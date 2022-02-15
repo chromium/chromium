@@ -133,6 +133,10 @@
 #include "content/browser/plugin_private_storage_helper.h"
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#include "content/browser/media/media_license_manager.h"
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
 using CookieDeletionFilter = network::mojom::CookieDeletionFilter;
 using CookieDeletionFilterPtr = network::mojom::CookieDeletionFilterPtr;
 
@@ -1344,6 +1348,12 @@ void StoragePartitionImpl::Initialize(
     aggregation_service_ =
         std::make_unique<AggregationServiceImpl>(is_in_memory(), path, this);
   }
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  media_license_manager_ = std::make_unique<MediaLicenseManager>(
+      GetBucketBasePath(), browser_context_->GetSpecialStoragePolicy(),
+      quota_manager_proxy);
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 }
 
 void StoragePartitionImpl::OnStorageServiceDisconnected() {
@@ -1622,6 +1632,13 @@ void StoragePartitionImpl::SetFontAccessManagerForTesting(
   DCHECK(font_access_manager);
   font_access_manager_ = std::move(font_access_manager);
 }
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+MediaLicenseManager* StoragePartitionImpl::GetMediaLicenseManager() {
+  DCHECK(initialized_);
+  return media_license_manager_.get();
+}
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 InterestGroupManager* StoragePartitionImpl::GetInterestGroupManager() {
   DCHECK(initialized_);

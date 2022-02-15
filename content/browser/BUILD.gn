@@ -2651,6 +2651,12 @@ source_set("browser") {
       "media/cdm_file_impl.h",
       "media/cdm_storage_impl.cc",
       "media/cdm_storage_impl.h",
+      "media/media_license_manager.cc",
+      "media/media_license_manager.h",
+      "media/media_license_quota_client.cc",
+      "media/media_license_quota_client.h",
+      "media/media_license_storage_host.cc",
+      "media/media_license_storage_host.h",
     ]
   }
 

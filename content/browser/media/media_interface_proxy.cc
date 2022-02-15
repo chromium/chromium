@@ -48,6 +48,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/media/cdm_storage_impl.h"
+#include "content/browser/media/media_license_manager.h"
 #include "media/base/key_system_names.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -161,7 +162,24 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
     if (cdm_type_.id.is_zero())
       return;
 
-    CdmStorageImpl::Create(render_frame_host_, cdm_type_, std::move(receiver));
+    // TODO(crbug.com/1231162): Make more test suites templated to test both
+    // backends.
+    if (base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
+      MediaLicenseManager* media_license_manager =
+          static_cast<StoragePartitionImpl*>(
+              render_frame_host_->GetStoragePartition())
+              ->GetMediaLicenseManager();
+      DCHECK(media_license_manager);
+
+      auto storage_key =
+          static_cast<RenderFrameHostImpl*>(render_frame_host_)->storage_key();
+      media_license_manager->OpenCdmStorage(
+          MediaLicenseManager::BindingContext(storage_key, cdm_type_),
+          std::move(receiver));
+    } else {
+      CdmStorageImpl::Create(render_frame_host_, cdm_type_,
+                             std::move(receiver));
+    }
 #endif
   }
 

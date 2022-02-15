@@ -12,8 +12,13 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
+#include "content/browser/media/media_license_manager.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "media/cdm/cdm_type.h"
@@ -22,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -76,10 +82,12 @@ class RunLoopWithExpectedCount {
 
 }  // namespace
 
-class CdmStorageTest : public RenderViewHostTestHarness {
+class CdmStorageTest : public base::test::WithFeatureOverride,
+                       public RenderViewHostTestHarness {
  public:
   CdmStorageTest()
-      : RenderViewHostTestHarness(
+      : base::test::WithFeatureOverride(features::kMediaLicenseBackend),
+        RenderViewHostTestHarness(
             content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
 
  protected:
@@ -88,10 +96,24 @@ class CdmStorageTest : public RenderViewHostTestHarness {
     rfh_ = web_contents()->GetMainFrame();
     RenderFrameHostTester::For(rfh_)->InitializeRenderFrameIfNeeded();
     SimulateNavigation(&rfh_, GURL(kTestOrigin));
-    // Create the CdmStorageImpl object. |cdm_storage_| will own the resulting
-    // object.
-    CdmStorageImpl::Create(rfh_, kTestCdmType,
-                           cdm_storage_.BindNewPipeAndPassReceiver());
+
+    if (base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
+      // Create the CdmStorageImpl object.
+      auto* media_license_manager =
+          static_cast<StoragePartitionImpl*>(rfh_->GetStoragePartition())
+              ->GetMediaLicenseManager();
+      DCHECK(media_license_manager);
+      media_license_manager->OpenCdmStorage(
+          MediaLicenseManager::BindingContext(
+              blink::StorageKey::CreateFromStringForTesting(kTestOrigin),
+              kTestCdmType),
+          cdm_storage_.BindNewPipeAndPassReceiver());
+    } else {
+      // Create the CdmStorageImpl object. |cdm_storage_| will own the resulting
+      // object.
+      CdmStorageImpl::Create(rfh_, kTestCdmType,
+                             cdm_storage_.BindNewPipeAndPassReceiver());
+    }
   }
 
   // Open the file |name|. Returns true if the file returned is valid, false
@@ -209,7 +231,11 @@ class CdmStorageTest : public RenderViewHostTestHarness {
   std::unique_ptr<RunLoopWithExpectedCount> run_loop_with_count_;
 };
 
-TEST_F(CdmStorageTest, InvalidFileName) {
+// TODO(crbug.com/1231162): Make this a non-parameterized test suite once we no
+// longer have to test against both backends.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CdmStorageTest);
+
+TEST_P(CdmStorageTest, InvalidFileName) {
   // Anything other than ASCII letter, digits, and -._ will fail. Add a
   // Unicode character to the name.
   const char kFileName[] = "openfile\u1234";
@@ -218,21 +244,21 @@ TEST_F(CdmStorageTest, InvalidFileName) {
   EXPECT_FALSE(cdm_file.is_bound());
 }
 
-TEST_F(CdmStorageTest, InvalidFileNameEmpty) {
+TEST_P(CdmStorageTest, InvalidFileNameEmpty) {
   const char kFileName[] = "";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_FALSE(Open(kFileName, cdm_file));
   EXPECT_FALSE(cdm_file.is_bound());
 }
 
-TEST_F(CdmStorageTest, InvalidFileNameStartWithUnderscore) {
+TEST_P(CdmStorageTest, InvalidFileNameStartWithUnderscore) {
   const char kFileName[] = "_invalid";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_FALSE(Open(kFileName, cdm_file));
   EXPECT_FALSE(cdm_file.is_bound());
 }
 
-TEST_F(CdmStorageTest, InvalidFileNameTooLong) {
+TEST_P(CdmStorageTest, InvalidFileNameTooLong) {
   // Limit is 256 characters, so try a file name with 257.
   const std::string kFileName(257, 'a');
   mojo::AssociatedRemote<CdmFile> cdm_file;
@@ -240,14 +266,14 @@ TEST_F(CdmStorageTest, InvalidFileNameTooLong) {
   EXPECT_FALSE(cdm_file.is_bound());
 }
 
-TEST_F(CdmStorageTest, OpenFile) {
+TEST_P(CdmStorageTest, OpenFile) {
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
   EXPECT_TRUE(cdm_file.is_bound());
 }
 
-TEST_F(CdmStorageTest, OpenFileLocked) {
+TEST_P(CdmStorageTest, OpenFileLocked) {
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file1;
   EXPECT_TRUE(Open(kFileName, cdm_file1));
@@ -266,7 +292,7 @@ TEST_F(CdmStorageTest, OpenFileLocked) {
   EXPECT_TRUE(cdm_file3.is_bound());
 }
 
-TEST_F(CdmStorageTest, MultipleFiles) {
+TEST_P(CdmStorageTest, MultipleFiles) {
   const char kFileName1[] = "file1";
   mojo::AssociatedRemote<CdmFile> cdm_file1;
   EXPECT_TRUE(Open(kFileName1, cdm_file1));
@@ -283,7 +309,12 @@ TEST_F(CdmStorageTest, MultipleFiles) {
   EXPECT_TRUE(cdm_file3.is_bound());
 }
 
-TEST_F(CdmStorageTest, WriteThenReadFile) {
+TEST_P(CdmStorageTest, WriteThenReadFile) {
+  if (base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
+    // TODO(crbug.com/1231162): Implement read and write for the new backend.
+    return;
+  }
+
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
@@ -298,7 +329,12 @@ TEST_F(CdmStorageTest, WriteThenReadFile) {
   EXPECT_EQ(kTestData, data_read);
 }
 
-TEST_F(CdmStorageTest, ReadThenWriteEmptyFile) {
+TEST_P(CdmStorageTest, ReadThenWriteEmptyFile) {
+  if (base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
+    // TODO(crbug.com/1231162): Implement read and write for the new backend.
+    return;
+  }
+
   const char kFileName[] = "empty_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
@@ -317,7 +353,12 @@ TEST_F(CdmStorageTest, ReadThenWriteEmptyFile) {
   EXPECT_EQ(0u, data_read.size());
 }
 
-TEST_F(CdmStorageTest, ParallelRead) {
+TEST_P(CdmStorageTest, ParallelRead) {
+  if (base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
+    // TODO(crbug.com/1231162): Implement read and write for the new backend.
+    return;
+  }
+
   const char kFileName[] = "duplicate_read_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
@@ -334,7 +375,12 @@ TEST_F(CdmStorageTest, ParallelRead) {
                status2 == CdmFile::Status::kSuccess));
 }
 
-TEST_F(CdmStorageTest, ParallelWrite) {
+TEST_P(CdmStorageTest, ParallelWrite) {
+  if (base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
+    // TODO(crbug.com/1231162): Implement read and write for the new backend.
+    return;
+  }
+
   const char kFileName[] = "duplicate_write_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));

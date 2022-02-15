@@ -24,4 +24,8 @@ const char kLocalStorageLeveldbName[] = "leveldb";
 const base::FilePath::CharType kServiceWorkerDirectory[] =
     FILE_PATH_LITERAL("Service Worker");
 
+// The file name of the database storing media license data.
+const base::FilePath::CharType kMediaLicenseDatabaseFileName[] =
+    FILE_PATH_LITERAL("Media Licenses.db");
+
 }  // namespace storage
