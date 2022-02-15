@@ -53,6 +53,11 @@ void FakeProcessInstance::ApplyHostMemoryPressure(
   host_memory_pressure_callback_ = std::move(callback);
 }
 
+void FakeProcessInstance::RequestLowMemoryKillCounts(
+    RequestLowMemoryKillCountsCallback callback) {
+  request_low_memory_kill_counts_callback_ = std::move(callback);
+}
+
 bool FakeProcessInstance::CheckLastHostMemoryPressure(
     mojom::PressureLevel level,
     int64_t reclaim_target) {
@@ -67,6 +72,12 @@ void FakeProcessInstance::RunHostMemoryPressureCallback(uint32_t killed,
   DCHECK(host_memory_pressure_callback_);
   // NB: two moves, one to reset the unique_ptr, and one to reset the callback.
   std::move(host_memory_pressure_callback_).Run(killed, reclaimed);
+}
+
+void FakeProcessInstance::RunRequestLowMemoryKillCountsCallback(
+    mojom::LowMemoryKillCountsPtr counts) {
+  DCHECK(request_low_memory_kill_counts_callback_);
+  std::move(request_low_memory_kill_counts_callback_).Run(std::move(counts));
 }
 
 }  // namespace arc

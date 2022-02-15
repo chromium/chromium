@@ -14,6 +14,7 @@
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/fake_process_instance.h"
 #include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/app_types.h"
 #include "base/metrics/histogram_samples.h"
@@ -109,6 +110,9 @@ class ArcMetricsServiceTest : public testing::Test {
         ArcMetricsService::GetForBrowserContextForTesting(context_.get());
 
     CreateFakeWindows();
+
+    ArcServiceManager::Get()->arc_bridge_service()->process()->SetInstance(
+        &fake_process_instance_);
   }
 
   ~ArcMetricsServiceTest() override {
@@ -146,6 +150,8 @@ class ArcMetricsServiceTest : public testing::Test {
   aura::Window* fake_arc_window() { return fake_arc_window_.get(); }
   aura::Window* fake_non_arc_window() { return fake_non_arc_window_.get(); }
 
+  FakeProcessInstance& process_instance() { return fake_process_instance_; }
+
  private:
   void CreateFakeWindows() {
     fake_arc_window_.reset(aura::test::CreateTestWindowWithId(
@@ -166,6 +172,8 @@ class ArcMetricsServiceTest : public testing::Test {
 
   std::unique_ptr<aura::Window> fake_arc_window_;
   std::unique_ptr<aura::Window> fake_non_arc_window_;
+
+  FakeProcessInstance fake_process_instance_;
 };
 
 // Tests that ReportBootProgress() actually records UMA stats.
@@ -452,6 +460,93 @@ TEST_F(ArcMetricsServiceTest, ArcAnr) {
   expectation[CreateAnrKey(kAppTypeArcAppLauncher,
                            mojom::AnrType::FOREGROUND_SERVICE)] = 1;
   VerifyAnr(tester, expectation);
+}
+
+TEST_F(ArcMetricsServiceTest, AppLowMemoryKills) {
+  base::HistogramTester tester;
+  service()->RequestLowMemoryKillCountsForTesting();
+  process_instance().RunRequestLowMemoryKillCountsCallback(
+      mojom::LowMemoryKillCounts::New(1,    // oom.
+                                      2,    // lmkd_foreground.
+                                      3,    // lmkd_perceptible.
+                                      4,    // lmkd_cached.
+                                      5,    // pressure_foreground.
+                                      6,    // pressure_preceptible.
+                                      7));  // pressure_cached.
+  // The first callback doesn't log to histograms, since it's collecting the
+  // first baseline.
+  tester.ExpectTotalCount("Arc.App.LowMemoryKills.LinuxOOMCount10Minutes", 0);
+  tester.ExpectTotalCount(
+      "Arc.App.LowMemoryKills.LMKD.ForegroundCount10Minutes", 0);
+  tester.ExpectTotalCount(
+      "Arc.App.LowMemoryKills.LMKD.PerceptibleCount10Minutes", 0);
+  tester.ExpectTotalCount("Arc.App.LowMemoryKills.LMKD.CachedCount10Minutes",
+                          0);
+  tester.ExpectTotalCount(
+      "Arc.App.LowMemoryKills.Pressure.ForegroundCount10Minutes", 0);
+  tester.ExpectTotalCount(
+      "Arc.App.LowMemoryKills.Pressure.PerceptibleCount10Minutes", 0);
+  tester.ExpectTotalCount(
+      "Arc.App.LowMemoryKills.Pressure.CachedCount10Minutes", 0);
+  service()->RequestLowMemoryKillCountsForTesting();
+  process_instance().RunRequestLowMemoryKillCountsCallback(
+      mojom::LowMemoryKillCounts::New(17,    // oom.
+                                      16,    // lmkd_foreground.
+                                      15,    // lmkd_perceptible.
+                                      14,    // lmkd_cached.
+                                      13,    // pressure_foreground.
+                                      12,    // pressure_preceptible.
+                                      11));  // pressure_cached.
+  tester.ExpectUniqueSample("Arc.App.LowMemoryKills.LinuxOOMCount10Minutes",
+                            17 - 1, 1);
+  tester.ExpectUniqueSample(
+      "Arc.App.LowMemoryKills.LMKD.ForegroundCount10Minutes", 16 - 2, 1);
+  tester.ExpectUniqueSample(
+      "Arc.App.LowMemoryKills.LMKD.PerceptibleCount10Minutes", 15 - 3, 1);
+  tester.ExpectUniqueSample("Arc.App.LowMemoryKills.LMKD.CachedCount10Minutes",
+                            14 - 4, 1);
+  tester.ExpectUniqueSample(
+      "Arc.App.LowMemoryKills.Pressure.ForegroundCount10Minutes", 13 - 5, 1);
+  tester.ExpectUniqueSample(
+      "Arc.App.LowMemoryKills.Pressure.PerceptibleCount10Minutes", 12 - 6, 1);
+  tester.ExpectUniqueSample(
+      "Arc.App.LowMemoryKills.Pressure.CachedCount10Minutes", 11 - 7, 1);
+}
+
+TEST_F(ArcMetricsServiceTest, AppLowMemoryKillsDecrease) {
+  base::HistogramTester tester;
+  service()->RequestLowMemoryKillCountsForTesting();
+  process_instance().RunRequestLowMemoryKillCountsCallback(
+      mojom::LowMemoryKillCounts::New(17,    // oom.
+                                      16,    // lmkd_foreground.
+                                      15,    // lmkd_perceptible.
+                                      14,    // lmkd_cached.
+                                      13,    // pressure_foreground.
+                                      12,    // pressure_preceptible.
+                                      11));  // pressure_cached.
+  service()->RequestLowMemoryKillCountsForTesting();
+  process_instance().RunRequestLowMemoryKillCountsCallback(
+      mojom::LowMemoryKillCounts::New(1,    // oom.
+                                      2,    // lmkd_foreground.
+                                      3,    // lmkd_perceptible.
+                                      4,    // lmkd_cached.
+                                      5,    // pressure_foreground.
+                                      6,    // pressure_preceptible.
+                                      7));  // pressure_cached.
+  // All counters decreased, so we should not log anything.
+  tester.ExpectTotalCount("Arc.App.LowMemoryKills.LinuxOOMCount10Minutes", 0);
+  tester.ExpectTotalCount(
+      "Arc.App.LowMemoryKills.LMKD.ForegroundCount10Minutes", 0);
+  tester.ExpectTotalCount(
+      "Arc.App.LowMemoryKills.LMKD.PerceptibleCount10Minutes", 0);
+  tester.ExpectTotalCount("Arc.App.LowMemoryKills.LMKD.CachedCount10Minutes",
+                          0);
+  tester.ExpectTotalCount(
+      "Arc.App.LowMemoryKills.Pressure.ForegroundCount10Minutes", 0);
+  tester.ExpectTotalCount(
+      "Arc.App.LowMemoryKills.Pressure.PerceptibleCount10Minutes", 0);
+  tester.ExpectTotalCount(
+      "Arc.App.LowMemoryKills.Pressure.CachedCount10Minutes", 0);
 }
 
 }  // namespace

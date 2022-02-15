@@ -34,6 +34,8 @@ class FakeProcessInstance : public mojom::ProcessInstance {
       mojom::PressureLevel level,
       int64_t reclaim_target,
       ApplyHostMemoryPressureCallback callback) override;
+  void RequestLowMemoryKillCounts(
+      RequestLowMemoryKillCountsCallback callback) override;
 
   // Returns true if the last call to HostMemoryPressure had matching level and
   // reclaim_target arguments.
@@ -49,12 +51,19 @@ class FakeProcessInstance : public mojom::ProcessInstance {
   // Executes the callback from the last call to HostMemoryPressure.
   void RunHostMemoryPressureCallback(uint32_t killed, uint64_t reclaimed);
 
+  // Executes the callback from the last call to RequestLowMemoryKillCounts.
+  void RunRequestLowMemoryKillCountsCallback(
+      mojom::LowMemoryKillCountsPtr counts);
+
  private:
   // State to save the most recent call to HostMemoryPressure.
   bool host_memory_pressure_checked_ = true;
   mojom::PressureLevel host_memory_pressure_level_;
   int64_t host_memory_pressure_reclaim_target_;
   ApplyHostMemoryPressureCallback host_memory_pressure_callback_;
+
+  // State to save the most recent call to RequestLowMemoryKillCounts.
+  RequestLowMemoryKillCountsCallback request_low_memory_kill_counts_callback_;
 };
 
 }  // namespace arc

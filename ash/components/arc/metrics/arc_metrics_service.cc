@@ -50,6 +50,9 @@ constexpr char kGmsProcessNamePrefix[] = "com.google.android.gms";
 constexpr char kBootProgressEnableScreen[] = "boot_progress_enable_screen";
 constexpr char kBootProgressArcUpgraded[] = "boot_progress_arc_upgraded";
 
+// Interval for collecting UMA "Arc.App.LowMemoryKills.*Count10Minutes" metrics.
+constexpr base::TimeDelta kRequestKillCountPeriod = base::Minutes(10);
+
 // App types to report.
 constexpr char kAppTypeArcAppLauncher[] = "ArcAppLauncher";
 constexpr char kAppTypeArcOther[] = "ArcOther";
@@ -237,11 +240,22 @@ void ArcMetricsService::OnProcessConnectionReady() {
   VLOG(2) << "Start updating process list.";
   request_process_list_timer_.Start(FROM_HERE, kRequestProcessListPeriod, this,
                                     &ArcMetricsService::RequestProcessList);
+
+  if (IsArcVmEnabled()) {
+    // Initialize prev_logged_memory_kills_ by immediately requesting new
+    // values.
+    prev_logged_memory_kills_.reset();
+    RequestLowMemoryKillCounts();
+    request_kill_count_timer_.Start(
+        FROM_HERE, kRequestKillCountPeriod, this,
+        &ArcMetricsService::RequestLowMemoryKillCounts);
+  }
 }
 
 void ArcMetricsService::OnProcessConnectionClosed() {
   VLOG(2) << "Stop updating process list.";
   request_process_list_timer_.Stop();
+  request_kill_count_timer_.Stop();
 }
 
 void ArcMetricsService::RequestProcessList() {
@@ -278,6 +292,67 @@ void ArcMetricsService::ParseProcessList(
   }
 
   UMA_HISTOGRAM_COUNTS_100("Arc.AppCount", running_app_count);
+}
+
+void ArcMetricsService::RequestLowMemoryKillCountsForTesting() {
+  RequestLowMemoryKillCounts();
+}
+
+void ArcMetricsService::RequestLowMemoryKillCounts() {
+  mojom::ProcessInstance* process_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->process(), RequestLowMemoryKillCounts);
+  if (!process_instance) {
+    LOG(WARNING)
+        << "Cannot get ProcessInstance for method RequestLowMemoryKillCounts";
+    return;
+  }
+  process_instance->RequestLowMemoryKillCounts(
+      base::BindOnce(&ArcMetricsService::LogLowMemoryKillCounts,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+// Helper that logs a single kill count type to a histogram, or logs a warning
+// if the counter decreased.
+static void LogLowMemoryKillCount(const char* suffix,
+                                  uint32_t prev_kills,
+                                  uint32_t curr_kills) {
+  if (prev_kills <= curr_kills) {
+    std::string name = std::string("Arc.App.LowMemoryKills.") + suffix;
+    base::UmaHistogramExactLinear(name, curr_kills - prev_kills, 50);
+  } else {
+    LOG(WARNING) << "LowMemoryKillCounts reported a decrease for " << suffix
+                 << ", previous: " << prev_kills << ", current: " << curr_kills;
+  }
+}
+
+void ArcMetricsService::LogLowMemoryKillCounts(
+    mojom::LowMemoryKillCountsPtr counts) {
+  if (prev_logged_memory_kills_) {
+    // Only log to the histograms if we have a previous sample to compute deltas
+    // from.
+    LogLowMemoryKillCount("LinuxOOMCount10Minutes",
+                          prev_logged_memory_kills_->guest_oom,
+                          counts->guest_oom);
+    LogLowMemoryKillCount("LMKD.ForegroundCount10Minutes",
+                          prev_logged_memory_kills_->lmkd_foreground,
+                          counts->lmkd_foreground);
+    LogLowMemoryKillCount("LMKD.PerceptibleCount10Minutes",
+                          prev_logged_memory_kills_->lmkd_perceptible,
+                          counts->lmkd_perceptible);
+    LogLowMemoryKillCount("LMKD.CachedCount10Minutes",
+                          prev_logged_memory_kills_->lmkd_cached,
+                          counts->lmkd_cached);
+    LogLowMemoryKillCount("Pressure.ForegroundCount10Minutes",
+                          prev_logged_memory_kills_->pressure_foreground,
+                          counts->pressure_foreground);
+    LogLowMemoryKillCount("Pressure.PerceptibleCount10Minutes",
+                          prev_logged_memory_kills_->pressure_perceptible,
+                          counts->pressure_perceptible);
+    LogLowMemoryKillCount("Pressure.CachedCount10Minutes",
+                          prev_logged_memory_kills_->pressure_cached,
+                          counts->pressure_cached);
+  }
+  prev_logged_memory_kills_ = std::move(counts);
 }
 
 void ArcMetricsService::OnArcStartTimeRetrieved(
