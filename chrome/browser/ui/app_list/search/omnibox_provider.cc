@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
@@ -19,8 +20,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/ui/app_list/search/common/types_util.h"
 #include "chrome/browser/ui/app_list/search/omnibox_answer_result.h"
 #include "chrome/browser/ui/app_list/search/omnibox_result.h"
+#include "chrome/browser/ui/app_list/search/open_tab_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -31,6 +34,8 @@
 
 namespace app_list {
 namespace {
+
+using chromeos::string_matching::TokenizedString;
 
 bool IsDriveUrl(const GURL& url) {
   // Returns true if the |url| points to a Drive Web host.
@@ -48,8 +53,12 @@ int ProviderTypes() {
   // We use all the default providers except for the document provider, which
   // suggests Drive files on enterprise devices. This is disabled to avoid
   // duplication with search results from DriveFS.
-  return AutocompleteClassifier::DefaultOmniboxProviders() &
-         ~AutocompleteProvider::TYPE_DOCUMENT;
+  int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
+                  ~AutocompleteProvider::TYPE_DOCUMENT;
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    providers |= AutocompleteProvider::TYPE_OPEN_TAB;
+  }
+  return providers;
 }
 
 void RemoveDuplicates(std::vector<std::unique_ptr<OmniboxResult>>& results) {
@@ -96,6 +105,7 @@ OmniboxProvider::~OmniboxProvider() {}
 
 void OmniboxProvider::Start(const std::u16string& query) {
   ClearResultsSilently();
+  last_query_.emplace(query, TokenizedString::Mode::kCamelCase);
 
   controller_->Stop(false);
   // The new page classification value(CHROMEOS_APP_LIST) is introduced
@@ -154,6 +164,11 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
     if (!is_zero_state_input_ && IsAnswer(match)) {
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
           profile_, list_controller_, controller_.get(), match));
+    } else if (match.type == AutocompleteMatchType::OPEN_TAB) {
+      DCHECK(last_query_.has_value());
+      new_results.emplace_back(std::make_unique<OpenTabResult>(
+          profile_, list_controller_, &favicon_cache_, last_query_.value(),
+          match));
     } else {
       list_results.emplace_back(std::make_unique<OmniboxResult>(
           profile_, list_controller_, controller_.get(), &favicon_cache_, match,

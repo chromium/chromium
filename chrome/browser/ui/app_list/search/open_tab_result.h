@@ -10,14 +10,18 @@
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 
+class AppListControllerDelegate;
 class FaviconCache;
+class Profile;
 
 namespace app_list {
 
 // Open tab search results. This is produced by the OmniboxProvider.
 class OpenTabResult : public ChromeSearchResult {
  public:
-  OpenTabResult(FaviconCache* favicon_cache,
+  OpenTabResult(Profile* profile,
+                AppListControllerDelegate* list_controller,
+                FaviconCache* favicon_cache,
                 const chromeos::string_matching::TokenizedString& query,
                 const AutocompleteMatch& match);
   ~OpenTabResult() override;
@@ -34,6 +38,8 @@ class OpenTabResult : public ChromeSearchResult {
   void UpdateIcon();
   void OnFaviconFetched(const gfx::Image& icon);
 
+  Profile* profile_;
+  AppListControllerDelegate* list_controller_;
   FaviconCache* favicon_cache_;
   AutocompleteMatch match_;
 

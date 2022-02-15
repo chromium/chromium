@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
@@ -16,6 +17,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
 
@@ -31,10 +33,15 @@ constexpr char16_t kUrlDelimiter[] = u" - ";
 
 }  // namespace
 
-OpenTabResult::OpenTabResult(FaviconCache* favicon_cache,
+OpenTabResult::OpenTabResult(Profile* profile,
+                             AppListControllerDelegate* list_controller,
+                             FaviconCache* favicon_cache,
                              const TokenizedString& query,
                              const AutocompleteMatch& match)
-    : favicon_cache_(favicon_cache), match_(match) {
+    : profile_(profile),
+      list_controller_(list_controller),
+      favicon_cache_(favicon_cache),
+      match_(match) {
   // TODO(crbug.com/1293702): This may not be unique. Once we have a mechanism
   // for opening a specific tab, add that info too to ensure uniqueness.
   set_id(kOpenTabScheme + match_.stripped_destination_url.spec());
@@ -52,34 +59,42 @@ OpenTabResult::OpenTabResult(FaviconCache* favicon_cache,
 OpenTabResult::~OpenTabResult() = default;
 
 void OpenTabResult::Open(int event_flags) {
-  // TODO(crbug.com/1293702): WIP. Use app list controller delegate to open the
-  // result.
+  list_controller_->OpenURL(
+      profile_, match_.destination_url, match_.transition,
+      ui::DispositionFromEventFlags(event_flags,
+                                    WindowOpenDisposition::SWITCH_TO_TAB));
 }
 
 void OpenTabResult::UpdateRelevance(const TokenizedString& query) {
-  TokenizedString title(match_.contents, TokenizedString::Mode::kWords);
+  TokenizedString title(match_.contents, TokenizedString::Mode::kCamelCase);
   TokenizedStringMatch match;
-  match.Calculate(query, title);
+  if (!match.Calculate(query, title)) {
+    // TODO(crbug.com/1293702): Low-scoring results are filtered out here
+    // because the browser-side provider currently only does very basic
+    // filtering.
+    scoring().filter = true;
+  }
   set_relevance(match.relevance());
 }
 
 void OpenTabResult::UpdateText() {
+  // URL results from the Omnibox have the page title stored in
+  // |match.description|.
   TextItem contents_text(TextType::kString);
-  contents_text.SetText(match_.contents);
+  contents_text.SetText(match_.description);
   contents_text.SetTextTags({});
 
-  TextItem delimeter_text(TextType::kString);
-  contents_text.SetText(kUrlDelimiter);
-  // TODO(crbug.com/1293702): Style this to match the details text once ash
-  // supports that.
-  contents_text.SetTextTags({});
+  TextItem delimiter_text(TextType::kString);
+  delimiter_text.SetText(kUrlDelimiter);
+  delimiter_text.SetTextTags({});
 
   std::u16string url = base::UTF8ToUTF16(match_.destination_url.spec());
   TextItem url_text(TextType::kString);
   url_text.SetText(url);
   url_text.SetTextTags({Tag(Tag::URL, 0, url.length())});
 
-  SetTitleTextVector({std::move(contents_text), std::move(url_text)});
+  SetTitleTextVector({std::move(contents_text), std::move(delimiter_text),
+                      std::move(url_text)});
   SetDetails(l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT));
 }
 

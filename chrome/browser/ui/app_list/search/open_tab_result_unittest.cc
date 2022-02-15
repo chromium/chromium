@@ -37,7 +37,8 @@ class OpenTabResultTest : public testing::Test {
     match.destination_url = GURL(url);
     TokenizedString tokenized_query(base::UTF8ToUTF16(query),
                                     TokenizedString::Mode::kWords);
-    return std::make_unique<OpenTabResult>(nullptr, tokenized_query, match);
+    return std::make_unique<OpenTabResult>(nullptr, nullptr, nullptr,
+                                           tokenized_query, match);
   }
 };
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chromeos/components/string_matching/tokenized_string.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,6 +51,7 @@ class OmniboxProvider : public SearchProvider,
   // True if the input is empty for zero state suggestion.
   bool is_zero_state_input_ = false;
   AppListControllerDelegate* list_controller_;
+  absl::optional<chromeos::string_matching::TokenizedString> last_query_;
   base::TimeTicks query_start_time_;
 
   // The omnibox AutocompleteController that collects/sorts/dup-
