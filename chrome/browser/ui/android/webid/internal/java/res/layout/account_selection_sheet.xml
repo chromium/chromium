@@ -16,8 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
-        android:layout_marginStart="@dimen/account_selection_sheet_horizontal_margin"
         android:clipToPadding="false"
         android:paddingBottom="8dp"
         android:divider="@null"

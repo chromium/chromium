@@ -11,12 +11,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
+    android:layout_marginBottom="8dp"
     android:layout_gravity="top"
     android:orientation="vertical">
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="top"
+      android:layout_marginEnd="@dimen/account_selection_sheet_close_button_horizontal_margin"
+      android:layout_marginStart="@dimen/account_selection_sheet_horizontal_margin"
       android:orientation="horizontal"
       android:minHeight="@dimen/account_selection_sheet_title_height">
      <org.chromium.ui.widget.ChromeImageView
@@ -43,8 +46,15 @@
           android:src="@drawable/btn_close" />
   </LinearLayout>
   <View
+    android:id="@+id/header_divider"
     android:background="@macro/divider_line_bg_color"
     android:layout_height="1dp"
+    android:layout_width="match_parent" />
+  <ProgressBar
+    android:id="@+id/header_progress_bar"
+    android:indeterminate="true"
+    android:layout_height="10dp"
     android:layout_width="match_parent"
-    android:layout_marginBottom="8dp"/>
+    android:visibility="gone"
+    style="?android:attr/progressBarStyleHorizontal" />
 </LinearLayout>

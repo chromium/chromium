@@ -251,10 +251,19 @@ class AccountSelectionViewBinder {
         if (key == HeaderProperties.FORMATTED_RP_URL || key == HeaderProperties.FORMATTED_IDP_URL
                 || key == HeaderProperties.TYPE) {
             TextView headerTitleText = view.findViewById(R.id.header_title);
-            String title = computeHeaderTitle(view.getResources(), model.get(HeaderProperties.TYPE),
+            HeaderProperties.HeaderType headerType = model.get(HeaderProperties.TYPE);
+            String title = computeHeaderTitle(view.getResources(), headerType,
                     model.get(HeaderProperties.FORMATTED_RP_URL),
                     model.get(HeaderProperties.FORMATTED_IDP_URL));
             headerTitleText.setText(title);
+
+            if (key == HeaderProperties.TYPE) {
+                boolean progressBarVisible = (headerType == HeaderProperties.HeaderType.VERIFY);
+                view.findViewById(R.id.header_progress_bar)
+                        .setVisibility(progressBarVisible ? View.VISIBLE : View.GONE);
+                view.findViewById(R.id.header_divider)
+                        .setVisibility(!progressBarVisible ? View.VISIBLE : View.GONE);
+            }
         } else if (key == HeaderProperties.IDP_BRAND_ICON) {
             Bitmap brandIcon = model.get(HeaderProperties.IDP_BRAND_ICON);
             if (brandIcon != null) {
