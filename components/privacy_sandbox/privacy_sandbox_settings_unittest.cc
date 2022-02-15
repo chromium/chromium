@@ -598,26 +598,46 @@ TEST_P(PrivacySandboxSettingsTest, FledgeJoiningAllowed) {
       url::Origin::Create(GURL("https://example.com.au"))));
 }
 
-TEST_P(PrivacySandboxSettingsTest, FledgeJoiningEtldChange) {
-  // Confirm that if what constitutes an eTLD+1 changes (e.g. due to Public
-  // Suffix List membership changing) previous settings still apply.
+TEST_P(PrivacySandboxSettingsTest, NonEtldPlusOneBlocked) {
+  // Confirm that, as a fallback, hosts are accepted by SetFledgeJoiningAllowed.
+  privacy_sandbox_settings()->SetFledgeJoiningAllowed("subsite.example.com",
+                                                      false);
 
-  // Attempting to apply settings to non eTLD+1's will be rejected by the
-  // service, so create them manually.
-  auto dict_pref = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
-  dict_pref->SetKey("subsite.example.com",
-                    base::TimeToValue(base::Time::Now()));
-  prefs()->SetUserPref(prefs::kPrivacySandboxFledgeJoinBlocked,
-                       std::move(dict_pref));
-
-  // The fact that subsite.example.com exists as a setting means it was once
-  // considered an eTLD+1, and should still affect subdomains.
+  // Applied setting should affect subdomaings.
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://subsite.example.com"))));
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("http://another.subsite.example.com"))));
   EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com"))));
+
+  // When removing the setting, only an exact match, and not the associated
+  // eTLD+1, should remove a setting.
+  privacy_sandbox_settings()->SetFledgeJoiningAllowed("example.com", true);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://subsite.example.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("http://another.subsite.example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://example.com"))));
+
+  privacy_sandbox_settings()->SetFledgeJoiningAllowed("subsite.example.com",
+                                                      true);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://subsite.example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("http://another.subsite.example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://example.com"))));
+
+  // IP addresses should also be accepted as a fallback.
+  privacy_sandbox_settings()->SetFledgeJoiningAllowed("10.1.1.100", false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://10.1.1.100"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("http://10.1.1.100:8080"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://10.2.2.200"))));
 }
 
 TEST_P(PrivacySandboxSettingsTest, FledgeJoinSettingTimeRangeDeletion) {

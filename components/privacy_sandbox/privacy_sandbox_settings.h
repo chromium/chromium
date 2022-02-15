@@ -88,7 +88,9 @@ class PrivacySandboxSettings : public KeyedService {
   // Sets the ability for |top_frame_etld_plus1| to join the profile to interest
   // groups to |allowed|. This information is stored in preferences, and is made
   // available to the API via IsFledgeJoiningAllowed(). |top_frame_etld_plus1|
-  // is DCHECK confirmed to be a non-empty, properly formed eTLD+1.
+  // should in most circumstances be a valid eTLD+1, but hosts are accepted to
+  // allow for shifts in private registries. Entries are converted into wildcard
+  // subdomain ContentSettingsPattern before comparison.
   void SetFledgeJoiningAllowed(const std::string& top_frame_etld_plus1,
                                bool allowed);
 

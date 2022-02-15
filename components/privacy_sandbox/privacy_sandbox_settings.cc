@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -60,14 +61,16 @@ bool HasNonDefaultBlockSetting(const ContentSettingsForOneType& cookie_settings,
   return false;
 }
 
-// Convert a stored FLEDGE block eTLD+1 into a content settings pattern. This
-// ensures that if Public Suffix List membership changes, the stored item
-// continues to match as when it was set.
+// Convert a stored FLEDGE block eTLD+1 into applicable content settings
+// patterns. This ensures that if Public Suffix List membership changes, the
+// stored item continues to match as when it was set. Multiple patterns are set
+// to support IP address fallbacks, which do not support [*.] prefixes.
 // TODO (crbug.com/1287153): This is somewhat hacky and can be removed when
 // FLEDGE is controlled by a content setting directly.
-ContentSettingsPattern FledgeBlockToContentSettingsPattern(
+std::vector<ContentSettingsPattern> FledgeBlockToContentSettingsPatterns(
     const std::string& entry) {
-  return ContentSettingsPattern::FromString("[*.]" + entry);
+  return {ContentSettingsPattern::FromString("[*.]" + entry),
+          ContentSettingsPattern::FromString(entry)};
 }
 
 }  // namespace
@@ -169,9 +172,21 @@ void PrivacySandboxSettings::SetFledgeJoiningAllowed(
       net::registry_controlled_domains::GetDomainAndRegistry(
           top_frame_etld_plus1,
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  DCHECK(effective_top_frame_etld_plus1 == top_frame_etld_plus1);
 
-  // Ignore attempts to configure an empty etld+1.
+  // Hosts are also accepted as a fallback. This may occur if the private
+  // registry has changed, and what the caller may be assuming is an eTLD+1 no
+  // longer is. Simply ignoring non-eTLD+1's may thus result in unexpected
+  // access.
+  if (effective_top_frame_etld_plus1 != top_frame_etld_plus1) {
+    // Add a dummy scheme and use GURL to confirm the provided string is a valid
+    // host.
+    const GURL url("https://" + top_frame_etld_plus1);
+    effective_top_frame_etld_plus1 = url.host();
+  }
+
+  // Ignore attempts to configure an empty etld+1. This will also catch the
+  // case where the eTLD+1 was not even a host, as GURL will have canonicalised
+  // it to empty.
   if (effective_top_frame_etld_plus1.length() == 0) {
     NOTREACHED() << "Cannot control FLEDGE joining for empty eTLD+1";
     return;
@@ -227,8 +242,11 @@ bool PrivacySandboxSettings::IsFledgeJoiningAllowed(
   DCHECK(pref_data);
   DCHECK(pref_data->is_dict());
   for (auto entry : pref_data->DictItems()) {
-    if (FledgeBlockToContentSettingsPattern(entry.first)
-            .Matches(top_frame_origin.GetURL())) {
+    if (base::ranges::any_of(FledgeBlockToContentSettingsPatterns(entry.first),
+                             [&](const auto& pattern) {
+                               return pattern.Matches(
+                                   top_frame_origin.GetURL());
+                             })) {
       return false;
     }
   }

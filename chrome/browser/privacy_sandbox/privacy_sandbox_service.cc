@@ -517,10 +517,6 @@ void PrivacySandboxService::ConvertFledgeJoiningTopFramesForDisplay(
 
     // The next best option is a host, which may be an IP address or an eTLD
     // itself (e.g. github.io).
-    // TODO(crbug.com/1286276): SetFledgeJoiningAllowed expects a non-empty
-    // eTLD+1 and so is more restrictive than what is allowed here. The logic
-    // there should be made to match this, as the user must be able to block
-    // whatever is displayed.
     if (origin.host().length() > 0) {
       display_entries.emplace(origin.host());
       continue;
