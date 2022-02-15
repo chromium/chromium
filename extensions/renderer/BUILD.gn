@@ -389,3 +389,23 @@ source_set("unit_tests") {
     "//ui/base",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "script_context_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":renderer",
+    "//base",
+    "//content/public/renderer",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//extensions/shell:app_shell_lib",
+    "//extensions/shell:browser_tests",
+    "//third_party/blink/public:blink",
+    "//url",
+  ]
+}

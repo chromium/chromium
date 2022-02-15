@@ -31,11 +31,8 @@ using content::RenderThread;
 
 namespace extensions {
 
-ShellContentRendererClient::ShellContentRendererClient() {
-}
-
-ShellContentRendererClient::~ShellContentRendererClient() {
-}
+ShellContentRendererClient::ShellContentRendererClient() = default;
+ShellContentRendererClient::~ShellContentRendererClient() = default;
 
 void ShellContentRendererClient::RenderThreadStarted() {
   RenderThread* thread = RenderThread::Get();
@@ -117,6 +114,18 @@ void ShellContentRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {
   extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentEnd(
       render_frame);
+}
+
+void ShellContentRendererClient::SetClientsForTesting(
+    std::unique_ptr<ExtensionsClient> extensions_client,
+    std::unique_ptr<ShellExtensionsRendererClient> extensions_renderer_client) {
+  DCHECK(!extensions_client_);
+  extensions_client_ = std::move(extensions_client);
+  ExtensionsClient::Set(extensions_client_.get());
+
+  DCHECK(!extensions_renderer_client_);
+  extensions_renderer_client_ = std::move(extensions_renderer_client);
+  ExtensionsRendererClient::Set(extensions_renderer_client_.get());
 }
 
 ExtensionsClient* ShellContentRendererClient::CreateExtensionsClient() {

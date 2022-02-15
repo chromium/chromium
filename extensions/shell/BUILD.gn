@@ -383,6 +383,8 @@ source_set("browser_tests") {
   sources = [
     "browser/api/runtime/runtime_apitest.cc",
     "browser/shell_browsertest.cc",
+    "test/extensions_render_view_test.cc",
+    "test/extensions_render_view_test.h",
     "test/shell_apitest.cc",
     "test/shell_apitest.h",
     "test/shell_test.cc",

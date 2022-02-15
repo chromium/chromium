@@ -303,6 +303,7 @@ test("extensions_browsertests") {
 
   deps = [
     "//extensions/browser:browser_tests",
+    "//extensions/renderer:browser_tests",
     "//extensions/shell:browser_tests",
   ]
 
@@ -323,7 +324,6 @@ source_set("chrome_extensions_browsertests") {
     "browser/api/serial/serial_apitest.cc",
     "browser/api/usb/usb_manual_apitest.cc",
     "browser/app_window/app_window_browsertest.cc",
-    "renderer/script_context_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

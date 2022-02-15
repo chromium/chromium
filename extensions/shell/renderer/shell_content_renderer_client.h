@@ -53,6 +53,10 @@ class ShellContentRendererClient : public content::ContentRendererClient {
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;
 
+  void SetClientsForTesting(std::unique_ptr<ExtensionsClient> extensions_client,
+                            std::unique_ptr<ShellExtensionsRendererClient>
+                                extensions_renderer_client);
+
  protected:
   // app_shell embedders may need custom extensions client interfaces.
   // This class takes ownership of the returned object.

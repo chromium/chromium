@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/frame_load_waiter.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
+#include "extensions/shell/test/extensions_render_view_test.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -18,7 +18,7 @@ using blink::WebLocalFrame;
 namespace extensions {
 namespace {
 
-class ScriptContextTest : public ChromeRenderViewTest {
+class ScriptContextTest : public ExtensionsRenderViewTest {
  protected:
   GURL GetEffectiveDocumentURLForContext(WebLocalFrame* frame) {
     return ScriptContext::GetEffectiveDocumentURLForContext(
