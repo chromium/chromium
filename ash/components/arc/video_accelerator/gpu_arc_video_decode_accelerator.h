@@ -221,12 +221,15 @@ class GpuArcVideoDecodeAccelerator
   // Set to true when the last ProvidePictureBuffers() is replied.
   bool awaiting_first_import_ = false;
 
-  // Set to true when we're waiting for the |protected_buffer_manager_| to reply
-  // to the first query for the shared memory region corresponding to a dummy
-  // FD. When true, we queue incoming Decode() requests in
-  // |decode_requests_waiting_for_first_secure_buffer_| for later use.
-  bool awaiting_first_secure_buffer_ = false;
-  std::queue<base::OnceClosure>
+  // |first_input_waiting_on_secure_buffer_| is set when we're waiting for the
+  // |protected_buffer_manager_| to reply to the first query for the shared
+  // memory region corresponding to a dummy FD. When set, its value is the
+  // bitstream buffer ID of the input buffer that caused us to query the
+  // |protected_buffer_manager_|. Also, when set, we queue incoming Decode()
+  // requests in |decode_requests_waiting_for_first_secure_buffer_| for later
+  // use.
+  absl::optional<int32_t> first_input_waiting_on_secure_buffer_;
+  std::queue<std::pair<int32_t, base::OnceClosure>>
       decode_requests_waiting_for_first_secure_buffer_;
 
   THREAD_CHECKER(thread_checker_);
