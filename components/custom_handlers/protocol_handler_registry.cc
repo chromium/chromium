@@ -34,7 +34,7 @@ namespace {
 
 const ProtocolHandler& LookupHandler(
     const ProtocolHandlerRegistry::ProtocolHandlerMap& handler_map,
-    const std::string& scheme) {
+    base::StringPiece scheme) {
   auto p = handler_map.find(scheme);
 
   if (p != handler_map.end())
@@ -46,7 +46,8 @@ const ProtocolHandler& LookupHandler(
 GURL TranslateUrl(
     const ProtocolHandlerRegistry::ProtocolHandlerMap& handler_map,
     const GURL& url) {
-  const ProtocolHandler& handler = LookupHandler(handler_map, url.scheme());
+  const ProtocolHandler& handler =
+      LookupHandler(handler_map, url.scheme_piece());
   if (handler.IsEmpty())
     return GURL();
 
@@ -147,6 +148,9 @@ ProtocolHandlerRegistry::GetReplacedHandlers(
 void ProtocolHandlerRegistry::ClearDefault(const std::string& scheme) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // TODO(jfernandez): If we want to use StringPiece as map's key for erasing,
+  // we would need to adapt the ProtocolHandlerMap, or just use the iterator
+  // got from find(scheme).
   default_handlers_.erase(scheme);
   Save();
   NotifyChanged();
@@ -206,7 +210,7 @@ void ProtocolHandlerRegistry::InitProtocolSettings() {
   }
 }
 
-int ProtocolHandlerRegistry::GetHandlerIndex(const std::string& scheme) const {
+int ProtocolHandlerRegistry::GetHandlerIndex(base::StringPiece scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const ProtocolHandler& handler = GetHandlerFor(scheme);
   if (handler.IsEmpty())
@@ -225,7 +229,7 @@ int ProtocolHandlerRegistry::GetHandlerIndex(const std::string& scheme) const {
 }
 
 ProtocolHandlerRegistry::ProtocolHandlerList
-ProtocolHandlerRegistry::GetHandlersFor(const std::string& scheme) const {
+ProtocolHandlerRegistry::GetHandlersFor(base::StringPiece scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto p = protocol_handlers_.find(scheme);
   if (p == protocol_handlers_.end()) {
@@ -285,14 +289,15 @@ void ProtocolHandlerRegistry::GetRegisteredProtocols(
 }
 
 bool ProtocolHandlerRegistry::CanSchemeBeOverridden(
-    const std::string& scheme) const {
+    base::StringPiece scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const ProtocolHandlerList* handlers = GetHandlerList(scheme);
   // If we already have a handler for this scheme, we can add more.
   if (handlers != NULL && !handlers->empty())
     return true;
   // Don't override a scheme if it already has an external handler.
-  return !delegate_->IsExternalHandlerRegistered(scheme);
+  return !delegate_->IsExternalHandlerRegistered(
+      static_cast<std::string>(scheme));
 }
 
 bool ProtocolHandlerRegistry::IsRegistered(
@@ -311,7 +316,7 @@ bool ProtocolHandlerRegistry::IsRegisteredByUser(
 }
 
 bool ProtocolHandlerRegistry::HasPolicyRegisteredHandler(
-    const std::string& scheme) {
+    base::StringPiece scheme) {
   return (policy_protocol_handlers_.find(scheme) !=
           policy_protocol_handlers_.end());
 }
@@ -375,7 +380,7 @@ void ProtocolHandlerRegistry::RemoveIgnoredHandler(
 }
 
 bool ProtocolHandlerRegistry::IsHandledProtocol(
-    const std::string& scheme) const {
+    base::StringPiece scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return enabled_ && !GetHandlerFor(scheme).IsEmpty();
 }
@@ -415,7 +420,7 @@ void ProtocolHandlerRegistry::RemoveHandler(const ProtocolHandler& handler) {
     NotifyChanged();
 }
 
-void ProtocolHandlerRegistry::RemoveDefaultHandler(const std::string& scheme) {
+void ProtocolHandlerRegistry::RemoveDefaultHandler(base::StringPiece scheme) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ProtocolHandler current_default = GetHandlerFor(scheme);
   if (!current_default.IsEmpty())
@@ -423,7 +428,7 @@ void ProtocolHandlerRegistry::RemoveDefaultHandler(const std::string& scheme) {
 }
 
 const ProtocolHandler& ProtocolHandlerRegistry::GetHandlerFor(
-    const std::string& scheme) const {
+    base::StringPiece scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return LookupHandler(default_handlers_, scheme);
 }
@@ -517,7 +522,7 @@ void ProtocolHandlerRegistry::Save() {
 }
 
 const ProtocolHandlerRegistry::ProtocolHandlerList*
-ProtocolHandlerRegistry::GetHandlerList(const std::string& scheme) const {
+ProtocolHandlerRegistry::GetHandlerList(base::StringPiece scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto p = protocol_handlers_.find(scheme);
   if (p == protocol_handlers_.end()) {

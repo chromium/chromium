@@ -41,9 +41,11 @@ class ProtocolHandlerRegistry : public KeyedService {
     POLICY,  // The handler was installed by policy
   };
 
-  typedef std::map<std::string, ProtocolHandler> ProtocolHandlerMap;
+  typedef std::map<std::string, ProtocolHandler, std::less<>>
+      ProtocolHandlerMap;
   typedef std::vector<ProtocolHandler> ProtocolHandlerList;
-  typedef std::map<std::string, ProtocolHandlerList> ProtocolHandlerMultiMap;
+  typedef std::map<std::string, ProtocolHandlerList, std::less<>>
+      ProtocolHandlerMultiMap;
 
   // |Delegate| provides an interface for interacting asynchronously
   // with the underlying OS for the purposes of registering Chrome
@@ -120,10 +122,10 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   // Returns the offset in the list of handlers for a protocol of the default
   // handler for that protocol.
-  int GetHandlerIndex(const std::string& scheme) const;
+  int GetHandlerIndex(base::StringPiece scheme) const;
 
   // Get the list of protocol handlers for the given scheme.
-  ProtocolHandlerList GetHandlersFor(const std::string& scheme) const;
+  ProtocolHandlerList GetHandlersFor(base::StringPiece scheme) const;
 
   // Get a list of protocol handlers registered in [begin, end).
   // Does not include predefined or policy installed handlers.
@@ -143,7 +145,7 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   // Returns true if we allow websites to register handlers for the given
   // scheme.
-  bool CanSchemeBeOverridden(const std::string& scheme) const;
+  bool CanSchemeBeOverridden(base::StringPiece scheme) const;
 
   // Returns true if an identical protocol handler has already been registered.
   bool IsRegistered(const ProtocolHandler& handler) const;
@@ -154,7 +156,7 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   // Returns true if the scheme has at least one handler that is registered by
   // policy.
-  bool HasPolicyRegisteredHandler(const std::string& scheme);
+  bool HasPolicyRegisteredHandler(base::StringPiece scheme);
 
   // Returns true if an identical protocol handler is being ignored.
   bool IsIgnored(const ProtocolHandler& handler) const;
@@ -169,17 +171,17 @@ class ProtocolHandlerRegistry : public KeyedService {
   void RemoveIgnoredHandler(const ProtocolHandler& handler);
 
   // Returns true if the protocol has a default protocol handler.
-  bool IsHandledProtocol(const std::string& scheme) const;
+  bool IsHandledProtocol(base::StringPiece scheme) const;
 
   // Removes the given protocol handler from the registry.
   void RemoveHandler(const ProtocolHandler& handler);
 
   // Remove the default handler for the given protocol.
-  void RemoveDefaultHandler(const std::string& scheme);
+  void RemoveDefaultHandler(base::StringPiece scheme);
 
   // Returns the default handler for this protocol, or an empty handler if none
   // exists.
-  const ProtocolHandler& GetHandlerFor(const std::string& scheme) const;
+  const ProtocolHandler& GetHandlerFor(base::StringPiece scheme) const;
 
   // Returns a translated URL if |url| is handled by a protocol handler,
   // otherwise it returns an empty URL.
@@ -234,7 +236,7 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   // Returns a pointer to the list of handlers registered for the given scheme,
   // or NULL if there are none.
-  const ProtocolHandlerList* GetHandlerList(const std::string& scheme) const;
+  const ProtocolHandlerList* GetHandlerList(base::StringPiece scheme) const;
 
   // Makes this ProtocolHandler the default handler for its protocol.
   void SetDefault(const ProtocolHandler& handler);
