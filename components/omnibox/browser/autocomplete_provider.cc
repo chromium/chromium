@@ -151,6 +151,8 @@ metrics::OmniboxEventProto_ProviderType AutocompleteProvider::
       return metrics::OmniboxEventProto::SEARCH;
     case TYPE_HISTORY_FUZZY:
       return metrics::OmniboxEventProto::HISTORY_FUZZY;
+    case TYPE_OPEN_TAB:
+      return metrics::OmniboxEventProto::OPEN_TAB;
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type_;
       return metrics::OmniboxEventProto::UNKNOWN_PROVIDER;

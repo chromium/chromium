@@ -5643,6 +5643,8 @@ others/histograms.xml -->
   <int value="26" label="CLIPBOARD_TEXT"/>
   <int value="27" label="CLIPBOARD_IMAGE"/>
   <int value="28" label="TILE_SUGGESTION"/>
+  <int value="29" label="TILE_NAVSUGGEST"/>
+  <int value="30" label="OPEN_TAB"/>
 </enum>
 
 <enum name="AutoDSEPermissionRevertTransition">
