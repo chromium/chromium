@@ -172,9 +172,6 @@ class AccessibilityManager
   // Enables or disables autoclick.
   void EnableAutoclick(bool enabled);
 
-  // Enables or disables autoclick without confirmation dialog.
-  void EnableAutoclickWithoutConfirmationDialog(bool enabled);
-
   // Returns true if autoclick is enabled.
   bool IsAutoclickEnabled() const;
 

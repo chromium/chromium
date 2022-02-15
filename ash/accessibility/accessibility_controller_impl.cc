@@ -2285,11 +2285,13 @@ AccessibilityControllerImpl::A11yNotificationWrapper::A11yNotificationWrapper(
 
 void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
   bool enabled = features_[feature]->enabled();
+  bool is_managed =
+      active_user_prefs_->IsManagedPreference(features_[feature]->pref_name());
 
   switch (feature) {
     case FeatureType::kAutoclick:
       Shell::Get()->autoclick_controller()->SetEnabled(
-          enabled, true /* show confirmation dialog */);
+          enabled, !is_managed /* show confirmation dialog */);
       break;
     case FeatureType::kCaretHighlight:
       UpdateAccessibilityHighlightingFromPrefs();

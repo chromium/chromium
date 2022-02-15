@@ -685,21 +685,6 @@ void AccessibilityManager::EnableAutoclick(bool enabled) {
   pref_service->CommitPendingWrite();
 }
 
-void AccessibilityManager::EnableAutoclickWithoutConfirmationDialog(
-    bool enabled) {
-  if (!profile_)
-    return;
-
-  // Updating auto-click pref causes a call to AutoclickController::SetEnabled
-  // with show_confirmation_dialog set to true. By making this call early with
-  // the same enabled parameter value, we cause the next call to be a no-op and
-  // show no confirmation dialog.
-  ash::Shell::Get()->autoclick_controller()->SetEnabled(
-      enabled, /*show_confirmation_dialog=*/false);
-
-  EnableAutoclick(enabled);
-}
-
 bool AccessibilityManager::IsAutoclickEnabled() const {
   return profile_ && profile_->GetPrefs()->GetBoolean(
                          prefs::kAccessibilityAutoclickEnabled);
