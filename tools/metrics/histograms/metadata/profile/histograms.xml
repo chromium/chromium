@@ -200,17 +200,6 @@ chromium-metrics-reviews@google.com.
   <summary>Size of the favicons database.</summary>
 </histogram>
 
-<histogram name="Profile.Guest.CreatedType" enum="GuestProfileCreatedType"
-    expires_after="2022-04-03">
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the type of Guest profile created, either a parent guest or the
-    first child (off-the-record) guest profile for the active parent guest
-    profile. It is recorded during the guest profile creation.
-  </summary>
-</histogram>
-
 <histogram name="Profile.Guest.ForcedByPolicy" enum="BooleanForced"
     expires_after="2022-08-14">
   <owner>rhalavati@chromium.org</owner>
@@ -228,6 +217,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     This histogram records the lifetime duration of an off-the-record Guest
     profile. It is recorded once the profile for the Guest session is closed.
+  </summary>
+</histogram>
+
+<histogram name="Profile.Guest.TypeCreated" enum="GuestProfileCreatedType"
+    expires_after="2022-04-03">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the type of Guest profile created, either a parent guest or the
+    first child (off-the-record) guest profile for the active parent guest
+    profile. It is recorded during the guest profile creation.
   </summary>
 </histogram>
 
