@@ -4922,9 +4922,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledGroupA_20211104",
+                    "name": "EnabledGroupA_FullTrim_20220211",
                     "params": {
-                        "TrimArcVmOnCriticalPressure": "false",
+                        "OnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot": "false",
                         "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot": "true"
                     },
                     "enable_features": [
@@ -4932,9 +4932,9 @@
                     ]
                 },
                 {
-                    "name": "EnabledGroupB_20211104",
+                    "name": "EnabledGroupB_DropCachesOnly_20220211",
                     "params": {
-                        "TrimArcVmOnCriticalPressure": "true",
+                        "OnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot": "true",
                         "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot": "true"
                     },
                     "enable_features": [
