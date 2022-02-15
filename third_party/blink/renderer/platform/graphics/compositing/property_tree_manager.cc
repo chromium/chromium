@@ -92,7 +92,7 @@ static void SetTransformTreePageScaleFactor(
     cc::TransformTree* transform_tree,
     cc::TransformNode* page_scale_node) {
   DCHECK(page_scale_node->local.IsScale2d());
-  auto page_scale = page_scale_node->local.Scale2d();
+  auto page_scale = page_scale_node->local.To2dScale();
   DCHECK_EQ(page_scale.x(), page_scale.y());
   transform_tree->set_page_scale_factor(page_scale.x());
 }

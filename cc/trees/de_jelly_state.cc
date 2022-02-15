@@ -53,8 +53,8 @@ void DeJellyState::AdvanceFrame(LayerTreeImpl* layer_tree_impl) {
   if (!previous_scroll_transform ||
       !previous_scroll_transform->IsScaleOrTranslation() ||
       !new_scroll_node_transform_->IsScaleOrTranslation() ||
-      new_scroll_node_transform_->Scale2d() !=
-          previous_scroll_transform->Scale2d()) {
+      new_scroll_node_transform_->To2dScale() !=
+          previous_scroll_transform->To2dScale()) {
     return;
   }
 

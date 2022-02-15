@@ -2709,8 +2709,8 @@ class LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate
 };
 
 // TODO(crbug.com/1292184): Flaky failures.
-//SINGLE_AND_MULTI_THREAD_TEST_F(
-//    LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate);
+// SINGLE_AND_MULTI_THREAD_TEST_F(
+//     LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate);
 
 class LayerTreeHostTestDeviceScaleFactorChange : public LayerTreeHostTest {
  public:
@@ -6125,7 +6125,7 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
   void VerifyOverscroll(const gfx::Vector2dF& stretch_amount,
                         const gfx::Transform& transform) {
 #if BUILDFLAG(IS_ANDROID)
-    gfx::Vector2dF scale = transform.Scale2d();
+    gfx::Vector2dF scale = transform.To2dScale();
     // On android, overscroll stretches the content. We don't assert the amount
     // of stretch but there should be some stretch for overscroll and no stretch
     // without it.

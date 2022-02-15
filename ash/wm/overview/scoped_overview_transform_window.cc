@@ -401,7 +401,7 @@ void ScopedOverviewTransformWindow::SetClipping(
       } else {
         // Transform affects the clip rect, so take that into account.
         const gfx::Vector2dF scale =
-            window_->layer()->GetTargetTransform().Scale2d();
+            window_->layer()->GetTargetTransform().To2dScale();
         size.Scale(1 / scale.x(), 1 / scale.y());
       }
       break;
@@ -541,7 +541,7 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
     DCHECK(!show);
 
   ui::Layer* layer = window_->layer();
-  const float scale = layer->transform().Scale2d().x();
+  const float scale = layer->transform().To2dScale().x();
   const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kLow);
   const gfx::RoundedCornersF radii(show ? (radius / scale) : 0.0f);

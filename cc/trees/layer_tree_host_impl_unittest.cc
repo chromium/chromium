@@ -15798,7 +15798,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, UpdatePageScaleFactorOnActiveTree) {
       host_impl_->active_tree()->PageScaleTransformNode();
   // SetPageScaleOnActiveTree also updates the factors in property trees.
   EXPECT_TRUE(active_tree_node->local.IsScale2d());
-  EXPECT_EQ(gfx::Vector2dF(2, 2), active_tree_node->local.Scale2d());
+  EXPECT_EQ(gfx::Vector2dF(2, 2), active_tree_node->local.To2dScale());
   EXPECT_EQ(gfx::Point3F(), active_tree_node->origin);
   EXPECT_EQ(2, host_impl_->active_tree()->current_page_scale_factor());
 
@@ -15819,14 +15819,14 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, UpdatePageScaleFactorOnActiveTree) {
   UpdateDrawProperties(host_impl_->pending_tree());
   pending_tree_node = host_impl_->pending_tree()->PageScaleTransformNode();
   EXPECT_TRUE(pending_tree_node->local.IsScale2d());
-  EXPECT_EQ(gfx::Vector2dF(2, 2), pending_tree_node->local.Scale2d());
+  EXPECT_EQ(gfx::Vector2dF(2, 2), pending_tree_node->local.To2dScale());
   EXPECT_EQ(gfx::Point3F(), pending_tree_node->origin);
 
   host_impl_->ActivateSyncTree();
   UpdateDrawProperties(host_impl_->active_tree());
   active_tree_node = host_impl_->active_tree()->PageScaleTransformNode();
   EXPECT_TRUE(active_tree_node->local.IsScale2d());
-  EXPECT_EQ(gfx::Vector2dF(2, 2), active_tree_node->local.Scale2d());
+  EXPECT_EQ(gfx::Vector2dF(2, 2), active_tree_node->local.To2dScale());
   EXPECT_EQ(gfx::Point3F(), active_tree_node->origin);
 }
 

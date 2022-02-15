@@ -241,7 +241,7 @@ void AccumulateDrawRects(const gfx::Rect& quad_rect,
 
     // Apply only the scale and translation component.
     const gfx::Vector2dF& translate = target_transform.To2dTranslation();
-    const gfx::Vector2dF& scale = target_transform.Scale2d();
+    const gfx::Vector2dF& scale = target_transform.To2dScale();
     quad_rect_f.Scale(scale.x(), scale.y());
     quad_rect_f.Offset(translate.x(), translate.y());
   } else {
@@ -3327,7 +3327,7 @@ void GLRenderer::SetShaderRoundedCorner(
   DCHECK(screen_transform.IsScaleOrTranslation());
 
   const gfx::Vector2dF& translate = screen_transform.To2dTranslation();
-  const gfx::Vector2dF& scale = screen_transform.Scale2d();
+  const gfx::Vector2dF& scale = screen_transform.To2dScale();
   gfx::RRectF bounds_in_screen = rounded_corner_bounds;
   bounds_in_screen.Scale(scale.x(), scale.y());
   bounds_in_screen.Offset(translate.x(), translate.y());

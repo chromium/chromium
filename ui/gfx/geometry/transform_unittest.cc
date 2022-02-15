@@ -2293,6 +2293,34 @@ TEST(XFormTest, verifyIsScaleOrTranslation) {
   EXPECT_FALSE(A.IsScaleOrTranslation());
 }
 
+TEST(XFormTest, Scale) {
+  Transform t;
+  EXPECT_TRUE(t.IsScale());
+  EXPECT_TRUE(t.IsScale2d());
+  EXPECT_EQ(gfx::Vector2dF(1, 1), t.To2dScale());
+
+  t.Scale(2.5f, 3.75f);
+  EXPECT_TRUE(t.IsScale());
+  EXPECT_TRUE(t.IsScale2d());
+  EXPECT_EQ(gfx::Vector2dF(2.5f, 3.75f), t.To2dScale());
+
+  t.Scale3d(3, 4, 5);
+  EXPECT_TRUE(t.IsScale());
+  EXPECT_FALSE(t.IsScale2d());
+  EXPECT_EQ(gfx::Vector2dF(7.5f, 15.f), t.To2dScale());
+
+  for (int row = 0; row < 4; row++) {
+    for (int col = 0; col < 4; col++) {
+      t.MakeIdentity();
+      t.matrix().set(row, col, 100);
+      bool is_scale = row == col && (row == 0 || row == 1 || row == 2);
+      bool is_scale_2d = row == col && (row == 0 || row == 1);
+      EXPECT_EQ(is_scale, t.IsScale()) << " row=" << row << " col=" << col;
+      EXPECT_EQ(is_scale_2d, t.IsScale2d()) << " row=" << row << " col=" << col;
+    }
+  }
+}
+
 TEST(XFormTest, verifyFlattenTo2d) {
   Transform A;
   InitializeTestMatrix(&A);

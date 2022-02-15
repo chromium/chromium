@@ -274,7 +274,7 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
   void Reset() {
     const gfx::Transform& transform = layer_->transform();
     did_animate_ = false;
-    start_scale_ = end_scale_ = min_scale_ = max_scale_ = transform.Scale2d();
+    start_scale_ = end_scale_ = min_scale_ = max_scale_ = transform.To2dScale();
     start_translation_ = end_translation_ = min_translation_ =
         max_translation_ = transform.To2dTranslation();
   }
@@ -326,7 +326,7 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
                           ui::PropertyChangeReason reason) override {
     const gfx::Transform& transform = layer_->transform();
     did_animate_ |= reason == ui::PropertyChangeReason::FROM_ANIMATION;
-    end_scale_ = transform.Scale2d();
+    end_scale_ = transform.To2dScale();
     end_translation_ = transform.To2dTranslation();
     min_scale_.SetToMin(end_scale_);
     max_scale_.SetToMax(end_scale_);
