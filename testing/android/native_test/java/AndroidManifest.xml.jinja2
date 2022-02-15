@@ -32,10 +32,12 @@ found in the LICENSE file.
     <application android:label="NativeTests"
             android:usesCleartextTraffic="true"
             android:requestLegacyExternalStorage="true"
+            android:memtagMode="sync"
             android:name="org.chromium.native_test.NativeTestApplication">
     {% else %}
     <application android:label="NativeTests"
             android:requestLegacyExternalStorage="true"
+            android:memtagMode="sync"
             android:name="org.chromium.native_test.NativeTestApplication">
     {% endif %}
         <uses-library android:name="android.test.runner"/>
