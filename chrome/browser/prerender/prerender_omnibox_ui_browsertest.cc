@@ -438,11 +438,20 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
 
   GURL GetSearchUrl(const std::string& query,
                     std::string search_terms,
-                    bool is_prerender = true) {
+                    bool is_prerender) {
+    // $1: the search terms that will be retrieved.
+    // $2: flag for prefetch/prerender request. Should be &pf=cs if the url is
+    // expected to be used for a prerendering navigation. Otherwise it should be
+    // an empty string.
+    // $3: origin query. This might differ than search terms. For example, an
+    //     origin query of "prerend" can have the search term of "prerender",
+    //     since the suggestion service suggests to retrieve the term.
+    std::string url_template = "/search_page.html?q=$1$2&oq=$3&";
     return search_engine_server_.GetURL(
-        kSearchDomain, "/search_page.html?q=" + search_terms +
-                           (is_prerender ? "&pf=cs" : "") + "&oq=" + query +
-                           "&");
+        kSearchDomain,
+        base::ReplaceStringPlaceholders(
+            url_template, {search_terms, is_prerender ? "&pf=cs" : "", query},
+            nullptr));
   }
 
   AutocompleteController* GetAutocompleteController() {
@@ -521,8 +530,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
   Observe(GetActiveWebContents());
   std::string search_query = "prerender2";
-  GURL prerender_url = GetSearchUrl(search_query, "prerender222");
-  int host_id = InputSearchQueryAndWaitForTrigger(search_query, prerender_url);
+  GURL expected_prerender_url =
+      GetSearchUrl(search_query, "prerender222", /*is_prerender=*/true);
+  int host_id =
+      InputSearchQueryAndWaitForTrigger(search_query, expected_prerender_url);
   ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   // Ensure there is a search hint.
@@ -537,7 +548,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
 
   SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id);
   EXPECT_TRUE(IsPrerenderingNavigation());
-  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), prerender_url);
+
+  // The displayed url shouldn't contain the parameter of pf=cs.
+  GURL expected_displayed_url = GetSearchUrl(search_query, "prerender222",
+                                             /*is_prerender=*/false);
+  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
+            expected_displayed_url);
 }
 
 // Tests that prerender maintain the previous prerendered page if the new
@@ -550,11 +566,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
   Observe(GetActiveWebContents());
   std::string search_query_1 = "prerender2";
-  GURL prerender_url = GetSearchUrl(search_query_1, "prerender222");
+  GURL expected_prerender_url =
+      GetSearchUrl(search_query_1, "prerender222", /*is_prerender=*/true);
 
   // Trigger an omnibox suggest that has a prerender hint.
   int host_id =
-      InputSearchQueryAndWaitForTrigger(search_query_1, prerender_url);
+      InputSearchQueryAndWaitForTrigger(search_query_1, expected_prerender_url);
   ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   std::string search_query_2 = "prerender22";
@@ -572,7 +589,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
   SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id);
   EXPECT_TRUE(IsPrerenderingNavigation());
-  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), prerender_url);
+  GURL expected_displayed_url =
+      GetSearchUrl(search_query_1, "prerender222", /*is_prerender=*/false);
+  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
+            expected_displayed_url);
 }
 
 // Tests whether prerendering a search suggestion will have pf=cs parameter

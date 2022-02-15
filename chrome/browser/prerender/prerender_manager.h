@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRERENDER_PRERENDER_MANAGER_H_
 
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/search_engines/template_url.h"
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -62,8 +63,14 @@ class PrerenderManager : public content::WebContentsObserver,
 
   std::unique_ptr<content::PrerenderHandle> search_prerender_handle_;
   std::unique_ptr<content::PrerenderHandle> direct_url_input_prerender_handle_;
-  // Stores the search terms that `search_prerender_handle_` is prerendering.
-  std::u16string prerendered_search_terms_;
+
+  // Stores the arguments of the search term that `search_prerender_handle_` is
+  // prerendering.
+  // TODO(https://crbug.com/1291147): This is a workaround to stop the location
+  // bar from displaying the prefetch flag. This should be removed after we
+  // confirm the prerendered documents update the url by theirselves.
+  TemplateURLRef::SearchTermsArgs prerendered_search_terms_args_;
+
   bool skip_template_url_service_for_testing_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

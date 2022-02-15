@@ -10,6 +10,9 @@
 
 namespace prerender_utils {
 
+const base::Feature kHidePrefetchParameter{"HidePrefetchParameter",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
 const char kDefaultSearchEngineMetricSuffix[] = "DefaultSearchEngine";
 const char kDirectUrlInputMetricSuffix[] = "DirectURLInput";
 
@@ -22,6 +25,10 @@ bool IsSearchSuggestionPrerenderEnabled() {
   return blink::features::IsPrerender2Enabled() &&
          base::FeatureList::IsEnabled(
              features::kSupportSearchSuggestionForPrerender2);
+}
+
+bool ShouldUpdateVirtualUrlForSearchManually() {
+  return base::FeatureList::IsEnabled(kHidePrefetchParameter);
 }
 
 }  // namespace prerender_utils
