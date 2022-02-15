@@ -526,7 +526,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   // Collect metrics on whether usage of SameParty attribute is correct.
   if (parsed_cookie.IsSameParty())
-    base::UmaHistogramBoolean("Cookie.IsSamePartyValid", is_same_party_valid);
+    UMA_HISTOGRAM_BOOLEAN("Cookie.IsSamePartyValid", is_same_party_valid);
 
   bool partition_has_nonce = CookiePartitionKey::HasNonce(cookie_partition_key);
   bool is_partitioned_valid =
@@ -539,8 +539,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   // Collect metrics on whether usage of the Partitioned attribute is correct.
   // Do not include implicit nonce-based partitioned cookies in these metrics.
   if (parsed_cookie.IsPartitioned()) {
-    base::UmaHistogramBoolean("Cookie.IsPartitionedValid",
-                              is_partitioned_valid);
+    UMA_HISTOGRAM_BOOLEAN("Cookie.IsPartitionedValid", is_partitioned_valid);
   } else if (!partition_has_nonce) {
     cookie_partition_key = absl::nullopt;
   }
