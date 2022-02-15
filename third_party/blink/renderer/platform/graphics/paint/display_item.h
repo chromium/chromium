@@ -296,7 +296,7 @@ class PLATFORM_EXPORT DisplayItem {
               const gfx::Rect& visual_rect,
               RasterEffectOutset raster_effect_outset,
               PaintInvalidationReason paint_invalidation_reason,
-              bool draws_content = false)
+              bool draws_content)
       : client_id_(client_id),
         visual_rect_(visual_rect),
         fragment_(0),

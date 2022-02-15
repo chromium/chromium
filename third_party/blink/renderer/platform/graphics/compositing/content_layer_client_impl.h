@@ -18,7 +18,7 @@ namespace blink {
 
 class JSONArray;
 class JSONObject;
-class PaintChunkSubset;
+class PendingLayer;
 
 class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
                                                public LayerAsJSONClient {
@@ -51,11 +51,7 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
     return id_ && paint_chunk.Matches(*id_);
   }
 
-  scoped_refptr<cc::PictureLayer> UpdateCcPictureLayer(
-      const PaintChunkSubset&,
-      const gfx::Vector2dF& layer_offset,
-      const gfx::Size& layer_bounds,
-      const PropertyTreeState&);
+  scoped_refptr<cc::PictureLayer> UpdateCcPictureLayer(const PendingLayer&);
 
   RasterInvalidator& GetRasterInvalidator() { return raster_invalidator_; }
 

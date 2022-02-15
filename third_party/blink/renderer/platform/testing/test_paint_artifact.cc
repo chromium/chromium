@@ -33,7 +33,9 @@ TestPaintArtifact& TestPaintArtifact::Chunk(int id) {
   // invalidation rects of chunks. The actual values don't matter. If the chunk
   // has display items, we will recalculate the bounds from the display items
   // when constructing the PaintArtifact.
-  Bounds(gfx::Rect(id * 110, id * 220, id * 220 + 200, id * 110 + 200));
+  gfx::Rect bounds(id * 110, id * 220, id * 220 + 200, id * 110 + 200);
+  Bounds(bounds);
+  DrawableBounds(bounds);
   return *this;
 }
 
@@ -153,7 +155,6 @@ TestPaintArtifact& TestPaintArtifact::EffectivelyInvisible() {
 TestPaintArtifact& TestPaintArtifact::Bounds(const gfx::Rect& bounds) {
   auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.bounds = bounds;
-  chunk.drawable_bounds = bounds;
   return *this;
 }
 

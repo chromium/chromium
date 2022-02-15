@@ -264,10 +264,7 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
 
   gfx::Vector2dF layer_offset = pending_layer.LayerOffset();
   gfx::Size layer_bounds = pending_layer.LayerBounds();
-  auto cc_layer = content_layer_client->UpdateCcPictureLayer(
-      pending_layer.Chunks(), layer_offset, layer_bounds,
-      pending_layer.GetPropertyTreeState());
-
+  auto cc_layer = content_layer_client->UpdateCcPictureLayer(pending_layer);
   new_content_layer_clients.push_back(std::move(content_layer_client));
 
   // Set properties that foreign layers would normally control for themselves
@@ -311,6 +308,7 @@ bool NeedsFullUpdateAfterPaintingChunk(
 
   if (repainted.is_moved_from_cached_subsequence) {
     DCHECK_EQ(previous.bounds, repainted.bounds);
+    DCHECK_EQ(previous.DrawsContent(), repainted.DrawsContent());
     DCHECK_EQ(previous.rect_known_to_be_opaque,
               repainted.rect_known_to_be_opaque);
     DCHECK_EQ(previous.text_known_to_be_on_opaque_background,
@@ -359,6 +357,12 @@ bool NeedsFullUpdateAfterPaintingChunk(
   // |has_text| affects compositing decisions (see:
   // |PendingLayer::MergeInternal|).
   if (previous.has_text != repainted.has_text)
+    return true;
+
+  // |PaintChunk::DrawsContent()| affects whether a layer draws content which
+  // affects whether mask layers are created (see:
+  // |SwitchToEffectNodeWithSynthesizedClip|).
+  if (previous.DrawsContent() != repainted.DrawsContent())
     return true;
 
   // Debugging for https://crbug.com/1237389 and https://crbug.com/1230104.
@@ -472,10 +476,10 @@ bool PaintArtifactCompositor::DecompositeEffect(
       if (num_previous_siblings > 2)
         return false;
       if (num_previous_siblings == 2 &&
-          pending_layers_[first_layer_in_parent_group_index].MayDrawContent())
+          pending_layers_[first_layer_in_parent_group_index].DrawsContent())
         return false;
       const auto& previous_sibling = pending_layers_[layer_index - 1];
-      if (previous_sibling.MayDrawContent() &&
+      if (previous_sibling.DrawsContent() &&
           !previous_sibling.CanMerge(layer, *upcast_state, prefers_lcd_text_))
         return false;
     }
@@ -938,9 +942,7 @@ void PaintArtifactCompositor::UpdateRepaintedContentLayerClient(
     content_layer_client.GetRasterInvalidator().SetOldPaintArtifact(
         &pending_layer.Chunks().GetPaintArtifact());
   } else {
-    content_layer_client.UpdateCcPictureLayer(
-        pending_layer.Chunks(), pending_layer.LayerOffset(),
-        pending_layer.LayerBounds(), pending_layer.GetPropertyTreeState());
+    content_layer_client.UpdateCcPictureLayer(pending_layer);
   }
 }
 
