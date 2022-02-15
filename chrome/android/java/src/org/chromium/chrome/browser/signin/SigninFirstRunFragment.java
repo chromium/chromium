@@ -197,6 +197,10 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     }
 
     private void notifyCoordinatorWhenNativeAndPolicyAreLoaded() {
+        // This may happen when the native initialized supplier in FirstRunActivity calls back after
+        // the fragment has been detached from the activity. See https://crbug.com/1294998.
+        if (getPageDelegate() == null) return;
+
         if (mSigninFirstRunCoordinator != null && mNativeInitialized
                 && getPageDelegate().getPolicyLoadListener().get() != null) {
             mSigninFirstRunCoordinator.onNativeAndPolicyLoaded(
