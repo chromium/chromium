@@ -29,7 +29,9 @@
     NSMutableArray<UITapGestureRecognizer*>* mostVisitedTapRecognizers;
 // The UILongPressGestureRecognizer for the Return To Recent Tab tile.
 @property(nonatomic, strong)
-    UILongPressGestureRecognizer* returnToRecentTabTapRecognizer;
+    UITapGestureRecognizer* returnToRecentTabTapRecognizer;
+@property(nonatomic, strong)
+    UILongPressGestureRecognizer* returnToRecentTabLongPressRecognizer;
 // The UITapGestureRecognizer for the NTP promo view.
 @property(nonatomic, strong) UITapGestureRecognizer* promoTapRecognizer;
 
@@ -56,14 +58,22 @@
     ContentSuggestionsReturnToRecentTabView* returnToRecentTabTile =
         [[ContentSuggestionsReturnToRecentTabView alloc]
             initWithConfiguration:self.returnToRecentItem];
-    self.returnToRecentTabTapRecognizer = [[UILongPressGestureRecognizer alloc]
+    self.returnToRecentTabTapRecognizer = [[UITapGestureRecognizer alloc]
         initWithTarget:self.tapTarget
                 action:@selector(contentSuggestionsElementTapped:)];
-    self.returnToRecentTabTapRecognizer.minimumPressDuration =
-        ios::material::kDuration8;
     [returnToRecentTabTile
         addGestureRecognizer:self.returnToRecentTabTapRecognizer];
     self.returnToRecentTabTapRecognizer.enabled = YES;
+    // Add long press functionality for the Return to Recent Tab tile.
+    self.returnToRecentTabLongPressRecognizer =
+        [[UILongPressGestureRecognizer alloc]
+            initWithTarget:self.tapTarget
+                    action:@selector(contentSuggestionsElementTapped:)];
+    self.returnToRecentTabLongPressRecognizer.minimumPressDuration =
+        ios::material::kDuration8;
+    self.returnToRecentTabLongPressRecognizer.enabled = YES;
+    [returnToRecentTabTile
+        addGestureRecognizer:self.returnToRecentTabLongPressRecognizer];
     [cell addUIElement:returnToRecentTabTile
         withCustomBottomSpacing:content_suggestions::
                                     kReturnToRecentTabSectionBottomMargin];
