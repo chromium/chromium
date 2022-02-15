@@ -36,6 +36,11 @@ class LabelButton;
 //  determine how it should be displayed and notify the delegate object of
 //  certain events.
 //
+//  If possible, it is better to compose DialogDelegate rather than subclassing
+//  it; it has many setters, including some inherited from WidgetDelegate, that
+//  let you set properties on it without overriding virtuals. Doing this also
+//  means you do not need to deal with implementing ::DeleteDelegate().
+//
 ///////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
  public:
@@ -357,6 +362,12 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
 // to call View's GetWidget() for the common case where a DialogDelegate
 // implementation is-a View. Note that DialogDelegateView is not owned by
 // view's hierarchy and is expected to be deleted on DeleteDelegate call.
+//
+// It is best not to add new uses of this class, and instead to subclass View
+// directly and have a DialogDelegate member that you configure - essentially,
+// to compose with DialogDelegate rather than inheriting from it.
+// DialogDelegateView has unusual lifetime semantics that you can avoid dealing
+// with, and your class will be smaller.
 class VIEWS_EXPORT DialogDelegateView : public DialogDelegate, public View {
  public:
   METADATA_HEADER(DialogDelegateView);
