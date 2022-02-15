@@ -663,6 +663,17 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     return [UIMenu menuWithTitle:@"" children:menuElements];
 }
 
+- (UITargetedPreview*)contextMenuInteraction:
+                          (UIContextMenuInteraction*)interaction
+    previewForHighlightingMenuWithConfiguration:
+        (UIContextMenuConfiguration*)configuration {
+  // Use the location bar's container view because that's the view that has the
+  // background color and corner radius.
+  return [[UITargetedPreview alloc]
+      initWithView:self.view.superview
+        parameters:[[UIPreviewParameters alloc] init]];
+}
+
 - (UIContextMenuConfiguration*)contextMenuInteraction:
                                    (UIContextMenuInteraction*)interaction
                        configurationForMenuAtLocation:(CGPoint)location {
@@ -672,9 +683,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   return [UIContextMenuConfiguration
       configurationWithIdentifier:nil
                   previewProvider:nil
-                   actionProvider:^UIMenu* (NSArray<UIMenuElement*>* suggestedActions) {
-                         return [weakSelf contextMenuUIMenu:suggestedActions];
-                       }];
+                   actionProvider:^UIMenu*(
+                       NSArray<UIMenuElement*>* suggestedActions) {
+                     return [weakSelf contextMenuUIMenu:suggestedActions];
+                   }];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
