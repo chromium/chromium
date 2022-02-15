@@ -7508,6 +7508,7 @@ crbug.com/1291850 external/wpt/mediacapture-insertable-streams/MediaStreamTrackG
 crbug.com/1253323 [ Win ] http/tests/devtools/sources/debugger-breakpoints/nodejs-set-breakpoint.js [ Skip ]
 crbug.com/1253323 http/tests/devtools/persistence/automapping-urlencoded-paths.js [ Skip ]
 crbug.com/1253323 http/tests/devtools/sources/debugger/navigator-view.js [ Skip ]
+crbug.com/1253323 http/tests/devtools/file-system-project.js [ Skip ]
 
 # Sheriff 2022-01-26
 crbug.com/1290978 [ Win ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
