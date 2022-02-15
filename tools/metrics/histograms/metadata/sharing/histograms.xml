@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sharing.SharingHubAndroid.TimeToSaveScreenshotImageBeforeShare"
-    units="ms" expires_after="M98">
+    units="ms" expires_after="M105">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
