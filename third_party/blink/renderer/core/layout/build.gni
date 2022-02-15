@@ -793,7 +793,6 @@ blink_core_tests_layout = [
   "force_legacy_layout_test.cc",
   "geometry/axis_test.cc",
   "geometry/logical_rect_test.cc",
-  "geometry/logical_size_test.cc",
   "geometry/physical_rect_test.cc",
   "geometry/physical_size_test.cc",
   "geometry/writing_mode_converter_test.cc",

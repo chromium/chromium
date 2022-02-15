@@ -1635,8 +1635,11 @@ LogicalSize NGBlockNode::GetAspectRatio() const {
     IntrinsicSizingInfo legacy_sizing_info;
     To<LayoutReplaced>(box_.Get())
         ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
-    if (!legacy_sizing_info.aspect_ratio.IsEmpty())
-      return LogicalSize::AspectRatioFromSizeF(legacy_sizing_info.aspect_ratio);
+    if (!legacy_sizing_info.aspect_ratio.IsEmpty()) {
+      PhysicalSize layout_ratio = StyleAspectRatio::LayoutRatioFromSizeF(
+          legacy_sizing_info.aspect_ratio);
+      return {layout_ratio.width, layout_ratio.height};
+    }
   }
   if (ratio.GetType() == EAspectRatioType::kAutoAndRatio)
     return Style().LogicalAspectRatio();

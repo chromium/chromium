@@ -2757,10 +2757,7 @@ class ComputedStyle : public ComputedStyleBase,
 
   LogicalSize LogicalAspectRatio() const {
     DCHECK_NE(AspectRatio().GetType(), EAspectRatioType::kAuto);
-    gfx::SizeF ratio = AspectRatio().GetRatio();
-    if (!IsHorizontalWritingMode())
-      ratio.Transpose();
-    return LogicalSize::AspectRatioFromSizeF(ratio);
+    return AspectRatio().GetLayoutRatio().ConvertToLogical(GetWritingMode());
   }
 
   EBoxSizing BoxSizingForAspectRatio() const {
