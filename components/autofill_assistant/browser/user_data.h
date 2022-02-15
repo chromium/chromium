@@ -302,6 +302,7 @@ struct CollectUserDataOptions {
   std::string credit_card_expired_text;
 
   std::vector<RequiredDataPiece> required_contact_data_pieces;
+  std::vector<RequiredDataPiece> required_phone_number_data_pieces;
   std::vector<RequiredDataPiece> required_shipping_address_data_pieces;
   std::vector<RequiredDataPiece> required_credit_card_data_pieces;
   std::vector<RequiredDataPiece> required_billing_address_data_pieces;

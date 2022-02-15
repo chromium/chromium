@@ -850,6 +850,10 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
       collect_user_data_options_->request_phone_number_separately = true;
       collect_user_data_options_->phone_number_section_title =
           contact_details.phone_number_section_title();
+      collect_user_data_options_->required_phone_number_data_pieces =
+          std::vector<RequiredDataPiece>(
+              contact_details.phone_number_required_data_piece().begin(),
+              contact_details.phone_number_required_data_piece().end());
     }
 
     if (RequiresContact(*collect_user_data_options_) ||
@@ -1175,6 +1179,9 @@ bool CollectUserDataAction::IsUserDataComplete(
       user_data.selected_address(options.shipping_address_name);
   // TODO(b/204419253): check for phone number errors
   return user_data::GetContactValidationErrors(selected_profile, options)
+             .empty() &&
+         user_data::GetPhoneNumberValidationErrors(
+             user_data.selected_phone_number(), options)
              .empty() &&
          user_data::GetShippingAddressValidationErrors(shipping_address,
                                                        options)
@@ -1626,10 +1633,11 @@ void CollectUserDataAction::UpdateSelectedPhoneNumber(UserData* user_data) {
 
   if (!user_data->selected_phone_number() &&
       RequiresPhoneNumberSeparately(*collect_user_data_options_)) {
-    if (!user_data->available_phone_numbers_.empty()) {
-      // TODO(b/204419253): get the most complete instead.
+    int default_selection = user_data::GetDefaultPhoneNumber(
+        *collect_user_data_options_, user_data->available_phone_numbers_);
+    if (default_selection != -1) {
       user_data->SetSelectedPhoneNumber(user_data::MakeUniqueFromProfile(
-          *user_data->available_phone_numbers_[0]->profile));
+          *user_data->available_phone_numbers_[default_selection]->profile));
     }
   }
 }

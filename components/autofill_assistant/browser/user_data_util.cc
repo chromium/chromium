@@ -145,19 +145,33 @@ std::vector<std::string> GetValidationErrors(
   return errors;
 }
 
+std::vector<std::string> GetProfileValidationErrors(
+    const autofill::AutofillProfile* profile,
+    const std::vector<RequiredDataPiece>& required_data_pieces) {
+  if (required_data_pieces.empty()) {
+    return std::vector<std::string>();
+  }
+
+  return GetValidationErrors(
+      profile
+          ? field_formatter::CreateAutofillMappings(*profile, kDefaultLocale)
+          : base::flat_map<field_formatter::Key, std::string>(),
+      required_data_pieces);
+}
+
 // Helper function that compares instances of AutofillProfile by completeness
 // in regards to the current options. Full profiles should be ordered before
 // empty ones and fall back to compare the profile's last usage.
 bool CompletenessCompareContacts(
-    const CollectUserDataOptions& options,
+    const std::vector<RequiredDataPiece>& required_data_pieces,
     const autofill::AutofillProfile& a,
     const base::flat_map<field_formatter::Key, std::string>& data_a,
     const autofill::AutofillProfile& b,
     const base::flat_map<field_formatter::Key, std::string>& data_b) {
   int incomplete_fields_a =
-      GetValidationErrors(data_a, options.required_contact_data_pieces).size();
+      GetValidationErrors(data_a, required_data_pieces).size();
   int incomplete_fields_b =
-      GetValidationErrors(data_b, options.required_contact_data_pieces).size();
+      GetValidationErrors(data_b, required_data_pieces).size();
   if (incomplete_fields_a != incomplete_fields_b) {
     return incomplete_fields_a <= incomplete_fields_b;
   }
@@ -310,15 +324,15 @@ ClientStatus MoveAutofillValueRegexpToTextFilter(
 std::vector<std::string> GetContactValidationErrors(
     const autofill::AutofillProfile* profile,
     const CollectUserDataOptions& collect_user_data_options) {
-  if (collect_user_data_options.required_contact_data_pieces.empty()) {
-    return std::vector<std::string>();
-  }
+  return GetProfileValidationErrors(
+      profile, collect_user_data_options.required_contact_data_pieces);
+}
 
-  return GetValidationErrors(
-      profile
-          ? field_formatter::CreateAutofillMappings(*profile, kDefaultLocale)
-          : base::flat_map<field_formatter::Key, std::string>(),
-      collect_user_data_options.required_contact_data_pieces);
+std::vector<std::string> GetPhoneNumberValidationErrors(
+    const autofill::AutofillProfile* profile,
+    const CollectUserDataOptions& collect_user_data_options) {
+  return GetProfileValidationErrors(
+      profile, collect_user_data_options.required_phone_number_data_pieces);
 }
 
 std::vector<int> SortContactsByCompleteness(
@@ -336,8 +350,32 @@ std::vector<int> SortContactsByCompleteness(
       indices.begin(), indices.end(),
       [&collect_user_data_options, &contacts, &mapped_contacts](int i, int j) {
         return CompletenessCompareContacts(
-            collect_user_data_options, *contacts[i]->profile,
-            mapped_contacts[i], *contacts[j]->profile, mapped_contacts[j]);
+            collect_user_data_options.required_contact_data_pieces,
+            *contacts[i]->profile, mapped_contacts[i], *contacts[j]->profile,
+            mapped_contacts[j]);
+      });
+  return indices;
+}
+
+std::vector<int> SortPhoneNumbersByCompleteness(
+    const CollectUserDataOptions& collect_user_data_options,
+    const std::vector<std::unique_ptr<PhoneNumber>>& phone_numbers) {
+  std::vector<base::flat_map<field_formatter::Key, std::string>>
+      mapped_phone_numbers;
+  for (const auto& phone_number : phone_numbers) {
+    mapped_phone_numbers.push_back(field_formatter::CreateAutofillMappings(
+        *phone_number->profile, kDefaultLocale));
+  }
+  std::vector<int> indices(phone_numbers.size());
+  std::iota(std::begin(indices), std::end(indices), 0);
+  std::stable_sort(
+      indices.begin(), indices.end(),
+      [&collect_user_data_options, &phone_numbers, &mapped_phone_numbers](
+          int i, int j) {
+        return CompletenessCompareContacts(
+            collect_user_data_options.required_phone_number_data_pieces,
+            *phone_numbers[i]->profile, mapped_phone_numbers[i],
+            *phone_numbers[j]->profile, mapped_phone_numbers[j]);
       });
   return indices;
 }
@@ -361,6 +399,17 @@ int GetDefaultContact(const CollectUserDataOptions& collect_user_data_options,
   return sorted_indices[0];
 }
 
+int GetDefaultPhoneNumber(
+    const CollectUserDataOptions& collect_user_data_options,
+    const std::vector<std::unique_ptr<PhoneNumber>>& phone_numbers) {
+  if (phone_numbers.empty()) {
+    return -1;
+  }
+  auto sorted_indices =
+      SortPhoneNumbersByCompleteness(collect_user_data_options, phone_numbers);
+  return sorted_indices[0];
+}
+
 std::vector<std::string> GetShippingAddressValidationErrors(
     const autofill::AutofillProfile* profile,
     const CollectUserDataOptions& collect_user_data_options) {
@@ -371,10 +420,8 @@ std::vector<std::string> GetShippingAddressValidationErrors(
 
   if (!collect_user_data_options.required_shipping_address_data_pieces
            .empty()) {
-    errors = GetValidationErrors(
-        profile
-            ? field_formatter::CreateAutofillMappings(*profile, kDefaultLocale)
-            : base::flat_map<field_formatter::Key, std::string>(),
+    errors = GetProfileValidationErrors(
+        profile,
         collect_user_data_options.required_shipping_address_data_pieces);
   }
 
@@ -445,10 +492,8 @@ std::vector<std::string> GetPaymentInstrumentValidationErrors(
   }
 
   if (!collect_user_data_options.required_billing_address_data_pieces.empty()) {
-    const auto& address_errors = GetValidationErrors(
-        billing_address ? field_formatter::CreateAutofillMappings(
-                              *billing_address, kDefaultLocale)
-                        : base::flat_map<field_formatter::Key, std::string>(),
+    const auto& address_errors = GetProfileValidationErrors(
+        billing_address,
         collect_user_data_options.required_billing_address_data_pieces);
     errors.insert(errors.end(), address_errors.begin(), address_errors.end());
   }

@@ -276,6 +276,67 @@ TEST(UserDataUtilTest, SortsCompleteAddressesByUseDate) {
   EXPECT_THAT(sorted_indices, ElementsAre(1, 0));
 }
 
+TEST(UserDataUtilTest, SortsPhoneNumbers) {
+  auto profile_complete = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(profile_complete.get(), "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "", "", "", "", "",
+                                 "", "+1 23 456 789 01");
+
+  auto profile_incomplete = std::make_unique<autofill::AutofillProfile>();
+  profile_incomplete->SetRawInfo(
+      autofill::ServerFieldType::PHONE_HOME_COUNTRY_CODE, u"1");
+
+  // Specify contacts in reverse order to force sorting.
+  std::vector<std::unique_ptr<PhoneNumber>> phone_numbers;
+  phone_numbers.emplace_back(
+      std::make_unique<PhoneNumber>(std::move(profile_incomplete)));
+  phone_numbers.emplace_back(
+      std::make_unique<PhoneNumber>(std::move(profile_complete)));
+
+  CollectUserDataOptions options;
+  options.required_phone_number_data_pieces.push_back(MakeRequiredDataPiece(
+      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
+  options.required_phone_number_data_pieces.push_back(MakeRequiredDataPiece(
+      autofill::ServerFieldType::PHONE_HOME_COUNTRY_CODE));
+
+  std::vector<int> sorted_indices =
+      SortPhoneNumbersByCompleteness(options, phone_numbers);
+  EXPECT_THAT(sorted_indices, ElementsAre(1, 0));
+}
+
+TEST(UserDataUtilTest, GetDefaultPhoneNumberSelectionForEmptyList) {
+  std::vector<std::unique_ptr<PhoneNumber>> phone_numbers;
+  CollectUserDataOptions options;
+
+  EXPECT_THAT(GetDefaultPhoneNumber(options, phone_numbers), -1);
+}
+
+TEST(UserDataUtilTest, GetDefaultPhoneNumberSelection) {
+  auto profile_complete = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(profile_complete.get(), "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "", "", "", "", "",
+                                 "", "+1 23 456 789 01");
+
+  auto profile_incomplete = std::make_unique<autofill::AutofillProfile>();
+  profile_incomplete->SetRawInfo(
+      autofill::ServerFieldType::PHONE_HOME_COUNTRY_CODE, u"1");
+
+  // Specify contacts in reverse order to force sorting.
+  std::vector<std::unique_ptr<PhoneNumber>> phone_numbers;
+  phone_numbers.emplace_back(
+      std::make_unique<PhoneNumber>(std::move(profile_incomplete)));
+  phone_numbers.emplace_back(
+      std::make_unique<PhoneNumber>(std::move(profile_complete)));
+
+  CollectUserDataOptions options;
+  options.required_phone_number_data_pieces.push_back(MakeRequiredDataPiece(
+      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
+  options.required_phone_number_data_pieces.push_back(MakeRequiredDataPiece(
+      autofill::ServerFieldType::PHONE_HOME_COUNTRY_CODE));
+
+  EXPECT_THAT(GetDefaultPhoneNumber(options, phone_numbers), 1);
+}
+
 TEST(UserDataUtilTest, SortsAddressesByEditorCompleteness) {
   // Adding email address and phone number to demonstrate that they are not
   // checked for completeness.
@@ -652,6 +713,30 @@ TEST(UserDataUtilTest, ContactCompletenessRequirePhone) {
   autofill::test::SetProfileInfo(&contact, "", "", "", "", "", "", "", "", "",
                                  "", "", "+41 79 123 45 67");
   EXPECT_THAT(GetContactValidationErrors(&contact, require_phone_options),
+              IsEmpty());
+}
+
+TEST(UserDataUtilTest, CompletePhoneNumberNotRequired) {
+  CollectUserDataOptions not_required_options;
+  not_required_options.request_phone_number_separately = false;
+
+  EXPECT_THAT(GetPhoneNumberValidationErrors(nullptr, not_required_options),
+              IsEmpty());
+}
+
+TEST(UserDataUtilTest, CompletePhoneNumber) {
+  autofill::AutofillProfile phone_number;
+  CollectUserDataOptions options;
+  options.required_phone_number_data_pieces.push_back(MakeRequiredDataPiece(
+      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
+
+  EXPECT_THAT(GetPhoneNumberValidationErrors(nullptr, options),
+              ElementsAre("14"));
+  autofill::test::SetProfileInfo(&phone_number, /* first_name= */ "",
+                                 /* middle_name= */ "",
+                                 /* last_name= */ "", "", "", "", "", "", "",
+                                 "", "", "+41");
+  EXPECT_THAT(GetPhoneNumberValidationErrors(&phone_number, options),
               IsEmpty());
 }
 

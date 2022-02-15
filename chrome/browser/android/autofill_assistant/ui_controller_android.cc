@@ -1346,6 +1346,9 @@ void UiControllerAndroid::OnUserDataChanged(
           : ui_controller_android_utils::CreateAssistantAutofillProfile(
                 env, *selected_phone_number,
                 base::android::GetDefaultLocaleString());
+  const auto& selected_phone_number_errors =
+      user_data::GetPhoneNumberValidationErrors(selected_contact_profile,
+                                                *collect_user_data_options);
 
   const autofill::AutofillProfile* selected_shipping_address =
       user_data.selected_address(
@@ -1388,22 +1391,25 @@ void UiControllerAndroid::OnUserDataChanged(
     // Phone numbers.
     auto jphone_number_list =
         Java_AssistantCollectUserDataModel_createContactList(env);
-    for (const auto& phone_number : user_data.available_phone_numbers_) {
-      // TODO(b/204419253): add errors and sort by most complete.
+    auto phone_number_indices = user_data::SortPhoneNumbersByCompleteness(
+        *collect_user_data_options, user_data.available_phone_numbers_);
+    for (int index : phone_number_indices) {
+      const auto& errors = user_data::GetPhoneNumberValidationErrors(
+          user_data.available_phone_numbers_[index]->profile.get(),
+          *collect_user_data_options);
       Java_AssistantCollectUserDataModel_addContact(
           env, jphone_number_list,
           ui_controller_android_utils::CreateAssistantAutofillProfile(
-              env, *phone_number->profile,
+              env, *user_data.available_phone_numbers_[index]->profile,
               base::android::GetDefaultLocaleString()),
-          base::android::ToJavaArrayOfStrings(env, std::vector<std::string>()),
+          base::android::ToJavaArrayOfStrings(env, errors),
           /* canEdit = */ false);
     }
     Java_AssistantCollectUserDataModel_setAvailablePhoneNumbers(
         env, jmodel, jphone_number_list);
-    // TODO(b/204419253): add errors
     Java_AssistantCollectUserDataModel_setSelectedPhoneNumber(
         env, jmodel, jselected_phone_number,
-        base::android::ToJavaArrayOfStrings(env, std::vector<std::string>()),
+        base::android::ToJavaArrayOfStrings(env, selected_phone_number_errors),
         /* canEdit = */ false);
 
     // Billing addresses.
@@ -1452,10 +1458,9 @@ void UiControllerAndroid::OnUserDataChanged(
   if (field_change == UserData::FieldChange::PHONE_NUMBER) {
     // The selection is already known in Java, but it has no errors. The PDM
     // off case does not set updated phone numbers.
-    // TODO(b/204419253): add errors
     Java_AssistantCollectUserDataModel_setSelectedPhoneNumber(
         env, jmodel, jselected_phone_number,
-        base::android::ToJavaArrayOfStrings(env, std::vector<std::string>()),
+        base::android::ToJavaArrayOfStrings(env, selected_phone_number_errors),
         /* canEdit = */ false);
   }
   if (field_change == UserData::FieldChange::SHIPPING_ADDRESS) {

@@ -1042,6 +1042,30 @@ TEST_F(CollectUserDataActionTest, UserDataCompleteContact) {
                                                         options));
 }
 
+TEST_F(CollectUserDataActionTest, UserDataCompletePhoneNumber) {
+  UserData user_data;
+  CollectUserDataOptions options;
+  EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
+                                                        options));
+
+  autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
+  user_data.SetSelectedPhoneNumber(
+      std::make_unique<autofill::AutofillProfile>(profile));
+
+  options.required_phone_number_data_pieces.push_back(MakeRequiredDataPiece(
+      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
+  options.request_phone_number_separately = true;
+  EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
+                                                         options));
+
+  profile.SetRawInfo(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
+                     u"+1 23 456 789 01");
+  user_data.SetSelectedPhoneNumber(
+      std::make_unique<autofill::AutofillProfile>(profile));
+  EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
+                                                        options));
+}
+
 TEST_F(CollectUserDataActionTest, UserDataCompletePayment) {
   UserData user_data;
   CollectUserDataOptions options;

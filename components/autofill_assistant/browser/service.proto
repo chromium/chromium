@@ -2284,6 +2284,9 @@ message ContactDetailsProto {
   // The title of the separate phone number section.
   // Required if |separate_phone_number_section| is true, ignored if false.
   optional string phone_number_section_title = 12;
+  // Defines how to evaluate the validity of the phone number in the separate
+  // section. Ignored if |separate_phone_number_section| is false.
+  repeated RequiredDataPiece phone_number_required_data_piece = 13;
 }
 
 message LoginDetailsProto {
