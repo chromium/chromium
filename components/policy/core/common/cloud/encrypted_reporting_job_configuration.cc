@@ -5,6 +5,7 @@
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -26,7 +27,7 @@ constexpr char kBrowserKey[] = "browser";
 EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
     CloudPolicyClient* client,
     const std::string& server_url,
-    base::Value merging_payload,
+    const base::Value::Dict& merging_payload,
     UploadCompleteCallback complete_cb)
     : ReportingJobConfigurationBase(TYPE_UPLOAD_ENCRYPTED_REPORT,
                                     client->GetURLLoaderFactory(),
@@ -35,7 +36,7 @@ EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
                                     /*include_device_info*/ true,
                                     std::move(complete_cb)) {
   // Merge it into the base class payload.
-  payload_.MergeDictionary(&merging_payload);
+  payload_.Merge(merging_payload);
 }
 
 EncryptedReportingJobConfiguration::~EncryptedReportingJobConfiguration() {
@@ -50,21 +51,18 @@ EncryptedReportingJobConfiguration::~EncryptedReportingJobConfiguration() {
 }
 
 void EncryptedReportingJobConfiguration::UpdatePayloadBeforeGetInternal() {
-  // Can't mutate payload_ and iterate it at the same time, so build a
-  // disallowed list and then remove the values.
-  std::set<std::string> disallowed_keys;
-  for (auto key_value_pair : payload_.DictItems()) {
-    if (GetTopLevelKeyAllowList().count(key_value_pair.first) == 0) {
-      disallowed_keys.insert(key_value_pair.first);
+  for (auto it = payload_.begin(); it != payload_.end();) {
+    const auto& [key, value] = *it;
+    if (!base::Contains(GetTopLevelKeyAllowList(), key)) {
+      it = payload_.erase(it);
+      continue;
     }
-  }
-
-  for (auto key : disallowed_keys) {
-    payload_.RemoveKey(key);
+    ++it;
   }
 }
 
-void EncryptedReportingJobConfiguration::UpdateContext(base::Value& context) {
+void EncryptedReportingJobConfiguration::UpdateContext(
+    base::Value::Dict context) {
   context_ = std::move(context);
 }
 

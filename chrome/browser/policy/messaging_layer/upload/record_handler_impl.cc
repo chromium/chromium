@@ -200,12 +200,10 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
   // Records have been captured in the request, safe to clear the vector.
   records_->clear();
 
-  base::Value request = std::move(request_result.value());
-
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](policy::CloudPolicyClient* client, base::Value request,
+          [](policy::CloudPolicyClient* client, base::Value::Dict request,
              base::OnceCallback<void(absl::optional<base::Value>)>
                  response_cb) {
             client->UploadEncryptedReport(
@@ -213,7 +211,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
                 reporting::GetContext(ProfileManager::GetPrimaryUserProfile()),
                 std::move(response_cb));
           },
-          client_, std::move(request), std::move(response_cb)));
+          client_, std::move(request_result.value()), std::move(response_cb)));
 }
 
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(

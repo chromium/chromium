@@ -113,9 +113,9 @@ Status FakeUploadClient::EnqueueUpload(
                                     std::move(report_upload_success_cb),
                                     std::move(encryption_key_attached_cb));
 
-  cloud_policy_client_->UploadEncryptedReport(
-      std::move(request_result.value()),
-      base::Value(base::Value::Type::DICTIONARY), std::move(response_cb));
+  cloud_policy_client_->UploadEncryptedReport(std::move(request_result.value()),
+                                              base::Value::Dict(),
+                                              std::move(response_cb));
   return Status::StatusOK();
 }
 

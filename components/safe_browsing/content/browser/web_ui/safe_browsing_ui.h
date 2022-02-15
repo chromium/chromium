@@ -259,7 +259,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
 
   // Called when any new reporting events are sent while one or more WebUI tabs
   // are open.
-  void NotifyReportingEventJsListener(const base::Value& event);
+  void NotifyReportingEventJsListener(const base::Value::Dict& event);
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Called when any deep scans are updated while one or more WebUI
@@ -401,7 +401,7 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
 
   // Add the reporting event to |reporting_events_| and send it to all the open
   // chrome://safe-browsing tabs.
-  void AddToReportingEvents(const base::Value& event);
+  void AddToReportingEvents(const base::Value::Dict& event);
 
   // Clear |reporting_events_|.
   void ClearReportingEvents();
@@ -635,6 +635,8 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
 
   // List of reporting events logged since the oldest currently open
   // chrome://safe-browsing tab was opened.
+  // TODO(https://crbug.com/1297256): This can only store base::Value::Dicts, so
+  // update this type to reflect that.
   std::vector<base::Value> reporting_events_;
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

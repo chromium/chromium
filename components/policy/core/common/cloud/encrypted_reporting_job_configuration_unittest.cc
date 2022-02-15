@@ -109,22 +109,22 @@ class RequestPayloadBuilder {
  public:
   explicit RequestPayloadBuilder(bool attach_encryption_settings = false) {
     if (attach_encryption_settings) {
-      payload_.SetBoolKey(kAttachEncryptionSettingsKey, true);
+      payload_.Set(kAttachEncryptionSettingsKey, true);
     }
-    payload_.SetKey(kEncryptedRecordListKey,
-                    base::Value{base::Value::Type::LIST});
+    payload_.Set(kEncryptedRecordListKey, base::Value::List());
   }
 
   RequestPayloadBuilder& AddRecord(const base::Value& record) {
-    base::Value* records_list = payload_.FindListKey(kEncryptedRecordListKey);
+    base::Value::List* records_list =
+        payload_.FindList(kEncryptedRecordListKey);
     records_list->Append(record.Clone());
     return *this;
   }
 
-  base::Value Build() { return std::move(payload_); }
+  base::Value::Dict Build() { return std::move(payload_); }
 
  private:
-  base::Value payload_{base::Value::Type::DICTIONARY};
+  base::Value::Dict payload_;
 };
 
 class ResponseValueBuilder {
@@ -243,10 +243,10 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
                                            DeviceManagementStatus code,
                                            int net_error,
                                            const base::Value&)>;
-  static base::Value GenerateContext(base::StringPiece key,
-                                     base::StringPiece value) {
-    base::Value context{base::Value::Type::DICTIONARY};
-    context.SetStringPath(key, value);
+  static base::Value::Dict GenerateContext(base::StringPiece key,
+                                           base::StringPiece value) {
+    base::Value::Dict context;
+    context.SetByDottedPath(key, value);
     return context;
   }
 
@@ -457,8 +457,8 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsAndUpdatesContext) {
 
   const std::string kTestKey = "device.name";
   const std::string kTestValue = "1701-A";
-  base::Value context = GenerateContext(kTestKey, kTestValue);
-  configuration.UpdateContext(context);
+  base::Value::Dict context = GenerateContext(kTestKey, kTestValue);
+  configuration.UpdateContext(std::move(context));
 
   // Ensure the payload includes the path and value.
   base::Value* payload = GetPayload(&configuration);
@@ -469,7 +469,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsAndUpdatesContext) {
   // Add a path that isn't in the allow list.
   const std::string kBadTestKey = "profile.string";
   context = GenerateContext(kBadTestKey, kTestValue);
-  configuration.UpdateContext(context);
+  configuration.UpdateContext(std::move(context));
 
   // Ensure that the path is removed from the payload.
   payload = GetPayload(&configuration);
@@ -484,7 +484,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsAndUpdatesContext) {
   // Ensure that a good path can be overriden.
   const std::string kUpdatedTestValue = "1701-B";
   context = GenerateContext(kTestKey, kUpdatedTestValue);
-  configuration.UpdateContext(context);
+  configuration.UpdateContext(std::move(context));
   payload = GetPayload(&configuration);
   good_result = payload->FindStringPath(kTestKey);
   ASSERT_THAT(good_result, NotNull());
@@ -509,8 +509,8 @@ TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_Success) {
 
   const std::string kTestString = "device.clientId";
   const std::string kTestInt = "1701-A";
-  base::Value context = GenerateContext(kTestString, kTestInt);
-  configuration.UpdateContext(context);
+  base::Value::Dict context = GenerateContext(kTestString, kTestInt);
+  configuration.UpdateContext(std::move(context));
 
   configuration.OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kSuccess,

@@ -104,24 +104,21 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
   }
   auto request_payload = builder.Build();
   ASSERT_TRUE(request_payload.has_value());
-  ASSERT_TRUE(request_payload.value().is_dict());
-  const auto attach_encryption_settings = request_payload.value().FindBoolKey(
-      UploadEncryptedReportingRequestBuilder::
-          GetAttachEncryptionSettingsPath());
+  const auto attach_encryption_settings =
+      request_payload->FindBool(UploadEncryptedReportingRequestBuilder::
+                                    GetAttachEncryptionSettingsPath());
   EXPECT_EQ(need_encryption_key(), attach_encryption_settings.has_value());
-  base::Value* const record_list = request_payload.value().FindListKey(
+  base::Value::List* const record_list = request_payload->FindList(
       UploadEncryptedReportingRequestBuilder::GetEncryptedRecordListPath());
   ASSERT_TRUE(record_list);
-  ASSERT_TRUE(record_list->is_list());
-  EXPECT_EQ(record_list->GetListDeprecated().size(), records.size());
+  EXPECT_EQ(record_list->size(), records.size());
 
   size_t counter = 0;
   for (auto record : records) {
     auto record_value_result =
         EncryptedRecordDictionaryBuilder(std::move(record)).Build();
     ASSERT_TRUE(record_value_result.has_value());
-    EXPECT_EQ(record_list->GetListDeprecated()[counter++],
-              record_value_result.value());
+    EXPECT_EQ((*record_list)[counter++].GetDict(), record_value_result.value());
   }
 }
 
@@ -177,9 +174,8 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptRequestId) {
 
   const auto request_payload = builder.Build();
   ASSERT_TRUE(request_payload.has_value());
-  ASSERT_TRUE(request_payload.value().is_dict());
 
-  auto* payload_request_id = request_payload->FindStringKey(
+  auto* payload_request_id = request_payload->FindString(
       UploadEncryptedReportingRequestBuilder::kRequestId);
   EXPECT_THAT(*payload_request_id, ::testing::StrEq(request_id));
 }
@@ -205,23 +201,23 @@ TEST_P(RecordUploadRequestBuilderTest,
   EncryptedRecord compressionless_record = GenerateEncryptedRecord("TEST_INFO");
   EXPECT_FALSE(compressionless_record.has_compression_information());
 
-  absl::optional<base::Value> compressionless_payload =
+  absl::optional<base::Value::Dict> compressionless_payload =
       EncryptedRecordDictionaryBuilder(std::move(compressionless_record))
           .Build();
   DCHECK(compressionless_payload.has_value());
 
-  EXPECT_FALSE(compressionless_payload.value().FindKey(
+  EXPECT_FALSE(compressionless_payload.value().Find(
       EncryptedRecordDictionaryBuilder::GetCompressionInformationPath()));
 
   EncryptedRecord compressed_record =
       GenerateEncryptedRecord("TEST_INFO", true);
   EXPECT_TRUE(compressed_record.has_compression_information());
 
-  absl::optional<base::Value> compressed_record_payload =
+  absl::optional<base::Value::Dict> compressed_record_payload =
       EncryptedRecordDictionaryBuilder(std::move(compressed_record)).Build();
   DCHECK(compressed_record_payload.has_value());
 
-  EXPECT_TRUE(compressed_record_payload.value().FindKey(
+  EXPECT_TRUE(compressed_record_payload.value().Find(
       EncryptedRecordDictionaryBuilder::GetCompressionInformationPath()));
 }
 

@@ -309,7 +309,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected) {
           kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-  base::Value report;
+  base::Value::Dict report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
@@ -322,22 +322,18 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected) {
   EXPECT_EQ("user_name_1", captured_args.FindKey("userName")->GetString());
 
   Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, report.type());
-  base::Value* event_list =
-      report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
-  EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetListDeprecated();
-  ASSERT_EQ(1, (int)mutable_list.size());
-  base::Value wrapper = std::move(mutable_list[0]);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
-  base::Value* event =
-      wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event =
+      wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent);
   EXPECT_NE(nullptr, event);
   EXPECT_EQ("https://phishing.com/",
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyUrl));
-  EXPECT_EQ("user_name_1", *event->FindStringKey(
-                               SafeBrowsingPrivateEventRouter::kKeyUserName));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
+  EXPECT_EQ("user_name_1",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUserName));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordChanged) {
@@ -346,7 +342,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordChanged) {
       api::safe_browsing_private::OnPolicySpecifiedPasswordChanged::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-  base::Value report;
+  base::Value::Dict report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
@@ -358,20 +354,16 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordChanged) {
   EXPECT_EQ("user_name_2", captured_args.GetString());
 
   Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, report.type());
-  base::Value* event_list =
-      report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
-  EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetListDeprecated();
-  ASSERT_EQ(1, (int)mutable_list.size());
-  base::Value wrapper = std::move(mutable_list[0]);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
-  base::Value* event =
-      wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event = wrapper.FindDict(
+      SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent);
   EXPECT_NE(nullptr, event);
-  EXPECT_EQ("user_name_2", *event->FindStringKey(
-                               SafeBrowsingPrivateEventRouter::kKeyUserName));
+  EXPECT_EQ("user_name_2",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUserName));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
@@ -380,7 +372,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
       api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-  base::Value report;
+  base::Value::Dict report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
@@ -398,32 +390,27 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
             captured_args.FindKey("downloadDigestSha256")->GetString());
 
   Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, report.type());
-  base::Value* event_list =
-      report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
-  EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetListDeprecated();
-  ASSERT_EQ(1, (int)mutable_list.size());
-  base::Value wrapper = std::move(mutable_list[0]);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
-  base::Value* event = wrapper.FindKey(
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event = wrapper.FindDict(
       SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent);
   EXPECT_NE(nullptr, event);
-  EXPECT_EQ(
-      "/path/to/malware.exe",
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName));
-  EXPECT_EQ("exe", *event->FindStringKey(
+  EXPECT_EQ("/path/to/malware.exe",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+  EXPECT_EQ("exe", *event->FindString(
                        SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ("1234", *event->FindStringKey(
+  EXPECT_EQ("1234", *event->FindString(
                         SafeBrowsingPrivateEventRouter::kKeyContentSize));
   EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyTrigger));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::BYPASSED),
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
   EXPECT_EQ("scan_id",
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyScanId));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
@@ -433,7 +420,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
       api::safe_browsing_private::OnSecurityInterstitialProceeded::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-  base::Value report;
+  base::Value::Dict report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
@@ -448,24 +435,20 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   EXPECT_EQ("", captured_args.FindKey("userName")->GetString());
 
   Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, report.type());
-  base::Value* event_list =
-      report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
-  EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetListDeprecated();
-  ASSERT_EQ(1, (int)mutable_list.size());
-  base::Value wrapper = std::move(mutable_list[0]);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
-  base::Value* event =
-      wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event =
+      wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent);
   EXPECT_NE(nullptr, event);
   EXPECT_EQ("PHISHING",
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyReason));
-  EXPECT_EQ(-201, *event->FindIntKey(
-                      SafeBrowsingPrivateEventRouter::kKeyNetErrorCode));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyReason));
+  EXPECT_EQ(-201,
+            *event->FindInt(SafeBrowsingPrivateEventRouter::kKeyNetErrorCode));
   EXPECT_TRUE(
-      *event->FindBoolKey(SafeBrowsingPrivateEventRouter::kKeyClickedThrough));
+      *event->FindBool(SafeBrowsingPrivateEventRouter::kKeyClickedThrough));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSecurityInterstitialShown) {
@@ -474,7 +457,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSecurityInterstitialShown) {
       api::safe_browsing_private::OnSecurityInterstitialShown::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-  base::Value report;
+  base::Value::Dict report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
@@ -489,24 +472,20 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSecurityInterstitialShown) {
   EXPECT_EQ("", captured_args.FindKey("userName")->GetString());
 
   Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, report.type());
-  base::Value* event_list =
-      report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
-  EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetListDeprecated();
-  ASSERT_EQ(1, (int)mutable_list.size());
-  base::Value wrapper = std::move(mutable_list[0]);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
-  base::Value* event =
-      wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event =
+      wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent);
   EXPECT_NE(nullptr, event);
   EXPECT_EQ("PHISHING",
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyReason));
-  EXPECT_EQ(
-      0, *event->FindIntKey(SafeBrowsingPrivateEventRouter::kKeyNetErrorCode));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyReason));
+  EXPECT_EQ(0,
+            *event->FindInt(SafeBrowsingPrivateEventRouter::kKeyNetErrorCode));
   EXPECT_FALSE(
-      *event->FindBoolKey(SafeBrowsingPrivateEventRouter::kKeyClickedThrough));
+      *event->FindBool(SafeBrowsingPrivateEventRouter::kKeyClickedThrough));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadWarning) {
@@ -515,7 +494,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadWarning) {
       api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-  base::Value report;
+  base::Value::Dict report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
@@ -523,33 +502,27 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadWarning) {
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, report.type());
-  base::Value* event_list =
-      report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
-  EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetListDeprecated();
-  ASSERT_EQ(1, (int)mutable_list.size());
-  base::Value wrapper = std::move(mutable_list[0]);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
-  base::Value* event = wrapper.FindKey(
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event = wrapper.FindDict(
       SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent);
   EXPECT_NE(nullptr, event);
-  EXPECT_EQ(
-      "/path/to/warning.exe",
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName));
-  EXPECT_EQ("exe", *event->FindStringKey(
+  EXPECT_EQ("/path/to/warning.exe",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+  EXPECT_EQ("exe", *event->FindString(
                        SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ("567", *event->FindStringKey(
+  EXPECT_EQ("567", *event->FindString(
                        SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ(
-      "POTENTIALLY_UNWANTED",
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyThreatType));
+  EXPECT_EQ("POTENTIALLY_UNWANTED",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyThreatType));
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
   EXPECT_EQ("scan_id",
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyScanId));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
@@ -559,7 +532,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
       api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-  base::Value report;
+  base::Value::Dict report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
@@ -567,33 +540,27 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, report.type());
-  base::Value* event_list =
-      report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
-  EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetListDeprecated();
-  ASSERT_EQ(1, (int)mutable_list.size());
-  base::Value wrapper = std::move(mutable_list[0]);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
-  base::Value* event = wrapper.FindKey(
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event = wrapper.FindDict(
       SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent);
   EXPECT_NE(nullptr, event);
-  EXPECT_EQ(
-      "/path/to/bypass.exe",
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName));
-  EXPECT_EQ("exe", *event->FindStringKey(
+  EXPECT_EQ("/path/to/bypass.exe",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+  EXPECT_EQ("exe", *event->FindString(
                        SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ("890", *event->FindStringKey(
+  EXPECT_EQ("890", *event->FindString(
                        SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ(
-      "BYPASSED_WARNING",
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyThreatType));
+  EXPECT_EQ("BYPASSED_WARNING",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyThreatType));
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::BYPASSED),
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
   EXPECT_EQ("scan_id",
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyScanId));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, PolicyControlOnToOffIsDynamic) {
@@ -937,7 +904,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
   SetUpRouters(/*authorized=*/true);
 
-  base::Value report;
+  base::Value::Dict report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
@@ -945,52 +912,46 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, report.type());
-  base::Value* event_list =
-      report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
-  EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetListDeprecated();
-  ASSERT_EQ(1, (int)mutable_list.size());
-  base::Value wrapper = std::move(mutable_list[0]);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
-  base::Value* event =
-      wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event =
+      wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent);
   ASSERT_NE(nullptr, event);
 
-  EXPECT_EQ("12345", *event->FindStringKey(
+  EXPECT_EQ("12345", *event->FindString(
                          SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ("text/plain", *event->FindStringKey(
+  EXPECT_EQ("text/plain", *event->FindString(
                               SafeBrowsingPrivateEventRouter::kKeyContentType));
   EXPECT_EQ("sha256_of_data",
-            *event->FindStringKey(
+            *event->FindString(
                 SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256));
-  EXPECT_EQ(
-      "sensitive_data.txt",
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName));
+  EXPECT_EQ("sensitive_data.txt",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyTrigger));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
 
-  base::Value* triggered_rule_info =
-      event->FindKey(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+  const base::Value::List* triggered_rule_info =
+      event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
   ASSERT_NE(nullptr, triggered_rule_info);
-  ASSERT_EQ(1u, triggered_rule_info->GetListDeprecated().size());
-  base::Value triggered_rule =
-      std::move(triggered_rule_info->GetListDeprecated()[0]);
+  ASSERT_EQ(1u, triggered_rule_info->size());
+  const base::Value::Dict& triggered_rule = (*triggered_rule_info)[0].GetDict();
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
   EXPECT_EQ("fake rule",
-            *triggered_rule.FindStringKey(
+            *triggered_rule.FindString(
                 SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
   EXPECT_EQ("scan_id",
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyScanId));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
   SetUpRouters();
 
-  base::Value report;
+  base::Value::Dict report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
@@ -998,52 +959,46 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, report.type());
-  base::Value* event_list =
-      report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
-  EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetListDeprecated();
-  ASSERT_EQ(1, (int)mutable_list.size());
-  base::Value wrapper = std::move(mutable_list[0]);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
-  base::Value* event =
-      wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event =
+      wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent);
   ASSERT_NE(nullptr, event);
 
-  EXPECT_EQ("12345", *event->FindStringKey(
+  EXPECT_EQ("12345", *event->FindString(
                          SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ("text/plain", *event->FindStringKey(
+  EXPECT_EQ("text/plain", *event->FindString(
                               SafeBrowsingPrivateEventRouter::kKeyContentType));
   EXPECT_EQ("sha256_of_data",
-            *event->FindStringKey(
+            *event->FindString(
                 SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256));
-  EXPECT_EQ(
-      "sensitive_data.txt",
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName));
+  EXPECT_EQ("sensitive_data.txt",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyTrigger));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
 
-  base::Value* triggered_rule_info =
-      event->FindKey(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+  const base::Value::List* triggered_rule_info =
+      event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
   ASSERT_NE(nullptr, triggered_rule_info);
-  ASSERT_EQ(1u, triggered_rule_info->GetListDeprecated().size());
-  base::Value triggered_rule =
-      std::move(triggered_rule_info->GetListDeprecated()[0]);
+  ASSERT_EQ(1u, triggered_rule_info->size());
+  const base::Value::Dict& triggered_rule = (*triggered_rule_info)[0].GetDict();
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
   EXPECT_EQ("fake rule",
-            *triggered_rule.FindStringKey(
+            *triggered_rule.FindString(
                 SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
   EXPECT_EQ("scan_id",
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyScanId));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
   SetUpRouters();
 
-  base::Value report;
+  base::Value::Dict report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
@@ -1051,43 +1006,38 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, report.type());
-  base::Value* event_list =
-      report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
-  EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetListDeprecated();
-  ASSERT_EQ(1, (int)mutable_list.size());
-  base::Value wrapper = std::move(mutable_list[0]);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
-  base::Value* event =
-      wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event =
+      wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent);
   ASSERT_NE(nullptr, event);
 
-  EXPECT_EQ("12345", *event->FindStringKey(
+  EXPECT_EQ("12345", *event->FindString(
                          SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ("text/plain", *event->FindStringKey(
+  EXPECT_EQ("text/plain", *event->FindString(
                               SafeBrowsingPrivateEventRouter::kKeyContentType));
   EXPECT_EQ("sha256_of_data",
-            *event->FindStringKey(
+            *event->FindString(
                 SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256));
-  EXPECT_EQ(
-      "sensitive_data.txt",
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName));
+  EXPECT_EQ("sensitive_data.txt",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyTrigger));
-  EXPECT_EQ("filePasswordProtected",
-            *event->FindStringKey(
-                SafeBrowsingPrivateEventRouter::kKeyUnscannedReason));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
+  EXPECT_EQ(
+      "filePasswordProtected",
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUnscannedReason));
   EXPECT_EQ(
       EventResultToString(safe_browsing::EventResult::ALLOWED),
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
   SetUpRouters();
 
-  base::Value report;
+  base::Value::Dict report;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
@@ -1095,37 +1045,32 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, report.type());
-  base::Value* event_list =
-      report.FindKey(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
-  EXPECT_EQ(base::Value::Type::LIST, event_list->type());
-  base::Value::ListView mutable_list = event_list->GetListDeprecated();
-  ASSERT_EQ(1, (int)mutable_list.size());
-  base::Value wrapper = std::move(mutable_list[0]);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, wrapper.type());
-  base::Value* event =
-      wrapper.FindKey(SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event =
+      wrapper.FindDict(SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent);
   ASSERT_NE(nullptr, event);
 
-  EXPECT_EQ("12345", *event->FindStringKey(
+  EXPECT_EQ("12345", *event->FindString(
                          SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ("text/plain", *event->FindStringKey(
+  EXPECT_EQ("text/plain", *event->FindString(
                               SafeBrowsingPrivateEventRouter::kKeyContentType));
   EXPECT_EQ("sha256_of_data",
-            *event->FindStringKey(
+            *event->FindString(
                 SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256));
-  EXPECT_EQ(
-      "sensitive_data.txt",
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName));
+  EXPECT_EQ("sensitive_data.txt",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyTrigger));
-  EXPECT_EQ("filePasswordProtected",
-            *event->FindStringKey(
-                SafeBrowsingPrivateEventRouter::kKeyUnscannedReason));
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
+  EXPECT_EQ(
+      "filePasswordProtected",
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUnscannedReason));
   EXPECT_EQ(
       EventResultToString(safe_browsing::EventResult::BLOCKED),
-      *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {

@@ -261,7 +261,7 @@ class SafeBrowsingPrivateEventRouter
   virtual void ReportRealtimeEvent(
       const std::string&,
       const enterprise_connectors::ReportingSettings& settings,
-      base::Value event);
+      base::Value::Dict event);
 
  private:
   // Initialize a real-time report client if needed.  This client is used only

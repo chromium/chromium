@@ -135,9 +135,10 @@ std::string GetDeviceDmToken(Profile* profile) {
 
 namespace reporting {
 
-base::Value GetContext(Profile* profile) {
-  base::Value context(base::Value::Type::DICTIONARY);
-  context.SetStringPath("browser.userAgent", embedder_support::GetUserAgent());
+base::Value::Dict GetContext(Profile* profile) {
+  base::Value::Dict context;
+  context.SetByDottedPath("browser.userAgent",
+                          embedder_support::GetUserAgent());
 
   if (!profile)
     return context;
@@ -147,28 +148,28 @@ base::Value GetContext(Profile* profile) {
   ProfileAttributesEntry* entry =
       storage.GetProfileAttributesWithPath(profile->GetPath());
   if (entry) {
-    context.SetStringPath("profile.profileName", entry->GetName());
-    context.SetStringPath("profile.gaiaEmail", entry->GetUserName());
+    context.SetByDottedPath("profile.profileName", entry->GetName());
+    context.SetByDottedPath("profile.gaiaEmail", entry->GetUserName());
   }
 
-  context.SetStringPath("profile.profilePath",
-                        profile->GetPath().AsUTF8Unsafe());
+  context.SetByDottedPath("profile.profilePath",
+                          profile->GetPath().AsUTF8Unsafe());
 
   const enterprise_management::PolicyData* policy = GetPolicyData(profile);
 
   if (policy) {
     if (policy->has_device_id())
-      context.SetStringPath("profile.clientId", policy->device_id());
+      context.SetByDottedPath("profile.clientId", policy->device_id());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     std::string device_dm_token = GetDeviceDmToken(profile);
     if (!device_dm_token.empty())
-      context.SetStringPath("device.dmToken", device_dm_token);
+      context.SetByDottedPath("device.dmToken", device_dm_token);
 #endif
 
     std::string user_dm_token = GetUserDmToken(profile);
     if (!user_dm_token.empty())
-      context.SetStringPath("profile.dmToken", user_dm_token);
+      context.SetByDottedPath("profile.dmToken", user_dm_token);
   }
 
   return context;

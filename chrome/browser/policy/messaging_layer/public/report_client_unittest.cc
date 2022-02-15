@@ -221,10 +221,10 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   bool is_encryption_enabled() const { return GetParam(); }
 
   auto GetEncryptionKeyInvocation() {
-    return [this](base::Value payload,
+    return [this](base::Value::Dict payload,
                   policy::CloudPolicyClient::ResponseCallback done_cb) {
       absl::optional<bool> const attach_encryption_settings =
-          payload.FindBoolKey("attachEncryptionSettings");
+          payload.FindBool("attachEncryptionSettings");
       ASSERT_TRUE(attach_encryption_settings.has_value());
       ASSERT_TRUE(attach_encryption_settings.value());  // If set, must be true.
       ASSERT_TRUE(is_encryption_enabled());
@@ -248,34 +248,34 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   }
 
   auto GetVerifyDataInvocation() {
-    return [this](base::Value payload,
+    return [this](base::Value::Dict payload,
                   policy::CloudPolicyClient::ResponseCallback done_cb) {
-      base::Value* const records = payload.FindListKey("encryptedRecord");
+      base::Value::List* const records = payload.FindList("encryptedRecord");
       ASSERT_THAT(records, Ne(nullptr));
-      base::Value::ListView records_list = records->GetListDeprecated();
-      ASSERT_THAT(records_list, SizeIs(1));
-      base::Value& record = records_list[0];
+      ASSERT_THAT(*records, SizeIs(1));
+      const base::Value::Dict& record = (*records)[0].GetDict();
       if (is_encryption_enabled()) {
-        const base::Value* const enctyption_info =
-            record.FindDictKey("encryptionInfo");
-        ASSERT_THAT(enctyption_info, Ne(nullptr));
+        const base::Value::Dict* const encryption_info =
+            record.FindDict("encryptionInfo");
+        ASSERT_THAT(encryption_info, Ne(nullptr));
         const std::string* const encryption_key =
-            enctyption_info->FindStringKey("encryptionKey");
+            encryption_info->FindString("encryptionKey");
         ASSERT_THAT(encryption_key, Ne(nullptr));
         const std::string* const public_key_id =
-            enctyption_info->FindStringKey("publicKeyId");
+            encryption_info->FindString("publicKeyId");
         ASSERT_THAT(public_key_id, Ne(nullptr));
         int64_t key_id;
         ASSERT_TRUE(base::StringToInt64(*public_key_id, &key_id));
         EXPECT_THAT(key_id, Eq(signed_encryption_key_.public_key_id()));
       } else {
-        ASSERT_THAT(record.FindKey("encryptionInfo"), Eq(nullptr));
+        ASSERT_FALSE(record.contains("encryptionInfo"));
       }
-      base::Value* const seq_info = record.FindDictKey("sequenceInformation");
+      const base::Value::Dict* const seq_info =
+          record.FindDict("sequenceInformation");
       ASSERT_THAT(seq_info, Ne(nullptr));
-      base::Value response{base::Value::Type::DICTIONARY};
-      response.SetPath("lastSucceedUploadedRecord", std::move(*seq_info));
-      std::move(done_cb).Run(std::move(response));
+      base::Value::Dict response;
+      response.Set("lastSucceedUploadedRecord", seq_info->Clone());
+      std::move(done_cb).Run(base::Value(std::move(response)));
     };
   }
 

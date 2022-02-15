@@ -11,15 +11,12 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}
 
 namespace policy {
 class MockCloudPolicyClient;
@@ -154,27 +151,27 @@ class EventReportValidator {
   void SetDoneClosure(base::RepeatingClosure closure);
 
  private:
-  void ValidateReport(base::Value* report);
-  void ValidateFederatedOrigin(base::Value* value);
-  void ValidateIdentities(base::Value* value);
-  void ValidateMimeType(base::Value* value);
+  void ValidateReport(const base::Value::Dict* report);
+  void ValidateFederatedOrigin(const base::Value::Dict* value);
+  void ValidateIdentities(const base::Value::Dict* value);
+  void ValidateMimeType(const base::Value::Dict* value);
   void ValidateDlpVerdict(
-      base::Value* value,
+      const base::Value::Dict* value,
       const enterprise_connectors::ContentAnalysisResponse::Result& result);
-  void ValidateDlpRule(base::Value* value,
+  void ValidateDlpRule(const base::Value::Dict* value,
                        const enterprise_connectors::ContentAnalysisResponse::
                            Result::TriggeredRule& expected_rule);
-  void ValidateFilenameMappedAttributes(base::Value* value);
-  void ValidateField(base::Value* value,
+  void ValidateFilenameMappedAttributes(const base::Value::Dict* value);
+  void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      const absl::optional<std::string>& expected_value);
-  void ValidateField(base::Value* value,
+  void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      const absl::optional<std::u16string>& expected_value);
-  void ValidateField(base::Value* value,
+  void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      const absl::optional<int>& expected_value);
-  void ValidateField(base::Value* value,
+  void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      const absl::optional<bool>& expected_value);
 

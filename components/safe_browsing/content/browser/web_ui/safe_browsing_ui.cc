@@ -295,14 +295,14 @@ void WebUIInfoSingleton::ClearLogMessages() {
     webui_listener->NotifyLogMessageJsListener(timestamp, message);
 }
 
-void WebUIInfoSingleton::AddToReportingEvents(const base::Value& event) {
+void WebUIInfoSingleton::AddToReportingEvents(const base::Value::Dict& event) {
   if (!HasListener())
     return;
 
   for (auto* webui_listener : webui_instances_)
     webui_listener->NotifyReportingEventJsListener(event);
 
-  reporting_events_.push_back(event.Clone());
+  reporting_events_.emplace_back(event.Clone());
 }
 
 void WebUIInfoSingleton::ClearReportingEvents() {
@@ -1781,7 +1781,7 @@ base::Value SerializeLogMessage(const base::Time& timestamp,
   return std::move(result);
 }
 
-base::Value SerializeReportingEvent(const base::Value& event) {
+base::Value SerializeReportingEvent(const base::Value::Dict& event) {
   base::DictionaryValue result;
 
   std::string event_serialized;
@@ -2639,7 +2639,7 @@ void SafeBrowsingUIHandler::NotifyLogMessageJsListener(
 }
 
 void SafeBrowsingUIHandler::NotifyReportingEventJsListener(
-    const base::Value& event) {
+    const base::Value::Dict& event) {
   AllowJavascript();
   FireWebUIListener("reporting-events-update", SerializeReportingEvent(event));
 }

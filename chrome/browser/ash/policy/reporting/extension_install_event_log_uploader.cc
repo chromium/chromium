@@ -89,11 +89,12 @@ void ExtensionInstallEventLogUploader::PostTaskForStartSerialization() {
 
 void ExtensionInstallEventLogUploader::EnqueueReport(
     const em::ExtensionInstallReportRequest* report) {
-  base::Value context = ::reporting::GetContext(profile_);
-  base::Value event_list = ConvertExtensionProtoToValue(report, context);
+  base::Value::Dict context = ::reporting::GetContext(profile_);
+  base::Value::List event_list = ConvertExtensionProtoToValue(report, context);
 
-  base::Value value_report = RealtimeReportingJobConfiguration::BuildReport(
-      std::move(event_list), std::move(context));
+  base::Value::Dict value_report =
+      RealtimeReportingJobConfiguration::BuildReport(std::move(event_list),
+                                                     std::move(context));
 
   // If --extension-install-event-chrome-log-for-tests is present, write event
   // logs to Chrome log. LOG(ERROR) ensures that logs are written.
@@ -130,7 +131,8 @@ void ExtensionInstallEventLogUploader::EnqueueReport(
       },
       weak_factory_.GetWeakPtr(), base::ThreadTaskRunnerHandle::Get());
 
-  report_queue_->Enqueue(std::move(value_report),
+  // TODO(https://crbug.com/1297264): Enqueue() should take a base::Value::Dict.
+  report_queue_->Enqueue(base::Value(std::move(value_report)),
                          ::reporting::Priority::SLOW_BATCH,
                          std::move(on_enqueue_done_cb));
 }

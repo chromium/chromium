@@ -129,18 +129,10 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
             DoAll(MoveArg<0>(callback), Invoke([=]() { waiter_->Signal(); })));
   }
 
-  void ClearReportDict() {
-    base::DictionaryValue* mutable_dict;
-    if (value_report_.GetAsDictionary(&mutable_dict))
-      mutable_dict->DictClear();
-    else
-      NOTREACHED();
-  }
-
   void CompleteUpload(bool success) {
-    ClearReportDict();
-    base::Value context = reporting::GetContext(/*profile=*/nullptr);
-    base::Value events = ConvertExtensionProtoToValue(&log_, context);
+    value_report_.clear();
+    base::Value::Dict context = reporting::GetContext(/*profile=*/nullptr);
+    base::Value::List events = ConvertExtensionProtoToValue(&log_, context);
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
         std::move(events), std::move(context));
 
@@ -167,9 +159,9 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
   }
 
   void CaptureUpload(reporting::MockReportQueue::EnqueueCallback* callback) {
-    ClearReportDict();
-    base::Value context = reporting::GetContext(/*profile=*/nullptr);
-    base::Value events = ConvertExtensionProtoToValue(&log_, context);
+    value_report_.clear();
+    base::Value::Dict context = reporting::GetContext(/*profile=*/nullptr);
+    base::Value::List events = ConvertExtensionProtoToValue(&log_, context);
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
         std::move(events), std::move(context));
 
@@ -222,7 +214,7 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   em::ExtensionInstallReportRequest log_;
-  base::Value value_report_{base::Value::Type::DICTIONARY};
+  base::Value::Dict value_report_;
 
   reporting::MockReportQueue* mock_report_queue_;
   MockExtensionInstallEventLogUploaderDelegate delegate_;
@@ -397,11 +389,9 @@ TEST_F(ExtensionInstallEventLogUploaderTest, DuplicateEvents) {
   uploader_->RequestUpload();
 
   WaitAndReset();
-  EXPECT_EQ(2u,
-            value_report_
-                .FindListKey(RealtimeReportingJobConfiguration::kEventListKey)
-                ->GetListDeprecated()
-                .size());
+  EXPECT_EQ(2u, value_report_
+                    .FindList(RealtimeReportingJobConfiguration::kEventListKey)
+                    ->size());
 }
 
 }  // namespace policy

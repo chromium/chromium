@@ -127,48 +127,48 @@ MATCHER_P(MatchProto, expected, "matches protobuf") {
   return arg.SerializePartialAsString() == expected.SerializePartialAsString();
 }
 
-base::Value ConvertEncryptedRecordToValue(
+base::Value::Dict ConvertEncryptedRecordToValue(
     const ::reporting::EncryptedRecord& record) {
-  base::Value record_request(base::Value::Type::DICTIONARY);
+  base::Value::Dict record_request;
   if (record.has_encrypted_wrapped_record()) {
-    base::Value encrypted_wrapped_record(base::Value::Type::DICTIONARY);
+    base::Value::Dict encrypted_wrapped_record;
     std::string base64_encode;
     base::Base64Encode(record.encrypted_wrapped_record(), &base64_encode);
-    record_request.SetStringKey("encryptedWrappedRecord", base64_encode);
+    record_request.Set("encryptedWrappedRecord", base64_encode);
   }
   if (record.has_encryption_info()) {
-    base::Value encryption_info(base::Value::Type::DICTIONARY);
+    base::Value::Dict encryption_info;
     if (record.encryption_info().has_encryption_key()) {
       std::string base64_encode;
       base::Base64Encode(record.encryption_info().encryption_key(),
                          &base64_encode);
-      encryption_info.SetStringKey("encryptionKey", base64_encode);
+      encryption_info.Set("encryptionKey", base64_encode);
     }
     if (record.encryption_info().has_public_key_id()) {
-      encryption_info.SetStringKey(
+      encryption_info.Set(
           "publicKeyId",
           base::NumberToString(record.encryption_info().public_key_id()));
     }
-    record_request.SetPath("encryptionInfo", std::move(encryption_info));
+    record_request.Set("encryptionInfo", std::move(encryption_info));
   }
   if (record.has_sequence_information()) {
-    base::Value sequence_information(base::Value::Type::DICTIONARY);
+    base::Value::Dict sequence_information;
     if (record.sequence_information().has_sequencing_id()) {
-      sequence_information.SetStringKey(
+      sequence_information.Set(
           "sequencingId",
           base::NumberToString(record.sequence_information().sequencing_id()));
     }
     if (record.sequence_information().has_generation_id()) {
-      sequence_information.SetStringKey(
+      sequence_information.Set(
           "generationId",
           base::NumberToString(record.sequence_information().generation_id()));
     }
     if (record.sequence_information().has_priority()) {
-      sequence_information.SetIntKey("priority",
-                                     record.sequence_information().priority());
+      sequence_information.Set("priority",
+                               record.sequence_information().priority());
     }
-    record_request.SetPath("sequencingInformation",
-                           std::move(sequence_information));
+    record_request.Set("sequencingInformation",
+                       std::move(sequence_information));
   }
   return record_request;
 }
@@ -497,20 +497,20 @@ class CloudPolicyClientTest : public testing::Test {
     client_->AddObserver(&observer_);
   }
 
-  base::Value MakeDefaultRealtimeReport() {
-    base::Value context(base::Value::Type::DICTIONARY);
-    context.SetStringPath("profile.gaiaEmail", "name@gmail.com");
-    context.SetStringPath("browser.userAgent", "User-Agent");
-    context.SetStringPath("profile.profileName", "Profile 1");
-    context.SetStringPath("profile.profilePath", "C:\\User Data\\Profile 1");
+  base::Value::Dict MakeDefaultRealtimeReport() {
+    base::Value::Dict context;
+    context.SetByDottedPath("profile.gaiaEmail", "name@gmail.com");
+    context.SetByDottedPath("browser.userAgent", "User-Agent");
+    context.SetByDottedPath("profile.profileName", "Profile 1");
+    context.SetByDottedPath("profile.profilePath", "C:\\User Data\\Profile 1");
 
-    base::Value event(base::Value::Type::DICTIONARY);
-    event.SetStringPath("time", "2019-05-22T13:01:45Z");
-    event.SetStringPath("foo.prop1", "value1");
-    event.SetStringPath("foo.prop2", "value2");
-    event.SetStringPath("foo.prop3", "value3");
+    base::Value::Dict event;
+    event.Set("time", "2019-05-22T13:01:45Z");
+    event.SetByDottedPath("foo.prop1", "value1");
+    event.SetByDottedPath("foo.prop2", "value2");
+    event.SetByDottedPath("foo.prop3", "value3");
 
-    base::Value event_list(base::Value::Type::LIST);
+    base::Value::List event_list;
     event_list.Append(std::move(event));
     return policy::RealtimeReportingJobConfiguration::BuildReport(
         std::move(event_list), std::move(context));
@@ -553,7 +553,7 @@ class CloudPolicyClientTest : public testing::Test {
 
   void AttemptUploadEncryptedWaitUntilIdle(
       const ::reporting::EncryptedRecord& record,
-      absl::optional<base::Value> context = absl::nullopt) {
+      absl::optional<base::Value::Dict> context = absl::nullopt) {
     CloudPolicyClient::ResponseCallback response_callback =
         base::BindOnce(&MockResponseCallbackObserver::OnResponseReceived,
                        base::Unretained(&response_callback_observer_));
@@ -1839,51 +1839,51 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
 
   // Add one report to the config.
   {
-    base::Value context(base::Value::Type::DICTIONARY);
-    context.SetStringPath("profile.gaiaEmail", "name@gmail.com");
-    context.SetStringPath("browser.userAgent", "User-Agent");
-    context.SetStringPath("profile.profileName", "Profile 1");
-    context.SetStringPath("profile.profilePath", "C:\\User Data\\Profile 1");
+    base::Value::Dict context;
+    context.SetByDottedPath("profile.gaiaEmail", "name@gmail.com");
+    context.SetByDottedPath("browser.userAgent", "User-Agent");
+    context.SetByDottedPath("profile.profileName", "Profile 1");
+    context.SetByDottedPath("profile.profilePath", "C:\\User Data\\Profile 1");
 
-    base::Value event(base::Value::Type::DICTIONARY);
-    event.SetStringPath("time", "2019-09-10T20:01:45Z");
-    event.SetStringPath("foo.prop1", "value1");
-    event.SetStringPath("foo.prop2", "value2");
-    event.SetStringPath("foo.prop3", "value3");
+    base::Value::Dict event;
+    event.Set("time", "2019-09-10T20:01:45Z");
+    event.SetByDottedPath("foo.prop1", "value1");
+    event.SetByDottedPath("foo.prop2", "value2");
+    event.SetByDottedPath("foo.prop3", "value3");
 
-    base::Value events(base::Value::Type::LIST);
+    base::Value::List events;
     events.Append(std::move(event));
 
-    base::Value report(base::Value::Type::DICTIONARY);
-    report.SetPath(RealtimeReportingJobConfiguration::kEventListKey,
-                   std::move(events));
-    report.SetPath(RealtimeReportingJobConfiguration::kContextKey,
-                   std::move(context));
+    base::Value::Dict report;
+    report.Set(RealtimeReportingJobConfiguration::kEventListKey,
+               std::move(events));
+    report.Set(RealtimeReportingJobConfiguration::kContextKey,
+               std::move(context));
 
     ASSERT_TRUE(config->AddReport(std::move(report)));
   }
 
   // Add a second report to the config with a different context.
   {
-    base::Value context(base::Value::Type::DICTIONARY);
-    context.SetStringPath("profile.gaiaEmail", "name2@gmail.com");
-    context.SetStringPath("browser.userAgent", "User-Agent2");
-    context.SetStringPath("browser.version", "1.0.0.0");
+    base::Value::Dict context;
+    context.SetByDottedPath("profile.gaiaEmail", "name2@gmail.com");
+    context.SetByDottedPath("browser.userAgent", "User-Agent2");
+    context.SetByDottedPath("browser.version", "1.0.0.0");
 
-    base::Value event(base::Value::Type::DICTIONARY);
-    event.SetStringPath("time", "2019-09-10T20:02:45Z");
-    event.SetStringPath("foo.prop1", "value1");
-    event.SetStringPath("foo.prop2", "value2");
-    event.SetStringPath("foo.prop3", "value3");
+    base::Value::Dict event;
+    event.Set("time", "2019-09-10T20:02:45Z");
+    event.SetByDottedPath("foo.prop1", "value1");
+    event.SetByDottedPath("foo.prop2", "value2");
+    event.SetByDottedPath("foo.prop3", "value3");
 
-    base::Value events(base::Value::Type::LIST);
+    base::Value::List events;
     events.Append(std::move(event));
 
-    base::Value report(base::Value::Type::DICTIONARY);
-    report.SetPath(RealtimeReportingJobConfiguration::kEventListKey,
-                   std::move(events));
-    report.SetPath(RealtimeReportingJobConfiguration::kContextKey,
-                   std::move(context));
+    base::Value::Dict report;
+    report.Set(RealtimeReportingJobConfiguration::kEventListKey,
+               std::move(events));
+    report.Set(RealtimeReportingJobConfiguration::kContextKey,
+               std::move(context));
 
     ASSERT_TRUE(config->AddReport(std::move(report)));
   }

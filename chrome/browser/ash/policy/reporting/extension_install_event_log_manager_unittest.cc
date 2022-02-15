@@ -105,16 +105,15 @@ bool ContainsSameEvents(const Events& expected,
   return true;
 }
 
-base::Value ConvertEventsToValue(const Events& events, Profile* profile) {
-  base::Value context = reporting::GetContext(profile);
-  base::Value event_list(base::Value::Type::LIST);
+base::Value::List ConvertEventsToValue(const Events& events, Profile* profile) {
+  base::Value::Dict context = reporting::GetContext(profile);
+  base::Value::List event_list;
 
   for (auto it = events.begin(); it != events.end(); ++it) {
     const extensions::ExtensionId& extension_id = (*it).first;
     for (const em::ExtensionInstallReportLogEvent&
              extension_install_report_log_event : (*it).second) {
-      base::Value wrapper;
-      wrapper = ConvertExtensionEventToValue(
+      base::Value::Dict wrapper = ConvertExtensionEventToValue(
           extension_id, extension_install_report_log_event, context);
       event_list.Append(std::move(wrapper));
     }
@@ -160,7 +159,6 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
       : log_task_runner_(log_task_runner_wrapper_.test_task_runner()),
         log_file_path_(profile_.GetPath().Append(kLogFileName)),
         extension_ids_{std::begin(kExtensionIds), std::end(kExtensionIds)},
-        events_value_(base::Value::Type::DICTIONARY),
         scoped_fake_statistics_provider_(
             std::make_unique<
                 chromeos::system::ScopedFakeStatisticsProvider>()) {}
@@ -222,17 +220,10 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
     AddLogEntryForsetOfExtensions(extension_ids_);
   }
 
-  void ClearEventsDict() {
-    base::DictionaryValue* mutable_dict;
-    if (events_value_.GetAsDictionary(&mutable_dict))
-      mutable_dict->DictClear();
-    else
-      NOTREACHED();
-  }
-
   void BuildReport() {
-    base::Value event_list = ConvertEventsToValue(events_, /*profile=*/nullptr);
-    base::Value context = reporting::GetContext(/*profile=*/nullptr);
+    base::Value::List event_list =
+        ConvertEventsToValue(events_, /*profile=*/nullptr);
+    base::Value::Dict context = reporting::GetContext(/*profile=*/nullptr);
 
     events_value_ = RealtimeReportingJobConfiguration::BuildReport(
         std::move(event_list), std::move(context));
@@ -240,7 +231,7 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
 
   void ExpectUploadAndCaptureCallback(
       reporting::MockReportQueue::EnqueueCallback* callback) {
-    ClearEventsDict();
+    events_value_.clear();
     BuildReport();
 
     EXPECT_CALL(*mock_report_queue_,
@@ -260,7 +251,7 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
   }
 
   void ExpectAndCompleteUpload() {
-    ClearEventsDict();
+    events_value_.clear();
     BuildReport();
 
     EXPECT_CALL(*mock_report_queue_,
@@ -323,7 +314,7 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
 
   const base::FilePath log_file_path_;
   const std::set<extensions::ExtensionId> extension_ids_;
-  base::Value events_value_;
+  base::Value::Dict events_value_;
   std::unique_ptr<chromeos::system::ScopedFakeStatisticsProvider>
       scoped_fake_statistics_provider_;
 

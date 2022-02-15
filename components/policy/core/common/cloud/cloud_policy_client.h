@@ -80,6 +80,8 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Callback that processes response value received from the server,
   // or nullopt, if there was a failure.
+  // TODO(https://crbug.com/1297247): Change this to accept an
+  // absl::optional<base::Value::Dict> parameter.
   using ResponseCallback =
       base::OnceCallback<void(absl::optional<base::Value>)>;
 
@@ -357,14 +359,14 @@ class POLICY_EXPORT CloudPolicyClient {
   // |callback| will be called when the operation completes.
   virtual void UploadSecurityEventReport(content::BrowserContext* context,
                                          bool include_device_info,
-                                         base::Value report,
+                                         base::Value::Dict report,
                                          StatusCallback callback);
 
   // Uploads a report containing |merging_payload| (merged into the default
   // payload of the job). The client must be in a registered state. The
   // |callback| will be called when the operation completes.
-  virtual void UploadEncryptedReport(base::Value merging_payload,
-                                     absl::optional<base::Value> context,
+  virtual void UploadEncryptedReport(base::Value::Dict merging_payload,
+                                     absl::optional<base::Value::Dict> context,
                                      ResponseCallback callback);
 
   // Uploads a report on the status of app push-installs. The client must be in
@@ -373,7 +375,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // Only one outstanding app push-install report upload is allowed.
   // In case the new push-installs report upload is started, the previous one
   // will be canceled.
-  virtual void UploadAppInstallReport(base::Value report,
+  virtual void UploadAppInstallReport(base::Value::Dict report,
                                       StatusCallback callback);
 
   // Cancels the pending app push-install status report upload, if exists.
@@ -385,7 +387,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // Only one outstanding extension install report upload is allowed.
   // In case the new installs report upload is started, the previous one
   // will be canceled.
-  virtual void UploadExtensionInstallReport(base::Value report,
+  virtual void UploadExtensionInstallReport(base::Value::Dict report,
                                             StatusCallback callback);
 
   // Cancels the pending extension install status report upload, if exists.
@@ -852,7 +854,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // enterprise connectors are added to the request uploading the report.
   // |callback| is invoked once the report is uploaded.
   DeviceManagementService::Job* CreateNewRealtimeReportingJob(
-      base::Value report,
+      base::Value::Dict report,
       const std::string& server_url,
       bool include_device_info,
       bool add_connector_url_params,

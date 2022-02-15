@@ -62,15 +62,15 @@ constexpr char kFetchTries[] = "fetchTries";
 
 void ConvertToValueAndVerify(const em::ExtensionInstallReportLogEvent& event,
                              const std::vector<std::string>& keys) {
-  base::Value context = reporting::GetContext(nullptr /*profile*/);
-  base::Value wrapper;
-  wrapper = ConvertExtensionEventToValue(kTestExtensionId, event, context);
-  ASSERT_TRUE(wrapper.FindKey(kExtensionInstallEvent) != nullptr);
-  EXPECT_TRUE(wrapper.FindKey(kTime) != nullptr);
-  base::Value* dict = wrapper.FindKey(kExtensionInstallEvent);
-  EXPECT_TRUE(dict->FindKey(kExtensionId) != nullptr);
+  base::Value::Dict context = reporting::GetContext(nullptr /*profile*/);
+  base::Value::Dict wrapper =
+      ConvertExtensionEventToValue(kTestExtensionId, event, context);
+  ASSERT_TRUE(wrapper.Find(kExtensionInstallEvent) != nullptr);
+  EXPECT_TRUE(wrapper.Find(kTime) != nullptr);
+  base::Value::Dict* dict = wrapper.FindDict(kExtensionInstallEvent);
+  EXPECT_TRUE(dict->Find(kExtensionId) != nullptr);
   for (const std::string& key : keys) {
-    EXPECT_TRUE(dict->FindKey(key) != nullptr);
+    EXPECT_TRUE(dict->Find(key) != nullptr);
   }
 }
 

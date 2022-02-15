@@ -56,7 +56,7 @@ namespace reporting {
 // builder.AddRecord(recordN);
 // auto payload_result = builder.Build();
 // DCHECK(payload_result.has_value());
-// job_payload_.MergeDict(payload_result.value());
+// job_payload_.Merge(payload_result.value());
 
 class UploadEncryptedReportingRequestBuilder {
  public:
@@ -72,24 +72,23 @@ class UploadEncryptedReportingRequestBuilder {
   UploadEncryptedReportingRequestBuilder& SetRequestId(
       base::StringPiece request_id);
 
-  absl::optional<base::Value> Build();
+  absl::optional<base::Value::Dict> Build();
 
   static base::StringPiece GetEncryptedRecordListPath();
   static base::StringPiece GetAttachEncryptionSettingsPath();
 
   static const char kEncryptedRecordListKey_[];
 
-  absl::optional<base::Value> result_;
+  absl::optional<base::Value::Dict> result_;
 };
 
-// Builds a |base::Value| dictionary from a |EncryptedRecord|
-// proto.
+// Builds a |base::Value::Dict| from a |EncryptedRecord| proto.
 class EncryptedRecordDictionaryBuilder {
  public:
   explicit EncryptedRecordDictionaryBuilder(EncryptedRecord record);
   ~EncryptedRecordDictionaryBuilder();
 
-  absl::optional<base::Value> Build();
+  absl::optional<base::Value::Dict> Build();
 
   static base::StringPiece GetEncryptedWrappedRecordPath();
   static base::StringPiece GetSequenceInformationKeyPath();
@@ -97,56 +96,55 @@ class EncryptedRecordDictionaryBuilder {
   static base::StringPiece GetCompressionInformationPath();
 
  private:
-  absl::optional<base::Value> result_;
+  absl::optional<base::Value::Dict> result_;
 };
 
-// Builds a |base::Value| dictionary from a |SequenceInformation|
-// proto.
+// Builds a |base::Value::Dict| from a |SequenceInformation| proto.
 class SequenceInformationDictionaryBuilder {
  public:
   explicit SequenceInformationDictionaryBuilder(
       const SequenceInformation& sequence_information);
   ~SequenceInformationDictionaryBuilder();
 
-  absl::optional<base::Value> Build();
+  absl::optional<base::Value::Dict> Build();
 
   static base::StringPiece GetSequencingIdPath();
   static base::StringPiece GetGenerationIdPath();
   static base::StringPiece GetPriorityPath();
 
  private:
-  absl::optional<base::Value> result_;
+  absl::optional<base::Value::Dict> result_;
 };
 
-// Builds a |base::Value| dictionary from a |EncryptionInfo| proto.
+// Builds a |base::Value::Dict| from a |EncryptionInfo| proto.
 class EncryptionInfoDictionaryBuilder {
  public:
   explicit EncryptionInfoDictionaryBuilder(
       const EncryptionInfo& encryption_info);
   ~EncryptionInfoDictionaryBuilder();
 
-  absl::optional<base::Value> Build();
+  absl::optional<base::Value::Dict> Build();
 
   static base::StringPiece GetEncryptionKeyPath();
   static base::StringPiece GetPublicKeyIdPath();
 
  private:
-  absl::optional<base::Value> result_;
+  absl::optional<base::Value::Dict> result_;
 };
 
-// Builds a |base::Value| dictionary from a |CompressionInfo| proto.
+// Builds a |base::Value::Dict| from a |CompressionInfo| proto.
 class CompressionInformationDictionaryBuilder {
  public:
   explicit CompressionInformationDictionaryBuilder(
       const CompressionInformation& compression_info);
   ~CompressionInformationDictionaryBuilder();
 
-  absl::optional<base::Value> Build();
+  absl::optional<base::Value::Dict> Build();
 
   static base::StringPiece GetCompressionAlgorithmPath();
 
  private:
-  absl::optional<base::Value> result_;
+  absl::optional<base::Value::Dict> result_;
 };
 
 }  // namespace reporting

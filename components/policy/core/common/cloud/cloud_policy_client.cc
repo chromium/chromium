@@ -670,7 +670,7 @@ void CloudPolicyClient::UploadChromeProfileReport(
 void CloudPolicyClient::UploadSecurityEventReport(
     content::BrowserContext* context,
     bool include_device_info,
-    base::Value report,
+    base::Value::Dict report,
     StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
@@ -681,8 +681,8 @@ void CloudPolicyClient::UploadSecurityEventReport(
 }
 
 void CloudPolicyClient::UploadEncryptedReport(
-    base::Value merging_payload,
-    absl::optional<base::Value> context,
+    base::Value::Dict merging_payload,
+    absl::optional<base::Value::Dict> context,
     ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_registered()) {
@@ -697,12 +697,12 @@ void CloudPolicyClient::UploadEncryptedReport(
           base::BindOnce(&CloudPolicyClient::OnEncryptedReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   if (context.has_value()) {
-    config->UpdateContext(context.value());
+    config->UpdateContext(std::move(context.value()));
   }
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
-void CloudPolicyClient::UploadAppInstallReport(base::Value report,
+void CloudPolicyClient::UploadAppInstallReport(base::Value::Dict report,
                                                StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
@@ -724,7 +724,7 @@ void CloudPolicyClient::CancelAppInstallReportUpload() {
   }
 }
 
-void CloudPolicyClient::UploadExtensionInstallReport(base::Value report,
+void CloudPolicyClient::UploadExtensionInstallReport(base::Value::Dict report,
                                                      StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
@@ -775,7 +775,7 @@ void CloudPolicyClient::FetchRemoteCommands(
 }
 
 DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
-    base::Value report,
+    base::Value::Dict report,
     const std::string& server_url,
     bool include_device_info,
     bool add_connector_url_params,
