@@ -159,7 +159,7 @@ class DecoderAdapter : public webrtc::VideoDecoderFactory {
  public:
   explicit DecoderAdapter(
       std::unique_ptr<webrtc::VideoDecoderFactory> hardware_decoder_factory,
-      StatsCollectingDecoder::StoreProcessingStatsCB stats_callback)
+      StatsCollector::StoreProcessingStatsCB stats_callback)
       : hardware_decoder_factory_(std::move(hardware_decoder_factory)),
         stats_callback_(stats_callback) {}
 
@@ -211,7 +211,7 @@ class DecoderAdapter : public webrtc::VideoDecoderFactory {
  private:
   webrtc::InternalDecoderFactory software_decoder_factory_;
   const std::unique_ptr<webrtc::VideoDecoderFactory> hardware_decoder_factory_;
-  StatsCollectingDecoder::StoreProcessingStatsCB stats_callback_;
+  StatsCollector::StoreProcessingStatsCB stats_callback_;
 };
 
 }  // namespace
@@ -239,7 +239,7 @@ std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(
     media::DecoderFactory* media_decoder_factory,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const gfx::ColorSpace& render_color_space,
-    StatsCollectingDecoder::StoreProcessingStatsCB stats_callback) {
+    StatsCollector::StoreProcessingStatsCB stats_callback) {
   const bool use_hw_decoding =
       gpu_factories != nullptr &&
       gpu_factories->IsGpuVideoDecodeAcceleratorEnabled() &&

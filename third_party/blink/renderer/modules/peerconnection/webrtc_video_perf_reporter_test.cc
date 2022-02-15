@@ -12,7 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
+#include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 
 using ::testing::_;
 
@@ -55,15 +55,15 @@ class WebrtcVideoPerfReporterTest : public ::testing::Test {
 };
 
 TEST_F(WebrtcVideoPerfReporterTest, StoreWebrtcVideoStats) {
-  const StatsCollectingDecoder::StatsKey kStatsKeyA = {
-      /*is_decode=*/true, kCodecProfile, 1920 * 1080,
-      /*hw_accelerated=*/false};
+  const StatsCollector::StatsKey kStatsKeyA = {/*is_decode=*/true,
+                                               kCodecProfile, 1920 * 1080,
+                                               /*hw_accelerated=*/false};
   const auto kExpectedFeaturesA = media::mojom::blink::WebrtcPredictionFeatures(
       /*is_decode_stats=*/true,
       static_cast<media::mojom::blink::VideoCodecProfile>(kCodecProfile),
       /*video_pixels=*/1920 * 1080, /*hardware_accelerated=*/false);
 
-  const StatsCollectingDecoder::VideoStats kVideoStats = {123, 4, 5.6};
+  const StatsCollector::VideoStats kVideoStats = {123, 4, 5.6};
   const auto kExpectedVideoStats = media::mojom::blink::WebrtcVideoStats(
       /*frames_processed=*/123, /*key_frames_processed=*/4,
       /*p99_processing_time_ms=*/5.6);
@@ -79,9 +79,9 @@ TEST_F(WebrtcVideoPerfReporterTest, StoreWebrtcVideoStats) {
   base::RunLoop().RunUntilIdle();
 
   // Toggle the booleans.
-  const StatsCollectingDecoder::StatsKey kStatsKeyB = {
-      /*is_decode=*/false, kCodecProfile, 1920 * 1080,
-      /*hw_accelerated=*/true};
+  const StatsCollector::StatsKey kStatsKeyB = {/*is_decode=*/false,
+                                               kCodecProfile, 1920 * 1080,
+                                               /*hw_accelerated=*/true};
   const auto kExpectedFeaturesB = media::mojom::blink::WebrtcPredictionFeatures(
       /*is_decode_stats=*/false,
       static_cast<media::mojom::blink::VideoCodecProfile>(kCodecProfile),

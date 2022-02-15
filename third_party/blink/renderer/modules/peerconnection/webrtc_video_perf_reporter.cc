@@ -27,8 +27,8 @@ void WebrtcVideoPerfReporter::InitializeOnTaskRunner(
 }
 
 void WebrtcVideoPerfReporter::StoreWebrtcVideoStats(
-    const StatsCollectingDecoder::StatsKey& stats_key,
-    const StatsCollectingDecoder::VideoStats& video_stats) {
+    const StatsCollector::StatsKey& stats_key,
+    const StatsCollector::VideoStats& video_stats) {
   DCHECK(task_runner_);
   task_runner_->PostTask(
       FROM_HERE,
@@ -38,8 +38,8 @@ void WebrtcVideoPerfReporter::StoreWebrtcVideoStats(
 }
 
 void WebrtcVideoPerfReporter::StoreWebrtcVideoStatsOnTaskRunner(
-    const StatsCollectingDecoder::StatsKey& stats_key,
-    const StatsCollectingDecoder::VideoStats& video_stats) {
+    const StatsCollector::StatsKey& stats_key,
+    const StatsCollector::VideoStats& video_stats) {
   DCHECK(task_runner_);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 

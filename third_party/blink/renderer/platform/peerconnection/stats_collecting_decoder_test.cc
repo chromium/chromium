@@ -141,9 +141,8 @@ class StatsCollectingDecoderTest : public ::testing::Test {
 
   void TearDown() override { stats_decoder_.Release(); }
 
-  void StoreProcessingStatsCB(
-      const StatsCollectingDecoder::StatsKey& stats_key,
-      const StatsCollectingDecoder::VideoStats& video_stats) {
+  void StoreProcessingStatsCB(const StatsCollector::StatsKey& stats_key,
+                              const StatsCollector::VideoStats& video_stats) {
     ++stats_callbacks_;
     last_stats_key_ = stats_key;
     last_video_stats_ = video_stats;
@@ -196,14 +195,11 @@ class StatsCollectingDecoderTest : public ::testing::Test {
   uint32_t frame_counter{0};
 
   int stats_callbacks_{0};
-  StatsCollectingDecoder::StatsKey last_stats_key_;
-  StatsCollectingDecoder::VideoStats last_video_stats_;
+  StatsCollector::StatsKey last_stats_key_;
+  StatsCollector::VideoStats last_video_stats_;
 };
 
-// Tests
-// Collection starts again if one decoder is destroyed.
-
-TEST_F(StatsCollectingDecoderTest, OneCallbackAfterMinNumberOfFrames) {
+TEST_F(StatsCollectingDecoderTest, StoreProcessingStatsCallbackHdSw) {
   // P99 not meaningful for less than 100 frames.
   constexpr int kMinimumNumberOfFrames = 100;
   constexpr int kFrames = 200;
@@ -225,95 +221,24 @@ TEST_F(StatsCollectingDecoderTest, OneCallbackAfterMinNumberOfFrames) {
               kExpectedP99ProcessingTimeMs, kP99ToleranceMs);
 }
 
-TEST_F(StatsCollectingDecoderTest, AtLeastOneCallbackEveryMinute) {
-  constexpr int kMinutesToRun = 10;
+TEST_F(StatsCollectingDecoderTest, StoreProcessingStatsCallbackFullHdHw) {
+  // P99 not meaningful for less than 100 frames.
+  constexpr int kMinimumNumberOfFrames = 100;
+  constexpr int kFrames = 200;
   EXPECT_EQ(stats_callbacks_, 0);
-  int last_stats_callbacks = stats_callbacks_;
-  int frames_processed = 0;
-  for (int minute = 0; minute < kMinutesToRun; ++minute) {
-    CreateAndDecodeFrames(kHdWidth, kHdHeight, /*is_hw_accelerated=*/false,
-                          kFramesPerMinute, kKeyframeInterval, kFramerate);
-    frames_processed += kFramesPerMinute;
-    // Verify that the counter are incremented.
-    EXPECT_GT(stats_callbacks_, last_stats_callbacks);
-    last_stats_callbacks = stats_callbacks_;
-    EXPECT_TRUE(last_stats_key_.is_decode);
-    EXPECT_EQ(last_stats_key_.codec_profile, kCodecProfile);
-    EXPECT_EQ(last_stats_key_.pixel_size, kHdWidth * kHdHeight);
-    EXPECT_FALSE(last_stats_key_.hw_accelerated);
-    EXPECT_GE(last_video_stats_.frame_count,
-              frames_processed - kFramesPerMinute / 2);
-    EXPECT_LT(last_video_stats_.frame_count, frames_processed);
-    EXPECT_NEAR(last_video_stats_.key_frame_count,
-                last_video_stats_.frame_count / kKeyframeInterval, 1);
-    EXPECT_NEAR(last_video_stats_.p99_processing_time_ms,
-                kExpectedP99ProcessingTimeMs, kP99ToleranceMs);
-  }
-}
-
-TEST_F(StatsCollectingDecoderTest, NewReportIfResolutionChanges) {
-  constexpr int kNumberOfFramesDuringTenSeconds = kFramerate * 10;
-  EXPECT_EQ(stats_callbacks_, 0);
-  int last_stats_callbacks = stats_callbacks_;
-  CreateAndDecodeFrames(kHdWidth, kHdHeight, /*is_hw_accelerated=*/false,
-                        kNumberOfFramesDuringTenSeconds, kKeyframeInterval,
-                        kFramerate);
-  // One frame with a different resolution.
-  CreateAndDecodeFrames(kFullHdWidth, kFullHdHeight,
-                        /*is_hw_accelerated=*/false, 1, kKeyframeInterval,
-                        kFramerate);
-
-  // Verify that the counter are incremented.
-  EXPECT_GT(stats_callbacks_, last_stats_callbacks);
-  last_stats_callbacks = stats_callbacks_;
-  EXPECT_EQ(last_stats_key_.pixel_size, kHdWidth * kHdHeight);
-  EXPECT_GE(last_video_stats_.frame_count, 100);
-  EXPECT_LE(last_video_stats_.frame_count, kNumberOfFramesDuringTenSeconds);
-  EXPECT_NEAR(last_video_stats_.p99_processing_time_ms,
-              kExpectedP99ProcessingTimeMs, kP99ToleranceMs);
-
-  // Continue with new resolution and expect another report.
-  CreateAndDecodeFrames(
-      kFullHdWidth, kFullHdHeight, /*is_hw_accelerated=*/false,
-      kNumberOfFramesDuringTenSeconds, kKeyframeInterval, kFramerate);
-  EXPECT_GT(stats_callbacks_, last_stats_callbacks);
+  CreateAndDecodeFrames(kFullHdWidth, kFullHdHeight, /*is_hw_accelerated=*/true,
+                        kFrames, kKeyframeInterval, kFramerate);
+  // Verify that there's been one stats callback and that the numbers are
+  // reasonable.
+  EXPECT_EQ(stats_callbacks_, 1);
+  EXPECT_TRUE(last_stats_key_.is_decode);
+  EXPECT_EQ(last_stats_key_.codec_profile, kCodecProfile);
   EXPECT_EQ(last_stats_key_.pixel_size, kFullHdWidth * kFullHdHeight);
-  EXPECT_GE(last_video_stats_.frame_count, 100);
-  EXPECT_LE(last_video_stats_.frame_count, kNumberOfFramesDuringTenSeconds);
-  EXPECT_NEAR(last_video_stats_.p99_processing_time_ms,
-              kExpectedP99ProcessingTimeMs, kP99ToleranceMs);
-}
-
-TEST_F(StatsCollectingDecoderTest, NewReportIfHwAccelerationChanges) {
-  constexpr int kNumberOfFramesDuringTenSeconds = kFramerate * 10;
-  EXPECT_EQ(stats_callbacks_, 0);
-  int last_stats_callbacks = stats_callbacks_;
-  CreateAndDecodeFrames(kHdWidth, kHdHeight, /*is_hw_accelerated=*/false,
-                        kNumberOfFramesDuringTenSeconds, kKeyframeInterval,
-                        kFramerate);
-  // One frame with HW acceleration.
-  CreateAndDecodeFrames(kHdWidth, kHdHeight, /*is_hw_accelerated=*/true, 1,
-                        kKeyframeInterval, kFramerate);
-
-  // Verify that the counter are incremented.
-  EXPECT_GT(stats_callbacks_, last_stats_callbacks);
-  last_stats_callbacks = stats_callbacks_;
-  EXPECT_EQ(last_stats_key_.pixel_size, kHdWidth * kHdHeight);
-  EXPECT_FALSE(last_stats_key_.hw_accelerated);
-  EXPECT_GE(last_video_stats_.frame_count, 100);
-  EXPECT_LE(last_video_stats_.frame_count, kNumberOfFramesDuringTenSeconds);
-  EXPECT_NEAR(last_video_stats_.p99_processing_time_ms,
-              kExpectedP99ProcessingTimeMs, kP99ToleranceMs);
-
-  // Continue with new resolution and expect another report.
-  CreateAndDecodeFrames(kHdWidth, kHdHeight, /*is_hw_accelerated=*/true,
-                        kNumberOfFramesDuringTenSeconds, kKeyframeInterval,
-                        kFramerate);
-  EXPECT_GT(stats_callbacks_, last_stats_callbacks);
-  EXPECT_EQ(last_stats_key_.pixel_size, kHdWidth * kHdHeight);
   EXPECT_TRUE(last_stats_key_.hw_accelerated);
-  EXPECT_GE(last_video_stats_.frame_count, 100);
-  EXPECT_LE(last_video_stats_.frame_count, kNumberOfFramesDuringTenSeconds);
+  EXPECT_GE(last_video_stats_.frame_count, kMinimumNumberOfFrames);
+  EXPECT_LT(last_video_stats_.frame_count, kFrames);
+  EXPECT_NEAR(last_video_stats_.key_frame_count,
+              last_video_stats_.frame_count / kKeyframeInterval, 1);
   EXPECT_NEAR(last_video_stats_.p99_processing_time_ms,
               kExpectedP99ProcessingTimeMs, kP99ToleranceMs);
 }

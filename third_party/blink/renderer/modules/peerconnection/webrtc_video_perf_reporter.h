@@ -10,7 +10,7 @@
 #include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
+#include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 
 namespace blink {
 
@@ -28,9 +28,8 @@ class MODULES_EXPORT WebrtcVideoPerfReporter {
       mojo::PendingRemote<media::mojom::blink::WebrtcVideoPerfRecorder>
           perf_recorder);
 
-  void StoreWebrtcVideoStats(
-      const StatsCollectingDecoder::StatsKey& stats_key,
-      const StatsCollectingDecoder::VideoStats& video_stats);
+  void StoreWebrtcVideoStats(const StatsCollector::StatsKey& stats_key,
+                             const StatsCollector::VideoStats& video_stats);
 
  private:
   void InitializeOnTaskRunner(
@@ -38,8 +37,8 @@ class MODULES_EXPORT WebrtcVideoPerfReporter {
           perf_recorder);
 
   void StoreWebrtcVideoStatsOnTaskRunner(
-      const StatsCollectingDecoder::StatsKey& stats_key,
-      const StatsCollectingDecoder::VideoStats& video_stats);
+      const StatsCollector::StatsKey& stats_key,
+      const StatsCollector::VideoStats& video_stats);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   mojo::Remote<media::mojom::blink::WebrtcVideoPerfRecorder> perf_recorder_;

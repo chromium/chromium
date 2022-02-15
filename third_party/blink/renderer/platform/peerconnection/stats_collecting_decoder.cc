@@ -15,24 +15,10 @@
 
 namespace blink {
 namespace {
-// Histogram parameters.
-constexpr float kDecodeTimeHistogramMinValue_ms = 1.0;
-constexpr float kDecodeTimeHistogramMaxValue_ms = 35;
-constexpr size_t kDecodeTimeHistogramBuckets = 80;
-constexpr float kDecodeTimePercentileToReport = 0.99;
-
 // Limit data collection to when only a single decoder is active. This gives an
 // optimistic estimate of the performance.
 constexpr int kMaximumDecodersToCollectStats = 1;
 constexpr base::TimeDelta kCheckSimultaneousDecodersInterval = base::Seconds(5);
-
-// Only store data if at least 100 samples were collected. This is the minimum
-// number of samples needed for the 99th percentile to be meaningful.
-constexpr size_t kMinDecodeTimeSamplesThreshold = 100;
-// Stop collecting data after 36000 samples (10 minutes at 60 fps).
-constexpr int kMaxDecodeTimeSamplesThreshold = 10 * 60 * 60;
-// Report intermediate results every 15 seconds.
-constexpr base::TimeDelta kDecodeStatsReportingPeriod = base::Seconds(15);
 
 // Number of StatsCollectingDecoder instances right now that have started
 // decoding.
@@ -46,12 +32,13 @@ StatsCollectingDecoder::StatsCollectingDecoder(
     const webrtc::SdpVideoFormat& format,
     std::unique_ptr<webrtc::VideoDecoder> decoder,
     StatsCollectingDecoder::StoreProcessingStatsCB stats_callback)
-    : codec_profile_(WebRtcVideoFormatToMediaVideoCodecProfile(format)),
-      decoder_(std::move(decoder)),
-      stats_callback_(stats_callback) {
-  DVLOG(3) << __func__ << " (" << media::GetProfileName(codec_profile_) << ")";
+    : StatsCollector(
+          /*is_decode=*/true,
+          WebRtcVideoFormatToMediaVideoCodecProfile(format),
+          stats_callback),
+      decoder_(std::move(decoder)) {
+  DVLOG(3) << __func__;
   CHECK(decoder_);
-  ClearStatsCollection();
   DETACH_FROM_SEQUENCE(decoding_sequence_checker_);
 }
 
@@ -99,13 +86,14 @@ int32_t StatsCollectingDecoder::Release() {
   // decoder_->Release(). Any outstanding calls to Decoded() will also finish
   // before decoder_->Release() returns. It's therefore safe to access member
   // variables here.
-  if (decode_time_ms_histogram_ && decode_time_ms_histogram_->NumValues() >=
-                                       kMinDecodeTimeSamplesThreshold) {
+  if (active_stats_collection() &&
+      samples_collected() >= kMinSamplesThreshold) {
     ReportStats();
   }
 
   if (first_frame_decoded_) {
     --(*GetDecoderCounter());
+    first_frame_decoded_ = false;
   }
 
   return ret;
@@ -133,7 +121,8 @@ void StatsCollectingDecoder::Decoded(webrtc::VideoFrame& decodedImage,
   // sequence.
   DCHECK(decoded_callback_);
   decoded_callback_->Decoded(decodedImage, decode_time_ms, qp);
-  if (stats_collection_finished_) {
+  if (stats_collection_finished()) {
+    // Return early if we've already finished the stats collection.
     return;
   }
 
@@ -144,7 +133,7 @@ void StatsCollectingDecoder::Decoded(webrtc::VideoFrame& decodedImage,
       kCheckSimultaneousDecodersInterval) {
     last_check_for_simultaneous_decoders_ = now;
     DVLOG(3) << "Simultaneous decoders: " << *GetDecoderCounter();
-    if (decode_time_ms_histogram_) {
+    if (active_stats_collection()) {
       if (*GetDecoderCounter() > kMaximumDecodersToCollectStats) {
         // Too many decoders, cancel stats collection.
         ClearStatsCollection();
@@ -155,84 +144,23 @@ void StatsCollectingDecoder::Decoded(webrtc::VideoFrame& decodedImage,
     }
   }
 
+  // Read out number of new processed keyframes since last Decoded() callback.
+  size_t number_of_new_keyframes = 0;
   {
     base::AutoLock auto_lock(lock_);
-    number_of_keyframes_ += number_of_new_keyframes_;
+    number_of_new_keyframes += number_of_new_keyframes_;
     number_of_new_keyframes_ = 0;
   }
 
-  if (decode_time_ms_histogram_ && decodedImage.processing_time()) {
+  if (active_stats_collection() && decodedImage.processing_time()) {
     int pixel_size = static_cast<int>(decodedImage.size());
     bool is_hardware_accelerated =
         decoder_->GetDecoderInfo().is_hardware_accelerated;
-    if (pixel_size == current_stats_key_.pixel_size &&
-        is_hardware_accelerated == current_stats_key_.hw_accelerated) {
-      // Store data.
-      decode_time_ms_histogram_->Add(
-          decodedImage.processing_time()->Elapsed().ms());
-    } else {
-      // New config, report data if enough samples have been collected,
-      // otherwise just start over.
-      if (decode_time_ms_histogram_->NumValues() >=
-          kMinDecodeTimeSamplesThreshold) {
-        ReportStats();
-      }
-      if (decode_time_ms_histogram_->NumValues() > 0) {
-        // No need to start over unless some samples have been collected.
-        StartStatsCollection();
-      }
-      current_stats_key_.pixel_size = pixel_size;
-      current_stats_key_.hw_accelerated = is_hardware_accelerated;
-    }
+    float decode_time_ms = decodedImage.processing_time()->Elapsed().ms();
 
-    // Report data regularly if enough samples have been collected.
-    if (decode_time_ms_histogram_->NumValues() >=
-            kMinDecodeTimeSamplesThreshold &&
-        (now - last_report_) > kDecodeStatsReportingPeriod) {
-      // Report intermediate values.
-      last_report_ = now;
-      ReportStats();
-
-      if (decode_time_ms_histogram_->NumValues() >=
-          kMaxDecodeTimeSamplesThreshold) {
-        // Stop collecting more stats if we reach the max samples threshold.
-        DVLOG(3) << "Enough samples collected, stop stats collection.";
-        decode_time_ms_histogram_.reset();
-        stats_collection_finished_ = true;
-      }
-    }
+    AddProcessingTime(pixel_size, is_hardware_accelerated, decode_time_ms,
+                      number_of_new_keyframes, now);
   }
-}
-
-void StatsCollectingDecoder::StartStatsCollection() {
-  DVLOG(3) << __func__;
-  decode_time_ms_histogram_ = std::make_unique<LinearHistogram>(
-      kDecodeTimeHistogramMinValue_ms, kDecodeTimeHistogramMaxValue_ms,
-      kDecodeTimeHistogramBuckets);
-  last_report_ = base::TimeTicks();
-}
-
-void StatsCollectingDecoder::ClearStatsCollection() {
-  DVLOG(3) << __func__;
-  decode_time_ms_histogram_.reset();
-  number_of_keyframes_ = 0;
-  current_stats_key_ = {/*is_decode=*/true, codec_profile_, 0,
-                        /*hw_accelerated=*/false};
-}
-
-void StatsCollectingDecoder::ReportStats() const {
-  DCHECK(decode_time_ms_histogram_);
-  StatsCollectingDecoder::VideoStats stats = {
-      static_cast<int>(decode_time_ms_histogram_->NumValues()),
-      static_cast<int>(number_of_keyframes_),
-      decode_time_ms_histogram_->GetPercentile(kDecodeTimePercentileToReport)};
-  DVLOG(3) << __func__ << "Pixel size: " << current_stats_key_.pixel_size
-           << ", HW: " << current_stats_key_.hw_accelerated
-           << ", P99: " << stats.p99_processing_time_ms
-           << " ms, frames: " << stats.frame_count
-           << ", key frames:: " << stats.key_frame_count;
-
-  stats_callback_.Run(current_stats_key_, stats);
 }
 
 }  // namespace blink
