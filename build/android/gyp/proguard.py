@@ -595,22 +595,6 @@ def _CreateDynamicConfig(options):
   if options.apply_mapping:
     ret.append("-applymapping '%s'" % options.apply_mapping)
 
-  _min_api = int(options.min_api) if options.min_api else 0
-  for api_level, version_code in _API_LEVEL_VERSION_CODE:
-    annotation_name = 'org.chromium.base.annotations.VerifiesOn' + version_code
-    if api_level > _min_api:
-      ret.append('-keep @interface %s' % annotation_name)
-      ret.append("""\
--if @%s class * {
-    *** *(...);
-}
--keep,allowobfuscation class <1> {
-    *** <2>(...);
-}""" % annotation_name)
-      ret.append("""\
--keepclassmembers,allowobfuscation class ** {
-  @%s <methods>;
-}""" % annotation_name)
   return '\n'.join(ret)
 
 
