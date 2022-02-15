@@ -16,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -135,8 +134,11 @@ public class FilePersistedTabDataStorageTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1297091")
     public void testOutOfMemoryError() throws InterruptedException {
+        // Ensure no data for Tab ID 1 / Data ID 1 (could be cross talk from other batch tests)
+        File file = FilePersistedTabDataStorage.getFile(TAB_ID_1, DATA_ID_1);
+        file.delete();
+        Assert.assertFalse(file.exists());
         FilePersistedTabDataStorage storage = new FilePersistedTabDataStorage();
         final Semaphore semaphore = new Semaphore(0);
         storage.addSaveRequest(storage.new FileSaveRequest(TAB_ID_1, DATA_ID_1, () -> {
@@ -145,13 +147,6 @@ public class FilePersistedTabDataStorageTest {
         }, semaphore::release));
         ThreadUtils.runOnUiThreadBlocking(() -> { storage.processNextItemOnQueue(); });
         semaphore.acquire();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            // Check nothing was saved.
-            storage.restore(TAB_ID_1, DATA_ID_1, (res) -> {
-                Assert.assertNull(res);
-                semaphore.release();
-            });
-        });
-        semaphore.acquire();
+        Assert.assertFalse(file.exists());
     }
 }
