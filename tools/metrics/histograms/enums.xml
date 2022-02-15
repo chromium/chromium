@@ -18925,6 +18925,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="29" label="SessionManager.SafeModeEnabled"/>
   <int value="30" label="Crash.Sender.FailedCrashRemoval"/>
   <int value="31" label="Crash.Sender.AttemptedCrashRemoval"/>
+  <int value="32" label="Chaps.DatabaseOpenedSuccessfully"/>
+  <int value="33" label="Chaps.DatabaseOpenAttempt"/>
 </enum>
 
 <enum name="CrosFirstRunTutorialCompletionType">
