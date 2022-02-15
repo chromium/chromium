@@ -9,6 +9,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantChip_jni.h"
@@ -222,9 +223,18 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
       return Java_AssistantDrawable_createFromIcon(
           env, static_cast<int>(MapDrawableIcon(proto.icon())));
     }
-    case DrawableProto::kBase64: {
+    case DrawableProto::kImageData: {
       return Java_AssistantDrawable_createFromBase64(
-          env, base::android::ToJavaByteArray(env, proto.base64()));
+          env, base::android::ToJavaByteArray(env, proto.image_data()));
+    }
+    case DrawableProto::kImageDataBase64: {
+      std::string image_data;
+      if (!base::Base64Decode(proto.image_data_base64(), &image_data)) {
+        VLOG(1) << "Invalid Base64 image data.";
+        return nullptr;
+      }
+      return Java_AssistantDrawable_createFromBase64(
+          env, base::android::ToJavaByteArray(env, image_data));
     }
     case DrawableProto::kFavicon: {
       if (!user_model) {
