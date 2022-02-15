@@ -403,6 +403,9 @@ static bool ConvertEventToUpdate(int render_process_id,
     }
     case media::MediaLogRecord::Type::kMediaStatus:
       dict.SetStringKey("type", "PIPELINE_ERROR");
+      base::Value wrapped_parameters(base::Value::Type::DICTIONARY);
+      wrapped_parameters.SetKey("error", std::move(cloned_params));
+      cloned_params = std::move(wrapped_parameters);
       break;
   }
 
