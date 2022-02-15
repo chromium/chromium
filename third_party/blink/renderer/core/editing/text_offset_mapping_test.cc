@@ -341,6 +341,17 @@ TEST_P(ParameterizedTextOffsetMappingTest, BackwardRangesWithTextControl) {
       TextOffsetMapping::FindBackwardInlineContents(inside_first).IsNull());
 }
 
+// http://crbug.com/1295233
+TEST_P(ParameterizedTextOffsetMappingTest, RangeWithBlockInInline) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    EXPECT_EQ("<div><p>ab</p><b><p>cd</p></b>^yz|</div>",
+              GetRange("<div><p>ab</p><b><p>cd</p></b>|yz</div>"));
+  } else {
+    EXPECT_EQ("<div><p>ab</p>^<b><p>cd</p></b>yz|</div>",
+              GetRange("<div><p>ab</p><b><p>cd</p></b>|yz</div>"));
+  }
+}
+
 // http://crbug.com/832497
 TEST_P(ParameterizedTextOffsetMappingTest, RangeWithCollapsedWhitespace) {
   // Whitespaces after <div> is collapsed.

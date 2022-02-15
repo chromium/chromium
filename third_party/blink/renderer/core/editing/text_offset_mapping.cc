@@ -96,7 +96,7 @@ bool ShouldSkipChildren(const Node& node) {
 LayoutObject* NextForInlineContents(const LayoutObject& layout_object,
                                     const LayoutObject& container) {
   if (layout_object.IsBlockInInline())
-    return layout_object.NextSibling();
+    return layout_object.NextInPreOrderAfterChildren(&container);
   const Node* const node = layout_object.NonPseudoNode();
   if (node && ShouldSkipChildren(*node))
     return layout_object.NextInPreOrderAfterChildren(&container);
