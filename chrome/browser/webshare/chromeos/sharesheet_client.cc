@@ -15,12 +15,11 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
-#include "chrome/browser/sharesheet/sharesheet_service.h"
-#include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/visibility_timer_tab_helper.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/browser/webshare/prepare_subdirectory_task.h"
@@ -34,13 +33,26 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/lacros/window_utility.h"
+#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "chromeos/crosapi/mojom/sharesheet.mojom.h"
+#include "chromeos/crosapi/mojom/sharesheet_mojom_traits.h"
+#include "chromeos/lacros/lacros_service.h"
+#else
+#include "chrome/browser/sharesheet/sharesheet_service.h"
+#include "chrome/browser/sharesheet/sharesheet_service_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using content::BrowserThread;
 using content::WebContents;
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr base::FilePath::CharType kWebShareDirname[] =
     FILE_PATH_LITERAL(".WebShare");
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr char kDefaultShareName[] = "share";
 
@@ -143,10 +155,14 @@ void SharesheetClient::Share(
   }
 
   current_share_ = CurrentShare();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   current_share_->files = std::move(files);
   current_share_->directory =
       file_manager::util::GetShareCacheFilePath(profile).Append(
           kWebShareDirname);
+#else
+  // TODO(crbug.com/1225825): Support file sharing from Lacros.
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (share_url.is_valid()) {
     if (text.empty())
       current_share_->text = share_url.spec();
@@ -168,12 +184,14 @@ void SharesheetClient::Share(
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Previously, shared files were stored in MyFiles/.WebShare. We remove this
   // obsolete directory.
   PrepareDirectoryTask::ScheduleSharedFileDeletion(
       {file_manager::util::GetMyFilesFolderForProfile(profile).Append(
           kWebShareDirname)},
       /*delay=*/base::TimeDelta());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   current_share_->prepare_directory_task =
       std::make_unique<PrepareDirectoryTask>(
@@ -284,9 +302,23 @@ void SharesheetClient::ShowSharesheet(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   DCHECK(profile);
 
-  sharesheet::SharesheetService* const sharesheet_service =
-      sharesheet::SharesheetServiceFactory::GetForProfile(profile);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1225825): Support file sharing from Lacros.
+  apps::mojom::IntentPtr intent =
+      apps_util::CreateShareIntentFromText(text, title);
 
+  auto* const service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<crosapi::mojom::Sharesheet>()) {
+    std::move(delivered_callback).Run(sharesheet::SharesheetResult::kCancel);
+    return;
+  }
+  service->GetRemote<crosapi::mojom::Sharesheet>()->ShowBubble(
+      lacros_window_utility::GetRootWindowUniqueId(
+          web_contents->GetTopLevelNativeWindow()),
+      sharesheet::LaunchSource::kWebShare,
+      apps_util::ConvertAppServiceToCrosapiIntent(intent, profile),
+      std::move(delivered_callback));
+#else
   apps::mojom::IntentPtr intent =
       file_paths.empty() ? apps_util::CreateShareIntentFromText(text, title)
                          : apps_util::CreateShareIntentFromFiles(
@@ -297,9 +329,13 @@ void SharesheetClient::ShowSharesheet(
       (*intent->files)[index]->file_size = file_sizes[index];
     }
   }
+
+  sharesheet::SharesheetService* const sharesheet_service =
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile);
   sharesheet_service->ShowBubble(web_contents, std::move(intent),
                                  sharesheet::LaunchSource::kWebShare,
                                  std::move(delivered_callback));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 SharesheetClient::SharesheetCallback&

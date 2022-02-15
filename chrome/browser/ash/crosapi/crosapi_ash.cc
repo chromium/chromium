@@ -62,6 +62,7 @@
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
 #include "chrome/browser/ash/crosapi/select_file_ash.h"
+#include "chrome/browser/ash/crosapi/sharesheet_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/system_display_ash.h"
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
@@ -176,6 +177,7 @@ CrosapiAsh::CrosapiAsh()
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       search_provider_ash_(std::make_unique<SearchProviderAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
+      sharesheet_ash_(std::make_unique<SharesheetAsh>()),
       stable_video_decoder_factory_ash_(
           std::make_unique<media::StableVideoDecoderFactoryService>()),
       structured_metrics_service_ash_(
@@ -380,6 +382,13 @@ void CrosapiAsh::BindNativeThemeService(
 void CrosapiAsh::BindSelectFile(
     mojo::PendingReceiver<mojom::SelectFile> receiver) {
   select_file_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindSharesheet(
+    mojo::PendingReceiver<mojom::Sharesheet> receiver) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  sharesheet_ash_->MaybeSetProfile(profile);
+  sharesheet_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindScreenManager(

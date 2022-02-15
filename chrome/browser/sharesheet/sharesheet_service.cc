@@ -40,6 +40,15 @@ std::u16string& GetSelectedApp() {
   return *selected_app;
 }
 
+gfx::NativeWindow GetNativeWindowFromWebContents(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  return web_contents->GetTopLevelNativeWindow();
+}
+
 }  // namespace
 
 SharesheetService::SharesheetService(Profile* profile)
@@ -55,8 +64,10 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    LaunchSource source,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback) {
-  ShowBubble(web_contents, std::move(intent),
+  ShowBubble(std::move(intent),
              /*contains_hosted_document=*/false, source,
+             base::BindOnce(&GetNativeWindowFromWebContents,
+                            web_contents->GetWeakPtr()),
              std::move(delivered_callback), std::move(close_callback));
 }
 
@@ -66,11 +77,24 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    LaunchSource source,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback) {
+  ShowBubble(std::move(intent), contains_hosted_document, source,
+             base::BindOnce(&GetNativeWindowFromWebContents,
+                            web_contents->GetWeakPtr()),
+             std::move(delivered_callback), std::move(close_callback));
+}
+
+void SharesheetService::ShowBubble(
+    apps::mojom::IntentPtr intent,
+    bool contains_hosted_document,
+    LaunchSource source,
+    GetNativeWindowCallback get_native_window_callback,
+    DeliveredCallback delivered_callback,
+    CloseCallback close_callback) {
   DCHECK(apps_util::IsShareIntent(intent));
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
-  PrepareToShowBubble(web_contents->GetWeakPtr(), std::move(intent),
-                      contains_hosted_document, std::move(delivered_callback),
-                      std::move(close_callback));
+  PrepareToShowBubble(std::move(intent), contains_hosted_document,
+                      std::move(get_native_window_callback),
+                      std::move(delivered_callback), std::move(close_callback));
 }
 
 SharesheetController* SharesheetService::GetSharesheetController(
@@ -89,6 +113,7 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
     ActionCleanupCallback action_cleanup_callback) {
+  DCHECK(intent);
   DCHECK(apps_util::IsShareIntent(intent));
 
   ShareAction* share_action = share_action_cache_->GetActionFromName(
@@ -214,9 +239,9 @@ void SharesheetService::SetSelectedAppForTesting(
 }
 
 void SharesheetService::PrepareToShowBubble(
-    base::WeakPtr<content::WebContents> web_contents,
     apps::mojom::IntentPtr intent,
     bool contains_hosted_document,
+    GetNativeWindowCallback get_native_window_callback,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback) {
   auto targets = GetActionsForIntent(intent, contains_hosted_document);
@@ -225,11 +250,12 @@ void SharesheetService::PrepareToShowBubble(
       contains_hosted_document ? std::vector<apps::IntentLaunchInfo>()
                                : app_service_proxy_->GetAppsForIntent(intent);
   SharesheetMetrics::RecordSharesheetAppCount(intent_launch_info.size());
-  LoadAppIcons(std::move(intent_launch_info), std::move(targets), 0,
-               base::BindOnce(&SharesheetService::OnAppIconsLoaded,
-                              weak_factory_.GetWeakPtr(), web_contents,
-                              std::move(intent), std::move(delivered_callback),
-                              std::move(close_callback)));
+  LoadAppIcons(
+      std::move(intent_launch_info), std::move(targets), 0,
+      base::BindOnce(&SharesheetService::OnAppIconsLoaded,
+                     weak_factory_.GetWeakPtr(), std::move(intent),
+                     std::move(get_native_window_callback),
+                     std::move(delivered_callback), std::move(close_callback)));
 }
 
 std::vector<TargetInfo> SharesheetService::GetActionsForIntent(
@@ -318,18 +344,20 @@ void SharesheetService::OnIconLoaded(
 }
 
 void SharesheetService::OnAppIconsLoaded(
-    base::WeakPtr<content::WebContents> web_contents,
     apps::mojom::IntentPtr intent,
+    GetNativeWindowCallback get_native_window_callback,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
     std::vector<TargetInfo> targets) {
-  if (!web_contents || !web_contents->GetTopLevelNativeWindow()) {
+  gfx::NativeWindow native_window = std::move(get_native_window_callback).Run();
+  if (!native_window) {
     std::move(delivered_callback).Run(SharesheetResult::kErrorWindowClosed);
     return;
   }
-  OnReadyToShowBubble(web_contents->GetTopLevelNativeWindow(),
-                      std::move(intent), std::move(delivered_callback),
-                      std::move(close_callback), std::move(targets));
+
+  OnReadyToShowBubble(native_window, std::move(intent),
+                      std::move(delivered_callback), std::move(close_callback),
+                      std::move(targets));
 }
 
 void SharesheetService::OnReadyToShowBubble(

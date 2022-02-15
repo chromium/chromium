@@ -260,9 +260,9 @@
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || \
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/webshare/share_service_impl.h"
 #endif
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
@@ -637,7 +637,7 @@ void PopulateChromeFrameBinders(
       &apps::DigitalGoodsFactoryImpl::BindDigitalGoodsFactory));
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kWebShare)) {
     map->Add<blink::mojom::ShareService>(
         base::BindRepeating(&ShareServiceImpl::Create));

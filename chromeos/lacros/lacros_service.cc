@@ -57,6 +57,7 @@
 #include "chromeos/crosapi/mojom/resource_manager.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
+#include "chromeos/crosapi/mojom/sharesheet.mojom.h"
 #include "chromeos/crosapi/mojom/system_display.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
@@ -342,6 +343,9 @@ LacrosService::LacrosService()
       crosapi::mojom::SearchControllerRegistry,
       &crosapi::mojom::Crosapi::BindSearchControllerRegistry,
       Crosapi::MethodMinVersions::kBindSearchControllerRegistryMinVersion>();
+  ConstructRemote<crosapi::mojom::Sharesheet,
+                  &crosapi::mojom::Crosapi::BindSharesheet,
+                  Crosapi::MethodMinVersions::kBindSharesheetMinVersion>();
   ConstructRemote<
       crosapi::mojom::StructuredMetricsService,
       &crosapi::mojom::Crosapi::BindStructuredMetricsService,

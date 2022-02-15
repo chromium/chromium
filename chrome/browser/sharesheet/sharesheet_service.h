@@ -52,6 +52,8 @@ class SharesheetUiDelegate;
 // Chrome desktop.
 class SharesheetService : public KeyedService {
  public:
+  using GetNativeWindowCallback = base::OnceCallback<gfx::NativeWindow()>;
+
   explicit SharesheetService(Profile* profile);
   ~SharesheetService() override;
 
@@ -79,6 +81,13 @@ class SharesheetService : public KeyedService {
                   LaunchSource source,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback = base::NullCallback());
+  void ShowBubble(apps::mojom::IntentPtr intent,
+                  bool contains_hosted_document,
+                  LaunchSource source,
+                  GetNativeWindowCallback get_native_window_callback,
+                  DeliveredCallback delivered_callback,
+                  CloseCallback close_callback = base::NullCallback());
+
   // Gets the sharesheet controller for the given |native_window|.
   SharesheetController* GetSharesheetController(
       gfx::NativeWindow native_window);
@@ -125,9 +134,9 @@ class SharesheetService : public KeyedService {
   using SharesheetServiceIconLoaderCallback =
       base::OnceCallback<void(std::vector<TargetInfo> targets)>;
 
-  void PrepareToShowBubble(base::WeakPtr<content::WebContents> web_contents,
-                           apps::mojom::IntentPtr intent,
+  void PrepareToShowBubble(apps::mojom::IntentPtr intent,
                            bool contains_hosted_document,
+                           GetNativeWindowCallback get_native_window_callback,
                            DeliveredCallback delivered_callback,
                            CloseCallback close_callback);
 
@@ -146,8 +155,8 @@ class SharesheetService : public KeyedService {
                     SharesheetServiceIconLoaderCallback callback,
                     apps::IconValuePtr icon_value);
 
-  void OnAppIconsLoaded(base::WeakPtr<content::WebContents> web_contents,
-                        apps::mojom::IntentPtr intent,
+  void OnAppIconsLoaded(apps::mojom::IntentPtr intent,
+                        GetNativeWindowCallback get_native_window_callback,
                         DeliveredCallback delivered_callback,
                         CloseCallback close_callback,
                         std::vector<TargetInfo> targets);

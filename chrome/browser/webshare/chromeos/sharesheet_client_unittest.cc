@@ -14,7 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
@@ -24,6 +24,10 @@
 #include "content/public/test/web_contents_tester.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/file_manager/path_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace webshare {
 
@@ -124,6 +128,7 @@ TEST_F(SharesheetClientUnitTest, TestWithoutFilesInIncognito) {
   EXPECT_EQ(error, blink::mojom::ShareError::OK);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SharesheetClientUnitTest, DeleteAfterShare) {
   SetGuest();
   SharesheetClient sharesheet_client(web_contents());
@@ -168,5 +173,8 @@ TEST_F(SharesheetClientUnitTest, DeleteAfterShare) {
   EXPECT_FALSE(base::PathExists(first_file));
   EXPECT_FALSE(base::PathExists(second_file));
 }
+#else
+// TODO(crbug.com/1225825): Support file sharing from Lacros.
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace webshare

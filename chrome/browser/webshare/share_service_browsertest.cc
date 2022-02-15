@@ -5,6 +5,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -112,6 +113,9 @@ IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Text) {
                                      WebShareMethod::kShare, kRepeats);
 }
 
+// TODO(crbug.com/1225825): Support file sharing from Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 class SafeBrowsingShareServiceBrowserTest : public ShareServiceBrowserTest {
  public:
   SafeBrowsingShareServiceBrowserTest()
@@ -164,3 +168,5 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingShareServiceBrowserTest,
   EXPECT_EQ("share failed: NotAllowedError: Permission denied",
             content::EvalJs(contents, "share_pdf_file()"));
 }
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

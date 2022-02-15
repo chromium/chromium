@@ -3928,7 +3928,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"web-share", flag_descriptions::kWebShareName,
      flag_descriptions::kWebShareDescription, kOsWin | kOsCrOS,
      FEATURE_VALUE_TYPE(features::kWebShare)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
     {"ozone-platform-hint", flag_descriptions::kOzonePlatformHintName,

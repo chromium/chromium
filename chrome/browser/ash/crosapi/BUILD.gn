@@ -145,6 +145,8 @@ source_set("crosapi") {
     "search_provider_ash.h",
     "select_file_ash.cc",
     "select_file_ash.h",
+    "sharesheet_ash.cc",
+    "sharesheet_ash.h",
     "structured_metrics_service_ash.cc",
     "structured_metrics_service_ash.h",
     "system_display_ash.cc",

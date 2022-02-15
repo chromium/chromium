@@ -166,16 +166,19 @@ SharesheetBubbleView::SharesheetBubbleView(
     gfx::NativeWindow native_window,
     ::sharesheet::SharesheetServiceDelegator* delegator)
     : delegator_(delegator) {
+  DCHECK(native_window);
+  DCHECK(delegator);
   SetID(SHARESHEET_BUBBLE_VIEW_ID);
   // We set the dialog role because views::BubbleDialogDelegate defaults this to
   // an alert dialog. This would make screen readers announce all of this dialog
   // which is undesirable.
   SetAccessibleRole(ax::mojom::Role::kDialog);
   set_parent_window(native_window);
-  parent_widget_observer_ = std::make_unique<SharesheetParentWidgetObserver>(
-      this, views::Widget::GetWidgetForNativeWindow(native_window));
-  parent_view_ =
-      views::Widget::GetWidgetForNativeWindow(native_window)->GetRootView();
+  views::Widget* const widget =
+      views::Widget::GetWidgetForNativeWindow(native_window);
+  parent_view_ = widget->GetRootView();
+  parent_widget_observer_ =
+      std::make_unique<SharesheetParentWidgetObserver>(this, widget);
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   CreateBubble();
 }
