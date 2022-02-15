@@ -955,7 +955,8 @@ void IndexedDBContextImpl::QueryDiskAndUpdateQuotaUsage(
     storage_key_size_map_[storage_key] = current_disk_usage;
     quota_manager_proxy()->NotifyStorageModified(
         storage::QuotaClientType::kIndexedDatabase, storage_key,
-        blink::mojom::StorageType::kTemporary, difference, base::Time::Now());
+        blink::mojom::StorageType::kTemporary, difference, base::Time::Now(),
+        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
     NotifyIndexedDBListChanged(storage_key);
   }
 }

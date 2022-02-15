@@ -35,6 +35,9 @@ namespace {
 void DidGetBucket(scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
                   base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
                   QuotaErrorOr<BucketInfo> result) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (callback_task_runner->RunsTasksInCurrentSequence()) {
     std::move(callback).Run(std::move(result));
     return;
@@ -47,6 +50,9 @@ void DidGetStatus(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(blink::mojom::QuotaStatusCode)> callback,
     blink::mojom::QuotaStatusCode status) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (callback_task_runner->RunsTasksInCurrentSequence()) {
     std::move(callback).Run(std::move(status));
     return;
@@ -105,6 +111,9 @@ void QuotaManagerProxy::GetOrCreateBucket(
     const std::string& bucket_name,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
@@ -133,6 +142,9 @@ void QuotaManagerProxy::GetOrCreateBucketDeprecated(
     blink::mojom::StorageType storage_type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
@@ -161,6 +173,9 @@ void QuotaManagerProxy::CreateBucketForTesting(
     blink::mojom::StorageType storage_type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
@@ -189,6 +204,9 @@ void QuotaManagerProxy::GetBucket(
     blink::mojom::StorageType type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
@@ -216,6 +234,9 @@ void QuotaManagerProxy::DeleteBucket(
     const std::string& bucket_name,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(blink::mojom::QuotaStatusCode)> callback) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
@@ -275,7 +296,9 @@ void QuotaManagerProxy::NotifyStorageModified(
     base::Time modification_time,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceClosure callback) {
-  DCHECK(!callback || callback_task_runner);
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
@@ -313,7 +336,9 @@ void QuotaManagerProxy::NotifyBucketModified(
     base::Time modification_time,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceClosure callback) {
-  DCHECK(!callback || callback_task_runner);
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
@@ -382,6 +407,9 @@ void DidGetUsageAndQuota(
     blink::mojom::QuotaStatusCode status,
     int64_t usage,
     int64_t quota) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (callback_task_runner->RunsTasksInCurrentSequence()) {
     std::move(callback).Run(status, usage, quota);
     return;
@@ -397,6 +425,9 @@ void QuotaManagerProxy::GetUsageAndQuota(
     blink::mojom::StorageType type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     UsageAndQuotaCallback callback) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
@@ -424,6 +455,9 @@ void QuotaManagerProxy::IsStorageUnlimited(
     blink::mojom::StorageType type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(bool)> callback) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
@@ -458,6 +492,9 @@ void QuotaManagerProxy::OverrideQuotaForStorageKey(
     absl::optional<int64_t> quota_size,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceClosure callback) {
+  DCHECK(callback_task_runner);
+  DCHECK(callback);
+
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,

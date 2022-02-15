@@ -1179,7 +1179,8 @@ void LegacyCacheStorage::DeleteCacheDidGetSize(
     int64_t cache_size) {
   quota_manager_proxy_->NotifyStorageModified(
       CacheStorageQuotaClient::GetClientTypeFromOwner(owner_), storage_key_,
-      StorageType::kTemporary, -cache_size, base::Time::Now());
+      StorageType::kTemporary, -cache_size, base::Time::Now(),
+      base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
 
   cache_loader_->CleanUpDeletedCache(doomed_cache);
   auto doomed_caches_iter = doomed_caches_.find(doomed_cache);

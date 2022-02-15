@@ -1247,7 +1247,8 @@ void ServiceWorkerRegistry::DidStoreRegistration(
         storage::QuotaClientType::kServiceWorker, key,
         blink::mojom::StorageType::kTemporary,
         stored_resources_total_size_bytes - deleted_resources_size,
-        base::Time::Now());
+        base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+        base::DoNothing());
   }
 
   scoped_refptr<ServiceWorkerRegistration> registration =
@@ -1287,7 +1288,8 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
     quota_manager_proxy_->NotifyStorageModified(
         storage::QuotaClientType::kServiceWorker, key,
         blink::mojom::StorageType::kTemporary, -deleted_resources_size,
-        base::Time::Now());
+        base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+        base::DoNothing());
   }
 
   scoped_refptr<ServiceWorkerRegistration> registration =

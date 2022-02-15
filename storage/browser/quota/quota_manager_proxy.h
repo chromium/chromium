@@ -146,8 +146,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       blink::mojom::StorageType type,
       int64_t delta,
       base::Time modification_time,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner = nullptr,
-      base::OnceClosure callback = base::OnceClosure());
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceClosure callback);
 
   // Notifies the quota manager that a bucket has been modified for the given
   // client.  A `callback` may be optionally provided to be invoked on the
@@ -160,8 +160,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       BucketId bucket_id,
       int64_t delta,
       base::Time modification_time,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner = nullptr,
-      base::OnceClosure callback = base::OnceClosure());
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceClosure callback);
 
   virtual void NotifyWriteFailed(const blink::StorageKey& storage_key);
 

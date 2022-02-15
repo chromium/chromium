@@ -340,9 +340,10 @@ SandboxFileSystemBackendDelegate::DeleteStorageKeyDataOnFileTaskRunner(
   bool result = obfuscated_file_util()->DeleteDirectoryForStorageKeyAndType(
       storage_key, GetTypeString(type));
   if (result && proxy && usage) {
-    proxy->NotifyStorageModified(QuotaClientType::kFileSystem, storage_key,
-                                 FileSystemTypeToQuotaStorageType(type), -usage,
-                                 base::Time::Now());
+    proxy->NotifyStorageModified(
+        QuotaClientType::kFileSystem, storage_key,
+        FileSystemTypeToQuotaStorageType(type), -usage, base::Time::Now(),
+        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
   }
 
   if (result)

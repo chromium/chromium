@@ -60,7 +60,8 @@ void MockQuotaClient::ModifyStorageKeyAndNotify(
 
   // TODO(tzik): Check quota to prevent usage exceed
   quota_manager_proxy_->NotifyStorageModified(
-      client_type_, storage_key, storage_type, delta, IncrementMockTime());
+      client_type_, storage_key, storage_type, delta, IncrementMockTime(),
+      base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
 }
 
 void MockQuotaClient::AddBucketToErrorSet(const BucketLocator& bucket) {
@@ -142,7 +143,8 @@ void MockQuotaClient::RunDeleteBucketData(const BucketLocator& bucket,
   int64_t delta = it->second;
   quota_manager_proxy_->NotifyStorageModified(
       client_type_, blink::StorageKey(bucket.storage_key), bucket.type, -delta,
-      base::Time::Now());
+      base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+      base::DoNothing());
   bucket_data_.erase(it);
   std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
 }
