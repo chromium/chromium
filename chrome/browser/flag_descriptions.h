@@ -880,6 +880,9 @@ extern const char kIncognitoNtpRevampDescription[];
 extern const char kIncognitoScreenshotName[];
 extern const char kIncognitoScreenshotDescription[];
 
+extern const char kInitialNavigationEntryName[];
+extern const char kInitialNavigationEntryDescription[];
+
 extern const char kInProductHelpDemoModeChoiceName[];
 extern const char kInProductHelpDemoModeChoiceDescription[];
 

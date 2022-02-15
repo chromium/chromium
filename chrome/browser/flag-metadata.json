@@ -3683,6 +3683,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "initial-navigation-entry",
+    "owners": [ "rakina", "chrome-security-architecture@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "installed-apps-in-cbd",
     "owners": [ "jarrydg", "pwnall" ],
     "expiry_milestone": 97

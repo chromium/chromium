@@ -1545,6 +1545,10 @@ const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
     "thumbnails visible.";
 
+const char kInitialNavigationEntryName[] = "Initial NavigationEntry";
+const char kInitialNavigationEntryDescription[] =
+    "Enables creation of initial NavigationEntry on tab creation.";
+
 const char kInProductHelpDemoModeChoiceName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeChoiceDescription[] =
     "Selects the In-Product Help demo mode.";
