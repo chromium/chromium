@@ -150,16 +150,16 @@ crbug.com/dawn/1025 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,r
 
 # Failures because of the changes on the validation rules on the texture format of multisampled
 # texture creation.
-crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="r32sint" [ Failure ]
-crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="r32uint" [ Failure ]
-crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rg32float" [ Failure ]
-crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rg32sint" [ Failure ]
-crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rg32uint" [ Failure ]
-crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rgba32float" [ Failure ]
-crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rgba32sint" [ Failure ]
-crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rgba32uint" [ Failure ]
-crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="2d" [ Failure ]
-crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="undef" [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="r32sint";* [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="r32uint";* [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rg32float";* [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rg32sint";* [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rg32uint";* [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rgba32float";* [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rgba32sint";* [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rgba32uint";* [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="2d";* [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="_undef_";* [ Failure ]
 crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,various_sampleCount_with_all_formats:* [ Failure ]
 
 ###
@@ -382,8 +382,9 @@ crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,oper
 # TODO r8unorm and rg8unorm only
 crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,render_pass,storeOp:render_pass_store_op,color_attachment_only:* [ Failure ]
 crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:mipLevelCount,format:* [ Failure ]
-crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="_undef_";* [ Failure ]
-crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="2d";* [ Failure ]
+# TODO recover the below two test expectations after new MSAA rules are implemented (see crbug.com/dawn/1244 for more details)
+# crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="_undef_";* [ Failure ]
+# crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="2d";* [ Failure ]
 crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="3d";* [ Failure ]
 crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyB2T";* [ Failure ]
 crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyT2B";* [ Failure ]
