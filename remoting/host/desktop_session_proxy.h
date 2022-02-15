@@ -16,10 +16,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/task/sequenced_task_runner_helpers.h"
-#include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_resolution.h"
@@ -119,7 +119,8 @@ class DesktopSessionProxy
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // Connects to the desktop session agent.
-  bool AttachToDesktop(const IPC::ChannelHandle& desktop_pipe, int session_id);
+  bool AttachToDesktop(mojo::ScopedMessagePipeHandle desktop_pipe,
+                       int session_id);
 
   // Closes the connection to the desktop session agent and cleans up
   // the associated resources.

@@ -15,9 +15,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
-#include "ipc/ipc_channel.h"
-#include "ipc/ipc_channel_handle.h"
+#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/config_watcher.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
@@ -72,10 +72,6 @@ class DaemonProcess : public ConfigWatcher::Delegate,
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
-  // Sends an IPC message to the network process. The message will be dropped
-  // unless the network process is connected over the IPC channel.
-  virtual void SendToNetwork(IPC::Message* message) = 0;
-
   // Called when a desktop integration process attaches to |terminal_id|.
   // |session_id| is the id of the desktop session being attached.
   // |desktop_pipe| specifies the client end of the desktop pipe. Returns true
@@ -83,7 +79,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   virtual bool OnDesktopSessionAgentAttached(
       int terminal_id,
       int session_id,
-      const IPC::ChannelHandle& desktop_pipe) = 0;
+      mojo::ScopedMessagePipeHandle desktop_pipe) = 0;
 
   // Closes the desktop session identified by |terminal_id|.
   void CloseDesktopSession(int terminal_id);
@@ -145,6 +141,10 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // are required to start the host and get online.
   virtual void SendHostConfigToNetworkProcess(
       const std::string& serialized_config) = 0;
+
+  // Notifies the network process that the daemon has disconnected the desktop
+  // session from the associated desktop environment.
+  virtual void SendTerminalDisconnected(int terminal_id) = 0;
 
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner() {
     return caller_task_runner_;

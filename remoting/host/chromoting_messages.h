@@ -44,23 +44,6 @@ IPC_MESSAGE_CONTROL(ChromotingDaemonMsg_Crash,
                     int /* line_number */)
 
 //-----------------------------------------------------------------------------
-// Chromoting messages sent from the daemon to the network process.
-
-// Notifies the network process that the terminal |terminal_id| has been
-// disconnected from the desktop session.
-IPC_MESSAGE_CONTROL(ChromotingDaemonNetworkMsg_TerminalDisconnected,
-                    int /* terminal_id */)
-
-// Notifies the network process that |terminal_id| is now attached to
-// a desktop integration process. |session_id| is the id of the desktop session
-// being attached. |desktop_pipe| is the client end of the desktop-to-network
-// pipe opened.
-IPC_MESSAGE_CONTROL(ChromotingDaemonNetworkMsg_DesktopAttached,
-                    int /* terminal_id */,
-                    int /* session_id */,
-                    IPC::ChannelHandle /* desktop_pipe */)
-
-//-----------------------------------------------------------------------------
 // Chromoting messages sent from the network to the daemon process.
 
 // Connects the terminal |terminal_id| (i.e. a remote client) to a desktop

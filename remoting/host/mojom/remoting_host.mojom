@@ -34,3 +34,23 @@ interface RemotingHostControl {
   InitializePairingRegistry(handle<platform> privileged_handle,
                             handle<platform> unprivileged_handle);
 };
+
+// Provides a set of methods to allow the Daemon process to notify the network
+// (a.k.a. host) process of changes in the desktop environment.
+// The remote for this interface is owned in the high-privilege daemon process
+// and the receiver is bound in the low-privilege network process.
+interface DesktopSessionConnectionEvents {
+  // Notifies the network process that the daemon has disconnected the desktop
+  // session from the associated desktop environment.
+  [EnableIf=is_win]
+  OnTerminalDisconnected(int32 terminal_id);
+
+  // Notifies the network process that |terminal_id| is now attached to
+  // a desktop integration process. |session_id| is the id of the desktop
+  // session attached. |desktop_pipe| is the client end of the message pipe
+  // which will be used for IPC communication between the desktop process and
+  // the network process.
+  [EnableIf=is_win]
+  OnDesktopSessionAgentAttached(int32 terminal_id, int32 session_id,
+                                handle<message_pipe> desktop_pipe);
+};

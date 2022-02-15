@@ -30,6 +30,7 @@
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_platform_file.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
@@ -525,7 +526,7 @@ void IpcDesktopEnvironmentTest::ConnectDesktopChannel(
     mojo::ScopedMessagePipeHandle desktop_pipe) {
   // Instruct DesktopSessionProxy to connect to the network-to-desktop pipe.
   desktop_environment_factory_->OnDesktopSessionAgentAttached(
-      terminal_id_, /*session_id=*/0, desktop_pipe.release());
+      terminal_id_, /*session_id=*/0, std::move(desktop_pipe));
 }
 
 void IpcDesktopEnvironmentTest::RunMainLoopUntilDone() {

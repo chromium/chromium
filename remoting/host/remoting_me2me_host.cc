@@ -37,6 +37,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_util.h"
 #include "net/socket/client_socket_factory.h"
@@ -451,7 +452,8 @@ class HostProcess : public ConfigWatcher::Delegate,
   // Accessed on the UI thread.
   std::unique_ptr<IPC::ChannelProxy> daemon_channel_;
 
-  // Owned as |desktop_environment_factory_|.
+  // Raw interface pointer which refers to the object owned by
+  // |desktop_environment_factory_|.
   raw_ptr<DesktopSessionConnector> desktop_session_connector_ = nullptr;
 #endif  // defined(REMOTING_MULTI_PROCESS)
 
@@ -831,26 +833,8 @@ void HostProcess::CreateAuthenticatorFactory() {
 
 // IPC::Listener implementation.
 bool HostProcess::OnMessageReceived(const IPC::Message& message) {
-  DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
-
-#if defined(REMOTING_MULTI_PROCESS)
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(HostProcess, message)
-    IPC_MESSAGE_FORWARD(ChromotingDaemonNetworkMsg_DesktopAttached,
-                        desktop_session_connector_.get(),
-                        DesktopSessionConnector::OnDesktopSessionAgentAttached)
-    IPC_MESSAGE_FORWARD(ChromotingDaemonNetworkMsg_TerminalDisconnected,
-                        desktop_session_connector_.get(),
-                        DesktopSessionConnector::OnTerminalDisconnected)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-
-  CHECK(handled) << "Received unexpected IPC type: " << message.type();
-  return handled;
-
-#else  // !defined(REMOTING_MULTI_PROCESS)
+  NOTREACHED() << "Received unexpected IPC type: " << message.type();
   return false;
-#endif  // !defined(REMOTING_MULTI_PROCESS)
 }
 
 void HostProcess::OnChannelError() {
@@ -867,6 +851,7 @@ void HostProcess::OnAssociatedInterfaceRequest(
     mojo::ScopedInterfaceEndpointHandle handle) {
   DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
 
+#if defined(REMOTING_MULTI_PROCESS)
   if (interface_name == mojom::RemotingHostControl::Name_) {
     if (remoting_host_control_.is_bound()) {
       LOG(ERROR) << "Receiver already bound for associated interface: "
@@ -877,11 +862,24 @@ void HostProcess::OnAssociatedInterfaceRequest(
     mojo::PendingAssociatedReceiver<mojom::RemotingHostControl>
         pending_receiver(std::move(handle));
     remoting_host_control_.Bind(std::move(pending_receiver));
+  } else if (interface_name == mojom::DesktopSessionConnectionEvents::Name_) {
+
+    if (!desktop_session_connector_->BindConnectionEventsReceiver(
+            std::move(handle))) {
+      LOG(ERROR) << "Failed to bind Receiver for associated interface: "
+                 << mojom::DesktopSessionConnectionEvents::Name_;
+      CrashProcess(__FUNCTION__, __FILE__, __LINE__);
+    }
   } else {
     LOG(ERROR) << "Unknown associated interface requested: " << interface_name
                << ", crashing the network process";
     CrashProcess(__FUNCTION__, __FILE__, __LINE__);
   }
+#else   // !defined(REMOTING_MULTI_PROCESS)
+  LOG(ERROR) << "Unexpected call requesting an associated interface: "
+             << interface_name << ", crashing the network process";
+  CrashProcess(__FUNCTION__, __FILE__, __LINE__);
+#endif  // !defined(REMOTING_MULTI_PROCESS)
 }
 
 void HostProcess::StartOnUiThread() {
@@ -973,6 +971,7 @@ void HostProcess::ShutdownOnUiThread() {
 
 #if defined(REMOTING_MULTI_PROCESS)
   daemon_channel_.reset();
+  desktop_session_connector_ = nullptr;
 #endif  // defined(REMOTING_MULTI_PROCESS)
 
   // It is now safe for the HostProcess to be deleted.

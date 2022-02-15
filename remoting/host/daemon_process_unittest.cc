@@ -17,9 +17,8 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message.h"
-#include "ipc/ipc_message_macros.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/desktop_session.h"
@@ -35,11 +34,8 @@ namespace remoting {
 namespace {
 
 enum Messages {
-  kMessageCrash = ChromotingDaemonMsg_Crash::ID,
   kMessageConnectTerminal = ChromotingNetworkHostMsg_ConnectTerminal::ID,
   kMessageDisconnectTerminal = ChromotingNetworkHostMsg_DisconnectTerminal::ID,
-  kMessageTerminalDisconnected =
-      ChromotingDaemonNetworkMsg_TerminalDisconnected::ID,
 };
 
 // Provides a public constructor allowing the test to create instances of
@@ -73,14 +69,13 @@ class MockDaemonProcess : public DaemonProcess {
       bool virtual_terminal) override;
 
   bool OnMessageReceived(const IPC::Message& message) override;
-  void SendToNetwork(IPC::Message* message) override;
 
   MOCK_METHOD(void, Received, (const IPC::Message&));
   MOCK_METHOD(void, Sent, (const IPC::Message&));
 
   MOCK_METHOD(bool,
               OnDesktopSessionAgentAttached,
-              (int, int, const IPC::ChannelHandle&),
+              (int, int, mojo::ScopedMessagePipeHandle),
               (override));
 
   MOCK_METHOD(DesktopSession*, DoCreateDesktopSessionPtr, (int));
@@ -90,6 +85,7 @@ class MockDaemonProcess : public DaemonProcess {
               SendHostConfigToNetworkProcess,
               (const std::string&),
               (override));
+  MOCK_METHOD(void, SendTerminalDisconnected, (int terminal_id), (override));
 };
 
 FakeDesktopSession::FakeDesktopSession(DaemonProcess* daemon_process, int id)
@@ -123,12 +119,6 @@ bool MockDaemonProcess::OnMessageReceived(const IPC::Message& message) {
   return DaemonProcess::OnMessageReceived(message);
 }
 
-void MockDaemonProcess::SendToNetwork(IPC::Message* message) {
-  // Notify the mock method.
-  Sent(*message);
-  delete message;
-}
-
 }  // namespace
 
 class DaemonProcessTest : public testing::Test {
@@ -141,7 +131,6 @@ class DaemonProcessTest : public testing::Test {
 
   // DaemonProcess mocks
   DesktopSession* DoCreateDesktopSession(int terminal_id);
-  void DoCrashNetworkProcess(const base::Location& location);
   void LaunchNetworkProcess();
 
   // Deletes |daemon_process_|.
@@ -183,9 +172,7 @@ void DaemonProcessTest::SetUp() {
   EXPECT_CALL(*daemon_process_, DoCreateDesktopSessionPtr(_))
       .Times(AnyNumber())
       .WillRepeatedly(Invoke(this, &DaemonProcessTest::DoCreateDesktopSession));
-  EXPECT_CALL(*daemon_process_, DoCrashNetworkProcess(_))
-      .Times(AnyNumber())
-      .WillRepeatedly(Invoke(this, &DaemonProcessTest::DoCrashNetworkProcess));
+  EXPECT_CALL(*daemon_process_, DoCrashNetworkProcess(_)).Times(AnyNumber());
   EXPECT_CALL(*daemon_process_, LaunchNetworkProcess())
       .Times(AnyNumber())
       .WillRepeatedly(Invoke(this, &DaemonProcessTest::LaunchNetworkProcess));
@@ -198,13 +185,6 @@ void DaemonProcessTest::TearDown() {
 
 DesktopSession* DaemonProcessTest::DoCreateDesktopSession(int terminal_id) {
   return new FakeDesktopSession(daemon_process_.get(), terminal_id);
-}
-
-void DaemonProcessTest::DoCrashNetworkProcess(const base::Location& location) {
-  daemon_process_->SendToNetwork(
-      new ChromotingDaemonMsg_Crash(location.function_name(),
-                                    location.file_name(),
-                                    location.line_number()));
 }
 
 void DaemonProcessTest::LaunchNetworkProcess() {
@@ -236,7 +216,7 @@ TEST_F(DaemonProcessTest, OpenClose) {
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageTerminalDisconnected)));
+  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_));
 
   StartDaemonProcess();
 
@@ -257,7 +237,7 @@ TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
   InSequence s;
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageTerminalDisconnected)));
+  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_));
 
   StartDaemonProcess();
 
@@ -280,7 +260,7 @@ TEST_F(DaemonProcessTest, DoubleDisconnectTerminal) {
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageTerminalDisconnected)));
+  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
 
   StartDaemonProcess();
@@ -308,9 +288,9 @@ TEST_F(DaemonProcessTest, InvalidDisconnectTerminal) {
   InSequence s;
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageCrash)))
-      .WillOnce(InvokeWithoutArgs(this,
-                                  &DaemonProcessTest::LaunchNetworkProcess));
+  EXPECT_CALL(*daemon_process_, DoCrashNetworkProcess(_))
+      .WillOnce(
+          InvokeWithoutArgs(this, &DaemonProcessTest::LaunchNetworkProcess));
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
 
   StartDaemonProcess();
@@ -330,9 +310,9 @@ TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageCrash)))
-      .WillOnce(InvokeWithoutArgs(this,
-                                  &DaemonProcessTest::LaunchNetworkProcess));
+  EXPECT_CALL(*daemon_process_, DoCrashNetworkProcess(_))
+      .WillOnce(
+          InvokeWithoutArgs(this, &DaemonProcessTest::LaunchNetworkProcess));
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
 
   StartDaemonProcess();

@@ -12,8 +12,8 @@
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_sender.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_controls.h"
@@ -194,25 +194,37 @@ void IpcDesktopEnvironmentFactory::SetScreenResolution(
   }
 }
 
+bool IpcDesktopEnvironmentFactory::BindConnectionEventsReceiver(
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  if (desktop_session_connection_events_.is_bound()) {
+    return false;
+  }
+
+  mojo::PendingAssociatedReceiver<mojom::DesktopSessionConnectionEvents>
+      pending_receiver(std::move(handle));
+  desktop_session_connection_events_.Bind(std::move(pending_receiver));
+
+  return true;
+}
+
 void IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached(
     int terminal_id,
     int session_id,
-    const IPC::ChannelHandle& desktop_pipe) {
+    mojo::ScopedMessagePipeHandle desktop_pipe) {
   if (!caller_task_runner_->BelongsToCurrentThread()) {
     caller_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached,
-            base::Unretained(this), terminal_id, session_id, desktop_pipe));
+            base::Unretained(this), terminal_id, session_id,
+            std::move(desktop_pipe)));
     return;
   }
 
   auto i = active_connections_.find(terminal_id);
   if (i != active_connections_.end()) {
     i->second->DetachFromDesktop();
-    i->second->AttachToDesktop(desktop_pipe, session_id);
-  } else {
-    mojo::ScopedMessagePipeHandle closer(desktop_pipe.mojo_handle);
+    i->second->AttachToDesktop(std::move(desktop_pipe), session_id);
   }
 }
 

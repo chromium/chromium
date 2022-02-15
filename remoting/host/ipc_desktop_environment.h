@@ -14,10 +14,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "ipc/ipc_channel_handle.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_session_connector.h"
 #include "remoting/host/file_transfer/ipc_file_operations.h"
+#include "remoting/host/mojom/remoting_host.mojom.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -112,10 +114,12 @@ class IpcDesktopEnvironmentFactory
   void DisconnectTerminal(DesktopSessionProxy* desktop_session_proxy) override;
   void SetScreenResolution(DesktopSessionProxy* desktop_session_proxy,
                            const ScreenResolution& resolution) override;
+  bool BindConnectionEventsReceiver(
+      mojo::ScopedInterfaceEndpointHandle handle) override;
   void OnDesktopSessionAgentAttached(
       int terminal_id,
       int session_id,
-      const IPC::ChannelHandle& desktop_pipe) override;
+      mojo::ScopedMessagePipeHandle desktop_pipe) override;
   void OnTerminalDisconnected(int terminal_id) override;
 
  private:
@@ -140,6 +144,9 @@ class IpcDesktopEnvironmentFactory
   // This gives us more than 67 years of unique IDs assuming a new ID is
   // allocated every second.
   int next_id_ = 0;
+
+  mojo::AssociatedReceiver<mojom::DesktopSessionConnectionEvents>
+      desktop_session_connection_events_{this};
 
   // Factory for weak pointers to DesktopSessionConnector interface.
   base::WeakPtrFactory<DesktopSessionConnector> connector_factory_{this};

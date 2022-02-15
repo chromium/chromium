@@ -165,8 +165,7 @@ void DaemonProcess::CloseDesktopSession(int terminal_id) {
   desktop_sessions_.erase(i);
 
   VLOG(1) << "Daemon: closed desktop session " << terminal_id;
-  SendToNetwork(
-      new ChromotingDaemonNetworkMsg_TerminalDisconnected(terminal_id));
+  SendTerminalDisconnected(terminal_id);
 }
 
 DaemonProcess::DaemonProcess(
@@ -206,8 +205,7 @@ void DaemonProcess::CreateDesktopSession(int terminal_id,
       DoCreateDesktopSession(terminal_id, resolution, virtual_terminal);
   if (!session) {
     LOG(ERROR) << "Failed to create a desktop session.";
-    SendToNetwork(
-        new ChromotingDaemonNetworkMsg_TerminalDisconnected(terminal_id));
+    SendTerminalDisconnected(terminal_id);
     return;
   }
 
