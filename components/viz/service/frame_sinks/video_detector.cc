@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
@@ -25,7 +26,9 @@ constexpr base::TimeDelta VideoDetector::kMinVideoDuration;
 // likely that a video is playing in it.
 class VideoDetector::ClientInfo {
  public:
-  ClientInfo() = default;
+  ClientInfo()
+      : should_ignore_non_video_frames_(
+            features::ShouldVideoDetectorIgnoreNonVideoFrames()) {}
 
   ClientInfo(const ClientInfo&) = delete;
   ClientInfo& operator=(const ClientInfo&) = delete;
@@ -43,6 +46,10 @@ class VideoDetector::ClientInfo {
     last_drawn_frame_index_ = frame_index;
 
     const CompositorFrame& frame = surface->GetActiveFrame();
+
+    if (should_ignore_non_video_frames_ && !frame.metadata.may_contain_video) {
+      return false;
+    }
 
     gfx::Rect damage =
         gfx::ScaleToEnclosingRect(frame.render_pass_list.back()->damage_rect,
@@ -74,6 +81,10 @@ class VideoDetector::ClientInfo {
   }
 
  private:
+  // If true, we'll only process frames that may contain videos, as determined
+  // by the frame's may_contain_video metadata.
+  bool should_ignore_non_video_frames_;
+
   // Circular buffer containing update times of the last (up to
   // |kMinFramesPerSecond|) video-sized updates to this client.
   base::TimeTicks update_times_[kMinFramesPerSecond];
