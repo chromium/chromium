@@ -286,6 +286,7 @@ void ContinueTaskView::RemoveResult() {
   DCHECK(result());
   view_delegate_->InvokeSearchResultAction(result()->id(),
                                            SearchResultActionType::kRemove);
+  LogMetricsOnResultRemoved();
 }
 
 bool ContinueTaskView::IsMenuShowing() const {
@@ -317,6 +318,18 @@ void ContinueTaskView::UpdateStyleForTabletMode() {
       GetCornerRadius(/*tablet_mode=*/true),
       HighlightBorder::Type::kHighlightBorder2,
       /*use_light_colors=*/false));
+}
+
+void ContinueTaskView::LogMetricsOnResultRemoved() {
+  if (result()->result_type() == AppListSearchResultType::kFileChip) {
+    base::UmaHistogramEnumeration("Apps.AppList.ContinueResultRemoved",
+                                  TaskResultType::kLocalFile,
+                                  TaskResultType::kMaxValue);
+  } else if (result()->result_type() == AppListSearchResultType::kFileChip) {
+    base::UmaHistogramEnumeration("Apps.AppList.ContinueResultRemoved",
+                                  TaskResultType::kDriveFile,
+                                  TaskResultType::kMaxValue);
+  }
 }
 
 BEGIN_METADATA(ContinueTaskView, views::View)

@@ -49654,6 +49654,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="16" label="Homescreen shortcut (Add To Homescreen)"/>
 </enum>
 
+<enum name="LauncherContinueSectionResultType">
+  <int value="0" label="Local file"/>
+  <int value="1" label="Drive file"/>
+</enum>
+
 <enum name="LauncherRankingItemType">
   <summary>
     The type of a result in the Chrome OS launcher, simplified to fewer
