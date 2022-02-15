@@ -171,6 +171,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     /** Whether the message ui is being shown or has already been shown. */
     private boolean mMessageShown;
 
+    /** Property Model of Reader mode message. */
+    private PropertyModel mMessageModel;
+
     ReaderModeManager(Tab tab, Supplier<MessageDispatcher> messageDispatcherSupplier) {
         super();
         mTab = tab;
@@ -486,11 +489,15 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     }
 
     private void showReaderModeMessage(MessageDispatcher messageDispatcher) {
+        if (mMessageModel != null) {
+            // It is safe to dismiss a message which has been dismissed previously.
+            messageDispatcher.dismissMessage(mMessageModel, DismissReason.DISMISSED_BY_FEATURE);
+        }
         Resources resources = mTab.getContext().getResources();
         // Save url for #onMessageDismissed. mDistillerUrl may have been changed and became
         // different from the url when message is enqueued.
         GURL url = mDistillerUrl;
-        PropertyModel message =
+        mMessageModel =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.READER_MODE)
@@ -505,10 +512,11 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                                 (reason) -> onMessageDismissed(url, reason))
                         .build();
         messageDispatcher.enqueueMessage(
-                message, mTab.getWebContents(), MessageScopeType.NAVIGATION, false);
+                mMessageModel, mTab.getWebContents(), MessageScopeType.NAVIGATION, false);
     }
 
     private void onMessageDismissed(GURL url, @DismissReason int dismissReason) {
+        mMessageModel = null;
         if (dismissReason == DismissReason.GESTURE) {
             onClosed();
         }
