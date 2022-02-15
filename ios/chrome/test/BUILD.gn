@@ -16,6 +16,7 @@ group("all_tests") {
   deps = [
     ":all_fuzzer_tests",
     ":ios_chrome_unittests",
+    "//ios/chrome/test/swift_interop:ios_swift_interop_xcuitests",
     "//ios/chrome/test/xcuitest:ios_chrome_device_check_xcuitests_module",
     "//ios/chrome/test/xcuitest:ios_chrome_xcuitests",
   ]
