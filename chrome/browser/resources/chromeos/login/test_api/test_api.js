@@ -418,6 +418,10 @@ class OobeApiProvider {
     this.skipPostLoginScreens = function() {
       chrome.send('OobeTestApi.skipPostLoginScreens');
     };
+
+    this.loginAsGuest = function() {
+      chrome.send('OobeTestApi.loginAsGuest');
+    };
   }
 }
 

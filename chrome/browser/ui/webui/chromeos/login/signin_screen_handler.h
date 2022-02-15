@@ -31,8 +31,6 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/event_handler.h"
 
-class AccountId;
-
 namespace ash {
 class LoginDisplayHostMojo;
 class UserContext;
@@ -177,9 +175,6 @@ class SigninScreenHandler
                const content::NotificationDetails& details) override;
 
   // WebUI message handlers.
-  void HandleAuthenticateUser(const AccountId& account_id,
-                              const std::string& password,
-                              bool authenticated_by_pin);
   void HandleLaunchIncognito();
   void HandleLaunchSAMLPublicSession(const std::string& email);
   void HandleOfflineLogin();
@@ -191,7 +186,6 @@ class SigninScreenHandler
   void HandleLoginVisible(const std::string& source);
   void HandleLoginUIStateChanged(const std::string& source, bool active);
   void HandleShowLoadingTimeoutError();
-  void HandleNoPodFocused();
 
   // Returns true if current visible screen is the Gaia sign-in page.
   bool IsGaiaVisible();
@@ -268,10 +262,6 @@ class SigninScreenHandler
   base::TimeDelta offline_timeout_for_test_;
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
-
-  // TODO (crbug.com/1168114): Only needed for GetKeyboardRemappedPrefValue that
-  // should be migrated.
-  std::unique_ptr<AccountId> focused_pod_account_id_;
 
   base::WeakPtrFactory<SigninScreenHandler> weak_factory_{this};
 };

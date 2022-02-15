@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/network_screen.h"
@@ -36,6 +37,7 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
               &OobeTestAPIHandler::AdvanceToScreen);
   AddCallback("OobeTestApi.skipPostLoginScreens",
               &OobeTestAPIHandler::SkipPostLoginScreens);
+  AddCallback("OobeTestApi.loginAsGuest", &OobeTestAPIHandler::LoginAsGuest);
 }
 
 void OobeTestAPIHandler::Initialize() {}
@@ -73,6 +75,12 @@ void OobeTestAPIHandler::AdvanceToScreen(const std::string& screen) {
 
 void OobeTestAPIHandler::SkipPostLoginScreens() {
   ash::WizardController::SkipPostLoginScreensForTesting();
+}
+
+void OobeTestAPIHandler::LoginAsGuest() {
+  UserContext context(user_manager::USER_TYPE_GUEST, EmptyAccountId());
+  ash::ExistingUserController::current_controller()->Login(context,
+                                                           SigninSpecifics());
 }
 
 }  // namespace chromeos

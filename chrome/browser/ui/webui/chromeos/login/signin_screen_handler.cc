@@ -669,10 +669,6 @@ void SigninScreenHandler::HandleShowLoadingTimeoutError() {
   UpdateState(NetworkError::ERROR_REASON_LOADING_TIMEOUT);
 }
 
-void SigninScreenHandler::HandleNoPodFocused() {
-  focused_pod_account_id_.reset();
-}
-
 bool SigninScreenHandler::IsGaiaVisible() {
   return IsSigninScreen(GetCurrentScreen()) &&
       ui_state_ == UI_STATE_GAIA_SIGNIN;
