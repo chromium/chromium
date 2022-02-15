@@ -220,6 +220,8 @@ enum class DictationBubbleHintType {
   kSelectAll,
   kUndo,
   kHelp,
+  kUnselect,
+  kCopy,
 };
 
 }  // namespace ash

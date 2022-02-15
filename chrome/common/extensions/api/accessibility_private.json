@@ -258,7 +258,7 @@
       {
         "id": "DictationBubbleHintType",
         "type": "string",
-        "enum": ["trySaying", "type", "delete", "selectAll", "undo", "help"],
+        "enum": ["trySaying", "type", "delete", "selectAll", "undo", "help", "unselect", "copy"],
         "description": "Types of hints displayed in the Dictation bubble UI."
       },
       {

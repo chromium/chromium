@@ -80,6 +80,10 @@ int ToMessageId(DictationBubbleHintType hint_type) {
       return IDS_ASH_DICTATION_HINT_UNDO;
     case DictationBubbleHintType::kHelp:
       return IDS_ASH_DICTATION_HINT_HELP;
+    case DictationBubbleHintType::kUnselect:
+      return IDS_ASH_DICTATION_HINT_UNSELECT;
+    case DictationBubbleHintType::kCopy:
+      return IDS_ASH_DICTATION_HINT_COPY;
   }
 }
 

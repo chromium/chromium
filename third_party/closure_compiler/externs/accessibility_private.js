@@ -347,6 +347,8 @@ chrome.accessibilityPrivate.DictationBubbleHintType = {
   SELECT_ALL: 'selectAll',
   UNDO: 'undo',
   HELP: 'help',
+  UNSELECT: 'unselect',
+  COPY: 'copy',
 };
 
 /**

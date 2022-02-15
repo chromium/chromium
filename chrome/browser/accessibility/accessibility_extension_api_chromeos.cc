@@ -84,6 +84,12 @@ ash::DictationBubbleHintType ConvertDictationHintType(
         DICTATION_BUBBLE_HINT_TYPE_HELP:
       return ash::DictationBubbleHintType::kHelp;
     case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_UNSELECT:
+      return ash::DictationBubbleHintType::kUnselect;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_COPY:
+      return ash::DictationBubbleHintType::kCopy;
+    case accessibility_private::DictationBubbleHintType::
         DICTATION_BUBBLE_HINT_TYPE_NONE:
       NOTREACHED();
       return ash::DictationBubbleHintType::kTrySaying;

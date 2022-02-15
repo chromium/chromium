@@ -208,8 +208,10 @@ SYNC_TEST_F(
       await this.waitForUIProperties({
         visible: true,
         icon: this.iconType.STANDBY,
-        hints:
-            [this.hintType.TRY_SAYING, this.hintType.DELETE, this.hintType.HELP]
+        hints: [
+          this.hintType.TRY_SAYING, this.hintType.UNSELECT, this.hintType.COPY,
+          this.hintType.DELETE, this.hintType.HELP
+        ]
       });
     });
 

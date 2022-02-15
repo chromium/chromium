@@ -39,6 +39,8 @@ var MockAccessibilityPrivate = {
     SELECT_ALL: 'selectAll',
     UNDO: 'undo',
     HELP: 'help',
+    UNSELECT: 'unselect',
+    COPY: 'copy',
   },
 
   SyntheticKeyboardEventType: {KEYDOWN: 'keydown', KEYUP: 'keyup,'},

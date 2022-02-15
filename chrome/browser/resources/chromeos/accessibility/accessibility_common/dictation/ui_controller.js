@@ -140,8 +140,10 @@ UIController.CONTEXT_TO_HINTS_MAP_ = {
     HintType.TRY_SAYING, HintType.UNDO, HintType.DELETE, HintType.SELECT_ALL,
     HintType.HELP
   ],
-  [HintContext.TEXT_SELECTED]:
-      [HintType.TRY_SAYING, HintType.DELETE, HintType.HELP],
+  [HintContext.TEXT_SELECTED]: [
+    HintType.TRY_SAYING, HintType.UNSELECT, HintType.COPY, HintType.DELETE,
+    HintType.HELP
+  ],
   [HintContext.MACRO_SUCCESS]:
       [HintType.TRY_SAYING, HintType.UNDO, HintType.HELP]
 };

@@ -1470,8 +1470,9 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownAfterTextSelected) {
   // speech.
   WaitForVisibility(true);
   WaitForVisibleIcon(DictationBubbleIconType::kStandby);
-  WaitForVisibleHints(
-      std::vector<std::u16string>{u"Try saying:", u"\"Delete\"", u"\"Help\""});
+  WaitForVisibleHints(std::vector<std::u16string>{u"Try saying:",
+                                                  u"\"Unselect\"", u"\"Copy\"",
+                                                  u"\"Delete\"", u"\"Help\""});
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownAfterCommandExecuted) {
