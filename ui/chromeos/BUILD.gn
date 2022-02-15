@@ -23,6 +23,7 @@ component("chromeos") {
     "//ash/constants",
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/network:network",

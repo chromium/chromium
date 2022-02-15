@@ -2150,8 +2150,6 @@ are declared in tools/grit/grit_rule.gni.
           Show in Finder
         </message>
       </if>
-      <if expr="chromeos">
-      </if>
       <message name="IDS_DOWNLOAD_TAB_CANCELLED"
                desc="Text that appears next to the downloaded files that have been canceled">
         Canceled
@@ -3965,9 +3963,16 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
       <if expr="enable_extensions">
-        <message name="IDS_UTILITY_PROCESS_IMAGE_WRITER_NAME" desc="The name of the utility process used for writing Chrome OS system images.">
-          Chrome OS System Image Writer
-        </message>
+        <if expr="reven">
+          <message name="IDS_UTILITY_PROCESS_IMAGE_WRITER_NAME" desc="The name of the utility process used for writing CouldReady 2.0 system images.">
+            CouldReady 2.0 System Image Writer
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_UTILITY_PROCESS_IMAGE_WRITER_NAME" desc="The name of the utility process used for writing Chrome OS system images.">
+            Chrome OS System Image Writer
+          </message>
+        </if>
       </if>
       <if expr="enable_extensions or is_android">
         <message name="IDS_UTILITY_PROCESS_MEDIA_GALLERY_UTILITY_NAME" desc="The name of the utility process used for checking media files.">
@@ -4515,15 +4520,28 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_REPORTING_PRIVATE" desc="Permission string for enterprise private reporting permission.">
           Read information about your browser, OS, and device
         </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
-          Run Chrome OS diagnostic tests.
-        </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY" desc="Permission string for chrome.os.telemetry API.">
-          Read Chrome OS device information and device data.
-        </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
-          Read Chrome OS device and component serial numbers.
-        </message>
+        <if expr="reven">
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
+            Run CloudReady 2.0 diagnostic tests.
+          </message>
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY" desc="Permission string for chrome.os.telemetry API.">
+            Read CloudReady 2.0 device information and device data.
+          </message>
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
+            Read CloudReady 2.0 device and component serial numbers.
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
+            Run Chrome OS diagnostic tests.
+          </message>
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY" desc="Permission string for chrome.os.telemetry API.">
+            Read Chrome OS device information and device data.
+          </message>
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
+            Read Chrome OS device and component serial numbers.
+          </message>
+        </if>
       </if>
 
       <!-- Extension/App error messages -->
@@ -4574,9 +4592,16 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_EXTENSION_INSTALL_GALLERY_ONLY" desc="Error displayed when an app or extension that has an update URL used by the gallery is installed when not directly downloaded from the gallery.">
         This can only be added from the <ph name="CHROME_WEB_STORE">$1<ex>Web Store</ex></ph>
       </message>
-      <message name="IDS_EXTENSION_INSTALL_KIOSK_MODE_ONLY" desc="Error displayed during installation of an app with 'kiosk_only' attribute but user is not in Chrome OS kiosk mode.">
-        App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode
-      </message>
+      <if expr="reven">
+        <message name="IDS_EXTENSION_INSTALL_KIOSK_MODE_ONLY" desc="Error displayed during installation of an app with 'kiosk_only' attribute but user is not in CloudReady 2.0 kiosk mode.">
+          App with 'kiosk_only' manifest attribute must be installed in CloudReady 2.0 kiosk mode
+        </message>
+      </if>
+      <if expr="not reven">
+        <message name="IDS_EXTENSION_INSTALL_KIOSK_MODE_ONLY" desc="Error displayed during installation of an app with 'kiosk_only' attribute but user is not in Chrome OS kiosk mode.">
+          App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode
+        </message>
+      </if>
       <message name="IDS_EXTENSION_OVERLAPPING_WEB_EXTENT" desc="Error message when a user tries to install an app with a web extent that overlaps another installed app.">
         Could not add application "<ph name="TO_INSTALL_APP_NAME">$1<ex>Google Mail</ex></ph>" because it conflicts with "<ph name="INSTALLED_APP_NAME">$2<ex>Google Calendar</ex></ph>".
       </message>

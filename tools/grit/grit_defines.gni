@@ -66,6 +66,13 @@ if (is_chromeos_ash) {
   ]
 }
 
+if (is_reven) {
+  grit_defines += [
+    "-D",
+    "reven",
+  ]
+}
+
 if (is_chromeos_lacros) {
   grit_defines += [
     # TODO(crbug.com/1230488): Remove |lacros| when everything is migrated to

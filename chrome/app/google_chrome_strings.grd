@@ -309,15 +309,28 @@ chromium_strings.grd. -->
         </message>
       </if>
       <if expr="chromeos">
-        <message name="IDS_PRODUCT_OS_NAME" desc="The Chrome OS application name">
-          Google Chrome OS
-        </message>
-        <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The Chrome OS application short name">
-          Chrome OS
-        </message>
-        <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
-          CloudReady 2.0
-        </message>
+        <if expr="reven">
+          <message name="IDS_PRODUCT_OS_NAME" desc="The CloudReady 2.0 application name">
+            Google CloudReady 2.0
+          </message>
+          <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The CloudReady 2.0 application short name">
+            CloudReady 2.0
+          </message>
+          <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
+            CloudReady 2.0
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_PRODUCT_OS_NAME" desc="The Chrome OS application name">
+            Google Chrome OS
+          </message>
+          <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The Chrome OS application short name">
+            Chrome OS
+          </message>
+          <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
+            CloudReady 2.0
+          </message>
+        </if>
       </if>
       <message name="IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT" desc="Alt text for the Chrome Enterprise logo image.">
         Chrome Enterprise logo
@@ -391,12 +404,22 @@ chromium_strings.grd. -->
         Copyright <ph name="YEAR">{0,date,y}<ex>2016</ex></ph> Google LLC. All rights reserved.
       </message>
       <if expr="chromeos">
-        <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for Chrome OS.">
-          Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
-        </message>
-        <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for Chrome OS when Crostini is installed.">
-          Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
-        </message>
+        <if expr="reven">
+          <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for CloudReady 2.0.">
+            CloudReady 2.0 is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
+          </message>
+          <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for CloudReady 2.0 when Crostini is installed.">
+            CloudReady 2.0 is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for Chrome OS.">
+            Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
+          </message>
+          <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for Chrome OS when Crostini is installed.">
+            Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
+          </message>
+        </if>
         <message name="IDS_ABOUT_SAFETY_INFORMATION" desc="The safety label in the About box.">
           Important use and safety information
         </message>
@@ -464,9 +487,16 @@ Google Chrome cannot read and write to its data directory:
 <ph name="USER_DATA_DIRECTORY">$1<ex>C:\Documents and Settings\devint\Local Settings\Application Data\Google\Chrome</ex></ph>
       </message>
       <if expr="chromeos">
-        <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging on EULA screen.">
-          Optional: Help improve Chrome OS features and performance by automatically sending diagnostic and usage data to Google.
-        </message>
+        <if expr="reven">
+          <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging on EULA screen.">
+            Optional: Help improve CloudReady 2.0 features and performance by automatically sending diagnostic and usage data to Google.
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging on EULA screen.">
+            Optional: Help improve Chrome OS features and performance by automatically sending diagnostic and usage data to Google.
+          </message>
+        </if>
       </if>
       <message name="IDS_PROFILE_TOO_NEW_ERROR" desc="Error displayed on startup when the profile is from a newer version of the product and can not be read">
 Your profile can not be used because it is from a newer version of Google Chrome.
@@ -752,9 +782,16 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Google Chrome
         </message>
-        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update Chrome OS menu item">
-          Relaunch to update &amp;Chrome OS
-        </message>
+        <if expr="reven">
+          <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update CloudReady 2.0 menu item">
+            Relaunch to update &amp;CloudReady 2.0
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update Chrome OS menu item">
+            Relaunch to update &amp;Chrome OS
+          </message>
+        </if>
       </if>
 
       <if expr="is_macosx">
@@ -892,18 +929,34 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
       <if expr="chromeos">
-        <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for Chrome OS Secondary Accounts.">
-          Chrome OS System
-        </message>
-        <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
-          Chrome OS could not sync your data because your account sign-in details are out of date.
-        </message>
-        <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
-          Chrome OS could not sync your data because Sync is not available for your domain.
-        </message>
-        <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when there's an error signing in.">
-          Chrome OS could not sync your data due to an error signing in.
-        </message>
+        <if expr="reven">
+          <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for CloudReady 2.0 Secondary Accounts.">
+            CloudReady 2.0 System
+          </message>
+          <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
+            CloudReady 2.0 could not sync your data because your account sign-in details are out of date.
+          </message>
+          <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
+            CloudReady 2.0 could not sync your data because Sync is not available for your domain.
+          </message>
+          <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when there's an error signing in.">
+            CloudReady 2.0 could not sync your data due to an error signing in.
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for Chrome OS Secondary Accounts.">
+            Chrome OS System
+          </message>
+          <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
+            Chrome OS could not sync your data because your account sign-in details are out of date.
+          </message>
+          <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
+            Chrome OS could not sync your data because Sync is not available for your domain.
+          </message>
+          <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when there's an error signing in.">
+            Chrome OS could not sync your data due to an error signing in.
+          </message>
+        </if>
       </if>
 
       <!-- App list -->
@@ -931,9 +984,16 @@ Google Chrome is unable to recover your settings.
 
       <!-- Chrome OS OOBE Terms of Service screen-->
       <if expr="chromeos">
-        <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
-          <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS Terms.
-        </message>
+        <if expr="reven">
+          <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
+            <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google CloudReady 2.0 Terms.
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
+            <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS Terms.
+          </message>
+        </if>
       </if>
 
       <!-- MediaStream capture status tray icon -->
@@ -1090,12 +1150,22 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
       <if expr="chromeos">
-        <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
-          Restart Chrome OS
-        </message>
-        <message name="IDS_UPDATE_RECOMMENDED" desc="The main text of the Update Recommended dialog.">
-          Chrome OS needs to be restarted to apply the update.
-        </message>
+        <if expr="reven">
+          <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
+            Restart CloudReady 2.0
+          </message>
+          <message name="IDS_UPDATE_RECOMMENDED" desc="The main text of the Update Recommended dialog.">
+            CloudReady 2.0 needs to be restarted to apply the update.
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
+            Restart Chrome OS
+          </message>
+          <message name="IDS_UPDATE_RECOMMENDED" desc="The main text of the Update Recommended dialog.">
+            Chrome OS needs to be restarted to apply the update.
+          </message>
+        </if>
         <message name="IDS_RELAUNCH_AND_UPDATE" desc="The button in the Update Recommended dialog which updates and restarts Chrome OS.">
           Restart
         </message>
@@ -1225,9 +1295,16 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_INSTALLING_UPDATE" desc="Label shown on the updates installation screen during OOBE">
           Please wait while Chrome installs the latest system updates.
         </message>
-        <message name="IDS_EULA_SCREEN_ACCESSIBLE_TITLE" desc="Title to be spoken on opening the OOBE EULA screen">
-          Chrome OS terms
-        </message>
+        <if expr="reven">
+          <message name="IDS_EULA_SCREEN_ACCESSIBLE_TITLE" desc="Title to be spoken on opening the OOBE EULA screen">
+            CloudReady 2.0 terms
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_EULA_SCREEN_ACCESSIBLE_TITLE" desc="Title to be spoken on opening the OOBE EULA screen">
+            Chrome OS terms
+          </message>
+        </if>
       </if>
 
       <!-- Welcome page (chrome://welcome) strings -->
@@ -1379,9 +1456,16 @@ Google Chrome is unable to recover your settings.
 
       <!-- Strings for full restore notifications -->
       <if expr="chromeos">
-        <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
-          Chrome OS system
-        </message>
+        <if expr="reven">
+          <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
+            CloudReady 2.0 system
+          </message>
+        </if>
+        <if expr="not reven">
+          <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
+            Chrome OS system
+          </message>
+        </if>
       </if>
 
       <!-- ChromeLabs bubble -->

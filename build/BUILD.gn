@@ -43,5 +43,6 @@ buildflag_header("chromeos_buildflags") {
     "IS_CHROMEOS_LACROS=$is_chromeos_lacros",
     "IS_CHROMEOS_ASH=$is_chromeos_ash",
     "IS_CHROMEOS_WITH_HW_DETAILS=$is_chromeos_with_hw_details",
+    "IS_REVEN=$is_reven",
   ]
 }

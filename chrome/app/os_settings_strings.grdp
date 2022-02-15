@@ -241,9 +241,16 @@
   <message name="IDS_OS_SETTINGS_SYNC_TURN_OFF" desc="Button label for turning off synchronization of settings across Chrome OS devices.">
     Turn off
   </message>
-  <message name="IDS_OS_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the OS sync feature.">
-    Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google account. For browser sync options, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
+  <if expr="reven">
+    <message name="IDS_OS_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the OS sync feature.">
+      Your apps and settings will sync across all CloudReady 2.0 devices where you are signed in with your Google account. For browser sync options, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
+    </message>
+  </if>
+  <if expr="not reven">
+    <message name="IDS_OS_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the OS sync feature.">
+      Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google account. For browser sync options, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
+    </message>
+  </if>
   <message name="IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of apps across devices.">
     Apps
   </message>
@@ -3223,7 +3230,7 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that dismiss notifications on the Chromebook will also dismiss them on the phone.">
     Keep in mind, dismissing notifications on your Chromebook will also dismiss them on your phone.
   </message>
-  
+
   <!-- Lock Screen Page (OS settings) -->
   <message name="IDS_ASH_SETTINGS_LOCK_SCREEN_NOTIFICATION_TITLE" desc="The title of options to change the behavior of notifications on the lock screen.">
     On the lock screen
@@ -4143,9 +4150,16 @@ Press an assigned switch or key to remove assignment.
   </message>
 
   <!-- Privacy Page -->
-  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable crash and user metrics logging in Chrome OS.">
-    Help improve Chrome OS features and performance
-  </message>
+  <if expr="reven">
+    <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable crash and user metrics logging in CloudReady 2.0.">
+      Help improve CloudReady 2.0 features and performance
+    </message>
+  </if>
+  <if expr="not reven">
+    <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable crash and user metrics logging in Chrome OS.">
+      Help improve Chrome OS features and performance
+    </message>
+  </if>
   <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging in Chrome OS.">
     Automatically sends diagnostic and usage data to Google
   </message>

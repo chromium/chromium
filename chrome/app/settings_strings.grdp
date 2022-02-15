@@ -1305,9 +1305,16 @@
     </if>
   </if>
   <if expr="chromeos">
-    <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in Chrome OS.">
-      Manage languages in Chrome OS settings
-    </message>
+    <if expr="reven">
+      <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in CloudReady 2.0.">
+        Manage languages in CloudReady 2.0 settings
+      </message>
+    </if>
+    <if expr="not reven">
+      <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in Chrome OS.">
+        Manage languages in Chrome OS settings
+      </message>
+    </if>
     <message name="IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS" desc="Title for the list of keyboard apps installed via Play Store by the user.">
       Keyboard apps
     </message>
@@ -1324,9 +1331,16 @@
     More
   </message>
   <if expr="chromeos_ash or chromeos_lacros">
-    <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in Chrome OS.">
-      Manage secure DNS in Chrome OS settings
-    </message>
+    <if expr="reven">
+      <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in CloudReady 2.0.">
+        Manage secure DNS in CloudReady 2.0 settings
+      </message>
+    </if>
+    <if expr="not reven">
+      <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in Chrome OS.">
+        Manage secure DNS in Chrome OS settings
+      </message>
+    </if>
   </if>
 
   <!-- Privacy Sandbox -->

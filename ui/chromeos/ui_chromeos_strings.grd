@@ -579,6 +579,9 @@
       <message name="IDS_CHROMEBOX_DEVICE_NAME" desc="The device name for a Chromebox (versus say Chromebook)">
         Chromebox
       </message>
+      <message name="IDS_REVEN_DEVICE_NAME" desc="The device name for a Reven Device">
+        CloudReady 2.0 device
+      </message>
       <message name="IDS_GENERIC_CHROMEOS_DEVICE_NAME" desc="The device name for a generic Chrome device">
         Chrome device
       </message>
@@ -595,6 +598,9 @@
       </message>
       <message name="IDS_CHROMEBOX_DEVICE_NAME_IN_PLURAL" desc="The device name (plural) for Chromebox (versus say Chromebooks)">
         Chromeboxes
+      </message>
+      <message name="IDS_REVEN_DEVICE_NAME_IN_PLURAL" desc="The device name (plural) for a Reven Device">
+        CloudReady 2.0 devices
       </message>
       <message name="IDS_GENERIC_CHROMEOS_DEVICE_NAME_IN_PLURAL" desc="The device name (plural) for generic Chrome device">
         Chrome devices
