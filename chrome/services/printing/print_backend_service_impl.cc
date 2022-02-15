@@ -338,8 +338,7 @@ void PrintBackendServiceImpl::Poke() {}
 void PrintBackendServiceImpl::EnumeratePrinters(
     mojom::PrintBackendService::EnumeratePrintersCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(
         mojom::PrinterListResult::NewResultCode(mojom::ResultCode::kFailed));
     return;
@@ -358,8 +357,7 @@ void PrintBackendServiceImpl::EnumeratePrinters(
 void PrintBackendServiceImpl::GetDefaultPrinterName(
     mojom::PrintBackendService::GetDefaultPrinterNameCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(mojom::DefaultPrinterNameResult::NewResultCode(
         mojom::ResultCode::kFailed));
     return;
@@ -381,8 +379,7 @@ void PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
     mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
         callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(
         mojom::PrinterSemanticCapsAndDefaultsResult::NewResultCode(
             mojom::ResultCode::kFailed));
@@ -410,8 +407,7 @@ void PrintBackendServiceImpl::FetchCapabilities(
     const std::string& printer_name,
     mojom::PrintBackendService::FetchCapabilitiesCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(mojom::PrinterCapsAndInfoResult::NewResultCode(
         mojom::ResultCode::kFailed));
     return;
@@ -464,8 +460,7 @@ void PrintBackendServiceImpl::FetchCapabilities(
 void PrintBackendServiceImpl::UseDefaultSettings(
     mojom::PrintBackendService::UseDefaultSettingsCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(
         mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
     return;
@@ -476,9 +471,8 @@ void PrintBackendServiceImpl::UseDefaultSettings(
       PrintingContext::Create(&context_delegate_, /*skip_system_calls=*/false);
   mojom::ResultCode result = context.get()->UseDefaultSettings();
   if (result != mojom::ResultCode::kSuccess) {
-    DLOG(ERROR)
-        << "Failure getting default settings of default printer, error: "
-        << result;
+    DLOG(ERROR) << "Failure getting default settings of default printer, "
+                << "error: " << result;
     std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));
     return;
   }
@@ -490,8 +484,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
     base::flat_map<std::string, base::Value> job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(
         mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
     return;
@@ -555,8 +548,7 @@ void PrintBackendServiceImpl::StartPrinting(
     const PrintSettings& settings,
     mojom::PrintBackendService::StartPrintingCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(mojom::ResultCode::kFailed);
     return;
   }
@@ -610,8 +602,7 @@ void PrintBackendServiceImpl::RenderPrintedPage(
     float shrink_factor,
     mojom::PrintBackendService::RenderPrintedPageCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(mojom::ResultCode::kFailed);
     return;
   }
@@ -641,8 +632,7 @@ void PrintBackendServiceImpl::DocumentDone(
     int document_cookie,
     mojom::PrintBackendService::DocumentDoneCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(mojom::ResultCode::kFailed);
     return;
   }
