@@ -174,8 +174,9 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
     return;
 
   SkBitmap old_bitmap;
-  old_bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
+  if (!old_bitmap.tryAllocPixels(
+          SkImageInfo::MakeN32Premul(rect.width(), rect.height())))
+    return;
   {
     SkiaPaintCanvas canvas(old_bitmap);
     canvas.clear(SK_ColorTRANSPARENT);
@@ -184,8 +185,9 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
   }
 
   SkBitmap new_bitmap;
-  new_bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
+  if (!new_bitmap.tryAllocPixels(
+          SkImageInfo::MakeN32Premul(rect.width(), rect.height())))
+    return;
   {
     SkiaPaintCanvas canvas(new_bitmap);
     canvas.clear(SK_ColorTRANSPARENT);

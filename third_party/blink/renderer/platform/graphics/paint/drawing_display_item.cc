@@ -22,8 +22,10 @@ namespace blink {
 static SkBitmap RecordToBitmap(sk_sp<const PaintRecord> record,
                                const gfx::Rect& bounds) {
   SkBitmap bitmap;
-  bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(bounds.width(), bounds.height()));
+  if (!bitmap.tryAllocPixels(
+          SkImageInfo::MakeN32Premul(bounds.width(), bounds.height())))
+    return bitmap;
+
   SkiaPaintCanvas canvas(bitmap);
   canvas.clear(SK_ColorTRANSPARENT);
   canvas.translate(-bounds.x(), -bounds.y());
@@ -36,6 +38,9 @@ static bool BitmapsEqual(sk_sp<const PaintRecord> record1,
                          const gfx::Rect& bounds) {
   SkBitmap bitmap1 = RecordToBitmap(record1, bounds);
   SkBitmap bitmap2 = RecordToBitmap(record2, bounds);
+  if (bitmap1.isNull() || bitmap2.isNull())
+    return true;
+
   int mismatch_count = 0;
   constexpr int kMaxMismatches = 10;
   for (int y = 0; y < bounds.height(); ++y) {
@@ -76,8 +81,6 @@ bool DrawingDisplayItem::EqualsForUnderInvalidationImpl(
 
   // Sometimes the client may produce different records for the same visual
   // result, which should be treated as equal.
-  // Limit the bounds to prevent OOM.
-  bounds.Intersect(gfx::Rect(bounds.x(), bounds.y(), 6000, 6000));
   return BitmapsEqual(std::move(record), std::move(other_record), bounds);
 }
 
