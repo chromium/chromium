@@ -8,7 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.R;
+import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.url.GURL;
 

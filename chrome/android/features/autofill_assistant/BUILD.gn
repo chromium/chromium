@@ -12,6 +12,7 @@ import("//tools/grit/grit_rule.gni")
 android_library("java") {
   resources_package = "org.chromium.chrome.autofill_assistant"
   deps = [
+    ":public_java",
     "//base:base_java",
     "//chrome/android:base_module_java",
     "//chrome/android:chrome_java",
@@ -25,6 +26,7 @@ android_library("java") {
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//components/autofill/android:autofill_java",
+    "//components/autofill_assistant/android:autofill_assistant_public_java",
     "//components/autofill_assistant/android:java_resources",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/modaldialog/android:java",
@@ -57,18 +59,6 @@ android_library("java") {
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]
-
-  if (enable_chrome_android_internal) {
-    deps += [
-      "//clank/components/autofill_assistant:gms_integrator_java",
-      "//clank/features/autofill_assistant:animated_poodle_java",
-    ]
-  } else {
-    deps += [
-      "//components/autofill_assistant/android:animated_poodle_java",
-      "//components/autofill_assistant/android:gms_integrator_java",
-    ]
-  }
 
   sources = [
     "java/src/org/chromium/chrome/browser/autofill_assistant/AbstractListObserver.java",
@@ -181,6 +171,35 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/user_data/additional_sections/AssistantTextInputSection.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+# Public dependencies of Autofill Assistant.
+# TODO(b/183478921): The java_sources.gni should eventually be dissolved and
+# added here. New entries should only be added here.
+android_library("public_java") {
+  resources_package = "org.chromium.chrome.autofill_assistant"
+
+  sources = [
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantAutofillCreditCard.java",
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantAutofillProfile.java",
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantContactEditorAccount.java",
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantEditor.java",
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantEditorFactory.java",
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantOptionModel.java",
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantPaymentInstrument.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//components/autofill/android:autofill_payments_java_resources",
+    "//components/autofill/android:main_autofill_java",
+    "//components/autofill_assistant/android:autofill_assistant_public_java",
+    "//components/payments/content/android:java_resources",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
 }
 
 generate_jni("jni_headers") {
@@ -332,6 +351,7 @@ android_library("test_java") {
   deps = [
     ":autofill_assistant_java_test_support",
     ":java",
+    ":public_java",
     ":test_support_jni_headers",
     "//base:base_java",
     "//base:base_java_test_support",
