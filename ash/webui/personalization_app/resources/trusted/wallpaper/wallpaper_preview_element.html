@@ -1,7 +1,13 @@
 <style include="common-style">
   #wallpaperLabel {
+    align-items: center;
     background: none;
     border: none;
+    display: flex;
+    flex-flow: row nowrap;
+    grid-area: label;
+    justify-content: space-between;
+    padding: 0;
   }
 
   iron-icon {
@@ -18,15 +24,6 @@
       '. .     .';
     grid-template-columns: 20px 1fr 20px;
     grid-template-rows: 48px minmax(158px, 220px) 1fr 20px;
-  }
-
-  #wallpaperLabel {
-    align-items: center;
-    display: flex;
-    flex-flow: row nowrap;
-    grid-area: label;
-    justify-content: space-between;
-    padding: 0;
   }
 
   #wallpaperLabel > p {
@@ -52,6 +49,16 @@
     min-width: 252px;
   }
 
+  #shelf {
+    background-color: var(--cros-separator-color);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    bottom: 0;
+    height: 24px;
+    position: absolute;
+    width: 100%;
+  }
+
   ::slotted(personalization-theme) {
     grid-area: theme;
   }
@@ -70,6 +77,7 @@
       <div id="imageContainer" class="photo-images-container">
         <img src="[[getImageSrc_(image_)]]" aria-hidden="true"
             on-click="onClickWallpaper_">
+        <div id="shelf"></div>
       </div>
   </template>
   <slot></slot>
