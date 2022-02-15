@@ -528,7 +528,7 @@ const char kPasswordCheckSubPage[] = "passwords/check?start=true";
 const char kPasswordManagerSubPage[] = "passwords";
 const char kPaymentsSubPage[] = "payments";
 const char kPrintingSettingsSubPage[] = "printing";
-const char kPrivacyReviewSubPage[] = "privacy/review";
+const char kPrivacyGuideSubPage[] = "privacy/guide";
 const char kPrivacySubPage[] = "privacy";
 const char kResetSubPage[] = "reset";
 const char kResetProfileSettingsSubPage[] = "resetProfileSettings";

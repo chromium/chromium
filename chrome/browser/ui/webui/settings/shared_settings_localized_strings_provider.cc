@@ -317,8 +317,8 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("activityControlsUrl",
                          chrome::kGoogleAccountActivityControlsURL);
   html_source->AddString(
-      "activityControlsUrlInPrivacyReview",
-      chrome::kGoogleAccountActivityControlsURLInPrivacyReview);
+      "activityControlsUrlInPrivacyGuide",
+      chrome::kGoogleAccountActivityControlsURLInPrivacyGuide);
   html_source->AddString("syncDashboardUrl", sync_dashboard_url);
   html_source->AddString(
       "passphraseExplanationText",

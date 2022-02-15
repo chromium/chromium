@@ -96,7 +96,7 @@ export class PrivacyGuideCompletionFragmentElement extends
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacyGuide.CompletionSWAAClick');
     OpenWindowProxyImpl.getInstance().openURL(
-        loadTimeData.getString('activityControlsUrlInPrivacyReview'));
+        loadTimeData.getString('activityControlsUrlInPrivacyGuide'));
   }
 }
 
