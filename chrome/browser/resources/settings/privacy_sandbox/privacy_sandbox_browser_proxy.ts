@@ -16,6 +16,11 @@ export type FlocIdentifier = {
   canReset: boolean,
 };
 
+export type FledgeState = {
+  joiningSites: Array<string>,
+  blockedSites: Array<string>,
+};
+
 export interface PrivacySandboxBrowserProxy {
   /**
    * Gets the user's current FLoC cohort identifier information.
@@ -24,6 +29,12 @@ export interface PrivacySandboxBrowserProxy {
 
   /** Resets the user's FLoC cohort identifier. */
   resetFlocId(): void;
+
+  /** Retrieves the user's current FLEDGE state. */
+  getFledgeState(): Promise<FledgeState>;
+
+  /** Sets FLEDGE joining to |allowed| for |site|.*/
+  setFledgeJoiningAllowed(site: string, allowed: boolean): void;
 }
 
 export class PrivacySandboxBrowserProxyImpl implements
@@ -34,6 +45,14 @@ export class PrivacySandboxBrowserProxyImpl implements
 
   resetFlocId() {
     chrome.send('resetFlocId');
+  }
+
+  getFledgeState() {
+    return sendWithPromise('getFledgeState');
+  }
+
+  setFledgeJoiningAllowed(site: string, allowed: boolean) {
+    chrome.send('setFledgeJoiningAllowed', [site, allowed]);
   }
 
   static getInstance(): PrivacySandboxBrowserProxy {

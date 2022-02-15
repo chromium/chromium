@@ -165,12 +165,20 @@ class PrivacySandboxService : public KeyedService,
   // Returns the set of eTLD + 1's on which the user was joined to a FLEDGE
   // interest group. Consults with the InterestGroupManager associated with
   // |profile_| and formats the returned data for direct display to the user.
-  void GetFledgeJoiningEtldPlusOneForDisplay(
+  // Virtual to allow mocking in tests.
+  virtual void GetFledgeJoiningEtldPlusOneForDisplay(
       base::OnceCallback<void(std::vector<std::string>)> callback);
 
   // Returns the set of top frames which are blocked from joining the profile to
-  // an interest group.
-  std::vector<std::string> GetBlockedFledgeJoiningTopFramesForDisplay() const;
+  // an interest group. Virtual to allow mocking in tests.
+  virtual std::vector<std::string> GetBlockedFledgeJoiningTopFramesForDisplay()
+      const;
+
+  // Sets Fledge interest group joining to |allowed| for |top_frame_etld_plus1|.
+  // This is a wrapper on the equivalent function on PrivacySandboxSettings.
+  // Virtual to allow mocking in tests.
+  virtual void SetFledgeJoiningAllowed(const std::string& top_frame_etld_plus1,
+                                       bool allowed) const;
 
   // Returns the top topics for the previous N epochs.
   std::vector<privacy_sandbox::CanonicalTopic> GetCurrentTopTopics() const;

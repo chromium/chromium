@@ -18,6 +18,10 @@ constexpr char kCohort[] = "cohort";
 constexpr char kNextUpdate[] = "nextUpdate";
 constexpr char kCanReset[] = "canReset";
 
+// Keys of the dictionary returned by getFledgeState.
+constexpr char kJoiningSites[] = "joiningSites";
+constexpr char kBlockedSites[] = "blockedSites";
+
 base::Value GetFlocIdInformation(Profile* profile) {
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(profile);
@@ -41,6 +45,9 @@ base::Value GetFlocIdInformation(Profile* profile) {
 
 }  // namespace
 
+PrivacySandboxHandler::PrivacySandboxHandler() = default;
+PrivacySandboxHandler::~PrivacySandboxHandler() = default;
+
 void PrivacySandboxHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getFlocId", base::BindRepeating(&PrivacySandboxHandler::HandleGetFlocId,
@@ -48,6 +55,14 @@ void PrivacySandboxHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "resetFlocId",
       base::BindRepeating(&PrivacySandboxHandler::HandleResetFlocId,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setFledgeJoiningAllowed",
+      base::BindRepeating(&PrivacySandboxHandler::HandleSetFledgeJoiningAllowed,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getFledgeState",
+      base::BindRepeating(&PrivacySandboxHandler::HandleGetFledgeState,
                           base::Unretained(this)));
 }
 
@@ -78,6 +93,54 @@ void PrivacySandboxHandler::HandleResetFlocId(base::Value::ConstListView args) {
   // from the FLoC provider, rather than inferring behavior.
   FireWebUIListener("floc-id-changed",
                     GetFlocIdInformation(Profile::FromWebUI(web_ui())));
+}
+
+void PrivacySandboxHandler::HandleSetFledgeJoiningAllowed(
+    base::Value::ConstListView args) {
+  const std::string& site = args[0].GetString();
+  const bool enabled = args[1].GetBool();
+  GetPrivacySandboxService()->SetFledgeJoiningAllowed(site, enabled);
+}
+
+void PrivacySandboxHandler::HandleGetFledgeState(
+    base::Value::ConstListView args) {
+  const std::string& callback_id = args[0].GetString();
+  GetPrivacySandboxService()->GetFledgeJoiningEtldPlusOneForDisplay(
+      base::BindOnce(&PrivacySandboxHandler::OnFledgeJoiningSitesRecieved,
+                     weak_ptr_factory_.GetWeakPtr(), callback_id));
+}
+
+void PrivacySandboxHandler::OnFledgeJoiningSitesRecieved(
+    const std::string& callback_id,
+    std::vector<std::string> joining_sites) {
+  // Combine |joining_sites| with the blocked FLEDGE sites information. The
+  // latter is available synchronously.
+  base::Value joining_sites_list(base::Value::Type::LIST);
+  for (const auto& site : joining_sites)
+    joining_sites_list.Append(base::Value(site));
+
+  const auto blocked_sites =
+      GetPrivacySandboxService()->GetBlockedFledgeJoiningTopFramesForDisplay();
+  base::Value blocked_sites_list(base::Value::Type::LIST);
+  for (const auto& site : blocked_sites)
+    blocked_sites_list.Append(base::Value(site));
+
+  base::DictionaryValue fledge_state;
+  fledge_state.SetKey(kJoiningSites, std::move(joining_sites_list));
+  fledge_state.SetKey(kBlockedSites, std::move(blocked_sites_list));
+
+  ResolveJavascriptCallback(base::Value(callback_id), std::move(fledge_state));
+}
+
+PrivacySandboxService* PrivacySandboxHandler::GetPrivacySandboxService() {
+  auto* privacy_sandbox_service =
+      PrivacySandboxServiceFactory::GetForProfile(Profile::FromWebUI(web_ui()));
+  DCHECK(privacy_sandbox_service);
+  return privacy_sandbox_service;
+}
+
+void PrivacySandboxHandler::OnJavascriptDisallowed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 }  // namespace settings

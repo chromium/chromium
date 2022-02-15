@@ -21,7 +21,9 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
     PrivacySandboxBrowserProxy {
   constructor() {
-    super(['getFlocId', 'resetFlocId']);
+    super([
+      'getFlocId', 'resetFlocId', 'getFledgeState', 'setFledgeJoiningAllowed'
+    ]);
   }
 
   getFlocId() {
@@ -36,6 +38,18 @@ class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
 
   resetFlocId() {
     this.methodCalled('resetFlocId');
+  }
+
+  getFledgeState() {
+    this.methodCalled('getFledgeState');
+    return Promise.resolve({
+      joiningSites: ['test-site-one.com'],
+      blockedSites: ['test-site-two.com'],
+    });
+  }
+
+  setFledgeJoiningAllowed(site: string, allowed: boolean) {
+    this.methodCalled('setFledgeJoiningAllowed', [site, allowed]);
   }
 }
 

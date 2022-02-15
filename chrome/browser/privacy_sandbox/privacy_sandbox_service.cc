@@ -303,6 +303,13 @@ PrivacySandboxService::GetBlockedFledgeJoiningTopFramesForDisplay() const {
   return blocked_top_frames;
 }
 
+void PrivacySandboxService::SetFledgeJoiningAllowed(
+    const std::string& top_frame_etld_plus1,
+    bool allowed) const {
+  privacy_sandbox_settings_->SetFledgeJoiningAllowed(top_frame_etld_plus1,
+                                                     allowed);
+}
+
 void PrivacySandboxService::Shutdown() {
   StopObserving();
 }
