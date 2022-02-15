@@ -16,6 +16,7 @@ source_set("tabs_search") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync_sessions",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/sessions",

@@ -15,11 +15,13 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_sessions/session_sync_service.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/history/history_utils.h"
 #include "ios/chrome/browser/history/web_history_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
+#import "ios/chrome/browser/main/browser_list_factory.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
@@ -47,20 +49,18 @@ TabsSearchService::~TabsSearchService() = default;
 void TabsSearchService::Search(
     const std::u16string& term,
     base::OnceCallback<void(std::vector<web::WebState*>)> completion) {
-  SearchWithinBrowsers(browser_list_->AllRegularBrowsers(), term,
-                       std::move(completion));
-}
-
-void TabsSearchService::SearchIncognito(
-    const std::u16string& term,
-    base::OnceCallback<void(std::vector<web::WebState*>)> completion) {
-  SearchWithinBrowsers(browser_list_->AllIncognitoBrowsers(), term,
-                       std::move(completion));
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state_);
+  std::set<Browser*> browsers = browser_state_->IsOffTheRecord()
+                                    ? browser_list->AllIncognitoBrowsers()
+                                    : browser_list->AllRegularBrowsers();
+  SearchWithinBrowsers(browsers, term, std::move(completion));
 }
 
 void TabsSearchService::SearchRecentlyClosed(
     const std::u16string& term,
     base::OnceCallback<void(std::vector<RecentlyClosedItemPair>)> completion) {
+  DCHECK(!browser_state_->IsOffTheRecord());
   FixedPatternStringSearchIgnoringCaseAndAccents query_search(term);
 
   std::vector<RecentlyClosedItemPair> results;
@@ -96,6 +96,7 @@ void TabsSearchService::SearchRemoteTabs(
     base::OnceCallback<void(std::unique_ptr<synced_sessions::SyncedSessions>,
                             std::vector<synced_sessions::DistantTabsSet>)>
         completion) {
+  DCHECK(!browser_state_->IsOffTheRecord());
   std::vector<synced_sessions::DistantTabsSet> results;
 
   signin::IdentityManager* identity_manager =
@@ -143,6 +144,7 @@ void TabsSearchService::SearchRemoteTabs(
 void TabsSearchService::SearchHistory(
     const std::u16string& term,
     base::OnceCallback<void(size_t result_count)> completion) {
+  DCHECK(!browser_state_->IsOffTheRecord());
   DCHECK(completion);
 
   ongoing_history_search_term_ = term;

@@ -119,10 +119,16 @@ class TabsSearchServiceTest : public PlatformTest {
     return inserted_web_state;
   }
 
-  // Returns the associated search service.
+  // Returns the associated search service for normal browser state.
   TabsSearchService* search_service() {
     return TabsSearchServiceFactory::GetForBrowserState(
         chrome_browser_state_.get());
+  }
+
+  // Returns the associated search service for off the record browser state.
+  TabsSearchService* incognito_search_service() {
+    return TabsSearchServiceFactory::GetForBrowserState(
+        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -224,7 +230,8 @@ TEST_F(TabsSearchServiceTest, MatchAcrossBrowsers) {
   ASSERT_TRUE(results_received);
 }
 
-// Tests that matches from incognito tabs are not returns from |Search|.
+// Tests that matches from incognito tabs are not returned for normal browser
+// state.
 TEST_F(TabsSearchServiceTest, NoIncognitoResults) {
   web::WebState* expected_web_state =
       AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
@@ -243,14 +250,15 @@ TEST_F(TabsSearchServiceTest, NoIncognitoResults) {
   ASSERT_TRUE(results_received);
 }
 
-// Tests that only incognito tabs are returned from |SearchIncognito|.
+// Tests that only incognito tabs are returned when searching off the record
+// browser state.
 TEST_F(TabsSearchServiceTest, IncognitoResults) {
   AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
   web::WebState* expected_web_state = AppendNewWebState(
       incognito_browser_.get(), kWebState2Title, GURL(kWebState2Url));
 
   __block bool results_received = false;
-  search_service()->SearchIncognito(
+  incognito_search_service()->Search(
       kSearchQueryMatchesAll,
       base::BindOnce(^(std::vector<web::WebState*> results) {
         ASSERT_EQ(1ul, results.size());

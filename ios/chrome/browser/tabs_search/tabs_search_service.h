@@ -41,17 +41,12 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
                     BrowserList* browser_list);
   ~TabsSearchService() override;
 
-  // Searches through all the regular tabs in Browsers within |browser_list| and
-  // provides the WebStates which match |term| to |completion|. |term| will be
-  // matched against WebState's current title and URL.
+  // Searches through all the tabs in Browsers associated with the current
+  // |browser_state| and provides the WebStates which match |term| to
+  // |completion|. |term| will be matched against WebState's current title and
+  // URL.
   void Search(const std::u16string& term,
               base::OnceCallback<void(std::vector<web::WebState*>)> completion);
-
-  // Performs a search through all the incognito tabs in Browsers within
-  // |browser_list| in the same manner as |Search|.
-  void SearchIncognito(
-      const std::u16string& term,
-      base::OnceCallback<void(std::vector<web::WebState*>)> completion);
 
   // A pair representing a recently closed item. The |SessionID| can be used to
   // restore the item and is safe to store without lifetime concerns. The
@@ -60,14 +55,14 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   typedef std::pair<SessionID, const sessions::SerializedNavigationEntry>
       RecentlyClosedItemPair;
   // Searches through recently closed tabs within |browser_state| in the same
-  // manner as |Search|.
+  // manner as |Search|. Can't be called on an off the record |browser_state|.
   void SearchRecentlyClosed(
       const std::u16string& term,
       base::OnceCallback<void(std::vector<RecentlyClosedItemPair>)> completion);
 
   // Searches through Remote Tabs for tabs matching |term|. The matching tabs
   // returned in the vector are owned by the SyncedSessions instance passed to
-  // the callback.
+  // the callback. Can't be called on an off the record |browser_state|.
   void SearchRemoteTabs(
       const std::u16string& term,
       base::OnceCallback<void(std::unique_ptr<synced_sessions::SyncedSessions>,
@@ -79,6 +74,7 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   // |completion| will be called with the result unless a new call to
   // SearchHistory is made. Only the last call to |SearchHistory| will continue
   // to be processed. Completion callbacks to earlier calls will not be run.
+  // Can't be called on an off the record |browser_state|.
   void SearchHistory(const std::u16string& term,
                      base::OnceCallback<void(size_t result_count)> completion);
 
