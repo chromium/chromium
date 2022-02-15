@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_header_view.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/sharesheet/constants.h"
@@ -30,6 +31,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view.h"
@@ -143,6 +145,8 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     return sharesheet_bubble_view_->GetViewByID(FOOTER_VIEW_ID);
   }
 
+  Profile* profile() { return profile_.get(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   gfx::NativeWindow parent_window_;
@@ -255,6 +259,82 @@ TEST_F(SharesheetBubbleViewTest, ClickCopyToClipboard) {
       ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
       &clipboard_text);
   EXPECT_EQ(::sharesheet::kTestText, base::UTF16ToUTF8(clipboard_text));
+}
+
+TEST_F(SharesheetBubbleViewTest, TextPreview) {
+  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
+                      ::sharesheet::LaunchSource::kUnknown);
+  views::View* text_views = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::HEADER_VIEW_TEXT_PREVIEW_ID);
+  // There should be 3 children, the 'Share' title, the text title and the text.
+  ASSERT_EQ(text_views->children().size(), 3u);
+
+  auto* share_title_text =
+      static_cast<views::Label*>(text_views->children()[0]);
+  ASSERT_EQ(share_title_text->GetText(),
+            l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL));
+  auto* title_text = static_cast<views::Label*>(text_views->children()[1]);
+  ASSERT_EQ(title_text->GetText(), u"title");
+  auto* text = static_cast<views::Label*>(text_views->children()[2]);
+  ASSERT_EQ(text->GetText(), u"text");
+
+  CloseBubble();
+}
+
+TEST_F(SharesheetBubbleViewTest, TextPreviewNoTitle) {
+  auto* text = "text";
+  ShowAndVerifyBubble(apps_util::CreateShareIntentFromText(text, ""),
+                      ::sharesheet::LaunchSource::kUnknown);
+  views::View* text_views = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::HEADER_VIEW_TEXT_PREVIEW_ID);
+  // There should be 2 children, the 'Share' title, and the text.
+  ASSERT_EQ(text_views->children().size(), 2u);
+
+  auto* share_title_text =
+      static_cast<views::Label*>(text_views->children()[0]);
+  ASSERT_EQ(share_title_text->GetText(),
+            l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL));
+  auto* text_label = static_cast<views::Label*>(text_views->children()[1]);
+  ASSERT_EQ(text_label->GetText(), base::UTF8ToUTF16(text));
+
+  CloseBubble();
+}
+
+TEST_F(SharesheetBubbleViewTest, TextPreviewOneFile) {
+  storage::FileSystemURL url = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestTextFile));
+  ShowAndVerifyBubble(apps_util::CreateShareIntentFromFiles(
+                          {url.ToGURL()}, {::sharesheet::kMimeTypeText}),
+                      ::sharesheet::LaunchSource::kUnknown);
+  views::View* text_views = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::HEADER_VIEW_TEXT_PREVIEW_ID);
+  // There should be 2 children, the 'Share' title, and the text.
+  ASSERT_EQ(text_views->children().size(), 2u);
+
+  auto* title_text = static_cast<views::Label*>(text_views->children()[1]);
+  ASSERT_EQ(title_text->GetText(), u"text.txt");
+  CloseBubble();
+}
+
+TEST_F(SharesheetBubbleViewTest, TextPreviewMultipleFiles) {
+  storage::FileSystemURL url1 = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestPdfFile));
+  storage::FileSystemURL url2 = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestTextFile));
+  ShowAndVerifyBubble(
+      apps_util::CreateShareIntentFromFiles(
+          {url1.ToGURL(), url2.ToGURL()},
+          {::sharesheet::kMimeTypePdf, ::sharesheet::kMimeTypeText}),
+      ::sharesheet::LaunchSource::kUnknown);
+
+  views::View* text_views = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::HEADER_VIEW_TEXT_PREVIEW_ID);
+  // There should be 2 children, the 'Share' title, and the text.
+  ASSERT_EQ(text_views->children().size(), 2u);
+
+  auto* title_text = static_cast<views::Label*>(text_views->children()[1]);
+  ASSERT_EQ(title_text->GetText(), u"2 files");
+  CloseBubble();
 }
 
 TEST_F(SharesheetBubbleViewTest, URLPreviewAverage) {
