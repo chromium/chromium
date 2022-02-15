@@ -1,0 +1,3 @@
+CONSOLE MESSAGE: This test logs exposed APIs from LayoutWorkletGlobalScope
+CONSOLE MESSAGE: CSS.layoutWorklet not exposed
+
