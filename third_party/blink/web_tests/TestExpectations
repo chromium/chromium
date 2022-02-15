@@ -5825,7 +5825,6 @@ crbug.com/1087471 [ Linux ] virtual/threaded/synthetic_gestures/synthetic-pinch-
 crbug.com/1088475 [ Linux ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries.html [ Failure Pass ]
 crbug.com/1088475 [ Linux ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries_resized.html [ Failure Pass ]
 
-crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvas-zero-size-readback.html [ Crash Pass ]
 crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvasClearRect.html [ Failure Pass ]
 crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvasClearRectPartial.html [ Failure Pass ]
 
