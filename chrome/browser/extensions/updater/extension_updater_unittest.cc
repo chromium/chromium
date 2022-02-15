@@ -796,10 +796,10 @@ class ExtensionUpdaterTest : public testing::Test {
       const std::string& id = extensions[i]->id();
       EXPECT_CALL(helper.delegate(), GetPingDataForExtension(id, _));
 
-      helper.downloader().AddPendingExtensionWithVersion(
+      helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
           id, ManifestURL::GetUpdateURL(extensions[i].get()),
           extensions[i]->location(), false, 0, fetch_priority,
-          extensions[i]->version(), extensions[i]->GetType(), std::string());
+          extensions[i]->version(), extensions[i]->GetType(), std::string()));
     }
 
     // Get the headers our loader was asked to fetch.
@@ -2694,26 +2694,26 @@ TEST_F(ExtensionUpdaterTest, TestManifestFetchesBuilderAddExtension) {
   std::string id = crx_file::id_util::GenerateId("foo");
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtension(
+  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       id, GURL("http://example.com/update"), ManifestLocation::kInternal, false,
-      0, ManifestFetchData::FetchPriority::BACKGROUND));
-  helper->downloader().StartAllPending(NULL);
+      0, ManifestFetchData::FetchPriority::BACKGROUND)));
+  helper->downloader().StartAllPending(nullptr);
   Mock::VerifyAndClearExpectations(&helper->delegate());
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with invalid update URLs should be rejected.
   id = crx_file::id_util::GenerateId("foo2");
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       id, GURL("http:google.com:foo"), ManifestLocation::kInternal, false, 0,
-      ManifestFetchData::FetchPriority::BACKGROUND));
-  helper->downloader().StartAllPending(NULL);
+      ManifestFetchData::FetchPriority::BACKGROUND)));
+  helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with empty IDs should be rejected.
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       std::string(), GURL(), ManifestLocation::kInternal, false, 0,
-      ManifestFetchData::FetchPriority::BACKGROUND));
-  helper->downloader().StartAllPending(NULL);
+      ManifestFetchData::FetchPriority::BACKGROUND)));
+  helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // TODO(akalin): Test that extensions with empty update URLs
@@ -2729,9 +2729,9 @@ TEST_F(ExtensionUpdaterTest, TestManifestFetchesBuilderAddExtension) {
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
   EXPECT_TRUE(helper->downloader().AddPendingExtension(
-      id, GURL(), ManifestLocation::kInternal, false, 0,
-      ManifestFetchData::FetchPriority::BACKGROUND));
-  helper->downloader().StartAllPending(NULL);
+      ExtensionDownloaderTask(id, GURL(), ManifestLocation::kInternal, false, 0,
+                              ManifestFetchData::FetchPriority::BACKGROUND)));
+  helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   RunUntilIdle();
@@ -2750,28 +2750,28 @@ TEST_F(ExtensionUpdaterTest, TestAddPendingExtensionWithVersion) {
   std::string id = crx_file::id_util::GenerateId("foo");
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtensionWithVersion(
+  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       id, GURL("http://example.com/update"), ManifestLocation::kInternal, false,
       0, ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string()));
+      Manifest::TYPE_UNKNOWN, std::string())));
   helper->downloader().StartAllPending(nullptr);
   Mock::VerifyAndClearExpectations(&helper->delegate());
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with invalid update URLs should be rejected.
   id = crx_file::id_util::GenerateId("foo2");
-  EXPECT_FALSE(helper->downloader().AddPendingExtensionWithVersion(
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       id, GURL("http:google.com:foo"), ManifestLocation::kInternal, false, 0,
       ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string()));
+      Manifest::TYPE_UNKNOWN, std::string())));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with empty IDs should be rejected.
-  EXPECT_FALSE(helper->downloader().AddPendingExtensionWithVersion(
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       std::string(), GURL(), ManifestLocation::kInternal, false, 0,
       ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string()));
+      Manifest::TYPE_UNKNOWN, std::string())));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
@@ -2784,10 +2784,10 @@ TEST_F(ExtensionUpdaterTest, TestAddPendingExtensionWithVersion) {
   id = crx_file::id_util::GenerateId("foo3");
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtensionWithVersion(
+  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       id, GURL(), ManifestLocation::kInternal, false, 0,
       ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string()));
+      Manifest::TYPE_UNKNOWN, std::string())));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 

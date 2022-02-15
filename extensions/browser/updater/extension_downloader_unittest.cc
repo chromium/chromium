@@ -419,22 +419,22 @@ TEST_F(ExtensionDownloaderTest, TestURLStats) {
   GURL kUpdateUrl("http://localhost/manifest1");
   const URLStats& stats = GetDownloaderURLStats(&helper);
 
-  helper.downloader().AddPendingExtension(
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
       kTestExtensionId, extension_urls::GetWebstoreUpdateUrl(),
       mojom::ManifestLocation::kInternal, false /* is_corrupt_reinstall */,
-      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND);
+      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND));
   EXPECT_EQ(1, stats.google_url_count);
 
-  helper.downloader().AddPendingExtension(
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
       kTestExtensionId2, GURL() /* update_url */,
       mojom::ManifestLocation::kInternal, false /* is_corrupt_reinstall */,
-      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND);
+      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND));
   EXPECT_EQ(1, stats.no_url_count);
 
-  helper.downloader().AddPendingExtension(
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
       kTestExtensionId3, kUpdateUrl, mojom::ManifestLocation::kInternal,
       false /* is_corrupt_reinstall */, 0 /* request_id */,
-      ManifestFetchData::FetchPriority::BACKGROUND);
+      ManifestFetchData::FetchPriority::BACKGROUND));
   EXPECT_EQ(1, stats.other_url_count);
 }
 

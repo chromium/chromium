@@ -372,10 +372,10 @@ bool ExtensionUpdater::AddExtensionToDownloader(
   if (!ManifestURL::UpdatesFromGallery(&extension))
     update_url_data = GetUpdateURLData(extension_prefs_, extension.id());
 
-  return downloader_->AddPendingExtensionWithVersion(
+  return downloader_->AddPendingExtension(ExtensionDownloaderTask(
       extension.id(), update_url, extension.location(),
       false /*is_corrupt_reinstall*/, request_id, fetch_priority,
-      extension.version(), extension.GetType(), update_url_data);
+      extension.version(), extension.GetType(), update_url_data));
 }
 
 void ExtensionUpdater::CheckNow(CheckParams params) {
@@ -472,12 +472,12 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
         update_check_params.update_info[pending_id].is_corrupt_reinstall =
             is_corrupt_reinstall;
       } else if (info &&
-                 downloader_->AddPendingExtension(
+                 downloader_->AddPendingExtension(ExtensionDownloaderTask(
                      pending_id, info->update_url(), info->install_source(),
                      is_corrupt_reinstall, request_id,
                      is_high_priority_extension_pending
                          ? ManifestFetchData::FOREGROUND
-                         : params.fetch_priority)) {
+                         : params.fetch_priority))) {
         request.in_progress_ids.insert(pending_id);
         InstallStageTracker::Get(profile_)->ReportInstallationStage(
             pending_id, InstallStageTracker::Stage::DOWNLOADING);
