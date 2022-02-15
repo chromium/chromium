@@ -29,6 +29,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -236,6 +237,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 
   bool skip_service_worker =
       skip_service_worker_ ||
+      !OriginCanAccessServiceWorkers(tentative_resource_request.url) ||
       !handle_->context_wrapper()->MaybeHasRegistrationForStorageKey(
           storage_key);
 
