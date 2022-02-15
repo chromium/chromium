@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -28,6 +29,7 @@ constexpr char kUsageMsg[] =
     "           [--frames=<number of frames to decode>]\n"
     "           [--v=<log verbosity>]\n"
     "           [--output_path_prefix=<output files path prefix>]\n"
+    "           [--md5]\n"
     "           [--help]\n";
 
 constexpr char kHelpMsg[] =
@@ -45,6 +47,9 @@ constexpr char kHelpMsg[] =
     "        written. For example, setting <path> to \"test/test_\" would \n"
     "        result in output files of the form \"test/test_000000.yuv\",\n"
     "       \"test/test_000001.yuv\", etc.\n"
+    "    --md5\n"
+    "        Optional. If specified, prints the md5 of each decoded frame\n"
+    "        in I420 format to stdout.\n"
     "    --help\n"
     "        Display this help message and exit.\n";
 
@@ -61,6 +66,14 @@ uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
   }
 
   return header_fourcc;
+}
+
+// Computes the md5 of given I420 data |yuv_plane| and prints the md5 to stdout.
+// This functionality is needed for tast tests.
+void ComputeAndPrintMd5hash(const std::vector<char>& yuv_plane) {
+  base::MD5Digest md5_digest;
+  base::MD5Sum(yuv_plane.data(), yuv_plane.size(), &md5_digest);
+  std::cout << MD5DigestToBase16(md5_digest) << std::endl;
 }
 
 // Creates the appropriate decoder for |stream|, which points to IVF data.
@@ -152,6 +165,14 @@ int main(int argc, char** argv) {
       LOG(INFO) << "End of stream.";
       break;
     }
+
+    std::vector<char> yuv_plane(y_plane);
+    yuv_plane.insert(yuv_plane.end(), u_plane.begin(), u_plane.end());
+    yuv_plane.insert(yuv_plane.end(), v_plane.begin(), v_plane.end());
+
+    // TODO(stevecho): md5 computation is not needed for non-displayed frames
+    if (cmd->HasSwitch("md5"))
+      ComputeAndPrintMd5hash(yuv_plane);
 
     if (!has_output_file)
       continue;
