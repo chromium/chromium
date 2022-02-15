@@ -117,6 +117,34 @@ void LogIsDriveEnabled(Profile* profile) {
       !profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive));
 }
 
+void LogContinueMetrics(const std::vector<Result>& results) {
+  int drive_count = 0;
+  int local_count = 0;
+  for (const auto& result : results) {
+    switch (result.type) {
+      case ash::SearchResultType::ZERO_STATE_DRIVE:
+        ++drive_count;
+        break;
+      case ash::SearchResultType::ZERO_STATE_FILE:
+        ++local_count;
+        break;
+      default:
+        // Only zero-state drive and local file results are expected in
+        // Continue.
+        NOTREACHED();
+    }
+  }
+
+  base::UmaHistogramExactLinear("Apps.AppList.Search.ContinueResultCount.Total",
+                                results.size(), 10);
+  base::UmaHistogramExactLinear("Apps.AppList.Search.ContinueResultCount.Drive",
+                                drive_count, 10);
+  base::UmaHistogramExactLinear("Apps.AppList.Search.ContinueResultCount.Local",
+                                local_count, 10);
+  base::UmaHistogramBoolean("Apps.AppList.Search.DriveContinueResultsShown",
+                            drive_count > 0);
+}
+
 }  // namespace
 
 SearchMetricsObserver::SearchMetricsObserver(Profile* profile,
@@ -137,14 +165,18 @@ void SearchMetricsObserver::OnImpression(Location location,
                                          const std::vector<Result>& results,
                                          const std::u16string& query) {
   LogTypeActions("Impression", location, query, TypeSet(results));
-  LogViewAction(location, query, Action::kImpression);
+  if (!results.empty())
+    LogViewAction(location, query, Action::kImpression);
+  if (location == Location::kContinue)
+    LogContinueMetrics(results);
 }
 
 void SearchMetricsObserver::OnAbandon(Location location,
                                       const std::vector<Result>& results,
                                       const std::u16string& query) {
   LogTypeActions("Abandon", location, query, TypeSet(results));
-  LogViewAction(location, query, Action::kAbandon);
+  if (!results.empty())
+    LogViewAction(location, query, Action::kAbandon);
 }
 
 void SearchMetricsObserver::OnLaunch(Location location,
@@ -183,30 +215,8 @@ void SearchMetricsObserver::OnIgnore(Location location,
   // We have no two concurrently displayed views showing the same result types,
   // so it's safe to log an ignore for all result types here.
   LogTypeActions("Ignore", location, query, TypeSet(results));
-  LogViewAction(location, query, Action::kIgnore);
-}
-
-void SearchMetricsObserver::LogMetricsOnZeroStateDisplay(
-    const std::vector<ChromeSearchResult*>& results) {
-  // Count the number of possible Continue results.
-  int total_count = 0;
-  int drive_count = 0;
-  int local_count = 0;
-  for (const auto* result : results) {
-    if (result->display_type() == DisplayType::kContinue)
-      ++total_count;
-    if (result->result_type() == ResultType::kZeroStateDrive)
-      ++drive_count;
-    if (result->result_type() == ResultType::kZeroStateFile)
-      ++local_count;
-  }
-
-  base::UmaHistogramExactLinear("Apps.AppList.ContinueResultCount.Total",
-                                total_count, 50);
-  base::UmaHistogramExactLinear("Apps.AppList.ContinueResultCount.Drive",
-                                drive_count, 50);
-  base::UmaHistogramExactLinear("Apps.AppList.ContinueResultCount.Local",
-                                local_count, 50);
+  if (!results.empty())
+    LogViewAction(location, query, Action::kIgnore);
 }
 
 }  // namespace app_list

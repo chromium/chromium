@@ -362,6 +362,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ContinueResultCount.{Type}" units="count"
     expires_after="2023-02-09">
+  <obsolete>
+    Deprecated Feb 2022 in favor of
+    Apps.AppList.Search.ContinueResultCount.Type. This histogram was recorded in
+    the wrong place to be useful for counting how many Continue results the user
+    sees, vs. how many the search backend is prepared to show.
+  </obsolete>
   <owner>amandadeacon@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -674,6 +680,36 @@ chromium-metrics-reviews@google.com.
     Various error states on writing a backing file to disk, in the score
     normalizer used by the Chrome OS launcher. Emitted each time a persistent
     proto writes to disk.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.ContinueResultCount.{Type}" units="count"
+    expires_after="2023-02-14">
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Recorded when the user has seen the zero-state launcher. Records the number
+    of {Type} results shown.
+  </summary>
+  <token key="Type">
+    <variant name="Drive" summary="Count of Drive results"/>
+    <variant name="Local" summary="Count of local file results"/>
+    <variant name="Total" summary="Count of all results"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppList.Search.DriveContinueResultsShown"
+    enum="BooleanShown" expires_after="2023-02-14">
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Recorded when the user has seen the zero-state launcher. Records whether or
+    not the user would have seen any Drive files. This is equivalent to
+    Apps.AppList.Search.ContinueResultCount.Drive greater than 0.
   </summary>
 </histogram>
 

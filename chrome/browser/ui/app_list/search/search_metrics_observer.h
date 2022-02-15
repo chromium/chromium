@@ -47,12 +47,6 @@ class SearchMetricsObserver : ash::AppListNotifier::Observer {
                 const std::vector<Result>& results,
                 const std::u16string& query) override;
 
-  // Record metrics at the moment when zero-state results are first ready for
-  // display upon opening the launcher. This is called only once per launcher
-  // open, and will not be called on subsequent updates to the results.
-  void LogMetricsOnZeroStateDisplay(
-      const std::vector<ChromeSearchResult*>& results);
-
  private:
   base::ScopedObservation<ash::AppListNotifier, ash::AppListNotifier::Observer>
       observation_{this};
