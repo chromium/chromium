@@ -546,7 +546,6 @@ component("net") {
     "http/bidirectional_stream_request_info.h",
     "http/broken_alternative_services.cc",
     "http/broken_alternative_services.h",
-    "http/hsts_info.h",
     "http/http_auth.cc",
     "http/http_auth.h",
     "http/http_auth_cache.cc",
