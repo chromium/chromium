@@ -27,7 +27,7 @@ using SingleDayEventList = std::list<google_apis::calendar::CalendarEvent>;
 // Controller of the `CalendarView`.
 class ASH_EXPORT CalendarModel {
  public:
-  explicit CalendarModel(const std::set<base::Time> non_prunable_months);
+  explicit CalendarModel(const std::set<base::Time>& non_prunable_months);
   CalendarModel(const CalendarModel& other) = delete;
   CalendarModel& operator=(const CalendarModel& other) = delete;
   virtual ~CalendarModel();
@@ -51,7 +51,7 @@ class ASH_EXPORT CalendarModel {
   void RemoveObserver(Observer* observer);
 
   // Requests events that fall in |months|.
-  void FetchEvents(const std::set<base::Time> months);
+  void FetchEvents(const std::set<base::Time>& months);
 
   // Requests events that fall in the set of non-prunable "base" months.
   void FetchEventsForBaseMonths();
@@ -67,6 +67,11 @@ class ASH_EXPORT CalendarModel {
   // this if you don't care about making the month in which |day| resides less
   // likely to be pruned if we need to trim down to stay within storage limits.
   SingleDayEventList FindEvents(base::Time day) const;
+
+ protected:
+  // Fetch events for |start_of_month| if we haven't already done so since the
+  // calendar was opened.  This registers our callback OnCalendarEventsFetched.
+  virtual void MaybeFetchMonth(base::Time start_of_month);
 
  private:
   // For unit tests.
@@ -84,8 +89,7 @@ class ASH_EXPORT CalendarModel {
                           const google_apis::calendar::CalendarEvent* event);
 
   // Insert EventList |events| in the EventCache.
-  void InsertEvents(
-      const std::unique_ptr<google_apis::calendar::EventList>& events);
+  void InsertEvents(const google_apis::calendar::EventList* events);
 
   // Free up months of events as needed to keep us within storage limits.
   void PruneEventCache();
@@ -99,10 +103,6 @@ class ASH_EXPORT CalendarModel {
   // Returns true if we've already fetched events for |start_of_month| since the
   // calendar was opened, false otherwise.
   bool IsMonthAlreadyFetched(base::Time start_of_month) const;
-
-  // Fetch events for |start_of_month| if we haven't already done so since the
-  // calendar was opened.  This registers our callback OnCalendarEventsFetched.
-  virtual void MaybeFetchMonth(base::Time start_of_month);
 
   // Officially declare the month denoted by |start_of_month| as "fetched."
   // If the month is non-prunable then we won't attempt to fetch it again unless

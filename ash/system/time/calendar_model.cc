@@ -50,12 +50,12 @@ constexpr int kMaxNumberOfMonthsCached =
 
 namespace ash {
 
-CalendarModel::CalendarModel(const std::set<base::Time> non_prunable_months)
+CalendarModel::CalendarModel(const std::set<base::Time>& non_prunable_months)
     : non_prunable_months_(non_prunable_months) {
   FetchEventsForBaseMonths();
 }
 
-CalendarModel::~CalendarModel() {}
+CalendarModel::~CalendarModel() = default;
 
 void CalendarModel::AddObserver(Observer* observer) {
   if (observer)
@@ -137,7 +137,7 @@ void CalendarModel::QueuePrunableMonth(base::Time start_of_month) {
   prunable_months_mru_.push_front(start_of_month);
 }
 
-void CalendarModel::FetchEvents(const std::set<base::Time> months) {
+void CalendarModel::FetchEvents(const std::set<base::Time>& months) {
   for (auto& month : months)
     MaybeFetchMonth(month.UTCMidnight());
 }
@@ -187,7 +187,7 @@ void CalendarModel::OnCalendarEventsFetched(
   PruneEventCache();
 
   // Store the incoming events.
-  InsertEvents(events);
+  InsertEvents(events.get());
 
   // Notify observers.
   for (auto& observer : observers_)
@@ -232,7 +232,7 @@ void CalendarModel::InsertEventInMonth(
 }
 
 void CalendarModel::InsertEvents(
-    const std::unique_ptr<google_apis::calendar::EventList>& events) {
+    const google_apis::calendar::EventList* events) {
   for (const auto& event : events->items())
     InsertEvent(event.get());
 }

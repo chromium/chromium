@@ -72,8 +72,9 @@ class CalendarMonthViewTest : public AshTestBase {
 
   void UploadEvents() {
     Shell::Get()->system_tray_model()->calendar_model()->InsertEvents(
-        CreateMockEventList());
+        CreateMockEventList().get());
   }
+
   void TriggerPaint() {
     gfx::Canvas canvas;
     for (auto* cell : calendar_month_view_->children())

@@ -136,6 +136,38 @@ class TestableCalendarModel : public CalendarModel {
     return event;
   }
 
+  // Directly add events to the calendar "service" from which they'll be
+  // fetched.
+  void InjectEvents(std::unique_ptr<google_apis::calendar::EventList> events) {
+    injected_events_ = std::move(events);
+  }
+
+  // For testing of event-fetching error cases.  Specify the error codes we want
+  // fetches of the previous, current, and next months' events to return.
+  void SetFetchErrors(base::Time current_date,
+                      google_apis::ApiErrorCode prev,
+                      google_apis::ApiErrorCode current,
+                      google_apis::ApiErrorCode next) {
+    ResetFetchErrors();
+    fetch_errors_.emplace(
+        calendar_utils::GetStartOfPreviousMonthUTC(current_date), prev);
+    fetch_errors_.emplace(calendar_utils::GetStartOfMonthUTC(current_date),
+                          current);
+    fetch_errors_.emplace(calendar_utils::GetStartOfNextMonthUTC(current_date),
+                          next);
+  }
+
+  void ResetFetchErrors() { fetch_errors_.clear(); }
+
+  google_apis::ApiErrorCode GetFetchErrorCode(base::Time date) {
+    google_apis::ApiErrorCode error = google_apis::HTTP_SUCCESS;
+    auto it = fetch_errors_.find(date);
+    if (it != fetch_errors_.end())
+      error = it->second;
+    return error;
+  }
+
+ protected:
   void MaybeFetchMonth(base::Time start_of_month) override {
     if (IsMonthAlreadyFetched(start_of_month))
       return;
@@ -169,35 +201,6 @@ class TestableCalendarModel : public CalendarModel {
     // for start_of_month.
     OnCalendarEventsFetched(GetFetchErrorCode(start_of_month),
                             std::move(fetched_events));
-  }
-
-  // Directly add events to the calendar "service" from which they'll be
-  // fetched.
-  void InjectEvents(std::unique_ptr<google_apis::calendar::EventList> events) {
-    injected_events_ = std::move(events);
-  }
-
-  // For testing of event-fetching error cases.  Specify the error codes we want
-  // fetches of the previous, current, and next months' events to return.
-  void SetFetchErrors(base::Time current_date,
-                      google_apis::ApiErrorCode prev,
-                      google_apis::ApiErrorCode current,
-                      google_apis::ApiErrorCode next) {
-    ResetFetchErrors();
-    fetch_errors_.emplace(
-        calendar_utils::GetStartOfPreviousMonthUTC(current_date), prev);
-    fetch_errors_.emplace(calendar_utils::GetStartOfMonthUTC(current_date),
-                          current);
-    fetch_errors_.emplace(calendar_utils::GetStartOfNextMonthUTC(current_date),
-                          next);
-  }
-  void ResetFetchErrors() { fetch_errors_.clear(); }
-  google_apis::ApiErrorCode GetFetchErrorCode(base::Time date) {
-    google_apis::ApiErrorCode error = google_apis::HTTP_SUCCESS;
-    auto it = fetch_errors_.find(date);
-    if (it != fetch_errors_.end())
-      error = it->second;
-    return error;
   }
 
  private:
