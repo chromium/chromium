@@ -279,6 +279,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//printing/backend",
     "//skia",
     "//ui/gfx",
   ]

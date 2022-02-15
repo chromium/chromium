@@ -461,6 +461,31 @@ void PrintBackendServiceImpl::FetchCapabilities(
           std::move(caps_and_info)));
 }
 
+void PrintBackendServiceImpl::UseDefaultSettings(
+    mojom::PrintBackendService::UseDefaultSettingsCallback callback) {
+  if (!print_backend_) {
+    DLOG(ERROR)
+        << "Print backend instance has not been initialized for locale.";
+    std::move(callback).Run(
+        mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
+    return;
+  }
+
+  // Use a one-time `PrintingContext` to get the print settings.
+  std::unique_ptr<PrintingContext> context =
+      PrintingContext::Create(&context_delegate_, /*skip_system_calls=*/false);
+  mojom::ResultCode result = context.get()->UseDefaultSettings();
+  if (result != mojom::ResultCode::kSuccess) {
+    DLOG(ERROR)
+        << "Failure getting default settings of default printer, error: "
+        << result;
+    std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));
+    return;
+  }
+  std::move(callback).Run(mojom::PrintSettingsResult::NewSettings(
+      *context->TakeAndResetSettings()));
+}
+
 void PrintBackendServiceImpl::UpdatePrintSettings(
     base::flat_map<std::string, base::Value> job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {

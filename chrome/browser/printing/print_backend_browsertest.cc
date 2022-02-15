@@ -114,6 +114,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     // Do local setup before calling base class, since the base class enters
     // the main run loop.
+    PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
     PrintingContext::SetPrintingContextFactoryForTest(
         &test_printing_context_factory_);
     InProcessBrowserTest::SetUp();
@@ -124,6 +125,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     // of `SetUp`.
     InProcessBrowserTest::TearDown();
     PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
+    PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
   }
 
   void LaunchUninitialized() {
@@ -247,7 +249,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     CheckForQuit();
   }
 
-  void OnDidUpdatePrintSettings(
+  void CapturePrintSettings(
       mojom::PrintSettingsResultPtr& capture_print_settings,
       mojom::PrintSettingsResultPtr print_settings) {
     capture_print_settings = std::move(print_settings);
@@ -485,6 +487,24 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilitiesAccessDenied) {
   EXPECT_EQ(caps_and_info->get_result_code(), mojom::ResultCode::kAccessDenied);
 }
 
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UseDefaultSettings) {
+  LaunchService();
+  AddDefaultPrinter();
+  SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
+
+  mojom::PrintSettingsResultPtr settings;
+
+  // Safe to use base::Unretained(this) since waiting locally on the callback
+  // forces a shorter lifetime than `this`.
+  GetPrintBackendService()->UseDefaultSettings(
+      base::BindOnce(&PrintBackendBrowserTest::CapturePrintSettings,
+                     base::Unretained(this), std::ref(settings)));
+  WaitUntilCallbackReceived();
+  ASSERT_TRUE(settings->is_settings());
+  EXPECT_EQ(settings->get_settings().copies(), kPrintSettingsCopies);
+  EXPECT_EQ(settings->get_settings().dpi(), kPrintSettingsDefaultDpi);
+}
+
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   LaunchService();
   AddDefaultPrinter();
@@ -503,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   // forces a shorter lifetime than `this`.
   GetPrintBackendService()->UpdatePrintSettings(
       std::move(job_settings).TakeDictDeprecated(),
-      base::BindOnce(&PrintBackendBrowserTest::OnDidUpdatePrintSettings,
+      base::BindOnce(&PrintBackendBrowserTest::CapturePrintSettings,
                      base::Unretained(this), std::ref(settings)));
   WaitUntilCallbackReceived();
   ASSERT_TRUE(settings->is_settings());
@@ -527,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
                          static_cast<int>(mojom::PrinterType::kLocal));
   GetPrintBackendService()->UpdatePrintSettings(
       std::move(job_settings).TakeDictDeprecated(),
-      base::BindOnce(&PrintBackendBrowserTest::OnDidUpdatePrintSettings,
+      base::BindOnce(&PrintBackendBrowserTest::CapturePrintSettings,
                      base::Unretained(this), std::ref(settings)));
   WaitUntilCallbackReceived();
   ASSERT_TRUE(settings->is_result_code());

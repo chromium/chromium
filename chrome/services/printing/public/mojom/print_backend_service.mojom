@@ -112,6 +112,11 @@ interface PrintBackendService {
   FetchCapabilities(string printer_name)
     => (PrinterCapsAndInfoResult printer_caps_and_info);
 
+  // Generates a print settings object based upon the default settings for the
+  // default printer.
+  UseDefaultSettings()
+    => (PrintSettingsResult settings);
+
   // Generates a print settings object based upon the job settings used with
   // the device settings.  The driver to be used is expected to be identified
   // in the `job_settings` map by an entry with key
