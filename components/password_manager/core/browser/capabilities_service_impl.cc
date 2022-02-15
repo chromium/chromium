@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/hash/legacy_hash.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
@@ -85,8 +86,9 @@ void CapabilitiesServiceImpl::OnGetCapabilitiesResult(
     ResponseCallback callback,
     int http_status,
     const std::vector<CapabilitiesInfo>& infos) {
+  base::UmaHistogramSparse(
+      "PasswordManager.CapabilitiesService.HttpResponseCode", http_status);
   if (http_status != net::HTTP_OK) {
-    // TODO(b/209429727) Record network failure metrics.
     std::move(callback).Run(std::set<url::Origin>());
     return;
   }

@@ -191,7 +191,6 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, ServerError) {
   EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
   EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
   EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
-  // TODO(b/209429727) Include check for server error metrics.
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, PrewarmCache) {
@@ -209,10 +208,6 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, PrewarmCache) {
   fetcher_->RefreshScriptsIfNecessary(base::DoNothing());
   CheckScriptAvailabilityDefaultResults();
 
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordScriptsFetcher.CacheState",
-      PasswordScriptsFetcher::CacheState::kReady, 1u);
-
   // Make cache stale again.
   RunUntilIdle();
   task_env_.AdvanceClock(base::Minutes(10));
@@ -221,8 +216,17 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, PrewarmCache) {
                   UnorderedElementsAre(
                       GetOriginWithScript1(), GetOriginWithScript2(),
                       GetOriginWithScript3(), GetOriginWithoutScript()),
-                  _));
+                  _))
+      .WillOnce(RunOnceCallback<1>(std::set<url::Origin>()));
   fetcher_->PrewarmCache();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher.CacheState",
+      PasswordScriptsFetcher::CacheState::kReady, 1u);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "AllOriginsResponseTime",
+      2u);
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, NoPrewarmCache) {
@@ -235,8 +239,12 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, NoPrewarmCache) {
   CheckScriptAvailabilityDefaultResults();
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordScriptsFetcher.CacheState",
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher.CacheState",
       PasswordScriptsFetcher::CacheState::kStale, 1u);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "AllOriginsResponseTime",
+      1u);
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest,
@@ -262,18 +270,22 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
       .Times(0);
   fetcher_->RefreshScriptsIfNecessary(base::DoNothing());
 
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordScriptsFetcher.CacheState",
-      PasswordScriptsFetcher::CacheState::kWaiting, 1u);
-
   // Resolve prewarming callback.
   std::move(callback).Run(std::set<url::Origin>{
       GetOriginWithScript1(), GetOriginWithScript2(), GetOriginWithScript3()});
   CheckScriptAvailabilityDefaultResults();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher.CacheState",
+      PasswordScriptsFetcher::CacheState::kWaiting, 1u);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "AllOriginsResponseTime",
+      1u);
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, IsScriptAvailable) {
   FillPasswordStore();
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_capabilities_service_,
               QueryPasswordChangeScriptAvailability)
       .Times(0);
@@ -301,6 +313,14 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, IsScriptAvailable) {
   EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
   EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
   EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher.CacheState",
+      PasswordScriptsFetcher::CacheState::kStale, 1u);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "AllOriginsResponseTime",
+      1u);
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, PasswordStoreUpdate) {
@@ -340,6 +360,7 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, PasswordStoreUpdate) {
 TEST_F(SavedPasswordsCapabilitiesFetcherTest,
        FetchScriptAvailabilityDuringRequest) {
   FillPasswordStore();
+  base::HistogramTester histogram_tester;
 
   CapabilitiesService::ResponseCallback callback;
   EXPECT_CALL(*mock_capabilities_service_,
@@ -367,11 +388,22 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
   EXPECT_THAT(recorded_responses_,
               UnorderedElementsAre(Pair(GetOriginWithScript1(), true),
                                    Pair(GetOriginWithoutScript(), false)));
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher.CacheState", 0u);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "AllOriginsResponseTime",
+      1u);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "SingleOriginResponseTime",
+      0u);
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest,
        FetchScriptAvailabilityAfterRefreshRequest) {
   FillPasswordStore();
+  base::HistogramTester histogram_tester;
 
   ExpectCacheRefresh();
   fetcher_->PrewarmCache();
@@ -402,11 +434,23 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
   EXPECT_THAT(recorded_responses_,
               UnorderedElementsAre(Pair(foo_origin, true),
                                    Pair(GetOriginWithoutScript(), false)));
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher.CacheState", 0u);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "AllOriginsResponseTime",
+      1u);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "SingleOriginResponseTime",
+      2u);
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest,
        FetchScriptAvailabilityAfterStaleCache) {
   FillPasswordStore();
+  base::HistogramTester histogram_tester;
 
   // FetchScriptAvailability without any refresh should trigger single origin
   // request.
@@ -453,6 +497,16 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
   EXPECT_THAT(recorded_responses_,
               UnorderedElementsAre(Pair(GetOriginWithScript2(), true),
                                    Pair(GetOriginWithoutScript(), false)));
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher.CacheState", 0u);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "AllOriginsResponseTime",
+      1u);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "SingleOriginResponseTime",
+      3u);
 }
 
 }  // namespace password_manager

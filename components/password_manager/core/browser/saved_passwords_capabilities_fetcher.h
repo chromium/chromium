@@ -60,6 +60,7 @@ class SavedPasswordsCapabilitiesFetcher
   void FetchCapababilitiesForAllStoredOrigins();
   // Callback to process refresh capabilities request.
   void FetchCapababilitiesForAllStoredOriginsDone(
+      base::TimeTicks request_start_timestamp,
       const std::set<url::Origin>& capabilities);
   // Fetches capabilities info for a single origin.
   void FetchCapababilitiesForSingleOrigin(const url::Origin& origin,
@@ -68,6 +69,7 @@ class SavedPasswordsCapabilitiesFetcher
   void FetchCapababilitiesForSingleOriginDone(
       const url::Origin& origin,
       ResponseCallback callback,
+      base::TimeTicks request_start_timestamp,
       const std::set<url::Origin>& capabilities);
   // Returns a sorted list of unique origins of all stored credentials.
   std::vector<url::Origin> GetOriginsOfStoredPasswords() const;

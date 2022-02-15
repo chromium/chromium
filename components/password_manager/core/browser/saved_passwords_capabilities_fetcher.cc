@@ -48,7 +48,7 @@ void SavedPasswordsCapabilitiesFetcher::RefreshScriptsIfNecessary(
   CacheState state = GetCacheState();
 
   base::UmaHistogramEnumeration(
-      "PasswordManager.PasswordScriptsFetcher.CacheState", state);
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher.CacheState", state);
 
   if (state == CacheState::kReady) {
     std::move(fetch_finished_callback).Run();
@@ -159,14 +159,19 @@ void SavedPasswordsCapabilitiesFetcher::
       GetOriginsOfStoredPasswords(),
       base::BindOnce(&SavedPasswordsCapabilitiesFetcher::
                          FetchCapababilitiesForAllStoredOriginsDone,
-                     base::Unretained(this)));
+                     base::Unretained(this), base::TimeTicks::Now()));
 }
 
 void SavedPasswordsCapabilitiesFetcher::
     FetchCapababilitiesForAllStoredOriginsDone(
+        base::TimeTicks request_start_timestamp,
         const std::set<url::Origin>& capabilities) {
   // Update |has_script| and |last_fetch_timestamp| for all origins.
   base::TimeTicks now = base::TimeTicks::Now();
+  base::UmaHistogramMediumTimes(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "AllOriginsResponseTime",
+      now - request_start_timestamp);
   for (auto& [origin, c_result] : cache_) {
     c_result.last_fetch_timestamp = now;
     c_result.has_script = capabilities.find(origin) != capabilities.end();
@@ -200,16 +205,21 @@ void SavedPasswordsCapabilitiesFetcher::FetchCapababilitiesForSingleOrigin(
   }
 
   fetcher_->QueryPasswordChangeScriptAvailability(
-      {origin},
-      base::BindOnce(&SavedPasswordsCapabilitiesFetcher::
-                         FetchCapababilitiesForSingleOriginDone,
-                     base::Unretained(this), origin, std::move(callback)));
+      {origin}, base::BindOnce(&SavedPasswordsCapabilitiesFetcher::
+                                   FetchCapababilitiesForSingleOriginDone,
+                               base::Unretained(this), origin,
+                               std::move(callback), base::TimeTicks::Now()));
 }
 
 void SavedPasswordsCapabilitiesFetcher::FetchCapababilitiesForSingleOriginDone(
     const url::Origin& origin,
     ResponseCallback callback,
+    base::TimeTicks request_start_timestamp,
     const std::set<url::Origin>& capabilities) {
+  base::UmaHistogramMediumTimes(
+      "PasswordManager.SavedPasswordsCapabilitiesFetcher."
+      "SingleOriginResponseTime",
+      base::TimeTicks::Now() - request_start_timestamp);
   // Domain not present. The password might have gotten deleted since the fetch
   // was started.
   if (cache_.find(origin) == cache_.end()) {

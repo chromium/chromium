@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
@@ -65,6 +66,7 @@ class CapabilitiesServiceImplTest : public ::testing::Test {
 };
 
 TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesEmptyResponse) {
+  base::HistogramTester histogram_tester;
   std::vector<url::Origin> origins = {
       url::Origin::Create(GURL("https://example.com")),
       url::Origin::Create(GURL("https://test.com"))};
@@ -83,9 +85,13 @@ TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesEmptyResponse) {
 
   service_->QueryPasswordChangeScriptAvailability(origins,
                                                   mock_response_callback.Get());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.CapabilitiesService.HttpResponseCode",
+      net::HttpStatusCode::HTTP_OK, 1u);
 }
 
 TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesEmptyRequest) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_autofill_assistant_, GetCapabilitiesByHashPrefix).Times(0);
   base::MockCallback<password_manager::CapabilitiesService::ResponseCallback>
       mock_response_callback;
@@ -93,9 +99,12 @@ TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesEmptyRequest) {
 
   service_->QueryPasswordChangeScriptAvailability({},
                                                   mock_response_callback.Get());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.CapabilitiesService.HttpResponseCode", 0u);
 }
 
 TEST_F(CapabilitiesServiceImplTest, BackendRequestFailed) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_autofill_assistant_, GetCapabilitiesByHashPrefix)
       .WillOnce(RunOnceCallback<3>(net::HTTP_FORBIDDEN,
                                    std::vector<CapabilitiesInfo>()));
@@ -110,9 +119,13 @@ TEST_F(CapabilitiesServiceImplTest, BackendRequestFailed) {
 
   service_->QueryPasswordChangeScriptAvailability(origins,
                                                   mock_response_callback.Get());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.CapabilitiesService.HttpResponseCode",
+      net::HTTP_FORBIDDEN, 1u);
 }
 
 TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesSuccess) {
+  base::HistogramTester histogram_tester;
   std::vector<CapabilitiesInfo> capabilities_reponse = {
       CapabilitiesInfo{"https://foo.test.com", {}},
       CapabilitiesInfo{"https://bar.test.com", {}},
@@ -147,9 +160,13 @@ TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesSuccess) {
 
   service_->QueryPasswordChangeScriptAvailability(origins,
                                                   mock_response_callback.Get());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.CapabilitiesService.HttpResponseCode",
+      net::HttpStatusCode::HTTP_OK, 1u);
 }
 
 TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesClientInLiveExperiment) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       password_manager::features::kPasswordDomainCapabilitiesFetching,
@@ -189,6 +206,9 @@ TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesClientInLiveExperiment) {
 
   service_->QueryPasswordChangeScriptAvailability(origins,
                                                   mock_response_callback.Get());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.CapabilitiesService.HttpResponseCode",
+      net::HttpStatusCode::HTTP_OK, 1u);
 }
 
 }  // namespace
