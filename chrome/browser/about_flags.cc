@@ -6968,15 +6968,17 @@ const FeatureEntry kFeatureEntries[] = {
      // Use a command-line parameter instead of a FEATURE_VALUE_TYPE to enable
      // multiple related features.
      SINGLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
-                                 "PrivacySandboxSettings3,InterestGroupStorage,"
+                                 "PrivacySandboxSettings3:disable-dialog-for-"
+                                 "testing/true,InterestGroupStorage,"
                                  "AdInterestGroupAPI,Fledge,FencedFrames")},
 
     {"privacy-sandbox-v3-android", flag_descriptions::kPrivacySandboxV3Name,
      flag_descriptions::kPrivacySandboxV3Description, kOsAndroid,
      // Use a command-line parameter instead of a FEATURE_VALUE_TYPE to enable
      // multiple related features when they are available.
-     SINGLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
-                                 "PrivacySandboxSettings3")},
+     SINGLE_VALUE_TYPE_AND_VALUE(
+         switches::kEnableFeatures,
+         "PrivacySandboxSettings3:disable-dialog-for-testing/true")},
 
     {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
      flag_descriptions::kAnimatedImageResumeDescription, kOsAll,

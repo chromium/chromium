@@ -10,9 +10,20 @@
 
 namespace privacy_sandbox {
 
+// Enables the third release of the Privacy Sandbox settings.
 extern const base::Feature kPrivacySandboxSettings3;
-extern const base::FeatureParam<bool> kPrivacySandboxSettings3ForceShowConsent;
-extern const base::FeatureParam<bool> kPrivacySandboxSettings3ForceShowNotice;
+extern const base::FeatureParam<bool> kPrivacySandboxSettings3ConsentRequired;
+
+// Feature parameters which should exclusively be used for testing purposes.
+// Enabling any of these parameters may result in the Privacy Sandbox prefs
+// (unsynced) entering an unexpected state, requiring profile deletion to
+// resolve.
+extern const base::FeatureParam<bool>
+    kPrivacySandboxSettings3DisableDialogForTesting;
+extern const base::FeatureParam<bool>
+    kPrivacySandboxSettings3ForceShowConsentForTesting;
+extern const base::FeatureParam<bool>
+    kPrivacySandboxSettings3ForceShowNoticeForTesting;
 
 }  // namespace privacy_sandbox
 

@@ -232,6 +232,8 @@ class PrivacySandboxService : public KeyedService,
                            MetricsLoggingOccursCorrectly);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTestNonRegularProfile,
                            NoMetricsRecorded);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDeathTest,
+                           GetRequiredDialogType);
 
   // Should be used only for tests when mocking the service.
   PrivacySandboxService();
@@ -286,6 +288,13 @@ class PrivacySandboxService : public KeyedService,
   void ConvertFledgeJoiningTopFramesForDisplay(
       base::OnceCallback<void(std::vector<std::string>)> callback,
       std::vector<url::Origin> top_frames);
+
+  // Contains the logic which powers GetRequiredDialogType(). Static to allow
+  // EXPECT_DCHECK_DEATH testing, which does not work well with many of the
+  // other dependencies of this service.
+  static PrivacySandboxService::DialogType GetRequiredDialogTypeInternal(
+      PrefService* pref_service,
+      profile_metrics::BrowserProfileType profile_type);
 
  private:
   raw_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;

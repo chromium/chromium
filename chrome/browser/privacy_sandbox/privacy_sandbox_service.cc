@@ -161,20 +161,37 @@ PrivacySandboxService::~PrivacySandboxService() = default;
 
 PrivacySandboxService::DialogType
 PrivacySandboxService::GetRequiredDialogType() {
-  // Only consult feature parameters
-  // TODO(crbug.com/1286276): Implement additional behavior.
-  if (privacy_sandbox::kPrivacySandboxSettings3ForceShowConsent.Get())
-    return DialogType::kConsent;
-
-  if (privacy_sandbox::kPrivacySandboxSettings3ForceShowNotice.Get())
-    return DialogType::kNotice;
-
-  return DialogType::kNone;
+  return GetRequiredDialogTypeInternal(pref_service_, profile_type_);
 }
 
 void PrivacySandboxService::DialogActionOccurred(
     PrivacySandboxService::DialogAction action) {
-  // TODO(crbug.com/1286276): Not yet implemented.
+  switch (action) {
+    case (DialogAction::kNoticeShown): {
+      DCHECK_EQ(DialogType::kNotice, GetRequiredDialogType());
+      // The new Privacy Sandbox pref can be enabled when the notice has been
+      // shown. Note that a notice will not have been shown if the user disabled
+      // the old Privacy Sandbox pref.
+      pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
+      pref_service_->SetBoolean(prefs::kPrivacySandboxNoticeDisplayed, true);
+      break;
+    }
+    case (DialogAction::kConsentAccepted): {
+      pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
+      pref_service_->SetBoolean(prefs::kPrivacySandboxConsentDecisionMade,
+                                true);
+      break;
+    }
+    case (DialogAction::kConsentDeclined): {
+      pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
+      pref_service_->SetBoolean(prefs::kPrivacySandboxConsentDecisionMade,
+                                true);
+      break;
+    }
+    default: {
+      // TODO(crbug.com/1286384): Record received actions in metrics.
+    }
+  }
 }
 
 std::u16string PrivacySandboxService::GetFlocDescriptionForDisplay() const {
@@ -556,4 +573,103 @@ void PrivacySandboxService::SetTopicAllowed(
     fake_current_topics_.erase(topic_id);
     fake_blocked_topics_.insert(topic_id);
   }
+}
+
+/*static*/ PrivacySandboxService::DialogType
+PrivacySandboxService::GetRequiredDialogTypeInternal(
+    PrefService* pref_service,
+    profile_metrics::BrowserProfileType profile_type) {
+  // If the profile isn't a regular profile, no dialog should ever be shown.
+  if (profile_type != profile_metrics::BrowserProfileType::kRegular)
+    return DialogType::kNone;
+
+  // If the release 3 feature is not enabled, no dialog is required.
+  if (!base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3))
+    return DialogType::kNone;
+
+  // Forced testing feature parameters override everything.
+  if (privacy_sandbox::kPrivacySandboxSettings3DisableDialogForTesting.Get())
+    return DialogType::kNone;
+
+  if (privacy_sandbox::kPrivacySandboxSettings3ForceShowConsentForTesting.Get())
+    return DialogType::kConsent;
+
+  if (privacy_sandbox::kPrivacySandboxSettings3ForceShowNoticeForTesting.Get())
+    return DialogType::kNotice;
+
+  // If a user wasn't shown a confirmation because they previously turned the
+  // Privacy Sandbox off, we do not attempt to re-show one.
+  if (pref_service->GetBoolean(
+          prefs::kPrivacySandboxNoConfirmationSandboxDisabled)) {
+    return DialogType::kNone;
+  }
+
+  // If a consent decision has already been made, no dialog is required.
+  if (pref_service->GetBoolean(prefs::kPrivacySandboxConsentDecisionMade))
+    return DialogType::kNone;
+
+  // If only a notice is required, and has been shown, no dialog is required.
+  if (!privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.Get() &&
+      pref_service->GetBoolean(prefs::kPrivacySandboxNoticeDisplayed)) {
+    return DialogType::kNone;
+  }
+
+  // If a user now requires consent, but has previously seen a notice, whether
+  // a consent is shown depends on their current Privacy Sandbox setting.
+  if (privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.Get() &&
+      pref_service->GetBoolean(prefs::kPrivacySandboxNoticeDisplayed)) {
+    DCHECK(
+        !pref_service->GetBoolean(prefs::kPrivacySandboxConsentDecisionMade));
+
+    // As the user has not yet consented, the V2 pref must be disabled.
+    // However, this may not be the first time that this function is being
+    // called. The API for this service guarantees, and clients depend, on
+    // successive calls to this function returning the same value. Browser
+    // restarts & updates via DialogActionOccurred() notwithstanding. To achieve
+    // this, we need to distinguish between the case where the user themselves
+    // previously disabled the APIs, and when this logic disabled them
+    // previously due to having insufficient confirmation.
+    if (pref_service->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)) {
+      pref_service->SetBoolean(
+          prefs::kPrivacySandboxDisabledInsufficientConfirmation, true);
+      pref_service->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
+    }
+
+    if (pref_service->GetBoolean(
+            prefs::kPrivacySandboxDisabledInsufficientConfirmation)) {
+      return DialogType::kConsent;
+    } else {
+      DCHECK(!pref_service->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+      pref_service->SetBoolean(
+          prefs::kPrivacySandboxNoConfirmationSandboxDisabled, true);
+      return DialogType::kNone;
+    }
+  }
+
+  // At this point, no previous decision should have been made.
+  DCHECK(!pref_service->GetBoolean(
+      prefs::kPrivacySandboxNoConfirmationSandboxDisabled));
+  DCHECK(!pref_service->GetBoolean(prefs::kPrivacySandboxNoticeDisplayed));
+  DCHECK(!pref_service->GetBoolean(prefs::kPrivacySandboxConsentDecisionMade));
+
+  // The user should not have been able to enable the Sandbox without a
+  // previous decision having been made. The exception to this is through test
+  // only feature parameters, which will have let the user skip confirmation.
+  DCHECK(!pref_service->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+
+  // If the user had previously disabled the Privacy Sandbox, no confirmation
+  // will be shown.
+  if (!pref_service->GetBoolean(prefs::kPrivacySandboxApisEnabled)) {
+    pref_service->SetBoolean(
+        prefs::kPrivacySandboxNoConfirmationSandboxDisabled, true);
+    return DialogType::kNone;
+  }
+
+  // Check if the users requires a consent. This information is provided by
+  // feature parameter to allow Finch based geo-targeting.
+  if (privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.Get())
+    return DialogType::kConsent;
+
+  // Finally a notice is required.
+  return DialogType::kNotice;
 }

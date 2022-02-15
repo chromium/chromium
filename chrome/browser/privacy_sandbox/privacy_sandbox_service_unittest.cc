@@ -58,6 +58,570 @@ class TestInterestGroupManager : public content::InterestGroupManager {
   std::vector<url::Origin> origins_;
 };
 
+struct DialogTestState {
+  bool consent_required;
+  bool old_api_pref;
+  bool new_api_pref;
+  bool notice_displayed;
+  bool consent_decision_made;
+  bool confirmation_not_shown;
+};
+
+struct ExpectedDialogOutput {
+  bool dcheck_failure;
+  PrivacySandboxService::DialogType dialog_type;
+  bool new_api_pref;
+};
+
+struct DialogTestCase {
+  DialogTestState test_setup;
+  ExpectedDialogOutput expected_output;
+};
+
+std::vector<DialogTestCase> kDialogTestCases = {
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNotice,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kConsent,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/true,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/true,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/true,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/true,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kConsent,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kConsent,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/false},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/false,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/false, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/false,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/false}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/false,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/false, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+
+    {{/*consent_required=*/true, /*old_api_pref=*/true,
+      /*new_api_pref=*/true,
+      /*notice_displayed=*/true, /*consent_decision_made=*/true,
+      /*confirmation_not_shown=*/true},
+     {/*dcheck_failure=*/false,
+      /*dialog_type=*/PrivacySandboxService::DialogType::kNone,
+      /*new_api_pref=*/true}},
+};
+
+void SetupDialogTestState(
+    base::test::ScopedFeatureList* feature_list,
+    sync_preferences::TestingPrefServiceSyncable* pref_service,
+    const DialogTestState& test_state) {
+  feature_list->Reset();
+  feature_list->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings3,
+      {{"consent-required", test_state.consent_required ? "true" : "false"}});
+
+  pref_service->SetUserPref(
+      prefs::kPrivacySandboxApisEnabled,
+      std::make_unique<base::Value>(test_state.old_api_pref));
+
+  pref_service->SetUserPref(
+      prefs::kPrivacySandboxApisEnabledV2,
+      std::make_unique<base::Value>(test_state.new_api_pref));
+
+  pref_service->SetUserPref(
+      prefs::kPrivacySandboxNoticeDisplayed,
+      std::make_unique<base::Value>(test_state.notice_displayed));
+
+  pref_service->SetUserPref(
+      prefs::kPrivacySandboxConsentDecisionMade,
+      std::make_unique<base::Value>(test_state.consent_decision_made));
+
+  pref_service->SetUserPref(
+      prefs::kPrivacySandboxNoConfirmationSandboxDisabled,
+      std::make_unique<base::Value>(test_state.confirmation_not_shown));
+}
+
 }  // namespace
 
 class PrivacySandboxServiceTest : public testing::Test {
@@ -81,6 +645,13 @@ class PrivacySandboxServiceTest : public testing::Test {
 
   virtual profile_metrics::BrowserProfileType GetProfileType() {
     return profile_metrics::BrowserProfileType::kRegular;
+  }
+
+  void ConfirmRequiredDialogType(
+      PrivacySandboxService::DialogType dialog_type) {
+    // The required dialog type should never change between successive calls to
+    // GetRequiredDialogType.
+    EXPECT_EQ(dialog_type, privacy_sandbox_service()->GetRequiredDialogType());
   }
 
   TestingProfile* profile() { return &profile_; }
@@ -337,6 +908,68 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
   ASSERT_EQ(2u, returned_sites.size());
   EXPECT_EQ(returned_sites[0], sites[1]);
   EXPECT_EQ(returned_sites[1], sites[2]);
+}
+
+TEST_F(PrivacySandboxServiceTest, DialogActionUpdatesRequiredDialog) {
+  // Confirm that when the service is informed a dialog action occurred, it
+  // correctly adjusts the required dialog type and Privacy Sandbox pref.
+
+  // Consent accepted:
+  SetupDialogTestState(feature_list(), prefs(),
+                       {/*consent_required=*/true,
+                        /*old_api_pref=*/true,
+                        /*new_api_pref=*/false,
+                        /*notice_displayed=*/false,
+                        /*consent_decision_made=*/false,
+                        /*confirmation_not_shown=*/false});
+  EXPECT_EQ(PrivacySandboxService::DialogType::kConsent,
+            privacy_sandbox_service()->GetRequiredDialogType());
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+
+  privacy_sandbox_service()->DialogActionOccurred(
+      PrivacySandboxService::DialogAction::kConsentAccepted);
+
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            privacy_sandbox_service()->GetRequiredDialogType());
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+
+  // Consent declined:
+  SetupDialogTestState(feature_list(), prefs(),
+                       {/*consent_required=*/true,
+                        /*old_api_pref=*/true,
+                        /*new_api_pref=*/false,
+                        /*notice_displayed=*/false,
+                        /*consent_decision_made=*/false,
+                        /*confirmation_not_shown=*/false});
+  EXPECT_EQ(PrivacySandboxService::DialogType::kConsent,
+            privacy_sandbox_service()->GetRequiredDialogType());
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+
+  privacy_sandbox_service()->DialogActionOccurred(
+      PrivacySandboxService::DialogAction::kConsentDeclined);
+
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            privacy_sandbox_service()->GetRequiredDialogType());
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+
+  // Notice shown:
+  SetupDialogTestState(feature_list(), prefs(),
+                       {/*consent_required=*/false,
+                        /*old_api_pref=*/true,
+                        /*new_api_pref=*/false,
+                        /*notice_displayed=*/false,
+                        /*consent_decision_made=*/false,
+                        /*confirmation_not_shown=*/false});
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNotice,
+            privacy_sandbox_service()->GetRequiredDialogType());
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+
+  privacy_sandbox_service()->DialogActionOccurred(
+      PrivacySandboxService::DialogAction::kNoticeShown);
+
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            privacy_sandbox_service()->GetRequiredDialogType());
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
 }
 
 class PrivacySandboxServiceTestReconciliationBlocked
@@ -1038,4 +1671,108 @@ TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoMetricsRecorded) {
 
   // The histogram should remain empty.
   histograms.ExpectTotalCount(histogram_name, 0);
+}
+
+TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoDialogRequired) {
+  // Non-regular profiles should never have a dialog shown.
+  SetupDialogTestState(feature_list(), prefs(),
+                       {/*consent_required=*/true,
+                        /*old_api_pref=*/true,
+                        /*new_api_pref=*/false,
+                        /*notice_displayed=*/false,
+                        /*consent_decision_made=*/false,
+                        /*confirmation_not_shown=*/false});
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            privacy_sandbox_service()->GetRequiredDialogType());
+
+  SetupDialogTestState(feature_list(), prefs(),
+                       {/*consent_required=*/false,
+                        /*old_api_pref=*/true,
+                        /*new_api_pref=*/false,
+                        /*notice_displayed=*/false,
+                        /*consent_decision_made=*/false,
+                        /*confirmation_not_shown=*/false});
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            privacy_sandbox_service()->GetRequiredDialogType());
+}
+
+class PrivacySandboxServiceDeathTest : public testing::TestWithParam<int> {
+ public:
+  PrivacySandboxServiceDeathTest() {
+    privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
+  }
+
+ protected:
+  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
+  sync_preferences::TestingPrefServiceSyncable* prefs() {
+    return &pref_service_;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+};
+
+TEST_P(PrivacySandboxServiceDeathTest, GetRequiredDialogType) {
+  const auto& test_case = kDialogTestCases[GetParam()];
+
+  testing::Message scope_message;
+  scope_message << "consent_required:" << test_case.test_setup.consent_required
+                << " old_api_pref:" << test_case.test_setup.old_api_pref
+                << " new_api_pref:" << test_case.test_setup.new_api_pref
+                << " notice_displayed:" << test_case.test_setup.notice_displayed
+                << " consent_decision_made:"
+                << test_case.test_setup.consent_decision_made
+                << " confirmation_not_shown:"
+                << test_case.test_setup.confirmation_not_shown;
+  SCOPED_TRACE(scope_message);
+
+  SetupDialogTestState(feature_list(), prefs(), test_case.test_setup);
+  if (test_case.expected_output.dcheck_failure) {
+    EXPECT_DCHECK_DEATH(PrivacySandboxService::GetRequiredDialogTypeInternal(
+        prefs(), profile_metrics::BrowserProfileType::kRegular));
+    return;
+  }
+
+  // Returned dialog type should never change between successive calls.
+  EXPECT_EQ(test_case.expected_output.dialog_type,
+            PrivacySandboxService::GetRequiredDialogTypeInternal(
+                prefs(), profile_metrics::BrowserProfileType::kRegular));
+  EXPECT_EQ(test_case.expected_output.dialog_type,
+            PrivacySandboxService::GetRequiredDialogTypeInternal(
+                prefs(), profile_metrics::BrowserProfileType::kRegular));
+
+  EXPECT_EQ(test_case.expected_output.new_api_pref,
+            prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+
+  // The old Privacy Sandbox pref should never change from the initial test
+  // state.
+  EXPECT_EQ(test_case.test_setup.old_api_pref,
+            prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabled));
+}
+
+INSTANTIATE_TEST_SUITE_P(PrivacySandboxServiceDeathTestInstance,
+                         PrivacySandboxServiceDeathTest,
+                         testing::Range(0, 64));
+
+using PrivacySandboxServiceTestCoverageTest = testing::Test;
+
+TEST_F(PrivacySandboxServiceTestCoverageTest, DialogTestCoverage) {
+  // Confirm that the set of dialog test cases exhaustively covers all possible
+  // combinations of input.
+  std::set<int> test_case_properties;
+  for (const auto& test_case : kDialogTestCases) {
+    int test_case_property = 0;
+    test_case_property |= test_case.test_setup.consent_required ? 1 << 0 : 0;
+    test_case_property |= test_case.test_setup.old_api_pref ? 1 << 1 : 0;
+    test_case_property |= test_case.test_setup.new_api_pref ? 1 << 2 : 0;
+    test_case_property |= test_case.test_setup.notice_displayed ? 1 << 3 : 0;
+    test_case_property |=
+        test_case.test_setup.consent_decision_made ? 1 << 4 : 0;
+    test_case_property |=
+        test_case.test_setup.confirmation_not_shown ? 1 << 5 : 0;
+    test_case_properties.insert(test_case_property);
+  }
+  EXPECT_EQ(test_case_properties.size(), kDialogTestCases.size());
+  EXPECT_EQ(64u, test_case_properties.size());
 }

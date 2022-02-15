@@ -6,12 +6,17 @@
 
 namespace privacy_sandbox {
 
-// Enables the third release of the Privacy Sandbox settings
 const base::Feature kPrivacySandboxSettings3{"PrivacySandboxSettings3",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
-const base::FeatureParam<bool> kPrivacySandboxSettings3ForceShowConsent{
-    &kPrivacySandboxSettings3, "force-show-consent", false};
-const base::FeatureParam<bool> kPrivacySandboxSettings3ForceShowNotice{
-    &kPrivacySandboxSettings3, "force-show-notice", false};
+const base::FeatureParam<bool> kPrivacySandboxSettings3ConsentRequired{
+    &kPrivacySandboxSettings3, "consent-required", false};
+const base::FeatureParam<bool> kPrivacySandboxSettings3DisableDialogForTesting{
+    &kPrivacySandboxSettings3, "disable-dialog-for-testing", false};
+const base::FeatureParam<bool>
+    kPrivacySandboxSettings3ForceShowConsentForTesting{
+        &kPrivacySandboxSettings3, "force-show-consent-for-testing", false};
+const base::FeatureParam<bool>
+    kPrivacySandboxSettings3ForceShowNoticeForTesting{
+        &kPrivacySandboxSettings3, "force-show-notice-for-testing", false};
 
 }  // namespace privacy_sandbox

@@ -48,6 +48,22 @@ extern const char kPrivacySandboxFlocEnabled[];
 // values are the time the setting was applied.
 extern const char kPrivacySandboxFledgeJoinBlocked[];
 
+// Boolean that indicates that the Privacy Sandbox notice was shown to the
+// profile.
+extern const char kPrivacySandboxNoticeDisplayed[];
+
+// Boolean that indicates that this profile has made a decision on the Privacy
+// Sandbox consent.
+extern const char kPrivacySandboxConsentDecisionMade[];
+
+// Boolean that indicates a Privacy Sandbox confirmation was not shown to the
+// profile because the profile had already disabled the Privacy Sandbox.
+extern const char kPrivacySandboxNoConfirmationSandboxDisabled[];
+
+// Boolean that indicates the user's Privacy Sandbox setting was disabled
+// automatically because they do not have the correct level of confirmation.
+extern const char kPrivacySandboxDisabledInsufficientConfirmation[];
+
 }  // namespace prefs
 
 namespace privacy_sandbox {

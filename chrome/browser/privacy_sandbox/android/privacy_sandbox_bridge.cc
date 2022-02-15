@@ -6,6 +6,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/android/jni_headers/PrivacySandboxBridge_jni.h"
@@ -125,6 +126,12 @@ static void JNI_PrivacySandboxBridge_SetTopicAllowed(JNIEnv* env,
 }
 
 static jint JNI_PrivacySandboxBridge_GetRequiredDialogType(JNIEnv* env) {
+  // If the FRE is disabled, as it is in tests which must not be interrupted
+  // with dialogs, do not attempt to show a dialog.
+  const auto& command_line = *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch("disable-fre"))
+    return static_cast<int>(PrivacySandboxService::DialogType::kNone);
+
   return static_cast<int>(PrivacySandboxServiceFactory::GetForProfile(
                               ProfileManager::GetActiveUserProfile())
                               ->GetRequiredDialogType());
