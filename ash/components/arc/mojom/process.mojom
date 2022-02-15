@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 module arc.mojom;
 
@@ -153,8 +153,17 @@ struct ArcMemoryDump {
   uint32 private_footprint_kb = 0;
 };
 
-// Deprecated method IDs: 6, 7
-// Next Method ID: 11
+// Describes ChromeOS's memory pressure level, which indicates what priority of
+// apps should be killed to save memory.
+[Extensible]
+enum PressureLevel {
+  kForeground = 0,
+  kPerceptible = 1,
+  kCached = 2,
+};
+
+// Deprecated method IDs: 6, 7, 10
+// Next Method ID: 12
 interface ProcessInstance {
   // Requests ARC instance to kill a process.
   [MinVersion=1]
@@ -173,10 +182,19 @@ interface ProcessInstance {
   RequestSystemProcessMemoryInfo@9(array<uint32> nspids)
     => (array<ArcMemoryDump> process_dumps);
 
+  // TODO (cwd): Submit http://ag/c/16816223 and https://crrev.com/c/3447769
+  // after M101 to remove the deprecated method.
   // Requests that ARC discard processes at and below the given level to free
   // the given amount of memory.
   // Returns the number of processes killed, and the estimated bytes reclaimed.
   [MinVersion=9]
-  ApplyHostMemoryPressure@10(ProcessState level, int64 reclaim_target)
+  ApplyHostMemoryPressureDeprecated@10(ProcessState level, int64 reclaim_target)
+    => (uint32 killed, uint64 reclaimed);
+
+  // Requests that ARC discard processes at and below the given level to free
+  // the given amount of memory.
+  // Returns the number of processes killed, and the estimated bytes reclaimed.
+  [MinVersion=10]
+  ApplyHostMemoryPressure@11(PressureLevel level, int64 reclaim_target)
     => (uint32 killed, uint64 reclaimed);
 };

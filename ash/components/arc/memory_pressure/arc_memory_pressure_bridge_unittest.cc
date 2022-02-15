@@ -120,8 +120,7 @@ TEST_F(ArcMemoryPressureBridgeTest, PressureCached) {
       chromeos::ResourcedClient::PressureLevelArcVm::CACHED,
       1 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
-      mojom::ProcessState::R_CACHED_ACTIVITY_CLIENT,
-      1024 /* reclaim_target */));
+      mojom::PressureLevel::kCached, 1024 /* reclaim_target */));
   // Check for overflow for large reclaim values by passing 5 GiB to the
   // callback, and then check that we report 5 MiB * KiB estimated_freed_kib.
   process_instance().RunHostMemoryPressureCallback(
@@ -137,7 +136,7 @@ TEST_F(ArcMemoryPressureBridgeTest, PressurePerceptible) {
       chromeos::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
       1 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
-      mojom::ProcessState::R_TOP, 1024 /* reclaim_target */));
+      mojom::PressureLevel::kPerceptible, 1024 /* reclaim_target */));
   process_instance().RunHostMemoryPressureCallback(1 /* killed */,
                                                    2048 /* reclaimed */);
   ASSERT_TRUE(kill_observer().CheckLastMemoryPressureKill(
@@ -151,7 +150,7 @@ TEST_F(ArcMemoryPressureBridgeTest, PressureForeground) {
       chromeos::ResourcedClient::PressureLevelArcVm::FOREGROUND,
       1 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
-      mojom::ProcessState::R_TOP, 1024 /* reclaim_target */));
+      mojom::PressureLevel::kForeground, 1024 /* reclaim_target */));
   process_instance().RunHostMemoryPressureCallback(1 /* killed */,
                                                    2048 /* reclaimed */);
   ASSERT_TRUE(kill_observer().CheckLastMemoryPressureKill(
@@ -176,7 +175,7 @@ TEST_F(ArcMemoryPressureBridgeTest, DebouncePressure) {
   // Check that the first call is the most recent one, meaning the second did
   // did not get forwarded to Mojo.
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
-      mojom::ProcessState::R_TOP, 1024 /* reclaim_target */));
+      mojom::PressureLevel::kPerceptible, 1024 /* reclaim_target */));
   process_instance().RunHostMemoryPressureCallback(1 /* killed */,
                                                    2048 /* reclaimed */);
   ASSERT_TRUE(kill_observer().CheckLastMemoryPressureKill(
@@ -187,7 +186,7 @@ TEST_F(ArcMemoryPressureBridgeTest, DebouncePressure) {
       chromeos::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
       3 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
-      mojom::ProcessState::R_TOP, 3072 /* reclaim_target */));
+      mojom::PressureLevel::kPerceptible, 3072 /* reclaim_target */));
   process_instance().RunHostMemoryPressureCallback(3 /* killed */,
                                                    4096 /* reclaimed */);
   ASSERT_TRUE(kill_observer().CheckLastMemoryPressureKill(

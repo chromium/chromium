@@ -35,8 +35,15 @@ void FakeProcessInstance::RequestSystemProcessMemoryInfo(
   DCHECK(false);
 }
 
-void FakeProcessInstance::ApplyHostMemoryPressure(
+void FakeProcessInstance::ApplyHostMemoryPressureDeprecated(
     mojom::ProcessState level,
+    int64_t reclaim_target,
+    ApplyHostMemoryPressureCallback callback) {
+  DCHECK(false);
+}
+
+void FakeProcessInstance::ApplyHostMemoryPressure(
+    mojom::PressureLevel level,
     int64_t reclaim_target,
     ApplyHostMemoryPressureCallback callback) {
   DCHECK(host_memory_pressure_checked_);
@@ -46,8 +53,9 @@ void FakeProcessInstance::ApplyHostMemoryPressure(
   host_memory_pressure_callback_ = std::move(callback);
 }
 
-bool FakeProcessInstance::CheckLastHostMemoryPressure(mojom::ProcessState level,
-                                                      int64_t reclaim_target) {
+bool FakeProcessInstance::CheckLastHostMemoryPressure(
+    mojom::PressureLevel level,
+    int64_t reclaim_target) {
   DCHECK(!host_memory_pressure_checked_);
   host_memory_pressure_checked_ = true;
   return level == host_memory_pressure_level_ &&

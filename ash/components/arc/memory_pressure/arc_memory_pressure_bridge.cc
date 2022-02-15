@@ -60,12 +60,14 @@ ArcMemoryPressureBridge::ArcMemoryPressureBridge(
   chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
   DCHECK(client);
   client->AddArcVmObserver(this);
+  arc_bridge_service_->process()->AddObserver(this);
 }
 
 ArcMemoryPressureBridge::~ArcMemoryPressureBridge() {
   chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
   if (client)
     client->RemoveArcVmObserver(this);
+  arc_bridge_service_->process()->RemoveObserver(this);
 }
 
 void ArcMemoryPressureBridge::OnMemoryPressure(
@@ -73,32 +75,60 @@ void ArcMemoryPressureBridge::OnMemoryPressure(
     uint64_t reclaim_target_kb) {
   if (memory_pressure_in_flight_)
     return;
-  memory_pressure_in_flight_ = true;
-  mojom::ProcessState arc_level;
+  mojom::PressureLevel arc_level;
+  mojom::ProcessState arc_level_deprecated;
   switch (level) {
     case chromeos::ResourcedClient::PressureLevelArcVm::NONE:
       return;
 
     case chromeos::ResourcedClient::PressureLevelArcVm::CACHED:
-      arc_level = mojom::ProcessState::R_CACHED_ACTIVITY_CLIENT;
+      arc_level = mojom::PressureLevel::kCached;
+      arc_level_deprecated = mojom::ProcessState::R_CACHED_ACTIVITY_CLIENT;
       break;
 
     case chromeos::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE:
-    case chromeos::ResourcedClient::PressureLevelArcVm::FOREGROUND:
-      arc_level = mojom::ProcessState::R_TOP;
+      arc_level = mojom::PressureLevel::kPerceptible;
+      arc_level_deprecated = mojom::ProcessState::R_TOP;
       break;
+
+    case chromeos::ResourcedClient::PressureLevelArcVm::FOREGROUND:
+      arc_level = mojom::PressureLevel::kForeground;
+      arc_level_deprecated = mojom::ProcessState::R_TOP;
+      break;
+
+    default:
+      LOG(ERROR) << "ArcMemoryPressureBridge::OnMemoryPressure unknown level "
+                 << static_cast<int>(level);
+      return;
   }
   auto* process_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->process(), ApplyHostMemoryPressure);
-  if (!process_instance) {
-    LOG(ERROR) << "ArcMemoryPressureBridge::OnMemoryPressure event, but no "
-                  "process_instance";
+  if (process_instance) {
+    process_instance->ApplyHostMemoryPressure(
+        arc_level, reclaim_target_kb * 1024,
+        base::BindOnce(&ArcMemoryPressureBridge::OnHostMemoryPressureComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+    memory_pressure_in_flight_ = true;
     return;
   }
-  process_instance->ApplyHostMemoryPressure(
-      arc_level, reclaim_target_kb * 1024,
-      base::BindOnce(&ArcMemoryPressureBridge::OnHostMemoryPressureComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+  auto* process_instance_deprecated = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->process(), ApplyHostMemoryPressureDeprecated);
+  if (process_instance_deprecated) {
+    process_instance_deprecated->ApplyHostMemoryPressureDeprecated(
+        arc_level_deprecated, reclaim_target_kb * 1024,
+        base::BindOnce(&ArcMemoryPressureBridge::OnHostMemoryPressureComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+    memory_pressure_in_flight_ = true;
+    return;
+  }
+  LOG(ERROR) << "ArcMemoryPressureBridge::OnMemoryPressure event, but no "
+                "process_instance or process_instance_deprecated";
+}
+
+void ArcMemoryPressureBridge::OnConnectionClosed() {
+  // The connection to ArcProcessService has been closed, there can not be any
+  // memory pressure signals in flight.
+  memory_pressure_in_flight_ = false;
 }
 
 void ArcMemoryPressureBridge::OnHostMemoryPressureComplete(uint32_t killed,
