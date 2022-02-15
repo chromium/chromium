@@ -86,15 +86,11 @@
       }
 
       picture {
-        display: none;
-      }
-
-      :host-context([enable-branding-update]) picture {
-        display: initial;
         margin-inline-end: 16px;
       }
 
-      :host-context([enable-branding-update]) :is(picture, #product-logo) {
+      picture,
+      #product-logo {
         height: 24px;
         width: 24px;
       }
