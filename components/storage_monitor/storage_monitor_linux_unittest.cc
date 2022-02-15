@@ -125,20 +125,20 @@ class TestStorageMonitorLinux : public StorageMonitorLinux {
 
   ~TestStorageMonitorLinux() override = default;
 
-  void SetMtabUpdatedCallback(base::OnceClosure mtab_updated_callback) {
-    EXPECT_FALSE(mtab_updated_callback_);
-    mtab_updated_callback_ = std::move(mtab_updated_callback);
+  void SetOnMtabUpdateCallback(base::OnceClosure on_mtab_update_callback) {
+    EXPECT_FALSE(on_mtab_update_callback_);
+    on_mtab_update_callback_ = std::move(on_mtab_update_callback);
   }
 
  private:
   void UpdateMtab(
       const MtabWatcherLinux::MountPointDeviceMap& new_mtab) override {
     StorageMonitorLinux::UpdateMtab(new_mtab);
-    if (mtab_updated_callback_)
-      AwaitMtabWatcherTaskRunnerForTest(std::move(mtab_updated_callback_));
+    if (on_mtab_update_callback_)
+      std::move(on_mtab_update_callback_).Run();
   }
 
-  base::OnceClosure mtab_updated_callback_;
+  base::OnceClosure on_mtab_update_callback_;
 };
 
 class StorageMonitorLinuxTest : public testing::Test {
@@ -257,10 +257,15 @@ class StorageMonitorLinuxTest : public testing::Test {
   // UpdateMtab() propagate.
   void WaitForMtabUpdate() {
     base::RunLoop run_loop;
-    // QuitWhenIdle() to make sure |mock_storage_observer_| is notified of the
-    // changes before this returns.
-    monitor_->SetMtabUpdatedCallback(run_loop.QuitWhenIdleClosure());
+    monitor_->SetOnMtabUpdateCallback(run_loop.QuitClosure());
+    // Wait until the UpdateMtab() notification comes in from the system
+    // (cannot use RunUntilIdle right away as that would racily return early
+    // per being idle until the system notification comes in).
     run_loop.Run();
+    // UpdateMtab() causes asynchronous work on internal task runners, flush
+    // everything to make sure `mock_storage_observer_` gets to observe the
+    // change.
+    task_environment_.RunUntilIdle();
   }
 
   // Create a directory named |dir| relative to the test directory.
