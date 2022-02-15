@@ -325,7 +325,7 @@
     disable-text="[[i18nRecursive('',
                                   'modulesDisableButtonText',
                                   'modulesPhotosMemoriesDisable')]]">
-  [[i18n('modulesPhotosTitle')]]
+  $i18n{modulesPhotosTitle}
 </ntp-module-header>
 <div id="memories">
   <template id="welcomeCardElement" is="dom-if" if="[[showOptInScreen]]">
@@ -333,26 +333,26 @@
       <div id="optInContent">
         <div>
           <h1 id="optInTitleText">
-            [[i18n('modulesPhotosMemoriesWelcomeTitle')]]
+            $i18n{modulesPhotosMemoriesWelcomeTitle}
           </h1>
           <span id="optInTitleDesc">
-            [[i18n('modulesPhotosMemoriesWelcomeText')]]
+            $i18n{modulesPhotosMemoriesWelcomeText}
           </span>
         </div>
         <div>
           <cr-button id="optInButton" class="action-button"
               on-click="onOptInClick_">
-            [[i18n('modulesPhotosMemoriesWelcomeButtonOptIn')]]
+            $i18n{modulesPhotosMemoriesWelcomeButtonOptIn}
           </cr-button>
           <cr-button id="optOutButton"
               on-click="onOptOutClick_"
               hidden="[[showSoftOptOutButton]]">
-            [[i18n('modulesPhotosMemoriesWelcomeButtonOptOut')]]
+            $i18n{modulesPhotosMemoriesWelcomeButtonOptOut}
           </cr-button>
           <cr-button id="softOptOutButton"
             on-click="onSoftOptOutClick_"
             hidden="[[!showSoftOptOutButton]]">
-              [[i18n('modulesPhotosMemoriesWelcomeButtonSoftOptOut')]]
+              $i18n{modulesPhotosMemoriesWelcomeButtonSoftOptOut}
           </cr-button>
         </div>
       </div>
@@ -362,7 +362,7 @@
         <div id="greenShape"></div>
         <div id="memoryMain" class="memory card">
           <div class="memory-title" dir="auto">
-            [[i18n('modulesPhotosMemoriesWelcomeExample')]]
+            $i18n{modulesPhotosMemoriesWelcomeExample}
           </div>
         </div>
         <div id="memorySecond" class="memory card no-title"></div>
@@ -389,7 +389,7 @@
           <div id="exploreIcon"></div>
         </div>
         <div id="exploreText">
-          [[i18n('modulesPhotosMemoriesExplore')]]
+          $i18n{modulesPhotosMemoriesExplore}
         </div>
       </a>
     </template>

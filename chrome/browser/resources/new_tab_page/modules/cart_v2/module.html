@@ -286,7 +286,7 @@
                                     'modulesCartLower')]]"
       on-disable-button-click="onDisableButtonClick_"
       icon-src="modules/cart/icons/cart_logo.svg">
-    [[i18n('modulesCartSentenceV2')]]
+    $i18n{modulesCartSentenceV2}
   </ntp-module-header>
   <div id="moduleContent">
     <div id="cartCarousel">
@@ -295,18 +295,18 @@
           if="[[showDiscountConsent]]">
         <div id="consentCard">
           <span id="consentContent">
-            [[i18n('modulesCartDiscountConsentContent')]]
+            $i18n{modulesCartDiscountConsentContent}
           </span>
           <div id="consentButtonContainer">
             <cr-button id="cancelButton"
                 class="cancel-button" on-click="onDisallowDiscount_"
                 on-auxclick="onDisallowDiscount_">
-              [[i18n('modulesCartDiscountConsentReject')]]
+              $i18n{modulesCartDiscountConsentReject}
             </cr-button>
             <cr-button id="actionButton"
                 class="action-button" on-click="onAllowDiscount_"
                 on-auxclick="onAllowDiscount_">
-              [[i18n('modulesCartDiscountConsentAccept')]]
+              $i18n{modulesCartDiscountConsentAccept}
             </cr-button>
           </div>
         </div>
@@ -319,7 +319,7 @@
             <div class="merchant-container">
               <span class="merchant">[[item.merchant]]</span>
               <cr-icon-button class="icon-more-vert"
-                  title="[[i18n('moreActions')]]"
+                  title="$i18n{moreActions}"
                   on-click="onCartMenuButtonClick_">
               </cr-icon-button>
             </div>
@@ -396,7 +396,7 @@
   </div>
   <cr-button id="undoDismissCartButton"
       on-click="onUndoDismissCartButtonClick_">
-    [[i18n('undo')]]
+    $i18n{undo}
   </cr-button>
 </cr-toast>
 <cr-toast id="confirmDiscountConsentToast" duration="10000">
@@ -405,6 +405,6 @@
   </div>
   <cr-button id="confirmDiscountConsentButton"
       on-click="onConfirmDiscountConsentClick_">
-    [[i18n('modulesCartDiscountConsentConfirmationDismiss')]]
+    $i18n{modulesCartDiscountConsentConfirmationDismiss}
   </cr-button>
 </cr-toast>
