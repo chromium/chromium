@@ -58,8 +58,6 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
     public SimpleIndexDelegate,
     public base::SupportsWeakPtr<SimpleBackendImpl> {
  public:
-  static const base::Feature kPrioritizedSimpleCacheTasks;
-
   // Note: only pass non-nullptr for |file_tracker| if you don't want the global
   // one (which things other than tests would want). |file_tracker| must outlive
   // the backend and all the entries, including their asynchronous close.

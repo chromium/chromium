@@ -183,9 +183,6 @@ SimpleEntryImpl::OperationsMode CacheTypeToOperationsMode(net::CacheType type) {
 
 }  // namespace
 
-const base::Feature SimpleBackendImpl::kPrioritizedSimpleCacheTasks{
-    "PrioritizedSimpleCacheTasks", base::FEATURE_ENABLED_BY_DEFAULT};
-
 class SimpleBackendImpl::ActiveEntryProxy
     : public SimpleEntryImpl::ActiveEntryProxy {
  public:
@@ -907,14 +904,9 @@ void SimpleBackendImpl::FlushWorkerPoolForTesting() {
 
 uint32_t SimpleBackendImpl::GetNewEntryPriority(
     net::RequestPriority request_priority) {
-  if (base::FeatureList::IsEnabled(kPrioritizedSimpleCacheTasks)) {
-    // Lower priority is better, so give high network priority the least bump.
-    return ((net::RequestPriority::MAXIMUM_PRIORITY - request_priority) *
-            10000) +
-           entry_count_++;
-  }
-
-  return 0;
+  // Lower priority is better, so give high network priority the least bump.
+  return ((net::RequestPriority::MAXIMUM_PRIORITY - request_priority) * 10000) +
+         entry_count_++;
 }
 
 }  // namespace disk_cache
