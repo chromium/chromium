@@ -28,18 +28,20 @@ class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
     super();
     this.progressValue_ = 0;
     this.canCancel_ = false;
+    this.lowBatteryStatus_ = false;
   }
 
   static get properties() {
     return {
       progressValue_: {type: Number},
 
-      canCancel_: {type: Boolean}
+      canCancel_: {type: Boolean},
+      lowBatteryStatus_: {type: Boolean}
     };
   }
 
   get EXTERNAL_API() {
-    return ['setProgressValue', 'showSkipButton'];
+    return ['setProgressValue', 'showSkipButton', 'setLowBatteryStatus'];
   }
 
   /**
@@ -55,6 +57,15 @@ class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
    */
   showSkipButton() {
     this.canCancel_ = true;
+  }
+
+  /**
+   * Called on updating low battery status.
+   * @param {boolean} status Whether or not low-battery UI should
+   *   show. Specifically, if battery is low and no charger is connected.
+   */
+  setLowBatteryStatus(status) {
+    this.lowBatteryStatus_ = status;
   }
 
   ready() {

@@ -14,10 +14,25 @@
 <link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
 <link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
 <link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/oobe_slide/oobe_slide.html">
 
 <dom-module id="lacros-data-migration-element">
   <template>
     <style include="oobe-dialog-host-styles">
+      <!-- TODO(crbug.com/1296174): merge following with other copies. -->
+      .update-illustration {
+          height: 264px;
+          width: 264px;
+      }
+
+      .slide-view {
+          border: 1px solid var(--google-grey-200);
+          border-radius: 16px;
+          height: 380px;
+          margin: auto;
+          overflow: hidden;
+          width: 380px;
+      }
     </style>
     <oobe-adaptive-dialog id="dialog" role="dialog">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
@@ -33,10 +48,25 @@
           [[i18nDynamic(locale, 'lacrosDataMigrationSkipSuggestion')]]
         </p>
       </div>
-      <div slot="content" class="flex layout vertical center center-justified">
+      <div slot="content" class="flex layout vertical center center-justified"
+           hidden="[[lowBatteryStatus_]]" id="updating">
         <img src="/images/update_boot.svg"
             class="oobe-illustration" aria-hidden="true">
       </div>
+      <div hidden="[[!lowBatteryStatus_]]" class="slide-view"
+           slot="content", id="lowBattery">
+        <oobe-slide is-warning>
+          <img slot="slide-img" class="update-illustration oobe-illustration"
+               srcset="images/update-charge.svg" aria-hidden="true">
+          <div slot="title">
+            [[i18nDynamic(locale, 'batteryWarningTitle')]]
+          </div>
+          <div slot="text">
+            [[i18nDynamic(locale, 'batteryWarningText')]]
+          </div>
+        </oobe-slide>
+      </div>
+
       <!-- Cancel button -->
       <div slot="bottom-buttons" class="flex layout horizontal end-justified">
         <oobe-text-button id="cancelButton"  hidden="[[!canCancel_]]"

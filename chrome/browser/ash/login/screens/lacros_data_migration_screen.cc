@@ -24,6 +24,10 @@ namespace ash {
 namespace {
 constexpr char kUserActionCancel[] = "cancel";
 constexpr base::TimeDelta kShowSkipButtonDuration = base::Seconds(20);
+
+// If the battery percent is lower than this ratio, and the charger is not
+// connected, then the low-battery warning will be displayed.
+constexpr double kInsufficientBatteryPercent = 50;
 }  // namespace
 
 LacrosDataMigrationScreen::LacrosDataMigrationScreen(
@@ -50,6 +54,10 @@ void LacrosDataMigrationScreen::OnViewDestroyed(
 void LacrosDataMigrationScreen::ShowImpl() {
   if (!view_)
     return;
+
+  if (!power_manager_subscription_.IsObserving())
+    power_manager_subscription_.Observe(PowerManagerClient::Get());
+  PowerManagerClient::Get()->RequestStatusUpdate();
 
   if (!migrator_) {
     const std::string user_id_hash =
@@ -94,8 +102,9 @@ void LacrosDataMigrationScreen::ShowImpl() {
   view_->Show();
 
   GetWakeLock()->RequestWakeLock();
+  UpdateLowBatteryStatus();
 
-  // If set, do not post `SHowSkipButton()`.
+  // If set, do not post `ShowSkipButton()`.
   if (skip_post_show_button_for_testing_)
     return;
 
@@ -129,6 +138,23 @@ void LacrosDataMigrationScreen::OnUserAction(const std::string& action_id) {
 
 void LacrosDataMigrationScreen::HideImpl() {
   GetWakeLock()->CancelWakeLock();
+  power_manager_subscription_.Reset();
+}
+
+void LacrosDataMigrationScreen::PowerChanged(
+    const power_manager::PowerSupplyProperties& proto) {
+  UpdateLowBatteryStatus();
+}
+
+void LacrosDataMigrationScreen::UpdateLowBatteryStatus() {
+  const absl::optional<power_manager::PowerSupplyProperties>& proto =
+      PowerManagerClient::Get()->GetLastStatus();
+  if (!proto.has_value())
+    return;
+  view_->SetLowBatteryStatus(
+      proto->battery_state() ==
+          power_manager::PowerSupplyProperties_BatteryState_DISCHARGING &&
+      proto->battery_percent() < kInsufficientBatteryPercent);
 }
 
 device::mojom::WakeLock* LacrosDataMigrationScreen::GetWakeLock() {

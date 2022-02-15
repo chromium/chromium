@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -26,6 +27,8 @@ namespace ash {
 namespace {
 constexpr char kLacrosDataMigrationId[] = "lacros-data-migration";
 const test::UIPath kSkipButton = {kLacrosDataMigrationId, "cancelButton"};
+const test::UIPath kUpdating = {kLacrosDataMigrationId, "updating"};
+const test::UIPath kLowBattery = {kLacrosDataMigrationId, "lowBattery"};
 
 class FakeMigrator : public BrowserDataMigrator {
  public:
@@ -73,6 +76,9 @@ class LacrosDataMigrationScreenTest : public OobeBaseTest {
 
  protected:
   FakeMigrator* fake_migrator() { return fake_migrator_; }
+  FakePowerManagerClient* power_manager_client() {
+    return static_cast<FakePowerManagerClient*>(PowerManagerClient::Get());
+  }
 
  private:
   // This is owned by `LacrosDataMigrationScreen`.
@@ -96,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, SkipButton) {
               LacrosDataMigrationScreenView::kScreenId));
   lacros_data_migration_screen->ShowSkipButton();
 
-  test::OobeJS().ExpectVisiblePath(kSkipButton);
+  test::OobeJS().CreateVisibilityWaiter(true, kSkipButton)->Wait();
 
   EXPECT_FALSE(fake_migrator()->IsCancelCalled());
   test::OobeJS().TapOnPath(kSkipButton);
@@ -108,5 +114,66 @@ IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, SkipButton) {
                           base::Unretained(fake_migrator())))
       .Wait();
 }
+
+IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, LowBattery) {
+  power_manager::PowerSupplyProperties power_props;
+  power_props.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_FULL);
+  power_props.set_battery_percent(100);
+  power_manager_client()->UpdatePowerProperties(power_props);
+
+  OobeScreenWaiter waiter(LacrosDataMigrationScreenView::kScreenId);
+  WizardController::default_controller()->AdvanceToScreen(
+      LacrosDataMigrationScreenView::kScreenId);
+  waiter.Wait();
+
+  // By default, low-battery screen should be hidden.
+  test::OobeJS().CreateVisibilityWaiter(true, kUpdating)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(false, kLowBattery)->Wait();
+
+  // If the battery is low, and the charger is not connected,
+  // the low battery warning should be shown.
+  power_props.Clear();
+  power_props.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_DISCHARGING);
+  power_props.set_battery_percent(30);
+  power_manager_client()->UpdatePowerProperties(power_props);
+
+  test::OobeJS().CreateVisibilityWaiter(false, kUpdating)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kLowBattery)->Wait();
+
+  // If power is enough, even if the charger is not connected,
+  // the low battery warning should be hidden.
+  power_props.Clear();
+  power_props.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_DISCHARGING);
+  power_props.set_battery_percent(100);
+  power_manager_client()->UpdatePowerProperties(power_props);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kUpdating)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(false, kLowBattery)->Wait();
+
+  // Similarly, even if the battery is lower, if the charger is connected,
+  // the low battery warning should be hidden, still.
+  // To confirm the state transition, first switching to low-battery state.
+  power_props.Clear();
+  power_props.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_DISCHARGING);
+  power_props.set_battery_percent(30);
+  power_manager_client()->UpdatePowerProperties(power_props);
+  test::OobeJS().CreateVisibilityWaiter(false, kUpdating)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kLowBattery)->Wait();
+
+  // Then, set to the charging and low-battery state.
+  power_props.Clear();
+  power_props.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_CHARGING);
+  power_props.set_battery_percent(30);
+  power_manager_client()->UpdatePowerProperties(power_props);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kUpdating)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(false, kLowBattery)->Wait();
+}
+
 }  // namespace
 }  // namespace ash
