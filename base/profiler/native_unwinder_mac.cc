@@ -12,9 +12,11 @@
 #include <sys/ptrace.h>
 
 #include "base/check_op.h"
+#include "base/mac/mac_util.h"
 #include "base/notreached.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/native_unwinder.h"
+#include "base/profiler/native_unwinder_apple.h"
 #include "base/profiler/profile_builder.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -350,6 +352,9 @@ absl::optional<UnwindResult> NativeUnwinderMac::CheckPostconditions(
 }
 
 std::unique_ptr<Unwinder> CreateNativeUnwinder(ModuleCache* module_cache) {
+  if (__builtin_available(macOS 10.14, *)) {
+    return std::make_unique<NativeUnwinderApple>();
+  }
   return std::make_unique<NativeUnwinderMac>(module_cache);
 }
 

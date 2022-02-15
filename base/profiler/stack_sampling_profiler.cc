@@ -748,20 +748,13 @@ TimeTicks StackSamplingProfiler::TestPeer::GetNextSampleTime(
 }
 
 // static
-// The profiler is currently supported for Windows x64, MacOSX x64, and Android
-// ARM32.
+// The profiler is currently supported for Windows x64, macOS, iOS 64-bit, and
+// Android ARM32.
 bool StackSamplingProfiler::IsSupportedForCurrentPlatform() {
 #if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) ||  \
     (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)) ||  \
     (BUILDFLAG(IS_IOS) && defined(ARCH_CPU_64_BITS)) || \
     (BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE))
-#if BUILDFLAG(IS_MAC)
-  // TODO(https://crbug.com/1098119): Fix unwinding on macOS 11. The OS has
-  // moved all system libraries into the dyld shared cache and this seems to
-  // break the sampling profiler.
-  if (base::mac::IsAtLeastOS11())
-    return false;
-#endif
 #if BUILDFLAG(IS_WIN)
   // Do not start the profiler when Application Verifier is in use; running them
   // simultaneously can cause crashes and has no known use case.
