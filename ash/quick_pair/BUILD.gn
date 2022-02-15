@@ -32,5 +32,6 @@ source_set("unit_tests") {
     "//ash/quick_pair/pairing:unit_tests",
     "//ash/quick_pair/repository:unit_tests",
     "//ash/quick_pair/scanning:unit_tests",
+    "//ash/quick_pair/ui:unit_tests",
   ]
 }

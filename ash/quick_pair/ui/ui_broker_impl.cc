@@ -10,13 +10,16 @@
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/ui/actions.h"
 #include "ash/quick_pair/ui/fast_pair/fast_pair_presenter.h"
+#include "ash/quick_pair/ui/fast_pair/fast_pair_presenter_impl.h"
 #include "base/bind.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 namespace quick_pair {
 
 UIBrokerImpl::UIBrokerImpl()
-    : fast_pair_presenter_(std::make_unique<FastPairPresenter>()) {}
+    : fast_pair_presenter_(FastPairPresenterImpl::Factory::Create(
+          message_center::MessageCenter::Get())) {}
 
 UIBrokerImpl::~UIBrokerImpl() = default;
 

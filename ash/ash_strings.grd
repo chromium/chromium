@@ -3165,6 +3165,9 @@ This file contains the strings for ash.
       <message name="IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_MESSAGE" desc="Notification message shown when there is a device discovered with Fast Pair.">
         Connect <ph name="NAME">$1<ex>Pixel Buds</ex></ph> to this Chromebook
       </message>
+      <message name="IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_EMAIL_MESSAGE" desc="Notification message shown when there is a device discovered with Fast Pair that includes the user's email address.">
+        Your <ph name="NAME">$1<ex>Pixel Buds</ex></ph> will appear on devices linked with <ph name="EMAIL">$2<ex>alisha123@gmail.com</ex></ph>
+      </message>
       <message name="IDS_FAST_PAIR_CANCEL_BUTTON" desc="Message on button to tell users to cancel bluetooth device connection with Fast Pair.">
         Cancel
       </message>

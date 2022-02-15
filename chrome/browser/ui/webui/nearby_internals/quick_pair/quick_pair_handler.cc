@@ -13,6 +13,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "ui/message_center/message_center.h"
 
 namespace {
 // Keys in the JSON representation of a log message
@@ -3777,7 +3778,8 @@ base::Value LogMessageToDictionary(
 
 QuickPairHandler::QuickPairHandler()
     : fast_pair_notification_controller_(
-          std::make_unique<ash::quick_pair::FastPairNotificationController>()),
+          std::make_unique<ash::quick_pair::FastPairNotificationController>(
+              message_center::MessageCenter::Get())),
       image_decoder_(
           std::make_unique<ash::quick_pair::FastPairImageDecoderImpl>()) {}
 
@@ -3860,7 +3862,7 @@ void QuickPairHandler::NotifyFastPairDiscovery(const base::ListValue* args) {
 }
 
 void QuickPairHandler::OnImageDecodedFastPairDiscovery(gfx::Image image) {
-  fast_pair_notification_controller_->ShowDiscoveryNotification(
+  fast_pair_notification_controller_->ShowGuestDiscoveryNotification(
       kTestDeviceName, image, base::DoNothing(), base::DoNothing(),
       base::DoNothing());
 }

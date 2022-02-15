@@ -10,6 +10,10 @@
 #include "base/timer/timer.h"
 #include "ui/gfx/image/image.h"
 
+namespace message_center {
+class MessageCenter;
+}  // namespace message_center
+
 namespace ash {
 namespace quick_pair {
 
@@ -17,7 +21,8 @@ namespace quick_pair {
 // FastPair corresponding notification event.
 class FastPairNotificationController {
  public:
-  FastPairNotificationController();
+  explicit FastPairNotificationController(
+      message_center::MessageCenter* message_center);
   ~FastPairNotificationController();
   FastPairNotificationController(const FastPairNotificationController&) =
       delete;
@@ -29,11 +34,19 @@ class FastPairNotificationController {
                              gfx::Image device_image,
                              base::RepeatingClosure launch_bluetooth_pairing,
                              base::OnceCallback<void(bool)> on_close);
-  void ShowDiscoveryNotification(const std::u16string& device_name,
-                                 gfx::Image device_image,
-                                 base::RepeatingClosure on_connect_clicked,
-                                 base::RepeatingClosure on_learn_more_clicked,
-                                 base::OnceCallback<void(bool)> on_close);
+  void ShowUserDiscoveryNotification(
+      const std::u16string& device_name,
+      const std::u16string& email_address,
+      gfx::Image device_image,
+      base::RepeatingClosure on_save_clicked,
+      base::RepeatingClosure on_learn_more_clicked,
+      base::OnceCallback<void(bool)> on_close);
+  void ShowGuestDiscoveryNotification(
+      const std::u16string& device_name,
+      gfx::Image device_image,
+      base::RepeatingClosure on_connect_clicked,
+      base::RepeatingClosure on_learn_more_clicked,
+      base::OnceCallback<void(bool)> on_close);
   void ShowPairingNotification(const std::u16string& device_name,
                                gfx::Image device_image,
                                base::OnceCallback<void(bool)> on_close);
@@ -50,6 +63,8 @@ class FastPairNotificationController {
   // remove them from the Message Center if the user does not elect to begin
   // pairing/saving to their account.
   base::OneShotTimer expire_notification_timer_;
+
+  message_center::MessageCenter* message_center_;
 
   base::WeakPtrFactory<FastPairNotificationController> weak_ptr_factory_{this};
 };
