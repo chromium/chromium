@@ -67,7 +67,6 @@ Subtype MatchTypeToSubtype(AutocompleteMatchType::Type type) {
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
     case AutocompleteMatchType::PEDAL_DEPRECATED:
-    case AutocompleteMatchType::OPEN_TAB:
       return Subtype::kDomain;
 
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
@@ -92,6 +91,7 @@ Subtype MatchTypeToSubtype(AutocompleteMatchType::Type type) {
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
+    case AutocompleteMatchType::OPEN_TAB:
     case AutocompleteMatchType::NUM_TYPES:
       NOTREACHED();
       return Subtype::kDomain;
@@ -221,9 +221,6 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
       return ash::OMNIBOX_NAVSUGGEST;
     case AutocompleteMatchType::CALCULATOR:
       return ash::OMNIBOX_CALCULATOR;
-    case AutocompleteMatchType::OPEN_TAB:
-      // TODO(crbug.com/1293702): Add an ash metrics type for open tab results.
-      return ash::SEARCH_RESULT_TYPE_BOUNDARY;
 
     case AutocompleteMatchType::HISTORY_KEYWORD:
     case AutocompleteMatchType::SEARCH_SUGGEST_TAIL:
@@ -244,6 +241,7 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
+    case AutocompleteMatchType::OPEN_TAB:
     case AutocompleteMatchType::NUM_TYPES:
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;
   }
