@@ -76,6 +76,8 @@ VariationsIdsProvider::GetClientDataHeaders(bool is_signed_in) {
 
   if (mode_ == Mode::kIgnoreSignedInState)
     is_signed_in = true;
+  else if (mode_ == Mode::kDontSendSignedInVariations)
+    is_signed_in = false;
 
   std::string first_party_header_copy;
   std::string any_context_header_copy;

@@ -112,4 +112,12 @@ public abstract class PlatformServiceBridge {
     public TrustTokenFulfillerManager.Factory getLocalTrustTokenFulfillerFactory() {
         return null;
     }
+
+    /**
+     * Returns a first party package ID that will send variations headers if the feature is
+     * enabled.
+     */
+    public String getFirstPartyVariationsHeadersEnabledPackageId() {
+        return "";
+    }
 }

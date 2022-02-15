@@ -240,5 +240,7 @@ public final class ProductionSupportedFlagList {
                     "Enables more efficient scheduling of work in WebRTC."),
             Flag.baseFeature(BlinkFeatures.INITIAL_NAVIGATION_ENTRY,
                     "Enables creation of initial NavigationEntries on WebContents creation."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_SEND_VARIATIONS_HEADERS,
+                    "Whether WebView will send variations headers on URLs where applicable."),
     };
 }

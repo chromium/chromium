@@ -45,6 +45,7 @@
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/variations/variations_ids_provider.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/viz/common/features.h"
 #include "content/public/browser/android/media_url_interceptor_register.h"
@@ -359,6 +360,12 @@ bool AwMainDelegate::ShouldCreateFeatureList() {
   // AwBrowserMainParts::PreCreateThreads() to
   // AwMainDelegate::PostEarlyInitialization().
   return false;
+}
+
+variations::VariationsIdsProvider*
+AwMainDelegate::CreateVariationsIdsProvider() {
+  return variations::VariationsIdsProvider::Create(
+      variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
 }
 
 // This function is called only on the browser process.

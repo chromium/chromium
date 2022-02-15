@@ -373,6 +373,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/TestAwContentsClient.java",
     "../javatests/src/org/chromium/android_webview/test/TestAwServiceWorkerClient.java",
     "../javatests/src/org/chromium/android_webview/test/UserAgentTest.java",
+    "../javatests/src/org/chromium/android_webview/test/VariationsHeadersTest.java",
     "../javatests/src/org/chromium/android_webview/test/VariationsSeedHolderTest.java",
     "../javatests/src/org/chromium/android_webview/test/VariationsSeedLoaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/VariationsTest.java",
