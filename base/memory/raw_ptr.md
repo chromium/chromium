@@ -2,9 +2,11 @@
 
 `raw_ptr<T>` is a non-owning smart pointer that has improved memory-safety over
 over raw pointers.  It behaves just like a raw pointer on platforms where
-USE_BACKUP_REF_PTR is off, and almost like one when it's on (the main
-difference is that it's zero-initialized and cleared on destruction and
-move). Unlike `std::unique_ptr<T>`, `base::scoped_refptr<T>`, etc., it
+USE_BACKUP_REF_PTR is off, and almost like one when it's on. The main
+difference is that when USE_BACKUP_REF_PTR is enabled, it's zero-initialized and
+cleared on destruction and move. (You should continue to explicitly initialize
+raw_ptr members to ensure consistent behavior on platforms where USE_BACKUP_REF_PTR
+is disabled.) Unlike `std::unique_ptr<T>`, `base::scoped_refptr<T>`, etc., it
 doesn’t manage ownership or lifetime of an allocated object - you are still
 responsible for freeing the object when no longer used, just as you would
 with a raw C++ pointer.
