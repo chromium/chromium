@@ -122,7 +122,7 @@ const base::Feature kPictureInPictureFeature{"ArcPictureInPicture",
 
 // Controls ARC right click long press compatibility feature.
 const base::Feature kRightClickLongPress{"ArcRightClickLongPress",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls ARCVM real time vcpu feature on a device with 2 logical cores
 // online.
