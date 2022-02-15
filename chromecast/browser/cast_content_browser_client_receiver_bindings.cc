@@ -48,6 +48,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/guest_view/extensions_guest_view.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #endif
 
@@ -115,6 +116,12 @@ void CastContentBrowserClient::ExposeInterfacesToRenderer(
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   associated_registry->AddInterface(base::BindRepeating(
       &extensions::EventRouter::BindForRenderer, render_process_host->GetID()));
+  associated_registry->AddInterface(
+      base::BindRepeating(&extensions::ExtensionsGuestView::CreateForComponents,
+                          render_process_host->GetID()));
+  associated_registry->AddInterface(
+      base::BindRepeating(&extensions::ExtensionsGuestView::CreateForExtensions,
+                          render_process_host->GetID()));
 #endif
 }
 

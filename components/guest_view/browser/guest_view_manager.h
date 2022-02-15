@@ -139,7 +139,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
  protected:
   friend class GuestViewBase;
   friend class GuestViewEvent;
-  friend class GuestViewMessageFilter;
+  friend class GuestViewMessageHandler;
 
   class EmbedderRenderProcessHostObserver;
 

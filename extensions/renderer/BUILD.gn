@@ -250,6 +250,7 @@ source_set("renderer") {
     "//chrome:resources",
     "//components/crx_file",
     "//components/guest_view/common",
+    "//components/guest_view/common:mojom",
     "//components/guest_view/renderer",
     "//components/version_info",
     "//content:content_resources",

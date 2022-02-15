@@ -177,6 +177,7 @@ void MimeHandlerViewAttachHelper::ResumeAttachOrDestroy(
     return;
   }
   guest_view->AttachToOuterWebContentsFrame(plugin_rfh, element_instance_id,
-                                            is_full_page_plugin);
+                                            is_full_page_plugin,
+                                            base::NullCallback());
 }
 }  // namespace extensions

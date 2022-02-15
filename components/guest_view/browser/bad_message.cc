@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace guest_view {
@@ -35,12 +34,6 @@ void ReceivedBadMessage(int render_process_id, BadMessageReason reason) {
     return;
 
   ReceivedBadMessage(rph, reason);
-}
-
-void ReceivedBadMessage(content::BrowserMessageFilter* filter,
-                        BadMessageReason reason) {
-  LogBadMessage(reason);
-  filter->ShutdownForBadMessage();
 }
 
 }  // namespace bad_message

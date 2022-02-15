@@ -1,7 +1,6 @@
 include_rules = [
   "+chrome/common",
   "+components/dns_prefetch/common",
-  "+components/guest_view/common",
   "+components/nacl/common",
   "+components/password_manager/content/common",
   "+components/spellcheck/common",

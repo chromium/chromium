@@ -12,7 +12,6 @@ static_library("ipc_message_lib") {
     "//base",
     "//chrome/common",
     "//chrome/common/safe_browsing:proto",
-    "//components/guest_view/common",
     "//components/nacl/common:buildflags",
     "//components/safe_browsing/core/common",
     "//components/spellcheck/common",

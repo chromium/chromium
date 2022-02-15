@@ -58,7 +58,6 @@
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 #include "chromecast/common/cast_extensions_client.h"
 #include "chromecast/renderer/cast_extensions_renderer_client.h"
-#include "components/guest_view/renderer/guest_view_container_dispatcher.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/common/common_manifest_handlers.h"  // nogncheck
 #include "extensions/common/extension_urls.h"            // nogncheck
@@ -154,10 +153,6 @@ void CastContentRendererClient::RenderThreadStarted() {
   extensions::ExtensionsRendererClient::Set(extensions_renderer_client_.get());
 
   thread->AddObserver(extensions_renderer_client_->GetDispatcher());
-
-  guest_view_container_dispatcher_ =
-      std::make_unique<guest_view::GuestViewContainerDispatcher>();
-  thread->AddObserver(guest_view_container_dispatcher_.get());
 #endif
 }
 

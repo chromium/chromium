@@ -40,7 +40,6 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_service_worker_message_filter.h"
-#include "extensions/browser/guest_view/extensions_guest_view_message_filter.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/updater/update_service_factory.h"
@@ -84,7 +83,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   ExtensionFunction::EnsureShutdownNotifierFactoryBuilt();
   ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt();
   ExtensionServiceWorkerMessageFilter::EnsureShutdownNotifierFactoryBuilt();
-  ExtensionsGuestViewMessageFilter::EnsureShutdownNotifierFactoryBuilt();
   ExtensionPrefsFactory::GetInstance();
   FeedbackPrivateAPI::GetFactoryInstance();
   HidDeviceManager::GetFactoryInstance();

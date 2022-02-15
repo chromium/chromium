@@ -21,7 +21,6 @@
 #if BUILDFLAG(ENABLE_NACL)
 #include "components/nacl/common/nacl_host_messages.h"
 #endif
-#include "components/guest_view/common/guest_view_message_generator.h"
 #include "content/common/all_messages.h"
 #include "extensions/common/extension_message_generator.h"
 #include "remoting/host/chromoting_messages.h"

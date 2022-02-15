@@ -6,7 +6,6 @@
 #define COMPONENTS_GUEST_VIEW_BROWSER_BAD_MESSAGE_H_
 
 namespace content {
-class BrowserMessageFilter;
 class RenderProcessHost;
 }  // namespace content
 
@@ -40,12 +39,6 @@ enum BadMessageReason {
 void ReceivedBadMessage(content::RenderProcessHost* host,
                         BadMessageReason reason);
 void ReceivedBadMessage(int render_process_id, BadMessageReason reason);
-
-// Called when a browser message filter receives a bad IPC message from a
-// renderer process. Logs the event, records a histogram metric for the
-// |reason|, and terminates the process for |filter|.
-void ReceivedBadMessage(content::BrowserMessageFilter* filter,
-                        BadMessageReason reason);
 
 }  // namespace bad_message
 }  // namespace guest_view

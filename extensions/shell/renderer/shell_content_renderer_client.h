@@ -14,10 +14,6 @@ namespace blink {
 class WebURL;
 }  // namespace blink
 
-namespace guest_view {
-class GuestViewContainerDispatcher;
-}
-
 namespace extensions {
 
 class ExtensionsClient;
@@ -65,8 +61,6 @@ class ShellContentRendererClient : public content::ContentRendererClient {
  private:
   std::unique_ptr<ExtensionsClient> extensions_client_;
   std::unique_ptr<ShellExtensionsRendererClient> extensions_renderer_client_;
-  std::unique_ptr<guest_view::GuestViewContainerDispatcher>
-      guest_view_container_dispatcher_;
 };
 
 }  // namespace extensions

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "components/guest_view/renderer/guest_view_container_dispatcher.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
@@ -45,10 +44,6 @@ void ShellContentRendererClient::RenderThreadStarted() {
   ExtensionsRendererClient::Set(extensions_renderer_client_.get());
 
   thread->AddObserver(extensions_renderer_client_->GetDispatcher());
-
-  guest_view_container_dispatcher_ =
-      std::make_unique<guest_view::GuestViewContainerDispatcher>();
-  thread->AddObserver(guest_view_container_dispatcher_.get());
 }
 
 void ShellContentRendererClient::RenderFrameCreated(

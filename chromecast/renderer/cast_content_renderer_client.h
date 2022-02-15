@@ -24,12 +24,6 @@ class ExtensionsClient;
 class CastExtensionsRendererClient;
 }  // namespace extensions
 
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-namespace guest_view {
-class GuestViewContainerDispatcher;
-}
-#endif
-
 namespace chromecast {
 class MemoryPressureObserverImpl;
 class UrlRewriteRulesProvider;
@@ -132,8 +126,6 @@ class CastContentRendererClient
   std::unique_ptr<extensions::ExtensionsClient> extensions_client_;
   std::unique_ptr<extensions::CastExtensionsRendererClient>
       extensions_renderer_client_;
-  std::unique_ptr<guest_view::GuestViewContainerDispatcher>
-      guest_view_container_dispatcher_;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

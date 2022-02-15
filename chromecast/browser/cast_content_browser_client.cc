@@ -130,7 +130,6 @@
 #include "extensions/browser/extension_message_filter.h"           // nogncheck
 #include "extensions/browser/extension_protocols.h"                // nogncheck
 #include "extensions/browser/extension_registry.h"                 // nogncheck
-#include "extensions/browser/guest_view/extensions_guest_view_message_filter.h"  // nogncheck
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"  // nogncheck
 #include "extensions/browser/process_map.h"                         // nogncheck
 #include "extensions/common/constants.h"                            // nogncheck
@@ -389,8 +388,6 @@ void CastContentBrowserClient::RenderProcessWillLaunch(
       cast_browser_main_parts_->browser_context();
   host->AddFilter(new extensions::ExtensionMessageFilter(render_process_id,
                                                          browser_context));
-  host->AddFilter(new extensions::ExtensionsGuestViewMessageFilter(
-      render_process_id, browser_context));
   host->AddFilter(
       new CastExtensionMessageFilter(render_process_id, browser_context));
 #endif

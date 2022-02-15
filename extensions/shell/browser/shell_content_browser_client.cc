@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
-#include "components/guest_view/browser/guest_view_message_filter.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -35,7 +34,7 @@
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
-#include "extensions/browser/guest_view/extensions_guest_view_message_filter.h"
+#include "extensions/browser/guest_view/extensions_guest_view.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/url_loader_factory_manager.h"
@@ -109,9 +108,6 @@ void ShellContentBrowserClient::RenderProcessWillLaunch(
   BrowserContext* browser_context = browser_main_parts_->browser_context();
   host->AddFilter(
       new ExtensionMessageFilter(render_process_id, browser_context));
-  host->AddFilter(
-      new ExtensionsGuestViewMessageFilter(
-          render_process_id, browser_context));
   host->AddFilter(
       new MessagingAPIMessageFilter(render_process_id, browser_context));
   // PluginInfoMessageFilter is not required because app_shell does not have
@@ -236,6 +232,10 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
     content::RenderProcessHost* render_process_host) {
   associated_registry->AddInterface(base::BindRepeating(
       &EventRouter::BindForRenderer, render_process_host->GetID()));
+  associated_registry->AddInterface(base::BindRepeating(
+      &ExtensionsGuestView::CreateForComponents, render_process_host->GetID()));
+  associated_registry->AddInterface(base::BindRepeating(
+      &ExtensionsGuestView::CreateForExtensions, render_process_host->GetID()));
 }
 
 void ShellContentBrowserClient::

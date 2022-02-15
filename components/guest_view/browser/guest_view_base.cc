@@ -15,7 +15,6 @@
 #include "components/guest_view/browser/guest_view_event.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/common/guest_view_constants.h"
-#include "components/guest_view/common/guest_view_messages.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/color_chooser.h"
@@ -493,14 +492,18 @@ void GuestViewBase::WillAttach(WebContents* embedder_web_contents,
                                bool is_full_page_plugin,
                                base::OnceClosure completion_callback) {
   WillAttach(embedder_web_contents, nullptr, element_instance_id,
-             is_full_page_plugin, std::move(completion_callback));
+             is_full_page_plugin, std::move(completion_callback),
+             base::NullCallback());
 }
 
-void GuestViewBase::WillAttach(WebContents* embedder_web_contents,
-                               content::RenderFrameHost* outer_contents_frame,
-                               int element_instance_id,
-                               bool is_full_page_plugin,
-                               base::OnceClosure completion_callback) {
+void GuestViewBase::WillAttach(
+    WebContents* embedder_web_contents,
+    content::RenderFrameHost* outer_contents_frame,
+    int element_instance_id,
+    bool is_full_page_plugin,
+    base::OnceClosure completion_callback,
+    GuestViewMessageHandler::AttachToEmbedderFrameCallback
+        attachment_callback) {
   // Stop tracking the old embedder's zoom level.
   if (owner_web_contents())
     StopTrackingEmbedderZoomLevel();
@@ -526,14 +529,12 @@ void GuestViewBase::WillAttach(WebContents* embedder_web_contents,
   owner_web_contents_->AttachInnerWebContents(
       base::WrapUnique<WebContents>(web_contents()), outer_contents_frame,
       is_full_page_plugin);
-  // TODO(ekaramad): MimeHandlerViewGuest might not need this ACK
-  // (https://crbug.com/659750).
   // We don't ACK until after AttachToOuterWebContentsFrame, so that
-  // |outer_contents_frame| gets swapped before the AttachIframeGuest callback
-  // is run. We also need to send the ACK before queued events are sent in
-  // DidAttach.
-  embedder_web_contents->GetMainFrame()->Send(
-      new GuestViewMsg_AttachToEmbedderFrame_ACK(element_instance_id));
+  // |outer_contents_frame| gets swapped before the AttachToEmbedderFrame
+  // callback is run. We also need to send the ACK before queued events are sent
+  // in DidAttach.
+  if (attachment_callback)
+    std::move(attachment_callback).Run();
 
   // Completing attachment will resume suspended resource loads and then send
   // queued events.
@@ -734,12 +735,14 @@ content::SiteInstance* GuestViewBase::GetOwnerSiteInstance() {
 void GuestViewBase::AttachToOuterWebContentsFrame(
     content::RenderFrameHost* embedder_frame,
     int32_t element_instance_id,
-    bool is_full_page_plugin) {
+    bool is_full_page_plugin,
+    GuestViewMessageHandler::AttachToEmbedderFrameCallback
+        attachment_callback) {
   auto completion_callback =
       base::BindOnce(&GuestViewBase::DidAttach, weak_ptr_factory_.GetWeakPtr());
   WillAttach(WebContents::FromRenderFrameHost(embedder_frame), embedder_frame,
              element_instance_id, is_full_page_plugin,
-             std::move(completion_callback));
+             std::move(completion_callback), std::move(attachment_callback));
 }
 
 void GuestViewBase::OnZoomChanged(
