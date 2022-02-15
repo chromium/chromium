@@ -681,7 +681,8 @@ def write_intel_gpu_series_list(entry_id, is_exception, exception_id,
       'tigerlake': 'kTigerlake',
       'rocketlake': 'kRocketlake',
       'dg1': 'kDG1',
-      'alderlake': 'kAlderlake'
+      'alderlake': 'kAlderlake',
+      'alchemist': 'kAlchemist'
     }
     for series in intel_gpu_series_list:
       assert series in intel_gpu_series_map

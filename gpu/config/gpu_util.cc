@@ -861,6 +861,9 @@ IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
         return IntelGpuSeriesType::kDG1;
       case 0x4600:
         return IntelGpuSeriesType::kAlderlake;
+      case 0x4F00:
+      case 0x5600:
+        return IntelGpuSeriesType::kAlchemist;
       default:
         break;
     }
@@ -902,6 +905,7 @@ std::string GetIntelGpuGeneration(uint32_t vendor_id, uint32_t device_id) {
         return "11";
       case IntelGpuSeriesType::kTigerlake:
       case IntelGpuSeriesType::kAlderlake:
+      case IntelGpuSeriesType::kAlchemist:
         return "12";
       default:
         break;

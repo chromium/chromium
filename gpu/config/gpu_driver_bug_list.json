@@ -3391,7 +3391,9 @@
       },
       "intel_gpu_series": [
         "icelake",
-        "tigerlake"
+        "tigerlake",
+        "alderlake",
+        "alchemist"
       ],
       "features": [
         "force_rgb10a2_overlay_support_flags"
@@ -3547,7 +3549,8 @@
       "intel_gpu_series": [
         "icelake",
         "tigerlake",
-        "alderlake"
+        "alderlake",
+        "alchemist"
       ],
       "features": [
         "supports_two_yuv_hardware_overlays"
