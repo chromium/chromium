@@ -35,6 +35,7 @@ std::array<std::atomic_uint32_t,
            AddressPoolManagerBitmap::kAddressSpaceSize / kSuperPageSize>
     AddressPoolManagerBitmap::super_page_refcount_map_;
 #endif
+std::atomic_size_t AddressPoolManagerBitmap::blocklist_hit_count_;
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 }  // namespace partition_alloc::internal
