@@ -33,7 +33,6 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
@@ -108,6 +107,7 @@
 #include "ui/accessibility/ax_enums.mojom-blink-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -5295,11 +5295,11 @@ int AXObject::GetDOMNodeId() const {
 
 void AXObject::GetRelativeBounds(AXObject** out_container,
                                  gfx::RectF& out_bounds_in_container,
-                                 skia::Matrix44& out_container_transform,
+                                 gfx::Transform& out_container_transform,
                                  bool* clips_children) const {
   *out_container = nullptr;
   out_bounds_in_container = gfx::RectF();
-  out_container_transform.setIdentity();
+  out_container_transform.MakeIdentity();
 
   // First check if it has explicit bounds, for example if this element is tied
   // to a canvas path. When explicit coordinates are provided, the ID of the
@@ -5419,7 +5419,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   if (transform.IsIdentityOr2DTranslation()) {
     out_bounds_in_container.Offset(transform.To2DTranslation());
   } else {
-    out_container_transform = TransformationMatrix::ToSkMatrix44(transform);
+    out_container_transform = TransformationMatrix::ToTransform(transform);
   }
 }
 
@@ -5434,7 +5434,7 @@ gfx::RectF AXObject::LocalBoundingBoxRectForAccessibility() {
 LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
   AXObject* container = nullptr;
   gfx::RectF bounds;
-  skia::Matrix44 transform;
+  gfx::Transform transform;
   GetRelativeBounds(&container, bounds, transform);
   gfx::RectF computed_bounds(0, 0, bounds.width(), bounds.height());
   while (container && container != this) {
@@ -5443,10 +5443,7 @@ LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
       computed_bounds.Offset(-container->GetScrollOffset().x(),
                              -container->GetScrollOffset().y());
     }
-    if (!transform.isIdentity()) {
-      TransformationMatrix transformation_matrix(transform);
-      transformation_matrix.MapRect(computed_bounds);
-    }
+    transform.TransformRect(&computed_bounds);
     container->GetRelativeBounds(&container, bounds, transform);
   }
   return LayoutRect(computed_bounds);

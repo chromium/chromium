@@ -139,6 +139,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace {
 
@@ -3536,7 +3537,7 @@ bool AXNodeObject::IsRedundantLabel(HTMLLabelElement* label) {
 
 void AXNodeObject::GetRelativeBounds(AXObject** out_container,
                                      gfx::RectF& out_bounds_in_container,
-                                     skia::Matrix44& out_container_transform,
+                                     gfx::Transform& out_container_transform,
                                      bool* clips_children) const {
   if (GetLayoutObject()) {
     AXObject::GetRelativeBounds(out_container, out_bounds_in_container,
@@ -3551,7 +3552,7 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
 
   *out_container = nullptr;
   out_bounds_in_container = gfx::RectF();
-  out_container_transform.setIdentity();
+  out_container_transform.MakeIdentity();
 
   // First check if it has explicit bounds, for example if this element is tied
   // to a canvas path. When explicit coordinates are provided, the ID of the

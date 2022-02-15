@@ -70,7 +70,7 @@ class AXImageMapLink final : public AXNodeObject {
   static AXObject* GetAXObjectForImageMap(AXObjectCacheImpl& cache, Node* area);
   void GetRelativeBounds(AXObject** out_container,
                          gfx::RectF& out_bounds_in_container,
-                         skia::Matrix44& out_container_transform,
+                         gfx::Transform& out_container_transform,
                          bool* clips_children = nullptr) const override;
 
  private:

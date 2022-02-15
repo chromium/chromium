@@ -44,6 +44,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -265,27 +266,23 @@ void BlinkAXTreeSource::PopulateAXRelativeBounds(WebAXObject obj,
                                                  bool* clips_children) const {
   WebAXObject offset_container;
   gfx::RectF bounds_in_container;
-  skia::Matrix44 web_container_transform;
+  gfx::Transform container_transform;
   obj.GetRelativeBounds(offset_container, bounds_in_container,
-                        web_container_transform, clips_children);
+                        container_transform, clips_children);
   bounds->bounds = bounds_in_container;
   if (!offset_container.IsDetached())
     bounds->offset_container_id = offset_container.AxID();
 
   if (content::AXShouldIncludePageScaleFactorInRoot() && obj.Equals(root())) {
     const WebView* web_view = render_frame_->GetWebView();
-    std::unique_ptr<gfx::Transform> container_transform =
-        std::make_unique<gfx::Transform>(web_container_transform);
-    container_transform->Scale(web_view->PageScaleFactor(),
-                               web_view->PageScaleFactor());
-    container_transform->Translate(
+    container_transform.Scale(web_view->PageScaleFactor(),
+                              web_view->PageScaleFactor());
+    container_transform.Translate(
         -web_view->VisualViewportOffset().OffsetFromOrigin());
-    if (!container_transform->IsIdentity())
-      bounds->transform = std::move(container_transform);
-  } else if (!web_container_transform.isIdentity()) {
-    bounds->transform =
-        base::WrapUnique(new gfx::Transform(web_container_transform));
   }
+
+  if (!container_transform.IsIdentity())
+    bounds->transform = std::make_unique<gfx::Transform>(container_transform);
 }
 
 bool BlinkAXTreeSource::HasCachedBoundingBox(int32_t id) const {
@@ -696,7 +693,7 @@ void BlinkAXTreeSource::AddImageAnnotations(blink::WebAXObject& src,
   // unloaded images where the size is unknown.
   WebAXObject offset_container;
   gfx::RectF bounds;
-  skia::Matrix44 container_transform;
+  gfx::Transform container_transform;
   bool clips_children = false;
   src.GetRelativeBounds(offset_container, bounds, container_transform,
                         &clips_children);

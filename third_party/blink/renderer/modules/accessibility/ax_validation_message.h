@@ -33,7 +33,7 @@ class AXValidationMessage final : public AXMockObject {
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
   void GetRelativeBounds(AXObject** out_container,
                          gfx::RectF& out_bounds_in_container,
-                         skia::Matrix44& out_container_transform,
+                         gfx::Transform& out_container_transform,
                          bool* clips_children) const override;
   const AtomicString& LiveRegionStatus() const override;
   const AtomicString& LiveRegionRelevant() const override;

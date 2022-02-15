@@ -55,8 +55,8 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/geometry/quad_f.h"
 
-namespace skia {
-class Matrix44;
+namespace gfx {
+class Transform;
 }
 
 namespace ui {
@@ -848,7 +848,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // set |clips_children| to true.
   virtual void GetRelativeBounds(AXObject** out_container,
                                  gfx::RectF& out_bounds_in_container,
-                                 skia::Matrix44& out_container_transform,
+                                 gfx::Transform& out_container_transform,
                                  bool* clips_children = nullptr) const;
 
   gfx::RectF LocalBoundingBoxRectForAccessibility();
