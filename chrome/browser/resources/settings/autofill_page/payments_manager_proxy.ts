@@ -66,6 +66,11 @@ export interface PaymentsManagerProxy {
    * Enrolls the card into virtual cards.
    */
   addVirtualCard(cardId: string): void;
+
+  /**
+   * Unenrolls the card from virtual cards.
+   */
+  removeVirtualCard(cardId: string): void;
 }
 
 /**
@@ -116,6 +121,10 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   addVirtualCard(cardId: string) {
     chrome.autofillPrivate.addVirtualCard(cardId);
+  }
+
+  removeVirtualCard(serverId: string) {
+    chrome.autofillPrivate.removeVirtualCard(serverId);
   }
 
   static getInstance(): PaymentsManagerProxy {

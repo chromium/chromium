@@ -252,6 +252,23 @@ class AutofillPrivateAddVirtualCardFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutofillPrivateRemoveVirtualCardFunction : public ExtensionFunction {
+ public:
+  AutofillPrivateRemoveVirtualCardFunction() = default;
+  AutofillPrivateRemoveVirtualCardFunction(
+      const AutofillPrivateRemoveVirtualCardFunction&) = delete;
+  AutofillPrivateRemoveVirtualCardFunction& operator=(
+      const AutofillPrivateRemoveVirtualCardFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.removeVirtualCard",
+                             AUTOFILLPRIVATE_REMOVEVIRTUALCARD)
+
+ protected:
+  ~AutofillPrivateRemoveVirtualCardFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_

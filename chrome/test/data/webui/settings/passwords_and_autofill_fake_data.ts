@@ -597,6 +597,8 @@ export class TestPaymentsManager implements PaymentsManagerProxy {
     this.actual_.addedVirtualCards++;
   }
 
+  removeVirtualCard(_cardId: string) {}
+
   /**
    * Verifies expectations.
    */

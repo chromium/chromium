@@ -706,6 +706,48 @@ suite('PaymentsSection', function() {
     paymentsManager.assertExpectations(expectations);
   });
 
+  test('verifyRemoveVirtualCardClicked', function() {
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = false;
+    creditCard.metadata!.isCached = false;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
+    creditCard.metadata!.isVirtualCardEnrolled = true;
+
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
+    const menuButton =
+        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
+    assertTrue(!!menuButton);
+    menuButton.click();
+    flush();
+
+    assertFalse(section.$.menuRemoveVirtualCard.hidden);
+    section.$.menuRemoveVirtualCard.click();
+    flush();
+
+    const menu =
+        rowShadowRoot.querySelector<HTMLElement>('#creditCardSharedMenu');
+    assertFalse(!!menu);
+  });
+
+  test('verifyVirtualCardUnenrollDialogConfirmed', async function() {
+    const creditCard = createCreditCardEntry();
+    creditCard.guid = '12345';
+    const dialog = createVirtualCardUnenrollDialog(creditCard);
+
+    // Wait for the dialog to open.
+    await whenAttributeIs(dialog.$.dialog, 'open', '');
+
+    const promise = eventToPromise('unenroll-virtual-card', dialog);
+    dialog.$.confirmButton.click();
+    const event = await promise;
+    assertEquals(event.detail, '12345');
+  });
+
   test('verifyMigrationButtonNotShownIfMigrationNotEnabled', function() {
     // Mock prerequisites are not met.
     loadTimeData.overrideValues({migrationEnabled: false});

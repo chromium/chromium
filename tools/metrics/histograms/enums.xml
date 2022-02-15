@@ -31666,6 +31666,7 @@ Called by update_extension_histograms.py.-->
   <int value="1624" label="OS_DIAGNOSTICS_RUNSMARTCTLCHECKROUTINE"/>
   <int value="1625" label="OS_DIAGNOSTICS_RUNNVMEWEARLEVELROUTINE"/>
   <int value="1626" label="AUTOFILLPRIVATE_ADDVIRTUALCARD"/>
+  <int value="1627" label="AUTOFILLPRIVATE_REMOVEVIRTUALCARD"/>
 </enum>
 
 <enum name="ExtensionIconState">

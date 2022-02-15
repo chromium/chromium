@@ -112,6 +112,7 @@ declare global {
       export function getUpiIdList(callback: (items: Array<string>) => void):
           void;
       export function addVirtualCard(cardId: string): void;
+      export function removeVirtualCard(cardId: string): void;
 
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: Array<AddressEntry>,

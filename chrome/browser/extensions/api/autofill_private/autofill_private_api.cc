@@ -657,4 +657,44 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateRemoveVirtualCardFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateRemoveVirtualCardFunction::Run() {
+  std::unique_ptr<api::autofill_private::RemoveVirtualCard::Params> parameters =
+      api::autofill_private::RemoveVirtualCard::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+
+  // Get the PersonalDataManager to retrieve the card based on the id.
+  autofill::PersonalDataManager* personal_data_manager =
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context()));
+  if (!personal_data_manager || !personal_data_manager->IsDataLoaded())
+    return RespondNow(Error(kErrorDataUnavailable));
+
+  autofill::CreditCard* card =
+      personal_data_manager->GetCreditCardByServerId(parameters->card_id);
+  if (!card)
+    return RespondNow(Error(kErrorDataUnavailable));
+
+  autofill::BrowserAutofillManager* autofill_manager =
+      GetBrowserAutofillManager(GetSenderWebContents());
+  if (!autofill_manager || !autofill_manager->client() ||
+      !autofill_manager->client()->GetFormDataImporter() ||
+      !autofill_manager->client()
+           ->GetFormDataImporter()
+           ->GetVirtualCardEnrollmentManager()) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  autofill::VirtualCardEnrollmentManager* virtual_card_enrollment_manager =
+      autofill_manager->client()
+          ->GetFormDataImporter()
+          ->GetVirtualCardEnrollmentManager();
+
+  virtual_card_enrollment_manager->Unenroll(card->instrument_id());
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

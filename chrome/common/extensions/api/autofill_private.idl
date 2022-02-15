@@ -275,6 +275,12 @@ namespace autofillPrivate {
     // |cardId|: The server side id of the credit card to be enrolled. Note it
     // refers to the legacy server id of credit cards, not the instrument ids.
     static void addVirtualCard(DOMString cardId);
+
+    // Unenrolls a credit card from virtual cards.
+    // |cardId|: The server side id of the credit card to be unenrolled. Note
+    // it refers to the legacy server id of credit cards, not the instrument
+    // ids.
+    static void removeVirtualCard(DOMString cardId);
   };
 
   interface Events {
