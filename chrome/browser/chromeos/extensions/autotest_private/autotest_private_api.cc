@@ -4455,6 +4455,18 @@ AutotestPrivateWaitForLauncherStateFunction::Run() {
       api::autotest_private::WaitForLauncherState::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   auto target_state = ToAppListViewState(params->launcher_state);
+  // The method is only implemented for fullscreen launcher, for bubble
+  // launcher, tests use automation APIs to wait for launcher visibility
+  // changes.
+  // Exceptionally, allow waiting for kClosed state in clamshell mode, so tests
+  // can wait for fullscreen launcher state change to finish when exiting tablet
+  // mode.
+  if (ash::features::IsProductivityLauncherEnabled() &&
+      !ash::TabletMode::Get()->InTabletMode() &&
+      target_state != ash::AppListViewState::kClosed) {
+    return RespondNow(Error("Not supported for bubble launcher"));
+  }
+
   if (WaitForLauncherState(
           target_state,
           base::BindOnce(&AutotestPrivateWaitForLauncherStateFunction::Done,

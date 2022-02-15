@@ -29,6 +29,60 @@ function promisify(f, ...args) {
   });
 }
 
+function closeLauncher(closeCallback) {
+  var toggle = newAccelerator('search', false /* shift */);
+  toggle.pressed = true;
+  chrome.autotestPrivate.activateAccelerator(
+      toggle, chrome.test.callbackPass(function(success) {
+        chrome.test.assertFalse(success);
+        toggle.pressed = false;
+        chrome.autotestPrivate.activateAccelerator(
+            toggle, chrome.test.callbackPass(function(success) {
+              chrome.test.assertTrue(success);
+              chrome.autotestPrivate.waitForLauncherState(
+                  'Closed', chrome.test.callbackPass(closeCallback));
+            }));
+      }));
+}
+
+// Minimizes the browser window while testing tablet mode launcher, so the
+// launcher actually gets shown when entering tablet mode.
+function minimizeBrowserWindow(callback) {
+  chrome.autotestPrivate.getAppWindowList(function(list) {
+    chrome.test.assertNoLastError();
+    chrome.test.assertEq(1, list.length);
+    var browser = list[0];
+    chrome.test.assertEq('Browser', browser.windowType);
+    chrome.test.assertEq('Normal', browser.stateType);
+    chrome.autotestPrivate.setAppWindowState(
+        browser.id, {eventType: 'WMEventMinimize'}, true /* wait */,
+        function(state) {
+          chrome.test.assertNoLastError();
+          chrome.test.assertEq('Minimized', state);
+          callback();
+        });
+  });
+}
+
+// Unminimizes the browser window that was minimized for tests that were using
+// tablet mode launcher.
+function unminimizeBrowserWindow(callback) {
+  chrome.autotestPrivate.getAppWindowList(function(list) {
+    chrome.test.assertNoLastError();
+    chrome.test.assertEq(1, list.length);
+    var browser = list[0];
+    chrome.test.assertEq('Browser', browser.windowType);
+    chrome.test.assertEq('Minimized', browser.stateType);
+    chrome.autotestPrivate.setAppWindowState(
+        browser.id, {eventType: 'WMEventNormal'}, true /* wait */,
+        function(state) {
+          chrome.test.assertNoLastError();
+          chrome.test.assertEq('Normal', state);
+          chrome.autotestPrivate.activateAppWindow(browser.id, callback);
+        });
+  });
+}
+
 var defaultTests = [
   // logout/restart/shutdown don't do anything as we don't want to kill the
   // browser with these tests.
@@ -184,9 +238,8 @@ var defaultTests = [
 
   async function douleStopArc() {
     try {
-      await promisify(
-          chrome.autotestPrivate.stopArc);
-          chrome.test.fail();
+      await promisify(chrome.autotestPrivate.stopArc);
+      chrome.test.fail();
     } catch (error) {
       chrome.test.assertEq("ARC is already stopped", error.message);
       chrome.test.succeed();
@@ -376,114 +429,143 @@ var defaultTests = [
   // to the 'Closed' state before creating launcher works.
   function waitForLauncherStateNoChangeBeforeLauncherCreation() {
     chrome.autotestPrivate.waitForLauncherState(
-        'Closed',
-        function() {
-          chrome.test.assertNoLastError();
-          chrome.test.succeed();
-        });
+        'Closed', chrome.test.callbackPass());
   },
+
   // This test verifies that api to wait for launcher state transition
-  // works as expected
+  // to peeking works as expected
   function waitForLauncherStatePeeking() {
     var togglePeeking = newAccelerator('search', false /* shift */);
-
-    function closeLauncher() {
-      togglePeeking.pressed = true;
-      chrome.autotestPrivate.activateAccelerator(
-          togglePeeking,
-          function(success) {
-            chrome.test.assertFalse(success);
-            togglePeeking.pressed = false;
-            chrome.autotestPrivate.activateAccelerator(
-                togglePeeking,
-                function(success) {
-                  chrome.test.assertTrue(success);
-                  chrome.autotestPrivate.waitForLauncherState(
-                      'Closed',
-                      function() {
-                        chrome.test.assertNoLastError();
-                        chrome.test.succeed();
-                      });
-                });
-          });
-    }
-
     chrome.autotestPrivate.activateAccelerator(
-        togglePeeking,
-        function(success) {
+        togglePeeking, function(success) {
+          chrome.test.assertNoLastError();
           chrome.test.assertFalse(success);
           togglePeeking.pressed = false;
           chrome.autotestPrivate.activateAccelerator(
-              togglePeeking,
-              function(success) {
+              togglePeeking, function(success) {
+                chrome.test.assertNoLastError();
                 chrome.test.assertTrue(success);
                 chrome.autotestPrivate.waitForLauncherState(
-                    'Peeking',
-                    closeLauncher);
+                    'Peeking', function() {
+                      if (chrome.runtime.lastError) {
+                        var errorMessage = chrome.runtime.lastError.message;
+                        closeLauncher(chrome.test.callbackPass(function() {
+                          chrome.test.assertEq(
+                              'Not supported for bubble launcher',
+                              errorMessage);
+                        }));
+                        return;
+                      }
+                      closeLauncher(chrome.test.callbackPass());
+                    });
               });
         });
   },
+
   // This test verifies that api to wait for launcher state transition
   // works as expected
   function waitForLauncherStateFullscreen() {
     var toggleFullscreen = newAccelerator('search', true /* shift */);
-    function closeLauncher() {
-      toggleFullscreen.pressed = true;
-      chrome.autotestPrivate.activateAccelerator(
-          toggleFullscreen,
-          function(success) {
-            chrome.test.assertFalse(success);
-            toggleFullscreen.pressed = false;
-            chrome.autotestPrivate.activateAccelerator(
-                toggleFullscreen,
-                function(success) {
-                  chrome.test.assertTrue(success);
-                  chrome.autotestPrivate.waitForLauncherState(
-                      'Closed',
-                      function() {
-                        chrome.test.assertNoLastError();
-                        chrome.test.succeed();
-                      });
-                });
-          });
-    }
-
     chrome.autotestPrivate.activateAccelerator(
-        toggleFullscreen,
-        function(success) {
+        toggleFullscreen, function(success) {
+          chrome.test.assertNoLastError();
           chrome.test.assertFalse(success);
           toggleFullscreen.pressed = false;
           chrome.autotestPrivate.activateAccelerator(
-              toggleFullscreen,
-              function(success) {
+              toggleFullscreen, function(success) {
+                chrome.test.assertNoLastError();
                 chrome.test.assertTrue(success);
                 chrome.autotestPrivate.waitForLauncherState(
-                    'FullscreenAllApps',
-                    closeLauncher);
+                    'FullscreenAllApps', function() {
+                      if (chrome.runtime.lastError) {
+                        var errorMessage = chrome.runtime.lastError.message;
+                        closeLauncher(chrome.test.callbackPass(function() {
+                          chrome.test.assertEq(
+                              'Not supported for bubble launcher',
+                              errorMessage);
+                        }));
+                        return;
+                      }
+                      closeLauncher(chrome.test.callbackPass());
+                    });
               });
         });
   },
+
   // This test verifies that api to wait for launcher state transition
   // to the same 'Closed' state when launcher is in closed state works.
   function waitForLauncherStateNoChangeAfterLauncherCreation() {
     chrome.autotestPrivate.waitForLauncherState(
-        'Closed',
-        function() {
-          chrome.test.assertNoLastError();
+        'Closed', chrome.test.callbackPass());
+  },
+
+  function waitForLauncherStateInTabletMode() {
+    promisify(minimizeBrowserWindow)
+        .then(function() {
+          return promisify(chrome.autotestPrivate.setTabletModeEnabled, true);
+        })
+        .then(function() {
+          return promisify(
+              chrome.autotestPrivate.waitForLauncherState, 'FullscreenAllApps');
+        })
+        .then(function() {
+          return promisify(chrome.autotestPrivate.setTabletModeEnabled, false);
+        })
+        .then(function() {
+          return promisify(
+              chrome.autotestPrivate.waitForLauncherState, 'Closed');
+        })
+        .then(function() {
+          return promisify(unminimizeBrowserWindow);
+        })
+        .then(function() {
           chrome.test.succeed();
+        })
+        .catch(function(err) {
+          chrome.test.fail(err);
         });
   },
-  function waitForLauncherStateInTabletMode() {
-    promisify(chrome.autotestPrivate.setTabletModeEnabled, true)
-      .then(promisify(chrome.autotestPrivate.waitForLauncherState,
-                      'FullscreenAllApps'))
-      .then(promisify(chrome.autotestPrivate.setTabletModeEnabled, false))
-      .then(function() {
-        chrome.test.succeed();
-      }).catch(function(err) {
-        chrome.test.fail(err);
-      });
+
+  function collectThoughputTrackerData() {
+    promisify(minimizeBrowserWindow)
+        .then(function() {
+          return promisify(
+              chrome.autotestPrivate.startThroughputTrackerDataCollection);
+        })
+        .then(function() {
+          // Triggers a tracked animation, e.g. enabling tablet mode to show
+          // fullscreen launcher.
+          return promisify(chrome.autotestPrivate.setTabletModeEnabled, true);
+        })
+        .then(function(enabled) {
+          chrome.test.assertTrue(enabled);
+          return promisify(
+              chrome.autotestPrivate.waitForLauncherState, 'FullscreenAllApps');
+        })
+        .then(function() {
+          return promisify(chrome.autotestPrivate.setTabletModeEnabled, false);
+        })
+        .then(function(enabled) {
+          chrome.test.assertFalse(enabled);
+          return promisify(
+              chrome.autotestPrivate.waitForLauncherState, 'Closed');
+        })
+        .then(function() {
+          return promisify(
+              chrome.autotestPrivate.stopThroughputTrackerDataCollection);
+        })
+        .then(function(data) {
+          chrome.test.assertTrue(data.length > 0);
+          return promisify(unminimizeBrowserWindow);
+        })
+        .then(function() {
+          chrome.test.succeed();
+        })
+        .catch(function(err) {
+          chrome.test.fail(err);
+        });
   },
+
   // Check if tablet mode is enabled.
   function isTabletModeEnabled() {
     chrome.autotestPrivate.isTabletModeEnabled(
@@ -1009,58 +1091,6 @@ var defaultTests = [
 
       chrome.test.assertTrue(smoothness >= 0);
       chrome.test.succeed();
-    });
-  },
-
-  function collectThoughputTrackerData() {
-    chrome.autotestPrivate.startThroughputTrackerDataCollection(function() {
-      chrome.test.assertNoLastError();
-
-      var stopAndCollectData = function() {
-        chrome.autotestPrivate.stopThroughputTrackerDataCollection(
-            function(data){
-          chrome.test.assertNoLastError();
-          chrome.test.assertTrue(data.length > 0);
-          chrome.test.succeed();
-        });
-      };
-
-      // Triggers a tracked animation, e.g. toggling the launcher.
-      var togglePeeking = newAccelerator('search', false /* shift */);
-      function closeLauncher() {
-        togglePeeking.pressed = true;
-        chrome.autotestPrivate.activateAccelerator(
-            togglePeeking,
-            function(success) {
-              chrome.test.assertFalse(success);
-              togglePeeking.pressed = false;
-              chrome.autotestPrivate.activateAccelerator(
-                  togglePeeking,
-                  function(success) {
-                    chrome.test.assertTrue(success);
-                    chrome.autotestPrivate.waitForLauncherState(
-                        'Closed',
-                        function() {
-                          chrome.test.assertNoLastError();
-                          stopAndCollectData();
-                        });
-                  });
-            });
-      }
-      chrome.autotestPrivate.activateAccelerator(
-          togglePeeking,
-          function(success) {
-            chrome.test.assertFalse(success);
-            togglePeeking.pressed = false;
-            chrome.autotestPrivate.activateAccelerator(
-                togglePeeking,
-                function(success) {
-                  chrome.test.assertTrue(success);
-                  chrome.autotestPrivate.waitForLauncherState(
-                      'Peeking',
-                      closeLauncher);
-                });
-          });
     });
   },
 
