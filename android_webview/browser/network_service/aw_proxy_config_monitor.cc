@@ -15,13 +15,42 @@
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace android_webview {
 
 namespace {
+
 const char kProxyServerSwitch[] = "proxy-server";
 const char kProxyBypassListSwitch[] = "proxy-bypass-list";
+
+constexpr net::NetworkTrafficAnnotationTag kProxyConfigTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("webview_proxy_config", R"(
+      semantics {
+        sender: "Proxy configuration via a command line flag"
+        description:
+          "Used to fetch HTTP/HTTPS/SOCKS5/PAC proxy configuration when "
+          "proxy is configured by the --proxy-server command line flag. "
+          "When proxy implies automatic configuration, it can send network "
+          "requests in the scope of this annotation."
+        trigger:
+          "Whenever a network request is made when the system proxy settings "
+          "are used, and they indicate to use a proxy server."
+        data:
+          "Proxy configuration."
+        destination: OTHER
+        destination_other: "The proxy server specified in the configuration."
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "This request cannot be disabled in settings. However it will never "
+          "be made if user does not run with the '--proxy-server' switch."
+        policy_exception_justification:
+          "Not implemented, behaviour only available behind a switch."
+      })");
+
 }  // namespace
 
 AwProxyConfigMonitor::AwProxyConfigMonitor() {
@@ -59,7 +88,7 @@ void AwProxyConfigMonitor::AddProxyToNetworkContextParams(
 
     network_context_params->initial_proxy_config =
         net::ProxyConfigWithAnnotation(proxy_config,
-                                       MISSING_TRAFFIC_ANNOTATION);
+                                       kProxyConfigTrafficAnnotation);
   } else {
     mojo::PendingRemote<network::mojom::ProxyConfigClient> proxy_config_client;
     network_context_params->proxy_config_client_receiver =
