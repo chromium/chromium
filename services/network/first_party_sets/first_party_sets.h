@@ -16,6 +16,7 @@
 #include "base/files/file.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/first_party_set_metadata.h"
@@ -141,7 +142,8 @@ class FirstPartySets {
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
-      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback,
+      base::TimeTicks enqueued_at) const;
 
   // Synchronous version of `ComputeMetadata`, to be run only once the instance
   // is fully initialized.
@@ -180,7 +182,8 @@ class FirstPartySets {
   // called once the instance is fully initialized.
   void FindOwnerAndInvoke(
       const net::SchemefulSite& site,
-      base::OnceCallback<void(FirstPartySets::OwnerResult)> callback) const;
+      base::OnceCallback<void(FirstPartySets::OwnerResult)> callback,
+      base::TimeTicks enqueued_at) const;
 
   // Returns `site`'s owner (optionally inferring a singleton set if necessary),
   // or `nullopt` if `site` has no owner. Must not return `nullopt` if
@@ -196,7 +199,8 @@ class FirstPartySets {
   // called once the instance is fully initialized.
   void FindOwnersAndInvoke(
       const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<void(FirstPartySets::OwnersResult)> callback) const;
+      base::OnceCallback<void(FirstPartySets::OwnersResult)> callback,
+      base::TimeTicks enqueued_at) const;
 
   // Synchronous version of `FindOwners`, to be run only once the instance is
   // initialized.
@@ -206,7 +210,8 @@ class FirstPartySets {
   // Same as `Sets`, but plumbs the result into the callback. Must only be
   // called once the instance is fully initialized.
   void SetsAndInvoke(
-      base::OnceCallback<void(FirstPartySets::SetsByOwner)> callback) const;
+      base::OnceCallback<void(FirstPartySets::SetsByOwner)> callback,
+      base::TimeTicks enqueued_at) const;
 
   // Synchronous version of `Sets`, to be run only once the instance is
   // initialized.
@@ -256,6 +261,10 @@ class FirstPartySets {
 
   // The queue of queries that are waiting for the instance to be initialized.
   std::unique_ptr<base::circular_deque<base::OnceClosure>> pending_queries_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The time when the first async query was enqueued, if any. Used for metrics.
+  absl::optional<base::TimeTicks> first_async_query_time_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -110,7 +110,8 @@ absl::optional<net::FirstPartySetMetadata> FirstPartySets::ComputeMetadata(
   if (!sets_.has_value()) {
     EnqueuePendingQuery(base::BindOnce(
         &FirstPartySets::ComputeMetadataAndInvoke, weak_factory_.GetWeakPtr(),
-        site, top_frame_site, party_context, std::move(callback)));
+        site, top_frame_site, party_context, std::move(callback),
+        base::TimeTicks::Now()));
     return absl::nullopt;
   }
 
@@ -121,9 +122,14 @@ void FirstPartySets::ComputeMetadataAndInvoke(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
-    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
+    base::OnceCallback<void(net::FirstPartySetMetadata)> callback,
+    base::TimeTicks enqueued_at) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
+
+  UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.ComputeMetadata",
+                      base::TimeTicks::Now() - enqueued_at);
+
   std::move(callback).Run(
       ComputeMetadataInternal(site, top_frame_site, party_context));
 }
@@ -227,9 +233,9 @@ absl::optional<FirstPartySets::OwnerResult> FirstPartySets::FindOwner(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!sets_.has_value()) {
-    EnqueuePendingQuery(base::BindOnce(&FirstPartySets::FindOwnerAndInvoke,
-                                       weak_factory_.GetWeakPtr(), site,
-                                       std::move(callback)));
+    EnqueuePendingQuery(base::BindOnce(
+        &FirstPartySets::FindOwnerAndInvoke, weak_factory_.GetWeakPtr(), site,
+        std::move(callback), base::TimeTicks::Now()));
     return absl::nullopt;
   }
 
@@ -238,9 +244,14 @@ absl::optional<FirstPartySets::OwnerResult> FirstPartySets::FindOwner(
 
 void FirstPartySets::FindOwnerAndInvoke(
     const net::SchemefulSite& site,
-    base::OnceCallback<void(FirstPartySets::OwnerResult)> callback) const {
+    base::OnceCallback<void(FirstPartySets::OwnerResult)> callback,
+    base::TimeTicks enqueued_at) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
+
+  UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.FindOwner",
+                      base::TimeTicks::Now() - enqueued_at);
+
   std::move(callback).Run(
       FindOwnerInternal(site, /*infer_singleton_sets=*/false));
 }
@@ -251,9 +262,9 @@ absl::optional<FirstPartySets::OwnersResult> FirstPartySets::FindOwners(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!sets_.has_value()) {
-    EnqueuePendingQuery(base::BindOnce(&FirstPartySets::FindOwnersAndInvoke,
-                                       weak_factory_.GetWeakPtr(), sites,
-                                       std::move(callback)));
+    EnqueuePendingQuery(base::BindOnce(
+        &FirstPartySets::FindOwnersAndInvoke, weak_factory_.GetWeakPtr(), sites,
+        std::move(callback), base::TimeTicks::Now()));
     return absl::nullopt;
   }
 
@@ -262,9 +273,14 @@ absl::optional<FirstPartySets::OwnersResult> FirstPartySets::FindOwners(
 
 void FirstPartySets::FindOwnersAndInvoke(
     const base::flat_set<net::SchemefulSite>& sites,
-    base::OnceCallback<void(FirstPartySets::OwnersResult)> callback) const {
+    base::OnceCallback<void(FirstPartySets::OwnersResult)> callback,
+    base::TimeTicks enqueued_at) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
+
+  UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.FindOwners",
+                      base::TimeTicks::Now() - enqueued_at);
+
   std::move(callback).Run(FindOwnersInternal(sites));
 }
 
@@ -290,9 +306,9 @@ absl::optional<FirstPartySets::SetsByOwner> FirstPartySets::Sets(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!sets_.has_value()) {
-    EnqueuePendingQuery(base::BindOnce(&FirstPartySets::SetsAndInvoke,
-                                       weak_factory_.GetWeakPtr(),
-                                       std::move(callback)));
+    EnqueuePendingQuery(base::BindOnce(
+        &FirstPartySets::SetsAndInvoke, weak_factory_.GetWeakPtr(),
+        std::move(callback), base::TimeTicks::Now()));
     return absl::nullopt;
   }
 
@@ -300,9 +316,14 @@ absl::optional<FirstPartySets::SetsByOwner> FirstPartySets::Sets(
 }
 
 void FirstPartySets::SetsAndInvoke(
-    base::OnceCallback<void(FirstPartySets::SetsByOwner)> callback) const {
+    base::OnceCallback<void(FirstPartySets::SetsByOwner)> callback,
+    base::TimeTicks enqueued_at) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
+
+  UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.Sets",
+                      base::TimeTicks::Now() - enqueued_at);
+
   std::move(callback).Run(SetsInternal());
 }
 
@@ -332,6 +353,14 @@ void FirstPartySets::InvokePendingQueries() {
 
   if (!pending_queries_)
     return;
+
+  base::UmaHistogramCounts10000("Cookie.FirstPartySets.DelayedQueriesCount",
+                                pending_queries_->size());
+  base::UmaHistogramTimes(
+      "Cookie.FirstPartySets.MostDelayedQueryDelta",
+      first_async_query_time_.has_value()
+          ? base::TimeTicks::Now() - first_async_query_time_.value()
+          : base::TimeDelta());
 
   while (!pending_queries_->empty()) {
     base::OnceClosure query_task = std::move(pending_queries_->front());
@@ -409,6 +438,10 @@ void FirstPartySets::EnqueuePendingQuery(base::OnceClosure run_query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!sets_.has_value());
   DCHECK(pending_queries_);
+
+  if (!first_async_query_time_.has_value())
+    first_async_query_time_ = {base::TimeTicks::Now()};
+
   pending_queries_->push_back(std::move(run_query));
 }
 
