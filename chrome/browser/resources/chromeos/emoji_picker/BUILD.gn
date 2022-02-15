@@ -41,6 +41,7 @@ generate_grd("build_grd") {
     "index.html",
     "metadata_extension.js",
     "store.js",
+    "structs/trie.js",
     "types.js",
     "emoji_picker_api_proxy.js",
     "no_results.svg",
@@ -186,6 +187,7 @@ js_library("emoji_picker") {
     ":events",
     ":store",
     ":text_group_button",
+    ":trie",
     ":types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
@@ -271,6 +273,10 @@ js_library("constants") {
 }
 
 js_library("events") {
+}
+
+js_library("trie") {
+  sources = [ "./structs/trie.js" ]
 }
 
 js_library("store") {
