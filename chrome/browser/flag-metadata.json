@@ -4696,7 +4696,7 @@
   {
     "name": "pdf-unseasoned",
     "owners": [ "//pdf/OWNERS" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 99
   },
   {
     "name": "pdf-xfa-forms",

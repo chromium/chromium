@@ -4875,25 +4875,6 @@
             ]
         }
     ],
-    "PdfUnseasoned": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PdfUnseasoned"
-                    ]
-                }
-            ]
-        }
-    ],
     "PerProcessReclaim": [
         {
             "platforms": [
