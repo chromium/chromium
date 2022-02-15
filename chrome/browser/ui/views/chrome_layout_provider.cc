@@ -136,6 +136,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 4;
     case DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE:
       return 18;
+    case DISTANCE_SIDE_PANEL_HEADER_RIGHT_MARGIN:
+      return 8;
   }
   NOTREACHED();
   return 0;
