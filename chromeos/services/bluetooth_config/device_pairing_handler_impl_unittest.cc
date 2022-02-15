@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
@@ -25,6 +26,7 @@ namespace {
 using NiceMockDevice =
     std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>;
 
+const char kTestDeviceIdSuffix[] = "-Identifier";
 const uint32_t kTestBluetoothClass = 1337u;
 const char kTestBluetoothName[] = "testName";
 
@@ -117,7 +119,7 @@ class DevicePairingHandlerImplTest : public testing::Test {
     ++num_devices_created_;
 
     // Mock devices have their ID set to "${address}-Identifier".
-    *id_out = base::StrCat({address, "-Identifier"});
+    *id_out = base::StrCat({address, kTestDeviceIdSuffix});
 
     auto mock_device =
         std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
@@ -247,6 +249,25 @@ class DevicePairingHandlerImplTest : public testing::Test {
     ON_CALL(**it, IsConnected()).WillByDefault(testing::Return(is_connected));
   }
 
+  mojom::BluetoothDevicePropertiesPtr FetchDevice(
+      const std::string& device_address) {
+    mojom::BluetoothDevicePropertiesPtr result;
+    remote_handler_->FetchDevice(
+        device_address,
+        base::BindLambdaForTesting(
+            [&result](mojom::BluetoothDevicePropertiesPtr device) {
+              result = std::move(device);
+            }));
+    base::RunLoop().RunUntilIdle();
+    return result;
+  }
+
+  std::string GetDeviceAddress(const std::string& device_id) {
+    return device_id.substr(
+        /*pos=*/0, device_id.length() -
+                       ((sizeof(kTestDeviceIdSuffix) - 1) / sizeof(char)));
+  }
+
   const absl::optional<mojom::PairingResult>& pairing_result() const {
     return pairing_result_;
   }
@@ -301,6 +322,21 @@ class DevicePairingHandlerImplTest : public testing::Test {
   mojo::Remote<mojom::DevicePairingHandler> remote_handler_;
   std::unique_ptr<DevicePairingHandlerImpl> device_pairing_handler_;
 };
+
+TEST_F(DevicePairingHandlerImplTest, FetchDeviceExists) {
+  std::string device_id;
+  AddDevice(&device_id, AuthType::kNone);
+
+  std::string device_address = GetDeviceAddress(device_id);
+  mojom::BluetoothDevicePropertiesPtr device = FetchDevice(device_address);
+  EXPECT_TRUE(device);
+  EXPECT_EQ(device->id, device_id);
+  EXPECT_EQ(device->address, device_address);
+}
+
+TEST_F(DevicePairingHandlerImplTest, FetchDeviceNotFound) {
+  EXPECT_FALSE(FetchDevice("invalid"));
+}
 
 TEST_F(DevicePairingHandlerImplTest, MultipleDevicesPairAuthNone) {
   std::string device_id1;

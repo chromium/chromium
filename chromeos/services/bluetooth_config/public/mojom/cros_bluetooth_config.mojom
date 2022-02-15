@@ -245,6 +245,14 @@ interface DevicePairingHandler {
       string device_id,
       pending_remote<DevicePairingDelegate> delegate) =>
           (PairingResult result);
+
+  // Returns the device with address |device_address|. This can be used
+  // to find the ID of a device where only its address is known in order
+  // to pair with it. Returns null if no device was found. Devices
+  // returned here may not be found in BluetoothDiscoveryDelegate's
+  // discovered devices list as this method retrieves the devices from the
+  // adapter directly without any filtering.
+  FetchDevice(string device_address) => (BluetoothDeviceProperties? device);
 };
 
 // Allows clients of Bluetooth discovery to be notified of the progress of a

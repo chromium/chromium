@@ -35,6 +35,12 @@ export class FakeDevicePairingHandler {
      */
     this.pairDeviceRejectCallback_ = null;
 
+    /**
+     * @private {?function({result:
+     *     ?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties})}
+     */
+    this.fetchDeviceCallback_ = null;
+
     /** @private {number} */
     this.pairDeviceCalledCount_ = 0;
 
@@ -68,6 +74,13 @@ export class FakeDevicePairingHandler {
     }
 
     return promise;
+  }
+
+  /** @override */
+  fetchDevice(deviceAddress) {
+    return new Promise((resolve, reject) => {
+      this.fetchDeviceCallback_ = resolve;
+    });
   }
 
   /**
@@ -223,5 +236,13 @@ export class FakeDevicePairingHandler {
    */
   getLastPairingDelegate() {
     return this.devicePairingDelegate_;
+  }
+
+  /**
+   * @param {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
+   */
+  completeFetchDevice(device) {
+    assert(this.fetchDeviceCallback_, 'fetchDevice() was never called');
+    this.fetchDeviceCallback_({result: device});
   }
 }
