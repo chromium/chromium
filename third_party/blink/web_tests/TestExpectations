@@ -7615,3 +7615,6 @@ crbug.com/1243128 http/tests/devtools/extensions/extensions-useragent.js [ Failu
 # Sheriff 2022-02-10
 crbug.com/1296106 [ Mac10.12 ] virtual/plz-dedicated-worker/external/wpt/referrer-policy/gen/srcdoc.meta/strict-origin/iframe-tag.http.html [ Failure Pass ]
 crbug.com/1296106 [ Mac10.13 ] virtual/plz-dedicated-worker/external/wpt/referrer-policy/gen/srcdoc.meta/strict-origin/iframe-tag.http.html [ Failure Pass ]
+
+# Sheriff 2022-02-15
+crbug.com/1297553 external/wpt/fetch/api/basic/response-null-body.any.sharedworker.html [ Pass Failure ]
