@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/scoped_thread_priority.h"
 
 namespace base {
 
@@ -88,6 +89,12 @@ NativeLibrary LoadNativeLibraryHelper(const FilePath& library_path,
   // LoadLibrary() opens the file off disk and acquires the LoaderLock, hence
   // must not be called from DllMain.
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+
+  // Mitigate the issues caused by loading DLLs on a background thread
+  // (see http://crbug/973868 for context). This temporarily boosts this
+  // thread's priority so that it doesn't get starved by higher priority threads
+  // while it holds the LoaderLock.
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
 
   HMODULE module = nullptr;
 
