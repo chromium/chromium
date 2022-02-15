@@ -103,6 +103,7 @@ void UnregisterWakeTask(UpdaterScope scope) {
   }
 
   task_scheduler->DeleteTask(task_name.c_str());
+  VLOG(1) << "UnregisterWakeTask succeeded: " << task_name;
 }
 
 std::vector<IID> GetSideBySideInterfaces() {
