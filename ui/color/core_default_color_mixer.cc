@@ -10,6 +10,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_set.h"
@@ -83,14 +84,16 @@ ColorTransform GoogleColorWithContrastRatio(ColorTransform foreground_transform,
 }  // namespace
 
 void AddCoreDefaultColorMixer(ColorProvider* provider,
-                              bool dark_window,
-                              bool high_contrast) {
+                              const ColorProviderManager::Key& key) {
+  const bool dark_mode =
+      key.color_mode == ColorProviderManager::ColorMode::kDark;
+  const bool high_contrast =
+      key.contrast_mode == ColorProviderManager::ContrastMode::kHigh;
   DVLOG(2) << "Adding CoreDefaultColorMixer to ColorProvider for "
-           << (dark_window ? "Dark" : "Light")
+           << (dark_mode ? "Dark" : "Light")
            << (high_contrast ? " High Contrast" : "") << " window.";
-  ColorMixer& mixer = dark_window
-                          ? AddMixerForDarkMode(provider, high_contrast)
-                          : AddMixerForLightMode(provider, high_contrast);
+  ColorMixer& mixer = dark_mode ? AddMixerForDarkMode(provider, high_contrast)
+                                : AddMixerForLightMode(provider, high_contrast);
   mixer[kColorDisabledForeground] = BlendForMinContrast(
       gfx::kGoogleGrey600, kColorPrimaryBackground, kColorPrimaryForeground);
   mixer[kColorEndpointBackground] =

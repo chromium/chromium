@@ -11,6 +11,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_set.h"
 #include "ui/color/mac/scoped_current_nsappearance.h"
@@ -35,10 +36,10 @@ constexpr auto kNativeOSColorIds = base::MakeFixedFlatSet<ui::ColorId>({
 namespace ui {
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
-                             bool dark_window,
-                             bool high_contrast,
-                             bool high_elevation) {
-  ScopedCurrentNSAppearance scoped_nsappearance(dark_window, high_contrast);
+                             const ColorProviderManager::Key& key) {
+  ScopedCurrentNSAppearance scoped_nsappearance(
+      key.color_mode == ColorProviderManager::ColorMode::kDark,
+      key.contrast_mode == ColorProviderManager::ContrastMode::kHigh);
   ColorMixer& mixer = provider->AddMixer();
   mixer.AddSet({kColorSetNative,
                 {
@@ -65,16 +66,19 @@ void AddNativeColorSetInColorMixer(ColorMixer& mixer) {
 }
 
 void AddNativeUiColorMixer(ColorProvider* provider,
-                           bool dark_window,
-                           bool high_contrast) {
-  ScopedCurrentNSAppearance scoped_nsappearance(dark_window, high_contrast);
+                           const ColorProviderManager::Key& key) {
+  const bool dark_mode =
+      key.color_mode == ColorProviderManager::ColorMode::kDark;
+  const bool high_contrast =
+      key.contrast_mode == ColorProviderManager::ContrastMode::kHigh;
+  ScopedCurrentNSAppearance scoped_nsappearance(dark_mode, high_contrast);
   ColorMixer& mixer = provider->AddMixer();
 
   // TODO(crbug.com/1268521): Investigate native color set behaviour for dark
   // windows on macOS versions running < 10.14.
   if (@available(macOS 10.14, *)) {
     AddNativeColorSetInColorMixer(mixer);
-  } else if (!dark_window) {
+  } else if (!dark_mode) {
     AddNativeColorSetInColorMixer(mixer);
   }
 
@@ -86,7 +90,7 @@ void AddNativeUiColorMixer(ColorProvider* provider,
         NSColor.controlAlternatingRowBackgroundColors[1])};
   }
 
-  SkColor menu_separator_color = dark_window
+  SkColor menu_separator_color = dark_mode
                                      ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
                                      : SkColorSetA(SK_ColorBLACK, 0x26);
   mixer[kColorMenuSeparator] = {menu_separator_color};
@@ -94,7 +98,7 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   if (!high_contrast)
     return;
 
-  if (dark_window) {
+  if (dark_mode) {
     mixer[kColorMenuItemForegroundSelected] = {SK_ColorBLACK};
     mixer[kColorMenuItemBackgroundSelected] = {SK_ColorLTGRAY};
   } else {
@@ -103,7 +107,8 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   }
 }
 
-void AddNativePostprocessingMixer(ColorProvider* provider) {
+void AddNativePostprocessingMixer(ColorProvider* provider,
+                                  const ColorProviderManager::Key& key) {
   ColorMixer& mixer = provider->AddPostprocessingMixer();
 
   for (ColorId id = kUiColorsStart; id < kUiColorsEnd; ++id) {

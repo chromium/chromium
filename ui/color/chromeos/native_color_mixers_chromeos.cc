@@ -8,6 +8,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -15,16 +16,16 @@
 namespace ui {
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
-                             bool dark_window,
-                             bool high_contrast,
-                             bool high_elevation) {
+                             const ColorProviderManager::Key& key) {
   ColorMixer& mixer = provider->AddMixer();
   mixer[kColorAshSystemUIMenuBackground] = {kColorMenuBackground};
   mixer[kColorAshSystemUIMenuIcon] = {kColorMenuIcon};
   mixer[kColorAshSystemUIMenuItemBackgroundSelected] = {
       kColorMenuItemBackgroundSelected};
   mixer[kColorAshSystemUIMenuSeparator] = {kColorMenuSeparator};
-  if (dark_window) {
+  if (key.color_mode == ColorProviderManager::ColorMode::kDark) {
+    const bool high_elevation =
+        key.elevation_mode == ColorProviderManager::ElevationMode::kHigh;
     const SkColor base_color =
         high_elevation
             ? color_utils::AlphaBlend(SK_ColorWHITE, gfx::kGoogleGrey900, 0.08f)

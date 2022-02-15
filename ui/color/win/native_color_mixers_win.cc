@@ -10,6 +10,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_set.h"
 #include "ui/color/color_switches.h"
@@ -21,9 +22,7 @@
 namespace ui {
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
-                             bool dark_window,
-                             bool high_contrast,
-                             bool high_elevation) {
+                             const ColorProviderManager::Key& key) {
   // TODO(pkasting): Not clear whether this is really the set of interest.
   // Maybe there's some way to query colors used by UxTheme.dll, or maybe we
   // should be hardcoding a list of colors for system light/dark modes based on
@@ -41,7 +40,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
     }
   }
 
-  if (!high_contrast)
+  if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal)
     return;
 
 #define E(chrome, native) {chrome, color_utils::GetSysSkColor(native)},
@@ -81,15 +80,16 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
 }
 
 void AddNativeUiColorMixer(ColorProvider* provider,
-                           bool dark_window,
-                           bool high_contrast) {
-  if (!high_contrast)
+                           const ColorProviderManager::Key& key) {
+  if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal)
     return;
 
   ColorMixer& mixer = provider->AddMixer();
 
-  mixer[kColorButtonForegroundChecked] = {dark_window ? gfx::kGoogleBlue100
-                                                      : gfx::kGoogleBlue900};
+  mixer[kColorButtonForegroundChecked] = {
+      key.color_mode == ColorProviderManager::ColorMode::kDark
+          ? gfx::kGoogleBlue100
+          : gfx::kGoogleBlue900};
   mixer[kColorNotificationInputPlaceholderForeground] =
       SetAlpha(kColorNotificationInputForeground, gfx::kGoogleGreyAlpha700);
   mixer[kColorSliderTrack] = AlphaBlend(

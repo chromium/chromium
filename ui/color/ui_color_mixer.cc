@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 #include "ui/gfx/color_palette.h"
@@ -14,8 +15,10 @@
 namespace ui {
 
 void AddUiColorMixer(ColorProvider* provider,
-                     bool dark_window,
-                     bool high_contrast) {
+                     const ColorProviderManager::Key& key) {
+  const bool dark_mode =
+      key.color_mode == ColorProviderManager::ColorMode::kDark;
+
   ColorMixer& mixer = provider->AddMixer();
   mixer[kColorAvatarHeaderArt] = {kColorMidground};
   mixer[kColorAvatarIconGuest] = {kColorSecondaryForeground};
@@ -52,10 +55,10 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorDropdownForegroundSelected] = {kColorPrimaryForeground};
   mixer[kColorFocusableBorderFocused] = {kColorItemHighlight};
   mixer[kColorFocusableBorderUnfocused] = {kColorMidground};
-  mixer[kColorFrameActive] = {dark_window ? gfx::kGoogleGrey900
-                                          : SkColorSetRGB(0xDE, 0xE1, 0xE6)};
-  mixer[kColorFrameInactive] = {dark_window ? gfx::kGoogleGrey800
-                                            : gfx::kGoogleGrey200};
+  mixer[kColorFrameActive] = {dark_mode ? gfx::kGoogleGrey900
+                                        : SkColorSetRGB(0xDE, 0xE1, 0xE6)};
+  mixer[kColorFrameInactive] = {dark_mode ? gfx::kGoogleGrey800
+                                          : gfx::kGoogleGrey200};
   mixer[kColorHelpIconActive] = {kColorPrimaryForeground};
   mixer[kColorHelpIconInactive] = {kColorSecondaryForeground};
   mixer[kColorIcon] = {kColorSecondaryForeground};
@@ -139,7 +142,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorPwaToolbarBackground] = {kColorEndpointBackground};
   mixer[kColorPwaToolbarForeground] = {kColorEndpointForeground};
   mixer[kColorSeparator] = {kColorMidground};
-  mixer[kColorShadowBase] = {dark_window ? SK_ColorBLACK : gfx::kGoogleGrey800};
+  mixer[kColorShadowBase] = {dark_mode ? SK_ColorBLACK : gfx::kGoogleGrey800};
   mixer[kColorShadowValueAmbientShadowElevationThree] =
       SetAlpha(kColorShadowBase, 0x40);
   mixer[kColorShadowValueKeyShadowElevationThree] =
@@ -192,16 +195,16 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorToggleButtonShadow] = {kColorMidground};
   mixer[kColorToggleButtonThumbOff] = {kColorSecondaryForeground};
   mixer[kColorToggleButtonThumbOn] = {kColorAccent};
-  if (dark_window) {
+  if (dark_mode) {
     mixer[kColorToggleButtonThumbOff] +=
         AlphaBlend(kColorPrimaryForeground, FromTransformInput(), 0x0D);
     mixer[kColorToggleButtonThumbOn] +=
         AlphaBlend(kColorPrimaryForeground, FromTransformInput(), 0x0D);
   }
   mixer[kColorToggleButtonTrackOff] = {
-      dark_window ? ColorTransform(gfx::kGoogleGrey700) : kColorMidground};
-  mixer[kColorToggleButtonTrackOn] = {dark_window ? gfx::kGoogleBlue600
-                                                  : gfx::kGoogleBlue300};
+      dark_mode ? ColorTransform(gfx::kGoogleGrey700) : kColorMidground};
+  mixer[kColorToggleButtonTrackOn] = {dark_mode ? gfx::kGoogleBlue600
+                                                : gfx::kGoogleBlue300};
   mixer[kColorTooltipBackground] = SetAlpha(kColorPrimaryBackground, 0xCC);
   mixer[kColorTooltipForeground] = SetAlpha(kColorPrimaryForeground, 0xDE);
   mixer[kColorTreeBackground] = {kColorPrimaryBackground};

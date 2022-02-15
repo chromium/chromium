@@ -12,18 +12,11 @@ namespace ui {
 
 void AddColorMixers(ColorProvider* provider,
                     const ColorProviderManager::Key& key) {
-  const bool dark_mode =
-      key.color_mode == ColorProviderManager::ColorMode::kDark;
-  const bool high_contrast =
-      key.contrast_mode == ColorProviderManager::ContrastMode::kHigh;
-  const bool high_elevation =
-      key.elevation_mode == ColorProviderManager::ElevationMode::kHigh;
-  ui::AddCoreDefaultColorMixer(provider, dark_mode, high_contrast);
-  ui::AddNativeCoreColorMixer(provider, dark_mode, high_contrast,
-                              high_elevation);
-  ui::AddUiColorMixer(provider, dark_mode, high_contrast);
-  ui::AddNativeUiColorMixer(provider, dark_mode, high_contrast);
-  ui::AddNativePostprocessingMixer(provider);
+  ui::AddCoreDefaultColorMixer(provider, key);
+  ui::AddNativeCoreColorMixer(provider, key);
+  ui::AddUiColorMixer(provider, key);
+  ui::AddNativeUiColorMixer(provider, key);
+  ui::AddNativePostprocessingMixer(provider, key);
 }
 
 }  // namespace ui

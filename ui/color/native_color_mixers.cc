@@ -5,24 +5,24 @@
 #include "ui/color/native_color_mixers.h"
 
 #include "build/build_config.h"
+#include "ui/color/color_provider_manager.h"
 
 namespace ui {
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC) && \
+    !BUILDFLAG(IS_WIN)
 void AddNativeCoreColorMixer(ColorProvider* provider,
-                             bool dark_window,
-                             bool high_contrast,
-                             bool high_elevation) {}
+                             const ColorProviderManager::Key& key) {}
 #endif
 
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 void AddNativeUiColorMixer(ColorProvider* provider,
-                           bool dark_window,
-                           bool high_contrast) {}
+                           const ColorProviderManager::Key& key) {}
 #endif
 
 #if !BUILDFLAG(IS_MAC)
-void AddNativePostprocessingMixer(ColorProvider* provider) {}
+void AddNativePostprocessingMixer(ColorProvider* provider,
+                                  const ColorProviderManager::Key& key) {}
 #endif
 
 }  // namespace ui
