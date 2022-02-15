@@ -89,5 +89,10 @@ const char kUserAgentClientHintsGREASEUpdateEnabled[] =
 // windows.
 const char kWindowPlacementAlwaysAllowed[] = "window_placement_always_allowed";
 
+// Boolean policy to enable/disable Direct Sockets API.
+// If true, the default API behavior is observed (secure context / cli flags
+// required). If false, the API gets blocked unconditionally.
+const char kEnableDirectSockets[] = "policy.enable_direct_sockets";
+
 }  // namespace policy_prefs
 }  // namespace policy

@@ -1599,6 +1599,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWindowPlacementAlwaysAllowed,
     policy_prefs::kWindowPlacementAlwaysAllowed,
     base::Value::Type::BOOLEAN },
+  { key::kEnableDirectSockets,
+    policy_prefs::kEnableDirectSockets,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

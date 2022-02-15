@@ -282,7 +282,7 @@ source_set("browser_tests") {
 
     deps += [
       "//chrome/browser/extensions:test_support",
-      "//chrome/browser/web_applications:web_applications_test_support_minimal",
+      "//chrome/browser/web_applications:web_applications_test_support",
       "//components/webapps/browser:browser",
     ]
   }
@@ -300,6 +300,7 @@ source_set("browser_tests") {
       "test/arc_policy_browsertest.cc",
       "test/assistant_policy_browsertest.cc",
       "test/audio_output_allowed_browsertest.cc",
+      "test/enable_direct_sockets_policy_browsertest.cc",
       "test/note_taking_on_lock_screen_policy_browsertest.cc",
       "test/screenshot_policy_browsertest.cc",
       "test/session_length_limit_policy_browsertest.cc",

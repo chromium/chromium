@@ -397,8 +397,6 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUp() override {
-    DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(false);
-
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -555,27 +553,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
       "'Navigator': keepAliveDelay must not be set when keepAlive = false or "
       "missing.";
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_RestrictedByEnterprisePolicies) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kEnterprisePolicy, 0);
-
-  DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(true);
-
-  const std::string script =
-      "openTcp({remoteAddress: '127.0.0.1', remotePort: 993})";
-
-  EXPECT_EQ("openTcp failed: NetworkError: Network error.",
-            EvalJs(shell(), script));
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kEnterprisePolicy, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
@@ -834,27 +811,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
       "please choose only one.";
 
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenUdp_RestrictedByEnterprisePolicies) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kEnterprisePolicy, 0);
-
-  DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(true);
-
-  const std::string script =
-      "openUdp({remoteAddress: '127.0.0.1', remotePort: 993})";
-
-  EXPECT_EQ("openUdp failed: NetworkError: Network error.",
-            EvalJs(shell(), script));
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kEnterprisePolicy, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,

@@ -623,6 +623,11 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& url);
 
+  // Checks whether Direct Sockets API is allowed by the EnableDirectSockets
+  // policy (chrome-only, the respective override can be found in
+  // ChromeContentBrowserClient). Returns true by default.
+  virtual bool AreDirectSocketsAllowedByPolicy(BrowserContext* context);
+
   // Allow the embedder to control the maximum renderer process count. Only
   // applies if it is set to a non-zero value.  Once this limit is exceeded,
   // existing processes will be reused whenever possible, see

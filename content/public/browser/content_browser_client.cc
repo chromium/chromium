@@ -319,6 +319,11 @@ bool ContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   return false;
 }
 
+bool ContentBrowserClient::AreDirectSocketsAllowedByPolicy(
+    BrowserContext* context) {
+  return true;
+}
+
 size_t ContentBrowserClient::GetMaxRendererProcessCountOverride() {
   return 0u;
 }

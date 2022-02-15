@@ -28653,7 +28653,7 @@ Called by update_document_policy_enum.py.-->
   <int value="947"
       label="ExemptDomainFileTypePairsFromFileTypeDownloadWarnings"/>
   <int value="948" label="FirstPartySetsEnabled"/>
-  <int value="949" label="UserAgentForceMajorVersionToMinorPosition"/>
+  <int value="949" label="ForceMajorVersionToMinorPositionInUserAgent"/>
   <int value="950" label="AllHttpAuthSchemesAllowedForOrigins"/>
   <int value="951" label="WindowPlacementAlwaysAllowed"/>
   <int value="952" label="ReportDevicePeripherals"/>
@@ -28662,6 +28662,7 @@ Called by update_document_policy_enum.py.-->
   <int value="955" label="WebHidAllowDevicesWithHidUsagesForUrls"/>
   <int value="956" label="SecondaryGoogleAccountUsage"/>
   <int value="957" label="EnableEncryptedReportingPipeline"/>
+  <int value="958" label="EnableDirectSockets"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

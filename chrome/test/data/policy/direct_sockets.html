@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Direct Sockets Policy Test</title>
+  <script>
+    'use strict';
+
+    async function mockTcp() {
+      return 'openTCPSocket' in navigator;
+    }
+
+    async function mockUdp() {
+      return 'openUDPSocket' in navigator;
+    }
+
+  </script>
+</head>
+<body>
+</body>
+</html>

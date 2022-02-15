@@ -46,6 +46,7 @@
 #include "chrome/browser/device_api/managed_configuration_service.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
@@ -1325,6 +1326,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       embedder_support::ForceMajorVersionToMinorPosition::kDefault);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kWindowPlacementAlwaysAllowed, false);
+  registry->RegisterBooleanPref(policy::policy_prefs::kEnableDirectSockets,
+                                true);
 }
 
 // static
@@ -2078,6 +2081,26 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   }
 #endif
   return false;
+}
+
+bool ChromeContentBrowserClient::AreDirectSocketsAllowedByPolicy(
+    content::BrowserContext* context) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // For ChromeOS we check the policy value.
+  // TODO(crbug/1297224): check for device too.
+  Profile* profile = Profile::FromBrowserContext(context);
+  return profile && profile->GetPrefs()->GetBoolean(
+                        policy::policy_prefs::kEnableDirectSockets);
+#elif BUILDFLAG(IS_LINUX)
+  // There are currently no reliable way to determine managed status on Linux.
+  return false;
+#elif BUILDFLAG(IS_MAC)
+  // TODO(crbug/1297224): merge with the block below.
+  return false;
+#else
+  // For other platforms we disable access to the API on managed devices.
+  return !policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
+#endif
 }
 
 bool ChromeContentBrowserClient::IsFileAccessAllowed(

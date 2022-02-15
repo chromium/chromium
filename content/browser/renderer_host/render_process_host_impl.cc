@@ -3163,7 +3163,12 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
   GetRendererInterface()->SetIsCrossOriginIsolated(
       process_lock.GetWebExposedIsolationInfo().is_isolated());
 
+  bool direct_sockets_allowed_by_policy =
+      GetContentClient()->browser()->AreDirectSocketsAllowedByPolicy(
+          GetBrowserContext());
+
   GetRendererInterface()->SetIsDirectSocketEnabled(
+      direct_sockets_allowed_by_policy &&
       process_lock.GetWebExposedIsolationInfo().is_isolated_application());
 
   if (!process_lock.IsASiteOrOrigin())

@@ -30026,7 +30026,37 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'desc': '''Setting the policy to True or leaving it unset allows for events, telemetry and info to be
       reported to the Encrypted Reporting Pipeline. Setting the policy to False disables the Encrypted Reporting Pipeline.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
-    }
+    },
+    {
+      'name': 'EnableDirectSockets',
+      'owners': ['file://content/browser/direct_sockets/OWNERS', 'greengrape@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Direct Sockets API.',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Direct Sockets API.',
+        }
+      ],
+      'supported_on': ['chrome_os:100-'],
+      'default': True,
+      'example_value': False,
+      'default_for_enterprise_users': False,
+      'tags': [],
+      'id': 958,
+      'caption': '''Enable Direct Sockets API.''',
+      'desc': '''Setting the policy to Enabled lets users use the Direct Sockets API (provided that all other necessary conditions are fulfilled).
+      Setting the policy to Disabled means users will not be able to access the API.
+      If this policy is left not set, the default is not allowed for enterprise-managed users and allowed for non-managed users.'''
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -31012,6 +31042,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 957,
+  'highest_id_currently_used': 958,
   'highest_atomic_group_id_currently_used': 41
 }
