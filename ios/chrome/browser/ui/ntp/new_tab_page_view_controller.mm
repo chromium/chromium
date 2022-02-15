@@ -65,10 +65,6 @@
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* feedHeaderConstraints;
 
-// Whether or not this NTP has fully appeared for the first time yet. This value
-// remains YES if viewDidAppear has been called.
-@property(nonatomic, assign) BOOL viewDidAppear;
-
 // |YES| if the initial scroll position is from the saved web state (when
 // navigating away and back), and |NO| if it is the top of the NTP.
 @property(nonatomic, assign, getter=isInitialOffsetFromSavedState)

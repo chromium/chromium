@@ -686,7 +686,14 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 #pragma mark - DiscoverFeedObserverBridge
 
 - (void)onDiscoverFeedModelRecreated {
-  [self updateNTPForFeed];
+  if (self.ntpViewController.viewDidAppear) {
+    [self updateNTPForFeed];
+  } else {
+    // If the NTP hasn't been completely configured (which happens by the time
+    // its view has appeared) just refresh the feed instead of updating the
+    // whole NTP.
+    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
+  }
 }
 
 #pragma mark - DiscoverFeedPreviewDelegate

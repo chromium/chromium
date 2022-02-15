@@ -69,6 +69,10 @@
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
+// Whether or not this NTP has fully appeared for the first time yet. This value
+// remains YES if viewDidAppear has been called.
+@property(nonatomic, assign) BOOL viewDidAppear;
+
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
