@@ -383,8 +383,8 @@ HTMLDocumentParser::HTMLDocumentParser(
 
   // For now document fragment parsing never reports errors.
   bool report_errors = false;
-  tokenizer_.SetState(TokenizerStateForContextElement(context_element,
-                                                      report_errors, options_));
+  tokenizer_->SetState(TokenizerStateForContextElement(
+      context_element, report_errors, options_));
 }
 
 HTMLDocumentParser::HTMLDocumentParser(Document& document,
@@ -393,7 +393,8 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
                                        ParserPrefetchPolicy prefetch_policy)
     : ScriptableDocumentParser(document, content_policy),
       options_(&document),
-      tokenizer_(options_),
+      token_(std::make_unique<HTMLToken>()),
+      tokenizer_(std::make_unique<HTMLTokenizer>(options_)),
       loading_task_runner_(sync_policy == kForceSynchronousParsing
                                ? nullptr
                                : document.GetTaskRunner(TaskType::kNetworking)),
@@ -458,8 +459,12 @@ void HTMLDocumentParser::Detach() {
   insertion_preload_scanner_.reset();
   // Oilpan: It is important to clear token_ to deallocate backing memory of
   // HTMLToken::data_ and let the allocator reuse the memory for
-  // HTMLToken::data_ of the next HTMLDocumentParser.
-  token_.Clear();
+  // HTMLToken::data_ of a next HTMLDocumentParser. We need to clear
+  // tokenizer_ first because tokenizer_ has a raw pointer to token_.
+  // TODO(masonf): We can probably move tokenizer_ and token_ into the
+  // HTMLDocumentParser itself, instead of having them as Members.
+  tokenizer_.reset();
+  token_.reset();
 }
 
 void HTMLDocumentParser::StopParsing() {
@@ -479,6 +484,8 @@ void HTMLDocumentParser::PrepareToStopParsing() {
   // WebFrameTest.SwapMainFrameWhileLoading, bail out.
   if (IsDetached())
     return;
+
+  DCHECK(tokenizer_);
 
   // NOTE: This pump should only ever emit buffered character tokens.
   if (!GetDocument()->IsPrefetchOnly()) {
@@ -616,12 +623,14 @@ HTMLDocumentParser::NextTokenStatus HTMLDocumentParser::CanTakeNextToken() {
 }
 
 void HTMLDocumentParser::ForcePlaintextForTextDocument() {
-  tokenizer_.SetState(HTMLTokenizer::kPLAINTEXTState);
+  tokenizer_->SetState(HTMLTokenizer::kPLAINTEXTState);
 }
 
 bool HTMLDocumentParser::PumpTokenizer() {
   DCHECK(!GetDocument()->IsPrefetchOnly());
   DCHECK(!IsStopped());
+  DCHECK(tokenizer_);
+  DCHECK(token_);
 
   NestingLevelIncrementer session = task_runner_state_->ScopedPumpSession();
 
@@ -675,7 +684,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
       RUNTIME_CALL_TIMER_SCOPE(
           V8PerIsolateData::MainThreadIsolate(),
           RuntimeCallStats::CounterId::kHTMLTokenizerNextToken);
-      if (!tokenizer_.NextToken(input_.Current(), Token()))
+      if (!tokenizer_->NextToken(input_.Current(), Token()))
         break;
       budget--;
       tokens_parsed++;
@@ -712,7 +721,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
   CHECK(!IsStopped());
 
   if (IsPaused()) {
-    DCHECK_EQ(tokenizer_.GetState(), HTMLTokenizer::kDataState);
+    DCHECK_EQ(tokenizer_->GetState(), HTMLTokenizer::kDataState);
 
     if (preloader_) {
       if (!preload_scanner_) {
@@ -797,7 +806,7 @@ void HTMLDocumentParser::ConstructTreeFromHTMLToken() {
   CheckIfBlockingStylesheetAdded();
 
   // FIXME: ConstructTree may synchronously cause Document to be detached.
-  if (IsDetached())
+  if (!token_)
     return;
 
   if (!Token().IsUninitialized()) {
@@ -1077,6 +1086,7 @@ void HTMLDocumentParser::ResumeParsingAfterPause() {
   CheckIfBlockingStylesheetAdded();
   if (IsStopped() || IsPaused() || IsDetached())
     return;
+  DCHECK(tokenizer_);
 
   insertion_preload_scanner_.reset();
   if (task_runner_state_->GetMode() == kAllowDeferredParsing &&

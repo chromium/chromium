@@ -134,11 +134,11 @@ TEST_P(HTMLDocumentParserTest, AppendPrefetch) {
   HTMLParserScriptRunnerHost* script_runner_host =
       parser->AsHTMLParserScriptRunnerHostForTesting();
   EXPECT_TRUE(script_runner_host->HasPreloadScanner());
-  EXPECT_EQ(HTMLTokenizer::kDataState, parser->Tokenizer().GetState());
+  EXPECT_EQ(HTMLTokenizer::kDataState, parser->Tokenizer()->GetState());
   // Finishing should not cause parsing to start (verified via an internal
   // DCHECK).
   static_cast<DocumentParser*>(parser)->Finish();
-  EXPECT_EQ(HTMLTokenizer::kDataState, parser->Tokenizer().GetState());
+  EXPECT_EQ(HTMLTokenizer::kDataState, parser->Tokenizer()->GetState());
   // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
   // fire.
   (static_cast<DocumentParser*>(parser))->StopParsing();
@@ -158,7 +158,7 @@ TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
       parser->AsHTMLParserScriptRunnerHostForTesting();
   EXPECT_EQ(script_runner_host->HasPreloadScanner(),
             GetParam() == kAllowDeferredParsing);
-  EXPECT_EQ(HTMLTokenizer::kTagNameState, parser->Tokenizer().GetState());
+  EXPECT_EQ(HTMLTokenizer::kTagNameState, parser->Tokenizer()->GetState());
   // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
   // fire.
   (static_cast<DocumentParser*>(parser))->StopParsing();
