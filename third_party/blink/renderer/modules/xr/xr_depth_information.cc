@@ -53,7 +53,7 @@ float XRDepthInformation::rawValueToMeters() const {
 
 XRRigidTransform* XRDepthInformation::normDepthBufferFromNormView() const {
   return MakeGarbageCollected<XRRigidTransform>(
-      TransformationMatrix(norm_depth_buffer_from_norm_view_.matrix()));
+      TransformationMatrix(norm_depth_buffer_from_norm_view_));
 }
 
 bool XRDepthInformation::ValidateFrame(ExceptionState& exception_state) const {

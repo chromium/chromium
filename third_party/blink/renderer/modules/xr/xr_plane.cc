@@ -57,7 +57,7 @@ absl::optional<TransformationMatrix> XRPlane::MojoFromObject() const {
     return absl::nullopt;
   }
 
-  return TransformationMatrix(mojo_from_plane_->ToTransform().matrix());
+  return TransformationMatrix(mojo_from_plane_->ToTransform());
 }
 
 device::mojom::blink::XRNativeOriginInformationPtr XRPlane::NativeOrigin()

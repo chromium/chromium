@@ -4645,7 +4645,7 @@ void LocalFrameView::MapLocalToRemoteMainFrame(
   if (frame_->IsMainFrame())
     return;
   transform_state.ApplyTransform(
-      TransformationMatrix(GetFrame().RemoteMainFrameTransform().matrix()),
+      TransformationMatrix(GetFrame().RemoteMainFrameTransform()),
       TransformState::kAccumulateTransform);
 }
 

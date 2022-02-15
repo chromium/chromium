@@ -28,7 +28,6 @@ class CORE_EXPORT DOMMatrix : public DOMMatrixReadOnly {
   // TODO(fserb): double check those two bellow are needed:
   static DOMMatrix* Create(DOMMatrixReadOnly*,
                            ExceptionState& = ASSERT_NO_EXCEPTION);
-  static DOMMatrix* Create(const skia::Matrix44&, ExceptionState&);
   static DOMMatrix* fromFloat32Array(NotShared<DOMFloat32Array>,
                                      ExceptionState&);
   static DOMMatrix* fromFloat64Array(NotShared<DOMFloat64Array>,

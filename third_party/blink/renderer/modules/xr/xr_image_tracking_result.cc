@@ -34,7 +34,7 @@ absl::optional<TransformationMatrix> XRImageTrackingResult::MojoFromObject()
     return absl::nullopt;
   }
 
-  return TransformationMatrix(mojo_from_this_->ToTransform().matrix());
+  return TransformationMatrix(mojo_from_this_->ToTransform());
 }
 
 XRSpace* XRImageTrackingResult::imageSpace() const {

@@ -32,7 +32,6 @@
 #include "base/memory/ptr_util.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/paint/display_item_list.h"
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"

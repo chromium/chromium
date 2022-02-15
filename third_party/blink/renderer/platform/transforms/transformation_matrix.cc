@@ -812,6 +812,15 @@ void Slerp(TransformationMatrix::DecomposedType& from_decomp,
 
 // End of Supporting Math Functions
 
+TransformationMatrix::TransformationMatrix(const gfx::Transform& t) {
+  const auto& matrix = t.matrix();
+  SetMatrix(
+      matrix.get(0, 0), matrix.get(1, 0), matrix.get(2, 0), matrix.get(3, 0),
+      matrix.get(0, 1), matrix.get(1, 1), matrix.get(2, 1), matrix.get(3, 1),
+      matrix.get(0, 2), matrix.get(1, 2), matrix.get(2, 2), matrix.get(3, 2),
+      matrix.get(0, 3), matrix.get(1, 3), matrix.get(2, 3), matrix.get(3, 3));
+}
+
 TransformationMatrix::TransformationMatrix(const AffineTransform& t) {
   SetMatrix(t.A(), t.B(), t.C(), t.D(), t.E(), t.F());
 }
@@ -2102,16 +2111,6 @@ void TransformationMatrix::ToColumnMajorFloatArray(FloatMatrix4& result) const {
   result[13] = M42();
   result[14] = M43();
   result[15] = M44();
-}
-
-skia::Matrix44 TransformationMatrix::ToSkMatrix44(
-    const TransformationMatrix& matrix) {
-  skia::Matrix44 ret(skia::Matrix44::kUninitialized_Constructor);
-  ret.set4x4(matrix.M11(), matrix.M12(), matrix.M13(), matrix.M14(),
-             matrix.M21(), matrix.M22(), matrix.M23(), matrix.M24(),
-             matrix.M31(), matrix.M32(), matrix.M33(), matrix.M34(),
-             matrix.M41(), matrix.M42(), matrix.M43(), matrix.M44());
-  return ret;
 }
 
 SkM44 TransformationMatrix::ToSkM44() const {

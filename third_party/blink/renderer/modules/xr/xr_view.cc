@@ -96,7 +96,7 @@ void XRViewData::UpdateView(const device::mojom::blink::XRViewPtr& view,
       fov->left_degrees * kDegToRad, fov->right_degrees * kDegToRad, depth_near,
       depth_far);
 
-  mojo_from_view_ = TransformationMatrix(view->mojo_from_view.matrix());
+  mojo_from_view_ = TransformationMatrix(view->mojo_from_view);
 
   viewport_ = view->viewport;
   is_first_person_observer_ = view->is_first_person_observer;

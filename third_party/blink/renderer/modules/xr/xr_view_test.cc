@@ -52,15 +52,14 @@ TEST(XRViewTest, ViewMatrices) {
 
   XRViewData* view_data =
       MakeGarbageCollected<XRViewData>(xr_view, kDepthNear, kDepthFar);
-  XRView view(nullptr, view_data,
-              TransformationMatrix(ref_space_from_mojo.matrix()));
+  XRView view(nullptr, view_data, TransformationMatrix(ref_space_from_mojo));
 
   AssertMatrixEquals(
       GetMatrixDataForTest(view_data->MojoFromView()),
-      GetMatrixDataForTest(TransformationMatrix(mojo_from_view.matrix())));
+      GetMatrixDataForTest(TransformationMatrix(mojo_from_view)));
   AssertMatrixEquals(
       GetMatrixDataForTest(view.refSpaceFromView()->TransformMatrix()),
-      GetMatrixDataForTest(TransformationMatrix(ref_space_from_view.matrix())));
+      GetMatrixDataForTest(TransformationMatrix(ref_space_from_view)));
   AssertMatrixEquals(GetMatrixDataForTest(view_data->ProjectionMatrix()),
                      GetMatrixDataForTest(TransformationMatrix(
                          0.78128596636, 0, 0, 0, 0, 0.78128596636, 0, 0, 0, 0,

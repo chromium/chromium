@@ -30,7 +30,7 @@ namespace {
 std::unique_ptr<TransformationMatrix> TryGetTransformationMatrix(
     const absl::optional<gfx::Transform>& transform) {
   if (transform) {
-    return std::make_unique<TransformationMatrix>(transform->matrix());
+    return std::make_unique<TransformationMatrix>(*transform);
   }
 
   return nullptr;

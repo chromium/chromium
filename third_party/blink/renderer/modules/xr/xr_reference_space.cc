@@ -78,7 +78,7 @@ void XRReferenceSpace::SetMojoFromFloor() const {
   if (stage_parameters) {
     // Use the transform given by stage_parameters if available.
     mojo_from_floor_ = std::make_unique<TransformationMatrix>(
-        stage_parameters->mojo_from_floor.matrix());
+        stage_parameters->mojo_from_floor);
   } else {
     mojo_from_floor_.reset();
   }
