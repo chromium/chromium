@@ -181,6 +181,10 @@ int PredictionModelFetchRandomMaxDelaySecs();
 // models.
 base::TimeDelta PredictionModelFetchRetryDelay();
 
+// Returns the time to wait after browser start before fetching prediciton
+// models.
+base::TimeDelta PredictionModelFetchStartupDelay();
+
 // Returns the time to wait after a successful fetch of prediction models to
 // refresh models.
 base::TimeDelta PredictionModelFetchInterval();

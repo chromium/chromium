@@ -791,8 +791,8 @@ void PredictionManager::MaybeFetchModels() {
 
   // Add a slight delay to allow the rest of the browser startup process to
   // finish up.
-  fetch_timer_.Start(FROM_HERE, base::Seconds(2), this,
-                     &PredictionManager::FetchModels);
+  fetch_timer_.Start(FROM_HERE, features::PredictionModelFetchStartupDelay(),
+                     this, &PredictionManager::FetchModels);
 }
 
 base::Time PredictionManager::GetLastFetchAttemptTime() const {
