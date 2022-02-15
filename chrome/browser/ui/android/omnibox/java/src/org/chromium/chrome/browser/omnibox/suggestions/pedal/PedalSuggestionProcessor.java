@@ -31,6 +31,9 @@ import java.util.Set;
  * A class that handles model and view creation for the pedal omnibox suggestion.
  */
 public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
+    // Only show pedals when the suggestion is on the top 3 suggestions.
+    private static final int PEDAL_MAX_SHOW_POSITION = 3;
+
     private final @NonNull OmniboxPedalDelegate mOmniboxPedalDelegate;
     private final @NonNull AutocompleteDelegate mAutocompleteDelegate;
     private @NonNull Set<Integer> mLastVisiblePedals = new ArraySet<>();
@@ -57,7 +60,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
 
     @Override
     public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
-        return suggestion.getOmniboxPedal() != null;
+        return suggestion.getOmniboxPedal() != null && position < PEDAL_MAX_SHOW_POSITION;
     }
 
     @Override

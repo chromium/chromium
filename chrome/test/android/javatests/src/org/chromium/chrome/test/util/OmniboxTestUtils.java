@@ -26,6 +26,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemViewInfo;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -174,6 +176,22 @@ public class OmniboxTestUtils {
     }
 
     /**
+     * Set the suggestions to the Omnibox to display.
+     *
+     * @param autocompleteResult The set of suggestions will be displayed on the Omnibox dropdown
+     *         list.
+     * @param inlineAutocompleteText the inline-autocomplete text.
+     */
+    public void setSuggestions(
+            AutocompleteResult autocompleteResult, String inlineAutocompleteText) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OnSuggestionsReceivedListener listener =
+                    mAutocomplete.getSuggestionsReceivedListenerForTest();
+            listener.onSuggestionsReceived(autocompleteResult, inlineAutocompleteText);
+        });
+    }
+
+    /**
      * Waits for a non-empty list of omnibox suggestions is shown.
      */
     public void checkSuggestionsShown() {
@@ -190,24 +208,6 @@ public class OmniboxTestUtils {
     }
 
     /**
-     * Waits for a suggestion list to be shown with a specified number of entries.
-     *
-     * @param expectedCount The number of suggestions expected to be shown. A value of -1 means the
-     *         parameter should be ignored
-     */
-    public void checkSuggestionsShown(int expectedCount) {
-        checkSuggestionsShown();
-        CriteriaHelper.pollUiThread(() -> {
-            OmniboxSuggestionsDropdown suggestionsDropdown =
-                    mLocationBar.getAutocompleteCoordinator().getSuggestionsDropdownForTest();
-            Criteria.checkThat(suggestionsDropdown, Matchers.notNullValue());
-            Criteria.checkThat(suggestionsDropdown.getViewGroup().isShown(), Matchers.is(true));
-            Criteria.checkThat(suggestionsDropdown.getDropdownItemViewCountForTest(),
-                    Matchers.is(expectedCount));
-        }, MAX_TIME_TO_POLL_MS, POLL_INTERVAL_MS);
-    }
-
-    /**
      * Check whether suggestion of supplied type has been shown in the Suggestions Dropdown.
      *
      * @param type The type of suggestion to check.
@@ -217,7 +217,7 @@ public class OmniboxTestUtils {
         checkSuggestionsShown();
         AtomicReference<SuggestionInfo<T>> result = new AtomicReference<>();
 
-        CriteriaHelper.pollUiThread(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             ModelList currentModels =
                     mLocationBar.getAutocompleteCoordinator().getSuggestionModelListForTest();
             for (int i = 0; i < currentModels.size(); i++) {
@@ -225,11 +225,10 @@ public class OmniboxTestUtils {
                 if (info.type == type) {
                     result.set(new SuggestionInfo<T>(i, info.type, mAutocomplete.getSuggestionAt(i),
                             info.model, getSuggestionViewForIndex(i)));
-                    return true;
+                    return;
                 }
             }
-            return false;
-        }, MAX_TIME_TO_POLL_MS, POLL_INTERVAL_MS);
+        });
 
         return result.get();
     }

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
+import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionView;
@@ -55,10 +56,15 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -210,6 +216,39 @@ public class OmniboxPedalsTest {
             Criteria.checkThat(fragment, Matchers.instanceOf(fragmentClass));
             Criteria.checkThat(urlBar.hasFocus(), Matchers.is(false));
         });
+    }
+
+    /**
+     * Build a dummy suggestions list.
+     * @param count How many suggestions to create.
+     * @param hasPostData If suggestions contain post data.
+     *
+     * @return List of suggestions.
+     */
+    private List<AutocompleteMatch> buildDummySuggestionsList(int count, String prefix) {
+        List<AutocompleteMatch> list = new ArrayList<>();
+        for (int index = 0; index < count; ++index) {
+            list.add(AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                             .setDisplayText(prefix + (index + 1))
+                             .build());
+        }
+
+        return list;
+    }
+
+    /**
+     * Create a dummy pedal suggestion.
+     * @param name The dummy suggestion name.
+     * @param id The Omnibox pedal type to be created.
+     *
+     * @return a dummy pedal suggestion.
+     */
+    private AutocompleteMatch createDummyPedalSuggestion(String name, @OmniboxPedalType int id) {
+        return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                .setDisplayText(name)
+                .setOmniboxPedal(new OmniboxPedal(id, "hints", "suggestionContents",
+                        "accessibilitySuffix", "accessibilityHint", GURL.emptyGURL()))
+                .build();
     }
 
     @Test
@@ -458,5 +497,42 @@ public class OmniboxPedalsTest {
         });
 
         verifyHistogram(OmniboxPedalType.PLAY_CHROME_DINO_GAME);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures("OmniboxPedalsAndroidBatch1")
+    public void testNoPedalSuggestionAfterTop3() {
+        mOmniboxUtils.requestFocus();
+        List<AutocompleteMatch> suggestionsList = buildDummySuggestionsList(3, "Suggestion");
+        suggestionsList.add(
+                createDummyPedalSuggestion("pedal", OmniboxPedalType.CLEAR_BROWSING_DATA));
+
+        mOmniboxUtils.setSuggestions(
+                AutocompleteResult.fromCache(suggestionsList, null), "Suggestion");
+
+        mOmniboxUtils.checkSuggestionsShown();
+        SuggestionInfo<PedalSuggestionView> info =
+                mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
+        Assert.assertNull(
+                "Should not show pedals if the suggestion is not in top 3 suggestions", info);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures("OmniboxPedalsAndroidBatch1")
+    public void testShownPedalSuggestionInTop3() {
+        mOmniboxUtils.requestFocus();
+        List<AutocompleteMatch> suggestionsList = buildDummySuggestionsList(2, "Suggestion");
+        suggestionsList.add(
+                createDummyPedalSuggestion("pedal", OmniboxPedalType.CLEAR_BROWSING_DATA));
+
+        mOmniboxUtils.setSuggestions(
+                AutocompleteResult.fromCache(suggestionsList, null), "Suggestion");
+
+        mOmniboxUtils.checkSuggestionsShown();
+        SuggestionInfo<PedalSuggestionView> info =
+                mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
+        Assert.assertNotNull("Should show a pedal if the suggestion is in top 3 suggestions", info);
     }
 }
