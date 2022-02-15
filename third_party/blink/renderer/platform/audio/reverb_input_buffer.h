@@ -41,7 +41,7 @@ class ReverbInputBuffer {
   DISALLOW_NEW();
 
  public:
-  ReverbInputBuffer(size_t length);
+  explicit ReverbInputBuffer(size_t length);
   ReverbInputBuffer(const ReverbInputBuffer&) = delete;
   ReverbInputBuffer& operator=(const ReverbInputBuffer&) = delete;
 

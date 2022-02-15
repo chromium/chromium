@@ -40,7 +40,7 @@ class FFTConvolver {
 
  public:
   // fftSize must be a power of two
-  FFTConvolver(unsigned fft_size);
+  explicit FFTConvolver(unsigned fft_size);
   FFTConvolver(const FFTConvolver&) = delete;
   FFTConvolver& operator=(const FFTConvolver&) = delete;
 

@@ -43,7 +43,7 @@ class ReverbAccumulationBuffer {
   DISALLOW_NEW();
 
  public:
-  ReverbAccumulationBuffer(uint32_t length);
+  explicit ReverbAccumulationBuffer(uint32_t length);
   ReverbAccumulationBuffer(const ReverbAccumulationBuffer&) = delete;
   ReverbAccumulationBuffer& operator=(const ReverbAccumulationBuffer&) = delete;
 

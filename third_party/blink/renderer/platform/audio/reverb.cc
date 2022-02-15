@@ -273,8 +273,8 @@ void Reverb::Process(const AudioBus* source_bus,
 }
 
 void Reverb::Reset() {
-  for (wtf_size_t i = 0; i < convolvers_.size(); ++i) {
-    convolvers_[i]->Reset();
+  for (auto& convolver : convolvers_) {
+    convolver->Reset();
   }
 }
 

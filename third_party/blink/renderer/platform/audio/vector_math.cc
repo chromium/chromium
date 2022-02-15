@@ -42,9 +42,7 @@
 #include "third_party/blink/renderer/platform/audio/vector_math_scalar.h"
 #endif
 
-namespace blink {
-
-namespace vector_math {
+namespace blink::vector_math {
 
 namespace {
 #if BUILDFLAG(IS_MAC)
@@ -282,6 +280,4 @@ void Zvmul(const float* real1p,
               frames_to_process);
 }
 
-}  // namespace vector_math
-
-}  // namespace blink
+}  // namespace blink::vector_math

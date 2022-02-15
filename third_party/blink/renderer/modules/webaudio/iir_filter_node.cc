@@ -191,8 +191,8 @@ IIRFilterNode* IIRFilterNode::Create(BaseAudioContext& context,
 
   bool has_non_zero_coef = false;
 
-  for (wtf_size_t k = 0; k < feedforward_coef.size(); ++k) {
-    if (feedforward_coef[k] != 0) {
+  for (double k : feedforward_coef) {
+    if (k != 0) {
       has_non_zero_coef = true;
       break;
     }

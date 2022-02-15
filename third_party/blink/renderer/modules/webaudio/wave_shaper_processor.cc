@@ -74,8 +74,8 @@ void WaveShaperProcessor::SetCurve(const float* curve_data,
   double output = kernel->WaveShaperCurveValue(0.0, curve_data, curve_length);
   double tail_time = output == 0 ? 0 : std::numeric_limits<double>::infinity();
 
-  for (unsigned k = 0; k < kernels_.size(); ++k) {
-    kernel = static_cast<WaveShaperDSPKernel*>(kernels_[k].get());
+  for (auto& k : kernels_) {
+    kernel = static_cast<WaveShaperDSPKernel*>(k.get());
     kernel->SetTailTime(tail_time);
   }
 }
@@ -87,9 +87,8 @@ void WaveShaperProcessor::SetOversample(OverSampleType oversample) {
   oversample_ = oversample;
 
   if (oversample != kOverSampleNone) {
-    for (unsigned i = 0; i < kernels_.size(); ++i) {
-      WaveShaperDSPKernel* kernel =
-          static_cast<WaveShaperDSPKernel*>(kernels_[i].get());
+    for (auto& i : kernels_) {
+      WaveShaperDSPKernel* kernel = static_cast<WaveShaperDSPKernel*>(i.get());
       kernel->LazyInitializeOversampling();
     }
   }

@@ -232,7 +232,7 @@ class PannerNode final : public AudioNode {
                             ExceptionState&);
   PannerHandler& GetPannerHandler() const;
 
-  PannerNode(BaseAudioContext&);
+  explicit PannerNode(BaseAudioContext&);
 
   void Trace(Visitor*) const override;
 

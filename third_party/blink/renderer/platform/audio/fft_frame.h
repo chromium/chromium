@@ -59,7 +59,7 @@ class PLATFORM_EXPORT FFTFrame {
   // The constructors, destructor, and methods up to the CROSS-PLATFORM section
   // have platform-dependent implementations.
 
-  FFTFrame(unsigned fft_size);
+  explicit FFTFrame(unsigned fft_size);
   // creates a blank/empty frame for later use with createInterpolatedFrame()
   FFTFrame();
   FFTFrame(const FFTFrame& frame);
@@ -185,7 +185,7 @@ class PLATFORM_EXPORT FFTFrame {
   // routines to construct or release the PFFFT_Setup objects.
   class FFTSetup {
    public:
-    FFTSetup(unsigned fft_size);
+    explicit FFTSetup(unsigned fft_size);
     ~FFTSetup();
     PFFFT_Setup* GetSetup() const { return setup_; }
 

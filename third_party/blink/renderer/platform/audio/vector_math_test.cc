@@ -16,8 +16,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace blink {
-namespace vector_math {
+namespace blink::vector_math {
 namespace {
 
 struct MemoryLayout {
@@ -569,5 +568,4 @@ TEST_F(VectorMathTest, Zvmul) {
 }
 
 }  // namespace
-}  // namespace vector_math
-}  // namespace blink
+}  // namespace blink::vector_math

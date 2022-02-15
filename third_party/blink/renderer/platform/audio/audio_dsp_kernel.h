@@ -44,7 +44,7 @@ class PLATFORM_EXPORT AudioDSPKernel {
   USING_FAST_MALLOC(AudioDSPKernel);
 
  public:
-  AudioDSPKernel(AudioDSPKernelProcessor* kernel_processor)
+  explicit AudioDSPKernel(AudioDSPKernelProcessor* kernel_processor)
       : kernel_processor_(kernel_processor),
         sample_rate_(kernel_processor->SampleRate()),
         render_quantum_frames_(kernel_processor->RenderQuantumFrames()) {}

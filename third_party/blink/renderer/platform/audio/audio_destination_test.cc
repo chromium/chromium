@@ -60,8 +60,8 @@ class AudioCallback : public blink::AudioIOCallback {
     frames_processed_ += frames_to_process;
   }
 
-  AudioCallback() : frames_processed_(0) {}
-  int frames_processed_;
+  AudioCallback() = default;
+  int frames_processed_ = 0;
 };
 
 void CountWASamplesProcessedForRate(absl::optional<float> sample_rate) {

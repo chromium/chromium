@@ -332,8 +332,8 @@ SharedAudioBuffer::SharedAudioBuffer(AudioBuffer* buffer)
 }
 
 void SharedAudioBuffer::Zero() {
-  for (unsigned i = 0; i < channels_.size(); ++i) {
-    float* data = static_cast<float*>(channels_[i].Data());
+  for (auto& channel : channels_) {
+    float* data = static_cast<float*>(channel.Data());
     memset(data, 0, length() * sizeof(*data));
   }
 }

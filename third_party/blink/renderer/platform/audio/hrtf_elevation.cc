@@ -261,7 +261,8 @@ std::unique_ptr<HRTFElevation> HRTFElevation::CreateForSubject(
     // Create the interpolated convolution kernels and delays.
     for (unsigned jj = 1; jj < kInterpolationFactor; ++jj) {
       float x =
-          float(jj) / float(kInterpolationFactor);  // interpolate from 0 -> 1
+          static_cast<float>(jj) /
+          static_cast<float>(kInterpolationFactor);  // interpolate from 0 -> 1
 
       (*kernel_list_l)[i + jj] = HRTFKernel::CreateInterpolatedKernel(
           kernel_list_l->at(i).get(), kernel_list_l->at(j).get(), x);

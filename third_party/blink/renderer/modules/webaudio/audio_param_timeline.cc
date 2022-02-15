@@ -1887,8 +1887,10 @@ std::tuple<size_t, float, unsigned> AudioParamTimeline::ProcessSetValueCurve(
       // curveIndex0 by more than one.  This can happen when we reached
       // the end of the curve but still need values to fill out the
       // current rendering quantum.
-      _mm_storeu_si128((__m128i*)a_curve_index0, v_curve_index0);
-      _mm_storeu_si128((__m128i*)a_curve_index1, v_curve_index1);
+      _mm_storeu_si128(reinterpret_cast<__m128i*>(a_curve_index0),
+                       v_curve_index0);
+      _mm_storeu_si128(reinterpret_cast<__m128i*>(a_curve_index1),
+                       v_curve_index1);
       __m128 v_c0 = _mm_set_ps(
           curve_data[a_curve_index0[3]], curve_data[a_curve_index0[2]],
           curve_data[a_curve_index0[1]], curve_data[a_curve_index0[0]]);

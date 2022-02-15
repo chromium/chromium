@@ -106,7 +106,7 @@ class AnalyserNode final : public AudioBasicInspectorNode {
                               const AnalyserOptions*,
                               ExceptionState&);
 
-  AnalyserNode(BaseAudioContext&);
+  explicit AnalyserNode(BaseAudioContext&);
 
   unsigned fftSize() const;
   void setFftSize(unsigned size, ExceptionState&);

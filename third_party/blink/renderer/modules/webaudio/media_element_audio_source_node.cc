@@ -47,7 +47,8 @@ class MediaElementAudioSourceHandlerLocker final {
   STACK_ALLOCATED();
 
  public:
-  MediaElementAudioSourceHandlerLocker(MediaElementAudioSourceHandler& lockable)
+  explicit MediaElementAudioSourceHandlerLocker(
+      MediaElementAudioSourceHandler& lockable)
       : lockable_(lockable) {
     lockable_.lock();
   }

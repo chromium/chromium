@@ -45,9 +45,9 @@ class SincResampler {
   // kernelSize can be adjusted for quality (higher is better)
   // numberOfKernelOffsets is used for interpolation and is the number of
   // sub-sample kernel shifts.
-  SincResampler(double scale_factor,
-                unsigned kernel_size = 32,
-                unsigned number_of_kernel_offsets = 32);
+  explicit SincResampler(double scale_factor,
+                         unsigned kernel_size = 32,
+                         unsigned number_of_kernel_offsets = 32);
 
   SincResampler(const SincResampler&) = delete;
   SincResampler& operator=(const SincResampler&) = delete;

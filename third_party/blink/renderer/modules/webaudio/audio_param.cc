@@ -578,9 +578,7 @@ AudioParam* AudioParam::setValueCurveAtTime(const Vector<float>& curve,
   // Find the first value in the curve (if any) that is outside the
   // nominal range.  It's probably not necessary to produce a warning
   // on every value outside the nominal range.
-  for (unsigned k = 0; k < curve.size(); ++k) {
-    float value = curve[k];
-
+  for (float value : curve) {
     if (value < min || value > max) {
       WarnIfOutsideRange("setValueCurveAtTime value", value);
       break;

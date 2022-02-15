@@ -40,7 +40,7 @@ class AudioResamplerKernel {
   USING_FAST_MALLOC(AudioResamplerKernel);
 
  public:
-  AudioResamplerKernel(AudioResampler*);
+  explicit AudioResamplerKernel(AudioResampler*);
   AudioResamplerKernel(const AudioResamplerKernel&) = delete;
   AudioResamplerKernel& operator=(const AudioResamplerKernel&) = delete;
 

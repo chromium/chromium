@@ -33,8 +33,7 @@
 // Defines the interface for several vector math functions whose implementation
 // will ideally be optimized.
 
-namespace blink {
-namespace vector_math {
+namespace blink::vector_math {
 
 // Direct vector convolution:
 //
@@ -189,7 +188,6 @@ PLATFORM_EXPORT void Vclip(const float* source_p,
                            int dest_stride,
                            uint32_t frames_to_process);
 
-}  // namespace vector_math
-}  // namespace blink
+}  // namespace blink::vector_math
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_VECTOR_MATH_H_

@@ -44,7 +44,7 @@ class AudioResampler {
 
  public:
   AudioResampler();
-  AudioResampler(unsigned number_of_channels);
+  explicit AudioResampler(unsigned number_of_channels);
   AudioResampler(const AudioResampler&) = delete;
   AudioResampler& operator=(const AudioResampler&) = delete;
   ~AudioResampler() = default;

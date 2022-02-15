@@ -29,8 +29,7 @@
 #include <cstddef>
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace blink {
-namespace audio_utilities {
+namespace blink::audio_utilities {
 
 // How to do rounding when converting time to sample frame.
 enum SampleFrameRounding {
@@ -69,7 +68,6 @@ PLATFORM_EXPORT float MaxAudioBufferSampleRate();
 // Check to see if x is a power of two.  If x == 0, returns false.
 PLATFORM_EXPORT bool IsPowerOfTwo(size_t x);
 
-}  // namespace audio_utilities
-}  // namespace blink
+}  // namespace blink::audio_utilities
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_UTILITIES_H_

@@ -202,7 +202,7 @@ class AudioBufferSourceNode final : public AudioScheduledSourceNode {
   static AudioBufferSourceNode* Create(BaseAudioContext*,
                                        AudioBufferSourceOptions*,
                                        ExceptionState&);
-  AudioBufferSourceNode(BaseAudioContext&);
+  explicit AudioBufferSourceNode(BaseAudioContext&);
   void Trace(Visitor*) const override;
   AudioBufferSourceHandler& GetAudioBufferSourceHandler() const;
 

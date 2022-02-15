@@ -109,8 +109,8 @@ void AudioDSPKernelProcessor::ProcessOnlyAudioParams(
   // other thread is updating the kernels, so we'll have to skip it
   // this time.
   if (try_locker.is_acquired()) {
-    for (unsigned i = 0; i < kernels_.size(); ++i) {
-      kernels_[i]->ProcessOnlyAudioParams(frames_to_process);
+    for (auto& kernel : kernels_) {
+      kernel->ProcessOnlyAudioParams(frames_to_process);
     }
   }
 }
@@ -128,8 +128,8 @@ void AudioDSPKernelProcessor::Reset() {
   has_just_reset_ = true;
 
   base::AutoLock locker(process_lock_);
-  for (unsigned i = 0; i < kernels_.size(); ++i) {
-    kernels_[i]->Reset();
+  for (auto& kernel : kernels_) {
+    kernel->Reset();
   }
 }
 

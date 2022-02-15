@@ -34,7 +34,7 @@ struct AudioCallbackMetric {
 
 class AudioCallbackMetricReporter {
  public:
-  AudioCallbackMetricReporter() {}
+  AudioCallbackMetricReporter() = default;
 
   // Must be called after WebAudioDevice is created, because we need the
   // platform parameters like callback buffer size and hardware sample rate.

@@ -57,7 +57,7 @@ class StereoPannerNode final : public AudioNode {
                                   const StereoPannerOptions*,
                                   ExceptionState&);
 
-  StereoPannerNode(BaseAudioContext&);
+  explicit StereoPannerNode(BaseAudioContext&);
 
   void Trace(Visitor*) const override;
 

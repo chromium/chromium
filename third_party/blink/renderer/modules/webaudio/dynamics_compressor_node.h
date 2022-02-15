@@ -96,7 +96,7 @@ class MODULES_EXPORT DynamicsCompressorNode final : public AudioNode {
                                         const DynamicsCompressorOptions*,
                                         ExceptionState&);
 
-  DynamicsCompressorNode(BaseAudioContext&);
+  explicit DynamicsCompressorNode(BaseAudioContext&);
 
   void Trace(Visitor*) const override;
 

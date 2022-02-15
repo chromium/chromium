@@ -166,8 +166,8 @@ void ReverbConvolver::ProcessInBackground() {
     const int kSliceSize = kMinFFTSize / 2;
 
     // Accumulate contributions from each stage
-    for (wtf_size_t i = 0; i < background_stages_.size(); ++i) {
-      background_stages_[i]->ProcessInBackground(this, kSliceSize);
+    for (auto& background_stage : background_stages_) {
+      background_stage->ProcessInBackground(this, kSliceSize);
     }
   }
 }
@@ -189,8 +189,8 @@ void ReverbConvolver::Process(const AudioChannel* source_channel,
   input_buffer_.Write(source, frames_to_process);
 
   // Accumulate contributions from each stage
-  for (wtf_size_t i = 0; i < stages_.size(); ++i) {
-    stages_[i]->Process(source, frames_to_process);
+  for (auto& stage : stages_) {
+    stage->Process(source, frames_to_process);
   }
 
   // Finally read from accumulation buffer
@@ -207,12 +207,12 @@ void ReverbConvolver::Process(const AudioChannel* source_channel,
 }
 
 void ReverbConvolver::Reset() {
-  for (wtf_size_t i = 0; i < stages_.size(); ++i) {
-    stages_[i]->Reset();
+  for (auto& stage : stages_) {
+    stage->Reset();
   }
 
-  for (wtf_size_t i = 0; i < background_stages_.size(); ++i) {
-    background_stages_[i]->Reset();
+  for (auto& background_stage : background_stages_) {
+    background_stage->Reset();
   }
 
   accumulation_buffer_.Reset();

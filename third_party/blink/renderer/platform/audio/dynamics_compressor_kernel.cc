@@ -89,8 +89,8 @@ void DynamicsCompressorKernel::SetPreDelayTime(float pre_delay_time) {
 
   if (last_pre_delay_frames_ != pre_delay_frames) {
     last_pre_delay_frames_ = pre_delay_frames;
-    for (unsigned i = 0; i < pre_delay_buffers_.size(); ++i) {
-      pre_delay_buffers_[i]->Zero();
+    for (auto& pre_delay_buffer : pre_delay_buffers_) {
+      pre_delay_buffer->Zero();
     }
 
     pre_delay_read_index_ = 0;
@@ -515,8 +515,8 @@ void DynamicsCompressorKernel::Reset() {
   metering_gain_ = 1;
 
   // Predelay section.
-  for (unsigned i = 0; i < pre_delay_buffers_.size(); ++i) {
-    pre_delay_buffers_[i]->Zero();
+  for (auto& pre_delay_buffer : pre_delay_buffers_) {
+    pre_delay_buffer->Zero();
   }
 
   pre_delay_read_index_ = 0;

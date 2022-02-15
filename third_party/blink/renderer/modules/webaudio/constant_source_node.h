@@ -52,7 +52,7 @@ class ConstantSourceNode final : public AudioScheduledSourceNode {
                                     const ConstantSourceOptions*,
                                     ExceptionState&);
 
-  ConstantSourceNode(BaseAudioContext&);
+  explicit ConstantSourceNode(BaseAudioContext&);
   void Trace(Visitor*) const override;
 
   AudioParam* offset();

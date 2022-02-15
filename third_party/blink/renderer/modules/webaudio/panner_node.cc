@@ -643,7 +643,7 @@ float PannerHandler::CalculateDistanceConeGain(
   double cone_gain =
       cone_effect_.Gain(position, orientation, listener_position);
 
-  return float(distance_gain * cone_gain);
+  return static_cast<float>(distance_gain * cone_gain);
 }
 
 void PannerHandler::AzimuthElevation(double* out_azimuth,

@@ -56,7 +56,7 @@ class DenormalDisabler {
   DISALLOW_NEW();
 
  public:
-  DenormalDisabler() : saved_csr_(0) { DisableDenormals(); }
+  DenormalDisabler() { DisableDenormals(); }
 
   ~DenormalDisabler() { RestoreState(); }
 
@@ -64,7 +64,7 @@ class DenormalDisabler {
   static inline float FlushDenormalFloatToZero(float f) { return f; }
 
  private:
-  unsigned saved_csr_;
+  unsigned saved_csr_ = 0;
 
 #if defined(COMPILER_GCC) && defined(ARCH_CPU_X86_FAMILY)
   inline void DisableDenormals() {
