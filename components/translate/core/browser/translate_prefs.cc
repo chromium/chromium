@@ -1027,8 +1027,9 @@ void TranslatePrefs::MigrateNeverPromptSites() {
         prefs_, kPrefNeverPromptSitesDeprecated);
     base::Value* deprecated_list = deprecated_prompt_list_update.Get();
     for (auto& site : deprecated_list->GetListDeprecated()) {
-      if (!never_prompt_list->FindKey(site.GetString()) ||
-          !base::ValueToTime(never_prompt_list->FindKey(site.GetString()))) {
+      if (site.is_string() &&
+          (!never_prompt_list->FindKey(site.GetString()) ||
+           !base::ValueToTime(never_prompt_list->FindKey(site.GetString())))) {
         never_prompt_list->SetKey(site.GetString(),
                                   base::TimeToValue(base::Time::Now()));
       }

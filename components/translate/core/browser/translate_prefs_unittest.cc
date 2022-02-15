@@ -961,6 +961,18 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
             0u);
 }
 
+TEST_F(TranslatePrefsTest, MigrateInvalidNeverPromptSites) {
+  ListPrefUpdate update(&prefs_,
+                        TranslatePrefs::kPrefNeverPromptSitesDeprecated);
+  base::Value* never_prompt_list = update.Get();
+  never_prompt_list->Append(1);
+  never_prompt_list->Append("unmigrated.com");
+  translate_prefs_->MigrateNeverPromptSites();
+  EXPECT_THAT(translate_prefs_->GetNeverPromptSitesBetween(
+                  base::Time::Now() - base::Days(1), base::Time::Max()),
+              ElementsAre("unmigrated.com"));
+}
+
 TEST_F(TranslatePrefsTest, SiteNeverPromptList) {
   translate_prefs_->AddSiteToNeverPromptList("a.com");
   base::Time t = base::Time::Now();
