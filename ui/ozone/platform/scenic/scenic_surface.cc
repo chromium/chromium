@@ -85,6 +85,7 @@ ScenicSurface::ScenicSurface(
     scenic::SessionPtrAndListenerRequest sesion_and_listener_request)
     : scenic_session_(std::move(sesion_and_listener_request)),
       safe_presenter_(&scenic_session_),
+      root_node_(&scenic_session_),
       main_shape_(&scenic_session_),
       main_material_(&scenic_session_),
       scenic_surface_factory_(scenic_surface_factory),
@@ -96,6 +97,7 @@ ScenicSurface::ScenicSurface(
   main_shape_.SetShape(scenic::Rectangle(&scenic_session_, 1.f, 1.f));
   main_shape_.SetMaterial(transparent_material);
   main_shape_.SetEventMask(fuchsia::ui::gfx::kMetricsEventMask);
+  root_node_.AddChild(main_shape_);
   scenic_surface_factory->AddSurface(window, this);
   scenic_session_.SetDebugName("Chromium ScenicSurface");
   scenic_session_.set_event_handler(
@@ -134,13 +136,22 @@ void ScenicSurface::OnScenicEvents(
         main_shape_size_.set_width(metrics.scale_x);
         main_shape_size_.set_height(metrics.scale_y);
         UpdateViewHolderScene();
+        safe_presenter_.QueuePresent();
+        break;
+      }
+      case fuchsia::ui::gfx::Event::kViewAttachedToScene: {
+        DCHECK(event.gfx().view_detached_from_scene().view_id == parent_->id());
+
+        // `root_node_` will be attached in the next Present(). This ensures
+        // that outdated content is never displaye don the screen.
+        attach_root_on_present_ = true;
         break;
       }
       case fuchsia::ui::gfx::Event::kViewDetachedFromScene: {
         DCHECK(event.gfx().view_detached_from_scene().view_id == parent_->id());
-        // Present an empty frame to ensure that the outdated content doesn't
-        // become visible if the view is attached again.
-        PresentEmptyImage();
+
+        root_node_.Detach();
+        safe_presenter_.QueuePresent();
         break;
       }
       default:
@@ -216,11 +227,20 @@ void ScenicSurface::Present(
     }
   }
 
-  if (layout_update_required) {
+  if (layout_update_required || attach_root_on_present_) {
+    if (attach_root_on_present_) {
+      parent_->AddChild(root_node_);
+      attach_root_on_present_ = false;
+    }
+
+    if (layout_update_required)
+      UpdateViewHolderScene();
+
     for (auto& fence : acquire_fences) {
       scenic_session_.EnqueueAcquireFence(std::move(fence.Clone().owned_event));
     }
-    UpdateViewHolderScene();
+
+    safe_presenter_.QueuePresent();
   }
 
   pending_frames_.emplace_back(
@@ -369,7 +389,7 @@ bool ScenicSurface::RemoveOverlayView(gfx::SysmemBufferCollectionId id) {
 
   auto it = overlay_views_.find(id);
   DCHECK(it != overlay_views_.end());
-  parent_->DetachChild(it->second.entity_node);
+  it->second.entity_node.Detach();
   safe_presenter_.QueuePresent();
   overlay_views_.erase(it);
   return true;
@@ -384,7 +404,6 @@ mojo::PlatformHandle ScenicSurface::CreateView() {
   auto tokens = scenic::ViewTokenPair::New();
   parent_ = std::make_unique<scenic::View>(
       &scenic_session_, std::move(tokens.view_token), "chromium surface");
-  parent_->AddChild(main_shape_);
 
   // Defer first Present call to SetTextureToNewImagePipe().
   return mojo::PlatformHandle(std::move(tokens.view_holder_token.value));
@@ -463,7 +482,7 @@ void ScenicSurface::UpdateViewHolderScene() {
     }
 
     // No-op if the node is already attached.
-    parent_->AddChild(overlay_view.entity_node);
+    root_node_.AddChild(overlay_view.entity_node);
 
     // Apply view bound clipping around the ImagePipe that has size 1x1 and
     // centered at (0, 0).
@@ -522,68 +541,6 @@ void ScenicSurface::UpdateViewHolderScene() {
 
   main_material_.SetColor(255, 255, 255, 0 > min_z_order ? 254 : 255);
   main_shape_.SetTranslation(0.f, 0.f, min_z_order * kElevationStep);
-
-  safe_presenter_.QueuePresent();
-}
-
-void ScenicSurface::PresentEmptyImage() {
-  if (last_frame_present_time_ == base::TimeTicks())
-    return;
-
-  fuchsia::sysmem::BufferCollectionTokenSyncPtr dummy_collection_token;
-  zx_status_t status =
-      sysmem_buffer_manager_->GetAllocator()->AllocateSharedCollection(
-          dummy_collection_token.NewRequest());
-  if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status)
-        << "fuchsia.sysmem.Allocator.AllocateSharedCollection()";
-    return;
-  }
-  dummy_collection_token->SetName(100u, "DummyImageCollection");
-  dummy_collection_token->SetDebugClientInfo("chromium", 0u);
-
-  fuchsia::sysmem::BufferCollectionTokenSyncPtr token_for_scenic;
-  dummy_collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
-                                    token_for_scenic.NewRequest());
-  token_for_scenic->SetDebugClientInfo("scenic", 0u);
-
-  const uint32_t image_id = ++next_unique_id_;
-  image_pipe_->AddBufferCollection(image_id, std::move(token_for_scenic));
-
-  // Synchroniously wait for the collection to be allocated before proceeding.
-  fuchsia::sysmem::BufferCollectionSyncPtr dummy_collection;
-  status = sysmem_buffer_manager_->GetAllocator()->BindSharedCollection(
-      std::move(dummy_collection_token), dummy_collection.NewRequest());
-  if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "fuchsia.sysmem.Allocator.BindSharedCollection()";
-    return;
-  }
-
-  fuchsia::sysmem::BufferCollectionConstraints constraints;
-  constraints.usage.none = fuchsia::sysmem::noneUsage;
-  constraints.min_buffer_count = 1;
-  constraints.image_format_constraints_count = 0;
-  status = dummy_collection->SetConstraints(/*has_constraints=*/true,
-                                            std::move(constraints));
-  zx_status_t wait_status;
-  fuchsia::sysmem::BufferCollectionInfo_2 buffers_info;
-  status =
-      dummy_collection->WaitForBuffersAllocated(&wait_status, &buffers_info);
-  if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "fuchsia.sysmem.BufferCollection failed";
-    return;
-  }
-  dummy_collection->Close();
-
-  // Present the first image from the collection.
-  fuchsia::sysmem::ImageFormat_2 image_format;
-  image_format.coded_width = 1;
-  image_format.coded_height = 1;
-  image_pipe_->AddImage(image_id, image_id, 0, image_format);
-
-  image_pipe_->PresentImage(image_id, last_frame_present_time_.ToZxTime(), {},
-                            {}, [](fuchsia::images::PresentationInfo) {});
-  image_pipe_->RemoveBufferCollection(image_id);
 }
 
 ScenicSurface::PresentedFrame::PresentedFrame(
