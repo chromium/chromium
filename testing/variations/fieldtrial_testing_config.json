@@ -5147,7 +5147,7 @@
             ]
         }
     ],
-    "PwaUpdateDialogForNameAndIconOnChromeOS": [
+    "PwaUpdateDialogForNameAndIcon": [
         {
             "platforms": [
                 "chromeos"
