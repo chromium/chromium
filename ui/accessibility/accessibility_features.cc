@@ -163,6 +163,14 @@ const base::Feature kEnhancedNetworkVoices{"EnhancedNetworkVoices",
 bool IsEnhancedNetworkVoicesEnabled() {
   return base::FeatureList::IsEnabled(::features::kEnhancedNetworkVoices);
 }
+
+const base::Feature kAccessibilityOSSettingsVisibility{
+    "AccessibilityOSSettingsVisibility", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsAccessibilityOSSettingsVisibility() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityOSSettingsVisibility);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kAugmentExistingImageLabels{

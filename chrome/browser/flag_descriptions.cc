@@ -939,6 +939,11 @@ const char kEnhancedNetworkVoicesDescription[] =
     "This option enables high-quality, network-based voices in "
     "Select-to-speak.";
 
+const char kAccessibilityOSSettingsVisibilityName[] =
+    "Accessibility OS Settings Visibility";
+const char kAccessibilityOSSettingsVisibilityDescription[] =
+    "This option enables improvements in Accessibility OS Settings visibility.";
+
 const char kPostQuantumCECPQ2Name[] = "TLS Post-Quantum Confidentiality";
 const char kPostQuantumCECPQ2Description[] =
     "This option enables a post-quantum (i.e. resistent to quantum computers) "

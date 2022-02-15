@@ -5957,6 +5957,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"enhanced-network-voices", flag_descriptions::kEnhancedNetworkVoicesName,
      flag_descriptions::kEnhancedNetworkVoicesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnhancedNetworkVoices)},
+
+    {"enable-accessibility-os-settings-visibility",
+     flag_descriptions::kAccessibilityOSSettingsVisibilityName,
+     flag_descriptions::kAccessibilityOSSettingsVisibilityDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityOSSettingsVisibility)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,

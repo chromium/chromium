@@ -1456,6 +1456,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "enable-accessibility-os-settings-visibility",
+    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-accessibility-page-zoom",
     "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 101

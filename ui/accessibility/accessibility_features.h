@@ -132,6 +132,12 @@ AX_BASE_EXPORT extern const base::Feature kEnhancedNetworkVoices;
 // Returns true if network-based voices are enabled in Select-to-speak.
 AX_BASE_EXPORT bool IsEnhancedNetworkVoicesEnabled();
 
+// Enables improved Accessibility OS Settings visibility.
+AX_BASE_EXPORT extern const base::Feature kAccessibilityOSSettingsVisibility;
+
+// Returns true if improved Accessibility OS Settings visibility is enabled.
+AX_BASE_EXPORT bool IsAccessibilityOSSettingsVisibilityEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,
