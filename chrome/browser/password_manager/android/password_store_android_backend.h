@@ -40,8 +40,7 @@ class PasswordStoreAndroidBackend
     : public PasswordStoreBackend,
       public PasswordStoreAndroidBackendBridge::Consumer {
  public:
-  explicit PasswordStoreAndroidBackend(
-      std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge);
+  PasswordStoreAndroidBackend();
   PasswordStoreAndroidBackend(
       base::PassKey<class PasswordStoreAndroidBackendTest>,
       std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge,

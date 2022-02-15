@@ -246,10 +246,9 @@ void PasswordStoreAndroidBackend::JobReturnHandler::RecordMetrics(
   metrics_recorder_.RecordMetrics(!error.has_value(), std::move(error));
 }
 
-PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
-    std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge)
+PasswordStoreAndroidBackend::PasswordStoreAndroidBackend()
     : lifecycle_helper_(std::make_unique<PasswordManagerLifecycleHelperImpl>()),
-      bridge_(std::move(bridge)),
+      bridge_(PasswordStoreAndroidBackendBridge::Create()),
       sync_controller_delegate_(
           std::make_unique<PasswordSyncControllerDelegateAndroid>()) {
   DCHECK(bridge_);

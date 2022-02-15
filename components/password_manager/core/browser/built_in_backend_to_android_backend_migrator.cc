@@ -94,11 +94,11 @@ BuiltInBackendToAndroidBackendMigrator::BuiltInBackendToAndroidBackendMigrator(
     PasswordStoreBackend* built_in_backend,
     PasswordStoreBackend* android_backend,
     PrefService* prefs,
-    base::RepeatingCallback<bool()> is_syncing_passwords_callback)
+    PasswordStoreBackend::SyncDelegate* sync_delegate)
     : built_in_backend_(built_in_backend),
       android_backend_(android_backend),
       prefs_(prefs),
-      is_syncing_passwords_callback_(std::move(is_syncing_passwords_callback)) {
+      sync_delegate_(sync_delegate) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   base::UmaHistogramBoolean(
@@ -115,7 +115,8 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
   // For syncing users, we don't need to move passwords between the built-in
   // and the Android backends, since both backends should be able to
   // retrieve the same passwords from the sync server.
-  if (is_syncing_passwords_callback_.Run() && is_initial_migration_needed) {
+  if (sync_delegate_->IsSyncingPasswordsEnabled() &&
+      is_initial_migration_needed) {
     // TODO:(crbug.com/1252443) Drop metadata and only then update pref.
     UpdateMigrationVersionInPref();
     return;

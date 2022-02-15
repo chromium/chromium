@@ -23,6 +23,7 @@
 namespace password_manager {
 namespace {
 
+using ::testing::Return;
 using ::testing::WithArg;
 using ::testing::WithArgs;
 
@@ -30,9 +31,7 @@ using ::testing::WithArgs;
 
 class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
  protected:
-  PasswordStoreBackendMigrationDecoratorTest() = default;
-
-  void Init(base::RepeatingCallback<bool()> is_sync_enabled) {
+  PasswordStoreBackendMigrationDecoratorTest() {
     prefs_.registry()->RegisterIntegerPref(
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
 
@@ -43,13 +42,14 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
     backend_migration_decorator_ =
         std::make_unique<PasswordStoreBackendMigrationDecorator>(
             CreateBuiltInBackend(), CreateAndroidBackend(), &prefs_,
-            std::move(is_sync_enabled));
+            CreateSyncDelegate());
   }
 
   ~PasswordStoreBackendMigrationDecoratorTest() override {
     backend_migration_decorator()->Shutdown(base::DoNothing());
   }
 
+  MockPasswordBackendSyncDelegate* sync_delegate() { return sync_delegate_; }
   PasswordStoreBackend* backend_migration_decorator() {
     return backend_migration_decorator_.get();
   }
@@ -73,9 +73,16 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
     return unique_backend;
   }
 
+  std::unique_ptr<MockPasswordBackendSyncDelegate> CreateSyncDelegate() {
+    auto unique_delegate = std::make_unique<MockPasswordBackendSyncDelegate>();
+    sync_delegate_ = unique_delegate.get();
+    return unique_delegate;
+  }
+
   base::test::SingleThreadTaskEnvironment task_env_;
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
+  raw_ptr<MockPasswordBackendSyncDelegate> sync_delegate_;
   raw_ptr<MockPasswordStoreBackend> built_in_backend_;
   raw_ptr<MockPasswordStoreBackend> android_backend_;
 
@@ -86,10 +93,7 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        MigrationPreferenceClearedWhenSyncDisabled) {
   base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
-  base::MockCallback<base::RepeatingCallback<bool()>> is_sync_enabled_callback_;
   base::RepeatingClosure sync_status_changed_closure;
-
-  Init(is_sync_enabled_callback_.Get());
 
   // Set up pref to indicate that initial migration is finished.
   prefs().SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
@@ -117,8 +121,8 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 
   // Invoke sync callback to simulate a change in sync status. Set expectation
   // for sync to be turned off.
-  EXPECT_CALL(is_sync_enabled_callback_, Run())
-      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillOnce(Return(false));
   sync_status_changed_closure.Run();
 
   RunUntilIdle();
@@ -131,10 +135,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        LocalAndroidPasswordsClearedWhenSyncEnabled) {
   base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
-  base::MockCallback<base::RepeatingCallback<bool()>> is_sync_enabled_callback_;
   base::RepeatingClosure sync_status_changed_closure;
-
-  Init(is_sync_enabled_callback_.Get());
 
   EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
 
@@ -159,7 +160,8 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 
   // Invoke sync callback to simulate a change in sync status. Set expectation
   // for sync to be turned off.
-  EXPECT_CALL(is_sync_enabled_callback_, Run()).WillOnce(testing::Return(true));
+  EXPECT_CALL(*sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillOnce(Return(true));
   EXPECT_CALL(*android_backend(), ClearAllLocalPasswords);
   sync_status_changed_closure.Run();
 

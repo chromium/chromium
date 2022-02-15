@@ -19,6 +19,17 @@
 
 namespace password_manager {
 
+class MockPasswordBackendSyncDelegate
+    : public PasswordStoreBackend::SyncDelegate {
+ public:
+  MockPasswordBackendSyncDelegate();
+  ~MockPasswordBackendSyncDelegate() override;
+
+  MOCK_METHOD(bool, IsSyncingPasswordsEnabled, (), (override));
+
+  MOCK_METHOD(absl::optional<std::string>, GetSyncingAccount, (), (override));
+};
+
 class MockPasswordStoreBackend : public PasswordStoreBackend {
  public:
   MockPasswordStoreBackend();

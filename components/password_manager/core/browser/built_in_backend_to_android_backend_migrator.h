@@ -12,8 +12,6 @@ class PrefService;
 
 namespace password_manager {
 
-class PasswordStoreBackend;
-
 // Instantiate this object to migrate all password stored in the built-in
 // backend to the Android backend. Migration is potentially an expensive
 // operation and shouldn't start during the hot phase of Chrome start.
@@ -25,7 +23,7 @@ class BuiltInBackendToAndroidBackendMigrator {
       PasswordStoreBackend* built_in_backend,
       PasswordStoreBackend* android_backend,
       PrefService* prefs,
-      base::RepeatingCallback<bool()> is_syncing_passwords_callback);
+      PasswordStoreBackend::SyncDelegate* sync_delegate);
 
   BuiltInBackendToAndroidBackendMigrator(
       const BuiltInBackendToAndroidBackendMigrator&) = delete;
@@ -97,7 +95,7 @@ class BuiltInBackendToAndroidBackendMigrator {
 
   std::unique_ptr<MigrationMetricsReporter> metrics_reporter_;
 
-  base::RepeatingCallback<bool()> is_syncing_passwords_callback_;
+  const raw_ptr<PasswordStoreBackend::SyncDelegate> sync_delegate_;
 
   base::WeakPtrFactory<BuiltInBackendToAndroidBackendMigrator>
       weak_ptr_factory_{this};

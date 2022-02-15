@@ -28,16 +28,16 @@ PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
     std::unique_ptr<PasswordStoreBackend> android_backend,
     PrefService* prefs,
-    base::RepeatingCallback<bool()> is_syncing_passwords_callback)
+    std::unique_ptr<SyncDelegate> sync_delegate)
     : built_in_backend_(std::move(built_in_backend)),
       android_backend_(std::move(android_backend)),
       prefs_(prefs),
-      is_syncing_passwords_callback_(std::move(is_syncing_passwords_callback)) {
+      sync_delegate_(std::move(sync_delegate)) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
       built_in_backend_.get(), android_backend_.get(), prefs_,
-      is_syncing_passwords_callback_);
+      sync_delegate_.get());
 }
 
 PasswordStoreBackendMigrationDecorator::
@@ -72,7 +72,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
           features::kUnifiedPasswordManagerMigration)) {
     migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
         built_in_backend_.get(), android_backend_.get(), prefs_,
-        is_syncing_passwords_callback_);
+        sync_delegate_.get());
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PasswordStoreBackendMigrationDecorator::StartMigration,
@@ -199,7 +199,7 @@ void PasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
   if (!base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerMigration))
     return;
 
-  if (is_syncing_passwords_callback_.Run()) {
+  if (sync_delegate_->IsSyncingPasswordsEnabled()) {
     // Sync was enabled. Delete all the passwords from GMS Core local storage.
     android_backend_->ClearAllLocalPasswords();
   } else {
