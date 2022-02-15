@@ -29,17 +29,19 @@ constexpr char kSwitchDelayMode[] = "delay_mode";
 constexpr char kSwitchNoiseMode[] = "noise_mode";
 constexpr char kSwitchRemoveReportIds[] = "remove_report_ids";
 constexpr char kSwitchInputMode[] = "input_mode";
+constexpr char kSwitchCopyInputToOutput[] = "copy_input_to_output";
 
 constexpr const char* kAllowedSwitches[] = {
-    kSwitchHelp,         kSwitchHelpShort, kSwitchVersion,
+    kSwitchHelp,         kSwitchHelpShort,         kSwitchVersion,
     kSwitchVersionShort,
 
-    kSwitchDelayMode,    kSwitchNoiseMode, kSwitchRemoveReportIds,
-    kSwitchInputMode,
+    kSwitchDelayMode,    kSwitchNoiseMode,         kSwitchRemoveReportIds,
+    kSwitchInputMode,    kSwitchCopyInputToOutput,
 };
 
 constexpr char kHelpMsg[] = R"(
 attribution_reporting_simulator
+  [--copy_input_to_output]
   [--delay_mode=<mode>]
   [--noise_mode=<mode>]
   [--input_mode=<input_mode>]
@@ -64,7 +66,10 @@ Learn about the meaning of the input and output fields at
 https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md.
 
 Switches:
-  --delay_mode=<mode>      -  Optional. One of `default` or `none`. Defaults to
+  --copy_input_to_output    - Optional. If present, the input is copied to the
+                              output in a top-level field called `input`.
+
+  --delay_mode=<mode>       - Optional. One of `default` or `none`. Defaults to
                               `default`.
 
                               default: Reports are sent in reporting windows
@@ -179,7 +184,7 @@ Output JSON format:
 
 {
   // List of zero or more reports.
-  reports: [
+  "reports": [
     {
       // Time at which the report would have been sent in seconds since the
       // UNIX epoch.
@@ -195,7 +200,9 @@ Output JSON format:
       },
     },
     ...
-  ]
+  ],
+  // The original input, if the `copy_input_to_output` switch is present.
+  "input": { ... }
 }
 )";
 
@@ -207,6 +214,7 @@ void PrintHelp() {
 
 int ProcessJsonString(const std::string& json_input,
                       const content::AttributionSimulationOptions& options,
+                      bool copy_input_to_output,
                       int json_write_options) {
   base::JSONReader::ValueWithError result =
       base::JSONReader::ReadAndReturnValueWithError(
@@ -216,8 +224,17 @@ int ProcessJsonString(const std::string& json_input,
               << std::endl;
     return 1;
   }
+
+  base::Value input_copy;
+  if (copy_input_to_output)
+    input_copy = result.value->Clone();
+
   base::Value output = content::RunAttributionSimulationOrExit(
       std::move(*result.value), options);
+
+  if (copy_input_to_output)
+    output.SetKey("input", std::move(input_copy));
+
   std::string output_json;
   bool success = base::JSONWriter::WriteWithOptions(output, json_write_options,
                                                     &output_json);
@@ -301,6 +318,9 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  const bool copy_input_to_output =
+      command_line.HasSwitch(kSwitchCopyInputToOutput);
+
   content::AttributionSimulationOptions options({
       .noise_mode = noise_mode,
       .delay_mode = delay_mode,
@@ -323,14 +343,14 @@ int main(int argc, char* argv[]) {
       // a streaming JSON parser available.
       std::string input_string;
       std::getline(std::cin, input_string, '\0');
-      return ProcessJsonString(input_string, options,
+      return ProcessJsonString(input_string, options, copy_input_to_output,
                                base::JSONWriter::OPTIONS_PRETTY_PRINT);
     }
     case InputMode::kMulti: {
       int ret = 0;
       std::string line;
       while (std::getline(std::cin, line) && ret == 0) {
-        ret = ProcessJsonString(line, options, 0);
+        ret = ProcessJsonString(line, options, copy_input_to_output, 0);
         std::cout << std::endl;
       }
       return ret;
