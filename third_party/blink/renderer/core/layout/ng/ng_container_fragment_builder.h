@@ -324,7 +324,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
 
   const NGConstraintSpace* ConstraintSpace() const { return space_; }
 
-  scoped_refptr<const NGLayoutResult> Abort(NGLayoutResult::EStatus);
+  const NGLayoutResult* Abort(NGLayoutResult::EStatus);
 
 #if DCHECK_IS_ON()
   String ToString() const;

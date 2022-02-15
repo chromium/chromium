@@ -93,8 +93,7 @@ void NGBoxFragmentBuilder::AddResult(
   // instead. The fact that we create a line box at all in such cases is just an
   // implementation detail -- anything of interest is stored on the child block
   // fragment.
-  scoped_refptr<const NGLayoutResult> result_for_propagation =
-      &child_layout_result;
+  const NGLayoutResult* result_for_propagation = &child_layout_result;
 
   if (!fragment.IsBox() && items_builder_) {
     if (const NGPhysicalLineBoxFragment* line =
@@ -477,7 +476,7 @@ void NGBoxFragmentBuilder::PropagateChildBreakValues(
   SetPreviousBreakAfter(break_after);
 }
 
-scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
+const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
     WritingMode block_or_line_writing_mode) {
 #if DCHECK_IS_ON()
   if (ItemsBuilder()) {
@@ -529,9 +528,8 @@ scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
       NGPhysicalBoxFragment::Create(this, block_or_line_writing_mode);
   fragment->CheckType();
 
-  return base::AdoptRef(
-      new NGLayoutResult(NGLayoutResult::NGBoxFragmentBuilderPassKey(),
-                         std::move(fragment), this));
+  return MakeGarbageCollected<NGLayoutResult>(
+      NGLayoutResult::NGBoxFragmentBuilderPassKey(), std::move(fragment), this);
 }
 
 LogicalOffset NGBoxFragmentBuilder::GetChildOffset(

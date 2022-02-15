@@ -26,7 +26,7 @@ class NGLayoutAlgorithmOperations {
   // constraints given by the NGConstraintSpace. Returns a layout result with
   // the resulting layout information.
   // TODO(layout-dev): attempt to make this function const.
-  virtual scoped_refptr<const NGLayoutResult> Layout() = 0;
+  virtual const NGLayoutResult* Layout() = 0;
 
   // Computes the min-content and max-content intrinsic sizes for the given box.
   // The result will not take any min-width, max-width or width properties into
@@ -133,7 +133,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   // fragmentainer at an less-than-ideal location, due to breaking restrictions,
   // such as orphans, widows, break-before:avoid or break-after:avoid.
   template <typename Algorithm>
-  scoped_refptr<const NGLayoutResult> RelayoutAndBreakEarlier(
+  const NGLayoutResult* RelayoutAndBreakEarlier(
       const NGEarlyBreak& breakpoint) {
     // Not allowed to recurse!
     DCHECK(!early_break_);
@@ -157,7 +157,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   // wants to break. We don't want any zero-sized clipped fragments that
   // contribute to superfluous fragmentainers.
   template <typename Algorithm>
-  scoped_refptr<const NGLayoutResult> RelayoutWithoutFragmentation() {
+  const NGLayoutResult* RelayoutWithoutFragmentation() {
     DCHECK(ConstraintSpace().HasBlockFragmentation());
     // We'll relayout with a special cloned constraint space that disables
     // further fragmentation (but rather lets clipped child content "overflow"

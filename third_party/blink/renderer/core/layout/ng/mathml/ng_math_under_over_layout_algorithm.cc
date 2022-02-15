@@ -182,7 +182,7 @@ void NGMathUnderOverLayoutAlgorithm::GatherChildren(NGBlockNode* base,
   }
 }
 
-scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
   DCHECK(IsValidMathMLScript(Node()));
 
@@ -214,14 +214,11 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
 
   // https://w3c.github.io/mathml-core/#dfn-algorithm-for-stretching-operators-along-the-inline-axis
   LayoutUnit inline_stretch_size;
-  auto UpdateInlineStretchSize =
-      [&](const scoped_refptr<const NGLayoutResult>& result) {
-        NGFragment fragment(
-            ConstraintSpace().GetWritingDirection(),
-            To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
-        inline_stretch_size =
-            std::max(inline_stretch_size, fragment.InlineSize());
-      };
+  auto UpdateInlineStretchSize = [&](const NGLayoutResult* result) {
+    NGFragment fragment(ConstraintSpace().GetWritingDirection(),
+                        To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+    inline_stretch_size = std::max(inline_stretch_size, fragment.InlineSize());
+  };
 
   // "Perform layout without any stretch size constraint on all the items of
   // LNotToStretch"
@@ -234,7 +231,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
     const auto child_constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), child,
         NGCacheSlot::kMeasure);
-    const auto child_layout_result = To<NGBlockNode>(child).Layout(
+    const auto* child_layout_result = To<NGBlockNode>(child).Layout(
         child_constraint_space, nullptr /* break_token */);
     UpdateInlineStretchSize(child_layout_result);
     layout_remaining_items_with_zero_inline_stretch_size = false;
@@ -255,7 +252,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
       const auto child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), ConstraintSpace(), child,
           NGCacheSlot::kMeasure, absl::nullopt, zero_stretch_size);
-      const auto child_layout_result = To<NGBlockNode>(child).Layout(
+      const auto* child_layout_result = To<NGBlockNode>(child).Layout(
           child_constraint_space, nullptr /* break_token */);
       UpdateInlineStretchSize(child_layout_result);
     }
@@ -291,7 +288,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
 
   const auto baseline_type = Style().GetFontBaseline();
   const auto base_space = CreateConstraintSpaceForUnderOverChild(base);
-  auto base_layout_result = base.Layout(base_space);
+  auto* base_layout_result = base.Layout(base_space);
   auto base_margins =
       ComputeMarginsFor(base_space, base.Style(), ConstraintSpace());
 
@@ -304,8 +301,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
   // therefore centered relative to themselves).
   if (over) {
     const auto over_space = CreateConstraintSpaceForUnderOverChild(over);
-    scoped_refptr<const NGLayoutResult> over_layout_result =
-        over.Layout(over_space);
+    const NGLayoutResult* over_layout_result = over.Layout(over_space);
     NGBoxStrut over_margins =
         ComputeMarginsFor(over_space, over.Style(), ConstraintSpace());
     NGBoxFragment over_fragment(
@@ -351,8 +347,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
 
   if (under) {
     const auto under_space = CreateConstraintSpaceForUnderOverChild(under);
-    scoped_refptr<const NGLayoutResult> under_layout_result =
-        under.Layout(under_space);
+    const NGLayoutResult* under_layout_result = under.Layout(under_space);
     NGBoxStrut under_margins =
         ComputeMarginsFor(under_space, under.Style(), ConstraintSpace());
     NGBoxFragment under_fragment(

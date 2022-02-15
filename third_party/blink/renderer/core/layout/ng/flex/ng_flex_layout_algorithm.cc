@@ -531,7 +531,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
           MinMaxSizesFunc);
     }
 
-    scoped_refptr<const NGLayoutResult> layout_result;
+    const NGLayoutResult* layout_result = nullptr;
     auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
       if (!layout_result) {
         NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(child);
@@ -777,8 +777,8 @@ NGFlexLayoutAlgorithm::AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
   return min_max.ClampSizeToMinAndMax(content_size_suggestion);
 }
 
-scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::Layout() {
-  auto result = LayoutInternal();
+const NGLayoutResult* NGFlexLayoutAlgorithm::Layout() {
+  auto* result = LayoutInternal();
   switch (result->Status()) {
     case NGLayoutResult::kNeedsEarlierBreak:
       // If we found a good break somewhere inside this block, re-layout and
@@ -796,7 +796,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::Layout() {
   }
 }
 
-scoped_refptr<const NGLayoutResult>
+const NGLayoutResult*
 NGFlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
   DCHECK(!ignore_child_scrollbar_changes_);
   DCHECK(!layout_info_for_devtools_);
@@ -809,7 +809,7 @@ NGFlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
   return algorithm.Layout();
 }
 
-scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
+const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
   // Freezing the scrollbars for the sub-tree shouldn't be strictly necessary,
   // but we do this just in case we trigger an unstable layout.
   absl::optional<PaintLayerScrollableArea::FreezeScrollbarsScope>
@@ -1108,7 +1108,7 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
       LogicalOffset offset = flex_item.offset.ToLogicalOffset(is_column_);
 
-      scoped_refptr<const NGLayoutResult> layout_result;
+      const NGLayoutResult* layout_result = nullptr;
       if (DoesItemStretch(flex_item.ng_input_node)) {
         NGConstraintSpace child_space = BuildSpaceForLayout(
             flex_item.ng_input_node, flex_item.main_axis_final_size,
@@ -1249,9 +1249,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         min_block_size_should_encompass_intrinsic_size);
     auto minimum_top = DeferredShapingMinimumTopScope::CreateDelta(
         Node(), offset.block_offset);
-    scoped_refptr<const NGLayoutResult> layout_result =
-        flex_item->ng_input_node.Layout(child_space, item_break_token,
-                                        early_break_in_child);
+    const NGLayoutResult* layout_result = flex_item->ng_input_node.Layout(
+        child_space, item_break_token, early_break_in_child);
 
     NGBreakStatus break_status = NGBreakStatus::kContinue;
     if (!early_break_ && ConstraintSpace().HasBlockFragmentation()) {

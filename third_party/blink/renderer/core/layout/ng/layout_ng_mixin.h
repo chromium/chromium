@@ -48,7 +48,7 @@ class LayoutNGMixin : public Base {
   NGConstraintSpace ConstraintSpaceForMinMaxSizes() const;
 
   void UpdateOutOfFlowBlockLayout();
-  scoped_refptr<const NGLayoutResult> UpdateInFlowBlockLayout();
+  const NGLayoutResult* UpdateInFlowBlockLayout();
   void UpdateMargins();
 };
 

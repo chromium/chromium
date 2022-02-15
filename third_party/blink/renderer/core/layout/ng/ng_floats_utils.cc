@@ -203,7 +203,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
   bool is_fragmentable =
       is_same_writing_mode && parent_space.HasBlockFragmentation();
 
-  scoped_refptr<const NGLayoutResult> layout_result;
+  const NGLayoutResult* layout_result = nullptr;
   NGBoxStrut fragment_margins;
   NGLayoutOpportunity opportunity;
   bool need_break_before = false;
@@ -266,7 +266,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
         DCHECK_EQ(layout_result->Status(),
                   NGLayoutResult::kOutOfFragmentainerSpace);
         need_break_before = true;
-        return NGPositionedFloat(std::move(layout_result), NGBfcOffset(),
+        return NGPositionedFloat(layout_result, NGBfcOffset(),
                                  need_break_before);
       }
 
@@ -392,8 +392,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
           fragment_margins.LineLeft(parent_space.Direction()),
       float_margin_bfc_offset.block_offset + fragment_margins.block_start);
 
-  return NGPositionedFloat(std::move(layout_result), float_bfc_offset,
-                           need_break_before);
+  return NGPositionedFloat(layout_result, float_bfc_offset, need_break_before);
 }
 
 }  // namespace blink

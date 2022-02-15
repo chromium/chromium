@@ -29,7 +29,7 @@ NGTableSectionLayoutAlgorithm::NGTableSectionLayoutAlgorithm(
 // |  +--------------------+  |
 // |       vspacing           |
 // +--------------------------+
-scoped_refptr<const NGLayoutResult> NGTableSectionLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
   const NGTableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
   wtf_size_t section_index = ConstraintSpace().TableSectionIndex();
 
@@ -71,8 +71,7 @@ scoped_refptr<const NGLayoutResult> NGTableSectionLayoutAlgorithm::Layout() {
     }
 
     NGConstraintSpace row_space = row_space_builder.ToConstraintSpace();
-    scoped_refptr<const NGLayoutResult> row_result =
-        row.Layout(row_space, row_break_token);
+    const NGLayoutResult* row_result = row.Layout(row_space, row_break_token);
 
     LayoutUnit previously_consumed_row_block_size;
     if (ConstraintSpace().HasBlockFragmentation()) {

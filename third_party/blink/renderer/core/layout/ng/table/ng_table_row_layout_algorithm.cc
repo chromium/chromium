@@ -20,7 +20,7 @@ NGTableRowLayoutAlgorithm::NGTableRowLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {}
 
-scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   const NGTableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
   const auto& row = table_data.rows[ConstraintSpace().TableRowIndex()];
 
@@ -108,8 +108,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
          cell = To<NGBlockNode>(cell.NextSibling()), ++cell_index) {
       NGConstraintSpace cell_constraint_space =
           CreateCellConstraintSpace(cell, cell_index, absl::nullopt);
-      scoped_refptr<const NGLayoutResult> layout_result =
-          cell.Layout(cell_constraint_space);
+      const NGLayoutResult* layout_result = cell.Layout(cell_constraint_space);
       NGBoxFragment fragment(
           table_data.table_writing_direction,
           To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));
@@ -135,7 +134,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
     NGConstraintSpace cell_constraint_space = CreateCellConstraintSpace(
         cell, cell_index, row_baseline, &cell_inline_offset,
         ConstraintSpace().HasBlockFragmentation());
-    scoped_refptr<const NGLayoutResult> cell_result =
+    const NGLayoutResult* cell_result =
         cell.Layout(cell_constraint_space, cell_break_token);
     // TODO(mstensho): Propagate break-before and break-after values to the row.
     container_builder_.AddResult(

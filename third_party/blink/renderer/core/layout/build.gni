@@ -544,6 +544,7 @@ blink_core_sources_layout = [
   "ng/ng_physical_box_fragment.h",
   "ng/ng_physical_fragment.cc",
   "ng/ng_physical_fragment.h",
+  "ng/ng_positioned_float.cc",
   "ng/ng_positioned_float.h",
   "ng/ng_relative_utils.cc",
   "ng/ng_relative_utils.h",

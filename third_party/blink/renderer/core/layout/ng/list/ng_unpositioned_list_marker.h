@@ -91,10 +91,9 @@ class CORE_EXPORT NGUnpositionedListMarker final {
     return marker_layout_object_ == other.marker_layout_object_;
   }
 
-  scoped_refptr<const NGLayoutResult> Layout(
-      const NGConstraintSpace& parent_space,
-      const ComputedStyle& parent_style,
-      FontBaseline) const;
+  const NGLayoutResult* Layout(const NGConstraintSpace& parent_space,
+                               const ComputedStyle& parent_style,
+                               FontBaseline) const;
 
 #if DCHECK_IS_ON()
   void CheckMargin() const;

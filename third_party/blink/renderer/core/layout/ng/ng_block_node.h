@@ -36,17 +36,16 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
 
   NGBlockNode(std::nullptr_t) : NGLayoutInputNode(nullptr) {}
 
-  scoped_refptr<const NGLayoutResult> Layout(
-      const NGConstraintSpace& constraint_space,
-      const NGBlockBreakToken* break_token = nullptr,
-      const NGEarlyBreak* = nullptr) const;
+  const NGLayoutResult* Layout(const NGConstraintSpace& constraint_space,
+                               const NGBlockBreakToken* break_token = nullptr,
+                               const NGEarlyBreak* = nullptr) const;
 
   // This method is just for use within the |NGSimplifiedLayoutAlgorithm|.
   //
   // If layout is dirty, it will perform layout using the previous constraint
   // space used to generate the |NGLayoutResult|.
   // Otherwise it will simply return the previous layout result generated.
-  scoped_refptr<const NGLayoutResult> SimplifiedLayout(
+  const NGLayoutResult* SimplifiedLayout(
       const NGPhysicalFragment& previous_fragment) const;
 
   // This method is just for use within the |NGOutOfFlowLayoutPart|.
@@ -61,7 +60,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   //
   // If the containing-block size hasn't changed, and we are layout-clean we
   // can reuse the previous layout result.
-  scoped_refptr<const NGLayoutResult> CachedLayoutResultForOutOfFlowPositioned(
+  const NGLayoutResult* CachedLayoutResultForOutOfFlowPositioned(
       LogicalSize container_content_size) const;
 
   NGLayoutInputNode NextSibling() const;
@@ -173,7 +172,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   bool HasIndex() const;
 
   // Layout an atomic inline; e.g., inline block.
-  scoped_refptr<const NGLayoutResult> LayoutAtomicInline(
+  const NGLayoutResult* LayoutAtomicInline(
       const NGConstraintSpace& parent_constraint_space,
       const ComputedStyle& parent_style,
       bool use_first_line_style,
@@ -221,22 +220,20 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
 
   // Runs layout on the underlying LayoutObject and creates a fragment for the
   // resulting geometry.
-  scoped_refptr<const NGLayoutResult> RunLegacyLayout(
-      const NGConstraintSpace&) const;
+  const NGLayoutResult* RunLegacyLayout(const NGConstraintSpace&) const;
 
-  scoped_refptr<const NGLayoutResult> RunSimplifiedLayout(
-      const NGLayoutAlgorithmParams&,
-      const NGLayoutResult&) const;
+  const NGLayoutResult* RunSimplifiedLayout(const NGLayoutAlgorithmParams&,
+                                            const NGLayoutResult&) const;
 
   // If this node is a LayoutNGMixin, the caller must pass the layout object for
   // this node cast to a LayoutBlockFlow as the first argument.
   void FinishLayout(LayoutBlockFlow*,
                     const NGConstraintSpace&,
                     const NGBlockBreakToken*,
-                    scoped_refptr<const NGLayoutResult>) const;
+                    const NGLayoutResult*) const;
 
   // Update the layout results vector in LayoutBox with the new result.
-  void StoreResultInLayoutBox(scoped_refptr<const NGLayoutResult>,
+  void StoreResultInLayoutBox(const NGLayoutResult*,
                               const NGBlockBreakToken*) const;
 
   // After we run the layout algorithm, this function copies back the geometry

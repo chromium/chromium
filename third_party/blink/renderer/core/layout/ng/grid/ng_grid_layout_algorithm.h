@@ -40,7 +40,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
  public:
   explicit NGGridLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  scoped_refptr<const NGLayoutResult> Layout() override;
+  const NGLayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
   // Computes the containing block rect of out of flow items from stored data in
@@ -61,7 +61,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
  private:
   friend class NGGridLayoutAlgorithmTest;
 
-  scoped_refptr<const NGLayoutResult> LayoutInternal();
+  const NGLayoutResult* LayoutInternal();
 
   LayoutUnit Baseline(const NGGridGeometry& grid_geometry,
                       const GridItemData& grid_item,

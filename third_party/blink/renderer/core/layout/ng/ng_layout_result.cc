@@ -19,13 +19,14 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGLayoutResult : public RefCounted<SameSizeAsNGLayoutResult> {
+struct SameSizeAsNGLayoutResult
+    : public GarbageCollected<SameSizeAsNGLayoutResult> {
   const NGConstraintSpace space;
-  void* physical_fragment;
+  scoped_refptr<void*> physical_fragment;
+  Member<void*> rare_data_;
   union {
     NGBfcOffset bfc_offset;
     LogicalOffset oof_positioned_offset;
-    void* rare_data;
   };
   LayoutUnit intrinsic_block_size;
   unsigned bitfields[1];
@@ -40,14 +41,13 @@ ASSERT_SIZE(NGLayoutResult, SameSizeAsNGLayoutResult);
 }  // namespace
 
 // static
-scoped_refptr<const NGLayoutResult>
-NGLayoutResult::CloneWithPostLayoutFragments(
+const NGLayoutResult* NGLayoutResult::CloneWithPostLayoutFragments(
     const NGLayoutResult& other,
     const absl::optional<PhysicalRect> updated_layout_overflow) {
-  return base::AdoptRef(new NGLayoutResult(
+  return MakeGarbageCollected<NGLayoutResult>(
       other, NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
                  To<NGPhysicalBoxFragment>(other.PhysicalFragment()),
-                 updated_layout_overflow)));
+                 updated_layout_overflow));
 }
 
 NGLayoutResult::NGLayoutResult(
@@ -149,8 +149,8 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
       physical_fragment_(other.physical_fragment_),
       intrinsic_block_size_(other.intrinsic_block_size_),
       bitfields_(other.bitfields_) {
-  if (HasRareData()) {
-    rare_data_ = new RareData(*other.rare_data_);
+  if (other.HasRareData()) {
+    rare_data_ = MakeGarbageCollected<RareData>(*other.rare_data_);
     rare_data_->bfc_line_offset = bfc_line_offset;
     rare_data_->bfc_block_offset = bfc_block_offset;
   } else if (!bitfields_.has_oof_positioned_offset) {
@@ -189,8 +189,8 @@ NGLayoutResult::NGLayoutResult(
       physical_fragment_(std::move(physical_fragment)),
       intrinsic_block_size_(other.intrinsic_block_size_),
       bitfields_(other.bitfields_) {
-  if (HasRareData()) {
-    rare_data_ = new RareData(*other.rare_data_);
+  if (other.HasRareData()) {
+    rare_data_ = MakeGarbageCollected<RareData>(*other.rare_data_);
   } else if (!bitfields_.has_oof_positioned_offset) {
     bfc_offset_ = other.bfc_offset_;
   } else {
@@ -276,11 +276,6 @@ NGLayoutResult::NGLayoutResult(
 #endif
 }
 
-NGLayoutResult::~NGLayoutResult() {
-  if (HasRareData())
-    delete rare_data_;
-}
-
 NGExclusionSpace NGLayoutResult::MergeExclusionSpaces(
     const NGLayoutResult& other,
     const NGExclusionSpace& new_input_exclusion_space,
@@ -300,10 +295,9 @@ NGLayoutResult::RareData* NGLayoutResult::EnsureRareData() {
     absl::optional<LayoutUnit> bfc_block_offset;
     if (!bitfields_.is_bfc_block_offset_nullopt)
       bfc_block_offset = bfc_offset_.block_offset;
-    rare_data_ = new RareData(bfc_offset_.line_offset, bfc_block_offset);
-    bitfields_.has_rare_data = true;
+    rare_data_ = MakeGarbageCollected<RareData>(bfc_offset_.line_offset,
+                                                bfc_block_offset);
   }
-
   return rare_data_;
 }
 
@@ -359,5 +353,13 @@ void NGLayoutResult::AssertSoleBoxFragment() const {
   DCHECK(!physical_fragment_->BreakToken());
 }
 #endif
+
+void NGLayoutResult::Trace(Visitor* visitor) const {
+  visitor->Trace(rare_data_);
+}
+
+void NGLayoutResult::RareData::Trace(Visitor* visitor) const {
+  visitor->Trace(early_break);
+}
 
 }  // namespace blink

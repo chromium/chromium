@@ -446,7 +446,7 @@ bool ComputeOutOfFlowInlineDimensions(
   return depends_on_min_max_sizes;
 }
 
-scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
+const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGBlockNode& node,
     const NGConstraintSpace& space,
     const NGBoxStrut& border_padding,
@@ -456,7 +456,7 @@ scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
     NGLogicalOutOfFlowDimensions* dimensions) {
   DCHECK(dimensions);
 
-  scoped_refptr<const NGLayoutResult> result;
+  const NGLayoutResult* result = nullptr;
 
   const auto& style = node.Style();
   const bool is_table = node.IsTable();

@@ -84,7 +84,7 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
       previous_fragment.MayHaveDescendantAboveBlockStart());
 }
 
-scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGSimplifiedOOFLayoutAlgorithm::Layout() {
   // Any children that had previously broken due to a break before would not
   // have been traversed via the |child_iterator_|, so their break tokens should
   // be added before layout is completed.
@@ -100,7 +100,7 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
 }
 
 void NGSimplifiedOOFLayoutAlgorithm::AppendOutOfFlowResult(
-    scoped_refptr<const NGLayoutResult> result) {
+    const NGLayoutResult* result) {
   container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset());
 
   // If there is an incoming child break token, make sure that it matches

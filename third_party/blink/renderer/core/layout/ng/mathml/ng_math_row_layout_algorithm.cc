@@ -64,7 +64,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
   if (!inherits_block_stretch_size_constraint &&
       !inherits_inline_stretch_size_constraint) {
     auto UpdateBlockStretchSizes =
-        [&](const scoped_refptr<const NGLayoutResult>& result) {
+        [&](const NGLayoutResult* result) {
           NGBoxFragment fragment(
               ConstraintSpace().GetWritingDirection(),
               To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
@@ -85,7 +85,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
       const auto child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), ConstraintSpace(), child,
           NGCacheSlot::kMeasure);
-      const auto child_layout_result = To<NGBlockNode>(child).Layout(
+      const auto* child_layout_result = To<NGBlockNode>(child).Layout(
           child_constraint_space, nullptr /* break_token */);
       UpdateBlockStretchSizes(child_layout_result);
       should_layout_remaining_items_with_zero_block_stretch_size = false;
@@ -103,7 +103,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
         const auto child_constraint_space = CreateConstraintSpaceForMathChild(
             Node(), ChildAvailableSize(), ConstraintSpace(), child,
             NGCacheSlot::kMeasure, zero_stretch_sizes);
-        const auto child_layout_result = To<NGBlockNode>(child).Layout(
+        const auto* child_layout_result = To<NGBlockNode>(child).Layout(
             child_constraint_space, nullptr /* break_token */);
         UpdateBlockStretchSizes(child_layout_result);
       }
@@ -144,7 +144,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
       child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), ConstraintSpace(), child);
     }
-    const auto child_layout_result = To<NGBlockNode>(child).Layout(
+    const auto* child_layout_result = To<NGBlockNode>(child).Layout(
         child_constraint_space, nullptr /* break_token */);
     LayoutUnit lspace, rspace;
     if (should_add_space)
@@ -185,7 +185,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
   row_total_size->block_size = max_row_ascent + max_row_descent;
 }
 
-scoped_refptr<const NGLayoutResult> NGMathRowLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGMathRowLayoutAlgorithm::Layout() {
   DCHECK(!IsResumingLayout(BreakToken()));
 
   bool is_display_block_math =

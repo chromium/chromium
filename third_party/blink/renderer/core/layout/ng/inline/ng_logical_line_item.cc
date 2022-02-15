@@ -75,7 +75,7 @@ const NGLayoutResult* NGLogicalLineItems::BlockInInlineLayoutResult() const {
   for (const NGLogicalLineItem& item : *this) {
     if (item.layout_result &&
         item.layout_result->PhysicalFragment().IsBlockInInline())
-      return item.layout_result.get();
+      return item.layout_result;
   }
   return nullptr;
 }

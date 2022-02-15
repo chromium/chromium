@@ -2067,7 +2067,7 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
     constraint_space_.ExclusionSpace().MoveAndUpdateDerivedGeometry(
         *exclusion_space_);
 
-    scoped_refptr<const NGLayoutResult> layout_result =
+    const NGLayoutResult* layout_result =
         NGBlockNode(To<LayoutBox>(item.GetLayoutObject()))
             .Layout(constraint_space_, incoming_block_break_token);
     line_info->SetBlockInInlineLayoutResult(layout_result);

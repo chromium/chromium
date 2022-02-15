@@ -27,11 +27,11 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
                                  DevtoolsFlexInfo* devtools = nullptr);
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
-  scoped_refptr<const NGLayoutResult> Layout() override;
+  const NGLayoutResult* Layout() override;
 
  private:
-  scoped_refptr<const NGLayoutResult> RelayoutIgnoringChildScrollbarChanges();
-  scoped_refptr<const NGLayoutResult> LayoutInternal();
+  const NGLayoutResult* RelayoutIgnoringChildScrollbarChanges();
+  const NGLayoutResult* LayoutInternal();
 
   void PlaceFlexItems(Vector<NGFlexLine>* flex_line_outputs);
   void CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);

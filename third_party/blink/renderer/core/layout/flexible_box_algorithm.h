@@ -225,7 +225,7 @@ class FlexItem {
   bool needs_relayout_for_stretch_;
 
   NGBlockNode ng_input_node_;
-  scoped_refptr<const NGLayoutResult> layout_result_;
+  Member<const NGLayoutResult> layout_result_;
 };
 
 class FlexItemVectorView {

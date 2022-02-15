@@ -170,7 +170,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // layout result if we needed to know the size in order to calculate the
     // offset. If an initial result is set, it will either be re-used or
     // replaced in the final layout pass.
-    scoped_refptr<const NGLayoutResult> initial_layout_result;
+    Member<const NGLayoutResult> initial_layout_result;
     // The |block_estimate| is wrt. the candidate's writing mode.
     absl::optional<LayoutUnit> block_estimate;
     NGLogicalOutOfFlowDimensions node_dimensions;
@@ -185,6 +185,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // The offset from the OOF to the top of the fragmentation context root.
     // This should only be used when laying out a fragmentainer descendant.
     LogicalOffset original_offset;
+
+    void Trace(Visitor* visitor) const;
   };
 
   struct NodeToLayout {
@@ -248,7 +250,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   NodeInfo SetupNodeInfo(const NGLogicalOutOfFlowPositionedNode& oof_node);
 
-  scoped_refptr<const NGLayoutResult> LayoutOOFNode(
+  const NGLayoutResult* LayoutOOFNode(
       NodeToLayout& oof_node_to_layout,
       const LayoutBox* only_layout,
       const NGConstraintSpace* fragmentainer_constraint_space = nullptr);
@@ -259,13 +261,13 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
                              const LayoutBox* only_layout,
                              bool is_first_run = true);
 
-  scoped_refptr<const NGLayoutResult> Layout(
+  const NGLayoutResult* Layout(
       const NodeToLayout& oof_node_to_layout,
       const NGConstraintSpace* fragmentainer_constraint_space);
 
   bool IsContainingBlockForCandidate(const NGLogicalOutOfFlowPositionedNode&);
 
-  scoped_refptr<const NGLayoutResult> GenerateFragment(
+  const NGLayoutResult* GenerateFragment(
       NGBlockNode node,
       const LogicalSize& container_content_size_in_child_writing_mode,
       const absl::optional<LayoutUnit>& block_estimate,
@@ -310,7 +312,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       wtf_size_t* start_index,
       LogicalOffset* offset) const;
 
-  void ReplaceFragment(scoped_refptr<const NGLayoutResult> new_result,
+  void ReplaceFragment(const NGLayoutResult* new_result,
                        const NGPhysicalBoxFragment& old_fragment,
                        wtf_size_t index);
 

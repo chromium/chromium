@@ -69,7 +69,7 @@ NGFieldsetLayoutAlgorithm::NGFieldsetLayoutAlgorithm(
   border_box_size_ = container_builder_.InitialBorderBoxSize();
 }
 
-scoped_refptr<const NGLayoutResult> NGFieldsetLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGFieldsetLayoutAlgorithm::Layout() {
   // Layout of a fieldset container consists of two parts: Create a child
   // fragment for the rendered legend (if any), and create a child fragment for
   // the fieldset contents anonymous box (if any).
@@ -257,8 +257,7 @@ void NGFieldsetLayoutAlgorithm::LayoutLegend(NGBlockNode& legend) {
 
   auto legend_space = CreateConstraintSpaceForLegend(
       legend, ChildAvailableSize(), percentage_size);
-  scoped_refptr<const NGLayoutResult> result =
-      legend.Layout(legend_space, BreakToken());
+  const NGLayoutResult* result = legend.Layout(legend_space, BreakToken());
 
   // Legends are monolithic, so abortions are not expected.
   DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
@@ -347,7 +346,7 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
     }
   }
 
-  scoped_refptr<const NGLayoutResult> result;
+  const NGLayoutResult* result = nullptr;
   bool is_past_end = BreakToken() && BreakToken()->IsAtBlockEnd();
 
   LayoutUnit max_content_block_size = LayoutUnit::Max();
@@ -409,7 +408,7 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
   NGBreakStatus break_status = NGBreakStatus::kContinue;
   if (ConstraintSpace().HasBlockFragmentation() && !early_break_) {
     break_status = BreakBeforeChildIfNeeded(
-        ConstraintSpace(), fieldset_content, *result.get(),
+        ConstraintSpace(), fieldset_content, *result,
         ConstraintSpace().FragmentainerOffsetAtBfc() + intrinsic_block_size_,
         /* has_container_separation */ false, &container_builder_);
   }

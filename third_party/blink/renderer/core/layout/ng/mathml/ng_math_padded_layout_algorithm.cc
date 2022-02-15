@@ -65,14 +65,14 @@ void NGMathPaddedLayoutAlgorithm::GatherChildren(
   }
 }
 
-scoped_refptr<const NGLayoutResult> NGMathPaddedLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGMathPaddedLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   NGBlockNode content = nullptr;
   GatherChildren(&content, &container_builder_);
   LayoutUnit content_ascent, content_descent;
   NGBoxStrut content_margins;
-  scoped_refptr<const NGLayoutResult> content_layout_result;
+  const NGLayoutResult* content_layout_result = nullptr;
   if (content) {
     NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), content);

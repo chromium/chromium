@@ -223,8 +223,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
         table_writing_direction);
     const NGConstraintSpace cell_constraint_space = CreateCellConstraintSpace(
         cell, colspan_cell_tabulator->CurrentColumn(), cell_borders);
-    scoped_refptr<const NGLayoutResult> layout_result =
-        cell.Layout(cell_constraint_space);
+    const NGLayoutResult* layout_result = cell.Layout(cell_constraint_space);
     const NGBoxFragment fragment(
         table_writing_direction,
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));

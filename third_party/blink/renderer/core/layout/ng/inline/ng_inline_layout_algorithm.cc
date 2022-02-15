@@ -334,9 +334,8 @@ void NGInlineLayoutAlgorithm::CreateLine(
       has_out_of_flow_positioned_items = true;
     } else if (item.Type() == NGInlineItem::kFloating) {
       if (item_result.positioned_float) {
-        if (scoped_refptr<const NGLayoutResult> layout_result =
-                item_result.positioned_float->layout_result) {
-          line_box->AddChild(std::move(layout_result),
+        if (item_result.positioned_float->layout_result) {
+          line_box->AddChild(item_result.positioned_float->layout_result,
                              item_result.positioned_float->bfc_offset,
                              item.BidiLevel());
         } else {
@@ -1112,7 +1111,7 @@ bool NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
   return true;
 }
 
-scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   NGExclusionSpace initial_exclusion_space(ConstraintSpace().ExclusionSpace());
 
   end_margin_strut_ = ConstraintSpace().MarginStrut();
@@ -1376,8 +1375,7 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
 
   DCHECK(items_builder);
   container_builder_.PropagateChildrenData(*line_box);
-  scoped_refptr<const NGLayoutResult> layout_result =
-      container_builder_.ToLineBoxFragment();
+  const NGLayoutResult* layout_result = container_builder_.ToLineBoxFragment();
   items_builder->AssociateLogicalLineItems(line_box,
                                            layout_result->PhysicalFragment());
   return layout_result;
@@ -1430,7 +1428,7 @@ unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
       }
     }
 
-    positioned_floats->push_back(std::move(positioned_float));
+    positioned_floats->push_back(positioned_float);
   }
 
   return index;
@@ -1514,12 +1512,8 @@ void NGInlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
   // Reorder to the visual order.
   NGLogicalLineItems visual_items;
   visual_items.ReserveInitialCapacity(line_box->size());
-  for (unsigned logical_index : indices_in_visual_order) {
+  for (unsigned logical_index : indices_in_visual_order)
     visual_items.AddChild(std::move((*line_box)[logical_index]));
-    DCHECK(!(*line_box)[logical_index].HasInFlowFragment() ||
-           // |inline_item| will not be null by moving.
-           (*line_box)[logical_index].inline_item);
-  }
   DCHECK_EQ(line_box->size(), visual_items.size());
   *line_box = std::move(visual_items);
 }

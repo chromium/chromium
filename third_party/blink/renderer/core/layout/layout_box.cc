@@ -131,8 +131,9 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutRectOutsets margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
-  void* pointers[3];
-  Vector<scoped_refptr<const NGLayoutResult>, 1> layout_results;
+  Member<void*> result;
+  HeapVector<Member<const NGLayoutResult>, 1> layout_results;
+  void* pointers[2];
   Member<void*> inline_box_wrapper;
   wtf_size_t first_fragment_item_index_;
   Member<void*> rare_data;
@@ -450,6 +451,8 @@ LayoutBox::LayoutBox(ContainerNode* node)
 }
 
 void LayoutBox::Trace(Visitor* visitor) const {
+  visitor->Trace(measure_result_);
+  visitor->Trace(layout_results_);
   visitor->Trace(inline_box_wrapper_);
   visitor->Trace(rare_data_);
   LayoutBoxModelObject::Trace(visitor);
@@ -3332,8 +3335,7 @@ bool LayoutBox::NGPhysicalFragmentList::Contains(
   return IndexOf(fragment) != kNotFound;
 }
 
-void LayoutBox::SetCachedLayoutResult(
-    scoped_refptr<const NGLayoutResult> result) {
+void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result) {
   NOT_DESTROYED();
   DCHECK(!result->PhysicalFragment().BreakToken());
   DCHECK(To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode());
@@ -3369,7 +3371,7 @@ void LayoutBox::SetCachedLayoutResult(
   AddLayoutResult(std::move(result), 0);
 }
 
-void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result,
+void LayoutBox::AddLayoutResult(const NGLayoutResult* result,
                                 wtf_size_t index) {
   NOT_DESTROYED();
   DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
@@ -3407,7 +3409,7 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result,
   AddLayoutResult(std::move(result));
 }
 
-void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result) {
+void LayoutBox::AddLayoutResult(const NGLayoutResult* result) {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
@@ -3423,12 +3425,12 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result) {
     FragmentCountOrSizeDidChange();
 }
 
-void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
+void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
                                     wtf_size_t index) {
   NOT_DESTROYED();
   DCHECK_LE(index, layout_results_.size());
-  const NGLayoutResult* old_result = layout_results_[index].get();
-  if (old_result == result.get())
+  const NGLayoutResult* old_result = layout_results_[index];
+  if (old_result == result)
     return;
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   const auto& old_fragment = old_result->PhysicalFragment();
@@ -3455,7 +3457,7 @@ void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
     NGFragmentItems::FinalizeAfterLayout(layout_results_);
 }
 
-void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
+void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
                                     const NGPhysicalBoxFragment& old_fragment) {
   DCHECK_EQ(this, old_fragment.OwnerLayoutBox());
   DCHECK_EQ(result->PhysicalFragment().GetSelfOrContainerLayoutObject(),
@@ -3471,13 +3473,13 @@ void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
 }
 
 void LayoutBox::RestoreLegacyLayoutResults(
-    scoped_refptr<const NGLayoutResult> measure_result,
-    scoped_refptr<const NGLayoutResult> layout_result) {
+    const NGLayoutResult* measure_result,
+    const NGLayoutResult* layout_result) {
   NOT_DESTROYED();
   DCHECK(!IsLayoutNGObject());
-  measure_result_ = std::move(measure_result);
+  measure_result_ = measure_result;
   if (layout_result)
-    AddLayoutResult(std::move(layout_result), 0);
+    AddLayoutResult(layout_result, 0);
   else
     DCHECK(layout_results_.IsEmpty());
 }
@@ -3529,7 +3531,7 @@ const NGLayoutResult* LayoutBox::GetCachedLayoutResult() const {
   if (layout_results_.IsEmpty())
     return nullptr;
   // Only return re-usable results.
-  const NGLayoutResult* result = layout_results_[0].get();
+  const NGLayoutResult* result = layout_results_[0];
   if (!To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode())
     return nullptr;
   DCHECK(!result->PhysicalFragment().IsLayoutObjectDestroyedOrMoved() ||
@@ -3547,10 +3549,10 @@ const NGLayoutResult* LayoutBox::GetCachedMeasureResult() const {
            .IsOnlyForNode())
     return nullptr;
 
-  return measure_result_.get();
+  return measure_result_;
 }
 
-scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
+const NGLayoutResult* LayoutBox::CachedLayoutResult(
     const NGConstraintSpace& new_space,
     const NGBreakToken* break_token,
     const NGEarlyBreak* early_break,
@@ -3867,7 +3869,7 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
   if (use_layout_cache_slot && !is_blocked_by_display_lock &&
       NeedsLayoutOverflowRecalc()) {
 #if DCHECK_IS_ON()
-    scoped_refptr<const NGLayoutResult> cloned_cached_layout_result =
+    const NGLayoutResult* cloned_cached_layout_result =
         NGLayoutResult::CloneWithPostLayoutFragments(*cached_layout_result);
 #endif
     RecalcLayoutOverflow();
@@ -3915,10 +3917,9 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
     return cached_layout_result;
   }
 
-  scoped_refptr<const NGLayoutResult> new_result =
-      base::AdoptRef(new NGLayoutResult(*cached_layout_result, new_space,
-                                        end_margin_strut, bfc_line_offset,
-                                        bfc_block_offset, block_offset_delta));
+  const NGLayoutResult* new_result = MakeGarbageCollected<NGLayoutResult>(
+      *cached_layout_result, new_space, end_margin_strut, bfc_line_offset,
+      bfc_block_offset, block_offset_delta);
 
   if (needs_cached_result_update && !NGDisableSideEffectsScope::IsDisabled())
     SetCachedLayoutResult(new_result);
@@ -3926,8 +3927,7 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
   return new_result;
 }
 
-scoped_refptr<const NGLayoutResult> LayoutBox::GetLayoutResult(
-    wtf_size_t i) const {
+const NGLayoutResult* LayoutBox::GetLayoutResult(wtf_size_t i) const {
   NOT_DESTROYED();
   return layout_results_[i];
 }

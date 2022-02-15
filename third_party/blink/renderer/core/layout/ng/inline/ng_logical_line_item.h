@@ -33,20 +33,20 @@ struct NGLogicalLineItem {
   // bidi level and affects bidi reordering.
   explicit NGLogicalLineItem(UBiDiLevel bidi_level) : bidi_level(bidi_level) {}
   // Create an in-flow |NGLayoutResult|.
-  NGLogicalLineItem(scoped_refptr<const NGLayoutResult> layout_result,
+  NGLogicalLineItem(const NGLayoutResult* layout_result,
                     const LogicalRect& rect,
                     unsigned children_count,
                     UBiDiLevel bidi_level)
-      : layout_result(std::move(layout_result)),
+      : layout_result(layout_result),
         rect(rect),
         children_count(children_count),
         bidi_level(bidi_level) {}
-  NGLogicalLineItem(scoped_refptr<const NGLayoutResult> layout_result,
+  NGLogicalLineItem(const NGLayoutResult* layout_result,
                     LogicalOffset offset,
                     LayoutUnit inline_size,
                     unsigned children_count,
                     UBiDiLevel bidi_level)
-      : layout_result(std::move(layout_result)),
+      : layout_result(layout_result),
         rect(offset, LogicalSize()),
         inline_size(inline_size),
         children_count(children_count),
@@ -133,10 +133,10 @@ struct NGLogicalLineItem {
   NGLogicalLineItem(LayoutObject* unpositioned_float, UBiDiLevel bidi_level)
       : unpositioned_float(unpositioned_float), bidi_level(bidi_level) {}
   // Create a positioned float.
-  NGLogicalLineItem(scoped_refptr<const NGLayoutResult> layout_result,
+  NGLogicalLineItem(const NGLayoutResult* layout_result,
                     NGBfcOffset bfc_offset,
                     UBiDiLevel bidi_level)
-      : layout_result(std::move(layout_result)),
+      : layout_result(layout_result),
         bfc_offset(bfc_offset),
         bidi_level(bidi_level) {}
 
@@ -200,7 +200,7 @@ struct NGLogicalLineItem {
                           : TextDirection::kLtr;
   }
 
-  scoped_refptr<const NGLayoutResult> layout_result;
+  Persistent<const NGLayoutResult> layout_result;
 
   // Data to create a text fragment from.
   // |inline_item| is null only for ellipsis items.
@@ -300,7 +300,7 @@ class NGLogicalLineItems {
     children_.insert(index, item);
   }
   void InsertChild(unsigned index,
-                   scoped_refptr<const NGLayoutResult> layout_result,
+                   const NGLayoutResult* layout_result,
                    const LogicalRect& rect,
                    unsigned children_count) {
     WillInsertChild(index);

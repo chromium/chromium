@@ -222,7 +222,7 @@ NGColumnLayoutAlgorithm::NGColumnLayoutAlgorithm(
   }
 }
 
-scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
   const LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
   // TODO(mstensho): This isn't the content-box size, as
   // |BorderScrollbarPadding()| has been adjusted for fragmentation. Verify
@@ -426,7 +426,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
     // break token, we wouldn't be able to resume layout after the any initial
     // spanners.
     if (!entry.spanner) {
-      scoped_refptr<const NGLayoutResult> result =
+      const NGLayoutResult* result =
           LayoutRow(child_break_token, &margin_strut);
 
       if (!result) {
@@ -549,7 +549,24 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
   return NGBreakStatus::kContinue;
 }
 
-scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
+struct ResultWithOffset {
+  DISALLOW_NEW();
+
+ public:
+  Member<const NGLayoutResult> result;
+  LogicalOffset offset;
+
+  ResultWithOffset(const NGLayoutResult* result, LogicalOffset offset)
+      : result(result), offset(offset) {}
+
+  const NGPhysicalBoxFragment& Fragment() const {
+    return To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+  }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(result); }
+};
+
+const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
     const NGBlockBreakToken* next_column_token,
     NGMarginStrut* margin_strut) {
   LogicalSize column_size(column_inline_size_, column_block_size_);
@@ -630,19 +647,8 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
   // (colum balancing). Keep them in this list, and add them to the fragment
   // builder when we have the final column fragments. Or clear the list and
   // retry otherwise.
-  struct ResultWithOffset {
-    scoped_refptr<const NGLayoutResult> result;
-    LogicalOffset offset;
+  HeapVector<ResultWithOffset, 16> new_columns;
 
-    ResultWithOffset(scoped_refptr<const NGLayoutResult> result,
-                     LogicalOffset offset)
-        : result(result), offset(offset) {}
-
-    const NGPhysicalBoxFragment& Fragment() const {
-      return To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-    }
-  };
-  Vector<ResultWithOffset, 16> new_columns;
   bool is_empty_spanner_parent = false;
 
   // Avoid suboptimal breaks (and overflow from monolithic content) inside a
@@ -682,7 +688,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     }
   }
 
-  scoped_refptr<const NGLayoutResult> result;
+  const NGLayoutResult* result = nullptr;
   absl::optional<NGBreakAppeal> min_break_appeal;
 
   do {
@@ -941,7 +947,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
   if (UNLIKELY(early_break_))
     early_break_in_child = EnterEarlyBreakInChild(spanner_node, *early_break_);
 
-  auto result =
+  auto* result =
       spanner_node.Layout(spanner_space, break_token, early_break_in_child);
 
   if (ConstraintSpace().HasBlockFragmentation() && !early_break_) {
@@ -952,9 +958,8 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
         ConstraintSpace().FragmentainerOffsetAtBfc() + block_offset;
 
     NGBreakStatus break_status = BreakBeforeChildIfNeeded(
-        ConstraintSpace(), spanner_node, *result.get(),
-        fragmentainer_block_offset, has_processed_first_child_,
-        &container_builder_);
+        ConstraintSpace(), spanner_node, *result, fragmentainer_block_offset,
+        has_processed_first_child_, &container_builder_);
 
     if (break_status != NGBreakStatus::kContinue) {
       // We need to break, either before the spanner, or even earlier.
@@ -1005,7 +1010,7 @@ void NGColumnLayoutAlgorithm::AttemptToPositionListMarker(
   if (!baseline)
     return;
 
-  scoped_refptr<const NGLayoutResult> layout_result = marker.Layout(
+  const NGLayoutResult* layout_result = marker.Layout(
       ConstraintSpace(), container_builder_.Style(), baseline_type);
   DCHECK(layout_result);
 
@@ -1028,7 +1033,7 @@ void NGColumnLayoutAlgorithm::PositionAnyUnclaimedListMarker() {
 
   // Lay out the list marker.
   FontBaseline baseline_type = Style().GetFontBaseline();
-  scoped_refptr<const NGLayoutResult> layout_result =
+  const NGLayoutResult* layout_result =
       marker.Layout(ConstraintSpace(), Style(), baseline_type);
   DCHECK(layout_result);
   // Position the list marker without aligning with line boxes.
@@ -1157,7 +1162,7 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
     NGBlockLayoutAlgorithm balancing_algorithm(
         {Node(), fragment_geometry, space, break_token});
     balancing_algorithm.SetBoxType(NGPhysicalFragment::kColumnBox);
-    scoped_refptr<const NGLayoutResult> result = balancing_algorithm.Layout();
+    const NGLayoutResult* result = balancing_algorithm.Layout();
 
     // This algorithm should never abort.
     DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
@@ -1352,3 +1357,5 @@ NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstraintSpaceForMinMax()
 }
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::ResultWithOffset)

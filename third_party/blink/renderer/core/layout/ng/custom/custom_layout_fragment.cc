@@ -13,7 +13,7 @@ namespace blink {
 CustomLayoutFragment::CustomLayoutFragment(
     CustomLayoutChild* child,
     CustomLayoutToken* token,
-    scoped_refptr<const NGLayoutResult> layout_result,
+    const NGLayoutResult* layout_result,
     const LogicalSize& size,
     const absl::optional<LayoutUnit> baseline,
     v8::Isolate* isolate)
@@ -56,6 +56,7 @@ ScriptValue CustomLayoutFragment::data(ScriptState* script_state) const {
 void CustomLayoutFragment::Trace(Visitor* visitor) const {
   visitor->Trace(child_);
   visitor->Trace(token_);
+  visitor->Trace(layout_result_);
   visitor->Trace(layout_worklet_world_v8_data_);
   ScriptWrappable::Trace(visitor);
 }

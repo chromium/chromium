@@ -316,8 +316,8 @@ void CacheGridTrackSpanProperties(
 
 }  // namespace
 
-scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
-  const auto result = LayoutInternal();
+const NGLayoutResult* NGGridLayoutAlgorithm::Layout() {
+  const auto* result = LayoutInternal();
   if (result->Status() == NGLayoutResult::kDisableFragmentation) {
     DCHECK(ConstraintSpace().HasBlockFragmentation());
     return RelayoutWithoutFragmentation<NGGridLayoutAlgorithm>();
@@ -325,7 +325,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
   return result;
 }
 
-scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::LayoutInternal() {
+const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
   const auto& node = Node();
@@ -992,7 +992,7 @@ LayoutUnit NGGridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
 
 namespace {
 
-scoped_refptr<const NGLayoutResult> LayoutNodeForMeasure(
+const NGLayoutResult* LayoutNodeForMeasure(
     const NGBlockNode& node,
     const NGConstraintSpace& constraint_space,
     const SizingConstraint sizing_constraint) {
@@ -1065,7 +1065,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     if (is_for_columns)
       grid_item->is_sizing_dependent_on_block_size = true;
 
-    scoped_refptr<const NGLayoutResult> result;
+    const NGLayoutResult* result = nullptr;
     if (space.AvailableSize().inline_size == kIndefiniteSize) {
       // The only case where we will have an indefinite block size is for the
       // first column resolution step; after that we will always have the used
@@ -1500,7 +1500,7 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
       continue;
     }
 
-    const auto result =
+    const auto* result =
         LayoutNodeForMeasure(grid_item.node, space, sizing_constraint);
 
     NGBoxFragment fragment(
@@ -3055,7 +3055,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     const auto& item_style = grid_item.node.Style();
     const auto margins = ComputeMarginsFor(space, item_style, container_space);
 
-    auto result = grid_item.node.Layout(space);
+    auto* result = grid_item.node.Layout(space);
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
     NGBoxFragment logical_fragment(item_style.GetWritingDirection(),
@@ -3141,6 +3141,24 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     container_builder_.SetBaseline(*baseline);
 }
 
+// This is only used in NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(),
+// but placed here to add WTF VectorTraits.
+struct ResultAndOffsets {
+  DISALLOW_NEW();
+
+ public:
+  ResultAndOffsets(const NGLayoutResult* result,
+                   LogicalOffset offset,
+                   LogicalOffset relative_offset)
+      : result(result), offset(offset), relative_offset(relative_offset) {}
+
+  void Trace(Visitor* visitor) const { visitor->Trace(result); }
+
+  Member<const NGLayoutResult> result;
+  LogicalOffset offset;
+  LogicalOffset relative_offset;
+};
+
 void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     const GridItems& grid_items,
     const Vector<EBreakBetween>& row_break_between,
@@ -3191,25 +3209,13 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
            Style().LogicalHeight().IsAutoOrContentOrIntrinsic();
   };
 
-  struct ResultAndOffsets {
-    ResultAndOffsets(scoped_refptr<const NGLayoutResult> result,
-                     LogicalOffset offset,
-                     LogicalOffset relative_offset)
-        : result(std::move(result)),
-          offset(offset),
-          relative_offset(relative_offset) {}
-    scoped_refptr<const NGLayoutResult> result;
-    LogicalOffset offset;
-    LogicalOffset relative_offset;
-  };
-
   wtf_size_t previous_expansion_row_set_index = kNotFound;
   auto IsExpansionMakingProgress = [&](wtf_size_t row_set_index) -> bool {
     return previous_expansion_row_set_index == kNotFound ||
            row_set_index > previous_expansion_row_set_index;
   };
 
-  Vector<ResultAndOffsets> result_and_offsets;
+  HeapVector<ResultAndOffsets> result_and_offsets;
   BaselineAccumulator baseline_accumulator;
   LayoutUnit max_row_expansion;
   wtf_size_t expansion_row_set_index;
@@ -3226,7 +3232,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
   auto PlaceItems = [&]() {
     // Reset our state.
-    result_and_offsets = Vector<ResultAndOffsets>();
+    result_and_offsets.clear();
     baseline_accumulator = BaselineAccumulator();
     max_row_expansion = LayoutUnit();
     expansion_row_set_index = kNotFound;
@@ -3280,7 +3286,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       if (grid_area.offset.block_offset < LayoutUnit() && !break_token)
         continue;
 
-      auto result = grid_item.node.Layout(space, break_token);
+      auto* result = grid_item.node.Layout(space, break_token);
       result_and_offsets.emplace_back(
           result,
           LogicalOffset(item_offsets.offset.inline_offset,
@@ -3843,3 +3849,5 @@ LogicalRect NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
 }
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::ResultAndOffsets)

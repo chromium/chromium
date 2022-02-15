@@ -355,8 +355,7 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
                         constraint_space, &container_builder,
                         initial_containing_block_fixed_size)
       .Run(/* only_layout */ this);
-  scoped_refptr<const NGLayoutResult> result =
-      container_builder.ToBoxFragment();
+  const NGLayoutResult* result = container_builder.ToBoxFragment();
 
   const auto& fragment = result->PhysicalFragment();
   DCHECK_GT(fragment.Children().size(), 0u);
@@ -392,12 +391,10 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
 }
 
 template <typename Base>
-scoped_refptr<const NGLayoutResult>
-LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
+const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   Base::CheckIsNotDestroyed();
 
-  scoped_refptr<const NGLayoutResult> previous_result =
-      Base::GetCachedLayoutResult();
+  const NGLayoutResult* previous_result = Base::GetCachedLayoutResult();
   bool is_layout_root = !Base::View()->GetLayoutState()->Next();
 
   // If we are a layout root, use the previous space if available. This will
@@ -409,8 +406,7 @@ LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
           ? previous_result->GetConstraintSpaceForCaching()
           : NGConstraintSpace::CreateFromLayoutObject(*this);
 
-  scoped_refptr<const NGLayoutResult> result =
-      NGBlockNode(this).Layout(constraint_space);
+  const NGLayoutResult* result = NGBlockNode(this).Layout(constraint_space);
 
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());

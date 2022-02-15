@@ -278,6 +278,7 @@ void FlexItem::ComputeStretchedSize() {
 
 void FlexItem::Trace(Visitor* visitor) const {
   visitor->Trace(box_);
+  visitor->Trace(layout_result_);
 }
 
 // static

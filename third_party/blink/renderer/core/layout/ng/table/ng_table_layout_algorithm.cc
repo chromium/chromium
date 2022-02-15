@@ -89,7 +89,7 @@ NGTableLayoutAlgorithm::CaptionResult LayoutCaption(
     const NGConstraintSpace& caption_constraint_space,
     const NGBlockNode& caption,
     const NGBlockBreakToken* break_token = nullptr) {
-  scoped_refptr<const NGLayoutResult> layout_result =
+  const NGLayoutResult* layout_result =
       caption.Layout(caption_constraint_space, break_token);
   NGFragment fragment(table_constraint_space.GetWritingDirection(),
                       layout_result->PhysicalFragment());
@@ -98,7 +98,7 @@ NGTableLayoutAlgorithm::CaptionResult LayoutCaption(
   ResolveInlineMargins(caption.Style(), table_style, table_inline_size,
                        fragment.InlineSize(), &margins);
 
-  return {caption, std::move(layout_result), margins};
+  return {caption, layout_result, margins};
 }
 
 void ComputeCaptionFragments(
@@ -106,7 +106,7 @@ void ComputeCaptionFragments(
     const ComputedStyle& table_style,
     const NGTableGroupedChildren& grouped_children,
     const LayoutUnit table_inline_size,
-    Vector<NGTableLayoutAlgorithm::CaptionResult>* captions,
+    HeapVector<NGTableLayoutAlgorithm::CaptionResult>* captions,
     LayoutUnit& captions_block_size) {
   const LogicalSize available_size = {table_inline_size, kIndefiniteSize};
   for (NGBlockNode caption : grouped_children.captions) {
@@ -488,7 +488,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeCaptionBlockSize(
   return captions_block_size;
 }
 
-scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
   const bool is_fixed_layout = Style().IsFixedTableLayout();
   const LogicalSize border_spacing = Style().TableBorderSpacing();
   NGTableGroupedChildren grouped_children(Node());
@@ -546,7 +546,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
   //
   // The block-size taken by the captions, *subtracts* from the available
   // block-size given to the table-grid.
-  Vector<CaptionResult> captions;
+  HeapVector<CaptionResult> captions;
   LayoutUnit captions_block_size;
   ComputeCaptionFragments(ConstraintSpace(), Style(), grouped_children,
                           container_builder_.InlineSize(), &captions,
@@ -783,7 +783,7 @@ void NGTableLayoutAlgorithm::ComputeTableSpecificFragmentData(
 // |     table border/padding       |
 // |     bottom caption fragments   |
 // +--------------------------------+
-scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
+const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     const LayoutUnit table_inline_size,
     const LayoutUnit minimal_table_grid_block_size,
     const NGTableGroupedChildren& grouped_children,
@@ -791,7 +791,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
     const NGTableTypes::Rows& rows,
     const NGTableTypes::CellBlockConstraints& cell_block_constraints,
     const NGTableTypes::Sections& sections,
-    const Vector<CaptionResult>& captions,
+    const HeapVector<CaptionResult>& captions,
     const NGTableBorders& table_borders,
     const LogicalSize& border_spacing) {
   const auto table_writing_direction = Style().GetWritingDirection();
@@ -909,7 +909,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
        NGBlockNode child = entry.GetNode();
        entry = child_iterator.NextChild()) {
     const NGBlockBreakToken* child_break_token = entry.GetBreakToken();
-    scoped_refptr<const NGLayoutResult> child_result;
+    const NGLayoutResult* child_result;
     LayoutUnit child_inline_offset;
     if (child.IsTableCaption()) {
       if (!relayout_captions)

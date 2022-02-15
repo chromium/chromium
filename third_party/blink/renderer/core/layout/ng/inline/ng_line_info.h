@@ -163,10 +163,9 @@ class CORE_EXPORT NGLineInfo {
 
   // The block-in-inline layout result.
   const NGLayoutResult* BlockInInlineLayoutResult() const {
-    return block_in_inline_layout_result_.get();
+    return block_in_inline_layout_result_;
   }
-  void SetBlockInInlineLayoutResult(
-      scoped_refptr<const NGLayoutResult> layout_result) {
+  void SetBlockInInlineLayoutResult(const NGLayoutResult* layout_result) {
     block_in_inline_layout_result_ = std::move(layout_result);
   }
 
@@ -189,7 +188,7 @@ class CORE_EXPORT NGLineInfo {
 
   NGBfcOffset bfc_offset_;
 
-  scoped_refptr<const NGLayoutResult> block_in_inline_layout_result_;
+  const NGLayoutResult* block_in_inline_layout_result_ = nullptr;
 
   LayoutUnit available_width_;
   LayoutUnit width_;
