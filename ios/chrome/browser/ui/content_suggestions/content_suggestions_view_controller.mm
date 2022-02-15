@@ -724,6 +724,7 @@ const CGFloat kCardBorderRadius = 11;
 // Adds the header for the first section, containing the logo and the omnibox,
 // if there is no header for the section.
 - (void)addLogoHeaderIfNeeded {
+  DCHECK(!IsContentSuggestionsHeaderMigrationEnabled());
   if (![self.collectionViewModel
           headerForSectionWithIdentifier:SectionIdentifierLogo]) {
     ContentSuggestionsHeaderItem* header =

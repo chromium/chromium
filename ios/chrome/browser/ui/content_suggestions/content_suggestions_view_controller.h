@@ -92,7 +92,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 @property(nonatomic, weak) id<ContentSuggestionsActionHandler> handler;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
-
+// Returns the header view containing the logo and omnibox to be displayed.
+- (UIView*)headerViewForWidth:(CGFloat)width;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_H_

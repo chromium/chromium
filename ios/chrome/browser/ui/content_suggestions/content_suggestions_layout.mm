@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_omnibox_positioning.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -44,7 +45,8 @@
 }
 
 - (NSArray*)layoutAttributesForElementsInRect:(CGRect)rect {
-  if (IsRegularXRegularSizeClass(self.collectionView))
+  if (IsRegularXRegularSizeClass(self.collectionView) ||
+      IsContentSuggestionsHeaderMigrationEnabled())
     return [super layoutAttributesForElementsInRect:rect];
 
   NSMutableArray* layoutAttributes =
@@ -86,7 +88,8 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
   UICollectionViewLayoutAttributes* attributes =
       [super layoutAttributesForSupplementaryViewOfKind:kind
                                             atIndexPath:indexPath];
-  if (!IsSplitToolbarMode(self.collectionView))
+  if (!IsSplitToolbarMode(self.collectionView) ||
+      IsContentSuggestionsHeaderMigrationEnabled())
     return attributes;
 
   if ([kind isEqualToString:UICollectionElementKindSectionHeader] &&

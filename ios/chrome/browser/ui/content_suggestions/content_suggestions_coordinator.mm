@@ -137,31 +137,34 @@
       prefs->GetBoolean(prefs::kArticlesForYouEnabled) &&
       prefs->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
 
-  self.headerController = [[ContentSuggestionsHeaderViewController alloc] init];
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  self.headerController.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
-                     FakeboxFocuser>>(self.browser->GetCommandDispatcher());
-  self.headerController.commandHandler = self;
-  self.headerController.delegate = self.ntpMediator;
+  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
+    self.headerController =
+        [[ContentSuggestionsHeaderViewController alloc] init];
+    // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+    // clean up.
+    self.headerController.dispatcher =
+        static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
+                       FakeboxFocuser>>(self.browser->GetCommandDispatcher());
+    self.headerController.commandHandler = self;
+    self.headerController.delegate = self.ntpMediator;
 
-  self.headerController.readingListModel =
-      ReadingListModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  self.headerController.toolbarDelegate = self.toolbarDelegate;
+    self.headerController.readingListModel =
+        ReadingListModelFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    self.headerController.toolbarDelegate = self.toolbarDelegate;
 
-  // Only handle app state for the new First Run UI.
-  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
-    SceneState* sceneState =
-        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-    AppState* appState = sceneState.appState;
-    [appState addObserver:self];
+    // Only handle app state for the new First Run UI.
+    if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+      SceneState* sceneState =
+          SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+      AppState* appState = sceneState.appState;
+      [appState addObserver:self];
 
-    // Do not focus on omnibox for voice over if there are other screens to
-    // show.
-    if (appState.initStage < InitStageFinal) {
-      self.headerController.focusOmniboxWhenViewAppears = NO;
+      // Do not focus on omnibox for voice over if there are other screens to
+      // show.
+      if (appState.initStage < InitStageFinal) {
+        self.headerController.focusOmniboxWhenViewAppears = NO;
+      }
     }
   }
 
@@ -202,8 +205,10 @@
       self.browser->GetWebStateList();
   [self configureStartSurfaceIfNeeded];
 
-  self.headerController.promoCanShow =
-      [self.contentSuggestionsMediator notificationPromo]->CanShow();
+  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
+    self.headerController.promoCanShow =
+        [self.contentSuggestionsMediator notificationPromo]->CanShow();
+  }
 
   self.suggestionsViewController = [[ContentSuggestionsViewController alloc]
       initWithStyle:CollectionViewControllerStyleDefault];
@@ -213,8 +218,13 @@
       self.contentSuggestionsEnabled;
 
   self.suggestionsViewController.menuProvider = self;
+  if (IsContentSuggestionsHeaderMigrationEnabled()) {
+    self.contentSuggestionsMediator.consumer = self.suggestionsViewController;
+  }
 
-  self.ntpMediator.consumer = self.headerController;
+  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
+    self.ntpMediator.consumer = self.headerController;
+  }
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.ntpMediator.dispatcher =
@@ -225,18 +235,21 @@
   [self.ntpMediator setUp];
   self.ntpMediator.feedMetricsRecorder = self.feedMetricsRecorder;
 
-  [self.suggestionsViewController addChildViewController:self.headerController];
-  [self.headerController
-      didMoveToParentViewController:self.suggestionsViewController];
+  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
+    [self.suggestionsViewController
+        addChildViewController:self.headerController];
+    [self.headerController
+        didMoveToParentViewController:self.suggestionsViewController];
 
-  // TODO(crbug.com/1114792): Remove header provider and use refactored header
-  // synchronizer instead.
-  self.suggestionsViewController.headerProvider = self.headerController;
+    // TODO(crbug.com/1114792): Remove header provider and use refactored header
+    // synchronizer instead.
+    self.suggestionsViewController.headerProvider = self.headerController;
 
-  // Set consumer after configuring the header to ensure that view controller
-  // has access to it when configuring its elements.
-  DCHECK(self.suggestionsViewController.headerProvider);
-  self.contentSuggestionsMediator.consumer = self.suggestionsViewController;
+    // Set consumer after configuring the header to ensure that view controller
+    // has access to it when configuring its elements.
+    DCHECK(self.suggestionsViewController.headerProvider);
+    self.contentSuggestionsMediator.consumer = self.suggestionsViewController;
+  }
 
   self.suggestionsViewController.collectionView.accessibilityIdentifier =
       kContentSuggestionsCollectionIdentifier;
@@ -342,6 +355,10 @@
 
 - (void)locationBarDidResignFirstResponder {
   [self.ntpMediator locationBarDidResignFirstResponder];
+}
+
+- (NotificationPromoWhatsNew*)notificationPromo {
+  return [self.contentSuggestionsMediator notificationPromo];
 }
 
 #pragma mark - ContentSuggestionsMenuProvider

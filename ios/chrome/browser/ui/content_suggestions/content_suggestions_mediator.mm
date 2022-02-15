@@ -385,7 +385,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   NSMutableArray<ContentSuggestionsSectionInformation*>* sectionsInfo =
       [NSMutableArray array];
 
-  [sectionsInfo addObject:self.logoSectionInfo];
+  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
+    [sectionsInfo addObject:self.logoSectionInfo];
+  }
 
   if (IsSingleCellContentSuggestionsEnabled()) {
     [sectionsInfo addObject:self.singleCellSectionInfo];

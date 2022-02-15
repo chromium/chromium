@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller_delegate.h"
@@ -78,6 +79,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxWidthConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxTopMarginConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* headerViewHeightConstraint;
 @property(nonatomic, assign) BOOL logoFetched;
 
 @end
@@ -118,6 +120,12 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if (self.traitCollection.horizontalSizeClass !=
       previousTraitCollection.horizontalSizeClass) {
     [self updateFakeboxDisplay];
+    if (IsContentSuggestionsHeaderMigrationEnabled()) {
+      self.headerViewHeightConstraint.constant =
+          content_suggestions::heightForLogoHeader(
+              self.logoIsShowing, self.logoVendor.isShowingDoodle,
+              self.promoCanShow, YES, [self topInset], self.traitCollection);
+    }
   }
 }
 
@@ -218,7 +226,11 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)loadView {
-  self.view = [[ContentSuggestionsHeaderView alloc] init];
+  if (IsContentSuggestionsHeaderMigrationEnabled()) {
+    [super loadView];
+  } else {
+    self.view = [[ContentSuggestionsHeaderView alloc] init];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -235,10 +247,54 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
       YES, [self topInset], self.traitCollection);
 }
 
+- (void)viewDidLoad {
+  [super viewDidLoad];
+
+  if (IsContentSuggestionsHeaderMigrationEnabled() && !self.headerView) {
+    CGFloat width = self.view.frame.size.width;
+
+    self.headerView = [[ContentSuggestionsHeaderView alloc] init];
+    self.headerView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.headerView];
+    AddSameConstraints(self.headerView, self.view);
+
+    [self addFakeOmnibox];
+
+    [self.headerView addSubview:self.logoVendor.view];
+    // Fake Tap View has identity disc, which should render above the doodle.
+    [self addFakeTapView];
+    [self.headerView addSubview:self.fakeOmnibox];
+    self.logoVendor.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.logoVendor.view.accessibilityIdentifier =
+        ntp_home::NTPLogoAccessibilityID();
+    self.fakeOmnibox.translatesAutoresizingMaskIntoConstraints = NO;
+
+    [self.headerView addSeparatorToSearchField:self.fakeOmnibox];
+
+    // Identity disc needs to be added after the Google logo/doodle since it
+    // needs to respond to user taps first.
+    [self addIdentityDisc];
+
+    UIEdgeInsets safeAreaInsets = self.baseViewController.view.safeAreaInsets;
+    width = std::max<CGFloat>(
+        0, width - safeAreaInsets.left - safeAreaInsets.right);
+
+    self.fakeOmniboxWidthConstraint = [self.fakeOmnibox.widthAnchor
+        constraintEqualToConstant:content_suggestions::searchFieldWidth(
+                                      width, self.traitCollection)];
+    [self addConstraintsForLogoView:self.logoVendor.view
+                        fakeOmnibox:self.fakeOmnibox
+                      andHeaderView:self.headerView];
+
+    [self.logoVendor fetchDoodle];
+  }
+}
+
 #pragma mark - ContentSuggestionsHeaderProvider
 
 - (UIView*)headerForWidth:(CGFloat)width
            safeAreaInsets:(UIEdgeInsets)safeAreaInsets {
+  DCHECK(!IsContentSuggestionsHeaderMigrationEnabled());
   if (!self.headerView) {
     self.headerView =
         base::mac::ObjCCastStrict<ContentSuggestionsHeaderView>(self.view);
@@ -505,6 +561,11 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   self.fakeOmniboxTopMarginConstraint = [logoView.bottomAnchor
       constraintEqualToAnchor:fakeOmnibox.topAnchor
                      constant:-content_suggestions::searchFieldTopMargin()];
+  if (IsContentSuggestionsHeaderMigrationEnabled()) {
+    self.headerViewHeightConstraint =
+        [headerView.heightAnchor constraintEqualToConstant:[self headerHeight]];
+    self.headerViewHeightConstraint.active = YES;
+  }
   self.doodleTopMarginConstraint.active = YES;
   self.doodleHeightConstraint.active = YES;
   self.fakeOmniboxWidthConstraint.active = YES;
@@ -599,7 +660,9 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (CGFloat)topInset {
-  return self.parentViewController.view.safeAreaInsets.top;
+  return IsContentSuggestionsHeaderMigrationEnabled()
+             ? 0
+             : self.parentViewController.view.safeAreaInsets.top;
 }
 
 #pragma mark - UIIndirectScribbleInteractionDelegate
