@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate.h"
 
 class Browser;
-class BrowserList;
 class ChromeBrowserState;
 
 namespace sessions {
@@ -37,8 +36,7 @@ class WebState;
 class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
                           public KeyedService {
  public:
-  TabsSearchService(ChromeBrowserState* browser_state,
-                    BrowserList* browser_list);
+  TabsSearchService(ChromeBrowserState* browser_state);
   ~TabsSearchService() override;
 
   // Searches through all the tabs in Browsers associated with the current
@@ -103,8 +101,6 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
 
   // The associated BrowserState.
   ChromeBrowserState* browser_state_;
-  // The list of Browsers to search through.
-  BrowserList* browser_list_;
   // The most recent search history term.
   std::u16string ongoing_history_search_term_;
   // A callback to return history search results once the current in progress

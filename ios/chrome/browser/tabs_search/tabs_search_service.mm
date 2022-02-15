@@ -37,11 +37,9 @@
 
 using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
 
-TabsSearchService::TabsSearchService(ChromeBrowserState* browser_state,
-                                     BrowserList* browser_list)
-    : browser_state_(browser_state), browser_list_(browser_list) {
+TabsSearchService::TabsSearchService(ChromeBrowserState* browser_state)
+    : browser_state_(browser_state) {
   DCHECK(browser_state_);
-  DCHECK(browser_list_);
 }
 
 TabsSearchService::~TabsSearchService() = default;
