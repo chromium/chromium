@@ -29,6 +29,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -49,6 +50,7 @@
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/cpp/simple_url_loader_throttle.h"
@@ -3859,6 +3861,72 @@ TEST_P(SimpleURLLoaderTest, BatchingTimeout) {
     EXPECT_TRUE(test_helper->simple_url_loader()->CompletionStatus());
     EXPECT_EQ(kExpectedResponse, *test_helper->response_body());
   }
+}
+
+TEST(SimpleURLLoaderThrottleTest, BatchingDisabled_FeatureDisabled) {
+  SimpleURLLoaderThrottle::ResetConfigForTesting();
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      TRAFFIC_ANNOTATION_FOR_TESTS;
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kBatchSimpleURLLoader);
+
+  ASSERT_FALSE(SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation));
+}
+
+TEST(SimpleURLLoaderThrottleTest,
+     BatchingDisabled_TrafficAnnotationIsNotSpecified) {
+  SimpleURLLoaderThrottle::ResetConfigForTesting();
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      TRAFFIC_ANNOTATION_FOR_TESTS;
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kBatchSimpleURLLoader);
+
+  ASSERT_FALSE(SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation));
+}
+
+TEST(SimpleURLLoaderThrottleTest, BatchingEnabled_OneTrafficAnnotation) {
+  SimpleURLLoaderThrottle::ResetConfigForTesting();
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      TRAFFIC_ANNOTATION_FOR_TESTS;
+
+  std::string traffic_annotation_hashes =
+      base::StringPrintf("%d", traffic_annotation.unique_id_hash_code);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kBatchSimpleURLLoader,
+      {{kBatchSimpleURLLoaderEnabledTrafficAnnotationHashesParam,
+        traffic_annotation_hashes}});
+
+  ASSERT_TRUE(SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation));
+}
+
+TEST(SimpleURLLoaderThrottleTest, BatchingEnabled_TwoTrafficAnnotations) {
+  SimpleURLLoaderThrottle::ResetConfigForTesting();
+  net::NetworkTrafficAnnotationTag traffic_annotation1 =
+      TRAFFIC_ANNOTATION_FOR_TESTS;
+  net::NetworkTrafficAnnotationTag traffic_annotation2 =
+      net::DefineNetworkTrafficAnnotation(
+          "test2", "Second traffic annotation for tests");
+  net::NetworkTrafficAnnotationTag traffic_annotation3 =
+      net::DefineNetworkTrafficAnnotation("test3",
+                                          "Third traffic annotation for tests");
+
+  std::string traffic_annotation_hashes =
+      base::StringPrintf("%d,%d", traffic_annotation1.unique_id_hash_code,
+                         traffic_annotation2.unique_id_hash_code);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kBatchSimpleURLLoader,
+      {{kBatchSimpleURLLoaderEnabledTrafficAnnotationHashesParam,
+        traffic_annotation_hashes}});
+
+  ASSERT_TRUE(SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation1));
+  ASSERT_TRUE(SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation2));
+  ASSERT_FALSE(SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation3));
 }
 
 }  // namespace

@@ -113,6 +113,9 @@ extern const base::Feature kCombineResponseBody;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kFasterSetCookie;
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kBatchSimpleURLLoader;
+
 }  // namespace features
 }  // namespace network
 

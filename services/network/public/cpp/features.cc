@@ -275,5 +275,10 @@ const base::Feature kCombineResponseBody{"CombineResponseBody",
 const base::Feature kFasterSetCookie{"FasterSetCookie",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allow batching SimpleURLLoaders when the underlying network state is
+// inactive.
+const base::Feature kBatchSimpleURLLoader{"BatchSimpleURLLoader",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network

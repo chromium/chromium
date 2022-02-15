@@ -11,7 +11,14 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
+namespace net {
+struct NetworkTrafficAnnotationTag;
+}  // namespace net
+
 namespace network {
+
+constexpr char kBatchSimpleURLLoaderEnabledTrafficAnnotationHashesParam[] =
+    "batching_enabled_traffic_annotation_hashes";
 
 // Throttles SimpleURLLoader creations based on the underlying network
 // connection status. When a SimpleURLLoader is allowed to be batched, this
@@ -20,6 +27,14 @@ namespace network {
 // of time has elapsed.
 class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoaderThrottle {
  public:
+  // Returns true when batching a SimpleURLLoader associated with
+  // `traffic_annotation` is enabled via experiment configurations.
+  static bool IsBatchingEnabled(
+      const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  // Resets experiment configurations for testing.
+  static void ResetConfigForTesting();
+
   // Handles platform specific logic to determine whether a request should be
   // batched or not. Also used for testing.
   class COMPONENT_EXPORT(NETWORK_CPP) Delegate {

@@ -4,8 +4,15 @@
 
 #include "services/network/public/cpp/simple_url_loader_throttle.h"
 
+#include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "net/base/network_change_notifier.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/features.h"
 
 namespace network {
 
@@ -56,7 +63,81 @@ class BatchingDelegate
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
+// Parses field trial parameters and holds parsed parameters.
+class BatchingConfig {
+ public:
+  BatchingConfig() = default;
+  ~BatchingConfig() = default;
+
+  BatchingConfig(const BatchingConfig&) = delete;
+  BatchingConfig& operator=(const BatchingConfig&) = delete;
+  BatchingConfig(BatchingConfig&&) = delete;
+  BatchingConfig& operator=(BatchingConfig&&) = delete;
+
+  bool IsBatchingEnabledForTrafficAnnotation(
+      const net::NetworkTrafficAnnotationTag& traffic_annotation) {
+    if (!initialized_)
+      Initialize();
+
+    return enabled_traffic_annotation_hashes_.contains(
+        traffic_annotation.unique_id_hash_code);
+  }
+
+  void ResetForTesting() {
+    enabled_traffic_annotation_hashes_.clear();
+    initialized_ = false;
+  }
+
+ private:
+  void Initialize() {
+    DCHECK(!initialized_);
+    DCHECK(enabled_traffic_annotation_hashes_.empty());
+
+    std::string comma_separated_hashes = base::GetFieldTrialParamValueByFeature(
+        features::kBatchSimpleURLLoader,
+        kBatchSimpleURLLoaderEnabledTrafficAnnotationHashesParam);
+    const std::vector<std::string> values =
+        base::SplitString(comma_separated_hashes, ",", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+    for (const auto& value : values) {
+      uint32_t parsed;
+      if (!base::StringToUint(value, &parsed))
+        continue;
+      enabled_traffic_annotation_hashes_.insert(parsed);
+    }
+
+    initialized_ = true;
+  }
+
+  bool initialized_ = false;
+  base::flat_set<uint32_t> enabled_traffic_annotation_hashes_;
+};
+
+BatchingConfig& GetBatchingConfig() {
+  static base::NoDestructor<BatchingConfig> configuration;
+  return *configuration;
+}
+
 }  // namespace
+
+// static
+bool SimpleURLLoaderThrottle::IsBatchingEnabled(
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) {
+  if (!base::FeatureList::IsEnabled(features::kBatchSimpleURLLoader))
+    return false;
+
+  if (!GetBatchingConfig().IsBatchingEnabledForTrafficAnnotation(
+          traffic_annotation)) {
+    return false;
+  }
+
+  return true;
+}
+
+// static
+void SimpleURLLoaderThrottle::ResetConfigForTesting() {
+  GetBatchingConfig().ResetForTesting();  // IN-TEST
+}
 
 SimpleURLLoaderThrottle::Delegate::Delegate() = default;
 SimpleURLLoaderThrottle::Delegate::~Delegate() = default;
