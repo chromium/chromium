@@ -173,7 +173,7 @@ TEST_F(PasswordScriptsFetcherImplTest, PrewarmCache) {
   EXPECT_EQ(0, GetNumberOfPendingRequests());
   histogram_tester->ExpectUniqueSample(
       "PasswordManager.PasswordScriptsFetcher.CacheState",
-      PasswordScriptsFetcherImpl::CacheState::kReady, 1u);
+      PasswordScriptsFetcher::CacheState::kReady, 1u);
 
   // Make cache stale and re-fetch the map.
   histogram_tester = std::make_unique<base::HistogramTester>();
@@ -201,7 +201,7 @@ TEST_F(PasswordScriptsFetcherImplTest, PrewarmCache) {
   EXPECT_EQ(0, GetNumberOfPendingRequests());
   histogram_tester->ExpectUniqueSample(
       "PasswordManager.PasswordScriptsFetcher.CacheState",
-      PasswordScriptsFetcherImpl::CacheState::kStale, 1u);
+      PasswordScriptsFetcher::CacheState::kStale, 1u);
 }
 
 TEST_F(PasswordScriptsFetcherImplTest, SlowResponse) {
@@ -214,7 +214,7 @@ TEST_F(PasswordScriptsFetcherImplTest, SlowResponse) {
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordScriptsFetcher.CacheState",
-      PasswordScriptsFetcherImpl::CacheState::kWaiting, 1u);
+      PasswordScriptsFetcher::CacheState::kWaiting, 1u);
 }
 
 TEST_F(PasswordScriptsFetcherImplTest, NoPrewarmCache) {
@@ -233,7 +233,7 @@ TEST_F(PasswordScriptsFetcherImplTest, NoPrewarmCache) {
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordScriptsFetcher.CacheState",
-      PasswordScriptsFetcherImpl::CacheState::kNeverSet, 1u);
+      PasswordScriptsFetcher::CacheState::kNeverSet, 1u);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordScriptsFetcher.ParsingResult",
       PasswordScriptsFetcherImpl::ParsingResult::kOk, 1u);

@@ -337,6 +337,8 @@ static_library("browser") {
       "password_store_backend_migration_decorator.h",
       "password_store_proxy_backend.cc",
       "password_store_proxy_backend.h",
+      "saved_passwords_capabilities_fetcher.cc",
+      "saved_passwords_capabilities_fetcher.h",
     ]
     deps += [ "//components/autofill_assistant/browser/public" ]
   }
@@ -729,6 +731,7 @@ source_set("unit_tests") {
       "password_scripts_fetcher_impl_unittests.cc",
       "password_store_backend_migration_decorator_unittest.cc",
       "password_store_proxy_backend_unittest.cc",
+      "saved_passwords_capabilities_fetcher_unittest.cc",
     ]
   }
   if (is_ios) {

@@ -13,7 +13,8 @@
 
 namespace password_manager {
 
-// The class fetches capabilities for different origins.
+// The class fetches capabilities (e.g. availability of a script for automated
+// password changes) for different origins.
 class CapabilitiesService {
  public:
   using ResponseCallback =

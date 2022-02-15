@@ -18,6 +18,19 @@ namespace password_manager {
 class PasswordScriptsFetcher : public KeyedService {
  public:
   using ResponseCallback = base::OnceCallback<void(bool)>;
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CacheState {
+    // Cache is ready.
+    kReady = 0,
+    // Cache was set but it is stale. Re-fetch needed.
+    kStale = 1,
+    // Cache was never set,
+    kNeverSet = 2,
+    // Cache is waiting for an in-flight request.
+    kWaiting = 3,
+    kMaxValue = kWaiting,
+  };
   // Triggers pre-fetching the list of scripts. Should be called from UI
   // preceding Bulk Check.
   virtual void PrewarmCache() = 0;
