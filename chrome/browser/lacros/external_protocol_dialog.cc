@@ -45,15 +45,8 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     content::WeakDocumentPtr initiator_document) {
   // First, check if ARC version of the dialog is available and run ARC version
   // when possible.
-  // TODO(ellyjones): Refactor arc::RunArcExternalProtocolDialog() to take a
-  // web_contents directly, which will mean sorting out how lifetimes work in
-  // that code. Same for OnArcHandled() (crbug.com/1136237).
-  int render_process_host_id =
-      web_contents->GetRenderViewHost()->GetProcess()->GetID();
-  int routing_id = web_contents->GetRenderViewHost()->GetRoutingID();
   arc::RunArcExternalProtocolDialog(
-      url, initiating_origin, render_process_host_id, routing_id,
-      page_transition, has_user_gesture,
-      std::make_unique<arc::ArcIntentHelperMojoLacros>(),
+      url, initiating_origin, web_contents->GetWeakPtr(), page_transition,
+      has_user_gesture, std::make_unique<arc::ArcIntentHelperMojoLacros>(),
       base::BindOnce(&OnArcHandled));
 }

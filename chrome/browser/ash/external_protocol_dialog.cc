@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
-#include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/external_protocol_dialog.h"
 #include "chrome/grit/chromium_strings.h"
@@ -35,15 +34,12 @@ const int kMessageWidth = 400;
 void OnArcHandled(const GURL& url,
                   const absl::optional<url::Origin>& initiating_origin,
                   content::WeakDocumentPtr initiator_document,
-                  int render_process_host_id,
-                  int routing_id,
+                  base::WeakPtr<WebContents> web_contents,
                   bool handled) {
   if (handled)
     return;
 
   // If WebContents have been destroyed, do not show any dialog.
-  WebContents* web_contents =
-      tab_util::GetWebContentsByID(render_process_host_id, routing_id);
   if (!web_contents)
     return;
 
@@ -59,7 +55,7 @@ void OnArcHandled(const GURL& url,
       guest_os::GetHandler(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()), url);
   if (registration) {
-    new ExternalProtocolDialog(web_contents, url,
+    new ExternalProtocolDialog(web_contents.get(), url,
                                base::UTF8ToUTF16(registration->Name()),
                                initiating_origin, initiator_document);
   } else if (url.scheme() == url::kTelScheme) {
@@ -82,19 +78,12 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     content::WeakDocumentPtr initiator_document) {
   // First, check if ARC version of the dialog is available and run ARC version
   // when possible.
-  // TODO(ellyjones): Refactor arc::RunArcExternalProtocolDialog() to take a
-  // web_contents directly, which will mean sorting out how lifetimes work in
-  // that code. Same for OnArcHandled() (crbug.com/1136237).
-  int render_process_host_id =
-      web_contents->GetRenderViewHost()->GetProcess()->GetID();
-  int routing_id = web_contents->GetRenderViewHost()->GetRoutingID();
   arc::RunArcExternalProtocolDialog(
-      url, initiating_origin, render_process_host_id, routing_id,
-      page_transition, has_user_gesture,
-      std::make_unique<arc::ArcIntentHelperMojoAsh>(),
+      url, initiating_origin, web_contents->GetWeakPtr(), page_transition,
+      has_user_gesture, std::make_unique<arc::ArcIntentHelperMojoAsh>(),
       base::BindOnce(&OnArcHandled, url, initiating_origin,
-                     std::move(initiator_document), render_process_host_id,
-                     routing_id));
+                     std::move(initiator_document),
+                     web_contents->GetWeakPtr()));
 }
 
 namespace ash {

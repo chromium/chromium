@@ -129,8 +129,7 @@ enum class Scheme {
 void RunArcExternalProtocolDialog(
     const GURL& url,
     const absl::optional<url::Origin>& initiating_origin,
-    int render_process_host_id,
-    int routing_id,
+    base::WeakPtr<content::WebContents> web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
@@ -160,8 +159,7 @@ ProtocolAction GetProtocolAction(Scheme scheme,
                                  bool persisted);
 
 void OnIntentPickerClosedForTesting(
-    int render_process_host_id,
-    int routing_id,
+    base::WeakPtr<content::WebContents> web_contents,
     const GURL& url,
     bool safe_to_bypass_ui,
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,

@@ -995,7 +995,6 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestSelectDeviceForTelLink) {
 
   std::string device_guid = "device_guid";
   MockSharingService* sharing_service = CreateSharingService();
-  content::RenderViewHost* rvh = web_contents()->GetRenderViewHost();
   std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
   devices.push_back(CreateFakeDeviceInfo(device_guid));
@@ -1011,7 +1010,7 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestSelectDeviceForTelLink) {
                   ProtoEquals(sharing_message), testing::_));
 
   OnIntentPickerClosedForTesting(
-      rvh->GetProcess()->GetID(), rvh->GetRoutingID(), phone_number,
+      web_contents()->GetWeakPtr(), phone_number,
       /*safe_to_bypass_ui=*/true, std::move(handlers),
       std::make_unique<FakeArcIntentHelperMojo>(), std::move(devices),
       /*selected_app_package=*/device_guid, apps::PickerEntryType::kDevice,
@@ -1022,7 +1021,6 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestDialogWithoutAppsWithDevices) {
   CreateTab(/*started_from_arc=*/false);
 
   MockSharingService* sharing_service = CreateSharingService();
-  content::RenderViewHost* rvh = web_contents()->GetRenderViewHost();
   std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
   devices.push_back(CreateFakeDeviceInfo("device_guid"));
 
@@ -1036,7 +1034,7 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestDialogWithoutAppsWithDevices) {
   bool handled = false;
   RunArcExternalProtocolDialog(
       GURL("tel:12341234"), /*initiating_origin=*/absl::nullopt,
-      rvh->GetProcess()->GetID(), rvh->GetRoutingID(), ui::PAGE_TRANSITION_LINK,
+      web_contents()->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
       /*has_user_gesture=*/true, std::make_unique<FakeArcIntentHelperMojo>(),
       base::BindOnce([](bool* handled, bool result) { *handled = result; },
                      &handled));
