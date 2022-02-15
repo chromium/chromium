@@ -30,7 +30,6 @@ class SlideAnimation;
 
 namespace ash {
 
-class CalendarModel;
 class DetailedViewController;
 class FeaturePodControllerBase;
 class PaginationController;
@@ -176,8 +175,6 @@ class ASH_EXPORT UnifiedSystemTrayController
     return showing_audio_detailed_view_;
   }
 
-  CalendarModel* calendar_model() { return calendar_model_.get(); }
-
  private:
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayControllerTest;
@@ -262,9 +259,6 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Controller of brightness slider. Owned.
   std::unique_ptr<UnifiedBrightnessSliderController>
       brightness_slider_controller_;
-
-  // Model for fetching/storing/looking-up any data needed for CalendarView.
-  std::unique_ptr<CalendarModel> calendar_model_;
 
   // If the previous state is expanded or not. Only valid during dragging (from
   // BeginDrag to EndDrag).

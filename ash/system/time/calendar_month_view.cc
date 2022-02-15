@@ -7,8 +7,10 @@
 #include <codecvt>
 
 #include "ash/public/cpp/ash_typography.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
@@ -234,10 +236,9 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
     return;
 
   const int event_number =
-      calendar_view_controller_->unified_system_tray_controller()
-          ->calendar_model()
-          ->EventsNumberOfDay(date_,
-                              /*events =*/nullptr);
+      Shell::Get()->system_tray_model()->calendar_model()->EventsNumberOfDay(
+          date_,
+          /*events =*/nullptr);
   const int tooltip_id = (event_number <= 1)
                              ? IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP
                              : IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP;

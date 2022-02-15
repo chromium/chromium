@@ -22,11 +22,7 @@ namespace ash {
 using CalendarViewControllerUnittest = AshTestBase;
 
 TEST_F(CalendarViewControllerUnittest, UtilFunctions) {
-  auto unified_model = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
-  auto unified_controller =
-      std::make_unique<UnifiedSystemTrayController>(unified_model);
-  auto controller =
-      std::make_unique<CalendarViewController>(unified_controller.get());
+  auto controller = std::make_unique<CalendarViewController>();
 
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("24 Aug 2021 10:00 GMT", &date));
@@ -65,11 +61,7 @@ TEST_F(CalendarViewControllerUnittest, UtilFunctions) {
 }
 
 TEST_F(CalendarViewControllerUnittest, CornerCases) {
-  auto unified_model = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
-  auto unified_controller =
-      std::make_unique<UnifiedSystemTrayController>(unified_model);
-  auto controller =
-      std::make_unique<CalendarViewController>(unified_controller.get());
+  auto controller = std::make_unique<CalendarViewController>();
 
   // Next month of Dec should be Jan of next year.
   base::Time last_month_date;

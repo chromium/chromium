@@ -12,6 +12,7 @@
 #include "ash/calendar/calendar_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/check.h"
@@ -24,11 +25,9 @@
 
 namespace ash {
 
-CalendarViewController::CalendarViewController(
-    UnifiedSystemTrayController* controller)
+CalendarViewController::CalendarViewController()
     : current_date_(base::Time::Now()),
-      month_dwell_time_(base::TimeTicks::Now()),
-      unified_system_tray_controller_(controller) {
+      month_dwell_time_(base::TimeTicks::Now()) {
   // Using the local time format to get the local `base::Time`, which is used to
   // generate the exploded everywhere, since the LocalExplode doesn't use the
   // manually set timezone.
@@ -172,14 +171,14 @@ void CalendarViewController::FetchEvents() {
   std::set<base::Time> months{GetPreviousMonthFirstDayUTC(1).UTCMidnight(),
                               GetOnScreenMonthFirstDayUTC().UTCMidnight(),
                               GetNextMonthFirstDayUTC(1).UTCMidnight()};
-  unified_system_tray_controller_->calendar_model()->FetchEvents(months);
+  Shell::Get()->system_tray_model()->calendar_model()->FetchEvents(months);
 }
 
 SingleDayEventList CalendarViewController::SelectedDateEvents() {
   if (!selected_date_.has_value())
     return std::list<google_apis::calendar::CalendarEvent>();
 
-  return unified_system_tray_controller_->calendar_model()->FindEvents(
+  return Shell::Get()->system_tray_model()->calendar_model()->FindEvents(
       selected_date_.value());
 }
 

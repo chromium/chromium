@@ -13,7 +13,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/time/calendar_model.h"
-#include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
@@ -25,7 +24,7 @@ namespace ash {
 // Controller of the `CalendarView`.
 class ASH_EXPORT CalendarViewController {
  public:
-  CalendarViewController(UnifiedSystemTrayController* controller);
+  CalendarViewController();
   CalendarViewController(const CalendarViewController& other) = delete;
   CalendarViewController& operator=(const CalendarViewController& other) =
       delete;
@@ -114,10 +113,6 @@ class ASH_EXPORT CalendarViewController {
 
   int time_difference_hours() { return time_difference_hours_; }
 
-  UnifiedSystemTrayController* unified_system_tray_controller() {
-    return unified_system_tray_controller_;
-  }
-
   // Getters of the today's row position, top and bottom.
   int GetTodayRowTopHeight() const;
   int GetTodayRowBottomHeight() const;
@@ -199,8 +194,6 @@ class ASH_EXPORT CalendarViewController {
 
   // The event list of the currently selected date.
   SingleDayEventList* selected_date_events_;
-
-  UnifiedSystemTrayController* unified_system_tray_controller_;
 
   base::ObserverList<Observer> observers_;
 

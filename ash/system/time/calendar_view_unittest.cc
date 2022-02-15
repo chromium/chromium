@@ -43,8 +43,7 @@ class CalendarViewTest : public AshTestBase {
         base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
-    controller_ =
-        std::make_unique<CalendarViewController>(tray_controller_.get());
+    controller_ = std::make_unique<CalendarViewController>();
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
   }

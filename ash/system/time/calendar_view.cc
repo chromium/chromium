@@ -6,9 +6,11 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_typography.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_month_view.h"
@@ -253,8 +255,7 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
                            UnifiedSystemTrayController* controller)
     : TrayDetailedView(delegate),
       controller_(controller),
-      calendar_view_controller_(
-          std::make_unique<CalendarViewController>(controller)),
+      calendar_view_controller_(std::make_unique<CalendarViewController>()),
       scrolling_settled_timer_(
           FROM_HERE,
           kScrollingSettledTimeout,
@@ -359,7 +360,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 
   SetMonthViews();
 
-  scoped_calendar_model_observer_.Observe(controller_->calendar_model());
+  scoped_calendar_model_observer_.Observe(
+      Shell::Get()->system_tray_model()->calendar_model());
   scoped_calendar_view_controller_observer_.Observe(
       calendar_view_controller_.get());
   scoped_view_observer_.AddObservation(scroll_view_);
