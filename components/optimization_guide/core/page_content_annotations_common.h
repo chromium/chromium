@@ -37,25 +37,25 @@ enum class AnnotationType {
 
 std::string AnnotationTypeToString(AnnotationType type);
 
-// A weighted string value.
-class WeightedString {
+// A weighted ID value.
+class WeightedIdentifier {
  public:
-  WeightedString(const std::string& value, double weight);
-  WeightedString(const WeightedString&);
-  ~WeightedString();
+  WeightedIdentifier(int32_t value, double weight);
+  WeightedIdentifier(const WeightedIdentifier&);
+  ~WeightedIdentifier();
 
-  std::string value() const { return value_; }
+  int32_t value() const { return value_; }
   double weight() const { return weight_; }
 
   std::string ToString() const;
 
-  bool operator==(const WeightedString& other) const;
+  bool operator==(const WeightedIdentifier& other) const;
 
   friend std::ostream& operator<<(std::ostream& stream,
-                                  const WeightedString& ws);
+                                  const WeightedIdentifier& ws);
 
  private:
-  std::string value_;
+  int32_t value_;
 
   // In the range of [0.0, 1.0].
   double weight_ = 0;
@@ -67,7 +67,7 @@ class BatchAnnotationResult {
   // Creates a result for a page topics annotation.
   static BatchAnnotationResult CreatePageTopicsResult(
       const std::string& input,
-      absl::optional<std::vector<WeightedString>> topics);
+      absl::optional<std::vector<WeightedIdentifier>> topics);
 
   // Creates a result for a page entities annotation.
   static BatchAnnotationResult CreatePageEntitiesResult(
@@ -88,7 +88,9 @@ class BatchAnnotationResult {
 
   std::string input() const { return input_; }
   AnnotationType type() const { return type_; }
-  absl::optional<std::vector<WeightedString>> topics() const { return topics_; }
+  absl::optional<std::vector<WeightedIdentifier>> topics() const {
+    return topics_;
+  }
   absl::optional<std::vector<ScoredEntityMetadata>> entities() const {
     return entities_;
   }
@@ -109,7 +111,7 @@ class BatchAnnotationResult {
 
   // Output for page topics annotations, set only if the |type_| matches and the
   // execution was successful.
-  absl::optional<std::vector<WeightedString>> topics_;
+  absl::optional<std::vector<WeightedIdentifier>> topics_;
 
   // Output for page entities annotations, set only if the |type_| matches and
   // the execution was successful.

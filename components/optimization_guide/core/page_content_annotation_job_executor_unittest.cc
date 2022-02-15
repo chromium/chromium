@@ -15,7 +15,7 @@
 namespace optimization_guide {
 
 namespace {
-const std::vector<WeightedString> kOutput{WeightedString("output", 1.0)};
+const std::vector<WeightedIdentifier> kOutput{WeightedIdentifier(1337, 1.0)};
 }
 
 class TestJobExecutor : public PageContentAnnotationJobExecutor {

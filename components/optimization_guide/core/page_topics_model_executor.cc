@@ -17,7 +17,7 @@ namespace {
 // The ID of the NONE category in the taxonomy. This node always exists.
 // Semantically, the none category is attached to data for which we can say
 // with certainty that no single label in the taxonomy is appropriate.
-const char kNoneCategoryId[] = "-2";
+const int32_t kNoneCategoryId = -2;
 
 }  // namespace
 
@@ -52,7 +52,7 @@ void PageTopicsModelExecutor::PostprocessCategoriesToBatchAnnotationResult(
     const absl::optional<std::vector<tflite::task::core::Category>>& output) {
   DCHECK_EQ(annotation_type, AnnotationType::kPageTopics);
 
-  absl::optional<std::vector<WeightedString>> categories;
+  absl::optional<std::vector<WeightedIdentifier>> categories;
   if (output) {
     categories = ExtractCategoriesFromModelOutput(*output);
   }
@@ -60,7 +60,7 @@ void PageTopicsModelExecutor::PostprocessCategoriesToBatchAnnotationResult(
       BatchAnnotationResult::CreatePageTopicsResult(input, categories));
 }
 
-absl::optional<std::vector<WeightedString>>
+absl::optional<std::vector<WeightedIdentifier>>
 PageTopicsModelExecutor::ExtractCategoriesFromModelOutput(
     const std::vector<tflite::task::core::Category>& model_output) const {
   absl::optional<proto::PageTopicsModelMetadata> model_metadata =
@@ -79,7 +79,7 @@ PageTopicsModelExecutor::ExtractCategoriesFromModelOutput(
                                     .category_name())
           : absl::nullopt;
 
-  std::vector<std::pair<std::string, float>> category_candidates;
+  std::vector<std::pair<int32_t, float>> category_candidates;
 
   for (const auto& category : model_output) {
     if (visibility_category_name &&
@@ -89,8 +89,8 @@ PageTopicsModelExecutor::ExtractCategoriesFromModelOutput(
     // Assume everything else is for categories.
     int category_id;
     if (base::StringToInt(category.class_name, &category_id)) {
-      category_candidates.emplace_back(std::make_pair(
-          category.class_name, static_cast<float>(category.score)));
+      category_candidates.emplace_back(
+          std::make_pair(category_id, static_cast<float>(category.score)));
     }
   }
 
@@ -103,20 +103,19 @@ PageTopicsModelExecutor::ExtractCategoriesFromModelOutput(
       model_metadata->output_postprocessing_params().category_params();
 
   // Determine the categories with the highest weights.
-  std::sort(category_candidates.begin(), category_candidates.end(),
-            [](const std::pair<std::string, float>& a,
-               const std::pair<std::string, float>& b) {
-              return a.second > b.second;
-            });
+  std::sort(
+      category_candidates.begin(), category_candidates.end(),
+      [](const std::pair<int32_t, float>& a,
+         const std::pair<int32_t, float>& b) { return a.second > b.second; });
   size_t max_categories = static_cast<size_t>(category_params.max_categories());
   float total_weight = 0.0;
   float sum_positive_scores = 0.0;
   absl::optional<std::pair<size_t, float>> none_idx_and_weight;
-  std::vector<std::pair<std::string, float>> categories;
+  std::vector<std::pair<int32_t, float>> categories;
   categories.reserve(max_categories);
   for (size_t i = 0; i < category_candidates.size() && i < max_categories;
        i++) {
-    std::pair<std::string, float> candidate = category_candidates[i];
+    std::pair<int32_t, float> candidate = category_candidates[i];
     categories.push_back(candidate);
     total_weight += candidate.second;
 
@@ -132,7 +131,7 @@ PageTopicsModelExecutor::ExtractCategoriesFromModelOutput(
   if (category_params.min_category_weight() > 0) {
     categories.erase(
         std::remove_if(categories.begin(), categories.end(),
-                       [&](const std::pair<std::string, float>& category) {
+                       [&](const std::pair<int32_t, float>& category) {
                          return category.second <
                                 category_params.min_category_weight();
                        }),
@@ -159,19 +158,19 @@ PageTopicsModelExecutor::ExtractCategoriesFromModelOutput(
   categories.erase(
       std::remove_if(
           categories.begin(), categories.end(),
-          [&](const std::pair<std::string, float>& category) {
+          [&](const std::pair<int32_t, float>& category) {
             return (category.second / normalization_factor) <
                    category_params.min_normalized_weight_within_top_n();
           }),
       categories.end());
 
-  std::vector<WeightedString> final_categories;
+  std::vector<WeightedIdentifier> final_categories;
   final_categories.reserve(categories.size());
   for (const auto& category : categories) {
     // We expect the weight to be between 0 and 1.
     DCHECK(category.second >= 0.0 && category.second <= 1.0);
     final_categories.emplace_back(
-        WeightedString(category.first, category.second));
+        WeightedIdentifier(category.first, category.second));
   }
   DCHECK_LE(final_categories.size(), max_categories);
 

@@ -125,13 +125,13 @@ TEST_F(
       {"0", 0.0001}, {"1", 0.1}, {"not an int", 0.9}, {"2", 0.2}, {"3", 0.3},
   };
 
-  absl::optional<std::vector<WeightedString>> categories =
+  absl::optional<std::vector<WeightedIdentifier>> categories =
       model_executor()->ExtractCategoriesFromModelOutput(model_output);
   ASSERT_TRUE(categories);
   EXPECT_THAT(*categories,
-              testing::UnorderedElementsAre(WeightedString("1", 0.1),
-                                            WeightedString("2", 0.2),
-                                            WeightedString("3", 0.3)));
+              testing::UnorderedElementsAre(WeightedIdentifier(1, 0.1),
+                                            WeightedIdentifier(2, 0.2),
+                                            WeightedIdentifier(3, 0.3)));
 }
 
 TEST_F(PageTopicsModelExecutorTest,
@@ -157,7 +157,7 @@ TEST_F(PageTopicsModelExecutorTest,
       {"1", 0.2},
   };
 
-  absl::optional<std::vector<WeightedString>> categories =
+  absl::optional<std::vector<WeightedIdentifier>> categories =
       model_executor()->ExtractCategoriesFromModelOutput(model_output);
   EXPECT_FALSE(categories);
 }
@@ -183,13 +183,13 @@ TEST_F(PageTopicsModelExecutorTest,
       {"-2", 0.1}, {"0", 0.3}, {"1", 0.2}, {"2", 0.4}, {"3", 0.05},
   };
 
-  absl::optional<std::vector<WeightedString>> categories =
+  absl::optional<std::vector<WeightedIdentifier>> categories =
       model_executor()->ExtractCategoriesFromModelOutput(model_output);
   ASSERT_TRUE(categories);
   EXPECT_THAT(*categories,
-              testing::UnorderedElementsAre(WeightedString("0", 0.3),
-                                            WeightedString("1", 0.2),
-                                            WeightedString("2", 0.4)));
+              testing::UnorderedElementsAre(WeightedIdentifier(0, 0.3),
+                                            WeightedIdentifier(1, 0.2),
+                                            WeightedIdentifier(2, 0.4)));
 }
 
 TEST_F(PageTopicsModelExecutorTest,
@@ -216,13 +216,13 @@ TEST_F(PageTopicsModelExecutorTest,
       {"3", 0.05},
   };
 
-  absl::optional<std::vector<WeightedString>> categories =
+  absl::optional<std::vector<WeightedIdentifier>> categories =
       model_executor()->ExtractCategoriesFromModelOutput(model_output);
   ASSERT_TRUE(categories);
   EXPECT_THAT(*categories,
-              testing::UnorderedElementsAre(WeightedString("0", 0.3),
-                                            WeightedString("1", 0.25),
-                                            WeightedString("2", 0.4)));
+              testing::UnorderedElementsAre(WeightedIdentifier(0, 0.3),
+                                            WeightedIdentifier(1, 0.25),
+                                            WeightedIdentifier(2, 0.4)));
 }
 
 TEST_F(PageTopicsModelExecutorTest,
@@ -260,10 +260,10 @@ TEST_F(PageTopicsModelExecutorTest,
           &topics_result),
       AnnotationType::kPageTopics, "input", model_output);
   EXPECT_EQ(topics_result, BatchAnnotationResult::CreatePageTopicsResult(
-                               "input", std::vector<WeightedString>{
-                                            WeightedString("0", 0.3),
-                                            WeightedString("1", 0.25),
-                                            WeightedString("2", 0.4),
+                               "input", std::vector<WeightedIdentifier>{
+                                            WeightedIdentifier(0, 0.3),
+                                            WeightedIdentifier(1, 0.25),
+                                            WeightedIdentifier(2, 0.4),
                                         }));
 }
 

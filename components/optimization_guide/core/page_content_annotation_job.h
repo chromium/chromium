@@ -22,8 +22,6 @@ namespace optimization_guide {
 // container that matches the I/O of a single call to the PCA Service.
 class PageContentAnnotationJob {
  public:
-  using WeightedCategories = std::vector<WeightedString>;
-
   PageContentAnnotationJob(BatchAnnotationCallback on_complete_callback,
                            const std::vector<std::string>& inputs,
                            AnnotationType type);

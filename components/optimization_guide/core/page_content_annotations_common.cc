@@ -29,26 +29,25 @@ std::string AnnotationTypeToString(AnnotationType type) {
   }
 }
 
-WeightedString::WeightedString(const std::string& value, double weight)
+WeightedIdentifier::WeightedIdentifier(int32_t value, double weight)
     : value_(value), weight_(weight) {
   DCHECK_GE(weight_, 0.0);
   DCHECK_LE(weight_, 1.0);
 }
-WeightedString::WeightedString(const WeightedString&) = default;
-WeightedString::~WeightedString() = default;
+WeightedIdentifier::WeightedIdentifier(const WeightedIdentifier&) = default;
+WeightedIdentifier::~WeightedIdentifier() = default;
 
-bool WeightedString::operator==(const WeightedString& other) const {
+bool WeightedIdentifier::operator==(const WeightedIdentifier& other) const {
   constexpr double kWeightTolerance = 1e-6;
   return this->value_ == other.value_ &&
          abs(this->weight_ - other.weight_) <= kWeightTolerance;
 }
 
-std::string WeightedString::ToString() const {
-  return base::StringPrintf("WeightedString{\"%s\",%f}", value().c_str(),
-                            weight());
+std::string WeightedIdentifier::ToString() const {
+  return base::StringPrintf("WeightedIdentifier{%d,%f}", value(), weight());
 }
 
-std::ostream& operator<<(std::ostream& stream, const WeightedString& ws) {
+std::ostream& operator<<(std::ostream& stream, const WeightedIdentifier& ws) {
   stream << ws.ToString();
   return stream;
 }
@@ -61,11 +60,11 @@ BatchAnnotationResult::~BatchAnnotationResult() = default;
 std::string BatchAnnotationResult::ToString() const {
   std::string output = "nullopt";
   if (topics_) {
-    std::vector<std::string> all_weighted_strings;
-    for (const WeightedString& ws : *topics_) {
-      all_weighted_strings.push_back(ws.ToString());
+    std::vector<std::string> all_weighted_ids;
+    for (const WeightedIdentifier& wi : *topics_) {
+      all_weighted_ids.push_back(wi.ToString());
     }
-    output = "{" + base::JoinString(all_weighted_strings, ",") + "}";
+    output = "{" + base::JoinString(all_weighted_ids, ",") + "}";
   } else if (entities_) {
     std::vector<std::string> all_entities;
     for (const ScoredEntityMetadata& md : *entities_) {
@@ -92,7 +91,7 @@ std::ostream& operator<<(std::ostream& stream,
 // static
 BatchAnnotationResult BatchAnnotationResult::CreatePageTopicsResult(
     const std::string& input,
-    absl::optional<std::vector<WeightedString>> topics) {
+    absl::optional<std::vector<WeightedIdentifier>> topics) {
   BatchAnnotationResult result;
   result.input_ = input;
   result.topics_ = topics;
@@ -101,7 +100,7 @@ BatchAnnotationResult BatchAnnotationResult::CreatePageTopicsResult(
   // Always sort the result (if present) by the given score.
   if (result.topics_) {
     std::sort(result.topics_->begin(), result.topics_->end(),
-              [](const WeightedString& a, const WeightedString& b) {
+              [](const WeightedIdentifier& a, const WeightedIdentifier& b) {
                 return a.weight() < b.weight();
               });
   }
