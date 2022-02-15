@@ -1130,6 +1130,20 @@
        {}
       ]
      ],
+     "chrome-bug-1291449-crash.https.html": [
+      "d13fed0179b45b28acc7f9514cd8f8e242e4b743",
+      [
+       null,
+       {}
+      ]
+     ],
+     "chrome-bug-1296664-crash.https.html": [
+      "9e523fb181e04b7a645cd70bd2954201120f0807",
+      [
+       null,
+       {}
+      ]
+     ],
      "input-text-crash.https.html": [
       "2d32609040a970fa0b20ec6f0530b91c53a360d4",
       [
@@ -84056,6 +84070,305 @@
        [
         [
          "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-001.html": [
+      "b03af9eb29fb6f4e23a036a927dd35bbf12bf112",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-ButtonBorder-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-002.html": [
+      "dcac061654bf30cb6ca73c197208897115aabef7",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-CanvasText-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-003.html": [
+      "b0a5466e8f6aab82168f9eacbacbc0263f3a6bf8",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-Canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-004.html": [
+      "8be2be1eb7f733eb73f9943e06a2490ce7bc90f3",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-Canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-005.html": [
+      "8ed192f2b63c163964c51520117dd956ea17a750",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-ButtonFace-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-006.html": [
+      "1a1a4776ef68130ecd96b945303ddec2723e6448",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-ButtonFace-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-007.html": [
+      "b10783723dde047a52e9bea78b631da697ba153a",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-CanvasText-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-008.html": [
+      "e8ffb845741bf86d9ac7e4045e558495c34c3b2e",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-ButtonBorder-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-009.html": [
+      "4940e6de677f1d19dabffcaf2922ea98c29c8301",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-Canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-010.html": [
+      "53e2588f9b8829da858a3da3eece5f4e4b2758e0",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-GrayText-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-011.html": [
+      "3a15d0150103a9130197b3b0715133c51616acab",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-Canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-012.html": [
+      "14d7ebf83449a4349162fb0d644eafd448651382",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-CanvasText-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-013.html": [
+      "374ab4775a079445299ca16f7ac8df211f518e40",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-Canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-014.html": [
+      "3ee9a8e088dcbfd5b3ccf3c38de807c98646c7a1",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-CanvasText-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-015.html": [
+      "71aba26527aa4ce8fbc858ffa7f8748af2b48303",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-Canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-016.html": [
+      "3a1e9cbf1f21c61351a0944fcb3bc4595fc3bc60",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-ButtonBorder-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-017.html": [
+      "eed5571ff254398511edf03e9c7de7a2e01b0307",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-ButtonFace-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-018.html": [
+      "9f9071635eae13593f719a2b69d753a33f027a6f",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-ButtonBorder-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-019.html": [
+      "c99239e2ef3165d439477defa50e40d4e6f6a972",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-ButtonBorder-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-020.html": [
+      "85dc1261d3764f8ee199a7458eb420dceecf574d",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-ButtonBorder-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-021.html": [
+      "ce3de2f3b55338f048bc55aa36c23d90c05571eb",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-Canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-022.html": [
+      "c873dc2d1084f40e2918d3f6301eab615d60988f",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-ButtonBorder-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "deprecated-sameas-023.html": [
+      "a074329c628c09e5f8520ef5bfa0c4539d439913",
+      [
+       null,
+       [
+        [
+         "/css/css-color/deprecated-sameas-CanvasText-ref.html",
          "=="
         ]
        ],
@@ -210925,6 +211238,23 @@
      ]
     }
    },
+   "custom-elements": {
+    "form-associated": {
+     "ElementInternals-reportValidity-bubble.html": [
+      "6ada4b473ab319fa57d83432c321e2d24b22ab87",
+      [
+       null,
+       [
+        [
+         "/custom-elements/form-associated/ElementInternals-reportValidity-bubble-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    }
+   },
    "density-size-correction": {
     "density-corrected-image-svg-aspect-ratio-cross-origin.sub.html": [
      "8c6512254503338919d55b66943fa1ea699b4471",
@@ -229878,6 +230208,14 @@
       []
      ]
     },
+    "focus-reset": {
+     "resources": {
+      "helpers.mjs": [
+       "e3012a0b12e618615ed90ab77528be2e8de41974",
+       []
+      ]
+     }
+    },
     "navigate": {
      "reload-service-worker-fetch-event-expected.txt": [
       "cf4b285328a985e8413570fcc80e16d4501b3d09",
@@ -244479,6 +244817,26 @@
      ],
      "composited-filters-under-opacity-ref.html": [
       "73b420189ec8bc073e8b6a2e4bfd628653bd4a78",
+      []
+     ],
+     "deprecated-sameas-ButtonBorder-ref.html": [
+      "99359aa4a776757973814748a9b74032b55cb8d8",
+      []
+     ],
+     "deprecated-sameas-ButtonFace-ref.html": [
+      "63b14e4fdaac850f829c94b78075cdabb146a674",
+      []
+     ],
+     "deprecated-sameas-Canvas-ref.html": [
+      "503cc13e7a59b0d1c8a245083ba0596fb4d8821e",
+      []
+     ],
+     "deprecated-sameas-CanvasText-ref.html": [
+      "a66c6ebce36ecdb2fb4d3307edf66141287918d8",
+      []
+     ],
+     "deprecated-sameas-GrayText-ref.html": [
+      "83d736c664989416bbcc281c66c7901695a96a6d",
       []
      ],
      "display-p3-004-ref.html": [
@@ -273818,11 +274176,11 @@
       []
      ],
      "minmax-time-computed-expected.txt": [
-      "49b7498fbbbecde32e739a50584b0c393c19514d",
+      "8699ace6b99e668951ffd373fac903501f39aa8b",
       []
      ],
      "minmax-time-serialize-expected.txt": [
-      "1f361467f7f4540a25ed8120d4d8c3496180bb07",
+      "4f03477c6103376605575e87875c86529b60a11e",
       []
      ],
      "negative-calc-to-non-negative-integer-ref.html": [
@@ -279069,6 +279427,10 @@
      ]
     },
     "form-associated": {
+     "ElementInternals-reportValidity-bubble-ref.html": [
+      "54a438245c8ea807a71d35d449893b016a51d9a4",
+      []
+     ],
      "ElementInternals-validation-expected.txt": [
       "ed5a28ed1e0622c5fb7749d1ed189191ed746998",
       []
@@ -283418,6 +283780,22 @@
       ],
       "request-upload.any.worker-expected.txt": [
        "14ad958723a641b06b3dd096a3e0a5f9cb1fe9c5",
+       []
+      ],
+      "response-null-body.any-expected.txt": [
+       "fa818f443d303b3903069f46bc8824dd2bf8bb27",
+       []
+      ],
+      "response-null-body.any.serviceworker-expected.txt": [
+       "fa818f443d303b3903069f46bc8824dd2bf8bb27",
+       []
+      ],
+      "response-null-body.any.sharedworker-expected.txt": [
+       "fa818f443d303b3903069f46bc8824dd2bf8bb27",
+       []
+      ],
+      "response-null-body.any.worker-expected.txt": [
+       "fa818f443d303b3903069f46bc8824dd2bf8bb27",
        []
       ]
      },
@@ -339616,6 +339994,29 @@
       ]
      ]
     },
+    "focus-reset": {
+     "autofocus.html": [
+      "57fdf865ab40d7c6a6ceba5470f5542ed713a735",
+      [
+       null,
+       {}
+      ]
+     ],
+     "basic.html": [
+      "fb57cf864482a1b9297c432da8687fcfcfe7edb2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "multiple-transitionWhile.html": [
+      "d38df573e59536b48cc9618ad20722a5d3c22978",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "navigate": {
      "back-forward-multiple-frames.html": [
       "80a8fb65a05fb622988e8f64ac78f16c9172869d",
@@ -350408,7 +350809,7 @@
       ]
      ],
      "child-src-cross-origin-load.sub.html": [
-      "af5d056e916a47581b0dfefd84ba91596cd3107b",
+      "1c21a185a62563c9bb6b4617450ec098b16c95d0",
       [
        null,
        {}
@@ -410433,6 +410834,69 @@
         }
        ]
       ],
+      "response-null-body.any.js": [
+       "7824a200067cf0ab01488274d1dbe8bc7b66bef0",
+       [
+        "fetch/api/basic/response-null-body.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/response-null-body.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/response-null-body.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/response-null-body.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "response-url.sub.any.js": [
        "0d123c429445f1e750db7d901fabd096ff0eb473",
        [
@@ -462821,7 +463285,7 @@
      "selectors": {
       "pseudo-classes": {
        "active-disabled.html": [
-        "63dda59c011d4a4aae4578416535829a7f81a2ce",
+        "a75a157c58f57814f421bd19aa588eaf75270f73",
         [
          null,
          {
@@ -468614,6 +469078,24 @@
      [
       null,
       {}
+     ]
+    ],
+    "inert-iframe-hittest.tentative.html": [
+     "63e347725ee360a0f0e0f240b673afcd2a31ea08",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "inert-iframe-tabbing.tentative.html": [
+     "e346993cdcc2c66d4dcad27696ab1587e88bbb6d",
+     [
+      null,
+      {
+       "testdriver": true
+      }
      ]
     ],
     "inert-in-shadow-dom.tentative.html": [
@@ -480441,7 +480923,7 @@
    "paint-timing": {
     "fcp-only": {
      "buffered-flag.window.js": [
-      "5c83ac01da457cbd6d48ed97b21269b1b1b0a5cc",
+      "5910b6881fb34486a24348c35eae84efe291469a",
       [
        "paint-timing/fcp-only/buffered-flag.window.html",
        {}
