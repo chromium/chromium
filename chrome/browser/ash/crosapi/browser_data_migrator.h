@@ -49,10 +49,38 @@ const base::Feature kLacrosMoveProfileMigration{
 // The interface is exposed to be inherited by fakes in tests.
 class BrowserDataMigrator {
  public:
+  // Represents a kind of the result status.
+  enum class ResultKind {
+    kSkipped,
+    kSucceeded,
+    kFailed,
+    kCancelled,
+  };
+
+  // Represents a result status.
+  struct Result {
+    ResultKind kind;
+
+    // TODO(crbug.com/1296174): add required data, if the migration is failed
+    // due to out of disk space.
+  };
+
+  // TODO(crbug.com/1296174): Currently, dependency around callback is not
+  // clean enough. Clean it up.
+  using MigrateCallback = base::OnceCallback<void(Result)>;
+
   virtual ~BrowserDataMigrator() = default;
+
   // Carries out the migration. It needs to be called on UI thread.
-  virtual void Migrate() = 0;
-  // Cancels the migration.
+  // |callback| will be called on the end of the migration procedure.
+  virtual void Migrate(MigrateCallback callback) = 0;
+
+  // Cancels the migration. This should be called on UI thread.
+  // If this is called during the migration, it is expected that |callback|
+  // passed to Migrate() will be called with kCancelled *in most cases*.
+  // Note that, there's timing issue, so the migration may be completed
+  // just before the notification to cancel, and in the case |callback|
+  // may be called with other ResultKind.
   virtual void Cancel() = 0;
 };
 
@@ -72,16 +100,15 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
     kEnded = 3  // Migration ended. It was either skipped, failed or succeeded.
   };
 
-  // TODO(ythjkt): Move this struct to browser_data_migrator_util.h.
-  enum class ResultValue { kSkipped, kSucceeded, kFailed, kCancelled };
+  enum class DataWipeResult { kSkipped, kSucceeded, kFailed };
 
   // TODO(ythjkt): Move this struct to browser_data_migrator_util.h.
   // Return value of `MigrateInternal()`.
   struct MigrationResult {
     // Describes the end result of user data wipe.
-    ResultValue data_wipe;
+    DataWipeResult data_wipe_result;
     // Describes the end result of data migration.
-    ResultValue data_migration;
+    Result data_migration_result;
   };
 
   // Specifies the mode of migration.
@@ -112,7 +139,6 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   BrowserDataMigratorImpl(const base::FilePath& original_profile_dir,
                           const std::string& user_id_hash,
                           const ProgressCallback& progress_callback,
-                          base::OnceClosure completion_callback,
                           PrefService* local_state);
   BrowserDataMigratorImpl(const BrowserDataMigratorImpl&) = delete;
   BrowserDataMigratorImpl& operator=(const BrowserDataMigratorImpl&) = delete;
@@ -129,7 +155,7 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
       crosapi::browser_util::PolicyInitState policy_init_state);
 
   // `BrowserDataMigrator` methods.
-  void Migrate() override;
+  void Migrate(MigrateCallback callback) override;
   void Cancel() override;
 
   // Registers boolean pref `kCheckForMigrationOnRestart` with default as false.
@@ -137,8 +163,6 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
 
   // Clears the value of `kMigrationStep` in Local State.
   static void ClearMigrationStep(PrefService* local_state);
-
-  ResultValue GetFinalStatus();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
@@ -187,14 +211,12 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   std::unique_ptr<MigrationProgressTracker> progress_tracker_;
   // Callback to be called once migration is done. It is called regardless of
   // whether migration succeeded or not.
-  base::OnceClosure completion_callback_;
+  MigrateCallback completion_callback_;
   // `cancel_flag_` gets set by `Cancel()` and tasks posted to worker threads
   // can check if migration is cancelled or not.
   scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag_;
   // Local state prefs, not owned.
   PrefService* local_state_ = nullptr;
-  // Final status of the migration.
-  ResultValue final_status_;
   std::unique_ptr<MigratorDelegate> migrator_delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);

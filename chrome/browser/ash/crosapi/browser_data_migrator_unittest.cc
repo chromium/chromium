@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
@@ -18,6 +19,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -88,9 +90,13 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
   base::RunLoop run_loop;
   std::unique_ptr<BrowserDataMigratorImpl> migrator =
       std::make_unique<BrowserDataMigratorImpl>(
-          from_dir_, user_id_hash, base::DoNothing(), run_loop.QuitClosure(),
-          &pref_service_);
-  migrator->Migrate();
+          from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
+  absl::optional<BrowserDataMigrator::Result> result;
+  migrator->Migrate(base::BindLambdaForTesting(
+      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
+        run_loop.Quit();
+        out_result = result;
+      }));
   run_loop.Run();
 
   const base::FilePath new_user_data_dir =
@@ -102,8 +108,8 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
   // Check that migration is marked as completed for the user.
   EXPECT_TRUE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
       &pref_service_, user_id_hash));
-  EXPECT_EQ(migrator->GetFinalStatus(),
-            BrowserDataMigratorImpl::ResultValue::kSucceeded);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(BrowserDataMigrator::ResultKind::kSucceeded, result->kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
             BrowserDataMigratorImpl::MigrationStep::kEnded);
   // Successful migration should clear the migration attempt count.
@@ -129,9 +135,13 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
   base::RunLoop run_loop;
   std::unique_ptr<BrowserDataMigratorImpl> migrator =
       std::make_unique<BrowserDataMigratorImpl>(
-          from_dir_, user_id_hash, base::DoNothing(), run_loop.QuitClosure(),
-          &pref_service_);
-  migrator->Migrate();
+          from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
+  absl::optional<BrowserDataMigrator::Result> result;
+  migrator->Migrate(base::BindLambdaForTesting(
+      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
+        run_loop.Quit();
+        out_result = result;
+      }));
   migrator->Cancel();
   run_loop.Run();
 
@@ -142,8 +152,8 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
   EXPECT_FALSE(base::PathExists(new_user_data_dir.Append(kFirstRun)));
   EXPECT_FALSE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
       &pref_service_, user_id_hash));
-  EXPECT_EQ(migrator->GetFinalStatus(),
-            BrowserDataMigratorImpl::ResultValue::kCancelled);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(BrowserDataMigrator::ResultKind::kCancelled, result->kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
             BrowserDataMigratorImpl::MigrationStep::kEnded);
   // If migration fails, migration attempt count should not be cleared thus

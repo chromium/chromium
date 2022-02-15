@@ -198,12 +198,12 @@ class MoveMigratorMigrateTest : public ::testing::Test {
 
     base::OnceCallback<void(BrowserDataMigratorImpl::MigrationResult)>
         finished_callback = base::BindOnce(
-            [](BrowserDataMigratorImpl::ResultValue* data_wipe_result,
-               BrowserDataMigratorImpl::ResultValue* data_migration_result,
+            [](BrowserDataMigratorImpl::DataWipeResult* data_wipe_result,
+               BrowserDataMigrator::Result* data_migration_result,
                base::OnceClosure cb,
                BrowserDataMigratorImpl::MigrationResult result) {
-              *data_wipe_result = result.data_wipe;
-              *data_migration_result = result.data_migration;
+              *data_wipe_result = result.data_wipe_result;
+              *data_migration_result = result.data_migration_result;
               std::move(cb).Run();
             },
             &data_wipe_result_, &data_migration_result_,
@@ -263,8 +263,8 @@ class MoveMigratorMigrateTest : public ::testing::Test {
 
   // Updated from `finished_callback` with the corresponding value on
   // `BrowserDataMigratorImpl::MigrationResult`.
-  BrowserDataMigratorImpl::ResultValue data_wipe_result_;
-  BrowserDataMigratorImpl::ResultValue data_migration_result_;
+  BrowserDataMigratorImpl::DataWipeResult data_wipe_result_;
+  BrowserDataMigrator::Result data_migration_result_;
 };
 
 TEST_F(MoveMigratorMigrateTest, Migrate) {
@@ -272,9 +272,9 @@ TEST_F(MoveMigratorMigrateTest, Migrate) {
   run_loop_->Run();
 
   EXPECT_EQ(data_wipe_result_,
-            BrowserDataMigratorImpl::ResultValue::kSucceeded);
-  EXPECT_EQ(data_migration_result_,
-            BrowserDataMigratorImpl::ResultValue::kSucceeded);
+            BrowserDataMigratorImpl::DataWipeResult::kSucceeded);
+  EXPECT_EQ(data_migration_result_.kind,
+            BrowserDataMigrator::ResultKind::kSucceeded);
 
   CheckProfileDirFinalState();
 }
@@ -315,9 +315,9 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromRemoveHardLinks) {
   run_loop_->Run();
 
   EXPECT_EQ(data_wipe_result_,
-            BrowserDataMigratorImpl::ResultValue::kSucceeded);
-  EXPECT_EQ(data_migration_result_,
-            BrowserDataMigratorImpl::ResultValue::kSucceeded);
+            BrowserDataMigratorImpl::DataWipeResult::kSucceeded);
+  EXPECT_EQ(data_migration_result_.kind,
+            BrowserDataMigrator::ResultKind::kSucceeded);
 
   CheckProfileDirFinalState();
 }
@@ -359,9 +359,9 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMove) {
   run_loop_->Run();
 
   EXPECT_EQ(data_wipe_result_,
-            BrowserDataMigratorImpl::ResultValue::kSucceeded);
-  EXPECT_EQ(data_migration_result_,
-            BrowserDataMigratorImpl::ResultValue::kSucceeded);
+            BrowserDataMigratorImpl::DataWipeResult::kSucceeded);
+  EXPECT_EQ(data_migration_result_.kind,
+            BrowserDataMigrator::ResultKind::kSucceeded);
 
   CheckProfileDirFinalState();
 }

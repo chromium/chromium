@@ -33,7 +33,7 @@ const test::UIPath kLowBattery = {kLacrosDataMigrationId, "lowBattery"};
 class FakeMigrator : public BrowserDataMigrator {
  public:
   // BrowserDataMigrator overrides.
-  void Migrate() override {}
+  void Migrate(MigrateCallback callback) override {}
   void Cancel() override { cancel_called_ = true; }
 
   bool IsCancelCalled() { return cancel_called_; }

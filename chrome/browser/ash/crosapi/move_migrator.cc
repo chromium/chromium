@@ -90,8 +90,8 @@ void MoveMigrator::Migrate() {
           << "This state indicates that migration was marked as completed by"
              "`MoveMigrator` but was not by `BrowserDataMigratorImpl`";
       std::move(finished_callback_)
-          .Run({BrowserDataMigratorImpl::ResultValue::kSucceeded,
-                BrowserDataMigratorImpl::ResultValue::kSucceeded});
+          .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
+                {BrowserDataMigrator::ResultKind::kSucceeded}});
       return;
   }
 }
@@ -186,8 +186,8 @@ void MoveMigrator::OnPreMigrationCleanUp(
   if (!result.success) {
     LOG(ERROR) << "PreMigrationCleanup() failed.";
     std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::ResultValue::kFailed,
-              BrowserDataMigratorImpl::ResultValue::kFailed});
+        .Run({BrowserDataMigratorImpl::DataWipeResult::kFailed,
+              {BrowserDataMigrator::ResultKind::kFailed}});
     return;
   }
 
@@ -197,8 +197,8 @@ void MoveMigrator::OnPreMigrationCleanUp(
                << result.extra_bytes_required_to_be_freed.value()
                << " bytes from " << original_profile_dir_.value();
     std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::ResultValue::kFailed,
-              BrowserDataMigratorImpl::ResultValue::kFailed});
+        .Run({BrowserDataMigratorImpl::DataWipeResult::kFailed,
+              {BrowserDataMigratorImpl::ResultKind::kFailed}});
     return;
   }
 
@@ -276,8 +276,8 @@ void MoveMigrator::OnSetupLacrosDir(bool success) {
   if (!success) {
     LOG(ERROR) << "MoveMigrator::SetupLacrosDir() failed.";
     std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::ResultValue::kSucceeded,
-              BrowserDataMigratorImpl::ResultValue::kFailed});
+        .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
+              {BrowserDataMigrator::ResultKind::kFailed}});
     return;
   }
 
@@ -358,8 +358,8 @@ void MoveMigrator::OnRemoveHardLinksFromOriginalDir(bool success) {
   if (!success) {
     LOG(ERROR) << "Removing hard links have failed.";
     std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::ResultValue::kSucceeded,
-              BrowserDataMigratorImpl::ResultValue::kFailed});
+        .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
+              {BrowserDataMigrator::ResultKind::kFailed}});
     return;
   }
 
@@ -404,16 +404,16 @@ void MoveMigrator::OnMoveTmpDirToLacrosDir(bool success) {
   if (!success) {
     LOG(ERROR) << "Moving tmp dir to lacros dir failed.";
     std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::ResultValue::kSucceeded,
-              BrowserDataMigratorImpl::ResultValue::kFailed});
+        .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
+              {BrowserDataMigrator::ResultKind::kFailed}});
     return;
   }
 
   SetResumeStep(local_state_, user_id_hash_, ResumeStep::kCompleted);
   LOG(WARNING) << "Move migration completed successfully.";
   std::move(finished_callback_)
-      .Run({BrowserDataMigratorImpl::ResultValue::kSucceeded,
-            BrowserDataMigratorImpl::ResultValue::kSucceeded});
+      .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
+            {BrowserDataMigratorImpl::ResultKind::kSucceeded}});
 }
 
 }  // namespace ash

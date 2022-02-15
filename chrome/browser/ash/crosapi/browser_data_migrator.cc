@@ -204,17 +204,14 @@ BrowserDataMigratorImpl::BrowserDataMigratorImpl(
     const base::FilePath& original_profile_dir,
     const std::string& user_id_hash,
     const ProgressCallback& progress_callback,
-    base::OnceClosure completion_callback,
     PrefService* local_state)
     : original_profile_dir_(original_profile_dir),
       user_id_hash_(user_id_hash),
       progress_tracker_(
           std::make_unique<MigrationProgressTrackerImpl>(progress_callback)),
-      completion_callback_(std::move(completion_callback)),
       cancel_flag_(
           base::MakeRefCounted<browser_data_migrator_util::CancelFlag>()),
-      local_state_(local_state),
-      final_status_(ResultValue::kSkipped) {
+      local_state_(local_state) {
   DCHECK(local_state_);
 }
 
@@ -222,8 +219,10 @@ BrowserDataMigratorImpl::~BrowserDataMigratorImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void BrowserDataMigratorImpl::Migrate() {
+void BrowserDataMigratorImpl::Migrate(MigrateCallback callback) {
   DCHECK(local_state_);
+  DCHECK(completion_callback_.is_null());
+  completion_callback_ = std::move(callback);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
   // log level to VLOG(1).
@@ -269,19 +268,17 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
   // log level to VLOG(1).
   LOG(WARNING)
       << "MigrateInternalFinishedUIThread() called with results data wipe = "
-      << static_cast<int>(result.data_wipe) << " and migration "
-      << static_cast<int>(result.data_migration);
+      << static_cast<int>(result.data_wipe_result) << " and migration "
+      << static_cast<int>(result.data_migration_result.kind);
 
-  final_status_ = result.data_migration;
-
-  if (result.data_wipe != ResultValue::kFailed) {
+  if (result.data_wipe_result != DataWipeResult::kFailed) {
     // kSkipped means that the directory did not exist so record the current
     // version as the data version.
     crosapi::browser_util::RecordDataVer(local_state_, user_id_hash_,
                                          version_info::GetVersion());
   }
 
-  if (result.data_migration == ResultValue::kSucceeded) {
+  if (result.data_migration_result.kind == ResultKind::kSucceeded) {
     crosapi::browser_util::SetProfileMigrationCompletedForUser(local_state_,
                                                                user_id_hash_);
 
@@ -292,11 +289,7 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
 
   local_state_->CommitPendingWrite();
 
-  std::move(completion_callback_).Run();
-}
-
-BrowserDataMigratorImpl::ResultValue BrowserDataMigratorImpl::GetFinalStatus() {
-  return final_status_;
+  std::move(completion_callback_).Run(result.data_migration_result);
 }
 
 // static

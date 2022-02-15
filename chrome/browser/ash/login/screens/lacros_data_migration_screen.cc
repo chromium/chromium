@@ -92,10 +92,12 @@ void LacrosDataMigrationScreen::ShowImpl() {
 
     migrator_ = std::make_unique<BrowserDataMigratorImpl>(
         profile_data_dir, user_id_hash, progress_callback,
-        base::BindOnce(&chrome::AttemptRestart),
         g_browser_process->local_state());
 
-    migrator_->Migrate();
+    migrator_->Migrate(base::BindOnce([](BrowserDataMigrator::Result result) {
+      // TODO(crbug.com/1296174): support page transition on failure.
+      chrome::AttemptRestart();
+    }));
   }
 
   // Show the screen.
