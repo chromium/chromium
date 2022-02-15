@@ -116,11 +116,14 @@
     left: var(--emoji-picker-side-padding);
   }
 
-  /* TODO(b/218754137): Add margins to both end of divider to match v2 mocks 
-   */
   .divider {
     border-top: 1px solid var(--cros-separator-color);
     width: var(--emoji-picker-width);
+  }
+
+  :host([v2-enabled]) .divider {
+    margin-inline: var(--emoji-picker-subcategory-bar-inline-margin);
+    width: unset;
   }
 
   .sr-only {
