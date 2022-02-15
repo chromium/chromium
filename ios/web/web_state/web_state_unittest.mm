@@ -91,9 +91,8 @@ TEST_F(WebStateTest, ScriptExecution) {
   });
 
   ASSERT_TRUE(execution_result);
-  std::string string_result;
-  execution_result->GetAsString(&string_result);
-  EXPECT_EQ("bar", string_result);
+  ASSERT_TRUE(execution_result->is_string());
+  EXPECT_EQ("bar", execution_result->GetString());
 }
 
 // Tests that executing user JavaScript registers user interaction.
