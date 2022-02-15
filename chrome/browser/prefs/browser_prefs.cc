@@ -1521,6 +1521,13 @@ void RegisterSigninProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 // This method should be periodically pruned of year+ old migrations.
 // See chrome/browser/prefs/README.md for details.
 void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
+  // IMPORTANT NOTE: This code is *not* run on iOS Chrome. If a pref is migrated
+  // or cleared here, and that pref is also used in iOS Chrome, it may also need
+  // to be migrated or cleared specifically for iOS as well. This could be by
+  // doing the migration in feature code that's called by all platforms instead
+  // of here, or by calling migration code in the appropriate place for iOS
+  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
+
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
@@ -1563,11 +1570,25 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
+
+  // IMPORTANT NOTE: This code is *not* run on iOS Chrome. If a pref is migrated
+  // or cleared here, and that pref is also used in iOS Chrome, it may also need
+  // to be migrated or cleared specifically for iOS as well. This could be by
+  // doing the migration in feature code that's called by all platforms instead
+  // of here, or by calling migration code in the appropriate place for iOS
+  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
 }
 
 // This method should be periodically pruned of year+ old migrations.
 // See chrome/browser/prefs/README.md for details.
 void MigrateObsoleteProfilePrefs(Profile* profile) {
+  // IMPORTANT NOTE: This code is *not* run on iOS Chrome. If a pref is migrated
+  // or cleared here, and that pref is also used in iOS Chrome, it may also need
+  // to be migrated or cleared specifically for iOS as well. This could be by
+  // doing the migration in feature code that's called by all platforms instead
+  // of here, or by calling migration code in the appropriate place for iOS
+  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
+
   // BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
@@ -1832,4 +1853,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
+
+  // IMPORTANT NOTE: This code is *not* run on iOS Chrome. If a pref is migrated
+  // or cleared here, and that pref is also used in iOS Chrome, it may also need
+  // to be migrated or cleared specifically for iOS as well. This could be by
+  // doing the migration in feature code that's called by all platforms instead
+  // of here, or by calling migration code in the appropriate place for iOS
+  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
 }
