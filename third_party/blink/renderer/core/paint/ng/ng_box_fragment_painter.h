@@ -322,7 +322,7 @@ inline NGBoxFragmentPainter::NGBoxFragmentPainter(
     const DisplayItemClient& display_item_client,
     const NGInlineCursor* inline_box_cursor,
     const NGFragmentItem* box_item)
-    : BoxPainterBase(&box.GetDocument(), box.Style(), box.GeneratingNode()),
+    : BoxPainterBase(&box.GetDocument(), box.Style(), box.GetNode()),
       box_fragment_(box),
       display_item_client_(display_item_client),
       items_(box.Items()),
