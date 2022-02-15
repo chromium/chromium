@@ -7,6 +7,7 @@
 """Deploys and runs a test package on a Fuchsia target."""
 
 import argparse
+import common
 import os
 import shutil
 import sys
@@ -244,6 +245,20 @@ def MapFilterFileToPackageFile(filter_file):
   return '/pkg/' + filter_file[filter_file.index(FILTER_DIR):]
 
 
+def MaybeApplyTestBotOverrides(parsed_args):
+  """Overrides certain arguments when running on test bots."""
+
+  if not parsed_args.test_launcher_bot_mode:
+    return
+
+  if common.GetHostArchFromPlatform() == 'arm64':
+    # Cap the number of cores for ARM bots.
+    # ARM-based test bots use container-level isolation, so the reported core
+    # count from the system reflects the actual number of physical system cores,
+    # not just the budget for this test task.
+    parsed_args.cpu_cores = min(parsed_args.cpu_cores, 4)
+
+
 def main():
   parser = argparse.ArgumentParser()
   AddTestExecutionArgs(parser)
@@ -269,6 +284,8 @@ def main():
     else:
       raise ValueError('Collecting code coverage info requires using '
                        'run-test-component.')
+
+  MaybeApplyTestBotOverrides(args)
 
   ConfigureLogging(args)
 
