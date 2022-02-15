@@ -2114,19 +2114,14 @@ skia::Matrix44 TransformationMatrix::ToSkMatrix44(
   return ret;
 }
 
-SkM44 TransformationMatrix::ToSkM44(const TransformationMatrix& matrix) {
-  return SkM44(matrix.M11(), matrix.M21(), matrix.M31(), matrix.M41(),
-               matrix.M12(), matrix.M22(), matrix.M32(), matrix.M42(),
-               matrix.M13(), matrix.M23(), matrix.M33(), matrix.M43(),
-               matrix.M14(), matrix.M24(), matrix.M34(), matrix.M44());
+SkM44 TransformationMatrix::ToSkM44() const {
+  return SkM44(M11(), M21(), M31(), M41(), M12(), M22(), M32(), M42(), M13(),
+               M23(), M33(), M43(), M14(), M24(), M34(), M44());
 }
 
-gfx::Transform TransformationMatrix::ToTransform(
-    const TransformationMatrix& matrix) {
-  return gfx::Transform(matrix.M11(), matrix.M21(), matrix.M31(), matrix.M41(),
-                        matrix.M12(), matrix.M22(), matrix.M32(), matrix.M42(),
-                        matrix.M13(), matrix.M23(), matrix.M33(), matrix.M43(),
-                        matrix.M14(), matrix.M24(), matrix.M34(), matrix.M44());
+gfx::Transform TransformationMatrix::ToTransform() const {
+  return gfx::Transform(M11(), M21(), M31(), M41(), M12(), M22(), M32(), M42(),
+                        M13(), M23(), M33(), M43(), M14(), M24(), M34(), M44());
 }
 
 String TransformationMatrix::ToString(bool as_matrix) const {

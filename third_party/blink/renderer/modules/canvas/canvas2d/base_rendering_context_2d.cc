@@ -307,8 +307,7 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
     c->setMatrix(SkM44());
     if (curr_state->Get()) {
       curr_state->Get()->PlaybackClips(c);
-      c->setMatrix(
-          TransformationMatrix::ToSkM44(curr_state->Get()->GetTransform()));
+      c->setMatrix(curr_state->Get()->GetTransform().ToSkM44());
     }
     c->save();
   }
@@ -908,7 +907,7 @@ void BaseRenderingContext2D::transform(double m11,
   if (!IsTransformInvertible())
     return;
 
-  c->concat(TransformationMatrix::ToSkM44(transform));
+  c->concat(transform.ToSkM44());
   path_.Transform(transform.Inverse());
 }
 

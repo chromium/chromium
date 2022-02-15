@@ -480,8 +480,8 @@ class PLATFORM_EXPORT TransformationMatrix {
   void ToColumnMajorFloatArray(FloatMatrix4& result) const;
 
   static skia::Matrix44 ToSkMatrix44(const TransformationMatrix&);
-  static SkM44 ToSkM44(const TransformationMatrix&);
-  static gfx::Transform ToTransform(const TransformationMatrix&);
+  SkM44 ToSkM44() const;
+  gfx::Transform ToTransform() const;
 
   // If |asMatrix|, return the matrix in row-major order. Otherwise, return
   // the transform's decomposition which shows the translation, scale, etc.

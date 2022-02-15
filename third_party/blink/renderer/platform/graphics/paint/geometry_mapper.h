@@ -123,13 +123,13 @@ class PLATFORM_EXPORT GeometryMapper {
         matrix_->PostTranslate(x, y);
     }
 
-    SkM44 ToSkM44() const { return TransformationMatrix::ToSkM44(Matrix()); }
+    SkM44 ToSkM44() const { return Matrix().ToSkM44(); }
 
     SkMatrix ToSkMatrix() const {
       if (LIKELY(IsIdentityOr2DTranslation())) {
         return SkMatrix::Translate(Translation2D().x(), Translation2D().y());
       }
-      return SkMatrix(TransformationMatrix::ToSkMatrix44(Matrix()));
+      return Matrix().ToSkM44().asM33();
     }
 
     bool operator==(const Translation2DOrMatrix& other) {

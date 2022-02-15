@@ -201,8 +201,8 @@ void RemoteFrameView::UpdateCompositingScaleFactor() {
                                           kTraverseDocumentBoundaries);
 
   float frame_to_local_root_scale_factor = 1.0f;
-  gfx::Transform local_root_transform = TransformationMatrix::ToTransform(
-      local_root_transform_state.AccumulatedTransform());
+  gfx::Transform local_root_transform =
+      local_root_transform_state.AccumulatedTransform().ToTransform();
   absl::optional<gfx::Vector2dF> scale_components =
       gfx::TryComputeTransform2dScaleComponents(local_root_transform);
   if (!scale_components) {

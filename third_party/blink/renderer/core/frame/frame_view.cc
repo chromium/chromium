@@ -207,7 +207,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   // An iframe's content is always pixel-snapped, even if the iframe element has
   // non-pixel-aligned location.
   gfx::Transform main_frame_gfx_transform =
-      TransformationMatrix::ToTransform(main_frame_transform_matrix);
+      main_frame_transform_matrix.ToTransform();
   main_frame_gfx_transform.RoundTranslationComponents();
 
   SetViewportIntersection(mojom::blink::ViewportIntersectionState(

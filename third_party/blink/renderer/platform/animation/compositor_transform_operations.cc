@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
 
-#include "skia/ext/skia_matrix_44.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_operations.h"
 
@@ -68,10 +67,8 @@ void CompositorTransformOperations::AppendPerspective(
   }
 }
 
-void CompositorTransformOperations::AppendMatrix(const skia::Matrix44& matrix) {
-  gfx::Transform transform(gfx::Transform::kSkipInitialization);
-  transform.matrix() = matrix;
-  transform_operations_.AppendMatrix(transform);
+void CompositorTransformOperations::AppendMatrix(const gfx::Transform& matrix) {
+  transform_operations_.AppendMatrix(matrix);
 }
 
 bool CompositorTransformOperations::IsIdentity() const {

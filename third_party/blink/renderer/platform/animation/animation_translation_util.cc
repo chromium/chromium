@@ -104,17 +104,15 @@ void ToCompositorTransformOperations(
       case TransformOperation::kMatrix: {
         auto* transform =
             static_cast<const MatrixTransformOperation*>(operation.get());
-        TransformationMatrix m = transform->Matrix();
         out_transform_operations->AppendMatrix(
-            TransformationMatrix::ToSkMatrix44(m));
+            transform->Matrix().ToTransform());
         break;
       }
       case TransformOperation::kMatrix3D: {
         auto* transform =
             static_cast<const Matrix3DTransformOperation*>(operation.get());
-        TransformationMatrix m = transform->Matrix();
         out_transform_operations->AppendMatrix(
-            TransformationMatrix::ToSkMatrix44(m));
+            transform->Matrix().ToTransform());
         break;
       }
       case TransformOperation::kPerspective: {
@@ -127,8 +125,7 @@ void ToCompositorTransformOperations(
       case TransformOperation::kInterpolated: {
         TransformationMatrix m;
         operation->Apply(m, box_size);
-        out_transform_operations->AppendMatrix(
-            TransformationMatrix::ToSkMatrix44(m));
+        out_transform_operations->AppendMatrix(m.ToTransform());
         break;
       }
       default:
