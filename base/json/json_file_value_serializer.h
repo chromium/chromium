@@ -32,19 +32,30 @@ class BASE_EXPORT JSONFileValueSerializer : public base::ValueSerializer {
   // DO NOT USE except in unit tests to verify the file was written properly.
   // We should never serialize directly to a file since this will block the
   // thread. Instead, serialize to a string and write to the file you want on
-  // the file thread.
+  // the thread pool.
   //
   // Attempt to serialize the data structure represented by Value into
   // JSON.  If the return value is true, the result will have been written
   // into the file whose name was passed into the constructor.
   bool Serialize(const base::Value& root) override;
+  // TODO(https://crbug.com/1297359): deduplicate these overloads.
+  bool Serialize(const base::Value::Dict& root) override;
+  bool Serialize(const base::Value::List& root) override;
 
   // Equivalent to Serialize(root) except binary values are omitted from the
   // output.
   bool SerializeAndOmitBinaryValues(const base::Value& root);
+  // TODO(https://crbug.com/1297359): deduplicate these overloads.
+  bool SerializeAndOmitBinaryValues(const base::Value::Dict& root);
+  bool SerializeAndOmitBinaryValues(const base::Value::List& root);
 
  private:
   bool SerializeInternal(const base::Value& root, bool omit_binary_values);
+  // TODO(https://crbug.com/1297359): deduplicate these overloads.
+  bool SerializeInternal(const base::Value::Dict& root,
+                         bool omit_binary_values);
+  bool SerializeInternal(const base::Value::List& root,
+                         bool omit_binary_values);
 
   const base::FilePath json_file_path_;
 };

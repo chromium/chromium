@@ -504,7 +504,7 @@ class CloudPolicyClientTest : public testing::Test {
     context.SetStringPath("profile.profileName", "Profile 1");
     context.SetStringPath("profile.profilePath", "C:\\User Data\\Profile 1");
 
-    base::Value event;
+    base::Value event(base::Value::Type::DICTIONARY);
     event.SetStringPath("time", "2019-05-22T13:01:45Z");
     event.SetStringPath("foo.prop1", "value1");
     event.SetStringPath("foo.prop2", "value2");
@@ -1845,7 +1845,7 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
     context.SetStringPath("profile.profileName", "Profile 1");
     context.SetStringPath("profile.profilePath", "C:\\User Data\\Profile 1");
 
-    base::Value event;
+    base::Value event(base::Value::Type::DICTIONARY);
     event.SetStringPath("time", "2019-09-10T20:01:45Z");
     event.SetStringPath("foo.prop1", "value1");
     event.SetStringPath("foo.prop2", "value2");
@@ -1870,7 +1870,7 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
     context.SetStringPath("browser.userAgent", "User-Agent2");
     context.SetStringPath("browser.version", "1.0.0.0");
 
-    base::Value event;
+    base::Value event(base::Value::Type::DICTIONARY);
     event.SetStringPath("time", "2019-09-10T20:02:45Z");
     event.SetStringPath("foo.prop1", "value1");
     event.SetStringPath("foo.prop2", "value2");

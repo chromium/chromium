@@ -3926,6 +3926,7 @@ if (enable_nocompile_tests) {
       "thread_annotations_unittest.nc",
       "traits_bag_unittest.nc",
       "types/pass_key_unittest.nc",
+      "values_unittest.nc",
     ]
 
     deps = [

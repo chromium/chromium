@@ -201,6 +201,9 @@ std::string AccessibilityPrivateEnumForAction(SelectToSpeakPanelAction action) {
 absl::optional<bool> GetDictationOfflineNudgePrefForLocale(
     Profile* profile,
     const std::string& dictation_locale) {
+  if (dictation_locale.empty()) {
+    return absl::nullopt;
+  }
   const base::Value* offline_nudges = profile->GetPrefs()->GetDictionary(
       prefs::kAccessibilityDictationLocaleOfflineNudge);
   return offline_nudges->FindBoolPath(dictation_locale);

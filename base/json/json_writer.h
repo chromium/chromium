@@ -12,10 +12,9 @@
 #include "base/base_export.h"
 #include "base/json/json_common.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 
 namespace base {
-
-class Value;
 
 class BASE_EXPORT JSONWriter {
  public:
@@ -50,9 +49,29 @@ class BASE_EXPORT JSONWriter {
                     std::string* json,
                     size_t max_depth = internal::kAbsoluteMaxDepth);
 
+  // TODO(https://crbug.com/1297359): deduplicate these overloads.
+  static bool Write(const Value::Dict& node,
+                    std::string* json,
+                    size_t max_depth = internal::kAbsoluteMaxDepth);
+
+  static bool Write(const Value::List& node,
+                    std::string* json,
+                    size_t max_depth = internal::kAbsoluteMaxDepth);
+
   // Same as above but with |options| which is a bunch of JSONWriter::Options
   // bitwise ORed together. Return true on success and false on failure.
   static bool WriteWithOptions(const Value& node,
+                               int options,
+                               std::string* json,
+                               size_t max_depth = internal::kAbsoluteMaxDepth);
+
+  // TODO(https://crbug.com/1297359): deduplicate these overloads.
+  static bool WriteWithOptions(const Value::Dict& node,
+                               int options,
+                               std::string* json,
+                               size_t max_depth = internal::kAbsoluteMaxDepth);
+
+  static bool WriteWithOptions(const Value::List& node,
                                int options,
                                std::string* json,
                                size_t max_depth = internal::kAbsoluteMaxDepth);
@@ -65,6 +84,9 @@ class BASE_EXPORT JSONWriter {
   // Called recursively to build the JSON string. When completed,
   // |json_string_| will contain the JSON.
   bool BuildJSONString(const Value& node, size_t depth);
+  // TODO(https://crbug.com/1297359): deduplicate these overloads.
+  bool BuildJSONString(const Value::Dict& node, size_t depth);
+  bool BuildJSONString(const Value::List& node, size_t depth);
 
   // Adds space to json_string_ for the indent level.
   void IndentLine(size_t depth);

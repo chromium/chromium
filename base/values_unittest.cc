@@ -564,6 +564,28 @@ TEST(ValuesTest, Insert) {
   auto span_iter = value.Insert(GetConstList().begin(), Value(123));
   EXPECT_TRUE(GetConstList().begin() == span_iter);
   EXPECT_TRUE(span_iter->is_int());
+
+  Value::List& list = value.GetList();
+  auto list_iter = list.Insert(list.begin() + 1, Value("Hello world!"));
+  EXPECT_TRUE(list.begin() + 1 == list_iter);
+  EXPECT_TRUE(list_iter->is_string());
+}
+
+// TODO(dcheng): Add more tests directly exercising the updated dictionary and
+// list APIs. For now, most of the updated APIs are tested indirectly via the
+// legacy APIs that are largely backed by the updated APIs.
+TEST(ValuesTest, ListErase) {
+  Value::List list;
+  list.Append(1);
+  list.Append(2);
+  list.Append(3);
+
+  auto next_it = list.erase(list.begin() + 1);
+  ASSERT_EQ(2u, list.size());
+  EXPECT_EQ(list[0], Value(1));
+  EXPECT_EQ(list[1], Value(3));
+  EXPECT_EQ(*next_it, Value(3));
+  EXPECT_EQ(next_it + 1, list.end());
 }
 
 TEST(ValuesTest, EraseListIter) {
@@ -1135,12 +1157,8 @@ TEST(ValuesTest, FindPath) {
   Value root(Value::Type::DICTIONARY);
   root.SetKey("foo", std::move(foo));
 
-  // No key (stupid but well-defined and takes work to prevent).
-  Value* found = root.FindPath("");
-  EXPECT_EQ(&root, found);
-
   // Double key, second not found.
-  found = root.FindPath("foo.notfound");
+  Value* found = root.FindPath("foo.notfound");
   EXPECT_FALSE(found);
 
   // Double key, found.

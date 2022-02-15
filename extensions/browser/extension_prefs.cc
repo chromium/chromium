@@ -475,6 +475,13 @@ void ExtensionPrefs::MakePathsRelative() {
 
 const base::DictionaryValue* ExtensionPrefs::GetExtensionPref(
     const std::string& extension_id) const {
+  // TODO(https://1297144): Should callers of this method proactively filter out
+  // extension IDs? Previously, this function would (potentially surprisingly)
+  // return `extensions` below if supplied with an empty `extension_id` due to
+  // the legacy behavior of `base::Value::FindDictPath()`.
+  if (extension_id.empty()) {
+    return nullptr;
+  }
   const base::Value* extensions =
       prefs_->GetDictionary(pref_names::kExtensions);
   if (!extensions)
@@ -1736,7 +1743,6 @@ base::Time ExtensionPrefs::GetInstallTime(
     const std::string& extension_id) const {
   const base::DictionaryValue* extension = GetExtensionPref(extension_id);
   if (!extension) {
-    NOTREACHED();
     return base::Time();
   }
   std::string install_time_str;

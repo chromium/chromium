@@ -28,8 +28,26 @@ bool JSONFileValueSerializer::Serialize(const base::Value& root) {
   return SerializeInternal(root, false);
 }
 
+bool JSONFileValueSerializer::Serialize(const base::Value::Dict& root) {
+  return SerializeInternal(root, false);
+}
+
+bool JSONFileValueSerializer::Serialize(const base::Value::List& root) {
+  return SerializeInternal(root, false);
+}
+
 bool JSONFileValueSerializer::SerializeAndOmitBinaryValues(
     const base::Value& root) {
+  return SerializeInternal(root, true);
+}
+
+bool JSONFileValueSerializer::SerializeAndOmitBinaryValues(
+    const base::Value::Dict& root) {
+  return SerializeInternal(root, true);
+}
+
+bool JSONFileValueSerializer::SerializeAndOmitBinaryValues(
+    const base::Value::List& root) {
   return SerializeInternal(root, true);
 }
 
@@ -41,6 +59,44 @@ bool JSONFileValueSerializer::SerializeInternal(const base::Value& root,
   bool result = omit_binary_values ?
       serializer.SerializeAndOmitBinaryValues(root) :
       serializer.Serialize(root);
+  if (!result)
+    return false;
+
+  int data_size = static_cast<int>(json_string.size());
+  if (base::WriteFile(json_file_path_, json_string.data(), data_size) !=
+      data_size)
+    return false;
+
+  return true;
+}
+
+bool JSONFileValueSerializer::SerializeInternal(const base::Value::Dict& root,
+                                                bool omit_binary_values) {
+  std::string json_string;
+  JSONStringValueSerializer serializer(&json_string);
+  serializer.set_pretty_print(true);
+  bool result = omit_binary_values
+                    ? serializer.SerializeAndOmitBinaryValues(root)
+                    : serializer.Serialize(root);
+  if (!result)
+    return false;
+
+  int data_size = static_cast<int>(json_string.size());
+  if (base::WriteFile(json_file_path_, json_string.data(), data_size) !=
+      data_size)
+    return false;
+
+  return true;
+}
+
+bool JSONFileValueSerializer::SerializeInternal(const base::Value::List& root,
+                                                bool omit_binary_values) {
+  std::string json_string;
+  JSONStringValueSerializer serializer(&json_string);
+  serializer.set_pretty_print(true);
+  bool result = omit_binary_values
+                    ? serializer.SerializeAndOmitBinaryValues(root)
+                    : serializer.Serialize(root);
   if (!result)
     return false;
 

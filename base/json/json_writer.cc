@@ -32,7 +32,57 @@ bool JSONWriter::Write(const Value& node, std::string* json, size_t max_depth) {
 }
 
 // static
+bool JSONWriter::Write(const Value::Dict& node,
+                       std::string* json,
+                       size_t max_depth) {
+  return WriteWithOptions(node, 0, json, max_depth);
+}
+
+// static
+bool JSONWriter::Write(const Value::List& node,
+                       std::string* json,
+                       size_t max_depth) {
+  return WriteWithOptions(node, 0, json, max_depth);
+}
+
+// static
 bool JSONWriter::WriteWithOptions(const Value& node,
+                                  int options,
+                                  std::string* json,
+                                  size_t max_depth) {
+  json->clear();
+  // Is there a better way to estimate the size of the output?
+  if (json->capacity() < 1024)
+    json->reserve(1024);
+
+  JSONWriter writer(options, json, max_depth);
+  bool result = writer.BuildJSONString(node, 0U);
+
+  if (options & OPTIONS_PRETTY_PRINT)
+    json->append(kPrettyPrintLineEnding);
+
+  return result;
+}
+
+bool JSONWriter::WriteWithOptions(const Value::Dict& node,
+                                  int options,
+                                  std::string* json,
+                                  size_t max_depth) {
+  json->clear();
+  // Is there a better way to estimate the size of the output?
+  if (json->capacity() < 1024)
+    json->reserve(1024);
+
+  JSONWriter writer(options, json, max_depth);
+  bool result = writer.BuildJSONString(node, 0U);
+
+  if (options & OPTIONS_PRETTY_PRINT)
+    json->append(kPrettyPrintLineEnding);
+
+  return result;
+}
+
+bool JSONWriter::WriteWithOptions(const Value::List& node,
                                   int options,
                                   std::string* json,
                                   size_t max_depth) {
@@ -63,8 +113,6 @@ JSONWriter::JSONWriter(int options, std::string* json, size_t max_depth)
 }
 
 bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
-  internal::StackMarker depth_check(max_depth_, &stack_depth_);
-
   switch (node.type()) {
     case Value::Type::NONE:
       json_string_->append("null");
@@ -113,80 +161,11 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
       return true;
 
     case Value::Type::LIST: {
-      if (depth_check.IsTooDeep())
-        return false;
-
-      json_string_->push_back('[');
-      if (pretty_print_)
-        json_string_->push_back(' ');
-
-      bool first_value_has_been_output = false;
-      bool result = true;
-      for (const auto& value : node.GetListDeprecated()) {
-        if (omit_binary_values_ && value.type() == Value::Type::BINARY)
-          continue;
-
-        if (first_value_has_been_output) {
-          json_string_->push_back(',');
-          if (pretty_print_)
-            json_string_->push_back(' ');
-        }
-
-        if (!BuildJSONString(value, depth))
-          result = false;
-
-        first_value_has_been_output = true;
-      }
-
-      if (pretty_print_)
-        json_string_->push_back(' ');
-      json_string_->push_back(']');
-      return result;
+      return BuildJSONString(node.GetList(), depth);
     }
 
     case Value::Type::DICTIONARY: {
-      if (depth_check.IsTooDeep())
-        return false;
-
-      json_string_->push_back('{');
-      if (pretty_print_)
-        json_string_->append(kPrettyPrintLineEnding);
-
-      bool first_value_has_been_output = false;
-      bool result = true;
-      for (auto pair : node.DictItems()) {
-        const auto& key = pair.first;
-        const auto& value = pair.second;
-        if (omit_binary_values_ && value.type() == Value::Type::BINARY)
-          continue;
-
-        if (first_value_has_been_output) {
-          json_string_->push_back(',');
-          if (pretty_print_)
-            json_string_->append(kPrettyPrintLineEnding);
-        }
-
-        if (pretty_print_)
-          IndentLine(depth + 1U);
-
-        EscapeJSONString(key, true, json_string_);
-        json_string_->push_back(':');
-        if (pretty_print_)
-          json_string_->push_back(' ');
-
-        if (!BuildJSONString(value, depth + 1U))
-          result = false;
-
-        first_value_has_been_output = true;
-      }
-
-      if (pretty_print_) {
-        json_string_->append(kPrettyPrintLineEnding);
-        IndentLine(depth);
-      }
-
-      json_string_->push_back('}');
-      return result;
+      return BuildJSONString(node.GetDict(), depth);
     }
 
     case Value::Type::BINARY:
@@ -197,6 +176,85 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
 
   NOTREACHED();
   return false;
+}
+
+bool JSONWriter::BuildJSONString(const Value::Dict& node, size_t depth) {
+  internal::StackMarker depth_check(max_depth_, &stack_depth_);
+
+  if (depth_check.IsTooDeep())
+    return false;
+
+  json_string_->push_back('{');
+  if (pretty_print_)
+    json_string_->append(kPrettyPrintLineEnding);
+
+  bool first_value_has_been_output = false;
+  bool result = true;
+  for (const auto [key, value] : node) {
+    if (omit_binary_values_ && value.type() == Value::Type::BINARY)
+      continue;
+
+    if (first_value_has_been_output) {
+      json_string_->push_back(',');
+      if (pretty_print_)
+        json_string_->append(kPrettyPrintLineEnding);
+    }
+
+    if (pretty_print_)
+      IndentLine(depth + 1U);
+
+    EscapeJSONString(key, true, json_string_);
+    json_string_->push_back(':');
+    if (pretty_print_)
+      json_string_->push_back(' ');
+
+    if (!BuildJSONString(value, depth + 1U))
+      result = false;
+
+    first_value_has_been_output = true;
+  }
+
+  if (pretty_print_) {
+    json_string_->append(kPrettyPrintLineEnding);
+    IndentLine(depth);
+  }
+
+  json_string_->push_back('}');
+  return result;
+}
+
+bool JSONWriter::BuildJSONString(const Value::List& node, size_t depth) {
+  internal::StackMarker depth_check(max_depth_, &stack_depth_);
+
+  if (depth_check.IsTooDeep())
+    return false;
+
+  json_string_->push_back('[');
+  if (pretty_print_)
+    json_string_->push_back(' ');
+
+  bool first_value_has_been_output = false;
+  bool result = true;
+  for (const auto& value : node) {
+    if (omit_binary_values_ && value.type() == Value::Type::BINARY)
+      continue;
+
+    if (first_value_has_been_output) {
+      json_string_->push_back(',');
+      if (pretty_print_)
+        json_string_->push_back(' ');
+    }
+
+    if (!BuildJSONString(value, depth))
+      result = false;
+
+    first_value_has_been_output = true;
+  }
+
+  if (pretty_print_)
+    json_string_->push_back(' ');
+  json_string_->push_back(']');
+  return result;
 }
 
 void JSONWriter::IndentLine(size_t depth) {
