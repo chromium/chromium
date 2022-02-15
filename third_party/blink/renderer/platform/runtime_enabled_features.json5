@@ -374,6 +374,7 @@
     {
       name: "CapabilityDelegationPaymentRequest",
       origin_trial_feature_name: "CapabilityDelegationPaymentRequest",
+      status: "stable",
     },
     {
       name: "CaptureHandle",
