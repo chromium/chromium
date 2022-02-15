@@ -6225,7 +6225,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 4
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
@@ -11925,7 +11925,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 4
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
@@ -13879,7 +13879,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 4
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
@@ -15821,7 +15821,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 4
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },

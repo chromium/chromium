@@ -1257,7 +1257,7 @@
         },
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 12,
+          'shards': 4,
         },
       },
     },
