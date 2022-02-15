@@ -16,6 +16,7 @@
 #include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -1571,7 +1572,17 @@ class ArcSessionOobeOptInNegotiatorTest
       public chromeos::ArcTermsOfServiceScreenView,
       public testing::WithParamInterface<bool> {
  public:
-  ArcSessionOobeOptInNegotiatorTest() = default;
+  ArcSessionOobeOptInNegotiatorTest() {
+    // This test only works with the ARC ToS screen, which would be replaced
+    // by the Consolidated Consent screen when the feature
+    // OobeConsolidatedConsent is enabled. Make sure that the
+    // OobeConsolidatedConsent feature is disabled before running these tests.
+    // TODO(crbug,com/1297250): Implement similar tests to test the interaction
+    // between the ArcSessionOobeOptInNegotiatorTest and the Consolidated
+    // Consent screen.
+    feature_list_.InitAndDisableFeature(
+        ash::features::kOobeConsolidatedConsent);
+  }
 
   ArcSessionOobeOptInNegotiatorTest(const ArcSessionOobeOptInNegotiatorTest&) =
       delete;
@@ -1675,6 +1686,7 @@ class ArcSessionOobeOptInNegotiatorTest
       observer_list_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   TestingPrefServiceSimple pref_service_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
