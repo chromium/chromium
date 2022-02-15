@@ -38,7 +38,7 @@ constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
 constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
-constexpr char kHatsSurveyTriggerPrivacyReview[] = "privacy-review";
+constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
 constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
@@ -134,8 +134,8 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       std::vector<std::string>{"3P cookies blocked",
                                "Privacy Sandbox enabled"});
   survey_configs.emplace_back(
-      &features::kHappinessTrackingSurveysForDesktopPrivacyReview,
-      kHatsSurveyTriggerPrivacyReview);
+      &features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
+      kHatsSurveyTriggerPrivacyGuide);
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
       kHatsSurveyTriggerPrivacySandbox,

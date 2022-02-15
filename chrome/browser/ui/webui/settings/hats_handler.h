@@ -29,7 +29,7 @@ class HatsHandler : public SettingsPageUIHandler {
  private:
   friend class HatsHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySettingsHats);
-  FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacyReviewHats);
+  FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacyGuideHats);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySandboxHats);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, TrustSafetySentimentInteractions);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest, PrivacySettings);

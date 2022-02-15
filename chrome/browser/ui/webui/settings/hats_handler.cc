@@ -93,7 +93,7 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
     // The control group for the Privacy guide HaTS experiment will need to see
     // either safety check or the privacy page to be eligible and have never
     // seen privacy guide.
-    if (features::kHappinessTrackingSurveysForDesktopSettingsPrivacyNoReview
+    if (features::kHappinessTrackingSurveysForDesktopSettingsPrivacyNoGuide
             .Get() &&
         Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
             prefs::kPrivacyGuideViewed)) {
@@ -117,8 +117,8 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
         /*require_same_origin=*/true);
   } else if (interaction == TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE) {
     hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerPrivacyReview, web_ui()->GetWebContents(),
-        features::kHappinessTrackingSurveysForDesktopPrivacyReviewTime.Get()
+        kHatsSurveyTriggerPrivacyGuide, web_ui()->GetWebContents(),
+        features::kHappinessTrackingSurveysForDesktopPrivacyGuideTime.Get()
             .InMilliseconds(),
         /*product_specific_bits_data=*/{},
         /*product_specific_string_data=*/{},

@@ -46,7 +46,7 @@ extern const char kHatsSurveyTriggerDevToolsIssuesCookiesSameSite[];
 extern const char kHatsSurveyTriggerDevToolsIssuesHeavyAd[];
 extern const char kHatsSurveyTriggerDevToolsIssuesCSP[];
 extern const char kHatsSurveyTriggerNtpModules[];
-extern const char kHatsSurveyTriggerPrivacyReview[];
+extern const char kHatsSurveyTriggerPrivacyGuide[];
 extern const char kHatsSurveyTriggerPrivacySandbox[];
 extern const char kHatsSurveyTriggerSettings[];
 extern const char kHatsSurveyTriggerSettingsPrivacy[];

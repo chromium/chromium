@@ -336,16 +336,16 @@ extern const base::FeatureParam<bool>
     kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>
-    kHappinessTrackingSurveysForDesktopSettingsPrivacyNoReview;
+    kHappinessTrackingSurveysForDesktopSettingsPrivacyNoGuide;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForDesktopSettingsPrivacyTime;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kHappinessTrackingSurveysForDesktopPrivacyReview;
+extern const base::Feature kHappinessTrackingSurveysForDesktopPrivacyGuide;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysForDesktopPrivacyReviewTime;
+    kHappinessTrackingSurveysForDesktopPrivacyGuideTime;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHappinessTrackingSurveysForDesktopNtpModules;

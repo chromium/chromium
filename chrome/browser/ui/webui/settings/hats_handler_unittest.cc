@@ -40,11 +40,11 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
     base::test::ScopedFeatureList::FeatureAndParams privacy_sandbox{
         features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
         {{"settings-time", "10s"}}};
-    base::test::ScopedFeatureList::FeatureAndParams privacy_review{
-        features::kHappinessTrackingSurveysForDesktopPrivacyReview,
+    base::test::ScopedFeatureList::FeatureAndParams privacy_guide{
+        features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
         {{"settings-time", "15s"}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {settings_privacy, privacy_sandbox, privacy_review}, {});
+        {settings_privacy, privacy_sandbox, privacy_guide}, {});
   }
 
   void SetUp() override {
@@ -121,10 +121,10 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(HatsHandlerTest, PrivacyReviewHats) {
-  // Check that completing a privacy review triggers a privacy review hats.
+TEST_F(HatsHandlerTest, PrivacyGuideHats) {
+  // Check that completing a privacy guide triggers a privacy guide hats.
   EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
-                                       kHatsSurveyTriggerPrivacyReview,
+                                       kHatsSurveyTriggerPrivacyGuide,
                                        web_contents(), 15000, _, _, true))
       .Times(1);
   base::Value args(base::Value::Type::LIST);
