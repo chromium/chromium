@@ -118,7 +118,6 @@ void DocumentTransitionStyleTracker::Prepare(
   // list.
   pseudo_document_transition_tags_[0] = RootTag();
   old_root_snapshot_id_ = viz::SharedElementResourceId::Generate();
-
   element_data_map_.ReserveCapacityForSize(old_elements.size());
   for (wtf_size_t i = 0; i < old_elements.size(); ++i) {
     auto document_transition_tag = IdFromIndex(i);
@@ -167,7 +166,9 @@ void DocumentTransitionStyleTracker::Start(
     element_data->target_element = new_elements[i];
     if (new_elements[i])
       element_data->new_snapshot_id = viz::SharedElementResourceId::Generate();
+    element_data->effect_node = nullptr;
   }
+  root_effect_node_ = nullptr;
 
   // We need a style invalidation to generate new content pseudo elements for
   // new elements in the DOM.
@@ -368,6 +369,62 @@ bool DocumentTransitionStyleTracker::HasActiveAnimations() const {
   return has_animations;
 }
 
+PaintPropertyChangeType DocumentTransitionStyleTracker::UpdateEffect(
+    Element* element,
+    EffectPaintPropertyNode::State state,
+    const EffectPaintPropertyNodeOrAlias& current_effect) {
+  for (auto& entry : element_data_map_) {
+    auto& element_data = entry.value;
+    if (element_data->target_element != element)
+      continue;
+
+    if (!element_data->effect_node) {
+      element_data->effect_node =
+          EffectPaintPropertyNode::Create(current_effect, std::move(state));
+#if DCHECK_IS_ON()
+      element_data->effect_node->SetDebugName("SharedElementTransition");
+#endif
+      return PaintPropertyChangeType::kNodeAddedOrRemoved;
+    }
+    return element_data->effect_node->Update(current_effect, std::move(state),
+                                             {});
+  }
+  NOTREACHED();
+  return PaintPropertyChangeType::kUnchanged;
+}
+
+PaintPropertyChangeType DocumentTransitionStyleTracker::UpdateRootEffect(
+    EffectPaintPropertyNode::State state,
+    const EffectPaintPropertyNodeOrAlias& current_effect) {
+  if (!root_effect_node_) {
+    root_effect_node_ =
+        EffectPaintPropertyNode::Create(current_effect, std::move(state));
+#if DCHECK_IS_ON()
+    root_effect_node_->SetDebugName("SharedElementTransition");
+#endif
+    return PaintPropertyChangeType::kNodeAddedOrRemoved;
+  }
+  return root_effect_node_->Update(current_effect, std::move(state), {});
+}
+
+EffectPaintPropertyNode* DocumentTransitionStyleTracker::GetEffect(
+    Element* element) const {
+  for (auto& entry : element_data_map_) {
+    auto& element_data = entry.value;
+    if (element_data->target_element != element)
+      continue;
+    DCHECK(element_data->effect_node);
+    return element_data->effect_node.get();
+  }
+  NOTREACHED();
+  return nullptr;
+}
+
+EffectPaintPropertyNode* DocumentTransitionStyleTracker::GetRootEffect() const {
+  DCHECK(root_effect_node_);
+  return root_effect_node_.get();
+}
+
 void DocumentTransitionStyleTracker::InvalidateStyle() {
   ua_style_sheet_.reset();
   document_->GetStyleEngine().InvalidateUADocumentTransitionStyle();
@@ -390,6 +447,14 @@ void DocumentTransitionStyleTracker::InvalidateStyle() {
     layout_view->SetNeedsPaintPropertyUpdate();
     if (layout_view->HasSelfPaintingLayer())
       layout_view->Layer()->SetNeedsCompositingInputsUpdate();
+  }
+  for (auto& entry : element_data_map_) {
+    if (!entry.value->target_element)
+      continue;
+    auto* object = entry.value->target_element->GetLayoutObject();
+    if (!object)
+      continue;
+    object->SetNeedsPaintPropertyUpdate();
   }
 }
 

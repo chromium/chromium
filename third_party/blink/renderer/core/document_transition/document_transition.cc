@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -99,6 +100,7 @@ void DocumentTransition::Trace(Visitor* visitor) const {
   visitor->Trace(prepare_promise_resolver_);
   visitor->Trace(start_promise_resolver_);
   visitor->Trace(active_shared_elements_);
+  visitor->Trace(effect_nodes_);
   visitor->Trace(signal_);
   visitor->Trace(style_tracker_);
 
@@ -391,15 +393,22 @@ bool DocumentTransition::IsTransitionParticipant(
   return element && active_shared_elements_.Contains(element);
 }
 
-void DocumentTransition::PopulateSharedElementAndResourceIds(
+PaintPropertyChangeType DocumentTransition::UpdateEffect(
     const LayoutObject& object,
-    DocumentTransitionSharedElementId* shared_element_id,
-    viz::SharedElementResourceId* resource_id) const {
-  if (!IsTransitionParticipant(object))
-    return;
+    const EffectPaintPropertyNodeOrAlias& current_effect,
+    const TransformPaintPropertyNodeOrAlias* current_transform) {
+  DCHECK(IsTransitionParticipant(object));
+  DCHECK(current_transform);
 
-  *shared_element_id = DocumentTransitionSharedElementId(document_tag_);
-
+  EffectPaintPropertyNode::State state;
+  state.direct_compositing_reasons =
+      CompositingReason::kDocumentTransitionSharedElement;
+  state.local_transform_space = current_transform;
+  state.document_transition_shared_element_id =
+      DocumentTransitionSharedElementId(document_tag_);
+  state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
+      object.UniqueId(),
+      CompositorElementIdNamespace::kSharedElementTransition);
   auto* element = DynamicTo<Element>(object.GetNode());
   if (!element) {
     // The only non-element participant is the layout view.
@@ -407,27 +416,69 @@ void DocumentTransition::PopulateSharedElementAndResourceIds(
     DCHECK(!RuntimeEnabledFeatures::DocumentTransitionVizEnabled());
     // This matches one past the size of the shared element configs generated in
     // ::prepare().
-    shared_element_id->AddIndex(active_shared_elements_.size());
-    *resource_id = style_tracker_->GetLiveRootSnapshotId();
-    DCHECK(shared_element_id->valid());
-    return;
+    state.document_transition_shared_element_id.AddIndex(
+        active_shared_elements_.size());
+    state.shared_element_resource_id = style_tracker_->GetLiveRootSnapshotId();
+    DCHECK(state.document_transition_shared_element_id.valid());
+    return style_tracker_->UpdateRootEffect(std::move(state), current_effect);
   }
 
   for (wtf_size_t i = 0; i < active_shared_elements_.size(); ++i) {
     if (active_shared_elements_[i] != element)
       continue;
-    shared_element_id->AddIndex(i);
+    state.document_transition_shared_element_id.AddIndex(i);
 
     // This tags the shared element's content with the resource id used by the
     // first pseudo element. This is okay since in the eventual API we should
     // have a 1:1 mapping between shared elements and pseudo elements.
     if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
-      if (!resource_id->IsValid()) {
-        *resource_id = style_tracker_->GetLiveSnapshotId(element);
+      if (!state.shared_element_resource_id.IsValid()) {
+        state.shared_element_resource_id =
+            style_tracker_->GetLiveSnapshotId(element);
       }
     }
   }
-  DCHECK(shared_element_id->valid());
+
+  if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
+    return style_tracker_->UpdateEffect(element, std::move(state),
+                                        current_effect);
+  }
+  return UpdateEffectWithoutStyleTracker(element, std::move(state),
+                                         current_effect);
+}
+
+EffectPaintPropertyNode* DocumentTransition::GetEffect(
+    const LayoutObject& object) const {
+  DCHECK(IsTransitionParticipant(object));
+
+  auto* element = DynamicTo<Element>(object.GetNode());
+  if (!element)
+    return style_tracker_->GetRootEffect();
+
+  if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled())
+    return style_tracker_->GetEffect(element);
+
+  auto it = effect_nodes_.find(element);
+  DCHECK(it != effect_nodes_.end());
+  return it->value.get();
+}
+
+PaintPropertyChangeType DocumentTransition::UpdateEffectWithoutStyleTracker(
+    Element* element,
+    EffectPaintPropertyNode::State state,
+    const EffectPaintPropertyNodeOrAlias& current_effect) {
+  DCHECK(RuntimeEnabledFeatures::DocumentTransitionVizEnabled());
+  auto it = effect_nodes_.find(element);
+  if (it == effect_nodes_.end()) {
+    auto effect =
+        EffectPaintPropertyNode::Create(current_effect, std::move(state));
+#if DCHECK_IS_ON()
+    effect->SetDebugName("SharedElementTransition");
+#endif
+    effect_nodes_.insert(element, std::move(effect));
+    return PaintPropertyChangeType::kNodeAddedOrRemoved;
+  }
+  return it->value->Update(current_effect, std::move(state), {});
 }
 
 void DocumentTransition::VerifySharedElements() {

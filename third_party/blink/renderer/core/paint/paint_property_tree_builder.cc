@@ -77,17 +77,6 @@ bool AreSubtreeUpdateReasonsIsolationPiercing(unsigned reasons) {
              SubtreePaintPropertyUpdateReason::kContainerChainMayChange));
 }
 
-void PopulateSharedElementAndResourceIds(
-    const LayoutObject& object,
-    DocumentTransitionSharedElementId* shared_element_id,
-    viz::SharedElementResourceId* resource_id) {
-  if (auto* supplement =
-          DocumentTransitionSupplement::FromIfExists(object.GetDocument())) {
-    supplement->GetTransition()->PopulateSharedElementAndResourceIds(
-        object, shared_element_id, resource_id);
-  }
-}
-
 }  // namespace
 
 PaintPropertyTreeBuilderFragmentContext::
@@ -251,6 +240,7 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateTransform();
   ALWAYS_INLINE void UpdateTransformForSVGChild(CompositingReasons);
   ALWAYS_INLINE bool EffectCanUseCurrentClipAsOutputClip() const;
+  ALWAYS_INLINE void UpdateSharedElementTransitionEffect();
   ALWAYS_INLINE void UpdateEffect();
   ALWAYS_INLINE void UpdateFilter();
   ALWAYS_INLINE void UpdateFragmentClip();
@@ -1295,10 +1285,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       state.has_active_backdrop_filter_animation =
           style.HasCurrentBackdropFilterAnimation();
 
-      PopulateSharedElementAndResourceIds(
-          object_, &state.document_transition_shared_element_id,
-          &state.shared_element_resource_id);
-
       EffectPaintPropertyNode::AnimationState animation_state;
       animation_state.is_running_opacity_animation_on_compositor =
           style.IsRunningOpacityAnimationOnCompositor();
@@ -1396,6 +1382,21 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
     if (properties_->MaskClip()) {
       context_.current.clip = context_.absolute_position.clip =
           context_.fixed_position.clip = properties_->MaskClip();
+    }
+  }
+}
+
+void FragmentPaintPropertyTreeBuilder::UpdateSharedElementTransitionEffect() {
+  if (NeedsPaintPropertyUpdate()) {
+    if (full_context_.direct_compositing_reasons &
+        CompositingReason::kDocumentTransitionSharedElement) {
+      auto* supplement =
+          DocumentTransitionSupplement::FromIfExists(object_.GetDocument());
+      DCHECK(supplement);
+
+      OnUpdate(supplement->GetTransition()->UpdateEffect(
+          object_, *context_.current_effect, context_.current.transform));
+      context_.current_effect = supplement->GetTransition()->GetEffect(object_);
     }
   }
 }
@@ -2810,6 +2811,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     UpdateStickyTranslation();
     UpdateTransform();
     UpdateClipPathClip();
+    UpdateSharedElementTransitionEffect();
     UpdateEffect();
     UpdateCssClip();
     UpdateFilter();

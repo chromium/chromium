@@ -10,6 +10,7 @@
 #include "components/viz/common/shared_element_resource_id.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
+#include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
 namespace blink {
@@ -85,6 +86,19 @@ class DocumentTransitionStyleTracker
   // an animation.
   bool HasActiveAnimations() const;
 
+  // Updates an effect node with the given state. The return value is a result
+  // of updating the effect node.
+  PaintPropertyChangeType UpdateEffect(
+      Element* element,
+      EffectPaintPropertyNode::State state,
+      const EffectPaintPropertyNodeOrAlias& current_effect);
+  PaintPropertyChangeType UpdateRootEffect(
+      EffectPaintPropertyNode::State state,
+      const EffectPaintPropertyNodeOrAlias& current_effect);
+
+  EffectPaintPropertyNode* GetEffect(Element* element) const;
+  EffectPaintPropertyNode* GetRootEffect() const;
+
  private:
   class ContainerPseudoElement;
 
@@ -113,6 +127,10 @@ class DocumentTransitionStyleTracker
 
     // Valid if there is an element in the new DOM generating a snapshot.
     viz::SharedElementResourceId new_snapshot_id;
+
+    // An effect used to represent the `target_element`'s contents, including
+    // any of element's own effects, in a pseudo element layer.
+    scoped_refptr<EffectPaintPropertyNode> effect_node;
   };
 
   void InvalidateStyle();
@@ -125,6 +143,7 @@ class DocumentTransitionStyleTracker
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;
   viz::SharedElementResourceId old_root_snapshot_id_;
   viz::SharedElementResourceId new_root_snapshot_id_;
+  scoped_refptr<EffectPaintPropertyNode> root_effect_node_;
   absl::optional<String> ua_style_sheet_;
 };
 
