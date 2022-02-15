@@ -168,7 +168,7 @@ const base::FilePath::CharType SavePackage::kDefaultHtmlExtension[] =
     FILE_PATH_LITERAL("html");
 
 SavePackage::SavePackage(Page& page)
-    : page_(&page),
+    : page_(page.GetWeakPtr()),
       page_url_(GetUrlToBeSaved(&page.GetMainDocument())),
       title_(GetTitle(page)),
       start_tick_(base::TimeTicks::Now()),
@@ -183,7 +183,7 @@ SavePackage::SavePackage(Page& page,
                          SavePageType save_type,
                          const base::FilePath& file_full_path,
                          const base::FilePath& directory_full_path)
-    : page_(&page),
+    : page_(page.GetWeakPtr()),
       page_url_(GetUrlToBeSaved(&page.GetMainDocument())),
       saved_main_file_path_(file_full_path),
       saved_main_directory_path_(directory_full_path),
@@ -269,6 +269,7 @@ void SavePackage::Cancel(bool user_action, bool cancel_download_item) {
 // cases, we need file_manager_ to be initialized, so we do this first.
 void SavePackage::InternalInit() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(page_);
 
   file_manager_ = SaveFileManager::Get();
   DCHECK(file_manager_);
@@ -295,7 +296,7 @@ bool SavePackage::Init(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(page_url_.is_valid());
   // Set proper running state.
-  if (wait_state_ != INITIALIZE)
+  if (wait_state_ != INITIALIZE || !page_)
     return false;
 
   wait_state_ = START_PROCESS;
@@ -323,6 +324,9 @@ void SavePackage::InitWithDownloadItem(
     download::DownloadItemImpl* item) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(item);
+
+  if (!page_)
+    return;
   download_ = item;
   // Confirm above didn't delete the tab out from under us.
   if (!download_created_callback.is_null())
@@ -335,13 +339,15 @@ void SavePackage::InitWithDownloadItem(
     GetSavableResourceLinks();
   } else if (save_type_ == SAVE_PAGE_TYPE_AS_MHTML) {
     MHTMLGenerationParams mhtml_generation_params(saved_main_file_path_);
-    GetWebContents(page_)->GenerateMHTML(
-        mhtml_generation_params,
-        base::BindOnce(&SavePackage::OnMHTMLOrWebBundleGenerated, this));
+    GetWebContents(page_.get())
+        ->GenerateMHTML(
+            mhtml_generation_params,
+            base::BindOnce(&SavePackage::OnMHTMLOrWebBundleGenerated, this));
   } else if (save_type_ == SAVE_PAGE_TYPE_AS_WEB_BUNDLE) {
-    GetWebContents(page_)->GenerateWebBundle(
-        saved_main_file_path_,
-        base::BindOnce(&SavePackage::OnWebBundleGenerated, this));
+    GetWebContents(page_.get())
+        ->GenerateWebBundle(
+            saved_main_file_path_,
+            base::BindOnce(&SavePackage::OnWebBundleGenerated, this));
   } else {
     DCHECK_EQ(SAVE_PAGE_TYPE_AS_ONLY_HTML, save_type_);
     wait_state_ = NET_FILES;
@@ -541,6 +547,9 @@ void SavePackage::StartSave(const SaveFileCreateInfo* info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(info);
 
+  if (!page_)
+    return;
+
   auto it = in_progress_items_.find(info->save_item_id);
   if (it == in_progress_items_.end()) {
     // If not found, we must have cancel action.
@@ -698,7 +707,7 @@ void SavePackage::Stop(bool cancel_download_item) {
 
 void SavePackage::CheckFinish() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (in_process_count() || finished_)
+  if (in_process_count() || finished_ || !page_)
     return;
 
   DownloadManagerDelegate* delegate = download_manager_->GetDelegate();
@@ -734,6 +743,7 @@ void SavePackage::CheckRenameAllowedForPaths(
 }
 
 void SavePackage::RenameIfAllowed(bool allowed) {
+  DCHECK(page_);
   if (!allowed) {
     Cancel(true);
     return;
@@ -984,6 +994,7 @@ void SavePackage::DoSavingProcess() {
 // Then render process will serialize DOM and send data to us.
 void SavePackage::GetSerializedHtmlWithLocalLinks() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(page_);
   if (wait_state_ != HTML_DATA)
     return;
 
@@ -1196,6 +1207,7 @@ void SavePackage::GetSavableResourceLinksForRenderFrameHost(
 // sub-frame.
 void SavePackage::GetSavableResourceLinks() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(page_);
   if (wait_state_ != START_PROCESS)
     return;
 
@@ -1359,6 +1371,8 @@ void SavePackage::CompleteSavableResourceLinksResponse() {
 
 void SavePackage::GetSaveInfo() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!page_)
+    return;
   // Can't use |page_| in the download sequence, so get the data that we
   // need before calling to it.
   base::FilePath website_save_dir;
@@ -1368,7 +1382,8 @@ void SavePackage::GetSaveInfo() {
     delegate->GetSaveDir(page_->GetMainDocument().GetBrowserContext(),
                          &website_save_dir, &download_save_dir);
   }
-  std::string mime_type = static_cast<PageImpl*>(page_)->contents_mime_type();
+  std::string mime_type =
+      static_cast<PageImpl*>(page_.get())->contents_mime_type();
   bool can_save_as_complete = CanSaveAsComplete(mime_type);
   base::PostTaskAndReplyWithResult(
       download::GetDownloadTaskRunner().get(), FROM_HERE,
@@ -1439,7 +1454,7 @@ void SavePackage::ContinueGetSaveInfo(bool can_save_as_complete,
     default_extension = kDefaultHtmlExtension;
 
   download_manager_->GetDelegate()->ChooseSavePath(
-      GetWebContents(page_), suggested_path, default_extension,
+      GetWebContents(page_.get()), suggested_path, default_extension,
       can_save_as_complete,
       base::BindOnce(&SavePackage::OnPathPicked, AsWeakPtr()));
 }
@@ -1454,11 +1469,14 @@ void SavePackage::OnPathPicked(
          (type == SAVE_PAGE_TYPE_AS_COMPLETE_HTML) ||
          (type == SAVE_PAGE_TYPE_AS_WEB_BUNDLE))
       << type;
+  if (!page_)
+    return;
   // Ensure the filename is safe.
   saved_main_file_path_ = final_name;
   // TODO(asanka): This call may block on IO and shouldn't be made
   // from the UI thread.  See http://crbug.com/61827.
-  std::string mime_type = static_cast<PageImpl*>(page_)->contents_mime_type();
+  std::string mime_type =
+      static_cast<PageImpl*>(page_.get())->contents_mime_type();
   net::GenerateSafeFileName(mime_type, false, &saved_main_file_path_);
 
   saved_main_directory_path_ = saved_main_file_path_.DirName();

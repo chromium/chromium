@@ -149,6 +149,7 @@ class CONTENT_EXPORT SavePackage
   FRIEND_TEST_ALL_PREFIXES(SavePackageTest, TestLongSafePureFilename);
   FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, ImplicitCancel);
   FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, ExplicitCancel);
+  FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, Reload);
   FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, DownloadItemDestroyed);
 
   // Map from SaveItem::id() (aka save_item_id) into a SaveItem.
@@ -360,7 +361,7 @@ class CONTENT_EXPORT SavePackage
 
   // The current page, may be null if the primary page has been navigated away
   // or destroyed.
-  raw_ptr<Page> page_;
+  base::WeakPtr<Page> page_;
 
   // A queue for items we are about to start saving.
   base::circular_deque<std::unique_ptr<SaveItem>> waiting_item_queue_;
