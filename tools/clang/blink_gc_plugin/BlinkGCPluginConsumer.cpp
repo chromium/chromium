@@ -564,17 +564,12 @@ void BlinkGCPluginConsumer::DumpClass(RecordInfo* info) {
       // The liveness kind of a path from the point to this value
       // is given by the innermost place that is non-strong.
       Edge::LivenessKind kind = Edge::kStrong;
-      if (Config::IsIgnoreCycleAnnotated(point_->field())) {
-        kind = Edge::kWeak;
-      } else {
-        for (Context::iterator it = context().begin();
-             it != context().end();
-             ++it) {
-          Edge::LivenessKind pointer_kind = (*it)->Kind();
-          if (pointer_kind != Edge::kStrong) {
-            kind = pointer_kind;
-            break;
-          }
+      for (Context::iterator it = context().begin(); it != context().end();
+           ++it) {
+        Edge::LivenessKind pointer_kind = (*it)->Kind();
+        if (pointer_kind != Edge::kStrong) {
+          kind = pointer_kind;
+          break;
         }
       }
       DumpEdge(

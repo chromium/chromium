@@ -69,20 +69,13 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
   void* operator new(size_t, NotNullTag, void*) = delete; \
   void* operator new(size_t, void*) = delete
 
-#if defined(__clang__)
-#define ANNOTATE_STACK_ALLOCATED \
-  __attribute__((annotate("blink_stack_allocated")))
-#else
-#define ANNOTATE_STACK_ALLOCATED
-#endif
-
-#define STACK_ALLOCATED()                                       \
- public:                                                        \
-  using IsStackAllocatedTypeMarker [[maybe_unused]] = int;      \
-                                                                \
- private:                                                       \
-  ANNOTATE_STACK_ALLOCATED void* operator new(size_t) = delete; \
-  void* operator new(size_t, NotNullTag, void*) = delete;       \
+#define STACK_ALLOCATED()                                  \
+ public:                                                   \
+  using IsStackAllocatedTypeMarker [[maybe_unused]] = int; \
+                                                           \
+ private:                                                  \
+  void* operator new(size_t) = delete;                     \
+  void* operator new(size_t, NotNullTag, void*) = delete;  \
   void* operator new(size_t, void*) = delete
 
 // Provides customizable overrides of fastMalloc/fastFree and operator
