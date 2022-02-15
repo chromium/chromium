@@ -111,6 +111,7 @@ source_set("unit_tests") {
     "//components/history/core/test",
     "//components/optimization_guide/core:entities",
     "//components/search_engines",
+    "//components/site_engagement/core",
     "//services/network:test_support",
     "//testing/gtest",
   ]

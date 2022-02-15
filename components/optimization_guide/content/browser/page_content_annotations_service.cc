@@ -144,15 +144,14 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
   LOCAL_HISTOGRAM_BOOLEAN(
       "PageContentAnnotations.AnnotateVisit.AnnotationRequested", true);
 
-  if (annotated_text_cache_.Peek(*visit.text_to_annotate) !=
-      annotated_text_cache_.end()) {
+  auto it = annotated_text_cache_.Peek(*visit.text_to_annotate);
+  if (it != annotated_text_cache_.end()) {
     // We have annotations the text for this visit, so return that immediately
     // rather than re-executing the model.
     //
     // TODO(crbug.com/1291275): If the model was updated, the cached value could
     // be stale so we should invalidate the cache on model updates.
-    OnPageContentAnnotated(
-        visit, annotated_text_cache_.Get(*visit.text_to_annotate)->second);
+    OnPageContentAnnotated(visit, it->second);
     base::UmaHistogramBoolean(
         "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
         true);

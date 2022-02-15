@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -76,6 +77,11 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
 
   // The task runner to run all clustering passes on.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
+  // Last time |engagement_score_cache_| was refreshed.
+  base::TimeTicks engagement_score_cache_last_refresh_timestamp_;
+  // URL host to score mapping.
+  base::HashingLRUCache<std::string, float> engagement_score_cache_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

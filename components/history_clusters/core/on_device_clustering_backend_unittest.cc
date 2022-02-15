@@ -12,6 +12,7 @@
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +22,27 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::FloatEq;
 using ::testing::UnorderedElementsAre;
+
+class TestSiteEngagementScoreProvider
+    : public site_engagement::SiteEngagementScoreProvider {
+ public:
+  TestSiteEngagementScoreProvider() = default;
+  ~TestSiteEngagementScoreProvider() = default;
+
+  double GetScore(const GURL& url) const override {
+    ++count_get_score_invocations_;
+    return 0;
+  }
+
+  double GetTotalEngagementPoints() const override { return 1; }
+
+  size_t count_get_score_invocations() const {
+    return count_get_score_invocations_;
+  }
+
+ private:
+  mutable size_t count_get_score_invocations_ = 0;
+};
 
 class TestEntityMetadataProvider
     : public optimization_guide::EntityMetadataProvider {
@@ -80,7 +102,7 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
   void SetUp() override {
     clustering_backend_ = std::make_unique<OnDeviceClusteringBackend>(
         /*template_url_service=*/nullptr, /*entity_metadata_provider=*/nullptr,
-        /*engagement_score_provider=*/nullptr);
+        &test_site_engagement_provider_);
   }
 
   void TearDown() override { clustering_backend_.reset(); }
@@ -105,12 +127,17 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
     return clusters;
   }
 
+  size_t GetSiteEngagementGetScoreInvocationCount() const {
+    return test_site_engagement_provider_.count_get_score_invocations();
+  }
+
  protected:
   std::unique_ptr<OnDeviceClusteringBackend> clustering_backend_;
   base::test::TaskEnvironment task_environment_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  TestSiteEngagementScoreProvider test_site_engagement_provider_;
 };
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest, ClusterNoVisits) {
@@ -594,6 +621,80 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.BatchEntityLookupSize", 2, 1);
 }
+
+class EngagementCacheOnDeviceClusteringWithoutContentBackendTest
+    : public OnDeviceClusteringWithoutContentBackendTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  EngagementCacheOnDeviceClusteringWithoutContentBackendTest() {
+    const base::FieldTrialParams on_device_clustering_feature_parameters = {
+        {"content_clustering_enabled", "false"},
+        {"dedupe_similar_visits", "false"},
+        {"min_page_topics_model_version_for_visibility", "125"},
+        {"include_categories_in_keywords", "true"},
+        {"exclude_keywords_from_noisy_visits", "false"}};
+
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{features::kOnDeviceClustering,
+            on_device_clustering_feature_parameters},
+           {{features::kUseEngagementScoreCache}, {}}},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{features::kOnDeviceClustering,
+            on_device_clustering_feature_parameters},
+           {{features::kUseEngagementScoreCache}, {}}},
+          {features::kUseEngagementScoreCache});
+    }
+  }
+
+  bool IsCacheStoreFeatureEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(EngagementCacheOnDeviceClusteringWithoutContentBackendTest,
+       EngagementScoreCache) {
+  base::HistogramTester histogram_tester;
+  std::vector<history::AnnotatedVisit> visits;
+
+  // Add 2 different hosts to |visits|.
+  history::AnnotatedVisit visit1 =
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
+  visits.push_back(visit1);
+
+  history::AnnotatedVisit visit2 =
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://github.com/"));
+  visits.push_back(visit2);
+
+  history::AnnotatedVisit visit3 =
+      testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
+  visits.push_back(visit3);
+
+  history::AnnotatedVisit visit4 =
+      testing::CreateDefaultAnnotatedVisit(10, GURL("https://github.com/"));
+  visits.push_back(visit4);
+
+  history::AnnotatedVisit visit5 =
+      testing::CreateDefaultAnnotatedVisit(3, GURL("https://github2.com/"));
+  visits.push_back(visit5);
+
+  std::vector<history::Cluster> result_clusters_1 = ClusterVisits(visits);
+  EXPECT_EQ(IsCacheStoreFeatureEnabled() ? 2u : 5u,
+            GetSiteEngagementGetScoreInvocationCount());
+
+  // No new queries should be issued when cache store is enabled.
+  std::vector<history::Cluster> result_clusters_2 = ClusterVisits(visits);
+  EXPECT_EQ(IsCacheStoreFeatureEnabled() ? 2u : 10u,
+            GetSiteEngagementGetScoreInvocationCount());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    EngagementCacheOnDeviceClusteringWithoutContentBackendTest,
+    ::testing::Bool());
 
 }  // namespace
 }  // namespace history_clusters
