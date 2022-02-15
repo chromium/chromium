@@ -111,8 +111,8 @@ class InspectorMediaEventHandlerTest : public testing::Test {
     error.id = 0;
     error.type = media::MediaLogRecord::Type::kMediaStatus;
     error.time = base::TimeTicks();
-    error.params.SetIntPath(media::MediaLog::kCodeKey, errorcode);
-    error.params.SetStringPath(media::MediaLog::kGroupKey,
+    error.params.SetIntPath(media::StatusConstants::kCodeKey, errorcode);
+    error.params.SetStringPath(media::StatusConstants::kGroupKey,
                                media::PipelineStatus::Traits::Group());
     return error;
   }

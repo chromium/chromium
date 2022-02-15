@@ -139,6 +139,18 @@ MEDIA_EXPORT std::ostream& operator<<(
 
 }  // namespace internal
 
+// Constant names for serialized TypedStatus<T>.
+struct MEDIA_EXPORT StatusConstants {
+  static const char kCodeKey[];
+  static const char kGroupKey[];
+  static const char kMsgKey[];
+  static const char kStackKey[];
+  static const char kDataKey[];
+  static const char kCauseKey[];
+  static const char kFileKey[];
+  static const char kLineKey[];
+};
+
 // See media/base/status.md for details and instructions for using TypedStatus.
 template <typename T>
 class MEDIA_EXPORT TypedStatus {

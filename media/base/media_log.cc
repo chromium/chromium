@@ -17,8 +17,6 @@ namespace media {
 // different |MediaLogRecord|s. We declare them here so if they change, its
 // only in one spot.
 const char MediaLog::kEventKey[] = "event";
-const char MediaLog::kCodeKey[] = "code";
-const char MediaLog::kGroupKey[] = "group";
 
 // A count of all MediaLogs created in the current process. Used to generate
 // unique IDs.

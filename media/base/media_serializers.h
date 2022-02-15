@@ -449,13 +449,13 @@ struct MediaSerializer<StatusData> {
     base::Value result(base::Value::Type::DICTIONARY);
     // TODO: replace code with a stringified version, since
     // this representation will only go to medialog anyway.
-    FIELD_SERIALIZE("code", status.code);
-    FIELD_SERIALIZE("group", status.group);
-    FIELD_SERIALIZE("message", status.message);
-    FIELD_SERIALIZE("stack", status.frames);
-    FIELD_SERIALIZE("data", status.data);
+    FIELD_SERIALIZE(StatusConstants::kCodeKey, status.code);
+    FIELD_SERIALIZE(StatusConstants::kGroupKey, status.group);
+    FIELD_SERIALIZE(StatusConstants::kMsgKey, status.message);
+    FIELD_SERIALIZE(StatusConstants::kStackKey, status.frames);
+    FIELD_SERIALIZE(StatusConstants::kDataKey, status.data);
     if (status.cause)
-      FIELD_SERIALIZE("cause", *status.cause);
+      FIELD_SERIALIZE(StatusConstants::kCauseKey, *status.cause);
     return result;
   }
 };
@@ -465,8 +465,9 @@ template <>
 struct MediaSerializer<base::Location> {
   static base::Value Serialize(const base::Location& value) {
     base::Value result(base::Value::Type::DICTIONARY);
-    FIELD_SERIALIZE("file", value.file_name() ? value.file_name() : "unknown");
-    FIELD_SERIALIZE("line", value.line_number());
+    FIELD_SERIALIZE(StatusConstants::kFileKey,
+                    value.file_name() ? value.file_name() : "unknown");
+    FIELD_SERIALIZE(StatusConstants::kLineKey, value.line_number());
     return result;
   }
 };

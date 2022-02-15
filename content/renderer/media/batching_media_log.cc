@@ -177,8 +177,9 @@ std::string BatchingMediaLog::MediaEventToMessageString(
   switch (event.type) {
     case media::MediaLogRecord::Type::kMediaStatus: {
       const std::string* group =
-          event.params.FindStringKey(MediaLog::kGroupKey);
-      auto code = event.params.FindIntKey(MediaLog::kCodeKey).value_or(0);
+          event.params.FindStringKey(media::StatusConstants::kGroupKey);
+      auto code =
+          event.params.FindIntKey(media::StatusConstants::kCodeKey).value_or(0);
       DCHECK_NE(code, 0);
       if (group && *group == media::PipelineStatus::Traits::Group()) {
         return PipelineStatusToString(

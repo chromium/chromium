@@ -84,9 +84,9 @@ void InspectorMediaEventHandler::SendQueuedMediaEvents(
       }
       case media::MediaLogRecord::Type::kMediaStatus: {
         const std::string* group =
-            event.params.FindStringKey(media::MediaLog::kGroupKey);
-        auto code =
-            event.params.FindIntKey(media::MediaLog::kCodeKey).value_or(0);
+            event.params.FindStringKey(media::StatusConstants::kGroupKey);
+        auto code = event.params.FindIntKey(media::StatusConstants::kCodeKey)
+                        .value_or(0);
         DCHECK_NE(code, 0);
         DCHECK_NE(group, nullptr);
         if (group && *group == media::PipelineStatus::Traits::Group()) {

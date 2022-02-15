@@ -62,6 +62,15 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace internal
 
+const char StatusConstants::kCodeKey[] = "code";
+const char StatusConstants::kGroupKey[] = "group";
+const char StatusConstants::kMsgKey[] = "message";
+const char StatusConstants::kStackKey[] = "stack";
+const char StatusConstants::kDataKey[] = "data";
+const char StatusConstants::kCauseKey[] = "cause";
+const char StatusConstants::kFileKey[] = "file";
+const char StatusConstants::kLineKey[] = "line";
+
 internal::OkStatusImplicitConstructionHelper OkStatus() {
   return {};
 }
