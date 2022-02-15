@@ -651,6 +651,10 @@ const base::Feature kFiltersInRecents{"FiltersInRecents",
 const base::Feature kFirmwareUpdaterApp = {"FirmwareUpdaterApp",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables Floating Workspace feature on Chrome OS
+const base::Feature kFloatingWorkspace{"FloatingWorkspace",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to allow keeping full screen mode after unlock.
 const base::Feature kFullscreenAfterUnlockAllowed = {
     "FullscreenAfterUnlockAllowed", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1595,6 +1599,10 @@ bool IsFilesWebDriveOfficeEnabled() {
 
 bool IsFirmwareUpdaterAppEnabled() {
   return base::FeatureList::IsEnabled(kFirmwareUpdaterApp);
+}
+
+bool IsFloatingWorkspaceEnabled() {
+  return base::FeatureList::IsEnabled(kFloatingWorkspace);
 }
 
 bool IsFullscreenAfterUnlockAllowed() {

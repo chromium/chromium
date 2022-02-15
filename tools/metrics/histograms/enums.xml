@@ -28665,6 +28665,7 @@ Called by update_document_policy_enum.py.-->
   <int value="956" label="SecondaryGoogleAccountUsage"/>
   <int value="957" label="EnableEncryptedReportingPipeline"/>
   <int value="958" label="EnableDirectSockets"/>
+  <int value="959" label="FloatingWorkspaceEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

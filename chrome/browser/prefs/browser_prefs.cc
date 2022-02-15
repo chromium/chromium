@@ -309,6 +309,7 @@
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/file_system_provider/registry.h"
 #include "chrome/browser/ash/first_run/first_run.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
@@ -1438,6 +1439,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   borealis::prefs::RegisterProfilePrefs(registry);
   ash::ChromeScanningAppDelegate::RegisterProfilePrefs(registry);
   ProjectorAppClientImpl::RegisterProfilePrefs(registry);
+  ash::floating_workspace_util::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

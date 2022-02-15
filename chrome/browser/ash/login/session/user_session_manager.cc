@@ -54,6 +54,8 @@
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/first_run/first_run.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/logging.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
@@ -2202,9 +2204,15 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
 
   VLOG(1) << "Launching browser...";
   TRACE_EVENT0("login", "LaunchBrowser");
-
   if (should_launch_browser_) {
-    if (!IsFullRestoreEnabled(profile)) {
+    if (floating_workspace_util::IsFloatingWorkspaceEnabled()) {
+      // If floating workspace is enabled, it will override full restore.
+      FloatingWorkspaceService* floating_workspace_service =
+          ash::FloatingWorkspaceService::GetForProfile(profile);
+      if (floating_workspace_service) {
+        floating_workspace_service->SubscribeToForeignSessionUpdates();
+      }
+    } else if (!IsFullRestoreEnabled(profile)) {
       LaunchBrowser(profile);
       MaybeLaunchSettings(profile);
     } else {

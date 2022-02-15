@@ -1313,6 +1313,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kProjectorEnabled,
     ash::prefs::kProjectorAllowByPolicy,
     base::Value::Type::BOOLEAN },
+  { key::kFloatingWorkspaceEnabled,
+    ash::prefs::kFloatingWorkspaceEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)

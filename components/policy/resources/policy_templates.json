@@ -30057,6 +30057,34 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       Setting the policy to Disabled means users will not be able to access the API.
       If this policy is left not set, the default is not allowed for enterprise-managed users and allowed for non-managed users.'''
     },
+    {
+      'name': 'FloatingWorkspaceEnabled',
+      'owners': ['ligeng@chromium.org', 'yzd@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:100-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': '''Enable floating workspace and launch remote browser windows upon login''',
+        },
+        {
+          'value': False,
+          'caption': '''Disable floating workspace and do not launch remote browser windows upon login''',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 959,
+      'caption': '''Enable Floating Workspace Service''',
+      'tags': [],
+      'desc': '''Setting the policy to Enabled will launch browser windows from current user's last used device automatically upon login.
+      Setting the policy to Disabled or leaving it unset will let full restore settings determine what to be launched upon login.''',
+    }
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -31042,6 +31070,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 958,
+  'highest_id_currently_used': 959,
   'highest_atomic_group_id_currently_used': 41
 }
