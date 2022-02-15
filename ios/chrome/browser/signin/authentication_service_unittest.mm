@@ -9,9 +9,12 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#include "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -789,4 +792,33 @@ TEST_F(AuthenticationServiceTest, TestGetServiceStatus) {
             authentication_service()->GetServiceStatus());
 
   EXPECT_OCMOCK_VERIFY(observer_delegate);
+}
+
+// Tests that a supervised user has all local data cleared on sign-in when
+// there was a previous account on the device.
+TEST_F(AuthenticationServiceTest, SupervisedAccountSwitch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      signin::kEnableUnicornAccountSupport);
+
+  SetExpectationsForSignIn();
+  identity_service()->SetCapabilities(
+      identity(1), @{
+        @(kIsSubjectToParentalControlsCapabilityName) :
+            @(static_cast<int>(ios::ChromeIdentityCapabilityResult::kTrue))
+      });
+
+  authentication_service()->SignIn(identity(0), nil);
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+  ON_CALL(*mock_sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+      .WillByDefault(Return(true));
+
+  authentication_service()->SignOut(signin_metrics::ABORT_SIGNIN,
+                                    /*force_clear_browsing_data=*/false, nil);
+  EXPECT_EQ(ClearBrowsingDataCount(), 0);
+
+  // Clears browsing data when signed-in as a child.
+  authentication_service()->SignIn(identity(1), nil);
+  EXPECT_EQ(ClearBrowsingDataCount(), 1);
 }

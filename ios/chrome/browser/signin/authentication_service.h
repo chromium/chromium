@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/user_approved_account_list_manager.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 namespace syncer {
 class SyncService;
@@ -167,6 +168,13 @@ class AuthenticationService : public KeyedService,
   // Grants signin::ConsentLevel::kSignin to |identity|.
   // Virtual for testing.
   virtual void SignInInternal(ChromeIdentity* identity);
+
+  // Clears local data for users under parental controls and grants
+  // signin::ConsentLevel::kSignin to |identity|.
+  void OnIsSubjectToParentalControlsResult(
+      ios::ChromeIdentityCapabilityResult result,
+      ChromeIdentity* identity,
+      signin_ui::CompletionCallback completion);
 
   // Migrates the token service accounts stored in prefs from emails to account
   // ids.

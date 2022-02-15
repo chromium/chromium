@@ -14,6 +14,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
@@ -349,9 +350,52 @@ ChromeIdentity* AuthenticationService::GetPrimaryIdentity(
 
 void AuthenticationService::SignIn(ChromeIdentity* identity,
                                    signin_ui::CompletionCallback completion) {
+  if (base::FeatureList::IsEnabled(signin::kEnableUnicornAccountSupport)) {
+    ios::ChromeIdentityService* identity_service =
+        ios::GetChromeBrowserProvider().GetChromeIdentityService();
+    base::WeakPtr<AuthenticationService> weak_ptr = GetWeakPtr();
+    identity_service->IsSubjectToParentalControls(
+        identity, ^(ios::ChromeIdentityCapabilityResult result) {
+          AuthenticationService* strong_ptr = weak_ptr.get();
+          if (strong_ptr) {
+            strong_ptr->OnIsSubjectToParentalControlsResult(result, identity,
+                                                            completion);
+          }
+        });
+    return;
+  }
+
+  // When supervised user account are not enabled, sign in the account by
+  // default.
   SignInInternal(identity);
   if (completion) {
     completion(HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+  }
+}
+
+void AuthenticationService::OnIsSubjectToParentalControlsResult(
+    ios::ChromeIdentityCapabilityResult result,
+    ChromeIdentity* identity,
+    signin_ui::CompletionCallback completion) {
+  base::WeakPtr<AuthenticationService> weak_ptr = GetWeakPtr();
+  ProceduralBlock signin_callback = ^() {
+    bool has_primary_identity = false;
+    AuthenticationService* strong_ptr = weak_ptr.get();
+    if (strong_ptr) {
+      strong_ptr->SignInInternal(identity);
+      has_primary_identity =
+          strong_ptr->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+    }
+    if (completion) {
+      completion(has_primary_identity);
+    }
+  };
+
+  // Clears browsing data before sign-in for supervised users.
+  if (result == ios::ChromeIdentityCapabilityResult::kTrue) {
+    delegate_->ClearBrowsingData(signin_callback);
+  } else {
+    signin_callback();
   }
 }
 
