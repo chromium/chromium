@@ -24,6 +24,10 @@ concurrent, but not necessarily
 parallel](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism#:~:text=Concurrency%20is%20when%20two%20or,e.g.%2C%20on%20a%20multicore%20processor.),
 system.
 
+A basic intro to the way Chromium does concurrency (especially Sequences) can be
+found
+[here](https://docs.google.com/presentation/d/1ujV8LjIUyPBmULzdT2aT9Izte8PDwbJi).
+
 This documentation assumes familiarity with computer science
 [threading concepts](https://en.wikipedia.org/wiki/Thread_(computing)).
 
