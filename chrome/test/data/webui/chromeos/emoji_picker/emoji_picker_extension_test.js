@@ -31,6 +31,7 @@ suite('emoji-picker-extension', () => {
     emojiPicker =
         /** @type {!EmojiPicker} */ (document.createElement('emoji-picker'));
     emojiPicker.emojiDataUrl = '/emoji_test_ordering';
+    emojiPicker.emoticonDataUrl = '/emoticon_test_ordering.json';
 
     findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
 

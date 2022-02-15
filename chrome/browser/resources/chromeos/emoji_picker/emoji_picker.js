@@ -23,7 +23,7 @@ import {RecentlyUsedStore} from './store.js';
 import {CategoryData, CategoryEnum, Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredItem, SubcategoryData} from './types.js';
 
 const EMOJI_ORDERING_JSON_TEMPLATE = '/emoji_14_0_ordering';
-const EMOTICON_ORDERING_JSON = '/emoticon_test_ordering.json';
+const EMOTICON_ORDERING_JSON_TEMPLATE = '/emoticon_ordering.json';
 
 // the name attributes below are used to label the group buttons.
 // the ordering group names are used for the group headings in the emoji picker.
@@ -128,6 +128,8 @@ export class EmojiPicker extends PolymerElement {
     return {
       /** {string} */
       emojiDataUrl: {type: String, value: EMOJI_ORDERING_JSON_TEMPLATE},
+      /** {string} */
+      emoticonDataUrl: {type: String, value: EMOTICON_ORDERING_JSON_TEMPLATE},
       /** @private {string} */
       category: {type: String, value: 'emoji', observer: 'onCategoryChanged'},
       /** @type {string} */
@@ -275,7 +277,7 @@ export class EmojiPicker extends PolymerElement {
             CATEGORY_BUTTON_CLICK,
             ev => this.onCategoryButtonClick(ev.detail.categoryName));
         this.addEventListener(EMOJI_REMAINING_DATA_LOADED, () => {
-          this.fetchOrderingData(EMOTICON_ORDERING_JSON).then((data) => {
+          this.fetchOrderingData(this.emoticonDataUrl).then((data) => {
             this.emoticonData = data;
             this.dispatchEvent(createCustomEvent(V2_CONTENT_LOADED));
           });

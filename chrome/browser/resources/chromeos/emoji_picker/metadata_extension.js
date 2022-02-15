@@ -125,7 +125,7 @@ export const V2_SUBCATEGORY_TABS = [
     pagination: 1
   },
   {
-    name: 'Love',
+    name: 'Loving',
     category: 'emoticon',
     groupId: '11',
     active: false,
@@ -157,7 +157,7 @@ export const V2_SUBCATEGORY_TABS = [
     pagination: 2
   },
   {
-    name: 'Surprise',
+    name: 'Surprising',
     category: 'emoticon',
     groupId: '15',
     active: false,
@@ -173,7 +173,7 @@ export const V2_SUBCATEGORY_TABS = [
     pagination: 2
   },
   {
-    name: 'Shruggie',
+    name: 'Shrugging',
     category: 'emoticon',
     groupId: '17',
     active: false,
@@ -181,7 +181,7 @@ export const V2_SUBCATEGORY_TABS = [
     pagination: 2
   },
   {
-    name: 'Table flip',
+    name: 'Table flipping',
     category: 'emoticon',
     groupId: '18',
     active: false,
@@ -189,7 +189,7 @@ export const V2_SUBCATEGORY_TABS = [
     pagination: 3
   },
   {
-    name: 'Disapproval look',
+    name: 'Disapproving',
     category: 'emoticon',
     groupId: '19',
     active: false,
@@ -205,7 +205,7 @@ export const V2_SUBCATEGORY_TABS = [
     pagination: 3
   },
   {
-    name: 'Nervous',
+    name: 'Worrying',
     category: 'emoticon',
     groupId: '21',
     active: false,
@@ -213,9 +213,17 @@ export const V2_SUBCATEGORY_TABS = [
     pagination: 4
   },
   {
-    name: 'Pointers',
+    name: 'Pointing',
     category: 'emoticon',
     groupId: '22',
+    active: false,
+    disabled: false,
+    pagination: 4
+  },
+  {
+    name: 'Sparkling',
+    category: 'emoticon',
+    groupId: '23',
     active: false,
     disabled: false,
     pagination: 4
