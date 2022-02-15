@@ -126,7 +126,6 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
     IntentPickerResponse intent_picker_cb) {
   if (intent_picker_bubble_) {
     intent_picker_bubble_->CloseBubble();
-    intent_picker_bubble_ = nullptr;
   }
   intent_picker_bubble_ = new IntentPickerBubbleView(
       anchor_view, bubble_type, std::move(app_info),
@@ -190,7 +189,7 @@ void IntentPickerBubbleView::CloseCurrentBubble() {
 }
 
 void IntentPickerBubbleView::CloseBubble() {
-  intent_picker_bubble_ = nullptr;
+  ClearIntentPickerBubbleView();
   LocationBarBubbleDelegateView::CloseBubble();
 }
 
@@ -435,7 +434,7 @@ void IntentPickerBubbleView::RunCallbackAndCloseBubble(
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason close_reason,
     bool should_persist) {
-  intent_picker_bubble_ = nullptr;
+  ClearIntentPickerBubbleView();
   if (!intent_picker_cb_.is_null()) {
     // Calling Run() will make |intent_picker_cb_| null.
     // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
@@ -497,6 +496,14 @@ void IntentPickerBubbleView::UpdateCheckboxState() {
   if (!should_enable)
     remember_selection_checkbox_->SetChecked(false);
   remember_selection_checkbox_->SetEnabled(should_enable);
+}
+
+void IntentPickerBubbleView::ClearIntentPickerBubbleView() {
+  // This is called asynchronously during OnWidgetDestroying, at which point
+  // intent_picker_bubble_ may have already been cleared or set to something
+  // else.
+  if (intent_picker_bubble_ == this)
+    intent_picker_bubble_ = nullptr;
 }
 
 gfx::ImageSkia IntentPickerBubbleView::GetAppImageForTesting(size_t index) {

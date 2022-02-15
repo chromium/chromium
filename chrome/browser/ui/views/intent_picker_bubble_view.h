@@ -134,7 +134,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
                            DismissBubble);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           ShowBubbleTwice);
+                           ShowBubbleMultipleTimes);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
                            PushStateLoadingTest);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
@@ -213,6 +213,9 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   // Updates whether the persistence checkbox is enabled or not.
   void UpdateCheckboxState();
+
+  // Clears this bubble from being considered the currently open bubble.
+  void ClearIntentPickerBubbleView();
 
   gfx::ImageSkia GetAppImageForTesting(size_t index);
   views::InkDropState GetInkDropStateForTesting(size_t);

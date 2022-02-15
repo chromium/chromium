@@ -13,6 +13,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -48,6 +49,8 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -113,6 +116,30 @@ class FakeIconLoader : public apps::IconLoader {
         apps::IconValueToMojomIconValueCallback(std::move(callback)));
   }
 };
+
+// Waits for a particular widget to be destroyed.
+class WidgetDestroyedWaiter : public views::WidgetObserver {
+ public:
+  explicit WidgetDestroyedWaiter(views::Widget* widget) {
+    observation_.Observe(widget);
+  }
+  ~WidgetDestroyedWaiter() override = default;
+
+  // Blocks until OnWidgetDestroyed is called for the widget.
+  void WaitForDestroyed() { run_loop_.Run(); }
+
+  // views::WidgetObserver:
+  void OnWidgetDestroyed(views::Widget* widget) override {
+    run_loop_.Quit();
+    observation_.Reset();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+};
+
 }  // namespace
 
 class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
@@ -596,19 +623,35 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
 }
 
-// Test that show intent picker bubble twice without closing doesn't
+// Test that show intent picker bubble multiple times without closing doesn't
 // crash the browser.
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       ShowBubbleTwice) {
+                       ShowBubbleMultipleTimes) {
   ShowBubbleForTesting();
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  EXPECT_EQ(2U, intent_picker_bubble()->GetScrollViewSize());
+  auto* bubble_1 = intent_picker_bubble();
+  ASSERT_TRUE(bubble_1);
+  EXPECT_TRUE(bubble_1->GetVisible());
+  EXPECT_EQ(2U, bubble_1->GetScrollViewSize());
+
+  WidgetDestroyedWaiter bubble_1_waiter(bubble_1->GetWidget());
+
   ShowBubbleForTesting();
-  ASSERT_TRUE(bubble_closed());
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  EXPECT_EQ(2U, intent_picker_bubble()->GetScrollViewSize());
+  auto* bubble_2 = intent_picker_bubble();
+  ASSERT_TRUE(bubble_2);
+  EXPECT_TRUE(bubble_2->GetVisible());
+  EXPECT_EQ(2U, bubble_2->GetScrollViewSize());
+  // Bubble 1 should be fully destroyed after the second bubble appears.
+  bubble_1_waiter.WaitForDestroyed();
+
+  WidgetDestroyedWaiter bubble_2_waiter(bubble_2->GetWidget());
+
+  ShowBubbleForTesting();
+  auto* bubble_3 = intent_picker_bubble();
+  ASSERT_TRUE(bubble_3);
+  EXPECT_TRUE(bubble_3->GetVisible());
+  EXPECT_EQ(2U, bubble_3->GetScrollViewSize());
+  // Bubble 2 should be fully destroyed after the third bubble appears.
+  bubble_2_waiter.WaitForDestroyed();
 }
 
 // Test that loading a page with pushState() call that doesn't change URL work
