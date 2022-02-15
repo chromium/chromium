@@ -48,6 +48,7 @@ copy("copy_proxy") {
 ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/$tsc_folder"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "whats_new_app.ts",

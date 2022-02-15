@@ -2,34 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://whats-new/whats_new_app.js';
+
 import {CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
-import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WhatsNewAppElement} from 'chrome://whats-new/whats_new_app.js';
-import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
-
-import {assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.js';
-import {eventToPromise, flushTasks} from '../test_util.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
+import {WhatsNewProxy, WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 
 const whatsNewURL = 'chrome://test/whats_new/test.html';
 
-class TestWhatsNewProxy extends TestBrowserProxy {
+class TestWhatsNewProxy extends TestBrowserProxy implements WhatsNewProxy {
+  private url_: string;
+
   /**
-   * @param {?string} url The URL to load in the iframe or null to simulate a
-   *     load failure.
+   * @param url The URL to load in the iframe.
    */
-  constructor(url) {
+  constructor(url: string) {
     super([
       'initialize',
     ]);
 
-    /** @private {?string} */
     this.url_ = url;
   }
 
-  /** @override */
   initialize() {
     this.methodCalled('initialize');
     return Promise.resolve(this.url_);
@@ -54,7 +53,8 @@ suite('WhatsNewAppTest', function() {
     await proxy.whenCalled('initialize');
     await flushTasks();
 
-    const iframe = whatsNewApp.shadowRoot.querySelector('#content');
+    const iframe =
+        whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
     // iframe has latest=true URL query parameter except on CrOS
     assertEquals(
@@ -73,7 +73,8 @@ suite('WhatsNewAppTest', function() {
     await proxy.whenCalled('initialize');
     await flushTasks();
 
-    const iframe = whatsNewApp.shadowRoot.querySelector('#content');
+    const iframe =
+        whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
     // iframe has latest=true URL query parameter except on CrOS
     assertEquals(
@@ -92,7 +93,8 @@ suite('WhatsNewAppTest', function() {
     await proxy.whenCalled('initialize');
     await flushTasks();
 
-    const iframe = whatsNewApp.shadowRoot.querySelector('#content');
+    const iframe =
+        whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
     assertEquals(whatsNewURL + '?latest=false&feedback=false', iframe.src);
   });
