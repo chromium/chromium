@@ -4328,13 +4328,15 @@
       如果未設定這項政策，使用者可自行決定要啟用或停用這項功能。</translation>
 <translation id="6174065452773547810">如果將這項政策設為 Enabled 或不設定，裝置就能取得精細回報控制項。
       如果將這項政策設為 Disabled，表示已註冊的裝置不會取得精細回報控制項。</translation>
-<translation id="6174187836314350835">網址模式清單。來自相符來源提供的網站所傳送的要求，不受私人網路存取權檢查應響。
+<translation id="6174187836314350835">網址模式清單。來自相符來源提供的網站所傳送的要求，不受私人網路存取權檢查影響。
 
-          如果不設定，這項政策的運作方式會如同已設為空白清單。
+如果不設定，這項政策的運作方式會如同已設為空白清單。
 
-          如果來源不符合此處指定的模式，系統會根據 <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> 政策 (如有設定) 或使用者的個人設定套用全域預設值。
+如果來源不符合此處指定的模式，系統會根據 <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> 政策 (如有設定) 或使用者的個人設定套用全域預設值。
 
-          如果想進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/intl/zh_tw/policies/url-patterns。</translation>
+如果想進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/intl/zh_tw/policies/url-patterns。
+
+</translation>
 <translation id="6178075938488052838">這項政策可控管哪些使用者能夠啟動 <ph name="PRODUCT_OS_NAME" />工作階段，但不會禁止使用者在 Android 應用程式中登入其他 Google 帳戶。如要禁止使用者登入其他 Google 帳戶，你可以在 <ph name="ARC_POLICY_POLICY_NAME" /> 中設定 Android 專屬的 <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> 政策。</translation>
 <translation id="6181304954168534748">桌面範本的 SHA-256 雜湊。</translation>
 <translation id="6181618732396778048">不允許任何網站要求檔案和目錄的寫入權限。</translation>

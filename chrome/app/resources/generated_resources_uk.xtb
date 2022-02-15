@@ -1710,6 +1710,7 @@
 <translation id="2684004000387153598">Натисніть OK і виберіть "Додати користувача", щоб створити новий профіль для своєї електронної адреси.</translation>
 <translation id="2687403674020088961">Блокувати всі файли cookie (не рекомендовано)</translation>
 <translation id="2687407218262674387">Загальні положення та умови Google</translation>
+<translation id="2687621393791886981">Запитати пізніше</translation>
 <translation id="2688196195245426394">Помилка під час реєстрації пристрою на сервері: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Показати опції мови</translation>
 <translation id="2691385045260836588">Модель</translation>
@@ -7228,6 +7229,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дозволено: <ph name="PERMISSION" /> і ще <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Спершу запитувати (рекомендується)</translation>
+<translation id="8414249071344507766">Спогади приховано на два дні</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Футляр)</translation>
 <translation id="8417548266957501132">Пароль батьків</translation>
 <translation id="8418445294933751433">&amp;Показати як вкладку</translation>

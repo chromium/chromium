@@ -1710,6 +1710,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2684004000387153598">Če želite nadaljevati, kliknite »V redu«, nato »Dodajanje osebe«, če želite za e-poštni naslov ustvariti nov profil.</translation>
 <translation id="2687403674020088961">Blokiranje vseh piškotkov (ni priporočljivo)</translation>
 <translation id="2687407218262674387">Googlovi pogoji storitve</translation>
+<translation id="2687621393791886981">Vprašaj me pozneje</translation>
 <translation id="2688196195245426394">Napaka pri registraciji naprave v strežniku: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Pokaži jezikovne možnosti</translation>
 <translation id="2691385045260836588">Model</translation>
@@ -7230,6 +7231,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Dovoljeno: <ph name="PERMISSION" /> in še <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Najprej vprašaj (priporočeno)</translation>
+<translation id="8414249071344507766">Spomini so skriti za dva dneva.</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (škatlica)</translation>
 <translation id="8417548266957501132">Geslo starša</translation>
 <translation id="8418445294933751433">&amp;Prikaži kot zavihek</translation>

@@ -971,7 +971,7 @@
 <translation id="1965624977906726414">No tiene permisos especiales.</translation>
 <translation id="1969654639948595766">Registros de texto de WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Se ha cambiado al modo de vídeo</translation>
-<translation id="1972325230031091483">Navegarás más rápido porque el contenido se cargará de forma proactiva en función de la página web en la que estés</translation>
+<translation id="1972325230031091483">Navegarás más rápido porque el contenido se carga de forma proactiva en función de la página web en la que estás</translation>
 <translation id="197288927597451399">Descargar</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> no se puede descargar de forma segura. Pulsa Mayús + F6 para desplazarte al área de la barra de descargas.</translation>
 <translation id="1974043046396539880">Puntos de distribución de listas de revocación de certificados</translation>
@@ -1223,7 +1223,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Fuente multimedia sin nombre</translation>
 <translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Para que puedas disfrutar de la mejor experiencia, <ph name="DEVICE_OS" /> recoge datos de hardware de los dispositivos y los comparte con Google para determinar qué actualizaciones deben enviarse. Si quieres, puedes permitir que Google use estos datos con otros fines, como la asistencia y mejora de la experiencia y del servicio de <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puedes iniciar sesión en este dispositivo y visitar la sección CLOUDREADY_HARDWARE_INFO en chrome://system para ver los datos enviados a Google con el fin de filtrar las actualizaciones, así como cualquier otra instancia en la que hayas elegido compartir datos con Google.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH2" />Puedes iniciar sesión en este dispositivo y visitar la sección CLOUDREADY_HARDWARE_INFO en chrome://system para ver los datos enviados a Google con el fin de filtrar las actualizaciones, así como los datos de los demás casos para los que has elegido compartir datos con Google.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Para consultar más información sobre los datos que <ph name="DEVICE_OS" /> podría compartir con Google y cómo se usan, visita g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Esta opción pertenece a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Debes seleccionar al menos un álbum de la galería de arte</translation>
@@ -1344,7 +1344,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2326931316514688470">&amp;Volver a cargar aplicación</translation>
 <translation id="2327492829706409234">Habilitar aplicación</translation>
 <translation id="2328561734797404498">Reinicia el dispositivo para usar <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Cuando navegues en modo de incógnito, los sitios solo podrán usar las cookies para ver tu actividad de navegación en su propio sitio. Las cookies se eliminan al final de la sesión de incógnito.</translation>
+<translation id="2328636661627946415">Cuando navegas en modo de incógnito, los sitios solo pueden usar las cookies para ver tu actividad de navegación en su propio sitio. Las cookies se eliminan al final de la sesión de incógnito.</translation>
 <translation id="2329597144923131178">Accede para ver marcadores, historial, contraseñas y otros en dispos.</translation>
 <translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Si permites que tus dispositivos Chrome OS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en Chrome OS. Estos informes pueden incluir información como qué funciones utilizas, cuánta memoria sueles usar, datos de diagnóstico y de uso de aplicaciones Android, así como errores. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes de tu dispositivo Chrome OS. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" />
@@ -5482,7 +5482,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6644846457769259194">Actualizando el dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">El dispositivo de Google Cloud Print seleccionado ya no se admite. <ph name="BR" /> Prueba a configurar la impresora desde la configuración del sistema de tu ordenador.</translation>
 <translation id="6647228709620733774">URL de revocación de la entidad emisora de certificados de Netscape</translation>
-<translation id="6647441008198474441">Las URLs que visites se enviarán a Google para predecir qué sitios podrías visitar después</translation>
+<translation id="6647441008198474441">Las URLs que visitas se envian a Google para predecir qué sitios podrías visitar después</translation>
 <translation id="6648911618876616409">Hay una actualización importante que puedes instalar. Inicia sesión para empezar.</translation>
 <translation id="6649018507441623493">Un segundo...</translation>
 <translation id="6650234781371031356">Tu contraseña de <ph name="WEBSITE" /> está almacenada en este dispositivo y en tu cuenta de Google. ¿De dónde la quieres eliminar?</translation>
@@ -5794,7 +5794,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6972887130317925583">Contraseña vulnerada cambiada correctamente. Comprueba tus contraseñas en cualquier momento en <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Puede enviar ventanas emergentes y usar redirecciones</translation>
 <translation id="6973611239564315524">Actualización a Debian 10 (Buster) disponible</translation>
-<translation id="69739764870135975">Si Google también es tu buscador predeterminado, verás mejores sugerencias relevantes según el contexto</translation>
+<translation id="69739764870135975">Si Google también es tu buscador predeterminado, verás mejores sugerencias y más relevantes contextualmente</translation>
 <translation id="6974609594866392343">Modo demo sin conexión</translation>
 <translation id="697508444536771064">Apagar Linux</translation>
 <translation id="6977739184256564679">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tablet.</translation>
@@ -5984,7 +5984,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7182791023900310535">Mover tu contraseña</translation>
-<translation id="7183193772170782394">Permitir que Google use tus datos de hardware para ayudar a mejorar <ph name="DEVICE_OS" />. Si no marcas esta opción, estos datos se enviarán a Google de todas formas para determinar las actualizaciones adecuadas, pero no se almacenarán ni se usarán de otro modo. Consulta más información en g.co/CR2/HWDataCollection.</translation>
+<translation id="7183193772170782394">Permitir que Google use tus datos de hardware para ayudar a mejorar <ph name="DEVICE_OS" />. Aunque no marques esta opción, los datos se envían a Google de todas formas para determinar las actualizaciones adecuadas, pero no se almacenan ni se usan de otro modo. Consulta más información en g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Activar o desactivar búsqueda lateral. Búsqueda lateral no activada.</translation>
 <translation id="7186088072322679094">Mantener en la barra de herramientas</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> no puede abrir esta carpeta porque contiene archivos del sistema</translation>
