@@ -1261,8 +1261,6 @@ mixed_component("base") {
       "process/process_mac.cc",
       "process/process_metrics_mac.cc",
       "profiler/module_cache_mac.cc",
-      "profiler/native_unwinder_apple.cc",
-      "profiler/native_unwinder_apple.h",
       "profiler/native_unwinder_mac.cc",
       "profiler/native_unwinder_mac.h",
       "profiler/stack_sampler_mac.cc",
@@ -1310,8 +1308,8 @@ mixed_component("base") {
 
     if (ios_stack_profiler_enabled) {
       sources += [
-        "profiler/native_unwinder_apple.cc",
-        "profiler/native_unwinder_apple.h",
+        "profiler/native_unwinder_ios.cc",
+        "profiler/native_unwinder_ios.h",
         "profiler/suspendable_thread_delegate_mac.cc",
         "profiler/suspendable_thread_delegate_mac.h",
       ]
@@ -3816,9 +3814,6 @@ test("base_unittests") {
       deps += [ ":base_profiler_test_support_library" ]
     }
     sources += [ "files/os_validation_win_unittest.cc" ]
-  }
-  if (is_apple) {
-    sources += [ "profiler/native_unwinder_apple_unittest.cc" ]
   }
 
   if (use_allocator_shim) {
