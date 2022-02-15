@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/shell.h"
+#include "base/barrier_callback.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -50,14 +51,13 @@ const char* const kFileTypeScreenshotFile = "screenshot_file";
 // String constant identifying the upload url field in the command payload.
 const char* const kUploadUrlFieldName = "fileUploadUrl";
 
-// A helper function which invokes |store_screenshot_callback| on |task_runner|.
-void RunStoreScreenshotOnTaskRunner(
-    ui::GrabWindowSnapshotAsyncPNGCallback store_screenshot_callback,
-    scoped_refptr<base::TaskRunner> task_runner,
+// Helper method to hide the |screen_index| and `std::make_pair` from the
+// |DeviceCommandScreenshotJob::Delegate|.
+void CallCollectAndUpload(
+    base::OnceCallback<void(ScreenshotData)> collect_and_upload,
+    int screen_index,
     scoped_refptr<base::RefCountedMemory> png_data) {
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(store_screenshot_callback), png_data));
+  std::move(collect_and_upload).Run(std::make_pair(screen_index, png_data));
 }
 
 }  // namespace
@@ -92,8 +92,7 @@ std::unique_ptr<std::string> DeviceCommandScreenshotJob::Payload::Serialize() {
 
 DeviceCommandScreenshotJob::DeviceCommandScreenshotJob(
     std::unique_ptr<Delegate> screenshot_delegate)
-    : num_pending_screenshots_(0),
-      screenshot_delegate_(std::move(screenshot_delegate)) {
+    : screenshot_delegate_(std::move(screenshot_delegate)) {
   DCHECK(screenshot_delegate_);
 }
 
@@ -144,26 +143,29 @@ bool DeviceCommandScreenshotJob::ParseCommandPayload(
   return true;
 }
 
-void DeviceCommandScreenshotJob::StoreScreenshot(
-    size_t screen,
-    scoped_refptr<base::RefCountedMemory> png_data) {
-  if (png_data) {
-    screenshots_.insert(std::make_pair(screen, png_data));
-  } else {
-    LOG(WARNING) << "not storing empty screenshot";
-  }
-
-  // TODO(https://crbug.com/1271923) replace custom logic with
-  // base::BarrierCallback.
-  DCHECK_LT(0, num_pending_screenshots_);
-  --num_pending_screenshots_;
-
-  if (num_pending_screenshots_ == 0)
-    StartScreenshotUpload();
+void DeviceCommandScreenshotJob::OnScreenshotsReady(
+    scoped_refptr<base::TaskRunner> task_runner,
+    std::vector<ScreenshotData> upload_data) {
+  // TODO(https://crbug.com/1297571) Do we really need to re-post here?
+  // Can we add guarantees to
+  // `DeviceCommandScreenshotJob::Delegate::TakeSnapshot`?
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DeviceCommandScreenshotJob::StartScreenshotUpload,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(upload_data)));
 }
 
-void DeviceCommandScreenshotJob::StartScreenshotUpload() {
-  for (const auto& screenshot_entry : screenshots_) {
+void DeviceCommandScreenshotJob::StartScreenshotUpload(
+    std::vector<ScreenshotData> upload_data) {
+  std::sort(begin(upload_data), end(upload_data),
+            [](const auto& l, const auto& r) { return l.first < r.first; });
+
+  for (const auto& screenshot_entry : upload_data) {
+    if (!screenshot_entry.second) {
+      LOG(WARNING) << "not uploading empty screenshot at index "
+                   << screenshot_entry.first;
+      continue;
+    }
     std::map<std::string, std::string> header_fields;
     header_fields.insert(
         std::make_pair(kFileTypeHeaderName, kFileTypeScreenshotFile));
@@ -225,17 +227,18 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult succeeded_callback,
 
   // Post tasks to the sequenced worker pool for taking screenshots on each
   // attached screen.
-  num_pending_screenshots_ = root_windows.size();
-  for (size_t screen = 0; screen < root_windows.size(); ++screen) {
-    aura::Window* root_window = root_windows[screen];
+  auto collect_and_upload = base::BarrierCallback<ScreenshotData>(
+      root_windows.size(),
+      base::BindOnce(&DeviceCommandScreenshotJob::OnScreenshotsReady,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::ThreadTaskRunnerHandle::Get()));
+  for (int screen_index = 0; screen_index < root_windows.size();
+       ++screen_index) {
+    aura::Window* root_window = root_windows[screen_index];
     gfx::Rect rect = root_window->bounds();
     screenshot_delegate_->TakeSnapshot(
         root_window, rect,
-        base::BindOnce(
-            &RunStoreScreenshotOnTaskRunner,
-            base::BindOnce(&DeviceCommandScreenshotJob::StoreScreenshot,
-                           weak_ptr_factory_.GetWeakPtr(), screen),
-            base::ThreadTaskRunnerHandle::Get()));
+        base::BindOnce(CallCollectAndUpload, collect_and_upload, screen_index));
   }
 }
 

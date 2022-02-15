@@ -42,11 +42,12 @@ bool ScreenshotDelegate::IsScreenshotAllowed() {
 void ScreenshotDelegate::TakeSnapshot(
     gfx::NativeWindow window,
     const gfx::Rect& source_rect,
-    ui::GrabWindowSnapshotAsyncPNGCallback callback) {
+    OnScreenshotTakenCallback upload_callback) {
   ui::GrabWindowSnapshotAsyncPNG(
       window, source_rect,
-      base::BindOnce(&ScreenshotDelegate::StoreScreenshot,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&ScreenshotDelegate::OnScreenshotTaken,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(upload_callback)));
 }
 
 std::unique_ptr<UploadJob> ScreenshotDelegate::CreateUploadJob(
@@ -86,8 +87,8 @@ std::unique_ptr<UploadJob> ScreenshotDelegate::CreateUploadJob(
       traffic_annotation, base::ThreadTaskRunnerHandle::Get()));
 }
 
-void ScreenshotDelegate::StoreScreenshot(
-    ui::GrabWindowSnapshotAsyncPNGCallback callback,
+void ScreenshotDelegate::OnScreenshotTaken(
+    OnScreenshotTakenCallback callback,
     scoped_refptr<base::RefCountedMemory> png_data) {
   std::move(callback).Run(png_data);
 }

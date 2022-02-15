@@ -143,7 +143,7 @@ class MockScreenshotDelegate : public DeviceCommandScreenshotJob::Delegate {
   bool IsScreenshotAllowed() override;
   void TakeSnapshot(gfx::NativeWindow window,
                     const gfx::Rect& source_rect,
-                    ui::GrabWindowSnapshotAsyncPNGCallback callback) override;
+                    OnScreenshotTakenCallback callback) override;
   std::unique_ptr<UploadJob> CreateUploadJob(const GURL&,
                                              UploadJob::Delegate*) override;
 
@@ -164,10 +164,9 @@ bool MockScreenshotDelegate::IsScreenshotAllowed() {
   return screenshot_allowed_;
 }
 
-void MockScreenshotDelegate::TakeSnapshot(
-    gfx::NativeWindow window,
-    const gfx::Rect& source_rect,
-    ui::GrabWindowSnapshotAsyncPNGCallback callback) {
+void MockScreenshotDelegate::TakeSnapshot(gfx::NativeWindow window,
+                                          const gfx::Rect& source_rect,
+                                          OnScreenshotTakenCallback callback) {
   const int width = source_rect.width();
   const int height = source_rect.height();
   scoped_refptr<base::RefCountedBytes> test_png =
