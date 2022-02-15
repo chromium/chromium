@@ -824,7 +824,13 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
           GetExecutionContext())) {
     payment_request_allowed |= payment_request_token_active;
-    if (!payment_request_allowed) {
+    local_frame->ConsumePaymentRequestToken();
+  }
+  if (RuntimeEnabledFeatures::PaymentRequestRequiresUserActivationEnabled(
+          GetExecutionContext())) {
+    if (payment_request_allowed) {
+      LocalFrame::ConsumeTransientUserActivation(local_frame);
+    } else {
       String message =
           "PaymentRequest.show() requires either transient user activation or "
           "delegated payment request capability";
@@ -835,8 +841,6 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
       exception_state.ThrowSecurityError(message);
       return ScriptPromise();
     }
-    LocalFrame::ConsumeTransientUserActivation(local_frame);
-    local_frame->ConsumePaymentRequestToken();
   }
 
   // TODO(crbug.com/779126): add support for handling payment requests in

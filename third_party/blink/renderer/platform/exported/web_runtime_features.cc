@@ -273,6 +273,12 @@ void WebRuntimeFeatures::EnablePaymentRequestBasicCard(bool enable) {
   RuntimeEnabledFeatures::SetPaymentRequestBasicCardEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnablePaymentRequestRequiresUserActivation(
+    bool enable) {
+  RuntimeEnabledFeatures::SetPaymentRequestRequiresUserActivationEnabled(
+      enable);
+}
+
 void WebRuntimeFeatures::EnablePercentBasedScrolling(bool enable) {
   RuntimeEnabledFeatures::SetPercentBasedScrollingEnabled(enable);
 }

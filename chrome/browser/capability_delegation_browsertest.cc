@@ -18,8 +18,10 @@ class CapabilityDelegationBrowserTest
     : public payments::PaymentRequestPlatformBrowserTestBase {
  public:
   CapabilityDelegationBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kCapabilityDelegationPaymentRequest);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kCapabilityDelegationPaymentRequest,
+                              features::kPaymentRequestRequiresUserActivation},
+        /*disabled_features=*/{});
   }
 
   CapabilityDelegationBrowserTest(const CapabilityDelegationBrowserTest&) =

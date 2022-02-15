@@ -806,6 +806,9 @@ const base::Feature kServiceWorkerPaymentApps{"ServiceWorkerPaymentApps",
 const base::Feature kPaymentRequestBasicCard{"PaymentRequestBasicCard",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPaymentRequestRequiresUserActivation{
+    "PaymentRequestRequiresUserActivation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Use this feature to experiment terminating a service worker when it doesn't
 // control any clients: https://crbug.com/1043845.
 const base::Feature kServiceWorkerTerminationOnNoControllee{

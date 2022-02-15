@@ -1778,6 +1778,9 @@
       status: "experimental",
     },
     {
+      name: "PaymentRequestRequiresUserActivation",
+    },
+    {
       name: "PaymentRetry",
       status: "stable",
     },
