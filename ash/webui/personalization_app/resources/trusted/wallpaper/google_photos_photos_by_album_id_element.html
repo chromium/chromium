@@ -15,6 +15,8 @@
       image-src="[[photo.url.url]]"
       on-click="onPhotoSelected_"
       on-keypress="onPhotoSelected_"
+      selected="[[isPhotoSelected_(
+        photo, currentSelected_, pendingSelected_)]]"
       tabindex$="[[tabIndex]]">
     </wallpaper-grid-item>
   </template>

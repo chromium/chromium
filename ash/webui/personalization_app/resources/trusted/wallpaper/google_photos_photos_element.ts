@@ -215,10 +215,10 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
   // Returns whether the specified |photo| is currently selected.
   private isPhotoSelected_(
-      photo: GooglePhotosPhoto,
+      photo: GooglePhotosPhoto|null,
       currentSelected: GooglePhotosPhotos['currentSelected_'],
       pendingSelected: GooglePhotosPhotos['pendingSelected_']): boolean {
-    if (!currentSelected && !pendingSelected) {
+    if (!photo || (!currentSelected && !pendingSelected)) {
       return false;
     }
     if (isGooglePhotosPhoto(pendingSelected) &&

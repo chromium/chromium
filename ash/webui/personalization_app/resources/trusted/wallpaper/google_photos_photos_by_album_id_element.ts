@@ -11,12 +11,14 @@ import './styles.js';
 import '/common/styles.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray, isSelectionEvent} from '../../common/utils.js';
-import {GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore, WithPersonalizationStore} from '../personalization_store.js';
+import {isGooglePhotosPhoto} from '../utils.js';
 
 import {fetchGooglePhotosAlbum, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
@@ -53,6 +55,8 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
             'computeAlbum_(albumId, photosByAlbumId_, photosByAlbumIdLoading_)',
       },
 
+      currentSelected_: Object,
+      pendingSelected_: Object,
       photosByAlbumId_: Object,
       photosByAlbumIdLoading_: Object,
     };
@@ -67,6 +71,12 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   /** The list of photos for the currently selected album id. */
   private album_: GooglePhotosPhoto[]|null|undefined;
 
+  /** The currently selected wallpaper. */
+  private currentSelected_: CurrentWallpaper|null;
+
+  /** The pending selected wallpaper. */
+  private pendingSelected_: FilePath|GooglePhotosPhoto|WallpaperImage|null;
+
   /** The list of photos by album id. */
   private photosByAlbumId_: Record<string, GooglePhotosPhoto[]|null|undefined>;
 
@@ -80,6 +90,10 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   connectedCallback() {
     super.connectedCallback();
 
+    this.watch<GooglePhotosPhotosByAlbumId['currentSelected_']>(
+        'currentSelected_', state => state.wallpaper.currentSelected);
+    this.watch<GooglePhotosPhotosByAlbumId['pendingSelected_']>(
+        'pendingSelected_', state => state.wallpaper.pendingSelected);
     this.watch<GooglePhotosPhotosByAlbumId['photosByAlbumId_']>(
         'photosByAlbumId_',
         state => state.wallpaper.googlePhotos.photosByAlbumId);
@@ -132,6 +146,27 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
 
     // Once the currently selected album has been fetched it can be displayed.
     return photosByAlbumId[albumId]!;
+  }
+
+  // Returns whether the specified |photo| is currently selected.
+  private isPhotoSelected_(
+      photo: GooglePhotosPhoto|null,
+      currentSelected: GooglePhotosPhotosByAlbumId['currentSelected_'],
+      pendingSelected: GooglePhotosPhotosByAlbumId['pendingSelected_']):
+      boolean {
+    if (!photo || (!currentSelected && !pendingSelected)) {
+      return false;
+    }
+    if (isGooglePhotosPhoto(pendingSelected) &&
+        pendingSelected!.id === photo.id) {
+      return true;
+    }
+    if (!pendingSelected &&
+        currentSelected?.type === WallpaperType.kGooglePhotos &&
+        currentSelected!.key === photo.id) {
+      return true;
+    }
+    return false;
   }
 }
 
