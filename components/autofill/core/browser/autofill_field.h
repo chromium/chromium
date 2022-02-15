@@ -202,6 +202,16 @@ class AutofillField : public FormFieldData {
     return single_username_vote_type_;
   }
 
+  // Getter and Setter methods for |value_not_autofilled_over_existing_value_|.
+  void set_value_not_autofilled_over_existing_value(
+      const std::u16string& value_not_autofilled_over_existing_value) {
+    value_not_autofilled_over_existing_value_ =
+        value_not_autofilled_over_existing_value;
+  }
+  std::u16string value_not_autofilled_over_existing_value() const {
+    return value_not_autofilled_over_existing_value_;
+  }
+
   // For each type in |possible_types_| that's missing from
   // |possible_types_validities_|, will add it to the
   // |possible_types_validities_| and will set its validity to UNVALIDATED. This
@@ -299,6 +309,11 @@ class AutofillField : public FormFieldData {
   // Strength of the single username vote signal, if applicable.
   absl::optional<AutofillUploadContents::Field::SingleUsernameVoteType>
       single_username_vote_type_;
+
+  // Stores the value which is supposed to be autofilled in the field.
+  // This value is set when the field was not autofilled due to a prefilled
+  // value.
+  std::u16string value_not_autofilled_over_existing_value_;
 };
 
 }  // namespace autofill

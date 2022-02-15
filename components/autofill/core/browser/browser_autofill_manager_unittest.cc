@@ -9423,6 +9423,22 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
   EXPECT_EQ(response_data.fields[3].value, u"Test Country");
 
+  {
+    FormStructure* form_structure;
+    AutofillField* autofill_field;
+    std::vector<std::u16string> expected_values = {
+        u"Elvis Aaron Presley", u"Memphis", u"", u"United States"};
+    bool found = browser_autofill_manager_->GetCachedFormAndField(
+        form, form.fields[0], &form_structure, &autofill_field);
+    ASSERT_TRUE(found);
+    for (size_t i = 0; i < form.fields.size(); ++i) {
+      ASSERT_TRUE(form_structure->field(i)->SameFieldAs(form.fields[i]));
+      EXPECT_EQ(
+          form_structure->field(i)->value_not_autofilled_over_existing_value(),
+          expected_values[i]);
+    }
+  }
+
   features.Reset();
   features.InitAndDisableFeature(
       autofill::features::kAutofillPreventOverridingPrefilledValues);

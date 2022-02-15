@@ -1221,6 +1221,8 @@ void FormStructure::RetrieveFromCache(
       }
       field->set_server_predictions(cached_field->server_predictions());
       field->set_previously_autofilled(cached_field->previously_autofilled());
+      field->set_value_not_autofilled_over_existing_value(
+          cached_field->value_not_autofilled_over_existing_value());
 
       // Only retrieve an overall prediction from cache if a server prediction
       // is set.
