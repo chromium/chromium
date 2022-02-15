@@ -4,13 +4,14 @@
 
 package org.chromium.android_webview;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.LinkAddress;
 import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkRequest;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
@@ -23,7 +24,7 @@ import java.net.InetAddress;
  * Class to evaluate PAC scripts.
  */
 @JNINamespace("android_webview")
-@TargetApi(28)
+@RequiresApi(28)
 // TODO(amalova): remove UsedByReflection
 @UsedByReflection("Android")
 public class AwPacProcessor {

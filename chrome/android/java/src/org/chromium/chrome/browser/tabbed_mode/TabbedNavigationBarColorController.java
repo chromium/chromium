@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tabbed_mode;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.res.Resources;
 import android.os.Build;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.view.Window;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CallbackController;
@@ -40,7 +40,7 @@ import org.chromium.ui.vr.VrModeObserver;
 /**
  * Controls the bottom system navigation bar color for the provided {@link Window}.
  */
-@TargetApi(Build.VERSION_CODES.O_MR1)
+@RequiresApi(Build.VERSION_CODES.O_MR1)
 class TabbedNavigationBarColorController implements VrModeObserver {
     private final Window mWindow;
     private final ViewGroup mRootView;

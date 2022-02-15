@@ -4,11 +4,12 @@
 
 package org.chromium.components.browser_ui.notifications;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import java.util.List;
 
@@ -26,17 +27,17 @@ public interface NotificationManagerProxy {
     void cancel(int id);
     void cancel(String tag, int id);
     void cancelAll();
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     void createNotificationChannel(NotificationChannel channel);
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     void createNotificationChannelGroup(NotificationChannelGroup channelGroup);
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     List<NotificationChannel> getNotificationChannels();
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     List<NotificationChannelGroup> getNotificationChannelGroups();
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     void deleteNotificationChannel(String id);
 
     @Deprecated
@@ -46,9 +47,9 @@ public interface NotificationManagerProxy {
 
     void notify(NotificationWrapper notification);
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     NotificationChannel getNotificationChannel(String channelId);
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     void deleteNotificationChannelGroup(String groupId);
 }

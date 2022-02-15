@@ -6,7 +6,6 @@ package org.chromium.webapk.shell_apk;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -25,6 +24,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkConstants;
@@ -154,7 +155,7 @@ public class ManageDataLauncherActivity extends Activity {
      * the app's main activity will be used by default. This activity needs to define the
      * MAIN action and LAUNCHER category in order to attach the shortcut.
      */
-    @TargetApi(Build.VERSION_CODES.N_MR1)
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
     private static ShortcutInfo createSiteSettingsShortcutInfo(
             Context context, String url, String providerPackage) {
         Intent siteSettingsIntent = new Intent(context, ManageDataLauncherActivity.class);

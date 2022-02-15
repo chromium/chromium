@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.selection;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -29,6 +28,7 @@ import android.view.textclassifier.SelectionEvent;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -785,7 +785,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         new MenuInflater(context).inflate(R.menu.select_action_menu, menu);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public static void setPasteAsPlainTextMenuItemTitle(Menu menu) {
         MenuItem item = menu.findItem(R.id.select_action_menu_paste_as_plain_text);
         if (item == null) return;
@@ -905,12 +905,12 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static Intent createProcessTextIntent() {
         return new Intent().setAction(Intent.ACTION_PROCESS_TEXT).setType("text/plain");
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private Intent createProcessTextIntentForResolveInfo(ResolveInfo info) {
         boolean isReadOnly = !isFocusedNodeEditable();
         return createProcessTextIntent()

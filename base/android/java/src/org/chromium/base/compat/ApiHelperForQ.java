@@ -5,7 +5,6 @@
 package org.chromium.base.compat;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
@@ -21,6 +20,8 @@ import android.provider.MediaStore;
 import android.telephony.CellInfo;
 import android.telephony.TelephonyManager;
 import android.view.MotionEvent;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.VerifiesOnQ;
@@ -39,7 +40,7 @@ import java.util.concurrent.Executor;
  * encountering the new APIs.
  */
 @VerifiesOnQ
-@TargetApi(Build.VERSION_CODES.Q)
+@RequiresApi(Build.VERSION_CODES.Q)
 public final class ApiHelperForQ {
     private ApiHelperForQ() {}
 

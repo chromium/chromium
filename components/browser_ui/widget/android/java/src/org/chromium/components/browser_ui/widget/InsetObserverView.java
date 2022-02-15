@@ -4,13 +4,14 @@
 
 package org.chromium.components.browser_ui.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.DisplayCutout;
 import android.view.View;
 import android.view.WindowInsets;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ObserverList;
 
@@ -134,7 +135,7 @@ public class InsetObserverView extends View {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     private static class InsetObserverViewApi28 extends InsetObserverView {
         private Rect mCurrentSafeArea = new Rect();
 

@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.widget.async_image;
 
-import android.annotation.TargetApi;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Animatable2;
 import android.graphics.drawable.Drawable;
@@ -17,6 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.graphics.drawable.DrawableWrapper;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 
@@ -80,7 +80,7 @@ public class AutoAnimatorDrawable extends DrawableWrapper {
         return found.get();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static void attachRestartListeners(@Nullable Drawable drawable) {
         AutoAnimatorDrawable.animatedDrawableHelper(drawable, animatable -> {
             if (animatable instanceof Animatable2Compat) {
@@ -162,7 +162,7 @@ public class AutoAnimatorDrawable extends DrawableWrapper {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static final class AutoRestarter extends Animatable2.AnimationCallback {
         // Animatable2.AnimationCallback implementation.
         @Override

@@ -4,12 +4,12 @@
 
 package org.chromium.components.content_capture;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.view.ViewStructure;
 import android.view.autofill.AutofillId;
 import android.view.contentcapture.ContentCaptureSession;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.VerifiesOnQ;
@@ -20,7 +20,7 @@ import org.chromium.base.annotations.VerifiesOnQ;
  * the crash.
  */
 @VerifiesOnQ
-@TargetApi(Build.VERSION_CODES.Q)
+@RequiresApi(Build.VERSION_CODES.Q)
 public abstract class PlatformAPIWrapper {
     private static PlatformAPIWrapper sImpl;
     public static PlatformAPIWrapper getInstance() {

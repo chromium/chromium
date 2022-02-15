@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.directactions;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * <p>To extend the set of direct actions beyond what's provided by this class, register handlers to
  * the coordinator {@code mCoordinator}.
  */
-@TargetApi(29)
+@RequiresApi(29)
 public class DirectActionInitializer implements NativeInitObserver, DestroyObserver {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;

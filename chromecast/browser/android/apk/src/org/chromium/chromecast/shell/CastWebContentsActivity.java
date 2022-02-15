@@ -4,7 +4,6 @@
 
 package org.chromium.chromecast.shell;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.PictureInPictureParams;
 import android.content.Context;
@@ -22,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.chromium.base.Log;
@@ -176,7 +176,7 @@ public class CastWebContentsActivity extends Activity {
         }));
     }
 
-    @TargetApi(Build.VERSION_CODES.S)
+    @RequiresApi(Build.VERSION_CODES.S)
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         if (DEBUG) Log.d(TAG, "onCreate");
@@ -250,7 +250,7 @@ public class CastWebContentsActivity extends Activity {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void onUserLeaveHint() {
         if (canUsePictureInPicture() && !canAutoEnterPictureInPicture()) {

@@ -4,7 +4,6 @@
 
 package org.chromium.weblayer_private;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +11,7 @@ import android.content.IntentSender;
 import android.os.Build;
 import android.view.View;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
@@ -115,7 +115,7 @@ public class FragmentWindowAndroid extends WindowAndroid {
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void setWideColorEnabled(boolean enabled) {
         // WebLayer should not change its behavior when the content contains wide color.
         // Rather, the app embedding the WebLayer gets to choose whether or not it is wide.

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -15,6 +14,7 @@ import android.os.Environment;
 import android.provider.MediaStore.MediaColumns;
 import android.text.format.DateUtils;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContentUriUtils;
@@ -93,7 +93,7 @@ public class OfflinePageArchivePublisherBridge {
     }
 
     // Use this pass through for API levels 24 and higher.
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     private static long callAddCompletedDownload(String title, String description, String path,
             long length, String uri, String referer) {
         DownloadManager downloadManager = getDownloadManager();

@@ -4,10 +4,11 @@
 
 package com.android.webview.chromium;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
@@ -22,7 +23,7 @@ import org.chromium.base.annotations.VerifiesOnOMR1;
  * specific to glue layer.
  */
 @VerifiesOnOMR1
-@TargetApi(Build.VERSION_CODES.O_MR1)
+@RequiresApi(Build.VERSION_CODES.O_MR1)
 public final class GlueApiHelperForOMR1 {
     private GlueApiHelperForOMR1() {}
 

@@ -32,7 +32,10 @@ android_library("runtime_library_for_assets_java") {
   sources =
       [ "src/org/chromium/webapk/lib/runtime_library/WebApkServiceImpl.java" ]
   srcjar_deps = [ ":webapk_service_aidl" ]
-  deps = [ "//third_party/androidx:androidx_core_core_java" ]
+  deps = [
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
 }
 
 # The subset of runtime_library_from_assets_java needed for tests.
@@ -41,6 +44,7 @@ android_library("runtime_library_for_tests_java") {
       [ "src/org/chromium/webapk/lib/runtime_library/WebApkServiceImpl.java" ]
   deps = [
     ":webapk_service_aidl_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
   ]
 }

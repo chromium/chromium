@@ -4,9 +4,10 @@
 
 package org.chromium.content.browser.accessibility;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.view.ViewStructure;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.content.browser.RenderCoordinatesImpl;
 
@@ -17,7 +18,7 @@ public class OViewStructureBuilder extends ViewStructureBuilder {
         super(renderCoordinates);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     protected void setViewStructureNodeHtmlInfo(
             ViewStructure node, String htmlTag, String cssDisplay, String[][] htmlAttributes) {

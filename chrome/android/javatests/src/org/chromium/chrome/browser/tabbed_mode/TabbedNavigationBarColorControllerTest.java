@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.junit.Assert.assertEquals;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.view.Window;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -47,7 +47,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MinAndroidSdkLevel(Build.VERSION_CODES.O_MR1)
-@TargetApi(Build.VERSION_CODES.O_MR1)
+@RequiresApi(Build.VERSION_CODES.O_MR1)
 @SuppressLint("NewApi")
 public class TabbedNavigationBarColorControllerTest {
     @Rule

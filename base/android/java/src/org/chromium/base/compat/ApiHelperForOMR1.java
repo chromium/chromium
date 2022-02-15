@@ -4,9 +4,10 @@
 
 package org.chromium.base.compat;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.view.Window;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.VerifiesOnOMR1;
 
@@ -16,7 +17,7 @@ import org.chromium.base.annotations.VerifiesOnOMR1;
  * encountering the new APIs.
  */
 @VerifiesOnOMR1
-@TargetApi(Build.VERSION_CODES.O_MR1)
+@RequiresApi(Build.VERSION_CODES.O_MR1)
 public final class ApiHelperForOMR1 {
     private ApiHelperForOMR1() {}
 

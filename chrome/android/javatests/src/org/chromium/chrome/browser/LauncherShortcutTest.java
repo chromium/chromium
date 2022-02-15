@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -12,6 +11,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -53,7 +53,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@TargetApi(VERSION_CODES.N_MR1)
+@RequiresApi(VERSION_CODES.N_MR1)
 @MinAndroidSdkLevel(Build.VERSION_CODES.N_MR1)
 public class LauncherShortcutTest {
     // clang-format on

@@ -4,16 +4,17 @@
 
 package com.android.webview.chromium;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.webkit.WebResourceError;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
 
 /**
  * Chromium implementation of {@link WebResourceError}.
  */
-@TargetApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.M)
 public class WebResourceErrorAdapter extends WebResourceError {
     private final AwWebResourceError mError;
 

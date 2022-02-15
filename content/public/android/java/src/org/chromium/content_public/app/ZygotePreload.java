@@ -5,11 +5,12 @@
 package org.chromium.content_public.app;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.os.Process;
 import android.os.SystemClock;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.JNIUtils;
 import org.chromium.base.Log;
@@ -25,7 +26,7 @@ import org.chromium.components.version_info.VersionConstants;
  * so care must be taken when writing code in this class. Eg it should not
  * create any thread.
  */
-@TargetApi(Build.VERSION_CODES.Q)
+@RequiresApi(Build.VERSION_CODES.Q)
 public class ZygotePreload implements android.app.ZygotePreload {
     private static final String TAG = "ZygotePreload";
 

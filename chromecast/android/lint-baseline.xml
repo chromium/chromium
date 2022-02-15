@@ -41,7 +41,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chromecast/media/cma/backend/android/java/src/org/chromium/chromecast/cma/backend/android/VolumeControl.java"
-            line="93"
+            line="94"
             column="17"/>
     </issue>
 

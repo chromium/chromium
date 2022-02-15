@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.portals;
 
-import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
@@ -16,6 +15,7 @@ import android.support.test.uiautomator.UiSelector;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -552,12 +552,12 @@ public class PortalsTest {
     private NotificationPredicate mMediaPlaybackNotificationPred =
             notification -> notification.getId() == R.id.media_playback_notification;
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private void waitForNotification(NotificationPredicate pred) {
         waitForNotification(pred, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private void waitForNotification(NotificationPredicate pred, long maxTimeoutMs) {
         CriteriaHelper.pollInstrumentationThread(() -> {
             StatusBarNotification notifications[] =
@@ -573,7 +573,7 @@ public class PortalsTest {
         }, maxTimeoutMs, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private void waitForNoNotifications(NotificationPredicate pred) {
         CriteriaHelper.pollInstrumentationThread(() -> {
             StatusBarNotification notifications[] =

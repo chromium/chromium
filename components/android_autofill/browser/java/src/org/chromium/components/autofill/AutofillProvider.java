@@ -4,7 +4,6 @@
 
 package org.chromium.components.autofill;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.Rect;
@@ -17,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.autofill.AutofillValue;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -57,7 +57,7 @@ import java.util.ArrayList;
  * VerifiesOnO since it causes class verification errors, see crbug.com/991851.
  */
 @VerifiesOnO
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 @JNINamespace("autofill")
 public class AutofillProvider {
     private static final String TAG = "AutofillProvider";

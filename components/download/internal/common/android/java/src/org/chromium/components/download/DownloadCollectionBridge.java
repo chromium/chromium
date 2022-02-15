@@ -4,7 +4,6 @@
 
 package org.chromium.components.download;
 
-import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -19,6 +18,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -145,7 +145,7 @@ public class DownloadCollectionBridge {
      * @return True on success, or false otherwise.
      */
     @CalledByNative
-    @TargetApi(29)
+    @RequiresApi(29)
     public static boolean copyFileToIntermediateUri(
             final String sourcePath, final String destinationUri) {
         try {
@@ -265,7 +265,7 @@ public class DownloadCollectionBridge {
      * @return an array of download Uri and display name pair.
      */
     @CalledByNative
-    @TargetApi(29)
+    @RequiresApi(29)
     private static DisplayNameInfo[] getDisplayNamesForDownloads() {
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         Cursor cursor = null;
@@ -303,7 +303,7 @@ public class DownloadCollectionBridge {
      * @param fileName name of the file.
      * @return Uri of the download with the given display name.
      */
-    @TargetApi(29)
+    @RequiresApi(29)
     public static Uri getDownloadUriForFileName(String fileName) {
         Cursor cursor = null;
         try {
@@ -360,7 +360,7 @@ public class DownloadCollectionBridge {
      * @param referrer Referrer of the download.
      * @return PendingParams needed for creating the PendingSession.
      */
-    @TargetApi(29)
+    @RequiresApi(29)
     private static PendingParams createPendingParams(final String fileName, final String mimeType,
             final String originalUrl, final String referrer) {
         Uri downloadsUri = Downloads.EXTERNAL_CONTENT_URI;

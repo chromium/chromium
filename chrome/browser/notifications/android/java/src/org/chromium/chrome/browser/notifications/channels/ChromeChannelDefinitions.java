@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.notifications.channels;
 
-import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.os.Build;
 import android.text.TextUtils;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringDef;
 
 import org.chromium.chrome.browser.notifications.R;
@@ -36,7 +36,7 @@ import java.util.Set;
  * <br/>
  * See the README.md in this directory for more information before adding or changing any channels.
  */
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public class ChromeChannelDefinitions extends ChannelDefinitions {
     /**
      * Version number identifying the current set of channels. This must be incremented whenever the
@@ -109,7 +109,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     }
 
     // Map defined in static inner class so it's only initialized lazily.
-    @TargetApi(Build.VERSION_CODES.N) // for NotificationManager.IMPORTANCE_* constants
+    @RequiresApi(Build.VERSION_CODES.N) // for NotificationManager.IMPORTANCE_* constants
     private static class PredefinedChannels {
         /**
          * Definitions for predefined channels. Any channel listed in STARTUP must have an entry in

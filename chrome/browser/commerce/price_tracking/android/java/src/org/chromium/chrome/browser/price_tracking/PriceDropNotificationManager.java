@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.price_tracking;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -19,6 +18,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONArray;
@@ -402,7 +402,7 @@ public class PriceDropNotificationManager {
     /**
      * Create the notification channel for price drop notifications.
      */
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void createNotificationChannel() {
         NotificationChannel channel = getNotificationChannel();
         if (channel != null) return;
@@ -454,7 +454,7 @@ public class PriceDropNotificationManager {
      * @return The price drop notification channel.
      */
     @VisibleForTesting
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public NotificationChannel getNotificationChannel() {
         return mNotificationManager.getNotificationChannel(
                 ChromeChannelDefinitions.ChannelId.PRICE_DROP);
@@ -485,7 +485,7 @@ public class PriceDropNotificationManager {
      * Delete price drop notification channel for testing.
      */
     @VisibleForTesting
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void deleteChannelForTesting() {
         mNotificationManager.deleteNotificationChannel(
                 ChromeChannelDefinitions.ChannelId.PRICE_DROP);

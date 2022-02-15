@@ -4,7 +4,6 @@
 
 package org.chromium.components.webapps;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -21,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -153,7 +153,7 @@ public class AddToHomescreenDialogView
         mIconView.setVisibility(View.VISIBLE);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private void setAdaptiveIcon(Bitmap icon) {
         mIconView.setImageIcon(Icon.createWithAdaptiveBitmap(icon));
     }

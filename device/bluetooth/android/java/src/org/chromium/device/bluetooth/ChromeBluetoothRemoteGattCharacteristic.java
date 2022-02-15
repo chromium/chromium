@@ -4,8 +4,9 @@
 
 package org.chromium.device.bluetooth;
 
-import android.annotation.TargetApi;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 @JNINamespace("device")
 @JNIAdditionalImport(Wrappers.class)
-@TargetApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.M)
 final class ChromeBluetoothRemoteGattCharacteristic {
     private static final String TAG = "Bluetooth";
 

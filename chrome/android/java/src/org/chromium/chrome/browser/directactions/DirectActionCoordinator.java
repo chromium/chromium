@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.directactions;
 
-import android.annotation.TargetApi;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  * aware of them to make use of them. For this to work, if you add a new action here, please list it
  * and document it in http://go.ext.google.com/chrome-direct-action-list
  */
-@TargetApi(29)
+@RequiresApi(29)
 public abstract class DirectActionCoordinator {
     private final Set<DirectActionHandler> mHandlers = new LinkedHashSet<>();
 

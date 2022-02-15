@@ -4,7 +4,6 @@
 
 package org.chromium.ui.base;
 
-import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -17,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.inputmethod.InputConnection;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 
@@ -184,7 +184,7 @@ public class ViewAndroidDelegate {
      * @param dropData The drop data presenting the drag target.
      */
     @SuppressWarnings("deprecation")
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     @CalledByNative
     private boolean startDragAndDrop(Bitmap shadowImage, DropDataAndroid dropData) {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) return false;

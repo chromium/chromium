@@ -22,10 +22,10 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -74,7 +74,7 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @MediumTest
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     @DisabledTest(message = "https://crbug.com/1231616")
     public void testMoveTabsAcrossWindow_GTS_WithoutGroup() {
         final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
@@ -157,7 +157,7 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @MediumTest
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     @Features.
     EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.TAB_REPARENTING})
     @DisabledTest(message = "https://crbug.com/1163569")
@@ -243,7 +243,7 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @MediumTest
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
         ChromeFeatureList.TAB_REPARENTING})

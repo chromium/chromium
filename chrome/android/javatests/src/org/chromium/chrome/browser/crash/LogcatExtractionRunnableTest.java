@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.crash;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.app.job.JobWorkItem;
@@ -15,6 +14,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -62,7 +62,7 @@ public class LogcatExtractionRunnableTest {
         }
     };
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static class TestJobScheduler extends JobScheduler {
         TestJobScheduler() {}
 

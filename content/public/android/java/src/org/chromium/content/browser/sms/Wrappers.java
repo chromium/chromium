@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.sms;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -12,6 +11,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Handler;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.auth.api.phone.SmsCodeBrowserClient;
 import com.google.android.gms.auth.api.phone.SmsCodeRetriever;
@@ -105,7 +106,7 @@ class Wrappers {
         }
 
         @Override
-        @TargetApi(Build.VERSION_CODES.O)
+        @RequiresApi(Build.VERSION_CODES.O)
         public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
                 String permission, Handler handler, int flags) {
             onRegisterReceiver(receiver, filter);
@@ -113,7 +114,7 @@ class Wrappers {
         }
 
         @Override
-        @TargetApi(Build.VERSION_CODES.O)
+        @RequiresApi(Build.VERSION_CODES.O)
         public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, int flags) {
             throw new RuntimeException(); // Not implemented.
         }

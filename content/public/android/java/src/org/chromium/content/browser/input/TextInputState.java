@@ -4,11 +4,11 @@
 
 package org.chromium.content.browser.input;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.inputmethod.SurroundingText;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
@@ -98,7 +98,7 @@ public class TextInputState {
                 mText, Math.max(0, mSelection.start() - maxChars), mSelection.start());
     }
 
-    @TargetApi(Build.VERSION_CODES.S)
+    @RequiresApi(Build.VERSION_CODES.S)
     public SurroundingText getSurroundingText(int beforeLength, int afterLength) {
         SurroundingTextInternal surroundingText =
                 getSurroundingTextInternal(beforeLength, afterLength);

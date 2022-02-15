@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.webauth.authenticator;
 
 import android.Manifest.permission;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.bluetooth.BluetoothAdapter;
@@ -27,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
@@ -518,13 +518,13 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
     }
 
     // This class should not be reachable on Android versions < N (API level 24).
-    @TargetApi(24)
+    @RequiresApi(24)
     private static boolean hasScreenLockConfigured(Context context) {
         KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         return km.isDeviceSecure();
     }
 
-    @TargetApi(31)
+    @RequiresApi(31)
     private boolean haveBluetoothPermissions() {
         return getContext().checkSelfPermission(permission.BLUETOOTH_CONNECT)
                 == PackageManager.PERMISSION_GRANTED
@@ -537,7 +537,7 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
      *
      * @return true if permissions were requested.
      */
-    @TargetApi(31)
+    @RequiresApi(31)
     private boolean requestBluetoothPermissions() {
         if (!haveBluetoothPermissions()) {
             if (shouldShowRequestPermissionRationale(permission.BLUETOOTH_CONNECT)

@@ -4,7 +4,6 @@
 
 package org.chromium.base;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -45,6 +44,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.annotations.VerifiesOnLollipopMR1;
@@ -70,7 +70,7 @@ public class ApiCompatibilityUtils {
     }
 
     @VerifiesOnQ
-    @TargetApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Build.VERSION_CODES.Q)
     private static class ApisQ {
         static boolean isRunningInUserTestHarness() {
             return ActivityManager.isRunningInUserTestHarness();
@@ -97,7 +97,7 @@ public class ApiCompatibilityUtils {
     }
 
     @VerifiesOnP
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     private static class ApisP {
         static String getProcessName() {
             return Application.getProcessName();
@@ -109,7 +109,7 @@ public class ApiCompatibilityUtils {
     }
 
     @VerifiesOnO
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private static class ApisO {
         static void initNotificationSettingsIntent(Intent intent, String packageName) {
             intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
@@ -128,14 +128,14 @@ public class ApiCompatibilityUtils {
     }
 
     @VerifiesOnN
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     private static class ApisN {
         static String toHtml(Spanned spanned, int option) {
             return Html.toHtml(spanned, option);
         }
 
         // This class is sufficiently small that it's fine if it doesn't verify for N devices.
-        @TargetApi(Build.VERSION_CODES.N_MR1)
+        @RequiresApi(Build.VERSION_CODES.N_MR1)
         static boolean isDemoUser() {
             UserManager userManager =
                     (UserManager) ContextUtils.getApplicationContext().getSystemService(
@@ -153,7 +153,7 @@ public class ApiCompatibilityUtils {
     }
 
     @VerifiesOnM
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static class ApisM {
         public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
             int systemUiVisibility = rootView.getSystemUiVisibility();

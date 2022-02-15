@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.input;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -16,6 +15,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+
+import androidx.annotation.RequiresApi;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -504,7 +505,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     // Note that deleteSurroundingTextInCodePoints() was introduced in Android N (Api level 24), but
     // the Android repository used in Chrome is behind that (level 23). So this function can't be
     // called by keyboard apps currently.
-    @TargetApi(24)
+    @RequiresApi(24)
     boolean deleteSurroundingTextInCodePoints(final int before, final int after) throws Exception {
         final ThreadedInputConnection connection = (ThreadedInputConnection) mConnection;
         return runBlockingOnImeThread(new Callable<Boolean>() {

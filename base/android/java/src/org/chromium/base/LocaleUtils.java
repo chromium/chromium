@@ -4,7 +4,6 @@
 
 package org.chromium.base;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -168,7 +167,7 @@ public class LocaleUtils {
      * @return a well-formed IETF BCP 47 language tag with language and country code that
      *         represents this locale list.
      */
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     public static String toLanguageTags(LocaleList localeList) {
         ArrayList<String> newLocaleList = new ArrayList<>();
         for (int i = 0; i < localeList.size(); i++) {

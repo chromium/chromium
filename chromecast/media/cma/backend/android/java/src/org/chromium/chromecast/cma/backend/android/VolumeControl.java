@@ -4,7 +4,6 @@
 
 package org.chromium.chromecast.cma.backend.android;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +12,8 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -36,7 +37,7 @@ import org.chromium.chromecast.media.AudioContentType;
  * intents and reports detected changes back to the native volume controller code.
  */
 @JNINamespace("chromecast::media")
-@TargetApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.M)
 class VolumeControl {
     /**
      * Helper class storing settings and reading/writing volume and mute settings from/to Android's

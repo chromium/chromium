@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.selection;
 
-import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.ActionMode;
@@ -12,12 +11,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.RequiresApi;
+
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 
 /**
  * A class thatextends ActionMode.Callback2 to support floating ActionModes.
  */
-@TargetApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.M)
 public class FloatingActionModeCallback extends ActionMode.Callback2 {
     private final ActionModeCallbackHelper mHelper;
     private final ActionMode.Callback mCallback;

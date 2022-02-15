@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.directactions;
 import static org.junit.Assert.assertThat;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -38,7 +38,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME)
 @MinAndroidSdkLevel(Build.VERSION_CODES.N)
-@TargetApi(24) // For java.util.function.Consumer.
+@RequiresApi(24) // For java.util.function.Consumer.
 public class DirectActionAvailabilityCustomTabTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();

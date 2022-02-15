@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.init;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +14,7 @@ import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.base.CommandLine;
@@ -722,7 +722,7 @@ public class ProcessInitializationHandler {
     /**
      * Logs a histogram with the size of the Android EGL shader cache.
      */
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     private static void logEGLShaderCacheSizeHistogram() {
         // To simplify logic, only log this value on Android N+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {

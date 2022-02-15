@@ -4,7 +4,6 @@
 
 package org.chromium.components.strictmode;
 
-import android.annotation.TargetApi;
 import android.app.ApplicationErrorReport;
 import android.os.Build;
 import android.os.StrictMode;
@@ -15,6 +14,7 @@ import android.os.strictmode.ResourceMismatchViolation;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Consumer;
 import org.chromium.base.Function;
@@ -147,7 +147,7 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
     /**
      * Computes the violation type based on the class of the passed-in violation.
      */
-    @TargetApi(29)
+    @RequiresApi(29)
     private static int computeViolationTypeAndroid10(Class<?> violationClass) {
         if (DiskReadViolation.class.isAssignableFrom(violationClass)) {
             return Violation.DETECT_DISK_READ;

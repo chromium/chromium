@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -29,25 +30,25 @@ public class NotificationSettingsBridge {
      *                it should start off as blocked.
      * @return The channel created for this origin.
      */
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @CalledByNative
     static SiteChannel createChannel(String origin, long creationTime, boolean enabled) {
         return SiteChannelsManager.getInstance().createSiteChannel(origin, creationTime, enabled);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @CalledByNative
     static @NotificationChannelStatus int getChannelStatus(String channelId) {
         return SiteChannelsManager.getInstance().getChannelStatus(channelId);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @CalledByNative
     static SiteChannel[] getSiteChannels() {
         return SiteChannelsManager.getInstance().getSiteChannels();
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @CalledByNative
     static void deleteChannel(String channelId) {
         SiteChannelsManager.getInstance().deleteSiteChannel(channelId);
@@ -56,7 +57,7 @@ public class NotificationSettingsBridge {
     /**
      * Helper type for passing site channel objects across the JNI.
      */
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public static class SiteChannel {
         private final String mId;
         private final String mOrigin;

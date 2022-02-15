@@ -4,12 +4,13 @@
 
 package org.chromium.components.browser_ui.notifications.channels;
 
-import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.res.Resources;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -23,7 +24,7 @@ import java.util.Set;
 /**
  * Initializes our notification channels.
  */
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public class ChannelsInitializer {
     private final NotificationManagerProxy mNotificationManager;
     private ChannelDefinitions mChannelDefinitions;

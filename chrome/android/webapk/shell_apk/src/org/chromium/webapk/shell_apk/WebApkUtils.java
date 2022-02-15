@@ -5,7 +5,6 @@
 package org.chromium.webapk.shell_apk;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -31,6 +30,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
@@ -319,7 +320,7 @@ public class WebApkUtils {
 
     /** Returns the ComponentName for the top activity in {@link taskId}'s task stack. */
     @SuppressLint("NewApi") // See crbug.com/1081331 for context.
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public static ComponentName fetchTopActivityComponent(Context context, int taskId) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return null;

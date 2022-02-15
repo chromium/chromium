@@ -5,7 +5,6 @@
 package org.chromium.weblayer.test;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.test.filters.MediumTest;
 
@@ -71,7 +71,7 @@ public final class GeolocationTest {
             + "      gotPos, errorCallback, {});"
             + "}";
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private class PermissionCompatDelegate implements ActivityCompat.PermissionCompatDelegate {
         private CallbackHelper mCallbackHelper = new CallbackHelper();
 

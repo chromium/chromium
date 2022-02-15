@@ -5,7 +5,6 @@
 package org.chromium.content.browser.selection;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
@@ -17,6 +16,7 @@ import android.view.textclassifier.TextSelection;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForP;
@@ -93,7 +93,7 @@ public class SmartSelectionProvider {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void setTextClassifier(TextClassifier textClassifier) {
         mTextClassifier = textClassifier;
 
@@ -107,7 +107,7 @@ public class SmartSelectionProvider {
 
     // TODO(wnwen): Remove this suppression once the constant is added to lint.
     @SuppressLint("WrongConstant")
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public TextClassifier getTextClassifier() {
         if (mTextClassifier != null) return mTextClassifier;
 
@@ -126,7 +126,7 @@ public class SmartSelectionProvider {
         return mTextClassifier;
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private TextClassifier getTextClassificationSession() {
         if (mWindowAndroid == null) {
             return null;
@@ -145,7 +145,7 @@ public class SmartSelectionProvider {
         return textClassifierSession;
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private void sendSmartSelectionRequest(
             @RequestType int requestType, CharSequence text, int start, int end) {
         TextClassifier classifier = getTextClassificationSession();
@@ -166,7 +166,7 @@ public class SmartSelectionProvider {
         mClassificationTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private class ClassificationTask extends AsyncTask<SelectionClient.Result> {
         private final TextClassifier mTextClassifier;
         private final @RequestType int mRequestType;

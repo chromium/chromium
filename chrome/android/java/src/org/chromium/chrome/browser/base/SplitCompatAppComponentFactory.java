@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.base;
 
 import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AppComponentFactory;
 import android.content.BroadcastReceiver;
@@ -14,6 +13,8 @@ import android.content.ContentProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
@@ -28,7 +29,7 @@ import org.chromium.base.Log;
  * Note: this workaround is not needed for services, since they always uses the base module's
  * ClassLoader, see b/169196314 for more details.
  */
-@TargetApi(Build.VERSION_CODES.P)
+@RequiresApi(Build.VERSION_CODES.P)
 public class SplitCompatAppComponentFactory extends AppComponentFactory {
     private static final String TAG = "SplitCompat";
 

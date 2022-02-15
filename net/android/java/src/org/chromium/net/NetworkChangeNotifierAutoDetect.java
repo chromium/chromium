@@ -11,7 +11,6 @@ import static android.net.NetworkCapabilities.TRANSPORT_VPN;
 
 import android.Manifest.permission;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +30,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.telephony.TelephonyManager;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
@@ -401,7 +401,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
          * Registers networkCallback to receive notifications about default network.
          * Only callable on P and newer releases.
          */
-        @TargetApi(Build.VERSION_CODES.P)
+        @RequiresApi(Build.VERSION_CODES.P)
         void registerDefaultNetworkCallback(NetworkCallback networkCallback, Handler handler) {
             ApiHelperForO.registerDefaultNetworkCallback(
                     mConnectivityManager, networkCallback, handler);
@@ -569,7 +569,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     // 2. Catches onCapabilitiesChanged() which includes cellular connections transitioning to and
     //    from SUSPENDED states.  Failing to catch this could leave the NetworkChangeNotifier in
     //    an incorrect disconnected state, see crbug.com/1120144.
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     private class AndroidRDefaultNetworkCallback extends NetworkCallback {
         LinkProperties mLinkProperties;
         NetworkCapabilities mNetworkCapabilities;

@@ -4,7 +4,6 @@
 
 package org.chromium.weblayer.test;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -15,6 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.PixelCopy;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.test.filters.SmallTest;
 
@@ -46,7 +46,7 @@ public class SmokeTest {
             new InstrumentationActivityTestRule();
 
     // Should be used only for solid color pages, since the window is downsampled significantly.
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private int getWindowCenterPixelColor(Activity activity) {
         BoundedCountDownLatch latch = new BoundedCountDownLatch(1);
         Bitmap bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888, /*hasAlpha=*/true);

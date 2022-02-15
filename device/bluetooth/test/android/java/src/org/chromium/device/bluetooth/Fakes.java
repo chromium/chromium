@@ -5,7 +5,6 @@
 package org.chromium.device.bluetooth;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanSettings;
@@ -18,6 +17,8 @@ import android.os.Build;
 import android.os.ParcelUuid;
 import android.test.mock.MockContext;
 import android.util.SparseArray;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -41,7 +42,7 @@ import java.util.UUID;
  * each of these classes.
  */
 @JNINamespace("device")
-@TargetApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.M)
 class Fakes {
     private static final String TAG = "Bluetooth";
 

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import android.annotation.TargetApi;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
@@ -15,6 +14,8 @@ import android.os.Build;
 import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -72,7 +73,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
             }
         }
 
-        @TargetApi(Build.VERSION_CODES.N)
+        @RequiresApi(Build.VERSION_CODES.N)
         private static void putJobScheduledTimeInExtras(PersistableBundle extras) {
             extras.putLong(NotificationConstants.EXTRA_JOB_SCHEDULED_TIME_MS,
                     SystemClock.elapsedRealtime());

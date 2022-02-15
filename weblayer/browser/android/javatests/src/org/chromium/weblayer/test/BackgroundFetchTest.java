@@ -6,13 +6,13 @@ package org.chromium.weblayer.test;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
@@ -125,7 +125,7 @@ public class BackgroundFetchTest {
      *         will do.
      * @return The matched notification, or null.
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private Notification getBackgroundFetchNotification(String expectedTitle) {
         StatusBarNotification notifications[] =
                 ((NotificationManager) mActivity.getApplicationContext().getSystemService(

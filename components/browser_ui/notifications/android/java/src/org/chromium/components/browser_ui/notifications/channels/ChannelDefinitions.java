@@ -4,13 +4,14 @@
 
 package org.chromium.components.browser_ui.notifications.channels;
 
-import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.content.res.Resources;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.Set;
  * See the README.md alongside ChromeChannelDefinitions.java for more information before adding or
  * changing any channels.
  */
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public abstract class ChannelDefinitions {
     /**
      * @return A set of all known channel group ids that can be used for {@link #getChannelGroup}.

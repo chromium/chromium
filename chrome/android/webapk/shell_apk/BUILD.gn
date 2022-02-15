@@ -92,7 +92,10 @@ template("webapk_with_service_java") {
       "src/org/chromium/webapk/shell_apk/WebApkServiceFactory.java",
       "src/org/chromium/webapk/shell_apk/WebApkServiceImplWrapper.java",
     ]
-    deps += [ ":compiled_in_runtime_library_java" ]
+    deps += [
+      ":compiled_in_runtime_library_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
   }
 }
 

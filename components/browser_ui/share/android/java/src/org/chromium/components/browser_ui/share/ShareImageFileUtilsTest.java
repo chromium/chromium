@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.share;
 
-import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -19,6 +18,7 @@ import android.os.Environment;
 import android.os.Looper;
 import android.provider.MediaStore;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -164,7 +164,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         waitForAsync();
     }
 
-    @TargetApi(29)
+    @RequiresApi(29)
     private void deleteMediaStoreFiles() {
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
         Cursor cursor =

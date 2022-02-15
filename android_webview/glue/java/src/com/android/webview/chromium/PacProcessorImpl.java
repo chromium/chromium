@@ -4,15 +4,16 @@
 
 package com.android.webview.chromium;
 
-import android.annotation.TargetApi;
 import android.net.Network;
 import android.webkit.PacProcessor;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwPacProcessor;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 
-@TargetApi(28)
+@RequiresApi(28)
 final class PacProcessorImpl implements PacProcessor {
     static {
         JNIUtils.setClassLoader(WebViewChromiumFactoryProvider.class.getClassLoader());

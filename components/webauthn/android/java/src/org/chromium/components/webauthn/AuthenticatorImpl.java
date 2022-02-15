@@ -4,12 +4,13 @@
 
 package org.chromium.components.webauthn;
 
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.util.Pair;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -154,7 +155,7 @@ public final class AuthenticatorImpl implements Authenticator {
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     public void isUserVerifyingPlatformAuthenticatorAvailable(
             final IsUserVerifyingPlatformAuthenticatorAvailable_Response callback) {
         IsUserVerifyingPlatformAuthenticatorAvailable_Response decoratedCallback = (isUvpaa) -> {

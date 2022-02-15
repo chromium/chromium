@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.os.Build;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -363,7 +363,7 @@ public class NotificationUmaTracker {
         recordHistogram("Mobile.SystemNotification.Shown", type);
     }
 
-    @TargetApi(26)
+    @RequiresApi(26)
     private boolean isChannelBlocked(@ChromeChannelDefinitions.ChannelId String channelId) {
         NotificationChannelCompat channel =
                 mNotificationManager.getNotificationChannelCompat(channelId);

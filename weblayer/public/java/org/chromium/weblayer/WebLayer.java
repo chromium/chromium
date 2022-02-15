@@ -4,7 +4,6 @@
 
 package org.chromium.weblayer;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -22,6 +21,7 @@ import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
@@ -832,7 +832,7 @@ public class WebLayer {
 
     /** Utility class to use new APIs that were added in O (API level 26). */
     @VerifiesOnO
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     /* package */ static final class ApiHelperForO {
         /** See {@link Context.createContextForSplit(String) }. */
         public static Context createContextForSplit(Context context, String name)
@@ -852,7 +852,7 @@ public class WebLayer {
     }
 
     @VerifiesOnR
-    @TargetApi(Build.VERSION_CODES.R)
+    @RequiresApi(Build.VERSION_CODES.R)
     private static final class ApiHelperForR {
         /** See {@link Context.getAttributionTag() }. */
         public static String getAttributionTag(Context context) {

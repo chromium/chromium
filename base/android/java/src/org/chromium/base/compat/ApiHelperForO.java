@@ -5,7 +5,6 @@
 package org.chromium.base.compat;
 
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
 import android.content.BroadcastReceiver;
@@ -26,6 +25,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.autofill.AutofillManager;
 
+import androidx.annotation.RequiresApi;
+
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.VerifiesOnO;
 
@@ -35,7 +36,7 @@ import org.chromium.base.annotations.VerifiesOnO;
  * encountering the new APIs.
  */
 @VerifiesOnO
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public final class ApiHelperForO {
     private ApiHelperForO() {}
 

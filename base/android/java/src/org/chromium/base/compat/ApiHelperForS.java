@@ -5,7 +5,6 @@
 package org.chromium.base.compat;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.app.PictureInPictureParams;
 import android.content.ClipData;
@@ -21,6 +20,7 @@ import android.view.textclassifier.TextLinks;
 import android.view.textclassifier.TextSelection;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
@@ -32,7 +32,7 @@ import org.chromium.base.annotations.VerifiesOnS;
  * encountering the new APIs.
  */
 @VerifiesOnS
-@TargetApi(Build.VERSION_CODES.S)
+@RequiresApi(Build.VERSION_CODES.S)
 public final class ApiHelperForS {
     private static final String TAG = "ApiHelperForS";
 

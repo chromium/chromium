@@ -113,48 +113,35 @@ _INCLUDE_ORDER_WARNING = (
 # * Full import path.
 # * Sequence of strings to show when the pattern matches.
 # * Sequence of path or filename exceptions to this rule
-_BANNED_JAVA_IMPORTS = (
+_BANNED_JAVA_IMPORTS = ((
+    'java.net.URI;',
+    ('Use org.chromium.url.GURL instead of java.net.URI, where possible.', ),
     (
-      'java.net.URI;',
-      (
-       'Use org.chromium.url.GURL instead of java.net.URI, where possible.',
-      ),
-      (
         'net/android/javatests/src/org/chromium/net/'
         'AndroidProxySelectorTest.java',
         'components/cronet/',
         'third_party/robolectric/local/',
-      ),
     ),
-    (
-      'android.support.test.rule.UiThreadTestRule;',
-      (
-       'Do not use UiThreadTestRule, just use '
-       '@org.chromium.base.test.UiThreadTest on test methods that should run '
-       'on the UI thread. See https://crbug.com/1111893.',
-      ),
-      (),
-    ),
-    (
-      'android.support.test.annotation.UiThreadTest;',
-      (
-        'Do not use android.support.test.annotation.UiThreadTest, use '
-        'org.chromium.base.test.UiThreadTest instead. See '
-        'https://crbug.com/1111893.',
-      ),
-      ()
-    ),
-    (
-      'android.support.test.rule.ActivityTestRule;',
-      (
-        'Do not use ActivityTestRule, use '
-        'org.chromium.base.test.BaseActivityTestRule instead.',
-      ),
-      (
-        'components/cronet/',
-      )
-    )
-)
+), (
+    'android.annotation.TargetApi;',
+    ('Do not use TargetApi, use @androidx.annotation.RequiresApi instead. '
+     'RequiresApi ensures that any calls are guarded by the appropriate '
+     'SDK_INT check. See https://crbug.com/1116486.', ),
+    (),
+), (
+    'android.support.test.rule.UiThreadTestRule;',
+    ('Do not use UiThreadTestRule, just use '
+     '@org.chromium.base.test.UiThreadTest on test methods that should run '
+     'on the UI thread. See https://crbug.com/1111893.', ),
+    (),
+), ('android.support.test.annotation.UiThreadTest;',
+    ('Do not use android.support.test.annotation.UiThreadTest, use '
+     'org.chromium.base.test.UiThreadTest instead. See '
+     'https://crbug.com/1111893.', ),
+    ()), ('android.support.test.rule.ActivityTestRule;',
+          ('Do not use ActivityTestRule, use '
+           'org.chromium.base.test.BaseActivityTestRule instead.', ),
+          ('components/cronet/', )))
 
 # Format: Sequence of tuples containing:
 # * String pattern or, if starting with a slash, a regular expression.

@@ -4,7 +4,6 @@
 
 package org.chromium.base.compat;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -28,6 +27,8 @@ import android.view.ViewConfiguration;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.RequiresApi;
+
 import org.chromium.base.annotations.VerifiesOnM;
 
 /**
@@ -36,7 +37,7 @@ import org.chromium.base.annotations.VerifiesOnM;
  * encountering the new APIs.
  */
 @VerifiesOnM
-@TargetApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.M)
 public final class ApiHelperForM {
     private ApiHelperForM() {}
 

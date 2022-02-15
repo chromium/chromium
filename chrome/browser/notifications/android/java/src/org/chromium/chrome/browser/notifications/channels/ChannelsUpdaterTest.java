@@ -10,7 +10,6 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -18,6 +17,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -47,7 +47,7 @@ import java.util.List;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public class ChannelsUpdaterTest {
     private NotificationManagerProxy mNotificationManagerProxy;
     private SharedPreferencesManager mSharedPreferences;
@@ -91,7 +91,7 @@ public class ChannelsUpdaterTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void testShouldUpdateChannels_returnsFalsePreO() {
         ChannelsUpdater updater = new ChannelsUpdater(
                 false /* isAtLeastO */, mSharedPreferences, mChannelsInitializer, 0);
@@ -101,7 +101,7 @@ public class ChannelsUpdaterTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void testShouldUpdateChannels_returnsTrueIfOAndNoSavedVersionInPrefs() {
         ChannelsUpdater updater = new ChannelsUpdater(
                 true /* isAtLeastO */, mSharedPreferences, mChannelsInitializer, 0);
@@ -111,7 +111,7 @@ public class ChannelsUpdaterTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void testShouldUpdateChannels_returnsTrueIfOAndDifferentVersionInPrefs() {
         mSharedPreferences.writeInt(ChromePreferenceKeys.NOTIFICATIONS_CHANNELS_VERSION, 4);
         ChannelsUpdater updater = new ChannelsUpdater(
@@ -122,7 +122,7 @@ public class ChannelsUpdaterTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void testShouldUpdateChannels_returnsFalseIfOAndSameVersionInPrefs() {
         mSharedPreferences.writeInt(ChromePreferenceKeys.NOTIFICATIONS_CHANNELS_VERSION, 3);
         ChannelsUpdater updater = new ChannelsUpdater(
@@ -133,7 +133,7 @@ public class ChannelsUpdaterTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void testUpdateChannels_noopPreO() {
         ChannelsUpdater updater = new ChannelsUpdater(
                 false /* isAtLeastO */, mSharedPreferences, mChannelsInitializer, 21);
@@ -148,7 +148,7 @@ public class ChannelsUpdaterTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void testUpdateChannels_createsExpectedChannelsAndUpdatesPref() {
         ChannelsUpdater updater = new ChannelsUpdater(
                 true /* isAtLeastO */, mSharedPreferences, mChannelsInitializer, 21);
@@ -168,7 +168,7 @@ public class ChannelsUpdaterTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void testUpdateChannels_deletesLegacyChannelsAndCreatesExpectedOnes() {
         ChromeChannelDefinitions definitions = ChromeChannelDefinitions.getInstance();
         // Set up any legacy channels.

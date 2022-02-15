@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.provider.MediaStore;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -109,7 +109,7 @@ public class SelectFileDialogTest {
      * Tests that clicks on <input type="file" /> trigger intent calls to ActivityWindowAndroid.
      */
     @Test
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @MediumTest
     @Feature({"TextInput", "Main"})
     @DisabledTest(message = "https://crbug.com/724163")

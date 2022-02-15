@@ -4,7 +4,6 @@
 
 package org.chromium.components.crash.anr;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.ApplicationExitInfo;
 import android.content.Context;
@@ -12,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Pair;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * We also grab the version number associated with the ANR and pair that with the ANR so we have
  * confidence knowing which version of Chrome actually caused this ANR.
  */
-@TargetApi(Build.VERSION_CODES.R)
+@RequiresApi(Build.VERSION_CODES.R)
 public class AnrCollector {
     private static final String TAG = "AnrCollector";
 

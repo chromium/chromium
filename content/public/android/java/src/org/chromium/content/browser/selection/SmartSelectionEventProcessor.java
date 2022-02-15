@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.selection;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.view.textclassifier.SelectionEvent;
@@ -13,6 +12,7 @@ import android.view.textclassifier.TextClassificationManager;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.VerifiesOnP;
@@ -34,7 +34,7 @@ import org.chromium.ui.base.WindowAndroid;
  * are ignored but we count each punctuation mark as a word.
  */
 @VerifiesOnP
-@TargetApi(Build.VERSION_CODES.P)
+@RequiresApi(Build.VERSION_CODES.P)
 public class SmartSelectionEventProcessor implements SelectionEventProcessor {
     private static final String TAG = "SmartSelectionLogger";
     private static final boolean DEBUG = false;

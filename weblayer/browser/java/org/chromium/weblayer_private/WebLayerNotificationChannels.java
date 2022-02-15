@@ -4,11 +4,11 @@
 
 package org.chromium.weblayer_private;
 
-import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringDef;
 
 import org.chromium.base.ContextUtils;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Defines notification channels for WebLayer. */
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public class WebLayerNotificationChannels extends ChannelDefinitions {
     /**
      * Version number identifying the current set of channels. This must be incremented whenever the
@@ -69,7 +69,7 @@ public class WebLayerNotificationChannels extends ChannelDefinitions {
     }
 
     // Map defined in static inner class so it's only initialized lazily.
-    @TargetApi(Build.VERSION_CODES.N) // for NotificationManager.IMPORTANCE_* constants
+    @RequiresApi(Build.VERSION_CODES.N) // for NotificationManager.IMPORTANCE_* constants
     private static class PredefinedChannels {
         static final Map<String, PredefinedChannel> MAP;
 

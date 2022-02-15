@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.VerifiesOnN;
 import org.chromium.chrome.R;
@@ -121,7 +122,7 @@ public class KeyboardShortcuts {
      *            resource.
      * @return a list of shortcuts organized into groups.
      */
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     @VerifiesOnN
     public static List<KeyboardShortcutGroup> createShortcutGroup(Context context) {
         final int ctrlShift = KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON;
@@ -181,9 +182,9 @@ public class KeyboardShortcuts {
         return shortcutGroups;
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
-    private static void addShortcut(Context context,
-            KeyboardShortcutGroup shortcutGroup, int resId, int keyCode, int keyModifier) {
+    @RequiresApi(Build.VERSION_CODES.N)
+    private static void addShortcut(Context context, KeyboardShortcutGroup shortcutGroup, int resId,
+            int keyCode, int keyModifier) {
         shortcutGroup.addItem(new KeyboardShortcutInfo(context.getString(resId), keyCode,
                 keyModifier));
     }

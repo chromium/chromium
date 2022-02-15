@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webauthn;
 
-import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -23,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
@@ -232,7 +232,7 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
 
     // canDeviceSupportCable has checked that the system is >= N (API level 24)
     // before calling this function.
-    @TargetApi(24)
+    @RequiresApi(24)
     private static boolean hasScreenLockConfigured() {
         KeyguardManager km =
                 (KeyguardManager) ContextUtils.getApplicationContext().getSystemService(

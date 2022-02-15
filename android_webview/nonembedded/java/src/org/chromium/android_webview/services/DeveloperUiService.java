@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.android_webview.services;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -21,6 +20,7 @@ import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.DeveloperModeUtils;
@@ -205,7 +205,7 @@ public final class DeveloperUiService extends Service {
         return mBinder;
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private Notification.Builder createNotificationBuilder() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return new Notification.Builder(this, CHANNEL_ID);
@@ -213,7 +213,7 @@ public final class DeveloperUiService extends Service {
         return new Notification.Builder(this);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private void registerDefaultNotificationChannel() {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         CharSequence name = "WebView DevTools alerts";

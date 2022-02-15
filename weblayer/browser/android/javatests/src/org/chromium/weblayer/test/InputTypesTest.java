@@ -5,7 +5,6 @@
 package org.chromium.weblayer.test;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
@@ -17,6 +16,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.test.filters.SmallTest;
 
@@ -87,7 +87,7 @@ public class InputTypesTest {
 
     private FileIntentInterceptor mIntentInterceptor = new FileIntentInterceptor();
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private class PermissionCompatDelegate implements ActivityCompat.PermissionCompatDelegate {
         public int mResult = PackageManager.PERMISSION_DENIED;
         private CallbackHelper mCallbackHelper = new CallbackHelper();

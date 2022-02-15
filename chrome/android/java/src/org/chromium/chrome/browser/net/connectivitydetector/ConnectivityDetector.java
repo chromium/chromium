@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.net.connectivitydetector;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -15,6 +14,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -141,7 +141,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
      * Implementation that talks with the Android connectivity manager service.
      */
     public class DelegateImpl implements Delegate {
-        @TargetApi(Build.VERSION_CODES.M)
+        @RequiresApi(Build.VERSION_CODES.M)
         @Override
         public @ConnectionState int inferConnectionStateFromSystem() {
             // NET_CAPABILITY_VALIDATED and NET_CAPABILITY_CAPTIVE_PORTAL are only available on

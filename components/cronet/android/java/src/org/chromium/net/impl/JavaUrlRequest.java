@@ -166,7 +166,7 @@ final class JavaUrlRequest extends UrlRequestBase {
                     mTaskQueue.removeLast();
                 }
             }
-        };
+};
     }
 
     /**
