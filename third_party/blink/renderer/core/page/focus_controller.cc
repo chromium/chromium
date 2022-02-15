@@ -1206,6 +1206,9 @@ Element* FocusController::NextFocusableElementInForm(
 
 // This is an implementation of step 2 of the "shadow host" branch of
 // https://html.spec.whatwg.org/C/#get-the-focusable-area
+// TODO(https://crbug.com/383230): update this to the latest spec for "focus
+// delegate", including using Element::GetAutofocusDelegate(), and use it for
+// <dialog> too.
 Element* FocusController::FindFocusableElementInShadowHost(
     const Element& shadow_host) {
   DCHECK(shadow_host.AuthorShadowRoot());

@@ -180,6 +180,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -4448,6 +4449,33 @@ Element* Element::GetFocusableArea() const {
 
   // Slide the focus to its inner node.
   return FocusController::FindFocusableElementInShadowHost(*this);
+}
+
+// https://html.spec.whatwg.org/C/#autofocus-delegate
+// TODO(https://crbug.com/383230): use this more broadly, including in
+// FocusController::FindFocusableElementInShadowHost() which will at that time
+// probably be renamed to "focus delegate".
+Element* Element::GetAutofocusDelegate() const {
+  for (Node& node : NodeTraversal::DescendantsOf(*this)) {
+    auto* element = DynamicTo<Element>(node);
+    if (!element)
+      continue;
+
+    if (!element->IsAutofocusable())
+      continue;
+
+    Element* focusable_area =
+        element->IsFocusable() ? element : element->GetFocusableArea();
+    if (!focusable_area)
+      continue;
+
+    // Step checking click-focusability and focus trigger omitted for now; it
+    // may be needed as part of https://crbug.com/383230.
+
+    return focusable_area;
+  }
+
+  return nullptr;
 }
 
 void Element::focus() {

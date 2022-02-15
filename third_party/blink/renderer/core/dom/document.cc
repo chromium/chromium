@@ -7622,6 +7622,15 @@ void Document::FinalizeAutofocus() {
   autofocus_processed_flag_ = true;
 }
 
+// https://html.spec.whatwg.org/C/#autofocus-delegate, although most uses are
+// of Element::GetAutofocusDelegate().
+Element* Document::GetAutofocusDelegate() const {
+  if (HTMLElement* body_element = body())
+    return body_element->GetAutofocusDelegate();
+
+  return nullptr;
+}
+
 Element* Document::ActiveElement() const {
   if (Element* element = AdjustedFocusedElement())
     return element;

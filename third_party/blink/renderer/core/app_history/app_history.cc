@@ -95,8 +95,12 @@ class NavigateReaction final : public ScriptFunction::Callable {
     }
 
     if (should_reset_focus_) {
-      // TODO(domenic): use the autofocus delegate, if one exists.
-      app_history->GetSupplementable()->document()->ClearFocusedElement();
+      auto* document = app_history->GetSupplementable()->document();
+      if (Element* focus_delegate = document->GetAutofocusDelegate()) {
+        focus_delegate->focus();
+      } else {
+        document->ClearFocusedElement();
+      }
     }
 
     if (react_type_ == ReactType::kTransitionWhile && window->GetFrame()) {

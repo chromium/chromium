@@ -691,6 +691,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // delegatesFocus flag.
   bool DelegatesFocus() const;
   Element* GetFocusableArea() const;
+  Element* GetAutofocusDelegate() const;
   virtual void focus(const FocusParams&);
   void focus();
   void focus(const FocusOptions*);
