@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -1252,11 +1251,18 @@ bool Window::CleanupGestureState() {
   // happen through some event handlers for CancelActiveTouches().
   if (cleaning_up_gesture_state_)
     return false;
+  cleaning_up_gesture_state_ = true;
 
-  base::AutoReset<bool> in_cleanup(&cleaning_up_gesture_state_, true);
+  // Cancelling active touches may end up destroying this window. We use a
+  // tracker to detect this.
+  // TODO(crbug.com/1292271): Add a regression test for this.
+  WindowTracker tracking_this({this});
+
   bool state_modified = false;
   Env* env = Env::GetInstance();
   state_modified |= env->gesture_recognizer()->CancelActiveTouches(this);
+  if (!tracking_this.Contains(this))
+    return state_modified;
   state_modified |= env->gesture_recognizer()->CleanupStateForConsumer(this);
   // Potentially event handlers for CancelActiveTouches() within
   // CleanupGestureState may change the window hierarchy (or reorder the
@@ -1267,6 +1273,7 @@ bool Window::CleanupGestureState() {
     Window* child = children.Pop();
     state_modified |= child->CleanupGestureState();
   }
+  cleaning_up_gesture_state_ = false;
   return state_modified;
 }
 
