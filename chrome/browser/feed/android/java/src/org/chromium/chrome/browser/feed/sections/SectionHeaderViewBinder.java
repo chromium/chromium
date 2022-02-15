@@ -23,12 +23,10 @@ public class SectionHeaderViewBinder
     @Override
     public void bind(PropertyModel model, SectionHeaderView view, PropertyKey key) {
         if (key == SectionHeaderListProperties.IS_SECTION_ENABLED_KEY) {
-            boolean isExpanding = model.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
-            if (isExpanding) {
-                view.expandHeader();
+            boolean isEnabled = model.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
+            view.setTextsEnabled(isEnabled);
+            if (isEnabled) {
                 setActiveTab(model, view);
-            } else {
-                view.collapseHeader();
             }
         } else if (key == SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY) {
             setActiveTab(model, view);

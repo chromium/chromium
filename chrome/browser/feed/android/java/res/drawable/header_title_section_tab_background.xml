@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+      <item android:state_enabled="false">
+        <shape
+            android:shape="rectangle">
+          <corners android:radius="@dimen/feed_header_background_corner_radius" />
+          <solid android:color="@color/feed_header_section_bg_color_disabled_baseline"/>
+        </shape>
+      </item>
+      <item android:state_enabled="true">
+        <shape
+            android:shape="rectangle">
+          <corners android:radius="@dimen/feed_header_background_corner_radius" />
+          <solid android:color="@color/feed_header_section_bg_color_baseline"/>
+        </shape>
+      </item>
+</selector>

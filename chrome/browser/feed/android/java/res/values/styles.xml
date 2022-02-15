@@ -24,4 +24,27 @@
         <item name="chipStrokeColor">@color/chip_hairline_color</item>
         <item name="solidColorChip">false</item>
     </style>
+
+    <style name="FeedHorizontalDivider" parent="HorizontalDivider">
+        <item name="android:layout_height">@dimen/feed_divider_height</item>
+        <item name="android:background">@drawable/rectangle_surface_1</item>
+    </style>
+
+    <style name="NtpHeaderTabLayoutStyle" parent="TabLayoutStyle">
+        <item name="tabTextAppearance">@style/TextAppearance.TabLayout</item>
+        <item name="tabGravity">center</item>
+        <item name="tabPaddingEnd">7dp</item>
+        <item name="tabPaddingStart">14dp</item>
+        <item name="android:background">@drawable/header_title_section_tab_background</item>
+        <item name="tabIndicatorColor">@android:color/transparent</item>
+    </style>
+
+    <style name="TextAppearance.TabLayout" parent="TextAppearance.TextAccentMediumThick">
+        <item name="android:textColor">@color/tab_layout_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.HeaderTitle" parent="TextAppearance.TextAccentMediumThick">
+        <item name="android:textColor">@color/header_title_text_color_list</item>
+    </style>
+
 </resources>

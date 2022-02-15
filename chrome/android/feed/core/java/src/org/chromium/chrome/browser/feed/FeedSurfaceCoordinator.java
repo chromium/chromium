@@ -655,8 +655,7 @@ public class FeedSurfaceCoordinator
         for (View header : headerViews) {
             // Feed header view in multi does not need padding added.
             int lateralPaddingsPx = getLateralPaddingsPx();
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
-                    && (header == mSectionHeaderView)) {
+            if (header == mSectionHeaderView) {
                 lateralPaddingsPx = 0;
             }
 

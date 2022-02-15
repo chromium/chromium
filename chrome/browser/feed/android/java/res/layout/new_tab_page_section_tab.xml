@@ -22,8 +22,8 @@
       android:textAppearance="@style/TextAppearance.TabLayout" />
   <ImageView
       android:id="@+id/options_indicator"
-      android:layout_width="@dimen/ntp_header_dropdown_size"
-      android:layout_height="@dimen/ntp_header_dropdown_size"
+      android:layout_width="@dimen/feed_header_dropdown_size"
+      android:layout_height="@dimen/feed_header_dropdown_size"
       android:scaleType="centerInside"
       app:tint="@macro/tab_layout_selected_tab_color"
       android:visibility="gone"

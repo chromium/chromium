@@ -4,14 +4,9 @@
 
 package org.chromium.chrome.browser.feed.sections;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
@@ -19,10 +14,12 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.badge.BadgeDrawable;
@@ -61,6 +58,8 @@ public class SectionHeaderView extends LinearLayout {
 
         @Override
         public void onTabSelected(TabLayout.Tab tab) {
+            tab.view.setBackground(ResourcesCompat.getDrawable(getResources(),
+                    R.drawable.header_title_tab_selected_background, getContext().getTheme()));
             if (mListener != null) {
                 mListener.onSectionHeaderSelected(tab.getPosition());
             }
@@ -68,6 +67,7 @@ public class SectionHeaderView extends LinearLayout {
 
         @Override
         public void onTabUnselected(TabLayout.Tab tab) {
+            tab.view.setBackground(null);
             if (mListener != null) {
                 mListener.onSectionHeaderUnselected(tab.getPosition());
             }
@@ -128,8 +128,7 @@ public class SectionHeaderView extends LinearLayout {
     private ListMenuButton mMenuView;
 
     private @Nullable SectionHeaderTabListener mTabListener;
-    private @Nullable View mDivider;
-    private LinearLayout mContent;
+    private RelativeLayout mContent;
     private @Nullable View mOptionsPanel;
 
     // Cached the indicator drawables for easy swapping.
@@ -155,7 +154,6 @@ public class SectionHeaderView extends LinearLayout {
         mMenuView = findViewById(R.id.header_menu);
         mLeadingStatusIndicator = findViewById(R.id.status_indicator);
         mTabLayout = findViewById(R.id.tab_list_view);
-        mDivider = findViewById(R.id.divider);
         mContent = findViewById(R.id.main_content);
 
         if (mTabLayout != null) {
@@ -238,6 +236,13 @@ public class SectionHeaderView extends LinearLayout {
         TabLayout.Tab tab = getTabAt(index);
         if (tab == null) return;
 
+        if (visibility == ViewVisibility.GONE) {
+            int leftPadding = tab.view.getPaddingLeft();
+            int rightPadding = tab.view.getPaddingRight()
+                    + getResources().getDimensionPixelOffset(
+                            R.dimen.feed_header_tab_extra_margin_right);
+            tab.view.setPadding(leftPadding, 0, rightPadding, 0);
+        }
         ImageView image = tab.view.findViewById(R.id.options_indicator);
         image.setVisibility(ViewVisibility.toVisibility(visibility));
     }
@@ -305,66 +310,6 @@ public class SectionHeaderView extends LinearLayout {
         }
     }
 
-    /** Expand the header to indicate the section has been enabled. */
-    void expandHeader() {
-        int finalHorizontalPadding = 0;
-        setBackground(false);
-
-        if (mTabLayout != null) {
-            // Re-enable indicator to cached indicator.
-            mTabLayout.setSelectedTabIndicator(mEnabledIndicatorDrawable);
-            setTextsEnabled(true);
-        }
-
-        if (mDivider != null) {
-            mDivider.setVisibility(VISIBLE);
-        }
-
-        ValueAnimator animator = ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
-        animator.addUpdateListener((ValueAnimator animation) -> {
-            int horizontalPadding = (Integer) animation.getAnimatedValue();
-            setPadding(/*left*/ horizontalPadding, getPaddingTop(),
-                    /*right*/ horizontalPadding, getPaddingBottom());
-        });
-        animator.setDuration(ANIMATION_DURATION_MS);
-        animator.start();
-    }
-
-    /** Collapse the header to indicate the section has been disabled. */
-    void collapseHeader() {
-        int finalHorizontalPadding =
-                getResources().getDimensionPixelSize(R.dimen.feed_v2_header_disabled_padding);
-        ValueAnimator animator = ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
-        animator.addUpdateListener((ValueAnimator animation) -> {
-            int horizontalPadding = (Integer) animation.getAnimatedValue();
-            setPadding(/*left*/ horizontalPadding, getPaddingTop(),
-                    /*right*/ horizontalPadding, getPaddingBottom());
-        });
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                // Add the card background after animation.
-                setBackground(true);
-                if (mTabLayout != null) {
-                    // Don't show the selected tab indicator if feed is off.
-                    // We use a TRANSPARENT drawable because setting indicator to null defaults
-                    // to drawable provided by TabLayout, and setting the indicatorColor to
-                    // TRANSPARENT will just use colors provided by the original drawable.
-                    if (mNoIndicatorDrawable == null) {
-                        mNoIndicatorDrawable = new ColorDrawable(Color.TRANSPARENT);
-                    }
-                    mTabLayout.setSelectedTabIndicator(mNoIndicatorDrawable);
-                    setTextsEnabled(false);
-                }
-                if (mDivider != null) {
-                    mDivider.setVisibility(INVISIBLE);
-                }
-            }
-        });
-        animator.setDuration(ANIMATION_DURATION_MS);
-        animator.start();
-    }
-
     void setOptionsPanel(View optionsView) {
         if (mOptionsPanel != null) {
             removeView(mOptionsPanel);
@@ -374,19 +319,15 @@ public class SectionHeaderView extends LinearLayout {
     }
 
     /**
-     * Set or clear the background of the header.
-     *
-     * @param hasBackground true to set background; false to clear background.
+     * Sets whether the texts on the tab layout or title view is enabled.
      */
-    private void setBackground(boolean hasBackground) {
-        mContent.setBackgroundResource(
-                hasBackground ? R.drawable.feed_header_border_background : 0);
-    }
-
-    private void setTextsEnabled(boolean enabled) {
+    void setTextsEnabled(boolean enabled) {
         mTextsEnabled = enabled;
-        for (int i = 0; i < mTabLayout.getTabCount(); i++) {
-            applyTabState(mTabLayout.getTabAt(i));
+        if (mTabLayout != null) {
+            for (int i = 0; i < mTabLayout.getTabCount(); i++) {
+                applyTabState(mTabLayout.getTabAt(i));
+            }
+            mTabLayout.setEnabled(enabled);
         }
         mTitleView.setEnabled(enabled);
     }

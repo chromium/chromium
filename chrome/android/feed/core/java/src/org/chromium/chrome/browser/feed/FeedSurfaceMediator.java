@@ -448,7 +448,9 @@ public class FeedSurfaceMediator
 
         PropertyModel headerModel = SectionHeaderProperties.createSectionHeader(headerText);
         ViewVisibility indicatorVisibility;
-        if (stream.supportsOptions()) {
+        // Keeping the indicator in place for the "Following" header, so it allows a fixed width of
+        // the "Following" header.
+        if (stream.supportsOptions() || stream.getStreamKind() == StreamKind.FOLLOWING) {
             indicatorVisibility = ViewVisibility.INVISIBLE;
         } else {
             indicatorVisibility = ViewVisibility.GONE;
