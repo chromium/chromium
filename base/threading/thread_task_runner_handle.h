@@ -5,11 +5,12 @@
 #ifndef BASE_THREADING_THREAD_TASK_RUNNER_HANDLE_H_
 #define BASE_THREADING_THREAD_TASK_RUNNER_HANDLE_H_
 
+#include <memory>
+
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,6 +22,8 @@ class MainThreadSchedulerImpl;
 }  // namespace blink
 
 namespace base {
+
+class ScopedDisallowRunningRunLoop;
 
 // ThreadTaskRunnerHandle stores a reference to a thread's TaskRunner
 // in thread-local storage.  Callers can then retrieve the TaskRunner
@@ -101,7 +104,7 @@ class BASE_EXPORT ThreadTaskRunnerHandleOverride {
 #if DCHECK_IS_ON()
   SingleThreadTaskRunner* expected_task_runner_before_restore_{nullptr};
 #endif
-  absl::optional<RunLoop::ScopedDisallowRunning> no_running_during_override_;
+  std::unique_ptr<ScopedDisallowRunningRunLoop> no_running_during_override_;
 };
 
 // Note: nesting ThreadTaskRunnerHandles isn't generally desired but it's useful

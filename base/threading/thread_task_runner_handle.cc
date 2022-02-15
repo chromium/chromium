@@ -84,8 +84,10 @@ ThreadTaskRunnerHandleOverride::ThreadTaskRunnerHandleOverride(
   // runner and `overriding_task_runner_` points to the previous task runner.
   task_runner_to_restore_ = std::move(overriding_task_runner);
 
-  if (!allow_nested_runloop)
-    no_running_during_override_.emplace();
+  if (!allow_nested_runloop) {
+    no_running_during_override_ =
+        std::make_unique<ScopedDisallowRunningRunLoop>();
+  }
 }
 
 ThreadTaskRunnerHandleOverride::~ThreadTaskRunnerHandleOverride() {

@@ -223,6 +223,8 @@ class BASE_EXPORT RunLoop {
     // it.
     friend class RunLoop;
 
+    friend class ScopedDisallowRunningRunLoop;
+
     // A vector-based stack is more memory efficient than the default
     // deque-based stack as the active RunLoop stack isn't expected to ever
     // have more than a few entries.
@@ -257,28 +259,6 @@ class BASE_EXPORT RunLoop {
   static void QuitCurrentDeprecated();
   static void QuitCurrentWhenIdleDeprecated();
   static RepeatingClosure QuitCurrentWhenIdleClosureDeprecated();
-
-  // Run() will DCHECK if called while there's a ScopedDisallowRunning
-  // in scope on its thread. This is useful to add safety to some test
-  // constructs which allow multiple task runners to share the main thread in
-  // unit tests. While the main thread can be shared by multiple runners to
-  // deterministically fake multi threading, there can still only be a single
-  // RunLoop::Delegate per thread and RunLoop::Run() should only be invoked from
-  // it (or it would result in incorrectly driving TaskRunner A while in
-  // TaskRunner B's context).
-  class BASE_EXPORT ScopedDisallowRunning {
-   public:
-    ScopedDisallowRunning();
-    ScopedDisallowRunning(const ScopedDisallowRunning&) = delete;
-    ScopedDisallowRunning& operator=(const ScopedDisallowRunning&) = delete;
-    ~ScopedDisallowRunning();
-
-   private:
-#if DCHECK_IS_ON()
-    Delegate* current_delegate_;
-    const bool previous_run_allowance_;
-#endif  // DCHECK_IS_ON()
-  };
 
   // Support for //base/test/scoped_run_loop_timeout.h.
   // This must be public for access by the implementation code in run_loop.cc.
@@ -354,6 +334,29 @@ class BASE_EXPORT RunLoop {
 
   // WeakPtrFactory for QuitClosure safety.
   WeakPtrFactory<RunLoop> weak_factory_{this};
+};
+
+// RunLoop::Run() will DCHECK if called while there's a
+// ScopedDisallowRunningRunLoop in scope on its thread. This is useful to add
+// safety to some test constructs which allow multiple task runners to share the
+// main thread in unit tests. While the main thread can be shared by multiple
+// runners to deterministically fake multi threading, there can still only be a
+// single RunLoop::Delegate per thread and RunLoop::Run() should only be invoked
+// from it (or it would result in incorrectly driving TaskRunner A while in
+// TaskRunner B's context).
+class BASE_EXPORT ScopedDisallowRunningRunLoop {
+ public:
+  ScopedDisallowRunningRunLoop();
+  ScopedDisallowRunningRunLoop(const ScopedDisallowRunningRunLoop&) = delete;
+  ScopedDisallowRunningRunLoop& operator=(const ScopedDisallowRunningRunLoop&) =
+      delete;
+  ~ScopedDisallowRunningRunLoop();
+
+ private:
+#if DCHECK_IS_ON()
+  RunLoop::Delegate* current_delegate_;
+  const bool previous_run_allowance_;
+#endif  // DCHECK_IS_ON()
 };
 
 }  // namespace base

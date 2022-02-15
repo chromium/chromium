@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_video_perf_reporter.h"
 
+#include "base/run_loop.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"

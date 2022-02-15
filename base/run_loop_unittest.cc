@@ -572,12 +572,12 @@ TEST_P(RunLoopTest, NestingObservers) {
 }
 
 TEST_P(RunLoopTest, DisallowRunning) {
-  RunLoop::ScopedDisallowRunning disallow_running;
+  ScopedDisallowRunningRunLoop disallow_running;
   EXPECT_DCHECK_DEATH({ run_loop_.RunUntilIdle(); });
 }
 
 TEST_P(RunLoopTest, ExpiredDisallowRunning) {
-  { RunLoop::ScopedDisallowRunning disallow_running; }
+  { ScopedDisallowRunningRunLoop disallow_running; }
   // Running should be fine after |disallow_running| goes out of scope.
   run_loop_.RunUntilIdle();
 }
