@@ -1572,6 +1572,7 @@ android_library("chrome_test_java") {
     "//third_party/android_data_chart:android_data_chart_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/android_deps:com_google_flatbuffers_flatbuffers_java_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",

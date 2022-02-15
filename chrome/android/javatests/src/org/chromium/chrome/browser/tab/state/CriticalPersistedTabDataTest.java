@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.SmallTest;
 
+import com.google.flatbuffers.FlatBufferBuilder;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -33,6 +35,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.chrome.browser.tab.flatbuffer.CriticalPersistedTabDataFlatBuffer;
 import org.chromium.chrome.browser.tab.flatbuffer.LaunchTypeAtCreation;
 import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -665,5 +668,45 @@ public class CriticalPersistedTabDataTest {
                 "Need to increment 1 to expected value each time a LaunchTypeAtCreation "
                         + "is added. Also need to add any new LaunchTypeAtCreation to this test.",
                 18, LaunchTypeAtCreation.names.length);
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testNullWebContentsState_1() {
+        Tab tab = new MockTab(1, false);
+        CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab,
+                CriticalPersistedTabData.getMapperForTesting().map(
+                        getFlatBufferWithNoWebContentsState()));
+        Assert.assertEquals(0, criticalPersistedTabData.getWebContentsState().buffer().limit());
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testNullWebContentsState_2() {
+        Tab tab = new MockTab(1, false);
+        CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab);
+        criticalPersistedTabData.deserialize(getFlatBufferWithNoWebContentsState());
+        Assert.assertEquals(0, criticalPersistedTabData.getWebContentsState().buffer().limit());
+    }
+
+    private static final ByteBuffer getFlatBufferWithNoWebContentsState() {
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
+        int oaid = fbb.createString(OPENER_APP_ID);
+        CriticalPersistedTabDataFlatBuffer.startCriticalPersistedTabDataFlatBuffer(fbb);
+        CriticalPersistedTabDataFlatBuffer.addParentId(fbb, PARENT_ID);
+        CriticalPersistedTabDataFlatBuffer.addRootId(fbb, ROOT_ID);
+        CriticalPersistedTabDataFlatBuffer.addTimestampMillis(fbb, TIMESTAMP);
+        // WebContentsState intentionally left out
+        CriticalPersistedTabDataFlatBuffer.addContentStateVersion(fbb, CONTENT_STATE_VERSION);
+        CriticalPersistedTabDataFlatBuffer.addOpenerAppId(fbb, oaid);
+        CriticalPersistedTabDataFlatBuffer.addThemeColor(fbb, THEME_COLOR);
+        CriticalPersistedTabDataFlatBuffer.addLaunchTypeAtCreation(
+                fbb, LaunchTypeAtCreation.FROM_LINK);
+        CriticalPersistedTabDataFlatBuffer.addUserAgent(fbb, UserAgentType.DEFAULT);
+        int r = CriticalPersistedTabDataFlatBuffer.endCriticalPersistedTabDataFlatBuffer(fbb);
+        fbb.finish(r);
+        return fbb.dataBuffer();
     }
 }
