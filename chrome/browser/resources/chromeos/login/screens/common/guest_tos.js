@@ -23,6 +23,12 @@ const GuestTosScreenState = {
 const GUEST_TOS_EULA_TERMS_URL = 'chrome://terms';
 
 /**
+ * Timeout to load online ToS.
+ * @type {number}
+ */
+const GUEST_TOS_ONLINE_LOAD_TIMEOUT_IN_MS = 10000;
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
@@ -105,7 +111,8 @@ class GuestTos extends GuestTosScreenElementBase {
     };
 
     const tosLoader = new WebViewLoader(
-        webview, loadFailureCallback, clear_anchors, true /* inject_css */);
+        webview, GUEST_TOS_ONLINE_LOAD_TIMEOUT_IN_MS, loadFailureCallback,
+        clear_anchors, true /* inject_css */);
     tosLoader.setUrl(online_tos_url);
   }
 

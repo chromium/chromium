@@ -30,6 +30,12 @@ const WEB_VIEW_FONTS_CSS = {
          line-height: 22px !important;}`
 };
 
+/**
+ * Timeout between consequent loads of online webview.
+ * @type {number}
+ */
+const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
+
 // WebViewLoader assists on the process of loading an URL into a webview.
 // It listens for events from the webRequest API for the given URL and
 // calls load_failure_callback case of failure.
@@ -37,7 +43,8 @@ const WEB_VIEW_FONTS_CSS = {
   /**
    * @suppress {missingProperties} as WebView type has no addContentScripts
    */
-  constructor(webview, load_failure_callback, clear_anchors, inject_css) {
+  constructor(
+      webview, timeout, load_failure_callback, clear_anchors, inject_css) {
     assert(webview.tagName === 'WEBVIEW');
 
     // Do not create multiple loaders.
@@ -45,6 +52,11 @@ const WEB_VIEW_FONTS_CSS = {
       return WebViewLoader.instances[webview.id];
 
     this.webview_ = webview;
+    this.timeout_ = timeout;
+    this.isPerformingRequests_ = false;
+    this.reloadRequested_ = false;
+    this.loadTimer_ = 0;
+    this.backOffTimer_ = 0;
     this.loadFailureCallback_ = load_failure_callback;
     this.url_ = '';
 
@@ -66,13 +78,25 @@ const WEB_VIEW_FONTS_CSS = {
       });
     }
 
-    this.webview_.request.onErrorOccurred.addListener(() => {
-      if (this.loadFailureCallback_)
-        this.loadFailureCallback_();
-    }, {urls: ['<all_urls>'], types: ['main_frame']});
+    // Monitor webRequests API events
+    this.webview_.request.onCompleted.addListener(
+        this.onCompleted_.bind(this),
+        {urls: ['<all_urls>'], types: ['main_frame']});
+    this.webview_.request.onErrorOccurred.addListener(
+        this.onErrorOccurred_.bind(this),
+        {urls: ['<all_urls>'], types: ['main_frame']});
 
     // The only instance of the WebViewLoader.
     WebViewLoader.instances[webview.id] = this;
+  }
+
+  // Clears the internal state of the EULA loader. Stops the timeout timer
+  // and prevents events from being handled.
+  clearInternalState() {
+    window.clearTimeout(this.loadTimer_);
+    window.clearTimeout(this.backOffTimer_);
+    this.isPerformingRequests_ = false;
+    this.reloadRequested_ = false;
   }
 
   // Sets an URL to be loaded in the webview. If the URL is different from the
@@ -82,11 +106,92 @@ const WEB_VIEW_FONTS_CSS = {
   setUrl(url) {
     assert(/^https?:\/\//.test(url));
 
-    this.url_ = url;
-    this.loadOnline();
+    if (url != this.url_) {
+      // Clear the internal state and start with a new URL.
+      this.clearInternalState();
+      this.url_ = url;
+      this.loadWithFallbackTimer();
+    } else {
+      // Same URL was requested again. Reload later if a request is under way.
+      if (this.isPerformingRequests_)
+        this.reloadRequested_ = true;
+      else
+        this.loadWithFallbackTimer();
+    }
   }
 
-  loadOnline() {
+  // This method only gets invoked if the webview webRequest API does not
+  // fire either 'onErrorOccurred' or 'onCompleted' before the timer runs out.
+  // See: https://developer.chrome.com/extensions/webRequest
+  onTimeoutError_() {
+    // Return if we are no longer monitoring requests. Confidence check.
+    if (!this.isPerformingRequests_)
+      return;
+
+    if (this.reloadRequested_) {
+      this.loadWithFallbackTimer();
+    } else {
+      this.clearInternalState();
+      this.loadFailureCallback_();
+    }
+  }
+
+  /**
+   * webRequest API Event Handler for 'onErrorOccurred'.
+   * @param {!Object} details
+   */
+  onErrorOccurred_(details) {
+    if (!this.isPerformingRequests_)
+      return;
+
+    if (this.reloadRequested_)
+      this.loadWithFallbackTimer();
+    else
+      this.loadAfterBackoff();
+  }
+
+  /**
+   * webRequest API Event Handler for 'onCompleted'
+   * @suppress {missingProperties} no statusCode for details
+   * @param {!Object} details
+   */
+  onCompleted_(details) {
+    if (!this.isPerformingRequests_)
+      return;
+
+    // Http errors such as 4xx, 5xx hit here instead of 'onErrorOccurred'.
+    if (details.statusCode != 200) {
+      // Not a successful request. Perform a reload if requested.
+      if (this.reloadRequested_)
+        this.loadWithFallbackTimer();
+      else
+        this.loadAfterBackoff();
+    } else {
+      // Success!
+      this.clearInternalState();
+    }
+  }
+
+  // Loads the URL into the webview and starts a timer.
+  loadWithFallbackTimer() {
+    // Clear previous timer and perform a load.
+    window.clearTimeout(this.loadTimer_);
+    this.loadTimer_ =
+        window.setTimeout(this.onTimeoutError_.bind(this), this.timeout_);
+    this.tryLoadOnline();
+  }
+
+  loadAfterBackoff() {
+    window.clearTimeout(this.backOffTimer_);
+    this.backOffTimer_ = window.setTimeout(
+        this.tryLoadOnline.bind(this), ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS);
+  }
+
+  tryLoadOnline() {
+    this.reloadRequested_ = false;
+
+    // A request is being made
+    this.isPerformingRequests_ = true;
     if (this.webview_.src === this.url_)
       this.webview_.reload();
     else

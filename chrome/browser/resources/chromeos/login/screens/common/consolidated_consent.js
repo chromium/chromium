@@ -28,6 +28,12 @@ const ARC_TERMS_URL = 'chrome://terms/arc/terms';
 const PRIVACY_POLICY_URL = 'chrome://terms/arc/privacy_policy';
 
 /**
+ * Timeout to load online ToS.
+ * @type {number}
+ */
+const CONSOLIDATED_CONSENT_ONLINE_LOAD_TIMEOUT_IN_MS = 10000;
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
@@ -311,7 +317,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     };
 
     const tosLoader = new WebViewLoader(
-        webview, loadFailureCallback, clear_anchors, true /* inject_css */);
+        webview, CONSOLIDATED_CONSENT_ONLINE_LOAD_TIMEOUT_IN_MS,
+        loadFailureCallback, clear_anchors, true /* inject_css */);
     tosLoader.setUrl(online_tos_url);
   }
 
@@ -329,8 +336,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     };
 
     var tosLoader = new WebViewLoader(
-        webview, loadFailureCallback, false /* clear_anchors */,
-        false /* inject_css */);
+        webview, CONSOLIDATED_CONSENT_ONLINE_LOAD_TIMEOUT_IN_MS,
+        loadFailureCallback, false /* clear_anchors */, false /* inject_css */);
     tosLoader.setUrl(online_tos_url);
   }
 
@@ -376,8 +383,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     };
 
     var tosLoader = new WebViewLoader(
-        webview, loadFailureCallback, false /* clear_anchors */,
-        false /* inject_css */);
+        webview, CONSOLIDATED_CONSENT_ONLINE_LOAD_TIMEOUT_IN_MS,
+        loadFailureCallback, false /* clear_anchors */, false /* inject_css */);
     tosLoader.setUrl(online_tos_url);
   }
 
