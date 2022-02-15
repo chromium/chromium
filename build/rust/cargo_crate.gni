@@ -97,10 +97,6 @@ template("cargo_crate") {
       assert(!defined(invoker.epoch))
     } else if (crate_type == "proc-macro") {
       target_type = "rust_proc_macro"
-      rustflags += [
-        "--extern",
-        "proc_macro",
-      ]
     } else {
       assert(crate_type == "rlib")
       target_type = "rust_library"

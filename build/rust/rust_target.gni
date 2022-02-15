@@ -76,6 +76,12 @@ template("rust_target") {
       _configs += invoker.library_configs
     }
   }
+  if (invoker.target_type == "rust_proc_macro") {
+    _rustflags += [
+      "--extern",
+      "proc_macro",
+    ]
+  }
 
   _deps_for_rust_targets = []
   if (defined(invoker.mutually_dependent_target)) {
@@ -120,11 +126,16 @@ template("rust_target") {
   # TODO(crbug.com/1256930) - verify this is correct
   assert(defined(invoker.sources), "sources must be listed")
 
+  _create_cpp_groups = false
+  if (defined(invoker.create_cpp_groups)) {
+    _create_cpp_groups = invoker.create_cpp_groups
+  }
+
   # If this code may be linked by both C++ and Rust, make differing
   # groups of deps for each of them, because unfortunately there are
   # differences in what they need to link against.
   main_target_suffix = ""
-  if (invoker.create_cpp_groups) {
+  if (_create_cpp_groups) {
     assert(invoker.target_type == "rust_library")
     main_target_suffix = "__rlib"
 
@@ -195,7 +206,7 @@ template("rust_target") {
     if (defined(invoker.rustenv)) {
       rustenv += invoker.rustenv
     }
-    if (invoker.create_cpp_groups) {
+    if (_create_cpp_groups) {
       visibility = [
         ":${_target_name}",
         ":${_target_name}_cpp_bindings",
