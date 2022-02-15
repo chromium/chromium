@@ -131,7 +131,7 @@ void ScenicSurface::OnScenicEvents(
     DCHECK(event.is_gfx());
     switch (event.gfx().Which()) {
       case fuchsia::ui::gfx::Event::kMetrics: {
-        DCHECK(event.gfx().metrics().node_id == main_shape_.id());
+        DCHECK_EQ(event.gfx().metrics().node_id, main_shape_.id());
         // This is enough to track size because |main_shape_| is 1x1.
         const auto& metrics = event.gfx().metrics().metrics;
         main_shape_size_.set_width(metrics.scale_x);
@@ -141,7 +141,7 @@ void ScenicSurface::OnScenicEvents(
         break;
       }
       case fuchsia::ui::gfx::Event::kViewAttachedToScene: {
-        DCHECK(event.gfx().view_detached_from_scene().view_id == parent_->id());
+        DCHECK_EQ(event.gfx().view_attached_to_scene().view_id, parent_->id());
 
         // `root_node_` will be attached in the next Present(). This ensures
         // that outdated content is never displaye don the screen.
@@ -149,7 +149,8 @@ void ScenicSurface::OnScenicEvents(
         break;
       }
       case fuchsia::ui::gfx::Event::kViewDetachedFromScene: {
-        DCHECK(event.gfx().view_detached_from_scene().view_id == parent_->id());
+        DCHECK_EQ(event.gfx().view_detached_from_scene().view_id,
+                  parent_->id());
 
         root_node_.Detach();
         safe_presenter_.QueuePresent();
