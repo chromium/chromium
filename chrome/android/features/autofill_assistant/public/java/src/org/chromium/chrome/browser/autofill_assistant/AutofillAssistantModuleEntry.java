@@ -8,7 +8,6 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.module_installer.builder.ModuleInterface;
 import org.chromium.content_public.browser.WebContents;
@@ -32,14 +31,14 @@ public interface AutofillAssistantModuleEntry {
      *
      * @param context activity context
      * @param bottomSheetController bottom sheet controller instance of the activity
-     * @param browserControls provider of browser controls state
+     * @param browserControlsFactory factory for providing browser controls state
      * @param rootView root view of the activity
      * @param webContentsSupplier supplier of the current WebContents
      * @param staticDependencies used to create platform-specific dependencies
      */
     AutofillAssistantActionHandler createActionHandler(Context context,
             BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, View rootView,
+            AssistantBrowserControlsFactory browserControlsFactory, View rootView,
             Supplier<WebContents> webContentsSupplier,
             AssistantStaticDependencies staticDependencies);
 }

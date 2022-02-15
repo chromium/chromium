@@ -270,7 +270,9 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
             @Nullable AutofillAssistantModuleEntry entry) {
         if (entry == null) return null;
 
-        return entry.createActionHandler(mContext, mBottomSheetController, mBrowserControls,
+        return entry.createActionHandler(mContext, mBottomSheetController,
+                ()
+                        -> new AssistantBrowserControlsChrome(mBrowserControls),
                 mRootView, mWebContentsSupplier, new AssistantStaticDependenciesChrome());
     }
 }

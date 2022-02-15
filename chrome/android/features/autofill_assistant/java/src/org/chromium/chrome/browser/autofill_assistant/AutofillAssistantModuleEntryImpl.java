@@ -10,7 +10,6 @@ import android.view.View;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 
@@ -29,14 +28,12 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
     @Override
     public AutofillAssistantActionHandler createActionHandler(Context context,
             BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, View rootView,
+            AssistantBrowserControlsFactory browserControlsFactory, View rootView,
             Supplier<WebContents> webContentsSupplier,
             AssistantStaticDependencies staticDependencies) {
         return new AutofillAssistantActionHandlerImpl(
                 new OnboardingCoordinatorFactory(context, bottomSheetController,
-                        ()
-                                -> new AssistantBrowserControlsChrome(browserControls),
-                        rootView, staticDependencies.getAccessibilityUtil(),
+                        browserControlsFactory, rootView, staticDependencies.getAccessibilityUtil(),
                         staticDependencies.createInfoPageUtil()),
                 webContentsSupplier, staticDependencies);
     }
