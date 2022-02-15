@@ -160,6 +160,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
                  const Font* override_font = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(NGInlineNodeData*) const;
   void ShapeTextIncludingFirstLine(
+      NGInlineNodeData::ShapingState new_state,
       NGInlineNodeData* data,
       const String* previous_text,
       const HeapVector<NGInlineItem>* previous_items) const;

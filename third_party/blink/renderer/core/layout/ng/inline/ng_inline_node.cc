@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
@@ -478,6 +479,15 @@ void TruncateOrPadText(String* text, unsigned length) {
   }
 }
 
+bool IsDeferrableContent(const NGInlineNodeData& data) {
+  for (wtf_size_t i = 0; i < data.text_content.length(); ++i) {
+    if (data.text_content[i] != kObjectReplacementCharacter &&
+        !IsASCIISpace(data.text_content[i]))
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 NGInlineNode::NGInlineNode(LayoutBlockFlow* block)
@@ -521,14 +531,25 @@ void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
   if (Data().shaping_state_ != NGInlineNodeData::kShapingNone)
     return;
 
+  NGInlineNodeData* data = MutableData();
   const auto& view = *GetLayoutBox()->GetFrameView();
-  if (view.AllowDeferredShaping()) {
+  NGInlineNodeData::ShapingState new_state = NGInlineNodeData::kShapingDone;
+  if (view.AllowDeferredShaping() && !GetLayoutBox()->IsInsideFlowThread()) {
+    DCHECK(IsHorizontalWritingMode(Style().GetWritingMode()));
     const LayoutUnit viewport_bottom = view.CurrentViewportBottom();
     DCHECK_NE(viewport_bottom, kIndefiniteSize) << GetLayoutBox();
-
-    // TODO(crbug.com/1259085): Check if this IFC is deferrable.
+    LayoutUnit top = view.CurrentMinimumTop();
+    // For css2.1/t080301-c411-vt-mrgn-00-b.html we should apply negative
+    // margin, but not positive margin because of margin collapse.
+    NGBoxStrut margins = ComputeMarginsForSelf(space, Style());
+    if (margins.block_start < LayoutUnit())
+      top += margins.block_start;
+    if (viewport_bottom >= LayoutUnit() && IsDeferrableContent(*data) &&
+        top > viewport_bottom) {
+      new_state = NGInlineNodeData::kShapingDeferred;
+    }
   }
-  ShapeTextIncludingFirstLine(MutableData(), nullptr, nullptr);
+  ShapeTextIncludingFirstLine(new_state, MutableData(), nullptr, nullptr);
 }
 
 void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
@@ -542,7 +563,8 @@ void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
        previous_data->shaping_state_ == NGInlineNodeData::kShapingDone) ||
       UNLIKELY(IsTextCombine())) {
     ShapeTextIncludingFirstLine(
-        data, previous_data ? &previous_data->text_content : nullptr, nullptr);
+        NGInlineNodeData::kShapingDone, data,
+        previous_data ? &previous_data->text_content : nullptr, nullptr);
   }
   AssociateItemsWithInlines(data);
   DCHECK_EQ(data, MutableData());
@@ -952,7 +974,8 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
   editor.Run();
   node.SegmentText(data);
   if (previous_data->shaping_state_ == NGInlineNodeData::kShapingDone) {
-    node.ShapeTextIncludingFirstLine(data, &previous_data->text_content,
+    node.ShapeTextIncludingFirstLine(NGInlineNodeData::kShapingDone, data,
+                                     &previous_data->text_content,
                                      &previous_data->items);
   }
   node.AssociateItemsWithInlines(data);
@@ -1414,8 +1437,17 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     }
 
     // Shape each item with the full context of the entire node.
-    scoped_refptr<ShapeResult> shape_result =
-        shaper.Shape(start_item, font, end_offset);
+    scoped_refptr<ShapeResult> shape_result;
+    if (MutableData() &&
+        MutableData()->shaping_state_ == NGInlineNodeData::kShapingDeferred &&
+        font.PrimaryFont()) {
+      unsigned length = end_offset - start_item.StartOffset();
+      shape_result = ShapeResult::CreateForSpacesWithPerGlyphWidth(
+          &font, TextDirection::kLtr, start_item.StartOffset(), length,
+          font.PrimaryFont()->AvgCharWidth());
+    } else {
+      shape_result = shaper.Shape(start_item, font, end_offset);
+    }
 
     if (UNLIKELY(spacing.SetSpacing(font.GetFontDescription()))) {
       DCHECK(!IsTextCombine()) << GetLayoutBlockFlow();
@@ -1526,9 +1558,12 @@ void NGInlineNode::ShapeTextForFirstLineIfNeeded(NGInlineNodeData* data) const {
 }
 
 void NGInlineNode::ShapeTextIncludingFirstLine(
+    NGInlineNodeData::ShapingState new_state,
     NGInlineNodeData* data,
     const String* previous_text,
     const HeapVector<NGInlineItem>* previous_items) const {
+  DCHECK_NE(new_state, NGInlineNodeData::kShapingNone);
+  data->shaping_state_ = new_state;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   ShapeText(data, previous_text, previous_items);
   ShapeTextForFirstLineIfNeeded(data);
@@ -1538,7 +1573,6 @@ void NGInlineNode::ShapeTextIncludingFirstLine(
   ShapeTextForFirstLineIfNeeded(data);
   FontPerformance::AddShapingTime(shaping_timer.Elapsed());
 #endif
-  data->shaping_state_ = NGInlineNodeData::kShapingDone;
 }
 
 void NGInlineNode::AssociateItemsWithInlines(NGInlineNodeData* data) const {

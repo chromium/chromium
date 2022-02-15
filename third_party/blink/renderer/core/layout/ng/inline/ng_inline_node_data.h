@@ -74,7 +74,7 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
   // not dirty.
   unsigned changes_may_affect_earlier_lines_ : 1;
 
-  enum { kShapingNone, kShapingDone, kShapingDeferred };
+  enum ShapingState { kShapingNone, kShapingDone, kShapingDeferred };
   unsigned shaping_state_ : 2;
 };
 

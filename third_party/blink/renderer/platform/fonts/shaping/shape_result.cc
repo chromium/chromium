@@ -1509,11 +1509,13 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForTabulationCharacters(
   return result;
 }
 
-scoped_refptr<ShapeResult> ShapeResult::CreateForSpaces(const Font* font,
-                                                        TextDirection direction,
-                                                        unsigned start_index,
-                                                        unsigned length,
-                                                        float width) {
+scoped_refptr<ShapeResult> ShapeResult::CreateForSpacesInternal(
+    const Font* font,
+    TextDirection direction,
+    unsigned start_index,
+    unsigned length,
+    float total_width,
+    float per_glyph_width) {
   DCHECK_GT(length, 0u);
   const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
@@ -1528,14 +1530,34 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForSpaces(const Font* font,
   scoped_refptr<ShapeResult::RunInfo> run = RunInfo::Create(
       font_data, hb_direction, CanvasRotationInVertical::kRegular,
       HB_SCRIPT_COMMON, start_index, length, length);
-  result->width_ = run->width_ = width;
+  result->width_ = run->width_ = total_width;
   for (unsigned i = 0; i < length; i++) {
     const unsigned index = blink::IsLtr(direction) ? i : length - 1 - i;
-    run->glyph_data_[i] = {font_data->SpaceGlyph(), index, true, width};
-    width = 0;
+    run->glyph_data_[i] = {font_data->SpaceGlyph(), index, true,
+                           per_glyph_width > 0 ? per_glyph_width : total_width};
+    total_width = 0;
   }
   result->runs_.push_back(std::move(run));
   return result;
+}
+
+scoped_refptr<ShapeResult> ShapeResult::CreateForSpaces(const Font* font,
+                                                        TextDirection direction,
+                                                        unsigned start_index,
+                                                        unsigned length,
+                                                        float width) {
+  return CreateForSpacesInternal(font, direction, start_index, length, width,
+                                 -1);
+}
+
+scoped_refptr<ShapeResult> ShapeResult::CreateForSpacesWithPerGlyphWidth(
+    const Font* font,
+    TextDirection direction,
+    unsigned start_index,
+    unsigned length,
+    float per_glyph_width) {
+  return CreateForSpacesInternal(font, direction, start_index, length,
+                                 per_glyph_width * length, per_glyph_width);
 }
 
 scoped_refptr<ShapeResult> ShapeResult::CreateForStretchyMathOperator(
