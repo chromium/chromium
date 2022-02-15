@@ -664,12 +664,13 @@ public class RootUiCoordinator
 
         // TODO(1293885): Remove this validator once we have an API on the backend that sends
         //                success/failure information back.
-        if (ShoppingFeatures.isShoppingListEnabled() && mBookmarkBridgeSupplier.get() != null) {
-            PowerBookmarkUtils.validateBookmarkedCommerceSubscriptions(
-                    mBookmarkBridgeSupplier.get(),
-                    new CommerceSubscriptionsServiceFactory()
-                            .getForLastUsedProfile()
-                            .getSubscriptionsManager());
+        if (ShoppingFeatures.isShoppingListEnabled()) {
+            mBookmarkBridgeSupplier.addObserver((bridge) -> {
+                PowerBookmarkUtils.validateBookmarkedCommerceSubscriptions(bridge,
+                        new CommerceSubscriptionsServiceFactory()
+                                .getForLastUsedProfile()
+                                .getSubscriptionsManager());
+            });
         }
     }
 

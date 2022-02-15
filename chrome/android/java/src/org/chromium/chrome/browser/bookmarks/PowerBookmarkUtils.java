@@ -33,6 +33,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -404,14 +405,14 @@ public class PowerBookmarkUtils {
         // Keep two sets of IDs since ID:Bookmark is NOT 1:1. |unusedCusterIds| will be used to
         // remove subscriptions for bookmarks not currently on (removed from) the client.
         HashSet<Long> clusterIdSet = new HashSet<>();
-        HashSet<Long> unusedClusterIds = new HashSet<>();
+        HashMap<Long, CommerceSubscription> unusedClusterIds = new HashMap<>();
 
         for (CommerceSubscription c : subscriptions) {
             if (CommerceSubscription.SubscriptionManagementType.USER_MANAGED.equals(
                         c.getManagementType())) {
                 long clusterId = UnsignedLongs.parseUnsignedLong(c.getTrackingId());
                 clusterIdSet.add(clusterId);
-                unusedClusterIds.add(clusterId);
+                unusedClusterIds.put(clusterId, c);
             }
         }
 
@@ -444,16 +445,12 @@ public class PowerBookmarkUtils {
         }
 
         // Finally, unsubscribe from active subscriptions if the bookmark either didn't exist or the
-        // bookmark wasn't flagged as being price tracked. Subscriptions in bookmarks are always
-        // USER_MANAGED and use PRODUCT_CLUSTER_ID as the identifier.
-        for (Long clusterId : unusedClusterIds) {
-            subscriptionsManager.unsubscribe(
-                    new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                            UnsignedLongs.toString(clusterId),
-                            SubscriptionManagementType.USER_MANAGED,
-                            TrackingIdType.PRODUCT_CLUSTER_ID),
-                    (id) -> {});
-            subscriptionFixCount++;
+        // bookmark wasn't flagged as being price tracked.
+        if (!unusedClusterIds.isEmpty()) {
+            ArrayList<CommerceSubscription> itemsToUnsubscribe =
+                    new ArrayList<>(unusedClusterIds.values());
+            subscriptionFixCount += itemsToUnsubscribe.size();
+            subscriptionsManager.unsubscribe(itemsToUnsubscribe, (id) -> {});
         }
 
         recordValidationResult(bookmarkFixCount, subscriptionFixCount);

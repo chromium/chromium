@@ -17,6 +17,7 @@ import androidx.test.filters.SmallTest;
 
 import com.google.common.primitives.UnsignedLongs;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,6 +58,9 @@ public class PowerBookmarkUtilsTest {
     @Captor
     private ArgumentCaptor<Callback<List<CommerceSubscription>>> mGetSubscriptionsCallbackCaptor;
 
+    @Captor
+    private ArgumentCaptor<List<CommerceSubscription>> mUnsubscribeListCaptor;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -90,7 +94,11 @@ public class PowerBookmarkUtilsTest {
 
         mGetSubscriptionsCallbackCaptor.getValue().onResult(subscriptions);
 
-        verify(mMockSubscriptionsManager).unsubscribe(eq(subscription), any());
+        verify(mMockSubscriptionsManager).unsubscribe(mUnsubscribeListCaptor.capture(), any());
+
+        Assert.assertTrue(
+                "The list of unsibscribed items did not contain the correct subscription!",
+                mUnsubscribeListCaptor.getValue().contains(subscription));
 
         // No bookmark meta updates should have occurred.
         verify(mMockBookmarkModel, times(0)).setPowerBookmarkMeta(any(), any());
@@ -119,7 +127,11 @@ public class PowerBookmarkUtilsTest {
 
         mGetSubscriptionsCallbackCaptor.getValue().onResult(subscriptions);
 
-        verify(mMockSubscriptionsManager).unsubscribe(eq(subscription), any());
+        verify(mMockSubscriptionsManager).unsubscribe(mUnsubscribeListCaptor.capture(), any());
+
+        Assert.assertTrue(
+                "The list of unsibscribed items did not contain the correct subscription!",
+                mUnsubscribeListCaptor.getValue().contains(subscription));
     }
 
     // If a bookmark is tracked locally but there is no subscription, unset the flag in the
@@ -149,7 +161,7 @@ public class PowerBookmarkUtilsTest {
         verify(mMockBookmarkModel).setPowerBookmarkMeta(eq(bookmark), any());
 
         // Unsubscribe should have never been invoked.
-        verify(mMockSubscriptionsManager, times(0)).unsubscribe(any(), any());
+        verify(mMockSubscriptionsManager, times(0)).unsubscribe(any(List.class), any());
     }
 
     // Ensure no bookmark updates or unsubscribe events occur if everything is aligned.
@@ -180,7 +192,7 @@ public class PowerBookmarkUtilsTest {
         mGetSubscriptionsCallbackCaptor.getValue().onResult(subscriptions);
 
         // Unsubscribe should have never been invoked.
-        verify(mMockSubscriptionsManager, times(0)).unsubscribe(any(), any());
+        verify(mMockSubscriptionsManager, times(0)).unsubscribe(any(List.class), any());
 
         // No bookmark meta updates should have occurred.
         verify(mMockBookmarkModel, times(0)).setPowerBookmarkMeta(any(), any());
