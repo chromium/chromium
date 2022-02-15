@@ -7618,3 +7618,4 @@ crbug.com/1296106 [ Mac10.13 ] virtual/plz-dedicated-worker/external/wpt/referre
 
 # Sheriff 2022-02-15
 crbug.com/1297553 external/wpt/fetch/api/basic/response-null-body.any.sharedworker.html [ Pass Failure ]
+crbug.com/1297587 [ Mac10.12 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Pass Failure ]
