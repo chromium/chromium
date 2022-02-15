@@ -7463,7 +7463,7 @@ crbug.com/1286944 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/cs
 crbug.com/1286944 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-conicGradient.https.html [ Failure ]
 crbug.com/1286944 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-rects.https.html [ Failure ]
 crbug.com/1286944 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-canvasFilter.https.html [ Failure ]
-crbug.com/1286944 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/overdraw.https.html [ Pass Timeout Failure ]
+crbug.com/1286944 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/overdraw.https.html [ Failure Pass Timeout ]
 crbug.com/1286944 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-003.https.html [ Failure ]
 crbug.com/1286944 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-001.https.html [ Failure ]
 

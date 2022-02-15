@@ -2708,6 +2708,15 @@
         ]
        }
       }
+     },
+     "offscreen": {
+      "set-proprietary-font-names-001-crash.html": [
+       "dfa661655ec6210a7e8ca7de415973cff628b706",
+       [
+        null,
+        {}
+       ]
+      ]
      }
     },
     "interaction": {
@@ -69730,7 +69739,7 @@
        ]
       ],
       "background-blend-mode-plus-lighter.html": [
-       "0816dc691b7f812da4962755b8c765a0e5074e99",
+       "bb237b38b314daacb627f10d006faee672cb05ae",
        [
         null,
         [
@@ -69739,7 +69748,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             4294967295
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ]
      },
@@ -70148,7 +70173,7 @@
        ]
       ],
       "mix-blend-mode-plus-lighter-svg.html": [
-       "fc5e94e74e90b083b5bf609f19fefbe570190bc0",
+       "630dcd777b811b9664b09b610348f42d94eb29e3",
        [
         null,
         [
@@ -70157,11 +70182,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             4294967295
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-plus-lighter.html": [
-       "e6fc4d73a0421e4e1978c3d4875b0f2e85c5917e",
+       "86bf1cc3f4f981ac3385ad62c04f43737f1454f5",
        [
         null,
         [
@@ -70170,7 +70211,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             4294967295
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-rotated-clip.html": [
