@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/login/ui/login_button.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/controls/image_view.h"
@@ -46,6 +47,9 @@ class ArrowButtonView : public LoginButton {
   // the animation is looped.
   void EnableLoadingAnimation(bool enabled);
 
+  void SetBackgroundColor(SkColor color) { background_color_ = color; }
+  void SetIconColor(SkColor color) { icon_color_ = color; }
+
  private:
   // Helper class that translates events from the loading animation events into
   // scheduling painting.
@@ -66,6 +70,8 @@ class ArrowButtonView : public LoginButton {
 
   LoadingAnimationDelegate loading_animation_delegate_{this};
   std::unique_ptr<gfx::MultiAnimation> loading_animation_;
+  absl::optional<SkColor> background_color_;
+  absl::optional<SkColor> icon_color_;
 };
 
 }  // namespace ash

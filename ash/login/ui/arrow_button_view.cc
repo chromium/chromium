@@ -98,8 +98,12 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   // Draw background.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+  if (background_color_) {
+    flags.setColor(*background_color_);
+  } else {
+    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+  }
   flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2, flags);
 
@@ -114,8 +118,13 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
 void ArrowButtonView::OnThemeChanged() {
   LoginButton::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
-  const SkColor icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
+  SkColor icon_color;
+  if (icon_color_) {
+    icon_color = *icon_color_;
+  } else {
+    icon_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
+  }
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
                                  icon_color));

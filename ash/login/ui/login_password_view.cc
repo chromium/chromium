@@ -661,10 +661,13 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
                         },
                         this)));
 
-  submit_button_ = AddChildView(std::make_unique<ArrowButtonView>(
+  auto arrow_button_view = std::make_unique<ArrowButtonView>(
       base::BindRepeating(&LoginPasswordView::SubmitPassword,
                           base::Unretained(this)),
-      kSubmitButtonContentSizeDp));
+      kSubmitButtonContentSizeDp);
+  arrow_button_view->SetBackgroundColor(palette.submit_button_background_color);
+  arrow_button_view->SetIconColor(palette.submit_button_icon_color);
+  submit_button_ = AddChildView(std::move(arrow_button_view));
   submit_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetAccessibleName(
