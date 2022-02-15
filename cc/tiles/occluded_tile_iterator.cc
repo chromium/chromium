@@ -10,8 +10,11 @@
 namespace cc {
 
 OccludedTileIterator::OccludedTileIterator(
-    const std::vector<PictureLayerImpl*>& picture_layers)
-    : picture_layers_(picture_layers) {
+    const std::vector<PictureLayerImpl*>* picture_layers,
+    const std::vector<PictureLayerImpl*>* secondary_picture_layers)
+    : picture_layers_(picture_layers),
+      secondary_picture_layers_(secondary_picture_layers),
+      active_layers_(picture_layers) {
   FindNextInPictureLayers();
 }
 
@@ -43,7 +46,23 @@ void OccludedTileIterator::Next() {
 }
 
 bool OccludedTileIterator::FindNextInPictureLayers() {
-  for (; current_picture_layer_index_ < picture_layers_.size();
+  if (FindNextInActiveLayers())
+    return true;
+  DCHECK(AtEnd());
+  if (is_active_layers_secondary_layers_)
+    return false;
+  // Finished iterating through primary picture layers. Start iterating
+  // through secondary layers.
+  is_active_layers_secondary_layers_ = true;
+  active_layers_ = secondary_picture_layers_;
+  if (!active_layers_)
+    return false;
+  current_picture_layer_index_ = 0;
+  return FindNextInActiveLayers();
+}
+
+bool OccludedTileIterator::FindNextInActiveLayers() {
+  for (; current_picture_layer_index_ < active_layers_->size();
        ++current_picture_layer_index_) {
     current_picture_layer_tiling_index_ = 0u;
     if (FindNextInPictureLayerTilingSet())
@@ -52,7 +71,6 @@ bool OccludedTileIterator::FindNextInPictureLayers() {
   // No more tiles to look at. Reset `tile_iterator_` so that AtEnd() returns
   // true.
   tile_iterator_.reset();
-  DCHECK(AtEnd());
   return false;
 }
 
@@ -71,14 +89,17 @@ bool OccludedTileIterator::FindNextInPictureLayerTilingSet() {
 bool OccludedTileIterator::FindNextInTileIterator() {
   PictureLayerTiling* tiling = CurrentPictureLayerTiling();
   for (; !tile_iterator_->AtEnd(); tile_iterator_->Next()) {
-    if (tiling->IsTileOccluded(tile_iterator_->GetCurrent()))
+    Tile* tile = tile_iterator_->GetCurrent();
+    if (visited_.insert(tile).second && tile->draw_info().has_resource() &&
+        tiling->IsTileOccluded(tile_iterator_->GetCurrent())) {
       return true;
+    }
   }
   return false;
 }
 
 PictureLayerTilingSet* OccludedTileIterator::CurrentPictureLayerTilingSet() {
-  return picture_layers_[current_picture_layer_index_]
+  return (*active_layers_)[current_picture_layer_index_]
       ->picture_layer_tiling_set();
 }
 

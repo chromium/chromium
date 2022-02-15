@@ -1867,8 +1867,8 @@ LayerTreeHostImpl::BuildEvictionQueue(TreePriority tree_priority) {
 std::unique_ptr<OccludedTileIterator>
 LayerTreeHostImpl::CreateOccludedTileIterator() {
   return std::make_unique<OccludedTileIterator>(
-      pending_tree_ ? pending_tree_->picture_layers()
-                    : active_tree_->picture_layers());
+      &active_tree_->picture_layers(),
+      pending_tree_ ? &pending_tree_->picture_layers() : nullptr);
 }
 
 void LayerTreeHostImpl::SetIsLikelyToRequireADraw(
