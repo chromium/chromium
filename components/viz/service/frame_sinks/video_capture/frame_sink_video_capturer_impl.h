@@ -100,11 +100,9 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // can be resolved.
   const absl::optional<VideoCaptureTarget>& target() const { return target_; }
 
-  // Sets the resolved target, detaching this capturer from the previous target
-  // (if any), and attaching to the new target. This is called by the frame sink
-  // manager. If |target| is null, the capturer goes idle and expects this
-  // method to be called again in the near future, once the target becomes known
-  // to the frame sink manager.
+  // In some cases, the target to resolve is already known and can be passed
+  // directly instead of attempting to resolve it in |ResolveTarget|. This is
+  // called by the frame sink manager.
   void SetResolvedTarget(CapturableFrameSink* target);
 
   // Notifies this capturer that the current target will be destroyed, and the
@@ -124,6 +122,10 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer,
              mojom::BufferFormatPreference buffer_format_preference) final;
   void Stop() final;
+  // If currently stopped, starts the refresh frame timer to guarantee a frame
+  // representing the most up-to-date content will be sent to the consumer in
+  // the near future. This refresh operation will be canceled if a compositing
+  // event triggers a frame capture in the meantime.
   void RequestRefreshFrame() final;
   void CreateOverlay(int32_t stacking_index,
                      mojo::PendingReceiver<mojom::FrameSinkVideoCaptureOverlay>
@@ -157,20 +159,20 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // exceeding 60% of the design limit is considered "red line" operation.
   static constexpr float kTargetPipelineUtilization = 0.6f;
 
+  // The maximum refresh delay. Provides an upper limit for how long the
+  // capture source will remain idle. Callers of the API that request a refresh
+  // frame may end up waiting up to this long.
+  static constexpr base::TimeDelta kMaxRefreshDelay = base::Seconds(1);
+
  private:
   friend class FrameSinkVideoCapturerTest;
 
   using OracleFrameNumber =
       decltype(std::declval<media::VideoCaptureOracle>().next_frame_number());
 
-  // Starts the refresh frame timer to guarantee a frame representing the most
-  // up-to-date content will be sent to the consumer in the near future. This
-  // refresh operation will be canceled if a compositing event triggers a frame
-  // capture in the meantime.
-  void ScheduleRefreshFrame();
-
   // Returns the delay that should be used when setting the refresh timer. This
-  // is based on the current oracle prediction for frame duration.
+  // is based on the current oracle prediction for frame duration and is
+  // bounded by |kMaxRefreshDelay|.
   base::TimeDelta GetDelayBeforeNextRefreshAttempt() const;
 
   // Called whenever a major damage event, such as a capture parameter change, a
@@ -192,6 +194,14 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                       base::TimeTicks target_display_time,
                       const CompositorFrameMetadata& frame_metadata) final;
   bool IsVideoCaptureStarted() final;
+
+  // Resolves the capturable frame sink target using the current value of
+  // |target_|, detaching this capturer from the previous target (if any), and
+  // attaching to the new found target. This is called by the frame sink
+  // manager. If |target_| is null, the capturer goes idle and expects this
+  // method to be called again in the near future, once the target becomes known
+  // to the frame sink manager.
+  void ResolveTarget();
 
   // VideoCaptureOverlay::FrameSource implementation:
   gfx::Size GetSourceSize() final;

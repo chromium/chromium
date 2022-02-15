@@ -265,11 +265,16 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
     ASSERT_FALSE(client_);
     ASSERT_TRUE(client);
     client_ = client;
+    if (client_->IsVideoCaptureStarted())
+      OnClientCaptureStarted();
   }
 
   void DetachCaptureClient(Client* client) override {
     ASSERT_TRUE(client);
     ASSERT_EQ(client, client_);
+    if (client_->IsVideoCaptureStarted())
+      OnClientCaptureStopped();
+
     client_ = nullptr;
   }
 
@@ -1427,8 +1432,8 @@ TEST_F(FrameSinkVideoCapturerTest, RegionCaptureCropId) {
   capturer_->ChangeTarget(kVideoCaptureTarget);
   EXPECT_EQ(frame_sink_.number_clients_capturing(), 0);
 
-  static const auto kCropId = RegionCaptureCropId::CreateRandom();
-  static const gfx::Rect kCropBounds{1, 2, 640, 478};
+  const auto kCropId = RegionCaptureCropId::CreateRandom();
+  constexpr gfx::Rect kCropBounds{1, 2, 640, 478};
 
   VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id, kCropId);
   frame_sink_.set_crop_bounds(kCropBounds);
@@ -1445,10 +1450,41 @@ TEST_F(FrameSinkVideoCapturerTest, RegionCaptureCropId) {
   EXPECT_EQ(kCropId, frame_sink_.current_crop_id());
 }
 
+TEST_F(FrameSinkVideoCapturerTest,
+       RegionCaptureTargetIsSetLaterWhenNotInitiallyAvailable) {
+  SwitchToSizeSet(kSizeSets[4]);
+
+  const auto kCropId = RegionCaptureCropId::CreateRandom();
+  constexpr gfx::Rect kCropBounds{1, 2, 640, 478};
+
+  // The region capture crop identifier is not associated with any frame
+  // sinks yet.
+  VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id, kCropId);
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(target))
+      .WillRepeatedly(Return(nullptr));
+  capturer_->ChangeTarget(target);
+
+  // Start capture, although we don't have a frame sink yet.
+  NiceMock<MockConsumer> consumer;
+  StartCapture(&consumer);
+  EXPECT_EQ(frame_sink_.number_clients_capturing(), 0);
+
+  // A frame sink that has |kCropId| associated with it should now be
+  // available, and the capturer should automatically attach to it.
+  frame_sink_.set_crop_bounds(kCropBounds);
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(target))
+      .WillRepeatedly(Return(&frame_sink_));
+  EXPECT_TRUE(IsRefreshRetryTimerRunning());
+  AdvanceClockForRefreshTimer();
+
+  EXPECT_EQ(frame_sink_.number_clients_capturing(), 1);
+  EXPECT_EQ(kCropId, frame_sink_.current_crop_id());
+}
+
 TEST_F(FrameSinkVideoCapturerTest, HandlesSubtreeCaptureId) {
   SwitchToSizeSet(kSizeSets[4]);
-  static const gfx::Rect kCaptureBounds{1, 2, 1024, 768};
-  static const SubtreeCaptureId kCaptureId{1234567u};
+  constexpr gfx::Rect kCaptureBounds{1, 2, 1024, 768};
+  constexpr SubtreeCaptureId kCaptureId{1234567u};
 
   VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id, kCaptureId);
   frame_sink_.set_capture_bounds(kCaptureBounds);

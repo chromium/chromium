@@ -105,6 +105,8 @@ constexpr int FrameSinkVideoCapturerImpl::kDesignLimitMaxFrames;
 constexpr int FrameSinkVideoCapturerImpl::kFramePoolCapacity;
 // static
 constexpr float FrameSinkVideoCapturerImpl::kTargetPipelineUtilization;
+// static
+constexpr base::TimeDelta FrameSinkVideoCapturerImpl::kMaxRefreshDelay;
 
 FrameSinkVideoCapturerImpl::FrameSinkVideoCapturerImpl(
     FrameSinkVideoCapturerManager* frame_sink_manager,
@@ -148,9 +150,21 @@ FrameSinkVideoCapturerImpl::~FrameSinkVideoCapturerImpl() {
   SetResolvedTarget(nullptr);
 }
 
+void FrameSinkVideoCapturerImpl::ResolveTarget() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetResolvedTarget(
+      target_ ? frame_sink_manager_->FindCapturableFrameSink(target_.value())
+              : nullptr);
+}
+
 void FrameSinkVideoCapturerImpl::SetResolvedTarget(
     CapturableFrameSink* target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // We were unable to resolve a target, so schedule a check for the next
+  // refresh.
+  if (!target && target_.has_value()) {
+    RequestRefreshFrame();
+  }
 
   if (resolved_target_ == target) {
     return;
@@ -302,26 +316,7 @@ void FrameSinkVideoCapturerImpl::ChangeTarget(
     const absl::optional<VideoCaptureTarget>& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   target_ = target;
-
-  CapturableFrameSink* resolved_target = nullptr;
-  if (target_) {
-    resolved_target =
-        frame_sink_manager_->FindCapturableFrameSink(target_.value());
-
-    // The frame sink identifier may have changed due to crop target
-    // dereferencing.
-    const FrameSinkId resolved_id =
-        resolved_target ? resolved_target->GetFrameSinkId() : FrameSinkId{};
-    if (resolved_id.is_valid() && resolved_id != target_->frame_sink_id) {
-      TRACE_EVENT_INSTANT2(
-          "gpu.capture", "ChangeTargetCropIdDereference",
-          TRACE_EVENT_SCOPE_THREAD, "from",
-          target_ ? target_->frame_sink_id.ToString().c_str() : "None", "to",
-          resolved_id.ToString());
-      target_->frame_sink_id = resolved_id;
-    }
-  }
-  SetResolvedTarget(resolved_target);
+  ResolveTarget();
 }
 
 void FrameSinkVideoCapturerImpl::Start(
@@ -386,7 +381,12 @@ void FrameSinkVideoCapturerImpl::RequestRefreshFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!refresh_frame_retry_timer_->IsRunning()) {
-    RefreshSoon();
+    // NOTE: base::Unretained is used here safely because if |this| is invalid
+    // then the retry timer should have already been destructed.
+    refresh_frame_retry_timer_->Start(
+        FROM_HERE, GetDelayBeforeNextRefreshAttempt(),
+        base::BindOnce(&FrameSinkVideoCapturerImpl::RefreshSoon,
+                       base::Unretained(this)));
   }
 }
 
@@ -401,23 +401,20 @@ void FrameSinkVideoCapturerImpl::CreateOverlay(
                                         this, std::move(receiver)));
 }
 
-void FrameSinkVideoCapturerImpl::ScheduleRefreshFrame() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  refresh_frame_retry_timer_->Start(
-      FROM_HERE, GetDelayBeforeNextRefreshAttempt(),
-      base::BindRepeating(&FrameSinkVideoCapturerImpl::RefreshSoon,
-                          base::Unretained(this)));
-}
-
 base::TimeDelta FrameSinkVideoCapturerImpl::GetDelayBeforeNextRefreshAttempt()
     const {
   // The delay should be long enough to prevent interrupting the smooth timing
   // of frame captures that are expected to take place due to compositor update
   // events. However, the delay should not be excessively long either. Two frame
   // periods should be "just right."
-  return 2 * std::max(oracle_->estimated_frame_duration(),
-                      oracle_->min_capture_period());
+  //
+  // NOTE: if a source is idle, the oracle may end up providing a frame duration
+  // equal to the time since the last refresh frame was called. In practice,
+  // this has the potential for this delay to end up being multiple seconds
+  // with no upper limit, so it is instead bounded at |kMaxRefreshDelay|.
+  return std::min(kMaxRefreshDelay,
+                  2 * std::max(oracle_->estimated_frame_duration(),
+                               oracle_->min_capture_period()));
 }
 
 void FrameSinkVideoCapturerImpl::RefreshEntireSourceSoon() {
@@ -435,11 +432,14 @@ void FrameSinkVideoCapturerImpl::RefreshSoon() {
     return;
   }
 
-  // If the capture target has not yet been resolved, the refresh must be
-  // attempted later.
+  // If the capture target has not yet been resolved, first try changing the
+  // target since it may be available now.
   if (!resolved_target_) {
-    ScheduleRefreshFrame();
-    return;
+    ResolveTarget();
+    if (!resolved_target_) {
+      RequestRefreshFrame();
+      return;
+    }
   }
 
   // Detect whether the source size changed before attempting capture.
@@ -452,7 +452,7 @@ void FrameSinkVideoCapturerImpl::RefreshSoon() {
     // frame has not been composited yet or the current region selected for
     // capture has a current size of zero. We schedule a frame refresh here,
     // although its not useful in all circumstances.
-    ScheduleRefreshFrame();
+    RequestRefreshFrame();
     return;
   }
 
@@ -620,7 +620,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
 
     // Whether the oracle rejected a compositor update or a refresh event,
     // the consumer needs to be provided an update in the near future.
-    ScheduleRefreshFrame();
+    RequestRefreshFrame();
     return;
   }
 
@@ -670,7 +670,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
       LOG(ERROR) << "Unable to allocate shmem for first frame capture: OOM?";
       Stop();
     } else {
-      ScheduleRefreshFrame();
+      RequestRefreshFrame();
     }
     return;
   }
@@ -1083,7 +1083,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
     TRACE_EVENT_ASYNC_END1("gpu.capture", "Capture", oracle_frame_number,
                            "success", false);
 
-    ScheduleRefreshFrame();
+    RequestRefreshFrame();
     return;
   }
 
