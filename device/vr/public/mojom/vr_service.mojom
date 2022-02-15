@@ -166,6 +166,9 @@ struct XRSessionOptions {
   // Must be present if either optional or required features contain
   // depth sensing API.
   XRDepthOptions? depth_options;
+
+  // ID of this request, used for tracing.
+  uint64 trace_id;
 };
 
 struct XRDepthConfig {

@@ -59,6 +59,9 @@ struct XRRuntimeSessionOptions {
   array<XRTrackedImage> tracked_images;
 
   XRDepthOptions? depth_options;
+
+  // ID of this request, used for tracing.
+  uint64 trace_id;
 };
 
 // Used to contain all data from the session created by the runtime, and meant

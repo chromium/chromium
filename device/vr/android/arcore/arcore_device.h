@@ -167,6 +167,10 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
     std::vector<device::mojom::XRTrackedImagePtr> tracked_images_;
 
     viz::FrameSinkId frame_sink_id_;
+
+    // Trace ID of the requestSession() call that resulted in creating this
+    // session state.
+    uint64_t request_session_trace_id_;
   };
 
   // This object is reset to initial values when ending a session. This helps

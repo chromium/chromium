@@ -272,6 +272,10 @@ void VRServiceImpl::OnInlineSessionCreated(
     SessionRequestData request,
     device::mojom::XRRuntimeSessionResultPtr session_result) {
   if (!session_result) {
+    TRACE_EVENT("xr",
+                "VRServiceImpl::OnInlineSessionCreated: no session_result",
+                perfetto::Flow::Global(request.options->trace_id));
+
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_RUNTIME_ERROR));
@@ -296,6 +300,12 @@ void VRServiceImpl::OnInlineSessionCreated(
     // UNKNOWN_FAILURE since a runtime should not return a session if there
     // exists a required feature that was not enabled - this would signify a bug
     // in the runtime.
+
+    TRACE_EVENT(
+        "xr",
+        "VRServiceImpl::OnInlineSessionCreated: required feature not granted",
+        perfetto::Flow::Global(request.options->trace_id));
+
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_FAILURE));
@@ -315,6 +325,10 @@ void VRServiceImpl::OnImmersiveSessionCreated(
     device::mojom::XRRuntimeSessionResultPtr session_result) {
   DCHECK(request.options);
   if (!session_result) {
+    TRACE_EVENT("xr",
+                "VRServiceImpl::OnImmersiveSessionCreated: no session_result",
+                perfetto::Flow::Global(request.options->trace_id));
+
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_RUNTIME_ERROR));
@@ -330,6 +344,12 @@ void VRServiceImpl::OnImmersiveSessionCreated(
     // UNKNOWN_FAILURE since a runtime should not return a session if there
     // exists a required feature that was not enabled - this would signify a bug
     // in the runtime.
+
+    TRACE_EVENT("xr",
+                "VRServiceImpl::OnImmersiveSessionCreated: required feature "
+                "not granted",
+                perfetto::Flow::Global(request.options->trace_id));
+
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_FAILURE));
@@ -390,6 +410,9 @@ void VRServiceImpl::OnSessionCreated(
   // |OnInlineSessionCreated| and |OnImmersiveSessionCreated|.
 
   UMA_HISTOGRAM_ENUMERATION("XR.RuntimeUsed", request.runtime_id);
+
+  TRACE_EVENT("xr", "VRServiceImpl::OnSessionCreated: succeeded",
+              perfetto::Flow::Global(request.options->trace_id));
 
   mojo::Remote<device::mojom::XRSessionClient> client;
   session->client_receiver = client.BindNewPipeAndPassReceiver();
@@ -564,6 +587,9 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
 
   // Ensure that it's the same runtime as the one we expect.
   if (!runtime || runtime->GetId() != request.runtime_id) {
+    TRACE_EVENT("xr", "VRServiceImpl::DoRequestSession: mismatching runtime",
+                perfetto::Flow::Global(request.options->trace_id));
+
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_RUNTIME_ERROR));
@@ -639,6 +665,10 @@ void VRServiceImpl::SupportsSession(
                        std::move(options), std::move(callback)));
     return;
   }
+
+  TRACE_EVENT("xr", "VRServiceImpl::SupportsSession: received",
+              perfetto::Flow::Global(options->trace_id));
+
   runtime_manager_->SupportsSession(std::move(options), std::move(callback));
 }
 

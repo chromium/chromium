@@ -15,6 +15,7 @@
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "content/browser/xr/service/xr_frame_sink_client_impl.h"
 #include "content/browser/xr/xr_utils.h"
@@ -334,6 +335,10 @@ void XRRuntimeManagerImpl::SupportsSession(
   auto* runtime = GetRuntimeForOptions(options.get());
 
   if (!runtime) {
+    TRACE_EVENT("xr",
+                "XRRuntimeManagerImpl::SupportsSession: runtime not found",
+                perfetto::Flow::Global(options->trace_id));
+
     std::move(callback).Run(false);
     return;
   }
