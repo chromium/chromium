@@ -1038,8 +1038,8 @@
   },
   {
     "name": "darken-websites-checkbox-in-themes-setting",
-    "owners": [ "lazzzis@google.com", "twellington" ],
-    "expiry_milestone": 98
+    "owners": [ "nemco@google.com", "wenyufu@google.com", "twellington" ],
+    "expiry_milestone": 110
   },
   {
     "name": "dcheck-is-fatal",
