@@ -115,7 +115,9 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
   // Erase the "d" member so the private key JWK can be used to import the
   // public key (WebCrypto doesn't provide a mechanism for importing a public
   // key given a private key).
-  std::unique_ptr<base::DictionaryValue> key_jwk_copy(key_jwk->DeepCopy());
+  std::unique_ptr<base::DictionaryValue> key_jwk_copy =
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(key_jwk->Clone()));
   key_jwk_copy->RemoveKey("d");
   blink::WebCryptoKey public_key;
   ASSERT_EQ(
