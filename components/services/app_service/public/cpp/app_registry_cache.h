@@ -50,15 +50,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     // returns.
     virtual void OnAppUpdate(const AppUpdate& update) = 0;
 
-    // Called when the publisher for `app_type` has finished initiating apps.
-    // Note that this will not be called for app types initialized prior to this
-    // observer being registered. Observers should call
-    // AppRegistryCache::GetInitializedAppTypes() at the time of starting
-    // observation to get a set of the app types which have been initialized.
-    // TODO(crbug.com/1253250): Remove this interface and use non mojom app type
-    // interface.
-    virtual void OnAppTypeInitialized(apps::mojom::AppType app_type) {}
-
     // Called when the publisher for |app_type| has finished initiating apps.
     // Note that this will not be called for app types initialized prior to this
     // observer being registered. Observers should call

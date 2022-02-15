@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 class PrefChangeRegistrar;
 class Profile;
@@ -55,7 +56,7 @@ class WebApkManager : public AppRegistryCache::Observer,
 
   // AppRegistryCache::Observer:
   void OnAppUpdate(const AppUpdate& update) override;
-  void OnAppTypeInitialized(apps::mojom::AppType type) override;
+  void OnAppTypeInitialized(AppType type) override;
   void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override;
 
   // ArcAppListPrefs::Observer:

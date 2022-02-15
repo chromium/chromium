@@ -155,7 +155,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   };
 
   // AppRegistryCache::Observer:
-  void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
+  void OnAppTypeInitialized(AppType app_type) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
   void OnAppUpdate(const apps::AppUpdate& update) override;
@@ -191,7 +191,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   // Records the number of apps of the given `app_type` that the family user has
   // recently used.
-  void RecordAppsCount(apps::mojom::AppType app_type);
+  void RecordAppsCount(AppType app_type);
 
   // Records the app running duration.
   void RecordAppsRunningDuration();

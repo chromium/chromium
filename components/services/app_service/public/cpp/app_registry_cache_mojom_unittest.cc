@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -68,7 +69,7 @@ class AppRegistryCacheMojomTest : public testing::Test,
     updated_names_.insert(update.Name());
   }
 
-  void OnAppTypeInitialized(apps::mojom::AppType app_type) override {
+  void OnAppTypeInitialized(apps::AppType app_type) override {
     app_type_ = app_type;
   }
 
@@ -78,17 +79,17 @@ class AppRegistryCacheMojomTest : public testing::Test,
     NOTREACHED();
   }
 
-  void SetAppType(apps::mojom::AppType app_type) { app_type_ = app_type; }
+  void SetAppType(apps::AppType app_type) { app_type_ = app_type; }
 
   const AccountId& account_id() const { return account_id_; }
 
-  apps::mojom::AppType app_type() const { return app_type_; }
+  apps::AppType app_type() const { return app_type_; }
 
   int num_freshly_installed_ = 0;
   std::set<std::string> updated_ids_;
   std::set<std::string> updated_names_;
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
-  apps::mojom::AppType app_type_ = apps::mojom::AppType::kUnknown;
+  apps::AppType app_type_ = apps::AppType::kUnknown;
 };
 
 // Responds to a cache's OnAppUpdate to call back into the cache, checking that
@@ -126,7 +127,7 @@ class RecursiveObserver : public apps::AppRegistryCache::Observer {
 
   int NumAppsSeenOnAppUpdate() { return num_apps_seen_on_app_update_; }
 
-  apps::mojom::AppType app_type() const { return app_type_; }
+  apps::AppType app_type() const { return app_type_; }
 
  protected:
   // apps::AppRegistryCache::Observer overrides.
@@ -199,7 +200,7 @@ class RecursiveObserver : public apps::AppRegistryCache::Observer {
     num_apps_seen_on_app_update_++;
   }
 
-  void OnAppTypeInitialized(apps::mojom::AppType app_type) override {
+  void OnAppTypeInitialized(apps::AppType app_type) override {
     app_type_ = app_type;
   }
 
@@ -222,7 +223,7 @@ class RecursiveObserver : public apps::AppRegistryCache::Observer {
   int expected_num_apps_;
   int num_apps_seen_on_app_update_;
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
-  apps::mojom::AppType app_type_ = apps::mojom::AppType::kUnknown;
+  apps::AppType app_type_ = apps::AppType::kUnknown;
 
   // Records previously seen app names, keyed by app_id's, so we can check
   // that, for these tests, a given app's name is always increasing (in string
@@ -261,7 +262,7 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
     updated_ids_.insert(update.AppId());
   }
 
-  void OnAppTypeInitialized(apps::mojom::AppType app_type) override {
+  void OnAppTypeInitialized(apps::AppType app_type) override {
     app_type_ = app_type;
     ++count_;
     app_count_ = updated_ids_.size();
@@ -272,9 +273,9 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
     Observe(nullptr);
   }
 
-  void SetAppType(apps::mojom::AppType app_type) { app_type_ = app_type; }
+  void SetAppType(apps::AppType app_type) { app_type_ = app_type; }
 
-  apps::mojom::AppType app_type() const { return app_type_; }
+  apps::AppType app_type() const { return app_type_; }
 
   int count() const { return count_; }
 
@@ -282,7 +283,7 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
 
  private:
   std::set<std::string> updated_ids_;
-  apps::mojom::AppType app_type_ = apps::mojom::AppType::kUnknown;
+  apps::AppType app_type_ = apps::AppType::kUnknown;
   int count_ = 0;
   int app_count_ = 0;
 };
@@ -410,10 +411,10 @@ TEST_F(AppRegistryCacheMojomTest, Observer) {
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("a"));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("c"));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("e"));
-  EXPECT_EQ(apps::mojom::AppType::kArc, app_type());
+  EXPECT_EQ(apps::AppType::kArc, app_type());
   EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
 
-  SetAppType(apps::mojom::AppType::kUnknown);
+  SetAppType(apps::AppType::kUnknown);
   num_freshly_installed_ = 0;
   updated_ids_.clear();
   deltas.clear();
@@ -426,7 +427,7 @@ TEST_F(AppRegistryCacheMojomTest, Observer) {
   EXPECT_EQ(2u, updated_ids_.size());
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("b"));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("c"));
-  EXPECT_EQ(apps::mojom::AppType::kUnknown, app_type());
+  EXPECT_EQ(apps::AppType::kUnknown, app_type());
 
   cache.RemoveObserver(this);
 
@@ -439,7 +440,7 @@ TEST_F(AppRegistryCacheMojomTest, Observer) {
 
   EXPECT_EQ(0, num_freshly_installed_);
   EXPECT_EQ(0u, updated_ids_.size());
-  EXPECT_EQ(apps::mojom::AppType::kUnknown, app_type());
+  EXPECT_EQ(apps::AppType::kUnknown, app_type());
   EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
 }
 
@@ -473,7 +474,7 @@ TEST_F(AppRegistryCacheMojomTest, Recursive) {
   cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                false /* should_notify_initialized */);
   EXPECT_EQ(1, observer.NumAppsSeenOnAppUpdate());
-  EXPECT_EQ(apps::mojom::AppType::kArc, observer.app_type());
+  EXPECT_EQ(apps::AppType::kArc, observer.app_type());
   EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
 }
 
@@ -521,7 +522,7 @@ TEST_F(AppRegistryCacheMojomTest, SuperRecursive) {
   EXPECT_EQ("avocado", GetName(cache, "a"));
   EXPECT_EQ("boysenberry", GetName(cache, "b"));
   EXPECT_EQ("coconut", GetName(cache, "c"));
-  EXPECT_EQ(apps::mojom::AppType::kArc, observer.app_type());
+  EXPECT_EQ(apps::AppType::kArc, observer.app_type());
   EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
 }
 
@@ -541,7 +542,7 @@ TEST_F(AppRegistryCacheMojomTest, OnAppTypeInitialized) {
   cache.OnApps(std::move(deltas), apps::mojom::AppType::kArc,
                true /* should_notify_initialized */);
 
-  EXPECT_EQ(apps::mojom::AppType::kArc, observer1.app_type());
+  EXPECT_EQ(apps::AppType::kArc, observer1.app_type());
   EXPECT_EQ(1, observer1.count());
   EXPECT_EQ(3, observer1.app_count());
   EXPECT_EQ(1u, cache.GetInitializedAppTypes().size());
@@ -549,7 +550,7 @@ TEST_F(AppRegistryCacheMojomTest, OnAppTypeInitialized) {
 
   // New observers should not have OnAppTypeInitialized called.
   InitializedObserver observer2(&cache);
-  EXPECT_EQ(apps::mojom::AppType::kUnknown, observer2.app_type());
+  EXPECT_EQ(apps::AppType::kUnknown, observer2.app_type());
   EXPECT_EQ(0, observer2.count());
   EXPECT_EQ(1u, cache.GetInitializedAppTypes().size());
   EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));

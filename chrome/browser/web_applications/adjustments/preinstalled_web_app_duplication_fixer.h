@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 class Profile;
 
@@ -31,7 +32,7 @@ class PreinstalledWebAppDuplicationFixer
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
+  void OnAppTypeInitialized(apps::AppType app_type) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 

@@ -56,8 +56,8 @@ void PreinstalledWebAppDuplicationFixer::OnAppUpdate(
     const apps::AppUpdate& update) {}
 
 void PreinstalledWebAppDuplicationFixer::OnAppTypeInitialized(
-    apps::mojom::AppType app_type) {
-  if (app_type != apps::mojom::AppType::kChromeApp)
+    apps::AppType app_type) {
+  if (app_type != apps::AppType::kChromeApp)
     return;
 
   ScanForDuplication();

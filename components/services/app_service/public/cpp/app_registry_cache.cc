@@ -266,7 +266,7 @@ void AppRegistryCache::OnMojomAppTypeInitialized() {
 
   for (auto app_type : in_progress_initialized_app_types) {
     for (auto& obs : observers_) {
-      obs.OnAppTypeInitialized(app_type);
+      obs.OnAppTypeInitialized(ConvertMojomAppTypToAppType(app_type));
     }
     initialized_mojom_app_types_.insert(app_type);
   }

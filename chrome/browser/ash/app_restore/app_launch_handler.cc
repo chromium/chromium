@@ -92,7 +92,7 @@ void AppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
                      update.AppType(), update.AppId()));
 }
 
-void AppLaunchHandler::OnAppTypeInitialized(apps::mojom::AppType app_type) {
+void AppLaunchHandler::OnAppTypeInitialized(apps::AppType app_type) {
   // Do nothing: overridden by subclasses.
 }
 
@@ -115,7 +115,7 @@ void AppLaunchHandler::LaunchApps() {
                      ->AppRegistryCache();
   Observe(cache);
   for (const auto app_type : cache->GetInitializedAppTypes()) {
-    OnAppTypeInitialized(app_type);
+    OnAppTypeInitialized(apps::ConvertMojomAppTypToAppType(app_type));
   }
 
   // Add the app to `app_ids` if there is a launch list from the restore data

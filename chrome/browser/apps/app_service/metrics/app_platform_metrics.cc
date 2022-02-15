@@ -560,7 +560,7 @@ std::string AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(
 
 void AppPlatformMetrics::OnNewDay() {
   should_record_metrics_on_new_day_ = true;
-  RecordAppsCount(apps::mojom::AppType::kUnknown);
+  RecordAppsCount(AppType::kUnknown);
   RecordAppsRunningDuration();
 }
 
@@ -639,7 +639,7 @@ void AppPlatformMetrics::RecordAppUninstallUkm(
   RemoveSourceId(source_id);
 }
 
-void AppPlatformMetrics::OnAppTypeInitialized(apps::mojom::AppType app_type) {
+void AppPlatformMetrics::OnAppTypeInitialized(AppType app_type) {
   if (should_record_metrics_on_new_day_) {
     RecordAppsCount(app_type);
   }
@@ -900,15 +900,17 @@ void AppPlatformMetrics::ClearRunningDuration() {
   activated_count_update->DictClear();
 }
 
-void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
+void AppPlatformMetrics::RecordAppsCount(AppType app_type) {
   std::map<AppTypeName, int> app_count;
   std::map<AppTypeName, std::map<apps::mojom::InstallReason, int>>
       app_count_per_install_reason;
+
+  apps::mojom::AppType mojom_app_type = ConvertAppTypeToMojomAppType(app_type);
   app_registry_cache_.ForEachApp(
-      [app_type, this, &app_count,
+      [mojom_app_type, this, &app_count,
        &app_count_per_install_reason](const apps::AppUpdate& update) {
-        if (app_type != apps::mojom::AppType::kUnknown &&
-            (update.AppType() != app_type ||
+        if (mojom_app_type != apps::mojom::AppType::kUnknown &&
+            (update.AppType() != mojom_app_type ||
              update.AppId() == app_constants::kChromeAppId)) {
           return;
         }

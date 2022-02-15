@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/app_restore/restore_data.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -97,7 +98,7 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
 
   // AppLaunchHandler:
   void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
+  void OnAppTypeInitialized(apps::AppType app_type) override;
 
   // SessionRestoreObserver:
   void OnGotSession(Profile* profile, bool for_apps, int window_count) override;

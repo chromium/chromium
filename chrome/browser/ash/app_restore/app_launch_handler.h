@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/app_restore/restore_data.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -37,7 +38,7 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
+  void OnAppTypeInitialized(apps::AppType app_type) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 

@@ -180,8 +180,8 @@ void WebApkManager::OnAppUpdate(const AppUpdate& update) {
 
 // Called once per app type during startup, once apps of that type are
 // initialized.
-void WebApkManager::OnAppTypeInitialized(apps::mojom::AppType type) {
-  if (type == apps::mojom::AppType::kWeb) {
+void WebApkManager::OnAppTypeInitialized(AppType type) {
+  if (type == AppType::kWeb) {
     Synchronize();
   }
 }
