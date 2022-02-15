@@ -67,10 +67,7 @@ double CSSMathFunctionValue::DoubleValue() const {
 
 double CSSMathFunctionValue::ComputeSeconds() const {
   DCHECK_EQ(kCalcTime, expression_->Category());
-  // TODO(crbug.com/984372): We currently use 'ms' as the canonical unit of
-  // <time>. Switch to 's' to follow the spec.
-  return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit() /
-                               1000);
+  return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
 }
 
 double CSSMathFunctionValue::ComputeDegrees() const {

@@ -359,8 +359,11 @@ double CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
     case UnitType::kPixels:
     case UnitType::kUserUnits:
     case UnitType::kDegrees:
-    case UnitType::kMilliseconds:
+    case UnitType::kSeconds:
     case UnitType::kHertz:
+      break;
+    case UnitType::kMilliseconds:
+      factor = 0.001;
       break;
     case UnitType::kCentimeters:
       factor = kCssPixelsPerCentimeter;
@@ -395,7 +398,6 @@ double CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
     case UnitType::kTurns:
       factor = 360;
       break;
-    case UnitType::kSeconds:
     case UnitType::kKilohertz:
       factor = 1000;
       break;
@@ -451,7 +453,7 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::CanonicalUnitTypeForCategory(
     case kUPercent:
       return UnitType::kUnknown;  // Cannot convert between numbers and percent.
     case kUTime:
-      return UnitType::kMilliseconds;
+      return UnitType::kSeconds;
     case kUAngle:
       return UnitType::kDegrees;
     case kUFrequency:

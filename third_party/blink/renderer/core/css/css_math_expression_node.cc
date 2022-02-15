@@ -891,11 +891,8 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
     case kCalcNumber:
       return CSSPrimitiveValue::UnitType::kNumber;
     case kCalcAngle:
-      return CSSPrimitiveValue::UnitType::kDegrees;
     case kCalcTime:
-      return CSSPrimitiveValue::UnitType::kMilliseconds;
     case kCalcFrequency:
-      return CSSPrimitiveValue::UnitType::kHertz;
     case kCalcLength:
     case kCalcPercent:
       switch (operator_) {
