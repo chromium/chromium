@@ -171,6 +171,9 @@ class DecoderAdapter : public webrtc::VideoDecoderFactory {
     std::unique_ptr<webrtc::VideoDecoder> hardware_decoder =
         CreateDecoder(hardware_decoder_factory_.get(), format);
 
+    if (!software_decoder && !hardware_decoder)
+      return nullptr;
+
     if (base::FeatureList::IsEnabled(kWebrtcMediaCapabilitiesStatsCollection)) {
       return std::make_unique<StatsCollectingDecoder>(
           format,
