@@ -6,13 +6,20 @@
 
 <template>
   <style include="cr-shared-style md-select shimless-fonts">
+    :host {
+      --radio-button-top-padding: 20px;
+      --title-bottom-margin: 16px;
+    }
+
     html {
       background-color: var(--cros-bg-color);
     }
 
     .indented-description {
       color: var(--shimless-instructions-text-color);
-      padding: 0 0 0 48px; /* specify all to override */
+      padding: 0; /* specify all to override */
+      padding-inline-start: 60px;
+      width: 375px;
     }
 
     .large-icon {
@@ -31,7 +38,7 @@
       font-size: var(--shimless-title-font-size);
       font-weight: var(--shimless-medium-font-weight);
       line-height: var(--shimless-title-line-height);
-      margin-bottom: 16px;
+      margin-bottom: var(--title-bottom-margin);
     }
 
     .instructions {
@@ -63,6 +70,18 @@
       font-size: var(--shimless-dialog-body-font-size);
       font-weight: var(--shimless-regular-font-weight);
       line-height: var(--shimless-dialog-body-line-height);
+    }
+
+    cr-radio-button {
+      --cr-radio-button-size: 20px;
+      padding-bottom: 8px;
+      padding-inline-start: 20px;
+      padding-top: var(--radio-button-top-padding);
+    }
+
+    cr-radio-group {
+      margin-top: calc(40px - var(--radio-button-top-padding) - 
+          var(--title-bottom-margin));
     }
 
     base-page {
