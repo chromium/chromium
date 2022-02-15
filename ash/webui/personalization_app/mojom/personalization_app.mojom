@@ -114,9 +114,6 @@ struct GooglePhotosPhoto {
     // Unique identifier for this photo.
     string id;
 
-    // Display name of the photo, derived from the photo's server-side filename.
-    string name;
-
     // Human-readable string representation of the date the photo was
     // taken, e.g., "Monday, March 6, 2008", translated into the user's current
     // locale.

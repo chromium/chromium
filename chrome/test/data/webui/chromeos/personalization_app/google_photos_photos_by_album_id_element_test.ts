@@ -45,13 +45,11 @@ export function GooglePhotosPhotosByAlbumIdTest() {
       '1': [
         {
           id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
-          name: 'foo',
           date: {data: []},
           url: {url: 'foo.com'}
         },
         {
           id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
-          name: 'bar',
           date: {data: []},
           url: {url: 'bar.com'}
         },
@@ -59,7 +57,6 @@ export function GooglePhotosPhotosByAlbumIdTest() {
       '2': [
         {
           id: '0a268a37-877a-4936-81d4-38cc84b0f596',
-          name: 'baz',
           date: {data: []},
           url: {url: 'baz.com'}
         },
@@ -269,7 +266,6 @@ export function GooglePhotosPhotosByAlbumIdTest() {
 
     const photo: GooglePhotosPhoto = {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
-      name: 'foo',
       date: {data: []},
       url: {url: 'foo.com'}
     };
