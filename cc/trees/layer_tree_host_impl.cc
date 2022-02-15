@@ -2636,8 +2636,15 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         render_surface->GetDocumentTransitionSharedElementId();
     if (!shared_element_id.valid())
       continue;
+
     DCHECK(
-        !base::Contains(shared_element_render_pass_id_map, shared_element_id));
+        !base::Contains(shared_element_render_pass_id_map, shared_element_id))
+        << "Cannot map " << shared_element_id.ToString() << " to render pass "
+        << render_surface->render_pass_id().GetUnsafeValue()
+        << "; It already maps to render pass "
+        << shared_element_render_pass_id_map[shared_element_id]
+               .render_pass_id.GetUnsafeValue();
+
     shared_element_render_pass_id_map[shared_element_id].render_pass_id =
         render_surface->render_pass_id();
     shared_element_render_pass_id_map[shared_element_id].resource_id =
