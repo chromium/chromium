@@ -24,13 +24,15 @@ class Label;
 
 namespace ash {
 
+class CalendarViewController;
+
 // This view displays a calendar event entry.
 class ASH_EXPORT CalendarEventListItemView : public ActionableView {
  public:
   METADATA_HEADER(CalendarEventListItemView);
 
-  explicit CalendarEventListItemView(
-      google_apis::calendar::CalendarEvent event);
+  CalendarEventListItemView(CalendarViewController* calendar_view_controller,
+                            google_apis::calendar::CalendarEvent event);
   CalendarEventListItemView(const CalendarEventListItemView& other) = delete;
   CalendarEventListItemView& operator=(const CalendarEventListItemView& other) =
       delete;
@@ -44,6 +46,9 @@ class ASH_EXPORT CalendarEventListItemView : public ActionableView {
 
  private:
   friend class CalendarViewEventListViewTest;
+
+  // Unowned.
+  CalendarViewController* const calendar_view_controller_;
 
   // The summary (title) of the meeting event.
   views::Label* const summary_;

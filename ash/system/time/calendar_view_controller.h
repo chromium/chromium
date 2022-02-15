@@ -32,7 +32,7 @@ class ASH_EXPORT CalendarViewController {
 
   class Observer : public base::CheckedObserver {
    public:
-    // Gets called when `current_date_ ` changes.
+    // Gets called when `currently_shown_date_ ` changes.
     virtual void OnMonthChanged(const base::Time::Exploded current_month) {}
 
     // Invoked when a date cell is clicked to open the event list.
@@ -49,43 +49,45 @@ class ASH_EXPORT CalendarViewController {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Updates the `current_date_`.
+  // Updates the `currently_shown_date_`.
   void UpdateMonth(const base::Time current_month_first_date);
 
-  // Gets the first day of the `current_date_`'s month, in local time.
+  // Gets the first day of the `currently_shown_date_`'s month, in local time.
   base::Time GetOnScreenMonthFirstDayLocal() const;
 
-  // Gets the first day of the nth-previous month based on the `current_date_`'s
-  // month, in local time.
+  // Gets the first day of the nth-previous month based on the
+  // `currently_shown_date_`'s month, in local time.
   base::Time GetPreviousMonthFirstDayLocal(unsigned int num_months) const;
 
-  // Gets the first day of the nth-next month based on the `current_date_`'s
-  // month, in local time.
+  // Gets the first day of the nth-next month based on the
+  // `currently_shown_date_`'s month, in local time.
   base::Time GetNextMonthFirstDayLocal(unsigned int num_months) const;
 
-  // Gets the first day of the `current_date_`'s month, in UTC time.
+  // Gets the first day of the `currently_shown_date_`'s month, in UTC time.
   base::Time GetOnScreenMonthFirstDayUTC() const;
 
-  // Gets the first day of the nth-previous month based on the `current_date_`'s
-  // month, in UTC time.
+  // Gets the first day of the nth-previous month based on the
+  // `currently_shown_date_`'s month, in UTC time.
   base::Time GetPreviousMonthFirstDayUTC(unsigned int num_months) const;
 
-  // Gets the first day of the nth-next month based on the `current_date_`'s
-  // month, in UTC time.
+  // Gets the first day of the nth-next month based on the
+  // `currently_shown_date_`'s month, in UTC time.
   base::Time GetNextMonthFirstDayUTC(unsigned int num_months) const;
 
-  // Gets the month name of the `current_date_`'s month.
+  // Gets the month name of the `currently_shown_date_`'s month.
   std::u16string GetOnScreenMonthName() const;
 
-  // Gets the month name of the next month based on the `current_date_`'s month.
+  // Gets the month name of the next month based on the
+  // `currently_shown_date_`'s month.
   std::u16string GetNextMonthName() const;
 
-  // Gets the month name of the previous month based `current_date_`'s month.
+  // Gets the month name of the previous month based `currently_shown_date_`'s
+  // month.
   std::u16string GetPreviousMonthName() const;
 
   // Get the current date, which can be today or the first day of the current
   // month if current month is not today's month.
-  base::Time current_date() { return current_date_; }
+  base::Time currently_shown_date() { return currently_shown_date_; }
 
   // The currently selected date to show the event list.
   absl::optional<base::Time> selected_date() { return selected_date_; }
@@ -142,6 +144,9 @@ class ASH_EXPORT CalendarViewController {
   // Gets called when the `CalendarEventListView` is closed.
   void OnEventListClosed();
 
+  // Called when a calendar event is about to launch. Used to record metrics.
+  void OnCalendarEventWillLaunch();
+
   // If the selected date in the current month. This is used to inform the
   // `CalendarView` if the month should be updated when a date is selected.
   bool IsSelectedDateInCurrentMonth();
@@ -158,9 +163,13 @@ class ASH_EXPORT CalendarViewController {
   // Records the time a user spends in a calendar month.
   void RecordMonthDwellTimeMetric();
 
-  // The current date, which can be today or the first day of the current month
-  // if current month is not today's month.
-  base::Time current_date_;
+  // The currently shown date, which can be today or the first day of the
+  // current month if current month is not today's month.
+  base::Time currently_shown_date_;
+
+  // The time the CalendarViewController was created, which coincides with the
+  // time the view was created.
+  base::TimeTicks calendar_open_time_;
 
   // The time the user spends in a month before navigating to another one.
   base::TimeTicks month_dwell_time_;
@@ -179,6 +188,10 @@ class ASH_EXPORT CalendarViewController {
 
   // If the event list is expanded.
   bool is_event_list_showing_ = false;
+
+  // Whether the user journey time has been recorded. It is recorded when an
+  // event is launched, or when this (which is owned by the view) is destroyed.
+  bool user_journey_time_recorded_ = false;
 
   // The currently selected date.
   absl::optional<base::Time> selected_date_;

@@ -11,8 +11,11 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/metrics/histogram.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 
@@ -80,17 +83,16 @@ class CalendarViewEventListViewTest : public AshTestBase {
   views::View* content_view() { return event_list_view_->content_view_; }
   CalendarViewController* controller() { return controller_.get(); }
 
-  views::Label* GetSummary(int child_idex) {
+  views::Label* GetSummary(int child_index) {
     return static_cast<views::Label*>(
         static_cast<CalendarEventListItemView*>(
-            content_view()->children()[child_idex])
+            content_view()->children()[child_index])
             ->summary_);
   }
 
   std::u16string GetEmptyLabel() {
     return static_cast<views::LabelButton*>(
-               static_cast<views::View*>(content_view()->children()[0])
-                   ->children()[0])
+               content_view()->children()[0]->children()[0])
         ->GetText();
   }
 
@@ -139,6 +141,42 @@ TEST_F(CalendarViewEventListViewTest, ShowEvents) {
   EXPECT_EQ(2u, content_view()->children().size());
   EXPECT_EQ(u"summary_4", GetSummary(0)->GetText());
   EXPECT_EQ(u"summary_5", GetSummary(1)->GetText());
+}
+
+TEST_F(CalendarViewEventListViewTest, LaunchEmptyList) {
+  base::HistogramTester histogram_tester;
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  CreateEventListView(date - base::Days(1));
+
+  // No events, so we see the empty list by default.
+  EXPECT_EQ(1u, content_view()->children().size());
+  views::Button* empty_list_button =
+      static_cast<views::Button*>(content_view()->children()[0]->children()[0]);
+  empty_list_button->AcceleratorPressed(
+      ui::Accelerator(ui::KeyboardCode::VKEY_SPACE, /*modifiers=*/0));
+
+  histogram_tester.ExpectTotalCount(
+      "Ash.Calendar.UserJourneyTime.EventLaunched", 1);
+}
+
+TEST_F(CalendarViewEventListViewTest, LaunchItem) {
+  base::HistogramTester histogram_tester;
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  CreateEventListView(date);
+
+  SetSelectedDate(date);
+  EXPECT_EQ(3u, content_view()->children().size());
+
+  // Launch the first item.
+  views::Button* first_item = static_cast<views::Button*>(
+      content_view()->children()[0]);
+  first_item->AcceleratorPressed(
+      ui::Accelerator(ui::KeyboardCode::VKEY_SPACE, /*modifiers=*/0));
+
+  histogram_tester.ExpectTotalCount(
+      "Ash.Calendar.UserJourneyTime.EventLaunched", 1);
 }
 
 }  // namespace ash

@@ -48,12 +48,13 @@ constexpr gfx::Insets kOpenGoogleCalendarContainerInsets{20, 60};
 // month view that has no events.  Clicking on it opens Google calendar.
 class CalendarEmptyEventListView : public views::LabelButton {
  public:
-  explicit CalendarEmptyEventListView()
+  explicit CalendarEmptyEventListView(CalendarViewController* controller)
       : views::LabelButton(
             views::Button::PressedCallback(base::BindRepeating(
                 &CalendarEmptyEventListView::OpenCalendarDefault,
                 base::Unretained(this))),
-            l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS)) {
+            l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS)),
+        controller_(controller) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     label()->SetBorder(views::CreateEmptyBorder(kOpenGoogleCalendarInsets));
     label()->SetTextContext(CONTEXT_CALENDAR_DATE);
@@ -78,11 +79,17 @@ class CalendarEmptyEventListView : public views::LabelButton {
   // Callback that's invoked when the user clicks on "Open in Google calendar"
   // in an empty event list.
   void OpenCalendarDefault() {
+    controller_->OnCalendarEventWillLaunch();
+
     GURL finalized_url;
     bool opened_pwa = false;
     Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
         absl::nullopt, opened_pwa, finalized_url);
   }
+
+ private:
+  // Owned by the parent view. Guaranteed to outlive this.
+  CalendarViewController* const controller_;
 };
 
 CalendarEventListView::CalendarEventListView(
@@ -162,7 +169,8 @@ void CalendarEventListView::UpdateListItems() {
 
     for (const google_apis::calendar::CalendarEvent& event : events) {
       auto* event_entry = content_view_->AddChildView(
-          std::make_unique<CalendarEventListItemView>(event));
+          std::make_unique<CalendarEventListItemView>(calendar_view_controller_,
+                                                      event));
 
       // Needs to repaint the `content_view_`'s children.
       event_entry->InvalidateLayout();
@@ -178,7 +186,8 @@ void CalendarEventListView::UpdateListItems() {
           views::BoxLayout::Orientation::kVertical));
   CalendarEmptyEventListView* empty_button =
       empty_list_view_container->AddChildView(
-          std::make_unique<CalendarEmptyEventListView>());
+          std::make_unique<CalendarEmptyEventListView>(
+              calendar_view_controller_));
   DCHECK(calendar_view_controller_->selected_date().has_value());
   empty_button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_NO_EVENT_BUTTON_ACCESSIBLE_DESCRIPTION,

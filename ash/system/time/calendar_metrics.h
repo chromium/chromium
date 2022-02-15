@@ -14,6 +14,7 @@ class TimeDelta;
 }  // namespace base
 
 namespace ash {
+
 namespace calendar_metrics {
 
 // The event types CalendarView is interested in. These are used in histograms,
@@ -58,6 +59,7 @@ void RecordEventListItemActivated(const ui::Event& event);
 void RecordMonthDwellTime(const base::TimeDelta& dwell_time);
 
 }  // namespace calendar_metrics
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_TIME_CALENDAR_METRICS_H_

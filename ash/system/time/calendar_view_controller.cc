@@ -19,6 +19,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -26,7 +27,8 @@
 namespace ash {
 
 CalendarViewController::CalendarViewController()
-    : current_date_(base::Time::Now()),
+    : currently_shown_date_(base::Time::Now()),
+      calendar_open_time_(base::TimeTicks::Now()),
       month_dwell_time_(base::TimeTicks::Now()) {
   // Using the local time format to get the local `base::Time`, which is used to
   // generate the exploded everywhere, since the LocalExplode doesn't use the
@@ -35,13 +37,13 @@ CalendarViewController::CalendarViewController()
   base::Time local_time;
   bool result = base::Time::FromString(
       converter
-          .to_bytes(
-              base::TimeFormatWithPattern(current_date_, "MMMMdyyyy HH:mm") +
-              u" GMT")
+          .to_bytes(base::TimeFormatWithPattern(currently_shown_date_,
+                                                "MMMMdyyyy HH:mm") +
+                    u" GMT")
           .c_str(),
       &local_time);
   DCHECK(result);
-  int difference_in_minutes = (local_time - current_date_).InMinutes();
+  int difference_in_minutes = (local_time - currently_shown_date_).InMinutes();
   // Gives it an extra 1 minute to round the time difference to hours.
   difference_in_minutes += difference_in_minutes > 0 ? 1 : (-1);
   time_difference_hours_ = difference_in_minutes / 60;
@@ -50,6 +52,12 @@ CalendarViewController::CalendarViewController()
 CalendarViewController::~CalendarViewController() {
   calendar_metrics::RecordMonthDwellTime(base::TimeTicks::Now() -
                                          month_dwell_time_);
+
+  if (user_journey_time_recorded_)
+    return;
+
+  UMA_HISTOGRAM_MEDIUM_TIMES("Ash.Calendar.UserJourneyTime.EventNotLaunched",
+                             base::TimeTicks::Now() - calendar_open_time_);
 }
 
 void CalendarViewController::AddObserver(Observer* observer) {
@@ -64,12 +72,14 @@ void CalendarViewController::RemoveObserver(Observer* observer) {
 
 void CalendarViewController::UpdateMonth(
     const base::Time current_month_first_date) {
-  base::Time::Exploded current_date_exploded =
-      calendar_utils::GetExplodedUTC(current_date_);
+  base::Time::Exploded currently_shown_date_exploded =
+      calendar_utils::GetExplodedUTC(currently_shown_date_);
   base::Time::Exploded current_month_first_date_exploded =
       calendar_utils::GetExplodedUTC(current_month_first_date);
-  if (current_date_exploded.year == current_month_first_date_exploded.year &&
-      current_date_exploded.month == current_month_first_date_exploded.month) {
+  if (currently_shown_date_exploded.year ==
+          current_month_first_date_exploded.year &&
+      currently_shown_date_exploded.month ==
+          current_month_first_date_exploded.month) {
     return;
   }
 
@@ -77,7 +87,7 @@ void CalendarViewController::UpdateMonth(
                                          month_dwell_time_);
   month_dwell_time_ = base::TimeTicks::Now();
 
-  current_date_ = current_month_first_date;
+  currently_shown_date_ = current_month_first_date;
   for (auto& observer : observers_) {
     observer.OnMonthChanged(
         calendar_utils::GetExplodedLocal(current_month_first_date));
@@ -85,7 +95,7 @@ void CalendarViewController::UpdateMonth(
 }
 
 base::Time CalendarViewController::GetOnScreenMonthFirstDayLocal() const {
-  return calendar_utils::GetStartOfMonthLocal(current_date_);
+  return calendar_utils::GetStartOfMonthLocal(currently_shown_date_);
 }
 
 base::Time CalendarViewController::GetPreviousMonthFirstDayLocal(
@@ -114,7 +124,7 @@ base::Time CalendarViewController::GetNextMonthFirstDayLocal(
 }
 
 base::Time CalendarViewController::GetOnScreenMonthFirstDayUTC() const {
-  return calendar_utils::GetStartOfMonthUTC(current_date_);
+  return calendar_utils::GetStartOfMonthUTC(currently_shown_date_);
 }
 
 base::Time CalendarViewController::GetPreviousMonthFirstDayUTC(
@@ -151,7 +161,7 @@ std::u16string CalendarViewController::GetNextMonthName() const {
 }
 
 std::u16string CalendarViewController::GetOnScreenMonthName() const {
-  return calendar_utils::GetMonthName(current_date_);
+  return calendar_utils::GetMonthName(currently_shown_date_);
 }
 
 int CalendarViewController::GetExpandedRowIndex() const {
@@ -217,16 +227,22 @@ void CalendarViewController::OnEventListClosed() {
   is_event_list_showing_ = false;
 }
 
+void CalendarViewController::OnCalendarEventWillLaunch() {
+  UMA_HISTOGRAM_MEDIUM_TIMES("Ash.Calendar.UserJourneyTime.EventLaunched",
+                             base::TimeTicks::Now() - calendar_open_time_);
+  user_journey_time_recorded_ = true;
+}
+
 bool CalendarViewController::IsSelectedDateInCurrentMonth() {
   if (!selected_date_.has_value())
     return false;
 
-  base::Time::Exploded current_date_exploded =
-      calendar_utils::GetExplodedUTC(current_date_);
+  base::Time::Exploded currently_shown_date_exploded =
+      calendar_utils::GetExplodedUTC(currently_shown_date_);
   base::Time::Exploded selected_date_exploded =
       calendar_utils::GetExplodedUTC(selected_date_.value());
-  return current_date_exploded.year == selected_date_exploded.year &&
-         current_date_exploded.month == selected_date_exploded.month;
+  return currently_shown_date_exploded.year == selected_date_exploded.year &&
+         currently_shown_date_exploded.month == selected_date_exploded.month;
 }
 
 }  // namespace ash

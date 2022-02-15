@@ -11,6 +11,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
+#include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/i18n/time_formatting.h"
@@ -98,8 +99,10 @@ class CalendarEventListItemDot : public views::View {
 }  // namespace
 
 CalendarEventListItemView::CalendarEventListItemView(
+    CalendarViewController* calendar_view_controller,
     google_apis::calendar::CalendarEvent event)
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
+      calendar_view_controller_(calendar_view_controller),
       summary_(new views::Label()),
       time_range_(new views::Label()),
       event_url_(event.html_link()) {
@@ -164,6 +167,7 @@ bool CalendarEventListItemView::PerformAction(const ui::Event& event) {
   DCHECK(event_url_.is_empty() || event_url_.is_valid());
 
   calendar_metrics::RecordEventListItemActivated(event);
+  calendar_view_controller_->OnCalendarEventWillLaunch();
 
   GURL finalized_url;
   bool opened_pwa = false;
