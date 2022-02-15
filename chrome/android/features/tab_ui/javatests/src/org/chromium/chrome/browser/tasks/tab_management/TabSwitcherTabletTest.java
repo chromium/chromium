@@ -41,6 +41,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -144,6 +145,7 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
+    @DisabledTest
     public void testEnterAndExitTabSwitcherVerifyThumbnails()
             throws ExecutionException, TimeoutException {
         enterGTSWithThumbnailChecking();
@@ -168,6 +170,7 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
+    @DisabledTest
     public void testTabSwitcherToolbar()
             throws InterruptedException, ExecutionException, TimeoutException {
         prepareTabs(1, 0, NTP_NON_NATIVE_URL);
