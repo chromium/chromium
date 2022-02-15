@@ -18,11 +18,12 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace multidevice = ::chromeos::multidevice;
 
 // The duration of a EID period in milliseconds.
 const int64_t kEidPeriodMs = 15 * 60 * 1000;  // 15 minutes
@@ -142,6 +143,4 @@ std::string BackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement(
              : std::string();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

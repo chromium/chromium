@@ -13,9 +13,7 @@
 #include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
 #include "base/containers/flat_map.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Concrete ActiveConnectionManager implementation, which utilizes
 // MultiplexedChannel instances to share individual connected channels with
@@ -66,8 +64,11 @@ class ActiveConnectionManagerImpl : public ActiveConnectionManager,
       details_to_channel_map_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::ActiveConnectionManagerImpl;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_ACTIVE_CONNECTION_MANAGER_IMPL_H_

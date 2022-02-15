@@ -7,13 +7,11 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/secure_context.h"
 #include "base/callback_forward.h"
 
-namespace chromeos {
-
-namespace secure_channel {
-
-class SecureContext;
+namespace ash::secure_channel {
 
 // Interface for authenticating the remote connection. The two devices
 // authenticate each other, and if the protocol succeeds, establishes a
@@ -45,8 +43,11 @@ class Authenticator {
   virtual void Authenticate(AuthenticationCallback callback) = 0;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::Authenticator;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_AUTHENTICATOR_H_

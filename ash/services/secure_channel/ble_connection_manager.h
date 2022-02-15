@@ -7,6 +7,8 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/ble_initiator_failure_type.h"
 #include "ash/services/secure_channel/ble_listener_failure_type.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
@@ -20,8 +22,6 @@
 namespace chromeos {
 
 namespace secure_channel {
-
-class AuthenticatedChannel;
 
 // Creates connections to remote devices over Bluetooth, using either the
 // listener role (BLE scans only) or the initiator role (a combination of BLE

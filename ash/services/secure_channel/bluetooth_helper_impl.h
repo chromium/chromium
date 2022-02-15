@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/background_eid_generator.h"
 #include "ash/services/secure_channel/bluetooth_helper.h"
 #include "ash/services/secure_channel/data_with_timestamp.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -21,7 +23,6 @@ class RemoteDeviceCache;
 
 namespace secure_channel {
 
-class BackgroundEidGenerator;
 class ForegroundEidGenerator;
 
 // Concrete BluetoothHelper implementation.

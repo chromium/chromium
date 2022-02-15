@@ -47,4 +47,9 @@ class FakeErrorTolerantBleAdvertisement : public ErrorTolerantBleAdvertisement {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::FakeErrorTolerantBleAdvertisement;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_ERROR_TOLERANT_BLE_ADVERTISEMENT_H_

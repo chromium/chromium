@@ -13,9 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/observer_list.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // A full-duplex communication channel which is guaranteed to be authenticated
 // (i.e., the two sides of the channel both belong to the same underlying user).
@@ -36,7 +34,9 @@ class AuthenticatedChannel {
   virtual ~AuthenticatedChannel();
 
   virtual void GetConnectionMetadata(
-      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) = 0;
+      base::OnceCallback<
+          void(chromeos::secure_channel::mojom::ConnectionMetadataPtr)>
+          callback) = 0;
 
   // Sends a message with the specified |feature| and |payload|. Once the
   // message has been sent, |on_sent_callback| will be invoked. Returns whether
@@ -54,7 +54,7 @@ class AuthenticatedChannel {
   // |file_transfer_update_callback| if the registration was successful.
   void RegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback);
 
@@ -83,7 +83,7 @@ class AuthenticatedChannel {
   // been disconnected.
   virtual void PerformRegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) = 0;
 
@@ -101,8 +101,11 @@ class AuthenticatedChannel {
   bool is_disconnected_ = false;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::AuthenticatedChannel;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_AUTHENTICATED_CHANNEL_H_

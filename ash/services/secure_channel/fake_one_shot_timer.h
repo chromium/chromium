@@ -36,4 +36,9 @@ class FakeOneShotTimer : public base::MockOneShotTimer {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::FakeOneShotTimer;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_ONE_SHOT_TIMER_H_

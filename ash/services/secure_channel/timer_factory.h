@@ -33,4 +33,9 @@ class TimerFactory {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::TimerFactory;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_TIMER_FACTORY_H_

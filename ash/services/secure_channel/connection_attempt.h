@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/connection_attempt_delegate.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
@@ -22,8 +24,6 @@
 namespace chromeos {
 
 namespace secure_channel {
-
-class AuthenticatedChannel;
 
 // ConnectionAttempt represents an ongoing attempt to connect to a given device
 // over a given medium. Each ConnectionAttempt is comprised of one or

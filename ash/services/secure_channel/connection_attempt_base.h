@@ -24,8 +24,6 @@ namespace chromeos {
 
 namespace secure_channel {
 
-class AuthenticatedChannel;
-
 // ConnectionAttempt implementation which stays active for as long as at least
 // one of its requests has not yet completed. While a ConnectionAttemptBase is
 // active, it starts one or more operations to connect to the device. If an

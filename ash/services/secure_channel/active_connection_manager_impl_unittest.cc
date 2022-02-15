@@ -20,9 +20,7 @@
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -413,6 +411,4 @@ TEST_F(SecureChannelActiveConnectionManagerImplTest,
   EXPECT_EQ(2u, GetNumDisconnections("deviceId1"));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

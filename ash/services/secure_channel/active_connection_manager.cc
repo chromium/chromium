@@ -8,9 +8,7 @@
 #include "base/logging.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 ActiveConnectionManager::ActiveConnectionManager(Delegate* delegate)
     : delegate_(delegate) {
@@ -80,6 +78,4 @@ std::ostream& operator<<(
   return stream;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -5,6 +5,8 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_H_
 #define ASH_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/callback.h"
 #include "base/logging.h"
@@ -13,8 +15,6 @@
 namespace chromeos {
 
 namespace secure_channel {
-
-class AuthenticatedChannel;
 
 // Performs an operation which creates a connection to a remote device. A
 // ConnectToDeviceOperation can only be used for a single connection attempt; if

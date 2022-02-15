@@ -93,4 +93,9 @@ std::ostream& operator<<(std::ostream& stream,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::ClientConnectionParameters;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CLIENT_CONNECTION_PARAMETERS_H_

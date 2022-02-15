@@ -79,4 +79,9 @@ class MockForegroundEidGenerator : public ForegroundEidGenerator {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::MockForegroundEidGenerator;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_MOCK_FOREGROUND_EID_GENERATOR_H_

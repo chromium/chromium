@@ -9,6 +9,8 @@
 #include <vector>
 
 // TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/authenticated_channel.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/connection_details.h"
@@ -19,7 +21,6 @@ namespace chromeos {
 
 namespace secure_channel {
 
-class AuthenticatedChannel;
 enum class ConnectionPriority;
 
 // Attempts to create connections to remote devices. If a connection request

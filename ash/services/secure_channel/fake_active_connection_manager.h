@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "ash/services/secure_channel/active_connection_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/connection_details.h"
 #include "base/containers/flat_map.h"
@@ -18,8 +20,6 @@
 namespace chromeos {
 
 namespace secure_channel {
-
-class AuthenticatedChannel;
 
 // Test ActiveConnectionManager implementation.
 class FakeActiveConnectionManager : public ActiveConnectionManager {
@@ -89,5 +89,10 @@ class FakeActiveConnectionManagerDelegate
 }  // namespace secure_channel
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::FakeActiveConnectionManagerDelegate;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_ACTIVE_CONNECTION_MANAGER_H_

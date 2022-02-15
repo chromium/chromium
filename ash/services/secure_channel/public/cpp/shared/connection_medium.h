@@ -27,4 +27,9 @@ std::ostream& operator<<(std::ostream& stream, const ConnectionMedium& medium);
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::ConnectionMedium;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_CONNECTION_MEDIUM_H_

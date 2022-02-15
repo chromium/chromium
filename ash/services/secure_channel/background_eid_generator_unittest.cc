@@ -18,11 +18,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
 const int64_t kEidPeriodMs = base::Minutes(15).InMilliseconds();
 const int64_t kBeaconSeedDurationMs = base::Days(14).InMilliseconds();
 
@@ -256,6 +255,4 @@ TEST_F(SecureChannelBackgroundEidGeneratorTest,
                 advertisement_eid.data, test_remote_devices_));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

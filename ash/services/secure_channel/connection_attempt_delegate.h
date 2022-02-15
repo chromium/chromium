@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/connection_details.h"
 #include "ash/services/secure_channel/device_id_pair.h"
@@ -15,8 +17,6 @@
 namespace chromeos {
 
 namespace secure_channel {
-
-class AuthenticatedChannel;
 
 class ConnectionAttemptDelegate {
  public:

@@ -103,4 +103,10 @@ class FakeAuthenticatedChannelObserver : public AuthenticatedChannel::Observer {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::FakeAuthenticatedChannel;
+using ::chromeos::secure_channel::FakeAuthenticatedChannelObserver;
+}  // namespace ash::secure_channel
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_AUTHENTICATED_CHANNEL_H_

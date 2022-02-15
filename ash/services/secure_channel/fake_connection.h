@@ -102,4 +102,9 @@ class FakeConnection : public Connection {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::FakeConnection;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_H_

@@ -4,13 +4,9 @@
 
 #include "ash/services/secure_channel/authenticator.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // static
 const char Authenticator::kAuthenticationFeature[] = "auth";
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

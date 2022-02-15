@@ -7,6 +7,8 @@
 
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/connection_attempt_delegate.h"
 #include "ash/services/secure_channel/connection_details.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -14,8 +16,6 @@
 namespace chromeos {
 
 namespace secure_channel {
-
-class AuthenticatedChannel;
 
 class FakeConnectionAttemptDelegate : public ConnectionAttemptDelegate {
  public:

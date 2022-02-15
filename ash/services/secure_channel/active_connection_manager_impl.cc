@@ -8,9 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // static
 ActiveConnectionManagerImpl::Factory*
@@ -96,6 +94,4 @@ void ActiveConnectionManagerImpl::OnDisconnected(
   OnChannelDisconnected(connection_details_copy);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

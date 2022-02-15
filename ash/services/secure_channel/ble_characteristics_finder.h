@@ -5,6 +5,8 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_BLE_CHARACTERISTICS_FINDER_H_
 #define ASH_SERVICES_SECURE_CHANNEL_BLE_CHARACTERISTICS_FINDER_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/background_eid_generator.h"
 #include "ash/services/secure_channel/remote_attribute.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
@@ -21,8 +23,6 @@
 namespace chromeos {
 
 namespace secure_channel {
-
-class BackgroundEidGenerator;
 
 // Looks for given characteristics in a remote device, for which a GATT
 // connection was already established. In the current BLE connection protocol
