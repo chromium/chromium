@@ -86,14 +86,14 @@ std::unique_ptr<base::DictionaryValue> LogMessageToDictionary(
     const multidevice::LogBuffer::LogMessage& log_message) {
   std::unique_ptr<base::DictionaryValue> dictionary(
       new base::DictionaryValue());
-  dictionary->SetString(kLogMessageTextKey, log_message.text);
-  dictionary->SetString(
+  dictionary->SetStringKey(kLogMessageTextKey, log_message.text);
+  dictionary->SetStringKey(
       kLogMessageTimeKey,
       base::TimeFormatTimeOfDayWithMilliseconds(log_message.time));
-  dictionary->SetString(kLogMessageFileKey, log_message.file);
-  dictionary->SetInteger(kLogMessageLineKey, log_message.line);
-  dictionary->SetInteger(kLogMessageSeverityKey,
-                         static_cast<int>(log_message.severity));
+  dictionary->SetStringKey(kLogMessageFileKey, log_message.file);
+  dictionary->SetIntKey(kLogMessageLineKey, log_message.line);
+  dictionary->SetIntKey(kLogMessageSeverityKey,
+                        static_cast<int>(log_message.severity));
   return dictionary;
 }
 
@@ -116,9 +116,9 @@ std::unique_ptr<base::DictionaryValue> CreateSyncStateDictionary(
       new base::DictionaryValue());
   sync_state->SetDoubleKey(kSyncStateLastSuccessTime, last_success_time);
   sync_state->SetDoubleKey(kSyncStateNextRefreshTime, next_refresh_time);
-  sync_state->SetBoolean(kSyncStateRecoveringFromFailure,
+  sync_state->SetBoolKey(kSyncStateRecoveringFromFailure,
                          is_recovering_from_failure);
-  sync_state->SetBoolean(kSyncStateOperationInProgress,
+  sync_state->SetBoolKey(kSyncStateOperationInProgress,
                          is_enrollment_in_progress);
   return sync_state;
 }
@@ -297,23 +297,24 @@ ProximityAuthWebUIHandler::RemoteDeviceToDictionary(
   // Set the fields in the ExternalDeviceInfo proto.
   std::unique_ptr<base::DictionaryValue> dictionary(
       new base::DictionaryValue());
-  dictionary->SetString(kExternalDevicePublicKey, remote_device.GetDeviceId());
-  dictionary->SetString(kExternalDevicePublicKeyTruncated,
-                        remote_device.GetTruncatedDeviceIdForLogs());
-  dictionary->SetString(kExternalDeviceFriendlyName, remote_device.name());
-  dictionary->SetString(kExternalDeviceNoPiiName,
-                        remote_device.pii_free_name());
-  dictionary->SetBoolean(kExternalDeviceUnlockKey,
+  dictionary->SetStringKey(kExternalDevicePublicKey,
+                           remote_device.GetDeviceId());
+  dictionary->SetStringKey(kExternalDevicePublicKeyTruncated,
+                           remote_device.GetTruncatedDeviceIdForLogs());
+  dictionary->SetStringKey(kExternalDeviceFriendlyName, remote_device.name());
+  dictionary->SetStringKey(kExternalDeviceNoPiiName,
+                           remote_device.pii_free_name());
+  dictionary->SetBoolKey(kExternalDeviceUnlockKey,
                          remote_device.GetSoftwareFeatureState(
                              multidevice::SoftwareFeature::kSmartLockHost) ==
                              multidevice::SoftwareFeatureState::kEnabled);
-  dictionary->SetBoolean(
+  dictionary->SetBoolKey(
       kExternalDeviceMobileHotspot,
       remote_device.GetSoftwareFeatureState(
           multidevice::SoftwareFeature::kInstantTetheringHost) ==
           multidevice::SoftwareFeatureState::kSupported);
-  dictionary->SetString(kExternalDeviceFeatureStates,
-                        GenerateFeaturesString(remote_device));
+  dictionary->SetStringKey(kExternalDeviceFeatureStates,
+                           GenerateFeaturesString(remote_device));
 
   return dictionary;
 }
