@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -35,16 +36,20 @@ constexpr int kSpaceBetweenTopRowAndHintViewsDip = 4;
 constexpr int kSpaceBetweenHintLabelsDip = 4;
 constexpr int kSpaceBetweenIconAndTextDip = 4;
 constexpr int kMaxNumHints = 5;
+constexpr SkColor kDefaultTextAndIconColorPrimary = SK_ColorBLACK;
+constexpr SkColor kDefaultTextAndIconColorSecondary = SK_ColorDKGRAY;
 
 std::unique_ptr<views::ImageView> CreateImageView(
     views::ImageView** destination_view,
     const gfx::VectorIcon& icon) {
+  SkColor color =
+      features::IsDarkLightModeEnabled()
+          ? AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorPrimary)
+          : kDefaultTextAndIconColorPrimary;
   return views::Builder<views::ImageView>()
       .CopyAddressTo(destination_view)
-      .SetImage(gfx::CreateVectorIcon(
-          icon, kIconSizeDip,
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorPrimary)))
+      .SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, color))
       .Build();
 }
 
@@ -104,10 +109,13 @@ class ASH_EXPORT TopRowView : public views::View {
                                  kDictationBubbleMacroSucceededIcon));
     AddChildView(
         CreateImageView(&macro_failed_image_, kDictationBubbleMacroFailedIcon));
-    AddChildView(CreateLabelView(
-        &label_, std::u16string(),
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kTextColorPrimary)));
+
+    SkColor text_color =
+        features::IsDarkLightModeEnabled()
+            ? AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kTextColorPrimary)
+            : kDefaultTextAndIconColorPrimary;
+    AddChildView(CreateLabelView(&label_, std::u16string(), text_color));
   }
 
   TopRowView(const TopRowView&) = delete;
@@ -215,10 +223,17 @@ class ASH_EXPORT HintView : public views::View {
     layout->set_between_child_spacing(kSpaceBetweenHintLabelsDip);
     SetLayoutManager(std::move(layout));
 
-    SkColor primary = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
-    SkColor secondary = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary);
+    bool is_dark_light_mode_enabled = features::IsDarkLightModeEnabled();
+    SkColor primary =
+        is_dark_light_mode_enabled
+            ? AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kTextColorPrimary)
+            : kDefaultTextAndIconColorPrimary;
+    SkColor secondary =
+        is_dark_light_mode_enabled
+            ? AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kTextColorSecondary)
+            : kDefaultTextAndIconColorSecondary;
     for (size_t i = 0; i < labels_.size(); ++i) {
       SkColor color = i == 0 ? secondary : primary;
       AddChildView(CreateLabelView(&labels_[i], std::u16string(), color));

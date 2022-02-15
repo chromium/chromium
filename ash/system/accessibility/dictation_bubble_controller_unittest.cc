@@ -159,6 +159,19 @@ TEST_F(DictationBubbleControllerTest, ShowMacroFailImage) {
   HideAndCheckExpectations();
 }
 
+// Verifies text and icon colors when the dark light mode feature is disabled.
+TEST_F(DictationBubbleControllerTest, NoDarkMode) {
+  // Show bubble UI.
+  EXPECT_FALSE(GetView());
+  Show(DictationBubbleIconType::kHidden,
+       absl::optional<std::u16string>(u"Testing"),
+       absl::optional<std::vector<DictationBubbleHintType>>());
+  EXPECT_TRUE(GetView());
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(u"Testing", GetBubbleText());
+  EXPECT_EQ(SK_ColorBLACK, GetLabelTextColor());
+}
+
 // Verifies that the bubble UI respects the dark mode setting. For convenience
 // purposes, we perform checks on the label's text and background color.
 TEST_F(DictationBubbleControllerTest, DarkMode) {
