@@ -166,6 +166,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="142858679511221695">Hodeiko erabiltzailea</translation>
 <translation id="1428729058023778569">Webgunea HTTPS protokoloarekin bateragarria ez delako erakutsi dizugu abisu hau. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Inprimatu</translation>
+<translation id="1432187715652018471">orriak zerbitzu-kudeatzaile bat instalatu nahi du.</translation>
 <translation id="1432581352905426595">Kudeatu bilatzaileak</translation>
 <translation id="1436185428532214179">Gailuko fitxategiak eta karpetak editatzea eska dezake</translation>
 <translation id="1442386063175183758">Leiho-erako tolestura eskuinean</translation>
@@ -219,6 +220,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1559572115229829303">&lt;p&gt;Ezin da ezarri <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeinurako konexio pribatua, gailuaren data eta ordua (<ph name="DATE_AND_TIME" />) okerrak direlako.&lt;/p&gt;
 
           &lt;p&gt;Doitu data eta ordua &lt;strong&gt;Ezarpenak&lt;/strong&gt; aplikazioko &lt;strong&gt;Orokorra&lt;/strong&gt; atalean.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Egun honetan, administratzaileak gailua berrabiaraziko du: <ph name="DATE" /> (<ph name="TIME" />)</translation>
 <translation id="156703335097561114">Sareei buruzko informazioa, hala nola helbideak, interfazeen konfigurazioa eta konexioen kalitatea</translation>
 <translation id="1567040042588613346">Gidalerroak espero bezala funtzionatzen du, baina balio bera beste nonbait dago ezarrita, eta gidalerro honek hura ordezten du.</translation>
 <translation id="1569487616857761740">Adierazi iraungitze-data</translation>
@@ -1961,6 +1963,7 @@ Xehetasun gehiago:
 <translation id="7304562222803846232">Kudeatu Google-ko kontuaren pribatutasun-ezarpenak</translation>
 <translation id="7305756307268530424">Hasi motelago</translation>
 <translation id="7308436126008021607">atzeko planoko sinkronizazioa</translation>
+<translation id="7310392214323165548">Gailua laster berrabiaraziko da</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Konexioari buruzko laguntza</translation>
 <translation id="7323804146520582233">Ezkutatu "<ph name="SECTION" />" atala</translation>

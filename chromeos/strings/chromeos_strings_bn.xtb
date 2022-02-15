@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">প্রিন্ট করা যায়নি - ফিল্টার কাজ করছে না</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">আমার কী পেয়ার আছে</translation>
+<translation id="1442433966118452622">ছবির সোর্স</translation>
 <translation id="1451536289672181509">ডিভাইস একটি কীবোর্ড।</translation>
 <translation id="1468664791493211953">অফার</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং তার ফলে হয়ত সে আপনার অ্যাক্টিভিটি মনিটর করতে পারে।</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">প্রতিদিন রিফ্রেশ করা হবে</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="2695514675076754339">৮-অক্ষরের আনলক কোড লিখুন</translation>
+<translation id="2712812801627182647">TLS যাচাইকরণ কী</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2751739896257479635">EAP ফেজ ২ যাচাইকরণ</translation>
 <translation id="2783010256799387990">পাস করেছে</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
 <translation id="3283504360622356314">{0,plural, =1{ফাইলটি এডিট করুন}one{ফাইলগুলি এডিট করুন}other{ফাইলগুলি এডিট করুন}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">মূল দিকনির্দেশ</translation>
 <translation id="3310640316857623290">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি উল্লেখযোগ্যভাবে তার চেয়ে বেশি</translation>
 <translation id="3328783797891415197">টেস্ট করা হচ্ছে</translation>
 <translation id="3340011300870565703">ডিভাইসের ডানদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS-এর পাসওয়ার্ড আপডেট করা হয়েছে</translation>
 <translation id="4773299976671772492">থামানো হয়েছে</translation>
 <translation id="4782311465517282004">আপনি ডানদিকের বোতামে ক্লিক করলে বা টেক্সট প্রেস করে ধরে থাকলে, সংজ্ঞা, অনুবাদ বা ইউনিট কনভার্সন পাবেন</translation>
+<translation id="4793756956024303490">কম্প্রেশন অ্যালগরিদম</translation>
 <translation id="4794140124556169553">সিপিইউ পরীক্ষা চালালে তার ফলে আপনার সিস্টেম পারফর্ম্যান্সে প্রভাব পড়তে পারে</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> প্রিন্ট করার কাজ বাতিল করা হয়েছে</translation>
 <translation id="4813136279048157860">আমার ছবি</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS রেজোলিউশন</translation>
 <translation id="4848429997038228357">টেস্ট করা হচ্ছে</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}one{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}other{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}}</translation>
+<translation id="4873827928179867585">যাচাইকরণ অ্যালগরিদম</translation>
 <translation id="4880328057631981605">অ্যাক্সেস পয়েন্ট নাম</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">অবিলম্বে একটি নতুন পাসওয়ার্ড বেছে নিন</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">রিপোর্ট লুকান</translation>
 <translation id="500920857929044050">টেস্ট বন্ধ করুন</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">আপনার স্ক্রিন ব্যবহার না হলে ফটো, সময়, আবহাওয়া এবং মিডিয়া সম্পর্কিত তথ্য দেখুন।</translation>
 <translation id="5039804452771397117">অনুমতি দিন</translation>
 <translation id="5049856988445523908">সিম লক করা হয়েছে (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">গ্রুপের নাম</translation>
@@ -435,6 +441,7 @@
 <translation id="6618744767048954150">চলছে</translation>
 <translation id="6620487321149975369">ম্যানুয়ালি সরিয়ে না দেওয়া পর্যন্ত প্রিন্ট হওয়া কাজগুলি ইতিহাসে দেখা যাবে</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
+<translation id="6647510110698214773">এনক্রিপশন অ্যালগরিদম</translation>
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
 <translation id="6692996468359469499">আপনার বেছে নেওয়া প্রশ্ন সম্পর্কিত উত্তর পান</translation>
 <translation id="6704062477274546131">DNS রেজোলিউশন</translation>

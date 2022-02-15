@@ -166,6 +166,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="142858679511221695">Bulut kullanıcısı</translation>
 <translation id="1428729058023778569">Bu site HTTPS'yi desteklemediği için bu uyarıyı görüyorsunuz. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Yazdır</translation>
+<translation id="1432187715652018471">sayfa bir servis işleyici yüklemek istiyor.</translation>
 <translation id="1432581352905426595">Arama motorlarını yönet</translation>
 <translation id="1436185428532214179">Cihazınızdaki dosyaları veya klasörleri düzenlemek isteyebilir</translation>
 <translation id="1442386063175183758">Sağa doğru iki kırımlı katlama</translation>
@@ -219,6 +220,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1559572115229829303">&lt;p&gt;Cihazınızın tarih ve saati (<ph name="DATE_AND_TIME" />) yanlış olduğundan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> alan adına gizli bir bağlantı kurulamadı.&lt;/p&gt;
 
       &lt;p&gt;Lütfen &lt;strong&gt;Ayarlar&lt;/strong&gt; uygulamasının &lt;strong&gt;Genel&lt;/strong&gt; bölümünden tarih ve saati ayarlayın.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Yöneticiniz cihazınızı <ph name="DATE" /> tarihinde saat <ph name="TIME" /> olunca yeniden başlatacak</translation>
 <translation id="156703335097561114">Adresler, arayüz yapılandırması ve bağlantı kalitesi gibi ağ iletişimi bilgileri</translation>
 <translation id="1567040042588613346">Bu politika beklenildiği gibi çalışıyor, ancak başka bir yerde ayarlanmış aynı değeri geçersiz kılıyor.</translation>
 <translation id="1569487616857761740">Son kullanma tarihi girin</translation>
@@ -1968,6 +1970,7 @@ Ek ayrıntılar:
 <translation id="7304562222803846232">Google Hesabı gizlilik ayarlarını yönet</translation>
 <translation id="7305756307268530424">Daha yavaş başlat</translation>
 <translation id="7308436126008021607">arka plan senkronizasyonu</translation>
+<translation id="7310392214323165548">Cihaz çok yakında yeniden başlatılacak</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bağlantı Yardımı</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" bölümünü gizle</translation>

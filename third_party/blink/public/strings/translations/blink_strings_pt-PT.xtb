@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">O valor tem de ser superior ou igual a <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Não selecionado. No grupo, opção <ph name="INDEX" /> de <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Introduza uma parte seguida de "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" está incompleto.</translation>
 <translation id="5334352251556557839">Não é possível reproduzir multimédia.</translation>
 <translation id="537648784377940524">A Data mínima (<ph name="MIN_DATE_OR_TIME" />) tem de ser anterior à Data máxima (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Outros...</translation>
 <translation id="6709093583001123835">O valor tem de ser <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Má qualidade de reprodução.</translation>
+<translation id="6719914554879143100">Selecionado. No grupo, opção <ph name="INDEX" /> de <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6820355525329141109">Não foi possível carregar o plug-in.</translation>
 <translation id="6831465880655513317">Círculo cromático com controlo de deslize de duas dimensões para selecionar a saturação e a claridade.</translation>

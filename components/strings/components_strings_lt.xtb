@@ -220,6 +220,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1559572115229829303">&lt;p&gt;Nepavyksta užmegzti privataus ryšio su <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, nes įrenginio data ir laikas (<ph name="DATE_AND_TIME" />) yra netinkami.&lt;/p&gt;
 
       &lt;p&gt;Koreguokite datą ir laiką programos &lt;strong&gt;Settings&lt;/strong&gt; skiltyje &lt;strong&gt;General&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Jūsų administratorius paleis jūsų įrenginį iš naujo <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="156703335097561114">Tinklų informacija, pvz., adresai, sąsajos konfigūracija ir ryšio kokybė</translation>
 <translation id="1567040042588613346">Ši politika veikia, kaip numatyta, bet ta pati vertė yra nustatyta kitur ir ją pakeičia ši politika.</translation>
 <translation id="1569487616857761740">Įveskite galiojimo laiko pabaigos datą</translation>
@@ -1977,6 +1978,7 @@ Papildoma išsami informacija:
 <translation id="7304562222803846232">Tvarkyti „Google“ paskyros privatumo nustatymus</translation>
 <translation id="7305756307268530424">Pradėti lėčiau</translation>
 <translation id="7308436126008021607">fono sinchronizavimas</translation>
+<translation id="7310392214323165548">Įrenginys netrukus bus paleistas iš naujo</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Su ryšiu susijusi pagalba</translation>
 <translation id="7323804146520582233">Slėpti skiltį „<ph name="SECTION" />“</translation>

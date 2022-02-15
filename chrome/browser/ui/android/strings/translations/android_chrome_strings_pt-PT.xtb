@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para o motor de pesquisa predefinido.</translation>
 <translation id="200114059308480249">Pretende incluir o texto circundante nas pesquisas no Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}one{# ficheiro(s)}other{# ficheiros}}</translation>
+<translation id="2015836039326522978">A app <ph name="APP_NAME" /> vai abrir no Chrome. Ao continuar, aceita os <ph name="BEGIN_LINK1" />Termos de Utilização da Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Google Chrome e Chrome OS<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Política de Privacidade<ph name="END_LINK3" /> também se aplica.</translation>
 <translation id="2020309681647789787">Terá o seu histórico em todos os dispositivos sincronizados para que possa continuar o que estava a fazer</translation>
 <translation id="2021896219286479412">Controlos de site em ecrã int.</translation>
 <translation id="2038563949887743358">Ativar Pedir site para computador</translation>
@@ -1224,6 +1225,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8037750541064988519">Faltam <ph name="DAYS" /> dias</translation>
 <translation id="8037801708772278989">Última verificação agora mesmo</translation>
 <translation id="804335162455518893">Cartão SD não encontrado.</translation>
+<translation id="8046319826565374740">Ao utilizar o Chrome, aceita os <ph name="BEGIN_LINK1" />Termos de Utilização da Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Google Chrome e Chrome OS<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Política de Privacidade<ph name="END_LINK3" /> também se aplica.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador de navegação anónima}one{<ph name="TAB_COUNT_NORMAL" /> separador(es) de navegação anónima}other{<ph name="TAB_COUNT_NORMAL" /> separadores de navegação anónima}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponíveis</translation>
 <translation id="8058655154417507695">Ano de expiração</translation>

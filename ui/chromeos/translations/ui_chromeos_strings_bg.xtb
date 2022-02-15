@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Хангъл, анматае</translation>
 <translation id="1155759005174418845">каталонски</translation>
 <translation id="1168100932582989117">Сървъри на Google за имена</translation>
+<translation id="1171082344678443012">Архив, компресиран във формат XZ</translation>
 <translation id="1172970565351728681">Оставащото време е около <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Преименуване</translation>
 <translation id="1173916544412572294">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, подробности</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">При форматирането на устройство ще бъдат изтрити всички съхранявани на него данни. Това действие не може да бъде отменено.</translation>
 <translation id="2025955442973426285">Тигриня</translation>
 <translation id="2028997212275086731">RAR архив</translation>
+<translation id="2036414735548252477">Tar архив, компресиран във формат LZMA</translation>
 <translation id="2037845485764049925">Руски</translation>
 <translation id="2044023416777079300">Модемът не е регистриран</translation>
 <translation id="2046702855113914483">Супа „Рамен“</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байта</translation>
 <translation id="4880214202172289027">Плъзгач за силата на звука</translation>
 <translation id="4881695831933465202">Отваряне</translation>
+<translation id="4886199584824489598">Архив, компресиран във формат Bzip2</translation>
 <translation id="4900532980794411603">Споделяне с Parallels Desktop</translation>
 <translation id="4902546322522096650">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, свързване</translation>
 <translation id="4905417359854579806">Готови сме да създадем резервно копие на <ph name="FILE_COUNT" /></translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> мрежа – не е установена връзка</translation>
 <translation id="6074825444536523002">Формуляр на Google</translation>
 <translation id="6079871810119356840">Унгарски с клавиатура QWERTY</translation>
+<translation id="6082256976217156453">Архив, компресиран във формат LZMA</translation>
 <translation id="6096979789310008754">Текстът за търсене е изчистен. Показват се всички файлове и папки.</translation>
 <translation id="610101264611565198">„<ph name="FILE_NAME" />“ се премества в(ъв) „<ph name="FOLDER_NAME" />“</translation>
 <translation id="6129953537138746214">Интервал</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">Хангъл, 3 набора (без „Shift“)</translation>
 <translation id="8299269255470343364">японски</translation>
 <translation id="8300849813060516376">Безжичното осигуряване на услуга не бе успешно</translation>
+<translation id="8308481408797647857">Tar архив, компресиран във формат XZ</translation>
 <translation id="8312871300878166382">Поставяне в папка</translation>
 <translation id="8329978297633540474">Неформатиран текст</translation>
 <translation id="8335587457941836791">Освобождаване от лавицата</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">Променено от</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="947144732524271678">Избрахте <ph name="ENTRY_COUNT" /> елемента – от <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Архив, компресиран във формат Gzip</translation>
 <translation id="965477715979482472">английски (Южна Африка)</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Вече съществува файл с име „<ph name="FILE_NAME" />“. Искате ли да го замените?</translation>

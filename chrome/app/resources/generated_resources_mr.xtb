@@ -603,6 +603,7 @@
 <translation id="1604432177629086300">प्रिंट करू शकलो नाही. प्रिंटर तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1605744057217831567">सर्व साइट डेटा आणि परवानग्या पहा</translation>
 <translation id="1606077700029460857">माउस सेटिंग्ज बदला</translation>
+<translation id="1606566847233779212">तुम्ही जोडलेल्या विशिष्ट साइट काढून टाकायच्या आहेत का?</translation>
 <translation id="1607139524282324606">प्रवेश साफ करा</translation>
 <translation id="1607499585984539560">वापरकर्ता डोमेनशी संबंधित नाही</translation>
 <translation id="1608668830839595724">निवडलेल्या आयटमसाठी अधिक कृती</translation>
@@ -875,6 +876,7 @@
 <translation id="1845727111305721124">आवाज प्ले करण्याची अनुमती आहे</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> चालवण्‍यासाठी Control-क्लिक करा</translation>
 <translation id="184862733444771842">वैशिष्ट्याबद्दल विनंती</translation>
+<translation id="1849016657376805933">कोणतेही HID डिव्हाइस</translation>
 <translation id="1849186935225320012">या पृष्ठास MIDI डिव्हाइसचे पूर्ण नियंत्रण आहे.</translation>
 <translation id="1850145825777333687">डिव्हाइसची क्रेडेंशियल</translation>
 <translation id="1850508293116537636">&amp;घड्याळाच्या दिशेने फिरवा</translation>
@@ -1009,6 +1011,7 @@
 <translation id="1988259784461813694">आवश्यकता</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
 <translation id="1989113344093894667">आशय कॅप्चर करू शकत नाही</translation>
+<translation id="1989744123191450103">बॅकअप घेता आला नाही</translation>
 <translation id="1989903373608997757">नेहमी वापरा</translation>
 <translation id="1990046457226896323">स्पीच फाइल डाउनलोड केल्या आहेत</translation>
 <translation id="1990512225220753005">या पेजवर शॉर्टकट दाखवू नका</translation>
@@ -1018,6 +1021,7 @@
 <translation id="1994173015038366702">साइट URL</translation>
 <translation id="1995916364271252349">साइट कोणती माहिती वापरू आणि दाखवू शकतात ते नियंत्रित करते (स्थान, कॅमेरा, पॉप-अप आणि बरेच काही)</translation>
 <translation id="1997616988432401742">तुमची प्रमाणपत्रे</translation>
+<translation id="1997645434968427303">तुमचा Linux चा बॅकअप रिस्टोअर करता आला नाही. Linux मध्ये पुरेशी डिस्कमधील जागा नसल्यामुळे हे झालेले असू शकते. Linux मध्ये डिस्कमधील जागा किती आहे ते तुम्ही बदलू शकता आणि OS सेटिंग्ज मध्ये तुमचा बॅकअप पुन्हा रिस्टोअर करण्याचा प्रयत्न करू शकता.</translation>
 <translation id="1999115740519098545">स्टार्टअप वर</translation>
 <translation id="2000419248597011803">ॲड्रेस बार आणि सर्च बॉक्समधून तुमच्या डीफॉल्ट शोध इंजिनला काही कुकीज आणि शोध पाठवते</translation>
 <translation id="2002109485265116295">रीअल टाइम</translation>
@@ -2096,6 +2100,7 @@
 <translation id="3046178388369461825">Linux डिस्कवरील जागा अतिशय कमी आहे</translation>
 <translation id="3046910703532196514">वेबपेज, संपूर्ण</translation>
 <translation id="304747341537320566">स्पीच इंजीन</translation>
+<translation id="3048336643003835855"><ph name="VENDOR_ID" /> या विक्रेत्याकडील HID डिव्हाइस</translation>
 <translation id="3048917188684939573">Cast आणि डिव्हाइसचे लॉग</translation>
 <translation id="3051250416341590778">डिस्प्ले आकार</translation>
 <translation id="3053013834507634016">सर्टिफिकेट की वापर</translation>
@@ -2523,6 +2528,7 @@
 <translation id="3511307672085573050">लिंक पत्ता कॉपी करा</translation>
 <translation id="351152300840026870">निश्चित-रुंदीचा फॉंट</translation>
 <translation id="3511528412952710609">लहान</translation>
+<translation id="3514011352559420398">रिस्टोअर करता आले नाही</translation>
 <translation id="3514335087372914653">गेम नियंत्रण</translation>
 <translation id="3514373592552233661">एका पेक्षा जास्त नेटवर्क उपलब्ध असल्यास इतर ज्ञात नेटवर्क ऐवजी प्राधान्यीकृत नेटवर्कना प्राधान्य दिले जाईल</translation>
 <translation id="3515983984924808886">रीसेटची खात्री करण्यासाठी तुमच्या सिक्युरिटी कीला पुन्हा स्पर्श करा. सिक्युरिटी कीवर स्टोअर केलेली सर्व माहिती, तिच्या पिनसह, हटवली जाईल.</translation>
@@ -3189,6 +3195,7 @@
 <translation id="4180788401304023883">CA सर्टिफिकेट "<ph name="CERTIFICATE_NAME" />" हटवायचे?</translation>
 <translation id="4181602000363099176">२०x</translation>
 <translation id="4181841719683918333">भाषा</translation>
+<translation id="4184803915913850597">HID डिव्हाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">डिस्प्ले हलविण्यासाठी ड्रॅग करा</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> सेट करत आहे...</translation>
 <translation id="4190828427319282529">कीबोर्ड फोकस हायलाइट करा</translation>
@@ -3683,6 +3690,7 @@
 <translation id="4699357559218762027">(स्वयं-लाँच केलेले)</translation>
 <translation id="4701025263201366865">पालक साइन इन</translation>
 <translation id="4701335814944566468">काल पाहिला होता</translation>
+<translation id="4707337002099455863">सर्व साइटना नेहमी अनुमती द्या</translation>
 <translation id="4708794300267213770">निष्क्रियवरून सक्रिय होताना लॉक स्क्रीन दर्शवा</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> मधून बाहेर या</translation>
 <translation id="4711638718396952945">सेटिंग्ज पुनर्संचयित करा</translation>
@@ -4147,6 +4155,7 @@
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> चे ऑथेंटिकेशन टोकन स्टोअर करणे</translation>
 <translation id="520902706163766447">सध्या उघडलेल्या टॅबवर शोधण्यासाठी, Chrome UI च्या सर्वात वरती असलेला पॉपअप बबल सुरू करा.</translation>
 <translation id="5209320130288484488">कोणतीही डिव्हाइसेस आढळली नाहीत</translation>
+<translation id="5209513429611499188"><ph name="USAGE_PAGE" /> या वापर पेजवर वापर असलेली HID डिव्हाइस</translation>
 <translation id="5210365745912300556">टॅब बंद करा</translation>
 <translation id="5213114823401215820">बंद केलेला गट पुन्हा उघडा</translation>
 <translation id="5213481667492808996">तुमची '<ph name="NAME" />' डेटा सेवा वापरण्यासाठी तयार आहे</translation>
@@ -4553,6 +4562,7 @@
 <translation id="5627086634964711283">तुम्ही होम बटण क्लिक करता तेव्हा कोणते पेज दर्शविले जाते हेदेखील हे नियंत्रित करते.</translation>
 <translation id="5627676517703583263">Chromeसह स्मार्ट ब्राउझ करा</translation>
 <translation id="5627832140542566187">डिस्प्ले ओरिएंटेशन</translation>
+<translation id="5628393161682339323">मी एक्स्टेंशनवर क्लिक करतो/करते तेव्हा</translation>
 <translation id="562935524653278697">तुमच्या ॲडमिनिस्ट्रेटरने तुमचे बुकमार्क, इतिहास, संंकेतशब्द आणि अन्य सेटिंग्ज सिंक करणे अक्षम केले आहे.</translation>
 <translation id="5631017369956619646">CPU वापर</translation>
 <translation id="5632059346822207074">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी Ctrl + Forward दाबा</translation>
@@ -4687,6 +4697,7 @@
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> म्हणून सिंक करा</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" /> ला आदेश पाठवा</translation>
 <translation id="5782227691023083829">भाषांतर करीत आहे...</translation>
+<translation id="5783304934509327739">साइट अ‍ॅक्सेस करण्याशी संबंधित पर्याय</translation>
 <translation id="57838592816432529">म्यूट करा</translation>
 <translation id="5785583009707899920">Chrome फाइल सुविधा</translation>
 <translation id="5787146423283493983">की करार</translation>
@@ -4737,6 +4748,7 @@
 <translation id="5834581999798853053">सुमारे <ph name="TIME" /> मिनिटे बाकी</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - कॅमेरा किंवा मायक्रोफोन रेकॉर्डिंग</translation>
 <translation id="583673505367439042">साइट तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर संपादित करण्यासाठी विचारू शकतात</translation>
+<translation id="583756221537636748">केस</translation>
 <translation id="5840680448799937675">फाइल नेहमी ऑफलाइन शेअर केल्या जातील</translation>
 <translation id="5841270259333717135">इथरनेट कॉंफिगर करा</translation>
 <translation id="5842497610951477805">ब्लूटूथ सक्षम आहे</translation>
@@ -5375,6 +5387,7 @@
 <translation id="6499143127267478107">प्रॉक्सी स्क्रिप्टमध्‍ये होस्ट निराकरण करीत आहे...</translation>
 <translation id="6499764981457476645">जवळपास कोणतीही डिव्हाइस आढळली नाहीत</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> ला ही फाइल उघडायची आहे:</translation>
+<translation id="65017764184991091">Linux अ‍ॅप्स आणि फाइलचा बॅकअप घेता आला नाही. तुमच्या डिव्हाइसमध्ये पुरेशी मोकळी स्टोरेज जागा नसल्यास, असे होऊ शकते. तुमच्या डिव्हाइसवरील काही जागा मोकळी करण्याचा प्रयत्न करा किंवा बॅकअप घेण्यासाठी वेगळे स्थान निवडण्याचा प्रयत्न करा.</translation>
 <translation id="6501957628055559556">सर्व कंटनेर</translation>
 <translation id="650266656685499220">अल्बम तयार करण्यासाठी Google Photos वर जा</translation>
 <translation id="6503077044568424649">सर्वाधिक भेट दिलेले</translation>
@@ -7402,6 +7415,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8581809080475256101">पुढे जाण्‍यासाठी दाबा, इतिहास पाहण्‍यासाठी काँटेक्स्ट मेनूवर जा</translation>
 <translation id="8584280235376696778">नवीन टॅबमध्ये व्हिडिओ &amp;उघडा</translation>
 <translation id="8584427708066927472">या डिव्हाइसवरून पासवर्ड हटवला गेला</translation>
+<translation id="8584843865238667486"><ph name="USAGE_PAGE" /> या वापर पेजवर <ph name="USAGE" /> असा वापर असलेली HID डिव्हाइस</translation>
 <translation id="8585480574870650651">Crostini काढून टाका</translation>
 <translation id="8585841788766257444">खाली सूचीबद्ध केलेल्या साइट डीफॉल्टऐवजी कस्टम सेटिंग्ज फॉलो करतात</translation>
 <translation id="8588866096426746242">प्रोफाइल आकडेवारी दर्शवा</translation>

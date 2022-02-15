@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Nilai mesti lebih besar daripada atau sama dengan <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Tidak ditandai. Dalam kumpulan, pilihan <ph name="INDEX" /> daripada <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Sila masukkan bahagian diikuti oleh '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' tidak lengkap.</translation>
 <translation id="5334352251556557839">Tidak dapat memainkan media.</translation>
 <translation id="537648784377940524">Tarikh Minimum (<ph name="MIN_DATE_OR_TIME" />) mesti lebih awal dari tarikh Maksimum (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Lain-lain...</translation>
 <translation id="6709093583001123835">Nilai mestilah <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Mutu main balik teruk</translation>
+<translation id="6719914554879143100">Ditandai Dalam kumpulan, pilihan <ph name="INDEX" /> daripada <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="6820355525329141109">Tidak dapat memuatkan pemalam.</translation>
 <translation id="6831465880655513317">Palet warna dengan peluncur dua dimensi untuk memilih ketepuan dan kecerahan</translation>

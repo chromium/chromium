@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Հանգուլ Անմատա</translation>
 <translation id="1155759005174418845">Կատալոնական</translation>
 <translation id="1168100932582989117">Google-ի DNS-սերվերներ</translation>
+<translation id="1171082344678443012">XZ սեղմված արխիվ</translation>
 <translation id="1172970565351728681">Մնացել է մոտ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Վերանվանել</translation>
 <translation id="1173916544412572294">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, մանրամասներ</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Ֆորմատավորման արդյունքում կրիչի վրա պահված բոլոր տվյալները կջնջվեն: Այս գործողությունը հնարավոր չէ հետարկել:</translation>
 <translation id="2025955442973426285">տիգրինյա</translation>
 <translation id="2028997212275086731">RAR արխիվ</translation>
+<translation id="2036414735548252477">LZMA սեղմված tar-արխիվ</translation>
 <translation id="2037845485764049925">ռուսերեն</translation>
 <translation id="2044023416777079300">Մոդեմը գրանցված չէ</translation>
 <translation id="2046702855113914483">Ռամեն</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> բայթ</translation>
 <translation id="4880214202172289027">Ձայնի սահիչ</translation>
 <translation id="4881695831933465202">Բացել</translation>
+<translation id="4886199584824489598">Bzip2 սեղմված արխիվ</translation>
 <translation id="4900532980794411603">Հասանելի դարձնել Parallels Desktop-ին</translation>
 <translation id="4902546322522096650">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կապակցում</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> ֆայլ պատրաստ է պահուստավորման</translation>
@@ -585,6 +588,7 @@
 <translation id="6055907707645252013">Կապը <ph name="NETWORK_TYPE" /> ցանցի հետ հաստատված չէ</translation>
 <translation id="6074825444536523002">Google ձևաթուղթ</translation>
 <translation id="6079871810119356840">հունգարերեն (QWERTY ստեղնաշար)</translation>
+<translation id="6082256976217156453">LZMA սեղմված արխիվ</translation>
 <translation id="6096979789310008754">Որոնման տեքստը մաքրվեց: Ցուցադրվում են բոլոր ֆայլերն ու պանակները:</translation>
 <translation id="610101264611565198">«<ph name="FILE_NAME" />» ֆայլը տեղափոխվում է «<ph name="FOLDER_NAME" />» պանակ</translation>
 <translation id="6129953537138746214">Բացատ</translation>
@@ -841,6 +845,7 @@
 <translation id="8297012244086013755">Հանգուլ 3 Set (առանց Shift-ի)</translation>
 <translation id="8299269255470343364">Ճապոնական</translation>
 <translation id="8300849813060516376">OTASP-ի խափանում</translation>
+<translation id="8308481408797647857">XZ սեղմված արխիվ</translation>
 <translation id="8312871300878166382">Տեղադրել պանակում</translation>
 <translation id="8329978297633540474">Պարզ տեքստ</translation>
 <translation id="8335587457941836791">Ապամրացնել դարակից</translation>
@@ -949,6 +954,7 @@
 <translation id="943972244133411984">Ով է փոփոխել</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="947144732524271678">Դուք ընտրեցիք <ph name="ENTRY_COUNT" /> գրառում՝ «<ph name="FROM_ENTRY_NAME" />»-ից «<ph name="TO_ENTRY_NAME" />»:</translation>
+<translation id="961973045258256291">Gzip սեղմված արխիվ</translation>
 <translation id="965477715979482472">Անգլերեն (Հարավային Աֆրիկա)</translation>
 <translation id="981121421437150478">Անցանց</translation>
 <translation id="988685240266037636">«<ph name="FILE_NAME" />» անունով ֆայլ արդեն գոյություն ունի: Ուզո՞ւմ եք փոխարինել այն:</translation>

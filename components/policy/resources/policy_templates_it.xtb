@@ -191,6 +191,20 @@
 <translation id="1223789468190631420">Stato attivazione Navigazione sicura per origini attendibili</translation>
 <translation id="123018742985150697">Richiede la corrispondenza tra utente locale e proprietario dell'host di accesso remoto</translation>
 <translation id="123081309365616809">Attiva la trasmissione di contenuti al dispositivo</translation>
+<translation id="1239526922294123540">Consente di stabilire se i siti web possono o meno effettuare richieste agli endpoint di rete con un livello di protezione più alto in modo non sicuro.
+
+          Se questo criterio viene impostato su vero, vengono disattivati tutti i controlli di <ph name="PRIVATE_NETWORK_ACCESS" /> per tutte le origini. Gli utenti malintenzionati potrebbero riuscire a compiere attacchi <ph name="CSRF" /> su server di reti private.
+
+          Se il criterio viene impostato su falso o se non viene configurato, il comportamento predefinito per le richieste agli endpoint di rete con un livello di protezione più alto dipende dalla configurazione personale dell'utente per i flag funzionalità <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> e <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" />, che possono essere configurati in base a prove sul campo o alla riga di comando.
+
+          Questo criterio riguarda la specifica <ph name="PRIVATE_NETWORK_ACCESS" />. Per maggiori dettagli, visita la pagina https://wicg.github.io/private-network-access/.
+
+          Un endpoint di rete ha un livello di protezione più alto di un altro se:
+          1) Il suo indirizzo IP è localhost e quello dell'altro no.
+          2) Il suo indirizzo IP è privato e quello dell'altro è pubblico.
+          In futuro, a seconda dell'evoluzione della specifica, questo criterio potrebbe essere applicato a tutte le richieste multiorigine indirizzate a localhost o IP privati.
+
+          Se il criterio viene impostato su vero, i siti web possono effettuare richieste a qualsiasi endpoint di rete, soggette ad altri controlli multiorigine.</translation>
 <translation id="1240722269871366886">Questo criterio consente a <ph name="PRODUCT_OS_NAME" /> di suggerire le emoji quando gli utenti digitano il testo sulle tastiere fisiche o virtuali.
       Se questo criterio viene impostato su vero, la funzionalità verrà attivata e gli utenti potranno modificarla.
       Per impostazione predefinita questo criterio è impostato su falso, il che significa che non vengono suggerite emoji e gli utenti non possono ignorarlo.</translation>
@@ -6009,6 +6023,13 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7904177352786629708">Impostando il criterio su Attivato, la ricerca CNAME viene saltata. Il nome del server viene utilizzato come valore inserito durante la generazione del Kerberos SPN.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, la ricerca CNAME determina il nome canonico del server durante la generazione del Kerberos SPN.</translation>
+<translation id="7904434413881624417">Elenco di pattern URL. Le richieste avviate da siti web pubblicati da origini corrispondenti non sono soggette ai controlli di <ph name="PRIVATE_NETWORK_ACCESS" />.
+
+          Se non viene configurato, questo criterio considera l'elenco come vuoto.
+
+          Per le origini non coperte dai pattern specificati qui, il valore predefinito globale viene utilizzato dal criterio <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" />, se configurato, o altrimenti dalla configurazione personale dell'utente.
+
+          Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="7906983682927840536">Recupera la durata del keepalive alla chiusura</translation>
 <translation id="7908384265697653397">Il periodo di tempo, in giorni, trascorso il quale l'utente viene disconnesso dall'account se la versione di <ph name="PRODUCT_OS_NAME" /> è precedente a quella specificata nel criterio <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="7912255076272890813">Configura tipi di app/estensioni consentiti</translation>

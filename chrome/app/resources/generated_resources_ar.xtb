@@ -1979,6 +1979,7 @@
 <translation id="2933632078076743449">آخر تحديث</translation>
 <translation id="2934999512438267372">‏تم السماح بالتحكُّم الكامل لأجهزة MIDI</translation>
 <translation id="2935225303485967257">إدارة الملفات الشخصية</translation>
+<translation id="2935314715123552088">‏إيقاف الملف الشخصي النشط لشريحة eSIM</translation>
 <translation id="2935654492420446828">إضافة حساب مؤسسة تعليمية لاحقًا</translation>
 <translation id="2936851848721175671">النسخ الاحتياطي والاستعادة</translation>
 <translation id="2939908794993783865">المزيد من المواقع الإلكترونية غير النشطة</translation>
@@ -3126,6 +3127,7 @@
 <translation id="4104163789986725820">ت&amp;صدير...</translation>
 <translation id="4107048419833779140">تحديد أجهزة التخزين وإخراجها</translation>
 <translation id="4109135793348361820">نقل النافذة إلى <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">استعادة التحذير</translation>
 <translation id="4110490973560452005">‏اكتمل التنزيل: <ph name="FILE_NAME" />. يمكنك الضغط على Shift+F6 للانتقال إلى منطقة شريط عمليات التنزيل.</translation>
 <translation id="4110686435123617899">اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (غير متصل بالإنترنت)</translation>
@@ -3249,6 +3251,7 @@
 <translation id="4259388776256904261">قد يستغرق هذا الإعداد بعض الوقت.</translation>
 <translation id="4260182282978351200">‏قد يكون الملف <ph name="FILE_NAME" /> خطيرًا. هل تريد إرساله إلى برنامج "الحماية المتقدّمة" من Google لفحصه؟ ما عليك سوى الضغط على Shift+F6 للانتقال إلى منطقة شريط عمليات التنزيل.</translation>
 <translation id="4261429981378979799">أذونات الإضافة</translation>
+<translation id="4262004481148703251">إغلاق التحذير</translation>
 <translation id="4263223596040212967">يُرجى التحقق من تنسيق لوحة المفاتيح وإعادة المحاولة.</translation>
 <translation id="426564820080660648">‏للتحقق من وجود تحديثات، يُرجى استخدام شبكة Ethernet أو Wi-Fi أو بيانات الجوّال.</translation>
 <translation id="4266679478228765574">وستؤدي إزالة المجلدات إلى إيقاف المشاركة ولكنها لن تحذف الملفات.</translation>
@@ -3654,6 +3657,7 @@
 <translation id="4681453295291708042">إيقاف ميزة "المشاركة عن قرب"</translation>
 <translation id="4681930562518940301">فتح الصورة الأصلية في علامة تبويب جديدة</translation>
 <translation id="4682551433947286597">تظهر الخلفيات على شاشة تسجيل الدخول.</translation>
+<translation id="4682830185876172415">عمليات التنزيل الأخيرة</translation>
 <translation id="4683629100208651599">تحويل الأحرف إلى أحرف صغيرة</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (تلقائي)</translation>
 <translation id="4684427112815847243">مزامنة كل شيء</translation>
@@ -3919,6 +3923,7 @@
 <translation id="496446150016900060">‏يمكنك مزامنة شبكات Wi-Fi مع هاتفك.</translation>
 <translation id="4965808351167763748">‏هل تريد فعلاً إعداد هذا الجهاز لتشغيل Hangouts Meet؟</translation>
 <translation id="4966972803217407697">يتم استخدام وضع التصفُّح المُتخفي حاليًا.</translation>
+<translation id="496742804571665842">‏إيقاف الملفات الشخصية لشرائح eSIM</translation>
 <translation id="496888482094675990">‏يوفر تطبيق الملفات وصولاً سريعًا إلى الملفات التي حفظتها على Google Drive، أو مساحة التخزين الخارجي، أو جهاز نظام التشغيل Chrome.</translation>
 <translation id="4971412780836297815">فتح عند اكتمال التنزيل</translation>
 <translation id="4971735654804503942">‏يوفّر حماية استباقية وسريعة من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة، ويُحذّرك من عمليات اختراق كلمة المرور. يتطلّب إرسال بيانات التصفّح إلى Google.</translation>
@@ -6275,6 +6280,7 @@
 <translation id="7448430327655618736">يمكنك تثبيت التطبيقات تلقائيًا.</translation>
 <translation id="7449752890690775568">هل تريد إزالة كلمة المرور؟</translation>
 <translation id="7450761244949417357">سيتم الفتح في <ph name="ALTERNATIVE_BROWSER_NAME" /> الآن.</translation>
+<translation id="7452166281927983300">التحذيرات التي تم إغلاقها (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">عند تحديد الطابعة، فإنك تمنح الإضافة التالية الإذن للدخول إلى الطابعة.</translation>
 <translation id="7454548535253569100">البوابة: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">إدارة الحاويات الإضافية</translation>

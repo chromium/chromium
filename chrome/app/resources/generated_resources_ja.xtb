@@ -1971,6 +1971,7 @@
 <translation id="2933632078076743449">最終更新日</translation>
 <translation id="2934999512438267372">MIDI デバイスのフル コントロールが許可されています</translation>
 <translation id="2935225303485967257">プロフィールを管理</translation>
+<translation id="2935314715123552088">アクティブな eSIM プロファイルを無効にする</translation>
 <translation id="2935654492420446828">学校用アカウントは後で追加します</translation>
 <translation id="2936851848721175671">バックアップと復元</translation>
 <translation id="2939908794993783865">追加の無効なサイト</translation>
@@ -3118,6 +3119,7 @@
 <translation id="4104163789986725820">エクスポート(&amp;X)</translation>
 <translation id="4107048419833779140">ストレージ デバイスの認識と取り外し</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）にウィンドウを移動</translation>
+<translation id="4110485659976215879">警告を復元</translation>
 <translation id="4110490973560452005">ダウンロードが完了しました（<ph name="FILE_NAME" />）。ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="4110686435123617899">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（オフライン）</translation>
@@ -3241,6 +3243,7 @@
 <translation id="4259388776256904261">しばらくお待ちください</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google の高度な保護機能に送信してスキャンしますか？ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="4261429981378979799">拡張機能の権限</translation>
+<translation id="4262004481148703251">警告を閉じる</translation>
 <translation id="4263223596040212967">キーボード レイアウトを確認してから、もう一度お試しください。</translation>
 <translation id="426564820080660648">アップデートの有無を確認するには、イーサネット、Wi-Fi、またはモバイル データを使用してください。</translation>
 <translation id="4266679478228765574">フォルダを削除した場合、共有は停止されますがファイルは削除されません。</translation>
@@ -3644,6 +3647,7 @@
 <translation id="4681453295291708042">ニアバイシェアを無効にする</translation>
 <translation id="4681930562518940301">元の画像を新しいタブで開く(&amp;I)</translation>
 <translation id="4682551433947286597">壁紙はログイン画面に表示されます。</translation>
+<translation id="4682830185876172415">最近のダウンロード</translation>
 <translation id="4683629100208651599">小文字にする</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（デフォルト）</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
@@ -3907,6 +3911,7 @@
 <translation id="496446150016900060">Wi-Fi ネットワークをスマートフォンと同期する</translation>
 <translation id="4965808351167763748">このデバイスでハングアウト Meet を実行するように設定してもよろしいですか？</translation>
 <translation id="4966972803217407697">シークレット モード使用中</translation>
+<translation id="496742804571665842">eSIM プロファイルを無効にする</translation>
 <translation id="496888482094675990">ファイル アプリを使えば、Google ドライブ、外部ストレージ、Chrome OS デバイスに保存したファイルにすぐにアクセスできます。</translation>
 <translation id="4971412780836297815">完了後に開く</translation>
 <translation id="4971735654804503942">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します。パスワードの侵害があった場合は警告します。Google に閲覧データを送信する必要があります。</translation>
@@ -6255,6 +6260,7 @@
 <translation id="7448430327655618736">アプリの自動インストール</translation>
 <translation id="7449752890690775568">パスワードを削除しますか？</translation>
 <translation id="7450761244949417357">まもなく <ph name="ALTERNATIVE_BROWSER_NAME" /> で開きます</translation>
+<translation id="7452166281927983300">閉じた警告（<ph name="MUTED_PASSWORDS" /> 件）</translation>
 <translation id="7453008956351770337">このプリンタを選択すると、次の拡張機能にプリンタへのアクセスを許可することになります。</translation>
 <translation id="7454548535253569100">ポータル: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">他のコンテナの管理</translation>

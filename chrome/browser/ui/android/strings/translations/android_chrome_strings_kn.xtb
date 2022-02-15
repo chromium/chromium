@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">ಕೆಲವು ಕುಕೀಗಳನ್ನು ಹಾಗೂ ವಿಳಾಸ ಪಟ್ಟಿ ಮತ್ತು ಹುಡುಕಾಟ ಬಾಕ್ಸ್‌ನಿಂದ ಹುಡುಕಾಟಗಳನ್ನು, ನಿಮ್ಮ ಡಿಫಾಲ್ಟ್ ಹುಡುಕಾಟದ ಎಂಜಿನ್‌ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="200114059308480249">Google ಹುಡುಕಾಟಗಳಲ್ಲಿ ಸುತ್ತಮುತ್ತಲಿನ ಪಠ್ಯವನ್ನು ಸೇರಿಸಬೇಕೇ?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
+<translation id="2015836039326522978"><ph name="APP_NAME" />, Chrome ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ. ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ. <ph name="BEGIN_LINK3" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_LINK3" /> ಸಹ ಅನ್ವಯಿಸುತ್ತದೆ.</translation>
 <translation id="2020309681647789787">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಿಂಕ್‌ ಮಾಡಿದ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಇತಿಹಾಸ ಲಭ್ಯವಿರುತ್ತದೆ, ಇದರಿಂದ ನೀವು ಮಾಡುತ್ತಿದ್ದ ಕೆಲಸವನ್ನು ನೀವು ಮುಂದುವರಿಸಬಹುದು</translation>
 <translation id="2021896219286479412">ಪೂರ್ಣ ಪರದೆ ಸೈಟ್ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="2038563949887743358">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್ ವಿನಂತಿಯನ್ನು ಆನ್ ಮಾಡಿ</translation>
@@ -1223,6 +1224,7 @@
 <translation id="8037750541064988519"><ph name="DAYS" /> ದಿನಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="8037801708772278989">ಈಗಷ್ಟೇ ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
 <translation id="804335162455518893">SD ಕಾರ್ಡ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
+<translation id="8046319826565374740">Chrome ಅನ್ನು ಬಳಸುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ. <ph name="BEGIN_LINK3" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_LINK3" /> ಸಹ ಅನ್ವಯಿಸುತ್ತದೆ.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌}one{<ph name="TAB_COUNT_NORMAL" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TAB_COUNT_NORMAL" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB  ಲಭ್ಯವಿದೆ</translation>
 <translation id="8058655154417507695">ಮುಕ್ತಾಯದ ವರ್ಷ</translation>

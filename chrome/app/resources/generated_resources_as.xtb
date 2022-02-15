@@ -1590,6 +1590,7 @@
 <translation id="2540449034743108469">এক্সটেনশ্বনৰ কাৰ্যকলাপসমূহ শুনিবলৈ "আৰম্ভ কৰক"ত টিপক</translation>
 <translation id="2540651571961486573">কিবা ভুল হ’ল। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="2541002089857695151">সম্পূর্ণ স্ক্ৰীণৰ কাষ্টটিং অপ্টিমাইজ কৰিবনে?</translation>
+<translation id="2541423446708352368">আটাইবোৰ ডাউনল'ড দেখুৱাওক</translation>
 <translation id="2541706104884128042">শোৱাৰ নতুন সময় ছেট কৰা হ’ল</translation>
 <translation id="2542050502251273923">ff_debug ব্যৱহাৰ কৰি নেটৱৰ্ক সংযোগ পৰিচালক আৰু অন্য সেৱাসমূহৰ ডিবাগিঙৰ স্তৰ ছেট কৰে।</translation>
 <translation id="2544352060595557290">এই টেবটো</translation>
@@ -1985,6 +1986,7 @@
 <translation id="2933632078076743449">অন্তিম আপডে’ট</translation>
 <translation id="2934999512438267372">MIDI ডিভাইচৰ সম্পূৰ্ণ নিয়ন্ত্ৰণৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="2935225303485967257">প্ৰ’ফাইল পৰিচালনা কৰক</translation>
+<translation id="2935314715123552088">সক্ৰিয় ই-ছিমৰ প্ৰ’ফাইল অক্ষম কৰক</translation>
 <translation id="2935654492420446828">পাছত বিদ্যালয়ৰ একাউণ্ট যোগ দিয়ক</translation>
 <translation id="2936851848721175671">বেক আপ আৰু পুনঃস্থাপন</translation>
 <translation id="2939908794993783865">নিষ্ক্ৰিয় হৈ থকা অতিৰিক্ত ছাইট</translation>
@@ -3133,6 +3135,7 @@
 <translation id="4104163789986725820">ৰ&amp;প্তানি কৰক...</translation>
 <translation id="4107048419833779140">ষ্ট’ৰেজ ডিভাইচ চিনাক্ত কৰক আৰু বাহিৰ কৰক</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)লৈ ৱিণ্ড’ক আঁতৰাওক</translation>
+<translation id="4110485659976215879">সকীয়নি পুনঃস্থাপন কৰক</translation>
 <translation id="4110490973560452005">ডাউনল’ড সম্পূৰ্ণ হ’ল: <ph name="FILE_NAME" />। ডাউনল’ড বাৰৰ ক্ষেত্ৰলৈ যাবলৈ Shift+F6 টিপক।</translation>
 <translation id="4110686435123617899">এলবাম বাছনি কৰক <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (অফলাইন হৈ আছে)</translation>
@@ -3256,6 +3259,7 @@
 <translation id="4259388776256904261">এইটোৰ বাবে কিছু সময় লাগিব পাৰে</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> বিপজ্জনক হ’ব পাৰে। স্কেন কৰিবলৈ Googleৰ সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাটোলৈ পঠিয়াবনে? ডাউনল’ড বাৰৰ ক্ষেত্ৰলৈ যাবলৈ শ্বিফ্ট+F6 টিপক।</translation>
 <translation id="4261429981378979799">এক্সটেনশ্বনৰ অনুমতি</translation>
+<translation id="4262004481148703251">সকীয়নি অগ্ৰাহ্য কৰক</translation>
 <translation id="4263223596040212967">আপোনাৰ কীব'ৰ্ডৰ লে’আউট পৰীক্ষা কৰক আৰু আকৌ চেষ্টা কৰক</translation>
 <translation id="426564820080660648">আপডে‘ট আছে নেকি চাবলৈ ইথাৰনেট, ৱাই-ফাই বা ম’বাইল ডেটা ব্যৱহাৰ কৰক।</translation>
 <translation id="4266679478228765574">ফল্ডাৰসমূহ আঁতৰালে শ্বেয়াৰ কৰা কার্যটো বন্ধ হ'ব কিন্তু ফাইল মচা নাযায়।</translation>
@@ -3662,6 +3666,7 @@
 <translation id="4681453295291708042">Nearby Share সুবিধাটো অক্ষম কৰক</translation>
 <translation id="4681930562518940301">মূল &amp;প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
 <translation id="4682551433947286597">ছাইন ইন কৰা স্ক্ৰীণত প্ৰদর্শন হোৱা ৱালপেপাৰ।</translation>
+<translation id="4682830185876172415">শেহতীয়া ডাউনল’ড</translation>
 <translation id="4683629100208651599">সৰুফলা কৰক</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ডিফ’ল্ট)</translation>
 <translation id="4684427112815847243">সকলো ছিংক কৰক</translation>
@@ -3927,6 +3932,7 @@
 <translation id="496446150016900060">আপোনাৰ ফ’নৰ সৈতে ৱাই-ফাই নেটৱৰ্ক ছিংক কৰক</translation>
 <translation id="4965808351167763748">আপুনি এই ডিভাইচটোত Hangouts Meet চলাবলৈ ছেট আপ কৰিব বিচৰাটো নিশ্চিতনে?</translation>
 <translation id="4966972803217407697">আপুনি ইনক’গনিট’ ম’ডত আছে</translation>
+<translation id="496742804571665842">ই-ছিমৰ প্ৰ’ফাইল অক্ষম কৰক</translation>
 <translation id="496888482094675990">Files এপে আপুনি Google Drive, বাহ্যিক ষ্ট'ৰেজ বা আপোনাৰ Chrome OS ডিভাইচত ছেভ কৰি থোৱা ফাইলত দ্ৰুত এক্সেছ প্রদান কৰে।</translation>
 <translation id="4971412780836297815">ডাউনল’ড সম্পূর্ণ হ’লে খোলক</translation>
 <translation id="4971735654804503942">ক্ষতিকাৰক হিচাপে জনাজাত ৱেবছাইট, ডাউনল'ড আৰু এক্সটেনশ্বনসমূহৰ পৰা ক্ষিপ্ৰ, আগতীয়া সুৰক্ষা। পাছৱর্ড ফাদিল হোৱা সম্পর্কে আপোনাক সকীয়নি দিয়ে। Googleলৈ পঠিয়াবলৈ ব্ৰাউজিং ডেটাৰ আৱশ্যক হয়।</translation>
@@ -6282,6 +6288,7 @@
 <translation id="7448430327655618736">এপ্‌সমূহ স্বয়ংক্ৰিয়ভাৱে ইনষ্টল কৰক</translation>
 <translation id="7449752890690775568">পাছৱৰ্ড আঁতৰাবনে?</translation>
 <translation id="7450761244949417357">এতিয়া <ph name="ALTERNATIVE_BROWSER_NAME" />ত খুলি থকা হৈছে</translation>
+<translation id="7452166281927983300">অগ্ৰাহ্য কৰা সকীয়নি (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">আপুনি এই প্ৰিণ্টাৰ বাছনি কৰি ইয়াত উল্লেখ কৰা এক্সটেনশ্বনক আপোনাৰ প্ৰিণ্টাৰলৈ এক্সেছ প্ৰদান কৰিছে:</translation>
 <translation id="7454548535253569100">পর্টেল: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">অতিৰিক্ত কণ্টেনাৰ পৰিচালনা কৰক</translation>

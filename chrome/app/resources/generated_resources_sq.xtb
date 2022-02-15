@@ -1971,6 +1971,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2933632078076743449">Përditësimi i fundit</translation>
 <translation id="2934999512438267372">Lejohet kontrolli i plotë mbi pajisjet MIDI</translation>
 <translation id="2935225303485967257">Menaxho profilet</translation>
+<translation id="2935314715123552088">Çaktivizo profilin aktiv të kartës eSIM</translation>
 <translation id="2935654492420446828">Shto një llogari shkolle më vonë</translation>
 <translation id="2936851848721175671">Rezervo dhe restauro</translation>
 <translation id="2939908794993783865">Sajte të tjera joaktive</translation>
@@ -3120,6 +3121,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4104163789986725820">E&amp;ksporto...</translation>
 <translation id="4107048419833779140">Identifiko dhe nxirr pajisjet e hapësirës së ruajtjes</translation>
 <translation id="4109135793348361820">Lëvize dritaren te <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Rikthe paralajmërimin</translation>
 <translation id="4110490973560452005">Shkarkimi përfundoi: <ph name="FILE_NAME" />. Shtyp Shift+F6 për të kaluar në cikël në zonën e shiritit të shkarkimeve.</translation>
 <translation id="4110686435123617899">Zgjidh albumin <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (jashtë linje)</translation>
@@ -3243,6 +3245,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4259388776256904261">Kjo mund të zgjasë pak</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm. Të dërgohet te "Mbrojtja e përparuar" e Google për skanim? Shtyp Shift+F6 për të kaluar në cikël në zonën e shiritit të shkarkimeve.</translation>
 <translation id="4261429981378979799">Lejet e shtesave</translation>
+<translation id="4262004481148703251">Hiq paralajmërimin</translation>
 <translation id="4263223596040212967">Kontrollo strukturën e tastierës dhe provo përsëri.</translation>
 <translation id="426564820080660648">Për të kontrolluar për përditësime, përdor Ethernet, Wi-Fi ose të dhënat celulare.</translation>
 <translation id="4266679478228765574">Heqja e dosjeve do të ndalojë ndarjen, por nuk do të fshijë skedarët.</translation>
@@ -3648,6 +3651,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4681453295291708042">Çaktivizo "Ndarjen në afërsi"</translation>
 <translation id="4681930562518940301">Hap imazhin &amp;origjinal në skedë të re</translation>
 <translation id="4682551433947286597">Imazhet e sfondit shfaqen në "Ekranin e identifikimit".</translation>
+<translation id="4682830185876172415">Shkarkimet e fundit</translation>
 <translation id="4683629100208651599">Bëj me shkronja të vogla</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (i parazgjedhur)</translation>
 <translation id="4684427112815847243">Sinkronizo gjithçka</translation>
@@ -3913,6 +3917,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="496446150016900060">Sinkronizo rrjetet Wi-Fi me telefonin tënd</translation>
 <translation id="4965808351167763748">Je i sigurt që dëshiron ta konfigurosh këtë pajisje për të ekzekutuar Hangouts Meet?</translation>
 <translation id="4966972803217407697">Je në modalitetin "e fshehtë"</translation>
+<translation id="496742804571665842">Çaktivizo profilet e kartës eSIM</translation>
 <translation id="496888482094675990">Aplikacioni "Skedarët" siguron qasje të shpejtë te skedarët që ke ruajtur në "Diskun e Google", në hapësirën e jashtme ruajtëse ose në pajisjen tënde të sistemit operativ Chrome.</translation>
 <translation id="4971412780836297815">Hape kur të përfundojë</translation>
 <translation id="4971735654804503942">Mbrojtje më e shpejtë dhe proaktive kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Të paralajmëron rreth nxjerrjeve të paautorizuara të fjalëkalimeve. Kërkon që të dhënat e shfletimit t'i dërgohen Google.</translation>
@@ -6268,6 +6273,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7448430327655618736">Instalo automatikisht aplikacionet</translation>
 <translation id="7449752890690775568">Të hiqet fjalëkalimi?</translation>
 <translation id="7450761244949417357">Po hapet në <ph name="ALTERNATIVE_BROWSER_NAME" /> tani</translation>
+<translation id="7452166281927983300">Paralajmërimet e hequra (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Duke zgjedhur këtë printer, po i jep shtesës së mëposhtme lejen për qasjen te printeri yt:</translation>
 <translation id="7454548535253569100">Portali: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Menaxho kontejnerët shtesë</translation>

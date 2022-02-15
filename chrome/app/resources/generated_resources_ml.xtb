@@ -499,6 +499,7 @@
 <translation id="1506061864768559482">തിരയൽ യന്ത്രം</translation>
 <translation id="1507170440449692343">നിങ്ങളുടെ ക്യാമറ ആക്‌സസ്സുചെയ്യുന്നതിൽ നിന്ന് ഈ പേജിനെ തടഞ്ഞു.</translation>
 <translation id="1507246803636407672">&amp;നിരസിക്കുക</translation>
+<translation id="1507884455975553832">സ്ട്രീം സന്ദേശമയയ്ക്കൽ ആപ്പുകൾ</translation>
 <translation id="1509163368529404530">&amp;ഗ്രൂപ്പ് പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="1509281256533087115">USB വഴി ഏതൊരു <ph name="DEVICE_NAME_AND_VENDOR" /> ഉപകരണത്തെയും ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
@@ -598,6 +599,7 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> മറക്കുക</translation>
 <translation id="1603914832182249871">(ആള്‍മാറാട്ടം)</translation>
 <translation id="1604432177629086300">പ്രിന്റ് ചെയ്യാനായില്ല. പ്രിന്റർ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="1604576689725077412">Chromebook-ലെ അറിയിപ്പുകൾ ഡിസ്‌മിസ് ചെയ്യുന്നത് നിങ്ങളുടെ ഫോണിൽ നിന്നും അവ ഡിസ്‌മിസ് ചെയ്യാനിടയാക്കുമെന്ന കാര്യം ശ്രദ്ധിക്കുക.</translation>
 <translation id="1605744057217831567">എല്ലാ സൈറ്റ് ഡാറ്റയും അനുമതികളും കാണുക</translation>
 <translation id="1606077700029460857">മൗസ് ക്രമീകരണം മാറ്റുക</translation>
 <translation id="1606566847233779212">നിങ്ങൾ ചേർത്ത നിർദ്ദിഷ്ട സൈറ്റുകൾ നീക്കം ചെയ്യണോ?</translation>
@@ -708,6 +710,7 @@
 <translation id="1697150536837697295">കല</translation>
 <translation id="1697686431566694143">ഫയൽ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="1700079447639026019">ഒരിക്കലും കുക്കികൾ ഉപയോഗിക്കാനാവാത്ത സൈറ്റുകൾ</translation>
+<translation id="1700201317341192482">നിങ്ങളുടെ വെർച്വൽ കാർഡ് നീക്കം ചെയ്യുക</translation>
 <translation id="1703331064825191675">നിങ്ങളുടെ പാസ്‌വേഡുകളെക്കുറിച്ച് ഇനി ആശങ്ക വേണ്ട</translation>
 <translation id="1703666494654169921">വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളോ ഡാറ്റയോ ഉപയോഗിക്കാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="1704097193565924901">ക്യാപിറ്റലൈസ് ചെയ്യുക</translation>
@@ -1020,6 +1023,7 @@
 <translation id="2006638907958895361"><ph name="APP" /> ആപ്പില്‍ ലിങ്ക് തുറക്കുക</translation>
 <translation id="2007404777272201486">ഒരു പ്രശ്നം റിപ്പോര്‍ട്ട് ചെയ്യുക...</translation>
 <translation id="2010501376126504057">അനുയോജ്യമായ ഉപകരണങ്ങൾ</translation>
+<translation id="2011968031299471357">സന്ദേശങ്ങൾ അവലോകനം ചെയ്ത് അവയോട് പ്രതികരിക്കുക</translation>
 <translation id="2015232545623037616">സമാന Wi-Fi നെറ്റ്‌വർക്കിലെ PC, Chromecast എന്നിവ</translation>
 <translation id="2016473077102413275">ചിത്രങ്ങൾ ആവശ്യമായ ഫീച്ചറുകൾ പ്രവർത്തിക്കില്ല</translation>
 <translation id="2016574333161572915">നിങ്ങളുടെ Google Meet ഹാർഡ്‌വെയർ സജ്ജീകരിക്കാൻ തയ്യാറാണ്</translation>
@@ -1260,6 +1264,7 @@
 <translation id="2241053333139545397">നിരവധി വെബ്‌സൈറ്റുകളിലെ നിങ്ങളുടെ ഡാറ്റ വായിക്കുക, മാറ്റുക</translation>
 <translation id="2241634353105152135">ഒരിക്കൽ മാത്രം</translation>
 <translation id="2242687258748107519">ഫയൽ വിവരം</translation>
+<translation id="2243381895573964397">ഫോൺ അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="2246549592927364792">Google-ൽ നിന്ന് ചിത്ര വിവരണങ്ങൾ നേടണോ?</translation>
 <translation id="2247738527273549923">നിങ്ങളുടെ ഉപകരണം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമാണ്</translation>
 <translation id="2249111429176737533">ടാബ് ചെയ്‌ത വിന്‍ഡോ ആയി തുറക്കുക</translation>
@@ -2078,6 +2083,7 @@
 <translation id="3036546437875325427">ഫ്ലാഷ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3037754279345160234">ഡൊമെയ്‌നിൽ ചേരാനുള്ള കോൺഫിഗറേഷൻ വിശകലനം ചെയ്യാനാവില്ല. നിങ്ങളുടെ അഡ്‌മിനിസ്ട്രേറ്ററെ ബന്ധപ്പെടുക.</translation>
 <translation id="3038612606416062604">നേരിട്ട് ഒരു പ്രിന്റർ ചേർക്കുക</translation>
+<translation id="3039409644314251320">സംഭാഷണങ്ങൾ കാണുക, സന്ദേശങ്ങളോട് പ്രതികരിക്കുക, ഗ്രൂപ്പ് ചാറ്റുകളിലേക്ക് ആളുകളെ ചേർക്കുക</translation>
 <translation id="3039491566278747710">ഉപകരണത്തിൽ ഓഫ്‌ലൈൻ നയം ഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> എന്നതിൽ നിന്ന്</translation>
@@ -2615,6 +2621,7 @@
 <translation id="362266093274784978">{COUNT,plural, =1{ഒരു ആപ്പ്}other{# ആപ്പുകൾ}}</translation>
 <translation id="362333465072914957">സര്‍ട്ടിഫിക്കറ്റ് ഇഷ്യൂ ചെയ്യാൻ CA-ക്കായി കാത്തിരിക്കുന്നു</translation>
 <translation id="3624567683873126087">ഉപകരണം അൺലോക്ക് ചെയ്‌ത് Google അക്കൗണ്ടിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="3624583033347146597">നിങ്ങളുടെ മൂന്നാം കക്ഷി കുക്കികൾക്കുള്ള മുൻഗണനകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3625481642044239431">അസാധുവായ ഫയൽ തിരഞ്ഞെടുത്തു. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3626296069957678981">ഈ Chromebook ചാർജ് ചെയ്യാൻ, അനുയോജ്യമായ ഒരു Dell ബാറ്ററി ഉപയോഗിക്കുക.</translation>
 <translation id="3627320433825461852">1 മിനിറ്റിൽ താഴെ ശേഷിക്കുന്നു</translation>
@@ -3298,6 +3305,7 @@
 <translation id="431076611119798497">&amp;വിശദാംശങ്ങള്‍‌</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{ഒരു Google അക്കൗണ്ട്}other{<ph name="EXTRA_ACCOUNTS" /> Google അക്കൗണ്ടുകൾ}}</translation>
 <translation id="4312866146174492540">ബ്ലോക്ക് ചെയ്യുക (ഡിഫോൾട്ട്)</translation>
+<translation id="4314497418046265427">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> നിങ്ങളുടെ ഫോണുമായി കണക്റ്റ് ചെയ്യുമ്പോൾ കൂടുതൽ ഉൽപ്പാദനക്ഷമതയുള്ളവരായിരിക്കുക</translation>
 <translation id="4314815835985389558">സമന്വയിപ്പിക്കൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="4315933848520197627">അക്കൗണ്ട് അൺലിങ്ക് ചെയ്യുക</translation>
 <translation id="4316850752623536204">ഡെവലപ്പർ വെബ്‌സൈറ്റ്</translation>
@@ -3490,6 +3498,7 @@
 <translation id="4519935350946509010">കണക്ഷൻ പിശക്.</translation>
 <translation id="4520385623207007473">ഉപയോഗത്തിലുള്ള കുക്കികൾ</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> എന്നതിൽ നിന്നുള്ള അജ്ഞാത ഉപകരണം</translation>
+<translation id="4522351342209941760">കുറച്ച് അനുമതികൾ കൂടി അവലോകനം ചെയ്യാൻ നിങ്ങളുടെ ഫോണിലേക്ക് പോകുക.</translation>
 <translation id="4522570452068850558">വിശദാംശങ്ങൾ‌</translation>
 <translation id="4522600456902129422">ക്ലിപ്പ്‌ബോർഡ് കാണാൻ ഈ സൈറ്റിനെ അനുവദിക്കുന്നത് തുടരുക</translation>
 <translation id="4522890784888918985">ഉപ അക്കൗണ്ടുകൾക്ക് പിന്തുണയില്ല</translation>
@@ -4805,6 +4814,7 @@
 
   പബ്ലിക് എക്‌സ്‌പൊണന്റ് (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> ബിറ്റുകൾ):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">നിങ്ങളുടെ ഫോണും <ph name="DEVICE_TYPE" /> ഉപകരണവും കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="59174027418879706">പ്രാപ്തമാക്കി</translation>
 <translation id="5920543303088087579">ഈ നെറ്റ്‌വർക്കിൽ കണക്‌റ്റ് ചെയ്യുന്നതിനെ അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി</translation>
@@ -5346,6 +5356,7 @@
 <translation id="6466258437571594570">അറിയിപ്പുകൾ അയയ്ക്കാൻ അനുമതി ആവശ്യപ്പെട്ട് നിങ്ങളെ തടസ്സപ്പെടുത്തുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുന്നു</translation>
 <translation id="6466988389784393586">&amp;എല്ലാ ബുക്ക്‍മാര്‍ക്കുകളും തുറക്കുക</translation>
 <translation id="6467304607960172345">പൂർണ്ണ സ്ക്രീൻ വീഡിയോകൾ ഒപ്‌റ്റിമൈസ് ചെയ്യുക</translation>
+<translation id="6467377768028664108">തുടർന്ന്, നിങ്ങളുടെ <ph name="DEVICE_TYPE" />-ന്:</translation>
 <translation id="6468485451923838994">ഫോണ്ടുകൾ</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ഫയലുകൾ</translation>
 <translation id="6469557521904094793">സെല്ലുലാർ നെറ്റ്‌വർക്ക് ഓണാക്കുക</translation>
@@ -6590,6 +6601,7 @@
 <translation id="7754704193130578113">ഡൗൺലോഡ് ചെയ്യുന്നതിനു മുമ്പ് ഓരോ ഫയലും എവിടെ സംരക്ഷിക്കണമെന്ന് ചോദിക്കുക</translation>
 <translation id="7755287808199759310">നിങ്ങൾക്ക് വേണ്ടി ഇത് അൺബ്ലോക്കുചെയ്യാൻ രക്ഷിതാവിന് കഴിയും</translation>
 <translation id="7757592200364144203">ഉപകരണത്തിന്റെ പേര് മാറ്റുക</translation>
+<translation id="7757739382819740102">സമീപത്തുള്ള കോൺടാക്റ്റുകൾക്ക് നിങ്ങളുമായി പങ്കിടാം. അനുമതി ആവശ്യമാണ്.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് പങ്കിട്ട ടെക്‌സ്റ്റ്</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">നിങ്ങളുടെ ഡിസ്‌പ്ലേയുടെ ബൗണ്ടറികൾ ക്രമീകരിക്കുക</translation>
@@ -6657,6 +6669,7 @@
 <translation id="7814458197256864873">&amp;പകര്‍ത്തൂ</translation>
 <translation id="7815680994978050279">ദോഷകരമായ ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7817361223956157679">Linux ആപ്പുകളിൽ ഇപ്പോഴും ഓൺ-സ്‌ക്രീൻ കീബോർഡ് പ്രവർത്തിക്കില്ല</translation>
+<translation id="7817671927108102061">ഫോണിൽ സജ്ജീകരണം പൂർത്തിയാക്കുക</translation>
 <translation id="7818135753970109980">പുതിയ തീം ചേർത്തു (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome സമന്വയം</translation>
 <translation id="7820561748632634942">കൂടുതൽ സ്വിച്ചുകൾ അസൈൻ ചെയ്യണോ?</translation>
@@ -7448,6 +7461,7 @@
 <translation id="8631032106121706562">പെറ്റൽസ്</translation>
 <translation id="863109444997383731">നിങ്ങളെ അറിയിപ്പുകൾ കാണിക്കാൻ അനുവാദം ചോദിക്കുന്നതിൽ നിന്നും സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യും. സൈറ്റ്, അറിയിപ്പുകൾ അഭ്യർത്ഥിച്ചാൽ ബ്ലോക്ക് ചെയ്‌തുവെന്ന് സൂചിപ്പിക്കുന്ന ഇൻഡിക്കേറ്റർ വിലാസ ബാറിൽ ദൃശ്യമാകും.</translation>
 <translation id="8633025649649592204">സമീപകാല ആക്റ്റിവിറ്റി</translation>
+<translation id="8634348081024879304">Google Pay-യിലൂടെ നിങ്ങൾക്ക് ഇനി വെർച്വൽ കാർഡ് ഉപയോഗിക്കാനാകില്ല. <ph name="BEGIN_LINK" />വെർച്വൽ കാർഡുകളെക്കുറിച്ച് അറിയുക<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">റീലോഡ് ചെയ്യുന്നു...</translation>
 <translation id="8636284842992792762">വിപുലീകരണങ്ങൾ ഇനിഷ്യലൈസ് ചെയ്യുന്നു...</translation>
 <translation id="8636500887554457830">പോപ്പ്-അപ്പുകൾ അയയ്‌ക്കാനോ റീഡയറക്റ്റുകൾ ഉപയോഗിക്കാനോ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
@@ -7666,6 +7680,7 @@
 <translation id="8838770651474809439">ഹാംബർഗർ</translation>
 <translation id="8838778928843281408">ഫോണുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="883911313571074303">ചിത്രം വ്യാഖ്യാനിക്കുക</translation>
+<translation id="8840427996758894516">നിങ്ങളുടെ ഫോൺ സമീപത്തുണ്ടെന്നും അൺലോക്ക് ചെയ്തിട്ടുണ്ടെന്നും Bluetooth-ഉം വൈഫൈയും ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക.</translation>
 <translation id="8841843049738266382">വൈറ്റ്ലിസ്‌റ്റ് ചെയ്‌ത ഉപയോക്താക്കളെ വായിക്കുക, മാറ്റുക</translation>
 <translation id="8842594465773264717">ഈ ഫിംഗർപ്രിന്റ് ഇല്ലാതാക്കുക</translation>
 <translation id="8845001906332463065">സഹായം നേടുക</translation>

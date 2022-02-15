@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">অ্যাড্রেস বার এবং সার্চ বক্স থেকে সার্চের তথ্য এবং কিছু কুকি আপনার ডিফল্ট সার্চ ইঞ্জিনে পাঠায়</translation>
 <translation id="200114059308480249">Google searches-এ কোনও কিছু সার্চ করার সময় সার্চের সাথে মেলে এমন টেক্সট অন্তর্ভুক্ত করবেন?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{#টি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
+<translation id="2015836039326522978"><ph name="APP_NAME" /> Chrome-এ খুলবে। চালিয়ে যাওয়ার মাধ্যমে, আপনি <ph name="BEGIN_LINK1" />Google-এর পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google Chrome ও Chrome OS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_LINK2" /> মেনে নিচ্ছেন। এছাড়াও <ph name="BEGIN_LINK3" />গোপনীয়তা নীতি<ph name="END_LINK3" /> প্রযোজ্য।</translation>
 <translation id="2020309681647789787">আপনার সিঙ্ক করা সব ডিভাইসে ইতিহাস সেভ হবে, যাতে আপনার আগের করা কাজ চালিয়ে যেতে পারেন</translation>
 <translation id="2021896219286479412">পূর্ণ স্ক্রিন সাইট নিয়ন্ত্রণ</translation>
 <translation id="2038563949887743358">ডেস্কটপ সাইটের অনুরোধ চালু করুন</translation>
@@ -1226,6 +1227,7 @@
 <translation id="8037750541064988519"><ph name="DAYS" /> দিন বাকি আছে</translation>
 <translation id="8037801708772278989">এখনই চেক করা হয়েছে</translation>
 <translation id="804335162455518893">এসডি কার্ড পাওয়া যায়নি</translation>
+<translation id="8046319826565374740">Chrome ব্যবহার করার মাধ্যমে, আপনি <ph name="BEGIN_LINK1" />Google পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google Chrome ও Chrome OS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_LINK2" /> মেনে নিচ্ছেন। এছাড়াও <ph name="BEGIN_LINK3" />গোপনীয়তা নীতি<ph name="END_LINK3" /> প্রযোজ্য।</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ছদ্মবেশী ট্যাব}one{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> এমবি উপলভ্য</translation>
 <translation id="8058655154417507695">মেয়াদ শেষের বছর</translation>

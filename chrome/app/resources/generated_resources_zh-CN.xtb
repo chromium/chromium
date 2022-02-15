@@ -598,6 +598,7 @@
 <translation id="1604432177629086300">无法打印。请检查打印机，然后重试。</translation>
 <translation id="1605744057217831567">查看所有网站数据和权限</translation>
 <translation id="1606077700029460857">更改鼠标设置</translation>
+<translation id="1606566847233779212">移除您添加的特定网站？</translation>
 <translation id="1607139524282324606">清除此条目</translation>
 <translation id="1607499585984539560">此用户未与网域关联</translation>
 <translation id="1608668830839595724">可对所选项执行的更多操作</translation>
@@ -862,6 +863,7 @@
 <translation id="1845727111305721124">允许播放声音</translation>
 <translation id="1846308012215045257">按住 Ctrl 键的同时点击即可运行 <ph name="PLUGIN_NAME" /></translation>
 <translation id="184862733444771842">功能请求</translation>
+<translation id="1849016657376805933">任何 HID 设备</translation>
 <translation id="1849186935225320012">此页面可以完全控制 MIDI 设备。</translation>
 <translation id="1850145825777333687">设备凭据</translation>
 <translation id="1850508293116537636">顺时针旋转(&amp;C)</translation>
@@ -995,6 +997,7 @@
 <translation id="1988259784461813694">要求</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="1989113344093894667">无法截取/录制内容</translation>
+<translation id="1989744123191450103">备份失败</translation>
 <translation id="1989903373608997757">始终使用</translation>
 <translation id="1990046457226896323">实时字幕文件已下载完毕</translation>
 <translation id="1990512225220753005">不在本页上显示快捷方式</translation>
@@ -1004,6 +1007,7 @@
 <translation id="1994173015038366702">网站网址</translation>
 <translation id="1995916364271252349">控制网站可以使用和显示什么信息（如位置信息、摄像头、弹出式窗口及其他）</translation>
 <translation id="1997616988432401742">您的证书</translation>
+<translation id="1997645434968427303">未能成功恢复您的 Linux 备份内容。可能是因为 Linux 没有足够的磁盘可用空间。您可在操作系统设置中更改 Linux 上的磁盘可用空间并再次尝试恢复您的备份内容。</translation>
 <translation id="1999115740519098545">启动时</translation>
 <translation id="2000419248597011803">将一些 Cookie 以及地址栏和搜索框中的搜索字词发送给您的默认搜索引擎</translation>
 <translation id="2002109485265116295">实时</translation>
@@ -1966,6 +1970,7 @@
 <translation id="2933632078076743449">上次更新时间</translation>
 <translation id="2934999512438267372">已允许全面控制 MIDI 设备</translation>
 <translation id="2935225303485967257">管理个人资料</translation>
+<translation id="2935314715123552088">停用有效的 eSIM 卡配置文件</translation>
 <translation id="2935654492420446828">需要时再添加学校帐号</translation>
 <translation id="2936851848721175671">备份和恢复</translation>
 <translation id="2939908794993783865">更多无效网站</translation>
@@ -2077,6 +2082,7 @@
 <translation id="3046178388369461825">Linux 磁盘空间严重不足</translation>
 <translation id="3046910703532196514">网页，全部</translation>
 <translation id="304747341537320566">语音引擎</translation>
+<translation id="3048336643003835855">来自供应商 <ph name="VENDOR_ID" /> 的 HID 设备</translation>
 <translation id="3048917188684939573">投射和设备日志</translation>
 <translation id="3051250416341590778">显示屏上的内容大小</translation>
 <translation id="3053013834507634016">证书密钥用法</translation>
@@ -2504,6 +2510,7 @@
 <translation id="3511307672085573050">复制链接地址(&amp;E)</translation>
 <translation id="351152300840026870">宽度固定的字体</translation>
 <translation id="3511528412952710609">短</translation>
+<translation id="3514011352559420398">恢复失败</translation>
 <translation id="3514335087372914653">游戏控制</translation>
 <translation id="3514373592552233661">如果有多个网络可供使用，首选网络将优先于其他已知网络</translation>
 <translation id="3515983984924808886">请再次轻触安全密钥以确认重置。安全密钥上存储的所有信息（包括它的 PIN 码）都会被删除。</translation>
@@ -3112,6 +3119,7 @@
 <translation id="4104163789986725820">导出(&amp;X)...</translation>
 <translation id="4107048419833779140">识别并弹出存储设备</translation>
 <translation id="4109135793348361820">将窗口移至<ph name="USER_NAME" />(<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4110490973560452005">下载完成：<ph name="FILE_NAME" />。按 Shift+F6 可切换到下载内容栏区域。</translation>
 <translation id="4110686435123617899">选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（离线）</translation>
@@ -3170,6 +3178,7 @@
 <translation id="4180788401304023883">要删除 CA 证书“<ph name="CERTIFICATE_NAME" />”吗？</translation>
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">语言</translation>
+<translation id="4184803915913850597">HID 设备 (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">拖动即可移动显示屏</translation>
 <translation id="4187424053537113647">正在设置 <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">突出显示键盘焦点</translation>
@@ -3234,6 +3243,7 @@
 <translation id="4259388776256904261">该过程可能需要一点时间</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 高级保护进行扫描？按 Shift+F6 可切换到“下载内容栏”区域。</translation>
 <translation id="4261429981378979799">扩展程序权限</translation>
+<translation id="4262004481148703251">关闭警告</translation>
 <translation id="4263223596040212967">请检查键盘布局，然后重试。</translation>
 <translation id="426564820080660648">要检查是否有更新，请使用以太网、WLAN 或移动数据。</translation>
 <translation id="4266679478228765574">移除文件夹会停止共享但不会删除其中的文件。</translation>
@@ -3639,6 +3649,7 @@
 <translation id="4681453295291708042">停用“附近分享”功能</translation>
 <translation id="4681930562518940301">在新标签页中打开原始图片(&amp;I)</translation>
 <translation id="4682551433947286597">登录屏幕上显示的壁纸。</translation>
+<translation id="4682830185876172415">近期的下载内容</translation>
 <translation id="4683629100208651599">转换为小写</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（默认）</translation>
 <translation id="4684427112815847243">同步所有数据类型</translation>
@@ -3661,6 +3672,7 @@
 <translation id="4699357559218762027">（自动启动）</translation>
 <translation id="4701025263201366865">家长登录</translation>
 <translation id="4701335814944566468">昨天看过</translation>
+<translation id="4707337002099455863">在所有网站上始终允许</translation>
 <translation id="4708794300267213770">从休眠状态唤醒时显示锁定屏幕</translation>
 <translation id="4708849949179781599">退出<ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">恢复设置</translation>
@@ -3903,6 +3915,7 @@
 <translation id="496446150016900060">将 Wi-Fi 网络配置同步到您的手机</translation>
 <translation id="4965808351167763748">确定要将此设备设为运行 Hangouts Meet 吗？</translation>
 <translation id="4966972803217407697">您正在使用无痕模式</translation>
+<translation id="496742804571665842">停用 eSIM 卡配置文件</translation>
 <translation id="496888482094675990">通过“文件”应用，您可以快速存取自己保存在Google云端硬盘、外部存储设备和Chrome操作系统设备上的文件。</translation>
 <translation id="4971412780836297815">完成后打开</translation>
 <translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
@@ -4124,6 +4137,7 @@
 <translation id="5208548918290612795">存储“<ph name="WEB_DRIVE" />”身份验证令牌</translation>
 <translation id="520902706163766447">如果您启用此实验，系统将会在 Chrome 界面顶部显示弹出式气泡，供您用来在当前打开的标签页中搜索所需内容。</translation>
 <translation id="5209320130288484488">未找到任何设备</translation>
+<translation id="5209513429611499188">具有用法页面 <ph name="USAGE_PAGE" /> 中的任一用法的 HID 设备</translation>
 <translation id="5210365745912300556">关闭标签页</translation>
 <translation id="5213114823401215820">重新打开已关闭的群组</translation>
 <translation id="5213481667492808996">您可以使用“<ph name="NAME" />”的数据流量服务了</translation>
@@ -4530,6 +4544,7 @@
 <translation id="5627086634964711283">它还能够控制您点击“主页”按钮后系统显示的页面。</translation>
 <translation id="5627676517703583263">使用 Chrome 进行智能浏览</translation>
 <translation id="5627832140542566187">显示屏方向</translation>
+<translation id="5628393161682339323">当我点击此扩展程序时</translation>
 <translation id="562935524653278697">您的管理员已停止同步您的书签、历史记录、密码及其他设置。</translation>
 <translation id="5631017369956619646">CPU 使用情况</translation>
 <translation id="5632059346822207074">收到了权限请求，按 Ctrl + 前进键即可回复</translation>
@@ -4664,6 +4679,7 @@
 <translation id="5781092003150880845">以<ph name="ACCOUNT_FULL_NAME" />的身份同步</translation>
 <translation id="5781865261247219930">向“<ph name="EXTENSION_NAME" />”发送命令</translation>
 <translation id="5782227691023083829">正在翻译...</translation>
+<translation id="5783304934509327739">网站访问权限选项</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5785583009707899920">Chrome 文件实用程序</translation>
 <translation id="5787146423283493983">密钥协议</translation>
@@ -4714,6 +4730,7 @@
 <translation id="5834581999798853053">约剩 <ph name="TIME" /> 分钟</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 摄像头或麦克风正在录制/录音</translation>
 <translation id="583673505367439042">网站可以请求修改您设备上的文件和文件夹</translation>
+<translation id="583756221537636748">耳机盒</translation>
 <translation id="5840680448799937675">始终离线分享</translation>
 <translation id="5841270259333717135">配置以太网</translation>
 <translation id="5842497610951477805">蓝牙开关</translation>
@@ -5351,6 +5368,7 @@
 <translation id="6499143127267478107">正在解析代理脚本中的主机...</translation>
 <translation id="6499764981457476645">在附近找不到任何设备</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> 想打开这个文件：</translation>
+<translation id="65017764184991091">未能成功备份 Linux 应用和文件。如果您的设备没有足够的可用存储空间，就可能会导致这种情况。请尝试在设备上释放一些空间，或者改为备份到别处。</translation>
 <translation id="6501957628055559556">所有容器</translation>
 <translation id="650266656685499220">如需创建影集，请转至 Google 相册。</translation>
 <translation id="6503077044568424649">常去网站</translation>
@@ -6253,6 +6271,7 @@
 <translation id="7448430327655618736">自动安装应用</translation>
 <translation id="7449752890690775568">移除此密码？</translation>
 <translation id="7450761244949417357">正在<ph name="ALTERNATIVE_BROWSER_NAME" />中打开</translation>
+<translation id="7452166281927983300">已忽略的警告 (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">选择此打印机即表示您允许以下扩展程序访问您的打印机：</translation>
 <translation id="7454548535253569100">门户网站：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">管理额外容器</translation>
@@ -7378,6 +7397,7 @@
 <translation id="8581809080475256101">点按该按钮可前进，点按上下文菜单可查看历史记录</translation>
 <translation id="8584280235376696778">在新标签页中打开视频(&amp;O)</translation>
 <translation id="8584427708066927472">密码已从此设备中删除</translation>
+<translation id="8584843865238667486">具有用法页面 <ph name="USAGE_PAGE" /> 中的用法 <ph name="USAGE" /> 的 HID 设备</translation>
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8585841788766257444">下列网站采用的是自定义设置（而非默认设置）</translation>
 <translation id="8588866096426746242">显示个人资料统计信息</translation>

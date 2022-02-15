@@ -45,6 +45,7 @@
 <translation id="1231733316453485619">Ενεργοποίηση συγχρονισμού;</translation>
 <translation id="123724288017357924">Επαναφ. τρέχ.σελ. αγνοώντας το περιεχ. κρυφ.μνήμης</translation>
 <translation id="1239792311949352652">Κοινοποιήστε γρήγορα αυτήν τη σελίδα. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
+<translation id="1240190568154816272">Συμβουλές για το Chrome</translation>
 <translation id="1240288207750131269">Φόρτωση <ph name="LANG" /></translation>
 <translation id="1242883863226959074">συσκευή</translation>
 <translation id="124678866338384709">Κλείσιμο τρέχουσας καρτέλας</translation>
@@ -165,6 +166,7 @@
 <translation id="2000419248597011803">Στέλνει ορισμένα cookie και αναζητήσεις από τη γραμμή διευθύνσεων και το πλαίσιο αναζήτησης στην προεπιλεγμένη μηχανή αναζήτησης</translation>
 <translation id="200114059308480249">Συμπερίληψη περιβάλλοντος κειμένου στις αναζητήσεις Google;</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Αρχείο}other{# Αρχεία}}</translation>
+<translation id="2015836039326522978">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Επίσης, ισχύει η <ph name="BEGIN_LINK3" />Πολιτική απορρήτου<ph name="END_LINK3" />.</translation>
 <translation id="2020309681647789787">Το ιστορικό σας θα εμφανίζεται σε όλες τις συγχρονισμένες συσκευές, ώστε να μπορείτε να συνεχίζετε ό,τι κάνετε</translation>
 <translation id="2021896219286479412">Στοιχ. ελέγ. σε πλήρη οθόνη</translation>
 <translation id="2038563949887743358">Ενεργοποίηση αιτήματος ιστότοπου για υπολογιστές</translation>
@@ -1157,6 +1159,7 @@
 <translation id="768618399695552958">Ορισμένες από τις σελίδες που επισκέπτεστε έχουν προφορτωθεί. Οι σελίδες μπορεί να προφορτώνονται μέσω των διακομιστών της Google όταν συνδέονται από έναν ιστότοπο Google.</translation>
 <translation id="7698359219371678927">Δημιουργία μηνύματος ηλεκτρονικού ταχυδρομείου στην εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Αυτόματη συμπλήρωση αναζητήσεων και URL</translation>
+<translation id="770741401784017797">Δημιουργία GIF</translation>
 <translation id="7707922173985738739">Χρήση δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="7725024127233776428">Εδώ εμφανίζονται οι σελίδες στις οποίες προσθέτετε σελιδοδείκτη</translation>
 <translation id="7757787379047923882">Το κείμενο κοινοποιήθηκε από τη συσκευή <ph name="DEVICE_NAME" /></translation>
@@ -1222,6 +1225,7 @@
 <translation id="8037750541064988519">Απομένουν <ph name="DAYS" /> ημέρες</translation>
 <translation id="8037801708772278989">Ελέγχθηκε μόλις τώρα</translation>
 <translation id="804335162455518893">Δεν βρέθηκε κάρτα SD</translation>
+<translation id="8046319826565374740">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους<ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Επίσης, ισχύει η <ph name="BEGIN_LINK3" />Πολιτική απορρήτου<ph name="END_LINK3" />.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα ανώνυμης περιήγησης}other{<ph name="TAB_COUNT_NORMAL" /> καρτέλες ανώνυμης περιήγησης}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB διαθέσιμα</translation>
 <translation id="8058655154417507695">Έτος λήξης</translation>

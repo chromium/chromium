@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">Zadanoj tražilici šalje neke kolačiće i pretraživanja iz adresne trake i okvira za pretraživanje</translation>
 <translation id="200114059308480249">Želite li uključiti okolni tekst u Google pretraživanja?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
+<translation id="2015836039326522978">Aplikacija <ph name="APP_NAME" /> otvorit će se u Chromeu. Nastavljanjem prihvaćate <ph name="BEGIN_LINK1" />Googleove uvjete pružanja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uvjete pružanja usluge za Google Chrome i OS Chrome<ph name="END_LINK2" />. Primjenjuju se i <ph name="BEGIN_LINK3" />pravila o privatnosti<ph name="END_LINK3" />.</translation>
 <translation id="2020309681647789787">Vaša će povijest biti na svim vašim sinkroniziranim uređajima kako biste mogli nastaviti ono što radite</translation>
 <translation id="2021896219286479412">Kontrole web-lokacije na cijelom zaslonu</translation>
 <translation id="2038563949887743358">Uključivanje zahtjeva za prikaz klasične web-lokacije</translation>
@@ -1224,6 +1225,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8037750541064988519">Preostalo dana: <ph name="DAYS" /></translation>
 <translation id="8037801708772278989">Provjera je upravo izvršena</translation>
 <translation id="804335162455518893">SD kartica nije pronađena</translation>
+<translation id="8046319826565374740">Korištenjem Chromea prihvaćate <ph name="BEGIN_LINK1" />Googleove uvjete pružanja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uvjete pružanja usluge za Google Chrome i OS Chrome<ph name="END_LINK2" />. Primjenjuju se i <ph name="BEGIN_LINK3" />pravila o privatnosti<ph name="END_LINK3" />.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> anonimna kartica}one{<ph name="TAB_COUNT_NORMAL" /> anonimna kartica}few{<ph name="TAB_COUNT_NORMAL" /> anonimne kartice}other{<ph name="TAB_COUNT_NORMAL" /> anonimnih kartica}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB dostupno</translation>
 <translation id="8058655154417507695">Godina isteka</translation>

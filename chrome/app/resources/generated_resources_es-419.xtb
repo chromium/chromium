@@ -598,6 +598,7 @@
 <translation id="1604432177629086300">No se pudo completar la impresión. Revisa la impresora y vuelve a intentarlo.</translation>
 <translation id="1605744057217831567">Ver todos los datos y permisos de sitios</translation>
 <translation id="1606077700029460857">Cambiar la configuración del mouse</translation>
+<translation id="1606566847233779212">¿Quieres quitar los sitios específicos que agregaste?</translation>
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1607499585984539560">El usuario no está afiliado al dominio</translation>
 <translation id="1608668830839595724">Más acciones para los elementos seleccionados</translation>
@@ -862,6 +863,7 @@
 <translation id="1845727111305721124">Puede reproducir sonido</translation>
 <translation id="1846308012215045257">Presionar Ctrl+clic para ejecutar <ph name="PLUGIN_NAME" /></translation>
 <translation id="184862733444771842">Solicitud de función</translation>
+<translation id="1849016657376805933">Cualquier dispositivo HID</translation>
 <translation id="1849186935225320012">Esta página tiene el control total de los dispositivos MIDI.</translation>
 <translation id="1850145825777333687">Credenciales del dispositivo</translation>
 <translation id="1850508293116537636">Girar &amp;a la derecha</translation>
@@ -995,6 +997,7 @@
 <translation id="1988259784461813694">Requisito</translation>
 <translation id="1989112275319619282">Navegar</translation>
 <translation id="1989113344093894667">No se puede capturar contenido</translation>
+<translation id="1989744123191450103">Falló la copia de seguridad</translation>
 <translation id="1989903373608997757">Usar siempre</translation>
 <translation id="1990046457226896323">Se descargaron los archivos de Subtitulado instantáneo</translation>
 <translation id="1990512225220753005">No se muestran accesos directos en esta página</translation>
@@ -1004,6 +1007,7 @@
 <translation id="1994173015038366702">URL del sitio</translation>
 <translation id="1995916364271252349">Controla qué información pueden usar y mostrar los sitios (ubicación, cámara, ventanas emergentes y más)</translation>
 <translation id="1997616988432401742">Tus certificados</translation>
+<translation id="1997645434968427303">Falló el restablecimiento de la copia de seguridad de Linux. Es posible que Linux no tenga suficiente espacio en el disco. Puedes modificar cuánto espacio en el disco tiene Linux y volver a intentar restablecer la copia de seguridad en la configuración del SO.</translation>
 <translation id="1999115740519098545">Al iniciar</translation>
 <translation id="2000419248597011803">Envía algunas cookies y búsquedas de la barra de direcciones y del cuadro de búsqueda a tu motor de búsqueda predeterminado</translation>
 <translation id="2002109485265116295">En tiempo real</translation>
@@ -2079,6 +2083,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3046178388369461825">Hay muy poco espacio en el disco de Linux</translation>
 <translation id="3046910703532196514">Página web, completa</translation>
 <translation id="304747341537320566">Motores de voz</translation>
+<translation id="3048336643003835855">Dispositivos HID del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Registros de dispositivo y transmisión</translation>
 <translation id="3051250416341590778">Tamaño de la pantalla</translation>
 <translation id="3053013834507634016">Uso de la clave del certificado</translation>
@@ -2506,6 +2511,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3511307672085573050">Copiar la dir&amp;ección del vínculo</translation>
 <translation id="351152300840026870">Fuente de ancho fijo</translation>
 <translation id="3511528412952710609">Breve</translation>
+<translation id="3514011352559420398">Falló el restablecimiento</translation>
 <translation id="3514335087372914653">Control de juegos</translation>
 <translation id="3514373592552233661">Se utilizarán las redes preferidas en lugar de otras conocidas si hay más de una disponible</translation>
 <translation id="3515983984924808886">Vuelve a tocar tu llave de seguridad para confirmar el restablecimiento. Se borrará toda la información almacenada en la llave de seguridad, incluido su PIN.</translation>
@@ -3174,6 +3180,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4180788401304023883">¿Eliminar Entidad del certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4184803915913850597">Dispositivo HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">Arrastrar para mover una pantalla</translation>
 <translation id="4187424053537113647">Configurando <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Destacar el enfoque del teclado</translation>
@@ -3667,6 +3674,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4699357559218762027">(con inicio automático)</translation>
 <translation id="4701025263201366865">Se requiere el acceso del padre o la madre</translation>
 <translation id="4701335814944566468">Visto ayer</translation>
+<translation id="4707337002099455863">Siempre en todos los sitios</translation>
 <translation id="4708794300267213770">Mostrar la pantalla bloqueada al salir del modo de suspensión</translation>
 <translation id="4708849949179781599">Salir <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
@@ -4131,6 +4139,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5208548918290612795">Almacenamiento del token de autenticación de <ph name="WEB_DRIVE" /></translation>
 <translation id="520902706163766447">Habilita un cuadro emergente en la parte superior de la IU de Chrome para realizar búsquedas en las pestañas abiertas actualmente.</translation>
 <translation id="5209320130288484488">No se encontraron dispositivos.</translation>
+<translation id="5209513429611499188">Dispositivos HID con usos de la página de uso <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5213114823401215820">Volver a abrir el grupo cerrado</translation>
 <translation id="5213481667492808996">Ya puedes usar tu servicio de datos de "<ph name="NAME" />"</translation>
@@ -4537,6 +4546,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5627086634964711283">También controla qué página se muestra al hacer clic en el botón de página principal.</translation>
 <translation id="5627676517703583263">Navega de forma inteligente con Chrome</translation>
 <translation id="5627832140542566187">Orientación de la pantalla</translation>
+<translation id="5628393161682339323">Cuando hago clic en la extensión</translation>
 <translation id="562935524653278697">Tu administrador inhabilitó la sincronización de tus favoritos, historial, contraseñas y otras opciones de configuración.</translation>
 <translation id="5631017369956619646">Uso de la CPU</translation>
 <translation id="5632059346822207074">Se solicitó un permiso; para responder, presiona Ctrl + flecha hacia adelante</translation>
@@ -4671,6 +4681,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Enviar comandos a <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
+<translation id="5783304934509327739">Opción de acceso a sitios</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5785583009707899920">Utilidades de archivos de Chrome</translation>
 <translation id="5787146423283493983">Acuerdo de claves</translation>
@@ -4721,6 +4732,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5834581999798853053">Faltan aproximadamente <ph name="TIME" /> minutos.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: La cámara o el micrófono están grabando</translation>
 <translation id="583673505367439042">Permitir que los sitios soliciten permiso para editar archivos y carpetas del dispositivo</translation>
+<translation id="583756221537636748">Caso</translation>
 <translation id="5840680448799937675">Los archivos siempre se compartirán sin conexión</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5842497610951477805">Activación de Bluetooth</translation>
@@ -5358,6 +5370,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6499143127267478107">Resolviendo host en secuencia de comandos de proxy...</translation>
 <translation id="6499764981457476645">No se encontraron dispositivos cercanos</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> desea abrir este archivo:</translation>
+<translation id="65017764184991091">Falló la copia de seguridad de las apps y los archivos de Linux. Esto puede suceder si el dispositivo no tiene suficiente espacio de almacenamiento disponible. Intenta liberar espacio en tu dispositivo o seleccionar una ubicación diferente para crear la copia de seguridad.</translation>
 <translation id="6501957628055559556">Todos los contenedores</translation>
 <translation id="650266656685499220">Para crear álbumes, ve a Google Fotos</translation>
 <translation id="6503077044568424649">Más visitados</translation>
@@ -7387,6 +7400,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8581809080475256101">Presiona para avanzar; usa el menú contextual para consultar el historial</translation>
 <translation id="8584280235376696778">Abrir video en una nueva pestaña</translation>
 <translation id="8584427708066927472">Se borró la contraseña de este dispositivo</translation>
+<translation id="8584843865238667486">Dispositivos HID con <ph name="USAGE" /> uso de la página de uso <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Quitar Crostini</translation>
 <translation id="8585841788766257444">Los sitios que se mencionan a continuación usan una configuración personalizada en lugar de la predeterminada</translation>
 <translation id="8588866096426746242">Mostrar estadísticas del perfil</translation>

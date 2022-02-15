@@ -501,6 +501,7 @@
 <translation id="1506061864768559482">সার্চ ইঞ্জিন</translation>
 <translation id="1507170440449692343">এই পৃষ্ঠাটিকে আপনার ক্যামেরা অ্যাক্সেস করা থেকে অবরুদ্ধ করা হয়েছে৷</translation>
 <translation id="1507246803636407672">এবং পরিত্যাগ</translation>
+<translation id="1507884455975553832">স্ট্রিম মেসেজিং অ্যাপ</translation>
 <translation id="1509163368529404530">&amp;গ্রুপ আবার আগের অবস্থায় ফিরিয়ে আনুন</translation>
 <translation id="1509281256533087115">USB এর মাধ্যমে যেকোনো <ph name="DEVICE_NAME_AND_VENDOR" /> অ্যাক্সেস করুন</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
@@ -603,6 +604,7 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" />-কে পেয়ার তালিকা থেকে সরিয়ে দিন</translation>
 <translation id="1603914832182249871">(ছদ্মবেশী)</translation>
 <translation id="1604432177629086300">প্রিন্ট করা যায়নি। প্রিন্টার চেক করে নিয়ে আবার চেষ্টা করুন।</translation>
+<translation id="1604576689725077412">মনে রাখবেন, আপনার Chromebook-এ বিজ্ঞপ্তি বাতিল করলে আপনার ফোনেও সেগুলি বাতিল হয়ে যাবে।</translation>
 <translation id="1605744057217831567">সব সাইটের ডেটা এবং অনুমতি দেখুন</translation>
 <translation id="1606077700029460857">মাউসের সেটিংস পরিবর্তন করুন</translation>
 <translation id="1606566847233779212">আপনার যোগ করা নির্দিষ্ট সাইট সরিয়ে দেবেন?</translation>
@@ -713,6 +715,7 @@
 <translation id="1697150536837697295">শিল্পকলা</translation>
 <translation id="1697686431566694143">ফাইল এডিট করতে পারবে</translation>
 <translation id="1700079447639026019">এমন সাইট যা কখনও কুকি ব্যবহার করে না</translation>
+<translation id="1700201317341192482">আপনার ভার্চুয়াল কার্ড সরিয়ে দিন</translation>
 <translation id="1703331064825191675">আপনার পাসওয়ার্ড সম্পর্কে কখনও চিন্তা করবেন না</translation>
 <translation id="1703666494654169921">সাইটগুলিকে ভার্চুয়াল রিয়েলিটি ডিভাইস বা ডেটা ব্যবহার করার অনুমতি দেয় না</translation>
 <translation id="1704097193565924901">বড় হাতের করুন</translation>
@@ -1034,6 +1037,7 @@
 <translation id="2006638907958895361"><ph name="APP" />-এ লিঙ্ক খুলুন</translation>
 <translation id="2007404777272201486">কোনও সমস্যা অভিযোগ করুন...</translation>
 <translation id="2010501376126504057">মানানসই ডিভাইস</translation>
+<translation id="2011968031299471357">মেসেজ রিসিভ করে তাতে প্রতিক্রিয়া জানান</translation>
 <translation id="2015232545623037616">PC ও Chromecast একই ওয়াই-ফাই নেটওয়ার্কে আছে</translation>
 <translation id="2016473077102413275">যেসব ফিচার ব্যবহার করার জন্য ছবি প্রয়োজন সেগুলি কাজ করবে না</translation>
 <translation id="2016574333161572915">আপনার Google Meet হার্ডওয়্যার সেট-আপ করার জন্য রেডি</translation>
@@ -1274,6 +1278,7 @@
 <translation id="2241053333139545397">কয়েকটি ওয়েবসাইটে আপনার ডেটা পড়ুন এবং পরিবর্তন করুন</translation>
 <translation id="2241634353105152135">শুধুমাত্র একবার</translation>
 <translation id="2242687258748107519">ফাইল তথ্য</translation>
+<translation id="2243381895573964397">ফোন সংক্রান্ত বিজ্ঞপ্তি পান</translation>
 <translation id="2246549592927364792">Google থেকে ছবির বিবরণ পেতে চান?</translation>
 <translation id="2247738527273549923">আপনার সংস্থা এই ডিভাইস ম্যানেজ করে</translation>
 <translation id="2249111429176737533">ট্যাবযুক্ত উইন্ডো হিসেবে খুলুন</translation>
@@ -2094,6 +2099,7 @@
 <translation id="3036546437875325427">Flash সক্ষম করুন</translation>
 <translation id="3037754279345160234">ডোমেনে যোগ করার জন্য প্রয়োজনীয় কনফিগারেশন পার্স করা যাচ্ছে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="3038612606416062604">নিজ হাতে একটি প্রিন্টার যোগ করুন</translation>
+<translation id="3039409644314251320">কথোপকথন দেখুন, মেসেজে প্রতিক্রিয়া জানান এবং গ্রুপ চ্যাটে ব্যক্তিদের যোগ করুন</translation>
 <translation id="3039491566278747710">ডিভাইসে অফলাইন নীতি ইনস্টল করা যায়নি।</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> থেকে</translation>
@@ -2631,6 +2637,7 @@
 <translation id="362266093274784978">{COUNT,plural, =1{একটি অ্যাপ}one{#টি অ্যাপ}other{#টি অ্যাপ}}</translation>
 <translation id="362333465072914957">চার্টার্ড অ্যাকাউন্ট্যান্টের জন্য অপেক্ষা করা হচ্ছে যাতে তিনি একটি সার্টিফিকেট ইস্যু করে দেন</translation>
 <translation id="3624567683873126087">ডিভাইস আনলক করে Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
+<translation id="3624583033347146597">থার্ড-পার্টি কুকি পছন্দ বেছে নিন</translation>
 <translation id="3625481642044239431">ভুল ফাইল বেছে নেওয়া হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="3626296069957678981">এই Chromebook চার্জ করতে, একটি মানানসই Dell ব্যাটারি ব্যবহার করুন।</translation>
 <translation id="3627320433825461852">1 মিনিটেরও কম সময় বাকি আছে</translation>
@@ -3314,6 +3321,7 @@
 <translation id="431076611119798497">&amp;বিশদ বিবরণ</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{১টি Google অ্যাকাউন্ট}one{<ph name="EXTRA_ACCOUNTS" />টি Google অ্যাকাউন্ট}other{<ph name="EXTRA_ACCOUNTS" />টি Google অ্যাকাউন্ট}}</translation>
 <translation id="4312866146174492540">অবরুদ্ধ করুন (ডিফল্ট)</translation>
+<translation id="4314497418046265427"><ph name="DEVICE_TYPE" />-এর সাথে আপনার ফোন কানেক্ট করার সময় আরও বেশি প্রোডাক্টিভ হন</translation>
 <translation id="4314815835985389558">সিঙ্ক ম্যানেজ করুন</translation>
 <translation id="4315933848520197627">অ্যাকাউন্ট আনলিঙ্ক করুন</translation>
 <translation id="4316850752623536204">ডেভেলপার ওয়েবসাইট</translation>
@@ -3507,6 +3515,7 @@
 <translation id="4519935350946509010">কানেকশনে সমস্যা।</translation>
 <translation id="4520385623207007473">কুকিগুলি ব্যবহার করা হচ্ছে</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> থেকে অজানা ডিভাইসগুলি</translation>
+<translation id="4522351342209941760">আরও কয়েকটি অনুমতির পর্যালোচনা করার জন্য আপনার ফোনে ইনপুট দিতে হবে।</translation>
 <translation id="4522570452068850558">বিবরণগুলি</translation>
 <translation id="4522600456902129422">সাইটটিকে ক্লিপবোর্ড দেখার অনুমতি চালু রাখুন</translation>
 <translation id="4522890784888918985">বাচ্চার অ্যাকাউন্ট কাজ করে না</translation>
@@ -4822,6 +4831,7 @@
 
   সর্বজনীন প্রকাশক (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> বিট):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">আপনার ফোন এবং <ph name="DEVICE_TYPE" /> কানেক্ট আছে</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="59174027418879706">সক্ষমিত</translation>
 <translation id="5920543303088087579">এই নেটওয়ার্কের সাথে সংযোগ আপনার প্রশাসক দ্বারা অক্ষম করা হয়েছে</translation>
@@ -5362,6 +5372,7 @@
 <translation id="6466258437571594570">সাইটগুলি যাতে আপনাকে বারবার বিজ্ঞপ্তি পাঠানোর অনুমতি চেয়ে বিরক্ত করতে না পারে সেজন্য তাদের ব্লক করা হয়েছে</translation>
 <translation id="6466988389784393586">ও সব বুকমার্ক খুলুন</translation>
 <translation id="6467304607960172345">ফুলস্ক্রিন ভিডিও অপ্টিমাইজ করুন</translation>
+<translation id="6467377768028664108">তারপরে আপনার <ph name="DEVICE_TYPE" />:</translation>
 <translation id="6468485451923838994">হরফগুলি</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" />টি ফাইল</translation>
 <translation id="6469557521904094793">মোবাইল নেটওয়ার্ক চালু করুন</translation>
@@ -6606,6 +6617,7 @@
 <translation id="7754704193130578113">প্রতিটি ফাইল ডাউনলোড করার আগে তা কোথায় সংরক্ষণ করতে হবে জিজ্ঞাসা করুন</translation>
 <translation id="7755287808199759310">আপনার পিতামাতা এটি আপনার জন্য অবরোধ মুক্ত করতে পারবেন</translation>
 <translation id="7757592200364144203">ডিভাইসের নাম পরিবর্তন করুন</translation>
+<translation id="7757739382819740102">আশেপাশের পরিচিতি আপনার সাথে শেয়ার করা যেতে পারে। অনুমোদনের প্রয়োজন।</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> থেকে টেক্সট শেয়ার করা হয়েছে</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">আপনার প্রদর্শনের সীমানাগুলি সমন্বয় করে</translation>
@@ -6672,6 +6684,7 @@
 <translation id="7814458197256864873">&amp;কপি করুন</translation>
 <translation id="7815680994978050279">ক্ষতিকারক ডাউনলোড ব্লক করা হয়েছে</translation>
 <translation id="7817361223956157679">এখনও Linux অ্যাপে স্ক্রিনের কীবোর্ড কাজ করে না।</translation>
+<translation id="7817671927108102061">আপনার ফোনে সেট-আপ শেষ করুন</translation>
 <translation id="7818135753970109980">নতুন থিম জোড়া হয়েছে (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome সিঙ্ক</translation>
 <translation id="7820561748632634942">অতিরিক্ত সুইচ অ্যাসাইন করতে চান?</translation>
@@ -7464,6 +7477,7 @@
 <translation id="8631032106121706562">পাপড়ি</translation>
 <translation id="863109444997383731">বিজ্ঞপ্তি দেখানোর জন্য আপনার কাছে সাইটের অনুমতি চাওয়া ব্লক করা হবে। কোনও সাইট বিজ্ঞপ্তি দেখাতে চাইলে, ব্লক করা আছে বলে অ্যাড্রেস বারে একটি সূচক দেখানো হবে।</translation>
 <translation id="8633025649649592204">সাম্প্রতিক অ্যাক্টিভিটি</translation>
+<translation id="8634348081024879304">Google Pay অ্যাপে আপনার ভার্চুয়াল কার্ড আর ব্যবহার করতে পারবেন না। <ph name="BEGIN_LINK" />ভার্চুয়াল কার্ডের বিষয়ে জানুন<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">আবার লোড করা হচ্ছে...</translation>
 <translation id="8636284842992792762">এক্সটেনশন চালু করা হচ্ছে...</translation>
 <translation id="8636500887554457830">সাইটকে পপ-আপ পাঠানো বা রিডাইরেক্ট ব্যবহার করার অনুমতি দেবেন না</translation>
@@ -7684,6 +7698,7 @@
 <translation id="8838770651474809439">হ্যামবার্গার</translation>
 <translation id="8838778928843281408">ফোন ম্যানেজ করুন</translation>
 <translation id="883911313571074303">ছবি ব্যাখ্যা করুন</translation>
+<translation id="8840427996758894516">আপনার ফোন কাছাকাছি, আনলক অবস্থায় রয়েছে কিনা এবং তাতে ব্লুটুথ আর ওয়াই-ফাই চালু আছে কিনা দেখে নিন।</translation>
 <translation id="8841843049738266382">সাদা তালিকাভুক্ত ব্যবহারকারীদের তালিকা পড়ুন ও পরিবর্তন করুন</translation>
 <translation id="8842594465773264717">এই ফিঙ্গারপ্রিন্ট মুছুন</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>

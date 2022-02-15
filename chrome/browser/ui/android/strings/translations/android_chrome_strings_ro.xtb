@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">Trimite anumite cookie-uri și căutări din bara de adrese și din caseta de căutare în motorul de căutare prestabilit</translation>
 <translation id="200114059308480249">Incluzi text din jur în căutările de pe Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
+<translation id="2015836039326522978"><ph name="APP_NAME" /> se va deschide în Chrome. Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome<ph name="END_LINK2" />. Se aplică și <ph name="BEGIN_LINK3" />Politica de confidențialitate<ph name="END_LINK3" />.</translation>
 <translation id="2020309681647789787">Istoricul apare pe toate dispozitivele tale sincronizate. Astfel, poți continua ceea ce făceai</translation>
 <translation id="2021896219286479412">Comenzi site în ecran complet</translation>
 <translation id="2038563949887743358">Activează opțiunea Versiune site pentru desktop</translation>
@@ -1224,6 +1225,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8037750541064988519"><ph name="DAYS" /> zile rămase</translation>
 <translation id="8037801708772278989">A rulat adineauri</translation>
 <translation id="804335162455518893">Nu s-a găsit cardul SD</translation>
+<translation id="8046319826565374740">Dacă folosești Chrome, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome<ph name="END_LINK2" />. Se aplică și <ph name="BEGIN_LINK3" />Politica de confidențialitate<ph name="END_LINK3" />.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> filă incognito}few{<ph name="TAB_COUNT_NORMAL" /> file incognito}other{<ph name="TAB_COUNT_NORMAL" /> de file incognito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MO disponibili</translation>
 <translation id="8058655154417507695">Anul expirării</translation>

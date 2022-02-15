@@ -220,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;আপোনাৰ ডিভাইচৰ তাৰিখ আৰু সময় (<ph name="DATE_AND_TIME" />) অশুদ্ধ হোৱাৰ বাবে <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />লৈ কোনো ব্যক্তিগত সংযোগ স্থাপন কৰিব নোৱাৰি।&lt;/p&gt;
 
       &lt;p&gt;অনুগ্ৰহ কৰি &lt;strong&gt;ছেটিংছ&lt;/strong&gt; এপৰ &lt;strong&gt;সাধাৰণ&lt;/strong&gt; অংশত তাৰিখ আৰু সময় মিলাওক।&lt;/p&gt;</translation>
+<translation id="1559839503761818503">আপোনাৰ প্ৰশাসকে আপোনাৰ ডিভাইচটো <ph name="DATE" />ৰ <ph name="TIME" />ত ৰিষ্টার্ট কৰিব</translation>
 <translation id="156703335097561114">ঠিকনা, ইণ্টাৰফে’চৰ কনফিগাৰেশ্বন আৰু সংযোগৰ গুণগত মানৰ দৰে নেটৱৰ্কিঙৰ তথ্য</translation>
 <translation id="1567040042588613346">এই নীতিটোৱে বিচৰা ধৰণে কাম কৰি আছে, কিন্তু অন্য কোনো ঠাইত একেটা মান ছেট কৰা হৈছে আৰু সেইটোক এই নীতিটোৱে অপসাৰণ কৰিছে।</translation>
 <translation id="1569487616857761740">ম্যাদ উকলাৰ তাৰিখ দিয়ক</translation>
@@ -1971,6 +1972,7 @@
 <translation id="7304562222803846232">Google একাউণ্টৰ গোপনীয়তাৰ ছেটিং পৰিচালনা কৰক</translation>
 <translation id="7305756307268530424">লেহেমীয়া গতি আৰম্ভ কৰক</translation>
 <translation id="7308436126008021607">নেপথ্যত ছিংক কৰা</translation>
+<translation id="7310392214323165548">ডিভাইচটো শীঘ্ৰেই ৰিষ্টার্ট হ’ব</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">সংযোগ সম্পৰ্কীয় সহায়</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" শাখাটো লুকুৱাওক</translation>

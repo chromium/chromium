@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Il valore deve essere superiore o uguale a <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Pulsante di opzione non selezionato. Nel gruppo, l'opzione <ph name="INDEX" /> di <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Inserisci una parte seguita da "<ph name="ATSIGN" />". Il valore "<ph name="INVALIDADDRESS" />" è incompleto.</translation>
 <translation id="5334352251556557839">Impossibile riprodurre i contenuti multimediali.</translation>
 <translation id="537648784377940524">Il termine minimo (<ph name="MIN_DATE_OR_TIME" />) deve essere precedente al termine massimo (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Altro...</translation>
 <translation id="6709093583001123835">Il valore deve essere <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Scarsa qualità di riproduzione</translation>
+<translation id="6719914554879143100">Pulsante di opzione selezionato. Nel gruppo, l'opzione <ph name="INDEX" /> di <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6820355525329141109">Impossibile caricare il plug-in</translation>
 <translation id="6831465880655513317">Selettore colori con dispositivo di scorrimento bidimensionale per selezionare saturazione e luminosità</translation>

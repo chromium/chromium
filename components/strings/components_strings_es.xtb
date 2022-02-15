@@ -166,6 +166,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="142858679511221695">Usuario de la nube</translation>
 <translation id="1428729058023778569">Si ves esta advertencia, significa que este sitio no es compatible con HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1432187715652018471">página quiere instalar un controlador de servicios.</translation>
 <translation id="1432581352905426595">Gestionar buscadores</translation>
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas de tu dispositivo</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
@@ -219,6 +220,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1559572115229829303">&lt;p&gt;No se puede establecer una conexión privada con <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque la fecha y la hora de tu dispositivo (<ph name="DATE_AND_TIME" />) no son correctas.&lt;/p&gt;
 
       &lt;p&gt;Ajusta la fecha y la hora en la sección &lt;strong&gt;General&lt;/strong&gt; de la aplicación &lt;strong&gt;Configuración&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Tu administrador reiniciará tu dispositivo a las <ph name="TIME" /> el <ph name="DATE" /></translation>
 <translation id="156703335097561114">Información de redes como las direcciones, la configuración de la interfaz y la calidad de la conexión</translation>
 <translation id="1567040042588613346">Esta política funciona según lo previsto, pero ha sustituido el mismo valor definido en otra parte.</translation>
 <translation id="1569487616857761740">Introducir fecha de vencimiento</translation>
@@ -1975,6 +1977,7 @@ Más información:
 <translation id="7304562222803846232">Gestionar configuración de privacidad de la cuenta de Google</translation>
 <translation id="7305756307268530424">Empezar más lento</translation>
 <translation id="7308436126008021607">sincronización en segundo plano</translation>
+<translation id="7310392214323165548">El dispositivo se reiniciará en breve</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ayuda para la conexión</translation>
 <translation id="7323804146520582233">Ocultar la sección "<ph name="SECTION" />"</translation>

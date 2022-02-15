@@ -166,6 +166,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="142858679511221695">Notandi í skýi</translation>
 <translation id="1428729058023778569">Þessi viðvörun birtist vegna þess að þetta vefsvæði styður ekki HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Prenta</translation>
+<translation id="1432187715652018471">síða vill setja upp þjónustuhjálparforrit.</translation>
 <translation id="1432581352905426595">Stjórna leitarvélum</translation>
 <translation id="1436185428532214179">Getur beðið um leyfi til að breyta skrám og möppum í tækinu þínu</translation>
 <translation id="1442386063175183758">Túristabrot hægra megin</translation>
@@ -219,6 +220,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1559572115229829303">&lt;p&gt;Ekki er hægt að koma á lokaðri tengingu við <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> vegna þess að dag- og tímasetning tækisins (<ph name="DATE_AND_TIME" />) er röng.&lt;/p&gt;
 
           &lt;p&gt;Stilltu dagsetningu og tíma í hlutanum &lt;strong&gt;Almennt&lt;/strong&gt; í forritinu &lt;strong&gt;Stillingar&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Stjórnandinn þinn endurræsir tækið klukkan <ph name="TIME" /> <ph name="DATE" /></translation>
 <translation id="156703335097561114">Upplýsingar um netkerfi á borð við vefföng, stillingar viðmóts og gæði tengingar</translation>
 <translation id="1567040042588613346">Þessi regla virkar sem skyldi en sama gildi er stillt annars staðar og þessi regla leysir það af hólmi.</translation>
 <translation id="1569487616857761740">Sláðu inn lokadagsetningu</translation>
@@ -1975,6 +1977,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7304562222803846232">Stjórna persónuverndarstillingum Google reikningsins</translation>
 <translation id="7305756307268530424">Ræsa hægari útgáfu</translation>
 <translation id="7308436126008021607">samstillingu í bakgrunni</translation>
+<translation id="7310392214323165548">Tækið verður endurræst bráðlega</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Tengingarhjálp</translation>
 <translation id="7323804146520582233">Fela hlutann „<ph name="SECTION" />“</translation>

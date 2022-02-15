@@ -840,6 +840,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8591976964826315682">Block third-party cookies in Incognito</translation>
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8620640915598389714">Edit</translation>
+<translation id="8626393685701737946">You can change the default site view to desktop in Settings &gt; Content Settings</translation>
 <translation id="863090005774946393">Your browser is managed by your organisation. Some features may be disabled.</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8654802032646794042">Cancel</translation>
@@ -859,6 +860,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8803639129939845298">Secure</translation>
 <translation id="8806823403540278281">Your organisation requires you to browse privately. Tabs aren't saved in Incognito mode.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="8810413591309742901">Default site view</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8840513115188359703">You won't be signed out of your Google Account.</translation>
 <translation id="8843129975935593190">Your organisation limits what you can sync.</translation>

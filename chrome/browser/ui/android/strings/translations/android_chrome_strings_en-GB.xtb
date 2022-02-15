@@ -165,6 +165,7 @@
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# Files}}</translation>
+<translation id="2015836039326522978"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Policy<ph name="END_LINK3" /> also applies.</translation>
 <translation id="2020309681647789787">You’ll have your history on all your synced devices, so you can continue what you were doing</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
@@ -1222,6 +1223,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8037750541064988519"><ph name="DAYS" /> days left</translation>
 <translation id="8037801708772278989">Checked just now</translation>
 <translation id="804335162455518893">SD card not found</translation>
+<translation id="8046319826565374740">By using Chrome, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />privacy policy<ph name="END_LINK3" /> also applies.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito tab}other{<ph name="TAB_COUNT_NORMAL" /> incognito tabs}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB available</translation>
 <translation id="8058655154417507695">Expiry year</translation>

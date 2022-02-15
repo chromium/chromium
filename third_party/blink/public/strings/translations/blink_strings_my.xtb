@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">တန်ဖိုးမှာ <ph name="MINIMUM" /> ထက်ကြီး သို့မဟုတ် တူညီရမည်။</translation>
 <translation id="5196716972587102051">၂</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">အမှန်ခြစ်မထားပါ။ အုပ်စု၌ ရွေးချယ်မှု <ph name="COUNT" /> ခု အနက် <ph name="INDEX" /> ခု</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' ၏နောက်တွင် တစ်ပိုင်း ရိုက်ထည့်ပါ။ '<ph name="INVALIDADDRESS" />' က မပြည့်စုံပါ။</translation>
 <translation id="5334352251556557839">မီဒီယာ ဖွင့်၍ မရပါ။</translation>
 <translation id="537648784377940524">အနည်းဆုံးရက်စွဲ (<ph name="MIN_DATE_OR_TIME" />) သည် အများဆုံးရက်စွဲ (<ph name="MAX_DATE_OR_TIME" />) အရင် ဖြစ်ရပါမည်။</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">အခြား...</translation>
 <translation id="6709093583001123835">တန်ဖိုးမှာ <ph name="VALUE" /> ဖြစ်ရမည်။</translation>
 <translation id="6709570249143506788">ဆိုးရွားသော ဗီဒီယို အရည်အသွေး</translation>
+<translation id="6719914554879143100">အမှန်ခြစ်ထားသည်။ အုပ်စု၌ ရွေးချယ်မှု <ph name="COUNT" /> ခု အနက် <ph name="INDEX" /> ခု</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6820355525329141109">ပလတ်အင်ကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="6831465880655513317">စိုစွတ်ပြည့်ဝမှုနှင့် အလင်းကို ရွေးချယ်ရန် နှစ်ဘက်မြင်ဆလိုက်ဒါပါသော အရောင်စက်ဝိုင်း</translation>

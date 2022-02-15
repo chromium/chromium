@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalonisht</translation>
 <translation id="1168100932582989117">Serverët e emrave të Google</translation>
+<translation id="1171082344678443012">Arkivë e ngjeshur XZ</translation>
 <translation id="1172970565351728681">Koha e mbetur: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Riemërto</translation>
 <translation id="1173916544412572294">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, detaje</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Formatimi i një disku do të fshijë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
 <translation id="2028997212275086731">Arkiv RAR</translation>
+<translation id="2036414735548252477">Arkivë e ngjeshur LZMA</translation>
 <translation id="2037845485764049925">Rusisht</translation>
 <translation id="2044023416777079300">Modemi nuk është regjistruar</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bajtë</translation>
 <translation id="4880214202172289027">Rrëshqitësi i volumit</translation>
 <translation id="4881695831933465202">Hap</translation>
+<translation id="4886199584824489598">Arkivë e ngjeshur bzip2</translation>
 <translation id="4900532980794411603">Ndaj me Parallels Desktop</translation>
 <translation id="4902546322522096650">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
 <translation id="4905417359854579806">Gati për të rezervuar <ph name="FILE_COUNT" /></translation>
@@ -585,6 +588,7 @@
 <translation id="6055907707645252013">Rrjeti <ph name="NETWORK_TYPE" />, nuk është lidhur</translation>
 <translation id="6074825444536523002">Formulari i Google</translation>
 <translation id="6079871810119356840">Hungarisht me tastierë Qwerty</translation>
+<translation id="6082256976217156453">Arkivë e ngjeshur LZMA</translation>
 <translation id="6096979789310008754">Teksti i kërkimit u fshi, duke treguar të gjithë skedarët dhe dosjet.</translation>
 <translation id="610101264611565198">Po zhvendos <ph name="FILE_NAME" /> në <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Hapësirë</translation>
@@ -841,6 +845,7 @@
 <translation id="8297012244086013755">Kompleti 3 Hangul (pa zhvendosje)</translation>
 <translation id="8299269255470343364">Japonisht</translation>
 <translation id="8300849813060516376">OTASP dështoi</translation>
+<translation id="8308481408797647857">Arkivë e ngjeshur tar XZ</translation>
 <translation id="8312871300878166382">Ngjite në dosje</translation>
 <translation id="8329978297633540474">Tekst i thjeshtë</translation>
 <translation id="8335587457941836791">Zhgozhdo nga rafti</translation>
@@ -949,6 +954,7 @@
 <translation id="943972244133411984">Modifikuar nga</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="947144732524271678">U zgjodh një gamë prej <ph name="ENTRY_COUNT" /> regjistrimesh nga <ph name="FROM_ENTRY_NAME" /> në <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Arkivë e ngjeshur gzip</translation>
 <translation id="965477715979482472">Anglisht (Afrika e Jugut)</translation>
 <translation id="981121421437150478">Jashtë linje</translation>
 <translation id="988685240266037636">Skedari me emrin "<ph name="FILE_NAME" />" ekziston. Dëshiron ta zëvendësosh?</translation>

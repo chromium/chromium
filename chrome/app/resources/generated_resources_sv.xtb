@@ -604,6 +604,7 @@
 <translation id="1604432177629086300">Utskriften misslyckades. Kontrollera skrivaren och försök igen.</translation>
 <translation id="1605744057217831567">Se all webbplatsdata och alla behörigheter</translation>
 <translation id="1606077700029460857">Ändra inställningar för mus</translation>
+<translation id="1606566847233779212">Vill du ta bort specifika webbplatser som du lagt till?</translation>
 <translation id="1607139524282324606">Rensa post</translation>
 <translation id="1607499585984539560">Användaren saknar koppling till domänen</translation>
 <translation id="1608668830839595724">Fler åtgärder för valda objekt</translation>
@@ -876,6 +877,7 @@
 <translation id="1845727111305721124">Får spela upp ljud</translation>
 <translation id="1846308012215045257">Kontroll-klicka för att köra <ph name="PLUGIN_NAME" /></translation>
 <translation id="184862733444771842">Förslag till ny funktion</translation>
+<translation id="1849016657376805933">Alla HID-enheter</translation>
 <translation id="1849186935225320012">Den här sidan har fullständig kontroll över MIDI-enheter.</translation>
 <translation id="1850145825777333687">Användaruppgifter för enheten</translation>
 <translation id="1850508293116537636">Rotera &amp;medurs</translation>
@@ -1010,6 +1012,7 @@
 <translation id="1988259784461813694">Krav</translation>
 <translation id="1989112275319619282">Bläddra</translation>
 <translation id="1989113344093894667">Det gick inte att ta en skärmbild/skärminspelning på innehållet</translation>
+<translation id="1989744123191450103">Säkerhetskopieringen misslyckades</translation>
 <translation id="1989903373608997757">Använd alltid</translation>
 <translation id="1990046457226896323">Röstfilerna har laddats ned</translation>
 <translation id="1990512225220753005">Visa inte genvägar på den här sidan</translation>
@@ -1019,6 +1022,7 @@
 <translation id="1994173015038366702">Webbadress</translation>
 <translation id="1995916364271252349">Styr vilken information webbplatser kan använda och visa (plats, kamera, popup-fönster med mera)</translation>
 <translation id="1997616988432401742">Dina certifikat</translation>
+<translation id="1997645434968427303">Det gick inte att återställa Linux-säkerhetskopian. Det kan bero på att Linux inte har tillräckligt diskutrymme. Du kan ändra hur mycket diskutrymme Linux har och försöka återställa säkerhetskopian igen i inställningarna för operativsystemet.</translation>
 <translation id="1999115740519098545">Vid start</translation>
 <translation id="2000419248597011803">Skickar vissa cookies och sökningar från adressfältet och sökrutan till standardsökmotorn</translation>
 <translation id="2002109485265116295">Realtid</translation>
@@ -1985,6 +1989,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2933632078076743449">Senast uppdaterat</translation>
 <translation id="2934999512438267372">Fullständig kontroll över MIDI-enheter tillåts</translation>
 <translation id="2935225303485967257">Hantera profiler</translation>
+<translation id="2935314715123552088">Inaktivera aktiv eSIM-profil</translation>
 <translation id="2935654492420446828">Lägg till ett skolkonto senare</translation>
 <translation id="2936851848721175671">Säkerhetskopiera och återställ</translation>
 <translation id="2939908794993783865">Ytterligare inaktiva webbplatser</translation>
@@ -2096,6 +2101,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3046178388369461825">Mycket ont om utrymme på Linux-disken</translation>
 <translation id="3046910703532196514">Webbsida, komplett</translation>
 <translation id="304747341537320566">Talmotorer</translation>
+<translation id="3048336643003835855">HID-enheter från leverantören <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Cast- och enhetsloggar</translation>
 <translation id="3051250416341590778">Skärmstorlek</translation>
 <translation id="3053013834507634016">Certifikatnyckelanvändning</translation>
@@ -2523,6 +2529,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3511307672085573050">Kopiera länk&amp;adress</translation>
 <translation id="351152300840026870">Teckensnitt med fast bredd</translation>
 <translation id="3511528412952710609">Kort</translation>
+<translation id="3514011352559420398">Återställningen misslyckades</translation>
 <translation id="3514335087372914653">Spelinställningar</translation>
 <translation id="3514373592552233661">Prioriterade nätverk väljs före andra kända nätverk när det finns flera nätverk tillgängliga</translation>
 <translation id="3515983984924808886">Tryck på säkerhetsnyckeln igen för att bekräfta återställningen. All information som lagras på säkerhetsnyckeln, inklusive dess pinkod, raderas.</translation>
@@ -3132,6 +3139,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4104163789986725820">E&amp;xportera...</translation>
 <translation id="4107048419833779140">Identifiera och mata ut lagringsenheter</translation>
 <translation id="4109135793348361820">Flytta fönster till <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Återställ varning</translation>
 <translation id="4110490973560452005">Nedladdningen är klar: <ph name="FILE_NAME" />. Stega till nedladdningsfältet med Skift+F6.</translation>
 <translation id="4110686435123617899">Välj detta album: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
@@ -3190,6 +3198,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4180788401304023883">Vill du ta bort certifikatet <ph name="CERTIFICATE_NAME" />?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Språk</translation>
+<translation id="4184803915913850597">HID-enhet (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">Flytta skärmar genom att dra dem</translation>
 <translation id="4187424053537113647">Konfigurerar <ph name="APP_NAME" /> …</translation>
 <translation id="4190828427319282529">Markera objekt med tangentbordsfokus</translation>
@@ -3254,6 +3263,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4259388776256904261">Det här kan ta en stund</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> kan vara farlig. Vill du skicka den till Avancerat skydd från Google för genomsökning? Stega till nedladdningsfältet med Skift + F6.</translation>
 <translation id="4261429981378979799">Behörigheter för tillägg</translation>
+<translation id="4262004481148703251">Ignorera varning</translation>
 <translation id="4263223596040212967">Kontrollera tangentbordslayouten och försök igen.</translation>
 <translation id="426564820080660648">Använd Ethernet, wifi eller mobildata om du vill söka efter uppdateringar.</translation>
 <translation id="4266679478228765574">Om mappar tas bort avbryts delningen, men inga filer raderas.</translation>
@@ -3660,6 +3670,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4681453295291708042">Inaktivera Närdelning</translation>
 <translation id="4681930562518940301">Öppna originalbilden i en ny flik</translation>
 <translation id="4682551433947286597">Bakgrunder visas på inloggningsskärmen.</translation>
+<translation id="4682830185876172415">Senaste nedladdningarna</translation>
 <translation id="4683629100208651599">Ändra till gemener</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (standard)</translation>
 <translation id="4684427112815847243">Synkronisera allt</translation>
@@ -3682,6 +3693,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4699357559218762027">(startas automatiskt)</translation>
 <translation id="4701025263201366865">Föräldrainloggning</translation>
 <translation id="4701335814944566468">Visades i går</translation>
+<translation id="4707337002099455863">Alltid på alla webbplatser</translation>
 <translation id="4708794300267213770">Visa låsskärm efter viloläge</translation>
 <translation id="4708849949179781599">Avsluta <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Återställ inställningarna</translation>
@@ -3924,6 +3936,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="496446150016900060">Synkronisera wifi-nätverk med telefonen</translation>
 <translation id="4965808351167763748">Vill du konfigurera den här enheten för Hangouts Meet?</translation>
 <translation id="4966972803217407697">Du använder inkognitoläget</translation>
+<translation id="496742804571665842">Inaktivera eSIM-profiler</translation>
 <translation id="496888482094675990">Med appen Filer kommer du snabbt åt filer som du har sparat på Google Drive, externa lagringsenheter eller din Chrome OS-enhet.</translation>
 <translation id="4971412780836297815">Öppna när nedladdningen är klar</translation>
 <translation id="4971735654804503942">Snabbare, proaktivt skydd mot farliga webbplatser, nedladdningar och tillägg. Du får varningar om lösenordsläckor. Kräver att webbinformationen skickas till Google.</translation>
@@ -4145,6 +4158,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5208548918290612795">Autentiseringstoken sparas för <ph name="WEB_DRIVE" /></translation>
 <translation id="520902706163766447">Aktivera en popup-bubbla i användargränssnittet högst upp i webbläsaren för att söka i flikar som är öppna just nu.</translation>
 <translation id="5209320130288484488">Det gick inte att hitta några enheter</translation>
+<translation id="5209513429611499188">HID-enheter med användning från användningssidan <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Stäng flik</translation>
 <translation id="5213114823401215820">Öppna stängd grupp igen</translation>
 <translation id="5213481667492808996">Datatjänsten <ph name="NAME" /> är klar att använda</translation>
@@ -4551,6 +4565,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5627086634964711283">Det styr också vilken sida som visas när du klickar på hemknappen.</translation>
 <translation id="5627676517703583263">Surfa smart med Chrome</translation>
 <translation id="5627832140542566187">Skärmriktning</translation>
+<translation id="5628393161682339323">När jag klickar på tillägget</translation>
 <translation id="562935524653278697">Administratören har inaktiverat synkronisering av bokmärken, historik, lösenord och andra inställningar.</translation>
 <translation id="5631017369956619646">processoranvändning</translation>
 <translation id="5632059346822207074">Behörighet har begärts, tryck på Ctrl + framåt för att svara</translation>
@@ -4685,6 +4700,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5781092003150880845">Synkronisera till <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Skicka kommandon till <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Översätter...</translation>
+<translation id="5783304934509327739">Alternativ för webbplatsåtkomst</translation>
 <translation id="57838592816432529">Stäng av ljudet</translation>
 <translation id="5785583009707899920">Chromes filverktyg</translation>
 <translation id="5787146423283493983">Nyckelavtal</translation>
@@ -4735,6 +4751,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5834581999798853053">Ca <ph name="TIME" /> minuter kvar</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – kameran eller mikrofonen spelar in</translation>
 <translation id="583673505367439042">Webbplatser får begära tillstånd att redigera filer eller mappar på enheten</translation>
+<translation id="583756221537636748">Fodral</translation>
 <translation id="5840680448799937675">Filer delas alltid offline</translation>
 <translation id="5841270259333717135">Konfigurera Ethernet</translation>
 <translation id="5842497610951477805">Aktivera Bluetooth</translation>
@@ -5372,6 +5389,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6499143127267478107">Slår upp adress i proxyscript</translation>
 <translation id="6499764981457476645">Inga enheter hittades i närheten</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> vill öppna följande fil:</translation>
+<translation id="65017764184991091">Säkerhetskopierar Linux-appar och Linux-filer. Detta kan inträffa om enheten inte har tillräckligt med lagringsutrymme. Testa att frigöra utrymme på enheten eller välj att säkerhetskopiera till en annan plats.</translation>
 <translation id="6501957628055559556">Alla behållare</translation>
 <translation id="650266656685499220">Besök Google Foto om du vill skapa album</translation>
 <translation id="6503077044568424649">Mest besökta</translation>
@@ -6274,6 +6292,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7448430327655618736">Installera appar automatiskt</translation>
 <translation id="7449752890690775568">Vill du ta bort lösenordet?</translation>
 <translation id="7450761244949417357">Öppnas i <ph name="ALTERNATIVE_BROWSER_NAME" /> nu</translation>
+<translation id="7452166281927983300">Ignorerade varningar (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Genom att välja den här skrivaren ger du följande tillägg behörighet att komma åt skrivaren:</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Hantera extra behållare</translation>
@@ -7400,6 +7419,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8581809080475256101">Tryck här om du vill fortsätta till nästa, visa historiken med snabbmenyn</translation>
 <translation id="8584280235376696778">&amp;Öppna video i ny flik</translation>
 <translation id="8584427708066927472">Lösenordet har raderats från den här enheten</translation>
+<translation id="8584843865238667486">HID-enheter med användning <ph name="USAGE" /> från användningssidan <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Ta bort Crostini</translation>
 <translation id="8585841788766257444">Webbplatser som listas nedan följer en anpassad inställning i stället för standardinställningen</translation>
 <translation id="8588866096426746242">Visa profilstatistik</translation>

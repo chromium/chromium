@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Alınmadı - Filtr xətası</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Açar cütüm var</translation>
+<translation id="1442433966118452622">Şəkil mənbəyi</translation>
 <translation id="1451536289672181509">Cihaz klaviaturadır.</translation>
 <translation id="1468664791493211953">Təkliflər</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> bu cihazı idarə edir və fəaliyyətinizə nəzarət edə bilər.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Gündəlik Yenilənmə</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2695514675076754339">8 simvoldan ibarət kilid açma kodunu daxil edin</translation>
+<translation id="2712812801627182647">TLS doğrulama açarı</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP Faza 2 doğrulaması</translation>
 <translation id="2783010256799387990">KEÇDİ</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Alınmadı - Qapı açıqdır</translation>
 <translation id="3283504360622356314">{0,plural, =1{Faylı redaktə edin}other{Faylları redaktə edin}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHs</translation>
+<translation id="3291996639387199448">Açar istiqaməti</translation>
 <translation id="3310640316857623290">DNS gecikməsi icazə verilən həddən xeyli yuxarıdır</translation>
 <translation id="3328783797891415197">Test icra edilir</translation>
 <translation id="3340011300870565703">Sağ qulaqlığın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS parolu güncəllənib</translation>
 <translation id="4773299976671772492">Durmuş</translation>
 <translation id="4782311465517282004">Mətnə sağ düymə ilə toxunduqda və ya toxunub saxladıqda izahlar, tərcümələr və ya vahid çevirmələrini əldə edin</translation>
+<translation id="4793756956024303490">Sıxılma alqoritmi</translation>
 <translation id="4794140124556169553">CPU testi etmək sistem performansınıza təsir göstərə bilər</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> çap işi ləğv edilib</translation>
 <translation id="4813136279048157860">Şəkillərim</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS ayırdetmə dəqiqliyi</translation>
 <translation id="4848429997038228357">İCRA EDİLİR</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}other{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}}</translation>
+<translation id="4873827928179867585">Doğrulama alqoritmi</translation>
 <translation id="4880328057631981605">Giriş nöqtəsi adı</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Dərhal yenisini seçin</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Hesabatı gizlədin</translation>
 <translation id="500920857929044050">Testi dayandırın</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Ekran durğun olduqda fotolar, vaxt, hava və media məlumatları göstərilsin.</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
 <translation id="5049856988445523908">SIM Kilidlənib (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Qrup adı</translation>
@@ -435,6 +441,7 @@
 <translation id="6618744767048954150">İcra olunur</translation>
 <translation id="6620487321149975369">Manual olaraq silinməsə, çap işləri tarixçədə görünəcək</translation>
 <translation id="6643016212128521049">Silin</translation>
+<translation id="6647510110698214773">Şifrələmə alqoritmi</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6692996468359469499">Seçiminizlə bağlı məlumat əldə edin</translation>
 <translation id="6704062477274546131">DNS Həlli</translation>

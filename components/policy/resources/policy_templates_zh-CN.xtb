@@ -1488,6 +1488,7 @@
 <translation id="2650049181907741121">当用户合上屏幕时执行的操作</translation>
 <translation id="2658653824183107970">使用旧版 <ph name="CORS" /> 实现方案（而非新版 <ph name="CORS" />）</translation>
 <translation id="2660846099862559570">从不使用代理</translation>
+<translation id="2661628029848851543">允许受管理的帐号的所有使用情况</translation>
 <translation id="2664391398878045611">“新标签页”页面将不会显示中间槽通知（即使有）</translation>
 <translation id="2664682171745499686">禁止在特定网域中针对相似域名显示警告</translation>
 <translation id="2665422249821137126">在登录屏幕上启用大号光标</translation>
@@ -3156,6 +3157,7 @@
 <translation id="4635284822166984665">设备将于何时（以设备的本地时区表示）开始充电。</translation>
 <translation id="4646739075621507361">报告打印任务</translation>
 <translation id="4649395978608361979">本地打印机目的地</translation>
+<translation id="4650581166828502203">针对在 Chrome 操作系统中将受管理的帐号用作辅助帐号的情况添加限制</translation>
 <translation id="4650759511838826572">停用网址协议架构</translation>
 <translation id="465099050592230505">企业网上应用店网址（已弃用）</translation>
 <translation id="4653465451589191309">如果此政策已启用或未设置，用户便可管理（断开或修改）VPN 连接。如果 VPN 连接是通过 VPN 应用创建的，相应应用内的界面不会受到影响。因此，用户或许仍能使用相应应用修改 VPN 连接。请将此政策与“始终开启的 VPN”功能结合使用，以便管理员决定是否要在启动设备时建立 VPN 连接。
@@ -3595,6 +3597,12 @@
 
       如果此政策未设置或无效，则等同于选择了“为实现版本降级，等待当前版本有可用的稳定版”这一行为选项。</translation>
 <translation id="5229339291699779956">为 Thunderbolt/USB4 外围设备启用 PCIe 隧道，外围设备会将自身的所有功能都发挥到极致</translation>
+<translation id="5233239004553860036">如果此政策设为<ph name="POLICY_VALUE_ALL" />或未设置，系统会允许受管理的帐号的所有使用情况。这可能会导致受管理的帐号成为辅助帐号，从而只能在该帐号作为浏览器配置文件中的主帐号登录时接收政策。
+      在以下情况下，系统将不会强制执行针对帐号设定的政策：
+        -  在操作系统级别将该帐号作为辅助帐号（帐号设置）
+        -  在浏览器配置文件中将该帐号作为辅助帐号
+
+      如果此政策在某个帐号中设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" />，系统将仅允许该帐号作为主帐号登录，而不允许它作为辅助帐号登录。</translation>
 <translation id="523505283826916779">无障碍设置</translation>
 <translation id="5238976843489093540">强制启用快速配对（快速蓝牙配对）。</translation>
 <translation id="52393120393725840">如果此政策已启用，用户便可让 <ph name="PRODUCT_NAME" /> 记住密码并在自己下次登录相应网站时提供密码。
@@ -4230,6 +4238,7 @@
 <translation id="5963752574792883406">端口 990（可在 2022 年 2 月 1 日之前解禁）</translation>
 <translation id="5966615072639944554">允许扩展程序使用 Remote Attestation API</translation>
 <translation id="596732417280023843">证书资料的名称。</translation>
+<translation id="5971999619173368706">禁止在 Chrome 操作系统上将受管理的帐号添加为辅助帐号（会话期间）</translation>
 <translation id="5972538402066550344">允许使用精细报告控件</translation>
 <translation id="5975765799383881158">如果此政策已启用或未设置，用户便可通过依次转到“菜单”&gt;“帮助”&gt;“报告问题”或按下组合键来向 Google 发送反馈。
 

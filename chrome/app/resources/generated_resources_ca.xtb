@@ -601,6 +601,7 @@
 <translation id="1604432177629086300">No s'ha pogut imprimir. Comprova la impressora i torna-ho a provar.</translation>
 <translation id="1605744057217831567">Mostra totes les dades i els permisos dels llocs web</translation>
 <translation id="1606077700029460857">Canvia la configuració del ratolí</translation>
+<translation id="1606566847233779212">Vols suprimir els llocs web específics que has afegit?</translation>
 <translation id="1607139524282324606">Esborra l'entrada</translation>
 <translation id="1607499585984539560">L'usuari no està afiliat al domini</translation>
 <translation id="1608668830839595724">Més accions per als elements seleccionats</translation>
@@ -865,6 +866,7 @@
 <translation id="1845727111305721124">Amb permís per reproduir so</translation>
 <translation id="1846308012215045257">Prem Ctrl+clic per executar <ph name="PLUGIN_NAME" /></translation>
 <translation id="184862733444771842">Sol·licitud de funció</translation>
+<translation id="1849016657376805933">Qualsevol dispositiu d'interfície humana</translation>
 <translation id="1849186935225320012">Aquesta pàgina té un control total dels dispositius MIDI.</translation>
 <translation id="1850145825777333687">Credencials del dispositiu</translation>
 <translation id="1850508293116537636">Gira en el sentit de les &amp;agulles del rellotge</translation>
@@ -998,6 +1000,7 @@
 <translation id="1988259784461813694">Requisit</translation>
 <translation id="1989112275319619282">Examina</translation>
 <translation id="1989113344093894667">No es pot capturar contingut</translation>
+<translation id="1989744123191450103">S'ha produït un error en fer la còpia de seguretat</translation>
 <translation id="1989903373608997757">Utilitza sempre</translation>
 <translation id="1990046457226896323">S'han baixat els fitxers de veu</translation>
 <translation id="1990512225220753005">No mostris dreceres en aquesta pàgina</translation>
@@ -1007,6 +1010,7 @@
 <translation id="1994173015038366702">URL del lloc web</translation>
 <translation id="1995916364271252349">Controlen la informació que els llocs web poden fer servir i mostrar (ubicació, càmera, finestres emergents i més)</translation>
 <translation id="1997616988432401742">Els meus certificats</translation>
+<translation id="1997645434968427303">S'ha produït un error en restaurar la còpia de seguretat de Linux. Pot ser que això passi perquè Linux no té prou espai de disc. Pots canviar la quantitat d'espai de disc que té Linux i provar de tornar a restaurar la còpia de seguretat a la configuració del SO.</translation>
 <translation id="1999115740519098545">A l'inici</translation>
 <translation id="2000419248597011803">Envia al motor de cerca predeterminat algunes galetes i cerques de la barra d'adreces i del quadre de cerca</translation>
 <translation id="2002109485265116295">En temps real</translation>
@@ -1969,6 +1973,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2933632078076743449">Darrera actualització</translation>
 <translation id="2934999512438267372">Es permet el control total dels dispositius MIDI</translation>
 <translation id="2935225303485967257">Gestiona els perfils</translation>
+<translation id="2935314715123552088">Desactiva el perfil d'eSIM actiu</translation>
 <translation id="2935654492420446828">Afegeix un compte de centre educatiu més endavant</translation>
 <translation id="2936851848721175671">Còpia de seguretat i restauració</translation>
 <translation id="2939908794993783865">Llocs web inactius addicionals</translation>
@@ -2080,6 +2085,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3046178388369461825">Queda molt poc espai de disc de Linux</translation>
 <translation id="3046910703532196514">Pàgina web completa</translation>
 <translation id="304747341537320566">Motors de veu</translation>
+<translation id="3048336643003835855">Dispositius d'interfície humana del proveïdor <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Registres d'emissions i dispositius</translation>
 <translation id="3051250416341590778">Mida de la pantalla</translation>
 <translation id="3053013834507634016">Ús de claus de certificat</translation>
@@ -2507,6 +2513,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3511307672085573050">Copia l'adr&amp;eça de l'enllaç</translation>
 <translation id="351152300840026870">Tipus de lletra amb amplada fixa</translation>
 <translation id="3511528412952710609">Curt</translation>
+<translation id="3514011352559420398">S'ha produït un error en restaurar la còpia de seguretat</translation>
 <translation id="3514335087372914653">Control de jocs</translation>
 <translation id="3514373592552233661">Les xarxes preferides tindran preferència sobre altres xarxes conegudes si n'hi ha més d'una disponible.</translation>
 <translation id="3515983984924808886">Torna a tocar la clau de seguretat per confirmar el restabliment. Se suprimirà tota la informació desada a la clau de seguretat, inclòs el PIN.</translation>
@@ -3115,6 +3122,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4104163789986725820">E&amp;xporta...</translation>
 <translation id="4107048419833779140">Identificar i expulsar els dispositius d'emmagatzematge</translation>
 <translation id="4109135793348361820">Mou la finestra a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Restaura l'advertiment</translation>
 <translation id="4110490973560452005">S'ha completat la baixada: <ph name="FILE_NAME" />. Prem Maj+F6 per anar a l'àrea de la barra de baixades.</translation>
 <translation id="4110686435123617899">Selecciona l'àlbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sense connexió)</translation>
@@ -3173,6 +3181,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4180788401304023883">Voleu suprimir el certificat de CA "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomes</translation>
+<translation id="4184803915913850597">Dispositiu d'interfície humana (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">Arrossega una pantalla per moure-la</translation>
 <translation id="4187424053537113647">S'està configurant <ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">Marca el focus del teclat</translation>
@@ -3237,6 +3246,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4259388776256904261">La configuració pot tardar una estona</translation>
 <translation id="4260182282978351200">El fitxer <ph name="FILE_NAME" /> pot ser perillós. Vols enviar-lo a la Protecció avançada de Google perquè l'analitzi? Prem Maj+F6 per anar a l'àrea de la barra de baixades.</translation>
 <translation id="4261429981378979799">Permisos d'extensions</translation>
+<translation id="4262004481148703251">Ignora l'advertiment</translation>
 <translation id="4263223596040212967">Comprova la disposició del teclat i torna-ho a provar.</translation>
 <translation id="426564820080660648">Per comprovar si hi ha actualitzacions, feu servir Ethernet, Wi-Fi o dades mòbils.</translation>
 <translation id="4266679478228765574">En suprimir carpetes, es deixen de compartir, però no se'n suprimeixen els fitxers.</translation>
@@ -3642,6 +3652,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4681453295291708042">Desactiva Compartició Nearby</translation>
 <translation id="4681930562518940301">Obre la &amp;imatge original en una pestanya nova</translation>
 <translation id="4682551433947286597">Els fons de pantalla apareixen a la pantalla d'inici de sessió.</translation>
+<translation id="4682830185876172415">Baixades recents</translation>
 <translation id="4683629100208651599">Canvia a minúscules</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (opció predeterminada)</translation>
 <translation id="4684427112815847243">Sincronitza-ho tot</translation>
@@ -3664,6 +3675,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4699357559218762027">(inici automàtic)</translation>
 <translation id="4701025263201366865">Inici de sessió dels pares</translation>
 <translation id="4701335814944566468">Es va veure ahir</translation>
+<translation id="4707337002099455863">Sempre en tots els llocs web</translation>
 <translation id="4708794300267213770">Mostra la pantalla de bloqueig en reactivar el dispositiu</translation>
 <translation id="4708849949179781599">Surt de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaura la configuració</translation>
@@ -3906,6 +3918,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="496446150016900060">Sincronitzar les xarxes Wi‑Fi amb el teu telèfon.</translation>
 <translation id="4965808351167763748">Confirmes que vols configurar aquest dispositiu perquè executi Hangouts Meet?</translation>
 <translation id="4966972803217407697">Estàs en mode d'incògnit</translation>
+<translation id="496742804571665842">Desactiva els perfils d'eSIM</translation>
 <translation id="496888482094675990">L'aplicació Fitxers permet accedir ràpidament als fitxers desats a Google Drive, a l'emmagatzematge extern o al dispositiu Chrome OS.</translation>
 <translation id="4971412780836297815">Obre quan acabi</translation>
 <translation id="4971735654804503942">Protecció més ràpida i proactiva contra llocs web, baixades i extensions perillosos. T'avisa sobre violacions de les contrasenyes. Requereix que les dades de navegació s'enviïn a Google.</translation>
@@ -4127,6 +4140,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5208548918290612795">S'emmagatzemarà el testimoni d'autenticació de: <ph name="WEB_DRIVE" /></translation>
 <translation id="520902706163766447">Activa un quadre emergent a la part superior de la interfície d'usuari de Chrome per fer cerques a les pestanyes que estiguin obertes.</translation>
 <translation id="5209320130288484488">No s'ha trobat cap dispositiu</translation>
+<translation id="5209513429611499188">Dispositius d'interfície humana amb usos de la pàgina d'ús <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Tanca la pestanya</translation>
 <translation id="5213114823401215820">Torna a obrir el grup tancat</translation>
 <translation id="5213481667492808996">Ja pots utilitzar el servei de dades <ph name="NAME" /></translation>
@@ -4535,6 +4549,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5627086634964711283">També controla la pàgina que es mostra quan feu clic al botó d'inici.</translation>
 <translation id="5627676517703583263">Navega de manera intel·ligent amb Chrome</translation>
 <translation id="5627832140542566187">Orientació de la pantalla</translation>
+<translation id="5628393161682339323">Quan faci clic a l'extensió</translation>
 <translation id="562935524653278697">L'administrador ha desactivat la sincronització de les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració.</translation>
 <translation id="5631017369956619646">Ús de la CPU</translation>
 <translation id="5632059346822207074">S'ha sol·licitat permís, prem Ctrl+Endavant per respondre</translation>
@@ -4669,6 +4684,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5781092003150880845">Sincronitza com a <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Envia les ordres a <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">S'està traduint...</translation>
+<translation id="5783304934509327739">Opció d'accés al lloc web</translation>
 <translation id="57838592816432529">Silencia</translation>
 <translation id="5785583009707899920">Utilitats per a fitxers de Chrome</translation>
 <translation id="5787146423283493983">Acord de clau</translation>
@@ -4719,6 +4735,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5834581999798853053">Queda cosa de <ph name="TIME" /> minuts</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: la càmera o el micròfon estan enregistrant contingut</translation>
 <translation id="583673505367439042">Els llocs web poden demanar permís per editar fitxers i carpetes del dispositiu</translation>
+<translation id="583756221537636748">Cas</translation>
 <translation id="5840680448799937675">Els fitxers es compartiran sempre sense connexió</translation>
 <translation id="5841270259333717135">Configura Ethernet</translation>
 <translation id="5842497610951477805">Activa el Bluetooth</translation>
@@ -5356,6 +5373,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6499143127267478107">S'està resolent l'amfitrió de l'script del servidor intermediari...</translation>
 <translation id="6499764981457476645">No s'ha trobat cap dispositiu a prop</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> vol obrir aquest fitxer:</translation>
+<translation id="65017764184991091">S'ha produït un error en fer una còpia de seguretat de les aplicacions i dels fitxers de Linux. Això pot passar si el teu dispositiu no té prou espai d'emmagatzematge lliure. Prova d'alliberar espai al dispositiu o tria una ubicació diferent per a la còpia de seguretat.</translation>
 <translation id="6501957628055559556">Tots els contenidors</translation>
 <translation id="650266656685499220">Per crear àlbums, ves a Google Fotos</translation>
 <translation id="6503077044568424649">Els més visitats</translation>
@@ -6258,6 +6276,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7448430327655618736">Instal·lar aplicacions automàticament.</translation>
 <translation id="7449752890690775568">Vols suprimir la contrasenya?</translation>
 <translation id="7450761244949417357">S'està obrint a <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
+<translation id="7452166281927983300">Advertiments ignorats (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">En seleccionar aquesta impressora, doneu permís a l'extensió següent per accedir a la vostra impressora:</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Gestiona els contenidors addicionals</translation>
@@ -7385,6 +7404,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8581809080475256101">Premeu per avançar, menú contextual per veure l'historial</translation>
 <translation id="8584280235376696778">O&amp;bre el vídeo en una pestanya nova</translation>
 <translation id="8584427708066927472">S'ha esborrat la contrasenya d'aquest dispositiu</translation>
+<translation id="8584843865238667486">Dispositius d'interfície humana amb ús <ph name="USAGE" /> de la pàgina d'ús <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Suprimeix Crostini</translation>
 <translation id="8585841788766257444">Els llocs web que apareixen a continuació segueixen una opció de configuració personalitzada en comptes de la predeterminada</translation>
 <translation id="8588866096426746242">Mostra les estadístiques del perfil</translation>

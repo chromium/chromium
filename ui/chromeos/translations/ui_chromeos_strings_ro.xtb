@@ -241,6 +241,7 @@
 <translation id="3078461028045006476">Permite accesul pentru <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Dispozitivele Chromebit</translation>
 <translation id="3085752524577180175">Gazdă SOCKS</translation>
+<translation id="3104793765551262433">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
 <translation id="3113153474486991170">Nu s-a putut deschide <ph name="PATH" /> din această locație. Copiază în Fișierele mele pentru a deschide.</translation>
 <translation id="3113592018909187986">Mai ai o încercare. Nu vei putea să folosești rețeaua dacă nu configurezi un PIN nou.</translation>
 <translation id="3124404833828281817">Persoană care visează cu ochii deschiși</translation>
@@ -883,6 +884,7 @@
 <translation id="8551494947769799688">Letonă</translation>
 <translation id="8560515948038859357">Cantoneză</translation>
 <translation id="8561206103590473338">Elefant</translation>
+<translation id="8566466896628108558">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
 <translation id="8569764466147087991">Selectează un fișier pentru a-l deschide</translation>
 <translation id="8577897833047451336">Croată</translation>
 <translation id="8578308463707544055">Indoneziană</translation>

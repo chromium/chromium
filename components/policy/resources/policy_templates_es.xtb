@@ -1526,6 +1526,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2650049181907741121">Acción que se realiza cuando el usuario cierra la tapa</translation>
 <translation id="2658653824183107970">Permite usar la implementación antigua de <ph name="CORS" /> en vez de la nueva implementación de <ph name="CORS" />.</translation>
 <translation id="2660846099862559570">No utilizar nunca un proxy</translation>
+<translation id="2661628029848851543">Se permiten todos los usos de las cuentas gestionadas</translation>
 <translation id="2664391398878045611">La página Nueva pestaña no mostrará el anuncio del espacio intermedio aunque esté disponible</translation>
 <translation id="2664682171745499686">Eliminar las advertencias de dominio similares en dominios</translation>
 <translation id="2665422249821137126">Habilitar el cursor grande en la pantalla de inicio de sesión</translation>
@@ -3209,6 +3210,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="4635284822166984665">Hora a la que el dispositivo empezará a cargarse, interpretada en la zona horaria local del dispositivo.</translation>
 <translation id="4646739075621507361">Informar de los trabajos de impresión</translation>
 <translation id="4649395978608361979">Destinos en impresoras locales</translation>
+<translation id="4650581166828502203">Añadir restricciones al uso de una cuenta gestionada como cuenta secundaria en Chrome OS</translation>
 <translation id="4650759511838826572">Inhabilitar esquemas de protocolo de URL</translation>
 <translation id="465099050592230505">URL de la tienda online de la empresa (política obsoleta)</translation>
 <translation id="4653465451589191309">Si se habilita la política o no se establece, los usuarios podrán gestionar (desconectar o modificar) conexiones VPN. Si se crea una conexión VPN utilizando una aplicación de VPN, esto no afectará a la interfaz de usuario de la aplicación. Por tanto, los usuarios podrán seguir utilizando la aplicación para modificar la conexión VPN. Usa esta política con la función "VPN siempre activada", que permite que el administrador decida establecer una conexión VPN al iniciar un dispositivo.
@@ -3649,6 +3651,12 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si esta política no se establece o no es válida, el comportamiento será el mismo que en el caso de "Esperar a que la versión actual iguale a la versión inferior objetivo".</translation>
 <translation id="5229339291699779956">Habilita la tunelización de PCIe desde dispositivos periféricos Thunderbolt/USB4, y los dispositivos periféricos funcionarán a plena capacidad</translation>
+<translation id="5233239004553860036">Si se asigna el valor <ph name="POLICY_VALUE_ALL" /> a esta política o no se establece, se permitirán todos los usos de las cuentas gestionadas. Esto podría provocar que una cuenta gestionada fuera secundaria, por lo que solo recibiría políticas cuando se inicie sesión en la cuenta como cuenta principal en el perfil del navegador.
+      Las políticas establecidas en la cuenta no se implementarán en los siguientes casos:
+        -  Si se trata de una cuenta secundaria en el nivel del sistema operativo (Configuración de la cuenta).
+        -  Si se trata de una cuenta secundaria en un perfil del navegador.
+
+      Si se asigna el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> a esta política en una cuenta, solo se podrá iniciar sesión en esa cuenta como cuenta principal. No se podrá iniciar sesión en esa cuenta como cuenta secundaria.</translation>
 <translation id="523505283826916779">Ajustes de accesibilidad</translation>
 <translation id="5238976843489093540">Forzar que se habilite Emparejamiento rápido (función que permite emparejar rápidamente mediante Bluetooth).</translation>
 <translation id="52393120393725840">Si se habilita esta política, los usuarios deberán hacer que <ph name="PRODUCT_NAME" /> recuerde las contraseñas y se las proporcione la próxima vez que inicien sesión en un sitio web.
@@ -4297,6 +4305,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5963752574792883406">puerto 990 (puede desbloquearse hasta el 01/02/2022)</translation>
 <translation id="5966615072639944554">Extensiones con permiso para utilizar la API de confirmación remota</translation>
 <translation id="596732417280023843">El nombre del perfil del certificado.</translation>
+<translation id="5971999619173368706">Bloquear la adición de una cuenta gestionada como cuenta secundaria en Chrome OS (con la sesión iniciada)</translation>
 <translation id="5972538402066550344">Permitir los controles de informes granulares</translation>
 <translation id="5975765799383881158">Si se habilita la política o no se establece, los usuarios podrán enviar comentarios a Google usando una combinación de teclas o mediante la opción que está en Menú &gt; Ayuda &gt; Notificar un problema.
 

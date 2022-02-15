@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിനിലേക്ക് വിലാസ ബാറിൽ നിന്നും തിരയൽ ബോക്‌സിൽ നിന്നുമുള്ള തിരയലുകളും കുറച്ച് കുക്കികളും അയയ്ക്കുന്നു</translation>
 <translation id="200114059308480249">Google തിരയലുകളിൽ ചുറ്റുമുള്ള ടെക്സ്റ്റ് ഉൾപ്പെടുത്തണോ?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ഫയല്‍}other{# ഫയലുകൾ}}</translation>
+<translation id="2015836039326522978"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />സ്വകാര്യതാ നയവും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
 <translation id="2020309681647789787">സമന്വയിപ്പിച്ച എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ചരിത്രം ഉണ്ടാകുമെന്നതിനാൽ, നിങ്ങൾ ചെയ്തുകൊണ്ടിരുന്ന കാര്യങ്ങൾ തുടർന്നും ചെയ്യാനാകും</translation>
 <translation id="2021896219286479412">പൂർണ്ണ സ്ക്രീൻ സൈറ്റ് നിയന്ത്രണങ്ങൾ</translation>
 <translation id="2038563949887743358">'ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കുക' ഓണാക്കുക</translation>
@@ -1224,6 +1225,7 @@
 <translation id="8037750541064988519"><ph name="DAYS" /> ദിവസം ശേഷിക്കുന്നു</translation>
 <translation id="8037801708772278989">തൊട്ടുമുമ്പ് പരിശോധിച്ചു</translation>
 <translation id="804335162455518893">SD കാർഡ് കണ്ടെത്തിയില്ല</translation>
+<translation id="8046319826565374740">Chrome ഉപയോഗിക്കുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />സ്വകാര്യതാ നയവും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> അദൃശ്യ ടാബ്}other{<ph name="TAB_COUNT_NORMAL" /> അദൃശ്യ ടാബുകൾ}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB ലഭ്യമാണ്</translation>
 <translation id="8058655154417507695">കാലാവധി കഴിയുന്ന വർഷം</translation>

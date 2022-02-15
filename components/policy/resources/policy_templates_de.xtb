@@ -1505,6 +1505,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2650049181907741121">Auszuführende Aktion beim Zuklappen des Geräts</translation>
 <translation id="2658653824183107970">Alte <ph name="CORS" />-Implementierung statt des neuen <ph name="CORS" /> verwenden</translation>
 <translation id="2660846099862559570">Nie Proxy verwenden</translation>
+<translation id="2661628029848851543">Jegliche Nutzung von verwalteten Konten ist zulässig</translation>
 <translation id="2664391398878045611">Die Seite „Neuer Tab“ zeigt die Information im mittleren Slot nicht an – selbst wenn sie verfügbar ist</translation>
 <translation id="2664682171745499686">Warnungen zu nachgeahmten URLs auf Domains unterdrücken</translation>
 <translation id="2665422249821137126">Großen Cursor auf der Anmeldeseite aktivieren</translation>
@@ -3183,6 +3184,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="4635284822166984665">Zeitpunkt, an dem der Ladevorgang beginnt, angegeben in der lokalen Zeit des Geräts.</translation>
 <translation id="4646739075621507361">Druckaufträge ausgeben</translation>
 <translation id="4649395978608361979">Lokale Druckziele</translation>
+<translation id="4650581166828502203">Einschränkungen zur Nutzung eines verwalteten Kontos als sekundäres Konto in Chrome OS hinzufügen</translation>
 <translation id="4650759511838826572">URL-Protokollschemas deaktivieren</translation>
 <translation id="465099050592230505">Unternehmens-Web-Store-URL (veraltet)</translation>
 <translation id="4653465451589191309">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer VPN-Verbindungen verwalten, d. h. trennen oder ändern. Wenn die VPN-Verbindung innerhalb einer VPN-App erstellt wird, hat diese Richtlinie keine Auswirkungen auf die Benutzeroberfläche der App. So können Nutzer die App auch weiterhin zum Ändern der VPN-Verbindung verwenden. Diese Richtlinie soll gemeinsam mit der Funktion „Durchgehend aktives VPN“ verwendet werden, mit der der Administrator festlegen kann, ob beim Start eines Geräts eine VPN-Verbindung hergestellt werden soll.
@@ -3622,6 +3624,12 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 
       Ist die Richtlinie nicht konfiguriert oder ungültig, gilt dasselbe Verhalten wie für "Abwarten, bis die Zielversion auf dem Stand des Versionsdowngrades ist".</translation>
 <translation id="5229339291699779956">Aktiviert PCIe-Tunneling für Thunderbolt/USB4-Peripheriegeräte; Peripheriegeräte sind voll funktionsfähig</translation>
+<translation id="5233239004553860036">Wenn diese Richtlinie auf <ph name="POLICY_VALUE_ALL" /> gesetzt oder nicht konfiguriert ist, ist jegliche Nutzung von verwalteten Konten zulässig. Das kann dazu führen, dass ein verwaltetes Konto ein sekundäres Konto ist. Ein sekundäres Konto kann nur Richtlinien empfangen, wenn das Konto in einem Browserprofil als primäres Konto angemeldet ist.
+      Richtlinien für das Konto werden in den folgenden Szenarien nicht umgesetzt:
+        – Es ist ein sekundäres Konto auf Betriebssystemebene (Kontoeinstellungen)
+        – Es ist ein sekundäres Konto in einem Browserprofil
+
+Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> gesetzt ist, kann dieses Konto nur als primäres Konto angemeldet werden. Eine Anmeldung als sekundäres Konto ist dann nicht zulässig.</translation>
 <translation id="523505283826916779">Einstellungen für Bedienungshilfen</translation>
 <translation id="5238976843489093540">Aktivierung von schnellem Pairing (schnellem Bluetooth-Koppeln) erzwingen.</translation>
 <translation id="52393120393725840">Wenn die Richtlinie aktiviert ist, können Nutzer einstellen, dass <ph name="PRODUCT_NAME" /> Passwörter speichert und sie bei der nächsten Anmeldung auf einer Website bereitstellt.
@@ -4259,6 +4267,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="5963752574792883406">Port 990 (Blockierung kann bis 01.02.2022 aufgehoben werden)</translation>
 <translation id="5966615072639944554">Erweiterungen, die die Remote Attestation API zur Bestätigung der Nutzeridentität verwenden dürfen</translation>
 <translation id="596732417280023843">Name des Zertifikatsprofils.</translation>
+<translation id="5971999619173368706">Hinzufügen eines verwalteten Kontos als sekundäres Konto in Chrome OS (bei laufender Sitzung) blockieren</translation>
 <translation id="5972538402066550344">Steuerelemente für detailliertes Reporting zulassen</translation>
 <translation id="5975765799383881158">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer über das Menü &gt; „Hilfe“ &gt; „Problem melden“ oder die entsprechende Tastenkombination Feedback an Google senden.
 

@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">പ്രിന്റ് ചെയ്യാനായില്ല - ഫിൽട്ടർ പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">എനിക്ക് കീ ജോടിയുണ്ട്</translation>
+<translation id="1442433966118452622">ചിത്രത്തിന്റെ ഉറവിടം</translation>
 <translation id="1451536289672181509">ഉപകരണം ഒരു കീബോർഡാണ്.</translation>
 <translation id="1468664791493211953">ഓഫറുകൾ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, ഒപ്പം നിങ്ങളുടെ ആക്‌റ്റിവിറ്റികൾ നിരീക്ഷിക്കാനുമായേക്കും.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">പ്രതിദിന റീഫ്രഷ് ചെയ്യൽ</translation>
 <translation id="2620436844016719705">സിസ്റ്റം</translation>
 <translation id="2695514675076754339">8 പ്രതീകങ്ങളുള്ള അൺലോക്ക് കോഡ് നൽകുക</translation>
+<translation id="2712812801627182647">TLS പരിശോധിച്ചുറപ്പിക്കൽ കീ</translation>
 <translation id="2740531572673183784">ശരി</translation>
 <translation id="2751739896257479635">രണ്ടാം ഘട്ട EAP പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="2783010256799387990">വിജയിച്ചു</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">പ്രിന്റ് ചെയ്യാനായില്ല - വാതിൽ തുറന്നിരിക്കുന്നു</translation>
 <translation id="3283504360622356314">{0,plural, =1{ഫയൽ എഡിറ്റ് ചെയ്യുക}other{ഫയലുകൾ എഡിറ്റ് ചെയ്യുക}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">കീയുടെ ദിശ</translation>
 <translation id="3310640316857623290">DNS പ്രതികരണ സമയം അനുവദിക്കപ്പെട്ട പരിധിയേക്കാൾ വളരെ മുകളിലാണ്</translation>
 <translation id="3328783797891415197">ടെസ്‌റ്റ് റൺ ചെയ്യുന്നു</translation>
 <translation id="3340011300870565703">ഉപകരണത്തിന്റെ വലത് ബഡിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്തു</translation>
 <translation id="4773299976671772492">അവസാനിപ്പിച്ചു</translation>
 <translation id="4782311465517282004">നിങ്ങൾ വലത്-ക്ലിക്ക് ചെയ്യുമ്പോഴോ ടെക്സ്റ്റിൽ സ്‌പർശിച്ച് പിടിക്കുമ്പോഴോ നിർവചനങ്ങളോ വിവർത്തനങ്ങളോ യൂണിറ്റ് കൺവേർഷനുകളോ നേടുക</translation>
+<translation id="4793756956024303490">കംപ്രഷൻ അൽഗോരിതം</translation>
 <translation id="4794140124556169553">CPU ടെസ്‌റ്റ് റൺ ചെയ്യുന്നത് സിസ്‌റ്റത്തിന്റെ പ്രകടനത്തെ ബാധിച്ചേക്കാം</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> എന്ന പ്രിന്റ് ജോലി റദ്ദാക്കി</translation>
 <translation id="4813136279048157860">എന്റെ ചിത്രങ്ങൾ</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS റെസല്യൂഷൻ</translation>
 <translation id="4848429997038228357">റൺ ചെയ്യുന്നു</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ശ്രമം ശേഷിക്കുന്നു}other{<ph name="ERROR_MESSAGE" /> {0} ശ്രമങ്ങൾ ശേഷിക്കുന്നു}}</translation>
+<translation id="4873827928179867585">പരിശോധിച്ചുറപ്പിക്കൽ അൽഗോരിതം</translation>
 <translation id="4880328057631981605">ആ‌ക്‌സസ് പോയിന്‍റിന്‍റെ പേര്</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">പുതിയ പാസ്‌വേഡ് പെട്ടെന്ന് തിരഞ്ഞെടുക്കുക</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">റിപ്പോർട്ട് മറയ്‌ക്കുക</translation>
 <translation id="500920857929044050">ടെസ്‌റ്റ് നിർത്തുക</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">നിങ്ങളുടെ സ്‌ക്രീൻ നിഷ്‌ക്രിയമായിരിക്കുമ്പോൾ ഫോട്ടോകൾ, സമയം, കാലാവസ്ഥ, മീഡിയാ വിവരങ്ങൾ എന്നിവ കാണിക്കുക.</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
 <translation id="5049856988445523908">സിം ലോക്ക് ചെയ്തു (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ഗ്രൂപ്പിന്‍റെ പേര്</translation>
@@ -435,6 +441,7 @@
 <translation id="6618744767048954150">റൺ ചെയ്യുന്നു</translation>
 <translation id="6620487321149975369">നേരിട്ട് നീക്കം ചെയ്തില്ലെങ്കിൽ പ്രിന്റ് ജോലികൾ ചരിത്രത്തിൽ ദൃശ്യമാകും</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
+<translation id="6647510110698214773">എൻക്രിപ്ഷൻ അൽഗോരിതം</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6692996468359469499">നിങ്ങളുടെ തിരഞ്ഞെടുക്കലുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ നേടുക</translation>
 <translation id="6704062477274546131">DNS റെസല്യൂഷൻ</translation>

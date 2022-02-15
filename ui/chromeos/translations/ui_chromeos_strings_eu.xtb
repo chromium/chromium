@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalana</translation>
 <translation id="1168100932582989117">Google izen-zerbitzariak</translation>
+<translation id="1171082344678443012">XZ bidez konprimatutako artxiboa</translation>
 <translation id="1172970565351728681"><ph name="REMAINING_TIME" /> inguru geratzen dira</translation>
 <translation id="1173894706177603556">Aldatu izena</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="PHONE_NAME" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Xehetasunak.</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Unitatea formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza hori.</translation>
 <translation id="2025955442973426285">Tigrinyarra</translation>
 <translation id="2028997212275086731">RAR fitxategia</translation>
+<translation id="2036414735548252477">LZMA bidez konprimatutako .tar artxiboa</translation>
 <translation id="2037845485764049925">Errusiarra</translation>
 <translation id="2044023416777079300">Modema ez dago erregistratuta</translation>
 <translation id="2046702855113914483">Ramen-a</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
 <translation id="4880214202172289027">Bolumen-graduatzailea</translation>
 <translation id="4881695831933465202">Ireki</translation>
+<translation id="4886199584824489598">Bzip2 bidez konprimatutako artxiboa</translation>
 <translation id="4900532980794411603">Partekatu Parallels Desktop aplikazioarekin</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Konektatu.</translation>
 <translation id="4905417359854579806">Hauen babeskopia egiteko prest: <ph name="FILE_COUNT" /></translation>
@@ -585,6 +588,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> sarea. Konektatu gabe.</translation>
 <translation id="6074825444536523002">Google-ko inprimakia</translation>
 <translation id="6079871810119356840">Hungariarra, QWERTY teklatuarekin</translation>
+<translation id="6082256976217156453">LZMA bidez konprimatutako artxiboa</translation>
 <translation id="6096979789310008754">Garbitu da bilaketa-testua. Fitxategi eta karpeta guztiak daude ikusgai.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> karpetara eramaten</translation>
 <translation id="6129953537138746214">Zuriunea</translation>
@@ -841,6 +845,7 @@
 <translation id="8297012244086013755">3. hangul-karaktere sorta (balio bikoitzeko teklarik gabe)</translation>
 <translation id="8299269255470343364">Japoniarra</translation>
 <translation id="8300849813060516376">OTASP zerbitzuak huts egin du</translation>
+<translation id="8308481408797647857">XZ bidez konprimatutako .tar artxiboa</translation>
 <translation id="8312871300878166382">Itsatsi karpetan</translation>
 <translation id="8329978297633540474">Testu arrunta</translation>
 <translation id="8335587457941836791">Desainguratu apaletik</translation>
@@ -949,6 +954,7 @@
 <translation id="943972244133411984">Aldaketaren egilea:</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="947144732524271678">Hautatu da <ph name="ENTRY_COUNT" /> sarrerako barruti bat, <ph name="FROM_ENTRY_NAME" /> sarreratik <ph name="TO_ENTRY_NAME" /> sarrerara.</translation>
+<translation id="961973045258256291">Gzip bidez konprimatutako artxiboa</translation>
 <translation id="965477715979482472">Ingelesa (Hegoafrika)</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>
 <translation id="988685240266037636">Badago "<ph name="FILE_NAME" />" izeneko fitxategi bat. Ordeztu egin nahi duzu?</translation>

@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Η τιμή πρέπει να είναι μεγαλύτερη ή ίση του <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Μη επιλεγμένο. Σε ομάδα, επιλογή <ph name="INDEX" /> από <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Καταχωρίστε το τμήμα της διεύθυνσης πριν το σύμβολο "<ph name="ATSIGN" />". Η διεύθυνση "<ph name="INVALIDADDRESS" />" δεν είναι πλήρης.</translation>
 <translation id="5334352251556557839">Δεν είναι δυνατή η αναπαραγωγή μέσων.</translation>
 <translation id="537648784377940524">Η ελάχιστη ημερομηνία (<ph name="MIN_DATE_OR_TIME" />) πρέπει να είναι προγενέστερη της μέγιστης ημερομηνίας (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Άλλο...</translation>
 <translation id="6709093583001123835">Η τιμή πρέπει να είναι <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Κακή ποιότητα αναπαραγωγής</translation>
+<translation id="6719914554879143100">Επιλεγμένο. Σε ομάδα, επιλογή <ph name="INDEX" /> από <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="6820355525329141109">Δεν είναι δυνατή η φόρτωση της προσθήκης.</translation>
 <translation id="6831465880655513317">Επιλογέας χρώματος με δισδιάστατο ρυθμιστικό για την επιλογή κορεσμού και φωτεινότητας</translation>

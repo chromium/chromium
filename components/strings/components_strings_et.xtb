@@ -166,6 +166,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="142858679511221695">Pilves olev kasutaja</translation>
 <translation id="1428729058023778569">Näete seda hoiatust, kuna see sait ei toeta HTTPS-i. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Printimine</translation>
+<translation id="1432187715652018471">leht soovib installida teenusetöötleja.</translation>
 <translation id="1432581352905426595">Halda otsingumootoreid</translation>
 <translation id="1436185428532214179">Saab küsida luba teie seadmes olevate failide ja kaustade muutmiseks</translation>
 <translation id="1442386063175183758">Paremalt väravakujuliselt volditud</translation>
@@ -219,6 +220,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1559572115229829303">&lt;p&gt;Domeeniga <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ei saa privaatset ühendust luua, kuna seadme kuupäev ja kellaaeg (<ph name="DATE_AND_TIME" />DATE_AND_TIME) on valed.&lt;/p&gt;
 
           &lt;p&gt;Kohandage kuupäeva ja kellaaega rakenduse &lt;strong&gt;Seaded&lt;/strong&gt; jaotises &lt;strong&gt;Üldine&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Administraator taaskäivitab teie seadme kuupäeval <ph name="DATE" />, kell <ph name="TIME" /></translation>
 <translation id="156703335097561114">Võrguteave, nagu aadressid, liidese seadistus ja ühenduse kvaliteet</translation>
 <translation id="1567040042588613346">See reegel töötab eesmärgipäraselt, kuid mujal on seadistatud sama väärtus, mis on selle reegliga asendatud.</translation>
 <translation id="1569487616857761740">Sisestage aegumiskuupäev</translation>
@@ -1974,6 +1976,7 @@ Lisateave:
 <translation id="7304562222803846232">Google’i konto privaatsusseadete haldamine</translation>
 <translation id="7305756307268530424">Aeglasemalt alustamine</translation>
 <translation id="7308436126008021607">taustal sünkroonimine</translation>
+<translation id="7310392214323165548">Seade taaskäivitub peagi</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ühendamise abi</translation>
 <translation id="7323804146520582233">Peida jaotis „<ph name="SECTION" />”</translation>

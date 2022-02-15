@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Hindi na-print - Hindi gumana ang filter</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">May keypair ako</translation>
+<translation id="1442433966118452622">Source ng larawan</translation>
 <translation id="1451536289672181509">Keyboard ang device.</translation>
 <translation id="1468664791493211953">Mga Alok</translation>
 <translation id="1476467821656042872">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at puwede nitong masubaybayan ang iyong aktibidad.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Araw-araw na Pag-refresh</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2695514675076754339">Ilagay ang 8-character na code sa pag-unlock</translation>
+<translation id="2712812801627182647">TLS authentication key</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP Phase 2 na pag-authenticate</translation>
 <translation id="2783010256799387990">NAKAPASA</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Hindi na-print - Nakabukas ang takip</translation>
 <translation id="3283504360622356314">{0,plural, =1{I-edit ang file}one{I-edit ang mga file}other{I-edit ang mga file}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">Direksyon ng key</translation>
 <translation id="3310640316857623290">Napakataas kumpara sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="3328783797891415197">Tumatakbo ang pagsusuri</translation>
 <translation id="3340011300870565703">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kanang bud ng device.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Na-update ang password sa Chrome OS</translation>
 <translation id="4773299976671772492">Inihinto</translation>
 <translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
+<translation id="4793756956024303490">Algorithm ng pag-compress</translation>
 <translation id="4794140124556169553">Posibleng makaapekto sa performance ng iyong system ang pagpapatakbo ng pagsusuri sa CPU</translation>
 <translation id="4808449224298348341">Kinansela ang pag-print ng <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Aking Mga Larawan</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) Resolution ng DNS</translation>
 <translation id="4848429997038228357">TUMATAKBO</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}one{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}other{<ph name="ERROR_MESSAGE" /> {0} na pagsubok na lang ang natitira}}</translation>
+<translation id="4873827928179867585">Algorithm ng pag-authenticate</translation>
 <translation id="4880328057631981605">Access point name</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Pumili agad ng bago</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Itago ang ulat</translation>
 <translation id="500920857929044050">Ihinto ang pagsusuri</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Kapag idle ang iyong screen, magpakita ng mga larawan, oras, lagay ng panahon, at impormasyon ng media.</translation>
 <translation id="5039804452771397117">Payagan</translation>
 <translation id="5049856988445523908">Na-lock ang SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Pangalan ng grupo</translation>
@@ -436,6 +442,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6618744767048954150">Tumatakbo</translation>
 <translation id="6620487321149975369">Lalabas sa history ang mga pag-print maliban na lang kung manual na aalisin ang mga ito</translation>
 <translation id="6643016212128521049">I-clear</translation>
+<translation id="6647510110698214773">Algorithm ng pag-encrypt</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
 <translation id="6704062477274546131">Resolution ng DNS</translation>

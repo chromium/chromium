@@ -128,6 +128,7 @@
 <translation id="1698760176351776263">IPv6 ଠିକଣା: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">ଡେସ୍କ: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ନେଟୱାର୍କ ସେଟିଂସ୍</translation>
+<translation id="1715293566947629045">ପ୍ରୋଫାଇଲକୁ ଅକ୍ଷମ କରାଯାଉଛି। କିଛି ସମୟ ପାଇଁ ଅପେକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">ଲାଇଭ୍ କ୍ୟାପ୍ସନ୍ ଚାଲୁ ଅଛି।</translation>
 <translation id="1720011244392820496">ୱାଇ-ଫାଇ ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -273,6 +274,7 @@
 <translation id="2750932254614666392">"ଡିଲିଟ କରନ୍ତୁ"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="2782591952652094792">କ୍ୟାପଚର୍ ମୋଡରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
+<translation id="2791421900609674576">ଆପଣ ଯେଉଁଠାରେ ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଜାରି ରଖିବା ପାଇଁ ସୁପାରିଶଗୁଡ଼ିକ ଦେଖିବେ। ଆପଣ ସୁପାରିଶଗୁଡ଼ିକୁ କାଢ଼ି ଦେବା ପାଇଁ ସ୍ପର୍ଶ କରି ଧରି ରଖିପାରିବେ।</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">ସେଲ୍ଫ ପାର୍ଟି</translation>
 <translation id="2803313416453193357">ଫୋଲ୍ଡର ଖୋଲନ୍ତୁ</translation>
@@ -396,6 +398,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{1 ମିନିଟ ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}other{# ମିନିଟ ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" />ଟି ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଇଛି</translation>
+<translation id="3542066395059568317">ଆପଣ ଯେଉଁଠାରେ ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଜାରି ରଖିବା ପାଇଁ ସୁପାରିଶଗୁଡ଼ିକ ଦେଖିବେ। ଆପଣ ସୁପାରିଶଗୁଡ଼ିକୁ କାଢ଼ି ଦେବା ପାଇଁ ଡାହାଣ-କ୍ଲିକ କରିପାରିବେ।</translation>
 <translation id="3552189655002856821">ୱାଇ-ଫାଇ ବନ୍ଦ ଅଛି</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ପିନ୍ କରାଯାଇଥିଲା</translation>
 <translation id="3560866052109807830">ମାର୍କର୍ ଡ୍ରଇଂ ଟୁଲ୍</translation>

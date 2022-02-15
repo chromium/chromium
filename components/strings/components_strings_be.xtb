@@ -166,6 +166,7 @@
 <translation id="142858679511221695">Карыстальнік воблачнага сэрвісу</translation>
 <translation id="1428729058023778569">Гэта папярэджанне паказана вам, бо дадзены сайт не падтрымлівае HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Друк</translation>
+<translation id="1432187715652018471">Старонка спрабуе ўсталяваць апрацоўшчык сэрвісу.</translation>
 <translation id="1432581352905426595">Кіраваць пошукавымі сістэмамі</translation>
 <translation id="1436185428532214179">Сайт можа запытваць дазвол на змяненне файлаў або папак на прыладзе</translation>
 <translation id="1442386063175183758">Згіб "вароты" справа</translation>
@@ -219,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;Немагчыма ўстанавіць прыватнае падключэнне да дамена <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, бо дата і час на прыладзе (<ph name="DATE_AND_TIME" />) няправільныя.&lt;/p&gt;
 
       &lt;p&gt;Змяніце дату і час у раздзеле &lt;strong&gt;Агульныя&lt;/strong&gt; праграмы &lt;strong&gt;Налады&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Адміністратар перазапусціць прыладу ў <ph name="TIME" /> <ph name="DATE" /></translation>
 <translation id="156703335097561114">Сеткавыя даныя, такая як адрасы, налады інтэрфейсу і якасць падключэння</translation>
 <translation id="1567040042588613346">Гэта палітыка працуе належным чынам, але замяняе аднолькавае значэнне, зададзенае з іншай крыніцы.</translation>
 <translation id="1569487616857761740">Увядзіце тэрмін дзеяння</translation>
@@ -1974,6 +1976,7 @@
 <translation id="7304562222803846232">Кіраваць наладамі прыватнасці Уліковага запісу Google</translation>
 <translation id="7305756307268530424">Запусціць павальней</translation>
 <translation id="7308436126008021607">фонавая сінхранізацыя</translation>
+<translation id="7310392214323165548">Скора прылада перазапусціцца</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Даведка па падключэнні</translation>
 <translation id="7323804146520582233">Схаваць раздзел "<ph name="SECTION" />"</translation>

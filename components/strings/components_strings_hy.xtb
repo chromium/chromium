@@ -220,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;Չհաջողվեց մասնավոր կապակցում հաստատել <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> տիրույթի հետ, քանի որ ձեր սարքի ամսաթիվը և ժամը (<ph name="DATE_AND_TIME" />) սխալ են:&lt;/p&gt;
 
       &lt;p&gt;Ուղղեք ամսաթիվը և ժամը &lt;strong&gt;Կարգավորումներ&lt;/strong&gt; հավելվածի &lt;strong&gt;Ընդհանուր&lt;/strong&gt; բաժնում:&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Ձեր ադմինիստրատորը կվերագործարկի սարքը <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="156703335097561114">Ցանցային տեղեկությունները, օրինակ՝ հասցեները, միջերեսի կարգավորումները և կապի որակը</translation>
 <translation id="1567040042588613346">Այս կանոնը պատշաճ կերպով աշխատում է, սակայն միևնույն արժեքը սահմանված է այլ տեղում և փոխարինվում է կանոնի կողմից։</translation>
 <translation id="1569487616857761740">Մուտքագրեք գործողության ժամկետը</translation>
@@ -1977,6 +1978,7 @@
 <translation id="7304562222803846232">Կառավարել Google հաշվի գաղտնիության կարգավորումները</translation>
 <translation id="7305756307268530424">Գործարկել ավելի դանդաղ</translation>
 <translation id="7308436126008021607">ֆոնային համաժամացում</translation>
+<translation id="7310392214323165548">Սարքը շուտով կվերագործարկվի</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Օգնություն կապի խնդիրների դեպքում</translation>
 <translation id="7323804146520582233">Թաքցնել «<ph name="SECTION" />» բաժինը</translation>

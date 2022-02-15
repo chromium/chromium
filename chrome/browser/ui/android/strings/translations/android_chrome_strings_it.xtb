@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">Invia al tuo motore di ricerca predefinito alcune ricerche dalla barra degli indirizzi e dalla casella di ricerca, nonché alcuni cookie</translation>
 <translation id="200114059308480249">Vuoi includere il testo circostante nelle ricerche Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# file}one{# file}other{# file}}</translation>
+<translation id="2015836039326522978"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_LINK2" />. Si applicano anche le <ph name="BEGIN_LINK3" />Norme sulla privacy<ph name="END_LINK3" />.</translation>
 <translation id="2020309681647789787">La tua cronologia sarà disponibile su tutti i dispositivi sincronizzati, quindi potrai continuare ciò che stavi facendo</translation>
 <translation id="2021896219286479412">Controlli sito a schermo intero</translation>
 <translation id="2038563949887743358">Attiva Richiedi sito desktop</translation>
@@ -1224,6 +1225,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8037750541064988519"><ph name="DAYS" /> giorni rimanenti</translation>
 <translation id="8037801708772278989">Controllo appena eseguito</translation>
 <translation id="804335162455518893">Scheda SD non trovata</translation>
+<translation id="8046319826565374740">Se utilizzi Chrome, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_LINK2" />. Si applicano anche le <ph name="BEGIN_LINK3" />Norme sulla privacy<ph name="END_LINK3" />.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda di navigazione in incognito}one{<ph name="TAB_COUNT_NORMAL" /> scheda di navigazione in incognito}other{<ph name="TAB_COUNT_NORMAL" /> schede di navigazione in incognito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponibili</translation>
 <translation id="8058655154417507695">Anno di scadenza</translation>

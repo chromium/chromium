@@ -601,6 +601,7 @@
 <translation id="1604432177629086300">No se ha podido imprimir. Comprueba la impresora y vuelve a intentarlo.</translation>
 <translation id="1605744057217831567">Ver todos los datos y permisos de sitios</translation>
 <translation id="1606077700029460857">Cambiar configuración del ratón</translation>
+<translation id="1606566847233779212">¿Quitar los sitios específicos que has añadido?</translation>
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1607499585984539560">El usuario no está asociado a un dominio</translation>
 <translation id="1608668830839595724">Más acciones para los elementos seleccionados</translation>
@@ -865,6 +866,7 @@
 <translation id="1845727111305721124">Puede reproducir sonido</translation>
 <translation id="1846308012215045257">Pulsa la tecla Ctrl y haz clic para ejecutar <ph name="PLUGIN_NAME" /></translation>
 <translation id="184862733444771842">Solicitud de función</translation>
+<translation id="1849016657376805933">Cualquier dispositivo HID</translation>
 <translation id="1849186935225320012">Esta página tiene un control absoluto de los dispositivos MIDI.</translation>
 <translation id="1850145825777333687">Credenciales del dispositivo</translation>
 <translation id="1850508293116537636">Girar a la &amp;derecha</translation>
@@ -998,6 +1000,7 @@
 <translation id="1988259784461813694">Requisito</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="1989113344093894667">No se puede capturar el contenido</translation>
+<translation id="1989744123191450103">No se ha podido crear la copia de seguridad</translation>
 <translation id="1989903373608997757">Usar siempre</translation>
 <translation id="1990046457226896323">Archivos de voz descargados</translation>
 <translation id="1990512225220753005">No mostrar accesos directos en esta página</translation>
@@ -1007,6 +1010,7 @@
 <translation id="1994173015038366702">URL del sitio</translation>
 <translation id="1995916364271252349">Controla la información que pueden usar y mostrar los sitios (ubicación, cámara, ventanas emergentes y otros)</translation>
 <translation id="1997616988432401742">Tus certificados</translation>
+<translation id="1997645434968427303">No se ha podido restaurar tu copia de seguridad de Linux. Esto puede deberse a que Linux no tenga suficiente espacio en disco. Puedes cambiar la cantidad de espacio en disco de Linux e intentar restaurar tu copia de seguridad de nuevo en los ajustes del sistema operativo.</translation>
 <translation id="1999115740519098545">Al abrir</translation>
 <translation id="2000419248597011803">Envía algunas cookies y búsquedas desde la barra de direcciones y el cuadro de búsqueda a tu buscador predeterminado</translation>
 <translation id="2002109485265116295">En tiempo real</translation>
@@ -1970,6 +1974,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2933632078076743449">Última actualización</translation>
 <translation id="2934999512438267372">Control total de los dispositivos MIDI permitido</translation>
 <translation id="2935225303485967257">Gestionar perfiles</translation>
+<translation id="2935314715123552088">Inhabilitar perfil activo de eSIM</translation>
 <translation id="2935654492420446828">Añade una cuenta de centro educativo más tarde</translation>
 <translation id="2936851848721175671">Copia de seguridad y restauración</translation>
 <translation id="2939908794993783865">Más sitios inactivos</translation>
@@ -2081,6 +2086,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3046178388369461825">Queda muy poco espacio en el disco de Linux</translation>
 <translation id="3046910703532196514">Página web (completa)</translation>
 <translation id="304747341537320566">Motores de voz</translation>
+<translation id="3048336643003835855">Dispositivos HID del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Registros de envío y del dispositivo</translation>
 <translation id="3051250416341590778">Tamaño de visualización</translation>
 <translation id="3053013834507634016">Uso de claves de certificado</translation>
@@ -2508,6 +2514,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3511307672085573050">Copiar dire&amp;cción de enlace</translation>
 <translation id="351152300840026870">Fuente de ancho fijo</translation>
 <translation id="3511528412952710609">Breve</translation>
+<translation id="3514011352559420398">No se ha podido restaurar</translation>
 <translation id="3514335087372914653">Control de juego</translation>
 <translation id="3514373592552233661">Las redes preferidas se utilizarán en lugar de otras redes conocidas si hay más de una disponible</translation>
 <translation id="3515983984924808886">Vuelve a tocar tu llave de seguridad para confirmar el restablecimiento. Se eliminará toda la información guardada en la llave de seguridad, incluido el PIN.</translation>
@@ -3116,6 +3123,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar y expulsar dispositivos de almacenamiento</translation>
 <translation id="4109135793348361820">Mover ventana a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Restaurar advertencia</translation>
 <translation id="4110490973560452005">Descarga completa: <ph name="FILE_NAME" />. Pulsa Mayús+F6 para desplazarte al área de la barra de descargas.</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sin conexión)</translation>
@@ -3174,6 +3182,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4180788401304023883">¿Eliminar el certificado AC "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4184803915913850597">Dispositivo HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">Arrastra una pantalla para moverla</translation>
 <translation id="4187424053537113647">Configurando <ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">Resaltar con el foco del teclado</translation>
@@ -3238,6 +3247,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4259388776256904261">Este proceso puede tardar un poco</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> podría ser peligroso. ¿Quieres enviarlo a Protección Avanzada de Google para que lo analice? Pulsa Mayús + F6 para desplazarte al área de la barra de descargas.</translation>
 <translation id="4261429981378979799">Permisos de extensiones</translation>
+<translation id="4262004481148703251">Ignorar advertencia</translation>
 <translation id="4263223596040212967">Revisa el diseño del teclado y vuelve a intentarlo.</translation>
 <translation id="426564820080660648">Para comprobar si hay actualizaciones, utiliza una conexión Ethernet, Wi-Fi o de datos móviles.</translation>
 <translation id="4266679478228765574">Al quitar carpetas, se dejará de compartir su contenido, pero no se eliminarán los archivos.</translation>
@@ -3643,6 +3653,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4681453295291708042">Inhabilitar Compartir con Nearby</translation>
 <translation id="4681930562518940301">Abrir &amp;imagen original en una pestaña nueva</translation>
 <translation id="4682551433947286597">Aparecen fondos de pantalla en la pantalla de inicio de sesión.</translation>
+<translation id="4682830185876172415">Descargas recientes</translation>
 <translation id="4683629100208651599">Convertir en minúsculas</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (predeterminado)</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
@@ -3665,6 +3676,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4699357559218762027">(con inicio automático)</translation>
 <translation id="4701025263201366865">Inicio de sesión del padre o de la madre</translation>
 <translation id="4701335814944566468">Visto ayer</translation>
+<translation id="4707337002099455863">Permitir siempre en todos los sitios</translation>
 <translation id="4708794300267213770">Mostrar la pantalla de bloqueo al activar el dispositivo</translation>
 <translation id="4708849949179781599">Salir de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
@@ -3907,6 +3919,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="496446150016900060">Sincroniza redes Wi-Fi con tu teléfono</translation>
 <translation id="4965808351167763748">¿Seguro que quieres configurar este dispositivo para que utilice Hangouts Meet?</translation>
 <translation id="4966972803217407697">Estás en incógnito</translation>
+<translation id="496742804571665842">Inhabilitar perfiles de eSIM</translation>
 <translation id="496888482094675990">La aplicación Archivos permite acceder rápidamente a los archivos que has guardado en Google Drive, en un almacenamiento externo o en tu dispositivo Chrome OS.</translation>
 <translation id="4971412780836297815">Abrir al finalizar</translation>
 <translation id="4971735654804503942">Protección más rápida y proactiva frente a descargas, extensiones y sitios web peligrosos. Te advierte sobre quiebras de seguridad de contraseñas. Necesita enviar datos de navegación a Google.</translation>
@@ -4128,6 +4141,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5208548918290612795">Almacenar token de autenticación de <ph name="WEB_DRIVE" /></translation>
 <translation id="520902706163766447">Habilita un cuadro emergente en la interfaz de Chrome para realizar búsquedas en pestañas abiertas.</translation>
 <translation id="5209320130288484488">No se ha encontrado ningún dispositivo.</translation>
+<translation id="5209513429611499188">Los dispositivos HID con usos de la página de uso <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5213114823401215820">Volver a abrir grupo cerrado</translation>
 <translation id="5213481667492808996">Ya puedes usar tu servicio de datos de "<ph name="NAME" />"</translation>
@@ -4534,6 +4548,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5627086634964711283">También controla qué página se muestra al hacer clic en el botón de página principal.</translation>
 <translation id="5627676517703583263">Navega de forma inteligente con Chrome</translation>
 <translation id="5627832140542566187">Orientación de la pantalla</translation>
+<translation id="5628393161682339323">Cuando haga clic en la extensión</translation>
 <translation id="562935524653278697">Tu administrador ha inhabilitado la sincronización de tus marcadores, tus contraseñas, tu historial y otros ajustes.</translation>
 <translation id="5631017369956619646">Uso de la CPU</translation>
 <translation id="5632059346822207074">Permiso solicitado, pulsa Ctrl + Adelante para responder</translation>
@@ -4668,6 +4683,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Enviar comandos a <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
+<translation id="5783304934509327739">Opción de acceso a sitios</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5785583009707899920">Utilidades de los archivos de Chrome</translation>
 <translation id="5787146423283493983">Acuerdo de claves</translation>
@@ -4718,6 +4734,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5834581999798853053">Unos <ph name="TIME" /> minutos</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: grabación de la cámara o del micrófono</translation>
 <translation id="583673505367439042">Los sitios pueden solicitar permiso para editar archivos y carpetas del dispositivo</translation>
+<translation id="583756221537636748">Funda</translation>
 <translation id="5840680448799937675">Los archivos siempre se compartirán sin conexión</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5842497610951477805">Habilitar Bluetooth</translation>
@@ -5355,6 +5372,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6499143127267478107">Resolviendo host de la secuencia de comandos de proxy...</translation>
 <translation id="6499764981457476645">No se ha encontrado ningún dispositivo cerca</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> quiere abrir este archivo:</translation>
+<translation id="65017764184991091">No se ha podido crear una copia de seguridad de aplicaciones y archivos de Linux. Esto puede ocurrir si tu dispositivo no tiene suficiente espacio de almacenamiento disponible. Prueba a liberar algo de espacio en tu dispositivo o a elegir otra ubicación en la que crear la copia de seguridad.</translation>
 <translation id="6501957628055559556">Todos los contenedores</translation>
 <translation id="650266656685499220">Para crear álbumes, ve a Google Fotos</translation>
 <translation id="6503077044568424649">Más visitado</translation>
@@ -6257,6 +6275,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7448430327655618736">Instalar aplicaciones automáticamente</translation>
 <translation id="7449752890690775568">¿Quitar la contraseña?</translation>
 <translation id="7450761244949417357">Abriendo en <ph name="ALTERNATIVE_BROWSER_NAME" /> ahora</translation>
+<translation id="7452166281927983300">Advertencias ignoradas (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Al seleccionar esta impresora, concedes permiso a la siguiente extensión para acceder a tu impresora:</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Gestionar contenedores adicionales</translation>
@@ -7383,6 +7402,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8581809080475256101">Pulsa para avanzar y acceder al menú contextual para ver el historial</translation>
 <translation id="8584280235376696778">&amp;Abrir vídeo en una pestaña nueva</translation>
 <translation id="8584427708066927472">Contraseña eliminada de este dispositivo</translation>
+<translation id="8584843865238667486">Los dispositivos HID con uso <ph name="USAGE" /> de la página de uso <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Eliminar Crostini</translation>
 <translation id="8585841788766257444">Los sitios indicados a continuación tienen una configuración personalizada en lugar de la predeterminada</translation>
 <translation id="8588866096426746242">Mostrar estadísticas del perfil</translation>

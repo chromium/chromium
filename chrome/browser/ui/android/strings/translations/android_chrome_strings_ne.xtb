@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">यसले ठेगाना पट्टी र खोज बाकसका केही कुकी र खोजहरूलाई तपाईंको डिफल्ट खोज इन्जिनमा पठाउँछ</translation>
 <translation id="200114059308480249">Google मा कुनै शब्द वा वाक्यांशका बारेमा थप जानकारी खोज्दा सो शब्द वा वाक्यांश वरपरका पाठहरू पनि समावेश गर्ने हो?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइलहरू}}</translation>
+<translation id="2015836039326522978"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ। यसका साथै, <ph name="BEGIN_LINK3" />गोपनीयता नीति<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
 <translation id="2020309681647789787">तपाईंका सबै डिभाइसमा तपाईंको ब्राउजिङ इतिहास सिंक गरिने भएकाले तपाईं जुनसुकै डिभाइसबाट आफूले गर्दै गरेको कार्य जारी राख्न सक्नुहुन्छ</translation>
 <translation id="2021896219286479412">पूर्ण स्क्रिनको साइटका नियन्त्रणहरू</translation>
 <translation id="2038563949887743358">अनुरोध डेस्कटप साइट खोल्नुहोस्</translation>
@@ -1223,6 +1224,7 @@
 <translation id="8037750541064988519"><ph name="DAYS" /> दिन बाँकी छ</translation>
 <translation id="8037801708772278989">भर्खरै जाँच गरिएको</translation>
 <translation id="804335162455518893">SD कार्ड फेला परेन</translation>
+<translation id="8046319826565374740">तपाईंले Chrome चलाउनुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ। यसका साथै, <ph name="BEGIN_LINK3" />गोपनीयता नीति<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> इन्कोग्निटो ट्याब}other{<ph name="TAB_COUNT_NORMAL" /> वटा इन्कोग्निटो ट्याब}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> एम.बि.उपलब्ध छ</translation>
 <translation id="8058655154417507695">म्याद सकिने वर्ष</translation>

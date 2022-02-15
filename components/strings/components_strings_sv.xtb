@@ -166,6 +166,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="142858679511221695">Molnanvändare</translation>
 <translation id="1428729058023778569">Den här varningen visas därför att webbplatsen inte stöder HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Skriv ut</translation>
+<translation id="1432187715652018471">Sidan vill installera en tjänsthanterare.</translation>
 <translation id="1432581352905426595">Hantera sökmotorer</translation>
 <translation id="1436185428532214179">Får begära tillstånd att redigera filer eller mappar på enheten</translation>
 <translation id="1442386063175183758">Fönsterfalsning, höger flik</translation>
@@ -219,6 +220,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1559572115229829303">&lt;p&gt;Det gick inte att upprätta en privat anslutning till <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> eftersom enhetens datum och tid (<ph name="DATE_AND_TIME" />) inte stämmer.&lt;/p&gt;
 
       &lt;p&gt;Ändra datumet och tiden under &lt;strong&gt;Allmänt&lt;/strong&gt; i appen &lt;strong&gt;Inställningar&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Administratören startar om enheten kl. <ph name="TIME" /> den <ph name="DATE" /></translation>
 <translation id="156703335097561114">Nätverksinformation som adresser, gränssnittskonfiguration och anslutningskvalitet</translation>
 <translation id="1567040042588613346">Den här principen fungerar som avsett, men den har även ställts in på annan plats med samma värde och detta andra värde ersätts av denna princip.</translation>
 <translation id="1569487616857761740">Ange sista giltighetsdatum</translation>
@@ -1975,6 +1977,7 @@ Mer information.
 <translation id="7304562222803846232">Hantera Google-kontots integritetsinställningar</translation>
 <translation id="7305756307268530424">Starta långsammare</translation>
 <translation id="7308436126008021607">synkronisering i bakgrunden</translation>
+<translation id="7310392214323165548">Enheten startas om inom kort</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Anslutningshjälp</translation>
 <translation id="7323804146520582233">Dölj avsnittet <ph name="SECTION" /></translation>

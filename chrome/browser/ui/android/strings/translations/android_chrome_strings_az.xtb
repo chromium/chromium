@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">Ünvan paneli və axtarış qutusundakı bəzi kuki və axtarışları defolt axtarış mühərrikinizə göndərin</translation>
 <translation id="200114059308480249">Google axtarışlarına ətrafdakı mətn daxil edilsin?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Fayl}other{# Fayl}}</translation>
+<translation id="2015836039326522978"><ph name="APP_NAME" /> Chrome'da açılacaq. Davam etməklə, <ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Google Chrome və Chrome ƏS Əlavə Xidmət Şərtləri<ph name="END_LINK2" /> ilə razılaşırsınız. <ph name="BEGIN_LINK3" />Məxfilik Siyasəti<ph name="END_LINK3" /> də tətbiq edilir.</translation>
 <translation id="2020309681647789787">Bütün sinxronlaşdırılmış cihazlarınızda tarixçəniz olacaq, beləliklə, gördüyünüz işə davam edə bilərsiniz</translation>
 <translation id="2021896219286479412">Tam ekran sayt nəzarətləri</translation>
 <translation id="2038563949887743358">Əsas Versiya Sorğusunu aktiv edin</translation>
@@ -1222,6 +1223,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="8037750541064988519"><ph name="DAYS" /> gün qaldı</translation>
 <translation id="8037801708772278989">İndicə yoxlanılıb</translation>
 <translation id="804335162455518893">SD kart tapılmadı</translation>
+<translation id="8046319826565374740">Chrome'u istifadə etməklə, <ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Google Chrome və Chrome ƏS Əlavə Xidmət Şərtləri<ph name="END_LINK2" /> ilə razılaşırsınız. <ph name="BEGIN_LINK3" />Məxfilik Siyasəti<ph name="END_LINK3" /> də tətbiq edilir.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> anonim tab}other{<ph name="TAB_COUNT_NORMAL" /> anonim tab}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB əlçatandır</translation>
 <translation id="8058655154417507695">Bitmə ili</translation>

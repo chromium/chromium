@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">Menghantar beberapa kuki dan carian daripada bar alamat dan kotak carian ke enjin carian lalai anda</translation>
 <translation id="200114059308480249">Sertakan teks sekitar dalam carian Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Fail}other{# Fail}}</translation>
+<translation id="2015836039326522978"><ph name="APP_NAME" /> akan dibuka dalam Chrome. Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Dasar Privasi<ph name="END_LINK3" /> juga dikenakan.</translation>
 <translation id="2020309681647789787">Sejarah anda boleh didapati pada semua peranti tersegerak anda, jadi anda boleh meneruskan perkara yang sedang anda lakukan</translation>
 <translation id="2021896219286479412">Kawalan tapak skrin penuh</translation>
 <translation id="2038563949887743358">Hidupkan Minta tapak desktop</translation>
@@ -1224,6 +1225,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8037750541064988519"><ph name="DAYS" /> hari lagi</translation>
 <translation id="8037801708772278989">Disemak sebentar tadi</translation>
 <translation id="804335162455518893">Kad SD tidak ditemui</translation>
+<translation id="8046319826565374740">Dengan menggunakan Chrome, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Dasar Privasi<ph name="END_LINK3" /> juga dikenakan.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab inkognito}other{<ph name="TAB_COUNT_NORMAL" /> tab inkognito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB tersedia</translation>
 <translation id="8058655154417507695">Tahun tamat tempoh</translation>

@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalanca</translation>
 <translation id="1168100932582989117">Google ad sunucuları</translation>
+<translation id="1171082344678443012">XZ sıkıştırılmış arşivi</translation>
 <translation id="1172970565351728681">Yaklaşık <ph name="REMAINING_TIME" /> kaldı</translation>
 <translation id="1173894706177603556">Yeniden adlandır</translation>
 <translation id="1173916544412572294">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, %<ph name="BATTERY_STATUS" /> Telefon Pili, Ayrıntılar</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Bir sürücünün biçimlendirilmesi, üzerinde depolanan tüm verileri siler. Bu işlem geri alınamaz.</translation>
 <translation id="2025955442973426285">Tigrinya dili</translation>
 <translation id="2028997212275086731">RAR arşivi</translation>
+<translation id="2036414735548252477">LZMA sıkıştırılmış tar arşivi</translation>
 <translation id="2037845485764049925">Rusça</translation>
 <translation id="2044023416777079300">Modem kayıtlı değil</translation>
 <translation id="2046702855113914483">Japon eriştesi</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bayt</translation>
 <translation id="4880214202172289027">Ses kaydırma çubuğu</translation>
 <translation id="4881695831933465202">Aç</translation>
+<translation id="4886199584824489598">Bzip2 sıkıştırılmış arşivi</translation>
 <translation id="4900532980794411603">Parallels Desktop ile paylaş</translation>
 <translation id="4902546322522096650">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Bağlan</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> yedeklenmeye hazır</translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> ağı, bağlı değil</translation>
 <translation id="6074825444536523002">Google formu</translation>
 <translation id="6079871810119356840">Macarca Qwerty klavye</translation>
+<translation id="6082256976217156453">LZMA sıkıştırılmış arşivi</translation>
 <translation id="6096979789310008754">Arama metni temizlendi, tüm dosya ve klasörler gösteriliyor.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> adlı dosya <ph name="FOLDER_NAME" /> klasörüne taşınıyor</translation>
 <translation id="6129953537138746214">Boşluk</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">Hangul 3 Grubu (Üst Karakter Yok)</translation>
 <translation id="8299269255470343364">Japonca</translation>
 <translation id="8300849813060516376">OTASP başarısız oldu</translation>
+<translation id="8308481408797647857">XZ sıkıştırılmış tar arşivi</translation>
 <translation id="8312871300878166382">Klasörünün içine yapıştır</translation>
 <translation id="8329978297633540474">Düz metin</translation>
 <translation id="8335587457941836791">Raftaki sabitlemeyi kaldır</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">Değiştiren:</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> - <ph name="TO_ENTRY_NAME" /> arasında <ph name="ENTRY_COUNT" /> giriş seçildi.</translation>
+<translation id="961973045258256291">Gzip sıkıştırılmış arşivi</translation>
 <translation id="965477715979482472">İngilizce (Güney Afrika)</translation>
 <translation id="981121421437150478">Çevrimdışı</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" adlı bir dosya zaten var. Değiştirmek istiyor musunuz?</translation>

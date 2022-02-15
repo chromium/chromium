@@ -166,6 +166,7 @@
 <translation id="142858679511221695">Потребител на облака</translation>
 <translation id="1428729058023778569">Виждате това предупреждение, защото сайтът не поддържа HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Печат</translation>
+<translation id="1432187715652018471">Страницата иска да инсталира манипулатор на услуги.</translation>
 <translation id="1432581352905426595">Управление на търсещите машини</translation>
 <translation id="1436185428532214179">Може да поиска разрешение да редактира файлове и папки на устройството ви</translation>
 <translation id="1442386063175183758">Сгъване на десния край навътре</translation>
@@ -219,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;Не може да се установи частна връзка с/ъс <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, тъй като датата и часът на устройството ви (<ph name="DATE_AND_TIME" />) са неправилни.&lt;/p&gt;
 
 &lt;p&gt;Моля, коригирайте датата и часа от секцията &lt;strong&gt;General&lt;/strong&gt; на приложението &lt;strong&gt;Settings&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Администраторът ще рестартира устройството ви в <ph name="TIME" /> на <ph name="DATE" /></translation>
 <translation id="156703335097561114">Информация за мрежите, като например адреси, конфигурация на интерфейса и качество на връзката</translation>
 <translation id="1567040042588613346">Това правило работи нормално, но на друго място е зададена същата стойност, която е заменена от него.</translation>
 <translation id="1569487616857761740">Въведете дата на валидност</translation>
@@ -1973,6 +1975,7 @@
 <translation id="7304562222803846232">Управление на настройките за поверителност за профила в Google</translation>
 <translation id="7305756307268530424">Стартиране с по-бавна скорост</translation>
 <translation id="7308436126008021607">синхронизиране на заден план</translation>
+<translation id="7310392214323165548">Устройството ще се рестартира много скоро</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помощ при проблеми с връзката</translation>
 <translation id="7323804146520582233">Скриване на секцията „<ph name="SECTION" />“</translation>

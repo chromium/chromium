@@ -128,6 +128,7 @@
 <translation id="1698760176351776263">IPv6 முகவரி: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">டெஸ்க்: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">நெட்வொர்க் அமைப்புகள்</translation>
+<translation id="1715293566947629045">சுயவிவரத்தை முடக்குகிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">'உடனடி வசனம்' இயக்கப்பட்டது.</translation>
 <translation id="1720011244392820496">வைஃபை ஒத்திசைவை இயக்குங்கள்</translation>
@@ -273,6 +274,7 @@
 <translation id="2750932254614666392">"நீக்கு"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது</translation>
 <translation id="2782591952652094792">படமெடுப்புப் பயன்முறையிலிருந்து வெளியேறும்</translation>
+<translation id="2791421900609674576">நீங்கள் விட்ட இடத்தில் இருந்து தொடர்வதற்கு உதவும் வகையில் பரிந்துரைகள் காட்டப்படும். தொட்டுப் பிடிப்பதன் மூலம் அவற்றை அகற்றலாம்.</translation>
 <translation id="2792498699870441125">Alt+தேடல்</translation>
 <translation id="2797741504905337289">ஷெல்ஃப் பார்ட்டி</translation>
 <translation id="2803313416453193357">ஃபோல்டரைத் திற</translation>
@@ -396,6 +398,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{ஒரு நிமிடத்திற்குள் சாதனத்தை மீண்டும் தொடங்குங்கள்}other{# நிமிடங்களுக்குள் சாதனத்தை மீண்டும் தொடங்குங்கள்}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> சாதனங்களுடன் இணைக்கப்பட்டுள்ளது</translation>
+<translation id="3542066395059568317">நீங்கள் விட்ட இடத்தில் இருந்து தொடர்வதற்கு உதவும் வகையில் பரிந்துரைகள் காட்டப்படும். வலது கிளிக் செய்து அவற்றை அகற்றலாம்.</translation>
 <translation id="3552189655002856821">வைஃபை முடக்கப்பட்டது</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ஷெல்ஃபில் நிலையாகப் பொருத்தப்பட்டது</translation>
 <translation id="3560866052109807830">மார்க்கர் கருவிகள்</translation>

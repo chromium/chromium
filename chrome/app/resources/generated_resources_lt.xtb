@@ -1992,6 +1992,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="2933632078076743449">Paskutinį kartą atnaujinta</translation>
 <translation id="2934999512438267372">Visiškas MIDI įrenginių valdymas leidžiamas</translation>
 <translation id="2935225303485967257">Tvarkyti profilius</translation>
+<translation id="2935314715123552088">Išjungti aktyvų „eSIM“ kortelės profilį</translation>
 <translation id="2935654492420446828">Mokyklos paskyrą pridėkite vėliau</translation>
 <translation id="2936851848721175671">Sukurti atsarginę kopiją ir atkurti</translation>
 <translation id="2939908794993783865">Papildomos neaktyvios svetainės</translation>
@@ -3141,6 +3142,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4104163789986725820">Eksportuoti...</translation>
 <translation id="4107048419833779140">Identifikuoti ir pašalinti saugyklos įrenginius</translation>
 <translation id="4109135793348361820">Perkelti langą <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Atkurti perspėjimą</translation>
 <translation id="4110490973560452005">Atsisiuntimas baigtas: <ph name="FILE_NAME" />. Kad perjungtumėte į atsisiuntimų juostą, paspauskite „Shift“ + F6.</translation>
 <translation id="4110686435123617899">Pasirinkti albumą „<ph name="TITLE" />“ (<ph name="DESC" />)</translation>
 <translation id="4112194537011183136">„<ph name="DEVICE_NAME" />“ (neprisijungta)</translation>
@@ -3264,6 +3266,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4259388776256904261">Tai gali šiek tiek užtrukti</translation>
 <translation id="4260182282978351200">Failas „<ph name="FILE_NAME" />“ gali būti pavojingas. Siųsti „Google“ papildomos apsaugos programai, kad nuskaitytų? Kad perjungtumėte į atsisiuntimų juostą, paspauskite „Shift“ + F6.</translation>
 <translation id="4261429981378979799">Plėtinių leidimai</translation>
+<translation id="4262004481148703251">Atsisakyti perspėjimo</translation>
 <translation id="4263223596040212967">Patikrinkite klaviatūros išdėstymą ir bandykite dar kartą.</translation>
 <translation id="426564820080660648">Jei norite tikrinti, ar nėra naujinių, naudokite eternetą, „Wi-Fi“ arba mobiliojo ryšio duomenis.</translation>
 <translation id="4266679478228765574">Pašalinus aplankus bus sustabdytas bendrinimas, bet failai nebus ištrinti.</translation>
@@ -3670,6 +3673,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4681453295291708042">Išjungti Bendrinimo netoliese funkciją</translation>
 <translation id="4681930562518940301">Atidaryti originalų &amp;vaizdą naujame skirtuke</translation>
 <translation id="4682551433947286597">Ekrano fonai rodomi prisijungimo ekrane.</translation>
+<translation id="4682830185876172415">Naujausi atsisiuntimai</translation>
 <translation id="4683629100208651599">Rašyti mažosiomis raidėmis</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (numatyta)</translation>
 <translation id="4684427112815847243">Viską sinchronizuoti</translation>
@@ -3935,6 +3939,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="496446150016900060">Sinchronizuokite „Wi-Fi“ tinklus su telefonu</translation>
 <translation id="4965808351167763748">Ar tikrai norite nustatyti šį įrenginį, kad būtų galima paleisti „Hangout Meet“?</translation>
 <translation id="4966972803217407697">Įjungtas inkognito režimas</translation>
+<translation id="496742804571665842">Išjungti „eSIM“ kortelės profilius</translation>
 <translation id="496888482094675990">Naudodami programą „Failai“ greitai pasieksite „Google“ diske, išorinėje atmintinėje ar „Chrome“ OS įrenginyje išsaugotus failus.</translation>
 <translation id="4971412780836297815">Baigus atidaryti</translation>
 <translation id="4971735654804503942">Spartesnė, veiksni apsauga nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Įspėjama apie slaptažodžių pažeidimus. Naršymo duomenys turi būti siunčiami į sistemą „Google“.</translation>
@@ -6291,6 +6296,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7448430327655618736">Automatiškai įdiekite programas</translation>
 <translation id="7449752890690775568">Pašalinti slaptažodį?</translation>
 <translation id="7450761244949417357">Dabar atidaroma naršyklėje „<ph name="ALTERNATIVE_BROWSER_NAME" />“</translation>
+<translation id="7452166281927983300">Perspėjimai, kurių atsisakyta (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Pasirinkdami šį spausdintuvą suteikiate nurodytam plėtiniui leidimą pasiekti savo spausdintuvą:</translation>
 <translation id="7454548535253569100">Portalas: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Papildomų sudėtinių failų valdymas</translation>

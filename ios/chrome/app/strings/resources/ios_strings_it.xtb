@@ -840,6 +840,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8591976964826315682">Blocca cookie di terze parti in modalità di navigazione in incognito</translation>
 <translation id="8605219856220328675">Chiudi la scheda.</translation>
 <translation id="8620640915598389714">Modifica</translation>
+<translation id="8626393685701737946">Puoi cambiare la visualizzazione predefinita del sito in Desktop in Impostazioni &gt; Impostazioni contenuti</translation>
 <translation id="863090005774946393">Il tuo browser è gestito dalla tua organizzazione. Alcune funzionalità potrebbero essere disattivate.</translation>
 <translation id="8636825310635137004">Attiva la sincronizzazione per trovare le tue schede degli altri dispositivi.</translation>
 <translation id="8654802032646794042">Annulla</translation>
@@ -859,6 +860,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8803639129939845298">Sicuro</translation>
 <translation id="8806823403540278281">La tua organizzazione ti richiede di navigare in privato. Le schede non vengono salvate in modalità di navigazione in incognito.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="8810413591309742901">Visualizzazione predefinita sito</translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8840513115188359703">Non verrai disconnesso dal tuo Account Google.</translation>
 <translation id="8843129975935593190">La tua organizzazione limita ciò che puoi sincronizzare.</translation>

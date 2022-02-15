@@ -220,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;உங்கள் சாதனத்தின் தேதி மற்றும் நேரம் (<ph name="DATE_AND_TIME" />) தவறாக இருப்பதால் <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> என்கிற டொமைனிற்குத் தனிப்பட்ட இணைப்பை ஏற்படுத்த முடியவில்லை.&lt;/p&gt;
 
       &lt;p&gt;தேதி மற்றும் நேரத்தை &lt;strong&gt;அமைப்புகள்&lt;/strong&gt; ஆப்ஸின் &lt;strong&gt;பொது&lt;/strong&gt; என்கிற பகுதியில் மாற்றவும்.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">உங்கள் நிர்வாகி சாதனத்தை <ph name="DATE" /> அன்று <ph name="TIME" /> மணிக்கு மீண்டும் தொடங்குவார்</translation>
 <translation id="156703335097561114">முகவரிகள், இடைமுக உள்ளமைவு, இணைப்பின் தரம் போன்ற நெட்வொர்க்கிங் தகவல்கள்</translation>
 <translation id="1567040042588613346">இந்தக் கொள்கை எதிர்பார்த்த வகையில் வேலை செய்கிறது. ஆனால் இதே மதிப்பு வேறு எங்கோ அமைக்கப்பட்டுள்ளதோடு இந்தக் கொள்கையின் மூலம் மாற்றியமைக்கப்படுகிறது.</translation>
 <translation id="1569487616857761740">காலாவதித் தேதியை உள்ளிடவும்</translation>
@@ -1971,6 +1972,7 @@
 <translation id="7304562222803846232">Google கணக்கின் தனியுரிமை அமைப்புகளை நிர்வகியுங்கள்</translation>
 <translation id="7305756307268530424">மெதுவான வேகத்தில் தொடங்கு</translation>
 <translation id="7308436126008021607">பின்னணி ஒத்திசைவு</translation>
+<translation id="7310392214323165548">சாதனம் விரைவில் மீண்டும் தொடங்கும்</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">இணைப்பிற்கான உதவி</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" பிரிவை மறைக்கும்</translation>

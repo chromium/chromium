@@ -1975,6 +1975,7 @@
 <translation id="2933632078076743449">Վերջին թարմացումը</translation>
 <translation id="2934999512438267372">MIDI սարքերի նկատմամբ ամբողջական վերահսկողությունը թույլատրված է</translation>
 <translation id="2935225303485967257">Կառավարել պրոֆիլները</translation>
+<translation id="2935314715123552088">Անջատել ակտիվ eSIM պրոֆիլը</translation>
 <translation id="2935654492420446828">Ավելացնել դպրոցական հաշիվ ավելի ուշ</translation>
 <translation id="2936851848721175671">Պահուստավորում և վերականգնում</translation>
 <translation id="2939908794993783865">Լրացուցիչ ոչ ակտիվ կայքեր</translation>
@@ -3124,6 +3125,7 @@
 <translation id="4104163789986725820">Ար&amp;տահանել…</translation>
 <translation id="4107048419833779140">Գտնել և անջատել հիշասարքերը</translation>
 <translation id="4109135793348361820">Տեղափոխել պատուհանը <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Վերականգնել նախազգուշացումը</translation>
 <translation id="4110490973560452005">Ներբեռնումն ավարտվեց. <ph name="FILE_NAME" />: Սեղմեք Shift+F6՝ ներբեռնումների գոտու տարածք անցնելու համար:</translation>
 <translation id="4110686435123617899">Ընտրեք ալբոմը՝ «<ph name="TITLE" />» (<ph name="DESC" />)</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (անցանց)</translation>
@@ -3247,6 +3249,7 @@
 <translation id="4259388776256904261">Կարող է որոշ ժամանակ պահանջվել</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> ֆայլը կարող է վտանգավոր լինել։ Ստուգե՞լ այն Google-ի լրացուցիչ պաշտպանության միջոցով։ Սեղմեք Shift+F6՝ ներբեռնումների գոտու տարածք անցնելու համար։</translation>
 <translation id="4261429981378979799">Ընդլայնման թույլտվություններ</translation>
+<translation id="4262004481148703251">Փակել նախազգուշացումը</translation>
 <translation id="4263223596040212967">Ստուգեք ստեղնաշարի դասավորությունը և նորից փորձեք։</translation>
 <translation id="426564820080660648">Թարմացումների առկայությունն ստուգելու համար օգտագործեք Ethernet, Wi-Fi կամ տվյալների բջջային փոխանցում:</translation>
 <translation id="4266679478228765574">Եթե պանակները ջնջեք, կհեռացվի միայն դրանց հասանելիությունը։ Ֆայլերը կպահպանվեն։</translation>
@@ -3652,6 +3655,7 @@
 <translation id="4681453295291708042">Անջատել մոտակա սարքերի հետ փոխանակումը</translation>
 <translation id="4681930562518940301">Բացել &amp;պատկերի բնօրինակը նոր ներդիրով</translation>
 <translation id="4682551433947286597">Պաստառները ցուցադրվում են մուտքի էկրանին:</translation>
+<translation id="4682830185876172415">Վերջին ներբեռնումները</translation>
 <translation id="4683629100208651599">Դարձնել փոքրատառ</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (կանխադրված)</translation>
 <translation id="4684427112815847243">Համաժամացնել բոլորը</translation>
@@ -3918,6 +3922,7 @@
 <translation id="496446150016900060">Համաժամացնել Wi-Fi ցանցերը ձեր հեռախոսի հետ</translation>
 <translation id="4965808351167763748">Կարգավորե՞լ Hangouts Meet-ն այս սարքում</translation>
 <translation id="4966972803217407697">Դուք ինկոգնիտո ռեժիմում եք</translation>
+<translation id="496742804571665842">Անջատել eSIM պրոֆիլները</translation>
 <translation id="496888482094675990">«Ֆայլեր» ծրագիրն ապահովում է արագ մուտք դեպի ֆայլեր, որոնք դուք պահել եք Google Drive-ում, արտաքին հիշողությունում կամ ձեր Chrome OS սարքում:</translation>
 <translation id="4971412780836297815">Բացել ավարտվելուն պես</translation>
 <translation id="4971735654804503942">Ավելի արագ և արդյունավետ պաշտպանություն վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։ Զգուշացնում է ձեզ գաղտնաբառերի արտահոսքի մասին։ Պահանջվում է դիտարկիչի աշխատանքի մասին տվյալների ուղարկում Google-ին։</translation>
@@ -6275,6 +6280,7 @@
 <translation id="7448430327655618736">Ավտոմատ տեղադրել հավելվածներ</translation>
 <translation id="7449752890690775568">Հեռացնե՞լ գաղտնաբառը</translation>
 <translation id="7450761244949417357">Բացվում է <ph name="ALTERNATIVE_BROWSER_NAME" /> դիտարկիչով</translation>
+<translation id="7452166281927983300">Անտեսված նախազգուշացումներ (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Ընտրելով այս տպիչը՝ դուք հետևյալ ընդլայնմանը թույլատրում եք մուտք գործել ձեր տպիչ՝</translation>
 <translation id="7454548535253569100">Պորտալ՝ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Կառավարել լրացուցիչ կոնտեյներներ</translation>

@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">মানটি অবশ্যই <ph name="MINIMUM" />এর চেয়ে বেশি বা সমান হবে৷</translation>
 <translation id="5196716972587102051">২</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">টিক চিহ্ন দেওয়া নেই। গ্রুপে, <ph name="COUNT" />টির মধ্যে <ph name="INDEX" /> নম্বর বিকল্প</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' অনুসরণ করে একটি অংশ লিখুন৷ '<ph name="INVALIDADDRESS" />' অসম্পূর্ণ৷</translation>
 <translation id="5334352251556557839">মিডিয়া চালানো যাচ্ছে না।</translation>
 <translation id="537648784377940524">আগের তারিখ (<ph name="MIN_DATE_OR_TIME" />) অবশ্যই পরের তারিখের (<ph name="MAX_DATE_OR_TIME" />) আগে লিখতে হবে।</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">অন্যান্য...</translation>
 <translation id="6709093583001123835">মান অবশ্যই <ph name="VALUE" /> হতে হবে।</translation>
 <translation id="6709570249143506788">প্লেব্যাকের গুণমান খারাপ</translation>
+<translation id="6719914554879143100">টিক চিহ্ন দেওয়া হয়েছে। গ্রুপে, <ph name="COUNT" />টির মধ্যে <ph name="INDEX" /> নম্বর বিকল্প</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6820355525329141109">প্লাগ-ইন লোড করা যায়নি।</translation>
 <translation id="6831465880655513317">কালার ওয়েলে দুই ডাইমেনশনের স্লাইডার আছে যেটি দিয়ে রঙ গাঢ় ও হালকা করা যায়</translation>

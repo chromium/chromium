@@ -220,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;デバイスの日時（<ph name="DATE_AND_TIME" />）が正しくないため、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> へのプライベート接続を確立できません。&lt;/p&gt;
 
       &lt;p&gt;&lt;strong&gt;設定&lt;/strong&gt;アプリの [&lt;strong&gt;全般&lt;/strong&gt;] セクションで日時を調整してください。&lt;/p&gt;</translation>
+<translation id="1559839503761818503">お使いのデバイスは <ph name="DATE" /> 日 <ph name="TIME" /> 時に管理者によって再起動されます</translation>
 <translation id="156703335097561114">ネットワーク情報（アドレス、インターフェース設定、接続品質など）</translation>
 <translation id="1567040042588613346">このポリシーは想定どおり動作していますが、同じ値が設定されている別のポリシーが優先されています。</translation>
 <translation id="1569487616857761740">有効期限の入力</translation>
@@ -1967,6 +1968,7 @@
 <translation id="7304562222803846232">Google アカウントのプライバシー設定を管理する</translation>
 <translation id="7305756307268530424">低速から開始</translation>
 <translation id="7308436126008021607">バックグラウンド同期</translation>
+<translation id="7310392214323165548">間もなくデバイスが再起動します</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">接続に関するヘルプ</translation>
 <translation id="7323804146520582233">「<ph name="SECTION" />」セクションを非表示にする</translation>

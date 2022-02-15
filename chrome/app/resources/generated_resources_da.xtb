@@ -1990,6 +1990,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2933632078076743449">Seneste opdatering</translation>
 <translation id="2934999512438267372">Fuld kontrol over MIDI-enheder blev tilladt</translation>
 <translation id="2935225303485967257">Administrer profiler</translation>
+<translation id="2935314715123552088">Deaktiver aktiv eSIM-profil</translation>
 <translation id="2935654492420446828">Tilføj en skolekonto senere</translation>
 <translation id="2936851848721175671">Sikkerhedskopiering og gendannelse</translation>
 <translation id="2939908794993783865">Yderligere inaktive websites</translation>
@@ -3139,6 +3140,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4104163789986725820">E&amp;ksporter...</translation>
 <translation id="4107048419833779140">Identificer og fjern lagerenheder</translation>
 <translation id="4109135793348361820">Flyt vindue til <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Gendan advarsel</translation>
 <translation id="4110490973560452005">[=1]1 download er fuldført: <ph name="FILE_NAME" />. Tryk på Shift+F6 for at skifte til downloadlinjen.</translation>
 <translation id="4110686435123617899">Vælg albummet <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
@@ -3262,6 +3264,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4259388776256904261">Dette kan tage lidt tid</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> kan være skadelig. Skal Google-programmet Avanceret beskyttelse scanne den? Tryk på Shift+F6 for at skifte til downloadlinjen.</translation>
 <translation id="4261429981378979799">Tilladelser for udvidelser</translation>
+<translation id="4262004481148703251">Luk advarsel</translation>
 <translation id="4263223596040212967">Tjek dit tastaturlayout, og prøv igen.</translation>
 <translation id="426564820080660648">Du kan søge efter opdateringer via Ethernet, Wi-Fi eller mobildata.</translation>
 <translation id="4266679478228765574">Fjernelse af mapper stopper delingen, men sletter ikke filerne.</translation>
@@ -3668,6 +3671,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4681453295291708042">Deaktiver Deling tæt på</translation>
 <translation id="4681930562518940301">Åbn originalbillede på ny fane</translation>
 <translation id="4682551433947286597">Baggrunde vises på loginskærmen.</translation>
+<translation id="4682830185876172415">Seneste downloads</translation>
 <translation id="4683629100208651599">Anvend små bogstaver</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (standard)</translation>
 <translation id="4684427112815847243">Synkroniser alt</translation>
@@ -3933,6 +3937,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="496446150016900060">Synkroniser Wi-Fi-netværk med din telefon</translation>
 <translation id="4965808351167763748">Er du sikker på, at du vil konfigurere denne enhed til at køre Hangouts Meet?</translation>
 <translation id="4966972803217407697">Du er i inkognitotilstand</translation>
+<translation id="496742804571665842">Deaktiver eSIM-profiler</translation>
 <translation id="496888482094675990">Appen Filer giver hurtig adgang til filer, som du har gemt i Google Drev, på et eksternt lager eller på din Chrome OS-enhed.</translation>
 <translation id="4971412780836297815">Åbn, når den er fuldført</translation>
 <translation id="4971735654804503942">Hurtigere proaktiv beskyttelse mod skadelige websites, downloads og udvidelser. Advarer dig om læk af adgangskoder. Kræver, at browserdata sendes til Google.</translation>
@@ -6288,6 +6293,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7448430327655618736">Installer apps automatisk</translation>
 <translation id="7449752890690775568">Vil du fjerne adgangskoden?</translation>
 <translation id="7450761244949417357">Åbner i <ph name="ALTERNATIVE_BROWSER_NAME" /> nu</translation>
+<translation id="7452166281927983300">Lukkede advarsler (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Ved at vælge denne printer giver du følgende udvidelser adgang til din printer:</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Administrer ekstra containere</translation>

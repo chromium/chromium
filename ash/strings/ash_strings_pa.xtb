@@ -128,6 +128,7 @@
 <translation id="1698760176351776263">IPv6 ਪਤਾ: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">ਡੈਸਕ: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="1715293566947629045">ਪ੍ਰੋਫਾਈਲ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰੋ।</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">ਲਾਈਵ ਸੁਰਖੀਆਂ ਚਾਲੂ ਹਨ।</translation>
 <translation id="1720011244392820496">ਵਾਈ-ਫਾਈ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
@@ -273,6 +274,7 @@
 <translation id="2750932254614666392">"ਮਿਟਾਓ"</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> ਡੋਮੇਨ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ</translation>
 <translation id="2782591952652094792">ਕੈਪਚਰ ਮੋਡ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
+<translation id="2791421900609674576">ਤੁਹਾਨੂੰ ਸਿਫ਼ਾਰਸ਼ਾਂ ਦਿਖਾਈ ਦੇਣਗੀਆਂ ਤਾਂ ਜੋ ਤੁਸੀਂ ਉੱਥੋਂ ਜਾਰੀ ਰੱਖ ਸਕੋ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ।  ਤੁਸੀਂ ਸਿਫ਼ਾਰਸ਼ਾਂ ਹਟਾਉਣ ਲਈ ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">ਸ਼ੈਲਫ ਪਾਰਟੀ</translation>
 <translation id="2803313416453193357">ਫੋਲਡਰ ਖੋਲ੍ਹੋ</translation>
@@ -396,6 +398,7 @@
         <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ 1 ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="3542066395059568317">ਤੁਹਾਨੂੰ ਸਿਫ਼ਾਰਸ਼ਾਂ ਦਿਖਾਈ ਦੇਣਗੀਆਂ ਤਾਂ ਜੋ ਤੁਸੀਂ ਉੱਥੋਂ ਜਾਰੀ ਰੱਖ ਸਕੋ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ। ਤੁਸੀਂ ਸਿਫ਼ਾਰਸ਼ਾਂ ਹਟਾਉਣ ਲਈ ਸੱਜਾ-ਕਲਿੱਕ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3552189655002856821">ਵਾਈ-ਫਾਈ ਬੰਦ ਹੈ</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ਨੂੰ ਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3560866052109807830">ਮਾਰਕਰ ਚਿੱਤਰਕਾਰੀ ਟੂਲ</translation>

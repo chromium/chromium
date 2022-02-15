@@ -603,6 +603,7 @@
 <translation id="1604432177629086300">לא ניתן היה להדפיס. יש לבדוק את המדפסת ולנסות שוב.</translation>
 <translation id="1605744057217831567">הצגת כל הנתונים מאתרים וההרשאות</translation>
 <translation id="1606077700029460857">שינוי הגדרות העכבר</translation>
+<translation id="1606566847233779212">להסיר את האתרים הספציפיים שהוספת?</translation>
 <translation id="1607139524282324606">ניקוי רשומה</translation>
 <translation id="1607499585984539560">המשתמש לא משויך לדומיין</translation>
 <translation id="1608668830839595724">פעולות נוספות שאפשר לבצע בפריטים שנבחרו</translation>
@@ -875,6 +876,7 @@
 <translation id="1845727111305721124">מורשים להשמיע צלילים</translation>
 <translation id="1846308012215045257">‏כדי להפעיל את <ph name="PLUGIN_NAME" />, יש ללחוץ עליו תוך כדי הקשה על Control</translation>
 <translation id="184862733444771842">שליחת בקשה להוספת תכונה</translation>
+<translation id="1849016657376805933">‏כל מכשיר HID</translation>
 <translation id="1849186935225320012">‏לדף זה יש שליטה מלאה על מכשירי MIDI.</translation>
 <translation id="1850145825777333687">פרטי הכניסה של המכשיר</translation>
 <translation id="1850508293116537636">סיבוב &amp;בכיוון השעון</translation>
@@ -1009,6 +1011,7 @@
 <translation id="1988259784461813694">דרישה</translation>
 <translation id="1989112275319619282">עיון</translation>
 <translation id="1989113344093894667">לא ניתן לצלם תוכן</translation>
+<translation id="1989744123191450103">הגיבוי נכשל</translation>
 <translation id="1989903373608997757">להשתמש תמיד</translation>
 <translation id="1990046457226896323">הסתיימה ההורדה של קובצי הדיבור</translation>
 <translation id="1990512225220753005">לא להציג קיצורי דרך בדף הזה</translation>
@@ -1018,6 +1021,7 @@
 <translation id="1994173015038366702">כתובת אתר</translation>
 <translation id="1995916364271252349">בדף הזה אפשר לשלוט על המידע שאתרים יכולים להשתמש בו ולהציג אותו (מיקום, מצלמה, חלונות קופצים ועוד)</translation>
 <translation id="1997616988432401742">האישורים שלך</translation>
+<translation id="1997645434968427303">‏שחזור הגיבוי של Linux נכשל. סיבה אפשרית לכך היא שאין מספיק מקום אחסון פנוי ב-Linux. ניתן לשנות את המקום בכונן שמוקצה ל-Linux ולנסות לשחזר את הגיבוי שוב בהגדרות מערכת ההפעלה.</translation>
 <translation id="1999115740519098545">בעת ההפעלה</translation>
 <translation id="2000419248597011803">‏שליחה של חלק מקובצי ה-Cookie והחיפושים משורת כתובת האתר ומתיבת החיפוש אל מנוע החיפוש שהוגדר כברירת מחדל</translation>
 <translation id="2002109485265116295">זמן אמת</translation>
@@ -1985,6 +1989,7 @@
 <translation id="2933632078076743449">עדכון אחרון</translation>
 <translation id="2934999512438267372">‏לאתר יש שליטה מלאה במכשירי MIDI</translation>
 <translation id="2935225303485967257">ניהול פרופילים</translation>
+<translation id="2935314715123552088">‏השבתה של פרופיל ה-eSIM הפעיל</translation>
 <translation id="2935654492420446828">הוספת חשבון בית ספרי מאוחר יותר</translation>
 <translation id="2936851848721175671">גיבוי ושחזור</translation>
 <translation id="2939908794993783865">אתרים נוספים שאינם פעילים</translation>
@@ -2096,6 +2101,7 @@
 <translation id="3046178388369461825">‏נפח האחסון של Linux כמעט נגמר</translation>
 <translation id="3046910703532196514">דף אינטרנט, שלם</translation>
 <translation id="304747341537320566">מנועי דיבור</translation>
+<translation id="3048336643003835855">‏מכשירי HID מהספק <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">יומני העברה ומכשירים</translation>
 <translation id="3051250416341590778">גודל תצוגה</translation>
 <translation id="3053013834507634016">שימוש במפתח אישור </translation>
@@ -2523,6 +2529,7 @@
 <translation id="3511307672085573050">העתקת כתוב&amp;ת קישור</translation>
 <translation id="351152300840026870">גופן ברוחב קבוע</translation>
 <translation id="3511528412952710609">קצרה</translation>
+<translation id="3514011352559420398">השחזור נכשל</translation>
 <translation id="3514335087372914653">בקרת משחקים</translation>
 <translation id="3514373592552233661">כשיש יותר מרשת זמינה אחת, הרשתות המועדפות יקבלו עדיפות על פני רשתות מוכרות אחרות</translation>
 <translation id="3515983984924808886">יש לגעת במפתח האבטחה פעם נוספת כדי לאשר את האיפוס. כל המידע שמאוחסן במפתח האבטחה יימחק, כולל קוד האימות.</translation>
@@ -3132,6 +3139,7 @@
 <translation id="4104163789986725820">יי&amp;צוא...</translation>
 <translation id="4107048419833779140">לזהות ולהוציא התקני אחסון</translation>
 <translation id="4109135793348361820">העברת חלון אל <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">שחזור האזהרה</translation>
 <translation id="4110490973560452005">‏ההורדה הושלמה: <ph name="FILE_NAME" />. אפשר להקיש על Shift+F6 כדי לעבור לאזור סרגל ההורדות.</translation>
 <translation id="4110686435123617899">בחירת האלבום <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (אופליין)</translation>
@@ -3190,6 +3198,7 @@
 <translation id="4180788401304023883">‏למחוק את אישור CA של "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">שפות</translation>
+<translation id="4184803915913850597">‏מכשיר HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">יש לגרור כדי להזיז צג</translation>
 <translation id="4187424053537113647">ההגדרה של <ph name="APP_NAME" /> מתבצעת…</translation>
 <translation id="4190828427319282529">הדגשת מיקוד המקלדת</translation>
@@ -3254,6 +3263,7 @@
 <translation id="4259388776256904261">הפעולה עשויה להימשך זמן מה</translation>
 <translation id="4260182282978351200">‏הקובץ <ph name="FILE_NAME" /> עלול להיות מסוכן. האם לשלוח אותו לסריקה באמצעות ההגנה המתקדמת של Google? אפשר להקיש על Shift+F6 כדי לעבור לאזור סרגל ההורדות.</translation>
 <translation id="4261429981378979799">הרשאות של תוספים</translation>
+<translation id="4262004481148703251">סגירת האזהרה</translation>
 <translation id="4263223596040212967">כדאי לבדוק את פריסת המקלדת ולנסות שוב.</translation>
 <translation id="426564820080660648">‏כדי לבדוק אם יש עדכונים, צריך להשתמש ב-Ethernet, ב-Wi-Fi או בחבילת גלישה.</translation>
 <translation id="4266679478228765574">הסרה של תיקיות תפסיק את השיתוף, אבל לא תמחק קבצים.</translation>
@@ -3660,6 +3670,7 @@
 <translation id="4681453295291708042">השבתה של 'שיתוף בקרבת מקום'</translation>
 <translation id="4681930562518940301">פתיחת ה&amp;תמונה המקורית בכרטיסייה חדשה</translation>
 <translation id="4682551433947286597">טפטים מופיעים במסך הכניסה.</translation>
+<translation id="4682830185876172415">ההורדות האחרונות</translation>
 <translation id="4683629100208651599">שינוי לאותיות קטנות</translation>
 <translation id="4683947955326903992">‏‎<ph name="PERCENTAGE" />%‎ (ברירת מחדל)</translation>
 <translation id="4684427112815847243">סנכרון הכל</translation>
@@ -3682,6 +3693,7 @@
 <translation id="4699357559218762027">(מופעלת אוטומטית)</translation>
 <translation id="4701025263201366865">כניסה של הורה</translation>
 <translation id="4701335814944566468">נצפה אתמול</translation>
+<translation id="4707337002099455863">פועל כל הזמן בכל האתרים</translation>
 <translation id="4708794300267213770">הצגת מסך הנעילה ביציאה ממצב שינה</translation>
 <translation id="4708849949179781599">יציאה מ-<ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">שחזור הגדרות</translation>
@@ -3924,6 +3936,7 @@
 <translation id="496446150016900060">‏סנכרון של רשתות Wi-Fi עם הטלפון שלך</translation>
 <translation id="4965808351167763748">‏בחרת להגדיר שהמכשיר הזה יפעיל את Hangouts Meet. להמשיך?</translation>
 <translation id="4966972803217407697">עברת למצב אנונימי</translation>
+<translation id="496742804571665842">‏השבתת פרופילים של eSIM</translation>
 <translation id="496888482094675990">‏היישום Files מספק גישה מהירה לקבצים ששמרת ב-Google Drive, באחסון חיצוני או במכשיר שלך עם מערכת הפעלה של Chrome.</translation>
 <translation id="4971412780836297815">פתיחה בסיום ההורדה</translation>
 <translation id="4971735654804503942">‏הגנה מהירה יותר ואקטיבית מפני אתרים, הורדות ותוספים מסוכנים. המערכת מזהירה אותך בנוגע לחשיפה של סיסמאות. כשמצב ההגנה הזה בשימוש, נתוני גלישה נשלחים אל Google.</translation>
@@ -4145,6 +4158,7 @@
 <translation id="5208548918290612795">אחסון אסימון אימות של <ph name="WEB_DRIVE" /></translation>
 <translation id="520902706163766447">‏ניתן להתיר הצגה של בועה קופצת בממשק העליון של Chrome כדי לחפש בכרטיסיות הפתוחות.</translation>
 <translation id="5209320130288484488">לא נמצאו מכשירים</translation>
+<translation id="5209513429611499188">‏מכשירי HID עם ערכי שימוש מדף השימוש <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">סגירת כרטיסייה</translation>
 <translation id="5213114823401215820">פתיחה מחדש של קבוצה שנסגרה</translation>
 <translation id="5213481667492808996">שירות הנתונים של '<ph name="NAME" />' מוכן לשימוש</translation>
@@ -4551,6 +4565,7 @@
 <translation id="5627086634964711283">הגדרה זו גם קובעת איזה דף מוצג כשלוחצים על הלחצן 'דף הבית'.</translation>
 <translation id="5627676517703583263">‏גלישה חכמה עם Chrome</translation>
 <translation id="5627832140542566187">כיוון המסך</translation>
+<translation id="5628393161682339323">בלחיצה על התוסף</translation>
 <translation id="562935524653278697">מנהל המערכת השבית את הסנכרון של סימניות, היסטוריה, סיסמאות והגדרות אחרות שלך.</translation>
 <translation id="5631017369956619646">שימוש במעבד</translation>
 <translation id="5632059346822207074">‏נשלחה בקשת הרשאה, יש ללחוץ על Ctrl + 'קדימה' כדי להשיב</translation>
@@ -4685,6 +4700,7 @@
 <translation id="5781092003150880845">סנכרון בשם <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">שליחת תגובות אל <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">מתבצע תרגום...</translation>
+<translation id="5783304934509327739">אפשרות הגישה לאתרים</translation>
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5785583009707899920">‏תוכניות שירות של Chrome לקבצים</translation>
 <translation id="5787146423283493983">הסכם מפתח</translation>
@@ -4735,6 +4751,7 @@
 <translation id="5834581999798853053">נותרו בערך <ph name="TIME" /> דקות</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - הקלטה במצלמה או במיקרופון</translation>
 <translation id="583673505367439042">אתרים יכולים לבקש הרשאה לערוך קבצים ותיקיות במכשיר שלך</translation>
+<translation id="583756221537636748">כיסוי</translation>
 <translation id="5840680448799937675">קבצים ישותפו תמיד במצב אופליין</translation>
 <translation id="5841270259333717135">‏הגדרת Ethernet</translation>
 <translation id="5842497610951477805">‏הפעלה של Bluetooth</translation>
@@ -5372,6 +5389,7 @@
 <translation id="6499143127267478107">‏הבירור של כתובת של שרת מארח בסקריפט של שרת Proxy מתבצע...</translation>
 <translation id="6499764981457476645">לא נמצאו מכשירים בקרבת מקום</translation>
 <translation id="6501086852992132091">האפליקציה <ph name="APP_ORIGIN" /> מבקשת לפתוח את הקובץ הזה:</translation>
+<translation id="65017764184991091">‏גיבוי האפליקציות וקובצי ה-Linux נכשל. סיבה אפשרית לכך היא שאין מספיק מקום אחסון פנוי. עליך לנסות לפנות מקום במכשיר או לבחור מיקום אחר לגיבוי.</translation>
 <translation id="6501957628055559556">כל הקונטיינרים</translation>
 <translation id="650266656685499220">‏כדי ליצור אלבומים, יש לעבור ל-Google Photos</translation>
 <translation id="6503077044568424649">הכי פופולריים</translation>
@@ -6274,6 +6292,7 @@
 <translation id="7448430327655618736">התקנה אוטומטית של אפליקציות</translation>
 <translation id="7449752890690775568">האם להסיר את הסיסמה?</translation>
 <translation id="7450761244949417357">נפתח ב-<ph name="ALTERNATIVE_BROWSER_NAME" /> עכשיו</translation>
+<translation id="7452166281927983300">אזהרות שנסגרו (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">הבחירה במדפסת הזו מעניקה לתוסף הבא את ההרשאה לגשת למדפסת:</translation>
 <translation id="7454548535253569100">פורטל: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">ניהול קונטיינרים נוספים</translation>
@@ -7401,6 +7420,7 @@
 <translation id="8581809080475256101">יש ללחוץ כדי להתקדם, תפריט הקשר כדי לראות את ההיסטוריה</translation>
 <translation id="8584280235376696778">פתיחת וידאו בכרטיסייה חדשה</translation>
 <translation id="8584427708066927472">הסיסמה נמחקה מהמכשיר הזה</translation>
+<translation id="8584843865238667486">‏מכשירי HID עם שימוש של <ph name="USAGE" /> מדף השימוש <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">‏הסרה של Crostini</translation>
 <translation id="8585841788766257444">האתרים ברשימה שבהמשך פועלים לפי הגדרה מותאמת אישית במקום ברירת המחדל</translation>
 <translation id="8588866096426746242">הצגת נתונים סטטיסטיים של פרופיל</translation>

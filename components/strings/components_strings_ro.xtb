@@ -1130,6 +1130,7 @@
 <translation id="4434045419905280838">Ferestre pop-up și redirecționări</translation>
 <translation id="4435702339979719576">Carte poștală)</translation>
 <translation id="443673843213245140">Utilizarea unui proxy este dezactivată, dar o configurare proxy este specificată în mod explicit.</translation>
+<translation id="4441832193888514600">Ignorată deoarece politica poate fi setată numai ca politică privind utilizatorii cloud.</translation>
 <translation id="4450893287417543264">Nu mai afișa</translation>
 <translation id="4451135742916150903">Poate solicita permisiunea de a se conecta la dispozitive HID</translation>
 <translation id="4452328064229197696">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Pentru a-ți proteja conturile, Managerul de parole Google îți recomandă să verifici parolele salvate.</translation>
@@ -2548,6 +2549,7 @@ Detalii suplimentare:
 <translation id="9150045010208374699">Utilizează camera foto</translation>
 <translation id="9150685862434908345">Administratorul poate schimba configurația browserului de la distanță. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Actualizat</translation>
+<translation id="9155211586651734179">dispozitivele periferice audio conectate;</translation>
 <translation id="9157595877708044936">Se configurează...</translation>
 <translation id="9158625974267017556">C6 (Plic)</translation>
 <translation id="9164029392738894042">Verificarea preciziei</translation>

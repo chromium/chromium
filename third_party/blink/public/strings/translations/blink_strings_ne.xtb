@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">मान <ph name="MINIMUM" /> भन्दा धेरै वा बराबर हुनै पर्छ।</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> पीबी</translation>
+<translation id="5272594226096532950">चिन्ह नलगाइएको। समूहमा <ph name="COUNT" /> मध्ये <ph name="INDEX" /> औँ विकल्प</translation>
 <translation id="5307600278924710095">कृपया '<ph name="ATSIGN" />' पछिको भाग प्रविष्टि गर्नुहोस्। '<ph name="INVALIDADDRESS" />' अपूरो छ।</translation>
 <translation id="5334352251556557839">मिडिया प्ले गर्न सकिएन।</translation>
 <translation id="537648784377940524">न्यूनतम मिति (<ph name="MIN_DATE_OR_TIME" />) अधिकतम मिति (<ph name="MAX_DATE_OR_TIME" />) भन्दा अगाडिको मिति हुनु पर्छ।</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">अन्य...</translation>
 <translation id="6709093583001123835">मान अनिवार्य रूपमा <ph name="VALUE" /> हुनु पर्छ।</translation>
 <translation id="6709570249143506788">प्लेब्याकको खराब गुणस्तर</translation>
+<translation id="6719914554879143100">चिन्ह लगाइएको। समूहमा <ph name="COUNT" /> मध्ये <ph name="INDEX" /> औँ विकल्प</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6820355525329141109">प्लगइन लोड गर्न सकेन।</translation>
 <translation id="6831465880655513317">रङको गाढापन वा फिक्कापन चयन गर्न प्रयोग गर्न सकिने द्विआयामिक स्लाइडर भएको कलर वेल</translation>

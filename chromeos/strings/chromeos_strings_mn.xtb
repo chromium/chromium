@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Амжилтгүй болсон - Шүүж чадсангүй</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Надад хос түлхүүр байгаа</translation>
+<translation id="1442433966118452622">Зургийн эх сурвалж</translation>
 <translation id="1451536289672181509">Төхөөрөмж нь гар байна.</translation>
 <translation id="1468664791493211953">Саналууд</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд таны үйл ажиллагааг хянах боломжтой байж болзошгүй.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Өдөр тутам сэргээх</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2695514675076754339">8 тэмдэгттэй түгжээг тайлах кодыг оруулна уу</translation>
+<translation id="2712812801627182647">TLS баталгаажуулалтын түлхүүр</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP 2-р шатны баталгаажуулалт</translation>
 <translation id="2783010256799387990">ДАВСАН</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Амжилтгүй болсон - Таг нээлттэй</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлыг засах}other{Файлуудыг засах}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />Гц</translation>
+<translation id="3291996639387199448">Түлхүүрийн чиглэл</translation>
 <translation id="3310640316857623290">DNS-н хоцролт зөвшөөрөгдөх хязгаараас нэлээд өндөр байна</translation>
 <translation id="3328783797891415197">Туршилтыг ажиллуулж байна</translation>
 <translation id="3340011300870565703">Төхөөрөмжийн баруун талын чихэвчийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome үйлдлийн системийн нууц үгийг шинэчилсэн</translation>
 <translation id="4773299976671772492">Зогссон</translation>
 <translation id="4782311465517282004">Та баруун талыг товших эсвэл текстийг удаан дарах үедээ тодорхойлолт, орчуулга эсвэл нэгж хөрвүүлэлт аваарай</translation>
+<translation id="4793756956024303490">Шахалтын алгоритм</translation>
 <translation id="4794140124556169553">Төв процессорын нэгжийн туршилтыг ажиллуулах нь таны системийн гүйцэтгэлд нөлөөлж болзошгүй</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> хэвлэх ажлыг цуцалсан</translation>
 <translation id="4813136279048157860">Миний зураг</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS нягтрал</translation>
 <translation id="4848429997038228357">АЖИЛЛУУЛЖ БАЙНА</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}other{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}}</translation>
+<translation id="4873827928179867585">Баталгаажуулалтын алгоритм</translation>
 <translation id="4880328057631981605">Нэвтрэх цэгийн нэр</translation>
 <translation id="4885705234041587624">MSCHAPV2</translation>
 <translation id="4890353053343094602">Нэн даруй шинийг сонгоно уу</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Тайланг нуух</translation>
 <translation id="500920857929044050">Туршилтыг зогсоох</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Дэлгэц тань идэвхгүй үед зураг, цаг, цаг агаар болон медиагийн мэдээлэл харуулна уу.</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5049856988445523908">SIM-г түгжсэн (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Бүлгийн нэр</translation>
@@ -436,6 +442,7 @@
 <translation id="6618744767048954150">Ажиллуулж байна</translation>
 <translation id="6620487321149975369">Хэвлэлийн ажлыг гараар хасахгүй бол түүхэнд харагдана</translation>
 <translation id="6643016212128521049">Цэвэрлэх</translation>
+<translation id="6647510110698214773">Шифрлэлтийн алгоритм</translation>
 <translation id="6657585470893396449">Нууц үг</translation>
 <translation id="6692996468359469499">Сонголттойгоо холбоотой мэдээлэл авах</translation>
 <translation id="6704062477274546131">DNS-н тайлал</translation>

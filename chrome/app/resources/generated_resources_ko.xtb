@@ -604,6 +604,7 @@
 <translation id="1604432177629086300">인쇄할 수 없음: 프린터를 확인하고 다시 시도해 보세요</translation>
 <translation id="1605744057217831567">모든 사이트 데이터 및 권한 보기</translation>
 <translation id="1606077700029460857">마우스 설정 변경</translation>
+<translation id="1606566847233779212">추가한 특정 사이트를 삭제할까요?</translation>
 <translation id="1607139524282324606">항목 삭제</translation>
 <translation id="1607499585984539560">사용자가 도메인과 연결되어 있지 않습니다.</translation>
 <translation id="1608668830839595724">선택한 항목과 관련된 작업 더보기</translation>
@@ -876,6 +877,7 @@
 <translation id="1845727111305721124">소리 재생이 허용됨</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" />을(를) 실행하려면 Control 키를 누르고 클릭합니다.</translation>
 <translation id="184862733444771842">기능 요청</translation>
+<translation id="1849016657376805933">모든 HID 기기</translation>
 <translation id="1849186935225320012">이 페이지는 MIDI 기기를 완전히 제어할 수 있습니다.</translation>
 <translation id="1850145825777333687">기기 사용자 인증 정보</translation>
 <translation id="1850508293116537636">시계 방향으로 회전(&amp;C)</translation>
@@ -1010,6 +1012,7 @@
 <translation id="1988259784461813694">요건</translation>
 <translation id="1989112275319619282">찾아보기</translation>
 <translation id="1989113344093894667">콘텐츠를 캡처할 수 없음</translation>
+<translation id="1989744123191450103">백업 실패</translation>
 <translation id="1989903373608997757">항상 사용</translation>
 <translation id="1990046457226896323">음성 파일 다운로드됨</translation>
 <translation id="1990512225220753005">이 페이지에 바로가기를 표시하지 않습니다.</translation>
@@ -1019,6 +1022,7 @@
 <translation id="1994173015038366702">사이트 URL</translation>
 <translation id="1995916364271252349">사이트에서 사용하고 표시할 수 있는 정보(위치, 카메라, 팝업 등)를 제어합니다.</translation>
 <translation id="1997616988432401742">내 인증서</translation>
+<translation id="1997645434968427303">Linux 백업 복원이 실패했습니다. Linux의 디스크 공간이 부족하기 때문일 수 있습니다. OS 설정에서 Linux의 디스크 공간을 변경하고 백업 복원을 다시 시도할 수 있습니다.</translation>
 <translation id="1999115740519098545">시작 그룹</translation>
 <translation id="2000419248597011803">검색주소창 및 검색창의 검색어 및 일부 쿠키를 기본 검색엔진에 전송</translation>
 <translation id="2002109485265116295">실시간</translation>
@@ -2097,6 +2101,7 @@
 <translation id="3046178388369461825">Linux 디스크 공간이 매우 부족함</translation>
 <translation id="3046910703532196514">웹페이지, 전부</translation>
 <translation id="304747341537320566">음성 엔진</translation>
+<translation id="3048336643003835855">HID 기기(업체 ID: <ph name="VENDOR_ID" />)</translation>
 <translation id="3048917188684939573">전송 및 기기 로그</translation>
 <translation id="3051250416341590778">디스플레이 크기</translation>
 <translation id="3053013834507634016">인증서 키 사용</translation>
@@ -2524,6 +2529,7 @@
 <translation id="3511307672085573050">링크 주소 복사(&amp;E)</translation>
 <translation id="351152300840026870">고정폭 글꼴</translation>
 <translation id="3511528412952710609">짧게</translation>
+<translation id="3514011352559420398">복원 실패</translation>
 <translation id="3514335087372914653">게임 컨트롤</translation>
 <translation id="3514373592552233661">두 개 이상의 네트워크를 사용할 수 있는 경우 기본 설정된 네트워크가 다른 알려진 네트워크보다 우선 사용됩니다.</translation>
 <translation id="3515983984924808886">보안 키를 다시 터치하여 초기화 여부를 확인하세요. PIN을 비롯하여 보안 키에 저장된 모든 정보가 삭제됩니다.</translation>
@@ -3190,6 +3196,7 @@
 <translation id="4180788401304023883">CA 인증서 '<ph name="CERTIFICATE_NAME" />'을(를) 삭제하겠습니까?</translation>
 <translation id="4181602000363099176">20배</translation>
 <translation id="4181841719683918333">언어</translation>
+<translation id="4184803915913850597">HID 기기(<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">디스플레이를 이동하려면 드래그하세요.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> 설정 중…</translation>
 <translation id="4190828427319282529">키보드 포커스 강조표시</translation>
@@ -3683,6 +3690,7 @@
 <translation id="4699357559218762027">(자동 실행)</translation>
 <translation id="4701025263201366865">부모 로그인</translation>
 <translation id="4701335814944566468">어제 확인함</translation>
+<translation id="4707337002099455863">항상 모든 사이트에서 사용</translation>
 <translation id="4708794300267213770">절전 모드 해제 시 잠금 화면 표시</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> 종료</translation>
 <translation id="4711638718396952945">설정값 복원</translation>
@@ -4147,6 +4155,7 @@
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> 인증 토큰을 저장하는 중</translation>
 <translation id="520902706163766447">Chrome 상단의 UI에서 말풍선 팝업을 사용 설정하여 현재 열려 있는 탭을 검색합니다.</translation>
 <translation id="5209320130288484488">기기를 찾을 수 없음</translation>
+<translation id="5209513429611499188">사용량 페이지 <ph name="USAGE_PAGE" />의 사용량이 있는 HID 기기</translation>
 <translation id="5210365745912300556">탭 닫기</translation>
 <translation id="5213114823401215820">닫은 그룹 다시 열기</translation>
 <translation id="5213481667492808996">'<ph name="NAME" />' 데이터 서비스를 사용할 수 있습니다.</translation>
@@ -4553,6 +4562,7 @@
 <translation id="5627086634964711283">또한 홈 버튼을 클릭할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="5627676517703583263">Chrome으로 편리하게 탐색</translation>
 <translation id="5627832140542566187">디스플레이 방향</translation>
+<translation id="5628393161682339323">확장 프로그램을 클릭할 경우</translation>
 <translation id="562935524653278697">관리자가 북마크, 방문 기록, 비밀번호 및 기타 설정의 동기화를 사용 중지했습니다.</translation>
 <translation id="5631017369956619646">CPU 사용</translation>
 <translation id="5632059346822207074">권한 요청됨, Ctrl 키와 앞으로를 눌러 응답</translation>
@@ -4687,6 +4697,7 @@
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" />님의 계정에 동기화</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" />에 명령어 보내기</translation>
 <translation id="5782227691023083829">번역 중...</translation>
+<translation id="5783304934509327739">사이트 액세스 옵션</translation>
 <translation id="57838592816432529">음소거</translation>
 <translation id="5785583009707899920">Chrome 파일 유틸리티</translation>
 <translation id="5787146423283493983">키 계약</translation>
@@ -4737,6 +4748,7 @@
 <translation id="5834581999798853053">약 <ph name="TIME" />분 남음</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 카메라 또는 마이크 녹음</translation>
 <translation id="583673505367439042">사이트에서 기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
+<translation id="583756221537636748">케이스</translation>
 <translation id="5840680448799937675">항상 오프라인으로 파일 공유</translation>
 <translation id="5841270259333717135">이더넷 구성</translation>
 <translation id="5842497610951477805">블루투스 사용</translation>
@@ -5374,6 +5386,7 @@
 <translation id="6499143127267478107">프록시 스크립트의 호스트 확인 중...</translation>
 <translation id="6499764981457476645">근처에서 기기를 찾을 수 없음</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" />에서 다음 파일을 열려고 합니다.</translation>
+<translation id="65017764184991091">Linux 앱 및 파일 백업이 실패했습니다. 이 문제는 기기의 여유 저장공간이 부족한 경우 발생할 수 있습니다. 기기에서 여유 공간을 확보하거나 다른 백업 위치를 선택해 보세요.</translation>
 <translation id="6501957628055559556">모든 컨테이너</translation>
 <translation id="650266656685499220">앨범을 만들려면 Google 포토로 이동하세요.</translation>
 <translation id="6503077044568424649">자주 방문한 페이지</translation>
@@ -7403,6 +7416,7 @@
 <translation id="8581809080475256101">앞으로 이동하려면 앞으로 버튼을 누르고, 방문 기록을 보려면 컨텍스트 메뉴 키를 누릅니다.</translation>
 <translation id="8584280235376696778">새 탭에서 동영상 열기(&amp;O)</translation>
 <translation id="8584427708066927472">비밀번호가 이 기기에서 삭제되었습니다.</translation>
+<translation id="8584843865238667486">사용량 페이지 <ph name="USAGE_PAGE" />의 HID 기기(사용량: <ph name="USAGE" />)</translation>
 <translation id="8585480574870650651">Crostini 삭제</translation>
 <translation id="8585841788766257444">다음 사이트는 기본 설정이 아닌 맞춤 설정을 따릅니다.</translation>
 <translation id="8588866096426746242">프로필 통계 보기</translation>

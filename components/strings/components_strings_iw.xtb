@@ -166,6 +166,7 @@
 <translation id="142858679511221695">משתמש בענן</translation>
 <translation id="1428729058023778569">‏האזהרה הזו מוצגת לך כי האתר הזה לא תומך ב-HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">הדפסה</translation>
+<translation id="1432187715652018471">‏התקבלה מהדף הזה בקשה להתקין handler של שירות.</translation>
 <translation id="1432581352905426595">ניהול מנועי חיפוש</translation>
 <translation id="1436185428532214179">האתר יכול לבקש הרשאה לערוך קבצים ותיקיות במכשיר</translation>
 <translation id="1442386063175183758">כנף ימנית בקיפול</translation>
@@ -219,6 +220,7 @@
 <translation id="1559572115229829303">‏&lt;p&gt;לא ניתן ליצור חיבור פרטי אל <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> משום שהתאריך והשעה במכשיר שלך (<ph name="DATE_AND_TIME" />) שגויים.&lt;/p&gt;
 
       &lt;p&gt;יש לשנות את התאריך והשעה בקטע &lt;strong&gt;כללי&lt;/strong&gt; באפליקציה &lt;strong&gt;הגדרות&lt;/strong&gt;‏.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">המכשיר יופעל מחדש על ידי האדמין בשעה <ph name="TIME" /> בתאריך <ph name="DATE" /></translation>
 <translation id="156703335097561114">מידע שקשור לרשת, כמו כתובות, הגדרת הממשק ואיכות החיבור.</translation>
 <translation id="1567040042588613346">המדיניות הזו פועלת כמו שצריך אבל הוגדר ערך זהה במקום אחר שמוחלף על ידי המדיניות הזו.</translation>
 <translation id="1569487616857761740">יש להזין תאריך תפוגה</translation>
@@ -1978,6 +1980,7 @@ Del</translation>
 <translation id="7304562222803846232">‏ניהול הגדרות הפרטיות בחשבון Google</translation>
 <translation id="7305756307268530424">התחלה איטית יותר</translation>
 <translation id="7308436126008021607">סנכרון ברקע</translation>
+<translation id="7310392214323165548">המכשיר יופעל מחדש בקרוב</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">עזרה בחיבור</translation>
 <translation id="7323804146520582233">הסתרת הקטע "<ph name="SECTION" />"</translation>

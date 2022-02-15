@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Nereușită – Filtru defect</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Am o pereche de chei</translation>
+<translation id="1442433966118452622">Sursa imaginii</translation>
 <translation id="1451536289672181509">Dispozitivul este o tastatură.</translation>
 <translation id="1468664791493211953">Oferte</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestionează acest dispozitiv și poate să îți monitorizeze activitatea.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Actualizare zilnică</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2695514675076754339">Introdu codul de deblocare format din 8 caractere</translation>
+<translation id="2712812801627182647">Cheia de autentificare TLS</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Autentificare EAP din a doua fază</translation>
 <translation id="2783010256799387990">REUȘIT</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Nereușită – Ușă deschisă</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editează fișierul}few{Editează fișierele}other{Editează fișierele}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Direcția cheii</translation>
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
 <translation id="3328783797891415197">Se rulează testul</translation>
 <translation id="3340011300870565703">Nivelul bateriei căștii drepte a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Parola sistemului de operare Chrome a fost actualizată</translation>
 <translation id="4773299976671772492">Oprit</translation>
 <translation id="4782311465517282004">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung pe text</translation>
+<translation id="4793756956024303490">Algoritm de comprimare</translation>
 <translation id="4794140124556169553">Rularea unui test pentru CPU poate afecta performanța sistemului</translation>
 <translation id="4808449224298348341">S-a anulat sarcina de printare <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Imaginile mele</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) Rezolvare DNS</translation>
 <translation id="4848429997038228357">RULEAZĂ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} încercare rămasă}few{<ph name="ERROR_MESSAGE" /> {0} încercări rămase}other{<ph name="ERROR_MESSAGE" /> {0} de încercări rămase}}</translation>
+<translation id="4873827928179867585">Algoritm de autentificare</translation>
 <translation id="4880328057631981605">Nume punct de acces</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Alege imediat una nouă</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Ascunde raportul</translation>
 <translation id="500920857929044050">Oprește testul</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Când ecranul este inactiv, se afișează fotografii, ora, vremea și informații despre media.</translation>
 <translation id="5039804452771397117">Permite</translation>
 <translation id="5049856988445523908">Card SIM blocat (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Numele grupului</translation>
@@ -436,6 +442,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6618744767048954150">Rulează</translation>
 <translation id="6620487321149975369">Sarcinile de printare vor apărea în istoric dacă nu sunt eliminate manual</translation>
 <translation id="6643016212128521049">Șterge</translation>
+<translation id="6647510110698214773">Algoritm de criptare</translation>
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6692996468359469499">Obține informații despre selecție</translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>

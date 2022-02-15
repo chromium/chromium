@@ -186,6 +186,20 @@
 <translation id="1223789468190631420">Ativar Navegação segura para fontes confiáveis</translation>
 <translation id="123018742985150697">Exigir correspondência entre o usuário local e o proprietário do host de acesso remoto</translation>
 <translation id="123081309365616809">Ativa transmissão de conteúdo para o dispositivo</translation>
+<translation id="1239526922294123540">Controla se os sites têm permissão para fazer solicitações para endpoints de rede mais particulares de forma não segura.
+
+          Quando esta política é definida como verdadeira, todas as verificações de <ph name="PRIVATE_NETWORK_ACCESS" /> são desativadas para todas as origens. Isso pode permitir que invasores realizem ataques <ph name="CSRF" /> a servidores de rede particular.
+
+          Quando esta política for deixada sem definição ou for definida como falsa, o comportamento padrão para solicitações para endpoints de rede mais particulares vai depender da configuração pessoal do usuário para as sinalizações de recurso <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> e <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" />, que podem ser definidas por testes de campo ou na linha de comando.
+
+          Esta política tem relação com a especificação de <ph name="PRIVATE_NETWORK_ACCESS" />. Para ver mais detalhes, acesse https://wicg.github.io/private-network-access/ (link em inglês).
+
+          Um endpoint de rede será mais particular que outro se:
+          1) o endereço IP dele for localhost e o do outro não for;
+          2) o endereço IP dele for particular e o do outro for público.
+          No futuro, dependendo da evolução das especificações, esta política poderá ser aplicada a todas as solicitações de origem cruzada direcionadas ao localhost ou IPs particulares.
+
+          Quando a política for definida como verdadeira, os sites terão permissão para fazer solicitações para qualquer endpoint de rede, sujeito a outras verificações de origem cruzada.</translation>
 <translation id="1240722269871366886">Esta política permite que o <ph name="PRODUCT_OS_NAME" /> sugira emojis quando os usuários digitam com o teclado virtual ou físico.
       Se ela for definida como verdadeira, o recurso será ativado e os usuários poderão mudá-lo.
       Por padrão, esta política é definida como falsa. Nenhum emoji será sugerido, e o usuário não poderá modificar isso.</translation>
@@ -6015,6 +6029,13 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="7904177352786629708">Definir a política como "Ativada" faz com que a pesquisa CNAME seja ignorada. O nome do servidor é usado conforme inserido ao gerar o SPN do Kerberos.
 
       Definir a política como "Desativada" ou deixá-la sem definição faz com que a pesquisa CNAME determine o nome canônico do servidor ao gerar o SPN do Kerberos.</translation>
+<translation id="7904434413881624417">Lista de padrões de URL. As solicitações iniciadas em sites veiculados por origens correspondentes não estão sujeitas a verificações de <ph name="PRIVATE_NETWORK_ACCESS" />.
+
+          Se esta política ficar sem definição, ela vai se comportar como se a lista tivesse sido definida como vazia.
+
+          No caso de origens não cobertas pelos padrões especificados aqui, o valor padrão geral usado será o da política <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" />, se ela estiver definida, ou o da configuração pessoal do usuário.
+
+          Para ver informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="7906983682927840536">Buscar duração do sinal de atividade durante o encerramento</translation>
 <translation id="7908384265697653397">Tempo, em dias, após o qual o usuário será desconectado se a versão do <ph name="PRODUCT_OS_NAME" /> for anterior à especificada por <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="7912255076272890813">Configurar tipos permitidos de aplicativo/extensão</translation>

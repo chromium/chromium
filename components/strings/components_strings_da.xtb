@@ -220,6 +220,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1559572115229829303">&lt;p&gt;Der kan ikke oprettes en privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, da datoen og tiden på din enhed (<ph name="DATE_AND_TIME" />) er forkert.&lt;/p&gt;
 
       &lt;p&gt;Juster datoen og tiden i sektionen &lt;strong&gt;Generelt&lt;/strong&gt; i appen &lt;strong&gt;Indstillinger&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Din administrator vil genstarte din enhed klokken <ph name="TIME" /> den <ph name="DATE" /></translation>
 <translation id="156703335097561114">Netværksoplysninger som f.eks. adresser, grænsefladekonfiguration og forbindelseskvalitet</translation>
 <translation id="1567040042588613346">Denne politik fungerer efter hensigten, men et andet sted er den samme værdi blevet tilsidesat af denne politik.</translation>
 <translation id="1569487616857761740">Angiv udløbsdato</translation>
@@ -1976,6 +1977,7 @@ Yderligere oplysninger:
 <translation id="7304562222803846232">Administrer privatlivsindstillingerne for din Google-konto</translation>
 <translation id="7305756307268530424">Start langsommere</translation>
 <translation id="7308436126008021607">synkronisering i baggrunden.</translation>
+<translation id="7310392214323165548">Enheden genstarter meget snart</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Hjælp til at oprette forbindelse</translation>
 <translation id="7323804146520582233">Skjul sektionen "<ph name="SECTION" />"</translation>

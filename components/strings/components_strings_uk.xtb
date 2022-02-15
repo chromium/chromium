@@ -220,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;Не вдається встановити конфіденційне з’єднання із сайтом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки на вашому пристрої неправильно налаштовано дату й час (<ph name="DATE_AND_TIME" />).&lt;/p&gt;
 
       &lt;p&gt;Налаштуйте дату й час у розділі &lt;strong&gt;Загальні&lt;/strong&gt; додатка &lt;strong&gt;Налаштування&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Адміністратор перезапустить пристрій <ph name="DATE" /> о <ph name="TIME" /></translation>
 <translation id="156703335097561114">Інформація про мережу, наприклад адреси, конфігурацію інтерфейсу та якість з’єднання</translation>
 <translation id="1567040042588613346">Це правило працює належним чином, але в іншому місці встановлюється таке ж значення й замінюється цим правилом.</translation>
 <translation id="1569487616857761740">Введіть дату закінчення терміну дії</translation>
@@ -1976,6 +1977,7 @@
 <translation id="7304562222803846232">Керувати налаштуваннями конфіденційності облікового запису Google</translation>
 <translation id="7305756307268530424">Сповільнити</translation>
 <translation id="7308436126008021607">фонова синхронізація</translation>
+<translation id="7310392214323165548">Невдовзі пристрій перезапуститься</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Довідка щодо з’єднання</translation>
 <translation id="7323804146520582233">Сховати розділ "<ph name="SECTION" />"</translation>

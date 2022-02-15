@@ -87,6 +87,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1391102559483454063">Activada</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
+<translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Usa as teclas das frechas para desprazarte polas datas.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplicación instalada</translation>
 <translation id="1419738280318246476">Desbloquea o dispositivo para levar a cabo a acción de notificación</translation>
 <translation id="1420408895951708260">Activar/desactivar Luz nocturna: <ph name="STATE_TEXT" /></translation>
@@ -98,6 +99,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="147310119694673958">Batería do teléfono: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1479909375538722835">Menú flotante de accesibilidade</translation>
+<translation id="1480845547124508962"><ph name="CURRENT_TIME" />. Preme a tecla Introducir para abrir a vista de Calendar</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> cambiouse con <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1503394326855300303">Esta conta de propietario debe ser a primeira en que se inicie sesión cando se realice un inicio de sesión múltiple.</translation>
@@ -126,6 +128,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1698760176351776263">Enderezo IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Escritorio: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Configuración de rede</translation>
+<translation id="1715293566947629045">Desactivando perfil. Agarda uns minutos.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">A función Subtítulos instantáneos está activada.</translation>
 <translation id="1720011244392820496">Activar Sincronización wifi</translation>
@@ -271,6 +274,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2750932254614666392">"Elimina"</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="2782591952652094792">Saír do modo de captura</translation>
+<translation id="2791421900609674576">Recibirás recomendacións para poder continuar coas túas actividades desde onde as deixaches. Podes manter premidas as recomendacións para quitalas.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Grupo de andeis</translation>
 <translation id="2803313416453193357">Abrir cartafol</translation>
@@ -394,6 +398,7 @@ Para comezar, podes probar o seguinte.</translation>
 <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Actualiza o dispositivo en 1 minuto}other{Actualiza o dispositivo en # minutos}}</translation>
 <translation id="353086728817903341">Conexión establecida con <ph name="NUM_DEVICES" /> dispositivos</translation>
+<translation id="3542066395059568317">Recibirás recomendacións para poder continuar coas túas actividades desde onde as deixaches. Podes facer clic co botón dereito para quitar as recomendacións.</translation>
 <translation id="3552189655002856821">A wifi está desactivada</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />(fixouse)</translation>
 <translation id="3560866052109807830">Ferramentas de debuxo (marcador)</translation>
@@ -855,6 +860,7 @@ Nova instalación</translation>
 <translation id="6565007273808762236">Non se puido establecer conexión coa eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{Actualiza o dispositivo en 1 hora}other{Actualiza o dispositivo en # horas}}</translation>
 <translation id="6570902864550063460">Cargando por USB</translation>
+<translation id="6574587113394758819">Ocultouse unha notificación da aplicación <ph name="APP_TITLE" /> porque está activada a protección fronte a usuarios non desexados</translation>
 <translation id="6578407462441924264">Sen nome</translation>
 <translation id="6585808820553845416">A sesión finaliza dentro de <ph name="SESSION_TIME_REMAINING" /> .</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -862,6 +868,7 @@ Nova instalación</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="6612802754306526077">Seleccionouse o modo de gravación da pantalla</translation>
 <translation id="6614169507485700968">A pantalla de privacidade está activada</translation>
+<translation id="6625718907317144388">Ocultáronse notificacións das aplicacións <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" />, ademais doutras, porque está activada a protección fronte a usuarios non desexados</translation>
 <translation id="6627638273713273709">Buscar+Maiús+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> quere usar o micrófono</translation>
 <translation id="6630773993843701741">Abre a configuración do Bluetooth para vincular o dispositivo manualmente</translation>
@@ -1044,6 +1051,7 @@ Nova instalación</translation>
 <translation id="776344839111254542">Fai clic para ver os detalles da actualización</translation>
 <translation id="7780159184141939021">Xirar a pantalla</translation>
 <translation id="7796353162336583443">Toca o botón do lapis óptico no estante para escribir unha nota, facer unha captura de pantalla, usar o Asistente de Google, utilizar o punteiro láser ou aplicar a lupa.</translation>
+<translation id="7796735576426975947">Ocultouse unha nova notificación</translation>
 <translation id="7798302898096527229">Preme Buscar ou Maiúsculas para cancelar.</translation>
 <translation id="7807067443225230855">Busca e Asistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
@@ -1137,6 +1145,7 @@ Nova instalación</translation>
 <translation id="8371991222807690464">É posible que os periféricos teñan un rendemento limitado no modo de convidado</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o teu teléfono conectaranse automaticamente</translation>
 <translation id="8380784334203145311">Boas noites!</translation>
+<translation id="8382715499079447151">Protección fronte a usuarios non desexados</translation>
 <translation id="8388750414311082622">O último escritorio non se pode quitar.</translation>
 <translation id="8394567579869570560">O teu pai ou nai bloqueou este dispositivo</translation>
 <translation id="8401850874595457088">Abrir menú de idioma</translation>
@@ -1168,6 +1177,7 @@ Nova instalación</translation>
 <translation id="857201607579416096">O menú moveuse á esquina inferior dereita da pantalla.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordena as túas aplicacións por nome ou cor</translation>
+<translation id="8614517853887502247">Ocultáronse notificacións das aplicacións <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> porque está activada a protección fronte a usuarios non desexados</translation>
 <translation id="8627191004499078455">Dispositivo conectado a: <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Configuración de accesibilidade</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>

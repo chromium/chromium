@@ -22,6 +22,7 @@
 <translation id="1155759005174418845">Καταλανικά
 </translation>
 <translation id="1168100932582989117">Διακομιστές ονομάτων της Google</translation>
+<translation id="1171082344678443012">Συμπιεσμένο αρχείο XZ</translation>
 <translation id="1172970565351728681">Απομένουν περίπου <ph name="REMAINING_TIME" />.</translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1173916544412572294">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Λεπτομέρειες</translation>
@@ -121,6 +122,7 @@
 <translation id="2009067268969781306">Η διαμόρφωση ενός δίσκου θα διαγράψει όλα τα δεδομένα που έχουν αποθηκευτεί σε αυτόν. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
 <translation id="2025955442973426285">Τιγκρίνια</translation>
 <translation id="2028997212275086731">Αρχείο RAR</translation>
+<translation id="2036414735548252477">Συμπιεσμένο αρχείο tar LZMA</translation>
 <translation id="2037845485764049925">Ρωσικά</translation>
 <translation id="2044023416777079300">Το μόντεμ δεν έχει καταχωριστεί</translation>
 <translation id="2046702855113914483">Ράμεν</translation>
@@ -452,6 +454,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
 <translation id="4880214202172289027">Ρυθμιστικό έντασης ήχου</translation>
 <translation id="4881695831933465202">Άνοιγμα</translation>
+<translation id="4886199584824489598">Συμπιεσμένο αρχείο Bzip2</translation>
 <translation id="4900532980794411603">Κοινή χρήση με το Parallels Desktop</translation>
 <translation id="4902546322522096650">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Σύνδεση</translation>
 <translation id="4905417359854579806">Έτοιμο για δημιουργία αντιγράφων ασφαλείας για <ph name="FILE_COUNT" /> αρχεία</translation>
@@ -599,6 +602,7 @@
 <translation id="6055907707645252013">Δίκτυο <ph name="NETWORK_TYPE" />, δεν είναι συνδεδεμένο</translation>
 <translation id="6074825444536523002">Φόρμα Google</translation>
 <translation id="6079871810119356840">Ουγγρικά με πληκτρολόγιο QWERTY</translation>
+<translation id="6082256976217156453">Συμπιεσμένο αρχείο LZMA</translation>
 <translation id="6096979789310008754">Έγινε κατάργηση του κειμένου αναζήτησης, εμφανίζονται όλα τα αρχεία και οι φάκελοι.</translation>
 <translation id="610101264611565198">Μετακίνηση αρχείου <ph name="FILE_NAME" /> στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Κενό</translation>
@@ -861,6 +865,7 @@
 <translation id="8299269255470343364">Ιαπωνικά
 </translation>
 <translation id="8300849813060516376">Αποτυχία OTASP</translation>
+<translation id="8308481408797647857">Συμπιεσμένο αρχείο tar XZ</translation>
 <translation id="8312871300878166382">Επικόλληση στο φάκελο</translation>
 <translation id="8329978297633540474">Απλό κείμενο</translation>
 <translation id="8335587457941836791">Ξεκαρφίτσωμα από το ράφι</translation>
@@ -973,6 +978,7 @@
 <translation id="943972244133411984">Τροποποιήθηκε από</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 <translation id="947144732524271678">Επιλέχθηκε ένα εύρος <ph name="ENTRY_COUNT" /> καταχωρίσεων από το <ph name="FROM_ENTRY_NAME" /> έως το <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Συμπιεσμένο αρχείο Gzip</translation>
 <translation id="965477715979482472">Αγγλικά (Νότια Αφρική)</translation>
 <translation id="981121421437150478">Εκτός σύνδεσης</translation>
 <translation id="988685240266037636">Υπάρχει ήδη ένα αρχείο με την ονομασία "<ph name="FILE_NAME" />". Θέλετε να το αντικαταστήσετε;</translation>

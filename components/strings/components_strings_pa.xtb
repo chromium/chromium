@@ -166,6 +166,7 @@
 <translation id="142858679511221695">ਕਲਾਊਡ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="1428729058023778569">ਤੁਹਾਨੂੰ ਇਹ ਚਿਤਾਵਨੀ ਇਸ ਲਈ ਦਿਸ ਰਹੀ ਹੈ ਕਿਉਂਕਿ ਇਹ ਸਾਈਟ HTTPS ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ। <ph name="BEGIN_LEARN_MORE_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
+<translation id="1432187715652018471">ਪੰਨਾ ਕਿਸੇ ਸੇਵਾ ਹੈਂਡਲਰ ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ।</translation>
 <translation id="1432581352905426595">ਖੋਜ ਇੰਜਣਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1436185428532214179">ਸਾਈਟ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਫੋਲਡਰਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1442386063175183758">ਸੱਜੇ ਪੱਲੇ ਵਾਲੀ ਤਹਿ</translation>
@@ -219,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ਨਾਲ ਇੱਕ ਨਿੱਜੀ ਕਨੈਕਸ਼ਨ ਨੂੰ ਸਥਾਪਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਦੀ ਮਿਤੀ ਅਤੇ ਸਮਾਂ (<ph name="DATE_AND_TIME" />) ਗ਼ਲਤ ਹੈ।&lt;/p&gt;
 
           &lt;p&gt;ਕਿਰਪਾ ਕਰਕੇ &lt;strong&gt;ਸੈਟਿੰਗਾਂ&lt;/strong&gt; ਐਪ ਦੇ &lt;strong&gt;ਸਧਾਰਨ&lt;/strong&gt; ਭਾਗ ਤੋਂ ਮਿਤੀ ਅਤੇ ਸਮਾਂ ਅਨੁਕੂਲਿਤ ਕਰੋ।&lt;/p&gt;</translation>
+<translation id="1559839503761818503">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ <ph name="DATE" /> ਨੂੰ <ph name="TIME" /> ਵਜੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੇਗਾ</translation>
 <translation id="156703335097561114">ਨੈੱਟਵਰਕਿੰਗ ਜਾਣਕਾਰੀ ਜਿਵੇਂ ਕਿ ਪਤੇ, ਇੰਟਰਫੇਸ ਸੰਰੂਪਣ, ਅਤੇ ਕਨੈਕਸ਼ਨ ਗੁਣਵੱਤਾ</translation>
 <translation id="1567040042588613346">ਇਹ ਨੀਤੀ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰ ਰਹੀ ਹੈ ਪਰ ਸਮਾਨ ਮੁੱਲ ਕਿਸੇ ਹੋਰ ਥਾਂ 'ਤੇ ਸੈੱਟ ਹੈ ਅਤੇ ਇਸ ਨੀਤੀ ਵੱਲੋਂ ਪ੍ਰਤਿਸਥਾਪਨ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="1569487616857761740">ਮਿਆਦ ਮੁੱਕਣ ਦੀ ਤਾਰੀਖ ਦਾਖਲ ਕਰੋ</translation>
@@ -1962,6 +1964,7 @@
 <translation id="7304562222803846232">Google ਖਾਤਾ ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7305756307268530424">ਹੌਲੀ-ਹੌਲੀ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="7308436126008021607">ਬੈਕਗ੍ਰਾਊਂਡ ਸਿੰਕ</translation>
+<translation id="7310392214323165548">ਡੀਵਾਈਸ ਜਲਦ ਹੀ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ਕਨੈਕਸ਼ਨ ਸੰਬੰਧੀ ਮਦਦ</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" ਸੈਕਸ਼ਨ ਲੁਕਾਓ</translation>

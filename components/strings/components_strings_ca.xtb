@@ -166,6 +166,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="142858679511221695">Usuari al núvol</translation>
 <translation id="1428729058023778569">Estàs veient aquest advertiment perquè aquest lloc web no admet HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Imprimeix</translation>
+<translation id="1432187715652018471">La pàgina vol instal·lar un gestor de serveis</translation>
 <translation id="1432581352905426595">Gestiona els motors de cerca</translation>
 <translation id="1436185428532214179">Pot demanar permís per editar fitxers i carpetes del dispositiu</translation>
 <translation id="1442386063175183758">Plegat amb finestra a la dreta</translation>
@@ -219,6 +220,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1559572115229829303">&lt;p&gt;No es pot establir una connexió privada amb <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perquè la data i l'hora (<ph name="DATE_AND_TIME" />) del vostre dispositiu no són correctes.&lt;/p&gt;
 
       &lt;p&gt;Canvieu la data i l'hora a la secció &lt;strong&gt;General&lt;/strong&gt; de l'aplicació &lt;strong&gt;Configuració&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">L'administrador reiniciarà el dispositiu el dia <ph name="DATE" /> a les <ph name="TIME" /></translation>
 <translation id="156703335097561114">Informació de les xarxes, com ara les adreces, la configuració de les interfícies i la qualitat de la connexió</translation>
 <translation id="1567040042588613346">Aquesta política funciona correctament, però s'ha establert el mateix valor en un altre lloc i s'ha substituït per la política.</translation>
 <translation id="1569487616857761740">Introdueix la data de caducitat</translation>
@@ -1966,6 +1968,7 @@ Detalls addicionals:
 <translation id="7304562222803846232">Gestiona la configuració de privadesa del Compte de Google</translation>
 <translation id="7305756307268530424">Inicia més a poc a poc</translation>
 <translation id="7308436126008021607">sincronització en segon pla</translation>
+<translation id="7310392214323165548">El dispositiu es reiniciarà aviat</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ajuda amb la connexió</translation>
 <translation id="7323804146520582233">Amaga la secció "<ph name="SECTION" />"</translation>

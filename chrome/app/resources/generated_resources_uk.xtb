@@ -1720,6 +1720,7 @@
 <translation id="2684004000387153598">Натисніть OK і виберіть "Додати користувача", щоб створити новий профіль для своєї електронної адреси.</translation>
 <translation id="2687403674020088961">Блокувати всі файли cookie (не рекомендовано)</translation>
 <translation id="2687407218262674387">Загальні положення та умови Google</translation>
+<translation id="2687621393791886981">Запитати пізніше</translation>
 <translation id="2688196195245426394">Помилка під час реєстрації пристрою на сервері: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Показати опції мови</translation>
 <translation id="2691385045260836588">Модель</translation>
@@ -1991,6 +1992,7 @@
 <translation id="2933632078076743449">Останнє оновлення</translation>
 <translation id="2934999512438267372">Доступ до повного контролю над пристроями MIDI надано</translation>
 <translation id="2935225303485967257">Керувати профілями</translation>
+<translation id="2935314715123552088">Вимкнути активний профіль eSIM</translation>
 <translation id="2935654492420446828">Додати обліковий запис закладу освіти пізніше</translation>
 <translation id="2936851848721175671">Резервне копіювання та відновлення</translation>
 <translation id="2939908794993783865">Інші неактивні сайти</translation>
@@ -3140,6 +3142,7 @@
 <translation id="4104163789986725820">Е&amp;кспортувати...</translation>
 <translation id="4107048419833779140">Виявляти й вилучати пристрої пам’яті</translation>
 <translation id="4109135793348361820">Перемістити вікно на робочий стіл користувача <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Відновити попередження</translation>
 <translation id="4110490973560452005">Завантажено: <ph name="FILE_NAME" />. Натисніть Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4110686435123617899">Вибрати альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
@@ -3263,6 +3266,7 @@
 <translation id="4259388776256904261">Це може зайняти якийсь час</translation>
 <translation id="4260182282978351200">Файл <ph name="FILE_NAME" /> може бути небезпечним. Надіслати його в Додатковий захист Google на перевірку? Натискайте Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4261429981378979799">Дозволи розширення</translation>
+<translation id="4262004481148703251">Закрити попередження</translation>
 <translation id="4263223596040212967">Перевірте розкладку клавіатури й повторіть спробу.</translation>
 <translation id="426564820080660648">Щоб перевірити наявність оновлень, скористайтеся мережею Ethernet, Wi-Fi чи мобільним передаванням даних.</translation>
 <translation id="4266679478228765574">Якщо видалити папки, спільний доступ до файлів буде припинено, однак самі файли не буде видалено.</translation>
@@ -3669,6 +3673,7 @@
 <translation id="4681453295291708042">Вимкнути функцію "Передавання поблизу"</translation>
 <translation id="4681930562518940301">Відкрити оригінальне зображення в новій вкладці</translation>
 <translation id="4682551433947286597">Фонові малюнки з’являються на екрані входу.</translation>
+<translation id="4682830185876172415">Нещодавні завантаження</translation>
 <translation id="4683629100208651599">Застосувати нижній регістр</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (за умовчанням)</translation>
 <translation id="4684427112815847243">Синхронізувати все</translation>
@@ -3934,6 +3939,7 @@
 <translation id="496446150016900060">Синхронізувати мережі Wi-Fi із вашим телефоном</translation>
 <translation id="4965808351167763748">Налаштувати пристрій для роботи Hangouts Meet?</translation>
 <translation id="4966972803217407697">Увімкнено анонімний режим</translation>
+<translation id="496742804571665842">Вимкнути профілі eSIM</translation>
 <translation id="496888482094675990">Додаток Файли надає швидкий доступ до файлів, збережених на Google Диску, у зовнішній пам’яті або на пристрої з ОС Chrome.</translation>
 <translation id="4971412780836297815">Відкрити після завантаження</translation>
 <translation id="4971735654804503942">Швидший активний захист від небезпечних веб-сайтів, завантажень і розширень. Попереджає про розкриття паролів через порушення безпеки даних.  Дані веб-перегляду потрібно надсилати в Google.</translation>
@@ -6289,6 +6295,7 @@
 <translation id="7448430327655618736">Автоматично встановлювати додатки</translation>
 <translation id="7449752890690775568">Видалити пароль?</translation>
 <translation id="7450761244949417357">Відкривається в <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
+<translation id="7452166281927983300">Закриті попередження (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Вибираючи цей принтер, ви надаєте доступ до свого принтера такому розширенню:</translation>
 <translation id="7454548535253569100">Портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Керуйте додатковими контейнерами</translation>
@@ -7271,6 +7278,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дозволено: <ph name="PERMISSION" /> і ще <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Спершу запитувати (рекомендується)</translation>
+<translation id="8414249071344507766">Спогади приховано на два дні</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Футляр)</translation>
 <translation id="8417548266957501132">Пароль батьків</translation>
 <translation id="8418445294933751433">&amp;Показати як вкладку</translation>

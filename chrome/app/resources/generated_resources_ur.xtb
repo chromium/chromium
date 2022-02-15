@@ -497,6 +497,7 @@
 <translation id="1506061864768559482">تلاش انجن</translation>
 <translation id="1507170440449692343">اس صفحہ کو آپ کے کیمرا تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="1507246803636407672">&amp;مسترد کریں</translation>
+<translation id="1507884455975553832">پیغام رسانی ایپس کی سلسلہ بندی کریں</translation>
 <translation id="1509163368529404530">&amp;گروپ بحال کریں</translation>
 <translation id="1509281256533087115">‏USB کے ذریعے کسی بھی <ph name="DEVICE_NAME_AND_VENDOR" /> تک رسائی حاصل کریں</translation>
 <translation id="1510238584712386396">لانچر</translation>
@@ -599,6 +600,7 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> بھول جائیں</translation>
 <translation id="1603914832182249871">(پوشیدگی)</translation>
 <translation id="1604432177629086300">پرنٹ نہیں کیا جا سکا۔ پرنٹر چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="1604576689725077412">‏ذہن میں رکھیں، اپنے Chromebook پر اطلاعات کو برخاست کرنے سے وہ آپ کے فون پر بھی برخاست ہو جائیں گی۔</translation>
 <translation id="1605744057217831567">سبھی سائٹ کا ڈیٹا اور اجازتیں دیکھیں</translation>
 <translation id="1606077700029460857">ماؤس کی ترتیبات کو تبدیل کریں</translation>
 <translation id="1606566847233779212">آپ کی شامل کردہ مخصوص سائٹس کو ہٹائیں؟</translation>
@@ -709,6 +711,7 @@
 <translation id="1697150536837697295">آرٹ</translation>
 <translation id="1697686431566694143">فائل میں ترمیم کریں</translation>
 <translation id="1700079447639026019">وہ سائٹس جو کبھی بھی کوکیز کا استعمال نہیں کر سکتی ہیں</translation>
+<translation id="1700201317341192482">آپ کا ورچوئل کارڈ ہٹائیں</translation>
 <translation id="1703331064825191675">اپنے پاس ورڈز کے تعلق سے کبھی فکرمند نہ ہوں</translation>
 <translation id="1703666494654169921">سائٹس کو ورچوئل رئیلٹی آلات یا ڈیٹا کا استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="1704097193565924901">بڑے حرف میں لکھیں</translation>
@@ -1021,6 +1024,7 @@
 <translation id="2006638907958895361">لنک کو <ph name="APP" /> میں کھولیں</translation>
 <translation id="2007404777272201486">مسئلہ کی اطلاع دیں…</translation>
 <translation id="2010501376126504057">موافق آلات</translation>
+<translation id="2011968031299471357">پیغامات موصول کریں اور ان کا جواب دیں</translation>
 <translation id="2015232545623037616">‏PC اور Chromecast ایک ہی Wi-Fi نیٹ ورک پر</translation>
 <translation id="2016473077102413275">وہ خصوصیات کام نہیں کریں گی جن کیلئے تصاویر کی ضرورت ہوتی ہے</translation>
 <translation id="2016574333161572915">‏آپ کا Google Meet ہارڈویئر سیٹ اپ کے لیے تیار ہے</translation>
@@ -1261,6 +1265,7 @@
 <translation id="2241053333139545397">متعدد ویب سائٹس پر اپنا ڈیٹا پڑھیں اور تبدیل کریں</translation>
 <translation id="2241634353105152135">بس ایک بار</translation>
 <translation id="2242687258748107519">فائل کی معلومات</translation>
+<translation id="2243381895573964397">فون کی اطلاعات حاصل کریں</translation>
 <translation id="2246549592927364792">‏Google سے تصویر کی تفصیلات حاصل کریں؟</translation>
 <translation id="2247738527273549923">آپ کا آلہ آپ کی تنظیم کے زیر انتظام ہے</translation>
 <translation id="2249111429176737533">ٹیب کردہ ونڈو کے طور پر کھولیں</translation>
@@ -2078,6 +2083,7 @@
 <translation id="3036546437875325427">‏Flash کو فعال کریں</translation>
 <translation id="3037754279345160234">ڈومین میں شمولیت کے لیے کنفیگریشن کو پارس نہیں کیا جا سکتا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="3038612606416062604">دستی طور پر پرنٹر شامل کریں</translation>
+<translation id="3039409644314251320">گفتگوئیں دیکھیں، پیغامات پر ردعمل ظاہر کریں اور اجتماٰعی چیٹس میں لوگوں کو شامل کریں</translation>
 <translation id="3039491566278747710">آلہ پر آف لائن پالیسی انسٹال نہیں ہو سکی۔</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> سے</translation>
@@ -3299,6 +3305,7 @@
 <translation id="431076611119798497">&amp;تفصیلات</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{‏1 Google اکاؤنٹ}other{‏<ph name="EXTRA_ACCOUNTS" /> Google اکاؤنٹس}}</translation>
 <translation id="4312866146174492540">مسدود کریں (ڈیفالٹ)</translation>
+<translation id="4314497418046265427">اپنے فون کو اپنے <ph name="DEVICE_TYPE" /> سے منسلک کرتے وقت زیادہ تخلیقی بنیں</translation>
 <translation id="4314815835985389558">مطابقت پذیری کا نظم کريں</translation>
 <translation id="4315933848520197627">اکاؤنٹ کا لنک ختم کریں</translation>
 <translation id="4316850752623536204">ڈویلپر کی ویب سائٹ</translation>
@@ -3491,6 +3498,7 @@
 <translation id="4519935350946509010">کنکشن میں خرابی ہے۔</translation>
 <translation id="4520385623207007473">زیر استعمال کوکیز</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> کی جانب سے نامعلوم آلات</translation>
+<translation id="4522351342209941760">کچھ مزید اجازتوں کا جائزہ لینے کے لیے اپنے فون پر جائیں۔</translation>
 <translation id="4522570452068850558">تفصیلات</translation>
 <translation id="4522600456902129422">اس سائٹ کو کلپ بورڈ دیکھنے کی اجازت دینا جاری رکھیں</translation>
 <translation id="4522890784888918985">بچوں کے اکاؤنٹس تعاون یافتہ نہیں ہیں</translation>
@@ -4804,6 +4812,7 @@
 
   عوامی قوت نما (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> بٹس):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">آپ کا فون اور <ph name="DEVICE_TYPE" /> منسلک ہے</translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="59174027418879706">فعال</translation>
 <translation id="5920543303088087579">اس نیٹ ورک سے منسلک ہونے کو آپ کے منتظم نے غیر فعال کر دیا ہے</translation>
@@ -5344,6 +5353,7 @@
 <translation id="6466258437571594570">سائٹس کو مسدود کر دیا گیا ہے تاکہ وہ اطلاعات بھیجنے کی اجازت مانگ کر آپ کو پریشان نہ کریں۔</translation>
 <translation id="6466988389784393586">سبھی بُک مارکس &amp;کھولیں</translation>
 <translation id="6467304607960172345">پوری اسکرین کی ویڈیوز کو بہتر بنائیں</translation>
+<translation id="6467377768028664108">پھر آپ کا <ph name="DEVICE_TYPE" /> یہ کر سکتا ہے:</translation>
 <translation id="6468485451923838994">فونٹس</translation>
 <translation id="6468773105221177474">فائلز: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">سیلولر نیٹ ورک آن کریں</translation>
@@ -6588,6 +6598,7 @@
 <translation id="7754704193130578113">ہر فائل ڈاؤن لوڈ کرنے سے پہلے پوچھیں کہ کہاں پر محفوظ کرنا ہے</translation>
 <translation id="7755287808199759310">آپ کے والدین آپ کیلئے اسے غیر مسدود کر سکتے ہیں</translation>
 <translation id="7757592200364144203">آلے کا نام تبدیل کریں</translation>
+<translation id="7757739382819740102">قریبی رابطے آپ کے ساتھ اشتراک کر سکتے ہیں۔ منظوری درکار ہوگی۔</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> سے ٹیکسٹ کا اشتراک کیا گیا ہے</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">اپنے ڈسپلے کی حدود کو ایڈجسٹ کریں</translation>
@@ -6655,6 +6666,7 @@
 <translation id="7814458197256864873">&amp;کاپی کریں</translation>
 <translation id="7815680994978050279">خطرناک ڈاؤن لوڈ مسدود کیا گیا</translation>
 <translation id="7817361223956157679">‏Linux ایپس پر آن اسکرین کی بورڈ ابھی کام نہیں کرتا ہے</translation>
+<translation id="7817671927108102061">اپنے فون پر سیٹ اپ مکمل کریں</translation>
 <translation id="7818135753970109980">نیا تھیم شامل کر دیا گیا (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome Sync</translation>
 <translation id="7820561748632634942">اضافی سوئچز تفویض کریں؟</translation>
@@ -7446,6 +7458,7 @@
 <translation id="8631032106121706562">پنکھڑیاں</translation>
 <translation id="863109444997383731">سائٹس کو آپ کو اطلاعات دکھانے کی درخواست کرنے سے مسدود کر دیا جائے گا۔ اگر کوئی سائٹ اطلاعات کی درخواست کرتی ہے، تو ایڈریس بار میں مسدود کردہ انڈیکیٹر ظاہر ہوگا۔</translation>
 <translation id="8633025649649592204">حالیہ سرگرمی</translation>
+<translation id="8634348081024879304">‏اب آپ Google Pay کے ساتھ اپنا ورچوئل کارڈ استعمال نہیں کر سکیں گے۔ <ph name="BEGIN_LINK" />ورچوئل کارڈز کے بارے میں جانیں<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">دوبارہ لوڈ ہو رہی ہے...</translation>
 <translation id="8636284842992792762">ایکسٹینشنز کا آغاز ہو رہا ہے...</translation>
 <translation id="8636500887554457830">سائٹس کو پاپ اپس بھیجنے یا ری ڈائریکٹس کا استعمال کرنے کی اجازت نہ دیں</translation>
@@ -7665,6 +7678,7 @@
 <translation id="8838770651474809439">ہیمبرگر</translation>
 <translation id="8838778928843281408">فونز کا نظم کریں</translation>
 <translation id="883911313571074303">تصویر کی تشریح کریں</translation>
+<translation id="8840427996758894516">‏یقینی بنائیں کہ آپ کا فون قریب میں ہے، غیر مقفل ہے اور اس میں بلوٹوتھ اور Wi-Fi آن ہے۔</translation>
 <translation id="8841843049738266382">اجازت یافتہ فہرست کے صارفین کو پڑھیں اور تبدیل کریں</translation>
 <translation id="8842594465773264717">اس فنگر پرنٹ کو حذف کریں</translation>
 <translation id="8845001906332463065">مدد حاصل کریں</translation>

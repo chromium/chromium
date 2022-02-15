@@ -21,6 +21,7 @@
 <translation id="115443833402798225">ハングル（Ahnmatae 式）</translation>
 <translation id="1155759005174418845">カタロニア語</translation>
 <translation id="1168100932582989117">Google ネーム サーバー</translation>
+<translation id="1171082344678443012">XZ で圧縮されたアーカイブ</translation>
 <translation id="1172970565351728681">残り約 <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、詳細</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが削除されます。この操作は元に戻せません。</translation>
 <translation id="2025955442973426285">チグリヤナ語</translation>
 <translation id="2028997212275086731">RAR アーカイブ</translation>
+<translation id="2036414735548252477">LZMA で圧縮された tar アーカイブ</translation>
 <translation id="2037845485764049925">ロシア語</translation>
 <translation id="2044023416777079300">モデムが登録されていません</translation>
 <translation id="2046702855113914483">ラーメン</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> バイト</translation>
 <translation id="4880214202172289027">音量スライダー</translation>
 <translation id="4881695831933465202">開く</translation>
+<translation id="4886199584824489598">Bzip2 で圧縮されたアーカイブ</translation>
 <translation id="4900532980794411603">Parallels Desktop と共有</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、接続</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" />をバックアップできます</translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> ネットワーク、未接続</translation>
 <translation id="6074825444536523002">Google フォーム</translation>
 <translation id="6079871810119356840">ハンガリー語（QWERTY）キーボード</translation>
+<translation id="6082256976217156453">LZMA で圧縮されたアーカイブ</translation>
 <translation id="6096979789310008754">検索語句を削除しました。すべてのファイルとフォルダを表示しています。</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> を <ph name="FOLDER_NAME" /> に移動しています</translation>
 <translation id="6129953537138746214">Space</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">ハングル（3 ボル式、Shift なし）</translation>
 <translation id="8299269255470343364">日本語</translation>
 <translation id="8300849813060516376">OTASP に失敗しました</translation>
+<translation id="8308481408797647857">XZ で圧縮された tar アーカイブ</translation>
 <translation id="8312871300878166382">フォルダに貼り付け</translation>
 <translation id="8329978297633540474">テキスト</translation>
 <translation id="8335587457941836791">シェルフの固定解除</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">更新者</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> 項目を選択しました。範囲の先頭は <ph name="FROM_ENTRY_NAME" />、末尾は <ph name="TO_ENTRY_NAME" /> です。</translation>
+<translation id="961973045258256291">Gzip で圧縮されたアーカイブ</translation>
 <translation id="965477715979482472">英語（南アフリカ）</translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="988685240266037636">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。置き換えますか？</translation>

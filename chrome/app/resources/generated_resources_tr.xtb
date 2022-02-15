@@ -601,6 +601,7 @@
 <translation id="1604432177629086300">Yazdırılamadı. Yazıcıyı kontrol edip tekrar deneyin.</translation>
 <translation id="1605744057217831567">Tüm site verilerini ve izinlerini görün</translation>
 <translation id="1606077700029460857">Fare ayarlarını değiştir</translation>
+<translation id="1606566847233779212">Eklediğiniz belirli siteler kaldırılsın mı?</translation>
 <translation id="1607139524282324606">Girişi temizle</translation>
 <translation id="1607499585984539560">Kullanıcı, alanla ilişkili değil</translation>
 <translation id="1608668830839595724">Seçilen öğeler için daha fazla işlem</translation>
@@ -865,6 +866,7 @@
 <translation id="1845727111305721124">Ses çalmasına izin verilen siteler</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> eklentisini çalıştırmak için Control tuşuyla birlikte tıklayın</translation>
 <translation id="184862733444771842">Özellik İsteği</translation>
+<translation id="1849016657376805933">Tüm HID cihazları</translation>
 <translation id="1849186935225320012">Bu sayfa MIDI cihazları üzerinde tam denetime sahip.</translation>
 <translation id="1850145825777333687">Cihaz Kimlik Bilgileri</translation>
 <translation id="1850508293116537636">Saat &amp;yönünde döndür</translation>
@@ -998,6 +1000,7 @@
 <translation id="1988259784461813694">Şartlar</translation>
 <translation id="1989112275319619282">Göz at</translation>
 <translation id="1989113344093894667">İçeriğin ekran görüntüsü alınamıyor</translation>
+<translation id="1989744123191450103">Yedekleme işlemi gerçekleştirilemedi</translation>
 <translation id="1989903373608997757">Her zaman kullan</translation>
 <translation id="1990046457226896323">Canlı Altyazı dosyaları indirildi</translation>
 <translation id="1990512225220753005">Kısayolları bu sayfada gösterme</translation>
@@ -1007,6 +1010,7 @@
 <translation id="1994173015038366702">Site URL'si</translation>
 <translation id="1995916364271252349">Sitelerin hangi bilgileri kullanabileceğini ve gösterebileceğini kontrol eder (konum, kamera, pop-up'lar ve diğerleri)</translation>
 <translation id="1997616988432401742">Sertifikalarınız</translation>
+<translation id="1997645434968427303">Linux yedeklemeniz geri yüklenemedi. Bu durum, Linux'ta yeterli disk alanı bulunmamasından kaynaklanıyor olabilir. Linux'un disk alanı boyutunu değiştirebilir ve OS ayarlarından yedeklemenizi tekrar geri yüklemeyi deneyebilirsiniz.</translation>
 <translation id="1999115740519098545">Başlangıçta</translation>
 <translation id="2000419248597011803">Adres çubuğundan ve arama kutusundan bazı çerezleri ve aramaları varsayılan arama motorunuza gönderir</translation>
 <translation id="2002109485265116295">Gerçek zamanlı</translation>
@@ -1968,6 +1972,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2933632078076743449">Son Güncelleme</translation>
 <translation id="2934999512438267372">MIDI cihazlarının tam denetimine izin verildi</translation>
 <translation id="2935225303485967257">Profilleri yönet</translation>
+<translation id="2935314715123552088">Etkin eSIM profilini devre dışı bırak</translation>
 <translation id="2935654492420446828">Okul hesabını daha sonra ekleyin</translation>
 <translation id="2936851848721175671">Yedekleme ve geri yükleme</translation>
 <translation id="2939908794993783865">Etkin olmayan diğer siteler</translation>
@@ -2079,6 +2084,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3046178388369461825">Linux diskinde boş alan kritik düzeyde</translation>
 <translation id="3046910703532196514">Web Sayfası, Tamamı</translation>
 <translation id="304747341537320566">Konuşma Motorları</translation>
+<translation id="3048336643003835855"><ph name="VENDOR_ID" /> tarafından sağlanan HID cihazları</translation>
 <translation id="3048917188684939573">Yayın ve Cihaz Günlükleri</translation>
 <translation id="3051250416341590778">Görüntü boyutu</translation>
 <translation id="3053013834507634016">Sertifika Anahtarı Kullanımı</translation>
@@ -2506,6 +2512,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3511307672085573050">Bağlantı Adr&amp;esini Kopyala</translation>
 <translation id="351152300840026870">Sabit genişlikte yazı tipi</translation>
 <translation id="3511528412952710609">Kısa</translation>
+<translation id="3514011352559420398">Geri yüklenemedi</translation>
 <translation id="3514335087372914653">Oyun Kontrolü</translation>
 <translation id="3514373592552233661">Birden fazla ağ kullanılabilir olduğunda, bilinen ağlar arasında tercih edilen ağlar seçilir</translation>
 <translation id="3515983984924808886">Sıfırlamayı onaylamak için güvenlik anahtarınıza tekrar dokunun. PIN'i de dahil olmak üzere güvenlik anahtarında depolanan tüm bilgiler silinir.</translation>
@@ -3115,6 +3122,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4104163789986725820">&amp;Dışa Aktar...</translation>
 <translation id="4107048419833779140">Depolama cihazlarını tanımlama ve çıkarma</translation>
 <translation id="4109135793348361820">Pencereyi <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) kullanıcısına taşı</translation>
+<translation id="4110485659976215879">Uyarıyı geri yükle</translation>
 <translation id="4110490973560452005">İndirme işlemi tamamlandı: <ph name="FILE_NAME" />. İndirme çubuğu alanına gitmek için Üst Karakter+F6 tuşlarına basın.</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> albümünü seçin</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (çevrimdışı)</translation>
@@ -3173,6 +3181,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4180788401304023883">"<ph name="CERTIFICATE_NAME" />" CA sertifikası silinsin mi?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Diller</translation>
+<translation id="4184803915913850597">HID cihazı (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">Ekranı taşımak için sürükleyin</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> kuruluyor...</translation>
 <translation id="4190828427319282529">Klavye odağını vurgula</translation>
@@ -3237,6 +3246,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4259388776256904261">Bu işlem biraz zaman alabilir</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> tehlikeli olabilir. Dosya taranmak üzere Google Gelişmiş Koruma'ya gönderilsin mi? İndirme çubuğu alanına gitmek için Üst Karakter+F6 tuşlarına basın.</translation>
 <translation id="4261429981378979799">Uzantı izinleri</translation>
+<translation id="4262004481148703251">Uyarıyı kapat</translation>
 <translation id="4263223596040212967">Klavye düzeninizi kontrol edip tekrar deneyin.</translation>
 <translation id="426564820080660648">Güncellemeleri kontrol etmek için lütfen Ethernet, Kablosuz veya mobil veri kullanın.</translation>
 <translation id="4266679478228765574">Klasörleri kaldırmak paylaşımı durdurur, ancak dosyaları silmez.</translation>
@@ -3642,6 +3652,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4681453295291708042">Yakındakilerle Paylaş'ı devre dışı bırak</translation>
 <translation id="4681930562518940301">Orijinal &amp;resmi yeni sekmede aç</translation>
 <translation id="4682551433947286597">Duvar kağıtları Oturum Açma Ekranında görüntülenir.</translation>
+<translation id="4682830185876172415">Son İndirilenler</translation>
 <translation id="4683629100208651599">Küçük Harf Yap</translation>
 <translation id="4683947955326903992">%<ph name="PERCENTAGE" /> (varsayılan)</translation>
 <translation id="4684427112815847243">Her şeyi senkronize et</translation>
@@ -3664,6 +3675,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4699357559218762027">(otomatik başlatıldı)</translation>
 <translation id="4701025263201366865">Ebeveyn oturum açmalı</translation>
 <translation id="4701335814944566468">Dün görüntülendi</translation>
+<translation id="4707337002099455863">Tüm Sitelerde Her Zaman</translation>
 <translation id="4708794300267213770">Uykudan uyanırken kilit ekranını göster</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> uygulamasından çık</translation>
 <translation id="4711638718396952945">Ayarları geri yükle</translation>
@@ -3906,6 +3918,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="496446150016900060">Kablosuz ağları telefonunuzla senkronize edin</translation>
 <translation id="4965808351167763748">Bu cihazı Hangouts Meet'i çalıştırmak üzere ayarlamak istediğinizden emin misiniz?</translation>
 <translation id="4966972803217407697">Gizli moddasınız</translation>
+<translation id="496742804571665842">eSIM profillerini devre dışı bırakın</translation>
 <translation id="496888482094675990">Dosyalar uygulaması; Google Drive'a, harici depolama birimine veya Chrome OS cihazınıza kaydettiğiniz dosyalara hızlı bir şekilde erişebilmenizi sağlar.</translation>
 <translation id="4971412780836297815">İşlem tamamlandığında aç</translation>
 <translation id="4971735654804503942">Tehlikeli web siteleri, indirmeler ve uzantılara karşı daha hızlı, proaktif koruma. Sizi şifre ihlalleri konusunda uyarır. Tarama verilerinin Google'a gönderilmesini gerektirir.</translation>
@@ -4127,6 +4140,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> Kimlik Doğrulama Jetonunu Saklama</translation>
 <translation id="520902706163766447">Şu anda açık olan sekmelerde arama yapmak için üst Chrome kullanıcı arayüzünde açılır balonu etkinleştirir.</translation>
 <translation id="5209320130288484488">Cihaz bulunamadı</translation>
+<translation id="5209513429611499188"><ph name="USAGE_PAGE" /> kullanım sayfasındaki kullanımlara sahip HID cihazları</translation>
 <translation id="5210365745912300556">Sekmeyi kapat</translation>
 <translation id="5213114823401215820">Kapatılan grubu yeniden aç</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" veri hizmetiniz kullanıma hazır</translation>
@@ -4534,6 +4548,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5627086634964711283">Ayrıca, Ana Sayfa düğmesini tıkladığınızda gösterilen sayfayı denetler.</translation>
 <translation id="5627676517703583263">Chrome ile akıllıca göz atın</translation>
 <translation id="5627832140542566187">Ekran yönü</translation>
+<translation id="5628393161682339323">Uzantıyı Tıkladığımda</translation>
 <translation id="562935524653278697">İşaretleyiciler, geçmiş, şifreler ve diğer ayarlarınızın senkronizasyonunu yöneticiniz tarafından devre dışı bırakıldı.</translation>
 <translation id="5631017369956619646">CPU Kullanımı</translation>
 <translation id="5632059346822207074">İzin istendi, yanıtlamak için Ctrl + İleri tuşlarına basın</translation>
@@ -4668,6 +4683,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> olarak senkronize et</translation>
 <translation id="5781865261247219930">Komutları <ph name="EXTENSION_NAME" /> uygulamasına gönder</translation>
 <translation id="5782227691023083829">Çevriliyor...</translation>
+<translation id="5783304934509327739">Site Erişimi Seçeneği</translation>
 <translation id="57838592816432529">Sesi kapat</translation>
 <translation id="5785583009707899920">Chrome Dosya Yardımcı Programları</translation>
 <translation id="5787146423283493983">Anahtar Anlaşması</translation>
@@ -4718,6 +4734,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5834581999798853053">Yaklaşık <ph name="TIME" /> dakika kaldı</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Kamera veya mikrofon kaydediyor</translation>
 <translation id="583673505367439042">Siteler cihazınızdaki dosyaları veya klasörleri düzenlemek isteyebilir</translation>
+<translation id="583756221537636748">Kılıf</translation>
 <translation id="5840680448799937675">Dosyalar her zaman çevrimdışı paylaşılır</translation>
 <translation id="5841270259333717135">Ethernet'i yapılandır</translation>
 <translation id="5842497610951477805">Bluetooth etkin</translation>
@@ -5355,6 +5372,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6499143127267478107">Proxy komut dosyasındaki ana makine çözümleniyor...</translation>
 <translation id="6499764981457476645">Yakında cihaz bulunamadı</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> şu dosyayı açmak istiyor:</translation>
+<translation id="65017764184991091">Linux uygulamaları ve dosyalar yedekleniyor. Bu durum, cihazınızda yeterli depolama alanı olmadığında meydana gelebilir. Cihazınızda yer açmayı veya yedekleme için farklı bir yer seçmeyi deneyin.</translation>
 <translation id="6501957628055559556">Tüm kapsayıcılar</translation>
 <translation id="650266656685499220">Albüm oluşturmak için Google Fotoğraflar'a gidin</translation>
 <translation id="6503077044568424649">En çok ziyaret edilenler</translation>
@@ -6257,6 +6275,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7448430327655618736">Uygulamaları otomatik olarak yükle</translation>
 <translation id="7449752890690775568">Şifre kaldırılsın mı?</translation>
 <translation id="7450761244949417357">Şimdi <ph name="ALTERNATIVE_BROWSER_NAME" /> tarayıcısında açılıyor</translation>
+<translation id="7452166281927983300">Kapatılan uyarılar (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Bu yazıcıyı seçerek aşağıdaki uzantının yazıcınıza erişmesine izin verirsiniz:</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Ek kapsayıcıları yönet</translation>
@@ -7381,6 +7400,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8581809080475256101">İleri gitmek için içerik menüsüne basarak geçmişi görüntüleyin</translation>
 <translation id="8584280235376696778">Videoyu yeni sekmede &amp;aç</translation>
 <translation id="8584427708066927472">Şifre bu cihazdan silindi</translation>
+<translation id="8584843865238667486"><ph name="USAGE_PAGE" /> kullanım sayfasındaki <ph name="USAGE" /> kullanıma sahip HID cihazları</translation>
 <translation id="8585480574870650651">Crostini'yi kaldır</translation>
 <translation id="8585841788766257444">Aşağıdaki siteler, varsayılan yerine özel bir ayar kullanır</translation>
 <translation id="8588866096426746242">Profil istatistiklerini göster</translation>

@@ -45,6 +45,7 @@
 <translation id="1231733316453485619">Kas lülitada sünkroonimine sisse?</translation>
 <translation id="123724288017357924">Praeguse lehe uuesti laadimine, eirates vahemälus olevat sisu</translation>
 <translation id="1239792311949352652">Jagage kiirelt seda lehte. Selle otsetee muutmiseks avage menüü Seaded.</translation>
+<translation id="1240190568154816272">Chrome’i nõuanded</translation>
 <translation id="1240288207750131269">Keele laadimine: <ph name="LANG" /></translation>
 <translation id="1242883863226959074">seadmes</translation>
 <translation id="124678866338384709">Aktiivse vahelehe sulgemine</translation>
@@ -1157,6 +1158,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="768618399695552958">Mõned teie külastatavad lehed on eellaaditud. Kui lehed on lingitud Google'i saidilt, võidakse need eellaadida Google'i serverite kaudu.</translation>
 <translation id="7698359219371678927">Looge meil rakenduses <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Otsingute ja URL-ide automaatne täitmine</translation>
+<translation id="770741401784017797">GIF-i loomine</translation>
 <translation id="7707922173985738739">Kasuta mobiilset andmesidet</translation>
 <translation id="7725024127233776428">Järjehoidjatesse lisatud lehed kuvatakse siin</translation>
 <translation id="7757787379047923882">Teksti jagati seadmest <ph name="DEVICE_NAME" /></translation>

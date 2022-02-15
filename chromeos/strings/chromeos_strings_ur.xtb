@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">ناکام ہو گیا - فلٹر ناکام ہو گیا</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">میرے پاس کلیدوں کا ایک جوڑا ہے</translation>
+<translation id="1442433966118452622">تصویر کا ماخذ</translation>
 <translation id="1451536289672181509">آلہ ایک کی بورڈ ہے۔</translation>
 <translation id="1468664791493211953">پیشکشیں</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور آپ کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">روزانہ ریفریش کریں</translation>
 <translation id="2620436844016719705">سسٹم</translation>
 <translation id="2695514675076754339">8 حروف والا غیر مقفل کرنے کا کوڈ درج کریں</translation>
+<translation id="2712812801627182647">‏TLS تصدیقی کلید</translation>
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2751739896257479635">‏EAP مرحلہ 2 توثیق</translation>
 <translation id="2783010256799387990">پاس ہو گیا</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">ناکام ہو گیا - دروازہ کھلا ہے</translation>
 <translation id="3283504360622356314">{0,plural, =1{فائل میں ترمیم کریں}other{فائلز میں ترمیم کریں}}</translation>
 <translation id="3286515922899063534">‎<ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">کلیدی ڈائریکشن</translation>
 <translation id="3310640316857623290">‏DNS تاخیر قابل اجازت حد سے نمایاں طور پر زیادہ ہے</translation>
 <translation id="3328783797891415197">ٹیسٹ جاری ہے</translation>
 <translation id="3340011300870565703">آلے کے دائیں بڈ میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">‏Chrome OS پاس ورڈ اپ ڈیٹ کیا گيا</translation>
 <translation id="4773299976671772492">روک دیا گیا</translation>
 <translation id="4782311465517282004">جب آپ دائیں طرف کلک کرنے یا ٹیکسٹ کو ٹچ کریں اور دبائے رکھیں تو تعریفیں، ترجمے یونٹ کی تبدیلیاں حاصل کریں</translation>
+<translation id="4793756956024303490">کمپریشن الگورتھم</translation>
 <translation id="4794140124556169553">‏CPU ٹیسٹ چلانے سے آپ کے سسٹم کی کارکردگی متاثر ہو سکتی ہے</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> پرنٹ جاب منسوخ کر دی گئی</translation>
 <translation id="4813136279048157860">میری تصاویر</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">‏‎(Android) DNS ریزولیوشن</translation>
 <translation id="4848429997038228357">جاری ہے</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} کوشش باقی ہے}other{<ph name="ERROR_MESSAGE" /> {0} کوششیں باقی ہیں}}</translation>
+<translation id="4873827928179867585">تصدیقی الگورتھم</translation>
 <translation id="4880328057631981605">رسائی کی جگہ کا نام</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">فوری طور پر نیا پاس ورڈ منتخب کریں</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">رپورٹ چھپائیں</translation>
 <translation id="500920857929044050">ٹیسٹ روکیں</translation>
 <translation id="5017508259293544172">لیپ</translation>
+<translation id="5019310272469539976">آپ کی اسکرین کے معطل ہونے پر، تصاویر، وقت، موسم اور میڈیا کی معلومات دکھائیں۔</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
 <translation id="5049856988445523908">‏SIM مقفل ہو گیا (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">گروپ کا نام</translation>
@@ -435,6 +441,7 @@
 <translation id="6618744767048954150">جاری ہے</translation>
 <translation id="6620487321149975369">پرنٹ جابز سرگزشت میں ظاہر ہوں گی جب تک کہ انہیں دستی طور پر ہٹا نہیں دیا جاتا</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
+<translation id="6647510110698214773">مرموز کاری الگورتھم</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="6692996468359469499">اپنے انتخاب سے متعلق معلومات حاصل کریں</translation>
 <translation id="6704062477274546131">‏DNS ریزولیوشن</translation>

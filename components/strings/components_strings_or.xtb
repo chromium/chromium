@@ -220,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />କୁ ଏକ ବ୍ୟକ୍ତିଗତ ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଇପାରିବ ନାହିଁ କାରଣ, ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ତାରିଖ ଏବଂ ସମୟ (<ph name="DATE_AND_TIME" />) ଭୁଲ ଅଛି।&lt;/p&gt;
 
       &lt;p&gt;ଦୟାକରି &lt;strong&gt;ସେଟିଂସ୍&lt;/strong&gt; ଆପ୍‌ର &lt;strong&gt;ସାଧାରଣ&lt;/strong&gt; ବିଭାଗରୁ ତାରିଖ ଏବଂ ସମୟ ଆଡ୍‌ଜଷ୍ଟ କରନ୍ତୁ।&lt;/p&gt;</translation>
+<translation id="1559839503761818503">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର ଡିଭାଇସକୁ <ph name="DATE" />ରେ <ph name="TIME" /> ବେଳେ ରିଷ୍ଟାର୍ଟ କରିବେ</translation>
 <translation id="156703335097561114">ଠିକଣା, ଇଣ୍ଟରଫେସ କନଫିଗରେସନ ଏବଂ ସଂଯୋଗର ଗୁଣବତ୍ତା ପରି ନେଟୱାର୍କିଂ ସୂଚନା</translation>
 <translation id="1567040042588613346">ଏହି ନୀତି ଆଶାନୁରୂପ ଭାବେ କାର୍ଯ୍ୟ କରୁଛି କିନ୍ତୁ ସମାନ ମୂଲ୍ୟ ଅନ୍ୟ କୌଣସି ସ୍ଥାନରେ ସେଟ୍ କରାଯାଇଛି ଏବଂ ଏହି ନୀତି ଦ୍ୱାରା ସ୍ଥାନ ଅଧିକାର କରାଯାଇଛି।</translation>
 <translation id="1569487616857761740">ମିଆଦ ଶେଷର ତାରିଖ ଲେଖନ୍ତୁ</translation>
@@ -1963,6 +1964,7 @@
 <translation id="7304562222803846232">Google ଆକାଉଣ୍ଟର ଗୋପନୀୟତା ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7305756307268530424">ଧୀର ଗତିରେ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="7308436126008021607">ପୃଷ୍ଠପଟ ସିଙ୍କ୍</translation>
+<translation id="7310392214323165548">ଡିଭାଇସଟି ଅତି ଶୀଘ୍ର ରିଷ୍ଟାର୍ଟ ହେବ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ସଂଯୋଗ ସହାୟତା</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" ବିଭାଗ ଲୁଚାନ୍ତୁ</translation>

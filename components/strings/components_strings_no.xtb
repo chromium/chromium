@@ -220,6 +220,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1559572115229829303">&lt;p&gt;Vi kan ikke opprette noen privat tilkobling til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, fordi datoen og klokkeslettet (<ph name="DATE_AND_TIME" />) på enheten din er feil.&lt;/p&gt;
 
       &lt;p&gt;Juster datoen og klokkeslettet under &lt;strong&gt;Generelt&lt;/strong&gt; i &lt;strong&gt;Innstillinger&lt;/strong&gt;-appen.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Administratoren din starter enheten din på nytt kl. <ph name="TIME" /> <ph name="DATE" /></translation>
 <translation id="156703335097561114">Nettverksinformasjon som adresser, grensesnittkonfigurasjon og tilkoblingskvalitet</translation>
 <translation id="1567040042588613346">Denne regelen fungerer som den skal, men den samme verdien er angitt et annet sted og overstyres av denne regelen.</translation>
 <translation id="1569487616857761740">Oppgi utløpsdato</translation>
@@ -1975,6 +1976,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7304562222803846232">Administrer personverninnstillingene for Google-kontoen</translation>
 <translation id="7305756307268530424">Start tregere</translation>
 <translation id="7308436126008021607">bakgrunnssynkronisering</translation>
+<translation id="7310392214323165548">Enheten startes på nytt veldig snart</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Tilkoblingshjelp</translation>
 <translation id="7323804146520582233">Skjul «<ph name="SECTION" />»-delen</translation>

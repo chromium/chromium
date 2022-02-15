@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para seu mecanismo de pesquisa padrão.</translation>
 <translation id="200114059308480249">Incluir o texto ao redor nas pesquisas do Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# arquivo}one{# arquivo}other{# arquivos}}</translation>
+<translation id="2015836039326522978">O app <ph name="APP_NAME" /> será aberto no Chrome. Ao continuar, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do Chrome OS<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Política de Privacidade<ph name="END_LINK3" /> também se aplica.</translation>
 <translation id="2020309681647789787">Seu histórico será mostrado em todos os dispositivos sincronizados para que você possa continuar o que estava fazendo</translation>
 <translation id="2021896219286479412">Controles de site em tela cheia</translation>
 <translation id="2038563949887743358">Ativar "Ver versão para computador"</translation>
@@ -1225,6 +1226,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8037750541064988519"><ph name="DAYS" /> dias restantes</translation>
 <translation id="8037801708772278989">Verificado agora mesmo</translation>
 <translation id="804335162455518893">Cartão SD não encontrado</translation>
+<translation id="8046319826565374740">Ao usar o Chrome, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do Chrome OS<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Política de Privacidade<ph name="END_LINK3" /> também se aplica.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia anônima}one{<ph name="TAB_COUNT_NORMAL" /> guia anônima}other{<ph name="TAB_COUNT_NORMAL" /> guias anônimas}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponíveis</translation>
 <translation id="8058655154417507695">Ano de expiração</translation>
