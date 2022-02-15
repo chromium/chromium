@@ -484,9 +484,13 @@ typedef NS_ENUM(NSInteger, CRUErrorCategoryEnum) {
 @synthesize state = _state;
 
 - (instancetype)initWithAppState:
-    (const updater::UpdateService::AppState&)appState {
+                    (const updater::UpdateService::AppState&)appState
+                  restrictedView:(bool)restrictedView {
   if (self = [super init]) {
     _state = appState;
+    if (restrictedView) {
+      _state.ecp = base::FilePath();
+    }
   }
   return self;
 }
@@ -536,7 +540,7 @@ typedef NS_ENUM(NSInteger, CRUErrorCategoryEnum) {
   appState.brand_code = base::SysNSStringToUTF8(brandCode);
   appState.brand_path = base::mac::NSStringToFilePath(brandPath);
   appState.ecp = base::mac::NSStringToFilePath(ecp);
-  return [self initWithAppState:appState];
+  return [self initWithAppState:appState restrictedView:NO];
 }
 
 @end
@@ -563,11 +567,14 @@ typedef NS_ENUM(NSInteger, CRUErrorCategoryEnum) {
 }
 
 - (instancetype)initWithAppStates:
-    (const std::vector<updater::UpdateService::AppState>&)appStates {
+                    (const std::vector<updater::UpdateService::AppState>&)
+                        appStates
+                   restrictedView:(bool)restrictedView {
   NSMutableArray<CRUAppStateWrapper*>* stateWrappers = [NSMutableArray array];
   for (const auto& state : appStates) {
     [stateWrappers addObject:[[[CRUAppStateWrapper alloc]
-                                 initWithAppState:state] autorelease]];
+                                 initWithAppState:state
+                                   restrictedView:restrictedView] autorelease]];
   }
 
   return [self initWithAppStateWrappers:stateWrappers];
