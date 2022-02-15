@@ -187,6 +187,7 @@ source_set("headers") {
     "messaging/web_message_port.h",
     "metrics/document_update_reason.h",
     "metrics/form_element_pii_type.h",
+    "metrics/post_message_counter.h",
     "mime_util/mime_util.h",
     "mobile_metrics/mobile_friendliness.h",
     "native_io/native_io_utils.h",

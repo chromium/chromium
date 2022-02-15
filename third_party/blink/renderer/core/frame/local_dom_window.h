@@ -31,6 +31,7 @@
 
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/metrics/post_message_counter.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -574,12 +575,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // from |DocumentPolicyViolationReport::MatchId()|.
   mutable HashSet<unsigned> document_policy_violation_reports_sent_;
 
-  // A list of the most recently recorded source frame UKM source IDs for the
-  // PostMessage.Incoming.Frame UKM event, in order to partially deduplicate
-  // logged events. Its size is limited to 20. See SchedulePostMessage() where
-  // this UKM is logged.
-  // TODO(crbug.com/1112491): Remove when no longer needed.
-  Deque<ukm::SourceId> post_message_ukm_recorded_source_ids_;
+  // Tracks metrics related to postMessage usage.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
+  PostMessageCounter post_message_counter_;
 
   // The storage key for this LocalDomWindow.
   BlinkStorageKey storage_key_;

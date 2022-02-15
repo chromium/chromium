@@ -35,7 +35,6 @@
 #include "build/build_config.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
@@ -148,31 +147,6 @@
 
 namespace blink {
 
-namespace {
-
-constexpr size_t kMaxPostMessageUkmRecordedSourceIdsSize = 20;
-
-bool ShouldRecordPostMessageIncomingFrameUkmEvent(
-    ukm::SourceId source_frame_ukm_source_id,
-    Deque<ukm::SourceId>& already_recorded_source_frame_ids) {
-  DCHECK_LE(already_recorded_source_frame_ids.size(),
-            kMaxPostMessageUkmRecordedSourceIdsSize);
-
-  if (base::Contains(already_recorded_source_frame_ids,
-                     source_frame_ukm_source_id)) {
-    return false;
-  }
-
-  if (already_recorded_source_frame_ids.size() ==
-      kMaxPostMessageUkmRecordedSourceIdsSize) {
-    already_recorded_source_frame_ids.pop_back();
-  }
-  already_recorded_source_frame_ids.push_front(source_frame_ukm_source_id);
-  return true;
-}
-
-}  // namespace
-
 class LocalDOMWindow::NetworkStateObserver final
     : public GarbageCollected<LocalDOMWindow::NetworkStateObserver>,
       public NetworkStateNotifier::NetworkStateObserver,
@@ -224,6 +198,7 @@ LocalDOMWindow::LocalDOMWindow(LocalFrame& frame,
           MakeGarbageCollected<
               HeapHashMap<int, Member<ContentSecurityPolicy>>>()),
       token_(frame.GetLocalFrameToken()),
+      post_message_counter_(PostMessagePartition::kSameProcess),
       network_state_observer_(MakeGarbageCollected<NetworkStateObserver>(this)),
       anonymous_(anonymous) {}
 
@@ -1070,13 +1045,8 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   LocalDOMWindow* source = posted_message->source;
 
   // Record UKM metrics for postMessage event.
-  ukm::SourceId source_frame_ukm_source_id = source->UkmSourceID();
-  if (ShouldRecordPostMessageIncomingFrameUkmEvent(
-          source_frame_ukm_source_id, post_message_ukm_recorded_source_ids_)) {
-    ukm::builders::PostMessage_Incoming_Frame(UkmSourceID())
-        .SetSourceFrameSourceId(source_frame_ukm_source_id)
-        .Record(UkmRecorder());
-  }
+  post_message_counter_.RecordMessage(source->UkmSourceID(), UkmSourceID(),
+                                      UkmRecorder());
 
   // Convert the posted message to a MessageEvent so it can be unpacked for
   // local dispatch.
