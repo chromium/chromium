@@ -10,4 +10,5 @@
   RuntimeEnabled=DesktopPWAsSubApps
 ] interface SubApps {
   [CallWith=ScriptState, RaisesException] Promise<void> add(DOMString install_url);
+  [CallWith=ScriptState, RaisesException] Promise<FrozenArray<DOMString>> list();
 };

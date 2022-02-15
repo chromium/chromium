@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 
+#include "base/containers/flat_set.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,6 +25,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/features.h"
 
+using blink::mojom::SubAppsServiceListResultPtr;
 using blink::mojom::SubAppsServiceResult;
 
 namespace web_app {
@@ -92,6 +94,14 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
     base::test::TestFuture<SubAppsServiceResult> future;
     remote_->Add(install_path, future.GetCallback());
     return future.Get();
+  }
+
+  // Calls the List() method on the mojo interface which is async, and waits for
+  // it to finish.
+  SubAppsServiceListResultPtr CallList() {
+    base::test::TestFuture<SubAppsServiceListResultPtr> future;
+    remote_->List(future.GetCallback());
+    return future.Take();
   }
 
  protected:
@@ -324,6 +334,67 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify that the standalone app no longer has the sub-app install source.
   EXPECT_TRUE(standalone_app->HasOnlySource(Source::kSync));
+}
+
+// List call returns the correct value for three sub-apps.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, ListSuccess) {
+  InstallParentApp();
+  NavigateToParentApp();
+  BindRemote();
+
+  // Empty list before adding any sub-apps.
+  SubAppsServiceListResultPtr result = CallList();
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, result->code);
+  EXPECT_EQ(std::vector<std::string>{}, result->sub_app_ids);
+
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath2));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath3));
+
+  // We need to use a set for comparison because the ordering changes between
+  // invocations (due to embedded test server using a random port each time).
+  base::flat_set<std::string> expected_set = {
+      GetURL(kSubAppPath).spec(),
+      GetURL(kSubAppPath2).spec(),
+      GetURL(kSubAppPath3).spec(),
+  };
+  result = CallList();
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, result->code);
+  base::flat_set<std::string> actual_set(result->sub_app_ids.begin(),
+                                         result->sub_app_ids.end());
+  // We see all three sub-apps now.
+  EXPECT_EQ(expected_set, actual_set);
+}
+
+// Verify that the list call doesn't return a non-sub-apps installed app.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       ListDoesntReturnNonSubApp) {
+  // Regular install.
+  InstallPWA(GetURL(kSubAppPath));
+
+  InstallParentApp();
+  NavigateToParentApp();
+  BindRemote();
+
+  // Sub-app install.
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath2));
+
+  // Should only see the sub-app one here, not the standalone.
+  SubAppsServiceListResultPtr result = CallList();
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, result->code);
+  EXPECT_EQ(std::vector<std::string>{GetURL(kSubAppPath2).spec()},
+            result->sub_app_ids);
+}
+
+// List call returns failure if the parent app isn't installed.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       ListFailParentAppNotInstalled) {
+  NavigateToParentApp();
+  BindRemote();
+
+  SubAppsServiceListResultPtr result = CallList();
+  EXPECT_EQ(SubAppsServiceResult::kFailure, result->code);
+  EXPECT_EQ(std::vector<std::string>(), result->sub_app_ids);
 }
 
 }  // namespace web_app

@@ -9,6 +9,11 @@ enum SubAppsServiceResult {
   kFailure,
 };
 
+struct SubAppsServiceListResult {
+  SubAppsServiceResult code;
+  array<string> sub_app_ids;
+};
+
 // Sub Apps APIs allow installed PWAs to install shortcuts to their various
 // sub-parts by means of installing the sub-component.  Example: main app hosted
 // at https://office.org/ which provides a full set of office productivity tools
@@ -23,4 +28,10 @@ interface SubAppsService {
   // be attached to the origin of the already-installed app (effectively
   // limiting the API to same-origin apps).
   Add(string install_path) => (SubAppsServiceResult result);
+
+  // List all sub-app `app_ids` installed by the app making the API call. The
+  // `app_id` format is the same as the `web_app::GenerateAppIdUnhashed`
+  // function which returns app identity according to the specification:
+  // https://www.w3.org/TR/appmanifest/#dfn-identity.
+  List() => (SubAppsServiceListResult result);
 };

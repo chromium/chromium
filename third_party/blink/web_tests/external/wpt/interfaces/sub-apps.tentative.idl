@@ -8,7 +8,9 @@
 
 [
   Exposed=Window,
-  SecureContext
+  SecureContext,
+  RuntimeEnabled=DesktopPWAsSubApps
 ] interface SubApps {
   [CallWith=ScriptState, RaisesException] Promise<undefined> add(DOMString install_url);
+  [CallWith=ScriptState, RaisesException] Promise<FrozenArray<DOMString>> list();
 };

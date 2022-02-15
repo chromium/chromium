@@ -8646,6 +8646,7 @@ interface SubApps
     attribute @@toStringTag
     method add
     method constructor
+    method list
 interface SubmitEvent : Event
     attribute @@toStringTag
     getter submitter

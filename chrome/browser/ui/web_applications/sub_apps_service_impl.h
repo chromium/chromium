@@ -30,6 +30,7 @@ class SubAppsServiceImpl
   // blink::mojom::SubAppsService
   void Add(const std::string& install_path,
            AddCallback result_callback) override;
+  void List(ListCallback result_callback) override;
 
  private:
   SubAppsServiceImpl(

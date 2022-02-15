@@ -23,17 +23,29 @@
 
 namespace blink {
 
+using mojom::blink::SubAppsServiceListResultPtr;
+using mojom::blink::SubAppsServiceResult;
+
 namespace {
 
 // We get called back from the SubAppsService mojo service (inside the browser
 // process), pass on the result to the calling context.
-void OnAddSubApp(ScriptPromiseResolver* resolver,
-                 mojom::blink::SubAppsServiceResult result) {
-  if (result == mojom::blink::SubAppsServiceResult::kSuccess) {
+void OnAddSubApp(ScriptPromiseResolver* resolver, SubAppsServiceResult result) {
+  if (result == SubAppsServiceResult::kSuccess) {
     resolver->Resolve();
   } else {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError, "Unable to add given sub-app."));
+  }
+}
+
+void OnListSubApp(ScriptPromiseResolver* resolver,
+                  SubAppsServiceListResultPtr result) {
+  if (result->code == SubAppsServiceResult::kSuccess) {
+    resolver->Resolve(result->sub_app_ids);
+  } else {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError, "Unable to list sub-apps."));
   }
 }
 
@@ -75,24 +87,14 @@ mojo::Remote<mojom::blink::SubAppsService>& SubApps::GetService() {
 ScriptPromise SubApps::add(ScriptState* script_state,
                            const String& install_url,
                            ExceptionState& exception_state) {
-  Navigator* const navigator = GetSupplementable();
   // [SecureContext] from the IDL ensures this.
   DCHECK(ExecutionContext::From(script_state)->IsSecureContext());
 
-  if (!navigator->DomWindow()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotFoundError,
-        "The object is no longer associated to a document.");
+  if (!CheckPreconditionsMaybeThrow(exception_state)) {
     return ScriptPromise();
   }
 
-  if (!navigator->DomWindow()->GetFrame()->IsMainFrame()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "API is only supported in top-level browsing contexts.");
-    return ScriptPromise();
-  }
-
+  Navigator* const navigator = GetSupplementable();
   const SecurityOrigin* frame_origin = navigator->DomWindow()
                                            ->GetFrame()
                                            ->GetSecurityContext()
@@ -114,6 +116,38 @@ ScriptPromise SubApps::add(ScriptState* script_state,
                     WTF::Bind(&OnAddSubApp, WrapPersistent(resolver)));
 
   return resolver->Promise();
+}
+
+ScriptPromise SubApps::list(ScriptState* script_state,
+                            ExceptionState& exception_state) {
+  if (!CheckPreconditionsMaybeThrow(exception_state)) {
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  GetService()->List(WTF::Bind(&OnListSubApp, WrapPersistent(resolver)));
+
+  return resolver->Promise();
+}
+
+bool SubApps::CheckPreconditionsMaybeThrow(ExceptionState& exception_state) {
+  Navigator* const navigator = GetSupplementable();
+
+  if (!navigator->DomWindow()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotFoundError,
+        "The object is no longer associated to a document.");
+    return false;
+  }
+
+  if (!navigator->DomWindow()->GetFrame()->IsMainFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "API is only supported in top-level browsing contexts.");
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace blink

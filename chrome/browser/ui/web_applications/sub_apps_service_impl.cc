@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+using blink::mojom::SubAppsServiceListResult;
 using blink::mojom::SubAppsServiceResult;
 
 namespace web_app {
@@ -103,6 +105,30 @@ void SubAppsServiceImpl::Add(const std::string& install_path,
       ->install_manager()
       .InstallSubApp(*parent_app_id, install_url,
                      base::BindOnce(&OnAdd, std::move(result_callback)));
+}
+
+void SubAppsServiceImpl::List(ListCallback result_callback) {
+  // Verify that the calling app is installed itself (cf. |Add|).
+  absl::optional<AppId> parent_app_id = GetAppId(render_frame_host());
+  if (!parent_app_id.has_value()) {
+    return std::move(result_callback)
+        .Run(SubAppsServiceListResult::New(SubAppsServiceResult::kFailure,
+                                           std::vector<std::string>()));
+  }
+
+  WebAppRegistrar& registrar =
+      GetWebAppProvider(render_frame_host())->registrar();
+
+  std::vector<std::string> sub_app_ids;
+  for (const AppId& web_app_id : registrar.GetAllSubAppIds(*parent_app_id)) {
+    const WebApp* web_app = registrar.GetAppById(web_app_id);
+    sub_app_ids.push_back(
+        GenerateAppIdUnhashed(web_app->manifest_id(), web_app->start_url()));
+  }
+
+  std::move(result_callback)
+      .Run(SubAppsServiceListResult::New(SubAppsServiceResult::kSuccess,
+                                         std::move(sub_app_ids)));
 }
 
 }  // namespace web_app
