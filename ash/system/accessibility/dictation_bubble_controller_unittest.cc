@@ -208,4 +208,17 @@ TEST_F(DictationBubbleControllerTest, Hints) {
   HideAndCheckExpectations();
 }
 
+// Verifies that the UI can be hidden before being shown.
+TEST_F(DictationBubbleControllerTest, HideBeforeShow) {
+  HideAndCheckExpectations();
+
+  EXPECT_TRUE(GetView());
+  Show(DictationBubbleIconType::kStandby, absl::optional<std::u16string>(),
+       absl::optional<std::vector<DictationBubbleHintType>>());
+  EXPECT_TRUE(GetView());
+  EXPECT_TRUE(IsBubbleVisible());
+
+  HideAndCheckExpectations();
+}
+
 }  // namespace ash

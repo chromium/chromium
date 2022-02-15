@@ -34,16 +34,9 @@ void DictationBubbleController::UpdateBubble(
     DictationBubbleIconType icon,
     const absl::optional<std::u16string>& text,
     const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
-  if (visible) {
-    MaybeInitialize();
-    Update(icon, text, hints);
-    widget_->Show();
-  } else {
-    Update(icon, text, hints);
-    if (widget_) {
-      widget_->Hide();
-    }
-  }
+  MaybeInitialize();
+  Update(icon, text, hints);
+  visible ? widget_->Show() : widget_->Hide();
 }
 
 void DictationBubbleController::OnCaretBoundsChanged(
