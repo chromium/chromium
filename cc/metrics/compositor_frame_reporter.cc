@@ -20,6 +20,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "cc/metrics/dropped_frame_counter.h"
+#include "cc/metrics/event_latency_tracing_recorder.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -57,228 +58,6 @@ constexpr int kFrameSequenceTrackerTypeCount =
 // also means too much memory usage.
 constexpr size_t kMaxOwnedPartialUpdateDependents = 300u;
 
-// Names for the viz breakdowns that are shown in trace as substages under
-// PipelineReporter -> SubmitCompositorFrameToPresentationCompositorFrame or
-// EventLatency -> SubmitCompositorFrameToPresentationCompositorFrame.
-constexpr const char* GetVizBreakdownName(VizBreakdown stage) {
-  switch (stage) {
-    case VizBreakdown::kSubmitToReceiveCompositorFrame:
-      return "SubmitToReceiveCompositorFrame";
-    case VizBreakdown::kReceivedCompositorFrameToStartDraw:
-      return "ReceiveCompositorFrameToStartDraw";
-    case VizBreakdown::kStartDrawToSwapStart:
-      return "StartDrawToSwapStart";
-    case VizBreakdown::kSwapStartToSwapEnd:
-      return "Swap";
-    case VizBreakdown::kSwapEndToPresentationCompositorFrame:
-      return "SwapEndToPresentationCompositorFrame";
-    case VizBreakdown::kSwapStartToBufferAvailable:
-      return "SwapStartToBufferAvailable";
-    case VizBreakdown::kBufferAvailableToBufferReady:
-      return "BufferAvailableToBufferReady";
-    case VizBreakdown::kBufferReadyToLatch:
-      return "BufferReadyToLatch";
-    case VizBreakdown::kLatchToSwapEnd:
-      return "LatchToSwapEnd";
-    case VizBreakdown::kBreakdownCount:
-      NOTREACHED();
-      return "";
-  }
-}
-
-// Returns the name of the event dispatch breakdown of EventLatency histograms
-// between `start_stage` and `end_stage`.
-constexpr const char* GetEventLatencyDispatchBreakdownName(
-    EventMetrics::DispatchStage start_stage,
-    EventMetrics::DispatchStage end_stage) {
-  switch (start_stage) {
-    case EventMetrics::DispatchStage::kGenerated:
-      DCHECK_EQ(end_stage,
-                EventMetrics::DispatchStage::kArrivedInRendererCompositor);
-      return "GenerationToRendererCompositor";
-    case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
-      switch (end_stage) {
-        case EventMetrics::DispatchStage::kRendererCompositorStarted:
-          return "RendererCompositorQueueingDelay";
-        case EventMetrics::DispatchStage::kRendererMainStarted:
-          return "RendererCompositorToMain";
-        default:
-          NOTREACHED();
-          return nullptr;
-      }
-    case EventMetrics::DispatchStage::kRendererCompositorStarted:
-      DCHECK_EQ(end_stage,
-                EventMetrics::DispatchStage::kRendererCompositorFinished);
-      return "RendererCompositorProcessing";
-    case EventMetrics::DispatchStage::kRendererCompositorFinished:
-      DCHECK_EQ(end_stage, EventMetrics::DispatchStage::kRendererMainStarted);
-      return "RendererCompositorToMain";
-    case EventMetrics::DispatchStage::kRendererMainStarted:
-      DCHECK_EQ(end_stage, EventMetrics::DispatchStage::kRendererMainFinished);
-      return "RendererMainProcessing";
-    case EventMetrics::DispatchStage::kRendererMainFinished:
-      NOTREACHED();
-      return nullptr;
-  }
-}
-
-// Returns the name of EventLatency breakdown between `dispatch_stage` and
-// `compositor_stage`.
-constexpr const char* GetEventLatencyDispatchToCompositorBreakdownName(
-    EventMetrics::DispatchStage dispatch_stage,
-    CompositorFrameReporter::StageType compositor_stage) {
-  switch (dispatch_stage) {
-    case EventMetrics::DispatchStage::kRendererCompositorFinished:
-      switch (compositor_stage) {
-        case CompositorFrameReporter::StageType::
-            kBeginImplFrameToSendBeginMainFrame:
-          return "RendererCompositorFinishedToBeginImplFrame";
-        case CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit:
-          return "RendererCompositorFinishedToSendBeginMainFrame";
-        case CompositorFrameReporter::StageType::kCommit:
-          return "RendererCompositorFinishedToCommit";
-        case CompositorFrameReporter::StageType::kEndCommitToActivation:
-          return "RendererCompositorFinishedToEndCommit";
-        case CompositorFrameReporter::StageType::kActivation:
-          return "RendererCompositorFinishedToActivation";
-        case CompositorFrameReporter::StageType::
-            kEndActivateToSubmitCompositorFrame:
-          return "RendererCompositorFinishedToEndActivate";
-        case CompositorFrameReporter::StageType::
-            kSubmitCompositorFrameToPresentationCompositorFrame:
-          return "RendererCompositorFinishedToSubmitCompositorFrame";
-        default:
-          NOTREACHED();
-          return nullptr;
-      }
-    case EventMetrics::DispatchStage::kRendererMainFinished:
-      switch (compositor_stage) {
-        case CompositorFrameReporter::StageType::
-            kBeginImplFrameToSendBeginMainFrame:
-          return "RendererMainFinishedToBeginImplFrame";
-        case CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit:
-          return "RendererMainFinishedToSendBeginMainFrame";
-        case CompositorFrameReporter::StageType::kCommit:
-          return "RendererMainFinishedToCommit";
-        case CompositorFrameReporter::StageType::kEndCommitToActivation:
-          return "RendererMainFinishedToEndCommit";
-        case CompositorFrameReporter::StageType::kActivation:
-          return "RendererMainFinishedToActivation";
-        case CompositorFrameReporter::StageType::
-            kEndActivateToSubmitCompositorFrame:
-          return "RendererMainFinishedToEndActivate";
-        case CompositorFrameReporter::StageType::
-            kSubmitCompositorFrameToPresentationCompositorFrame:
-          return "RendererMainFinishedToSubmitCompositorFrame";
-        default:
-          NOTREACHED();
-          return nullptr;
-      }
-    default:
-      NOTREACHED();
-      return nullptr;
-  }
-}
-
-// Names for CompositorFrameReporter::StageType, which should be updated in case
-// of changes to the enum.
-constexpr const char* GetStageName(int stage_type_index,
-                                   bool impl_only = false) {
-  switch (stage_type_index) {
-    case static_cast<int>(StageType::kBeginImplFrameToSendBeginMainFrame):
-      if (impl_only)
-        return "BeginImplFrameToFinishImpl";
-      return "BeginImplFrameToSendBeginMainFrame";
-    case static_cast<int>(StageType::kSendBeginMainFrameToCommit):
-      if (impl_only)
-        return "SendBeginMainFrameToBeginMainAbort";
-      return "SendBeginMainFrameToCommit";
-    case static_cast<int>(StageType::kCommit):
-      return "Commit";
-    case static_cast<int>(StageType::kEndCommitToActivation):
-      return "EndCommitToActivation";
-    case static_cast<int>(StageType::kActivation):
-      return "Activation";
-    case static_cast<int>(StageType::kEndActivateToSubmitCompositorFrame):
-      if (impl_only)
-        return "ImplFrameDoneToSubmitCompositorFrame";
-      return "EndActivateToSubmitCompositorFrame";
-    case static_cast<int>(
-        StageType::kSubmitCompositorFrameToPresentationCompositorFrame):
-      return "SubmitCompositorFrameToPresentationCompositorFrame";
-    case static_cast<int>(StageType::kTotalLatency):
-      return "TotalLatency";
-    case static_cast<int>(VizBreakdown::kSubmitToReceiveCompositorFrame) +
-        kVizBreakdownInitialIndex:
-      return "SubmitCompositorFrameToPresentationCompositorFrame."
-             "SubmitToReceiveCompositorFrame";
-    case static_cast<int>(VizBreakdown::kReceivedCompositorFrameToStartDraw) +
-        kVizBreakdownInitialIndex:
-      return "SubmitCompositorFrameToPresentationCompositorFrame."
-             "ReceivedCompositorFrameToStartDraw";
-    case static_cast<int>(VizBreakdown::kStartDrawToSwapStart) +
-        kVizBreakdownInitialIndex:
-      return "SubmitCompositorFrameToPresentationCompositorFrame."
-             "StartDrawToSwapStart";
-    case static_cast<int>(VizBreakdown::kSwapStartToSwapEnd) +
-        kVizBreakdownInitialIndex:
-      return "SubmitCompositorFrameToPresentationCompositorFrame."
-             "SwapStartToSwapEnd";
-    case static_cast<int>(VizBreakdown::kSwapEndToPresentationCompositorFrame) +
-        kVizBreakdownInitialIndex:
-      return "SubmitCompositorFrameToPresentationCompositorFrame."
-             "SwapEndToPresentationCompositorFrame";
-    case static_cast<int>(VizBreakdown::kSwapStartToBufferAvailable) +
-        kVizBreakdownInitialIndex:
-      return "SubmitCompositorFrameToPresentationCompositorFrame."
-             "SwapStartToBufferAvailable";
-    case static_cast<int>(VizBreakdown::kBufferAvailableToBufferReady) +
-        kVizBreakdownInitialIndex:
-      return "SubmitCompositorFrameToPresentationCompositorFrame."
-             "BufferAvailableToBufferReady";
-    case static_cast<int>(VizBreakdown::kBufferReadyToLatch) +
-        kVizBreakdownInitialIndex:
-      return "SubmitCompositorFrameToPresentationCompositorFrame."
-             "BufferReadyToLatch";
-    case static_cast<int>(VizBreakdown::kLatchToSwapEnd) +
-        kVizBreakdownInitialIndex:
-      return "SubmitCompositorFrameToPresentationCompositorFrame."
-             "LatchToSwapEnd";
-    case static_cast<int>(BlinkBreakdown::kHandleInputEvents) +
-        kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.HandleInputEvents";
-    case static_cast<int>(BlinkBreakdown::kAnimate) +
-        kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.Animate";
-    case static_cast<int>(BlinkBreakdown::kStyleUpdate) +
-        kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.StyleUpdate";
-    case static_cast<int>(BlinkBreakdown::kLayoutUpdate) +
-        kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.LayoutUpdate";
-    case static_cast<int>(BlinkBreakdown::kPrepaint) +
-        kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.Prepaint";
-    case static_cast<int>(BlinkBreakdown::kCompositingInputs) +
-        kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.CompositingInputs";
-    case static_cast<int>(BlinkBreakdown::kPaint) + kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.Paint";
-    case static_cast<int>(BlinkBreakdown::kCompositeCommit) +
-        kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.CompositeCommit";
-    case static_cast<int>(BlinkBreakdown::kUpdateLayers) +
-        kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.UpdateLayers";
-    case static_cast<int>(BlinkBreakdown::kBeginMainSentToStarted) +
-        kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.BeginMainSentToStarted";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
 // Names for CompositorFrameReporter::FrameReportType, which should be
 // updated in case of changes to the enum.
 constexpr const char* kReportTypeNames[]{
@@ -314,21 +93,22 @@ constexpr base::TimeDelta kEventLatencyHistogramMax = base::Seconds(5);
 constexpr int kEventLatencyHistogramBucketCount = 100;
 
 std::string GetCompositorLatencyHistogramName(
-    const int report_type_index,
+    FrameReportType report_type,
     FrameSequenceTrackerType frame_sequence_tracker_type,
-    const int stage_type_index) {
+    StageType stage_type,
+    absl::optional<VizBreakdown> viz_breakdown,
+    absl::optional<BlinkBreakdown> blink_breakdown) {
   DCHECK_LE(frame_sequence_tracker_type, FrameSequenceTrackerType::kMaxType);
   const char* tracker_type_name =
       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
           frame_sequence_tracker_type);
   DCHECK(tracker_type_name);
-  bool impl_only_frame =
-      (report_type_index ==
-       static_cast<int>(FrameReportType::kCompositorOnlyFrame));
-  return base::StrCat({"CompositorLatency.",
-                       kReportTypeNames[report_type_index], tracker_type_name,
-                       *tracker_type_name ? "." : "",
-                       GetStageName(stage_type_index, impl_only_frame)});
+  bool impl_only_frame = report_type == FrameReportType::kCompositorOnlyFrame;
+  return base::StrCat(
+      {"CompositorLatency.", kReportTypeNames[static_cast<int>(report_type)],
+       tracker_type_name, *tracker_type_name ? "." : "",
+       CompositorFrameReporter::GetStageName(
+           stage_type, viz_breakdown, blink_breakdown, impl_only_frame)});
 }
 
 std::string GetEventLatencyHistogramBaseName(
@@ -345,45 +125,9 @@ std::string GetEventLatencyHistogramBaseName(
 
 constexpr char kTraceCategory[] =
     "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame");
-constexpr char kTraceEventCategory[] = "cc,benchmark,input";
 
 base::TimeTicks ComputeSafeDeadlineForFrame(const viz::BeginFrameArgs& args) {
   return args.frame_time + (args.interval * 1.5);
-}
-
-perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(
-    EventMetrics::EventType event_type) {
-#define CASE(event_type, proto_event_type)  \
-  case EventMetrics::EventType::event_type: \
-    return perfetto::protos::pbzero::EventLatency::proto_event_type
-  switch (event_type) {
-    CASE(kMousePressed, MOUSE_PRESSED);
-    CASE(kMouseReleased, MOUSE_RELEASED);
-    CASE(kMouseWheel, MOUSE_WHEEL);
-    CASE(kKeyPressed, KEY_PRESSED);
-    CASE(kKeyReleased, KEY_RELEASED);
-    CASE(kTouchPressed, TOUCH_PRESSED);
-    CASE(kTouchReleased, TOUCH_RELEASED);
-    CASE(kTouchMoved, TOUCH_MOVED);
-    CASE(kGestureScrollBegin, GESTURE_SCROLL_BEGIN);
-    CASE(kGestureScrollUpdate, GESTURE_SCROLL_UPDATE);
-    CASE(kGestureScrollEnd, GESTURE_SCROLL_END);
-    CASE(kGestureDoubleTap, GESTURE_DOUBLE_TAP);
-    CASE(kGestureLongPress, GESTURE_LONG_PRESS);
-    CASE(kGestureLongTap, GESTURE_LONG_TAP);
-    CASE(kGestureShowPress, GESTURE_SHOW_PRESS);
-    CASE(kGestureTap, GESTURE_TAP);
-    CASE(kGestureTapCancel, GESTURE_TAP_CANCEL);
-    CASE(kGestureTapDown, GESTURE_TAP_DOWN);
-    CASE(kGestureTapUnconfirmed, GESTURE_TAP_UNCONFIRMED);
-    CASE(kGestureTwoFingerTap, GESTURE_TWO_FINGER_TAP);
-    CASE(kFirstGestureScrollUpdate, FIRST_GESTURE_SCROLL_UPDATE);
-    CASE(kMouseDragged, MOUSE_DRAGGED);
-    CASE(kGesturePinchBegin, GESTURE_PINCH_BEGIN);
-    CASE(kGesturePinchEnd, GESTURE_PINCH_END);
-    CASE(kGesturePinchUpdate, GESTURE_PINCH_UPDATE);
-    CASE(kInertialGestureScrollUpdate, INERTIAL_GESTURE_SCROLL_UPDATE);
-  }
 }
 
 }  // namespace
@@ -601,6 +345,131 @@ CompositorFrameReporter::CompositorFrameReporter(
   }
 }
 
+// static
+const char* CompositorFrameReporter::GetStageName(
+    StageType stage_type,
+    absl::optional<VizBreakdown> viz_breakdown,
+    absl::optional<BlinkBreakdown> blink_breakdown,
+    bool impl_only) {
+  DCHECK(!viz_breakdown ||
+         stage_type ==
+             StageType::kSubmitCompositorFrameToPresentationCompositorFrame);
+  DCHECK(!blink_breakdown ||
+         stage_type == StageType::kSendBeginMainFrameToCommit);
+  switch (stage_type) {
+    case StageType::kBeginImplFrameToSendBeginMainFrame:
+      return impl_only ? "BeginImplFrameToFinishImpl"
+                       : "BeginImplFrameToSendBeginMainFrame";
+    case StageType::kSendBeginMainFrameToCommit:
+      if (!blink_breakdown) {
+        return impl_only ? "SendBeginMainFrameToBeginMainAbort"
+                         : "SendBeginMainFrameToCommit";
+      }
+      switch (*blink_breakdown) {
+        case BlinkBreakdown::kHandleInputEvents:
+          return "SendBeginMainFrameToCommit.HandleInputEvents";
+        case BlinkBreakdown::kAnimate:
+          return "SendBeginMainFrameToCommit.Animate";
+        case BlinkBreakdown::kStyleUpdate:
+          return "SendBeginMainFrameToCommit.StyleUpdate";
+        case BlinkBreakdown::kLayoutUpdate:
+          return "SendBeginMainFrameToCommit.LayoutUpdate";
+        case BlinkBreakdown::kPrepaint:
+          return "SendBeginMainFrameToCommit.Prepaint";
+        case BlinkBreakdown::kCompositingInputs:
+          return "SendBeginMainFrameToCommit.CompositingInputs";
+        case BlinkBreakdown::kPaint:
+          return "SendBeginMainFrameToCommit.Paint";
+        case BlinkBreakdown::kCompositeCommit:
+          return "SendBeginMainFrameToCommit.CompositeCommit";
+        case BlinkBreakdown::kUpdateLayers:
+          return "SendBeginMainFrameToCommit.UpdateLayers";
+        case BlinkBreakdown::kBeginMainSentToStarted:
+          return "SendBeginMainFrameToCommit.BeginMainSentToStarted";
+        case BlinkBreakdown::kBreakdownCount:
+          NOTREACHED();
+          return "";
+      }
+    case StageType::kCommit:
+      return "Commit";
+    case StageType::kEndCommitToActivation:
+      return "EndCommitToActivation";
+    case StageType::kActivation:
+      return "Activation";
+    case StageType::kEndActivateToSubmitCompositorFrame:
+      return impl_only ? "ImplFrameDoneToSubmitCompositorFrame"
+                       : "EndActivateToSubmitCompositorFrame";
+    case StageType::kSubmitCompositorFrameToPresentationCompositorFrame:
+      if (!viz_breakdown)
+        return "SubmitCompositorFrameToPresentationCompositorFrame";
+      switch (*viz_breakdown) {
+        case VizBreakdown::kSubmitToReceiveCompositorFrame:
+          return "SubmitCompositorFrameToPresentationCompositorFrame."
+                 "SubmitToReceiveCompositorFrame";
+        case VizBreakdown::kReceivedCompositorFrameToStartDraw:
+          return "SubmitCompositorFrameToPresentationCompositorFrame."
+                 "ReceivedCompositorFrameToStartDraw";
+        case VizBreakdown::kStartDrawToSwapStart:
+          return "SubmitCompositorFrameToPresentationCompositorFrame."
+                 "StartDrawToSwapStart";
+        case VizBreakdown::kSwapStartToSwapEnd:
+          return "SubmitCompositorFrameToPresentationCompositorFrame."
+                 "SwapStartToSwapEnd";
+        case VizBreakdown::kSwapEndToPresentationCompositorFrame:
+          return "SubmitCompositorFrameToPresentationCompositorFrame."
+                 "SwapEndToPresentationCompositorFrame";
+        case VizBreakdown::kSwapStartToBufferAvailable:
+          return "SubmitCompositorFrameToPresentationCompositorFrame."
+                 "SwapStartToBufferAvailable";
+        case VizBreakdown::kBufferAvailableToBufferReady:
+          return "SubmitCompositorFrameToPresentationCompositorFrame."
+                 "BufferAvailableToBufferReady";
+        case VizBreakdown::kBufferReadyToLatch:
+          return "SubmitCompositorFrameToPresentationCompositorFrame."
+                 "BufferReadyToLatch";
+        case VizBreakdown::kLatchToSwapEnd:
+          return "SubmitCompositorFrameToPresentationCompositorFrame."
+                 "LatchToSwapEnd";
+        case VizBreakdown::kBreakdownCount:
+          NOTREACHED();
+          return "";
+      }
+    case StageType::kTotalLatency:
+      return "TotalLatency";
+    case StageType::kStageTypeCount:
+      NOTREACHED();
+      return "";
+  }
+}
+
+// static
+const char* CompositorFrameReporter::GetVizBreakdownName(
+    VizBreakdown breakdown) {
+  switch (breakdown) {
+    case VizBreakdown::kSubmitToReceiveCompositorFrame:
+      return "SubmitToReceiveCompositorFrame";
+    case VizBreakdown::kReceivedCompositorFrameToStartDraw:
+      return "ReceiveCompositorFrameToStartDraw";
+    case VizBreakdown::kStartDrawToSwapStart:
+      return "StartDrawToSwapStart";
+    case VizBreakdown::kSwapStartToSwapEnd:
+      return "Swap";
+    case VizBreakdown::kSwapEndToPresentationCompositorFrame:
+      return "SwapEndToPresentationCompositorFrame";
+    case VizBreakdown::kSwapStartToBufferAvailable:
+      return "SwapStartToBufferAvailable";
+    case VizBreakdown::kBufferAvailableToBufferReady:
+      return "BufferAvailableToBufferReady";
+    case VizBreakdown::kBufferReadyToLatch:
+      return "BufferReadyToLatch";
+    case VizBreakdown::kLatchToSwapEnd:
+      return "LatchToSwapEnd";
+    case VizBreakdown::kBreakdownCount:
+      NOTREACHED();
+      return "";
+  }
+}
+
 std::unique_ptr<CompositorFrameReporter>
 CompositorFrameReporter::CopyReporterAtBeginImplStage() {
   // If |this| reporter is dependent on another reporter to decide about partial
@@ -690,7 +559,7 @@ void CompositorFrameReporter::OnAbortBeginMainFrame(base::TimeTicks timestamp) {
   main_frame_abort_time_ = timestamp;
   impl_frame_finish_time_ = timestamp;
   // impl_frame_finish_time_ can be used for the end of BeginMain to Commit
-  // stage
+  // stage.
 }
 
 void CompositorFrameReporter::OnDidNotProduceFrame(
@@ -919,9 +788,10 @@ void CompositorFrameReporter::ReportStageHistogramWithBreakdown(
     const CompositorFrameReporter::StageData& stage,
     FrameSequenceTrackerType frame_sequence_tracker_type) const {
   base::TimeDelta stage_delta = stage.end_time - stage.start_time;
-  ReportCompositorLatencyHistogram(frame_sequence_tracker_type,
-                                   static_cast<int>(stage.stage_type),
-                                   stage_delta);
+  ReportCompositorLatencyHistogram(
+      frame_sequence_tracker_type, stage.stage_type,
+      /*viz_breakdown=*/absl::nullopt,
+      /*blink_breakdown=*/absl::nullopt, stage_delta);
   switch (stage.stage_type) {
     case StageType::kSendBeginMainFrameToCommit:
       ReportCompositorLatencyBlinkBreakdowns(frame_sequence_tracker_type);
@@ -940,9 +810,8 @@ void CompositorFrameReporter::ReportCompositorLatencyBlinkBreakdowns(
   for (auto it = processed_blink_breakdown_->CreateIterator(); it.IsValid();
        it.Advance()) {
     ReportCompositorLatencyHistogram(
-        frame_sequence_tracker_type,
-        kBlinkBreakdownInitialIndex + static_cast<size_t>(it.GetBreakdown()),
-        it.GetLatency());
+        frame_sequence_tracker_type, StageType::kSendBeginMainFrameToCommit,
+        /*viz_breakdown=*/absl::nullopt, it.GetBreakdown(), it.GetLatency());
   }
 }
 
@@ -953,15 +822,22 @@ void CompositorFrameReporter::ReportCompositorLatencyVizBreakdowns(
        it.Advance()) {
     ReportCompositorLatencyHistogram(
         frame_sequence_tracker_type,
-        kVizBreakdownInitialIndex + static_cast<size_t>(it.GetBreakdown()),
-        it.GetDuration());
+        StageType::kSubmitCompositorFrameToPresentationCompositorFrame,
+        it.GetBreakdown(), /*blink_breakdown=*/absl::nullopt, it.GetDuration());
   }
 }
 
 void CompositorFrameReporter::ReportCompositorLatencyHistogram(
     FrameSequenceTrackerType frame_sequence_tracker_type,
-    const int stage_type_index,
+    StageType stage_type,
+    absl::optional<VizBreakdown> viz_breakdown,
+    absl::optional<BlinkBreakdown> blink_breakdown,
     base::TimeDelta time_delta) const {
+  DCHECK(!viz_breakdown ||
+         stage_type ==
+             StageType::kSubmitCompositorFrameToPresentationCompositorFrame);
+  DCHECK(!blink_breakdown ||
+         stage_type == StageType::kSendBeginMainFrameToCommit);
   for (size_t type = 0; type < report_types_.size(); ++type) {
     if (!report_types_.test(type))
       continue;
@@ -969,7 +845,12 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
     const int report_type_index = static_cast<int>(report_type);
     const int frame_sequence_tracker_type_index =
         static_cast<int>(frame_sequence_tracker_type);
-
+    const int stage_type_index =
+        blink_breakdown
+            ? kBlinkBreakdownInitialIndex + static_cast<int>(*blink_breakdown)
+            : viz_breakdown
+                  ? kVizBreakdownInitialIndex + static_cast<int>(*viz_breakdown)
+                  : static_cast<int>(stage_type);
     const int histogram_index =
         (stage_type_index == static_cast<int>(StageType::kTotalLatency)
              ? kStagesWithBreakdownCount + frame_sequence_tracker_type_index
@@ -989,13 +870,14 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
     // `STATIC_HISTOGRAM_POINTER_GROUP()` to cache histogram objects.
     STATIC_HISTOGRAM_POINTER_GROUP(
         GetCompositorLatencyHistogramName(
-            report_type_index, frame_sequence_tracker_type, stage_type_index),
+            report_type, frame_sequence_tracker_type, stage_type, viz_breakdown,
+            blink_breakdown),
         histogram_index, kMaxCompositorLatencyHistogramIndex,
         AddTimeMicrosecondsGranularity(time_delta),
         base::Histogram::FactoryMicrosecondsTimeGet(
-            GetCompositorLatencyHistogramName(report_type_index,
-                                              frame_sequence_tracker_type,
-                                              stage_type_index),
+            GetCompositorLatencyHistogramName(
+                report_type, frame_sequence_tracker_type, stage_type,
+                viz_breakdown, blink_breakdown),
             kCompositorLatencyHistogramMin, kCompositorLatencyHistogramMax,
             kCompositorLatencyHistogramBucketCount,
             base::HistogramBase::kUmaTargetedHistogramFlag));
@@ -1007,7 +889,7 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
   DCHECK_EQ(StageType::kTotalLatency, total_latency_stage.stage_type);
 
   const std::string total_latency_stage_name =
-      GetStageName(static_cast<int>(StageType::kTotalLatency));
+      GetStageName(StageType::kTotalLatency);
   const std::string total_latency_histogram_name =
       "EventLatency." + total_latency_stage_name;
 
@@ -1134,16 +1016,13 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
       });
 
   for (const auto& stage : stage_history_) {
-    const int stage_type_index = static_cast<int>(stage.stage_type);
-    CHECK_LT(stage_type_index, static_cast<int>(StageType::kStageTypeCount));
-    CHECK_GE(stage_type_index, 0);
     if (stage.start_time >= frame_termination_time_)
       break;
     DCHECK_GE(stage.end_time, stage.start_time);
     if (stage.start_time == stage.end_time)
       continue;
 
-    const char* stage_name = GetStageName(stage_type_index);
+    const char* stage_name = GetStageName(stage.stage_type);
 
     if (stage.stage_type == StageType::kSendBeginMainFrameToCommit) {
       TRACE_EVENT_BEGIN(
@@ -1227,117 +1106,9 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
   // we should investigate whether we can skip this function entirely if tracing
   // is off and whether that has any positive impact or not.
   for (const auto& event_metrics : events_metrics_) {
-    const base::TimeTicks generated_timestamp =
-        event_metrics->GetDispatchStageTimestamp(
-            EventMetrics::DispatchStage::kGenerated);
-
-    const auto trace_track =
-        perfetto::Track(base::trace_event::GetNextGlobalTraceId());
-    TRACE_EVENT_BEGIN(
-        kTraceEventCategory, "EventLatency", trace_track, generated_timestamp,
-        [&](perfetto::EventContext context) {
-          auto* event =
-              context.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-          auto* event_latency = event->set_event_latency();
-          event_latency->set_event_type(ToProtoEnum(event_metrics->type()));
-        });
-
-    // Event dispatch stages.
-    EventMetrics::DispatchStage dispatch_stage =
-        EventMetrics::DispatchStage::kGenerated;
-    base::TimeTicks dispatch_timestamp =
-        event_metrics->GetDispatchStageTimestamp(dispatch_stage);
-    while (dispatch_stage != EventMetrics::DispatchStage::kMaxValue) {
-      DCHECK(!dispatch_timestamp.is_null());
-
-      // Find the end dispatch stage.
-      auto end_stage = static_cast<EventMetrics::DispatchStage>(
-          static_cast<int>(dispatch_stage) + 1);
-      base::TimeTicks end_timestamp =
-          event_metrics->GetDispatchStageTimestamp(end_stage);
-      while (end_timestamp.is_null() &&
-             end_stage != EventMetrics::DispatchStage::kMaxValue) {
-        end_stage = static_cast<EventMetrics::DispatchStage>(
-            static_cast<int>(end_stage) + 1);
-        end_timestamp = event_metrics->GetDispatchStageTimestamp(end_stage);
-      }
-      if (end_timestamp.is_null())
-        break;
-
-      const char* breakdown_name =
-          GetEventLatencyDispatchBreakdownName(dispatch_stage, end_stage);
-      TRACE_EVENT_BEGIN(kTraceEventCategory,
-                        perfetto::StaticString{breakdown_name}, trace_track,
-                        dispatch_timestamp);
-      TRACE_EVENT_END(kTraceEventCategory, trace_track, end_timestamp);
-
-      dispatch_stage = end_stage;
-      dispatch_timestamp = end_timestamp;
-    }
-
-    // Find the first compositor stage that happens after the final dispatch
-    // stage.
-    auto stage_it = std::find_if(stage_history_.begin(), stage_history_.end(),
-                                 [dispatch_timestamp](const StageData& stage) {
-                                   return stage.start_time > dispatch_timestamp;
-                                 });
-    // TODO(crbug.com/1079116): Ideally, at least the start time of
-    // SubmitCompositorFrameToPresentationCompositorFrame stage should be
-    // greater than the final event dispatch timestamp, but apparently, this is
-    // not always the case (see crbug.com/1093698). For now, skip to the next
-    // event in such cases. Hopefully, the work to reduce discrepancies between
-    // the new EventLatency and the old Event.Latency metrics would fix this
-    // issue. If not, we need to reconsider investigating this issue.
-    if (stage_it == stage_history_.end())
-      continue;
-
-    DCHECK(dispatch_stage ==
-               EventMetrics::DispatchStage::kRendererCompositorFinished ||
-           dispatch_stage ==
-               EventMetrics::DispatchStage::kRendererMainFinished);
-    const char* d2c_breakdown_name =
-        GetEventLatencyDispatchToCompositorBreakdownName(dispatch_stage,
-                                                         stage_it->stage_type);
-    TRACE_EVENT_BEGIN(kTraceEventCategory,
-                      perfetto::StaticString{d2c_breakdown_name}, trace_track,
-                      dispatch_timestamp);
-    TRACE_EVENT_END(kTraceEventCategory, trace_track, stage_it->start_time);
-
-    // Compositor stages.
-    for (; stage_it != stage_history_.end(); ++stage_it) {
-      const int stage_type_index = static_cast<int>(stage_it->stage_type);
-      CHECK_LT(stage_type_index, static_cast<int>(StageType::kStageTypeCount));
-      CHECK_GE(stage_type_index, 0);
-      if (stage_it->start_time >= frame_termination_time_)
-        break;
-      DCHECK_GE(stage_it->end_time, stage_it->start_time);
-      if (stage_it->start_time == stage_it->end_time)
-        continue;
-      const char* stage_name = GetStageName(stage_type_index);
-
-      TRACE_EVENT_BEGIN(kTraceEventCategory, perfetto::StaticString{stage_name},
-                        trace_track, stage_it->start_time);
-
-      if (stage_it->stage_type ==
-          StageType::kSubmitCompositorFrameToPresentationCompositorFrame) {
-        DCHECK(processed_viz_breakdown_);
-        for (auto it = processed_viz_breakdown_->CreateIterator(true);
-             it.IsValid(); it.Advance()) {
-          base::TimeTicks start_time = it.GetStartTime();
-          base::TimeTicks end_time = it.GetEndTime();
-          if (start_time >= end_time)
-            continue;
-          const char* breakdown_name = GetVizBreakdownName(it.GetBreakdown());
-          TRACE_EVENT_BEGIN(kTraceEventCategory,
-                            perfetto::StaticString{breakdown_name}, trace_track,
-                            start_time);
-          TRACE_EVENT_END(kTraceEventCategory, trace_track, end_time);
-        }
-      }
-
-      TRACE_EVENT_END(kTraceEventCategory, trace_track, stage_it->end_time);
-    }
-    TRACE_EVENT_END(kTraceEventCategory, trace_track, frame_termination_time_);
+    EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
+        event_metrics.get(), frame_termination_time_, &stage_history_,
+        processed_viz_breakdown_.get());
   }
 }
 

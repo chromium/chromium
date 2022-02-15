@@ -126,6 +126,12 @@ class CC_EXPORT EventMetrics {
 
   virtual std::unique_ptr<EventMetrics> Clone() const;
 
+  bool is_tracing_recorded() const { return is_tracing_recorded_; }
+  void set_tracing_recorded() {
+    DCHECK(!is_tracing_recorded_);
+    is_tracing_recorded_ = true;
+  }
+
  protected:
   EventMetrics(EventType type,
                base::TimeTicks timestamp,
@@ -156,6 +162,8 @@ class CC_EXPORT EventMetrics {
   base::TimeTicks
       dispatch_stage_timestamps_[static_cast<int>(DispatchStage::kMaxValue) +
                                  1];
+
+  bool is_tracing_recorded_ = false;
 };
 
 class CC_EXPORT ScrollEventMetrics : public EventMetrics {

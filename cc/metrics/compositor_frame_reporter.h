@@ -239,6 +239,19 @@ class CC_EXPORT CompositorFrameReporter {
   CompositorFrameReporter& operator=(const CompositorFrameReporter& reporter) =
       delete;
 
+  // Name for `CompositorFrameReporter::StageType`, possibly suffixed with the
+  // name of the appropriate breakdown.
+  static const char* GetStageName(
+      StageType stage_type,
+      absl::optional<VizBreakdown> viz_breakdown = absl::nullopt,
+      absl::optional<BlinkBreakdown> blink_breakdown = absl::nullopt,
+      bool impl_only = false);
+
+  // Name for the viz breakdowns which are shown in traces as substages under
+  // PipelineReporter -> SubmitCompositorFrameToPresentationCompositorFrame or
+  // EventLatency -> SubmitCompositorFrameToPresentationCompositorFrame.
+  static const char* GetVizBreakdownName(VizBreakdown breakdown);
+
   // Creates and returns a clone of the reporter, only if it is currently in the
   // 'begin impl frame' stage. For any other state, it returns null.
   // This is used only when there is a partial update. So the cloned reporter
@@ -348,7 +361,9 @@ class CC_EXPORT CompositorFrameReporter {
       FrameSequenceTrackerType frame_sequence_tracker_type) const;
   void ReportCompositorLatencyHistogram(
       FrameSequenceTrackerType intraction_type,
-      const int stage_type_index,
+      StageType stage_type,
+      absl::optional<VizBreakdown> viz_breakdown,
+      absl::optional<BlinkBreakdown> blink_breakdown,
       base::TimeDelta time_delta) const;
 
   void ReportEventLatencyHistograms() const;
@@ -458,4 +473,4 @@ class CC_EXPORT CompositorFrameReporter {
 
 }  // namespace cc
 
-#endif  // CC_METRICS_COMPOSITOR_FRAME_REPORTER_H_"
+#endif  // CC_METRICS_COMPOSITOR_FRAME_REPORTER_H_

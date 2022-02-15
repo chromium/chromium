@@ -390,8 +390,12 @@ void WidgetInputHandlerManager::GenerateScrollBeginAndSendToMainThread(
       cc::ScrollEventMetrics::CreateFromExisting(
           gesture_event->GetTypeAsUiEventType(),
           gesture_event->GetScrollInputType(), is_inertial,
-          cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
+          cc::EventMetrics::DispatchStage::kRendererCompositorStarted,
           update_metrics);
+  if (metrics) {
+    metrics->SetDispatchStageTimestamp(
+        cc::EventMetrics::DispatchStage::kRendererCompositorFinished);
+  }
 
   auto event = std::make_unique<WebCoalescedInputEvent>(
       std::move(gesture_event), ui::LatencyInfo());

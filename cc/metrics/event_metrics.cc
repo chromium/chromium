@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/time/default_tick_clock.h"
+#include "cc/metrics/event_latency_tracing_recorder.h"
 
 namespace cc {
 namespace {
@@ -259,7 +260,12 @@ EventMetrics::EventMetrics(const EventMetrics& other)
   CopyTimestampsFrom(other, DispatchStage::kMaxValue);
 }
 
-EventMetrics::~EventMetrics() = default;
+EventMetrics::~EventMetrics() {
+  if (!is_tracing_recorded()) {
+    EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
+        this, base::TimeTicks::Now(), nullptr, nullptr);
+  }
+}
 
 const char* EventMetrics::GetTypeName() const {
   return kInterestingEvents[static_cast<int>(type_)].name;
@@ -422,7 +428,12 @@ ScrollEventMetrics::ScrollEventMetrics(EventType type,
 
 ScrollEventMetrics::ScrollEventMetrics(const ScrollEventMetrics&) = default;
 
-ScrollEventMetrics::~ScrollEventMetrics() = default;
+ScrollEventMetrics::~ScrollEventMetrics() {
+  if (!is_tracing_recorded()) {
+    EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
+        this, base::TimeTicks::Now(), nullptr, nullptr);
+  }
+}
 
 const char* ScrollEventMetrics::GetScrollTypeName() const {
   return kScrollTypes[static_cast<int>(scroll_type_)].name;
@@ -550,7 +561,12 @@ ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
 ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
     const ScrollUpdateEventMetrics&) = default;
 
-ScrollUpdateEventMetrics::~ScrollUpdateEventMetrics() = default;
+ScrollUpdateEventMetrics::~ScrollUpdateEventMetrics() {
+  if (!is_tracing_recorded()) {
+    EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
+        this, base::TimeTicks::Now(), nullptr, nullptr);
+  }
+}
 
 void ScrollUpdateEventMetrics::CoalesceWith(
     const ScrollUpdateEventMetrics& newer_scroll_update) {
@@ -632,7 +648,12 @@ PinchEventMetrics::PinchEventMetrics(EventType type,
 
 PinchEventMetrics::PinchEventMetrics(const PinchEventMetrics&) = default;
 
-PinchEventMetrics::~PinchEventMetrics() = default;
+PinchEventMetrics::~PinchEventMetrics() {
+  if (!is_tracing_recorded()) {
+    EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
+        this, base::TimeTicks::Now(), nullptr, nullptr);
+  }
+}
 
 const char* PinchEventMetrics::GetPinchTypeName() const {
   return kPinchTypes[static_cast<int>(pinch_type_)].name;
