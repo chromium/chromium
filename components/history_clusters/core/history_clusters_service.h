@@ -17,9 +17,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
@@ -133,6 +131,10 @@ class HistoryClustersService : public KeyedService {
   // have been recorded. References retrieved prior will no longer be valid.
   void CompleteVisitContextAnnotationsIfReady(int64_t nav_id);
 
+  // This is a low-level API that doesn't support querying by search terms or
+  // de-duplication across multiple batches. Any UI should almost certainly use
+  // `QueryClustersState` instead.
+  //
   // Returns the freshest clusters created from the user visit history based on
   // `query`, `begin_time`, and `end_time`.
   // - `begin_time` is an inclusive lower bound. In the general case where the
@@ -147,7 +149,6 @@ class HistoryClustersService : public KeyedService {
   // TODO(tommycli): Investigate entirely hiding access to this low-level method
   // behind QueryClustersState.
   void QueryClusters(ClusteringRequestSource clustering_request_source,
-                     const std::string& query,
                      base::Time begin_time,
                      base::Time end_time,
                      QueryClustersCallback callback,
@@ -185,24 +186,15 @@ class HistoryClustersService : public KeyedService {
 
   // Internally used callback for `QueryClusters()`.
   void OnGotHistoryVisits(ClusteringRequestSource clustering_request_source,
-                          const std::string& query,
                           QueryClustersCallback callback,
                           std::vector<history::AnnotatedVisit> annotated_visits,
                           base::Time continuation_end_time) const;
 
   // Runs on UI thread. Internally used callback for `OnGotHistoryVisits()`.
-  void OnGotRawClusters(const std::string& query,
-                        base::Time continuation_end_time,
+  void OnGotRawClusters(base::Time continuation_end_time,
                         base::TimeTicks cluster_start_time,
                         QueryClustersCallback callback,
                         std::vector<history::Cluster> clusters) const;
-
-  // Runs on UI thread. Used as the 'reply' part from `PostProcessClusters()`.
-  void OnProcessedClusters(base::ElapsedTimer post_processing_timer,
-                           size_t clusters_from_backend_count,
-                           QueryClustersCallback callback,
-                           base::Time continuation_end_time,
-                           std::vector<history::Cluster> clusters) const;
 
   // True if the Journeys feature is enabled for the application locale.
   const bool is_journeys_enabled_;
@@ -244,9 +236,6 @@ class HistoryClustersService : public KeyedService {
   base::ObserverList<Observer> observers_;
 
   VisitDeletionObserver visit_deletion_observer_;
-
-  // A task runner to run all the post-processing tasks on.
-  scoped_refptr<base::SequencedTaskRunner> post_processing_task_runner_;
 
   // Weak pointers issued from this factory never get invalidated before the
   // service is destroyed.

@@ -10,7 +10,9 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,12 +52,24 @@ class QueryClustersState {
   void LoadNextBatchOfClusters(ResultCallback callback);
 
  private:
-  void OnGotClusters(base::TimeTicks query_start_time,
+  FRIEND_TEST_ALL_PREFIXES(QueryClustersStateTest, PostProcessingOccurs);
+
+  // Callback to `LoadNextBatchOfClusters()`.
+  void OnGotRawClusters(base::TimeTicks query_start_time,
+                        ResultCallback callback,
+                        std::vector<history::Cluster> clusters,
+                        base::Time continuation_end_time) const;
+
+  // Callback to `OnGotRawClusters()`.
+  void OnGotClusters(base::ElapsedTimer post_processing_timer,
+                     size_t clusters_from_backend_count,
+                     base::TimeTicks query_start_time,
                      ResultCallback callback,
-                     std::vector<history::Cluster> clusters,
-                     base::Time continuation_end_time);
+                     base::Time continuation_end_time,
+                     std::vector<history::Cluster> clusters);
 
   // A weak pointer to the service in case we outlive the service.
+  // Never nullptr, except in unit tests.
   const base::WeakPtr<HistoryClustersService> service_;
 
   // The string query the user entered into the searchbox.
@@ -76,6 +90,9 @@ class QueryClustersState {
 
   // Used only to fast-cancel tasks in case we are destroyed.
   base::CancelableTaskTracker task_tracker_;
+
+  // A task runner to run all the post-processing tasks on.
+  scoped_refptr<base::SequencedTaskRunner> post_processing_task_runner_;
 
   base::WeakPtrFactory<QueryClustersState> weak_factory_{this};
 };

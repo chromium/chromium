@@ -58,13 +58,6 @@ class HistoryClustersServiceTestApi {
     history_clusters_service_->short_keyword_cache_timestamp_ = time;
   }
 
-  void FlushPostProcessingTaskRunner() {
-    base::RunLoop loop;
-    history_clusters_service_->post_processing_task_runner_->PostTask(
-        FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
-
   HistoryClustersService* const history_clusters_service_;
   history::HistoryService* const history_service_;
 };
