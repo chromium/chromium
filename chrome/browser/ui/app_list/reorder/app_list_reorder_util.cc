@@ -62,19 +62,19 @@ SyncItemWrapper<std::u16string>::SyncItemWrapper(
 
 template <>
 SyncItemWrapper<std::u16string>::SyncItemWrapper(
-    const ChromeAppListItem& app_list_item)
-    : id(app_list_item.id()),
-      item_ordinal(app_list_item.position()),
-      is_folder(app_list_item.is_folder()) {
+    const ash::AppListItemMetadata& metadata)
+    : id(metadata.id),
+      item_ordinal(metadata.position),
+      is_folder(metadata.is_folder) {
   // Handle the case when the folder item name is not specified and set the
   // `key_attribute` to the default placeholder.
-  if (is_folder && app_list_item.name().empty()) {
+  if (is_folder && metadata.name.empty()) {
     key_attribute =
         l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER);
     return;
   }
 
-  key_attribute = base::UTF8ToUTF16(app_list_item.name());
+  key_attribute = base::UTF8ToUTF16(metadata.name);
 }
 
 // SyncItemWrapper<ash::IconColor> ---------------------------------------------
@@ -89,11 +89,11 @@ SyncItemWrapper<ash::IconColor>::SyncItemWrapper(
 
 template <>
 SyncItemWrapper<ash::IconColor>::SyncItemWrapper(
-    const ChromeAppListItem& app_list_item)
-    : id(app_list_item.id()),
-      item_ordinal(app_list_item.position()),
-      is_folder(app_list_item.is_folder()),
-      key_attribute(app_list_item.icon_color()) {}
+    const ash::AppListItemMetadata& metadata)
+    : id(metadata.id),
+      item_ordinal(metadata.position),
+      is_folder(metadata.is_folder),
+      key_attribute(metadata.icon_color) {}
 
 // IconColorWrapperComparator -------------------------------------------------
 

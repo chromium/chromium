@@ -27,11 +27,11 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
 
 // Calcuates the target position so that `order` is still maintained among the
 // specified items after:
-// (1) `item` is added to the model updater if it does not exist in the model
-// updater yet, or
-// (2) `item` is set with the target position if it is already in the model
-// updater. In this case, if `item`'s current position maintains the sort order,
-// `target_position` should be the current position.
+// (1) the item matched by `metadata` is added to the model updater if it does
+// not exist in the model updater yet, or
+// (2) the item matched by `metadata` is set with the target position if it is
+// already in the model updater. In this case, if the item's current position
+// maintains the sort order, `target_position` should be the current position.
 // Returns whether `target_position` is set. The return value is false if such
 // a target position does not exist. In this case, `target_position` is not set.
 // `local_items` indicates the elements in the active app list model before
@@ -41,7 +41,7 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
 // `global_items` is null, position is calculated only based on `local_items`.
 bool CalculateItemPositionInOrder(
     ash::AppListSortOrder order,
-    const ChromeAppListItem& item,
+    const ash::AppListItemMetadata& metadata,
     const std::vector<const ChromeAppListItem*>& local_items,
     const AppListSyncableService::SyncItemMap* global_items,
     syncer::StringOrdinal* target_position);

@@ -498,7 +498,7 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
 
 bool CalculateItemPositionInOrder(
     ash::AppListSortOrder order,
-    const ChromeAppListItem& item,
+    const ash::AppListItemMetadata& metadata,
     const std::vector<const ChromeAppListItem*>& local_items,
     const AppListSyncableService::SyncItemMap* global_items,
     syncer::StringOrdinal* target_position) {
@@ -518,14 +518,14 @@ bool CalculateItemPositionInOrder(
       StringWrapperComparator comparator(IsIncreasingOrder(order),
                                          collator.get());
       return CalculatePositionForSyncItemWrapper(
-          order, reorder::SyncItemWrapper<std::u16string>(item), local_items,
-          global_items, comparator, target_position);
+          order, reorder::SyncItemWrapper<std::u16string>(metadata),
+          local_items, global_items, comparator, target_position);
     }
     case ash::AppListSortOrder::kColor: {
       IconColorWrapperComparator comparator;
       return CalculatePositionForSyncItemWrapper(
-          order, reorder::SyncItemWrapper<ash::IconColor>(item), local_items,
-          global_items, comparator, target_position);
+          order, reorder::SyncItemWrapper<ash::IconColor>(metadata),
+          local_items, global_items, comparator, target_position);
     }
   }
 }

@@ -40,13 +40,13 @@ TEST_F(AppListReorderCoreTest, CalculatePositionForItemAlreadyInOrder) {
   std::vector<const ChromeAppListItem*> items{&item1, &item2, &item3, &item4};
   syncer::StringOrdinal target_position;
   bool success = reorder::CalculateItemPositionInOrder(
-      ash::AppListSortOrder::kNameAlphabetical, item1, items,
+      ash::AppListSortOrder::kNameAlphabetical, item1.metadata(), items,
       /*global_items=*/nullptr, &target_position);
   EXPECT_TRUE(success);
   EXPECT_TRUE(target_position.Equals(item1.position()));
 
   success = reorder::CalculateItemPositionInOrder(
-      ash::AppListSortOrder::kNameAlphabetical, item2, items,
+      ash::AppListSortOrder::kNameAlphabetical, item2.metadata(), items,
       /*global_items=*/nullptr, &target_position);
   EXPECT_TRUE(success);
   EXPECT_TRUE(target_position.Equals(item2.position()));
@@ -55,13 +55,13 @@ TEST_F(AppListReorderCoreTest, CalculatePositionForItemAlreadyInOrder) {
   // Verify that the item's position under sort order does not change.
   item3.SetChromeName("ca");
   success = reorder::CalculateItemPositionInOrder(
-      ash::AppListSortOrder::kNameAlphabetical, item3, items,
+      ash::AppListSortOrder::kNameAlphabetical, item3.metadata(), items,
       /*global_items=*/nullptr, &target_position);
   EXPECT_TRUE(success);
   EXPECT_TRUE(target_position.Equals(item3.position()));
 
   success = reorder::CalculateItemPositionInOrder(
-      ash::AppListSortOrder::kNameAlphabetical, item4, items,
+      ash::AppListSortOrder::kNameAlphabetical, item4.metadata(), items,
       /*global_items=*/nullptr, &target_position);
   EXPECT_TRUE(success);
   EXPECT_TRUE(target_position.Equals(item4.position()));

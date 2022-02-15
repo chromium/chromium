@@ -71,6 +71,7 @@ class ChromeAppListItem {
 
   void SetMetadata(std::unique_ptr<ash::AppListItemMetadata> metadata);
   std::unique_ptr<ash::AppListItemMetadata> CloneMetadata() const;
+  const ash::AppListItemMetadata& metadata() const { return *metadata_; }
 
   // Loads the app icon and call SetIcon to update ash when finished.
   virtual void LoadIcon();

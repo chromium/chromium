@@ -197,7 +197,8 @@ void ChromeAppListModelUpdater::AddAppItemToFolder(
     // Calculate `app_item`'s position under the temporary order.
     syncer::StringOrdinal position_under_temporary_order;
     bool is_successful = app_list::reorder::CalculateItemPositionInOrder(
-        temporary_sort_manager_->temporary_order(), *app_item.get(), GetItems(),
+        temporary_sort_manager_->temporary_order(), app_item->metadata(),
+        GetItems(),
         /*global_items=*/nullptr, &position_under_temporary_order);
 
     // When the app list is under temporary sorting, local items should be
@@ -947,7 +948,7 @@ std::string ChromeAppListModelUpdater::RequestFolderCreation(
     syncer::StringOrdinal sorted_position;
     bool has_sorted_position =
         order_delegate_->CalculateItemPositionInPermanentSortOrder(
-            *new_folder_item, GetItems(), &sorted_position);
+            new_folder_item->metadata(), GetItems(), &sorted_position);
     if (has_sorted_position)
       target_position = sorted_position;
   }
@@ -1030,7 +1031,7 @@ void ChromeAppListModelUpdater::RequestFolderRename(
     syncer::StringOrdinal sorted_position;
     position_changed =
         order_delegate_->CalculateItemPositionInPermanentSortOrder(
-            *folder_item, GetItems(), &sorted_position);
+            folder_item->metadata(), GetItems(), &sorted_position);
     if (position_changed)
       folder_item->SetChromePosition(sorted_position);
   }

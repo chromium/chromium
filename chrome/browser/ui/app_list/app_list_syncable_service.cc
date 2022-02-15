@@ -1364,11 +1364,11 @@ syncer::StringOrdinal AppListSyncableService::CalculateGlobalFrontPosition()
 }
 
 bool AppListSyncableService::CalculateItemPositionInPermanentSortOrder(
-    const ChromeAppListItem& new_item,
+    const ash::AppListItemMetadata& metadata,
     const std::vector<const ChromeAppListItem*>& local_items,
     syncer::StringOrdinal* target_position) const {
   return reorder::CalculateItemPositionInOrder(GetPermanentSortingOrder(),
-                                               new_item, local_items,
+                                               metadata, local_items,
                                                &sync_items_, target_position);
 }
 
@@ -1788,7 +1788,7 @@ void AppListSyncableService::InitNewItemPosition(ChromeAppListItem* new_item) {
   // TODO(https://crbug.com/1260877): ideally we would not have to create a
   // one-off vector of items using `GetItems()`.
   bool is_successful = CalculateItemPositionInPermanentSortOrder(
-      *new_item, model_updater_->GetItems(), &position);
+      new_item->metadata(), model_updater_->GetItems(), &position);
 
   // If `new_item` cannot be placed following the specified order, `new_item`
   // should be placed at front. Also reset the sorting order.
