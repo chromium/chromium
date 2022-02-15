@@ -243,7 +243,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   const std::set<apps::mojom::AppType>& GetInitializedAppTypes() const;
   const std::set<AppType>& InitializedAppTypes() const;
 
-  bool IsAppTypeInitialized(apps::mojom::AppType app_type) const;
   bool IsAppTypeInitialized(AppType app_type) const;
 
  private:

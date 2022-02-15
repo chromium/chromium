@@ -661,10 +661,10 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
     return;
   }
 
-  InstallTime install_time =
-      app_registry_cache_.IsAppTypeInitialized(update.AppType())
-          ? InstallTime::kRunning
-          : InstallTime::kInit;
+  InstallTime install_time = app_registry_cache_.IsAppTypeInitialized(
+                                 ConvertMojomAppTypToAppType(update.AppType()))
+                                 ? InstallTime::kRunning
+                                 : InstallTime::kInit;
   RecordAppsInstallUkm(update, install_time);
 }
 

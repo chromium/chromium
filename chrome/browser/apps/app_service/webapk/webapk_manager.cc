@@ -94,7 +94,7 @@ void WebApkManager::StartOrStopObserving() {
     auto* cache = &proxy_->AppRegistryCache();
     Observe(cache);
 
-    if (cache->IsAppTypeInitialized(apps::mojom::AppType::kWeb)) {
+    if (cache->IsAppTypeInitialized(AppType::kWeb)) {
       Synchronize();
     }
     return;

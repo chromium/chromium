@@ -412,7 +412,7 @@ TEST_F(AppRegistryCacheMojomTest, Observer) {
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("c"));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("e"));
   EXPECT_EQ(apps::AppType::kArc, app_type());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::AppType::kArc));
 
   SetAppType(apps::AppType::kUnknown);
   num_freshly_installed_ = 0;
@@ -441,7 +441,7 @@ TEST_F(AppRegistryCacheMojomTest, Observer) {
   EXPECT_EQ(0, num_freshly_installed_);
   EXPECT_EQ(0u, updated_ids_.size());
   EXPECT_EQ(apps::AppType::kUnknown, app_type());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::AppType::kArc));
 }
 
 TEST_F(AppRegistryCacheMojomTest, Recursive) {
@@ -475,7 +475,7 @@ TEST_F(AppRegistryCacheMojomTest, Recursive) {
                false /* should_notify_initialized */);
   EXPECT_EQ(1, observer.NumAppsSeenOnAppUpdate());
   EXPECT_EQ(apps::AppType::kArc, observer.app_type());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::AppType::kArc));
 }
 
 TEST_F(AppRegistryCacheMojomTest, SuperRecursive) {
@@ -523,7 +523,7 @@ TEST_F(AppRegistryCacheMojomTest, SuperRecursive) {
   EXPECT_EQ("boysenberry", GetName(cache, "b"));
   EXPECT_EQ("coconut", GetName(cache, "c"));
   EXPECT_EQ(apps::AppType::kArc, observer.app_type());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::AppType::kArc));
 }
 
 TEST_F(AppRegistryCacheMojomTest, OnAppTypeInitialized) {
@@ -546,12 +546,12 @@ TEST_F(AppRegistryCacheMojomTest, OnAppTypeInitialized) {
   EXPECT_EQ(1, observer1.count());
   EXPECT_EQ(3, observer1.app_count());
   EXPECT_EQ(1u, cache.GetInitializedAppTypes().size());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::AppType::kArc));
 
   // New observers should not have OnAppTypeInitialized called.
   InitializedObserver observer2(&cache);
   EXPECT_EQ(apps::AppType::kUnknown, observer2.app_type());
   EXPECT_EQ(0, observer2.count());
   EXPECT_EQ(1u, cache.GetInitializedAppTypes().size());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::AppType::kArc));
 }

@@ -40,8 +40,7 @@ PreinstalledWebAppDuplicationFixer::PreinstalledWebAppDuplicationFixer(
   apps::AppRegistryCache& app_registry_cache =
       apps::AppServiceProxyFactory::GetForProfile(&profile_)
           ->AppRegistryCache();
-  if (app_registry_cache.IsAppTypeInitialized(
-          apps::mojom::AppType::kChromeApp)) {
+  if (app_registry_cache.IsAppTypeInitialized(apps::AppType::kChromeApp)) {
     ScanForDuplication();
   } else {
     // Await OnAppTypeInitialized().

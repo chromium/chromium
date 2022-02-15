@@ -62,7 +62,7 @@ void AppRegistryCache::OnApps(std::vector<apps::mojom::AppPtr> deltas,
 
   if (should_notify_initialized) {
     DCHECK_NE(apps::mojom::AppType::kUnknown, app_type);
-    if (!IsAppTypeInitialized(app_type)) {
+    if (!IsAppTypeInitialized(ConvertMojomAppTypToAppType(app_type))) {
       in_progress_initialized_mojom_app_types_.insert(app_type);
     }
   }
@@ -246,13 +246,12 @@ const std::set<AppType>& AppRegistryCache::InitializedAppTypes() const {
   return initialized_app_types_;
 }
 
-bool AppRegistryCache::IsAppTypeInitialized(
-    apps::mojom::AppType app_type) const {
-  return base::Contains(initialized_mojom_app_types_, app_type);
-}
-
 bool AppRegistryCache::IsAppTypeInitialized(apps::AppType app_type) const {
-  return base::Contains(initialized_app_types_, app_type);
+  return base::FeatureList::IsEnabled(
+             kAppServiceOnAppTypeInitializedWithoutMojom)
+             ? base::Contains(initialized_app_types_, app_type)
+             : base::Contains(initialized_mojom_app_types_,
+                              ConvertAppTypeToMojomAppType(app_type));
 }
 
 void AppRegistryCache::OnMojomAppTypeInitialized() {

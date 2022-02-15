@@ -267,7 +267,7 @@ TEST_F(AppRegistryCacheTest,
   EXPECT_EQ(0, observer1.initialized_app_type_count());
   EXPECT_EQ(0, observer1.app_count_at_initialization());
   EXPECT_EQ(0u, cache.GetInitializedAppTypes().size());
-  EXPECT_FALSE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
+  EXPECT_FALSE(cache.IsAppTypeInitialized(AppType::kArc));
 
   std::vector<apps::mojom::AppPtr> mojom_deltas1;
   mojom_deltas1.push_back(MakeMojomApp("a", "avocado"));
@@ -280,7 +280,7 @@ TEST_F(AppRegistryCacheTest,
   EXPECT_EQ(1, observer1.initialized_app_type_count());
   EXPECT_EQ(2, observer1.app_count_at_initialization());
   EXPECT_EQ(1u, cache.GetInitializedAppTypes().size());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
 
   std::vector<AppPtr> deltas2;
   deltas2.push_back(MakeApp("d", "durian"));
@@ -331,7 +331,7 @@ TEST_F(AppRegistryCacheTest,
   EXPECT_EQ(1, observer1.initialized_app_type_count());
   EXPECT_EQ(2, observer1.app_count_at_initialization());
   EXPECT_EQ(1u, cache.GetInitializedAppTypes().size());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
 
   std::vector<AppPtr> deltas1;
   deltas1.push_back(MakeApp("a", "avocado"));
@@ -399,7 +399,7 @@ TEST_F(AppRegistryCacheTest,
   EXPECT_EQ(1, observer1.initialized_app_type_count());
   EXPECT_EQ(2, observer1.app_count_at_initialization());
   EXPECT_EQ(1u, cache.GetInitializedAppTypes().size());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
 
   std::vector<apps::mojom::AppPtr> mojom_deltas2;
   mojom_deltas2.push_back(
@@ -413,7 +413,7 @@ TEST_F(AppRegistryCacheTest,
   EXPECT_EQ(2, observer1.initialized_app_type_count());
   EXPECT_EQ(5, observer1.app_count_at_initialization());
   EXPECT_EQ(2u, cache.GetInitializedAppTypes().size());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kChromeApp));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kChromeApp));
 
   std::vector<AppPtr> deltas2;
   deltas2.push_back(MakeApp("d", "durian", AppType::kChromeApp));
@@ -451,8 +451,8 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithDisableFlagEmptyUpdate) {
   EXPECT_EQ(0, observer1.initialized_app_type_count());
   EXPECT_EQ(0, observer1.app_count_at_initialization());
   EXPECT_EQ(0u, cache.GetInitializedAppTypes().size());
-  EXPECT_FALSE(cache.IsAppTypeInitialized(
-      apps::mojom::AppType::kStandaloneBrowserChromeApp));
+  EXPECT_FALSE(
+      cache.IsAppTypeInitialized(AppType::kStandaloneBrowserChromeApp));
 
   std::vector<apps::mojom::AppPtr> mojom_deltas1;
   cache.OnApps(std::move(mojom_deltas1),
@@ -465,8 +465,7 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithDisableFlagEmptyUpdate) {
   EXPECT_EQ(1, observer1.initialized_app_type_count());
   EXPECT_EQ(0, observer1.app_count_at_initialization());
   EXPECT_EQ(1u, cache.GetInitializedAppTypes().size());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(
-      apps::mojom::AppType::kStandaloneBrowserChromeApp));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kStandaloneBrowserChromeApp));
 
   std::vector<AppPtr> deltas2;
   deltas2.push_back(MakeApp("d", "durian"));
@@ -500,7 +499,7 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithDisableFlagEmptyUpdate) {
   EXPECT_TRUE(base::Contains(observer1.app_types(), apps::AppType::kRemote));
   EXPECT_EQ(2, observer1.initialized_app_type_count());
   EXPECT_EQ(2u, cache.GetInitializedAppTypes().size());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kRemote));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kRemote));
 
   std::vector<AppPtr> deltas3;
   cache.OnApps(std::move(deltas3), AppType::kRemote,
