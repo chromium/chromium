@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -166,8 +167,11 @@ class ProfileLaunchObserver : public ProfileObserver,
     MaybeActivateProfile();
   }
 
-  bool HasBeenLaunched(const Profile* profile) const {
-    return launched_profiles_.find(profile) != launched_profiles_.end();
+  // Returns true if `profile` has been launched by
+  // StartupBrowserCreator::LaunchBrowser() and has at least one open window.
+  bool HasBeenLaunchedAndBrowserOpen(const Profile* profile) const {
+    return base::Contains(opened_profiles_, profile) &&
+           base::Contains(launched_profiles_, profile);
   }
 
   void AddLaunched(Profile* profile) {
@@ -1405,7 +1409,8 @@ bool StartupBrowserCreator::ActivatedProfile() {
 bool HasPendingUncleanExit(Profile* profile) {
   return ExitTypeService::GetLastSessionExitType(profile) ==
              ExitType::kCrashed &&
-         !profile_launch_observer.Get().HasBeenLaunched(profile) &&
+         !profile_launch_observer.Get().HasBeenLaunchedAndBrowserOpen(
+             profile) &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kHideCrashRestoreBubble);
 }

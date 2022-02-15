@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -162,10 +163,12 @@ bool SessionService::ShouldRestore(Browser* browser) {
   // ChromeOS and OSX have different ideas of application lifetime than
   // the other platforms.
   // On ChromeOS opening a new window should never start a new session.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // In Chrome OS, Chrome browser is not launched automatically during the
-  // system startup phase. When Chrome browser is created or launched by users,
-  // sessions might be restored based on the startup setting.
+#if BUILDFLAG(IS_CHROMEOS)
+  // On Chrome OS, the ash-chrome browser is not launched automatically during
+  // the system startup phase. The lacros-chrome browser may or may not be
+  // launched automatically during system startup. When either the ash-chrome or
+  // lacros-chrome browser is created or launched by users, sessions might be
+  // restored based on the startup setting.
 
   // If there are other browser windows, or during the restoring process, or
   // restore from crash, or should not restore for `browser`, sessions should
@@ -175,6 +178,12 @@ bool SessionService::ShouldRestore(Browser* browser) {
       (browser && !browser->should_trigger_session_restore())) {
     return false;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Restore should trigger for lacros-chrome if handling a restart.
+  if (StartupBrowserCreator::WasRestarted())
+    return true;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // If the on startup setting is not restore, sessions should not be
   // restored.
@@ -208,7 +217,7 @@ bool SessionService::ShouldRestore(Browser* browser) {
     return true;
   }
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
@@ -517,14 +526,34 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
           startup_tabs);
       return true;
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   } else if (HasPendingUncleanExit(profile())) {
     if (!browser) {
+      base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // Currently the kNoStartupWindow flag is set when lacros-chrome is
+      // launched with crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow.
+      // The intention is to prevent lacros-chrome from launching a window
+      // during startup. However this flag remains set throughout the whole
+      // execution of Chrome.
+      // This leads to issues since SessionService uses LaunchBrowser() here to
+      // create the first Browser window when the Browser icon is clicked on
+      // the shelf. In this case kNoStartupWindow will prevent the Browser
+      // window from ever launching.
+      // As a temporary workaround remove the kNoStartupWindow switch from the
+      // command line when launching the Browser window from
+      // RestoreIfNecessary().
+      base::CommandLine lacros_command_line =
+          base::CommandLine(*base::CommandLine::ForCurrentProcess());
+      lacros_command_line.RemoveSwitch(switches::kNoStartupWindow);
+      command_line = &lacros_command_line;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
       // If 'browser' is null, call StartupBrowserCreator to create a new
       // browser instance.
       StartupBrowserCreator browser_creator;
-      browser_creator.LaunchBrowser(*base::CommandLine::ForCurrentProcess(),
-                                    profile(), base::FilePath(),
+      browser_creator.LaunchBrowser(*command_line, profile(), base::FilePath(),
                                     chrome::startup::IsProcessStartup::kYes,
                                     chrome::startup::IsFirstRun::kNo,
                                     std::make_unique<LaunchModeRecorder>());
@@ -536,7 +565,7 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
           browser, /*skip_tab_checking=*/true);
       AddLaunchedProfile(profile());
     }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   return false;
 }

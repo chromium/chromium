@@ -9,10 +9,14 @@
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/views/session_crashed_bubble_view.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -164,4 +168,48 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
       /*incognito=*/false, /*should_trigger_session_restore=*/false,
       /*callback=*/base::BindLambdaForTesting([]() {}));
   EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
+// Tests for lacros-chrome that require lacros starting in its windowless
+// background state.
+class BrowserServiceLacrosWindowlessBrowserTest
+    : public BrowserServiceLacrosBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // The kNoStartupWindow is applied when launching lacros-chrome with the
+    // kDoNotOpenWindow initial browser action.
+    command_line->AppendSwitch(switches::kNoStartupWindow);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
+                       HandlesUncleanExit) {
+  // Browser launch should be suppressed with the kNoStartupWindow switch.
+  ASSERT_FALSE(browser());
+
+  // Ensure we have an active profile for this test.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  auto* profile = profile_manager->GetLastUsedProfile();
+  ASSERT_TRUE(profile);
+
+  // Disable the profile picker and set the exit type to crashed.
+  g_browser_process->local_state()->SetInteger(
+      prefs::kBrowserProfilePickerAvailabilityOnStartup,
+      static_cast<int>(ProfilePicker::AvailabilityOnStartup::kDisabled));
+  ExitTypeService::GetInstanceForProfile(profile)
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
+
+  // Opening a new window should suppress the profile picker and the crash
+  // restore bubble should be showing.
+  base::RunLoop run_loop;
+  browser_service()->NewWindow(
+      /*incognito=*/false, /*should_trigger_session_restore=*/true,
+      /*callback=*/base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  run_loop.Run();
+
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  views::BubbleDialogDelegate* crash_bubble_delegate =
+      SessionCrashedBubbleView::GetInstanceForTest();
+  EXPECT_TRUE(crash_bubble_delegate);
 }
