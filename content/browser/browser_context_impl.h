@@ -45,7 +45,6 @@ class BrowserContextImpl;
 class BrowserContextImpl {
  public:
   static BrowserContextImpl* From(BrowserContext* self);
-  explicit BrowserContextImpl(BrowserContext* self);
   ~BrowserContextImpl();
 
   BrowserContextImpl(const BrowserContextImpl&) = delete;
@@ -99,9 +98,12 @@ class BrowserContextImpl {
   // exposed to the web directly, so privacy is not compromised.
   std::unique_ptr<media::WebrtcVideoPerfHistory> CreateWebrtcVideoPerfHistory();
 
-  // TODO(https://crbug.com/1179776): Remove the `self_` field.  In the future
-  // BrowserContext::BrowserContextImpl should become BrowserContextImpl that
-  // inherits from BrowserContext, making the `self_` member obsolete.
+  // BrowserContextImpl is owned and build from BrowserContext constructor.
+  // TODO(https://crbug.com/1179776): Invert the dependency. Make BrowserContext
+  // a pure interface and BrowserContextImpl implements it. Remove the `self_`
+  // field and 'friend' declaration.
+  friend BrowserContext;
+  explicit BrowserContextImpl(BrowserContext* self);
   raw_ptr<BrowserContext> self_;
 
   const std::string unique_id_ = base::UnguessableToken::Create().ToString();

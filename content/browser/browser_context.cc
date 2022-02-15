@@ -77,7 +77,7 @@ base::WeakPtr<storage::BlobStorageContext> BlobStorageContextGetterForBrowser(
 }  // namespace
 
 BrowserContext::BrowserContext() {
-  impl_ = std::make_unique<BrowserContextImpl>(this);
+  impl_ = base::WrapUnique(new BrowserContextImpl(this));
   TRACE_EVENT("shutdown", "BrowserContext::BrowserContext",
               ChromeTrackEvent::kChromeBrowserContext, *this);
   TRACE_EVENT_BEGIN("shutdown", "Browser.BrowserContext",
