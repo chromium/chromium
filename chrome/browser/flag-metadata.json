@@ -423,7 +423,6 @@
   {
     "name": "autofill-enable-sending-bcn-in-get-upload-details",
     "owners": [
-      "chashivani@google.com",
       "jsaul@google.com",
       "payments-autofill-team@google.com"
     ],
@@ -441,7 +440,7 @@
   },
   {
     "name": "autofill-enable-unmask-card-request-set-instrument-id",
-    "owners": ["chashivani@google.com", "jsaul@google.com"],
+    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 105
   },
   {
