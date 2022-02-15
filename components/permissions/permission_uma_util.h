@@ -358,6 +358,11 @@ class PermissionUmaUtil {
   static void RecordPermissionPredictionSource(
       PermissionPredictionSource prediction_type);
 
+  static void RecordPermissionPredictionServiceHoldback(
+      RequestType request_type,
+      bool is_on_device,
+      bool is_heldback);
+
   static std::string GetPermissionActionString(
       PermissionAction permission_action);
 

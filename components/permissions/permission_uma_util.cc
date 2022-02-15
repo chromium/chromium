@@ -1056,8 +1056,26 @@ void PermissionUmaUtil::RecordDSEEffectiveSetting(
 // static
 void PermissionUmaUtil::RecordPermissionPredictionSource(
     PermissionPredictionSource prediction_source) {
-  base::UmaHistogramEnumeration("Permissions.PredictionService.PredictionSource",
-                                prediction_source);
+  base::UmaHistogramEnumeration(
+      "Permissions.PredictionService.PredictionSource", prediction_source);
+}
+
+// static
+void PermissionUmaUtil::RecordPermissionPredictionServiceHoldback(
+    RequestType request_type,
+    bool is_on_device,
+    bool is_heldback) {
+  if (is_on_device) {
+    base::UmaHistogramBoolean(
+        "Permissions.OnDevicePredictionService.Response." +
+            GetPermissionRequestString(GetUmaValueForRequestType(request_type)),
+        is_heldback);
+  } else {
+    base::UmaHistogramBoolean(
+        "Permissions.PredictionService.Response." +
+            GetPermissionRequestString(GetUmaValueForRequestType(request_type)),
+        is_heldback);
+  }
 }
 
 std::string PermissionUmaUtil::GetPermissionActionString(
