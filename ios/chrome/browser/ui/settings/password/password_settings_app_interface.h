@@ -53,7 +53,7 @@
 // Gets number of password form stored.
 + (NSInteger)passwordStoreResultsCount;
 
-// Returns YES is crdential service is enabled.
+// Returns YES if credential service is enabled.
 + (BOOL)isCredentialsServiceEnabled;
 
 @end

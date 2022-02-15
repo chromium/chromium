@@ -756,7 +756,7 @@ UIWindow* GetAnyKeyWindow();
 - (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
                           timeout:(NSTimeInterval)timeout;
 
-// Returns YES is the button with given (accessibility) |label| was observed at
+// Returns YES if the button with given (accessibility) |label| was observed at
 // some point since |watchForButtonsWithLabels:timeout:| was called.
 - (BOOL)watcherDetectedButtonWithLabel:(NSString*)label;
 
