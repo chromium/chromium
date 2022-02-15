@@ -113,7 +113,13 @@ void AddStrings(content::WebUIDataSource* source) {
       {"ambientModeTopicSourceSelectedRow",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_SELECTED_ROW},
       {"ambientModeTopicSourceUnselectedRow",
-       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_UNSELECTED_ROW}};
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_UNSELECTED_ROW},
+      {"ambientModeWeatherTitle",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_TITLE},
+      {"ambientModeWeatherUnitFahrenheit",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_UNIT_FAHRENHEIT},
+      {"ambientModeWeatherUnitCelsius",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_UNIT_CELSIUS}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
 

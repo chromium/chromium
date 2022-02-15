@@ -52,6 +52,10 @@ export function AmbientSubpageTest() {
     const topicSource =
         ambientSubpageElement.shadowRoot!.querySelector('topic-source-list');
     assertTrue(!!topicSource);
+
+    const weatherUnit =
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit');
+    assertTrue(!!weatherUnit);
   });
 
   test('sets ambient mode enabled in store on first load', async () => {

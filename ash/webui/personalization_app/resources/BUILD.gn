@@ -66,6 +66,7 @@ polymer_js_files = [
 
   "trusted/ambient/ambient_preview_element.ts",
   "trusted/ambient/ambient_subpage_element.ts",
+  "trusted/ambient/ambient_weather_element.ts",
   "trusted/ambient/toggle_row_element.ts",
   "trusted/ambient/topic_source_item_element.ts",
   "trusted/ambient/topic_source_list_element.ts",

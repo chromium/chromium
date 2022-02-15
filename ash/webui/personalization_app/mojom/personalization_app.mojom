@@ -336,6 +336,12 @@ enum TopicSource {
   kArtGallery = 1,
 };
 
+// Temperature unit for screensaver weather section.
+enum TemperatureUnit {
+  kFahrenheit = 1,
+  kCelsius = 2,
+};
+
 // Receives information whenever there are ambient mode pref changes.
 interface AmbientObserver {
   // Retrieves information whether ambient mode is enabled.

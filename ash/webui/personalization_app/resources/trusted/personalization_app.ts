@@ -11,6 +11,7 @@
 import '/strings.m.js';
 import './ambient/ambient_preview_element.js';
 import './ambient/ambient_subpage_element.js';
+import './ambient/ambient_weather_element.js';
 import './ambient/toggle_row_element.js';
 import './ambient/topic_source_item_element.js';
 import './ambient/topic_source_list_element.js';
