@@ -529,6 +529,7 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1092104")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/1092104")
     public void testVideoPlayerAnimations() throws Throwable {
         PickerVideoPlayer.setShortAnimationTimesForTesting(true);
 
