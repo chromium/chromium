@@ -382,8 +382,18 @@ bool CreateLoginOptionResponse(UserModel* user_model,
   }
 
   // The result is intentionally not client_side_only, irrespective of input.
+  const LoginOptionProto& login_option = value->login_options().values(0);
   ValueProto result;
-  result.set_server_payload(value->login_options().values(0).payload());
+  switch (login_option.payload_or_tag_case()) {
+    case LoginOptionProto::kPayload:
+    case LoginOptionProto::PAYLOAD_OR_TAG_NOT_SET:
+      result.set_server_payload(login_option.payload());
+      break;
+
+    case LoginOptionProto::kTag:
+      result.mutable_strings()->add_values(login_option.tag());
+      break;
+  }
   user_model->SetValue(result_model_identifier, result);
   return true;
 }

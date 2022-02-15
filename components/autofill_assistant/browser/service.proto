@@ -957,8 +957,13 @@ message CollectUserDataResultProto {
   // If set, this means that the user clicked on one of the terms and conditions
   // links.
   optional int32 terms_link = 5;
-  // The payload of the chosen login option.
-  optional bytes login_payload = 6;
+
+  oneof payload_or_tag {
+    // The payload of the chosen login option, from LoginOptionsProto.payload.
+    bytes login_payload = 6;
+    // The payload of the chosen login option, from LoginOptionsProto.tag.
+    string login_tag = 21;
+  }
   // The values obtained by the generic user interface.
   optional ModelProto model = 9;
   // The memory keys of all non-empty text inputs, corresponding to the memory
@@ -2316,8 +2321,17 @@ message LoginDetailsProto {
     // description.
     optional string edit_button_content_description = 10;
 
-    // If the option was chosen, this payload will be returned to the server.
-    optional bytes payload = 1;
+    oneof payload_or_tag {
+      // The payload attached to this login option, to be echoed back to the
+      // caller when the option is chosen.
+      //
+      // Prefer using tag.
+      bytes payload = 1;
+
+      // The tag attached to this login option, to be echoed back to the
+      // caller when the option is chosen.
+      string tag = 21;
+    }
 
     // Whether the UI should automatically choose this login option if no
     // password manager login options are available.

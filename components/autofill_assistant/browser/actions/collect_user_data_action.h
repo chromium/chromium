@@ -50,13 +50,16 @@ class CollectUserDataAction : public Action,
  private:
   struct LoginDetails {
     LoginDetails(bool choose_automatically_if_no_stored_login,
-                 const std::string& payload);
+                 const std::string& payload,
+                 const std::string& tag);
     LoginDetails(bool choose_automatically_if_no_stored_login,
                  const std::string& payload,
+                 const std::string& tag,
                  const WebsiteLoginManager::Login& login);
     ~LoginDetails();
     bool choose_automatically_if_no_stored_login;
     std::string payload;
+    std::string tag;
     // Only for Chrome PWM login details.
     absl::optional<WebsiteLoginManager::Login> login;
   };

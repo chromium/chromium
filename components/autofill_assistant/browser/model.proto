@@ -409,5 +409,14 @@ message AutofillProfileProto {
 message LoginOptionProto {
   optional string label = 1;
   optional string sublabel = 2;
-  optional bytes payload = 3;
+
+  oneof payload_or_tag {
+    // A payload to be echoed back to the caller when the option is selected.
+    //
+    // Prefer using tag.
+    bytes payload = 3;
+
+    // A tag to be echoed back to the caller when the option is selected.
+    string tag = 4;
+  }
 }

@@ -672,6 +672,33 @@ TEST_F(BasicInteractionsTest, ComputeValueCreateLoginOptionResponse) {
   EXPECT_EQ(user_model_.GetValue("result"), expected_response_value);
 }
 
+TEST_F(BasicInteractionsTest, ComputeValueCreateLoginOptionResponseWithTag) {
+  ComputeValueProto proto;
+  proto.mutable_create_login_option_response();
+
+  // Missing fields.
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+  proto.mutable_create_login_option_response()
+      ->mutable_value()
+      ->set_model_identifier("value");
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+  proto.set_result_model_identifier("result");
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+
+  ValueProto value;
+  value.mutable_login_options()->add_values()->set_tag("tag");
+  value.set_is_client_side_only(true);
+  user_model_.SetValue("value", value);
+  EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
+
+  // LoginOptionResponseProto is allowed to extract the payload from
+  // client-only values.
+  ValueProto expected_response_value;
+  expected_response_value.mutable_strings()->add_values("tag");
+  expected_response_value.set_is_client_side_only(false);
+  EXPECT_EQ(user_model_.GetValue("result"), expected_response_value);
+}
+
 TEST_F(BasicInteractionsTest, ComputeStringEmpty) {
   ComputeValueProto proto;
   proto.set_result_model_identifier("result");

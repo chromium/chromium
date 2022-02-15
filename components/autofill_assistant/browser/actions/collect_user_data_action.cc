@@ -393,18 +393,22 @@ void MergePhoneNumberIntoSelectedContact(
 CollectUserDataAction::LoginDetails::LoginDetails(
     bool _choose_automatically_if_no_stored_login,
     const std::string& _payload,
+    const std::string& _tag,
     const WebsiteLoginManager::Login& _login)
     : choose_automatically_if_no_stored_login(
           _choose_automatically_if_no_stored_login),
       payload(_payload),
+      tag(_tag),
       login(_login) {}
 
 CollectUserDataAction::LoginDetails::LoginDetails(
     bool _choose_automatically_if_no_stored_login,
-    const std::string& _payload)
+    const std::string& _payload,
+    const std::string& _tag)
     : choose_automatically_if_no_stored_login(
           _choose_automatically_if_no_stored_login),
-      payload(_payload) {}
+      payload(_payload),
+      tag(_tag) {}
 
 CollectUserDataAction::LoginDetails::~LoginDetails() = default;
 
@@ -550,7 +554,7 @@ void CollectUserDataAction::OnGetLogins(
     login_details_map_.emplace(
         identifier, std::make_unique<LoginDetails>(
                         login_option.choose_automatically_if_no_stored_login(),
-                        login_option.payload(), login));
+                        login_option.payload(), login_option.tag(), login));
   }
   ShowToUser();
 }
@@ -969,7 +973,7 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
             identifier,
             std::make_unique<LoginDetails>(
                 login_option.choose_automatically_if_no_stored_login(),
-                login_option.payload()));
+                login_option.payload(), login_option.tag()));
         break;
       }
       case LoginDetailsProto::LoginOptionProto::kPasswordManager: {
@@ -1239,8 +1243,13 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
         }
       }
 
-      processed_action_proto_->mutable_collect_user_data_result()
-          ->set_login_payload(login_details->second->payload);
+      auto* result =
+          processed_action_proto_->mutable_collect_user_data_result();
+      if (!login_details->second->tag.empty()) {
+        result->set_login_tag(login_details->second->tag);
+      } else {
+        result->set_login_payload(login_details->second->payload);
+      }
     }
   }
 
