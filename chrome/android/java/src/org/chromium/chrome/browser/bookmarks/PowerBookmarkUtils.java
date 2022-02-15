@@ -222,6 +222,7 @@ public class PowerBookmarkUtils {
                                                    R.string.price_tracking_error_snackbar_action),
                                         null);
             }
+            snackbar.setSingleLine(false);
             snackbarManager.showSnackbar(snackbar);
             callback.onResult(status);
         };
