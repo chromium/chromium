@@ -210,10 +210,8 @@ void MetronomeSource::ListenerHandle::Inactivate() {
 MetronomeSource::MetronomeSource(base::TimeTicks metronome_phase,
                                  base::TimeDelta metronome_tick)
     : metronome_task_runner_(
-          // Single thread is used to allow tracing the metronome's ticks to
-          // consistently happen on the same thread. HIGHEST priority is used to
-          // reduce risk of jitter.
-          base::ThreadPool::CreateSingleThreadTaskRunner(
+          // HIGHEST priority is used to reduce risk of jitter.
+          base::ThreadPool::CreateSequencedTaskRunner(
               {base::TaskPriority::HIGHEST})),
       metronome_phase_(std::move(metronome_phase)),
       metronome_tick_(std::move(metronome_tick)) {
