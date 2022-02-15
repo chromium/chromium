@@ -107,6 +107,9 @@ export class BaseSettings extends View {
   }
 }
 
+const helpUrl =
+    'https://support.google.com/chromebook/?p=camera_usage_on_chromebook';
+
 /**
  * Controller of primary settings view.
  */
@@ -138,7 +141,9 @@ export class PrimarySettings extends BaseSettings {
                   loadTimeData.getI18nMessage(
                       I18nString.FEEDBACK_DESCRIPTION_PLACEHOLDER));
             },
-            'settings-help': () => util.openHelp(),
+            'settings-help': () => {
+              ChromeHelper.getInstance().openUrlInBrowser(helpUrl);
+            },
           };
         })(),
     );

@@ -7,6 +7,7 @@ module ash.camera_app.mojom;
 import "ash/components/arc/mojom/camera_intent.mojom";
 import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
 
 // Interface for monitoring tablet mode state of device. The state is detected
 // from Chrome browser process and is notified to Chrome Camera App in renderer
@@ -152,6 +153,9 @@ interface CameraAppHelper {
   // field. It is only usable for SWA version. For platform app version, we send
   // message to Feedback extension via chrome.runtime API.
   OpenFeedbackDialog(string placeholder);
+
+  // Opens the given URL in the browser.
+  OpenUrlInBrowser(url.mojom.Url url);
 
   // Sets the monitor to monitor the camera usage ownership changed. If the
   // window operation is not supported for current instance, return false.

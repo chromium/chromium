@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback_helpers.h"
@@ -236,6 +237,10 @@ void CameraAppHelperImpl::OpenFileInGallery(const std::string& name) {
 
 void CameraAppHelperImpl::OpenFeedbackDialog(const std::string& placeholder) {
   camera_app_ui_->delegate()->OpenFeedbackDialog(placeholder);
+}
+
+void CameraAppHelperImpl::OpenUrlInBrowser(const GURL& url) {
+  NewWindowDelegate::GetPrimary()->OpenUrl(url, /*from_user_interaction=*/true);
 }
 
 void CameraAppHelperImpl::SetCameraUsageMonitor(

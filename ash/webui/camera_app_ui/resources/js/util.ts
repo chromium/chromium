@@ -86,14 +86,6 @@ export function getShortcutIdentifier(event: KeyboardEvent): string {
 }
 
 /**
- * Opens help.
- */
-export function openHelp(): void {
-  window.open(
-      'https://support.google.com/chromebook/?p=camera_usage_on_chromebook');
-}
-
-/**
  * Sets up i18n messages on DOM subtree by i18n attributes.
  * @param rootElement Root of DOM subtree to be set up with.
  */

@@ -111,6 +111,7 @@ mojom("mojo_bindings") {
     "//ash/components/arc/mojom:camera_intent",
     "//chromeos/services/machine_learning/public/mojom:document_scanner_param_types",
     "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/ash/webui/camera_app_ui"
 }

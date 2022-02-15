@@ -70,6 +70,7 @@ class CameraAppHelperImpl : public TabletModeObserver,
       SetExternalScreenMonitorCallback callback) override;
   void OpenFileInGallery(const std::string& name) override;
   void OpenFeedbackDialog(const std::string& placeholder) override;
+  void OpenUrlInBrowser(const GURL& url) override;
   void SetCameraUsageMonitor(
       mojo::PendingRemote<CameraUsageOwnershipMonitor> usage_monitor,
       SetCameraUsageMonitorCallback callback) override;

@@ -192,6 +192,14 @@ export class ChromeHelper {
   }
 
   /**
+   * Opens the given URL in the browser.
+   * @param url The URL to open.
+   */
+  openUrlInBrowser(url: string): void {
+    this.remote.openUrlInBrowser({url: url});
+  }
+
+  /**
    * Checks return value from |handleCameraResult|.
    * @param caller Caller identifier.
    */
