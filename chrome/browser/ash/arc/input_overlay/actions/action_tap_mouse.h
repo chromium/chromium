@@ -37,8 +37,8 @@ class ActionTapMouse : public Action {
                     const bool is_mouse_locked,
                     std::list<ui::TouchEvent>& touch_events,
                     bool& keep_original_event) override;
-  gfx::PointF GetUIPosition(const gfx::RectF& content_bounds) override;
-  std::unique_ptr<ActionLabel> CreateView(
+  gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) override;
+  std::unique_ptr<ActionView> CreateView(
       const gfx::RectF& content_bounds) override;
 
   const std::string& target_mouse_action() const {
@@ -50,6 +50,8 @@ class ActionTapMouse : public Action {
   int target_flags() const { return target_flags_; }
 
  private:
+  class ActionTapMouseView;
+
   bool RewriteMouseEvent(const ui::MouseEvent* mouse_event,
                          std::list<ui::TouchEvent>& rewritten_events,
                          const gfx::RectF& content_bounds);

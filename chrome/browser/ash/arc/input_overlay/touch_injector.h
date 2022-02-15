@@ -95,7 +95,6 @@ class TouchInjector : public ui::EventRewriter {
   void ParseMouseLock(const base::Value& value);
 
   void FlipMouseLockFlag();
-  void FlipDisplayModeFlag();
   // Check if the event located on menu icon.
   bool MenuAnchorPressed(const ui::Event& event,
                          const gfx::RectF& content_bounds);

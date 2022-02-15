@@ -30,9 +30,6 @@ constexpr char kMouseLock[] = "mouse_lock";
 // Mask for interesting modifiers.
 const int kInterestingFlagsMask =
     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
-// It is used temporarily for switching view and edit mode.
-// TODO(cuicuiruan): Remove this after the entry point is ready.
-const ui::DomCode kSwitchModeKey = ui::DomCode::BACKSPACE;
 
 // Parse Json to different types of actions.
 std::vector<std::unique_ptr<Action>> ParseJsonToActions(
@@ -161,11 +158,6 @@ void TouchInjector::RegisterEventRewriter() {
   if (observation_.IsObserving())
     return;
   observation_.Observe(target_window_->GetHost()->GetEventSource());
-  // TODO(cuicuiruan): temporarily entry point to change mode.
-  switch_mode_ = std::make_unique<KeyCommand>(
-      kSwitchModeKey, /*modifiers=*/0,
-      base::BindRepeating(&TouchInjector::FlipDisplayModeFlag,
-                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TouchInjector::UnRegisterEventRewriter() {
@@ -242,18 +234,6 @@ void TouchInjector::FlipMouseLockFlag() {
     DispatchTouchReleaseEventOnMouseUnLock();
 }
 
-void TouchInjector::FlipDisplayModeFlag() {
-  DCHECK(display_overlay_controller_);
-  if (display_mode_ == DisplayMode::kView) {
-    if (is_mouse_locked_)
-      FlipMouseLockFlag();
-    DispatchTouchReleaseEvent();
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kEdit);
-  } else {
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
-  }
-}
-
 bool TouchInjector::MenuAnchorPressed(const ui::Event& event,
                                       const gfx::RectF& content_bounds) {
   if (!event.IsMouseEvent() && !event.IsTouchEvent())
@@ -308,6 +288,12 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   // |display_overlay_controller_| is null for unittest.
   if (display_overlay_controller_ && display_mode_ == DisplayMode::kView &&
       MenuAnchorPressed(event, bounds)) {
+    // Release all active touches when the display mode is changed from |kView|
+    // to |kMenu|.
+    if (is_mouse_locked_)
+      FlipMouseLockFlag();
+    DispatchTouchReleaseEvent();
+
     display_overlay_controller_->SetDisplayMode(DisplayMode::kMenu);
     return SendEvent(continuation, &event);
   }

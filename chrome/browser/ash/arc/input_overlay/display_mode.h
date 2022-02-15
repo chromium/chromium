@@ -20,6 +20,9 @@ enum class DisplayMode {
   // Display overlay can receive events and action labels can be focused. It
   // shows input mapping in edit mode.
   kEdit,
+  // Display overlay can still receive events. It is a mode after an action
+  // label receives a valid key mapping.
+  kEdited,
   // Display overlay can receive events but action labels can't be focused.
   // It shows expanded menu and input mapping as in view mode.
   kMenu,

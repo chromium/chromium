@@ -4,17 +4,21 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap_key.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/controls/label.h"
 
 namespace arc {
 namespace input_overlay {
 namespace {
+// UI specs.
+constexpr int kLabelPositionToSide = 36;
+constexpr int kLabelMargin = 2;
 
 bool IsAlt(ui::DomCode code) {
   return code == ui::DomCode::ALT_LEFT || code == ui::DomCode::ALT_RIGHT;
@@ -39,6 +43,45 @@ bool IsModifier(ui::DomCode code) {
 }
 
 }  // namespace
+
+class ActionTapKey::ActionTapKeyView : public ActionView {
+ public:
+  ActionTapKeyView(Action* action, const gfx::RectF& content_bounds)
+      : ActionView(action) {
+    int radius = action->GetUIRadius(content_bounds);
+    auto circle = std::make_unique<ActionCircle>(radius);
+    auto text = GetDisplayText(static_cast<ActionTapKey*>(action)->key());
+    auto label = std::make_unique<ActionLabel>(base::UTF8ToUTF16(text));
+    label->set_editable(true);
+    auto label_size = label->GetPreferredSize();
+    label->SetSize(label_size);
+    int width = std::max(
+        radius * 2, radius * 2 - kLabelPositionToSide + label_size.width());
+    SetSize(gfx::Size(width, radius * 2));
+    if (action->on_left_or_middle_side()) {
+      circle->SetPosition(gfx::Point());
+      label->SetPosition(
+          gfx::Point(label_size.width() > kLabelPositionToSide
+                         ? width - label_size.width()
+                         : width - kLabelPositionToSide,
+                     radius * 2 - label_size.height() - kLabelMargin));
+      center_.set_x(radius);
+      center_.set_y(radius);
+    } else {
+      circle->SetPosition(gfx::Point(width - radius * 2, 0));
+      label->SetPosition(
+          gfx::Point(0, radius * 2 - label_size.height() - kLabelMargin));
+      center_.set_x(width - radius);
+      center_.set_y(radius);
+    }
+    circle_ = AddChildView(std::move(circle));
+    labels_.emplace_back(AddChildView(std::move(label)));
+  }
+
+  ActionTapKeyView(const ActionTapKeyView&) = delete;
+  ActionTapKeyView& operator=(const ActionTapKeyView&) = delete;
+  ~ActionTapKeyView() override = default;
+};
 
 ActionTapKey::ActionTapKey(aura::Window* window) : Action(window) {}
 
@@ -150,18 +193,17 @@ bool ActionTapKey::RewriteKeyEvent(const ui::KeyEvent& key_event,
   return true;
 }
 
-gfx::PointF ActionTapKey::GetUIPosition(const gfx::RectF& content_bounds) {
-  // TODO(cuicuiruan): will update the UI position according to design specs.
+gfx::PointF ActionTapKey::GetUICenterPosition(
+    const gfx::RectF& content_bounds) {
   auto* position = locations().front().get();
   return position->CalculatePosition(content_bounds);
 }
 
-std::unique_ptr<ActionLabel> ActionTapKey::CreateView(
+std::unique_ptr<ActionView> ActionTapKey::CreateView(
     const gfx::RectF& content_bounds) {
-  // TODO(cuicuiruan): will update the view according to design specs.
-  auto text = GetDisplayText(ui::KeycodeConverter::DomCodeToCodeString(key_));
-  auto view = std::make_unique<ActionLabel>(base::UTF8ToUTF16(text));
-  auto center_pos = GetUIPosition(content_bounds);
+  auto view = std::make_unique<ActionTapKeyView>(this, content_bounds);
+  view->set_editable(true);
+  auto center_pos = GetUICenterPosition(content_bounds);
   view->SetPositionFromCenterPosition(center_pos);
   return view;
 }

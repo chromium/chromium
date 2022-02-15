@@ -7,6 +7,8 @@
 #include "ash/shell.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace arc {
 namespace input_overlay {
@@ -36,6 +38,25 @@ std::unique_ptr<Position> ParseApplyAreaPosition(const base::Value& value,
 }
 
 }  // namespace
+
+class ActionMoveMouse::ActionMoveMouseView : public ActionView {
+ public:
+  ActionMoveMouseView(Action* action, const gfx::RectF& content_bounds)
+      : ActionView(action) {
+    auto label = std::make_unique<ActionLabel>(u"mouse cursor lock (esc)");
+    label->set_editable(false);
+    auto label_size = label->GetPreferredSize();
+    label->SetSize(label_size);
+    SetSize(label_size);
+    center_.set_x(label_size.width() / 2);
+    center_.set_y(label_size.height() / 2);
+    labels_.emplace_back(AddChildView(std::move(label)));
+  }
+
+  ActionMoveMouseView(const ActionMoveMouseView&) = delete;
+  ActionMoveMouseView& operator=(const ActionMoveMouseView&) = delete;
+  ~ActionMoveMouseView() override = default;
+};
 
 ActionMoveMouse::ActionMoveMouse(aura::Window* window) : Action(window) {}
 
@@ -118,7 +139,8 @@ bool ActionMoveMouse::RewriteEvent(const ui::Event& origin,
   return rewritten;
 }
 
-gfx::PointF ActionMoveMouse::GetUIPosition(const gfx::RectF& content_bounds) {
+gfx::PointF ActionMoveMouse::GetUICenterPosition(
+    const gfx::RectF& content_bounds) {
   if (locations().empty())
     return gfx::PointF(content_bounds.width() / 2, content_bounds.height() / 2);
   // Sometimes, the touch down position binds to a UI location. The action view
@@ -127,10 +149,11 @@ gfx::PointF ActionMoveMouse::GetUIPosition(const gfx::RectF& content_bounds) {
   return locations().front().get()->CalculatePosition(content_bounds);
 }
 
-std::unique_ptr<ActionLabel> ActionMoveMouse::CreateView(
+std::unique_ptr<ActionView> ActionMoveMouse::CreateView(
     const gfx::RectF& content_bounds) {
-  auto view = std::make_unique<ActionLabel>(u"mouse cursor lock (esc)");
-  auto center_pos = GetUIPosition(content_bounds);
+  auto view = std::make_unique<ActionMoveMouseView>(this, content_bounds);
+  view->set_editable(false);
+  auto center_pos = GetUICenterPosition(content_bounds);
   view->SetPositionFromCenterPosition(center_pos);
   return view;
 }

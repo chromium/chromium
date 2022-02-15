@@ -10,14 +10,20 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_label.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace arc {
 namespace input_overlay {
+
+class ActionView;
 
 // Parse position from Json.
 std::unique_ptr<Position> ParsePosition(const base::Value& value);
@@ -55,8 +61,8 @@ class Action {
                             std::list<ui::TouchEvent>& touch_events,
                             bool& keep_original_event) = 0;
   // Get the UI location in the content view.
-  virtual gfx::PointF GetUIPosition(const gfx::RectF& content_bounds) = 0;
-  virtual std::unique_ptr<ActionLabel> CreateView(
+  virtual gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) = 0;
+  virtual std::unique_ptr<ActionView> CreateView(
       const gfx::RectF& content_bounds) = 0;
 
   const std::string& name() { return name_; }
@@ -67,12 +73,13 @@ class Action {
   const aura::Window* target_window() const { return target_window_; }
   int current_position_index() const { return current_position_index_; }
   const absl::optional<int> touch_id() const { return touch_id_; }
+  bool on_left_or_middle_side() const { return on_left_or_middle_side_; }
 
   // Cancel event when the focus is leave or window is destroyed and the touch
   // event is still not released.
   absl::optional<ui::TouchEvent> GetTouchCanceledEvent();
   absl::optional<ui::TouchEvent> GetTouchReleasedEvent();
-  // TODO (b/200210666): Can remove this after the bug is fixed.
+  int GetUIRadius(const gfx::RectF& content_bounds);
 
  protected:
   explicit Action(aura::Window* window);
@@ -99,6 +106,11 @@ class Action {
 
   gfx::PointF last_touch_root_location_;
   base::flat_set<ui::DomCode> keys_pressed_;
+  // This is used for marking the position of the UI view for the action.
+  // According to the design spec, the label position depends
+  // on whether the action position is on left or right.
+  bool on_left_or_middle_side_ = false;
+  absl::optional<float> radius_;
 };
 
 }  // namespace input_overlay

@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action_label.h"
 
+#include <set>
+
+#include "chrome/browser/ash/arc/input_overlay/actions/action_view.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
 
@@ -27,7 +31,8 @@ constexpr int kUnFocusFontSize = 16;
 constexpr int kFocusFontSize = 20;
 }  // namespace
 
-std::string GetDisplayText(const std::string& dom_code_string) {
+std::string GetDisplayText(const ui::DomCode code) {
+  std::string dom_code_string = ui::KeycodeConverter::DomCodeToCodeString(code);
   if (base::StartsWith(dom_code_string, "Key", base::CompareCase::SENSITIVE))
     return base::ToLowerASCII(dom_code_string.substr(3));
   if (base::StartsWith(dom_code_string, "Digit", base::CompareCase::SENSITIVE))

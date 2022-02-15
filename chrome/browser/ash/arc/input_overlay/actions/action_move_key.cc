@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move_key.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace arc {
 namespace input_overlay {
@@ -17,13 +20,48 @@ constexpr char kKeys[] = "keys";
 constexpr char kMoveDistance[] = "move_distance";
 
 constexpr int kAxisSize = 2;
-
 constexpr int kDirection[kActionMoveKeysSize][kAxisSize] = {{0, -1},
                                                             {-1, 0},
                                                             {0, 1},
                                                             {1, 0}};
+// UI specs.
+constexpr int kMinRadius = 99;
+constexpr int kLabelOffset = 49;  // Offset by label center.
 
 }  // namespace
+
+class ActionMoveKey::ActionMoveKeyView : public ActionView {
+ public:
+  ActionMoveKeyView(Action* action, const gfx::RectF& content_bounds)
+      : ActionView(action) {
+    int radius = std::max(kMinRadius, action->GetUIRadius(content_bounds));
+    SetSize(gfx::Size(radius * 2, radius * 2));
+    auto circle = std::make_unique<ActionCircle>(radius);
+    circle->SetPosition(gfx::Point());
+    center_.set_x(radius);
+    center_.set_y(radius);
+    circle_ = AddChildView(std::move(circle));
+    auto* action_move_key = static_cast<ActionMoveKey*>(action);
+    for (int i = 0; i < action_move_key->keys().size(); i++) {
+      auto text = GetDisplayText(action_move_key->keys()[i]);
+      auto label = std::make_unique<ActionLabel>(base::UTF8ToUTF16(text));
+      label->set_editable(true);
+      auto label_size = label->GetPreferredSize();
+      label->SetSize(label_size);
+      int x = kDirection[i][0];
+      int y = kDirection[i][1];
+      auto pos = gfx::Point(
+          radius + x * (radius - kLabelOffset) - label_size.width() / 2,
+          radius + y * (radius - kLabelOffset) - label_size.height() / 2);
+      label->SetPosition(pos);
+      labels_.emplace_back(AddChildView(std::move(label)));
+    }
+  }
+
+  ActionMoveKeyView(const ActionMoveKeyView&) = delete;
+  ActionMoveKeyView& operator=(const ActionMoveKeyView&) = delete;
+  ~ActionMoveKeyView() override = default;
+};
 
 ActionMoveKey::ActionMoveKey(aura::Window* window) : Action(window) {}
 
@@ -93,21 +131,17 @@ bool ActionMoveKey::RewriteEvent(const ui::Event& origin,
   return rewritten;
 }
 
-gfx::PointF ActionMoveKey::GetUIPosition(const gfx::RectF& content_bounds) {
-  // TODO(cuicuiruan): will update the UI position according to design specs.
+gfx::PointF ActionMoveKey::GetUICenterPosition(
+    const gfx::RectF& content_bounds) {
   auto* position = locations().front().get();
   return position->CalculatePosition(content_bounds);
 }
 
-std::unique_ptr<ActionLabel> ActionMoveKey::CreateView(
+std::unique_ptr<ActionView> ActionMoveKey::CreateView(
     const gfx::RectF& content_bounds) {
-  // TODO(cuicuiruan): will update the view according to design specs.
-  std::string text;
-  for (auto key : keys_) {
-    text += GetDisplayText(ui::KeycodeConverter::DomCodeToCodeString(key));
-  }
-  auto view = std::make_unique<ActionLabel>(base::UTF8ToUTF16(text));
-  auto center_pos = GetUIPosition(content_bounds);
+  auto view = std::make_unique<ActionMoveKeyView>(this, content_bounds);
+  view->set_editable(true);
+  auto center_pos = GetUICenterPosition(content_bounds);
   view->SetPositionFromCenterPosition(center_pos);
   return view;
 }

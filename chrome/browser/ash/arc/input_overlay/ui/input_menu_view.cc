@@ -257,8 +257,11 @@ void InputMenuView::OnToggleShowHintPressed() {
 }
 
 void InputMenuView::OnButtonCustomizedPressed() {
-  // TODO(djacobo|cuicuiruan): Triggers |InputMappingEditView| so the user can
-  // adjust key-bindings.
+  DCHECK(display_overlay_controller_);
+  if (display_overlay_controller_) {
+    display_overlay_controller_->SetDisplayMode(DisplayMode::kEdit);
+  }
+  // TODO(djacobo|cuicuiruan): Show the save/cancel dialog.
 }
 
 }  // namespace input_overlay

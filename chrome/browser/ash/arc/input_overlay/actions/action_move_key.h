@@ -42,13 +42,15 @@ class ActionMoveKey : public Action {
                     const bool is_mouse_locked,
                     std::list<ui::TouchEvent>& touch_events,
                     bool& keep_original_event) override;
-  gfx::PointF GetUIPosition(const gfx::RectF& content_bounds) override;
-  std::unique_ptr<ActionLabel> CreateView(
+  gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) override;
+  std::unique_ptr<ActionView> CreateView(
       const gfx::RectF& content_bounds) override;
 
   const std::vector<ui::DomCode>& keys() const { return keys_; }
 
  private:
+  class ActionMoveKeyView;
+
   bool RewriteKeyEvent(const ui::KeyEvent& key_event,
                        std::list<ui::TouchEvent>& rewritten_events,
                        const gfx::RectF& content_bounds);

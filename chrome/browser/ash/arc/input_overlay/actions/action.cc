@@ -10,23 +10,25 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/views/controls/label.h"
 
 namespace arc {
 namespace input_overlay {
 namespace {
-// Strings for parsing positions.
+// Json strings.
 constexpr char kName[] = "name";
 constexpr char kLocation[] = "location";
 constexpr char kType[] = "type";
 constexpr char kPosition[] = "position";
 constexpr char kDependentPosition[] = "dependent_position";
-// Strings for parsing keyboard key.
 constexpr char kKey[] = "key";
 constexpr char kModifiers[] = "modifiers";
 constexpr char kCtrl[] = "ctrl";
 constexpr char kShift[] = "shift";
 constexpr char kAlt[] = "alt";
+constexpr char kRadius[] = "radius";
+// UI specs.
+constexpr int kMinRadius = 18;
+constexpr float kHalf = 0.5;
 
 std::vector<std::unique_ptr<Position>> ParseLocation(
     const base::Value& position) {
@@ -147,8 +149,19 @@ bool Action::ParseFromJson(const base::Value& value) {
     if (!parsed_pos.empty()) {
       std::move(parsed_pos.begin(), parsed_pos.end(),
                 std::back_inserter(locations_));
+      on_left_or_middle_side_ = (locations_.front()->anchor().x() <= kHalf);
     }
   }
+
+  if (!ParsePositiveFraction(value, kRadius, &radius_))
+    return false;
+
+  if (radius_ && *radius_ >= kHalf) {
+    LOG(ERROR) << "Require value of " << kRadius << " less than " << kHalf
+               << ". But got " << *radius_;
+    return false;
+  }
+
   return true;
 }
 
@@ -199,6 +212,14 @@ absl::optional<ui::TouchEvent> Action::GetTouchReleasedEvent() {
   LogEvent(*touch_event);
   OnTouchReleased();
   return touch_event;
+}
+
+int Action::GetUIRadius(const gfx::RectF& content_bounds) {
+  if (!radius_)
+    return kMinRadius;
+
+  int min = std::min(content_bounds.width(), content_bounds.height());
+  return std::max(static_cast<int>(*radius_ * min), kMinRadius);
 }
 
 bool Action::IsRepeatedKeyEvent(const ui::KeyEvent& key_event) {

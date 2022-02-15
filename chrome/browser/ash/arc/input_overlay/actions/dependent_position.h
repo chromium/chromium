@@ -9,6 +9,11 @@
 
 namespace arc {
 namespace input_overlay {
+// Returns true if there is no value of |key| or there is positive value of the
+// |key|.
+bool ParsePositiveFraction(const base::Value& value,
+                           const char* key,
+                           absl::optional<float>* output);
 
 // For dependent position, it can be height-dependent or width-dependent.
 // If y_on_x is set, it is width-dependent.

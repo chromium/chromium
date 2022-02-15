@@ -68,7 +68,7 @@ class DisplayOverlayController::InputMappingView : public views::View {
         break;
     }
     for (auto* view : children()) {
-      auto* action_view = static_cast<ActionLabel*>(view);
+      auto* action_view = static_cast<ActionView*>(view);
       action_view->SetDisplayMode(mode);
     }
     current_display_mode_ = mode;
@@ -95,9 +95,7 @@ DisplayOverlayController::~DisplayOverlayController() {
 }
 
 void DisplayOverlayController::OnWindowBoundsChanged() {
-  RemoveInputMappingView();
-  // TODO(cuicuiruan): Add support for window bounds change. Currently, it is
-  // reset to |kView| mode.
+  SetDisplayMode(DisplayMode::kNone);
   SetDisplayMode(DisplayMode::kView);
 }
 
@@ -119,6 +117,8 @@ void DisplayOverlayController::AddOverlay() {
   params.overlaps_frame = false;
   params.focusable = true;
   shell_surface_base->AddOverlay(std::move(params));
+
+  SetDisplayMode(DisplayMode::kView);
 }
 
 void DisplayOverlayController::RemoveOverlayIfAny() {
@@ -235,11 +235,14 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
     return;
 
   switch (mode) {
+    case DisplayMode::kNone:
+      RemoveMenuEntryView();
+      RemoveInputMappingView();
+      break;
     case DisplayMode::kEducation:
       // TODO(cuicuiruan): Add educational dialog.
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
-      touch_injector_->set_display_mode(mode);
       break;
     case DisplayMode::kView:
       if (!input_mapping_view_)
@@ -249,20 +252,16 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
         AddMenuEntryView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kNone);
-      touch_injector_->set_display_mode(mode);
       break;
     case DisplayMode::kEdit:
-      // TODO(cuicuiruan): |RemoveMenuEntry()| can be removed after the entry
-      // point for |kEdit| is created from menu.
+      RemoveInputMenuView();
       RemoveMenuEntryView();
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
-      touch_injector_->set_display_mode(mode);
       break;
     case DisplayMode::kMenu:
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
-      touch_injector_->set_display_mode(mode);
       break;
     default:
       NOTREACHED();
@@ -271,6 +270,10 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
 
   if (input_mapping_view_)
     input_mapping_view_->SetDisplayMode(mode);
+
+  DCHECK(touch_injector_);
+  if (touch_injector_)
+    touch_injector_->set_display_mode(mode);
 
   display_mode_ = mode;
 }

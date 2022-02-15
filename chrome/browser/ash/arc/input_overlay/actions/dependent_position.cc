@@ -15,18 +15,6 @@ constexpr char kAspectRatio[] = "aspect_ratio";
 constexpr char kXonY[] = "x_on_y";
 constexpr char kYonX[] = "y_on_x";
 
-bool ParsePositiveFraction(const base::Value& value,
-                           const char* key,
-                           absl::optional<float>* output) {
-  *output = value.FindDoubleKey(key);
-  if (*output && **output <= 0) {
-    LOG(ERROR) << "Require positive value of " << key << ". But got "
-               << output->value();
-    return false;
-  }
-  return true;
-}
-
 float CalculateDependent(gfx::PointF anchor,
                          gfx::Vector2dF anchor_to_target,
                          bool height_dependent,
@@ -50,11 +38,21 @@ float CalculateDependent(gfx::PointF anchor,
       res = window_bounds.height() - 1;
   }
   // Make sure it is inside of the window bounds.
-  if (res < 0)
-    res = 0;
-  return res;
+  return std::max(0.f, res);
 }
 }  // namespace
+
+bool ParsePositiveFraction(const base::Value& value,
+                           const char* key,
+                           absl::optional<float>* output) {
+  *output = value.FindDoubleKey(key);
+  if (*output && **output <= 0) {
+    LOG(ERROR) << "Require positive value of " << key << ". But got {"
+               << output->value() << "}.";
+    return false;
+  }
+  return true;
+}
 
 DependentPosition::DependentPosition() {}
 DependentPosition::~DependentPosition() = default;

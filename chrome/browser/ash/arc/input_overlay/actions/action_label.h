@@ -15,7 +15,7 @@ namespace input_overlay {
 // TODO(cuicuiruan): Currently, it shows the dom_code.
 // Will replace it with showing the result of dom_key / keyboard key depending
 // on different keyboard layout.
-std::string GetDisplayText(const std::string& dom_code_string);
+std::string GetDisplayText(const ui::DomCode code);
 
 // ActionLabel is the basic UI label for the action. It can set default view
 // mode and edit mode.
@@ -27,6 +27,8 @@ class ActionLabel : public views::Label {
   ActionLabel(const ActionLabel&) = delete;
   ActionLabel& operator=(const ActionLabel&) = delete;
   ~ActionLabel() override;
+
+  void set_editable(bool editable) { editable_ = editable; }
 
   void SetDisplayMode(const DisplayMode mode);
   // Set position from its center position.
@@ -42,6 +44,9 @@ class ActionLabel : public views::Label {
   void SetToView();
   void SetToEditDefault();
   void SetToEditFocus();
+
+ private:
+  bool editable_ = false;
 };
 }  // namespace input_overlay
 }  // namespace arc

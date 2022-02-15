@@ -40,13 +40,15 @@ class ActionTapKey : public Action {
                     const bool is_mouse_locked,
                     std::list<ui::TouchEvent>& touch_events,
                     bool& keep_original_event) override;
-  gfx::PointF GetUIPosition(const gfx::RectF& content_bounds) override;
-  std::unique_ptr<ActionLabel> CreateView(
+  gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) override;
+  std::unique_ptr<ActionView> CreateView(
       const gfx::RectF& content_bounds) override;
 
   ui::DomCode key() { return key_; }
 
  private:
+  class ActionTapKeyView;
+
   bool RewriteKeyEvent(const ui::KeyEvent& key_event,
                        std::list<ui::TouchEvent>& rewritten_events,
                        const gfx::RectF& content_bounds,
