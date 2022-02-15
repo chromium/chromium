@@ -237,6 +237,24 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
           base::Unretained(this), context));
 }
 
+void PrintBackendServiceManager::UseDefaultSettings(
+    const std::string& printer_name,
+    mojom::PrintBackendService::UseDefaultSettingsCallback callback) {
+  CallbackContext context;
+  auto& service = GetServiceAndCallbackContext(printer_name, context);
+
+  SaveCallback(GetRemoteSavedUseDefaultSettingsCallbacks(context.is_sandboxed),
+               context.remote_id, context.saved_callback_id,
+               std::move(callback));
+
+  SetCrashKeys(printer_name);
+
+  LogCallToRemote("UseDefaultSettings", context);
+  service->UseDefaultSettings(
+      base::BindOnce(&PrintBackendServiceManager::OnDidUseDefaultSettings,
+                     base::Unretained(this), context));
+}
+
 void PrintBackendServiceManager::UpdatePrintSettings(
     const std::string& printer_name,
     base::flat_map<std::string, base::Value> job_settings,
@@ -549,6 +567,9 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
       mojom::PrinterSemanticCapsAndDefaultsResult::NewResultCode(
           mojom::ResultCode::kFailed));
   RunSavedCallbacksStructResult(
+      GetRemoteSavedUseDefaultSettingsCallbacks(sandboxed), remote_id,
+      mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
+  RunSavedCallbacksStructResult(
       GetRemoteSavedUpdatePrintSettingsCallbacks(sandboxed), remote_id,
       mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
   RunSavedCallbacksResult(GetRemoteSavedStartPrintingCallbacks(sandboxed),
@@ -590,6 +611,13 @@ PrintBackendServiceManager::
   return sandboxed
              ? sandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_
              : unsandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
+}
+
+PrintBackendServiceManager::RemoteSavedUseDefaultSettingsCallbacks&
+PrintBackendServiceManager::GetRemoteSavedUseDefaultSettingsCallbacks(
+    bool sandboxed) {
+  return sandboxed ? sandboxed_saved_use_default_settings_callbacks_
+                   : unsandboxed_saved_use_default_settings_callbacks_;
 }
 
 PrintBackendServiceManager::RemoteSavedUpdatePrintSettingsCallbacks&
@@ -696,6 +724,15 @@ void PrintBackendServiceManager::OnDidGetPrinterSemanticCapsAndDefaults(
                           context.is_sandboxed),
                       context.remote_id, context.saved_callback_id,
                       std::move(printer_caps));
+}
+
+void PrintBackendServiceManager::OnDidUseDefaultSettings(
+    const CallbackContext& context,
+    mojom::PrintSettingsResultPtr settings) {
+  LogCallbackFromRemote("UseDefaultSettings", context);
+  ServiceCallbackDone(
+      GetRemoteSavedUseDefaultSettingsCallbacks(context.is_sandboxed),
+      context.remote_id, context.saved_callback_id, std::move(settings));
 }
 
 void PrintBackendServiceManager::OnDidUpdatePrintSettings(

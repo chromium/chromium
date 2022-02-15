@@ -60,6 +60,9 @@ class PrintBackendServiceManager {
       const std::string& printer_name,
       mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
           callback);
+  void UseDefaultSettings(
+      const std::string& printer_name,
+      mojom::PrintBackendService::UseDefaultSettingsCallback callback);
   void UpdatePrintSettings(
       const std::string& printer_name,
       base::flat_map<std::string, base::Value> job_settings,
@@ -142,6 +145,8 @@ class PrintBackendServiceManager {
       RemoteSavedStructCallbacks<mojom::DefaultPrinterNameResult>;
   using RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrinterSemanticCapsAndDefaultsResult>;
+  using RemoteSavedUseDefaultSettingsCallbacks =
+      RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
   using RemoteSavedUpdatePrintSettingsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
   using RemoteSavedStartPrintingCallbacks =
@@ -210,6 +215,8 @@ class PrintBackendServiceManager {
   GetRemoteSavedGetDefaultPrinterNameCallbacks(bool sandboxed);
   RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks&
   GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(bool sandboxed);
+  RemoteSavedUseDefaultSettingsCallbacks&
+  GetRemoteSavedUseDefaultSettingsCallbacks(bool sandboxed);
   RemoteSavedUpdatePrintSettingsCallbacks&
   GetRemoteSavedUpdatePrintSettingsCallbacks(bool sandboxed);
   RemoteSavedStartPrintingCallbacks& GetRemoteSavedStartPrintingCallbacks(
@@ -253,6 +260,8 @@ class PrintBackendServiceManager {
   void OnDidGetPrinterSemanticCapsAndDefaults(
       const CallbackContext& context,
       mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps);
+  void OnDidUseDefaultSettings(const CallbackContext& context,
+                               mojom::PrintSettingsResultPtr settings);
   void OnDidUpdatePrintSettings(const CallbackContext& context,
                                 mojom::PrintSettingsResultPtr printer_caps);
   void OnDidStartPrinting(const CallbackContext& context,
@@ -307,6 +316,10 @@ class PrintBackendServiceManager {
       sandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
   RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks
       unsandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
+  RemoteSavedUseDefaultSettingsCallbacks
+      sandboxed_saved_use_default_settings_callbacks_;
+  RemoteSavedUseDefaultSettingsCallbacks
+      unsandboxed_saved_use_default_settings_callbacks_;
   RemoteSavedUpdatePrintSettingsCallbacks
       sandboxed_saved_update_print_settings_callbacks_;
   RemoteSavedUpdatePrintSettingsCallbacks
