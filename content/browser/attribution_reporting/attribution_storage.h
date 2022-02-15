@@ -111,9 +111,9 @@ class AttributionStorage {
    private:
     AttributionTrigger::Result status_;
 
-    // Null unless `status` is `kSuccessDroppedLowerPriority`,
-    // `kExcessiveReports`, `kPriorityTooLow`, `kDroppedForNoise`, or
-    // `kExcessiveReportingOrigins`..
+    // `AttributionTrigger::Result::kInternalError` is only associated with a
+    // dropped report if the browser succeeded in running the
+    // source-to-attribute logic.
     absl::optional<AttributionReport> dropped_report_;
 
     // Null unless `dropped_report_`'s source was deactivated.

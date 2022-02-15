@@ -555,8 +555,12 @@ TEST_F(AttributionStorageTest, MaxConversionsPerOrigin) {
   EXPECT_EQ(AttributionTrigger::Result::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
   // Verify that MaxConversionsPerOrigin is enforced.
+  auto result = storage()->MaybeCreateAndStoreReport(
+      TriggerBuilder().SetTriggerData(5).Build());
   EXPECT_EQ(AttributionTrigger::Result::kNoCapacityForConversionDestination,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+            result.status());
+  EXPECT_THAT(result.dropped_report(),
+              Optional(EventLevelDataIs(TriggerDataIs(5))));
 }
 
 TEST_F(AttributionStorageTest, ClearDataWithNoMatch_NoDelete) {
@@ -1335,14 +1339,16 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
                     .Build()));
 
   // Shouldn't be stored because conversion destination and dedup key match.
-  EXPECT_EQ(AttributionTrigger::Result::kDeduplicated,
-            MaybeCreateAndStoreReport(
-                TriggerBuilder()
-                    .SetConversionDestination(net::SchemefulSite(
-                        url::Origin::Create(GURL("https://a.example"))))
-                    .SetDedupKey(11)
-                    .SetTriggerData(74)
-                    .Build()));
+  auto result = storage()->MaybeCreateAndStoreReport(
+      TriggerBuilder()
+          .SetConversionDestination(net::SchemefulSite(
+              url::Origin::Create(GURL("https://a.example"))))
+          .SetDedupKey(11)
+          .SetTriggerData(74)
+          .Build());
+  EXPECT_EQ(AttributionTrigger::Result::kDeduplicated, result.status());
+  EXPECT_THAT(result.dropped_report(),
+              Optional(EventLevelDataIs(TriggerDataIs(74))));
 
   // Shouldn't be stored because conversion destination and dedup key match.
   EXPECT_EQ(AttributionTrigger::Result::kDeduplicated,

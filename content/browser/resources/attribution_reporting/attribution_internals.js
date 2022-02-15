@@ -535,6 +535,15 @@ class Report extends Selectable {
       case WebUIAttributionReport_Status.kDroppedForNoise:
         this.status = 'Dropped for noise';
         break;
+      case WebUIAttributionReport_Status.kDeduplicated:
+        this.status = 'Deduplicated';
+        break;
+      case WebUIAttributionReport_Status.kNoReportCapacityForDestinationSite:
+        this.status = 'No report capacity for destination site';
+        break;
+      case WebUIAttributionReport_Status.kInternalError:
+        this.status = 'Internal error';
+        break;
       case WebUIAttributionReport_Status.kProhibitedByBrowserPolicy:
         this.status = 'Prohibited by browser policy';
         break;

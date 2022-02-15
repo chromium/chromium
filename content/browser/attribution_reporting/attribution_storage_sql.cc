@@ -710,25 +710,6 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     return CreateReportResult(AttributionTrigger::Result::kInternalError);
   }
 
-  switch (ReportAlreadyStored(source_id_to_attribute, trigger.dedup_key())) {
-    case ReportAlreadyStoredStatus::kNotStored:
-      break;
-    case ReportAlreadyStoredStatus::kStored:
-      return CreateReportResult(AttributionTrigger::Result::kDeduplicated);
-    case ReportAlreadyStoredStatus::kError:
-      return CreateReportResult(AttributionTrigger::Result::kInternalError);
-  }
-
-  switch (CapacityForStoringReport(serialized_conversion_destination)) {
-    case ConversionCapacityStatus::kHasCapacity:
-      break;
-    case ConversionCapacityStatus::kNoCapacity:
-      return CreateReportResult(
-          AttributionTrigger::Result::kNoCapacityForConversionDestination);
-    case ConversionCapacityStatus::kError:
-      return CreateReportResult(AttributionTrigger::Result::kInternalError);
-  }
-
   absl::optional<SourceToAttribute> source_to_attribute = ReadSourceToAttribute(
       db_.get(), source_id_to_attribute, reporting_origin);
   // This is only possible if there is a corrupt DB.
@@ -753,6 +734,29 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       AttributionReport::EventLevelData(trigger_data, trigger.priority(),
                                         /*id=*/absl::nullopt));
 
+  switch (ReportAlreadyStored(source_id_to_attribute, trigger.dedup_key())) {
+    case ReportAlreadyStoredStatus::kNotStored:
+      break;
+    case ReportAlreadyStoredStatus::kStored:
+      return CreateReportResult(AttributionTrigger::Result::kDeduplicated,
+                                std::move(report));
+    case ReportAlreadyStoredStatus::kError:
+      return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                                std::move(report));
+  }
+
+  switch (CapacityForStoringReport(serialized_conversion_destination)) {
+    case ConversionCapacityStatus::kHasCapacity:
+      break;
+    case ConversionCapacityStatus::kNoCapacity:
+      return CreateReportResult(
+          AttributionTrigger::Result::kNoCapacityForConversionDestination,
+          std::move(report));
+    case ConversionCapacityStatus::kError:
+      return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                                std::move(report));
+  }
+
   switch (
       rate_limit_table_.ReportAllowedForAttributionLimit(db_.get(), report)) {
     case RateLimitTable::Result::kAllowed:
@@ -761,7 +765,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       return CreateReportResult(AttributionTrigger::Result::kExcessiveReports,
                                 std::move(report));
     case RateLimitTable::Result::kError:
-      return CreateReportResult(AttributionTrigger::Result::kInternalError);
+      return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                                std::move(report));
   }
 
   switch (rate_limit_table_.ReportAllowedForReportingOriginLimit(db_.get(),
@@ -773,12 +778,14 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
           AttributionTrigger::Result::kExcessiveReportingOrigins,
           std::move(report));
     case RateLimitTable::Result::kError:
-      return CreateReportResult(AttributionTrigger::Result::kInternalError);
+      return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                                std::move(report));
   }
 
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin()) {
-    return CreateReportResult(AttributionTrigger::Result::kInternalError);
+    return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                              std::move(report));
   }
 
   absl::optional<AttributionReport> replaced_report;
@@ -788,7 +795,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                       trigger.priority(), replaced_report);
   if (maybe_replace_lower_priority_report_result ==
       MaybeReplaceLowerPriorityReportResult::kError) {
-    return CreateReportResult(AttributionTrigger::Result::kInternalError);
+    return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                              std::move(report));
   }
 
   if (maybe_replace_lower_priority_report_result ==
@@ -797,7 +805,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
           MaybeReplaceLowerPriorityReportResult::
               kDropNewReportSourceDeactivated) {
     if (!transaction.Commit()) {
-      return CreateReportResult(AttributionTrigger::Result::kInternalError);
+      return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                                std::move(report));
     }
     return CreateReportResult(
         AttributionTrigger::Result::kPriorityTooLow, std::move(report),
@@ -820,7 +829,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                      report.trigger_time(), report.report_time(),
                      trigger.priority(), report.external_report_id(),
                      trigger.debug_key())) {
-      return CreateReportResult(AttributionTrigger::Result::kInternalError);
+      return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                                std::move(report));
     }
   }
 
@@ -835,7 +845,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     insert_dedup_key_statement.BindInt64(0, *report.source().source_id());
     insert_dedup_key_statement.BindInt64(1, *trigger.dedup_key());
     if (!insert_dedup_key_statement.Run()) {
-      return CreateReportResult(AttributionTrigger::Result::kInternalError);
+      return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                                std::move(report));
     }
   }
 
@@ -852,13 +863,15 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     // Update the attributed source.
     impression_update_statement.BindInt64(0, *report.source().source_id());
     if (!impression_update_statement.Run()) {
-      return CreateReportResult(AttributionTrigger::Result::kInternalError);
+      return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                                std::move(report));
     }
   }
 
   // Delete all unattributed sources.
   if (!DeleteSources(source_ids_to_delete)) {
-    return CreateReportResult(AttributionTrigger::Result::kInternalError);
+    return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                              std::move(report));
   }
 
   // Based on the deletion logic here and the fact that we delete sources
@@ -870,11 +883,13 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   if (create_report &&
       !rate_limit_table_.AddRateLimitForReport(db_.get(), report)) {
-    return CreateReportResult(AttributionTrigger::Result::kInternalError);
+    return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                              std::move(report));
   }
 
   if (!transaction.Commit()) {
-    return CreateReportResult(AttributionTrigger::Result::kInternalError);
+    return CreateReportResult(AttributionTrigger::Result::kInternalError,
+                              std::move(report));
   }
 
   if (!create_report) {

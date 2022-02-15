@@ -300,7 +300,18 @@ void AttributionInternalsHandlerImpl::OnReportDropped(
       status = mojom::WebUIAttributionReport::Status::
           kDroppedDueToExcessiveReportingOrigins;
       break;
-    default:
+    case AttributionTrigger::Result::kDeduplicated:
+      status = mojom::WebUIAttributionReport::Status::kDeduplicated;
+      break;
+    case AttributionTrigger::Result::kNoCapacityForConversionDestination:
+      status = mojom::WebUIAttributionReport::Status::
+          kNoReportCapacityForDestinationSite;
+      break;
+    case AttributionTrigger::Result::kInternalError:
+      status = mojom::WebUIAttributionReport::Status::kInternalError;
+      break;
+    case AttributionTrigger::Result::kSuccess:
+    case AttributionTrigger::Result::kNoMatchingImpressions:
       NOTREACHED();
       return;
   }
