@@ -457,11 +457,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that the position of the collection view is restored when navigating
 // back to the NTP.
 - (void)testPositionRestored {
-  // TODO(crbug.com/1296258): Test fails on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
-  }
-
   [self addMostVisitedTile];
 
   // Add suggestions to be able to scroll on iPad.
