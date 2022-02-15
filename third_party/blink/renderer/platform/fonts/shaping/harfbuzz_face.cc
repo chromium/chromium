@@ -82,33 +82,19 @@ void DetermineTrakSbix(SkTypeface* typeface, bool* has_trak, bool* has_sbix) {
 
 }  // namespace
 
-static scoped_refptr<HbFontCacheEntry> CreateHbFontCacheEntry(
-    hb_face_t*,
-    SkTypeface* typefaces);
-
 HarfBuzzFace::HarfBuzzFace(FontPlatformData* platform_data, uint64_t unique_id)
     : platform_data_(platform_data), unique_id_(unique_id) {
-  HarfBuzzFontCache::AddResult result =
-      FontGlobalContext::GetHarfBuzzFontCache()->insert(unique_id_, nullptr);
-  if (result.is_new_entry) {
-    HbScoped<hb_face_t> face = CreateFace();
-    result.stored_value->value =
-        CreateHbFontCacheEntry(face.get(), platform_data->Typeface());
-  }
-  result.stored_value->value->AddRef();
-  unscaled_font_ = result.stored_value->value->HbFont();
-  harfbuzz_font_data_ = result.stored_value->value->HbFontData();
+  HbFontCacheEntry* const cache_entry =
+      FontGlobalContext::GetHarfBuzzFontCache()->GetOrNew(unique_id_,
+                                                          platform_data);
+  unscaled_font_ = cache_entry->HbFont();
+  harfbuzz_font_data_ = cache_entry->HbFontData();
 }
 
 HarfBuzzFace::~HarfBuzzFace() {
   HarfBuzzFontCache* harfbuzz_font_cache =
       FontGlobalContext::GetHarfBuzzFontCache();
-  HarfBuzzFontCache::iterator result = harfbuzz_font_cache->find(unique_id_);
-  SECURITY_DCHECK(result != harfbuzz_font_cache->end());
-  DCHECK(!result.Get()->value->HasOneRef());
-  result.Get()->value->Release();
-  if (result.Get()->value->HasOneRef())
-    harfbuzz_font_cache->erase(unique_id_);
+  harfbuzz_font_cache->Remove(unique_id_);
 }
 
 static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
@@ -362,10 +348,11 @@ static hb_blob_t* HarfBuzzSkiaGetTable(hb_face_t* face,
                         WTF::Partitions::FastFree);
 }
 
-HbScoped<hb_face_t> HarfBuzzFace::CreateFace() {
+// TODO(yosin): We should move |CreateFace()| to "harfbuzz_font_cache.cc".
+static HbScoped<hb_face_t> CreateFace(FontPlatformData* platform_data) {
   HbScoped<hb_face_t> face;
 
-  sk_sp<SkTypeface> typeface = sk_ref_sp(platform_data_->Typeface());
+  sk_sp<SkTypeface> typeface = sk_ref_sp(platform_data->Typeface());
   CHECK(typeface);
 #if !BUILDFLAG(IS_MAC)
   face = HbFaceFromSkTypeface(typeface);
@@ -381,8 +368,11 @@ HbScoped<hb_face_t> HarfBuzzFace::CreateFace() {
   return face;
 }
 
-scoped_refptr<HbFontCacheEntry> CreateHbFontCacheEntry(hb_face_t* face,
-                                                       SkTypeface* typeface) {
+// TODO(yosin): We should move |CreateHbFontCacheEntry()| to
+// "harfbuzz_font_cache.cc".
+static scoped_refptr<HbFontCacheEntry> CreateHbFontCacheEntry(
+    hb_face_t* face,
+    SkTypeface* typeface) {
   HbScoped<hb_font_t> ot_font(hb_font_create(face));
   hb_ot_font_set_funcs(ot_font.get());
 
@@ -416,6 +406,18 @@ scoped_refptr<HbFontCacheEntry> CreateHbFontCacheEntry(hb_face_t* face,
   hb_font_set_funcs(unscaled_font, HarfBuzzSkiaGetFontFuncs(advance_source),
                     cache_entry->HbFontData(), nullptr);
   return cache_entry;
+}
+
+HbFontCacheEntry* HarfBuzzFontCache::GetOrNew(uint64_t unique_id,
+                                              FontPlatformData* platform_data) {
+  const auto& result = entries_.insert(unique_id, nullptr);
+  if (result.is_new_entry) {
+    HbScoped<hb_face_t> face = CreateFace(platform_data);
+    result.stored_value->value =
+        CreateHbFontCacheEntry(face.get(), platform_data->Typeface());
+  }
+  result.stored_value->value->AddRef();
+  return result.stored_value->value.get();
 }
 
 static_assert(

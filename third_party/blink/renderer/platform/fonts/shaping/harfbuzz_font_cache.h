@@ -44,11 +44,23 @@ class HbFontCacheEntry : public RefCounted<HbFontCacheEntry> {
 
 // Declare as derived class in order to be able to forward-declare it as class
 // in FontGlobalContext.
-class HarfBuzzFontCache
-    : public HashMap<uint64_t,
-                     scoped_refptr<HbFontCacheEntry>,
-                     WTF::IntHash<uint64_t>,
-                     WTF::UnsignedWithZeroKeyHashTraits<uint64_t>> {};
+class HarfBuzzFontCache final {
+ public:
+  HarfBuzzFontCache();
+  ~HarfBuzzFontCache();
+
+  HbFontCacheEntry* GetOrNew(uint64_t unique_id,
+                             FontPlatformData* platform_data);
+  void Remove(uint64_t unique_id);
+
+ private:
+  using Entries = HashMap<uint64_t,
+                          scoped_refptr<HbFontCacheEntry>,
+                          WTF::IntHash<uint64_t>,
+                          WTF::UnsignedWithZeroKeyHashTraits<uint64_t>>;
+
+  Entries entries_;
+};
 
 }  // namespace blink
 

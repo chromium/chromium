@@ -79,11 +79,10 @@ class HarfBuzzFace : public RefCounted<HarfBuzzFace> {
  private:
   HarfBuzzFace(FontPlatformData*, uint64_t);
 
-  HbScoped<hb_face_t> CreateFace();
   void PrepareHarfBuzzFontData();
 
-  FontPlatformData* platform_data_;
-  uint64_t unique_id_;
+  FontPlatformData* const platform_data_;
+  const uint64_t unique_id_;
   hb_font_t* unscaled_font_;
   HarfBuzzFontData* harfbuzz_font_data_;
 };
