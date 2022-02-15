@@ -592,33 +592,6 @@
             ]
         }
     ],
-    "AutofillConcurrentExperiments": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AutofillShadowDOM_2021-08-10",
-                    "enable_features": [
-                        "AutofillShadowDOM"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableProfileDeduplication",
-                        "AutofillEnableSupportForParsingWithSharedLabels",
-                        "AutofillLabelAffixRemoval",
-                        "AutofillRetrieveOverallPredictionsFromCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillDelayPopupControllerDeletion": [
         {
             "platforms": [
@@ -883,6 +856,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillServerTypeTakesPrecedence"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillShadowDOM": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillShadowDOM"
                     ]
                 }
             ]
