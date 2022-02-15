@@ -20,9 +20,14 @@ constexpr int kShadowElevationNone = 0;
 
 // Standard shadow elevations used by the the aura window manager. The value is
 // used to initialize an instance of wm::Shadow and controls the offset and blur
-// of the shadow style created by gfx::ShadowValue::MakeMdShadowValues().
+// of the shadow style created by gfx::ShadowValue::MakeMdShadowValues() or
+// gfx::ShadowValue::MakeChromeOSSystemUIShadowValues().
 constexpr int kShadowElevationMenuOrTooltip = 6;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr int kShadowElevationInactiveWindow = 12;
+#else
 constexpr int kShadowElevationInactiveWindow = 8;
+#endif
 constexpr int kShadowElevationActiveWindow = 24;
 
 WM_CORE_EXPORT void SetShadowElevation(aura::Window* window, int elevation);
