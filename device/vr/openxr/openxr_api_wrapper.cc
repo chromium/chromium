@@ -632,7 +632,7 @@ void OpenXrApiWrapper::ReleaseColorSwapchainImages() {
     gpu::SharedImageInterface* shared_image_interface =
         context_provider_->SharedImageInterface();
     for (SwapChainInfo& info : color_swapchain_images_) {
-      if (!info.mailbox_holder.mailbox.IsZero() &&
+      if (shared_image_interface && !info.mailbox_holder.mailbox.IsZero() &&
           info.mailbox_holder.sync_token.HasData()) {
         shared_image_interface->DestroySharedImage(
             info.mailbox_holder.sync_token, info.mailbox_holder.mailbox);
