@@ -55197,6 +55197,7 @@ from previous Chrome versions.
   <int value="654879464" label="WalletRequiresFirstSyncSetupComplete:enabled"/>
   <int value="656864700" label="FillOnAccountSelectHttp:disabled"/>
   <int value="657832926" label="SwipeToMoveCursor:enabled"/>
+  <int value="658983252" label="enable-features"/>
   <int value="659051425"
       label="AdaptiveButtonInTopToolbarCustomizationV2:disabled"/>
   <int value="659086147" label="OverlayScrollbarFlashWhenMouseEnter:enabled"/>

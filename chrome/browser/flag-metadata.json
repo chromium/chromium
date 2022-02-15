@@ -4812,6 +4812,22 @@
     "expiry_milestone": 100
   },
   {
+    "name": "privacy-sandbox-v3-android",
+    "owners": [
+      "dullweber",
+      "sauski",
+      "chrome-friendly-settings@google.com"],
+    "expiry_milestone": 103
+  },
+  {
+    "name": "privacy-sandbox-v3-desktop",
+    "owners": [
+      "dullweber",
+      "sauski",
+      "chrome-friendly-settings@google.com"],
+    "expiry_milestone": 103
+  },
+  {
     "name": "productivity-launcher",
     "owners": [ "cros-system-ui-eng@google.com" ],
     "expiry_milestone": 101

@@ -2117,6 +2117,11 @@ const char kPrivacyReviewDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "
     "privacy settings.";
 
+const char kPrivacySandboxV3Name[] = "Privacy Sandbox V3";
+const char kPrivacySandboxV3Description[] =
+    "Enables an updated Privacy Sandbox UI. Also enables some related "
+    "features.";
+
 const char kProminentDarkModeActiveTabTitleName[] =
     "Prominent Dark Mode Active Tab Titles";
 const char kProminentDarkModeActiveTabTitleDescription[] =

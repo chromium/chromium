@@ -6963,6 +6963,21 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacyAdvisorDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPrivacyAdvisor)},
 
+    {"privacy-sandbox-v3-desktop", flag_descriptions::kPrivacySandboxV3Name,
+     flag_descriptions::kPrivacySandboxV3Description, kOsDesktop,
+     // Use a command-line parameter instead of a FEATURE_VALUE_TYPE to enable
+     // multiple related features.
+     SINGLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
+                                 "PrivacySandboxSettings3,InterestGroupStorage,"
+                                 "AdInterestGroupAPI,Fledge,FencedFrames")},
+
+    {"privacy-sandbox-v3-android", flag_descriptions::kPrivacySandboxV3Name,
+     flag_descriptions::kPrivacySandboxV3Description, kOsAndroid,
+     // Use a command-line parameter instead of a FEATURE_VALUE_TYPE to enable
+     // multiple related features when they are available.
+     SINGLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
+                                 "PrivacySandboxSettings3")},
+
     {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
      flag_descriptions::kAnimatedImageResumeDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kAnimatedImageResume)},
