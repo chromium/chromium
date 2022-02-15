@@ -149,6 +149,9 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                            NoShowBluetoothScanningPromptInPrerendering);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            DeferredStartNotifySession);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest, DeviceDisconnected);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           DeviceGattServicesDiscoveryTimeout);
 #if PAIR_BLUETOOTH_ON_DEMAND()
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBondingTest,
                            ReadCharacteristicValueNotAuthorized);

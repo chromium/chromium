@@ -118,7 +118,6 @@ class MockBluetoothDevice : public BluetoothDevice {
   }
   MOCK_METHOD1(CreateGattConnection_, void(GattConnectionCallback& callback));
 
-  MOCK_METHOD1(SetGattServicesDiscoveryComplete, void(bool));
   MOCK_CONST_METHOD0(IsGattServicesDiscoveryComplete, bool());
 
   MOCK_CONST_METHOD0(GetGattServices,

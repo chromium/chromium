@@ -1067,22 +1067,8 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServices(
     return;
   }
 
-  const std::string& device_address = query_result.device->GetAddress();
-
-  // We can't know if a service is present or not until GATT service discovery
-  // is complete for the device.
-  if (query_result.device->IsGattServicesDiscoveryComplete()) {
-    RemoteServerGetPrimaryServicesImpl(device_id, quantity, services_uuid,
-                                       std::move(callback),
-                                       query_result.device);
-    return;
-  }
-
-  DVLOG(1) << "Services not yet discovered.";
-  pending_primary_services_requests_[device_address].push_back(base::BindOnce(
-      &WebBluetoothServiceImpl::RemoteServerGetPrimaryServicesImpl,
-      base::Unretained(this), device_id, quantity, services_uuid,
-      std::move(callback)));
+  RemoteServerGetPrimaryServicesImpl(device_id, quantity, services_uuid,
+                                     std::move(callback), query_result.device);
 }
 
 void WebBluetoothServiceImpl::RemoteServiceGetCharacteristics(
@@ -1918,6 +1904,18 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServicesImpl(
         quantity, UMAGetPrimaryServiceOutcome::DEVICE_DISCONNECTED);
     std::move(callback).Run(blink::mojom::WebBluetoothResult::NO_SERVICES_FOUND,
                             absl::nullopt /* services */);
+    return;
+  }
+
+  // We can't know if a service is present or not until GATT service discovery
+  // is complete for the device.
+  if (!device->IsGattServicesDiscoveryComplete()) {
+    DVLOG(1) << "Services not yet discovered.";
+    pending_primary_services_requests_[device->GetAddress()].push_back(
+        base::BindOnce(
+            &WebBluetoothServiceImpl::RemoteServerGetPrimaryServicesImpl,
+            base::Unretained(this), device_id, quantity, services_uuid,
+            std::move(callback)));
     return;
   }
 

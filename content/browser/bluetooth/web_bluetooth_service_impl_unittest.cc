@@ -201,7 +201,9 @@ class FakeBluetoothDevice : public NiceMock<MockBluetoothDevice> {
                                       /*paired=*/false,
                                       /*connected=*/true) {}
 
-  bool IsGattServicesDiscoveryComplete() const override { return true; }
+  bool IsGattServicesDiscoveryComplete() const override {
+    return gatt_services_discovery_complete_;
+  }
 
   std::vector<BluetoothRemoteGattService*> GetGattServices() const override {
     return GetMockServices();
@@ -585,6 +587,9 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     const blink::WebBluetoothDeviceId& test_device_id =
         service_->allowed_devices().AddDevice(
             test_bundle().device().GetAddress(), device_options);
+
+    auto& device = battery_object_bundle_->device();
+    device.SetGattServicesDiscoveryComplete(true);
 
     FakeBluetoothCharacteristic& test_characteristic =
         test_bundle().characteristic();
@@ -990,6 +995,54 @@ TEST_F(WebBluetoothServiceImplTest, DeferredStartNotifySession) {
 
     run_loop.Run();
   }
+}
+
+TEST_F(WebBluetoothServiceImplTest, DeviceGattServicesDiscoveryTimeout) {
+  auto device_options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
+  device_options->accept_all_devices = true;
+  device_options->optional_services.push_back(
+      test_bundle().service().GetUUID());
+  const blink::WebBluetoothDeviceId& test_device_id =
+      service_->allowed_devices().AddDevice(test_bundle().device().GetAddress(),
+                                            device_options);
+
+  auto& device = battery_object_bundle_->device();
+  device.SetGattServicesDiscoveryComplete(false);
+
+  TestFuture<WebBluetoothResult,
+             absl::optional<std::vector<WebBluetoothRemoteGATTServicePtr>>>
+      get_primary_services_future;
+  service_->RemoteServerGetPrimaryServices(
+      test_device_id, WebBluetoothGATTQueryQuantity::SINGLE,
+      test_bundle().service().GetUUID(),
+      get_primary_services_future.GetCallback());
+  device.SetConnected(false);
+  service_->DeviceChanged(device.GetAdapter(), &device);
+  EXPECT_EQ(get_primary_services_future.Get<0>(),
+            blink::mojom::WebBluetoothResult::NO_SERVICES_FOUND);
+}
+
+TEST_F(WebBluetoothServiceImplTest, DeviceDisconnected) {
+  auto device_options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
+  device_options->accept_all_devices = true;
+  device_options->optional_services.push_back(
+      test_bundle().service().GetUUID());
+  const blink::WebBluetoothDeviceId& test_device_id =
+      service_->allowed_devices().AddDevice(test_bundle().device().GetAddress(),
+                                            device_options);
+
+  auto& device = battery_object_bundle_->device();
+  device.SetConnected(false);
+
+  TestFuture<WebBluetoothResult,
+             absl::optional<std::vector<WebBluetoothRemoteGATTServicePtr>>>
+      get_primary_services_future;
+  service_->RemoteServerGetPrimaryServices(
+      test_device_id, WebBluetoothGATTQueryQuantity::SINGLE,
+      test_bundle().service().GetUUID(),
+      get_primary_services_future.GetCallback());
+  EXPECT_EQ(get_primary_services_future.Get<0>(),
+            blink::mojom::WebBluetoothResult::NO_SERVICES_FOUND);
 }
 
 }  // namespace content
