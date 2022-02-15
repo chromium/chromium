@@ -22,7 +22,9 @@ namespace {
 
 std::vector<std::unique_ptr<Unwinder>> CreateUnwinders() {
   std::vector<std::unique_ptr<Unwinder>> unwinders;
-  unwinders.push_back(std::make_unique<NativeUnwinderApple>());
+  if (__builtin_available(iOS 12.0, *)) {
+    unwinders.push_back(std::make_unique<NativeUnwinderApple>());
+  }
   return unwinders;
 }
 
