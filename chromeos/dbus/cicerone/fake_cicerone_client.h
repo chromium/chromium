@@ -44,6 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   bool IsLxdContainerDownloadingSignalConnected() override;
   bool IsTremplinStartedSignalConnected() override;
   bool IsLxdContainerStartingSignalConnected() override;
+  bool IsLxdContainerStoppingSignalConnected() override;
   bool IsExportLxdContainerProgressSignalConnected() override;
   bool IsImportLxdContainerProgressSignalConnected() override;
   bool IsPendingAppListUpdatesSignalConnected() override;
@@ -91,6 +92,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
       const vm_tools::cicerone::StartLxdContainerRequest& request,
       DBusMethodCallback<vm_tools::cicerone::StartLxdContainerResponse>
           callback) override;
+  void StopLxdContainer(
+      const vm_tools::cicerone::StopLxdContainerRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::StopLxdContainerResponse> callback)
+      override;
   void GetLxdContainerUsername(
       const vm_tools::cicerone::GetLxdContainerUsernameRequest& request,
       DBusMethodCallback<vm_tools::cicerone::GetLxdContainerUsernameResponse>
@@ -191,6 +196,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   void set_lxd_container_starting_signal_connected(bool connected) {
     is_lxd_container_starting_signal_connected_ = connected;
   }
+  void set_lxd_container_stopping_signal_connected(bool connected) {
+    is_lxd_container_stopping_signal_connected_ = connected;
+  }
   void set_export_lxd_container_progress_signal_connected(bool connected) {
     is_export_lxd_container_progress_signal_connected_ = connected;
   }
@@ -258,6 +266,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
       const vm_tools::cicerone::StartLxdContainerResponse&
           start_lxd_container_response) {
     start_lxd_container_response_ = start_lxd_container_response;
+  }
+  void set_stop_lxd_container_response(
+      const vm_tools::cicerone::StopLxdContainerResponse&
+          stop_lxd_container_response) {
+    stop_lxd_container_response_ = stop_lxd_container_response;
   }
   void set_get_lxd_container_username_response(
       const vm_tools::cicerone::GetLxdContainerUsernameResponse&
@@ -353,6 +366,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   void set_send_start_lxd_container_response_delay(base::TimeDelta delay) {
     send_start_lxd_container_response_delay_ = delay;
   }
+  void set_send_stop_lxd_container_response_delay(base::TimeDelta delay) {
+    send_stop_lxd_container_response_delay_ = delay;
+  }
 
   // Returns true if the method has been invoked at least once, false otherwise.
   bool configure_for_arc_sideload_called() {
@@ -366,10 +382,14 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
       const vm_tools::cicerone::LxdContainerDeletedSignal& signal);
   void NotifyContainerStarted(
       const vm_tools::cicerone::ContainerStartedSignal& signal);
+  void NotifyContainerShutdownSignal(
+      const vm_tools::cicerone::ContainerShutdownSignal& signal);
   void NotifyTremplinStarted(
       const vm_tools::cicerone::TremplinStartedSignal& signal);
   void NotifyLxdContainerStarting(
       const vm_tools::cicerone::LxdContainerStartingSignal& signal);
+  void NotifyLxdContainerStopping(
+      const vm_tools::cicerone::LxdContainerStoppingSignal& signal);
   void NotifyExportLxdContainerProgress(
       const vm_tools::cicerone::ExportLxdContainerProgressSignal& signal);
   void NotifyImportLxdContainerProgress(
@@ -410,6 +430,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   bool is_lxd_container_downloading_signal_connected_ = true;
   bool is_tremplin_started_signal_connected_ = true;
   bool is_lxd_container_starting_signal_connected_ = true;
+  bool is_lxd_container_stopping_signal_connected_ = true;
   bool is_export_lxd_container_progress_signal_connected_ = true;
   bool is_import_lxd_container_progress_signal_connected_ = true;
   bool is_apply_ansible_playbook_progress_signal_connected_ = true;
@@ -431,6 +452,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   vm_tools::cicerone::LxdContainerStartingSignal_Status
       lxd_container_starting_signal_status_ =
           vm_tools::cicerone::LxdContainerStartingSignal::STARTED;
+  vm_tools::cicerone::LxdContainerStoppingSignal_Status
+      lxd_container_stopping_signal_status_ =
+          vm_tools::cicerone::LxdContainerStoppingSignal::STOPPED;
 
   vm_tools::cicerone::LaunchContainerApplicationResponse
       launch_container_application_response_;
@@ -447,6 +471,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   vm_tools::cicerone::CreateLxdContainerResponse create_lxd_container_response_;
   vm_tools::cicerone::DeleteLxdContainerResponse delete_lxd_container_response_;
   vm_tools::cicerone::StartLxdContainerResponse start_lxd_container_response_;
+  vm_tools::cicerone::StopLxdContainerResponse stop_lxd_container_response_;
   vm_tools::cicerone::GetLxdContainerUsernameResponse
       get_lxd_container_username_response_;
   vm_tools::cicerone::SetUpLxdContainerUserResponse
@@ -476,6 +501,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   base::TimeDelta send_notify_lxd_container_created_signal_delay_;
   base::TimeDelta send_set_up_lxd_container_user_response_delay_;
   base::TimeDelta send_start_lxd_container_response_delay_;
+  base::TimeDelta send_stop_lxd_container_response_delay_;
 
   vm_tools::cicerone::OsRelease lxd_container_os_release_;
 

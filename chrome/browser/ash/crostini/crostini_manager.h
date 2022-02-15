@@ -316,6 +316,12 @@ class CrostiniManager : public KeyedService,
   void StartLxdContainer(ContainerId container_id,
                          CrostiniResultCallback callback);
 
+  // Checks the arguments for stopping an Lxd container via
+  // CiceroneClient::StopLxdContainer. |callback| is called immediately if the
+  // arguments are bad, or once the container has been stopped.
+  void StopLxdContainer(ContainerId container_id,
+                        CrostiniResultCallback callback);
+
   // Checks the arguments for setting up an Lxd container user via
   // CiceroneClient::SetUpLxdContainerUser. |callback| is called immediately if
   // the arguments are bad, or once garcon has been started.
@@ -538,6 +544,8 @@ class CrostiniManager : public KeyedService,
       const vm_tools::cicerone::TremplinStartedSignal& signal) override;
   void OnLxdContainerStarting(
       const vm_tools::cicerone::LxdContainerStartingSignal& signal) override;
+  void OnLxdContainerStopping(
+      const vm_tools::cicerone::LxdContainerStoppingSignal& signal) override;
   void OnExportLxdContainerProgress(
       const vm_tools::cicerone::ExportLxdContainerProgressSignal& signal)
       override;
@@ -725,6 +733,12 @@ class CrostiniManager : public KeyedService,
       CrostiniResultCallback callback,
       absl::optional<vm_tools::cicerone::StartLxdContainerResponse> response);
 
+  // Callback for CiceroneClient::StopLxdContainer.
+  void OnStopLxdContainer(
+      const ContainerId& container_id,
+      CrostiniResultCallback callback,
+      absl::optional<vm_tools::cicerone::StopLxdContainerResponse> response);
+
   // Callback for CiceroneClient::SetUpLxdContainerUser.
   void OnSetUpLxdContainerUser(
       const ContainerId& container_id,
@@ -843,6 +857,7 @@ class CrostiniManager : public KeyedService,
 
   // Callbacks that are waiting on a signal
   std::multimap<ContainerId, CrostiniResultCallback> start_container_callbacks_;
+  std::multimap<ContainerId, CrostiniResultCallback> stop_container_callbacks_;
   std::multimap<ContainerId, base::OnceClosure> shutdown_container_callbacks_;
   std::multimap<ContainerId, CrostiniResultCallback>
       create_lxd_container_callbacks_;

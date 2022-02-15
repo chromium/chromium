@@ -2087,6 +2087,15 @@ TEST_F(CrostiniManagerTest, StartContainerSuccess) {
   run_loop()->Run();
 }
 
+TEST_F(CrostiniManagerTest, StopContainerSuccess) {
+  crostini_manager()->StopLxdContainer(
+      container_id(),
+      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
+                     CrostiniResult::SUCCESS));
+
+  run_loop()->Run();
+}
+
 TEST_F(CrostiniManagerTest, FileSystemCorruptionSignal) {
   base::HistogramTester histogram_tester{};
 

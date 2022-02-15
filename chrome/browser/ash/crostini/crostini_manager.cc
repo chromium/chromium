@@ -1471,6 +1471,29 @@ void CrostiniManager::StartLxdContainer(ContainerId container_id,
                      std::move(callback)));
 }
 
+void CrostiniManager::StopLxdContainer(ContainerId container_id,
+                                       CrostiniResultCallback callback) {
+  if (container_id.vm_name.empty()) {
+    LOG(ERROR) << "vm_name is required";
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    return;
+  }
+  if (container_id.container_name.empty()) {
+    LOG(ERROR) << "container_name is required";
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    return;
+  }
+  vm_tools::cicerone::StopLxdContainerRequest request;
+  request.set_vm_name(container_id.vm_name);
+  request.set_container_name(container_id.container_name);
+  request.set_owner_id(owner_id_);
+  GetCiceroneClient()->StopLxdContainer(
+      std::move(request),
+      base::BindOnce(&CrostiniManager::OnStopLxdContainer,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(container_id),
+                     std::move(callback)));
+}
+
 void CrostiniManager::SetUpLxdContainerUser(ContainerId container_id,
                                             std::string container_username,
                                             BoolCallback callback) {
@@ -2858,6 +2881,44 @@ void CrostiniManager::OnStartLxdContainer(
   }
 }
 
+void CrostiniManager::OnStopLxdContainer(
+    const ContainerId& container_id,
+    CrostiniResultCallback callback,
+    absl::optional<vm_tools::cicerone::StopLxdContainerResponse> response) {
+  if (!response) {
+    VLOG(1) << "Failed to stop lxd container in vm. Empty response.";
+    std::move(callback).Run(CrostiniResult::CONTAINER_STOP_FAILED);
+    return;
+  }
+
+  switch (response->status()) {
+    case vm_tools::cicerone::StopLxdContainerResponse::UNKNOWN:
+    case vm_tools::cicerone::StopLxdContainerResponse::FAILED:
+      LOG(ERROR) << "Failed to stop container: " << response->failure_reason();
+      std::move(callback).Run(CrostiniResult::CONTAINER_STOP_FAILED);
+      break;
+
+    case vm_tools::cicerone::StopLxdContainerResponse::STOPPED:
+      std::move(callback).Run(CrostiniResult::SUCCESS);
+      break;
+
+    case vm_tools::cicerone::StopLxdContainerResponse::STOPPING:
+      VLOG(1) << "Awaiting LxdContainerStoppingSignal for " << owner_id_ << ", "
+              << container_id;
+      stop_container_callbacks_.emplace(container_id, std::move(callback));
+      break;
+
+    case vm_tools::cicerone::StopLxdContainerResponse::DOES_NOT_EXIST:
+      VLOG(1) << "Container does not exist " << container_id;
+      std::move(callback).Run(CrostiniResult::CONTAINER_STOP_FAILED);
+      break;
+
+    default:
+      NOTREACHED();
+      break;
+  }
+}
+
 void CrostiniManager::OnSetUpLxdContainerUser(
     const ContainerId& container_id,
     BoolCallback callback,
@@ -3062,6 +3123,40 @@ void CrostiniManager::OnLxdContainerStarting(
   }
 
   InvokeAndErasePendingContainerCallbacks(&start_container_callbacks_,
+                                          container_id, result);
+}
+
+void CrostiniManager::OnLxdContainerStopping(
+    const vm_tools::cicerone::LxdContainerStoppingSignal& signal) {
+  if (signal.owner_id() != owner_id_)
+    return;
+  ContainerId container_id(signal.vm_name(), signal.container_name());
+  CrostiniResult result;
+  switch (signal.status()) {
+    case vm_tools::cicerone::LxdContainerStoppingSignal::UNKNOWN:
+      result = CrostiniResult::UNKNOWN_ERROR;
+      break;
+    case vm_tools::cicerone::LxdContainerStoppingSignal::CANCELLED:
+      result = CrostiniResult::CONTAINER_STOP_CANCELLED;
+      break;
+    case vm_tools::cicerone::LxdContainerStoppingSignal::STOPPED:
+      result = CrostiniResult::SUCCESS;
+      break;
+    case vm_tools::cicerone::LxdContainerStoppingSignal::STOPPING:
+      // No-op
+      return;
+    case vm_tools::cicerone::LxdContainerStoppingSignal::FAILED:
+      result = CrostiniResult::CONTAINER_STOP_FAILED;
+      break;
+    default:
+      result = CrostiniResult::UNKNOWN_ERROR;
+      break;
+  }
+  if (result != CrostiniResult::SUCCESS) {
+    LOG(ERROR) << "Failed to stop container. ID: " << container_id
+               << " reason: " << signal.failure_reason();
+  }
+  InvokeAndErasePendingContainerCallbacks(&stop_container_callbacks_,
                                           container_id, result);
 }
 
