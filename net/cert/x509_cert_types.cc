@@ -31,46 +31,48 @@ bool CertPrincipal::ParseDistinguishedName(
           : X509NameAttribute::PrintableStringHandling::kDefault;
   for (const RelativeDistinguishedName& rdn : rdns) {
     for (const X509NameAttribute& name_attribute : rdn) {
-      if (name_attribute.type == TypeCommonNameOid()) {
+      if (name_attribute.type == der::Input(kTypeCommonNameOid)) {
         if (common_name.empty() &&
             !name_attribute.ValueAsStringWithUnsafeOptions(string_handling,
                                                            &common_name)) {
           return false;
         }
-      } else if (name_attribute.type == TypeLocalityNameOid()) {
+      } else if (name_attribute.type == der::Input(kTypeLocalityNameOid)) {
         if (locality_name.empty() &&
             !name_attribute.ValueAsStringWithUnsafeOptions(string_handling,
                                                            &locality_name)) {
           return false;
         }
-      } else if (name_attribute.type == TypeStateOrProvinceNameOid()) {
+      } else if (name_attribute.type ==
+                 der::Input(kTypeStateOrProvinceNameOid)) {
         if (state_or_province_name.empty() &&
             !name_attribute.ValueAsStringWithUnsafeOptions(
                 string_handling, &state_or_province_name)) {
           return false;
         }
-      } else if (name_attribute.type == TypeCountryNameOid()) {
+      } else if (name_attribute.type == der::Input(kTypeCountryNameOid)) {
         if (country_name.empty() &&
             !name_attribute.ValueAsStringWithUnsafeOptions(string_handling,
                                                            &country_name)) {
           return false;
         }
-      } else if (name_attribute.type == TypeStreetAddressOid()) {
+      } else if (name_attribute.type == der::Input(kTypeStreetAddressOid)) {
         std::string s;
         if (!name_attribute.ValueAsStringWithUnsafeOptions(string_handling, &s))
           return false;
         street_addresses.push_back(s);
-      } else if (name_attribute.type == TypeOrganizationNameOid()) {
+      } else if (name_attribute.type == der::Input(kTypeOrganizationNameOid)) {
         std::string s;
         if (!name_attribute.ValueAsStringWithUnsafeOptions(string_handling, &s))
           return false;
         organization_names.push_back(s);
-      } else if (name_attribute.type == TypeOrganizationUnitNameOid()) {
+      } else if (name_attribute.type ==
+                 der::Input(kTypeOrganizationUnitNameOid)) {
         std::string s;
         if (!name_attribute.ValueAsStringWithUnsafeOptions(string_handling, &s))
           return false;
         organization_unit_names.push_back(s);
-      } else if (name_attribute.type == TypeDomainComponentOid()) {
+      } else if (name_attribute.type == der::Input(kTypeDomainComponentOid)) {
         std::string s;
         if (!name_attribute.ValueAsStringWithUnsafeOptions(string_handling, &s))
           return false;

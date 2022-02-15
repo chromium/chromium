@@ -206,7 +206,7 @@ bool GetCommonNameFromSubject(const net::der::Input& subject_tlv,
 
   for (const net::RelativeDistinguishedName& rdn : rdn_sequence) {
     for (const auto& atv : rdn) {
-      if (atv.type == net::TypeCommonNameOid()) {
+      if (atv.type == net::der::Input(net::kTypeCommonNameOid)) {
         return atv.ValueAsString(common_name);
       }
     }

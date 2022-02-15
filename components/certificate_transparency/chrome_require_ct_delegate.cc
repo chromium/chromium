@@ -75,7 +75,7 @@ class OrgAttributeFilter {
   void AdvanceIfNecessary() {
     while (sequence_head_ != sequence_end_) {
       while (rdn_it_ != sequence_head_->end()) {
-        if (rdn_it_->type == net::TypeOrganizationNameOid())
+        if (rdn_it_->type == net::der::Input(net::kTypeOrganizationNameOid))
           return;
         ++rdn_it_;
       }
@@ -100,8 +100,10 @@ bool ParseOrganizationBoundName(net::der::Input dn_without_sequence,
     return false;
   for (const auto& rdn : *out) {
     for (const auto& attribute_type_and_value : rdn) {
-      if (attribute_type_and_value.type == net::TypeOrganizationNameOid())
+      if (attribute_type_and_value.type ==
+          net::der::Input(net::kTypeOrganizationNameOid)) {
         return true;
+      }
     }
   }
   return false;

@@ -28,110 +28,6 @@ std::string OidToString(der::Input oid) {
 
 }  // namespace
 
-der::Input TypeCommonNameOid() {
-  // id-at-commonName: 2.5.4.3 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x03};
-  return der::Input(oid);
-}
-
-der::Input TypeSurnameOid() {
-  // id-at-surname: 2.5.4.4 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x04};
-  return der::Input(oid);
-}
-
-der::Input TypeSerialNumberOid() {
-  // id-at-serialNumber: 2.5.4.5 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x05};
-  return der::Input(oid);
-}
-
-der::Input TypeCountryNameOid() {
-  // id-at-countryName: 2.5.4.6 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x06};
-  return der::Input(oid);
-}
-
-der::Input TypeLocalityNameOid() {
-  // id-at-localityName: 2.5.4.7 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x07};
-  return der::Input(oid);
-}
-
-der::Input TypeStateOrProvinceNameOid() {
-  // id-at-stateOrProvinceName: 2.5.4.8 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x08};
-  return der::Input(oid);
-}
-
-der::Input TypeStreetAddressOid() {
-  // street (streetAddress): 2.5.4.9 (RFC 4519)
-  static const uint8_t oid[] = {0x55, 0x04, 0x09};
-  return der::Input(oid);
-}
-
-der::Input TypeOrganizationNameOid() {
-  // id-at-organizationName: 2.5.4.10 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x0a};
-  return der::Input(oid);
-}
-
-der::Input TypeOrganizationUnitNameOid() {
-  // id-at-organizationalUnitName: 2.5.4.11 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x0b};
-  return der::Input(oid);
-}
-
-der::Input TypeTitleOid() {
-  // id-at-title: 2.5.4.12 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x0c};
-  return der::Input(oid);
-}
-
-der::Input TypeNameOid() {
-  // id-at-name: 2.5.4.41 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x29};
-  return der::Input(oid);
-}
-
-der::Input TypeGivenNameOid() {
-  // id-at-givenName: 2.5.4.42 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x2a};
-  return der::Input(oid);
-}
-
-der::Input TypeInitialsOid() {
-  // id-at-initials: 2.5.4.43 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x2b};
-  return der::Input(oid);
-}
-
-der::Input TypeGenerationQualifierOid() {
-  // id-at-generationQualifier: 2.5.4.44 (RFC 5280)
-  static const uint8_t oid[] = {0x55, 0x04, 0x2c};
-  return der::Input(oid);
-}
-
-der::Input TypeDomainComponentOid() {
-  // dc (domainComponent): 0.9.2342.19200300.100.1.25 (RFC 4519)
-  static const uint8_t oid[] = {0x09, 0x92, 0x26, 0x89, 0x93,
-                                0xF2, 0x2C, 0x64, 0x01, 0x19};
-  return der::Input(oid);
-}
-
-der::Input TypeEmailAddressOid() {
-  // RFC 5280 section A.1:
-  //
-  // pkcs-9 OBJECT IDENTIFIER ::=
-  //   { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) 9 }
-  //
-  // id-emailAddress      AttributeType ::= { pkcs-9 1 }
-  //
-  // In dotted form: 1.2.840.113549.1.9.1
-  const uint8_t oid[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x09, 0x01};
-  return der::Input(oid);
-}
-
 bool X509NameAttribute::ValueAsString(std::string* out) const {
   switch (value_tag) {
     case der::kTeletexString:
@@ -185,23 +81,23 @@ bool X509NameAttribute::AsRFC2253String(std::string* out) const {
   std::string type_string;
   std::string value_string;
   // TODO(mattm): Add streetAddress and domainComponent here?
-  if (type == TypeCommonNameOid()) {
+  if (type == der::Input(kTypeCommonNameOid)) {
     type_string = "CN";
-  } else if (type == TypeSurnameOid()) {
+  } else if (type == der::Input(kTypeSurnameOid)) {
     type_string = "SN";
-  } else if (type == TypeCountryNameOid()) {
+  } else if (type == der::Input(kTypeCountryNameOid)) {
     type_string = "C";
-  } else if (type == TypeLocalityNameOid()) {
+  } else if (type == der::Input(kTypeLocalityNameOid)) {
     type_string = "L";
-  } else if (type == TypeStateOrProvinceNameOid()) {
+  } else if (type == der::Input(kTypeStateOrProvinceNameOid)) {
     type_string = "ST";
-  } else if (type == TypeOrganizationNameOid()) {
+  } else if (type == der::Input(kTypeOrganizationNameOid)) {
     type_string = "O";
-  } else if (type == TypeOrganizationUnitNameOid()) {
+  } else if (type == der::Input(kTypeOrganizationUnitNameOid)) {
     type_string = "OU";
-  } else if (type == TypeGivenNameOid()) {
+  } else if (type == der::Input(kTypeGivenNameOid)) {
     type_string = "givenName";
-  } else if (type == TypeEmailAddressOid()) {
+  } else if (type == der::Input(kTypeEmailAddressOid)) {
     type_string = "emailAddress";
   } else {
     type_string = OidToString(type);

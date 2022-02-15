@@ -403,7 +403,7 @@ bool NameContainsEmailAddress(const der::Input& name_rdn_sequence,
       return false;
 
     for (const auto& type_and_value : type_and_values) {
-      if (type_and_value.type == TypeEmailAddressOid()) {
+      if (type_and_value.type == der::Input(kTypeEmailAddressOid)) {
         *contained_email_address = true;
         return true;
       }

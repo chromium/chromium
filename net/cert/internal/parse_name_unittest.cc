@@ -186,13 +186,13 @@ TEST(ParseNameTest, ValidName) {
   ASSERT_TRUE(ParseName(rdn, &atv));
   ASSERT_EQ(3u, atv.size());
   ASSERT_EQ(1u, atv[0].size());
-  ASSERT_EQ(TypeCountryNameOid(), atv[0][0].type);
+  ASSERT_EQ(der::Input(kTypeCountryNameOid), atv[0][0].type);
   ASSERT_EQ("US", atv[0][0].value.AsString());
   ASSERT_EQ(1u, atv[1].size());
-  ASSERT_EQ(TypeOrganizationNameOid(), atv[1][0].type);
+  ASSERT_EQ(der::Input(kTypeOrganizationNameOid), atv[1][0].type);
   ASSERT_EQ("Google Inc.", atv[1][0].value.AsString());
   ASSERT_EQ(1u, atv[2].size());
-  ASSERT_EQ(TypeCommonNameOid(), atv[2][0].type);
+  ASSERT_EQ(der::Input(kTypeCommonNameOid), atv[2][0].type);
   ASSERT_EQ("Google Test CA", atv[2][0].value.AsString());
 }
 
