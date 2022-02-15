@@ -31,7 +31,7 @@ struct NGContainingBlock {
   // The relative offset is stored separately to ensure that it is applied after
   // fragmentation: https://www.w3.org/TR/css-break-3/#transforms.
   OffsetType relative_offset;
-  Member<const NGPhysicalFragment> fragment;
+  scoped_refptr<const NGPhysicalFragment> fragment;
   // True if there is a column spanner between the containing block and the
   // multicol container (or if the containing block is a column spanner).
   bool is_inside_column_spanner = false;
@@ -40,14 +40,12 @@ struct NGContainingBlock {
 
   NGContainingBlock(OffsetType offset,
                     OffsetType relative_offset,
-                    const NGPhysicalFragment* fragment,
+                    scoped_refptr<const NGPhysicalFragment> fragment,
                     bool is_inside_column_spanner)
       : offset(offset),
         relative_offset(relative_offset),
         fragment(std::move(fragment)),
         is_inside_column_spanner(is_inside_column_spanner) {}
-
-  void Trace(Visitor* visitor) const { visitor->Trace(fragment); }
 };
 
 // This holds the containing block for an out-of-flow positioned element
@@ -59,7 +57,7 @@ struct NGInlineContainer {
   DISALLOW_NEW();
 
  public:
-  Member<const LayoutInline> container;
+  UntracedMember<const LayoutInline> container = nullptr;
   // Store the relative offset so that it can be applied after fragmentation,
   // if inside a fragmentation context.
   OffsetType relative_offset;
@@ -67,8 +65,6 @@ struct NGInlineContainer {
   NGInlineContainer() = default;
   NGInlineContainer(const LayoutInline* container, OffsetType relative_offset)
       : container(container), relative_offset(relative_offset) {}
-
-  void Trace(Visitor* visitor) const { visitor->Trace(container); }
 };
 
 // If an out-of-flow positioned element is inside a nested fragmentation
@@ -77,8 +73,7 @@ struct NGInlineContainer {
 // needed to perform layout on the OOF descendants once they make their way to
 // the outermost context.
 template <typename OffsetType>
-struct NGMulticolWithPendingOOFs
-    : public GarbageCollected<NGMulticolWithPendingOOFs<OffsetType>> {
+struct NGMulticolWithPendingOOFs {
  public:
   // If no fixedpos containing block was found, |multicol_offset| will be
   // relative to the outer fragmentation context root. Otherwise, it will be
@@ -97,10 +92,6 @@ struct NGMulticolWithPendingOOFs
       NGContainingBlock<OffsetType> fixedpos_containing_block)
       : multicol_offset(multicol_offset),
         fixedpos_containing_block(fixedpos_containing_block) {}
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(fixedpos_containing_block);
-  }
 };
 
 // A physical out-of-flow positioned-node is an element with the style
@@ -122,7 +113,7 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   using VerticalEdge = NGPhysicalStaticPosition::VerticalEdge;
 
  public:
-  Member<LayoutBox> box;
+  UntracedMember<LayoutBox> box;
   // Unpacked NGPhysicalStaticPosition.
   PhysicalOffset static_position;
   unsigned static_position_horizontal_edge : 2;
@@ -159,9 +150,6 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
     return {static_position, GetStaticPositionHorizontalEdge(),
             GetStaticPositionVerticalEdge()};
   }
-
-  void Trace(Visitor* visitor) const;
-  void TraceAfterDispatch(Visitor*) const;
 };
 
 // When fragmentation comes into play, we no longer place a positioned-node as
@@ -205,8 +193,6 @@ struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
         fixedpos_containing_block(fixedpos_containing_block) {
     is_for_fragmentation = true;
   }
-
-  void TraceAfterDispatch(Visitor* visitor) const;
 };
 
 // The logical version of above. It is used within a an algorithm pass (within
@@ -219,7 +205,7 @@ struct NGLogicalOutOfFlowPositionedNode final {
   DISALLOW_NEW();
 
  public:
-  Member<LayoutBox> box;
+  UntracedMember<LayoutBox> box;
   NGLogicalStaticPosition static_position;
   NGInlineContainer<LogicalOffset> inline_container;
   bool needs_block_offset_adjustment;
@@ -250,13 +236,6 @@ struct NGLogicalOutOfFlowPositionedNode final {
   }
 
   NGBlockNode Node() const { return NGBlockNode(box); }
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(box);
-    visitor->Trace(inline_container);
-    visitor->Trace(containing_block);
-    visitor->Trace(fixedpos_containing_block);
-  }
 };
 
 // This is a sub class of |NGPhysicalFragment::OutOfFlowData| that can store OOF
@@ -266,10 +245,9 @@ struct NGLogicalOutOfFlowPositionedNode final {
 // needed for this class requires full definition of |NGPhysicalFragment|, and
 // |NGPhysicalFragment| requires full definition of this class if this is put
 // into |NGPhysicalFragment|.
-struct NGFragmentedOutOfFlowData final : NGPhysicalFragment::OutOfFlowData {
-  using MulticolCollection =
-      HeapHashMap<Member<LayoutBox>,
-                  Member<NGMulticolWithPendingOOFs<PhysicalOffset>>>;
+struct NGFragmentedOutOfFlowData : NGPhysicalFragment::OutOfFlowData {
+  using MulticolCollection = HashMap<UntracedMember<LayoutBox>,
+                                     NGMulticolWithPendingOOFs<PhysicalOffset>>;
 
   static bool HasOutOfFlowPositionedFragmentainerDescendants(
       const NGPhysicalFragment& fragment) {
@@ -292,36 +270,17 @@ struct NGFragmentedOutOfFlowData final : NGPhysicalFragment::OutOfFlowData {
     if (!oof_data ||
         oof_data->oof_positioned_fragmentainer_descendants.IsEmpty())
       return base::span<NGPhysicalOOFNodeForFragmentation>();
-    HeapVector<NGPhysicalOOFNodeForFragmentation>& descendants =
-        const_cast<HeapVector<NGPhysicalOOFNodeForFragmentation>&>(
+    Vector<NGPhysicalOOFNodeForFragmentation>& descendants =
+        const_cast<Vector<NGPhysicalOOFNodeForFragmentation>&>(
             oof_data->oof_positioned_fragmentainer_descendants);
     return {descendants.data(), descendants.size()};
   }
 
-  void Clear() override {
-    oof_positioned_fragmentainer_descendants.clear();
-    multicols_with_pending_oofs.clear();
-    NGPhysicalFragment::OutOfFlowData::Clear();
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(oof_positioned_fragmentainer_descendants);
-    visitor->Trace(multicols_with_pending_oofs);
-    NGPhysicalFragment::OutOfFlowData::Trace(visitor);
-  }
-
-  HeapVector<NGPhysicalOOFNodeForFragmentation>
+  Vector<NGPhysicalOOFNodeForFragmentation>
       oof_positioned_fragmentainer_descendants;
   MulticolCollection multicols_with_pending_oofs;
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGPhysicalOutOfFlowPositionedNode)
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGPhysicalOOFNodeForFragmentation)
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGLogicalOutOfFlowPositionedNode)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_OUT_OF_FLOW_POSITIONED_NODE_H_

@@ -140,7 +140,8 @@ class NGGridLayoutAlgorithmTest
     return growth_limits;
   }
 
-  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
+  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
+      Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -149,8 +150,8 @@ class NGGridLayoutAlgorithmTest
   }
 
   String DumpFragmentTree(Element* element) {
-    auto* fragment = RunBlockLayoutAlgorithm(element);
-    return DumpFragmentTree(fragment);
+    auto fragment = RunBlockLayoutAlgorithm(element);
+    return DumpFragmentTree(fragment.get());
   }
 
   String DumpFragmentTree(const blink::NGPhysicalBoxFragment* fragment) {

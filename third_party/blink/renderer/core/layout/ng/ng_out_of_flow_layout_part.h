@@ -200,7 +200,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // The physical fragment of the containing block used when laying out a
     // fragmentainer descendant. This is the containing block as defined by the
     // spec: https://www.w3.org/TR/css-position-3/#absolute-cb.
-    Member<const NGPhysicalFragment> containing_block_fragment;
+    scoped_refptr<const NGPhysicalFragment> containing_block_fragment = nullptr;
 
     void Trace(Visitor* visitor) const;
   };
@@ -213,9 +213,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const NGLogicalOutOfFlowPositionedNode&);
 
   void ComputeInlineContainingBlocks(
-      const HeapVector<NGLogicalOutOfFlowPositionedNode>&);
+      const Vector<NGLogicalOutOfFlowPositionedNode>&);
   void ComputeInlineContainingBlocksForFragmentainer(
-      const HeapVector<NGLogicalOutOfFlowPositionedNode>&);
+      const Vector<NGLogicalOutOfFlowPositionedNode>&);
   // |containing_block_relative_offset| is the accumulated relative offset from
   // the inline's containing block to the fragmentation context root.
   // |containing_block_offset| is the offset of the inline's containing block
@@ -230,7 +230,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       bool adjust_for_fragmentation = false);
 
   void LayoutCandidates(
-      HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates,
+      Vector<NGLogicalOutOfFlowPositionedNode>* candidates,
       const LayoutBox* only_layout,
       HeapHashSet<Member<const LayoutObject>>* placed_objects);
 
@@ -243,7 +243,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   // |multicol_children| holds the children of an inner multicol if
   // we are laying out OOF elements inside a nested fragmentation context.
   void LayoutFragmentainerDescendants(
-      HeapVector<NGLogicalOutOfFlowPositionedNode>* descendants,
+      Vector<NGLogicalOutOfFlowPositionedNode>* descendants,
       LayoutUnit column_inline_progression,
       bool outer_context_has_fixedpos_container = false,
       HeapVector<MulticolChildInfo>* multicol_children = nullptr);
@@ -334,7 +334,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   // Out-of-flow positioned nodes that we should lay out at a later time. For
   // example, if the containing block has not finished layout.
-  HeapVector<NGLogicalOutOfFlowPositionedNode> delayed_descendants_;
+  Vector<NGLogicalOutOfFlowPositionedNode> delayed_descendants_;
 
   // Holds the children of an inner multicol if we are laying out OOF elements
   // inside a nested fragmentation context.

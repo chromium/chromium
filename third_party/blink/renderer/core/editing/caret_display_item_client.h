@@ -112,7 +112,7 @@ class CORE_EXPORT CaretDisplayItemClient final
   // in the previous layout block.
   Member<const LayoutBlock> previous_layout_block_;
 
-  Member<const NGPhysicalBoxFragment> box_fragment_;
+  const NGPhysicalBoxFragment* box_fragment_ = nullptr;
 
   bool is_active_ = false;
   bool needs_paint_invalidation_ = false;

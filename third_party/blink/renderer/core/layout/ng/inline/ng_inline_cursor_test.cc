@@ -1318,7 +1318,7 @@ TEST_F(NGInlineCursorBlockFragmentationTest, MoveToLayoutObject) {
 
   // Test cursors rooted at |NGFragmentItems|.
   // They can enumerate fragments only in the specified fragmentainer.
-  HeapVector<Member<const NGPhysicalBoxFragment>> fragments;
+  Vector<const NGPhysicalBoxFragment*> fragments;
   for (const NGPhysicalBoxFragment& fragment :
        block_flow->PhysicalFragments()) {
     DCHECK(fragment.HasItems());

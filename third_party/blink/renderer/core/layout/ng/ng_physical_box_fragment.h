@@ -26,15 +26,15 @@ enum class NGOutlineType;
 
 class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
  public:
-  static const NGPhysicalBoxFragment* Create(
+  static scoped_refptr<const NGPhysicalBoxFragment> Create(
       NGBoxFragmentBuilder* builder,
       WritingMode block_or_line_writing_mode);
   // Creates a copy of |other| but uses the "post-layout" fragments to ensure
   // fragment-tree consistency.
-  static const NGPhysicalBoxFragment* CloneWithPostLayoutFragments(
-      const NGPhysicalBoxFragment& other,
-      const absl::optional<PhysicalRect> updated_layout_overflow =
-          absl::nullopt);
+  static scoped_refptr<const NGPhysicalBoxFragment>
+  CloneWithPostLayoutFragments(const NGPhysicalBoxFragment& other,
+                               const absl::optional<PhysicalRect>
+                                   updated_layout_overflow = absl::nullopt);
 
   using PassKey = base::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
@@ -62,6 +62,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
       ComputeItemsAddress()->~NGFragmentItems();
     if (const_has_rare_data_)
       ComputeRareDataAddress()->~RareData();
+    if (ChildrenValid()) {
+      for (const NGLink& child : Children()) {
+        if (child.fragment)
+          child.fragment->Release();
+      }
+    }
   }
 
 #if DCHECK_IS_ON()
@@ -77,8 +83,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     static unsigned allow_count_;
   };
 #endif
-
-  void TraceAfterDispatch(Visitor* visitor) const;
 
   const NGPhysicalBoxFragment* PostLayout() const;
 
@@ -400,21 +404,17 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 #endif
 
  private:
-  static size_t AdditionalByteSize(wtf_size_t num_fragment_items,
-                                   wtf_size_t num_children,
-                                   bool has_layout_overflow,
-                                   bool has_borders,
-                                   bool has_padding,
-                                   bool has_inflow_bounds,
-                                   bool has_rare_data);
+  static size_t ByteSize(wtf_size_t num_fragment_items,
+                         wtf_size_t num_children,
+                         bool has_layout_overflow,
+                         bool has_borders,
+                         bool has_padding,
+                         bool has_inflow_bounds,
+                         bool has_rare_data);
 
   struct RareData {
-    DISALLOW_NEW();
-
-   public:
     RareData(const RareData&);
     explicit RareData(NGBoxFragmentBuilder*);
-    void Trace(Visitor*) const;
 
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
 

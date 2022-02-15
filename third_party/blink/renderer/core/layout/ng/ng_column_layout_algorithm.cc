@@ -130,7 +130,7 @@ void MulticolPartWalker::UpdateNextColumnBreakToken(
     const NGContainerFragmentBuilder::ChildrenVector& children) {
   if (children.IsEmpty())
     return;
-  const blink::NGPhysicalFragment* const last_child =
+  const scoped_refptr<const blink::NGPhysicalFragment> last_child =
       children[children.size() - 1].fragment;
   if (!last_child->IsColumnBox())
     return;
