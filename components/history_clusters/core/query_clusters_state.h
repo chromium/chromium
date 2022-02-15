@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -54,6 +55,10 @@ class QueryClustersState {
  private:
   FRIEND_TEST_ALL_PREFIXES(QueryClustersStateTest, PostProcessingOccurs);
 
+  // Private class containing state that's only accessed on
+  // `post_processing_task_runner`.
+  class PostProcessor;
+
   // Callback to `LoadNextBatchOfClusters()`.
   void OnGotRawClusters(base::TimeTicks query_start_time,
                         ResultCallback callback,
@@ -75,10 +80,6 @@ class QueryClustersState {
   // The string query the user entered into the searchbox.
   const std::string query_;
 
-  // TODO(tommycli): Actually use this piece of state to implement the
-  // cross-batch deduplication and search caching.
-  std::vector<history::Cluster> clusters_;
-
   // A nullopt `continuation_end_time` means we have exhausted History.
   // Note that this differs from History itself, which uses base::Time() as the
   // value to indicate we've exhausted history. I've found that to be not
@@ -93,6 +94,10 @@ class QueryClustersState {
 
   // A task runner to run all the post-processing tasks on.
   scoped_refptr<base::SequencedTaskRunner> post_processing_task_runner_;
+
+  // The private state used for post-processing. It's created on the main
+  // thread, but used and freed on `post_processing_task_runner`.
+  scoped_refptr<PostProcessor> post_processing_state_;
 
   base::WeakPtrFactory<QueryClustersState> weak_factory_{this};
 };

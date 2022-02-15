@@ -4,6 +4,7 @@
 
 #include "components/history_clusters/core/query_clusters_state.h"
 
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -11,13 +12,45 @@
 
 namespace history_clusters {
 
+// Helper class that lives and is destroyed on the `sequenced_task_runner`,
+// although it's created on the main thread. It allows us to store state that
+// is only accessed on `sequenced_task_runner` that persists between batches.
+class QueryClustersState::PostProcessor
+    : public base::RefCountedDeleteOnSequence<PostProcessor> {
+ public:
+  PostProcessor(scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
+                const std::string query)
+      : base::RefCountedDeleteOnSequence<PostProcessor>(sequenced_task_runner),
+        query_(query) {}
+  PostProcessor(const PostProcessor& other) = delete;
+  PostProcessor& operator=(const PostProcessor& other) = delete;
+
+  std::vector<history::Cluster> PostProcess(
+      std::vector<history::Cluster> clusters) {
+    // TODO(tommycli): Implement de-duplication of single-visit clusters here.
+    return FilterClustersMatchingQuery(query_, std::move(clusters));
+  }
+
+ private:
+  friend class base::RefCountedDeleteOnSequence<PostProcessor>;
+  friend class base::DeleteHelper<PostProcessor>;
+
+  // Ref-counted object should only be deleted via ref-counting.
+  ~PostProcessor() = default;
+
+  const std::string query_;
+};
+
 QueryClustersState::QueryClustersState(
     base::WeakPtr<HistoryClustersService> service,
     const std::string& query)
     : service_(service),
       query_(query),
       post_processing_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
+      post_processing_state_(
+          base::MakeRefCounted<PostProcessor>(post_processing_task_runner_,
+                                              query)) {}
 
 QueryClustersState::~QueryClustersState() = default;
 
@@ -47,7 +80,8 @@ void QueryClustersState::OnGotRawClusters(
   size_t clusters_from_backend_count = clusters.size();
   post_processing_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&FilterClustersMatchingQuery, query_, std::move(clusters)),
+      base::BindOnce(&PostProcessor::PostProcess, post_processing_state_,
+                     std::move(clusters)),
       base::BindOnce(
           &QueryClustersState::OnGotClusters, weak_factory_.GetWeakPtr(),
           std::move(post_processing_timer), clusters_from_backend_count,
