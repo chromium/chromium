@@ -70,10 +70,10 @@ class CORE_EXPORT NGLayoutResult final
 
   // Creates a copy of NGLayoutResult with a new (but "identical") fragment.
   NGLayoutResult(const NGLayoutResult& other,
-                 scoped_refptr<const NGPhysicalFragment> physical_fragment);
+                 const NGPhysicalFragment* physical_fragment);
 
   // Delegate constructor that sets up what it can, based on the builder.
-  NGLayoutResult(scoped_refptr<const NGPhysicalFragment> physical_fragment,
+  NGLayoutResult(const NGPhysicalFragment* physical_fragment,
                  NGContainerFragmentBuilder* builder);
 
   // We don't need the copy constructor, move constructor, copy
@@ -457,14 +457,14 @@ class CORE_EXPORT NGLayoutResult final
   // This constructor requires a non-null fragment and sets a success status.
   using NGBoxFragmentBuilderPassKey = base::PassKey<NGBoxFragmentBuilder>;
   NGLayoutResult(NGBoxFragmentBuilderPassKey,
-                 scoped_refptr<const NGPhysicalFragment> physical_fragment,
+                 const NGPhysicalFragment* physical_fragment,
                  NGBoxFragmentBuilder*);
 
   using NGLineBoxFragmentBuilderPassKey =
       base::PassKey<NGLineBoxFragmentBuilder>;
   // This constructor requires a non-null fragment and sets a success status.
   NGLayoutResult(NGLineBoxFragmentBuilderPassKey,
-                 scoped_refptr<const NGPhysicalFragment> physical_fragment,
+                 const NGPhysicalFragment* physical_fragment,
                  NGLineBoxFragmentBuilder*);
 
   void Trace(Visitor*) const;
@@ -623,7 +623,7 @@ class CORE_EXPORT NGLayoutResult final
   // as indicated by |has_valid_space_|.
   const NGConstraintSpace space_;
 
-  scoped_refptr<const NGPhysicalFragment> physical_fragment_;
+  Member<const NGPhysicalFragment> physical_fragment_;
 
   // |rare_data_| cannot be stored in the union because it is difficult to have
   // a const bitfield for it and it cannot be traced.

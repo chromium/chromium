@@ -21,8 +21,7 @@ class NGOutOfFlowLayoutPartTest
  protected:
   NGOutOfFlowLayoutPartTest() : ScopedLayoutNGBlockFragmentationForTest(true) {}
 
-  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
-      Element* element) {
+  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -31,8 +30,8 @@ class NGOutOfFlowLayoutPartTest
   }
 
   String DumpFragmentTree(Element* element) {
-    auto fragment = RunBlockLayoutAlgorithm(element);
-    return DumpFragmentTree(fragment.get());
+    auto* fragment = RunBlockLayoutAlgorithm(element);
+    return DumpFragmentTree(fragment);
   }
 
   String DumpFragmentTree(const blink::NGPhysicalBoxFragment* fragment) {

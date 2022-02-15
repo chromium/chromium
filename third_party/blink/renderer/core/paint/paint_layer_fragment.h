@@ -89,7 +89,7 @@ struct PaintLayerFragment {
   // The corresponding FragmentData of this structure.
   Member<const FragmentData> fragment_data = nullptr;
 
-  const NGPhysicalBoxFragment* physical_fragment = nullptr;
+  Member<const NGPhysicalBoxFragment> physical_fragment = nullptr;
 
   void Trace(Visitor*) const;
 };

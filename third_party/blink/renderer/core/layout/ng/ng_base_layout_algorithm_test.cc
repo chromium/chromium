@@ -30,8 +30,7 @@ void NGBaseLayoutAlgorithmTest::AdvanceToLayoutPhase() {
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPerformLayout);
 }
 
-scoped_refptr<const NGPhysicalBoxFragment>
-NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
+const NGPhysicalBoxFragment* NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
     NGBlockNode node,
     const NGConstraintSpace& space,
     const NGBreakToken* break_token) {
@@ -46,7 +45,7 @@ NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
   return To<NGPhysicalBoxFragment>(&result->PhysicalFragment());
 }
 
-std::pair<scoped_refptr<const NGPhysicalBoxFragment>, NGConstraintSpace>
+std::pair<const NGPhysicalBoxFragment*, NGConstraintSpace>
 NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithmForElement(Element* element) {
   auto* block_flow = To<LayoutBlockFlow>(element->GetLayoutObject());
   NGBlockNode node(block_flow);
@@ -61,7 +60,7 @@ NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithmForElement(Element* element) {
                         std::move(space));
 }
 
-scoped_refptr<const NGPhysicalBoxFragment>
+const NGPhysicalBoxFragment*
 NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
     NGBlockNode node,
     const NGConstraintSpace& space,
@@ -77,11 +76,11 @@ NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
   return To<NGPhysicalBoxFragment>(&result->PhysicalFragment());
 }
 
-scoped_refptr<const NGPhysicalBoxFragment>
+const NGPhysicalBoxFragment*
 NGBaseLayoutAlgorithmTest::GetBoxFragmentByElementId(const char* id) {
   LayoutObject* layout_object = GetLayoutObjectByElementId(id);
   CHECK(layout_object && layout_object->IsLayoutNGObject());
-  scoped_refptr<const NGPhysicalBoxFragment> fragment =
+  const NGPhysicalBoxFragment* fragment =
       To<LayoutBlockFlow>(layout_object)->GetPhysicalFragment(0);
   CHECK(fragment);
   return fragment;

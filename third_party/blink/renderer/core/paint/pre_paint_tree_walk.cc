@@ -351,7 +351,7 @@ void PrePaintTreeWalk::CheckTreeBuilderContextState(
 NGPrePaintInfo PrePaintTreeWalk::CreatePrePaintInfo(
     const NGLink& child,
     const PrePaintTreeWalkContext& context) {
-  const auto& fragment = *To<NGPhysicalBoxFragment>(child.fragment);
+  const auto& fragment = *To<NGPhysicalBoxFragment>(child.fragment.Get());
   return NGPrePaintInfo(fragment, child.offset,
                         context.current_fragmentainer.fragmentainer_idx,
                         fragment.IsFirstForNode(), !fragment.BreakToken(),
@@ -627,7 +627,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
   }
 
   for (NGLink child : fragment.Children()) {
-    const auto* box_fragment = To<NGPhysicalBoxFragment>(child.fragment);
+    const auto* box_fragment = To<NGPhysicalBoxFragment>(child.fragment.Get());
     if (UNLIKELY(box_fragment->IsLayoutObjectDestroyedOrMoved()))
       continue;
 
