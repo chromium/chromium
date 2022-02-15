@@ -457,6 +457,26 @@ TEST_F(RetroactivePairingDetectorTest,
 }
 
 TEST_F(RetroactivePairingDetectorTest,
+       MessageStream_Ble_ModelId_KioskUserLoggedIn) {
+  Login(user_manager::UserType::USER_TYPE_KIOSK_APP);
+  base::RunLoop().RunUntilIdle();
+  CreateRetroactivePairingDetector();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  SetMessageStream(kModelIdBleAddressBytes);
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kTestDeviceAddress);
+
+  fake_socket_->TriggerReceiveCallback();
+  base::RunLoop().RunUntilIdle();
+  NotifyMessageStreamConnected(kTestDeviceAddress);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+}
+
+TEST_F(RetroactivePairingDetectorTest,
        MessageStream_GetMessageStream_Ble_ModelId) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
@@ -478,12 +498,13 @@ TEST_F(RetroactivePairingDetectorTest,
 }
 
 TEST_F(RetroactivePairingDetectorTest, EnableScenarioIfLoggedInLater) {
+  Login(user_manager::UserType::USER_TYPE_GUEST);
   EXPECT_FALSE(retroactive_pair_found_);
 
   CreateRetroactivePairingDetector();
   base::RunLoop().RunUntilIdle();
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
 
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
   AddMessageStream(kModelIdBleAddressBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
@@ -495,6 +516,20 @@ TEST_F(RetroactivePairingDetectorTest, EnableScenarioIfLoggedInLater) {
   EXPECT_TRUE(retroactive_pair_found_);
   EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
   EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+}
+
+TEST_F(RetroactivePairingDetectorTest,
+       DontEnableScenarioIfLoggedInLaterAsGuest) {
+  Login(user_manager::UserType::USER_TYPE_GUEST);
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  CreateRetroactivePairingDetector();
+  base::RunLoop().RunUntilIdle();
+
+  Login(user_manager::UserType::USER_TYPE_GUEST);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(retroactive_pair_found_);
 }
 
 TEST_F(RetroactivePairingDetectorTest,

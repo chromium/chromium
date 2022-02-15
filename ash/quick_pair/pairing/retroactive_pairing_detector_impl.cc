@@ -99,6 +99,7 @@ void RetroactivePairingDetectorImpl::OnLoginStatusChanged(
 void RetroactivePairingDetectorImpl::OnGetAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   adapter_ = adapter;
+  adapter_observation_.Reset();
   adapter_observation_.Observe(adapter_.get());
 }
 
