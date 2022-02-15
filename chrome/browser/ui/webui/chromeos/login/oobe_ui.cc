@@ -809,7 +809,7 @@ void OobeUI::ShowOobeUI(bool show) {
 void OobeUI::ShowSigninScreen(SigninScreenHandlerDelegate* delegate) {
   signin_screen_handler_->SetDelegate(delegate);
 
-  signin_screen_handler_->Show(core_handler_->show_oobe_ui());
+  signin_screen_handler_->Show();
 }
 
 void OobeUI::ForwardAccelerator(std::string accelerator_name) {

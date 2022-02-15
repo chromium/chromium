@@ -98,7 +98,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   bool IsSigninInProgress() const override;
   void Login(const UserContext& user_context,
              const SigninSpecifics& specifics) override;
-  void OnSigninScreenReady() override;
   void OnStartEnterpriseEnrollment() override;
   void OnStartKioskEnableScreen() override;
   void OnStartKioskAutolaunchScreen() override;

@@ -574,7 +574,6 @@ class ExistingUserControllerPublicSessionTest
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
                        ConfigureAutoLoginUsingPolicy) {
-  existing_user_controller()->OnSigninScreenReady();
   EXPECT_TRUE(!auto_login_account_id().is_valid());
   EXPECT_EQ(0, auto_login_delay());
   EXPECT_FALSE(auto_login_timer());
@@ -601,7 +600,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
                            public_session_account_id_);
   user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail());
   ExpectSuccessfulLogin(user_context);
-  existing_user_controller()->OnSigninScreenReady();
 
   // Start auto-login and wait for login tasks to complete.
   SetAutoLoginPolicy(kPublicSessionUserEmail, kAutoLoginNoDelay);
@@ -615,7 +613,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
                            public_session_account_id_);
   user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail());
   ExpectSuccessfulLogin(user_context);
-  existing_user_controller()->OnSigninScreenReady();
 
   UserProfileLoadedObserver profile_loaded_observer;
 
@@ -645,7 +642,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
       LoginManagerMixin::CreateDefaultUserContext(new_user_));
   ExpectSuccessfulLogin(user_context);
 
-  existing_user_controller()->OnSigninScreenReady();
   SetAutoLoginPolicy(kPublicSessionUserEmail, kAutoLoginLongDelay);
   EXPECT_TRUE(auto_login_timer());
 
@@ -676,7 +672,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
       UserSessionManager::GetInstance());
   session_manager_test_api.InjectStubUserContext(user_context);
 
-  existing_user_controller()->OnSigninScreenReady();
   SetAutoLoginPolicy(kPublicSessionUserEmail, kAutoLoginLongDelay);
   EXPECT_TRUE(auto_login_timer());
 
@@ -703,7 +698,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
       LoginManagerMixin::CreateDefaultUserContext(new_user_));
   ExpectSuccessfulLogin(user_context);
 
-  existing_user_controller()->OnSigninScreenReady();
   SetAutoLoginPolicy(kPublicSessionUserEmail, kAutoLoginLongDelay);
   EXPECT_TRUE(auto_login_timer());
 
@@ -731,7 +725,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
                            public_session_account_id_);
   user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail());
   ExpectSuccessfulLogin(user_context);
-  existing_user_controller()->OnSigninScreenReady();
   SetAutoLoginPolicy(kPublicSessionUserEmail, kAutoLoginLongDelay);
   EXPECT_TRUE(auto_login_timer());
 
@@ -773,7 +766,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
                        NoAutoLoginWhenUntrusted) {
   // Start the public session timer.
   SetAutoLoginPolicy(kPublicSessionUserEmail, kAutoLoginLongDelay);
-  existing_user_controller()->OnSigninScreenReady();
   EXPECT_TRUE(auto_login_timer());
 
   // Make cros settings untrusted.
@@ -792,7 +784,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginConfigured());
 
   ConfigureAutoLogin();
-  existing_user_controller()->OnSigninScreenReady();
 
   // Do not start an auto-login public account session when in blocked UI mode.
   EXPECT_TRUE(auto_login_account_id().is_valid());
@@ -876,7 +867,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerSecondPublicSessionTest,
   EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginConfigured());
 
   ConfigureAutoLogin();
-  existing_user_controller()->OnSigninScreenReady();
 
   // Do not configure auto login if more than one public session is configured.
   EXPECT_FALSE(auto_login_account_id().is_valid());

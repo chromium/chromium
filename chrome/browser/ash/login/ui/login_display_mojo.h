@@ -45,10 +45,8 @@ class LoginDisplayMojo : public LoginDisplay,
   void Login(const UserContext& user_context,
              const SigninSpecifics& specifics) override;
   bool IsSigninInProgress() const override;
-  void OnSigninScreenReady() override;
   void ShowEnterpriseEnrollmentScreen() override;
   void ShowKioskAutolaunchScreen() override;
-  void ShowWrongHWIDScreen() override;
   void SetWebUIHandler(LoginDisplayWebUIHandler* webui_handler) override;
   bool AllowNewUserChanged() const override;
   bool IsUserSigninCompleted() const override;

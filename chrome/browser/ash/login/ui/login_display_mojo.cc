@@ -154,20 +154,11 @@ bool LoginDisplayMojo::IsSigninInProgress() const {
   return false;
 }
 
-void LoginDisplayMojo::OnSigninScreenReady() {
-  if (delegate_)
-    delegate_->OnSigninScreenReady();
-}
-
 void LoginDisplayMojo::ShowEnterpriseEnrollmentScreen() {
   NOTIMPLEMENTED();
 }
 
 void LoginDisplayMojo::ShowKioskAutolaunchScreen() {
-  NOTIMPLEMENTED();
-}
-
-void LoginDisplayMojo::ShowWrongHWIDScreen() {
   NOTIMPLEMENTED();
 }
 

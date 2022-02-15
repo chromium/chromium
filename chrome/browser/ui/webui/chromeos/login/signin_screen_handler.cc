@@ -286,11 +286,8 @@ void SigninScreenHandler::RegisterMessages() {
               &SigninScreenHandler::HandleShowLoadingTimeoutError);
 }
 
-void SigninScreenHandler::Show(bool oobe_ui) {
+void SigninScreenHandler::Show() {
   CHECK(delegate_);
-
-  // Just initialize internal fields from context and call ShowImpl().
-  oobe_ui_ = oobe_ui;
 
   ShowImpl();
   histogram_helper_->OnScreenShow();

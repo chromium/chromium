@@ -687,15 +687,7 @@ void ExistingUserController::ContinuePerformLoginWithoutMigration(
   ContinuePerformLogin(auth_mode, user_context_ecryptfs);
 }
 
-void ExistingUserController::OnSigninScreenReady() {
-  // Used to debug crbug.com/902315. Feel free to remove after that is fixed.
-  VLOG(1) << "OnSigninScreenReady";
-  StartAutoLoginTimer();
-}
-
 void ExistingUserController::OnGaiaScreenReady() {
-  // Used to debug crbug.com/902315. Feel free to remove after that is fixed.
-  VLOG(1) << "OnGaiaScreenReady";
   StartAutoLoginTimer();
 }
 

@@ -102,11 +102,6 @@ void LoginDisplayWebUI::Login(const UserContext& user_context,
     delegate_->Login(user_context, specifics);
 }
 
-void LoginDisplayWebUI::OnSigninScreenReady() {
-  if (delegate_)
-    delegate_->OnSigninScreenReady();
-}
-
 void LoginDisplayWebUI::ShowEnterpriseEnrollmentScreen() {
   if (delegate_)
     delegate_->OnStartEnterpriseEnrollment();
@@ -115,10 +110,6 @@ void LoginDisplayWebUI::ShowEnterpriseEnrollmentScreen() {
 void LoginDisplayWebUI::ShowKioskAutolaunchScreen() {
   if (delegate_)
     delegate_->OnStartKioskAutolaunchScreen();
-}
-
-void LoginDisplayWebUI::ShowWrongHWIDScreen() {
-  LoginDisplayHost::default_host()->StartWizard(WrongHWIDScreenView::kScreenId);
 }
 
 void LoginDisplayWebUI::SetWebUIHandler(
