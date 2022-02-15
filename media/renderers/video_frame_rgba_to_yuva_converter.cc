@@ -193,10 +193,14 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
       sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
     }
 
-    completion_sync_token = sii->GenVerifiedSyncToken();
-  } else {
-    ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
+    auto copy_to_gmb_done_sync_token = sii->GenUnverifiedSyncToken();
+    ri->WaitSyncTokenCHROMIUM(copy_to_gmb_done_sync_token.GetData());
   }
+
+  // We want to generate a SyncToken from the RasterInterface since callers may
+  // be using RasterInterface::Finish() to ensure synchronization in cases where
+  // SignalSyncToken can't be used.
+  ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
 
   // Make access to the `dst_video_frame` wait on copy completion. We also
   // update the ReleaseSyncToken here since it's used when the underlying
