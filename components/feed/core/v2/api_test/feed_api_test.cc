@@ -478,6 +478,7 @@ void TestFeedNetwork::SendDiscoverApiRequest(
     base::StringPiece method,
     std::string request_bytes,
     const AccountInfo& account_info,
+    absl::optional<RequestMetadata> request_metadata,
     base::OnceCallback<void(RawResponse)> callback) {
   last_account_info = account_info;
   api_requests_sent_[request_type] = request_bytes;

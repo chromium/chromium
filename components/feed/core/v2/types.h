@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "base/values.h"
+#include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/common_enums.h"
@@ -45,6 +46,8 @@ struct RequestMetadata {
   ~RequestMetadata();
   RequestMetadata(RequestMetadata&&);
   RequestMetadata& operator=(RequestMetadata&&);
+
+  feedwire::ClientInfo ToClientInfo() const;
 
   ChromeInfo chrome_info;
   std::string language_tag;

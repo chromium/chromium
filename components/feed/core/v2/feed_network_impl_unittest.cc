@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feed/core/common/pref_names.h"
+#include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
@@ -45,8 +47,30 @@
 namespace feed {
 namespace {
 
+MATCHER_P(EqualsProto,
+          message,
+          "Match a proto Message equal to the matcher's argument.") {
+  return arg.ShortDebugString() == message.ShortDebugString();
+}
+
 using testing::ElementsAre;
 using QueryRequestResult = FeedNetwork::QueryRequestResult;
+
+feedwire::ClientInfo ExpectHasClientInfoHeader(
+    network::ResourceRequest request) {
+  EXPECT_TRUE(request.headers.HasHeader(feed::kClientInfoHeader));
+  std::string clientinfo;
+  EXPECT_TRUE(request.headers.GetHeader(feed::kClientInfoHeader, &clientinfo));
+  std::string decoded_clientinfo;
+  EXPECT_TRUE(base::Base64Decode(clientinfo, &decoded_clientinfo));
+  feedwire::ClientInfo clientinfo_proto;
+  EXPECT_TRUE(clientinfo_proto.ParseFromString(decoded_clientinfo));
+  return clientinfo_proto;
+}
+
+void ExpectNoClientInfoHeader(network::ResourceRequest request) {
+  EXPECT_FALSE(request.headers.HasHeader(feed::kClientInfoHeader));
+}
 
 feedwire::Request GetTestFeedRequest(feedwire::FeedQuery::RequestReason reason =
                                          feedwire::FeedQuery::MANUAL_REFRESH) {
@@ -120,6 +144,19 @@ class FeedNetworkTest : public testing::Test {
   }
 
   AccountInfo account_info() { return delegate_.GetAccountInfo(); }
+  RequestMetadata request_metadata() {
+    RequestMetadata request_metadata;
+    request_metadata.chrome_info.version = base::Version({1, 2, 3, 4});
+    request_metadata.chrome_info.channel = version_info::Channel::STABLE;
+    request_metadata.chrome_info.start_surface = false;
+    request_metadata.display_metrics.density = 1;
+    request_metadata.display_metrics.width_pixels = 2;
+    request_metadata.display_metrics.height_pixels = 3;
+    request_metadata.language_tag = "en-US";
+    request_metadata.client_instance_id = "client_instance_id";
+
+    return request_metadata;
+  }
 
   network::TestURLLoaderFactory* test_factory() { return &test_factory_; }
 
@@ -176,6 +213,9 @@ class FeedNetworkTest : public testing::Test {
         test_factory()->GetPendingRequest(0);
     CHECK(pending_request);
     network::ResourceRequest resource_request = pending_request->request;
+
+    ExpectNoClientInfoHeader(resource_request);
+
     Respond(pending_request->request.url,
             PrependResponseLength(response_string), code);
     task_environment_.FastForwardUntilNoTasksRemain();
@@ -208,7 +248,10 @@ class FeedNetworkTest : public testing::Test {
       net::HttpStatusCode code) {
     std::string binary_proto;
     response_message.SerializeToString(&binary_proto);
-    return RespondToDiscoverRequest(binary_proto, code);
+    network::ResourceRequest resource_request =
+        RespondToDiscoverRequest(binary_proto, code);
+    ExpectHasClientInfoHeader(resource_request);
+    return resource_request;
   }
 
  protected:
@@ -220,6 +263,7 @@ class FeedNetworkTest : public testing::Test {
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<FeedNetwork> feed_network_;
+  RequestMetadata request_metadata_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   TestingPrefServiceSimple profile_prefs_;
@@ -605,16 +649,59 @@ TEST_F(FeedNetworkTest, SendApiRequest_UploadActions) {
   CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
       receiver;
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), account_info(), receiver.Bind());
-  RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
+      GetTestActionRequest(), account_info(), request_metadata(),
+      receiver.Bind());
+
+  network::ResourceRequest request =
+      RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
 
   ASSERT_TRUE(receiver.GetResult());
   const FeedNetwork::ApiResult<feedwire::UploadActionsResponse>& result =
       *receiver.GetResult();
   EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
   EXPECT_TRUE(result.response_body);
+
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.UploadActions", 200, 1);
+}
+
+TEST_F(FeedNetworkTest, SendApiRequest_DecodesClientInfo_WithClientInstanceId) {
+  CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
+      receiver;
+  feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
+      GetTestActionRequest(), account_info(), request_metadata(),
+      receiver.Bind());
+
+  network::ResourceRequest request =
+      RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
+  feedwire::ClientInfo client_info = ExpectHasClientInfoHeader(request);
+
+  EXPECT_EQ(feedwire::ClientInfo::CHROME_ANDROID, client_info.app_type());
+  EXPECT_EQ(feedwire::Version::RELEASE, client_info.app_version().build_type());
+  EXPECT_EQ(1, client_info.app_version().major());
+  EXPECT_EQ(2, client_info.app_version().minor());
+  EXPECT_EQ(3, client_info.app_version().build());
+  EXPECT_EQ(4, client_info.app_version().revision());
+  EXPECT_FALSE(client_info.chrome_client_info().start_surface());
+  EXPECT_EQ("client_instance_id", client_info.client_instance_id());
+}
+
+TEST_F(FeedNetworkTest, SendApiRequest_DecodesClientInfo_WithSessionId) {
+  RequestMetadata request_metadata_with_session = request_metadata();
+  request_metadata_with_session.session_id = "session_id";
+  request_metadata_with_session.client_instance_id = "";
+
+  CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
+      receiver;
+  feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
+      GetTestActionRequest(), account_info(),
+      std::move(request_metadata_with_session), receiver.Bind());
+  network::ResourceRequest request =
+      RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
+  feedwire::ClientInfo client_info = ExpectHasClientInfoHeader(request);
+
+  EXPECT_EQ("session_id", client_info.chrome_client_info().session_id());
+  EXPECT_EQ("", client_info.client_instance_id());
 }
 
 TEST_F(FeedNetworkTest, SendApiRequest_UploadActionsFailsForWrongUser) {
@@ -624,7 +711,8 @@ TEST_F(FeedNetworkTest, SendApiRequest_UploadActionsFailsForWrongUser) {
   other_account.gaia = "some_other_gaia";
   other_account.email = "some@other.com";
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), other_account, receiver.Bind());
+      GetTestActionRequest(), other_account, request_metadata(),
+      receiver.Bind());
   task_environment_.RunUntilIdle();
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_factory()->GetPendingRequest(0);
@@ -646,7 +734,8 @@ TEST_F(FeedNetworkTest, SendApiRequestSendsValidRequest_UploadActions) {
   CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
       receiver;
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), account_info(), receiver.Bind());
+      GetTestActionRequest(), account_info(), request_metadata(),
+      receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
 
@@ -682,8 +771,8 @@ TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
   CallbackReceiver<
       FeedNetwork::ApiResult<feedwire::webfeed::UnfollowWebFeedResponse>>
       receiver;
-  feed_network()->SendApiRequest<UnfollowWebFeedDiscoverApi>({}, account_info(),
-                                                             receiver.Bind());
+  feed_network()->SendApiRequest<UnfollowWebFeedDiscoverApi>(
+      {}, account_info(), request_metadata(), receiver.Bind());
   RespondToDiscoverRequest("", net::HTTP_OK);
 
   ASSERT_TRUE(receiver.GetResult());
@@ -696,8 +785,8 @@ TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
 }
 
 TEST_F(FeedNetworkTest, SendApiRequest_ListWebFeedsSendsCorrectContentType) {
-  feed_network()->SendApiRequest<ListWebFeedsDiscoverApi>({}, account_info(),
-                                                          base::DoNothing());
+  feed_network()->SendApiRequest<ListWebFeedsDiscoverApi>(
+      {}, account_info(), request_metadata(), base::DoNothing());
   std::string requested_content_type;
   RespondToDiscoverRequest("", net::HTTP_OK)
       .headers.GetHeader("content-type", &requested_content_type);
@@ -709,7 +798,8 @@ TEST_F(FeedNetworkTest, TestOverrideHostDoesNotAffectDiscoverApis) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/");
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), account_info(), base::DoNothing());
+      GetTestActionRequest(), account_info(), request_metadata(),
+      base::DoNothing());
 
   EXPECT_EQ(GURL("https://discover-pa.googleapis.com/v1/actions:upload"),
             GetPendingRequestURL());
@@ -719,7 +809,8 @@ TEST_F(FeedNetworkTest, TestOverrideDiscoverEndpoint) {
   profile_prefs().SetString(feed::prefs::kDiscoverAPIEndpointOverride,
                             "http://www.newhost.com/");
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), account_info(), base::DoNothing());
+      GetTestActionRequest(), account_info(), request_metadata(),
+      base::DoNothing());
 
   EXPECT_EQ(GURL("http://www.newhost.com/v1/actions:upload"),
             GetPendingRequestURL());

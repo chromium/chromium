@@ -17,6 +17,7 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/types.h"
 #include "components/version_info/channel.h"
+#include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -29,6 +30,7 @@ class SharedURLLoaderFactory;
 
 namespace feed {
 constexpr base::TimeDelta kAccessTokenFetchTimeout = base::Seconds(10);
+constexpr char kClientInfoHeader[] = "search.now.clientinfo-bin";
 
 class FeedNetworkImpl : public FeedNetwork {
  public:
@@ -69,6 +71,7 @@ class FeedNetworkImpl : public FeedNetwork {
       base::StringPiece method,
       std::string request_bytes,
       const AccountInfo& account_info,
+      absl::optional<RequestMetadata> request_metadata,
       base::OnceCallback<void(RawResponse)> callback) override;
 
   // Cancels all pending requests immediately. This could be used, for example,
@@ -85,6 +88,7 @@ class FeedNetworkImpl : public FeedNetwork {
             std::string request_body,
             bool allow_bless_auth,
             const AccountInfo& account_info,
+            net::HttpRequestHeaders request_metadata,
             base::OnceCallback<void(FeedNetworkImpl::RawResponse)> callback);
 
   void SendComplete(NetworkFetch* fetch,

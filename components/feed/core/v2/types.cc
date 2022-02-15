@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/public/types.h"
 
 // Note: This file contains implementation for both types.h and public/types.h.
@@ -101,6 +102,9 @@ RequestMetadata::RequestMetadata() = default;
 RequestMetadata::~RequestMetadata() = default;
 RequestMetadata::RequestMetadata(RequestMetadata&&) = default;
 RequestMetadata& RequestMetadata::operator=(RequestMetadata&&) = default;
+feedwire::ClientInfo RequestMetadata::ToClientInfo() const {
+  return CreateClientInfo(*this);
+}
 
 NetworkResponseInfo::NetworkResponseInfo() = default;
 NetworkResponseInfo::~NetworkResponseInfo() = default;

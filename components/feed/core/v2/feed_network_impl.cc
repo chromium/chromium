@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -26,6 +27,7 @@
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/v2/metrics_reporter.h"
+#include "components/feed/core/v2/proto_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -88,6 +90,17 @@ GURL GetUrlWithoutQuery(const GURL& url) {
 }
 
 using RawResponse = FeedNetwork::RawResponse;
+
+net::HttpRequestHeaders CreateApiRequestHeaders(
+    const RequestMetadata& request_metadata) {
+  std::string encoded_client_info;
+  base::Base64Encode(CreateClientInfo(request_metadata).SerializeAsString(),
+                     &encoded_client_info);
+  net::HttpRequestHeaders headers;
+  headers.SetHeader(kClientInfoHeader, encoded_client_info);
+  return headers;
+}
+
 }  // namespace
 
 namespace {
@@ -165,6 +178,7 @@ class FeedNetworkImpl::NetworkFetch {
                network::SharedURLLoaderFactory* loader_factory,
                const std::string& api_key,
                const AccountInfo& account_info,
+               net::HttpRequestHeaders headers,
                bool allow_bless_auth)
       : url_(url),
         request_method_(request_method),
@@ -175,6 +189,7 @@ class FeedNetworkImpl::NetworkFetch {
         api_key_(api_key),
         entire_send_start_ticks_(base::TimeTicks::Now()),
         account_info_(account_info),
+        headers_(std::move(headers)),
         allow_bless_auth_(allow_bless_auth) {}
   ~NetworkFetch() = default;
   NetworkFetch(const NetworkFetch&) = delete;
@@ -270,30 +285,30 @@ class FeedNetworkImpl::NetworkFetch {
   std::unique_ptr<network::SimpleURLLoader> MakeLoader() {
     net::NetworkTrafficAnnotationTag traffic_annotation =
         net::DefineNetworkTrafficAnnotation("interest_feedv2_send", R"(
-        semantics {
-          sender: "Feed Library"
-          description: "Chrome can show content suggestions (e.g. articles) "
-            "in the form of a feed. For signed-in users, these may be "
-            "personalized based on interest signals in the user's account."
-          trigger: "Triggered periodically in the background, or upon "
-            "explicit user request."
-          data: "The locale of the device and data describing the suggested "
-            "content that the user interacted with. For signed-in users "
-            "the request is authenticated. "
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting: "This can be disabled from the New Tab Page by collapsing "
-          "the articles section."
-          chrome_policy {
-            NTPContentSuggestionsEnabled {
-              policy_options {mode: MANDATORY}
-              NTPContentSuggestionsEnabled: false
-            }
+      semantics {
+        sender: "Feed Library"
+        description: "Chrome can show content suggestions (e.g. articles) "
+          "in the form of a feed. For signed-in users, these may be "
+          "personalized based on interest signals in the user's account."
+        trigger: "Triggered periodically in the background, or upon "
+          "explicit user request."
+        data: "The locale of the device and data describing the suggested "
+          "content that the user interacted with. For signed-in users "
+          "the request is authenticated. "
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        cookies_allowed: YES
+        cookies_store: "user"
+        setting: "This can be disabled from the New Tab Page by collapsing "
+        "the articles section."
+        chrome_policy {
+          NTPContentSuggestionsEnabled {
+            policy_options {mode: MANDATORY}
+            NTPContentSuggestionsEnabled: false
           }
-        })");
+        }
+      })");
 
     GURL url(url_);
     if (access_token_.empty() && !api_key_.empty())
@@ -349,6 +364,8 @@ class FeedNetworkImpl::NetworkFetch {
     if (has_request_body) {
       request.headers.SetHeader("Content-Encoding", "gzip");
     }
+
+    request.headers.MergeFrom(headers_);
 
     variations::SignedIn signed_in_status = variations::SignedIn::kNo;
     if (!access_token_.empty()) {
@@ -463,6 +480,7 @@ class FeedNetworkImpl::NetworkFetch {
   const base::TimeTicks entire_send_start_ticks_;
 
   const AccountInfo account_info_;
+  const net::HttpRequestHeaders headers_;
 
   // Should be set right before the article fetch, and after the token fetch if
   // there is one.
@@ -536,6 +554,7 @@ void FeedNetworkImpl::SendQueryRequest(
                                   url);
   Send(url, "GET", /*request_body=*/{},
        /*allow_bless_auth=*/host_overridden, account_info,
+       net::HttpRequestHeaders(),
        base::BindOnce(&ParseAndForwardQueryResponse, request_type,
                       std::move(callback)));
 }
@@ -549,11 +568,12 @@ void FeedNetworkImpl::Send(const GURL& url,
                            std::string request_body,
                            bool allow_bless_auth,
                            const AccountInfo& account_info,
+                           net::HttpRequestHeaders headers,
                            base::OnceCallback<void(RawResponse)> callback) {
   auto fetch = std::make_unique<NetworkFetch>(
       url, request_method, std::move(request_body), delegate_,
       identity_manager_, loader_factory_.get(), api_key_, account_info,
-      allow_bless_auth);
+      std::move(headers), allow_bless_auth);
   NetworkFetch* fetch_unowned = fetch.get();
   pending_requests_.emplace(std::move(fetch));
 
@@ -570,6 +590,7 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
     base::StringPiece method,
     std::string request_body,
     const AccountInfo& account_info,
+    absl::optional<RequestMetadata> request_metadata,
     base::OnceCallback<void(RawResponse)> callback) {
   GURL url(base::StrCat({kDiscoverHost, request_path}));
   // Override url if requested.
@@ -582,8 +603,13 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
     }
   }
 
+  net::HttpRequestHeaders headers =
+      request_metadata ? CreateApiRequestHeaders(*request_metadata)
+                       : net::HttpRequestHeaders();
+
   Send(url, method, std::move(request_body),
-       /*allow_bless_auth=*/false, account_info, std::move(callback));
+       /*allow_bless_auth=*/false, account_info, std::move(headers),
+       std::move(callback));
 }
 
 void FeedNetworkImpl::SendComplete(

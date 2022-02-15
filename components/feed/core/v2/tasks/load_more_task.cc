@@ -87,17 +87,18 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
   // Send network request.
   fetch_start_time_ = base::TimeTicks::Now();
 
-  feedwire::Request request = CreateFeedQueryLoadMoreRequest(
+  RequestMetadata request_metadata =
       stream_.GetRequestMetadata(stream_type_,
-                                 /*is_for_next_page=*/true),
-      stream_.GetMetadata().consistency_token(),
+                                 /*is_for_next_page=*/true);
+  feedwire::Request request = CreateFeedQueryLoadMoreRequest(
+      request_metadata, stream_.GetMetadata().consistency_token(),
       stream_.GetModel(stream_type_)->GetNextPageToken());
 
   // TODO(crbug/1152592): Send a different network request type for
   // WebFeeds.
   if (base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
     stream_.GetNetwork().SendApiRequest<QueryNextPageDiscoverApi>(
-        request, account_info,
+        request, account_info, std::move(request_metadata),
         base::BindOnce(&LoadMoreTask::QueryApiRequestComplete, GetWeakPtr()));
   } else {
     stream_.GetNetwork().SendQueryRequest(

@@ -41,7 +41,7 @@ void FetchRecommendedWebFeedsTask::Run() {
   feedwire::webfeed::ListRecommendedWebFeedsRequest request;
   SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
   stream_.GetNetwork().SendApiRequest<ListRecommendedWebFeedDiscoverApi>(
-      request, stream_.GetAccountInfo(),
+      request, stream_.GetAccountInfo(), stream_.GetSignedInRequestMetadata(),
       base::BindOnce(&FetchRecommendedWebFeedsTask::RequestComplete,
                      base::Unretained(this)));
 }

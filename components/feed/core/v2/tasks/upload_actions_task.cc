@@ -298,7 +298,7 @@ void UploadActionsTask::OnUpdateActionsFinished(
   }
 
   stream_.GetNetwork().SendApiRequest<UploadActionsDiscoverApi>(
-      *request, account_info_,
+      *request, account_info_, stream_.GetSignedInRequestMetadata(),
       base::BindOnce(&UploadActionsTask::OnUploadFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(batch)));
 }
