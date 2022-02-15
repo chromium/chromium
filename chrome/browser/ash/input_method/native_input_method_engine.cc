@@ -715,6 +715,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
     remote_manager_.reset();
+    connection_factory_.reset();
     input_method_.reset();
     host_receiver_.reset();
 
