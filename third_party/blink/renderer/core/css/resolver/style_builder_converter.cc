@@ -210,7 +210,8 @@ static bool ConvertFontFamilyName(
     generic_family = ConvertGenericFamily(cssValueID);
     if (generic_family != FontDescription::kNoFamily) {
       family_name = font_builder->GenericFontFamilyName(generic_family);
-      if (cssValueID == CSSValueID::kWebkitBody && !family_name.IsEmpty()) {
+      if (document_for_count && cssValueID == CSSValueID::kWebkitBody &&
+          !family_name.IsEmpty()) {
         // TODO(crbug.com/1065468): Remove this counter when it's no longer
         // necessary.
         document_for_count->CountUse(
@@ -276,7 +277,7 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
     if (IsA<CSSFontFamilyValue>(*family) &&
         family_name == FontCache::LegacySystemFontFamily()) {
       family_name = font_family_names::kSystemUi;
-      if (!has_seen_system_ui)
+      if (document_for_count && !has_seen_system_ui)
         document_for_count->CountUse(WebFeature::kBlinkMacSystemFont);
     }
 #endif

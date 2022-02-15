@@ -73,9 +73,11 @@ FontFamily FontBuilder::StandardFontFamily() const {
 }
 
 AtomicString FontBuilder::StandardFontFamilyName() const {
-  Settings* settings = document_->GetSettings();
-  if (settings)
-    return settings->GetGenericFontFamilySettings().Standard();
+  if (document_) {
+    Settings* settings = document_->GetSettings();
+    if (settings)
+      return settings->GetGenericFontFamilySettings().Standard();
+  }
   return AtomicString();
 }
 
