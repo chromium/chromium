@@ -220,7 +220,7 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
-  EXPECT_EQ(u"August 18, 2021, 0 event",
+  EXPECT_EQ(u"August 18, 2021, 0 events",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 
@@ -236,7 +236,7 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
-  EXPECT_EQ(u"August 18, 2021, 0 event",
+  EXPECT_EQ(u"August 18, 2021, 0 events",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 

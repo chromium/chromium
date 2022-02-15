@@ -95,12 +95,15 @@ void CalendarViewController::UpdateMonth(
 }
 
 base::Time CalendarViewController::GetOnScreenMonthFirstDayLocal() const {
-  return calendar_utils::GetStartOfMonthLocal(currently_shown_date_);
+  return calendar_utils::GetFirstDayOfMonth(
+             currently_shown_date_ + base::Hours(time_difference_hours_)) -
+         base::Hours(time_difference_hours_);
 }
 
 base::Time CalendarViewController::GetPreviousMonthFirstDayLocal(
     unsigned int num_months) const {
-  base::Time prev, current = GetOnScreenMonthFirstDayLocal();
+  base::Time prev, current = GetOnScreenMonthFirstDayLocal() +
+                             base::Hours(time_difference_hours_);
 
   DCHECK_GE(num_months, 1UL);
 
@@ -108,19 +111,20 @@ base::Time CalendarViewController::GetPreviousMonthFirstDayLocal(
     prev = calendar_utils::GetStartOfPreviousMonthLocal(current);
   }
 
-  return prev;
+  return prev - base::Hours(time_difference_hours_);
 }
 
 base::Time CalendarViewController::GetNextMonthFirstDayLocal(
     unsigned int num_months) const {
-  base::Time next, current = GetOnScreenMonthFirstDayLocal();
+  base::Time next, current = GetOnScreenMonthFirstDayLocal() +
+                             base::Hours(time_difference_hours_);
 
   DCHECK_GE(num_months, 1UL);
 
   for (unsigned int i = 0; i < num_months; i++, current = next) {
     next = calendar_utils::GetStartOfNextMonthLocal(current);
   }
-  return next;
+  return next - base::Hours(time_difference_hours_);
 }
 
 base::Time CalendarViewController::GetOnScreenMonthFirstDayUTC() const {

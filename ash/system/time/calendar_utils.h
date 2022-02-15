@@ -70,15 +70,13 @@ void SetUpWeekColumns(views::TableLayout* layout);
 SkColor GetPrimaryTextColor();
 SkColor GetSecondaryTextColor();
 
-// Get local midnight on the first day of the month that includes |date|.
-base::Time GetStartOfMonthLocal(const base::Time& date);
+// Get the first day of the month that includes |date|.
+base::Time GetFirstDayOfMonth(const base::Time& date);
 
-// Get local midnight on the first day of the month before the one that includes
-// |date|.
+// Get the first day of the month before the one that includes |date|.
 base::Time GetStartOfPreviousMonthLocal(base::Time date);
 
-// Get local midnight on the first day of the month after the one that includes
-// |date|.
+// Get the first day of the month after the one that includes |date|.
 base::Time GetStartOfNextMonthLocal(base::Time date);
 
 // Get UTC midnight on the first day of the month that includes |date|.

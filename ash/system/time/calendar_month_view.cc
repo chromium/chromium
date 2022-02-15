@@ -92,8 +92,8 @@ CalendarDateCellView::CalendarDateCellView(
 
   DisableFocus();
   if (!grayed_out_) {
-    SetTooltipText(tool_tip_);
-    SetAccessibleName(tool_tip_);
+    event_number_ = GetEventNumber();
+    SetTooltipAndAccessibleName();
   }
   scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
 }
@@ -209,12 +209,30 @@ void CalendarDateCellView::DisableFocus() {
   SetFocusBehavior(FocusBehavior::NEVER);
 }
 
+void CalendarDateCellView::SetTooltipAndAccessibleName() {
+  const int tooltip_id = event_number_ == 1
+                             ? IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP
+                             : IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP;
+  tool_tip_ = l10n_util::GetStringFUTF16(
+      tooltip_id, base::TimeFormatWithPattern(date_, "MMMMdyyyy"),
+      base::UTF8ToUTF16(base::NumberToString(event_number_)));
+  SetTooltipText(tool_tip_);
+  SetAccessibleName(tool_tip_);
+}
+
 void CalendarDateCellView::MaybeSchedulePaint() {
   // No need to re-paint the grayed out cells, since here should be no change
   // for them.
   if (grayed_out_)
     return;
 
+  // Early return if the event number doesn't change.
+  const int event_number = GetEventNumber();
+  if (event_number_ == event_number)
+    return;
+
+  event_number_ = event_number;
+  SetTooltipAndAccessibleName();
   SchedulePaint();
 }
 
@@ -235,20 +253,7 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   if (grayed_out_)
     return;
 
-  const int event_number =
-      Shell::Get()->system_tray_model()->calendar_model()->EventsNumberOfDay(
-          date_,
-          /*events =*/nullptr);
-  const int tooltip_id = (event_number <= 1)
-                             ? IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP
-                             : IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP;
-  tool_tip_ = l10n_util::GetStringFUTF16(
-      tooltip_id, base::TimeFormatWithPattern(date_, "MMMMdyyyy"),
-      base::UTF8ToUTF16(base::NumberToString(event_number)));
-  SetTooltipText(tool_tip_);
-  SetAccessibleName(tool_tip_);
-
-  if (event_number == 0)
+  if (GetEventNumber() == 0)
     return;
 
   cc::PaintFlags indicator_paint_flags;
@@ -258,6 +263,12 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   indicator_paint_flags.setAntiAlias(true);
   canvas->DrawCircle(GetEventsPresentIndicatorCenterPosition(),
                      kEventsPresentRoundedRadius, indicator_paint_flags);
+}
+
+int CalendarDateCellView::GetEventNumber() {
+  return Shell::Get()->system_tray_model()->calendar_model()->EventsNumberOfDay(
+      date_,
+      /*events =*/nullptr);
 }
 
 void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {

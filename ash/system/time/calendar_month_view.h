@@ -49,6 +49,9 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   // Disables focus behavior of this cell.
   void DisableFocus();
 
+  // Sets the tooltip label and a11y label based on the `event_number_`.
+  void SetTooltipAndAccessibleName();
+
   // Schedule paint the cell to show the event dot.
   void MaybeSchedulePaint();
 
@@ -76,6 +79,9 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   // Draw the indicator if our day has events.
   void MaybeDrawEventsIndicator(gfx::Canvas* canvas);
 
+  // Gets the most recent number of events from the model.
+  int GetEventNumber();
+
   // The date used to render this cell view.
   const base::Time date_;
 
@@ -86,6 +92,9 @@ class CalendarDateCellView : public CalendarViewController::Observer,
 
   // If the current cell is selected.
   bool is_selected_ = false;
+
+  // The number of event for `date_`.
+  int event_number_ = 0;
 
   // The tool tip for this view. Before events data is back, only show date.
   // After the events date is back, show date and event numbers.

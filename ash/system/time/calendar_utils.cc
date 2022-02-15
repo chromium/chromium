@@ -4,12 +4,10 @@
 
 #include "ash/system/time/calendar_utils.h"
 
-#include <codecvt>
 #include <string>
 
 #include "ash/style/ash_color_provider.h"
 #include "base/i18n/time_formatting.h"
-#include "base/i18n/unicodestring.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,11 +25,9 @@ bool IsTheSameDay(absl::optional<base::Time> date_a,
                   absl::optional<base::Time> date_b) {
   if (!date_a.has_value() || !date_b.has_value())
     return false;
-  base::Time::Exploded exploded_a = GetExplodedUTC(date_a.value());
-  base::Time::Exploded exploded_b = GetExplodedUTC(date_b.value());
-  return exploded_a.year == exploded_b.year &&
-         exploded_a.month == exploded_b.month &&
-         exploded_a.day_of_month == exploded_b.day_of_month;
+
+  return base::TimeFormatWithPattern(date_a.value(), "dd MM YYYY") ==
+         base::TimeFormatWithPattern(date_b.value(), "dd MM YYYY");
 }
 
 ASH_EXPORT void GetSurroundingMonthsUTC(const base::Time& selected_date,
@@ -99,25 +95,18 @@ SkColor GetSecondaryTextColor() {
       AshColorProvider::ContentLayerType::kTextColorSecondary);
 }
 
-base::Time GetStartOfMonthLocal(const base::Time& date) {
-  // Using the local time format to calculate the start of a month, since the
-  // LocalExplode doesn't use the manually set timezone.
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
-  int local_day_of_month;
-  bool result = base::StringToInt(
-      converter.to_bytes(base::TimeFormatWithPattern(date, "dd")),
-      &local_day_of_month);
-  DCHECK(result);
-  return date - base::Days(local_day_of_month - 1);
+base::Time GetFirstDayOfMonth(const base::Time& date) {
+  return date -
+         base::Days(calendar_utils::GetExplodedUTC(date).day_of_month - 1);
 }
 
 base::Time GetStartOfPreviousMonthLocal(base::Time date) {
-  return GetStartOfMonthLocal(GetStartOfMonthLocal(date) - base::Days(1));
+  return GetFirstDayOfMonth(GetFirstDayOfMonth(date) - base::Days(1));
 }
 
 base::Time GetStartOfNextMonthLocal(base::Time date) {
   // Adds over 31 days to make sure it goes to the next month.
-  return GetStartOfMonthLocal(GetStartOfMonthLocal(date) + base::Days(33));
+  return GetFirstDayOfMonth(GetFirstDayOfMonth(date) + base::Days(33));
 }
 
 ASH_EXPORT base::Time GetStartOfMonthUTC(const base::Time& date) {
