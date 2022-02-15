@@ -90,6 +90,7 @@ constexpr char kCommandRegister[] = "register";
 constexpr char kCommandSystemStore[] = "system-store";
 constexpr char kCommandUserInitiated[] = "user-initiated";
 constexpr char kCommandUserStore[] = "user-store";
+constexpr char kCommandStorePath[] = "store";
 constexpr char kCommandBrandKey[] = "brand-key";
 constexpr char kCommandBrandPath[] = "brand-path";
 constexpr char kCommandProductId[] = "productid";
@@ -161,6 +162,12 @@ UpdaterScope Scope(const std::map<std::string, std::string>& switches) {
   if (HasSwitch(kCommandUserStore, switches))
     return UpdaterScope::kUser;
 
+  if (HasSwitch(kCommandStorePath, switches)) {
+    return SwitchValue(kCommandStorePath, switches) ==
+                   KeystoneTicketStorePath(UpdaterScope::kSystem)
+               ? UpdaterScope::kSystem
+               : UpdaterScope::kUser;
+  }
   return IsSystemShim() ? UpdaterScope::kSystem : UpdaterScope::kUser;
 }
 
@@ -253,7 +260,8 @@ scoped_refptr<UpdateServiceProxy> KSAdminApp::ServiceProxy(
 void KSAdminApp::ChooseService(
     base::OnceCallback<void(UpdaterScope)> callback) const {
   // Choose updater in the following order:
-  //   1. If user explicitly specified the scope.
+  //   1. If user explicitly specified the scope (based on `-S` or `-U` or
+  //      value of `--store`).
   //   2. Choose user scope if shim is user scope.
   //   3. Choose system updater if user is root.
   //   4. Prefer system updater if app ID is given and is a system app.
@@ -263,6 +271,12 @@ void KSAdminApp::ChooseService(
     scope = absl::make_optional(UpdaterScope::kSystem);
   } else if (HasSwitch(kCommandUserStore) || !IsSystemShim()) {
     scope = absl::make_optional(UpdaterScope::kUser);
+  } else if (HasSwitch(kCommandStorePath)) {
+    scope = absl::make_optional(
+        SwitchValue(kCommandStorePath) ==
+                KeystoneTicketStorePath(UpdaterScope::kSystem)
+            ? UpdaterScope::kSystem
+            : UpdaterScope::kUser);
   } else if (geteuid() == 0) {
     scope = absl::make_optional(UpdaterScope::kSystem);
   } else {
