@@ -143,8 +143,8 @@ AddSinkResultCode GetErrorFromResponse(const base::Value& response) {
   }
 
   const std::string* error_message = error->FindStringKey(kJsonErrorMessage);
-  DVLOG(1) << "Error: HTTP " << *http_code << ": ("
-           << (error_message ? *error_message : "") << ")";
+  LOG(ERROR) << "CAST2CLASS: Error: HTTP " << *http_code << ": ("
+             << (error_message ? *error_message : "") << ")";
 
   switch (*http_code) {
     // 401
@@ -196,13 +196,13 @@ AddSinkResultCode GetErrorFromResponse(const base::Value& response) {
 // check the enum instead of the string
 AddSinkResultCode IsResponseValid(const absl::optional<base::Value>& response) {
   if (!response || !response->is_dict()) {
-    DVLOG(1) << "response_body was of unexpected format.";
+    LOG(ERROR) << "CAST2CLASS: response_body was of unexpected format.";
     return AddSinkResultCode::RESPONSE_MALFORMED;
   }
 
   if (response->DictEmpty()) {
-    DVLOG(1) << "Response does not have value. Response: "
-             << response->DebugString();
+    LOG(ERROR) << "CAST2CLASS: Response does not have value. Response: "
+               << response->DebugString();
     return AddSinkResultCode::EMPTY_RESPONSE;
   }
 
@@ -308,14 +308,16 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
     std::unique_ptr<EndpointResponse> response) {
   const std::string& response_string = response->response;
   if (HasAuthenticationError(response_string)) {
-    DVLOG(1) << "The request to the server failed to be authenticated";
+    LOG(ERROR)
+        << "CAST2CLASS: The request to the server failed to be authenticated";
     ReportError(AddSinkResultCode::AUTH_ERROR);
     return;
   }
 
   if (HasServerError(response_string)) {
-    DVLOG(1) << "Did not recieve a response from server while attempting to"
-             << " validate discovery device.";
+    LOG(ERROR) << "CAST2CLASS: Did not recieve a response from server while "
+                  "attempting to"
+               << " validate discovery device.";
     ReportError(AddSinkResultCode::SERVER_ERROR);
     return;
   }

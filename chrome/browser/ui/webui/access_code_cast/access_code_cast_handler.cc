@@ -201,6 +201,7 @@ void AccessCodeCastHandler::OnAccessCodeValidated(
     return;
   }
   if (!discovery_device.has_value()) {
+    LOG(ERROR) << "CAST2CLASS: Response from the server is empty.";
     std::move(add_sink_callback_).Run(AddSinkResultCode::EMPTY_RESPONSE);
     return;
   }
@@ -209,6 +210,7 @@ void AccessCodeCastHandler::OnAccessCodeValidated(
 
   if (!creation_result.first.has_value() ||
       creation_result.second != CreateCastMediaSinkResult::kOk) {
+    LOG(ERROR) << "CAST2CLASS: An error occured while constructing the sink.";
     std::move(add_sink_callback_).Run(AddSinkResultCode::SINK_CREATION_ERROR);
     return;
   }
@@ -235,6 +237,7 @@ void AccessCodeCastHandler::OnChannelOpenedResult(bool channel_opened) {
   // Wait for OnResultsUpdated before triggering the |add_sink_callback_| since
   // we are not entirely sure the sink is ready to be casted to yet.
   if (!channel_opened && add_sink_callback_) {
+    LOG(ERROR) << "CAST2CLASS: The cast channel failed to open.";
     std::move(add_sink_callback_).Run(AddSinkResultCode::CHANNEL_OPEN_ERROR);
   }
 }
