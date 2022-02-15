@@ -385,6 +385,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::ColorSpace reshape_color_space_;
   absl::optional<gfx::BufferFormat> reshape_buffer_format_;
   bool reshape_use_stencil_ = false;
+  gfx::OverlayTransform reshape_display_transform_ =
+      gfx::OVERLAY_TRANSFORM_INVALID;
 };
 
 }  // namespace viz

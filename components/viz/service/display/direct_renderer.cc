@@ -363,16 +363,19 @@ void DirectRenderer::DrawFrame(
   // viewport size is never set.
   bool use_stencil = overdraw_feedback_;
   bool needs_full_frame_redraw = false;
+  auto display_transform = output_surface_->GetDisplayTransform();
   if (surface_resource_size != reshape_surface_size_ ||
       device_scale_factor != reshape_device_scale_factor_ ||
       frame_color_space != reshape_color_space_ ||
       frame_buffer_format != reshape_buffer_format_ ||
-      use_stencil != reshape_use_stencil_) {
+      use_stencil != reshape_use_stencil_ ||
+      display_transform != reshape_display_transform_) {
     reshape_surface_size_ = surface_resource_size;
     reshape_device_scale_factor_ = device_scale_factor;
     reshape_color_space_ = frame_color_space;
     reshape_buffer_format_ = frame_buffer_format;
     reshape_use_stencil_ = overdraw_feedback_;
+    reshape_display_transform_ = display_transform;
     output_surface_->Reshape(reshape_surface_size_,
                              reshape_device_scale_factor_, reshape_color_space_,
                              *reshape_buffer_format_, reshape_use_stencil_);
