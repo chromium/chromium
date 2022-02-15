@@ -148,18 +148,8 @@ class RootWindowTransformersTest : public AshTestBase {
   }
 };
 
-class UnfiedRootWindowTransformersTest : public RootWindowTransformersTest {
+class UnifiedRootWindowTransformersTest : public RootWindowTransformersTest {
  public:
-  UnfiedRootWindowTransformersTest() = default;
-
-  UnfiedRootWindowTransformersTest(const UnfiedRootWindowTransformersTest&) =
-      delete;
-  UnfiedRootWindowTransformersTest& operator=(
-      const UnfiedRootWindowTransformersTest&) = delete;
-
-  ~UnfiedRootWindowTransformersTest() override = default;
-
-  // RootWindowTransformersTest:
   void SetUp() override {
     // kEnableUnifiedDesktop switch needs to be added before DisplayManager
     // creation. Hence before calling SetUp.
@@ -580,7 +570,7 @@ TEST_F(RootWindowTransformersTest, ShouldSetWindowSizeDuringOpacityAnimation) {
   EXPECT_EQ(root_window->GetTargetBounds(), gfx::Rect(0, 0, 600, 800));
 }
 
-TEST_F(UnfiedRootWindowTransformersTest, HostBoundsAndTransform) {
+TEST_F(UnifiedRootWindowTransformersTest, HostBoundsAndTransform) {
   UpdateDisplay("800x600,800x600");
   // Has only one logical root window.
   EXPECT_EQ(1u, Shell::GetAllRootWindows().size());
@@ -600,6 +590,184 @@ TEST_F(UnfiedRootWindowTransformersTest, HostBoundsAndTransform) {
   gfx::Point viewport_1_origin(0, 0);
   hosts[1]->window()->transform().TransformPointReverse(&viewport_1_origin);
   EXPECT_EQ(gfx::Point(800, 0), viewport_1_origin);
+}
+
+TEST_F(UnifiedRootWindowTransformersTest,
+       PrimaryDisplayRotationAndInputEvents) {
+  TestEventHandler event_handler;
+  Shell::Get()->AddPreTargetHandler(&event_handler);
+
+  // Use different sized displays with primary display rotated to the right.
+  UpdateDisplay("1920x1080*2/r,800x600");
+  base::RunLoop().RunUntilIdle();
+
+  // Has only one logical root window.
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  EXPECT_EQ(1u, root_windows.size());
+
+  MirrorWindowTestApi test_api;
+  std::vector<aura::WindowTreeHost*> hosts = test_api.GetHosts();
+  // Have 2 WindowTreeHosts, one per display.
+  ASSERT_EQ(2u, hosts.size());
+
+  EXPECT_EQ(display::Display::ROTATE_90,
+            GetActiveDisplayRotation(hosts[0]->GetDisplayId()));
+  EXPECT_EQ(display::Display::ROTATE_0,
+            GetActiveDisplayRotation(hosts[1]->GetDisplayId()));
+
+  EXPECT_EQ(gfx::Rect(0, 0, 1080, 1920),
+            hosts[0]->window()->GetBoundsInScreen());
+  gfx::Point viewport_0_origin(0, 0);
+  EXPECT_TRUE(hosts[0]->window()->transform().TransformPointReverse(
+      &viewport_0_origin));
+  EXPECT_EQ(gfx::Point(0, 0), viewport_0_origin);
+  gfx::Point viewport_0_bottom_right(1000, 1900);
+  EXPECT_TRUE(hosts[0]->window()->transform().TransformPointReverse(
+      &viewport_0_bottom_right));
+  EXPECT_EQ(gfx::Point(1000, 1900), viewport_0_bottom_right);
+
+  EXPECT_EQ(gfx::Rect(1080, 0, 800, 600),
+            hosts[1]->window()->GetBoundsInScreen());
+  gfx::Point viewport_1_origin(0, 0);
+  EXPECT_TRUE(hosts[1]->window()->transform().TransformPointReverse(
+      &viewport_1_origin));
+  EXPECT_EQ(gfx::Point(1080, 0), viewport_1_origin);
+  gfx::Point viewport_1_bottom_right(800, 600);
+  EXPECT_TRUE(hosts[1]->window()->transform().TransformPointReverse(
+      &viewport_1_bottom_right));
+  // Since the first display is rotated, the unified height is 1920.
+  // The 2nd display's height of 600 is scaled to this: 1920/600=3.2.
+  // So the bottom right corner of the 2nd display has
+  // x=1080+(800*3.2)=3640 and y=0+(600*3.2)=1920.
+  EXPECT_EQ(gfx::Point(3640, 1920), viewport_1_bottom_right);
+
+  // Mouse input on the 1st display.
+  ui::test::EventGenerator generator0(hosts[0]->window());
+  generator0.MoveMouseToInHost(0, 0);
+  // x=0/2=0 y=(1920-0)/2=960
+  // But y=959 because it's at the bottom edge.
+  EXPECT_EQ(gfx::Point(0, 959), event_handler.GetLocationAndReset());
+  generator0.MoveMouseToInHost(300, 200);
+  // x=200/2=100 y=(1920-300)/2=810
+  EXPECT_EQ(gfx::Point(100, 810), event_handler.GetLocationAndReset());
+  generator0.MoveMouseToInHost(1900, 1050);
+  // x=1050/2=525 y=(1920-1900)/2=10
+  EXPECT_EQ(gfx::Point(525, 10), event_handler.GetLocationAndReset());
+
+  // Mouse input on the 2nd display.
+  ui::test::EventGenerator generator1(hosts[1]->window());
+  generator1.MoveMouseToInHost(0, 0);
+  // x=(1080+(0*3.2))/2=540 y=0*3.2/2=0
+  EXPECT_EQ(gfx::Point(540, 0), event_handler.GetLocationAndReset());
+  generator1.MoveMouseToInHost(100, 200);
+  // x=(1080+(100*3.2))/2=700 y=200*3.2/2=320
+  EXPECT_EQ(gfx::Point(700, 320), event_handler.GetLocationAndReset());
+  generator1.MoveMouseToInHost(600, 500);
+  // x=(1080+(600*3.2))/2=1500 y=500*3.2/2=800
+  EXPECT_EQ(gfx::Point(1500, 800), event_handler.GetLocationAndReset());
+
+  Shell::Get()->RemovePreTargetHandler(&event_handler);
+}
+
+TEST_F(UnifiedRootWindowTransformersTest,
+       SecondaryDisplayRotationAndInputEvents) {
+  TestEventHandler event_handler;
+  Shell::Get()->AddPreTargetHandler(&event_handler);
+
+  // Use different sized displays with secondary display rotated to the right.
+  UpdateDisplay("1920x1080*2,800x600/r");
+  base::RunLoop().RunUntilIdle();
+
+  // Has only one logical root window.
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  EXPECT_EQ(1u, root_windows.size());
+
+  MirrorWindowTestApi test_api;
+  std::vector<aura::WindowTreeHost*> hosts = test_api.GetHosts();
+  // Have 2 WindowTreeHosts, one per display.
+  ASSERT_EQ(2u, hosts.size());
+
+  EXPECT_EQ(display::Display::ROTATE_0,
+            GetActiveDisplayRotation(hosts[0]->GetDisplayId()));
+  EXPECT_EQ(display::Display::ROTATE_90,
+            GetActiveDisplayRotation(hosts[1]->GetDisplayId()));
+
+  EXPECT_EQ(gfx::Rect(0, 0, 1920, 1080),
+            hosts[0]->window()->GetBoundsInScreen());
+  gfx::Point viewport_0_origin(0, 0);
+  EXPECT_TRUE(hosts[0]->window()->transform().TransformPointReverse(
+      &viewport_0_origin));
+  EXPECT_EQ(gfx::Point(0, 0), viewport_0_origin);
+  gfx::Point viewport_0_bottom_right(1900, 1000);
+  EXPECT_TRUE(hosts[0]->window()->transform().TransformPointReverse(
+      &viewport_0_bottom_right));
+  EXPECT_EQ(gfx::Point(1900, 1000), viewport_0_bottom_right);
+
+  EXPECT_EQ(gfx::Rect(1920, 0, 600, 800),
+            hosts[1]->window()->GetBoundsInScreen());
+  gfx::Point viewport_1_origin(0, 0);
+  EXPECT_TRUE(hosts[1]->window()->transform().TransformPointReverse(
+      &viewport_1_origin));
+  EXPECT_EQ(gfx::Point(1920, 0), viewport_1_origin);
+  gfx::Point viewport_1_bottom_right(600, 800);
+  EXPECT_TRUE(hosts[1]->window()->transform().TransformPointReverse(
+      &viewport_1_bottom_right));
+  // Since the 2nd display is rotated, its height is 800. This is scaled to the
+  // height of the 1st display, which is 1080. So the 2nd display's scaling is
+  // 1080/800=1.35. So the bottom right corner of the 2nd display has
+  // x=1920+(600*1.35)=2730 and y=0+(800*1.35)=1080.
+  EXPECT_EQ(gfx::Point(2730, 1080), viewport_1_bottom_right);
+
+  // Mouse input on the 1st display.
+  ui::test::EventGenerator generator0(hosts[0]->window());
+  generator0.MoveMouseToInHost(0, 0);
+  EXPECT_EQ(gfx::Point(0, 0), event_handler.GetLocationAndReset());
+  generator0.MoveMouseToInHost(300, 200);
+  EXPECT_EQ(gfx::Point(150, 100), event_handler.GetLocationAndReset());
+  generator0.MoveMouseToInHost(1900, 1000);
+  EXPECT_EQ(gfx::Point(950, 500), event_handler.GetLocationAndReset());
+
+  // Mouse input on the 2nd display.
+  ui::test::EventGenerator generator1(hosts[1]->window());
+  generator1.MoveMouseToInHost(0, 0);
+  // x=(1920+(0*1.35))/2=960 y=(800-0)*1.35/2=540
+  // But y=539 because it's at the bottom edge.
+  EXPECT_EQ(gfx::Point(960, 539), event_handler.GetLocationAndReset());
+  generator1.MoveMouseToInHost(100, 200);
+  // x=(1920+(200*1.35))/2=1095 y=(800-100)*1.35/2=472.5
+  EXPECT_EQ(gfx::Point(1095, 472), event_handler.GetLocationAndReset());
+  generator1.MoveMouseToInHost(700, 500);
+  // x=(1920+(500*1.35))/2=1297.5 y=(800-700)*1.35/2=67.5
+  EXPECT_EQ(gfx::Point(1297, 67), event_handler.GetLocationAndReset());
+
+  // Now rotate the 2nd display to the left.
+  UpdateDisplay("1920x1080*2,800x600/l");
+  base::RunLoop().RunUntilIdle();
+
+  hosts = test_api.GetHosts();
+  // Have 2 WindowTreeHosts, one per display.
+  ASSERT_EQ(2u, hosts.size());
+
+  EXPECT_EQ(display::Display::ROTATE_270,
+            GetActiveDisplayRotation(hosts[1]->GetDisplayId()));
+
+  EXPECT_EQ(gfx::Rect(1920, 0, 600, 800),
+            hosts[1]->window()->GetBoundsInScreen());
+
+  // Mouse input on the 2nd display.
+  ui::test::EventGenerator generator2(hosts[1]->window());
+  generator2.MoveMouseToInHost(0, 0);
+  // x=(1920+((600-0)*1.35))/2=1365 y=0*1.35/2=0
+  // But x=1364 because it's at the right most edge.
+  EXPECT_EQ(gfx::Point(1364, 0), event_handler.GetLocationAndReset());
+  generator2.MoveMouseToInHost(100, 200);
+  // x=(1920+((600-200)*1.35))/2=1230 y=100*1.35/2=67.5
+  EXPECT_EQ(gfx::Point(1230, 67), event_handler.GetLocationAndReset());
+  generator2.MoveMouseToInHost(110, 210);
+  // x=(1920+((600-210)*1.35))/2=1223.25 y=110*1.35/2=74.25
+  EXPECT_EQ(gfx::Point(1223, 74), event_handler.GetLocationAndReset());
+
+  Shell::Get()->RemovePreTargetHandler(&event_handler);
 }
 
 }  // namespace ash

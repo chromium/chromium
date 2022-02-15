@@ -336,7 +336,11 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
     transform_.Scale(scale, scale);
     transform_.Translate(-SkIntToScalar(display.bounds().x()),
                          -SkIntToScalar(display.bounds().y()));
-    gfx::Transform rotation = CreateRootWindowRotationTransform(display);
+    // Scaling using physical root bounds here, because rotation is applied
+    // before device_scale_factor is applied.
+    gfx::Transform rotation = CreateRotationTransform(
+        display::Display::ROTATE_0, display.panel_rotation(),
+        gfx::SizeF(root_bounds_.size()));
     CHECK((rotation * transform_).GetInverse(&invert_transform_));
   }
 
