@@ -12,11 +12,13 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -31,6 +33,7 @@
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -93,14 +96,14 @@ namespace SetStoreLogin = api::webstore_private::SetStoreLogin;
 namespace {
 
 // Holds the Approvals between the time we prompt and start the installs.
-class PendingApprovals {
+class PendingApprovals : public ProfileObserver {
  public:
-  PendingApprovals();
+  PendingApprovals() = default;
 
   PendingApprovals(const PendingApprovals&) = delete;
   PendingApprovals& operator=(const PendingApprovals&) = delete;
 
-  ~PendingApprovals();
+  ~PendingApprovals() override = default;
 
   void PushApproval(std::unique_ptr<WebstoreInstaller::Approval> approval);
   std::unique_ptr<WebstoreInstaller::Approval> PopApproval(
@@ -108,18 +111,44 @@ class PendingApprovals {
       const std::string& id);
   void Clear();
 
+  int GetCount() const { return approvals_.size(); }
+
  private:
+  // ProfileObserver
+  // Remove pending approvals if the Profile is being destroyed.
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    base::EraseIf(approvals_, [profile](const auto& approval) {
+      return approval->profile == profile;
+    });
+    observation_.RemoveObservation(profile);
+  }
+
+  void MaybeAddObservation(Profile* profile) {
+    if (!observation_.IsObservingSource(profile))
+      observation_.AddObservation(profile);
+  }
+
+  // Remove observation if there are no pending approvals
+  // for the Profile.
+  void MaybeRemoveObservation(Profile* profile) {
+    for (const auto& entry : approvals_) {
+      if (entry->profile == profile)
+        return;
+    }
+    observation_.RemoveObservation(profile);
+  }
+
   using ApprovalList =
       std::vector<std::unique_ptr<WebstoreInstaller::Approval>>;
 
   ApprovalList approvals_;
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver> observation_{
+      this};
 };
-
-PendingApprovals::PendingApprovals() {}
-PendingApprovals::~PendingApprovals() {}
 
 void PendingApprovals::PushApproval(
     std::unique_ptr<WebstoreInstaller::Approval> approval) {
+  MaybeAddObservation(approval->profile);
   approvals_.push_back(std::move(approval));
 }
 
@@ -131,6 +160,7 @@ std::unique_ptr<WebstoreInstaller::Approval> PendingApprovals::PopApproval(
         profile->IsSameOrParent(iter->get()->profile)) {
       std::unique_ptr<WebstoreInstaller::Approval> approval = std::move(*iter);
       approvals_.erase(iter);
+      MaybeRemoveObservation(approval->profile);
       return approval;
     }
   }
@@ -396,6 +426,10 @@ WebstorePrivateApi::PopApprovalForTesting(Profile* profile,
 
 void WebstorePrivateApi::ClearPendingApprovalsForTesting() {
   g_pending_approvals.Get().Clear();
+}
+
+int WebstorePrivateApi::GetPendingApprovalsCountForTesting() {
+  return g_pending_approvals.Get().GetCount();
 }
 
 WebstorePrivateBeginInstallWithManifest3Function::

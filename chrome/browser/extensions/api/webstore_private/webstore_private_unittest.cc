@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
@@ -650,10 +651,44 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
 
   std::unique_ptr<base::Value> response = RunFunctionAndReturnValue(
       function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
-  // The API returns empty string when extension is installed successfully.
+  // The API returns an empty string on success.
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_string());
   EXPECT_EQ(std::string(), response->GetString());
+}
+
+TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
+       ProfileDeletedBeforeCompleteInstall) {
+  const std::string profile_name = "deleted_before_complete_install";
+  TestingProfile* const test_profile =
+      profile_manager()->CreateTestingProfile(profile_name);
+  ASSERT_TRUE(test_profile);
+  // There should be no pending approvals.
+  EXPECT_EQ(WebstorePrivateApi::GetPendingApprovalsCountForTesting(), 0);
+  {
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContentsTester::CreateTestWebContents(test_profile,
+                                                          nullptr);
+    auto function = base::MakeRefCounted<
+        WebstorePrivateBeginInstallWithManifest3Function>();
+    function->SetRenderFrameHost(web_contents->GetMainFrame());
+    ScopedTestDialogAutoConfirm auto_confirm(
+        ScopedTestDialogAutoConfirm::ACCEPT);
+
+    function->set_extension(extension());
+    auto response = api_test_utils::RunFunctionAndReturnSingleResult(
+        function.get(), GenerateArgs(kExtensionId, kExtensionManifest),
+        test_profile);
+    // The API returns an empty string on success.
+    ASSERT_TRUE(response);
+    ASSERT_TRUE(response->is_string());
+    EXPECT_EQ(response->GetString(), "");
+    // Running the function creates a pending approval.
+    EXPECT_EQ(WebstorePrivateApi::GetPendingApprovalsCountForTesting(), 1);
+  }
+  // Deleting the Profile should remove the pending approval.
+  profile_manager()->DeleteTestingProfile(profile_name);
+  EXPECT_EQ(WebstorePrivateApi::GetPendingApprovalsCountForTesting(), 0);
 }
 
 struct FrictionDialogTestCase {
