@@ -2140,174 +2140,235 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   if (image_data->mode == DecodedDataMode::kTransferCache) {
     DCHECK(use_transfer_cache_);
     if (image_data->decode.do_hardware_accelerated_decode()) {
-      // The assumption is that scaling is not currently supported for
-      // hardware-accelerated decodes.
-      DCHECK_EQ(0, image_data->upload_scale_mip_level);
-      const gfx::Size output_size(draw_image.paint_image().width(),
-                                  draw_image.paint_image().height());
-
-      // Get the encoded data in a contiguous form.
-      sk_sp<SkData> encoded_data =
-          draw_image.paint_image().GetSwSkImage()->refEncodedData();
-      DCHECK(encoded_data);
-      const uint32_t transfer_cache_id =
-          ClientImageTransferCacheEntry::GetNextId();
-      const gpu::SyncToken decode_sync_token =
-          context_->RasterInterface()->ScheduleImageDecode(
-              base::make_span(encoded_data->bytes(), encoded_data->size()),
-              output_size, transfer_cache_id,
-              color_space ? gfx::ColorSpace(*color_space) : gfx::ColorSpace(),
-              image_data->needs_mips);
-
-      if (!decode_sync_token.HasData()) {
-        image_data->decode.decode_failure = true;
-        return;
-      }
-
-      image_data->upload.SetTransferCacheId(transfer_cache_id);
-
-      // Note that we wait for the decode sync token here for two reasons:
-      //
-      // 1) To make sure that raster work that depends on the image decode
-      //    happens after the decode completes.
-      //
-      // 2) To protect the transfer cache entry from being unlocked on the
-      //    service side before the decode is completed.
-      context_->RasterInterface()->WaitSyncTokenCHROMIUM(
-          decode_sync_token.GetConstData());
-
-      return;
-    }
-
-    // Non-hardware-accelerated path.
-    if (image_data->yuva_pixmap_info.has_value()) {
-      SkPixmap yuv_pixmaps[3];
-      if (!image_data->decode.y_image()->peekPixels(&yuv_pixmaps[0]) ||
-          !image_data->decode.u_image()->peekPixels(&yuv_pixmaps[1]) ||
-          !image_data->decode.v_image()->peekPixels(&yuv_pixmaps[2])) {
-        return;
-      }
-      ClientImageTransferCacheEntry image_entry(
-          yuv_pixmaps, image_data->yuva_pixmap_info->yuvaInfo().planeConfig(),
-          image_data->yuva_pixmap_info->yuvaInfo().subsampling(),
-          decoded_target_colorspace.get(),
-          image_data->yuva_pixmap_info->yuvaInfo().yuvColorSpace(),
-          image_data->needs_mips);
-      if (!image_entry.IsValid())
-        return;
-      InsertTransferCacheEntry(image_entry, image_data);
+      UploadImageIfNecessary_TransferCache_HardwareDecode(
+          draw_image, image_data, color_space);
+    } else if (image_data->yuva_pixmap_info.has_value()) {
+      UploadImageIfNecessary_TransferCache_SoftwareDecode_YUVA(
+          draw_image, image_data, decoded_target_colorspace);
     } else {
-      SkPixmap pixmap;
-      if (!image_data->decode.image()->peekPixels(&pixmap))
-        return;
-      if (needs_adjusted_color_space)
-        pixmap.setColorSpace(decoded_target_colorspace);
-
-      ClientImageTransferCacheEntry image_entry(&pixmap, color_space.get(),
-                                                image_data->needs_mips);
-      if (!image_entry.IsValid())
-        return;
-      InsertTransferCacheEntry(image_entry, image_data);
+      UploadImageIfNecessary_TransferCache_SoftwareDecode_RGBA(
+          draw_image, image_data, needs_adjusted_color_space,
+          decoded_target_colorspace, color_space);
     }
+  } else {
+    // Grab a reference to our decoded image. For the kCpu path, we will use
+    // this directly as our "uploaded" data.
+    sk_sp<SkImage> uploaded_image = image_data->decode.image();
+    GrMipMapped image_needs_mips =
+        image_data->needs_mips ? GrMipMapped::kYes : GrMipMapped::kNo;
 
+    if (image_data->yuva_pixmap_info.has_value()) {
+      UploadImageIfNecessary_GpuCpu_YUVA(
+          draw_image, image_data, uploaded_image, image_needs_mips,
+          decoded_target_colorspace, color_space);
+    } else {
+      UploadImageIfNecessary_GpuCpu_RGBA(
+          draw_image, image_data, uploaded_image, image_needs_mips,
+          needs_adjusted_color_space, decoded_target_colorspace, color_space);
+    }
+  }
+}
+
+void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_HardwareDecode(
+    const DrawImage& draw_image,
+    ImageData* image_data,
+    sk_sp<SkColorSpace> color_space) {
+  DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
+  DCHECK(use_transfer_cache_);
+  DCHECK(image_data->decode.do_hardware_accelerated_decode());
+
+  // The assumption is that scaling is not currently supported for
+  // hardware-accelerated decodes.
+  DCHECK_EQ(0, image_data->upload_scale_mip_level);
+  const gfx::Size output_size(draw_image.paint_image().width(),
+                              draw_image.paint_image().height());
+
+  // Get the encoded data in a contiguous form.
+  sk_sp<SkData> encoded_data =
+      draw_image.paint_image().GetSwSkImage()->refEncodedData();
+  DCHECK(encoded_data);
+  const uint32_t transfer_cache_id = ClientImageTransferCacheEntry::GetNextId();
+  const gpu::SyncToken decode_sync_token =
+      context_->RasterInterface()->ScheduleImageDecode(
+          base::make_span(encoded_data->bytes(), encoded_data->size()),
+          output_size, transfer_cache_id,
+          color_space ? gfx::ColorSpace(*color_space) : gfx::ColorSpace(),
+          image_data->needs_mips);
+
+  if (!decode_sync_token.HasData()) {
+    image_data->decode.decode_failure = true;
     return;
   }
 
-  // If we reached this point, we are in the CPU/GPU path (not transfer cache).
+  image_data->upload.SetTransferCacheId(transfer_cache_id);
+
+  // Note that we wait for the decode sync token here for two reasons:
+  //
+  // 1) To make sure that raster work that depends on the image decode
+  //    happens after the decode completes.
+  //
+  // 2) To protect the transfer cache entry from being unlocked on the
+  //    service side before the decode is completed.
+  context_->RasterInterface()->WaitSyncTokenCHROMIUM(
+      decode_sync_token.GetConstData());
+}
+
+void GpuImageDecodeCache::
+    UploadImageIfNecessary_TransferCache_SoftwareDecode_YUVA(
+        const DrawImage& draw_image,
+        ImageData* image_data,
+        sk_sp<SkColorSpace> decoded_target_colorspace) {
+  DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
+  DCHECK(use_transfer_cache_);
+  DCHECK(!image_data->decode.do_hardware_accelerated_decode());
+  DCHECK(image_data->yuva_pixmap_info.has_value());
+
+  SkPixmap yuv_pixmaps[3];
+  if (!image_data->decode.y_image()->peekPixels(&yuv_pixmaps[0]) ||
+      !image_data->decode.u_image()->peekPixels(&yuv_pixmaps[1]) ||
+      !image_data->decode.v_image()->peekPixels(&yuv_pixmaps[2])) {
+    return;
+  }
+  ClientImageTransferCacheEntry image_entry(
+      yuv_pixmaps, image_data->yuva_pixmap_info->yuvaInfo().planeConfig(),
+      image_data->yuva_pixmap_info->yuvaInfo().subsampling(),
+      decoded_target_colorspace.get(),
+      image_data->yuva_pixmap_info->yuvaInfo().yuvColorSpace(),
+      image_data->needs_mips);
+  if (!image_entry.IsValid())
+    return;
+  InsertTransferCacheEntry(image_entry, image_data);
+}
+
+void GpuImageDecodeCache::
+    UploadImageIfNecessary_TransferCache_SoftwareDecode_RGBA(
+        const DrawImage& draw_image,
+        ImageData* image_data,
+        bool needs_adjusted_color_space,
+        sk_sp<SkColorSpace> decoded_target_colorspace,
+        sk_sp<SkColorSpace> color_space) {
+  DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
+  DCHECK(use_transfer_cache_);
+  DCHECK(!image_data->decode.do_hardware_accelerated_decode());
+  DCHECK(!image_data->yuva_pixmap_info.has_value());
+
+  SkPixmap pixmap;
+  if (!image_data->decode.image()->peekPixels(&pixmap))
+    return;
+  if (needs_adjusted_color_space)
+    pixmap.setColorSpace(decoded_target_colorspace);
+
+  ClientImageTransferCacheEntry image_entry(&pixmap, color_space.get(),
+                                            image_data->needs_mips);
+  if (!image_entry.IsValid())
+    return;
+  InsertTransferCacheEntry(image_entry, image_data);
+}
+
+void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
+    const DrawImage& draw_image,
+    ImageData* image_data,
+    sk_sp<SkImage> uploaded_image,
+    GrMipMapped image_needs_mips,
+    sk_sp<SkColorSpace> decoded_target_colorspace,
+    sk_sp<SkColorSpace> color_space) {
   DCHECK(!use_transfer_cache_);
+  DCHECK(image_data->yuva_pixmap_info.has_value());
 
   // Grab a reference to our decoded image. For the kCpu path, we will use
   // this directly as our "uploaded" data.
-  sk_sp<SkImage> uploaded_image = image_data->decode.image();
-  GrMipMapped image_needs_mips =
-      image_data->needs_mips ? GrMipMapped::kYes : GrMipMapped::kNo;
+  sk_sp<SkImage> uploaded_y_image = image_data->decode.y_image();
+  sk_sp<SkImage> uploaded_u_image = image_data->decode.u_image();
+  sk_sp<SkImage> uploaded_v_image = image_data->decode.v_image();
 
-  if (image_data->yuva_pixmap_info.has_value()) {
-    // Grab a reference to our decoded image. For the kCpu path, we will use
-    // this directly as our "uploaded" data.
-    sk_sp<SkImage> uploaded_y_image = image_data->decode.y_image();
-    sk_sp<SkImage> uploaded_u_image = image_data->decode.u_image();
-    sk_sp<SkImage> uploaded_v_image = image_data->decode.v_image();
-
-    // For kGpu, we upload and color convert (if necessary).
-    if (image_data->mode == DecodedDataMode::kGpu) {
-      DCHECK(!use_transfer_cache_);
-      base::AutoUnlock unlock(lock_);
-      uploaded_y_image = uploaded_y_image->makeTextureImage(
-          context_->GrContext(), image_needs_mips);
-      uploaded_u_image = uploaded_u_image->makeTextureImage(
-          context_->GrContext(), image_needs_mips);
-      uploaded_v_image = uploaded_v_image->makeTextureImage(
-          context_->GrContext(), image_needs_mips);
-      if (!uploaded_y_image || !uploaded_u_image || !uploaded_v_image) {
-        DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
-        return;
-      }
-
-      int image_width = uploaded_y_image->width();
-      int image_height = uploaded_y_image->height();
-      uploaded_image = CreateImageFromYUVATexturesInternal(
-          uploaded_y_image.get(), uploaded_u_image.get(),
-          uploaded_v_image.get(), image_width, image_height,
-          image_data->yuva_pixmap_info->yuvaInfo().planeConfig(),
-          image_data->yuva_pixmap_info->yuvaInfo().subsampling(),
-          image_data->yuva_pixmap_info->yuvaInfo().yuvColorSpace(), color_space,
-          decoded_target_colorspace);
-    }
-
-    // At-raster may have decoded this while we were unlocked. If so, ignore our
-    // result.
-    if (image_data->HasUploadedData()) {
-      if (uploaded_image) {
-        DCHECK(uploaded_y_image);
-        DCHECK(uploaded_u_image);
-        DCHECK(uploaded_v_image);
-        // We do not call DeleteSkImageAndPreventCaching for |uploaded_image|
-        // because calls to getBackendTexture will flatten the YUV planes to
-        // an RGB texture only to immediately delete it.
-        DeleteSkImageAndPreventCaching(context_, std::move(uploaded_y_image));
-        DeleteSkImageAndPreventCaching(context_, std::move(uploaded_u_image));
-        DeleteSkImageAndPreventCaching(context_, std::move(uploaded_v_image));
-      }
-      return;
-    }
-
-    // TODO(crbug.com/740737): |uploaded_image| is sometimes null in certain
-    // context-lost situations, so it is handled with an early out.
-    if (!uploaded_image || !uploaded_y_image || !uploaded_u_image ||
-        !uploaded_v_image) {
+  // For kGpu, we upload and color convert (if necessary).
+  if (image_data->mode == DecodedDataMode::kGpu) {
+    DCHECK(!use_transfer_cache_);
+    base::AutoUnlock unlock(lock_);
+    uploaded_y_image = uploaded_y_image->makeTextureImage(context_->GrContext(),
+                                                          image_needs_mips);
+    uploaded_u_image = uploaded_u_image->makeTextureImage(context_->GrContext(),
+                                                          image_needs_mips);
+    uploaded_v_image = uploaded_v_image->makeTextureImage(context_->GrContext(),
+                                                          image_needs_mips);
+    if (!uploaded_y_image || !uploaded_u_image || !uploaded_v_image) {
       DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
       return;
     }
 
-    uploaded_y_image = TakeOwnershipOfSkImageBacking(
-        context_->GrContext(), std::move(uploaded_y_image));
-    uploaded_u_image = TakeOwnershipOfSkImageBacking(
-        context_->GrContext(), std::move(uploaded_u_image));
-    uploaded_v_image = TakeOwnershipOfSkImageBacking(
-        context_->GrContext(), std::move(uploaded_v_image));
+    int image_width = uploaded_y_image->width();
+    int image_height = uploaded_y_image->height();
+    uploaded_image = CreateImageFromYUVATexturesInternal(
+        uploaded_y_image.get(), uploaded_u_image.get(), uploaded_v_image.get(),
+        image_width, image_height,
+        image_data->yuva_pixmap_info->yuvaInfo().planeConfig(),
+        image_data->yuva_pixmap_info->yuvaInfo().subsampling(),
+        image_data->yuva_pixmap_info->yuvaInfo().yuvColorSpace(), color_space,
+        decoded_target_colorspace);
+  }
 
-    image_data->upload.SetImage(std::move(uploaded_image),
-                                image_data->yuva_pixmap_info.has_value());
-    image_data->upload.SetYuvImage(std::move(uploaded_y_image),
-                                   std::move(uploaded_u_image),
-                                   std::move(uploaded_v_image));
-
-    // If we have a new GPU-backed image, initialize it for use in the GPU
-    // discardable system.
-    if (image_data->mode == DecodedDataMode::kGpu) {
-      // Notify the discardable system of the planes so they will count against
-      // budgets.
-      context_->RasterInterface()->InitializeDiscardableTextureCHROMIUM(
-          image_data->upload.gl_y_id());
-      context_->RasterInterface()->InitializeDiscardableTextureCHROMIUM(
-          image_data->upload.gl_u_id());
-      context_->RasterInterface()->InitializeDiscardableTextureCHROMIUM(
-          image_data->upload.gl_v_id());
+  // At-raster may have decoded this while we were unlocked. If so, ignore our
+  // result.
+  if (image_data->HasUploadedData()) {
+    if (uploaded_image) {
+      DCHECK(uploaded_y_image);
+      DCHECK(uploaded_u_image);
+      DCHECK(uploaded_v_image);
+      // We do not call DeleteSkImageAndPreventCaching for |uploaded_image|
+      // because calls to getBackendTexture will flatten the YUV planes to
+      // an RGB texture only to immediately delete it.
+      DeleteSkImageAndPreventCaching(context_, std::move(uploaded_y_image));
+      DeleteSkImageAndPreventCaching(context_, std::move(uploaded_u_image));
+      DeleteSkImageAndPreventCaching(context_, std::move(uploaded_v_image));
     }
-    // YUV decoding ends.
     return;
   }
+
+  // TODO(crbug.com/740737): |uploaded_image| is sometimes null in certain
+  // context-lost situations, so it is handled with an early out.
+  if (!uploaded_image || !uploaded_y_image || !uploaded_u_image ||
+      !uploaded_v_image) {
+    DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
+    return;
+  }
+
+  uploaded_y_image = TakeOwnershipOfSkImageBacking(context_->GrContext(),
+                                                   std::move(uploaded_y_image));
+  uploaded_u_image = TakeOwnershipOfSkImageBacking(context_->GrContext(),
+                                                   std::move(uploaded_u_image));
+  uploaded_v_image = TakeOwnershipOfSkImageBacking(context_->GrContext(),
+                                                   std::move(uploaded_v_image));
+
+  image_data->upload.SetImage(std::move(uploaded_image),
+                              image_data->yuva_pixmap_info.has_value());
+  image_data->upload.SetYuvImage(std::move(uploaded_y_image),
+                                 std::move(uploaded_u_image),
+                                 std::move(uploaded_v_image));
+
+  // If we have a new GPU-backed image, initialize it for use in the GPU
+  // discardable system.
+  if (image_data->mode == DecodedDataMode::kGpu) {
+    // Notify the discardable system of the planes so they will count against
+    // budgets.
+    context_->RasterInterface()->InitializeDiscardableTextureCHROMIUM(
+        image_data->upload.gl_y_id());
+    context_->RasterInterface()->InitializeDiscardableTextureCHROMIUM(
+        image_data->upload.gl_u_id());
+    context_->RasterInterface()->InitializeDiscardableTextureCHROMIUM(
+        image_data->upload.gl_v_id());
+  }
+}
+
+void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_RGBA(
+    const DrawImage& draw_image,
+    ImageData* image_data,
+    sk_sp<SkImage> uploaded_image,
+    GrMipMapped image_needs_mips,
+    bool needs_adjusted_color_space,
+    sk_sp<SkColorSpace> decoded_target_colorspace,
+    sk_sp<SkColorSpace> color_space) {
+  DCHECK(!use_transfer_cache_);
+  DCHECK(!image_data->yuva_pixmap_info.has_value());
 
   // TODO(crbug.com/1120719): The RGBX path is broken for HDR images.
   if (needs_adjusted_color_space) {
