@@ -18,7 +18,6 @@ import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -55,20 +54,6 @@ public class AutofillAssistantUiController {
     private final AssistantFeedbackUtil mFeedbackUtil;
     @Nullable
     private AssistantSnackbar mSnackbar;
-
-    /**
-     * Getter for the current profile while assistant is running. Since autofill assistant is only
-     * available in regular mode and there is only one regular profile in android, this method
-     * returns {@link Profile#getLastUsedRegularProfile()}.
-     *
-     * TODO(b/161519639): Return current profile to support multi profiles, instead of returning
-     * always regular profile. This could be achieve by retrieving profile from native and using it
-     * where the profile is needed on Java side.
-     * @return The current regular profile.
-     */
-    public static Profile getProfile() {
-        return Profile.getLastUsedRegularProfile();
-    }
 
     /**
      * Returns {@code true} if an activity without a ui controller was found.

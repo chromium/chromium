@@ -21,7 +21,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
 import org.chromium.chrome.browser.autofill_assistant.drawable.AssistantDrawableIcon;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -79,8 +78,8 @@ public abstract class AssistantDrawable {
 
     @CalledByNative
     public static AssistantDrawable createFromFavicon(
-            GURL url, int diameterSizeInPixel, boolean forceMonogram) {
-        return new AssistantFaviconDrawable(url, diameterSizeInPixel, forceMonogram);
+            LargeIconBridge iconBridge, GURL url, int diameterSizeInPixel, boolean forceMonogram) {
+        return new AssistantFaviconDrawable(iconBridge, url, diameterSizeInPixel, forceMonogram);
     }
 
     private static class AssistantRectangleDrawable extends AssistantDrawable {
@@ -230,11 +229,14 @@ public abstract class AssistantDrawable {
     }
 
     private static class AssistantFaviconDrawable extends AssistantDrawable {
+        private final LargeIconBridge mIconBridge;
         private final GURL mUrl;
         private final int mDiameterSizeInPixel;
         private final Boolean mForceMonogram;
 
-        AssistantFaviconDrawable(GURL url, int diameterSizeInPixel, boolean forceMonogram) {
+        AssistantFaviconDrawable(LargeIconBridge iconBridge, GURL url, int diameterSizeInPixel,
+                boolean forceMonogram) {
+            mIconBridge = iconBridge;
             mUrl = url;
             mDiameterSizeInPixel = diameterSizeInPixel;
             mForceMonogram = forceMonogram;
@@ -242,9 +244,7 @@ public abstract class AssistantDrawable {
 
         @Override
         public void getDrawable(Context context, Callback<Drawable> callback) {
-            final LargeIconBridge iconBridge =
-                    new LargeIconBridge(AutofillAssistantUiController.getProfile());
-            iconBridge.getLargeIconForUrl(mUrl, mDiameterSizeInPixel,
+            mIconBridge.getLargeIconForUrl(mUrl, mDiameterSizeInPixel,
                     (@Nullable Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
                             int iconType) -> {
                         Resources resources = context.getResources();

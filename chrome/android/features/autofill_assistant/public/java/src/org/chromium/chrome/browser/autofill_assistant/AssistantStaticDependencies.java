@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.AccessibilityUtil;
@@ -55,6 +56,9 @@ public interface AssistantStaticDependencies {
 
     @CalledByNative
     ImageFetcher createImageFetcher();
+
+    @CalledByNative
+    LargeIconBridge createIconBridge();
 
     @Nullable
     String getSignedInAccountEmailOrNull();

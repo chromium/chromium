@@ -248,8 +248,9 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
                      ? GURL(proto.favicon().website_url())
                      : user_model->GetCurrentURL();
       return Java_AssistantDrawable_createFromFavicon(
-          env, url::GURLAndroid::FromNativeGURL(env, url),
-          diameter_size_in_pixel, proto.favicon().force_monogram());
+          env, dependencies.CreateIconBridge(),
+          url::GURLAndroid::FromNativeGURL(env, url), diameter_size_in_pixel,
+          proto.favicon().force_monogram());
     }
     case DrawableProto::DRAWABLE_NOT_SET:
       return nullptr;

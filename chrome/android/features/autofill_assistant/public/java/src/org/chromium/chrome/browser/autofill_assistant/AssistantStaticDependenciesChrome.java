@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.TabObscuringHandlerSupplier;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -100,6 +101,11 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
     public ImageFetcher createImageFetcher() {
         return ImageFetcherFactory.createImageFetcher(
                 ImageFetcherConfig.DISK_CACHE_ONLY, getProfile().getProfileKey());
+    }
+
+    @Override
+    public LargeIconBridge createIconBridge() {
+        return new LargeIconBridge(getProfile());
     }
 
     @Override

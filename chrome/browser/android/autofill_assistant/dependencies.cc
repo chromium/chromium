@@ -59,6 +59,12 @@ ScopedJavaGlobalRef<jobject> Dependencies::CreateImageFetcher() const {
           AttachCurrentThread(), jstatic_dependencies_));
 }
 
+ScopedJavaGlobalRef<jobject> Dependencies::CreateIconBridge() const {
+  return ScopedJavaGlobalRef<jobject>(
+      Java_AssistantStaticDependencies_createIconBridge(AttachCurrentThread(),
+                                                        jstatic_dependencies_));
+}
+
 bool Dependencies::IsAccessibilityEnabled() const {
   return Java_AssistantStaticDependencies_isAccessibilityEnabled(
       AttachCurrentThread(), jstatic_dependencies_);

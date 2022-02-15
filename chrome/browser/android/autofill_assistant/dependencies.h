@@ -30,6 +30,7 @@ class Dependencies {
   base::android::ScopedJavaGlobalRef<jobject> CreateInfoPageUtil() const;
   base::android::ScopedJavaGlobalRef<jobject> CreateAccessTokenUtil() const;
   base::android::ScopedJavaGlobalRef<jobject> CreateImageFetcher() const;
+  base::android::ScopedJavaGlobalRef<jobject> CreateIconBridge() const;
 
   bool IsAccessibilityEnabled() const;
 
