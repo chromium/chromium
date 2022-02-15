@@ -1,0 +1,369 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 2f929064ff924..55152038d3c19 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -106,7 +106,6 @@ if (is_chromeos_ash) {
+       "src/prng/chacha_prng_util.cc",
+       "src/prng/single_thread_chacha_prng.cc",
+       "src/relinearization_key.cc",
+-      "src/statusor.cc",
+     ]
+     public_deps = [
+       ":serialization_proto",
+@@ -163,7 +162,6 @@ if (is_chromeos_ash) {
+       "src/relinearization_key_test.cc",
+       "src/sample_error_test.cc",
+       "src/status_macros_test.cc",
+-      "src/statusor_test.cc",
+       "src/symmetric_encryption_test.cc",
+       "src/symmetric_encryption_with_prng_test.cc",
+       "src/testing/coefficient_polynomial_ciphertext_test.cc",
+diff --git a/patches/0006-Quit-using-ValueOrDie.patch b/patches/0006-Quit-using-ValueOrDie.patch
+new file mode 100644
+index 0000000000000..e69de29bb2d1d
+diff --git a/src/montgomery_test.cc b/src/montgomery_test.cc
+index 2d952ddfbdad4..97444fc6c15c2 100644
+--- a/src/montgomery_test.cc
++++ b/src/montgomery_test.cc
+@@ -768,7 +768,7 @@ TYPED_TEST(MontgomeryTest, BatchOperations) {
+       std::vector<TypeParam> expected_add, expected_sub, expected_mul;
+       TypeParam scalar =
+           TypeParam::ImportRandom(prng.get(), modulus_params.get())
+-              .ValueOrDie();
++              .value();
+       auto scalar_constants_tuple = scalar.GetConstant(modulus_params.get());
+       auto scalar_constant = std::get<0>(scalar_constants_tuple);
+       auto scalar_constant_barrett = std::get<1>(scalar_constants_tuple);
+@@ -776,9 +776,9 @@ TYPED_TEST(MontgomeryTest, BatchOperations) {
+           expected_mul_scalar;
+       for (size_t i = 0; i < length; i++) {
+         a.push_back(TypeParam::ImportRandom(prng.get(), modulus_params.get())
+-                        .ValueOrDie());
++                        .value());
+         b.push_back(TypeParam::ImportRandom(prng.get(), modulus_params.get())
+-                        .ValueOrDie());
++                        .value());
+         auto constants_tuple = b[i].GetConstant(modulus_params.get());
+         auto constant = std::get<0>(constants_tuple);
+         auto constant_barrett = std::get<1>(constants_tuple); 
+diff --git a/src/polynomial_test.cc b/src/polynomial_test.cc
+index 6d5112e67c6b0..e246788d09bcc 100644
+--- a/src/polynomial_test.cc
++++ b/src/polynomial_test.cc
+@@ -55,7 +55,7 @@ template <typename Prng>
+ class PolynomialTest : public ::testing::Test {
+  protected:
+   PolynomialTest()
+-      : params14_(uint_m::Params::Create(rlwe::kNewhopeModulus).ValueOrDie()),
++      : params14_(uint_m::Params::Create(rlwe::kNewhopeModulus).value()),
+         zero_(uint_m::ImportZero(params14_.get())) {}
+ 
+   void SetUp() override { srand(0); }
+@@ -98,7 +98,7 @@ class PolynomialTest : public ::testing::Test {
+   }
+ 
+   std::unique_ptr<Prng> MakePrng(absl::string_view seed) {
+-    auto prng = Prng::Create(seed.substr(0, Prng::SeedLength())).ValueOrDie();
++    auto prng = Prng::Create(seed.substr(0, Prng::SeedLength())).value();
+     return prng;
+   }
+ 
+diff --git a/src/status_macros.h b/src/status_macros.h
+index d297bfe0ed682..2622f6e544b8e 100644
+--- a/src/status_macros.h
++++ b/src/status_macros.h
+@@ -34,7 +34,7 @@
+   if (ABSL_PREDICT_FALSE(!statusor.ok())) {               \
+     return std::move(statusor).status();                  \
+   }                                                       \
+-  lhs = std::move(statusor).ValueOrDie()
++  lhs = std::move(statusor).value()
+ 
+ // Internal helper for concatenating macro values.
+ #define RLWE_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
+diff --git a/src/status_macros_test.cc b/src/status_macros_test.cc
+index d43b55c9bb800..1f96d59e5d3b7 100644
+--- a/src/status_macros_test.cc
++++ b/src/status_macros_test.cc
+@@ -27,8 +27,8 @@ namespace {
+ TEST(StatusMacrosTest, TestAssignOrReturn) {
+   StatusOr<StatusOr<int>> a(StatusOr<int>(2));
+   auto f = [&]() -> absl::Status {
+-    RLWE_ASSIGN_OR_RETURN(StatusOr<int> status_or_a, a.ValueOrDie());
+-    EXPECT_EQ(2, status_or_a.ValueOrDie());
++    RLWE_ASSIGN_OR_RETURN(StatusOr<int> status_or_a, a.value());
++    EXPECT_EQ(2, status_or_a.value());
+     return absl::OkStatus();
+   };
+   auto status = f();
+diff --git a/src/statusor.h b/src/statusor.h
+index b7ada09372c9f..2d3ecd810c49c 100644
+--- a/src/statusor.h
++++ b/src/statusor.h
+@@ -17,239 +17,13 @@
+ #ifndef RLWE_STATUSOR_H_
+ #define RLWE_STATUSOR_H_
+ 
+-#include <cassert>
+-
+-#include "absl/base/attributes.h"
+-#include "absl/status/status.h"
+-#include "absl/types/optional.h"
++#include "absl/status/statusor.h"
+ #include "third_party/shell-encryption/base/shell_encryption_export.h"
+ 
+ namespace rlwe {
+ 
+ template <typename T>
+-class SHELL_ENCRYPTION_EXPORT StatusOr {
+- public:
+-  // Construct a new StatusOr with Status::UNKNOWN status
+-  StatusOr();
+-
+-  // Construct a new StatusOr with the given non-ok status. After calling
+-  // this constructor, calls to value() will CHECK-fail.
+-  //
+-  // NOTE: Not explicit - we want to use StatusOr<T> as a return
+-  // value, so it is convenient and sensible to be able to do 'return
+-  // Status()' when the return type is StatusOr<T>.
+-  //
+-  // REQUIRES: status != Status::OK. This requirement is DCHECKed.
+-  // In optimized builds, passing Status::OK here will have the effect
+-  // of passing PosixErrorSpace::EINVAL as a fallback.
+-  StatusOr(const absl::Status& status);
+-
+-  // Construct a new StatusOr with the given value. If T is a plain pointer,
+-  // value must not be NULL. After calling this constructor, calls to
+-  // value() will succeed, and calls to status() will return OK.
+-  //
+-  // NOTE: Not explicit - we want to use StatusOr<T> as a return type
+-  // so it is convenient and sensible to be able to do 'return T()'
+-  // when the return type is StatusOr<T>.
+-  //
+-  // REQUIRES: if T is a plain pointer, value != NULL. This requirement is
+-  // DCHECKed. In optimized builds, passing a NULL pointer here will have
+-  // the effect of passing absl::StatusCode::kInternal as a fallback.
+-  StatusOr(const T& value);
+-
+-  // Copy constructor.
+-  StatusOr(const StatusOr& other);
+-
+-  // Assignment operator.
+-  StatusOr& operator=(const StatusOr& other);
+-
+-  // Move constructor and move-assignment operator.
+-  StatusOr(StatusOr&& other) = default;
+-  StatusOr& operator=(StatusOr&& other) = default;
+-
+-  // Rvalue-reference overloads of the other constructors and assignment
+-  // operators, to support move-only types and avoid unnecessary copying.
+-  StatusOr(T&& value);
+-
+-  // Returns a reference to our status. If this contains a T, then
+-  // returns Status::OK.
+-  const absl::Status& status() const;
+-
+-  // Returns this->status().ok()
+-  bool ok() const;
+-
+-  // Returns a reference to our current value, or CHECK-fails if !this->ok().
+-  const T& ValueOrDie() const&;
+-  T& ValueOrDie() &;
+-  const T&& ValueOrDie() const&&;
+-  T&& ValueOrDie() &&;
+-
+-  // Returns a reference to our current value, or CHECK-fails if !this->ok().
+-  const T& value() const&;
+-  T& value() &;
+-  const T&& value() const&&;
+-  T&& value() &&;
+-
+-  // Ignores any errors. This method does nothing except potentially suppress
+-  // complaints from any tools that are checking that errors are not dropped on
+-  // the floor.
+-  void IgnoreError() const {}
+-
+-  operator absl::Status() const { return status(); }
+-
+-  template <template <typename> class OtherStatusOrType>
+-  operator OtherStatusOrType<T>() {
+-    if (value_) {
+-      return OtherStatusOrType<T>(std::move(value_.value()));
+-    } else {
+-      return OtherStatusOrType<T>(status());
+-    }
+-  }
+-
+- private:
+-  absl::Status status_;
+-  absl::optional<T> value_;
+-};
+-
+-namespace internal {
+-
+-class SHELL_ENCRYPTION_EXPORT StatusOrHelper {
+- public:
+-  // Move type-agnostic error handling to the .cc.
+-  static SHELL_ENCRYPTION_EXPORT absl::Status HandleInvalidStatusCtorArg();
+-  static SHELL_ENCRYPTION_EXPORT absl::Status HandleNullObjectCtorArg();
+-  static SHELL_ENCRYPTION_EXPORT void Crash(const absl::Status& status);
+-
+-  // Customized behavior for StatusOr<T> vs. StatusOr<T*>
+-  template <typename T>
+-  struct Specialize;
+-};
+-
+-template <typename T>
+-struct SHELL_ENCRYPTION_EXPORT StatusOrHelper::Specialize {
+-  // For non-pointer T, a reference can never be NULL.
+-  static inline bool IsValueNull(const T& t) { return false; }
+-};
+-
+-template <typename T>
+-struct SHELL_ENCRYPTION_EXPORT StatusOrHelper::Specialize<T*> {
+-  static inline bool IsValueNull(const T* t) { return t == nullptr; }
+-};
+-
+-}  // namespace internal
+-
+-template <typename T>
+-inline StatusOr<T>::StatusOr()
+-    : status_(absl::UnknownError("")), value_(absl::nullopt) {}
+-
+-template <typename T>
+-inline StatusOr<T>::StatusOr(const absl::Status& status)
+-    : status_(status), value_(absl::nullopt) {
+-  if (status.ok()) {
+-    status_ = internal::StatusOrHelper::HandleInvalidStatusCtorArg();
+-  }
+-}
+-
+-template <typename T>
+-inline StatusOr<T>::StatusOr(const T& value)
+-    : status_(absl::OkStatus()), value_(value) {
+-  if (internal::StatusOrHelper::Specialize<T>::IsValueNull(value)) {
+-    status_ = internal::StatusOrHelper::HandleNullObjectCtorArg();
+-  }
+-}
+-
+-template <typename T>
+-inline StatusOr<T>::StatusOr(const StatusOr& other)
+-    : status_(other.status_), value_(other.value_) {}
+-
+-template <typename T>
+-inline StatusOr<T>& StatusOr<T>::operator=(const StatusOr<T>& other) {
+-  status_ = other.status_;
+-  value_.reset(other.value_);
+-  return *this;
+-}
+-
+-template <typename T>
+-inline StatusOr<T>::StatusOr(T&& value)
+-    : status_(absl::OkStatus()), value_(std::forward<T>(value)) {
+-  if (internal::StatusOrHelper::Specialize<T>::IsValueNull(value_.value())) {
+-    status_ = internal::StatusOrHelper::HandleNullObjectCtorArg();
+-  }
+-}
+-
+-template <typename T>
+-inline const absl::Status& StatusOr<T>::status() const {
+-  return status_;
+-}
+-
+-template <typename T>
+-inline bool StatusOr<T>::ok() const {
+-  return status_.ok();
+-}
+-
+-template <typename T>
+-inline const T& StatusOr<T>::ValueOrDie() const& {
+-  if (!value_) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return value_.value();
+-}
+-
+-template <typename T>
+-inline T& StatusOr<T>::ValueOrDie() & {
+-  if (!value_) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return value_.value();
+-}
+-
+-template <typename T>
+-inline const T&& StatusOr<T>::ValueOrDie() const&& {
+-  if (!value_) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return std::move(value_.value());
+-}
+-
+-template <typename T>
+-inline T&& StatusOr<T>::ValueOrDie() && {
+-  if (!value_) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return std::move(value_.value());
+-}
+-
+-template <typename T>
+-inline const T& StatusOr<T>::value() const& {
+-  if (!value_) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return value_.value();
+-}
+-
+-template <typename T>
+-inline T& StatusOr<T>::value() & {
+-  if (!value_) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return value_.value();
+-}
+-
+-template <typename T>
+-inline const T&& StatusOr<T>::value() const&& {
+-  if (!value_) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return std::move(value_.value());
+-}
+-
+-template <typename T>
+-inline T&& StatusOr<T>::value() && {
+-  if (!value_) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return std::move(value_.value());
+-}
++using StatusOr = absl::StatusOr<T>;
+ 
+ }  // namespace rlwe
+ 
+diff --git a/src/testing/coefficient_polynomial_test.cc b/src/testing/coefficient_polynomial_test.cc
+index bf43ee6f4ae02..e2a36c3d7d6bf 100644
+--- a/src/testing/coefficient_polynomial_test.cc
++++ b/src/testing/coefficient_polynomial_test.cc
+@@ -43,7 +43,7 @@ unsigned int seed = 0;
+ class PolynomialTest : public ::testing::Test {
+  protected:
+   PolynomialTest()
+-      : params14_(uint_m::Params::Create(rlwe::kNewhopeModulus).ValueOrDie()),
++      : params14_(uint_m::Params::Create(rlwe::kNewhopeModulus).value()),
+         one_(uint_m::ImportOne(params14_.get())),
+         zero_(uint_m::ImportZero(params14_.get())) {}
+ 
+diff --git a/src/testing/status_testing.h b/src/testing/status_testing.h
+index 27b8c0ed63073..6adc0278c98d2 100644
+--- a/src/testing/status_testing.h
++++ b/src/testing/status_testing.h
+@@ -43,6 +43,6 @@
+ #define RLWE_ASSERT_OK_AND_ASSIGN_IMPL_(statusor, lhs, rexpr) \
+   auto statusor = (rexpr);                                    \
+   ASSERT_THAT(statusor.ok(), ::testing::Eq(true));            \
+-  lhs = std::move(statusor).ValueOrDie()
++  lhs = std::move(statusor).value()
+ 
+ #endif  // RLWE_TESTING_STATUS_TESTING_H_

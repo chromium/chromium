@@ -106,7 +106,6 @@ if (is_chromeos_ash) {
       "src/prng/chacha_prng_util.cc",
       "src/prng/single_thread_chacha_prng.cc",
       "src/relinearization_key.cc",
-      "src/statusor.cc",
     ]
     public_deps = [
       ":serialization_proto",
@@ -163,7 +162,6 @@ if (is_chromeos_ash) {
       "src/relinearization_key_test.cc",
       "src/sample_error_test.cc",
       "src/status_macros_test.cc",
-      "src/statusor_test.cc",
       "src/symmetric_encryption_test.cc",
       "src/symmetric_encryption_with_prng_test.cc",
       "src/testing/coefficient_polynomial_ciphertext_test.cc",

@@ -42,17 +42,16 @@ component("ec_commutative_cipher") {
     "crypto/openssl.inc",
     "util/canonical_errors.cc",
     "util/canonical_errors.h",
-    "util/status.cc",
     "util/status.h",
     "util/status.inc",
     "util/status_macros.h",
-    "util/statusor.cc",
     "util/statusor.h",
   ]
   deps = [
     "//base",
     "//third_party/boringssl",
   ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
 
   configs += [
     "//build/config/compiler:no_chromium_code",

@@ -31,7 +31,7 @@ namespace private_membership {
     return absl::InvalidArgumentError(
         status_or_reencrypted_id.status().message());
   }
-  auto reencrypted_id = std::move(status_or_reencrypted_id).ValueOrDie();
+  auto reencrypted_id = std::move(status_or_reencrypted_id).value();
   doubly_encrypted_id.set_doubly_encrypted_id(std::string(reencrypted_id));
 
   return doubly_encrypted_id;

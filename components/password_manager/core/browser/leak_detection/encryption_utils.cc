@@ -131,10 +131,10 @@ absl::optional<std::string> CipherEncrypt(const std::string& plaintext,
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
-    auto result = cipher.ValueOrDie()->Encrypt(plaintext);
+    auto result = cipher.value()->Encrypt(plaintext);
     if (result.ok()) {
-      *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
-      return std::move(result).ValueOrDie();
+      *key = cipher.value()->GetPrivateKeyBytes();
+      return std::move(result).value();
     }
   }
   return absl::nullopt;
@@ -146,9 +146,9 @@ absl::optional<std::string> CipherEncryptWithKey(const std::string& plaintext,
   auto cipher = ECCommutativeCipher::CreateFromKey(NID_X9_62_prime256v1, key,
                                                    ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
-    auto result = cipher.ValueOrDie()->Encrypt(plaintext);
+    auto result = cipher.value()->Encrypt(plaintext);
     if (result.ok())
-      return std::move(result).ValueOrDie();
+      return std::move(result).value();
   }
   return absl::nullopt;
 }
@@ -160,10 +160,10 @@ absl::optional<std::string> CipherReEncrypt(
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
-    auto result = cipher.ValueOrDie()->ReEncrypt(already_encrypted);
+    auto result = cipher.value()->ReEncrypt(already_encrypted);
     if (result.ok()) {
-      *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
-      return std::move(result).ValueOrDie();
+      *key = cipher.value()->GetPrivateKeyBytes();
+      return std::move(result).value();
     }
   }
   return absl::nullopt;
@@ -175,9 +175,9 @@ absl::optional<std::string> CipherDecrypt(const std::string& ciphertext,
   auto cipher = ECCommutativeCipher::CreateFromKey(NID_X9_62_prime256v1, key,
                                                    ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
-    auto result = cipher.ValueOrDie()->Decrypt(ciphertext);
+    auto result = cipher.value()->Decrypt(ciphertext);
     if (result.ok())
-      return std::move(result).ValueOrDie();
+      return std::move(result).value();
   }
   return absl::nullopt;
 }
@@ -187,7 +187,7 @@ absl::optional<std::string> CreateNewKey() {
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
   if (cipher.ok())
-    return cipher.ValueOrDie()->GetPrivateKeyBytes();
+    return cipher.value()->GetPrivateKeyBytes();
   return absl::nullopt;
 }
 

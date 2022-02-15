@@ -90,7 +90,7 @@ PrivateMembershipRlweClient::CreateInternal(
   if (!status_or_ec_cipher.ok()) {
     return absl::InvalidArgumentError(status_or_ec_cipher.status().message());
   }
-  auto ec_cipher = std::move(status_or_ec_cipher).ValueOrDie();
+  auto ec_cipher = std::move(status_or_ec_cipher).value();
 
    return absl::WrapUnique<PrivateMembershipRlweClient>(
       new PrivateMembershipRlweClient(use_case, plaintext_ids,
@@ -120,7 +120,7 @@ PrivateMembershipRlweClient::CreateOprfRequest() {
     return absl::InternalError(status_or_client_encrypted_id.status().message());
     }
     std::string client_encrypted_id =
-        status_or_client_encrypted_id.ValueOrDie();
+        status_or_client_encrypted_id.value();
     *request.add_encrypted_ids() = client_encrypted_id;
 
     // Populate the map of client encrypted id to plaintext id.
@@ -207,7 +207,7 @@ PrivateMembershipRlweClient::CreateQueryRequest(
     if (!status_or_server_encrypted_id.ok()) {
         return absl::InternalError(status_or_server_encrypted_id.status().message());
     }
-    auto server_encrypted_id = status_or_server_encrypted_id.ValueOrDie();
+    auto server_encrypted_id = status_or_server_encrypted_id.value();
 
     // Truncate the hash of the server encrypted id by the first
     // encrypted_bucket_id_length bits to compute the encrypted bucket id.

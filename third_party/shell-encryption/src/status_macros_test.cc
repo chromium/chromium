@@ -27,8 +27,8 @@ namespace {
 TEST(StatusMacrosTest, TestAssignOrReturn) {
   StatusOr<StatusOr<int>> a(StatusOr<int>(2));
   auto f = [&]() -> absl::Status {
-    RLWE_ASSIGN_OR_RETURN(StatusOr<int> status_or_a, a.ValueOrDie());
-    EXPECT_EQ(2, status_or_a.ValueOrDie());
+    RLWE_ASSIGN_OR_RETURN(StatusOr<int> status_or_a, a.value());
+    EXPECT_EQ(2, status_or_a.value());
     return absl::OkStatus();
   };
   auto status = f();

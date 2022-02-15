@@ -55,7 +55,7 @@ template <typename Prng>
 class PolynomialTest : public ::testing::Test {
  protected:
   PolynomialTest()
-      : params14_(uint_m::Params::Create(rlwe::kNewhopeModulus).ValueOrDie()),
+      : params14_(uint_m::Params::Create(rlwe::kNewhopeModulus).value()),
         zero_(uint_m::ImportZero(params14_.get())) {}
 
   void SetUp() override { srand(0); }
@@ -98,7 +98,7 @@ class PolynomialTest : public ::testing::Test {
   }
 
   std::unique_ptr<Prng> MakePrng(absl::string_view seed) {
-    auto prng = Prng::Create(seed.substr(0, Prng::SeedLength())).ValueOrDie();
+    auto prng = Prng::Create(seed.substr(0, Prng::SeedLength())).value();
     return prng;
   }
 

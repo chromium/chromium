@@ -26,8 +26,8 @@ std::string CalculateECCurveHash(const std::string& plaintext) {
 
   std::unique_ptr<Context> context(new Context);
   auto group = ECGroup::Create(NID_X9_62_prime256v1, context.get());
-  auto point = group.ValueOrDie().GetPointByHashingToCurveSha256(plaintext);
-  return point.ValueOrDie().ToBytesCompressed().ValueOrDie();
+  auto point = group.value().GetPointByHashingToCurveSha256(plaintext);
+  return point.value().ToBytesCompressed().value();
 }
 
 // Converts a string to an array for printing.
