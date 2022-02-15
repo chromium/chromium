@@ -8,7 +8,14 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -53,11 +60,52 @@ import java.util.List;
 class AccountSelectionViewBinder {
     private static final String TAG = "AccountSelectionView";
 
+    /**
+     * The size of the maskable icon's safe zone as a fraction of the icon's edge size as defined
+     * in https://www.w3.org/TR/appmanifest/
+     */
+    private static final float MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO = 0.8f;
+
     private static TabCreator sTabCreatorForTesting;
 
     @VisibleForTesting
     static void setTabCreatorForTesting(TabCreator creator) {
         sTabCreatorForTesting = creator;
+    }
+
+    /**
+     * Returns bitmap with the maskable bitmap's safe zone as defined in
+     * https://www.w3.org/TR/appmanifest/ cropped in a circle.
+     * @param resources the Resources used to set initial target density.
+     * @param bitmap the maskable bitmap. It should adhere to the maskable icon spec as defined in
+     * https://www.w3.org/TR/appmanifest/
+     * @param outBitmapSize the target bitmap size in pixels.
+     * @return the cropped bitmap.
+     */
+    public static Drawable createBitmapWithMaskableIconSafeZone(
+            Resources resources, Bitmap bitmap, int outBitmapSize) {
+        int cropWidth =
+                (int) Math.floor(bitmap.getWidth() * MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
+        int cropHeight =
+                (int) Math.floor(bitmap.getHeight() * MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
+        int cropX = (int) Math.floor((bitmap.getWidth() - cropWidth) / 2.0f);
+        int cropY = (int) Math.floor((bitmap.getHeight() - cropHeight) / 2.0f);
+
+        Bitmap output = Bitmap.createBitmap(outBitmapSize, outBitmapSize, Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+        // Fill the canvas with transparent color.
+        canvas.drawColor(Color.TRANSPARENT);
+        // Draw a white circle.
+        float radius = (float) outBitmapSize / 2;
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.WHITE);
+        canvas.drawCircle(radius, radius, radius, paint);
+        // Use SRC_IN so white circle acts as a mask while drawing the avatar.
+        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, new Rect(cropX, cropY, cropWidth + cropX, cropHeight + cropY),
+                new Rect(0, 0, outBitmapSize, outBitmapSize), paint);
+        return new BitmapDrawable(resources, output);
     }
 
     /**
@@ -268,10 +316,10 @@ class AccountSelectionViewBinder {
             Bitmap brandIcon = model.get(HeaderProperties.IDP_BRAND_ICON);
             if (brandIcon != null) {
                 Resources resources = view.getResources();
-                int iconSize = resources.getDimensionPixelSize(
-                        R.dimen.account_selection_continue_icon_size);
+                int iconSize =
+                        resources.getDimensionPixelSize(R.dimen.account_selection_sheet_icon_size);
                 Drawable croppedBrandIcon =
-                        AvatarGenerator.makeRoundAvatar(resources, brandIcon, iconSize);
+                        createBitmapWithMaskableIconSafeZone(resources, brandIcon, iconSize);
                 ImageView headerIconView = (ImageView) view.findViewById(R.id.header_idp_icon);
                 headerIconView.setImageDrawable(croppedBrandIcon);
                 headerIconView.setVisibility(View.VISIBLE);

@@ -50,7 +50,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     @CalledByNative
     private static int getBrandIconIdealSize() {
         Resources resources = ContextUtils.getApplicationContext().getResources();
-        return Math.round(resources.getDimension(R.dimen.account_selection_continue_icon_size));
+        return Math.round(resources.getDimension(R.dimen.account_selection_sheet_icon_size));
     }
 
     @CalledByNative

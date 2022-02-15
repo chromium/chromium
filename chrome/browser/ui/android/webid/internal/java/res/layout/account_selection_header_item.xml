@@ -24,8 +24,8 @@
       android:minHeight="@dimen/account_selection_sheet_title_height">
      <org.chromium.ui.widget.ChromeImageView
          android:id="@+id/header_idp_icon"
-         android:layout_width="24dp"
-         android:layout_height="24dp"
+         android:layout_width="@dimen/account_selection_sheet_icon_size"
+         android:layout_height="@dimen/account_selection_sheet_icon_size"
          android:layout_gravity="center_vertical"
          android:layout_marginEnd="16dp"
          android:visibility="gone" />
