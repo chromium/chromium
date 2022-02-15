@@ -25,19 +25,23 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
     ash::AppListSortOrder order,
     const std::vector<const ChromeAppListItem*>& app_list_items);
 
-// Calculates the position for an incoming item based on the specified sorting
-// order and pass the target position through the parameter. Returns whether
-// `target_position` is set. The return value is false if it is not propriate
-// to place `new_item` following `order`. In this case, `target_position` is
-// not set.
+// Calcuates the target position so that `order` is still maintained among the
+// specified items after:
+// (1) `item` is added to the model updater if it does not exist in the model
+// updater yet, or
+// (2) `item` is set with the target position if it is already in the model
+// updater. In this case, if `item`'s current position maintains the sort order,
+// `target_position` should be the current position.
+// Returns whether `target_position` is set. The return value is false if such
+// a target position does not exist. In this case, `target_position` is not set.
 // `local_items` indicates the elements in the active app list model before
 // adding the new item. Note that different devices may have different sets of
 // app list items. It is why the parameter is named `local_items`.
 // `global_items` is the sync data of the items across synced devices. If
 // `global_items` is null, position is calculated only based on `local_items`.
-bool CalculateNewItemPosition(
+bool CalculateItemPositionInOrder(
     ash::AppListSortOrder order,
-    const ChromeAppListItem& new_item,
+    const ChromeAppListItem& item,
     const std::vector<const ChromeAppListItem*>& local_items,
     const AppListSyncableService::SyncItemMap* global_items,
     syncer::StringOrdinal* target_position);

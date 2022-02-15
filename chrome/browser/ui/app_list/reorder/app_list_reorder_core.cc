@@ -393,10 +393,9 @@ syncer::StringOrdinal CalculatePositionBetweenNeighbors(
   return next.CreateBefore();
 }
 
-// Implementation for `CalculateNewItemPosition()` parameterized by type used
-// to compare items.
-// `compare` is comparison function object which returns true if the first
-// argument is ordered before) the second.
+// Implementation for `CalculateItemPositionInOrder()` parameterized by type
+// used to compare items. `compare` is comparison function object which returns
+// true if the first argument is ordered before) the second.
 template <typename T, class Compare>
 bool CalculatePositionForSyncItemWrapper(
     ash::AppListSortOrder order,
@@ -432,6 +431,16 @@ bool CalculatePositionForSyncItemWrapper(
     AdjustNeighborsInGlobalScope(
         item_wrapper, reorder::GenerateWrappersFromSyncItems<T>(*global_items),
         compare, &prev_neighbor, &next_neighbor);
+  }
+
+  // Use the item's old position if the old value does not break the item order.
+  if (item_wrapper.item_ordinal.IsValid()) {
+    const syncer::StringOrdinal& old_ordinal = item_wrapper.item_ordinal;
+    if ((prev_neighbor.IsValid() && !prev_neighbor.GreaterThan(old_ordinal)) ||
+        (next_neighbor.IsValid() && !next_neighbor.LessThan(old_ordinal))) {
+      *target_position = old_ordinal;
+      return true;
+    }
   }
 
   *target_position =
@@ -487,9 +496,9 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
   }
 }
 
-bool CalculateNewItemPosition(
+bool CalculateItemPositionInOrder(
     ash::AppListSortOrder order,
-    const ChromeAppListItem& new_item,
+    const ChromeAppListItem& item,
     const std::vector<const ChromeAppListItem*>& local_items,
     const AppListSyncableService::SyncItemMap* global_items,
     syncer::StringOrdinal* target_position) {
@@ -509,14 +518,14 @@ bool CalculateNewItemPosition(
       StringWrapperComparator comparator(IsIncreasingOrder(order),
                                          collator.get());
       return CalculatePositionForSyncItemWrapper(
-          order, reorder::SyncItemWrapper<std::u16string>(new_item),
-          local_items, global_items, comparator, target_position);
+          order, reorder::SyncItemWrapper<std::u16string>(item), local_items,
+          global_items, comparator, target_position);
     }
     case ash::AppListSortOrder::kColor: {
       IconColorWrapperComparator comparator;
       return CalculatePositionForSyncItemWrapper(
-          order, reorder::SyncItemWrapper<ash::IconColor>(new_item),
-          local_items, global_items, comparator, target_position);
+          order, reorder::SyncItemWrapper<ash::IconColor>(item), local_items,
+          global_items, comparator, target_position);
     }
   }
 }

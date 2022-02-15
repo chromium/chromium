@@ -27,11 +27,16 @@ class AppListReorderDelegate {
   // Returns the front position among all sync items.
   virtual syncer::StringOrdinal CalculateGlobalFrontPosition() const = 0;
 
-  // Calcuates a position for a `new_item` so the preferred sort order is
-  // preserved. The sort order is returned through `target_position`. Returns
-  // whether the item should be placed in the sort order, in which case
-  // `target_position` gets set.
-  virtual bool CalculateNewItemPosition(
+  // Calcuates the target position so that the permanent sorting order is still
+  // maintained on all sync items after:
+  // (1) `item` is added to the model updater if it does not exist in the model
+  // updater yet, or
+  // (2) `item` is set with the target position if it is already in the model
+  // updater. In this case, if `item`'s current position maintains the sort
+  // order, `target_position` should be the current position.
+  // The target position is returned through the parameter. Returns whether such
+  // a target position could exist, in which case `target_position` gets set.
+  virtual bool CalculateItemPositionInPermanentSortOrder(
       const ChromeAppListItem& new_item,
       const std::vector<const ChromeAppListItem*>& local_items,
       syncer::StringOrdinal* target_position) const = 0;
