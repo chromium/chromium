@@ -123,11 +123,11 @@ const base::Feature kIPHDownloadInfoBarDownloadsAreFasterFeature{
 const base::Feature kIPHQuietNotificationPromptsFeature{
     "IPH_QuietNotificationPrompts", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHReadLaterContextMenuFeature{
-    "IPH_ReadLaterContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IPH_ReadLaterContextMenu", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHReadLaterAppMenuBookmarkThisPageFeature{
-    "IPH_ReadLaterAppMenuBookmarkThisPage", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IPH_ReadLaterAppMenuBookmarkThisPage", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHReadLaterAppMenuBookmarksFeature{
-    "IPH_ReadLaterAppMenuBookmarks", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IPH_ReadLaterAppMenuBookmarks", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHReadLaterBottomSheetFeature{
     "IPH_ReadLaterBottomSheet", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHShoppingListSaveFlowFeature{

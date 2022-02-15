@@ -779,6 +779,58 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHReadLaterAppMenuBookmarkThisPageFeature.name == feature->name) {
+    // A config that allows the reading list IPH bubble to prompt the user to
+    // bookmark this page.
+    // This will only occur once every 60 days.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("read_later_app_menu_bookmark_this_page_iph_trigger",
+                    Comparator(EQUAL, 0), 60, 60);
+    config->used = EventConfig("app_menu_bookmark_star_icon_pressed",
+                               Comparator(EQUAL, 0), 60, 60);
+
+    return config;
+  }
+
+  if (kIPHReadLaterAppMenuBookmarksFeature.name == feature->name) {
+    // A config that allows the reading list IPH bubble to promopt the user to
+    // open the reading list.
+    // This will only occur once every 60 days.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("read_later_app_menu_bookmarks_iph_trigger",
+                                  Comparator(EQUAL, 0), 60, 60);
+    config->used = EventConfig("read_later_bookmark_folder_opened",
+                               Comparator(EQUAL, 0), 60, 60);
+    config->event_configs.insert(
+        EventConfig("read_later_article_saved",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 60, 60));
+    return config;
+  }
+
+  if (kIPHReadLaterContextMenuFeature.name == feature->name) {
+    // A config that allows the reading list label on the context menu to show
+    // when the context menu "copy" option is clicked.
+    // This will only occur once every 60 days.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("read_later_context_menu_tapped_iph_trigger",
+                                  Comparator(EQUAL, 0), 60, 60);
+    config->used = EventConfig("read_later_context_menu_tapped",
+                               Comparator(EQUAL, 0), 60, 60);
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
