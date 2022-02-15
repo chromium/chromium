@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -18,6 +19,9 @@ using base::android::ConvertUTF16ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
+const char TOPICS_JAVA_CLASS[] =
+    "org/chromium/chrome/browser/privacy_sandbox/Topic";
+
 PrivacySandboxService* GetPrivacySandboxService() {
   return PrivacySandboxServiceFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile());
@@ -32,7 +36,8 @@ ScopedJavaLocalRef<jobjectArray> ToJavaTopicsArray(
         env, topic.topic_id(), topic.taxonomy_version(),
         ConvertUTF16ToJavaString(env, topic.GetLocalizedRepresentation())));
   }
-  return base::android::ToJavaArrayOfObjects(env, j_topics);
+  return base::android::ToJavaArrayOfObjects(
+      env, base::android::GetClass(env, TOPICS_JAVA_CLASS), j_topics);
 }
 }  // namespace
 
