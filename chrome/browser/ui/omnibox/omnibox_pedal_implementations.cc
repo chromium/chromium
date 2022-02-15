@@ -171,12 +171,21 @@ class OmniboxPedalLaunchIncognito : public OmniboxPedal {
   OmniboxPedalLaunchIncognito()
       : OmniboxPedal(
             OmniboxPedalId::LAUNCH_INCOGNITO,
+#if BUILDFLAG(IS_ANDROID)
+            LabelStrings(
+                IDS_ANDROID_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT,
+                IDS_ANDROID_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS,
+                IDS_ANDROID_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX,
+                IDS_ANDROID_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO),
+#else
             LabelStrings(IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT,
                          IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO),
-            // Fake URL to distinguish matches.
-            GURL("chrome://newtab?incognito=true")) {}
+#endif  // BUILDFLAG(IS_ANDROID)
+        // Fake URL to distinguish matches.
+            GURL("chrome://newtab?incognito=true")) {
+  }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -317,12 +326,21 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
   OmniboxPedalRunChromeSafetyCheck()
       : OmniboxPedal(
             OmniboxPedalId::RUN_CHROME_SAFETY_CHECK,
+#if BUILDFLAG(IS_ANDROID)
+            LabelStrings(
+                IDS_ANDROID_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT,
+                IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK),
+#else
             LabelStrings(
                 IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT,
                 IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK),
-            GURL()) {}
+#endif  // BUILDFLAG(IS_ANDROID)
+            GURL()) {
+  }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
