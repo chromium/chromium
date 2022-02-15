@@ -331,12 +331,12 @@ bool SimpleIndexFile::IndexMetadata::CheckIndexMetadata() {
 }
 
 SimpleIndexFile::SimpleIndexFile(
-    const scoped_refptr<base::SequencedTaskRunner>& cache_runner,
-    const scoped_refptr<base::TaskRunner>& worker_pool,
+    scoped_refptr<base::SequencedTaskRunner> cache_runner,
+    scoped_refptr<base::TaskRunner> worker_pool,
     net::CacheType cache_type,
     const base::FilePath& cache_directory)
-    : cache_runner_(cache_runner),
-      worker_pool_(worker_pool),
+    : cache_runner_(std::move(cache_runner)),
+      worker_pool_(std::move(worker_pool)),
       cache_type_(cache_type),
       cache_directory_(cache_directory),
       index_file_(cache_directory_.AppendASCII(kIndexDirectory)

@@ -86,8 +86,8 @@ class NET_EXPORT_PRIVATE SimpleIndexFile {
     uint64_t cache_size_;  // Total cache storage size in bytes.
   };
 
-  SimpleIndexFile(const scoped_refptr<base::SequencedTaskRunner>& cache_runner,
-                  const scoped_refptr<base::TaskRunner>& worker_pool,
+  SimpleIndexFile(scoped_refptr<base::SequencedTaskRunner> cache_runner,
+                  scoped_refptr<base::TaskRunner> worker_pool,
                   net::CacheType cache_type,
                   const base::FilePath& cache_directory);
 

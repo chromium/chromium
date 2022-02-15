@@ -224,9 +224,6 @@ SimpleBackendImpl::SimpleBackendImpl(
       file_tracker_(file_tracker ? file_tracker
                                  : g_simple_file_tracker.Pointer()),
       path_(path),
-      cache_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       orig_max_size_(max_bytes),
       entry_operations_mode_(CacheTypeToOperationsMode(cache_type)),
       post_doom_waiting_(
@@ -252,6 +249,9 @@ void SimpleBackendImpl::SetTaskRunnerForTesting(
 }
 
 net::Error SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
+  auto index_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   auto worker_pool = base::ThreadPool::CreateTaskRunner(
       {base::MayBlock(), base::WithBaseSyncPrimitives(),
        base::TaskPriority::USER_BLOCKING,
@@ -263,13 +263,13 @@ net::Error SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
   index_ = std::make_unique<SimpleIndex>(
       base::SequencedTaskRunnerHandle::Get(), cleanup_tracker_.get(), this,
       GetCacheType(),
-      std::make_unique<SimpleIndexFile>(cache_runner_, worker_pool.get(),
-                                        GetCacheType(), path_));
+      std::make_unique<SimpleIndexFile>(
+          index_task_runner, std::move(worker_pool), GetCacheType(), path_));
   index_->ExecuteWhenReady(
       base::BindOnce(&RecordIndexLoad, GetCacheType(), base::TimeTicks::Now()));
 
-  PostTaskAndReplyWithResult(
-      cache_runner_.get(), FROM_HERE,
+  index_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SimpleBackendImpl::InitCacheStructureOnDisk, path_,
                      orig_max_size_, GetCacheType()),
       base::BindOnce(&SimpleBackendImpl::InitializeIndex, AsWeakPtr(),
