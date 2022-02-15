@@ -8,6 +8,7 @@
     "types": [
       "dom-mediacapture-record",
       "google.analytics",
+      "offscreencanvas",
       "w3c-css-typed-object-model-level-1",
       "w3c-image-capture"
     ],

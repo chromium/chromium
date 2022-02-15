@@ -202,7 +202,10 @@ ts_library("build_ts") {
     "//ui/webui/resources/cr_components/most_visited:build_ts",
   ]
 
-  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
 
   extra_deps = [
     ":copy_mojom",

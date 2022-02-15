@@ -105,6 +105,7 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
   ]

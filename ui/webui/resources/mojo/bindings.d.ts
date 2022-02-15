@@ -8,6 +8,10 @@
 // even better auto-generated from bindings_uncompiled.js eventually. The
 // latter currently does not produce definitions that work.
 
+declare global {
+  interface MojoHandle {}
+}
+
 export namespace mojo {
   namespace internal {
     namespace interfaceSupport {
@@ -34,5 +38,7 @@ export namespace mojo {
         close(): void;
       }
     }
+
+    interface MojomType {}
   }
 }

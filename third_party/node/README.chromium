@@ -38,7 +38,7 @@ Local Modifications:
 Name: Typescript Compiler
 Short Name: typescript
 URL: https://www.npmjs.com/package/typescript
-Version: 4.2.3
+Version: 4.5.4
 License: Apache 2.0
 Security Critical: No. The compiler is not shipped with Chrome but code compiled using it is.
 
@@ -55,7 +55,7 @@ Local Modifications:
 Name: Type Definition for W3C MediaStream Recording
 Short Name: @types/dom-mediacapture-record
 URL: https://www.npmjs.com/package/@types/dom-mediacapture-record
-Version: 1.0.10
+Version: 1.0.11
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
 
@@ -70,7 +70,7 @@ Local Modifications:
 Name: Type Definition for CSS Typed OM Level 1
 Short Name: @types/w3c-css-typed-object-model-level-1
 URL: https://www.npmjs.com/package/@types/w3c-css-typed-object-model-level-1
-Version: 20180410.0.3
+Version: 20180410.0.4
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
 
@@ -100,7 +100,7 @@ Local Modifications:
 Name: Type Definition for webrtc
 Short Name: @types/webrtc
 URL: https://www.npmjs.com/package/@types/webrtc
-Version: 0.0.29
+Version: 0.0.31
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
 

@@ -6,7 +6,6 @@ import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/le
 
 interface CrInputElement extends LegacyElementMixin, HTMLElement {
   ariaDescription: string|undefined;
-  ariaLabel: string|null|undefined;
   autofocus: boolean;
   autoValidate: boolean|null|undefined;
   disabled: boolean;
