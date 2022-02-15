@@ -14,6 +14,7 @@ import 'chrome://resources/cr_components/app_management/uninstall_button.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // TODO(crbug.com/1294060): Investigate end-to-end WebAppSettings tests
@@ -44,6 +45,11 @@ export class WebAppSettingsAppElement extends PolymerElement {
     if (urlPath.length <= 1) {
       return;
     }
+
+    window.CrPolicyStrings = {
+      controlledSettingPolicy: loadTimeData.getString('controlledSettingPolicy')
+    };
+
     const appId = urlPath.substring(1);
     BrowserProxy.getInstance().handler.getApp(appId).then((result) => {
       this.app_ = result.app;
@@ -68,6 +74,10 @@ export class WebAppSettingsAppElement extends PolymerElement {
 declare global {
   interface HTMLElementTagNameMap {
     'web-app-settings-app': WebAppSettingsAppElement;
+  }
+
+  interface Window {
+    CrPolicyStrings: {[key: string]: string},
   }
 }
 

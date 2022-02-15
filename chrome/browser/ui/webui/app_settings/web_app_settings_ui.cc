@@ -39,6 +39,7 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementWindowModeLabel", IDS_APP_MANAGEMENT_WINDOW},
       {"appManagementRunOnOsLoginModeLabel",
        IDS_APP_MANAGEMENT_RUN_ON_OS_LOGIN},
+      {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
