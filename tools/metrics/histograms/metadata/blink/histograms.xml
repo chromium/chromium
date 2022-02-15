@@ -1509,7 +1509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.JavaJsBridge.MethodInvocationError"
-    enum="JavaJsBridgeMethodInvocationError" expires_after="2022-03-11">
+    enum="JavaJsBridgeMethodInvocationError" expires_after="2022-12-31">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Records the Java/JS bridge method invocation errors.</summary>

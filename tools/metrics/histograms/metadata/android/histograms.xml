@@ -3765,8 +3765,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage1.FactoryInit"
-    units="ms" expires_after="2022-08-07">
-  <owner>changwan@chromium.org</owner>
+    units="ms" expires_after="2023-12-31">
+  <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     How long it takes to initialize a WebViewChromiumFactoryProvider. This is
@@ -3775,8 +3775,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold"
-    units="ms" expires_after="2022-06-05">
-  <owner>changwan@chromium.org</owner>
+    units="ms" expires_after="2023-12-31">
+  <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     How long it takes to initialize a WebViewProvider, the first time that one
@@ -3787,8 +3787,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm"
-    units="ms" expires_after="2022-08-07">
-  <owner>changwan@chromium.org</owner>
+    units="ms" expires_after="2023-12-31">
+  <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     How long it takes to initialize a WebViewProvider, the first time that one
@@ -3799,15 +3799,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.StartChromiumLocked"
-    units="ms" expires_after="2022-02-26">
-  <owner>amalova@chromium.org</owner>
+    units="ms" expires_after="2023-12-31">
+  <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>How long it takes to run startChromiumLocked.</summary>
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.TotalFactoryInitTime"
-    units="ms" expires_after="2022-02-26">
-  <owner>amalova@chromium.org</owner>
+    units="ms" expires_after="2023-12-31">
+  <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     The total time to initialize WebViewChromiumFactoryProvider.
