@@ -30,9 +30,15 @@ const char kHTMLOfTestPage[] =
     "<span id='target'>Lorem ipsum</span> dolor sit amet, consectetur "
     "adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore "
     "magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco "
-    "laboris nisi ut aliquip ex ea commodo consequat."
-    "</p></body></html>";
+    "laboris nisi ut aliquip ex ea commodo consequat.</p>"
+    "<a href='/testPage2' id='link'>Link</a>"
+    "</body></html>";
 const char kTestPageTextSample[] = "Lorem ipsum";
+
+const char kTestURL2[] = "/testPage2";
+const char kHTMLOfTestPage2[] =
+    "<html><body>Navigated to second page</body></html>";
+const char kTestPage2TextSample[] = "Navigated to second page";
 
 std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
     const std::string& html,
@@ -92,6 +98,9 @@ void DismissMenu() {
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&net::test_server::HandlePrefixedRequest, kTestURL,
                           base::BindRepeating(&LoadHtml, kHTMLOfTestPage)));
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&net::test_server::HandlePrefixedRequest, kTestURL2,
+                          base::BindRepeating(&LoadHtml, kHTMLOfTestPage2)));
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
@@ -181,6 +190,36 @@ void DismissMenu() {
   GREYAssert(
       [getPastedURL waitWithTimeout:base::test::ios::kWaitForActionTimeout],
       @"Could not get expected URL from pasteboard.");
+}
+
+// Verify that navigating away from the page and then coming back does not
+// result in two sets of <mark> elements being created.
+- (void)testNoDuplicatesOnNavigation {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kURLWithFragment)];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
+  ElementSelector* selector = [ElementSelector selectorWithCSSSelector:"mark"];
+  [ChromeEarlGrey waitForWebStateContainingElement:selector];
+
+  // Click link to navigate away, then return to where we started
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"document.getElementById('link').click();"];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPage2TextSample];
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
+
+  // Count how many <mark> elements exist in the page. It should be OK to call
+  // this now because the JS to create highlights runs as soon as navigation
+  // finishes, and JS is single-threaded, so this will be evaluated after that.
+  base::Value result = [ChromeEarlGrey
+      evaluateJavaScript:@"(function() {"
+                          "return document.getElementsByTagName('mark').length;"
+                          "})();"];
+
+  // Even though it's a count, we retrieve it as a double because JS numbers are
+  // always treated as doubles.
+  GREYAssertTrue(result.is_double(), @"Count of mark elements is not a number");
+  GREYAssertEqual(1, result.GetDouble(),
+                  @"Found wrong number of mark elements");
 }
 
 @end
