@@ -96,7 +96,10 @@
     self.suggestedCredentials = suggestions;
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      BOOL canCreatePassword = IsPasswordCreationUserRestricted();
+      // TODO(crbug.com/1297158): Remove the serviceIdentifier check once the
+      // new password screen properly supports user url entry.
+      BOOL canCreatePassword =
+          IsPasswordCreationUserEnabled() && self.serviceIdentifiers.count > 0;
       if (!canCreatePassword && !self.allCredentials.count) {
         [self.UIHandler showEmptyCredentials];
         return;
@@ -124,8 +127,11 @@
 }
 
 - (void)updateResultsWithFilter:(NSString*)filter {
-  BOOL showNewPasswordOption =
-      !filter.length && IsPasswordCreationUserRestricted();
+  // TODO(crbug.com/1297158): Remove the serviceIdentifier check once the
+  // new password screen properly supports user url entry.
+  BOOL showNewPasswordOption = !filter.length &&
+                               IsPasswordCreationUserEnabled() &&
+                               self.serviceIdentifiers.count > 0;
   if (!filter.length) {
     [self.consumer presentSuggestedPasswords:self.suggestedCredentials
                                 allPasswords:self.allCredentials

@@ -12,7 +12,7 @@
 #error "This file requires ARC support."
 #endif
 
-BOOL IsPasswordCreationUserRestricted() {
+BOOL IsPasswordCreationUserEnabled() {
   return [[app_group::GetGroupUserDefaults()
       objectForKey:
           AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()]
