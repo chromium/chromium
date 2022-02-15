@@ -270,6 +270,11 @@ namespace autofillPrivate {
     // Gets the list of UPI IDs (a.k.a. Virtual Payment Addresses).
     // |callback|: Callback which will be called with the list of UPI IDs.
     [supportsPromises] static void getUpiIdList(GetUpiIdListCallback callback);
+
+    // Enrolls a credit card into virtual cards.
+    // |cardId|: The server side id of the credit card to be enrolled. Note it
+    // refers to the legacy server id of credit cards, not the instrument ids.
+    static void addVirtualCard(DOMString cardId);
   };
 
   interface Events {

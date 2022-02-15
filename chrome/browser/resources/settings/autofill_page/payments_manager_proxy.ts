@@ -61,6 +61,11 @@ export interface PaymentsManagerProxy {
    * Requests the list of UPI IDs from personal data.
    */
   getUpiIdList(callback: (entries: Array<string>) => void): void;
+
+  /**
+   * Enrolls the card into virtual cards.
+   */
+  addVirtualCard(cardId: string): void;
 }
 
 /**
@@ -107,6 +112,10 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   getUpiIdList(callback: (entries: Array<string>) => void) {
     chrome.autofillPrivate.getUpiIdList(callback);
+  }
+
+  addVirtualCard(cardId: string) {
+    chrome.autofillPrivate.addVirtualCard(cardId);
   }
 
   static getInstance(): PaymentsManagerProxy {

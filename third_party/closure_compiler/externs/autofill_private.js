@@ -214,6 +214,13 @@ chrome.autofillPrivate.setCreditCardFIDOAuthEnabledState = function(enabled) {};
 chrome.autofillPrivate.getUpiIdList = function(callback) {};
 
 /**
+ * Enrolls a credit card into virtual cards.
+ * @param {string} cardId The server side id of the credit card to be
+ *     enrolled.
+ */
+chrome.autofillPrivate.addVirtualCard = function(cardId) {};
+
+/**
  * Fired when the personal data has changed, meaning that an entry has been
  * added, removed, or changed. |entries| The updated list of entries.
  * @type {!ChromeEvent}

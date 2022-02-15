@@ -1686,6 +1686,7 @@ enum HistogramValue {
   PASSWORDSPRIVATE_UNMUTEINSECURECREDENTIAL = 1623,
   OS_DIAGNOSTICS_RUNSMARTCTLCHECKROUTINE = 1624,
   OS_DIAGNOSTICS_RUNNVMEWEARLEVELROUTINE = 1625,
+  AUTOFILLPRIVATE_ADDVIRTUALCARD = 1626,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

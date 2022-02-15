@@ -523,6 +523,9 @@ export class PaymentsManagerExpectations {
   requestedCreditCards: number = 0;
   listeningCreditCards: number = 0;
   requestedUpiIds: number = 0;
+  removedCreditCards: number = 0;
+  clearedCachedCreditCards: number = 0;
+  addedVirtualCards: number = 0;
 }
 
 /**
@@ -574,17 +577,25 @@ export class TestPaymentsManager implements PaymentsManagerProxy {
     callback(this.data.upiIds);
   }
 
-  clearCachedCreditCard(_guid: string) {}
+  clearCachedCreditCard(_guid: string) {
+    this.actual_.clearedCachedCreditCards++;
+  }
 
   logServerCardLinkClicked() {}
 
   migrateCreditCards() {}
 
-  removeCreditCard(_guid: string) {}
+  removeCreditCard(_guid: string) {
+    this.actual_.removedCreditCards++;
+  }
 
   saveCreditCard(_creditCard: chrome.autofillPrivate.CreditCardEntry) {}
 
   setCreditCardFIDOAuthEnabledState(_enabled: boolean) {}
+
+  addVirtualCard(_cardId: string) {
+    this.actual_.addedVirtualCards++;
+  }
 
   /**
    * Verifies expectations.
@@ -593,5 +604,9 @@ export class TestPaymentsManager implements PaymentsManagerProxy {
     const actual = this.actual_;
     assertEquals(expected.requestedCreditCards, actual.requestedCreditCards);
     assertEquals(expected.listeningCreditCards, actual.listeningCreditCards);
+    assertEquals(expected.removedCreditCards, actual.removedCreditCards);
+    assertEquals(
+        expected.clearedCachedCreditCards, actual.clearedCachedCreditCards);
+    assertEquals(expected.addedVirtualCards, actual.addedVirtualCards);
   }
 }

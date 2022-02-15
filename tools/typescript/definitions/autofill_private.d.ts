@@ -111,6 +111,7 @@ declare global {
       export function setCreditCardFIDOAuthEnabledState(enabled: boolean): void;
       export function getUpiIdList(callback: (items: Array<string>) => void):
           void;
+      export function addVirtualCard(cardId: string): void;
 
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: Array<AddressEntry>,

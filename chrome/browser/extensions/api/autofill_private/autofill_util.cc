@@ -136,7 +136,10 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   autofill_private::CreditCardEntry card;
 
   // Add all credit card fields to the entry.
-  card.guid = std::make_unique<std::string>(credit_card.guid());
+  card.guid = std::make_unique<std::string>(
+      credit_card.record_type() == autofill::CreditCard::LOCAL_CARD
+          ? credit_card.guid()
+          : credit_card.server_id());
   card.name = std::make_unique<std::string>(base::UTF16ToUTF8(
       credit_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL)));
   card.card_number = std::make_unique<std::string>(

@@ -298,8 +298,9 @@ export class SettingsPaymentsSectionElement extends
 
 
   private onMenuAddVirtualCardClick_() {
-    // TODO(crbug.com/1281695): Add communication between settings page and
-    // VirtualCardEnrollmentManager.
+    this.paymentsManager_.addVirtualCard(this.activeCreditCard_!.guid!);
+    this.$.creditCardSharedMenu.close();
+    this.activeCreditCard_ = null;
   }
 
   private onMenuRemoveVirtualCardClick_() {

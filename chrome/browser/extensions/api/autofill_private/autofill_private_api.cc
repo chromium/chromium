@@ -23,8 +23,11 @@
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
@@ -611,6 +614,47 @@ ExtensionFunction::ResponseAction AutofillPrivateGetUpiIdListFunction::Run() {
   return RespondNow(
       ArgumentList(api::autofill_private::GetUpiIdList::Results::Create(
           personal_data->GetUpiIds())));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateAddVirtualCardFunction
+
+ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
+  std::unique_ptr<api::autofill_private::AddVirtualCard::Params> parameters =
+      api::autofill_private::AddVirtualCard::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+
+  // Get the PersonalDataManager to retrieve the card based on the id.
+  autofill::PersonalDataManager* personal_data_manager =
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context()));
+  if (!personal_data_manager || !personal_data_manager->IsDataLoaded())
+    return RespondNow(Error(kErrorDataUnavailable));
+
+  autofill::CreditCard* card =
+      personal_data_manager->GetCreditCardByServerId(parameters->card_id);
+  if (!card)
+    return RespondNow(Error(kErrorDataUnavailable));
+
+  autofill::BrowserAutofillManager* autofill_manager =
+      GetBrowserAutofillManager(GetSenderWebContents());
+  if (!autofill_manager || !autofill_manager->client() ||
+      !autofill_manager->client()->GetFormDataImporter() ||
+      !autofill_manager->client()
+           ->GetFormDataImporter()
+           ->GetVirtualCardEnrollmentManager()) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  autofill::VirtualCardEnrollmentManager* virtual_card_enrollment_manager =
+      autofill_manager->client()
+          ->GetFormDataImporter()
+          ->GetVirtualCardEnrollmentManager();
+
+  virtual_card_enrollment_manager->OfferVirtualCardEnroll(
+      raw_ptr<autofill::CreditCard>(card),
+      autofill::VirtualCardEnrollmentSource::kSettingsPage);
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions
