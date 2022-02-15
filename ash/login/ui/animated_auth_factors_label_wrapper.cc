@@ -20,7 +20,9 @@ namespace ash {
 
 namespace {
 
-constexpr int kAuthFactorsViewWidthDp = 204;
+// TODO(b/219594317): Const variables identical to the ones used in
+// LoginAuthFactorsView should be factored in a single location.
+constexpr int kAuthFactorsViewWidthDp = 280;
 constexpr int kSpacingBetweenIconsAndLabelDp = 8;
 constexpr int kLabelAnimationOffsetDp = 20;
 constexpr base::TimeDelta kLabelAnimationDuration = base::Milliseconds(300);
@@ -30,6 +32,8 @@ constexpr base::TimeDelta kLabelAnimationCurrentLabelFadeInDuration =
     kLabelAnimationDuration / 2;
 constexpr base::TimeDelta kLabelAnimationCurrentLabelFadeInDelay =
     kLabelAnimationDuration / 6;
+// In English, the number of lines should not exceed 2. kLabelMaxLines is set to
+// 3 in order to prevent truncation in other languages (e.g., Persian, Dutch).
 constexpr int kLabelMaxLines = 3;
 constexpr int kLabelLineHeightDp = 20;
 constexpr int kLabelWrapperHeightDp = kLabelMaxLines * kLabelLineHeightDp;

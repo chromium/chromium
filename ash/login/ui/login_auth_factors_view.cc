@@ -35,7 +35,7 @@ namespace {
 
 using AuthFactorState = AuthFactorModel::AuthFactorState;
 
-constexpr int kAuthFactorsViewWidthDp = 204;
+constexpr int kAuthFactorsViewWidthDp = 280;
 constexpr int kSpacingBetweenIconsAndLabelDp = 8;
 constexpr int kIconTopSpacingDp = 10;
 constexpr int kArrowButtonSizeDp = 32;
