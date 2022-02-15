@@ -49,6 +49,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/tracing/perfetto_platform.h"
 #include "third_party/perfetto/include/perfetto/ext/trace_processor/export_json.h"  // nogncheck
