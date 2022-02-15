@@ -50,7 +50,6 @@ namespace {
 // Name of disk cache directory.
 const base::FilePath::CharType kDiskCacheDirectoryName[] =
     FILE_PATH_LITERAL("disk_cache");
-// TODO(xunjieli): Refactor constants in io_thread.cc.
 const char kQuicFieldTrialName[] = "QUIC";
 const char kQuicConnectionOptions[] = "connection_options";
 const char kQuicClientConnectionOptions[] = "client_connection_options";
@@ -94,6 +93,8 @@ const char kQuicVersion[] = "quic_version";
 const char kQuicObsoleteVersionsAllowed[] = "obsolete_versions_allowed";
 const char kQuicFlags[] = "set_quic_flags";
 const char kQuicIOSNetworkServiceType[] = "ios_network_service_type";
+const char kRetryWithoutAltSvcOnQuicErrors[] =
+    "retry_without_alt_svc_on_quic_errors";
 
 // AsyncDNS experiment dictionary name.
 const char kAsyncDnsFieldTrialName[] = "AsyncDNS";
@@ -575,6 +576,10 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       quic_params->allow_port_migration =
           quic_args.FindBoolKey(kAllowPortMigration)
               .value_or(quic_params->allow_port_migration);
+
+      quic_params->retry_without_alt_svc_on_quic_errors =
+          quic_args.FindBoolKey(kRetryWithoutAltSvcOnQuicErrors)
+              .value_or(quic_params->retry_without_alt_svc_on_quic_errors);
 
       quic_params->disable_tls_zero_rtt =
           quic_args.FindBoolKey(kDisableTlsZeroRtt)
