@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/history_fuzzy_provider.h"
 
 #include <algorithm>
+#include <functional>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -65,7 +66,7 @@ struct Correction {
 
 struct Node {
   int relevance = 0;
-  std::unordered_map<char16_t, Node> next;
+  std::unordered_map<char16_t, std::reference_wrapper<Node>> next;
 
   void Insert(const std::u16string& text, size_t from) {
     if (from >= text.length()) {
@@ -73,7 +74,7 @@ struct Node {
       return;
     }
     char16_t c = text[from];
-    Node& node = next[c];
+    Node& node = next.at(c);
     node.Insert(text, from + 1);
   }
 
@@ -113,8 +114,8 @@ struct Node {
         // insertion, not only replacement. Change `from` parameter and modify
         // correction accordingly.
         std::vector<Correction> subcorrections;
-        bool found = entry.second.FindCorrections(text, from + 1, tolerance - 1,
-                                                  subcorrections);
+        bool found = entry.second.get().FindCorrections(
+            text, from + 1, tolerance - 1, subcorrections);
         if (found) {
           // Remaining input without further correction is on trie.
           corrections.emplace_back(from, entry.first);
@@ -134,7 +135,8 @@ struct Node {
       return false;
     } else {
       // Found; proceed with tolerance.
-      return it->second.FindCorrections(text, from + 1, tolerance, corrections);
+      return it->second.get().FindCorrections(text, from + 1, tolerance,
+                                              corrections);
     }
   }
 
@@ -146,7 +148,7 @@ struct Node {
       DVLOG(1) << "  <" << built << ">";
     }
     for (const auto& entry : next) {
-      entry.second.Log(built + entry.first);
+      entry.second.get().Log(built + entry.first);
     }
   }
 };
