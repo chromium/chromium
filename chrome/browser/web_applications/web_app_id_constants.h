@@ -45,6 +45,10 @@ extern const char kYoutubeAppId[];
 extern const char kYoutubeMusicAppId[];
 extern const char kYoutubeTVAppId[];
 
+#if !defined(OFFICIAL_BUILD)
+extern const char kSampleSystemWebAppId[];
+#endif  // !defined(OFFICIAL_BUILD)
+
 bool IsSystemAppIdWithFileHandlers(base::StringPiece id);
 
 }  // namespace web_app

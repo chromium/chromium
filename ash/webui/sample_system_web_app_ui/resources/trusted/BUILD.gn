@@ -20,6 +20,7 @@ generate_grd("trusted_grd") {
     "component_playground.html",
     "index.html",
     "inter_frame_communication.html",
+    "share.html",
     "timer.html",
   ]
   input_files_base_dir = rebase_path(".", "//")

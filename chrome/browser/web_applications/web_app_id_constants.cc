@@ -152,6 +152,12 @@ const char kYoutubeMusicAppId[] = "cinhimbnkkaeohfgghhklpknlkffjgod";
 //     "https://tv.youtube.com/"))
 const char kYoutubeTVAppId[] = "kiemjbkkegajmpbobdfngbmjccjhnofh";
 
+#if !defined(OFFICIAL_BUILD)
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "chrome://sample-system-web-app"))
+const char kSampleSystemWebAppId[] = "jalmdcokfklmaoadompgacjlcomfckcf";
+#endif  // !defined(OFFICIAL_BUILD)
+
 bool IsSystemAppIdWithFileHandlers(base::StringPiece id) {
   return id == kMediaAppId;
 }

@@ -294,7 +294,8 @@ void SharesheetService::OnIconLoaded(
   auto target_type = TargetType::kUnknown;
   if (app_type == apps::mojom::AppType::kArc) {
     target_type = TargetType::kArcApp;
-  } else if (app_type == apps::mojom::AppType::kWeb) {
+  } else if (app_type == apps::mojom::AppType::kWeb ||
+             app_type == apps::mojom::AppType::kSystemWeb) {
     target_type = TargetType::kWebApp;
   }
 
