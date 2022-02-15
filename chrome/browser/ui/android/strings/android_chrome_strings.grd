@@ -5240,6 +5240,20 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Save up to 60% data, read today's news
       </message>
 
+      <!-- Notification Permission Rationale Dialog Strings-->
+      <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_DIALOG_TITLE" desc="The title of a dialog shown to users before asking for notification permission.">
+        Chrome notifications make things easier
+      </message>
+      <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_DIALOG_MESSAGE" desc="The body text of a dialog explaining the benefits of enabling Chrome notifications.">
+        You’ll be able to easily manage media controls, incognito sessions, downloads and more
+      </message>
+      <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_ACCEPT_BUTTON_TEXT" desc="The text of the positive button on the notification permission prompt dialog">
+        Continue
+      </message>
+      <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_REJECT_BUTTON_TEXT" desc="The text of the negative button on the notification permission prompt dialog">
+        No thanks
+      </message>
+
       <!-- Get Image Descriptions -->
       <message name="IDS_IMAGE_DESCRIPTIONS_DIALOG_HEADER" desc="Header for confirmation dialog to enable image descriptions.">
         Get image descriptions?
