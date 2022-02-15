@@ -19,6 +19,7 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/types.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,6 +87,10 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
   void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override {
     std::move(callback).Run(kSubscriptionCount);
   }
+  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override {
+    register_feed_user_settings_field_trial_calls_.push_back(
+        static_cast<std::string>(group));
+  }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -93,6 +98,7 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
   std::unique_ptr<MetricsReporter> reporter_;
   base::HistogramTester histogram_;
   base::UserActionTester user_actions_;
+  std::vector<std::string> register_feed_user_settings_field_trial_calls_;
 };
 
 TEST_F(MetricsReporterTest, SliceViewedReportsSuggestionShown) {
@@ -1027,6 +1033,8 @@ TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedNotEnabled) {
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
                                 UserSettingsOnStart::kFeedNotEnabledByPolicy,
                                 1);
+  EXPECT_EQ(std::vector<std::string>({"FeedNotEnabledByPolicy"}),
+            register_feed_user_settings_field_trial_calls_);
 }
 
 TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedNotVisible_SignedOut) {
@@ -1036,6 +1044,8 @@ TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedNotVisible_SignedOut) {
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
                                 UserSettingsOnStart::kFeedNotVisibleSignedOut,
                                 1);
+  EXPECT_EQ(std::vector<std::string>({"FeedNotVisibleSignedOut"}),
+            register_feed_user_settings_field_trial_calls_);
 }
 
 TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedNotVisible_SignedIn) {
@@ -1045,6 +1055,8 @@ TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedNotVisible_SignedIn) {
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
                                 UserSettingsOnStart::kFeedNotVisibleSignedIn,
                                 1);
+  EXPECT_EQ(std::vector<std::string>({"FeedNotVisibleSignedIn"}),
+            register_feed_user_settings_field_trial_calls_);
 }
 
 TEST_F(MetricsReporterTest, UserSettingsOnStart_EnabledSignedOut) {
@@ -1053,6 +1065,8 @@ TEST_F(MetricsReporterTest, UserSettingsOnStart_EnabledSignedOut) {
                                    /*isSignedIn=*/false, feedstore::Metadata());
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
                                 UserSettingsOnStart::kSignedOut, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedOut"}),
+            register_feed_user_settings_field_trial_calls_);
 }
 
 TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOffDpOff) {
@@ -1065,6 +1079,8 @@ TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOffDpOff) {
                                    /*isSignedIn=*/true, metadata);
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
                                 UserSettingsOnStart::kSignedInWaaOffDpOff, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInWaaOffDpOff"}),
+            register_feed_user_settings_field_trial_calls_);
 }
 
 TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOnDpOff) {
@@ -1078,6 +1094,8 @@ TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOnDpOff) {
                                    /*isSignedIn=*/true, metadata);
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
                                 UserSettingsOnStart::kSignedInWaaOnDpOff, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInWaaOnDpOff"}),
+            register_feed_user_settings_field_trial_calls_);
 }
 
 TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOffDpOn) {
@@ -1094,6 +1112,8 @@ TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOffDpOn) {
                                    /*isSignedIn=*/true, metadata);
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
                                 UserSettingsOnStart::kSignedInWaaOffDpOn, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInWaaOffDpOn"}),
+            register_feed_user_settings_field_trial_calls_);
 }
 
 TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOnDpOn) {
@@ -1111,6 +1131,8 @@ TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOnDpOn) {
                                    /*isSignedIn=*/true, metadata);
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
                                 UserSettingsOnStart::kSignedInWaaOnDpOn, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInWaaOnDpOn"}),
+            register_feed_user_settings_field_trial_calls_);
 }
 
 TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedDataTooOld) {
@@ -1123,6 +1145,8 @@ TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedDataTooOld) {
                                    /*isSignedIn=*/true, metadata);
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
                                 UserSettingsOnStart::kSignedInNoRecentData, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInNoRecentData"}),
+            register_feed_user_settings_field_trial_calls_);
 }
 
 TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedDataFromFuture) {
@@ -1134,6 +1158,8 @@ TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedDataFromFuture) {
                                    /*isSignedIn=*/true, metadata);
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
                                 UserSettingsOnStart::kSignedInNoRecentData, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInNoRecentData"}),
+            register_feed_user_settings_field_trial_calls_);
 }
 
 }  // namespace feed

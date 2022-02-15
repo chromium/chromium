@@ -856,6 +856,10 @@ void FeedApiTest::RegisterFollowingFeedFollowCountFieldTrial(
   register_following_feed_follow_count_field_trial_calls_.push_back(
       follow_count);
 }
+void FeedApiTest::RegisterFeedUserSettingsFieldTrial(base::StringPiece group) {
+  register_feed_user_settings_field_trial_calls_.push_back(
+      static_cast<std::string>(group));
+}
 DisplayMetrics FeedApiTest::GetDisplayMetrics() {
   DisplayMetrics result;
   result.density = 200;

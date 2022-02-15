@@ -164,6 +164,9 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
       size_t follow_count) override {
     service_delegate_->RegisterFollowingFeedFollowCountFieldTrial(follow_count);
   }
+  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override {
+    service_delegate_->RegisterFeedUserSettingsFieldTrial(group);
+  }
 
  private:
   raw_ptr<FeedService::Delegate> service_delegate_;

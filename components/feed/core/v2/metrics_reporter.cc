@@ -247,10 +247,11 @@ void MetricsReporter::OnMetadataInitialized(
     bool isFeedVisible,
     bool isSignedIn,
     const feedstore::Metadata& metadata) {
-  base::UmaHistogramEnumeration(
-      "ContentSuggestions.Feed.UserSettingsOnStart",
-      GetUserSettingsOnStart(isEnabledByEnterprisePolicy, isFeedVisible,
-                             isSignedIn, metadata));
+  UserSettingsOnStart settings = GetUserSettingsOnStart(
+      isEnabledByEnterprisePolicy, isFeedVisible, isSignedIn, metadata);
+  delegate_->RegisterFeedUserSettingsFieldTrial(ToString(settings));
+  base::UmaHistogramEnumeration("ContentSuggestions.Feed.UserSettingsOnStart",
+                                settings);
 }
 
 void MetricsReporter::OnEnterBackground() {

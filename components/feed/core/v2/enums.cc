@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/enums.h"
 
 #include <ostream>
+#include "base/strings/string_piece.h"
 
 namespace feed {
 
@@ -185,6 +186,33 @@ std::ostream& operator<<(std::ostream& out, WebFeedRefreshStatus value) {
     case WebFeedRefreshStatus::kAbortFetchWebFeedPendingClearAll:
       return out << "kAbortFetchWebFeedPendingClearAll";
   }
+}
+
+base::StringPiece ToString(UserSettingsOnStart v) {
+  switch (v) {
+    case UserSettingsOnStart::kFeedNotEnabledByPolicy:
+      return "FeedNotEnabledByPolicy";
+    case UserSettingsOnStart::kFeedNotVisibleSignedOut:
+      return "FeedNotVisibleSignedOut";
+    case UserSettingsOnStart::kFeedNotVisibleSignedIn:
+      return "FeedNotVisibleSignedIn";
+    case UserSettingsOnStart::kSignedOut:
+      return "SignedOut";
+    case UserSettingsOnStart::kSignedInWaaOnDpOn:
+      return "SignedInWaaOnDpOn";
+    case UserSettingsOnStart::kSignedInWaaOnDpOff:
+      return "SignedInWaaOnDpOff";
+    case UserSettingsOnStart::kSignedInWaaOffDpOn:
+      return "SignedInWaaOffDpOn";
+    case UserSettingsOnStart::kSignedInWaaOffDpOff:
+      return "SignedInWaaOffDpOff";
+    case UserSettingsOnStart::kSignedInNoRecentData:
+      return "SignedInNoRecentData";
+  }
+  return "Unknown";
+}
+std::ostream& operator<<(std::ostream& out, UserSettingsOnStart value) {
+  return out << ToString(value);
 }
 
 }  // namespace feed

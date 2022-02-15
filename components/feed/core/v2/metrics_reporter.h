@@ -42,6 +42,8 @@ class MetricsReporter {
     // subscribed.
     virtual void SubscribedWebFeedCount(
         base::OnceCallback<void(int)> callback) = 0;
+    virtual void RegisterFeedUserSettingsFieldTrial(
+        base::StringPiece group) = 0;
   };
 
   explicit MetricsReporter(PrefService* profile_prefs);

@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_ENUMS_H_
 
 #include <iosfwd>
+#include "base/strings/string_piece_forward.h"
 
 namespace feed {
 
@@ -181,6 +182,8 @@ enum class UserSettingsOnStart {
   kSignedInNoRecentData = 8,
   kMaxValue = kSignedInNoRecentData,
 };
+base::StringPiece ToString(UserSettingsOnStart v);
+std::ostream& operator<<(std::ostream& out, UserSettingsOnStart value);
 
 }  // namespace feed
 

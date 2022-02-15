@@ -80,6 +80,8 @@ class FeedStream : public FeedApi,
     virtual AccountInfo GetAccountInfo() = 0;
     virtual void PrefetchImage(const GURL& url) = 0;
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
+    virtual void RegisterFeedUserSettingsFieldTrial(
+        base::StringPiece group) = 0;
   };
 
   FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
@@ -179,6 +181,7 @@ class FeedStream : public FeedApi,
 
   // MetricsReporter::Delegate.
   void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override;
+  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override;
 
   // StreamModel::StoreObserver.
   void OnStoreChange(StreamModel::StoreUpdate update) override;

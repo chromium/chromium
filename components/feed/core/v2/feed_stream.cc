@@ -756,6 +756,9 @@ void FeedStream::SubscribedWebFeedCount(
     base::OnceCallback<void(int)> callback) {
   subscriptions().SubscribedWebFeedCount(std::move(callback));
 }
+void FeedStream::RegisterFeedUserSettingsFieldTrial(base::StringPiece group) {
+  delegate_->RegisterFeedUserSettingsFieldTrial(group);
+}
 
 void FeedStream::SetIdleCallbackForTesting(
     base::RepeatingClosure idle_callback) {

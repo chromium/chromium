@@ -76,6 +76,9 @@ class FeedService : public KeyedService {
     // Registers a synthetic field trial "FollowingFeedFollowCount".
     virtual void RegisterFollowingFeedFollowCountFieldTrial(
         size_t follow_count) = 0;
+    // Registers a synthetic field trial "FeedUserSettings".
+    virtual void RegisterFeedUserSettingsFieldTrial(
+        base::StringPiece group) = 0;
   };
 
   // Construct a FeedService given an already constructed FeedStream.

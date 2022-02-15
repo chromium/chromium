@@ -84,6 +84,10 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
         "FollowingFeedFollowCount",
         internal::GetFollowingFeedFollowCountGroupName(follow_count));
   }
+  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "FeedUserSettings", group);
+  }
 };
 
 // static

@@ -2581,6 +2581,9 @@ TEST_F(FeedApiTest, ReportUserSettingsFromMetadataWaaOnDpOff) {
   CreateStream();
   histograms.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
                                 UserSettingsOnStart::kSignedInWaaOnDpOff, 1);
+  EXPECT_EQ(
+      std::vector<std::string>({"SignedInNoRecentData", "SignedInWaaOnDpOff"}),
+      register_feed_user_settings_field_trial_calls_);
 }
 
 TEST_F(FeedApiTest, ReportUserSettingsFromMetadataWaaOffDpOn) {
