@@ -4144,6 +4144,113 @@ TEST_F(TSFTextStoreTest, RegressionTest13) {
   EXPECT_EQ(S_OK, result);
 }
 
+// regression tests for crbug.com/1295578.
+// Some IMEs (e.g. voice typing panel) may select text before active
+// composition. We should select text after composition end.
+class RegressionTest14Callback : public TSFTextStoreTestCallback {
+ public:
+  explicit RegressionTest14Callback(TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  RegressionTest14Callback(const RegressionTest14Callback&) = delete;
+  RegressionTest14Callback& operator=(const RegressionTest14Callback&) = delete;
+
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"text ", S_OK);
+    SetTextTest(4, 5, L"", S_OK);
+    SetTextTest(4, 4, L" select that ", S_OK);
+    SetSelectionTest(17, 17, S_OK);
+
+    text_spans()->clear();
+    ImeTextSpan text_span;
+    text_span.start_offset = 4;
+    text_span.end_offset = 17;
+    text_span.underline_color = SK_ColorBLACK;
+    text_span.thickness = ImeTextSpan::Thickness::kThin;
+    text_span.background_color = SK_ColorTRANSPARENT;
+    text_spans()->push_back(text_span);
+    *edit_flag() = true;
+    *composition_start() = 4;
+    composition_range()->set_start(4);
+    composition_range()->set_end(17);
+    *has_composition_range() = true;
+
+    return S_OK;
+  }
+
+  void SetCompositionText1(const ui::CompositionText& composition) {
+    EXPECT_EQ(u" select that ", composition.text);
+    EXPECT_EQ(13u, composition.selection.start());
+    EXPECT_EQ(13u, composition.selection.end());
+    ASSERT_EQ(1u, composition.ime_text_spans.size());
+    EXPECT_EQ(0u, composition.ime_text_spans[0].start_offset);
+    EXPECT_EQ(13u, composition.ime_text_spans[0].end_offset);
+    SetHasCompositionText(true);
+    SetTextRange(0, 17);
+    SetTextBuffer(u"text select that ");
+    SetSelectionRange(17, 17);
+  }
+
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"text select that ", 17);
+    SetTextTest(4, 17, L"", S_OK);
+    GetTextTest(0, -1, L"text", 4);
+    SetSelectionTest(0, 4, S_OK);
+
+    text_spans()->clear();
+    *edit_flag() = true;
+    *composition_start() = 0;
+    composition_range()->set_start(0);
+    composition_range()->set_end(0);
+    *has_composition_range() = false;
+
+    return S_OK;
+  }
+
+  bool SetEditableSelectionRange2(const gfx::Range& range) {
+    EXPECT_EQ(range.GetMin(), 0u);
+    EXPECT_EQ(range.length(), 4u);
+    return true;
+  }
+
+  HRESULT LockGranted3(DWORD flags) {
+    GetTextTest(0, -1, L"text", 4);
+    GetSelectionTest(0, 4);
+
+    return S_OK;
+  }
+};
+
+TEST_F(TSFTextStoreTest, RegressionTest14) {
+  RegressionTest14Callback callback(text_store_.get());
+  EXPECT_CALL(text_input_client_, InsertText(_, _)).Times(0);
+  EXPECT_CALL(text_input_client_, SetCompositionText(_))
+      .WillOnce(
+          Invoke(&callback, &RegressionTest14Callback::SetCompositionText1));
+  EXPECT_CALL(text_input_client_, SetEditableSelectionRange(_))
+      .WillOnce(Invoke(&callback,
+                       &RegressionTest14Callback::SetEditableSelectionRange2));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(Invoke(&callback, &RegressionTest14Callback::LockGranted1))
+      .WillOnce(Invoke(&callback, &RegressionTest14Callback::LockGranted2))
+      .WillOnce(Invoke(&callback, &RegressionTest14Callback::LockGranted3));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+}
+
 // Test multiple |SetText| call in one edit session.
 class MultipleSetTextCallback : public TSFTextStoreTestCallback {
  public:
