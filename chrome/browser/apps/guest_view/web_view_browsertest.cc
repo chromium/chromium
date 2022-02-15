@@ -2940,9 +2940,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, GeolocationAPIEmbedderHasNoAccessDeny) {
 // the tests become flaky.
 //
 // GeolocationAPI* test 1 of 3.
-// Currently disabled until crbug.com/526788 is fixed.
-IN_PROC_BROWSER_TEST_F(WebViewTest,
-                       DISABLED_GeolocationAPIEmbedderHasAccessAllow) {
+IN_PROC_BROWSER_TEST_F(WebViewTest, GeolocationAPIEmbedderHasAccessAllow) {
   TestHelper("testAllow",
              "web_view/geolocation/embedder_has_permission",
              NEEDS_TEST_SERVER);
@@ -2957,9 +2955,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, GeolocationAPIEmbedderHasAccessDeny) {
 
 // GeolocationAPI* test 3 of 3.
 // Currently disabled until crbug.com/526788 is fixed.
-IN_PROC_BROWSER_TEST_F(
-    WebViewTest,
-    DISABLED_GeolocationAPIEmbedderHasAccessMultipleBridgeIdAllow) {
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       GeolocationAPIEmbedderHasAccessMultipleBridgeIdAllow) {
   TestHelper("testMultipleBridgeIdAllow",
              "web_view/geolocation/embedder_has_permission",
              NEEDS_TEST_SERVER);
