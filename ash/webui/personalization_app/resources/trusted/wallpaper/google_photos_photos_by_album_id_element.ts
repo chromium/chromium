@@ -91,8 +91,8 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   }
 
   /** Invoked on changes to this element's |hidden| state. */
-  private onHiddenChanged_() {
-    if (this.hidden) {
+  private onHiddenChanged_(hidden: GooglePhotosPhotosByAlbumId['hidden']) {
+    if (hidden) {
       return;
     }
 
@@ -111,23 +111,27 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   }
 
   /** Invoked to compute |album_|. */
-  private computeAlbum_(): GooglePhotosPhoto[]|null {
+  private computeAlbum_(
+      albumId: GooglePhotosPhotosByAlbumId['albumId'],
+      photosByAlbumId: GooglePhotosPhotosByAlbumId['photosByAlbumId_'],
+      photosByAlbumIdLoading:
+          GooglePhotosPhotosByAlbumId['photosByAlbumIdLoading_']):
+      GooglePhotosPhoto[]|null {
     // If no album is currently selected or if the currently selected album is
     // still loading then there is nothing to display.
-    if (!this.albumId || this.photosByAlbumIdLoading_[this.albumId]) {
+    if (!albumId || photosByAlbumIdLoading[albumId]) {
       return null;
     }
 
     // If the currently selected album has not already been fetched, do so
     // though there is still nothing to display.
-    if (!this.photosByAlbumId_.hasOwnProperty(this.albumId)) {
-      fetchGooglePhotosAlbum(
-          this.wallpaperProvider_, this.getStore(), this.albumId);
+    if (!photosByAlbumId.hasOwnProperty(albumId)) {
+      fetchGooglePhotosAlbum(this.wallpaperProvider_, this.getStore(), albumId);
       return null;
     }
 
     // Once the currently selected album has been fetched it can be displayed.
-    return this.photosByAlbumId_[this.albumId]!;
+    return photosByAlbumId[albumId]!;
   }
 }
 

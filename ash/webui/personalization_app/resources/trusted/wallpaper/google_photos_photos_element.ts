@@ -120,8 +120,8 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /** Invoked on changes to this element's |hidden| state. */
-  private onHiddenChanged_() {
-    if (this.hidden) {
+  private onHiddenChanged_(hidden: GooglePhotosPhotos['hidden']) {
+    if (hidden) {
       return;
     }
 
@@ -195,18 +195,21 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /** Invoked to compute |photosByRow_|. */
-  private computePhotosByRow_(): GooglePhotosPhoto[][]|null {
-    if (this.photosLoading_ || !this.photosPerRow_) {
+  private computePhotosByRow_(
+      photos: GooglePhotosPhotos['photos_'],
+      photosLoading: GooglePhotosPhotos['photosLoading_'],
+      photosPerRow: GooglePhotosPhotos['photosPerRow_']):
+      GooglePhotosPhoto[][]|null {
+    if (photosLoading || !photosPerRow) {
       return null;
     }
-    if (!isNonEmptyArray(this.photos_)) {
+    if (!isNonEmptyArray(photos)) {
       return null;
     }
     return Array.from(
-        {length: Math.ceil(this.photos_.length / this.photosPerRow_)},
-        (_, i) => {
-          i *= this.photosPerRow_;
-          return this.photos_!.slice(i, i + this.photosPerRow_);
+        {length: Math.ceil(photos.length / photosPerRow)}, (_, i) => {
+          i *= photosPerRow;
+          return photos!.slice(i, i + photosPerRow);
         });
   }
 

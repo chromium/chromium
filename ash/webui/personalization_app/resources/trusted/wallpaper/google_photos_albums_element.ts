@@ -75,8 +75,8 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   }
 
   /** Invoked on changes to this element's |hidden| state. */
-  private onHiddenChanged_() {
-    if (this.hidden) {
+  private onHiddenChanged_(hidden: GooglePhotosAlbums['hidden']) {
+    if (hidden) {
       return;
     }
 

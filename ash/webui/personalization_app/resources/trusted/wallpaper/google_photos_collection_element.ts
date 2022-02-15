@@ -98,13 +98,13 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   }
 
   /** Invoked on changes to the currently selected |albumId|. */
-  private onAlbumIdChanged_() {
-    this.tab_ = this.albumId ? Tab.PhotosByAlbumId : Tab.Albums;
+  private onAlbumIdChanged_(albumId: GooglePhotosCollection['albumId']) {
+    this.tab_ = albumId ? Tab.PhotosByAlbumId : Tab.Albums;
   }
 
   /** Invoked on changes to this element's |hidden| state. */
-  private onHiddenChanged_() {
-    if (this.hidden) {
+  private onHiddenChanged_(hidden: GooglePhotosCollection['hidden']) {
+    if (hidden) {
       return;
     }
 
@@ -129,43 +129,51 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   }
 
   /** Whether the list of albums is empty. */
-  private isAlbumsEmpty_(): boolean {
-    return !isNonEmptyArray(this.albums_);
+  private isAlbumsEmpty_(albums: GooglePhotosCollection['albums_']): boolean {
+    return !isNonEmptyArray(albums);
   }
 
   /** Whether the albums tab is currently selected. */
-  private isAlbumsTabSelected_(): boolean {
-    return this.tab_ === Tab.Albums;
+  private isAlbumsTabSelected_(tab: GooglePhotosCollection['tab_']): boolean {
+    return tab === Tab.Albums;
   }
 
   /** Whether the albums tab is currently visible. */
-  private isAlbumsTabVisible_(): boolean {
-    return this.isAlbumsTabSelected_() && !this.hidden;
+  private isAlbumsTabVisible_(
+      hidden: GooglePhotosCollection['hidden'],
+      tab: GooglePhotosCollection['tab_']): boolean {
+    return this.isAlbumsTabSelected_(tab) && !hidden;
   }
 
   /** Whether the photos by album id tab is currently visible. */
-  private isPhotosByAlbumIdTabVisible_(): boolean {
-    return this.tab_ === Tab.PhotosByAlbumId && !this.hidden;
+  private isPhotosByAlbumIdTabVisible_(
+      hidden: GooglePhotosCollection['hidden'],
+      tab: GooglePhotosCollection['tab_']): boolean {
+    return tab === Tab.PhotosByAlbumId && !hidden;
   }
 
   /** Whether the list of photos is empty. */
-  private isPhotosEmpty_(): boolean {
-    return !isNonEmptyArray(this.photos_);
+  private isPhotosEmpty_(photos: GooglePhotosCollection['photos_']): boolean {
+    return !isNonEmptyArray(photos);
   }
 
   /** Whether the photos tab is currently selected. */
-  private isPhotosTabSelected_(): boolean {
-    return this.tab_ === Tab.Photos;
+  private isPhotosTabSelected_(tab: GooglePhotosCollection['tab_']): boolean {
+    return tab === Tab.Photos;
   }
 
   /** Whether the photos tab is currently visible. */
-  private isPhotosTabVisible_(): boolean {
-    return this.isPhotosTabSelected_() && !this.hidden;
+  private isPhotosTabVisible_(
+      hidden: GooglePhotosCollection['hidden'],
+      tab: GooglePhotosCollection['tab_']): boolean {
+    return this.isPhotosTabSelected_(tab) && !hidden;
   }
 
   /** Whether the tab strip is currently visible. */
-  private isTabStripVisible_(): boolean {
-    return !this.albumId && !this.isAlbumsEmpty_();
+  private isTabStripVisible_(
+      albumId: GooglePhotosCollection['albumId'],
+      albums: GooglePhotosCollection['albums_']): boolean {
+    return !albumId && !this.isAlbumsEmpty_(albums);
   }
 }
 
