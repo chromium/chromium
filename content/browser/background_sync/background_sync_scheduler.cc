@@ -25,7 +25,7 @@ BackgroundSyncScheduler* BackgroundSyncScheduler::GetFor(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(browser_context);
 
-  return browser_context->impl()->background_sync_scheduler();
+  return BrowserContextImpl::From(browser_context)->background_sync_scheduler();
 }
 
 BackgroundSyncScheduler::BackgroundSyncScheduler() = default;

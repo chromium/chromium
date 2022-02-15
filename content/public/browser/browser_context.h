@@ -74,12 +74,13 @@ namespace content {
 class BackgroundFetchDelegate;
 class BackgroundSyncController;
 class BlobHandle;
+class BrowserContextImpl;
 class BrowserPluginGuestManager;
 class BrowsingDataRemover;
 class BrowsingDataRemoverDelegate;
-class DownloadManager;
 class ClientHintsControllerDelegate;
 class ContentIndexProvider;
+class DownloadManager;
 class DownloadManagerDelegate;
 class FederatedIdentityActiveSessionPermissionContextDelegate;
 class FederatedIdentityRequestPermissionContextDelegate;
@@ -90,12 +91,12 @@ class PermissionControllerDelegate;
 class PlatformNotificationService;
 class PushMessagingService;
 class ResourceContext;
+class SSLHostStateDelegate;
 class SharedCorsOriginAccessList;
 class SiteInstance;
 class StorageNotificationService;
 class StoragePartition;
 class StoragePartitionConfig;
-class SSLHostStateDelegate;
 
 // This class holds the context needed for a browsing session.
 // It lives on the UI thread. All these methods must only be called on the UI
@@ -111,7 +112,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // non-virtual instance methods.
   //
   // TODO(https://crbug.com/1179776): Consider moving these methods to
-  // BrowserContext::Impl or (in the future) BrowserContextImpl class.
+  // BrowserContextImpl.
 
   BrowserContext();
   ~BrowserContext() override;
@@ -432,14 +433,13 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // methods and no fields), but currently BrowserContext and BrowserContextImpl
   // and BrowserContextDelegate are kind of mixed together in a single class.
   //
-  // TODO(https://crbug.com/1179776): Evolve the Impl class into a
-  // BrowserContextImpl in //content/browser/browser_context_impl.h / .cc
-  // (Removing afterwards the Impl fwd-declaration, `impl_` field, `friend`
-  // declaration and `impl` accessor below).
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-  friend class BackgroundSyncScheduler;
-  Impl* impl() { return impl_.get(); }
+  // TODO(https://crbug.com/1179776): Make BrowserContextImpl to implement
+  // BrowserContext instead (Removing afterwards the BrowserContextImpl,
+  // fwd-declaration, `impl_` field, `friend` declaration and `impl` accessor
+  // below).
+  friend class BrowserContextImpl;
+  std::unique_ptr<BrowserContextImpl> impl_;
+  BrowserContextImpl* impl() { return impl_.get(); }
 };
 
 }  // namespace content

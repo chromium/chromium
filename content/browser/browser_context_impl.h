@@ -35,18 +35,20 @@ class BrowsingDataRemoverImpl;
 class DownloadManager;
 class StoragePartitionImplMap;
 class PermissionController;
+class BrowserContextImpl;
 
-// //content-internal parts of BrowserContext.
+// content-internal parts of BrowserContext.
 //
-// TODO(https://crbug.com/1179776): Evolve the Impl class into a
-// full BrowserContextImpl.
-class BrowserContext::Impl {
+// TODO(https://crbug.com/1179776): Make BrowserContextImpl to implement
+// BrowserContext, instead of being a member.
+class BrowserContextImpl {
  public:
-  explicit Impl(BrowserContext* self);
-  ~Impl();
+  static BrowserContextImpl* From(BrowserContext* self);
+  explicit BrowserContextImpl(BrowserContext* self);
+  ~BrowserContextImpl();
 
-  Impl(const Impl&) = delete;
-  Impl& operator=(const Impl&) = delete;
+  BrowserContextImpl(const BrowserContextImpl&) = delete;
+  BrowserContextImpl& operator=(const BrowserContextImpl&) = delete;
 
   const std::string& UniqueId() const { return unique_id_; }
 
@@ -85,8 +87,8 @@ class BrowserContext::Impl {
 
  private:
   // TODO(https://crbug.com/1179776): Remove the `self_` field.  In the future
-  // BrowserContext::Impl should become BrowserContextImpl that inherits from
-  // BrowserContext, making the `self_` member obsolete.
+  // BrowserContext::BrowserContextImpl should become BrowserContextImpl that
+  // inherits from BrowserContext, making the `self_` member obsolete.
   raw_ptr<BrowserContext> self_;
 
   const std::string unique_id_ = base::UnguessableToken::Create().ToString();
