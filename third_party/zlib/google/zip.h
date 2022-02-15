@@ -170,33 +170,37 @@ bool ZipFiles(const base::FilePath& src_dir,
               int dest_fd);
 #endif  // defined(OS_POSIX)
 
-// Unzip the contents of zip_file into dest_dir.
-// For each file in zip_file, include it only if the callback |filter_cb|
-// returns true. Otherwise omit it.
-// If |log_skipped_files| is true, files skipped during extraction are printed
-// to debug log.
-bool UnzipWithFilterCallback(const base::FilePath& zip_file,
-                             const base::FilePath& dest_dir,
-                             FilterCallback filter_cb,
-                             bool log_skipped_files);
+// Options of the Unzip function, with valid default values.
+struct UnzipOptions {
+  // Only extract the entries for which |filter_cb| returns true. If no filter
+  // is provided, everything gets extracted.
+  FilterCallback filter;
 
-// Unzip the contents of zip_file, using the writers provided by writer_factory.
-// For each file in zip_file, include it only if the callback |filter_cb|
-// returns true. Otherwise omit it.
-// If |log_skipped_files| is true, files skipped during extraction are printed
-// to debug log.
+  // Password to decrypt the encrypted files.
+  std::string password;
+
+  // If |log_skipped_files| is true, files skipped during extraction are printed
+  // to debug log.
+  bool log_skipped_files = true;
+};
+
 typedef base::RepeatingCallback<std::unique_ptr<WriterDelegate>(
     const base::FilePath&)>
     WriterFactory;
-typedef base::RepeatingCallback<bool(const base::FilePath&)> DirectoryCreator;
-bool UnzipWithFilterAndWriters(const base::PlatformFile& zip_file,
-                               WriterFactory writer_factory,
-                               DirectoryCreator directory_creator,
-                               FilterCallback filter_cb,
-                               bool log_skipped_files);
 
-// Unzip the contents of zip_file into dest_dir.
-bool Unzip(const base::FilePath& zip_file, const base::FilePath& dest_dir);
+typedef base::RepeatingCallback<bool(const base::FilePath&)> DirectoryCreator;
+
+// Unzips the contents of |zip_file|, using the writers provided by
+// |writer_factory|.
+bool Unzip(const base::PlatformFile& zip_file,
+           WriterFactory writer_factory,
+           DirectoryCreator directory_creator,
+           UnzipOptions options = {});
+
+// Unzips the contents of |zip_file| into |dest_dir|.
+bool Unzip(const base::FilePath& zip_file,
+           const base::FilePath& dest_dir,
+           UnzipOptions options = {});
 
 }  // namespace zip
 

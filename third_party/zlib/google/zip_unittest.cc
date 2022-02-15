@@ -192,32 +192,28 @@ class ZipTest : public PlatformTest {
 
   virtual void TearDown() { PlatformTest::TearDown(); }
 
-  bool GetTestDataDirectory(base::FilePath* path) {
-    bool success = base::PathService::Get(base::DIR_SOURCE_ROOT, path);
+  static base::FilePath GetDataDirectory() {
+    base::FilePath path;
+    bool success = base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
     EXPECT_TRUE(success);
-    if (!success)
-      return false;
-    for (const base::StringPiece s :
-         {"third_party", "zlib", "google", "test", "data"}) {
-      *path = path->AppendASCII(s);
-    }
-    return true;
+    return std::move(path)
+        .AppendASCII("third_party")
+        .AppendASCII("zlib")
+        .AppendASCII("google")
+        .AppendASCII("test")
+        .AppendASCII("data");
   }
 
   void TestUnzipFile(const base::FilePath::StringType& filename,
                      bool expect_hidden_files) {
-    base::FilePath test_dir;
-    ASSERT_TRUE(GetTestDataDirectory(&test_dir));
-    TestUnzipFile(test_dir.Append(filename), expect_hidden_files);
+    TestUnzipFile(GetDataDirectory().Append(filename), expect_hidden_files);
   }
 
   void TestUnzipFile(const base::FilePath& path, bool expect_hidden_files) {
     ASSERT_TRUE(base::PathExists(path)) << "no file " << path;
     ASSERT_TRUE(zip::Unzip(path, test_dir_));
 
-    base::FilePath original_dir;
-    ASSERT_TRUE(GetTestDataDirectory(&original_dir));
-    original_dir = original_dir.AppendASCII("test");
+    base::FilePath original_dir = GetDataDirectory().AppendASCII("test");
 
     base::FileEnumerator files(
         test_dir_, true,
@@ -329,9 +325,7 @@ TEST_F(ZipTest, UnzipUncompressed) {
 }
 
 TEST_F(ZipTest, UnzipEvil) {
-  base::FilePath path;
-  ASSERT_TRUE(GetTestDataDirectory(&path));
-  path = path.AppendASCII("evil.zip");
+  base::FilePath path = GetDataDirectory().AppendASCII("evil.zip");
   // Unzip the zip file into a sub directory of test_dir_ so evil.zip
   // won't create a persistent file outside test_dir_ in case of a
   // failure.
@@ -344,10 +338,9 @@ TEST_F(ZipTest, UnzipEvil) {
 }
 
 TEST_F(ZipTest, UnzipEvil2) {
-  base::FilePath path;
-  ASSERT_TRUE(GetTestDataDirectory(&path));
   // The ZIP file contains a file with invalid UTF-8 in its file name.
-  path = path.AppendASCII("evil_via_invalid_utf8.zip");
+  base::FilePath path =
+      GetDataDirectory().AppendASCII("evil_via_invalid_utf8.zip");
   // See the comment at UnzipEvil() for why we do this.
   base::FilePath output_dir = test_dir_.AppendASCII("out");
   ASSERT_TRUE(zip::Unzip(path, output_dir));
@@ -360,10 +353,8 @@ TEST_F(ZipTest, UnzipWithFilter) {
   auto filter = base::BindRepeating([](const base::FilePath& path) {
     return path.BaseName().MaybeAsASCII() == "foo.txt";
   });
-  base::FilePath path;
-  ASSERT_TRUE(GetTestDataDirectory(&path));
-  ASSERT_TRUE(zip::UnzipWithFilterCallback(path.AppendASCII("test.zip"),
-                                           test_dir_, filter, false));
+  ASSERT_TRUE(zip::Unzip(GetDataDirectory().AppendASCII("test.zip"), test_dir_,
+                         {.filter = std::move(filter)}));
   // Only foo.txt should have been extracted. The following paths should not
   // be extracted:
   //   foo/
@@ -392,9 +383,71 @@ TEST_F(ZipTest, UnzipWithFilter) {
   ASSERT_EQ(0, extracted_count);
 }
 
+TEST_F(ZipTest, UnzipEncryptedWithRightPassword) {
+  // TODO(crbug.com/1296838) Also check the AES-encrypted files.
+  auto filter = base::BindRepeating([](const base::FilePath& path) {
+    return !base::StartsWith(path.MaybeAsASCII(), "Encrypted AES");
+  });
+
+  ASSERT_TRUE(zip::Unzip(
+      GetDataDirectory().AppendASCII("Different Encryptions.zip"), test_dir_,
+      {.filter = std::move(filter), .password = "password"}));
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(test_dir_.AppendASCII("ClearText.txt"),
+                                     &contents));
+  EXPECT_EQ("This is not encrypted.\n", contents);
+
+  ASSERT_TRUE(base::ReadFileToString(
+      test_dir_.AppendASCII("Encrypted ZipCrypto.txt"), &contents));
+  EXPECT_EQ("This is encrypted with ZipCrypto.\n", contents);
+}
+
+TEST_F(ZipTest, UnzipEncryptedWithWrongPassword) {
+  // TODO(crbug.com/1296838) Also check the AES-encrypted files.
+  auto filter = base::BindRepeating([](const base::FilePath& path) {
+    return !base::StartsWith(path.MaybeAsASCII(), "Encrypted AES");
+  });
+
+  ASSERT_FALSE(zip::Unzip(
+      GetDataDirectory().AppendASCII("Different Encryptions.zip"), test_dir_,
+      {.filter = std::move(filter), .password = "wrong"}));
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(test_dir_.AppendASCII("ClearText.txt"),
+                                     &contents));
+  EXPECT_EQ("This is not encrypted.\n", contents);
+
+  // This extracted file contains rubbish data.
+  ASSERT_TRUE(base::ReadFileToString(
+      test_dir_.AppendASCII("Encrypted ZipCrypto.txt"), &contents));
+  EXPECT_NE("", contents);
+  EXPECT_NE("This is encrypted with ZipCrypto.\n", contents);
+}
+
+TEST_F(ZipTest, UnzipEncryptedWithNoPassword) {
+  // TODO(crbug.com/1296838) Also check the AES-encrypted files.
+  auto filter = base::BindRepeating([](const base::FilePath& path) {
+    return !base::StartsWith(path.MaybeAsASCII(), "Encrypted AES");
+  });
+
+  ASSERT_FALSE(
+      zip::Unzip(GetDataDirectory().AppendASCII("Different Encryptions.zip"),
+                 test_dir_, {.filter = std::move(filter)}));
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(test_dir_.AppendASCII("ClearText.txt"),
+                                     &contents));
+  EXPECT_EQ("This is not encrypted.\n", contents);
+
+  // This extracted file contains rubbish data.
+  ASSERT_TRUE(base::ReadFileToString(
+      test_dir_.AppendASCII("Encrypted ZipCrypto.txt"), &contents));
+  EXPECT_NE("", contents);
+  EXPECT_NE("This is encrypted with ZipCrypto.\n", contents);
+}
+
 TEST_F(ZipTest, UnzipWithDelegates) {
-  auto filter =
-      base::BindRepeating([](const base::FilePath& path) { return true; });
   auto dir_creator = base::BindRepeating(
       [](const base::FilePath& extract_dir, const base::FilePath& entry_path) {
         return base::CreateDirectory(extract_dir.Append(entry_path));
@@ -407,12 +460,10 @@ TEST_F(ZipTest, UnzipWithDelegates) {
             extract_dir.Append(entry_path));
       },
       test_dir_);
-  base::FilePath path;
-  ASSERT_TRUE(GetTestDataDirectory(&path));
-  base::File file(path.AppendASCII("test.zip"),
+
+  base::File file(GetDataDirectory().AppendASCII("test.zip"),
                   base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
-  ASSERT_TRUE(zip::UnzipWithFilterAndWriters(file.GetPlatformFile(), writer,
-                                             dir_creator, filter, false));
+  ASSERT_TRUE(zip::Unzip(file.GetPlatformFile(), writer, dir_creator));
   base::FilePath dir = test_dir_;
   base::FilePath dir_foo = dir.AppendASCII("foo");
   base::FilePath dir_foo_bar = dir_foo.AppendASCII("bar");
@@ -426,9 +477,7 @@ TEST_F(ZipTest, UnzipWithDelegates) {
 }
 
 TEST_F(ZipTest, Zip) {
-  base::FilePath src_dir;
-  ASSERT_TRUE(GetTestDataDirectory(&src_dir));
-  src_dir = src_dir.AppendASCII("test");
+  base::FilePath src_dir = GetDataDirectory().AppendASCII("test");
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -439,9 +488,7 @@ TEST_F(ZipTest, Zip) {
 }
 
 TEST_F(ZipTest, ZipIgnoreHidden) {
-  base::FilePath src_dir;
-  ASSERT_TRUE(GetTestDataDirectory(&src_dir));
-  src_dir = src_dir.AppendASCII("test");
+  base::FilePath src_dir = GetDataDirectory().AppendASCII("test");
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -452,9 +499,7 @@ TEST_F(ZipTest, ZipIgnoreHidden) {
 }
 
 TEST_F(ZipTest, ZipNonASCIIDir) {
-  base::FilePath src_dir;
-  ASSERT_TRUE(GetTestDataDirectory(&src_dir));
-  src_dir = src_dir.AppendASCII("test");
+  base::FilePath src_dir = GetDataDirectory().AppendASCII("test");
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -492,9 +537,7 @@ TEST_F(ZipTest, ZipTimeStamp) {
 
 #if defined(OS_POSIX)
 TEST_F(ZipTest, ZipFiles) {
-  base::FilePath src_dir;
-  ASSERT_TRUE(GetTestDataDirectory(&src_dir));
-  src_dir = src_dir.AppendASCII("test");
+  base::FilePath src_dir = GetDataDirectory().AppendASCII("test");
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -519,15 +562,12 @@ TEST_F(ZipTest, ZipFiles) {
 #endif  // defined(OS_POSIX)
 
 TEST_F(ZipTest, UnzipFilesWithIncorrectSize) {
-  base::FilePath test_data_folder;
-  ASSERT_TRUE(GetTestDataDirectory(&test_data_folder));
-
   // test_mismatch_size.zip contains files with names from 0.txt to 7.txt with
   // sizes from 0 to 7 bytes respectively, but the metadata in the zip file says
   // the uncompressed size is 3 bytes. The ZipReader and minizip code needs to
   // be clever enough to get all the data out.
   base::FilePath test_zip_file =
-      test_data_folder.AppendASCII("test_mismatch_size.zip");
+      GetDataDirectory().AppendASCII("test_mismatch_size.zip");
 
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
@@ -574,9 +614,7 @@ TEST_F(ZipTest, ZipWithFileAccessor) {
 
 // Tests progress reporting while zipping files.
 TEST_F(ZipTest, ZipProgress) {
-  base::FilePath src_dir;
-  ASSERT_TRUE(GetTestDataDirectory(&src_dir));
-  src_dir = src_dir.AppendASCII("test");
+  base::FilePath src_dir = GetDataDirectory().AppendASCII("test");
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -613,9 +651,7 @@ TEST_F(ZipTest, ZipProgress) {
 
 // Tests throttling of progress reporting while zipping files.
 TEST_F(ZipTest, ZipProgressPeriod) {
-  base::FilePath src_dir;
-  ASSERT_TRUE(GetTestDataDirectory(&src_dir));
-  src_dir = src_dir.AppendASCII("test");
+  base::FilePath src_dir = GetDataDirectory().AppendASCII("test");
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -654,9 +690,7 @@ TEST_F(ZipTest, ZipProgressPeriod) {
 
 // Tests cancellation while zipping files.
 TEST_F(ZipTest, ZipCancel) {
-  base::FilePath src_dir;
-  ASSERT_TRUE(GetTestDataDirectory(&src_dir));
-  src_dir = src_dir.AppendASCII("test");
+  base::FilePath src_dir = GetDataDirectory().AppendASCII("test");
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

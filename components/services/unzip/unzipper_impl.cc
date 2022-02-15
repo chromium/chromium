@@ -135,17 +135,11 @@ void UnzipperImpl::Unzip(
         &Filter, mojo::Remote<mojom::UnzipFilter>(std::move(filter_remote)));
   }
 
-  // Note that we pass a pointer to |filter| below, as it is a repeating
-  // callback and transferring its value would cause the callback to fail when
-  // called more than once. It is safe to pass a pointer as
-  // UnzipWithFilterAndWriters is synchronous, so |filter| won't be used when
-  // the method returns.
-  std::move(callback).Run(zip::UnzipWithFilterAndWriters(
-      zip_file.GetPlatformFile(),
-      base::BindRepeating(&MakeFileWriterDelegate, output_dir.get()),
-      base::BindRepeating(&CreateDirectory, output_dir.get()),
-      std::move(filter_cb),
-      /*log_skipped_files=*/false));
+  std::move(callback).Run(
+      zip::Unzip(zip_file.GetPlatformFile(),
+                 base::BindRepeating(&MakeFileWriterDelegate, output_dir.get()),
+                 base::BindRepeating(&CreateDirectory, output_dir.get()),
+                 {.filter = std::move(filter_cb)}));
 }
 
 void UnzipperImpl::DetectEncoding(base::File zip_file,
