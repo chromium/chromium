@@ -570,6 +570,10 @@ const base::Feature kEolWarningNotifications{"EolWarningNotifications",
 // See https://crbug.com/1231305.
 const base::Feature kESimPolicy{"ESimPolicy", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable or disable support for touchpad with haptic feedback.
+const base::Feature kExoHapticFeedbackSupport("ExoHapticFeedbackSupport",
+                                              base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable or disable bubble showing when an application gains any UI lock.
 const base::Feature kExoLockNotification{"ExoLockNotification",
                                          base::FEATURE_ENABLED_BY_DEFAULT};

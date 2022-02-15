@@ -226,6 +226,8 @@ extern const base::Feature kExtendedOpenVpnSettings;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEolWarningNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kESimPolicy;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kExoHapticFeedbackSupport;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kExoLockNotification;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kExoOrdinalMotion;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kExoPointerLock;
