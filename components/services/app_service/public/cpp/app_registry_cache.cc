@@ -237,21 +237,12 @@ void AppRegistryCache::SetAccountId(const AccountId& account_id) {
   account_id_ = account_id;
 }
 
-const std::set<apps::mojom::AppType>& AppRegistryCache::GetInitializedAppTypes()
-    const {
-  return initialized_mojom_app_types_;
-}
-
 const std::set<AppType>& AppRegistryCache::InitializedAppTypes() const {
   return initialized_app_types_;
 }
 
 bool AppRegistryCache::IsAppTypeInitialized(apps::AppType app_type) const {
-  return base::FeatureList::IsEnabled(
-             kAppServiceOnAppTypeInitializedWithoutMojom)
-             ? base::Contains(initialized_app_types_, app_type)
-             : base::Contains(initialized_mojom_app_types_,
-                              ConvertAppTypeToMojomAppType(app_type));
+  return base::Contains(initialized_app_types_, app_type);
 }
 
 void AppRegistryCache::OnMojomAppTypeInitialized() {
@@ -267,7 +258,7 @@ void AppRegistryCache::OnMojomAppTypeInitialized() {
     for (auto& obs : observers_) {
       obs.OnAppTypeInitialized(ConvertMojomAppTypToAppType(app_type));
     }
-    initialized_mojom_app_types_.insert(app_type);
+    initialized_app_types_.insert(ConvertMojomAppTypToAppType(app_type));
   }
 }
 
@@ -309,7 +300,6 @@ void AppRegistryCache::OnAppTypeInitialized() {
       obs.OnAppTypeInitialized(app_type);
     }
     initialized_app_types_.insert(app_type);
-    initialized_mojom_app_types_.insert(mojom_app_type);
   }
 }
 

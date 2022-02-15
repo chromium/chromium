@@ -114,8 +114,8 @@ void AppLaunchHandler::LaunchApps() {
   auto* cache = &apps::AppServiceProxyFactory::GetForProfile(profile_)
                      ->AppRegistryCache();
   Observe(cache);
-  for (const auto app_type : cache->GetInitializedAppTypes()) {
-    OnAppTypeInitialized(apps::ConvertMojomAppTypToAppType(app_type));
+  for (const auto app_type : cache->InitializedAppTypes()) {
+    OnAppTypeInitialized(app_type);
   }
 
   // Add the app to `app_ids` if there is a launch list from the restore data

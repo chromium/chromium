@@ -240,7 +240,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   }
 
   // Returns the set of app types that have so far been initialized.
-  const std::set<apps::mojom::AppType>& GetInitializedAppTypes() const;
   const std::set<AppType>& InitializedAppTypes() const;
 
   bool IsAppTypeInitialized(AppType app_type) const;
@@ -290,7 +289,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
   // Saves app types which have finished initialization, and
   // OnAppTypeInitialized has be called to notify observers.
-  std::set<apps::mojom::AppType> initialized_mojom_app_types_;
   std::set<AppType> initialized_app_types_;
 
   AccountId account_id_;

@@ -137,8 +137,8 @@ const char* FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(
 }
 
 void FamilyUserAppMetrics::Init() {
-  for (const auto app_type : app_registry_->GetInitializedAppTypes()) {
-    OnAppTypeInitialized(apps::ConvertMojomAppTypToAppType(app_type));
+  for (const auto app_type : app_registry_->InitializedAppTypes()) {
+    OnAppTypeInitialized(app_type);
   }
 }
 

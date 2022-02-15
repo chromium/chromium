@@ -81,8 +81,8 @@ void FullRestoreAppLaunchHandler::LaunchBrowserWhenReady(
                          ->AppRegistryCache();
       Observe(cache);
 
-      for (const auto app_type : cache->GetInitializedAppTypes()) {
-        OnAppTypeInitialized(apps::ConvertMojomAppTypToAppType(app_type));
+      for (const auto app_type : cache->InitializedAppTypes()) {
+        OnAppTypeInitialized(app_type);
       }
     }
 
