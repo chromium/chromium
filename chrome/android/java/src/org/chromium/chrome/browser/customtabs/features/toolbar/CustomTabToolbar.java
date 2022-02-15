@@ -36,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.Tab;
@@ -81,7 +83,6 @@ import org.chromium.ui.interpolators.BakedBezierInterpolator;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -135,11 +136,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     // This View will be non-null only for bottom sheet custom tabs.
     private ImageView mHandleView;
 
-    // Whether dark tint should be applied to icons and text.
-    private boolean mUseDarkColors;
-
-    private final ColorStateList mDarkModeTint;
-    private final ColorStateList mLightModeTint;
+    // Color scheme and tint that will be applied to icons and text.
+    private @BrandedColorScheme int mBrandedColorScheme;
+    private ColorStateList mTint;
 
     private ValueAnimator mBrandColorTransitionAnimation;
     private boolean mBrandColorTransitionActive;
@@ -185,9 +184,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      */
     public CustomTabToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        mDarkModeTint = ThemeUtils.getThemedToolbarIconTint(context, false);
-        mLightModeTint = ThemeUtils.getThemedToolbarIconTint(context, true);
     }
 
     @Override
@@ -195,7 +191,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         super.onFinishInflate();
         final int backgroundColor = ChromeColors.getDefaultThemeColor(getContext(), false);
         setBackground(new ColorDrawable(backgroundColor));
-        mUseDarkColors = !ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
+        mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
 
         mIncognitoImageView = findViewById(R.id.incognito_cct_logo_image_view);
         mCustomActionButtons = findViewById(R.id.action_buttons);
@@ -378,7 +374,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private void updateButtonTint(ImageButton button) {
         Drawable drawable = button.getDrawable();
         if (drawable instanceof TintedDrawable) {
-            ((TintedDrawable) drawable).setTint(mUseDarkColors ? mDarkModeTint : mLightModeTint);
+            ((TintedDrawable) drawable).setTint(mTint);
         }
     }
 
@@ -532,7 +528,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 // Using the current background color instead of the final color in case this
                 // animation was cancelled.  This ensures the assets are updated to the visible
                 // color.
-                updateUseDarkColors(background.getColor());
+                updateColorsForBackground(background.getColor());
             }
         });
         mBrandColorTransitionAnimation.start();
@@ -540,11 +536,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (!shouldAnimate) mBrandColorTransitionAnimation.end();
     }
 
-    private void updateUseDarkColors(int backgroundColor) {
-        boolean useDarkColors = !ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
-        if (mUseDarkColors == useDarkColors) return;
-        mUseDarkColors = useDarkColors;
-        mLocationBar.updateUseDarkColors();
+    private void updateColorsForBackground(@ColorInt int background) {
+        final @BrandedColorScheme int brandedColorScheme =
+                OmniboxResourceProvider.getBrandedColorScheme(
+                        getContext(), isIncognito(), background);
+        if (mBrandedColorScheme == brandedColorScheme) return;
+        mBrandedColorScheme = brandedColorScheme;
+        final ColorStateList tint =
+                ThemeUtils.getThemedToolbarIconTint(getContext(), mBrandedColorScheme);
+        mTint = tint;
+        mLocationBar.updateColors();
+        setToolbarHairlineColor(background);
     }
 
     @Override
@@ -725,7 +727,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             -> {},
                     this, new NoOpkeyboardVisibilityDelegate(),
                     locationBarDataProvider.isIncognito());
-            updateUseDarkColors();
+            updateColors();
             updateSecurityIcon();
             updateProgressBarColors();
             updateUrlBar();
@@ -802,7 +804,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void onPrimaryColorChanged() {
-            updateUseDarkColors();
+            updateColors();
             updateSecurityIcon();
             updateProgressBarColors();
         }
@@ -824,6 +826,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void updateVisualsForState() {
+            updateColorsForBackground(getBackground().getColor());
             updateSecurityIcon();
             updateProgressBarColors();
             updateUrlBar();
@@ -927,7 +930,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
                 return;
             }
-
             String publisherUrl = TrustedCdn.getPublisherUrl(tab);
             String url = publisherUrl != null ? publisherUrl : tab.getUrl().getSpec().trim();
             if (mState == STATE_TITLE_ONLY) {
@@ -952,11 +954,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 String plainDisplayText =
                         getContext().getString(R.string.custom_tab_amp_publisher_url,
                                 UrlUtilities.extractPublisherFromPublisherUrl(publisherUrl));
-                ColorStateList tint = mUseDarkColors ? mDarkModeTint : mLightModeTint;
                 SpannableString formattedDisplayText = SpanApplier.applySpans(plainDisplayText,
                         new SpanInfo("<pub>", "</pub>", ORIGIN_SPAN),
                         new SpanInfo(
-                                "<bg>", "</bg>", new ForegroundColorSpan(tint.getDefaultColor())));
+                                "<bg>", "</bg>", new ForegroundColorSpan(mTint.getDefaultColor())));
                 originStart = formattedDisplayText.getSpanStart(ORIGIN_SPAN);
                 originEnd = formattedDisplayText.getSpanEnd(ORIGIN_SPAN);
                 formattedDisplayText.removeSpan(ORIGIN_SPAN);
@@ -974,19 +975,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
         }
 
-        private void updateUseDarkColors() {
+        private void updateColors() {
             updateButtonsTint();
-            @BrandedColorScheme
-            int brandedColorScheme = mUseDarkColors ? BrandedColorScheme.LIGHT_BRANDED_THEME
-                                                    : BrandedColorScheme.DARK_BRANDED_THEME;
-            if (mUrlCoordinator.setBrandedColorScheme(brandedColorScheme)) {
+
+            if (mUrlCoordinator.setBrandedColorScheme(mBrandedColorScheme)) {
                 // Update the URL to make it use the new color scheme.
                 updateUrlBar();
             }
 
-            mTitleBar.setTextColor(ApiCompatibilityUtils.getColor(getResources(),
-                    mUseDarkColors ? R.color.branded_url_text_on_light_bg
-                                   : R.color.branded_url_text_on_dark_bg));
+            mTitleBar.setTextColor(OmniboxResourceProvider.getUrlBarPrimaryTextColor(
+                    getContext(), mBrandedColorScheme));
         }
 
         @Override
