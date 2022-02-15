@@ -5337,22 +5337,27 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       root_frame_host()->GetWebExposedIsolationLevel());
 }
 
-class RenderFrameHostImplBrowserTestWithDirectSockets
+class RenderFrameHostImplBrowserTestWithRestrictedApis
     : public RenderFrameHostImplBrowserTest {
  public:
-  RenderFrameHostImplBrowserTestWithDirectSockets() {
-    feature_list_.InitAndEnableFeature(features::kDirectSockets);
-  }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
 
- private:
-  base::test::ScopedFeatureList feature_list_;
+    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
+                                    "http://127.0.0.1");
+  }
 };
 
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithDirectSockets,
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
                        GetWebExposedIsolationLevel) {
   // Not isolated:
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+  TestNavigationObserver navigation_observer(web_contents());
+  shell()->LoadURL(embedded_test_server()->GetURL("/empty.html"));
+  navigation_observer.Wait();
+
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+            navigation_observer.last_net_error_code());
   EXPECT_EQ(RenderFrameHost::WebExposedIsolationLevel::kNotIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
 

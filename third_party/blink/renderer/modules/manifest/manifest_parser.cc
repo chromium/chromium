@@ -173,12 +173,9 @@ bool ManifestParser::Parse() {
   manifest_->shortcuts = ParseShortcuts(root_object.get());
   manifest_->capture_links = ParseCaptureLinks(root_object.get());
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableIsolatedStorage)) {
-    manifest_->isolated_storage = ParseIsolatedStorage(root_object.get());
-    manifest_->permissions_policy =
-        ParseIsolatedAppPermissions(root_object.get());
-  }
+  manifest_->isolated_storage = ParseIsolatedStorage(root_object.get());
+  manifest_->permissions_policy =
+      ParseIsolatedAppPermissions(root_object.get());
 
   manifest_->launch_handler = ParseLaunchHandler(root_object.get());
 

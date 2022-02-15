@@ -37,6 +37,7 @@
 #include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -179,6 +180,15 @@ class IsolatedAppBrowserTest : public IsolatedAppBrowserTestHarness {
   IsolatedAppBrowserTest(const IsolatedAppBrowserTest&) = delete;
   IsolatedAppBrowserTest& operator=(const IsolatedAppBrowserTest&) = delete;
   ~IsolatedAppBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolatedAppBrowserTestHarness::SetUpCommandLine(command_line);
+
+    std::string isolated_app_origins =
+        std::string("https://") + kAppHost + ",https://" + kApp2Host;
+    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
+                                    isolated_app_origins);
+  }
 
  protected:
   content::StoragePartition* default_storage_partition() {

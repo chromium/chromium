@@ -12,7 +12,6 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
-class PrefService;
 class Profile;
 
 namespace web_app {
@@ -70,9 +69,6 @@ bool IsValidWebAppUrl(const GURL& app_url);
 absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                                                      const GURL& url,
                                                      bool window_only = false);
-
-// Returns true if the given URL is in the scope of any installed isolated PWA.
-bool IsUrlInIsolatedAppScope(PrefService* prefs, const GURL& url);
 
 }  // namespace web_app
 

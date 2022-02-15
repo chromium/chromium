@@ -7,10 +7,8 @@
 
 #include <string>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -38,10 +36,6 @@ class IsolatedAppBrowserTestHarness : public WebAppControllerBrowserTest {
       Browser* window,
       const GURL& url,
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppEnableIsolatedStorage};
 };
 
 }  // namespace web_app

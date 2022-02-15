@@ -121,17 +121,4 @@ absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                   : absl::nullopt;
 }
 
-bool IsUrlInIsolatedAppScope(PrefService* prefs, const GURL& url) {
-  // For short-term testing, also use kDirectSockets to enable isolated
-  // application level. DirectSocket WPT and browser tests require application
-  // isolation level.
-  //
-  // TODO(https://crbug.com/1206150): Figure out a better way to enable isolated
-  // application level in tests.
-  bool is_isolated_storage_enabled = base::FeatureList::IsEnabled(
-      blink::features::kWebAppEnableIsolatedStorage);
-  return is_isolated_storage_enabled &&
-         web_app::GetStorageIsolationKey(prefs, url::Origin::Create(url));
-}
-
 }  // namespace web_app

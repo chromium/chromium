@@ -55,6 +55,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   std::string GetDefaultDownloadName() override;
   WebContentsViewDelegate* GetWebContentsViewDelegate(
       WebContents* web_contents) override;
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override;
   scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
       override;
   GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(

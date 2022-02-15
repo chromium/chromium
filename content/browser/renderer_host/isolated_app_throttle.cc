@@ -12,10 +12,10 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/page_type.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 
@@ -66,8 +66,7 @@ absl::optional<url::SchemeHostPort> GetTupleFromOptionalOrigin(
 // static
 std::unique_ptr<IsolatedAppThrottle>
 IsolatedAppThrottle::MaybeCreateThrottleFor(NavigationHandle* handle) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableIsolatedStorage)) {
+  if (content::SiteIsolationPolicy::IsApplicationIsolationLevelEnabled()) {
     return std::make_unique<IsolatedAppThrottle>(handle);
   }
   return nullptr;
@@ -245,7 +244,7 @@ bool IsolatedAppThrottle::embedder_requests_app_isolation() {
                                         ->navigator()
                                         .controller()
                                         .GetBrowserContext();
-  return GetContentClient()->browser()->ShouldUrlUseApplicationIsolationLevel(
+  return SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
       browser_context, navigation_handle()->GetURL());
 }
 

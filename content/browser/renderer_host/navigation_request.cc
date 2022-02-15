@@ -7404,7 +7404,7 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
   const GURL& url = common_params().url;
   url::Origin origin = url::Origin::Create(url);
 
-  return GetContentClient()->browser()->ShouldUrlUseApplicationIsolationLevel(
+  return SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
              GetNavigationController()->GetBrowserContext(), url)
              ? WebExposedIsolationInfo::CreateIsolatedApplication(origin)
              : WebExposedIsolationInfo::CreateIsolated(origin);

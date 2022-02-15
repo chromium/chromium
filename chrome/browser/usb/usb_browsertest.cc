@@ -60,6 +60,8 @@ using device::mojom::UsbDeviceManager;
 
 namespace {
 
+constexpr char kIsolatedAppHost[] = "app.com";
+
 class FakeChooserView : public permissions::ChooserController::View {
  public:
   explicit FakeChooserView(
@@ -465,6 +467,13 @@ class IsolatedAppUsbBrowserTest
   IsolatedAppUsbBrowserTest() = default;
   ~IsolatedAppUsbBrowserTest() override = default;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolatedAppBrowserTestHarness::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
+                                    std::string("https://") + kIsolatedAppHost);
+  }
+
   void SetUpOnMainThread() override {
     IsolatedAppBrowserTestHarness::SetUpOnMainThread();
 
@@ -487,8 +496,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppUsbBrowserTest, ClaimInterface) {
   auto* non_app_frame = ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("/banners/isolated/simple.html"));
 
-  const char kAppHost[] = "app.com";
-  web_app::AppId app_id = InstallIsolatedApp(kAppHost);
+  web_app::AppId app_id = InstallIsolatedApp(kIsolatedAppHost);
   auto* app_frame = OpenApp(app_id);
 
   auto fake_device_info = CreateSmartCardDevice();

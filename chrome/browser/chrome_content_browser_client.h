@@ -874,8 +874,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   embedder_support::ForceMajorVersionToMinorPosition
   GetForceMajorVersionToMinorPosition(content::BrowserContext* context);
 
-  std::unique_ptr<std::vector<url::Origin>> restricted_api_origins_;
-
   // Vector of additional ChromeContentBrowserClientParts.
   // Parts are deleted in the reverse order they are added.
   std::vector<ChromeContentBrowserClientParts*> extra_parts_;

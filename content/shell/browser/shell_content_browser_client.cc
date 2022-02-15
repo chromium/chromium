@@ -341,6 +341,15 @@ WebContentsViewDelegate* ShellContentBrowserClient::GetWebContentsViewDelegate(
   return CreateShellWebContentsViewDelegate(web_contents);
 }
 
+bool ShellContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
+    BrowserContext* browser_context,
+    const GURL& url) {
+  // Enable application isolation level to allow restricted APIs in WPT.
+  // Note that this will not turn on application isolation for all URLs; the
+  // content layer will still run its own checks.
+  return true;
+}
+
 scoped_refptr<content::QuotaPermissionContext>
 ShellContentBrowserClient::CreateQuotaPermissionContext() {
   return new ShellQuotaPermissionContext();

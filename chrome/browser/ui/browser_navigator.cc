@@ -51,6 +51,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
@@ -560,8 +561,9 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Force isolated PWAs to open in an app window.
-  params->force_open_pwa_window = web_app::IsUrlInIsolatedAppScope(
-      params->initiating_profile->GetPrefs(), params->url);
+  params->force_open_pwa_window =
+      content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+          params->initiating_profile, params->url);
   params->open_pwa_window_if_possible |= params->force_open_pwa_window;
 #endif
 

@@ -851,10 +851,6 @@ const base::Feature kWebAppEnableDarkMode{"WebAppEnableDarkMode",
 const base::Feature kWebAppEnableHandleLinks{"WebAppEnableHandleLinks",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables web apps to request isolated storage.
-const base::Feature kWebAppEnableIsolatedStorage{
-    "WebAppEnableIsolatedStorage", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the "launch_handler" manifest field for web apps.
 // Explainer: https://github.com/WICG/sw-launch/blob/main/launch_handler.md
 const base::Feature kWebAppEnableLaunchHandler{

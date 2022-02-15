@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -16,7 +16,6 @@
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -43,7 +42,7 @@ class IsolatedAppContentBrowserClient : public ContentBrowserClient {
 
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
-    return url::Origin::Create(url) == app_origin_;
+    return true;
   }
 
  private:
@@ -59,6 +58,8 @@ class HttpsBrowserTest : public ContentBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
     mock_cert_verifier_.SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
+                                    std::string("https://") + kAppHost);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -88,9 +89,6 @@ class HttpsBrowserTest : public ContentBrowserTest {
 
 class IsolatedAppThrottleBrowserTest : public HttpsBrowserTest {
  public:
-  IsolatedAppThrottleBrowserTest()
-      : scoped_feature_list_(blink::features::kWebAppEnableIsolatedStorage) {}
-
   void SetUpOnMainThread() override {
     HttpsBrowserTest::SetUpOnMainThread();
 
@@ -165,7 +163,6 @@ class IsolatedAppThrottleBrowserTest : public HttpsBrowserTest {
   WebContents* web_contents() { return shell()->web_contents(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<IsolatedAppContentBrowserClient> test_client_;
   raw_ptr<ContentBrowserClient> old_client_;
 };

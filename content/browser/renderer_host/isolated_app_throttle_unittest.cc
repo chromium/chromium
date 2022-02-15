@@ -5,10 +5,11 @@
 #include "content/browser/renderer_host/isolated_app_throttle.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -17,7 +18,6 @@
 #include "content/test/test_render_frame_host.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
@@ -39,7 +39,7 @@ class IsolatedAppContentBrowserClient : public ContentBrowserClient {
  public:
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
-    return url::Origin::Create(url) == url::Origin::Create(GURL(kAppUrl));
+    return true;
   }
 
   bool HandleExternalProtocol(
@@ -82,11 +82,12 @@ class IsolatedAppContentBrowserClient : public ContentBrowserClient {
 
 class IsolatedAppThrottleTest : public RenderViewHostTestHarness {
  public:
-  IsolatedAppThrottleTest()
-      : feature_list_(blink::features::kWebAppEnableIsolatedStorage) {}
-
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kRestrictedApiOrigins, kAppUrl);
+    content::SiteIsolationPolicy::DisableFlagCachingForTesting();
 
     old_client_ = SetBrowserClientForTesting(&test_client_);
 
@@ -202,7 +203,6 @@ class IsolatedAppThrottleTest : public RenderViewHostTestHarness {
     CHECK_EQ(GURL(url), rfh->GetLastCommittedURL());
   }
 
-  base::test::ScopedFeatureList feature_list_;
   IsolatedAppContentBrowserClient test_client_;
   raw_ptr<ContentBrowserClient> old_client_;
   scoped_refptr<net::HttpResponseHeaders> coop_coep_headers_;
