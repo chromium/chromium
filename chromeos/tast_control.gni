@@ -134,10 +134,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/217362120
   "security.SELinuxFilesARC.vm",
 
-  # b/217100326
-  "arc.SettingsBridge",
-  "arc.SettingsBridge.vm",
-
   # https://crbug.com/1297028
   "arc.StandardizedKeyboardCopyPaste",
   "arc.StandardizedKeyboardCopyPaste.tablet_mode",
