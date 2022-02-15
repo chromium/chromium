@@ -551,12 +551,15 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CWP.JankinessTriggerStatus"
-    enum="ChromeOSJankinessTriggerStatus" expires_after="2020-08-30">
-  <owner>cywang@chromium.org</owner>
+    enum="ChromeOSJankinessTriggerStatus" expires_after="2023-03-30">
   <owner>chinglinyu@chromium.org</owner>
+  <owner>cwp-team@google.com</owner>
   <summary>
     Records the status of collection attempts triggered by jankiness on Chrome
     OS.
+
+    Warning: this histogram was expired from 08/30/2020 to 03/30/2022; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -627,7 +630,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CWP.UploadPerf" units="reports"
-    expires_after="2022-03-27">
+    expires_after="2023-03-30">
   <owner>aalexand@google.com</owner>
   <owner>gmx@chromium.org</owner>
   <owner>cwp-team@google.com</owner>
