@@ -78,6 +78,8 @@ class UnzipParams : public base::RefCounted<UnzipParams> {
       callback_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback_), result));
     }
+
+    unzipper_.reset();
   }
 
   void set_unzip_filter(std::unique_ptr<UnzipFilter> filter) {
@@ -145,12 +147,7 @@ class DetectEncodingParams : public base::RefCounted<DetectEncodingParams> {
   const base::TimeTicks start_time_ = base::TimeTicks::Now();
 };
 
-void UnzipDone(scoped_refptr<UnzipParams> params, bool success) {
-  params->InvokeCallback(success);
-  params->unzipper().reset();
-}
-
-void DoUnzipWithFilter(
+void DoUnzip(
     mojo::PendingRemote<mojom::Unzipper> unzipper,
     const base::FilePath& zip_path,
     const base::FilePath& output_dir,
@@ -180,22 +177,19 @@ void DoUnzipWithFilter(
       background_task_runner_keep_alive);
 
   unzip_params->unzipper().set_disconnect_handler(
-      base::BindOnce(&UnzipDone, unzip_params, false));
-
-  if (filter_callback.is_null()) {
-    unzip_params->unzipper()->Unzip(std::move(zip_file),
-                                    std::move(directory_remote),
-                                    base::BindOnce(&UnzipDone, unzip_params));
-    return;
-  }
+      base::BindOnce(&UnzipParams::InvokeCallback, unzip_params, false));
 
   mojo::PendingRemote<unzip::mojom::UnzipFilter> unzip_filter_remote;
-  unzip_params->set_unzip_filter(std::make_unique<UnzipFilter>(
-      unzip_filter_remote.InitWithNewPipeAndPassReceiver(), filter_callback));
+  if (filter_callback) {
+    unzip_params->set_unzip_filter(std::make_unique<UnzipFilter>(
+        unzip_filter_remote.InitWithNewPipeAndPassReceiver(),
+        std::move(filter_callback)));
+  }
 
-  unzip_params->unzipper()->UnzipWithFilter(
+  unzip_params->unzipper()->Unzip(
       std::move(zip_file), std::move(directory_remote),
-      std::move(unzip_filter_remote), base::BindOnce(&UnzipDone, unzip_params));
+      std::move(unzip_filter_remote),
+      base::BindOnce(&UnzipParams::InvokeCallback, unzip_params));
 }
 
 void DoDetectEncoding(
@@ -252,10 +246,9 @@ void UnzipWithFilter(mojo::PendingRemote<mojom::Unzipper> unzipper,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   background_task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(&DoUnzipWithFilter, std::move(unzipper), zip_path,
-                     output_dir, base::SequencedTaskRunnerHandle::Get(),
-                     filter_callback, std::move(result_callback),
-                     background_task_runner));
+      base::BindOnce(&DoUnzip, std::move(unzipper), zip_path, output_dir,
+                     base::SequencedTaskRunnerHandle::Get(), filter_callback,
+                     std::move(result_callback), background_task_runner));
 }
 
 void DetectEncoding(mojo::PendingRemote<mojom::Unzipper> unzipper,

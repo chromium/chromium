@@ -89,12 +89,8 @@ std::unique_ptr<zip::WriterDelegate> MakeFileWriterDelegate(
   return MakeFileWriterDelegateNoParent(parent.get(), path.BaseName());
 }
 
-bool FilterNoFiles(const base::FilePath& unused) {
-  return true;
-}
-
-bool FilterWithFilterRemote(mojom::UnzipFilter* filter,
-                            const base::FilePath& path) {
+bool Filter(const mojo::Remote<mojom::UnzipFilter>& filter,
+            const base::FilePath& path) {
   bool result = false;
   filter->ShouldUnzipFile(path, &result);
   return result;
@@ -145,26 +141,16 @@ UnzipperImpl::~UnzipperImpl() = default;
 void UnzipperImpl::Unzip(
     base::File zip_file,
     mojo::PendingRemote<filesystem::mojom::Directory> output_dir_remote,
-    UnzipCallback callback) {
-  DCHECK(zip_file.IsValid());
-  mojo::Remote<filesystem::mojom::Directory> output_dir(
-      std::move(output_dir_remote));
-  std::move(callback).Run(zip::UnzipWithFilterAndWriters(
-      zip_file.GetPlatformFile(),
-      base::BindRepeating(&MakeFileWriterDelegate, output_dir.get()),
-      base::BindRepeating(&CreateDirectory, output_dir.get()),
-      base::BindRepeating(&FilterNoFiles), /*log_skipped_files=*/false));
-}
-
-void UnzipperImpl::UnzipWithFilter(
-    base::File zip_file,
-    mojo::PendingRemote<filesystem::mojom::Directory> output_dir_remote,
     mojo::PendingRemote<mojom::UnzipFilter> filter_remote,
     UnzipCallback callback) {
   DCHECK(zip_file.IsValid());
   mojo::Remote<filesystem::mojom::Directory> output_dir(
       std::move(output_dir_remote));
-  mojo::Remote<mojom::UnzipFilter> filter(std::move(filter_remote));
+  zip::FilterCallback filter_cb;
+  if (filter_remote) {
+    filter_cb = base::BindRepeating(
+        &Filter, mojo::Remote<mojom::UnzipFilter>(std::move(filter_remote)));
+  }
 
   // Note that we pass a pointer to |filter| below, as it is a repeating
   // callback and transferring its value would cause the callback to fail when
@@ -175,7 +161,7 @@ void UnzipperImpl::UnzipWithFilter(
       zip_file.GetPlatformFile(),
       base::BindRepeating(&MakeFileWriterDelegate, output_dir.get()),
       base::BindRepeating(&CreateDirectory, output_dir.get()),
-      base::BindRepeating(&FilterWithFilterRemote, filter.get()),
+      std::move(filter_cb),
       /*log_skipped_files=*/false));
 }
 

@@ -80,13 +80,9 @@ class UnzipTest : public testing::Test {
           run_loop.QuitClosure().Run();
         });
 
-    if (filter_callback) {
-      UnzipWithFilter(std::move(unzipper), zip_file, output_dir,
-                      std::move(filter_callback), std::move(result_callback));
-    } else {
-      Unzip(std::move(unzipper), zip_file, output_dir,
-            std::move(result_callback));
-    }
+    UnzipWithFilter(std::move(unzipper), zip_file, output_dir,
+                    std::move(filter_callback), std::move(result_callback));
+
     run_loop.Run();
     return result;
   }
