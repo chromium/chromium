@@ -135,8 +135,8 @@ public class DuplicateDownloadDialog {
     /**
      * Gets the clickable span to display on the dialog.
      * @param context Context for showing the dialog.
-     * @param filePath Path of the download file.
-     * @param pageUrl URL of the page, empty for file downloads.
+     * @param filePath Path of the download file. Or the actual page URL for offline page download.
+     * @param pageUrl URL of the page, formatted for better display and empty for file downloads.
      * @param totalBytes Total bytes of the file.
      * @param duplicateExists Whether a duplicate download is in progress.
      * @param otrProfileID Off the record profile ID.
@@ -158,7 +158,7 @@ public class DuplicateDownloadDialog {
                     @Override
                     public void onClick(View view) {
                         closeDialog(true);
-                        DownloadUtils.openPageUrl(context, pageUrl);
+                        DownloadUtils.openPageUrl(context, filePath);
                     }
                 });
     }
