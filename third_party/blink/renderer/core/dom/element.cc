@@ -4928,13 +4928,6 @@ bool Element::ForceLegacyLayoutInFormattingContext(
       break;
     const ComputedStyle* style = ancestor->GetComputedStyle();
 
-    // Some layout types, such as MathML and custom layout, are only implemented
-    // in LayoutNG. We cannot fall back to legacy layout for such elements. If
-    // some descendant wants legacy fallback, while some ancestor in the same
-    // formatting context doesn't support legacy layout, we have ended up in an
-    // impossible situation.
-    DCHECK(!style->DisplayTypeRequiresLayoutNG());
-
     if (style->Display() == EDisplay::kNone)
       break;
 
@@ -5221,12 +5214,6 @@ void Element::AdjustForceLegacyLayout(const ComputedStyle* style,
   // (but see below):
   if (ShouldForceLegacyLayout())
     *should_force_legacy_layout = true;
-
-  // However, any forcing of legacy layout, by this element, or by an acestor,
-  // must be reset here, if the legacy layout engine doesn't support the display
-  // type.
-  if (style && style->DisplayTypeRequiresLayoutNG())
-    *should_force_legacy_layout = false;
 }
 
 ElementIntersectionObserverData* Element::IntersectionObserverData() const {

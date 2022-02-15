@@ -1698,7 +1698,8 @@ TEST_F(MultiColumnRenderingTest, LegacyMulticolWithMathMLAndAbspos) {
   // Disable LayoutNGBlockFragmentation, so that multicol uses legacy layout.
   ScopedLayoutNGBlockFragmentationForTest layout_ng_block_fragmentation(false);
 
-  // Enable MathML, which forces LayoutNG even in legacy multicol.
+  // Enable MathML. This will not actually create MathML objects, since we're
+  // inside legacy multicol. But at the very least it shouldn't crash.
   ScopedMathMLCoreForTest mathml_core(true);
   ScopedLayoutNGForTest layout_ng(true);
 
@@ -1710,24 +1711,14 @@ TEST_F(MultiColumnRenderingTest, LegacyMulticolWithMathMLAndAbspos) {
       "<mtext style='position: fixed'></mtext>"
       "</math>"
       "</section>");
-
-  Element* multicol = GetDocument().QuerySelector("section");
-  EXPECT_EQ(R"DUMP(
-LayoutBlockFlow SECTION style="position: relative; column-count: 1"
-  +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGMathMLBlock math
-  |  |  +--LayoutNGMathMLBlockFlow mtext style="position: absolute"
-  |  |  +--LayoutNGMathMLBlockFlow mtext style="position: fixed"
-  +--LayoutMultiColumnSet (anonymous)
-)DUMP",
-            ToSimpleLayoutTree(*multicol->GetLayoutObject()));
 }
 
-TEST_F(MultiColumnRenderingTest, LegacyMulticolWithTHeadContainingNGFixedpos) {
+TEST_F(MultiColumnRenderingTest, LegacyMulticolWithTHeadContainingFixedpos) {
   // Disable LayoutNGBlockFragmentation, so that multicol uses legacy layout.
   ScopedLayoutNGBlockFragmentationForTest layout_ng_block_fragmentation(false);
 
-  // Enable MathML, which forces LayoutNG even in legacy multicol.
+  // Enable MathML. This will not actually create MathML objects, since we're
+  // inside legacy multicol. But at the very least it shouldn't crash.
   ScopedMathMLCoreForTest mathml_core(true);
   ScopedLayoutNGForTest layout_ng(true);
 
@@ -1743,20 +1734,6 @@ TEST_F(MultiColumnRenderingTest, LegacyMulticolWithTHeadContainingNGFixedpos) {
       "</math>"
       "</div>"
       "</div>");
-
-  Element* multicol = GetDocument().QuerySelector("div");
-  EXPECT_EQ(R"DUMP(
-LayoutBlockFlow DIV style="column-count: 1"
-  +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutTable (anonymous)
-  |  |  +--LayoutTableSection DIV style="display: table-header-group; transform: scale(1)"
-  |  |  |  +--LayoutTableRow (anonymous)
-  |  |  |  |  +--LayoutTableCell (anonymous)
-  |  |  |  |  |  +--LayoutNGMathMLBlock math style="position: absolute"
-  |  |  |  |  |  |  +--LayoutNGMathMLBlockFlow mtext style="position: fixed"
-  +--LayoutMultiColumnSet (anonymous)
-)DUMP",
-            ToSimpleLayoutTree(*multicol->GetLayoutObject()));
 }
 
 }  // anonymous namespace
