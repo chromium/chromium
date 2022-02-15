@@ -2829,7 +2829,8 @@ void AppsGridView::CreateGhostImageView() {
   gfx::Rect ghost_view_bounds = GetExpectedTileBounds(reorder_placeholder_);
   ghost_view_bounds.Offset(
       CalculateTransitionOffset(reorder_placeholder_.page));
-  current_ghost_view->Init(app_list_config_, ghost_view_bounds);
+  current_ghost_view->Init(ghost_view_bounds,
+                           app_list_config_->grid_focus_corner_radius());
   current_ghost_view_ =
       items_container_->AddChildView(std::move(current_ghost_view));
   current_ghost_view_->FadeIn();

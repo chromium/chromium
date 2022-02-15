@@ -12,8 +12,6 @@
 
 namespace ash {
 
-class AppListConfig;
-
 // An ImageView of the ghosting icon to show where a dragged app or folder
 // will drop on the app list. This view is owned by the client and not the
 // view hierarchy.
@@ -30,8 +28,7 @@ class GhostImageView : public views::ImageView,
   ~GhostImageView() override;
 
   // Initialize the GhostImageView.
-  void Init(const AppListConfig* app_list_config,
-            const gfx::Rect& drop_target_bounds);
+  void Init(const gfx::Rect& drop_target_bounds, int grid_focus_corner_radius);
 
   // Begins the fade out animation.
   void FadeOut();

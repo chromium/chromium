@@ -10,6 +10,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/views/app_drag_icon_proxy.h"
+#include "ash/app_list/views/ghost_image_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -716,6 +717,20 @@ View* ShelfView::GetTooltipHandlerForPoint(const gfx::Point& point) {
   return this;
 }
 
+void ShelfView::ViewHierarchyChanged(
+    const views::ViewHierarchyChangedDetails& details) {
+  if (!details.is_add) {
+    if (details.child == current_ghost_view_) {
+      current_ghost_view_ = nullptr;
+      current_ghost_view_index_ = -1;
+    }
+    if (details.child == last_ghost_view_) {
+      last_ghost_view_ = nullptr;
+      current_ghost_view_index_ = -1;
+    }
+  }
+}
+
 void ShelfView::OnShelfButtonAboutToRequestFocusFromTabTraversal(
     ShelfButton* button,
     bool reverse) {
@@ -988,6 +1003,22 @@ void ShelfView::CalculateIdealBounds() {
     if (view_model_->view_at(i)->GetVisible()) {
       view_model_->set_ideal_bounds(i,
                                     gfx::Rect(x, y, button_size, button_size));
+      if (view_model_->view_at(i) == drag_view_ &&
+          current_ghost_view_index_ != i && !dragged_off_shelf_) {
+        if (current_ghost_view_)
+          current_ghost_view_->FadeOut();
+
+        last_ghost_view_ = current_ghost_view_;
+
+        auto current_ghost_view = std::make_unique<GhostImageView>(GridIndex());
+        gfx::Rect ghost_view_bounds(x, y, button_size, button_size);
+        current_ghost_view->Init(ghost_view_bounds,
+                                 ShelfConfig::Get()->button_spacing());
+
+        current_ghost_view_ = AddChildView(std::move(current_ghost_view));
+        current_ghost_view_->FadeIn();
+        current_ghost_view_index_ = i;
+      }
       x = shelf()->PrimaryAxisValue(x + button_size + button_spacing, x);
       y = shelf()->PrimaryAxisValue(y, y + button_size + button_spacing);
     } else {
@@ -1370,6 +1401,7 @@ void ShelfView::PointerReleasedOnButton(const views::View* view,
   // |drag_view_| can be released.
   drag_view_ = nullptr;
   drag_view_relative_to_ideal_bounds_ = RelativePosition::kNotAvailable;
+  RemoveGhostView();
 }
 
 void ShelfView::OnDragIconProxyAnimatedOut(
@@ -1643,6 +1675,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
     }
 
     dragged_off_shelf_ = true;
+    RemoveGhostView();
 
     if (RemovableByRipOff(current_index) == REMOVABLE) {
       // Move the item to the back and hide it. ShelfItemMoved() callback will
@@ -2566,6 +2599,19 @@ void ShelfView::HandleShelfParty() {
   UpdateShelfItemViewsVisibility();
   PreferredSizeChanged();
   AnimateToIdealBounds();
+}
+
+void ShelfView::RemoveGhostView() {
+  if (current_ghost_view_) {
+    current_ghost_view_index_ = -1;
+    current_ghost_view_->FadeOut();
+    current_ghost_view_ = nullptr;
+  }
+
+  if (last_ghost_view_) {
+    last_ghost_view_->FadeOut();
+    last_ghost_view_ = nullptr;
+  }
 }
 
 }  // namespace ash

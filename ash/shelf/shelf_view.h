@@ -54,6 +54,7 @@ class Separator;
 }  // namespace views
 
 namespace ash {
+class GhostImageView;
 class ShelfAppButton;
 class ShelfButton;
 class ShelfModel;
@@ -165,6 +166,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void OnMouseEvent(ui::MouseEvent* event) override;
   const char* GetClassName() const override;
   void OnThemeChanged() override;
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
@@ -316,6 +319,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   ShelfMenuModelAdapter* shelf_menu_model_adapter_for_testing() {
     return shelf_menu_model_adapter_.get();
   }
+
+  int current_ghost_view_index() { return current_ghost_view_index_; }
 
  private:
   friend class ShelfViewTestAPI;
@@ -543,6 +548,9 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // this function causes the items that were partying to reappear on the shelf.
   void HandleShelfParty();
 
+  // Removes and reset |current_ghost_view| and |last_ghost_view|.
+  void RemoveGhostView();
+
   // The model; owned by Launcher.
   ShelfModel* model_;
 
@@ -698,6 +706,14 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // The app item icon proxy created for drag operation.
   std::unique_ptr<AppDragIconProxy> drag_icon_proxy_;
+
+  // Placeholder ghost icon to show where an app will drop on the shelf.
+  GhostImageView* current_ghost_view_ = nullptr;
+  // The latest ghost icon shown set to be replaced by |current_ghost_view_|.
+  GhostImageView* last_ghost_view_ = nullptr;
+
+  // The index in the shelf app icons where the |current_ghost_view_| will show.
+  int current_ghost_view_index_ = -1;
 
   // When the scrollable shelf is enabled, |shelf_button_delegate_| should
   // be ScrollableShelfView.
