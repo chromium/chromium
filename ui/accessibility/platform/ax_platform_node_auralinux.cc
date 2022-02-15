@@ -3575,6 +3575,14 @@ void AXPlatformNodeAuraLinux::ResendFocusSignalsForCurrentlyFocusedNode() {
   atk_object_notify_state_change(focused_node, ATK_STATE_FOCUSED, true);
 }
 
+void AXPlatformNodeAuraLinux::SetAsCurrentlyFocusedNode() {
+  AtkObject* obj = GetOrCreateAtkObject();
+  if (!obj)
+    return;
+
+  SetWeakGPtrToAtkObject(&g_current_focused, obj);
+}
+
 // All menus have closed.
 void AXPlatformNodeAuraLinux::OnAllMenusEnded() {
   if (!GetActiveMenus().empty() && g_active_top_level_frame &&
