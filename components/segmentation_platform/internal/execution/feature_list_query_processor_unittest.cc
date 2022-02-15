@@ -83,16 +83,64 @@ class FeatureListQueryProcessorTest : public testing::Test {
       uma_feature->add_enum_ids(accepted_enum_id);
   }
 
-  void ProcessFeatureList(bool expected_error,
-                          const std::vector<float>& expected_input_tensor) {
+  void AddUserActionWithProcessingSetup(base::TimeDelta bucket_duration) {
+    // Set up a single user action feature.
+    std::string user_action_name = "some_action";
+    AddUmaFeature(proto::SignalType::USER_ACTION, user_action_name, 2, 1,
+                  proto::Aggregation::COUNT, {});
+
+    // When the particular user action is looked up with the correct start time,
+    // end time, and aggregation type, return 3 samples.
+    std::vector<SignalDatabaseSample> samples{
+        {clock_.Now(), 0},
+        {clock_.Now(), 0},
+        {clock_.Now(), 0},
+    };
+
+    EXPECT_CALL(*signal_database_,
+                GetSamples(proto::SignalType::USER_ACTION,
+                           base::HashMetricName(user_action_name),
+                           StartTime(bucket_duration, 2), clock_.Now(), _))
+        .WillOnce(RunOnceCallback<4>(samples));
+
+    // After retrieving the samples, they should be processed and aggregated.
+    EXPECT_CALL(
+        *feature_aggregator_,
+        Process(proto::SignalType::USER_ACTION, proto::Aggregation::COUNT, 2,
+                clock_.Now(), bucket_duration, samples))
+        .WillOnce(Return(std::vector<float>{3}));
+  }
+
+  void AddCustomInput(int tensor_length,
+                      proto::CustomInput::FillPolicy fill_policy,
+                      const std::vector<float>& default_values) {
+    auto* input_feature = model_metadata.add_input_features();
+    proto::CustomInput* custom_input = input_feature->mutable_custom_input();
+    custom_input->set_fill_policy(fill_policy);
+    custom_input->set_tensor_length(tensor_length);
+    for (float default_value : default_values)
+      custom_input->add_default_value(default_value);
+  }
+
+  void ExpectProcessedFeatureList(
+      bool expected_error,
+      const std::vector<float>& expected_input_tensor,
+      base::Time prediction_time) {
     base::RunLoop loop;
     feature_list_query_processor_->ProcessFeatureList(
-        model_metadata, segment_id_, clock_.Now(),
+        model_metadata, segment_id_, prediction_time,
         base::BindOnce(
             &FeatureListQueryProcessorTest::OnProcessingFinishedCallback,
             base::Unretained(this), loop.QuitClosure(), expected_error,
             expected_input_tensor));
     loop.Run();
+  }
+
+  void ExpectProcessedFeatureList(
+      bool expected_error,
+      const std::vector<float>& expected_input_tensor) {
+    ExpectProcessedFeatureList(expected_error, expected_input_tensor,
+                               clock_.Now());
   }
 
   void OnProcessingFinishedCallback(
@@ -128,7 +176,40 @@ TEST_F(FeatureListQueryProcessorTest, InvalidMetadata) {
                 1, proto::Aggregation::COUNT, {});
 
   // The next step should be to run the feature processor.
-  ProcessFeatureList(true, std::vector<float>{});
+  ExpectProcessedFeatureList(true, std::vector<float>{});
+}
+
+TEST_F(FeatureListQueryProcessorTest, SingleCustomInput) {
+  CreateFeatureListQueryProcessor();
+
+  // Initialize with required metadata.
+  SetBucketDuration(3, proto::TimeUnit::HOUR);
+
+  // Set up a custom input.
+  AddCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {});
+
+  // The next step should be to run the feature processor, the input tensor
+  // should contain the current time.
+  base::Time prediction_time = clock_.Now();
+  ExpectProcessedFeatureList(
+      false,
+      std::vector<float>{static_cast<float>(
+          prediction_time.ToDeltaSinceWindowsEpoch().InMicroseconds())},
+      prediction_time);
+}
+
+TEST_F(FeatureListQueryProcessorTest, DefaultValueCustomInput) {
+  CreateFeatureListQueryProcessor();
+
+  // Initialize with required metadata.
+  SetBucketDuration(3, proto::TimeUnit::HOUR);
+
+  // Set up a custom input.
+  AddCustomInput(2, proto::CustomInput::UNKNOWN_FILL_POLICY, {1, 2});
+
+  // The next step should be to run the feature processor, the input tensor
+  // should contain the default values 1 and 2.
+  ExpectProcessedFeatureList(false, std::vector<float>{1, 2});
 }
 
 TEST_F(FeatureListQueryProcessorTest, SingleUserAction) {
@@ -163,7 +244,48 @@ TEST_F(FeatureListQueryProcessorTest, SingleUserAction) {
       .WillOnce(Return(std::vector<float>{3}));
 
   // The next step should be to run the feature processor.
-  ProcessFeatureList(false, std::vector<float>{3});
+  ExpectProcessedFeatureList(false, std::vector<float>{3});
+}
+
+TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputs) {
+  CreateFeatureListQueryProcessor();
+
+  // Initialize with required metadata.
+  SetBucketDuration(3, proto::TimeUnit::HOUR);
+  base::TimeDelta bucket_duration = base::Hours(3);
+
+  // Set up a user action feature.
+  AddUserActionWithProcessingSetup(bucket_duration);
+
+  // Set up a custom input.
+  AddCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {});
+
+  // The next step should be to run the feature processor, the input tensor
+  // should contain 3 and current time.
+  base::Time prediction_time = clock_.Now();
+  ExpectProcessedFeatureList(
+      false,
+      std::vector<float>{
+          3, static_cast<float>(
+                 prediction_time.ToDeltaSinceWindowsEpoch().InMicroseconds())},
+      prediction_time);
+}
+
+TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputsInvalid) {
+  CreateFeatureListQueryProcessor();
+
+  // Initialize with required metadata.
+  SetBucketDuration(3, proto::TimeUnit::HOUR);
+  base::TimeDelta bucket_duration = base::Hours(3);
+
+  // Set up a user action feature.
+  AddUserActionWithProcessingSetup(bucket_duration);
+
+  // Set up an invalid custom input.
+  AddCustomInput(1, proto::CustomInput::UNKNOWN_FILL_POLICY, {});
+
+  // The next step should be to run the feature processor.
+  ExpectProcessedFeatureList(true, std::vector<float>{});
 }
 
 TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeatures) {
@@ -236,7 +358,7 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeatures) {
       .WillOnce(Return(std::vector<float>{4}));
 
   // The input tensor should contain all three values: 3, 6, and 4.
-  ProcessFeatureList(false, std::vector<float>{3, 6, 4});
+  ExpectProcessedFeatureList(false, std::vector<float>{3, 6, 4});
 }
 
 TEST_F(FeatureListQueryProcessorTest, SkipCollectionOnlyUmaFeatures) {
@@ -299,7 +421,28 @@ TEST_F(FeatureListQueryProcessorTest, SkipCollectionOnlyUmaFeatures) {
       .WillOnce(Return(std::vector<float>{6}));
 
   // The input tensor should contain only the first and last uma feature.
-  ProcessFeatureList(false, std::vector<float>{3, 6});
+  ExpectProcessedFeatureList(false, std::vector<float>{3, 6});
+}
+
+TEST_F(FeatureListQueryProcessorTest, SkipNoColumnWeightCustomInput) {
+  CreateFeatureListQueryProcessor();
+
+  // Initialize with required metadata.
+  SetBucketDuration(3, proto::TimeUnit::HOUR);
+
+  // Set up a custom input.
+  AddCustomInput(1, proto::CustomInput::UNKNOWN_FILL_POLICY, {1});
+
+  // Set up a few custom input with tensor length of 0.
+  AddCustomInput(0, proto::CustomInput::UNKNOWN_FILL_POLICY, {2});
+  AddCustomInput(0, proto::CustomInput::UNKNOWN_FILL_POLICY, {3});
+
+  // Set up another custom input with tensor length.
+  AddCustomInput(1, proto::CustomInput::UNKNOWN_FILL_POLICY, {4});
+
+  // The next step should be to run the feature processor, the input tensor
+  // should contain the first and last custom input of 1 and 4.
+  ExpectProcessedFeatureList(false, std::vector<float>{1, 4});
 }
 
 TEST_F(FeatureListQueryProcessorTest, FilteredEnumSamples) {
@@ -342,7 +485,7 @@ TEST_F(FeatureListQueryProcessorTest, FilteredEnumSamples) {
       .WillOnce(Return(std::vector<float>{2}));
 
   // The input tensor should contain a single value.
-  ProcessFeatureList(false, std::vector<float>{2});
+  ExpectProcessedFeatureList(false, std::vector<float>{2});
 }
 
 TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithMultipleBuckets) {
@@ -412,7 +555,7 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithMultipleBuckets) {
       .WillOnce(Return(std::vector<float>{4, 5, 6, 7}));
 
   // The input tensor should contain all values flattened to a single vector.
-  ProcessFeatureList(false, std::vector<float>{1, 2, 3, 4, 5, 6, 7});
+  ExpectProcessedFeatureList(false, std::vector<float>{1, 2, 3, 4, 5, 6, 7});
 }
 
 }  // namespace segmentation_platform

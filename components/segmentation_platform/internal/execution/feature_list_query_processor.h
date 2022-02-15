@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/execution/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 #include "components/segmentation_platform/internal/execution/uma_feature_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
@@ -58,6 +59,9 @@ class FeatureListQueryProcessor {
 
   // Feature processor for uma type of input features.
   UmaFeatureProcessor uma_feature_processor_;
+
+  // Feature processor for uma type of input features.
+  CustomInputProcessor custom_input_processor_;
 
   base::WeakPtrFactory<FeatureListQueryProcessor> weak_ptr_factory_{this};
 };

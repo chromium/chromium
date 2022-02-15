@@ -133,6 +133,26 @@ ValidationResult ValidateMetadataUmaFeature(const proto::UMAFeature& feature) {
   return ValidationResult::kValidationSuccess;
 }
 
+ValidationResult ValidateMetadataCustomInput(
+    const proto::CustomInput& custom_input) {
+  if (custom_input.fill_policy() == proto::CustomInput::UNKNOWN_FILL_POLICY) {
+    // If the current fill policy is not supported or not filled, we must use
+    // the given default value list, therefore the default value list must
+    // provide enough input values as specified by tensor length.
+    if (custom_input.tensor_length() > custom_input.default_value_size()) {
+      return ValidationResult::kCustomInputInvalid;
+    }
+  } else if (custom_input.fill_policy() ==
+             proto::CustomInput::FILL_PREDICTION_TIME) {
+    // Current time can only provide up to one input tensor value, so column
+    // weight must not exceed 1.
+    if (custom_input.tensor_length() > 1) {
+      return ValidationResult::kCustomInputInvalid;
+    }
+  }
+  return ValidationResult::kValidationSuccess;
+}
+
 ValidationResult ValidateMetadataAndFeatures(
     const proto::SegmentationModelMetadata& model_metadata) {
   auto metadata_result = ValidateMetadata(model_metadata);
@@ -150,6 +170,10 @@ ValidationResult ValidateMetadataAndFeatures(
     auto feature = model_metadata.input_features(i);
     if (feature.has_uma_feature()) {
       auto feature_result = ValidateMetadataUmaFeature(feature.uma_feature());
+      if (feature_result != ValidationResult::kValidationSuccess)
+        return feature_result;
+    } else if (feature.has_custom_input()) {
+      auto feature_result = ValidateMetadataCustomInput(feature.custom_input());
       if (feature_result != ValidationResult::kValidationSuccess)
         return feature_result;
     } else {

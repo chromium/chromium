@@ -79,7 +79,7 @@ TEST_F(MetadataUtilsTest, MetadataValidation) {
             metadata_utils::ValidateMetadata(metadata));
 }
 
-TEST_F(MetadataUtilsTest, MetadataFeatureValidation) {
+TEST_F(MetadataUtilsTest, MetadataUmaFeatureValidation) {
   proto::UMAFeature feature;
   EXPECT_EQ(metadata_utils::ValidationResult::kSignalTypeInvalid,
             metadata_utils::ValidateMetadataUmaFeature(feature));
@@ -190,6 +190,35 @@ TEST_F(MetadataUtilsTest, MetadataFeatureValidation) {
     EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
               metadata_utils::ValidateMetadataUmaFeature(feature));
   }
+}
+
+TEST_F(MetadataUtilsTest, MetadataCustomInputValidation) {
+  // Empty custom input has tensor length of 0 and result in a valid input
+  // tensor of length 0.
+  proto::CustomInput custom_input;
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataCustomInput(custom_input));
+
+  // When fill policy is unknown, the custom input is invalid if the default
+  // value list size is smaller than the input tensor length.
+  custom_input.set_tensor_length(1);
+  EXPECT_EQ(metadata_utils::ValidationResult::kCustomInputInvalid,
+            metadata_utils::ValidateMetadataCustomInput(custom_input));
+
+  custom_input.add_default_value(0);
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataCustomInput(custom_input));
+
+  // When fill policy is current time, the custom input is invalid if the tensor
+  // length is bigger than 1.
+  custom_input.set_fill_policy(proto::CustomInput::FILL_PREDICTION_TIME);
+  custom_input.set_tensor_length(2);
+  EXPECT_EQ(metadata_utils::ValidationResult::kCustomInputInvalid,
+            metadata_utils::ValidateMetadataCustomInput(custom_input));
+
+  custom_input.set_tensor_length(1);
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataCustomInput(custom_input));
 }
 
 TEST_F(MetadataUtilsTest, ValidateMetadataAndFeatures) {

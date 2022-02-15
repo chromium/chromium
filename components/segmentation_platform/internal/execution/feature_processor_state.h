@@ -52,6 +52,7 @@ class FeatureProcessorState {
 
   // Update the input tensor vector.
   void AppendInputTensor(const std::vector<float>& data);
+  void AppendInputTensor(float data);
 
  private:
   const base::Time prediction_time_;

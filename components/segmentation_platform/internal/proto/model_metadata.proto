@@ -87,7 +87,7 @@ message CustomInput {
     UNKNOWN_FILL_POLICY = 0;
     // Output is the time at which model prediction is needed. Can be used to
     // bind TIME type param to queries.
-    PREDICTION_TIME = 1;
+    FILL_PREDICTION_TIME = 1;
   }
 
   // The fill type of the custom input.

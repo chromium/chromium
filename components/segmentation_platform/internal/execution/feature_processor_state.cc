@@ -22,6 +22,7 @@ FeatureProcessorState::~FeatureProcessorState() = default;
 
 void FeatureProcessorState::SetError() {
   error_ = true;
+  input_tensor_.clear();
 }
 
 proto::InputFeature FeatureProcessorState::PopNextInputFeature() {

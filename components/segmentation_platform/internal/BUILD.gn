@@ -35,6 +35,8 @@ static_library("internal") {
     "database/signal_storage_config.h",
     "dummy_segmentation_platform_service.cc",
     "dummy_segmentation_platform_service.h",
+    "execution/custom_input_processor.cc",
+    "execution/custom_input_processor.h",
     "execution/dummy_model_execution_manager.cc",
     "execution/dummy_model_execution_manager.h",
     "execution/feature_aggregator.h",

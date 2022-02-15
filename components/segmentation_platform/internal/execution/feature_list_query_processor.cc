@@ -10,6 +10,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
+#include "components/segmentation_platform/internal/execution/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/feature_processor_state.h"
 #include "components/segmentation_platform/internal/execution/uma_feature_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
@@ -70,6 +71,11 @@ void FeatureListQueryProcessor::ProcessNextInputFeature(
     // Process all the features in-order, starting with the first feature.
     uma_feature_processor_.ProcessUmaFeature(
         input_feature.uma_feature(), std::move(feature_processor_state),
+        base::BindOnce(&FeatureListQueryProcessor::ProcessNextInputFeature,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else if (input_feature.has_custom_input()) {
+    custom_input_processor_.ProcessCustomInput(
+        input_feature.custom_input(), std::move(feature_processor_state),
         base::BindOnce(&FeatureListQueryProcessor::ProcessNextInputFeature,
                        weak_ptr_factory_.GetWeakPtr()));
   }

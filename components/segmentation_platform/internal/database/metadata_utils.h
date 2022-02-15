@@ -33,7 +33,8 @@ enum class ValidationResult {
   kFeatureNameHashDoesNotMatchName = 9,
   kVersionNotSupported = 10,
   kFeatureListInvalid = 11,
-  kMaxValue = kFeatureListInvalid,
+  kCustomInputInvalid = 12,
+  kMaxValue = kCustomInputInvalid,
 };
 
 // Whether the given SegmentInfo and its metadata is valid to be used for the
@@ -48,6 +49,11 @@ ValidationResult ValidateMetadata(
 // Whether the given feature metadata is valid to be used for the current
 // segmentation platform.
 ValidationResult ValidateMetadataUmaFeature(const proto::UMAFeature& feature);
+
+// Whether the given custom input metadata is valid to be used for the current
+// segmentation platform.
+ValidationResult ValidateMetadataCustomInput(
+    const proto::CustomInput& custom_input);
 
 // Whether the given metadata and feature metadata is valid to be used for the
 // current segmentation platform.
