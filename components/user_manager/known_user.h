@@ -346,29 +346,6 @@ void USER_MANAGER_EXPORT SetDeviceId(const AccountId& account_id,
 // instead.
 std::string USER_MANAGER_EXPORT GetDeviceId(const AccountId& account_id);
 
-// Setter and getter for GAPSCookie known user string preference.
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::SetGAPSCookie
-// instead.
-void USER_MANAGER_EXPORT SetGAPSCookie(const AccountId& account_id,
-                                       const std::string& gaps_cookie);
-
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::GetGAPSCookie
-// instead.
-std::string USER_MANAGER_EXPORT GetGAPSCookie(const AccountId& account_id);
-
-// Setter and getter for the known user preference that stores whether the user
-// authenticated via SAML using the principals API.
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::UpdateIsUsingSAMLPrincipalsAPI instead.
-void USER_MANAGER_EXPORT
-UpdateIsUsingSAMLPrincipalsAPI(const AccountId& account_id,
-                               bool is_using_saml_principals_api);
-
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::GetIsUsingSAMLPrincipalsAPI instead.
-bool USER_MANAGER_EXPORT
-GetIsUsingSAMLPrincipalsAPI(const AccountId& account_id);
-
 }  // namespace known_user
 }  // namespace user_manager
 

@@ -1682,10 +1682,10 @@ void ExistingUserController::DoCompleteLogin(
   }
   user_context.SetDeviceId(device_id);
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   const std::string& gaps_cookie = user_context.GetGAPSCookie();
   if (!gaps_cookie.empty()) {
-    user_manager::known_user::SetGAPSCookie(user_context.GetAccountId(),
-                                            gaps_cookie);
+    known_user.SetGAPSCookie(user_context.GetAccountId(), gaps_cookie);
   }
 
   PerformPreLoginActions(user_context);

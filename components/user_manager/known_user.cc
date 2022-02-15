@@ -933,42 +933,5 @@ std::string GetDeviceId(const AccountId& account_id) {
   return KnownUser(local_state).GetDeviceId(account_id);
 }
 
-void SetGAPSCookie(const AccountId& account_id,
-                   const std::string& gaps_cookie) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).SetGAPSCookie(account_id, gaps_cookie);
-}
-
-std::string GetGAPSCookie(const AccountId& account_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return std::string();
-  return KnownUser(local_state).GetGAPSCookie(account_id);
-}
-
-void USER_MANAGER_EXPORT
-UpdateIsUsingSAMLPrincipalsAPI(const AccountId& account_id,
-                               bool is_using_saml_principals_api) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state)
-      .UpdateIsUsingSAMLPrincipalsAPI(account_id, is_using_saml_principals_api);
-}
-
-bool USER_MANAGER_EXPORT
-GetIsUsingSAMLPrincipalsAPI(const AccountId& account_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return false;
-  return KnownUser(local_state).GetIsUsingSAMLPrincipalsAPI(account_id);
-}
-
 }  // namespace known_user
 }  // namespace user_manager

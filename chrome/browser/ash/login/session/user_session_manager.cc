@@ -1580,7 +1580,7 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
   if (user_manager->IsLoggedInAsUserWithGaiaAccount()) {
     if (user_context_.GetAuthFlow() == UserContext::AUTH_FLOW_GAIA_WITH_SAML) {
       known_user.UpdateUsingSAML(user_context_.GetAccountId(), true);
-      user_manager::known_user::UpdateIsUsingSAMLPrincipalsAPI(
+      known_user.UpdateIsUsingSAMLPrincipalsAPI(
           user_context_.GetAccountId(),
           user_context_.IsUsingSamlPrincipalsApi());
       user->set_using_saml(true);
