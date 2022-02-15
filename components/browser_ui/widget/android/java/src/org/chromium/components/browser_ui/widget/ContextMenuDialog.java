@@ -176,6 +176,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                     if (mDesiredPopupContentWidth != null) {
                         mPopupWindow.setDesiredContentWidth(mDesiredPopupContentWidth);
                     }
+                    mPopupWindow.setSmartAnchorWithMaxWidth(true);
                     mPopupWindow.setVerticalOverlapAnchor(true);
                     mPopupWindow.setOutsideTouchable(false);
                     // Set popup focusable so the screen reader can announce the popup properly.
