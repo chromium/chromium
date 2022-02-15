@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -48,7 +48,7 @@ class FakeMBW(mb.MetaBuildWrapper):
       self.default_config = '/fake_src/tools/mb/mb_config.pyl'
       self.default_isolate_map = '/fake_src/testing/buildbot/gn_isolate_map.pyl'
       self.executable = '/usr/bin/python'
-      self.platform = 'linux2'
+      self.platform = 'linux'
       self.sep = '/'
       self.cwd = '/fake_src/out/Default'
 
