@@ -1,5 +1,7 @@
 - name: 2d.reset.basic
   desc: reset clears to transparent black
+  canvasType:
+    ['HTMLCanvas']
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);

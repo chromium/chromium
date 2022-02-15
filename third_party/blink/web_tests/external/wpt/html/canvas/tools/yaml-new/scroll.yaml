@@ -1,5 +1,7 @@
 - name: 2d.scrollPathIntoView.basic
   desc: scrollPathIntoView() works
+  canvasType:
+    ['HTMLCanvas']
   testing:
   - 2d.scrollPathIntoView.basic
   code: |
@@ -18,6 +20,8 @@
 
 - name: 2d.scrollPathIntoView.verticalLR
   desc: scrollPathIntoView() works in vertical-lr writing mode
+  canvasType:
+    ['HTMLCanvas']
   testing:
   - 2d.scrollPathIntoView.basic
   code: |
@@ -37,6 +41,8 @@
 
 - name: 2d.scrollPathIntoView.verticalRL
   desc: scrollPathIntoView() works in vertical-rl writing mode
+  canvasType:
+    ['HTMLCanvas']
   testing:
   - 2d.scrollPathIntoView.basic
   code: |
@@ -58,6 +64,8 @@
 
 - name: 2d.scrollPathIntoView.path
   desc: scrollPathIntoView() with path argument works
+  canvasType:
+    ['HTMLCanvas']
   testing:
   - 2d.scrollPathIntoView.basic
   code: |
