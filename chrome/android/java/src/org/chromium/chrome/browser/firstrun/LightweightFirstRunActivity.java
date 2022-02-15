@@ -26,7 +26,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -96,11 +95,9 @@ public class LightweightFirstRunActivity
                     return;
                 }
 
-                @ChildAccountStatus.Status
-                int childAccountStatus =
-                        freProperties.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS,
-                                ChildAccountStatus.NOT_CHILD);
-                initializeViews(ChildAccountStatus.isChild(childAccountStatus));
+                boolean isChild = freProperties.getBoolean(
+                        SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
+                initializeViews(isChild);
             }
         };
         mFirstRunFlowSequencer.start();

@@ -26,7 +26,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.ui.signin.fre.FreUMADialogCoordinator;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -182,10 +181,8 @@ public class ToSAndUMAFirstRunFragment
 
         final boolean umaDialogMayBeShown =
                 FREMobileIdentityConsistencyFieldTrial.shouldShowOldFreWithUmaDialog();
-        final boolean hasChildAccount = getPageDelegate().getProperties().getInt(
-                                                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS,
-                                                ChildAccountStatus.NOT_CHILD)
-                == ChildAccountStatus.REGULAR_CHILD;
+        final boolean hasChildAccount = getPageDelegate().getProperties().getBoolean(
+                SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
         final boolean isMetricsReportingDisabledByPolicy = !isWaitingForNativeAndPolicyInit()
                 && PrivacyPreferencesManagerImpl.getInstance().isMetricsReportingDisabledByPolicy();
 

@@ -259,37 +259,13 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testCheckChildAccountForRegularChild() {
-        final Account account = setFeaturesForAccount(
-                "uca@gmail.com", AccountManagerFacadeImpl.FEATURE_IS_CHILD_ACCOUNT_KEY);
-
-        mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
-
-        verify(mChildAccountStatusListenerMock)
-                .onStatusReady(ChildAccountStatus.REGULAR_CHILD, account);
-    }
-
-    @Test
-    public void testCheckChildAccountForUSMChild() {
+    public void testCheckChildAccount() {
         final Account account = setFeaturesForAccount(
                 "usm@gmail.com", AccountManagerFacadeImpl.FEATURE_IS_USM_ACCOUNT_KEY);
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock)
-                .onStatusReady(ChildAccountStatus.USM_CHILD, account);
-    }
-
-    @Test
-    public void testCheckChildAccountForRegularUSMChild() {
-        final Account account = setFeaturesForAccount("usm_uca@gmail.com",
-                AccountManagerFacadeImpl.FEATURE_IS_USM_ACCOUNT_KEY,
-                AccountManagerFacadeImpl.FEATURE_IS_CHILD_ACCOUNT_KEY);
-
-        mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
-
-        verify(mChildAccountStatusListenerMock)
-                .onStatusReady(ChildAccountStatus.REGULAR_CHILD, account);
+        verify(mChildAccountStatusListenerMock).onStatusReady(true, account);
     }
 
     @Test
@@ -298,7 +274,7 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD, null);
+        verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
     }
 
     @Test

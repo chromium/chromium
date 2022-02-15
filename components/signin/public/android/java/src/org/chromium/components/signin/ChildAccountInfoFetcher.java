@@ -17,7 +17,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.signin.ChildAccountStatus.Status;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
@@ -79,14 +78,13 @@ final class ChildAccountInfoFetcher {
                 this::onChildAccountStatusReady);
     }
 
-    private void onChildAccountStatusReady(@Status int status, @Nullable Account childAccount) {
+    private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
         assert mCoreAccountInfo != null;
         assert (childAccount == null
                 || childAccount.equals(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo)))
             : "childAccount " + childAccount.name + " doesn't match mCoreAccountInfo "
               + CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo).name;
 
-        final boolean isChild = ChildAccountStatus.isChild(status);
         Log.d(TAG, "Setting child account status for %s to %s", mCoreAccountInfo.getEmail(),
                 isChild);
         ChildAccountInfoFetcherJni.get().setIsChildAccount(

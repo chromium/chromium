@@ -23,8 +23,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountRenameChecker;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.ChildAccountStatus;
-import org.chromium.components.signin.ChildAccountStatus.Status;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -148,8 +146,8 @@ public class SigninChecker
                 mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
     }
 
-    private void onChildAccountStatusReady(@Status int status, @Nullable Account childAccount) {
-        if (ChildAccountStatus.isChild(status)) {
+    private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
+        if (isChild) {
             assert childAccount != null;
             mSigninManager.onFirstRunCheckDone();
             mSigninManager.runAfterOperationInProgress(() -> {

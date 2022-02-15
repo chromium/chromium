@@ -43,13 +43,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AccountManagerFacadeImpl implements AccountManagerFacade {
     /**
      * An account feature (corresponding to a Gaia service flag) that specifies whether the account
-     * is a child account.
-     */
-    @VisibleForTesting
-    public static final String FEATURE_IS_CHILD_ACCOUNT_KEY = "service_uca";
-
-    /**
-     * An account feature (corresponding to a Gaia service flag) that specifies whether the account
      * is a USM account.
      */
     @VisibleForTesting
@@ -160,22 +153,16 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
         ThreadUtils.assertOnUiThread();
-        new AsyncTask<Integer>() {
+        new AsyncTask<Boolean>() {
             @Override
-            public @ChildAccountStatus.Status Integer doInBackground() {
-                if (mDelegate.hasFeature(account, FEATURE_IS_CHILD_ACCOUNT_KEY)) {
-                    return ChildAccountStatus.REGULAR_CHILD;
-                } else if (mDelegate.hasFeature(account, FEATURE_IS_USM_ACCOUNT_KEY)) {
-                    return ChildAccountStatus.USM_CHILD;
-                } else {
-                    return ChildAccountStatus.NOT_CHILD;
-                }
+            public Boolean doInBackground() {
+                return mDelegate.hasFeature(account, FEATURE_IS_USM_ACCOUNT_KEY);
             }
 
             @Override
-            public void onPostExecute(@ChildAccountStatus.Status Integer status) {
+            protected void onPostExecute(Boolean isChild) {
                 // TODO(crbug.com/1258563): rework this interface to avoid passing a null account.
-                listener.onStatusReady(status, ChildAccountStatus.isChild(status) ? account : null);
+                listener.onStatusReady(isChild, isChild ? account : null);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }

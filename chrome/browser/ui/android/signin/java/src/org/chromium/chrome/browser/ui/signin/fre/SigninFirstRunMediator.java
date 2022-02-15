@@ -28,8 +28,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.ChildAccountStatus;
-import org.chromium.components.signin.ChildAccountStatus.Status;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -244,8 +242,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
                 mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
     }
 
-    private void onChildAccountStatusReady(@Status int status, @Nullable Account childAccount) {
-        final boolean isChild = ChildAccountStatus.isChild(status);
+    private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
         mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
         mModel.set(SigninFirstRunProperties.FOOTER_STRING,
                 getFooterString(isChild, isMetricsReportingDisabledByPolicy()));

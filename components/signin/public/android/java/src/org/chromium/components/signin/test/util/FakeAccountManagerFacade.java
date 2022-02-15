@@ -21,7 +21,6 @@ import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
-import org.chromium.components.signin.ChildAccountStatus;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -36,7 +35,7 @@ import java.util.UUID;
 public class FakeAccountManagerFacade implements AccountManagerFacade {
     /**
      * All the account names starting with this prefix will be considered as
-     * {@link ChildAccountStatus#REGULAR_CHILD} in {@link FakeAccountManagerFacade}.
+     * a child account in {@link FakeAccountManagerFacade}.
      */
     private static final String CHILD_ACCOUNT_NAME_PREFIX = "child.";
     private final Object mLock = new Object();
@@ -105,9 +104,9 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     @Override
     public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
         if (account.name.startsWith(CHILD_ACCOUNT_NAME_PREFIX)) {
-            listener.onStatusReady(ChildAccountStatus.REGULAR_CHILD, account);
+            listener.onStatusReady(true, account);
         } else {
-            listener.onStatusReady(ChildAccountStatus.NOT_CHILD, /*childAccount=*/null);
+            listener.onStatusReady(false, /*childAccount=*/null);
         }
     }
 
@@ -165,8 +164,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     /**
      * Creates an email used to identify child accounts in tests.
      * A child-specific prefix will be appended to the base name so that the created account
-     * will be considered as {@link ChildAccountStatus#REGULAR_CHILD} in
-     * {@link FakeAccountManagerFacade}.
+     * will be considered a child account in {@link FakeAccountManagerFacade}.
      */
     public static String generateChildEmail(String baseEmail) {
         return CHILD_ACCOUNT_NAME_PREFIX + baseEmail;

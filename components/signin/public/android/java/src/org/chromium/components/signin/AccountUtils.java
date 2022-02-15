@@ -98,16 +98,17 @@ public class AccountUtils {
      * Checks the child account status on device based on the list of (zero or more) provided
      * accounts.
      *
-     * If there are no child accounts on the device, the listener will be invoked with the status
-     * {@link ChildAccountStatus#NOT_CHILD}. If there is a child account on device, the listener
-     * will be called with that account and its child status. Note that it is not currently possible
+     * If there are no child accounts on the device, the listener will be invoked with
+     * isChild = false. If there is a child account on device, the listener
+     * will be called with that account and isChild = true. Note that it is not currently possible
      * to have more than one child account on device.
      *
      * It should be safe to invoke this method before the native library is initialized.
      *
      * @param accountManagerFacade The singleton instance of {@link AccountManagerFacade}.
      * @param accounts The list of accounts on device.
-     * @param listener The listener is called when the {@link ChildAccountStatus.Status} is ready.
+     * @param listener The listener is called when the status of the account
+     *                 (whether it is a child one) is ready.
      */
     public static void checkChildAccountStatus(@NonNull AccountManagerFacade accountManagerFacade,
             @NonNull List<Account> accounts, @NonNull ChildAccountStatusListener listener) {
@@ -116,7 +117,7 @@ public class AccountUtils {
             // account on the device.
             accountManagerFacade.checkChildAccountStatus(accounts.get(0), listener);
         } else {
-            listener.onStatusReady(ChildAccountStatus.NOT_CHILD, null);
+            listener.onStatusReady(false, null);
         }
     }
 

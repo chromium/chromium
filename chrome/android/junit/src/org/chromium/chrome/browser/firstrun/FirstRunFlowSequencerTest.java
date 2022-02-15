@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -162,8 +161,7 @@ public class FirstRunFlowSequencerTest {
         Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
+        assertFalse(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
         assertEquals(3, bundle.size());
     }
 
@@ -183,8 +181,7 @@ public class FirstRunFlowSequencerTest {
         Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.REGULAR_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
+        assertTrue(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
         assertEquals(3, bundle.size());
     }
 
@@ -204,8 +201,7 @@ public class FirstRunFlowSequencerTest {
         Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
+        assertFalse(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
         assertEquals(3, bundle.size());
     }
 
@@ -226,8 +222,7 @@ public class FirstRunFlowSequencerTest {
         final Bundle bundle = mSequencer.returnedBundle;
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
+        assertFalse(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
         assertEquals(3, bundle.size());
     }
 
@@ -249,8 +244,7 @@ public class FirstRunFlowSequencerTest {
         final Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
+        assertFalse(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
         assertEquals(3, bundle.size());
     }
 

@@ -47,7 +47,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -95,7 +94,7 @@ public abstract class SyncConsentFragmentBase
     }
 
     private final AccountManagerFacade mAccountManagerFacade;
-    protected @ChildAccountStatus.Status int mChildAccountStatus;
+    protected boolean mIsChild;
 
     private SigninView mView;
     private ConsentTextTracker mConsentTextTracker;
@@ -133,12 +132,12 @@ public abstract class SyncConsentFragmentBase
      * {@link ChildAccountStatus}.
      * @param accessPoint The access point for starting sign-in flow.
      * @param accountName The account to preselect.
-     * @param childAccountStatus Whether the selected account is a child one.
+     * @param isChild Whether the selected account is a child one.
      */
-    protected static Bundle createArguments(@SigninAccessPoint int accessPoint, String accountName,
-            @ChildAccountStatus.Status int childAccountStatus) {
+    protected static Bundle createArguments(
+            @SigninAccessPoint int accessPoint, String accountName, boolean isChild) {
         Bundle result = createArguments(accessPoint, accountName);
-        result.putInt(ARGUMENT_CHILD_ACCOUNT_STATUS, childAccountStatus);
+        result.putBoolean(ARGUMENT_CHILD_ACCOUNT_STATUS, isChild);
         return result;
     }
 
@@ -199,8 +198,7 @@ public abstract class SyncConsentFragmentBase
         mSigninAccessPoint = arguments.getInt(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
         assert mSigninAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
         mSelectedAccountName = arguments.getString(ARGUMENT_ACCOUNT_NAME, null);
-        mChildAccountStatus =
-                arguments.getInt(ARGUMENT_CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        mIsChild = arguments.getBoolean(ARGUMENT_CHILD_ACCOUNT_STATUS, false);
         @SigninFlowType
         int signinFlowType = arguments.getInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.DEFAULT);
 
@@ -217,7 +215,7 @@ public abstract class SyncConsentFragmentBase
 
         mConsentTextTracker = new ConsentTextTracker(getResources());
 
-        mProfileDataCache = ChildAccountStatus.isChild(mChildAccountStatus)
+        mProfileDataCache = mIsChild
                 ? ProfileDataCache.createWithDefaultImageSize(
                         requireContext(), R.drawable.ic_account_child_20dp)
                 : ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
@@ -269,7 +267,7 @@ public abstract class SyncConsentFragmentBase
         mView.getDetailsDescriptionView().setMovementMethod(LinkMovementMethod.getInstance());
 
         final Drawable endImageViewDrawable;
-        if (ChildAccountStatus.isChild(mChildAccountStatus)) {
+        if (mIsChild) {
             endImageViewDrawable = SigninView.getCheckmarkDrawable(getContext());
             mView.getRefuseButton().setVisibility(View.GONE);
             mView.getAcceptButtonEndPadding().setVisibility(View.INVISIBLE);
@@ -301,7 +299,7 @@ public abstract class SyncConsentFragmentBase
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        boolean cancelable = !ChildAccountStatus.isChild(mChildAccountStatus);
+        boolean cancelable = !mIsChild;
         mCanUseGooglePlayServices = ExternalAuthUtils.getInstance().canUseGooglePlayServices(
                 new UserRecoverableErrorHandler.ModalDialog(requireActivity(), cancelable));
         mView.getAcceptButton().setEnabled(mCanUseGooglePlayServices);
@@ -337,8 +335,7 @@ public abstract class SyncConsentFragmentBase
     private void setHasAccounts(boolean hasAccounts) {
         if (hasAccounts) {
             final boolean hideAccountPicker = mIsSignedInWithoutSync
-                    || (FREMobileIdentityConsistencyFieldTrial.isEnabled()
-                            && ChildAccountStatus.isChild(mChildAccountStatus));
+                    || (FREMobileIdentityConsistencyFieldTrial.isEnabled() && mIsChild);
             mView.getAccountPickerView().setVisibility(
                     hideAccountPicker ? View.GONE : View.VISIBLE);
             mConsentTextTracker.setText(mView.getAcceptButton(), R.string.signin_accept_button);
@@ -410,7 +407,7 @@ public abstract class SyncConsentFragmentBase
     }
 
     private void onAccountPickerClicked() {
-        if (ChildAccountStatus.isChild(mChildAccountStatus) || !areControlsEnabled()) return;
+        if (mIsChild || !areControlsEnabled()) return;
         mAccountPickerDialogCoordinator =
                 new AccountPickerDialogCoordinator(requireContext(), this, mModalDialogManager);
     }
@@ -590,7 +587,7 @@ public abstract class SyncConsentFragmentBase
         }
 
         // Account for forced sign-in flow disappeared before the sign-in was completed.
-        if (ChildAccountStatus.isChild(mChildAccountStatus)) {
+        if (mIsChild) {
             onSyncRefused();
             return;
         }
