@@ -55,7 +55,7 @@ std::unique_ptr<message_center::MessageView> CreateCustomMessageView(
   DCHECK_EQ(kArcNotificationCustomViewType, notification.custom_view_type());
   auto* arc_delegate =
       static_cast<ArcNotificationDelegate*>(notification.delegate());
-  return arc_delegate->CreateCustomMessageView(notification);
+  return arc_delegate->CreateCustomMessageView(notification, shown_in_popup);
 }
 
 class DoNotDisturbManager : public message_center::MessageCenterObserver {

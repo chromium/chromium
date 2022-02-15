@@ -11,6 +11,7 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/message_center/message_center_constants.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -20,6 +21,7 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_background_painter.h"
@@ -51,10 +53,12 @@ ArcNotificationView* ArcNotificationView::FromView(views::View* view) {
 
 ArcNotificationView::ArcNotificationView(
     ArcNotificationItem* item,
-    const message_center::Notification& notification)
+    const message_center::Notification& notification,
+    bool shown_in_popup)
     : message_center::MessageView(notification),
       item_(item),
-      content_view_(new ArcNotificationContentView(item_, notification, this)) {
+      content_view_(new ArcNotificationContentView(item_, notification, this)),
+      shown_in_popup_(shown_in_popup) {
   DCHECK_EQ(message_center::NOTIFICATION_TYPE_CUSTOM, notification.type());
   DCHECK_EQ(kArcNotificationCustomViewType, notification.custom_view_type());
 
@@ -73,6 +77,13 @@ ArcNotificationView::ArcNotificationView(
       background()->SetNativeControlColor(
           content_view_->background()->get_color());
     }
+  }
+
+  if (features::IsNotificationsRefreshEnabled() && shown_in_popup) {
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF{kMessagePopupCornerRadius});
   }
 
   UpdateCornerRadius(message_center::kNotificationCornerRadius,
@@ -190,6 +201,12 @@ void ArcNotificationView::OnThemeChanged() {
     focus_painter_ = views::Painter::CreateSolidFocusPainter(
         GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),
         gfx::Insets(0, 1, 3, 2));
+  }
+
+  if (features::IsNotificationsRefreshEnabled() && shown_in_popup_) {
+    SetBackground(
+        views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent80)));
   }
 }
 

@@ -202,7 +202,8 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
   std::unique_ptr<ArcNotificationView> CreateArcNotificationView(
       ArcNotificationItem* item,
       const message_center::Notification& notification) {
-    return std::make_unique<ArcNotificationView>(item, notification);
+    return std::make_unique<ArcNotificationView>(item, notification,
+                                                 /*shown_in_popup=*/false);
   }
 
  protected:
