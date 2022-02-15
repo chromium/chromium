@@ -1,5 +1,67 @@
+- name: 2d.filter.value
+  desc: test if ctx.filter works correctly
+  code: |
+    @assert ctx.filter == 'none';
+    ctx.filter = 'blur(5px)';
+    @assert ctx.filter == 'blur(5px)';
+    ctx.save();
+    ctx.filter = 'none';
+    @assert ctx.filter == 'none';
+    ctx.restore();
+    @assert ctx.filter == 'blur(5px)';
+
+    ctx.filter = 'blur(10)';
+    @assert ctx.filter == 'blur(5px)';
+    ctx.filter = 'blur 10px';
+    @assert ctx.filter == 'blur(5px)';
+
+    ctx.filter = 'inherit';
+    @assert ctx.filter == 'blur(5px)';
+    ctx.filter = 'initial';
+    @assert ctx.filter == 'blur(5px)';
+    ctx.filter = 'unset';
+    @assert ctx.filter == 'blur(5px)';
+
+    ctx.filter = '';
+    @assert ctx.filter == 'blur(5px)';
+    ctx.filter = null;
+    @assert ctx.filter == 'blur(5px)';
+    ctx.filter = undefined;
+    @assert ctx.filter == 'blur(5px)';
+
+    ctx.filter = 'blur(  5px)';
+    assert_equals(ctx.filter, 'blur(  5px)');
+
 - name: 2d.filter.canvasFilterObject
   desc: Test CanvasFilter() object
+  canvasType:
+    ['HTMLCanvas']
+  code: |
+    @assert ctx.filter == 'none';
+    ctx.filter = 'blur(5px)';
+    @assert ctx.filter == 'blur(5px)';
+    ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: 5});
+    @assert ctx.filter.toString() == '[object CanvasFilter]';
+    ctx.filter = new CanvasFilter([
+        {filter: "gaussianBlur", stdDeviation: 5},
+        {filter: "gaussianBlur", stdDeviation: 10}
+    ]);
+    @assert ctx.filter.toString() == '[object CanvasFilter]';
+    var canvas2 = document.createElement('canvas');
+    var ctx2 = canvas2.getContext('2d');
+    ctx2.filter = ctx.filter;
+    @assert ctx.filter.toString() == '[object CanvasFilter]';
+    ctx.filter = 'blur(5px)';
+    @assert ctx.filter == 'blur(5px)';
+    ctx.filter = 'none';
+    @assert ctx.filter == 'none';
+    ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: 5});
+    ctx.filter = "this string is not a filter and should do nothing";
+    @assert ctx.filter.toString() == '[object CanvasFilter]';
+
+- name: 2d.filter.canvasFilterObject
+  desc: Test CanvasFilter() object
+  canvasType: ['OffscreenCanvas']
   code: |
     @assert ctx.filter == 'none';
     ctx.filter = 'blur(5px)';
@@ -22,7 +84,6 @@
     ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: 5});
     ctx.filter = "this string is not a filter and should do nothing";
     @assert ctx.filter.toString() == '[object CanvasFilter]';
-    t.done();
 
 - name: 2d.filter.canvasFilterObject.blur.exceptions
   desc: Test exceptions on CanvasFilter() blur.object
@@ -33,7 +94,6 @@
     @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: [1,2]});
     @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: NaN});
     @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: {}});
-    t.done();
 
 - name: 2d.filter.canvasFilterObject.colorMatrix
   desc: Test the functionality of ColorMatrix filters in CanvasFilter objects
@@ -81,7 +141,6 @@
     @assert pixel 60,10 ==~ 0,255,0,255;
     @assert pixel 10,30 ==~ 0,255,0,255;
     @assert pixel 60,30 ==~ 0,255,0,255;
-    t.done();
 
 - name: 2d.filter.canvasFilterObject.convolveMatrix.exceptions
   desc: Test exceptions on CanvasFilter() convolveMatrix
@@ -97,7 +156,6 @@
     @assert throws TypeError new CanvasFilter({filter: "convolveMatrix", kernelMatrix: []});
     // This should not throw an error
     ctx.filter = new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[]]});
-    t.done();
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.linear
   desc: Test pixels on CanvasFilter() componentTransfer with linear type
@@ -133,7 +191,6 @@
         ctx.fillRect(0, 0, 10, 10);
         _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
     }
-    t.done();
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.identity
   desc: Test pixels on CanvasFilter() componentTransfer with identity type
@@ -157,7 +214,6 @@
         ctx.fillRect(0, 0, 10, 10);
         _assertPixel(canvas, 5, 5, color[0],color[1],color[2],255, "5,5", `${color[0]},${color[1]},${color[2]}`);
     }
-    t.done();
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.gamma
   desc: Test pixels on CanvasFilter() componentTransfer with gamma type
@@ -194,7 +250,6 @@
         ctx.fillRect(0, 0, 10, 10);
         _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
     }
-    t.done();
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.table
   desc: Test pixels on CanvasFilter() componentTransfer with table type
@@ -240,7 +295,6 @@
         ctx.fillRect(0, 0, 10, 10);
         _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
     }
-    t.done()
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.discrete
   desc: Test pixels on CanvasFilter() componentTransfer with discrete type
@@ -286,4 +340,112 @@
         ctx.fillRect(0, 0, 10, 10);
         _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
     }
-    t.done();
+
+- name: 2d.filter.canvasFilterObject.turbulence.inputTypes
+  desc: Test exceptions on CanvasFilter() turbulence object
+  code: |
+    const errorTestCases = [
+      {baseFrequency: {}},
+      {baseFrequency: -1},
+      {baseFrequency: [0, -1]},
+      {baseFrequency: NaN},
+      {baseFrequency: Infinity},
+      {baseFrequency: undefined},
+      {baseFrequency: -Infinity},
+      {baseFrequency: "test"},
+
+      {numOctaves: {}},
+      {numOctaves: -1},
+      {numOctaves: NaN},
+      {numOctaves: Infinity},
+      {numOctaves: undefined},
+      {numOctaves: -Infinity},
+      {numOctaves: [1, 1]},
+      {numOctaves: "test"},
+
+      {seed: {}},
+      {seed: NaN},
+      {seed: Infinity},
+      {seed: undefined},
+      {seed: -Infinity},
+      {seed: [1, 1]},
+      {seed: "test"},
+
+      {stitchTiles: {}},
+      {stitchTiles: NaN},
+      {stitchTiles: Infinity},
+      {stitchTiles: undefined},
+      {stitchTiles: -Infinity},
+      {stitchTiles: [1, 1]},
+      {stitchTiles: "test"},
+      {stitchTiles: null},
+      {stitchTiles: []},
+      {stitchTiles: [10]},
+      {stitchTiles: 30},
+      {stitchTiles: false},
+      {stitchTiles: true},
+      {stitchTiles: "10"},
+      {stitchTiles: -1},
+
+      {type: {}},
+      {type: NaN},
+      {type: Infinity},
+      {type: undefined},
+      {type: -Infinity},
+      {type: [1, 1]},
+      {type: "test"},
+      {type: null},
+      {type: []},
+      {type: [10]},
+      {type: 30},
+      {type: false},
+      {type: true},
+      {type: "10"},
+      {type: -1},
+    ]
+
+    // null and [] = 0 when parsed as number
+    const workingTestCases = [
+      {baseFrequency: null},
+      {baseFrequency: []},
+      {baseFrequency: [10]},
+      {baseFrequency: [10, 3]},
+      {baseFrequency: 30},
+      {baseFrequency: false},
+      {baseFrequency: true},
+      {baseFrequency: "10"},
+
+      {numOctaves: null},
+      {numOctaves: []},
+      {numOctaves: [10]},
+      {numOctaves: 30},
+      {numOctaves: false},
+      {numOctaves: true},
+      {numOctaves: "10"},
+
+      {seed: null},
+      {seed: []},
+      {seed: [10]},
+      {seed: 30},
+      {seed: false},
+      {seed: true},
+      {seed: "10"},
+      {seed: -1},
+
+      {stitchTiles: "stitch"},
+      {stitchTiles: "noStitch"},
+
+      {type: "fractalNoise"},
+      {type: "turbulence"},
+    ]
+
+    for (testCase of errorTestCases) {
+      const filterOptions = {...{filter: "turbulence"}, ...testCase};
+      @assert throws TypeError CanvasFilter(filterOptions);
+    }
+
+    for (testCase of workingTestCases) {
+      const filterOptions = {...{filter: "turbulence"}, ...testCase};
+      @assert new CanvasFilter(filterOptions) != null;
+    }
+
