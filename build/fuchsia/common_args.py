@@ -7,7 +7,6 @@ import importlib
 import logging
 import multiprocessing
 import os
-import subprocess
 import sys
 
 from common import GetHostArchFromPlatform
@@ -66,13 +65,16 @@ def _LoadTargetClass(target_path):
 
 
 def _GetDefaultEmulatedCpuCoreCount():
-  # Determine the practical maximum number of cores to use on this system.
-  # Additional cores beyond a certain limit may degrade overall execution time.
-  is_nested_virt = b'kvm' == \
-          subprocess.check_output(['systemd-detect-virt']).split(b'\n', 1)[0]
-  max_performant_core_count = 8 if is_nested_virt else 12
-
-  return min(max_performant_core_count, multiprocessing.cpu_count())
+  # Revise the processor count on arm64, the trybots on arm64 are in
+  # dockers and cannot use all processors.
+  # For x64, fvdl always assumes hyperthreading is supported by intel
+  # processors, but the cpu_count returns the number regarding if the core
+  # is a physical one or a hyperthreading one, so the number should be
+  # divided by 2 to avoid creating more threads than the processor
+  # supports.
+  if GetHostArchFromPlatform() == 'x64':
+    return max(int(multiprocessing.cpu_count() / 2) - 1, 4)
+  return 4
 
 
 def AddCommonArgs(arg_parser):
