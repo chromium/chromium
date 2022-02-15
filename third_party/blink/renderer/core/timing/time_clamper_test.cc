@@ -80,7 +80,7 @@ TEST(TimeClamperTest, ClampingNegativeNumbersIsConsistent) {
 TEST(TimeClamperTest, ClampingIsPerInstance) {
   TimeClamper clamper1;
   TimeClamper clamper2;
-  int64_t time_microseconds = 0;
+  int64_t time_microseconds = kIntervalInMicroseconds / 2;
   while (true) {
     if (std::abs(clamper1
                      .ClampTimeResolution(base::Microseconds(time_microseconds),
