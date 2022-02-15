@@ -19,10 +19,17 @@ namespace eche_app {
 
 const char kEcheAppScreenLockNotifierId[] =
     "eche_app_notification_ids.screen_lock";
+
 // The notification type from WebUI is CONNECTION_FAILED or CONNECTION_LOST
 // allow users to retry.
 const char kEcheAppRetryConnectionNotifierId[] =
     "eche_app_notification_ids.retry_connection";
+
+// The notification type from WebUI is DEVICE_IDLE
+// allow users to retry.
+const char kEcheAppInactivityNotifierId[] =
+    "eche_app_notification_ids.inactivity";
+
 // The notification type from WebUI without any actions need to do.
 const char kEcheAppFromWebWithoudButtonNotifierId[] =
     "eche_app_notification_ids.from_web_without_button";
@@ -55,8 +62,10 @@ std::unique_ptr<message_center::Notification> CreateNotification(
 
 }  // namespace
 
-EcheAppNotificationController::EcheAppNotificationController(Profile* profile)
-    : profile_(profile) {}
+EcheAppNotificationController::EcheAppNotificationController(
+    Profile* profile,
+    const base::RepeatingCallback<void(Profile*)>& relaunch_callback)
+    : profile_(profile), relaunch_callback_(relaunch_callback) {}
 
 EcheAppNotificationController::~EcheAppNotificationController() {}
 void EcheAppNotificationController::LaunchSettings() {
@@ -72,7 +81,7 @@ void EcheAppNotificationController::LaunchLearnMore() {
 }
 
 void EcheAppNotificationController::LaunchTryAgain() {
-  // TODO(crbug.com/1241352): Wait for UX confirm.
+  relaunch_callback_.Run(profile_);
 }
 
 void EcheAppNotificationController::LaunchHelp() {
@@ -85,14 +94,30 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
     absl::variant<LaunchAppHelper::NotificationInfo::NotificationType,
                   mojom::WebNotificationType> type) {
   auto web_type = absl::get<mojom::WebNotificationType>(type);
+  PA_LOG(INFO) << "ShowNotificationFromWebUI web_type: " << web_type;
   if (title && message) {
     if (web_type == mojom::WebNotificationType::CONNECTION_FAILED ||
         web_type == mojom::WebNotificationType::CONNECTION_LOST) {
-      // TODO(guanrulee): Show the buttons once they're completed.
+      message_center::RichNotificationData rich_notification_data;
+      rich_notification_data.buttons.push_back(
+          message_center::ButtonInfo(l10n_util::GetStringUTF16(
+              IDS_ECHE_APP_NOTIFICATION_TRY_AGAIN_BUTTON)));
+      rich_notification_data.buttons.push_back(message_center::ButtonInfo(
+          l10n_util::GetStringUTF16(IDS_ECHE_APP_NOTIFICATION_HELP_BUTTON)));
       ShowNotification(CreateNotification(
           kEcheAppRetryConnectionNotifierId, title.value(), message.value(),
-          gfx::Image(), message_center::RichNotificationData(),
+          gfx::Image(), rich_notification_data,
           new NotificationDelegate(kEcheAppRetryConnectionNotifierId,
+                                   weak_ptr_factory_.GetWeakPtr())));
+    } else if (web_type == mojom::WebNotificationType::DEVICE_IDLE) {
+      message_center::RichNotificationData rich_notification_data;
+      rich_notification_data.buttons.push_back(
+          message_center::ButtonInfo(l10n_util::GetStringUTF16(
+              IDS_ECHE_APP_NOTIFICATION_OPEN_AGAIN_BUTTON)));
+      ShowNotification(CreateNotification(
+          kEcheAppInactivityNotifierId, title.value(), message.value(),
+          gfx::Image(), rich_notification_data,
+          new NotificationDelegate(kEcheAppInactivityNotifierId,
                                    weak_ptr_factory_.GetWeakPtr())));
     } else {
       // No need to take the action.
@@ -148,6 +173,25 @@ void EcheAppNotificationController::ShowNotification(
       /*metadata=*/nullptr);
 }
 
+void EcheAppNotificationController::CloseNotification(
+    const std::string& notification_id) {
+  NotificationDisplayService::GetForProfile(profile_)->Close(
+      NotificationHandler::Type::TRANSIENT, notification_id);
+}
+
+void EcheAppNotificationController::
+    CloseConnectionOrLaunchErrorNotifications() {
+  NotificationDisplayService::GetForProfile(profile_)->Close(
+      NotificationHandler::Type::TRANSIENT, kEcheAppRetryConnectionNotifierId);
+  NotificationDisplayService::GetForProfile(profile_)->Close(
+      NotificationHandler::Type::TRANSIENT, kEcheAppInactivityNotifierId);
+  NotificationDisplayService::GetForProfile(profile_)->Close(
+      NotificationHandler::Type::TRANSIENT,
+      kEcheAppFromWebWithoudButtonNotifierId);
+  NotificationDisplayService::GetForProfile(profile_)->Close(
+      NotificationHandler::Type::TRANSIENT, kEcheAppDisabledByPhoneNotifierId);
+}
+
 EcheAppNotificationController::NotificationDelegate::NotificationDelegate(
     const std::string& notification_id,
     const base::WeakPtr<EcheAppNotificationController>& notification_controller)
@@ -174,6 +218,10 @@ void EcheAppNotificationController::NotificationDelegate::Click(
     } else {
       DCHECK_EQ(1, *button_index);
       notification_controller_->LaunchHelp();
+    }
+  } else if (notification_id_ == kEcheAppInactivityNotifierId) {
+    if (*button_index == 0) {
+      notification_controller_->LaunchTryAgain();
     }
   }
 }

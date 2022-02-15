@@ -20,6 +20,62 @@ class EcheAppManager;
 class EcheAppNotificationController;
 class SystemInfo;
 
+class LaunchedAppInfo {
+ public:
+  class Builder {
+   public:
+    Builder() = default;
+    ~Builder() = default;
+
+    std::unique_ptr<LaunchedAppInfo> Build() {
+      return base::WrapUnique(
+          new LaunchedAppInfo(package_name_, visible_name_, user_id_));
+    }
+    Builder& SetPackageName(const std::string& package_name) {
+      package_name_ = package_name;
+      return *this;
+    }
+
+    Builder& SetVisibleName(const std::u16string& visible_name) {
+      visible_name_ = visible_name;
+      return *this;
+    }
+
+    Builder& SetUserId(const absl::optional<int64_t>& user_id) {
+      user_id_ = user_id;
+      return *this;
+    }
+
+   private:
+    std::string package_name_;
+    std::u16string visible_name_;
+    absl::optional<int64_t> user_id_;
+  };
+
+  LaunchedAppInfo() = default;
+  LaunchedAppInfo(const LaunchedAppInfo&) = delete;
+  LaunchedAppInfo& operator=(const LaunchedAppInfo&) = delete;
+  ~LaunchedAppInfo() = default;
+
+  std::string package_name() const { return package_name_; }
+  std::u16string visible_name() const { return visible_name_; }
+  absl::optional<int64_t> user_id() const { return user_id_; }
+
+ protected:
+  LaunchedAppInfo(const std::string& package_name,
+                  const std::u16string& visible_name,
+                  const absl::optional<int64_t>& user_id) {
+    package_name_ = package_name;
+    visible_name_ = visible_name;
+    user_id_ = user_id;
+  }
+
+ private:
+  std::string package_name_;
+  std::u16string visible_name_;
+  absl::optional<int64_t> user_id_;
+};
+
 // Factory to create a single EcheAppManager.
 class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -31,6 +87,11 @@ class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
       const absl::optional<std::u16string>& title,
       const absl::optional<std::u16string>& message,
       std::unique_ptr<LaunchAppHelper::NotificationInfo> info);
+
+  void SetLastLaunchedAppInfo(
+      std::unique_ptr<LaunchedAppInfo> last_launched_app_info);
+  std::unique_ptr<LaunchedAppInfo> GetLastLaunchedAppInfo();
+  void CloseConnectionOrLaunchErrorNotifications();
 
   EcheAppManagerFactory(const EcheAppManagerFactory&) = delete;
   EcheAppManagerFactory& operator=(const EcheAppManagerFactory&) = delete;
@@ -48,6 +109,8 @@ class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
 
   std::unique_ptr<SystemInfo> GetSystemInfo(Profile* profile) const;
+
+  std::unique_ptr<LaunchedAppInfo> last_launched_app_info_;
 
   std::unique_ptr<EcheAppNotificationController> notification_controller_;
   base::WeakPtrFactory<EcheAppManagerFactory> weak_ptr_factory_{this};
