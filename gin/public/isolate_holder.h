@@ -82,7 +82,9 @@ class GIN_EXPORT IsolateHolder {
       IsolateType isolate_type,
       IsolateCreationMode isolate_creation_mode = IsolateCreationMode::kNormal,
       v8::CreateHistogramCallback create_histogram_callback = nullptr,
-      v8::AddHistogramSampleCallback add_histogram_sample_callback = nullptr);
+      v8::AddHistogramSampleCallback add_histogram_sample_callback = nullptr,
+      v8::FatalErrorCallback fatal_error_callback = nullptr,
+      v8::OOMErrorCallback oom_error_callback = nullptr);
   IsolateHolder(const IsolateHolder&) = delete;
   IsolateHolder& operator=(const IsolateHolder&) = delete;
   ~IsolateHolder();

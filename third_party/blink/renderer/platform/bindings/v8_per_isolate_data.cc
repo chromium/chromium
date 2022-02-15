@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/allocator/partition_allocator/oom.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -70,7 +71,9 @@ V8PerIsolateData::V8PerIsolateData(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     V8ContextSnapshotMode v8_context_snapshot_mode,
     v8::CreateHistogramCallback create_histogram_callback,
-    v8::AddHistogramSampleCallback add_histogram_sample_callback)
+    v8::AddHistogramSampleCallback add_histogram_sample_callback,
+    v8::FatalErrorCallback fatal_error_callback,
+    v8::OOMErrorCallback oom_error_callback)
     : v8_context_snapshot_mode_(v8_context_snapshot_mode),
       isolate_holder_(task_runner,
                       gin::IsolateHolder::kSingleThread,
@@ -81,7 +84,9 @@ V8PerIsolateData::V8PerIsolateData(
                           : gin::IsolateHolder::IsolateType::kBlinkWorkerThread,
                       gin::IsolateHolder::IsolateCreationMode::kNormal,
                       create_histogram_callback,
-                      add_histogram_sample_callback),
+                      add_histogram_sample_callback,
+                      fatal_error_callback,
+                      oom_error_callback),
       string_cache_(std::make_unique<StringCache>(GetIsolate())),
       private_property_(std::make_unique<V8PrivateProperty>()),
       constructor_mode_(ConstructorMode::kCreateNewObject),
@@ -132,7 +137,9 @@ v8::Isolate* V8PerIsolateData::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     V8ContextSnapshotMode context_mode,
     v8::CreateHistogramCallback create_histogram_callback,
-    v8::AddHistogramSampleCallback add_histogram_sample_callback) {
+    v8::AddHistogramSampleCallback add_histogram_sample_callback,
+    v8::FatalErrorCallback fatal_error_callback,
+    v8::OOMErrorCallback oom_error_callback) {
   TRACE_EVENT1("v8", "V8PerIsolateData::Initialize", "V8ContextSnapshotMode",
                context_mode);
   V8PerIsolateData* data = nullptr;
@@ -141,7 +148,8 @@ v8::Isolate* V8PerIsolateData::Initialize(
   } else {
     data = new V8PerIsolateData(task_runner, context_mode,
                                 create_histogram_callback,
-                                add_histogram_sample_callback);
+                                add_histogram_sample_callback,
+                                fatal_error_callback, oom_error_callback);
   }
   DCHECK(data);
 
@@ -407,6 +415,16 @@ void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
 void AddHistogramSample(void* hist, int sample) {
   base::Histogram* histogram = static_cast<base::Histogram*>(hist);
   histogram->Add(sample);
+}
+
+void ReportV8FatalError(const char* location, const char* message) {
+  LOG(FATAL) << "V8 error: " << message << " (" << location << ").";
+}
+
+void ReportV8OOMError(const char* location, bool is_js_heap) {
+  DVLOG(1) << "V8 " << (is_js_heap ? "javascript" : "process") << " OOM: ("
+           << location << ").";
+  OOM_CRASH(0);
 }
 
 }  // namespace blink
