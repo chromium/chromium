@@ -586,7 +586,9 @@ bool FakeChromeUserManager::IsLoggedInAsPublicAccount() const {
 }
 
 bool FakeChromeUserManager::IsLoggedInAsGuest() const {
-  return false;
+  const user_manager::User* active_user = GetActiveUser();
+  return active_user ? active_user->GetType() == user_manager::USER_TYPE_GUEST
+                     : false;
 }
 
 bool FakeChromeUserManager::IsLoggedInAsKioskApp() const {
