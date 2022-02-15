@@ -73,13 +73,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   void PairingIsInvalid(size_t pairing_index);
   static absl::optional<UnpairedKeys> KeysFromQRGeneratorKey(
       absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key);
-  static absl::optional<UnpairedKeys> KeysFromExtension(
+  static std::vector<UnpairedKeys> KeysFromExtension(
       const std::vector<CableDiscoveryData>& extension_contents);
 
   const FidoRequestType request_type_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
   const absl::optional<UnpairedKeys> qr_keys_;
-  const absl::optional<UnpairedKeys> extension_keys_;
+  const std::vector<UnpairedKeys> extension_keys_;
   std::unique_ptr<AdvertEventStream> advert_stream_;
   std::vector<std::unique_ptr<Pairing>> pairings_;
   std::unique_ptr<EventStream<size_t>> contact_device_stream_;
