@@ -26,6 +26,24 @@ constexpr size_t kMinQueryLength = 3u;
 constexpr size_t kMaxResults = 10u;
 constexpr double kResultRelevanceThreshold = 0.5;
 
+std::vector<std::pair<KeyboardShortcutData, double>> Search(
+    const std::vector<KeyboardShortcutData>& shortcut_data,
+    std::u16string query) {
+  chromeos::string_matching::TokenizedString tokenized_query(
+      query, TokenizedString::Mode::kWords);
+
+  // Find all shortcuts which meet the relevance threshold.
+  std::vector<std::pair<KeyboardShortcutData, double>> candidates;
+  for (const auto& shortcut : shortcut_data) {
+    double relevance = KeyboardShortcutResult::CalculateRelevance(
+        tokenized_query, shortcut.description);
+    if (relevance > kResultRelevanceThreshold) {
+      candidates.push_back(std::make_pair(shortcut, relevance));
+    }
+  }
+  return candidates;
+}
+
 }  // namespace
 
 KeyboardShortcutProvider::KeyboardShortcutProvider(Profile* profile)
@@ -41,15 +59,15 @@ KeyboardShortcutProvider::~KeyboardShortcutProvider() = default;
 void KeyboardShortcutProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Cancel all previous searches.
+  weak_factory_.InvalidateWeakPtrs();
+
   if (query.size() < kMinQueryLength)
     return;
 
-  last_query_ = query;
-  last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&KeyboardShortcutProvider::Search, base::Unretained(this)),
+      base::BindOnce(&Search, shortcut_data_, query),
       base::BindOnce(&KeyboardShortcutProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -64,20 +82,6 @@ void KeyboardShortcutProvider::ProcessShortcutList() {
        keyboard_shortcut_viewer::GetKeyboardShortcutItemList()) {
     shortcut_data_.push_back(KeyboardShortcutData(item));
   }
-}
-
-KeyboardShortcutProvider::ShortcutDataAndScores
-KeyboardShortcutProvider::Search() {
-  // Find all shortcuts which meet the relevance threshold.
-  KeyboardShortcutProvider::ShortcutDataAndScores candidates;
-  for (const auto& shortcut : shortcut_data_) {
-    double relevance = KeyboardShortcutResult::CalculateRelevance(
-        last_tokenized_query_.value(), shortcut.description);
-    if (relevance > kResultRelevanceThreshold) {
-      candidates.push_back(std::make_pair(shortcut, relevance));
-    }
-  }
-  return candidates;
 }
 
 void KeyboardShortcutProvider::OnSearchComplete(

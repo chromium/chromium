@@ -35,7 +35,6 @@ class KeyboardShortcutProvider : public SearchProvider {
   // |shortcut_data_|.
   void ProcessShortcutList();
 
-  ShortcutDataAndScores Search();
   void OnSearchComplete(ShortcutDataAndScores);
 
   Profile* const profile_;
@@ -43,10 +42,6 @@ class KeyboardShortcutProvider : public SearchProvider {
   // A full collection of keyboard shortcuts, against which a query is compared
   // during a search.
   std::vector<KeyboardShortcutData> shortcut_data_;
-
-  std::u16string last_query_;
-  absl::optional<chromeos::string_matching::TokenizedString>
-      last_tokenized_query_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<KeyboardShortcutProvider> weak_factory_{this};
