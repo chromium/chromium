@@ -196,7 +196,6 @@
   E_CPONLY(kColorNativeButtonBackground) \
   E_CPONLY(kColorNativeButtonBackgroundDisabled) \
   E_CPONLY(kColorNativeButtonBorder) \
-  E_CPONLY(kColorNativeButtonBorder2) \
   E_CPONLY(kColorNativeButtonForeground) \
   E_CPONLY(kColorNativeButtonForegroundDisabled) \
   E_CPONLY(kColorNativeButtonIcon) \
@@ -244,6 +243,7 @@
   E_CPONLY(kColorNativeTextareaForegroundDisabled) \
   E_CPONLY(kColorNativeTextareaForegroundSelected) \
   E_CPONLY(kColorNativeTextfieldBorderUnfocused) \
+  E_CPONLY(kColorNativeTextfieldBorderFocused) \
   E_CPONLY(kColorNativeTextfieldForegroundPlaceholder) \
   E_CPONLY(kColorNativeToggleButtonBackgroundChecked) \
   E_CPONLY(kColorNativeToggleButtonBackgroundUnchecked) \
@@ -253,8 +253,10 @@
   E_CPONLY(kColorNativeTreeHeaderBorder) \
   E_CPONLY(kColorNativeTreeHeaderForeground) \
   E_CPONLY(kColorNativeTreeNodeBackground) \
+  E_CPONLY(kColorNativeTreeNodeBackgroundSelected) \
   E_CPONLY(kColorNativeTreeNodeBackgroundSelectedFocused) \
   E_CPONLY(kColorNativeTreeNodeForeground) \
+  E_CPONLY(kColorNativeTreeNodeForegroundSelected) \
   E_CPONLY(kColorNativeTreeNodeForegroundSelectedFocused) \
   E_CPONLY(kColorNativeWindowBackground)
 #elif BUILDFLAG(IS_WIN)
