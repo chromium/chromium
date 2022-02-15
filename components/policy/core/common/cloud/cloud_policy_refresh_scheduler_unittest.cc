@@ -9,11 +9,15 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -42,7 +46,8 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
  protected:
   CloudPolicyRefreshSchedulerTest()
       : service_(std::make_unique<MockCloudPolicyService>(&client_, &store_)),
-        task_runner_(new base::TestSimpleTaskRunner()) {}
+        task_runner_(new base::TestSimpleTaskRunner()),
+        mock_clock_(std::make_unique<base::SimpleTestClock>()) {}
 
   void SetUp() override {
     client_.SetDMToken("token");
@@ -77,14 +82,18 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void EmulateSleepThroughLastRefreshTime(
-      CloudPolicyRefreshScheduler* const scheduler) {
-    // Simulate a sleep of the device by decreasing the wall clock based refresh
-    // timestamp, so that the next refresh time point, calculated from it, turns
-    // out to be earlier than the next refresh time point, calculated from the
-    // ticks count clock.
-    scheduler->set_last_refresh_for_testing(base::Time::NowFromSystemTime() -
-                                            base::Days(1));
+  base::ScopedClosureRunner EmulateSleepThroughLastRefreshTime() {
+    // Mock wall clock time, but make sure that it starts from current time.
+    mock_clock_->Advance(base::Time::Now() - base::Time());
+
+    // Simulate a sleep of the device by advancing the wall clock time, but
+    // keeping tick count clock unchanged. Since tick clock is not mocked, some
+    // time will pass and difference between clocks will be smaller than 1 day,
+    // but it should still be larger than the refresh rate (4 hours).
+    mock_clock_->Advance(base::Days(1));
+
+    return CloudPolicyRefreshScheduler::OverrideClockForTesting(
+        mock_clock_.get());
   }
 
   base::TimeDelta GetLastDelay() const {
@@ -186,6 +195,8 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
   // Base time for the refresh that the scheduler should be using.
   base::Time last_update_;
   base::TimeTicks last_update_ticks_;
+
+  std::unique_ptr<base::SimpleTestClock> mock_clock_;
 };
 
 TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshNoPolicy) {
@@ -425,7 +436,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, OnConnectionChangedUnregistered) {
   client_.NotifyClientError();
   EXPECT_FALSE(task_runner_->HasPendingTask());
 
-  EmulateSleepThroughLastRefreshTime(scheduler.get());
+  auto closure = EmulateSleepThroughLastRefreshTime();
   scheduler->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_WIFI);
   EXPECT_FALSE(task_runner_->HasPendingTask());
@@ -444,7 +455,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, OnConnectionChangedAfterSleep) {
   task_runner_->RunPendingTasks();
   EXPECT_FALSE(task_runner_->HasPendingTask());
 
-  EmulateSleepThroughLastRefreshTime(scheduler.get());
+  auto closure = EmulateSleepThroughLastRefreshTime();
   scheduler->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_WIFI);
   EXPECT_TRUE(task_runner_->HasPendingTask());
@@ -454,7 +465,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, OnConnectionChangedAfterSleep) {
 class CloudPolicyRefreshSchedulerSteadyStateTest
     : public CloudPolicyRefreshSchedulerTest {
  protected:
-  CloudPolicyRefreshSchedulerSteadyStateTest() {}
+  CloudPolicyRefreshSchedulerSteadyStateTest() = default;
 
   void SetUp() override {
     refresh_scheduler_.reset(CreateRefreshScheduler());

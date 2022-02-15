@@ -7,9 +7,12 @@
 
 #include <stdint.h>
 
+#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/clock.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -96,7 +99,12 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // Triggered also when the device wakes up.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  void set_last_refresh_for_testing(base::Time last_refresh);
+  // Overrides clock or tick clock in tests. Returned closure removes the
+  // override when destroyed.
+  static base::ScopedClosureRunner OverrideClockForTesting(
+      base::Clock* clock_for_testing);
+  static base::ScopedClosureRunner OverrideTickClockForTesting(
+      base::TickClock* tick_clock_for_testing);
 
  private:
   // Initializes |last_refresh_| to the policy timestamp from |store_| in case

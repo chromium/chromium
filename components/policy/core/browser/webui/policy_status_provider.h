@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_POLICY_CORE_BROWSER_WEBUI_POLICY_STATUS_PROVIDER_H_
 #define COMPONENTS_POLICY_CORE_BROWSER_WEBUI_POLICY_STATUS_PROVIDER_H_
 
+#include <memory>
+
 #include "base/callback_helpers.h"
+#include "base/time/clock.h"
 #include "components/policy/policy_export.h"
 
 namespace base {
@@ -44,6 +47,11 @@ class POLICY_EXPORT PolicyStatusProvider {
   static void GetStatusFromPolicyData(
       const enterprise_management::PolicyData* policy,
       base::DictionaryValue* dict);
+
+  // Overrides clock in tests. Returned closure removes the override when
+  // destroyed.
+  static base::ScopedClosureRunner OverrideClockForTesting(
+      base::Clock* clock_for_testing);
 
  protected:
   void NotifyStatusChange();

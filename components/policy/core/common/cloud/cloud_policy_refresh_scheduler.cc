@@ -12,13 +12,38 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 
 namespace policy {
+
+namespace {
+
+base::Clock* clock_for_testing_ = nullptr;
+
+const base::Clock* GetClock() {
+  if (clock_for_testing_)
+    return clock_for_testing_;
+  return base::DefaultClock::GetInstance();
+}
+
+base::TickClock* tick_clock_for_testing_ = nullptr;
+
+const base::TickClock* GetTickClock() {
+  if (tick_clock_for_testing_)
+    return tick_clock_for_testing_;
+  return base::DefaultTickClock::GetInstance();
+}
+
+}  // namespace
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
@@ -78,7 +103,7 @@ CloudPolicyRefreshScheduler::CloudPolicyRefreshScheduler(
       refresh_delay_salt_ms_(static_cast<int64_t>(
           base::RandGenerator(kRandomSaltDelayMaxValueMs))),
       invalidations_available_(false),
-      creation_time_(base::Time::NowFromSystemTime()) {
+      creation_time_(GetClock()->Now()) {
   client_->AddObserver(this);
   store_->AddObserver(this);
   network_connection_tracker_->AddNetworkConnectionObserver(this);
@@ -126,7 +151,7 @@ void CloudPolicyRefreshScheduler::RefreshSoon() {
 void CloudPolicyRefreshScheduler::SetInvalidationServiceAvailability(
     bool is_available) {
   if (!creation_time_.is_null()) {
-    base::TimeDelta elapsed = base::Time::NowFromSystemTime() - creation_time_;
+    base::TimeDelta elapsed = GetClock()->Now() - creation_time_;
     UMA_HISTOGRAM_MEDIUM_TIMES("Enterprise.PolicyInvalidationsStartupTime",
                                elapsed);
     creation_time_ = base::Time();
@@ -172,11 +197,10 @@ void CloudPolicyRefreshScheduler::OnClientError(CloudPolicyClient* client) {
   ScheduleRefresh();
 
   // Update the retry delay.
-  if (client->is_registered() &&
-      (status == DM_STATUS_REQUEST_FAILED ||
-       status == DM_STATUS_TEMPORARY_UNAVAILABLE)) {
-    error_retry_delay_ms_ = std::min(error_retry_delay_ms_ * 2,
-                                     refresh_delay_ms_);
+  if (client->is_registered() && (status == DM_STATUS_REQUEST_FAILED ||
+                                  status == DM_STATUS_TEMPORARY_UNAVAILABLE)) {
+    error_retry_delay_ms_ =
+        std::min(error_retry_delay_ms_ * 2, refresh_delay_ms_);
   } else {
     error_retry_delay_ms_ = kInitialErrorRetryDelayMs;
   }
@@ -218,18 +242,12 @@ void CloudPolicyRefreshScheduler::OnConnectionChanged(
 
   const base::TimeDelta refresh_delay =
       base::Milliseconds(GetActualRefreshDelay());
-  const base::TimeDelta system_delta =
-      std::max(last_refresh_ + refresh_delay - base::Time::NowFromSystemTime(),
-               base::TimeDelta());
+  const base::TimeDelta system_delta = std::max(
+      last_refresh_ + refresh_delay - GetClock()->Now(), base::TimeDelta());
   const base::TimeDelta ticks_delta =
-      last_refresh_ticks_ + refresh_delay - base::TimeTicks::Now();
+      last_refresh_ticks_ + refresh_delay - GetTickClock()->NowTicks();
   if (ticks_delta > system_delta)
     RefreshAfter(system_delta.InMilliseconds());
-}
-
-void CloudPolicyRefreshScheduler::set_last_refresh_for_testing(
-    base::Time last_refresh) {
-  last_refresh_ = last_refresh;
 }
 
 void CloudPolicyRefreshScheduler::UpdateLastRefreshFromPolicy() {
@@ -268,8 +286,8 @@ void CloudPolicyRefreshScheduler::UpdateLastRefreshFromPolicy() {
   // this aspect.
   if (store_->has_policy() && store_->policy()->has_timestamp()) {
     last_refresh_ = base::Time::FromJavaTime(store_->policy()->timestamp());
-    last_refresh_ticks_ = base::TimeTicks::Now() +
-                          (last_refresh_ - base::Time::NowFromSystemTime());
+    last_refresh_ticks_ =
+        GetTickClock()->NowTicks() + (last_refresh_ - GetClock()->Now());
   }
 #else
   // If there is a cached non-managed response, make sure to only re-query the
@@ -278,8 +296,8 @@ void CloudPolicyRefreshScheduler::UpdateLastRefreshFromPolicy() {
   if (store_->has_policy() && store_->policy()->has_timestamp() &&
       !store_->is_managed()) {
     last_refresh_ = base::Time::FromJavaTime(store_->policy()->timestamp());
-    last_refresh_ticks_ = base::TimeTicks::Now() +
-                          (last_refresh_ - base::Time::NowFromSystemTime());
+    last_refresh_ticks_ =
+        GetTickClock()->NowTicks() + (last_refresh_ - GetClock()->Now());
   }
 #endif
 }
@@ -375,10 +393,9 @@ void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms) {
   // make sure the refresh is not delayed too much when the system time moved
   // backward after the last refresh.
   const base::TimeDelta system_delay =
-      std::max((last_refresh_ + delta) - base::Time::NowFromSystemTime(),
-               base::TimeDelta());
+      std::max((last_refresh_ + delta) - GetClock()->Now(), base::TimeDelta());
   const base::TimeDelta time_ticks_delay =
-      std::max((last_refresh_ticks_ + delta) - base::TimeTicks::Now(),
+      std::max((last_refresh_ticks_ + delta) - GetTickClock()->NowTicks(),
                base::TimeDelta());
   base::TimeDelta delay = std::min(system_delay, time_ticks_delay);
 
@@ -398,14 +415,33 @@ void CloudPolicyRefreshScheduler::CancelRefresh() {
 }
 
 void CloudPolicyRefreshScheduler::UpdateLastRefresh() {
-  last_refresh_ = base::Time::NowFromSystemTime();
-  last_refresh_ticks_ = base::TimeTicks::Now();
+  last_refresh_ = GetClock()->Now();
+  last_refresh_ticks_ = GetTickClock()->NowTicks();
 }
 
 void CloudPolicyRefreshScheduler::OnPolicyRefreshed(bool success) {
   // Next policy fetch is scheduled in OnPolicyFetched() callback.
   VLOG(1) << "Scheduled policy refresh "
           << (success ? "successful" : "unsuccessful");
+}
+
+// static
+base::ScopedClosureRunner CloudPolicyRefreshScheduler::OverrideClockForTesting(
+    base::Clock* clock_for_testing) {
+  CHECK(!clock_for_testing_);
+  clock_for_testing_ = clock_for_testing;
+  return base::ScopedClosureRunner(
+      base::BindOnce([]() { clock_for_testing_ = nullptr; }));
+}
+
+// static
+base::ScopedClosureRunner
+CloudPolicyRefreshScheduler::OverrideTickClockForTesting(
+    base::TickClock* tick_clock_for_testing) {
+  CHECK(!tick_clock_for_testing_);
+  tick_clock_for_testing_ = tick_clock_for_testing;
+  return base::ScopedClosureRunner(
+      base::BindOnce([]() { tick_clock_for_testing_ = nullptr; }));
 }
 
 }  // namespace policy
