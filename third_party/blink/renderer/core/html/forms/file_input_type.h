@@ -54,7 +54,8 @@ class CORE_EXPORT FileInputType final : public InputType,
   void Trace(Visitor*) const override;
   using InputType::GetElement;
   static Vector<String> FilesFromFormControlState(const FormControlState&);
-  static FileList* CreateFileList(const FileChooserFileInfoList& files,
+  static FileList* CreateFileList(ExecutionContext& context,
+                                  const FileChooserFileInfoList& files,
                                   const base::FilePath& base_dir);
 
   void CountUsage() override;

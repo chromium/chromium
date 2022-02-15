@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
@@ -52,7 +53,9 @@ TEST(FileInputTypeTest, createFileList) {
   files.push_back(CreateFileChooserFileInfoFileSystem(
       url, base::Time::FromJsTime(1.0 * kMsPerDay + 3), 64));
 
-  FileList* list = FileInputType::CreateFileList(files, base::FilePath());
+  auto* execution_context = MakeGarbageCollected<NullExecutionContext>();
+  FileList* list = FileInputType::CreateFileList(*execution_context, files,
+                                                 base::FilePath());
   ASSERT_TRUE(list);
   ASSERT_EQ(2u, list->length());
 
@@ -65,6 +68,7 @@ TEST(FileInputTypeTest, createFileList) {
   EXPECT_EQ(url, list->item(1)->FileSystemURL());
   EXPECT_EQ(64u, list->item(1)->size());
   EXPECT_EQ(1.0 * kMsPerDay + 3, list->item(1)->lastModified());
+  execution_context->NotifyContextDestroyed();
 }
 
 TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
@@ -91,8 +95,8 @@ TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
   FileMetadata metadata;
   metadata.length = 1234;
   const KURL url("filesystem:http://example.com/isolated/hash/non-native-file");
-  non_native_file_drag_data.PlatformData()->Add(
-      File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible));
+  non_native_file_drag_data.PlatformData()->Add(File::CreateForFileSystemFile(
+      url, metadata, File::kIsUserVisible, BlobDataHandle::Create()));
   non_native_file_drag_data.PlatformData()->SetFilesystemId("fileSystemId");
   file_input->ReceiveDroppedFiles(&non_native_file_drag_data);
   // Dropping non-native files should not change the existing files.

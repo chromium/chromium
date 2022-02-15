@@ -59,6 +59,8 @@ class MODULES_EXPORT ModulesInitializer : public CoreInitializer {
   void SetSessionStorageArea(LocalFrame& frame,
                              mojo::PendingRemote<mojom::blink::StorageArea>
                                  session_storage_area) override;
+  mojom::blink::FileSystemManager& GetFileSystemManager(
+      ExecutionContext* context) override;
 };
 
 }  // namespace blink

@@ -295,7 +295,7 @@ void SnapshotFileCallback::DidCreateSnapshotFile(const FileMetadata& metadata) {
     return;
 
   std::move(success_callback_)
-      .Run(DOMFileSystemBase::CreateFile(metadata, url_,
+      .Run(DOMFileSystemBase::CreateFile(execution_context_, metadata, url_,
                                          file_system_->GetType(), name_));
 }
 

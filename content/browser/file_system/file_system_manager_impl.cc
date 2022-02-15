@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -26,19 +27,24 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 #include "ipc/ipc_platform_file.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/mime_util.h"
 #include "storage/browser/blob/blob_data_builder.h"
+#include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_permission_policy.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/common/file_system/file_system_info.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
+#include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -977,6 +983,37 @@ void FileSystemManagerImpl::GetPlatformPath(const GURL& path,
       base::BindOnce(&FileSystemManagerImpl::GetPlatformPathOnFileThread, path,
                      process_id_, context_, GetWeakPtr(),
                      receivers_.current_context(), std::move(callback)));
+}
+
+void FileSystemManagerImpl::RegisterBlob(
+    const std::string& content_type,
+    const GURL& url,
+    uint64_t length,
+    absl::optional<base::Time> expected_modification_time,
+    RegisterBlobCallback callback) {
+  storage::FileSystemURL crack_url =
+      context_->CrackURL(url, receivers_.current_context());
+  std::string uuid = base::GenerateGUID();
+  mojo::PendingRemote<blink::mojom::Blob> blob_remote;
+  mojo::PendingReceiver<blink::mojom::Blob> blob_receiver =
+      blob_remote.InitWithNewPipeAndPassReceiver();
+
+  if (crack_url.is_valid() &&
+      context_->GetFileSystemBackend(crack_url.type()) &&
+      security_policy_->CanReadFileSystemFile(process_id_, crack_url)) {
+    blob_storage_context_->CreateFileSystemBlob(
+        context_, std::move(blob_receiver), crack_url, uuid, content_type,
+        length, expected_modification_time.value_or(base::Time()));
+  } else {
+    std::unique_ptr<storage::BlobDataHandle> handle =
+        blob_storage_context_->context()->AddBrokenBlob(
+            uuid, content_type, "",
+            storage::BlobStatus::ERR_REFERENCED_FILE_UNAVAILABLE);
+    storage::BlobImpl::Create(std::move(handle), std::move(blob_receiver));
+  }
+
+  std::move(callback).Run(blink::mojom::SerializedBlob::New(
+      uuid, content_type, length, std::move(blob_remote)));
 }
 
 void FileSystemManagerImpl::Cancel(

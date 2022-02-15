@@ -216,8 +216,8 @@ TEST(FileTest, fileSystemFileWithoutNativeSnapshot) {
   KURL url("filesystem:http://example.com/isolated/hash/non-native-file");
   FileMetadata metadata;
   metadata.length = 0;
-  File* const file =
-      File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible);
+  File* const file = File::CreateForFileSystemFile(
+      url, metadata, File::kIsUserVisible, BlobDataHandle::Create());
   EXPECT_FALSE(file->HasBackingFile());
   EXPECT_TRUE(file->GetPath().IsEmpty());
   EXPECT_EQ(url, file->FileSystemURL());
@@ -242,12 +242,12 @@ TEST(FileTest, hsaSameSource) {
   KURL url_b("filesystem:http://example.com/isolated/hash/non-native-file-B");
   FileMetadata metadata;
   metadata.length = 0;
-  File* const file_system_file_a1 =
-      File::CreateForFileSystemFile(url_a, metadata, File::kIsUserVisible);
-  File* const file_system_file_a2 =
-      File::CreateForFileSystemFile(url_a, metadata, File::kIsUserVisible);
-  File* const file_system_file_b =
-      File::CreateForFileSystemFile(url_b, metadata, File::kIsUserVisible);
+  File* const file_system_file_a1 = File::CreateForFileSystemFile(
+      url_a, metadata, File::kIsUserVisible, BlobDataHandle::Create());
+  File* const file_system_file_a2 = File::CreateForFileSystemFile(
+      url_a, metadata, File::kIsUserVisible, BlobDataHandle::Create());
+  File* const file_system_file_b = File::CreateForFileSystemFile(
+      url_b, metadata, File::kIsUserVisible, BlobDataHandle::Create());
 
   EXPECT_FALSE(native_file_a1->HasSameSource(*blob_file_a1));
   EXPECT_FALSE(blob_file_a1->HasSameSource(*file_system_file_a1));

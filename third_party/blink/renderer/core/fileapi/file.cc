@@ -27,10 +27,13 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file_property_bag.h"
+#include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -42,6 +45,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -189,6 +193,25 @@ File* File::CreateWithRelativePath(const String& path,
                                           File::kIsUserVisible);
   file->relative_path_ = relative_path;
   return file;
+}
+
+// static
+File* File::CreateForFileSystemFile(ExecutionContext& context,
+                                    const KURL& url,
+                                    const FileMetadata& metadata,
+                                    UserVisibility user_visibility) {
+  String content_type =
+      GetContentTypeFromFileName(url.GetPath(), File::kWellKnownContentTypes);
+  // RegisterBlob doesn't take nullable strings.
+  if (content_type.IsNull()) {
+    content_type = g_empty_string;
+  }
+
+  scoped_refptr<BlobDataHandle> handle;
+  CoreInitializer::GetInstance().GetFileSystemManager(&context).RegisterBlob(
+      content_type, url, metadata.length, metadata.modification_time, &handle);
+
+  return MakeGarbageCollected<File>(url, metadata, user_visibility, handle);
 }
 
 File::File(const String& path,

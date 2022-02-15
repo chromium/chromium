@@ -39,7 +39,6 @@
 namespace blink {
 
 class ExceptionState;
-class ExecutionContext;
 class FilePropertyBag;
 class FileMetadata;
 class FormControlState;
@@ -113,11 +112,12 @@ class CORE_EXPORT File final : public Blob {
     return MakeGarbageCollected<File>(name, metadata, user_visibility);
   }
 
+  // KURL has a String() operator, so if this signature is called and not
+  // deleted it will overload to the signature above
+  // `CreateForFileSystemFile(String, FileMetadata, user_visibility)`.
   static File* CreateForFileSystemFile(const KURL& url,
                                        const FileMetadata& metadata,
-                                       UserVisibility user_visibility) {
-    return MakeGarbageCollected<File>(url, metadata, user_visibility);
-  }
+                                       UserVisibility user_visibility) = delete;
 
   static File* CreateForFileSystemFile(
       const KURL& url,
@@ -127,6 +127,13 @@ class CORE_EXPORT File final : public Blob {
     return MakeGarbageCollected<File>(url, metadata, user_visibility,
                                       std::move(blob_data_handle));
   }
+
+  // Calls RegisterBlob through the relevant FileSystemManager, then constructs
+  // a File with the resulting BlobDataHandle.
+  static File* CreateForFileSystemFile(ExecutionContext& context,
+                                       const KURL& url,
+                                       const FileMetadata& metadata,
+                                       UserVisibility user_visibility);
 
   explicit File(const String& path,
                 ContentTypeLookupPolicy = kWellKnownContentTypes,

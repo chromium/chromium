@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom-blink.h"
+#include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -59,6 +60,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/exported/web_embedded_worker_impl.h"
 #include "third_party/blink/renderer/modules/filesystem/dragged_isolated_file_system_impl.h"
+#include "third_party/blink/renderer/modules/filesystem/file_system_dispatcher.h"
 #include "third_party/blink/renderer/modules/gamepad/navigator_gamepad.h"
 #include "third_party/blink/renderer/modules/image_downloader/image_downloader_impl.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -410,6 +412,11 @@ void ModulesInitializer::SetSessionStorageArea(
     return;
   DOMWindowStorage::From(*frame.DomWindow())
       .InitSessionStorage(std::move(session_storage_area));
+}
+
+mojom::blink::FileSystemManager& ModulesInitializer::GetFileSystemManager(
+    ExecutionContext* context) {
+  return FileSystemDispatcher::From(context).GetFileSystemManager();
 }
 
 void ModulesInitializer::RegisterInterfaces(mojo::BinderMap& binders) {

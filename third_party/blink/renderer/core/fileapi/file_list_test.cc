@@ -6,6 +6,8 @@
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 
 namespace blink {
@@ -44,8 +46,8 @@ TEST(FileListTest, pathsForUserVisibleFiles) {
         "filesystem:http://example.com/isolated/hash/visible-non-native-file");
     FileMetadata metadata;
     metadata.length = 0;
-    file_list->Append(
-        File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible));
+    file_list->Append(File::CreateForFileSystemFile(
+        url, metadata, File::kIsUserVisible, BlobDataHandle::Create()));
   }
 
   // Not user visible file system URL file.
@@ -55,8 +57,8 @@ TEST(FileListTest, pathsForUserVisibleFiles) {
         "not-visible-non-native-file");
     FileMetadata metadata;
     metadata.length = 0;
-    file_list->Append(
-        File::CreateForFileSystemFile(url, metadata, File::kIsNotUserVisible));
+    file_list->Append(File::CreateForFileSystemFile(
+        url, metadata, File::kIsNotUserVisible, BlobDataHandle::Create()));
   }
 
   Vector<base::FilePath> paths = file_list->PathsForUserVisibleFiles();

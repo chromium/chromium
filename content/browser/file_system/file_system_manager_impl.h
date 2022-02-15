@@ -127,6 +127,11 @@ class CONTENT_EXPORT FileSystemManagerImpl
                           CreateSnapshotFileCallback callback) override;
   void GetPlatformPath(const GURL& file_path,
                        GetPlatformPathCallback callback) override;
+  void RegisterBlob(const std::string& content_type,
+                    const GURL& url,
+                    uint64_t length,
+                    absl::optional<base::Time> expected_modification_time,
+                    RegisterBlobCallback callback) override;
 
  private:
   class FileSystemCancellableOperationImpl;
