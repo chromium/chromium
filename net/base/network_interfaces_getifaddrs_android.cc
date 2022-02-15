@@ -24,6 +24,8 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+#include "base/scoped_generic.h"
+
 namespace net {
 namespace internal {
 
@@ -35,6 +37,18 @@ struct netlinkrequest {
 };
 
 const int kMaxReadSize = 4096;
+
+struct FdTraits {
+  static int InvalidValue() { return -1; }
+
+  static void Free(int f) { ::close(f); }
+};
+
+struct IfaddrsTraits {
+  static struct ifaddrs* InvalidValue() { return nullptr; }
+
+  static void Free(struct ifaddrs* ifaddrs) { Freeifaddrs(ifaddrs); }
+};
 
 int set_ifname(struct ifaddrs* ifaddr, int interface) {
   char buf[IFNAMSIZ] = {0};
@@ -141,8 +155,12 @@ int populate_ifaddrs(struct ifaddrs* ifaddr,
 int Getifaddrs(struct ifaddrs** result) {
   int fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
   if (fd < 0) {
+    *result = nullptr;
     return -1;
   }
+
+  base::ScopedGeneric<int, FdTraits> scoped_fd(fd);
+  base::ScopedGeneric<struct ifaddrs*, IfaddrsTraits> scoped_ifaddrs;
 
   netlinkrequest ifaddr_request;
   memset(&ifaddr_request, 0, sizeof(ifaddr_request));
@@ -155,7 +173,6 @@ int Getifaddrs(struct ifaddrs** result) {
     close(fd);
     return -1;
   }
-  struct ifaddrs* start = nullptr;
   struct ifaddrs* current = nullptr;
   char buf[kMaxReadSize];
   ssize_t amount_read = recv(fd, &buf, kMaxReadSize, 0);
@@ -167,12 +184,10 @@ int Getifaddrs(struct ifaddrs** result) {
       switch (header->nlmsg_type) {
         case NLMSG_DONE:
           // Success. Return.
-          *result = start;
-          close(fd);
+          *result = scoped_ifaddrs.release();
           return 0;
         case NLMSG_ERROR:
-          close(fd);
-          Freeifaddrs(start);
+          *result = nullptr;
           return -1;
         case RTM_NEWADDR: {
           ifaddrmsg* address_msg =
@@ -189,11 +204,10 @@ int Getifaddrs(struct ifaddrs** result) {
               if (current) {
                 current->ifa_next = newest;
               } else {
-                start = newest;
+                scoped_ifaddrs.reset(newest);
               }
               if (populate_ifaddrs(newest, address_msg, RTA_DATA(rta),
                                    RTA_PAYLOAD(rta)) != 0) {
-                Freeifaddrs(start);
                 *result = nullptr;
                 return -1;
               }
@@ -207,8 +221,7 @@ int Getifaddrs(struct ifaddrs** result) {
     }
     amount_read = recv(fd, &buf, kMaxReadSize, 0);
   }
-  close(fd);
-  Freeifaddrs(start);
+  *result = nullptr;
   return -1;
 }
 
