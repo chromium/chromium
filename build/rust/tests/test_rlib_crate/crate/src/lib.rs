@@ -21,3 +21,21 @@ pub fn say_hello_from_crate() {
     #[cfg(not(has_feature_b))]
     panic!("Wasn't passed feature b");
 }
+
+#[cfg(test)]
+mod tests {
+    /// Test features are passed through from BUILD.gn
+    /// correctly
+    #[test]
+    fn test_features_passed() {
+        #[cfg(not(has_feature_a))]
+        panic!("Wasn't passed feature a");
+        #[cfg(not(has_feature_b))]
+        panic!("Wasn't passed feature b");
+    }
+
+    #[test]
+    fn test_generated_code_works() {
+        assert_eq!(crate::run_some_generated_code(), 42);
+    }
+}

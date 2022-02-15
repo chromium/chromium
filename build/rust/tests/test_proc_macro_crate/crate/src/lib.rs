@@ -5,6 +5,6 @@
 use proc_macro::TokenStream;
 
 #[proc_macro]
-pub fn say_hello_from_proc_macro(_item: TokenStream) -> TokenStream {
-    "println!(\"Hello from proc macro\");".parse().unwrap()
+pub fn calculate_using_proc_macro(_item: TokenStream) -> TokenStream {
+    "(15 + 15)".parse().unwrap()
 }

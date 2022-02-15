@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-pub extern "C" fn say_foo() {
-    println!("Foo");
+pub extern "C" fn do_subtract(a: u32, b: u32) -> u32 {
+    a - b
 }
 
 #[test]
 fn test_ok() {
-    assert_eq!(42, 42);
+    assert_eq!(do_subtract(12, 8), 4)
 }
