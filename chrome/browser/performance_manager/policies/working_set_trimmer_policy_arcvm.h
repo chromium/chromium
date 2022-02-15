@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -35,6 +36,7 @@ class WorkingSetTrimmerPolicyArcVm
       public arc::ArcMetricsService::UserInteractionObserver,
       public arc::ArcSessionManagerObserver,
       public arc::ConnectionObserver<arc::mojom::AppInstance>,
+      public arc::ConnectionObserver<arc::mojom::IntentHelperInstance>,
       public wm::ActivationChangeObserver {
  public:
   // Gets an instance of WorkingSetTrimmerPolicyArcVm.
@@ -64,6 +66,7 @@ class WorkingSetTrimmerPolicyArcVm
   void OnArcSessionRestarting() override;
 
   // arc::ConnectionObserver<arc::mojom::AppInstance> overrides.
+  // arc::ConnectionObserver<arc::mojom::IntentHelperInstance> overrides.
   void OnConnectionReady() override;
 
   // wm::ActivationChangeObserver overrides.
@@ -71,11 +74,14 @@ class WorkingSetTrimmerPolicyArcVm
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
+  static const base::TimeDelta& GetArcVmBootDelayForTesting();
+
  private:
   friend class base::NoDestructor<WorkingSetTrimmerPolicyArcVm>;
   WorkingSetTrimmerPolicyArcVm();
 
   void StartObservingUserInteractions();
+  void OnConnectionReadyInternal();
 
   content::BrowserContext* context_for_testing_ = nullptr;
 
@@ -92,6 +98,8 @@ class WorkingSetTrimmerPolicyArcVm
   bool trimmed_at_boot_ = false;
   // True if observing the user's interactions with ARCVM via ArcMetricsService.
   bool observing_user_interactions_ = false;
+
+  base::OneShotTimer timer_;
 };
 
 }  // namespace policies

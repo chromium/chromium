@@ -8,6 +8,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
@@ -22,6 +23,16 @@
 namespace performance_manager {
 namespace policies {
 namespace {
+
+// The delay until |is_boot_complete_and_connected_| is flipped after app.mojom
+// and intent_helper.mojom are connected, The delay is necessary because when
+// the connections are established, ARCVM is often still busy accessing many
+// files. The current value (100s) is based on the slowest SKU (Bluebird) of the
+// Octopus family. It usually takes about 50 seconds for the device to become
+// idle after the mojo connections ready event, and the 100s setting is 50s * 2
+// (safety factor) considering that we might launch ARCVM on (slightly) slower
+// devices than Octopus in the future.
+constexpr base::TimeDelta kArcVmBootDelay = base::Seconds(100);
 
 content::BrowserContext* GetContext() {
   // For production, always use the primary user profile. ARCVM does not
@@ -67,15 +78,17 @@ WorkingSetTrimmerPolicyArcVm::WorkingSetTrimmerPolicyArcVm() {
         helper->GetActiveWindow(), /*lost_active=*/nullptr);
   }
 
-  // If app() is already connected to the AppInstance in the guest, the
-  // OnConnectionReady() function is synchronously called before returning
-  // from AddObserver. See ash/components/arc/session/connection_holder.h for
-  // more details, especially its AddObserver() function.
+  // If app() and/or intent_helper() are already connected to the instance in
+  // the guest, the OnConnectionReady() function is synchronously called before
+  // returning from AddObserver. For more details, see
+  // ash/components/arc/session/connection_holder.h, especially its
+  // AddObserver() function.
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   // ArcServiceManager and objects owned by the manager are created very early
   // in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()` too.
   DCHECK(arc_service_manager);
   arc_service_manager->arc_bridge_service()->app()->AddObserver(this);
+  arc_service_manager->arc_bridge_service()->intent_helper()->AddObserver(this);
 }
 
 WorkingSetTrimmerPolicyArcVm::~WorkingSetTrimmerPolicyArcVm() {
@@ -91,8 +104,9 @@ WorkingSetTrimmerPolicyArcVm::~WorkingSetTrimmerPolicyArcVm() {
   }
 
   auto* arc_service_manager = arc::ArcServiceManager::Get();
-  if (arc_service_manager)
-    arc_service_manager->arc_bridge_service()->app()->RemoveObserver(this);
+  arc_service_manager->arc_bridge_service()->intent_helper()->RemoveObserver(
+      this);
+  arc_service_manager->arc_bridge_service()->app()->RemoveObserver(this);
 
   if (exo::WMHelper::HasInstance())
     exo::WMHelper::GetInstance()->RemoveActivationObserver(this);
@@ -129,17 +143,48 @@ void WorkingSetTrimmerPolicyArcVm::OnUserInteraction(
 void WorkingSetTrimmerPolicyArcVm::OnArcSessionStopped(
     arc::ArcStopReason stop_reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // OnConnectionReadyInternal() shouldn't be called anymore.
+  timer_.Stop();
+
   is_boot_complete_and_connected_ = false;
   trimmed_at_boot_ = false;
 }
 
 void WorkingSetTrimmerPolicyArcVm::OnArcSessionRestarting() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // OnConnectionReadyInternal() shouldn't be called anymore.
+  timer_.Stop();
+
   is_boot_complete_and_connected_ = false;
   trimmed_at_boot_ = false;
 }
 
 void WorkingSetTrimmerPolicyArcVm::OnConnectionReady() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Check if both mojo connections are established.
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  const bool app_connected =
+      arc_service_manager &&
+      arc_service_manager->arc_bridge_service()->app()->IsConnected();
+  const bool intent_helper_connected =
+      arc_service_manager &&
+      arc_service_manager->arc_bridge_service()->intent_helper()->IsConnected();
+  if (!app_connected || !intent_helper_connected)
+    return;
+
+  // Wait for a while more until ARCVM stops accessing too many files. Using
+  // Unretained() is safe here because |this| object is created with
+  // base::NoDestructor<> in the factory method above.
+  timer_.Start(
+      FROM_HERE, kArcVmBootDelay,
+      base::BindOnce(&WorkingSetTrimmerPolicyArcVm::OnConnectionReadyInternal,
+                     base::Unretained(this)));
+}
+
+void WorkingSetTrimmerPolicyArcVm::OnConnectionReadyInternal() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   is_boot_complete_and_connected_ = true;
   // Now the user is able to interact with ARCVM. Reset the value.
@@ -161,6 +206,12 @@ void WorkingSetTrimmerPolicyArcVm::OnWindowActivated(
     // While the window was focused, the user was interacting with ARCVM.
     last_user_interaction_ = base::TimeTicks::Now();
   }
+}
+
+// static
+const base::TimeDelta&
+WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting() {
+  return kArcVmBootDelay;
 }
 
 void WorkingSetTrimmerPolicyArcVm::StartObservingUserInteractions() {
