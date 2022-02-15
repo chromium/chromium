@@ -94,10 +94,13 @@ BrowserDataMigratorImpl::MigrationResult CopyMigrator::MigrateInternal(
 
   base::ElapsedTimer timer;
 
-  if (!browser_data_migrator_util::HasEnoughDiskSpace(total_copy_size,
-                                                      original_profile_dir)) {
+  uint64_t required_size =
+      browser_data_migrator_util::ExtraBytesRequiredToBeFreed(
+          total_copy_size, original_profile_dir);
+  if (required_size > 0) {
     UMA_HISTOGRAM_ENUMERATION(kFinalStatus, FinalStatus::kNotEnoughSpace);
-    return {data_wipe_result, {BrowserDataMigrator::ResultKind::kFailed}};
+    return {data_wipe_result,
+            {BrowserDataMigrator::ResultKind::kFailed, required_size}};
   }
 
   // Copy files to `tmp_dir`.

@@ -221,4 +221,19 @@ TEST_F(CopyMigratorTest, MigrateInternal) {
                                      kFileSize * 4 / (1024 * 1024), 1);
 }
 
+TEST_F(CopyMigratorTest, MigrateInternalOutOfDisk) {
+  // Emulate the situation of out-of-disk.
+  browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting
+      scoped_extra_bytes(100);
+
+  // Run the migration.
+  auto result = CopyMigrator::MigrateInternal(
+      from_dir_, std::make_unique<FakeMigrationProgressTracker>(),
+      base::MakeRefCounted<browser_data_migrator_util::CancelFlag>());
+
+  EXPECT_EQ(BrowserDataMigrator::ResultKind::kFailed,
+            result.data_migration_result.kind);
+  EXPECT_EQ(100u, result.data_migration_result.required_size);
+}
+
 }  // namespace ash

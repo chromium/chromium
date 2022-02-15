@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -61,8 +62,10 @@ class BrowserDataMigrator {
   struct Result {
     ResultKind kind;
 
-    // TODO(crbug.com/1296174): add required data, if the migration is failed
-    // due to out of disk space.
+    // If the migration is failed (kind must be kFailed) due to
+    // out-of-diskspace, this field will be filled with the size of the disk
+    // in bytes where the user required to free up.
+    absl::optional<uint64_t> required_size;
   };
 
   // TODO(crbug.com/1296174): Currently, dependency around callback is not
@@ -169,6 +172,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
                            ManipulateMigrationAttemptCount);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, Migrate);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateCancelled);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
+                           MigrateOutOfDiskForCopy);
 
   // Sets the value of `kMigrationStep` in Local State.
   static void SetMigrationStep(PrefService* local_state, MigrationStep step);

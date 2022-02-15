@@ -73,6 +73,7 @@ class CopyMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   FRIEND_TEST_ALL_PREFIXES(CopyMigratorTest, SetupTmpDir);
   FRIEND_TEST_ALL_PREFIXES(CopyMigratorTest, CancelSetupTmpDir);
   FRIEND_TEST_ALL_PREFIXES(CopyMigratorTest, MigrateInternal);
+  FRIEND_TEST_ALL_PREFIXES(CopyMigratorTest, MigrateInternalOutOfDisk);
 
   // Handles the migration on a worker thread. Returns the end status of data
   // wipe and migration. `progress_callback` gets posted on UI thread whenever

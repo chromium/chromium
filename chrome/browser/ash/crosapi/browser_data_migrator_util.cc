@@ -132,6 +132,8 @@ static_assert(base::ranges::is_sorted(kPathNamePairs, PathNameComparator()),
               "kPathNamePairs needs to be sorted by the keys of its elements "
               "so that binary_search can be used on it.");
 
+absl::optional<uint64_t> g_extra_bytes_required_to_be_freed_for_testing;
+
 }  // namespace
 
 CancelFlag::CancelFlag() : cancelled_(false) {}
@@ -234,6 +236,9 @@ bool HasEnoughDiskSpace(const int64_t total_copy_size,
 uint64_t ExtraBytesRequiredToBeFreed(
     const int64_t total_copy_size,
     const base::FilePath& original_profile_dir) {
+  if (g_extra_bytes_required_to_be_freed_for_testing)
+    return *g_extra_bytes_required_to_be_freed_for_testing;
+
   const int64_t free_disk_space =
       base::SysInfo::AmountOfFreeDiskSpace(original_profile_dir);
   const int64_t required_disk_space = total_copy_size + kBuffer;
@@ -246,6 +251,17 @@ uint64_t ExtraBytesRequiredToBeFreed(
   }
 
   return 0;
+}
+
+ScopedExtraBytesRequiredToBeFreedForTesting::
+    ScopedExtraBytesRequiredToBeFreedForTesting(uint64_t required_size) {
+  DCHECK(!g_extra_bytes_required_to_be_freed_for_testing.has_value());
+  g_extra_bytes_required_to_be_freed_for_testing = required_size;
+}
+
+ScopedExtraBytesRequiredToBeFreedForTesting::
+    ~ScopedExtraBytesRequiredToBeFreedForTesting() {
+  g_extra_bytes_required_to_be_freed_for_testing.reset();
 }
 
 bool CopyDirectory(const base::FilePath& from_path,

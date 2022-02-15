@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/synchronization/atomic_flag.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -239,6 +240,7 @@ TargetItems GetTargetItems(const base::FilePath& original_profile_dir,
                            const ItemType type);
 
 // Checks if there is enough disk space to migration to be carried out safely.
+// that needs to be copied.
 bool HasEnoughDiskSpace(const int64_t total_copy_size,
                         const base::FilePath& original_profile_dir);
 
@@ -248,6 +250,14 @@ bool HasEnoughDiskSpace(const int64_t total_copy_size,
 uint64_t ExtraBytesRequiredToBeFreed(
     const int64_t total_copy_size,
     const base::FilePath& original_profile_dir);
+
+// Injects the bytes to be returned by ExtraBytesRequiredToBeFreed above
+// in RAII manner.
+class ScopedExtraBytesRequiredToBeFreedForTesting {
+ public:
+  explicit ScopedExtraBytesRequiredToBeFreedForTesting(uint64_t bytes);
+  ~ScopedExtraBytesRequiredToBeFreedForTesting();
+};
 
 // Copies `items` to `to_dir`.
 bool CopyTargetItems(const base::FilePath& to_dir,
