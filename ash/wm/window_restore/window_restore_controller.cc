@@ -456,6 +456,10 @@ void WindowRestoreController::StackWindow(aura::Window* window) {
     window->parent()->StackChildBelow(window, *insertion_point);
 }
 
+bool WindowRestoreController::IsRestoringWindow(aura::Window* window) const {
+  return windows_observation_.IsObservingSource(window);
+}
+
 void WindowRestoreController::SaveWindowImpl(
     WindowState* window_state,
     absl::optional<int> activation_index) {

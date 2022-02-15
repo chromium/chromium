@@ -43,6 +43,7 @@
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_event.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
@@ -2622,6 +2623,27 @@ TEST_F(DesksTemplatesTest, TimeStrFormat) {
     EXPECT_EQ(expected_timestr[i],
               DesksTemplatesItemViewTestApi(item_view).time_view()->GetText());
   }
+}
+
+// Test that desk templates can launch snapped windows properly.
+TEST_F(DesksTemplatesTest, SnapWindowTest) {
+  auto test_window = CreateAppWindow();
+
+  WindowState* window_state = WindowState::Get(test_window.get());
+  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_event);
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            window_state->GetStateType());
+
+  // Open overview and save a template.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  ASSERT_EQ(1ul, GetAllEntries().size());
+
+  ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
+  WaitForDesksTemplatesUI();
+
+  // Test that overview is still active and there is no crash.
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
 }  // namespace ash
