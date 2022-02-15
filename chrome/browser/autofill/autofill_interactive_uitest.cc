@@ -2969,8 +2969,9 @@ class AutofillDynamicFormReplacementInteractiveTest
 };
 
 // Test that we can Autofill dynamically generated forms.
+// TODO(https://crbug.com/1297560): Fix flake and re-enable test.
 IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
-                       DynamicChangingFormFill) {
+                       DISABLED_DynamicChangingFormFill) {
   CreateTestProfile();
 
   GURL url =
@@ -2996,8 +2997,9 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
   ExpectFieldValue("phone_form1", "15125551234");
 }
 
+// TODO(https://crbug.com/1297560): Fix flake and re-enable test.
 IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
-                       TwoDynamicChangingFormsFill) {
+                       DISABLED_TwoDynamicChangingFormsFill) {
   // Setup that the test expects a re-fill to happen.
   test_delegate()->SetIsExpectingDynamicRefill(true);
 
@@ -3151,8 +3153,9 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
 
 // Test that we can autofill forms that dynamically change select fields to text
 // fields by changing the visibilities.
+// TODO(https://crbug.com/1297560): Fix flake and re-enable test.
 IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
-                       DynamicFormFill_SelectToText) {
+                       DISABLED_DynamicFormFill_SelectToText) {
   CreateTestProfile();
 
   GURL url = embedded_test_server()->GetURL(
@@ -3418,8 +3421,9 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
 }
 
 // Test that credit card fields are re-filled.
+// TODO(https://crbug.com/1297560): Fix flake and re-enable test.
 IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
-                       DynamicChangingFormFill_AlsoForCreditCard) {
+                       DISABLED_DynamicChangingFormFill_AlsoForCreditCard) {
   CreateTestCreditCart();
 
   // Navigate to the page.
@@ -3632,8 +3636,10 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
 
 // Test that we can Autofill dynamically synthetic forms when the select options
 // change if the NameForAutofill of the first field matches
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
-                       DynamicChangingFormFill_SelectUpdated_SyntheticForm) {
+// TODO(https://crbug.com/1297560): Fix flake and re-enable test.
+IN_PROC_BROWSER_TEST_P(
+    AutofillDynamicFormInteractiveTest,
+    DISABLED_DynamicChangingFormFill_SelectUpdated_SyntheticForm) {
   CreateTestProfile();
 
   GURL url = embedded_test_server()->GetURL(
