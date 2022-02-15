@@ -50,6 +50,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.AuthScanDoneSignal.UpgradeToFingerprintMessage"
     enum="BooleanUpgraded" expires_after="2022-06-09">
+  <obsolete>
+    Since transition to FingerprintMessage is completed, this histogram is no
+    longer used. Removed in 02/2022.
+  </obsolete>
   <owner>patrykd@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>

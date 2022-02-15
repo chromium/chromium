@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/dbus/biod/fake_biod_client.h"
 #include "chromeos/dbus/biod/messages.pb.h"
@@ -26,11 +25,6 @@
 namespace chromeos {
 
 namespace {
-
-// Name of UMA boolean histogram used to count signals with FingerprintMessage
-// and ScanResult.
-const char* kUmaUpgradeToFingerprintMessage =
-    "Fingerprint.AuthScanDoneSignal.UpgradeToFingerprintMessage";
 
 BiodClient* g_instance = nullptr;
 
@@ -377,21 +371,9 @@ class BiodClientImpl : public BiodClient {
     biod::FingerprintMessage msg;
 
     if (!signal_reader.PopArrayOfBytesAsProto(&msg)) {
-      LOG(WARNING) << "Signal doesn't contain protobuf with authentication "
-                   << "result. Trying to extract ScanResult enum";
-      uint32_t scan_result;
-      if (!signal_reader.PopUint32(&scan_result)) {
-        LOG(ERROR) << "Can't read ScanResult from AuthScanDone signal";
-        return;
-      }
-      // Copy obtained ScanResult to FingerprintMessage protobuf.
-      msg.set_scan_result(static_cast<biod::ScanResult>(scan_result));
-
-      // AuthScanDone signal contains ScanResult enum.
-      base::UmaHistogramBoolean(kUmaUpgradeToFingerprintMessage, false);
-    } else {
-      // AuthScanDone signal contains FingerprintMessage protobuf.
-      base::UmaHistogramBoolean(kUmaUpgradeToFingerprintMessage, true);
+      LOG(ERROR) << "Signal doesn't contain protobuf with authentication "
+                 << "result.";
+      return;
     }
 
     if (!signal_reader.PopArray(&array_reader)) {
