@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -38,6 +39,12 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
     public static String getPreloadPagesSummaryString(Context context) {
         @PreloadPagesState
         int preloadPagesState = PreloadPagesSettingsBridge.getState();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_EXTENDED_PRELOADING_SETTING)
+                && preloadPagesState == PreloadPagesState.EXTENDED_PRELOADING) {
+            // If the extended preloading UI setting is disabled, show "Standard
+            // Preloading" as a substitute.
+            preloadPagesState = PreloadPagesState.STANDARD_PRELOADING;
+        }
         String preloadPagesStateString = "";
         if (preloadPagesState == PreloadPagesState.EXTENDED_PRELOADING) {
             return context.getString(R.string.preload_pages_extended_preloading_title);
