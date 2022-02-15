@@ -13,7 +13,6 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -21,6 +20,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {AddSinkResultCode, CastDiscoveryMethod, PageCallbackRouter} from './access_code_cast.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
+import {CodeInputElement} from './code_input/code_input.js';
 import {ErrorMessageElement} from './error_message/error_message.js';
 import {RouteRequestResultCode} from './route_request_result_code.mojom-webui.js';
 
@@ -36,7 +36,7 @@ interface AccessCodeCastElement {
     backButton: CrButtonElement;
     castButton: CrButtonElement;
     codeInputView: HTMLDivElement;
-    codeInput: CrInputElement;
+    codeInput: CodeInputElement;
     dialog: CrDialogElement;
     errorMessage: ErrorMessageElement;
     qrInputView: HTMLDivElement;
@@ -60,7 +60,6 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
   private static readonly ACCESS_CODE_LENGTH = 6;
   private accessCode: string;
   private canCast: boolean;
-  private inputFocused: boolean;
   private state: PageState;
   private qrScannerEnabled: boolean;
 
@@ -90,15 +89,8 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     super.ready();
     this.setState(PageState.CODE_INPUT);
     this.$.errorMessage.setNoError();
-    this.$.codeInput.inputElement.setAttribute('aria-label', this.i18n('inputLabel'));
-    this.$.codeInput.addEventListener('input', (e: Event) => {
+    this.$.codeInput.addEventListener('access-code-input', (e: any) => {
       this.handleCodeInput(e);
-    });
-    this.$.codeInput.addEventListener('focus', () => {
-      this.trackInputFocus('focus');
-    });
-    this.$.codeInput.addEventListener('blur', () => {
-      this.trackInputFocus('blur');
     });
     this.$.dialog.showModal();
   }
@@ -185,25 +177,20 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     this.$.backButton.hidden = state !== PageState.QR_INPUT;
 
     if (state === PageState.CODE_INPUT) {
-      this.$.codeInput.value = '';
+      this.$.codeInput.clearInput();
       this.$.codeInput.focusInput();
-      this.trackInputFocus('focus');
     }
   }
 
-  private handleCodeInput(e: Event) {
-    console.log('input');
-    const input = e.target as CrInputElement;
-    console.log(input.value);
-    input.value = input.value.toUpperCase();
-    this.accessCode = input.value;
+  private handleCodeInput(e: any) {
+    this.accessCode = e.detail.value;
   }
 
   private handleEnterPressed() {
     if (this.castButtonDisabled(this.accessCode, this.canCast)) {
       return;
     }
-    if (!this.inputFocused) {
+    if (this.$.codeInput.getFocusedIndex() === -1) {
       return;
     }
     if (this.state !== PageState.CODE_INPUT) {
@@ -223,10 +210,6 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
   private async cast(): Promise<RouteRequestResultCode> {
     const castResult = await BrowserProxy.getInstance().handler.castToSink();
     return castResult.resultCode as RouteRequestResultCode;
-  }
-
-  private trackInputFocus(focusState: 'blur'|'focus') {
-    this.inputFocused = focusState === 'focus';
   }
 }
 

@@ -10,6 +10,6 @@
 </style>
 <template is="dom-repeat" items="[[inputs]]" as="inputIndex">
   <cr-input minlength="1" maxlength="1" id="input-[[index]]"
-            disabled="[[disabled]]">
+            disabled="[[disabled]]" aria-label="[[getInputLabel(index)]]">
   </cr-input>
 </template>

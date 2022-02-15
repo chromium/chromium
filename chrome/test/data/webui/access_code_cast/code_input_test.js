@@ -4,6 +4,7 @@
 
 import 'chrome://access-code-cast/code_input/code_input.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 suite('CodeInputElementTest', () => {
@@ -11,6 +12,9 @@ suite('CodeInputElementTest', () => {
   let c2cInput;
 
   setup(async () => {
+    loadTimeData.resetForTesting({});
+    loadTimeData.getString = id => id;
+
     PolymerTest.clearBody();
 
     c2cInput = document.createElement('c2c-code-input');

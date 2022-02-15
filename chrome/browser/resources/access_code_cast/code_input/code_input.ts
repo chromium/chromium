@@ -5,9 +5,13 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-export class CodeInputElement extends PolymerElement {
+const CodeInputElementBase = WebUIListenerMixin(I18nMixin(PolymerElement));
+
+export class CodeInputElement extends CodeInputElementBase {
   static get is() {
     return 'c2c-code-input';
   }
@@ -132,6 +136,10 @@ export class CodeInputElement extends PolymerElement {
     if (index > 0) {
       this.getInput(index - 1).focusInput();
     }
+  }
+
+  private getInputLabel(index: number) {
+    return this.i18n('enterCharacter', index + 1, this.length);
   }
 
   private handleInput(value: string, index: number) {

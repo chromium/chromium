@@ -199,6 +199,7 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
       {"cast", IDS_ACCESS_CODE_CAST_CAST},
       {"close", IDS_CLOSE},
       {"dialogTitle", IDS_ACCESS_CODE_CAST_DIALOG_TITLE},
+      {"enterCharacter", IDS_ACCESS_CODE_CAST_ENTER_CHARACTER},
       {"errorAccessCode", IDS_ACCESS_CODE_CAST_ERROR_ACCESS_CODE},
       {"errorNetwork", IDS_ACCESS_CODE_CAST_ERROR_NETWORK},
       {"errorPermission", IDS_ACCESS_CODE_CAST_ERROR_PERMISSION},
