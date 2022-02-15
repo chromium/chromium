@@ -80,16 +80,16 @@ void UsbPeripheralNotificationController::OnInvalidDpCableWarning() {
 
   message_center::RichNotificationData optional;
   optional.buttons.push_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_LEARN_MORE)));
+      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE)));
 
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUsbPeripheralInvalidDpCableNotificationId,
           l10n_util::GetStringUTF16(
-              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_DISPLAY_TITLE),
+              IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_DISPLAY_TITLE),
           l10n_util::GetStringUTF16(
-              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_DISPLAY_BODY),
+              IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_DISPLAY_BODY),
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
@@ -112,16 +112,16 @@ void UsbPeripheralNotificationController::OnInvalidUSB4ValidTBTCableWarning() {
 
   message_center::RichNotificationData optional;
   optional.buttons.push_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_LEARN_MORE)));
+      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE)));
 
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUsbPeripheralInvalidUSB4ValidTBTCableNotificationId,
           l10n_util::GetStringUTF16(
-              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_PERFORMANCE_TITLE),
+              IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_PERFORMANCE_TITLE),
           l10n_util::GetStringUTF16(
-              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_NO_USB4_SUPPORT_BODY),
+              IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_NO_USB4_SUPPORT_BODY),
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
@@ -146,16 +146,16 @@ void UsbPeripheralNotificationController::OnInvalidUSB4CableWarning() {
 
   message_center::RichNotificationData optional;
   optional.buttons.push_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_LEARN_MORE)));
+      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE)));
 
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUsbPeripheralInvalidUSB4CableNotificationId,
           l10n_util::GetStringUTF16(
-              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_PERFORMANCE_TITLE),
+              IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_PERFORMANCE_TITLE),
           l10n_util::GetStringUTF16(
-              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_NO_USB4_SUPPORT_BODY),
+              IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_NO_USB4_SUPPORT_BODY),
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
@@ -179,16 +179,16 @@ void UsbPeripheralNotificationController::OnInvalidTBTCableWarning() {
 
   message_center::RichNotificationData optional;
   optional.buttons.push_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_LEARN_MORE)));
+      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE)));
 
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUsbPeripheralInvalidTBTCableNotificationId,
           l10n_util::GetStringUTF16(
-              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_PERFORMANCE_TITLE),
+              IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_PERFORMANCE_TITLE),
           l10n_util::GetStringUTF16(
-              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_NO_TBT_SUPPORT_BODY),
+              IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_NO_TBT_SUPPORT_BODY),
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
@@ -211,16 +211,16 @@ void UsbPeripheralNotificationController::OnSpeedLimitingCableWarning() {
 
   message_center::RichNotificationData optional;
   optional.buttons.push_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_LEARN_MORE)));
+      l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE)));
 
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUsbPeripheralSpeedLimitingCableNotificationId,
           l10n_util::GetStringUTF16(
-              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_PERFORMANCE_TITLE),
+              IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_PERFORMANCE_TITLE),
           l10n_util::GetStringUTF16(
-              IDS_ASH_USB_NOTIFICATION_CABLE_WARNING_SPEED_LIMITED_BODY),
+              IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_SPEED_LIMITED_BODY),
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,

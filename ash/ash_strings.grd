@@ -4781,6 +4781,29 @@ New install
       <message name="IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SETTINGS_BUTTON_TEXT" desc="Text in notification button to launch smart privacy settings.">
         Privacy settings
       </message>
+
+      <!-- USB-C cable notifications - version 2 -->
+      <message name="IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE" desc="Notification button text. If the user clicks on it, it will send them to a relevant webpage.">
+        Learn More
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_DISPLAY_TITLE" desc="Notification title text for when a user connects a display to a Chromebook's USB-C port with a cable that cannot support driving display signals.">
+        Cable may not support displays
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_DISPLAY_BODY" desc="Notification body text for when a user connects a display to a Chromebook's USB-C port with a cable that cannot support driving display signals.">
+        Your USB-C cable may not connect to diplays properly
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_PERFORMANCE_TITLE" desc="Notification title text for when a user connects something to the USB-C port on their Chromebook and performance is in some way limited by the cable.">
+        Cable may impact performance
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_NO_USB4_SUPPORT_BODY" desc="Notification body text for when a user connects a USB4 device to their Chromebook with a cable that does not support USB4.">
+        Your USB-C cable does not support USB4. Device performance may be limited.
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_NO_TBT_SUPPORT_BODY" desc="Notification body text for when a user connects a Thunderbolt device to their Chromebook with a cable that does not support Thunderbolt.">
+        Your USB-C cable does not support Thunderbolt. Device performance may be limited.
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_SPEED_LIMITED_BODY" desc="Notification body text for when a user connects a device to their Chromebook with a cable that has a lower maximum data rate than the device.">
+        Your device supports a higher data rate than your cable. Device performance may be limited.
+      </message>
     </messages>
   </release>
 </grit>
