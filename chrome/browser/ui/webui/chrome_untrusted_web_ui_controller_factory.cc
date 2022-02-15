@@ -23,9 +23,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/video_tutorials/video_player_ui.h"
-#else  // !BUILDFLAG(IS_ANDROID)
+#else
 #include "chrome/browser/ui/webui/feed/feed_ui_config.h"
-#include "chrome/browser/ui/webui/image_editor/image_editor_untrusted_ui.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -73,10 +72,8 @@ WebUIConfigList CreateConfigs() {
 
 #if BUILDFLAG(IS_ANDROID)
   register_config(std::make_unique<video_tutorials::VideoPlayerUIConfig>());
-#else  // !BUILDFLAG(IS_ANDROID)
+#else
   register_config(std::make_unique<feed::FeedUIConfig>());
-  register_config(
-      std::make_unique<image_editor::ImageEditorUntrustedUIConfig>());
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

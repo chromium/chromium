@@ -30,12 +30,11 @@ enum EditAction {
   kDrawSizeChange = 17,
   kDrawColorChange = 18,
   kHighlightColorChange = 19,
-  kFallbackLaunched = 20,
 };
 
 // Represents the Chrome side of the desktop screenshot editing session.
 // Used by the image editor to call back into the browser.
-interface ImageEditorHandler {
+interface ScreenshotCoordinator {
     // TODO (crbug/1249227) Add call to get bitmap data.
     // Called after editor is instantiated to get the screenshot data.
     // GetImage() => (skia.mojom.BitmapN32 image);

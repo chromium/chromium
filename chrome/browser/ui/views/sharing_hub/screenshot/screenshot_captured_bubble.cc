@@ -70,7 +70,9 @@ bool ScreenshotCapturedBubble::ShouldShowCloseButton() const {
   return true;
 }
 
-void ScreenshotCapturedBubble::WindowClosing() {}
+void ScreenshotCapturedBubble::WindowClosing() {
+  NOTIMPLEMENTED();
+}
 
 void ScreenshotCapturedBubble::Init() {
   auto* layout_provider = ChromeLayoutProvider::Get();
