@@ -365,58 +365,21 @@ To<Longhand>(resolved_property).{{apply_call}};
     {% set type = property.style_builder_template_args['type'] %}
     {% call(property) apply_initial(property) %}
   state.Style()->SetGridTemplate{{type}}s(ComputedStyleInitialValues::InitialGridTemplate{{type}}s());
-  state.Style()->SetNamedGrid{{type}}Lines(ComputedStyleInitialValues::InitialNamedGrid{{type}}Lines());
-  state.Style()->SetOrderedNamedGrid{{type}}Lines(ComputedStyleInitialValues::InitialOrderedNamedGrid{{type}}Lines());
-  state.Style()->SetGridAutoRepeat{{type}}s(ComputedStyleInitialValues::InitialGridAutoRepeat{{type}}s());
-  state.Style()->SetGridAutoRepeat{{type}}sInsertionPoint(ComputedStyleInitialValues::InitialGridAutoRepeat{{type}}sInsertionPoint());
-  state.Style()->SetAutoRepeatNamedGrid{{type}}Lines(ComputedStyleInitialValues::InitialNamedGrid{{type}}Lines());
-  state.Style()->SetAutoRepeatOrderedNamedGrid{{type}}Lines(ComputedStyleInitialValues::InitialOrderedNamedGrid{{type}}Lines());
-  state.Style()->SetGridAutoRepeat{{type}}sType(ComputedStyleInitialValues::InitialGridAutoRepeat{{type}}sType());
     {% endcall %}
 
     {% call(property) apply_inherit(property) %}
   state.Style()->SetGridTemplate{{type}}s(state.ParentStyle()->GridTemplate{{type}}s());
-  state.Style()->SetNamedGrid{{type}}Lines(state.ParentStyle()->NamedGrid{{type}}Lines());
-  state.Style()->SetOrderedNamedGrid{{type}}Lines(state.ParentStyle()->OrderedNamedGrid{{type}}Lines());
-  state.Style()->SetGridAutoRepeat{{type}}s(state.ParentStyle()->GridAutoRepeat{{type}}s());
-  state.Style()->SetGridAutoRepeat{{type}}sInsertionPoint(state.ParentStyle()->GridAutoRepeat{{type}}sInsertionPoint());
-  state.Style()->SetAutoRepeatNamedGrid{{type}}Lines(state.ParentStyle()->AutoRepeatNamedGrid{{type}}Lines());
-  state.Style()->SetAutoRepeatOrderedNamedGrid{{type}}Lines(state.ParentStyle()->AutoRepeatOrderedNamedGrid{{type}}Lines());
-  state.Style()->SetGridAutoRepeat{{type}}sType(state.ParentStyle()->GridAutoRepeat{{type}}sType());
     {% endcall %}
 
     {% call(property) apply_value(property) %}
-  GridTrackList track_sizes;
-  Vector<GridTrackSize, 1> auto_repeat_track_sizes;
-  NamedGridLinesMap named_grid_lines;
-  OrderedNamedGridLines ordered_named_grid_lines;
-  NamedGridLinesMap auto_repeat_named_grid_lines;
-  OrderedNamedGridLines auto_repeat_ordered_named_grid_lines;
-  AutoRepeatType auto_repeat_type = ComputedStyleInitialValues::InitialGridAutoRepeatType();
-  wtf_size_t auto_repeat_insertion_point =
-      ComputedStyleInitialValues::InitialGridAutoRepeatInsertionPoint();
-  GridAxisType grid_axis_type = ComputedStyleInitialValues::InitialGridAxisType();
-  StyleBuilderConverter::ConvertGridTrackList(
-      value, track_sizes, named_grid_lines, ordered_named_grid_lines,
-      auto_repeat_track_sizes, auto_repeat_named_grid_lines,
-      auto_repeat_ordered_named_grid_lines, auto_repeat_insertion_point,
-      auto_repeat_type, grid_axis_type, state);
+  ComputedGridTrackList computed_grid_track_list;
+  StyleBuilderConverter::ConvertGridTrackList(value, computed_grid_track_list, state);
   const NamedGridAreaMap& named_grid_areas = state.Style()->NamedGridArea();
   if (!named_grid_areas.IsEmpty()) {
     StyleBuilderConverter::CreateImplicitNamedGridLinesFromGridArea(
-        named_grid_areas, named_grid_lines, kFor{{type}}s);
+        named_grid_areas, computed_grid_track_list.named_grid_lines, kFor{{type}}s);
   }
-  state.Style()->SetGridTemplate{{type}}s(track_sizes);
-  state.Style()->SetNamedGrid{{type}}Lines(named_grid_lines);
-  state.Style()->SetOrderedNamedGrid{{type}}Lines(ordered_named_grid_lines);
-  state.Style()->SetGridAutoRepeat{{type}}s(auto_repeat_track_sizes);
-  state.Style()->SetGridAutoRepeat{{type}}sInsertionPoint(
-      auto_repeat_insertion_point);
-  state.Style()->SetAutoRepeatNamedGrid{{type}}Lines(auto_repeat_named_grid_lines);
-  state.Style()->SetAutoRepeatOrderedNamedGrid{{type}}Lines(
-      auto_repeat_ordered_named_grid_lines);
-  state.Style()->SetGridAutoRepeat{{type}}sType(auto_repeat_type);
-  state.Style()->SetGrid{{type}}sAxisType(grid_axis_type);
+  state.Style()->SetGridTemplate{{type}}s(computed_grid_track_list);
     {% endcall %}
   {% endif %}
 {%- endmacro %}

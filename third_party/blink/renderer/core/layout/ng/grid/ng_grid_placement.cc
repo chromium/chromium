@@ -46,12 +46,14 @@ NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
                                                                : kForColumns),
       minor_direction_(grid_style.IsGridAutoFlowDirectionRow() ? kForColumns
                                                                : kForRows),
-      column_auto_repeat_track_count_(
-          grid_style.GridTemplateColumns().NGTrackList().AutoRepeatSize() *
-          placement_data.column_auto_repetitions),
-      row_auto_repeat_track_count_(
-          grid_style.GridTemplateRows().NGTrackList().AutoRepeatSize() *
-          placement_data.row_auto_repetitions),
+      column_auto_repeat_track_count_(grid_style.GridTemplateColumns()
+                                          .track_sizes.NGTrackList()
+                                          .AutoRepeatSize() *
+                                      placement_data.column_auto_repetitions),
+      row_auto_repeat_track_count_(grid_style.GridTemplateRows()
+                                       .track_sizes.NGTrackList()
+                                       .AutoRepeatSize() *
+                                   placement_data.row_auto_repetitions),
       column_auto_repetitions_(placement_data.column_auto_repetitions),
       row_auto_repetitions_(placement_data.row_auto_repetitions),
       is_parent_grid_container_(placement_data.is_parent_grid_container),

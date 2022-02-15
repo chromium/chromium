@@ -15,6 +15,7 @@ blink_core_sources_style = [
   "border_style.h",
   "border_value.h",
   "clip_path_operation.h",
+  "computed_grid_track_list.h",
   "computed_style.cc",
   "computed_style.h",
   "computed_style_constants.h",

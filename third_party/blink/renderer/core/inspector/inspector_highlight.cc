@@ -907,15 +907,16 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNames(
     const Vector<LayoutUnit>& alt_axis_positions) {
   LayoutObject* layout_object = node->GetLayoutObject();
   auto* grid_interface = ToInterface<LayoutNGGridInterface>(layout_object);
+  const ComputedStyle& grid_container_style = layout_object->StyleRef();
   bool is_rtl = direction == kForColumns &&
-                !layout_object->StyleRef().IsLeftToRightDirection();
+                !grid_container_style.IsLeftToRightDirection();
 
   std::unique_ptr<protocol::ListValue> lines = protocol::ListValue::create();
 
   const NamedGridLinesMap& named_lines_map =
-      direction == kForColumns
-          ? layout_object->StyleRef().NamedGridColumnLines()
-          : layout_object->StyleRef().NamedGridRowLines();
+      (direction == kForColumns)
+          ? grid_container_style.GridTemplateColumns().named_grid_lines
+          : grid_container_style.GridTemplateRows().named_grid_lines;
   LayoutUnit gap = grid_interface->GridGap(direction);
   LayoutUnit alt_axis_pos = GetPositionForFirstTrack(
       layout_object, direction == kForRows ? kForColumns : kForRows,

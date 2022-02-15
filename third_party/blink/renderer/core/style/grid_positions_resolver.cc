@@ -33,10 +33,11 @@ NamedLineCollection::NamedLineCollection(
     : last_line_(last_line),
       auto_repeat_total_tracks_(auto_repeat_tracks_count) {
   const bool is_for_columns = track_direction == kForColumns;
-  const auto& grid_axis_type = is_for_columns
-                                   ? grid_container_style.GridColumnsAxisType()
-                                   : grid_container_style.GridRowsAxisType();
-  is_standalone_grid_ = grid_axis_type == GridAxisType::kStandaloneAxis;
+  const ComputedGridTrackList& computed_grid_track_list =
+      is_for_columns ? grid_container_style.GridTemplateColumns()
+                     : grid_container_style.GridTemplateRows();
+  is_standalone_grid_ =
+      computed_grid_track_list.axis_type == GridAxisType::kStandaloneAxis;
 
   // Line names from the container style are valid when the grid axis type is a
   // standalone grid or the axis is a subgrid and the parent is a grid. See:
@@ -46,11 +47,9 @@ NamedLineCollection::NamedLineCollection(
     are_named_lines_valid = is_parent_grid_container || is_standalone_grid_;
 
   const NamedGridLinesMap& grid_line_names =
-      is_for_columns ? grid_container_style.NamedGridColumnLines()
-                     : grid_container_style.NamedGridRowLines();
+      computed_grid_track_list.named_grid_lines;
   const NamedGridLinesMap& auto_repeat_grid_line_names =
-      is_for_columns ? grid_container_style.AutoRepeatNamedGridColumnLines()
-                     : grid_container_style.AutoRepeatNamedGridRowLines();
+      computed_grid_track_list.auto_repeat_named_grid_lines;
   const NamedGridLinesMap& implicit_grid_line_names =
       is_for_columns ? grid_container_style.ImplicitNamedGridColumnLines()
                      : grid_container_style.ImplicitNamedGridRowLines();
@@ -72,14 +71,9 @@ NamedLineCollection::NamedLineCollection(
         it == implicit_grid_line_names.end() ? nullptr : &it->value;
   }
 
-  insertion_point_ =
-      is_for_columns
-          ? grid_container_style.GridAutoRepeatColumnsInsertionPoint()
-          : grid_container_style.GridAutoRepeatRowsInsertionPoint();
-
+  insertion_point_ = computed_grid_track_list.auto_repeat_insertion_point;
   auto_repeat_track_list_length_ =
-      is_for_columns ? grid_container_style.GridAutoRepeatColumns().size()
-                     : grid_container_style.GridAutoRepeatRows().size();
+      computed_grid_track_list.auto_repeat_track_sizes.size();
 }
 
 bool NamedLineCollection::HasExplicitNamedLines() {
@@ -280,10 +274,11 @@ wtf_size_t GridPositionsResolver::ExplicitGridColumnCount(
     const ComputedStyle& grid_container_style,
     wtf_size_t auto_repeat_tracks_count) {
   return std::min<wtf_size_t>(
-      std::max(
-          grid_container_style.GridTemplateColumns().LegacyTrackList().size() +
-              auto_repeat_tracks_count,
-          grid_container_style.NamedGridAreaColumnCount()),
+      std::max(grid_container_style.GridTemplateColumns()
+                       .track_sizes.LegacyTrackList()
+                       .size() +
+                   auto_repeat_tracks_count,
+               grid_container_style.NamedGridAreaColumnCount()),
       kGridMaxTracks);
 }
 
@@ -291,10 +286,11 @@ wtf_size_t GridPositionsResolver::ExplicitGridRowCount(
     const ComputedStyle& grid_container_style,
     wtf_size_t auto_repeat_tracks_count) {
   return std::min<wtf_size_t>(
-      std::max(
-          grid_container_style.GridTemplateRows().LegacyTrackList().size() +
-              auto_repeat_tracks_count,
-          grid_container_style.NamedGridAreaRowCount()),
+      std::max(grid_container_style.GridTemplateRows()
+                       .track_sizes.LegacyTrackList()
+                       .size() +
+                   auto_repeat_tracks_count,
+               grid_container_style.NamedGridAreaRowCount()),
       kGridMaxTracks);
 }
 

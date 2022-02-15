@@ -71,6 +71,7 @@ class StyleSVGResource;
 class TextSizeAdjust;
 class TranslateTransformOperation;
 class UnzoomedLength;
+struct ComputedGridTrackList;
 
 class StyleBuilderConverterBase {
   STATIC_ONLY(StyleBuilderConverterBase);
@@ -228,18 +229,9 @@ class StyleBuilderConverter {
   static TransformOrigin ConvertTransformOrigin(StyleResolverState&,
                                                 const CSSValue&);
 
-  static void ConvertGridTrackList(
-      const CSSValue&,
-      GridTrackList&,
-      NamedGridLinesMap&,
-      OrderedNamedGridLines&,
-      Vector<GridTrackSize, 1>& auto_repeat_track_sizes,
-      NamedGridLinesMap&,
-      OrderedNamedGridLines&,
-      wtf_size_t& auto_repeat_insertion_point,
-      AutoRepeatType&,
-      GridAxisType&,
-      StyleResolverState&);
+  static void ConvertGridTrackList(const CSSValue&,
+                                   ComputedGridTrackList&,
+                                   StyleResolverState&);
   static void CreateImplicitNamedGridLinesFromGridArea(
       const NamedGridAreaMap&,
       NamedGridLinesMap&,

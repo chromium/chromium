@@ -1273,8 +1273,8 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
     const GridTrackSizingDirection track_direction) const {
   const NGGridTrackList& track_list =
       (track_direction == kForColumns)
-          ? Style().GridTemplateColumns().NGTrackList()
-          : Style().GridTemplateRows().NGTrackList();
+          ? Style().GridTemplateColumns().track_sizes.NGTrackList()
+          : Style().GridTemplateRows().track_sizes.NGTrackList();
   if (!track_list.HasAutoRepeater())
     return 0;
 
@@ -1395,8 +1395,9 @@ void NGGridLayoutAlgorithm::BuildBlockTrackCollections(
         const bool is_for_columns = track_collection->IsForColumns();
 
         const NGGridTrackList& template_track_list =
-            is_for_columns ? grid_style.GridTemplateColumns().NGTrackList()
-                           : grid_style.GridTemplateRows().NGTrackList();
+            is_for_columns
+                ? grid_style.GridTemplateColumns().track_sizes.NGTrackList()
+                : grid_style.GridTemplateRows().track_sizes.NGTrackList();
         const NGGridTrackList& auto_track_list =
             is_for_columns ? grid_style.GridAutoColumns().NGTrackList()
                            : grid_style.GridAutoRows().NGTrackList();
