@@ -61,6 +61,21 @@ class CalendarHeaderView : public views::View {
   views::Label* const header_year_;
 };
 
+// The container for a `CalendarEventListView`.
+class CalendarEventListContainer : public views::View {
+ public:
+  explicit CalendarEventListContainer(CalendarViewController* controller);
+  CalendarEventListContainer(const CalendarEventListContainer& other) = delete;
+  CalendarEventListContainer& operator=(
+      const CalendarEventListContainer& other) = delete;
+  ~CalendarEventListContainer() override;
+
+  CalendarEventListView* event_list() { return event_list_; }
+
+ private:
+  CalendarEventListView* const event_list_;
+};
+
 // This view displays a scrollable calendar.
 class ASH_EXPORT CalendarView : public CalendarModel::Observer,
                                 public CalendarViewController::Observer,
@@ -190,9 +205,10 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Adjusts the Chrome Vox box position for date cells in the scroll view.
   void AdjustDateCellVoxBounds();
 
-  // Handles the position and status of `event_list_view_` and other views after
-  // the opening event list animation or closing event list animation. Such as
-  // restoring the position of them, re-enabling animation and etc.
+  // Handles the position and status of `event_list_container_->event_list()`
+  // and other views after the opening event list animation or closing event
+  // list animation. Such as restoring the position of them, re-enabling
+  // animation and etc.
   void OnOpenEventListAnimationComplete();
   void OnCloseEventListAnimationComplete();
 
@@ -229,7 +245,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   views::Button* settings_button_ = nullptr;
   IconButton* up_button_ = nullptr;
   IconButton* down_button_ = nullptr;
-  CalendarEventListView* event_list_view_ = nullptr;
+  CalendarEventListContainer* event_list_container_ = nullptr;
 
   // If it `is_resetting_scroll_`, we don't calculate the scroll position and we
   // don't need to check if we need to update the month or not.
@@ -247,9 +263,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // This is used to define the animation directions for updating the header and
   // month views.
   bool is_scrolling_up_ = true;
-
-  // Whether the Calendar View is scrolling.
-  bool is_calendar_view_scrolling_ = false;
 
   // Timer that fires when we've "settled" on, i.e. finished scrolling to, a
   // currently-visible month
