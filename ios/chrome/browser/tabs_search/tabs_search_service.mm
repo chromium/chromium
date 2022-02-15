@@ -208,6 +208,6 @@ void TabsSearchService::HistoryQueryCompleted(
 
   std::move(history_search_callback_).Run(results.size());
 
-  ongoing_history_search_term_ = nullptr;
+  ongoing_history_search_term_ = std::u16string();
   history_service_.reset();
 }

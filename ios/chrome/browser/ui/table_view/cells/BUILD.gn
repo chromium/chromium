@@ -34,6 +34,8 @@ source_set("cells") {
     "table_view_switch_cell.mm",
     "table_view_switch_item.h",
     "table_view_switch_item.mm",
+    "table_view_tabs_search_suggested_history_item.h",
+    "table_view_tabs_search_suggested_history_item.mm",
     "table_view_text_button_item.h",
     "table_view_text_button_item.mm",
     "table_view_text_edit_item.h",

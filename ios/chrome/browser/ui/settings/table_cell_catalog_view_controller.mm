@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_tabs_search_suggested_history_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -63,6 +64,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeTextButton,
   ItemTypeURLNoMetadata,
   ItemTypeTextAccessoryImage,
+  ItemTypeSearchHistorySuggestedItem,
   ItemTypeTextAccessoryNoImage,
   ItemTypeTextEditItem,
   ItemTypeURLWithTimestamp,
@@ -143,6 +145,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textImageItem.title = @"Image Item with History Image";
   textImageItem.image = [UIImage imageNamed:@"show_history"];
   [model addItem:textImageItem toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewTabsSearchSuggestedHistoryItem* searchHistorySuggestedItem =
+      [[TableViewTabsSearchSuggestedHistoryItem alloc]
+          initWithType:ItemTypeSearchHistorySuggestedItem];
+  [model addItem:searchHistorySuggestedItem
+      toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewImageItem* textImageItem2 =
       [[TableViewImageItem alloc] initWithType:ItemTypeTextAccessoryImage];
@@ -654,6 +662,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [checkCell.infoButton addTarget:self
                              action:@selector(didTapCheckInfoButton:)
                    forControlEvents:UIControlEventTouchUpInside];
+  } else if (itemType == ItemTypeSearchHistorySuggestedItem) {
+    TableViewTabsSearchSuggestedHistoryCell* searchHistoryCell =
+        base::mac::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
+            cell);
+    [searchHistoryCell updateHistoryResultsCount:7];
   }
   return cell;
 }

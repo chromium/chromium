@@ -58,7 +58,9 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_illustrated_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_tabs_search_suggested_history_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -91,6 +93,7 @@ namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierRecentlyClosedTabs = kSectionIdentifierEnumZero,
   SectionIdentifierOtherDevices,
+  SectionIdentifierSuggestedActions,
   // The first SessionsSectionIdentifier index.
   kFirstSessionSectionIdentifier,
 };
@@ -108,6 +111,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSessionTabData,
   ItemTypeShowFullHistory,
   ItemTypeSigninDisabled,
+  ItemTypeSuggestedActionsHeader,
+  ItemTypeSuggestedActionSearchOpenTabs,
+  ItemTypeSuggestedActionSearchWeb,
+  ItemTypeSuggestedActionSearchHistory,
 };
 
 // Key for saving whether the Other Device section is collapsed.
@@ -309,6 +316,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   } else {
     [self addOtherDevicesSectionForState:self.sessionState];
   }
+
+  if (IsTabsSearchEnabled() && self.searchTerms.length) {
+    [self addSuggestedActionsSection];
+  }
 }
 
 #pragma mark Recently Closed Section
@@ -409,8 +420,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 // Updates the recently closed tabs section by clobbering and reinserting
-// section. Needs to be called inside a [UITableView beginUpdates] block on
-// iOS10, or performBatchUpdates on iOS11+.
+// section. Needs to be called inside a performBatchUpdates block.
 - (void)updateRecentlyClosedSection {
   [self.tableViewModel
       removeSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
@@ -424,8 +434,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark Sessions Section
 
 // Cleans up the model in order to update the Session sections. Needs to be
-// called inside a [UITableView beginUpdates] block on iOS10, or
-// performBatchUpdates on iOS11+.
+// called inside a performBatchUpdates block.
 - (void)updateSessionSections {
   SessionsSyncUserState previousState = self.sessionState;
   if (previousState !=
@@ -510,35 +519,70 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 // Remove all SessionSections from |self.tableViewModel| and |self.tableView|
-// Needs to be called inside a [UITableView beginUpdates] block on iOS10, or
-// performBatchUpdates on iOS11+.
+// Needs to be called inside a performBatchUpdates block.
 - (void)removeSessionSections {
+  if (!IsTabsSearchEnabled()) {
+    // |_displayedTabs| has been updated by now, that means that
+    // |self.tableViewModel| does not reflect |_displayedTabs| data.
+    NSInteger sectionIdentifierToRemove = kFirstSessionSectionIdentifier;
+    NSInteger sectionToDelete = kNumberOfSectionsBeforeSessions;
+    while ([self.tableViewModel numberOfSections] >
+           kNumberOfSectionsBeforeSessions) {
+      // A SectionIdentifier could've been deleted previously, do not rely on
+      // these being in sequential order at this point.
+      if ([self.tableViewModel
+              hasSectionForSectionIdentifier:sectionIdentifierToRemove]) {
+        [self.tableView
+              deleteSections:[NSIndexSet indexSetWithIndex:sectionToDelete]
+            withRowAnimation:UITableViewRowAnimationNone];
+        sectionToDelete++;
+        [self.tableViewModel
+            removeSectionWithIdentifier:sectionIdentifierToRemove];
+      }
+      sectionIdentifierToRemove++;
+    }
+    return;
+  }
+
   // |_displayedTabs| has been updated by now, that means that
   // |self.tableViewModel| does not reflect |_displayedTabs| data.
-  NSInteger sectionIdentifierToRemove = kFirstSessionSectionIdentifier;
-  NSInteger sectionToDelete = kNumberOfSectionsBeforeSessions;
-  while ([self.tableViewModel numberOfSections] >
-         kNumberOfSectionsBeforeSessions) {
+  NSInteger firstSessionSectionIndex = 0;
+  NSInteger sectionCountToRemove = [self.tableViewModel numberOfSections];
+  if ([self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierRecentlyClosedTabs]) {
+    sectionCountToRemove--;
+    // Recently closed section is before the remote session sections, do not
+    // remove it.
+    firstSessionSectionIndex++;
+  }
+  if ([self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierSuggestedActions]) {
+    sectionCountToRemove--;
+  }
+
+  NSInteger sectionIndexToDelete = firstSessionSectionIndex;
+  for (NSInteger sessionSection = 0; sessionSection < sectionCountToRemove;
+       sessionSection++) {
+    NSInteger sectionIdentifierToRemove =
+        kFirstSessionSectionIdentifier + sessionSection;
     // A SectionIdentifier could've been deleted previously, do not rely on
     // these being in sequential order at this point.
     if ([self.tableViewModel
             hasSectionForSectionIdentifier:sectionIdentifierToRemove]) {
       [self.tableView
-            deleteSections:[NSIndexSet indexSetWithIndex:sectionToDelete]
+            deleteSections:[NSIndexSet indexSetWithIndex:sectionIndexToDelete]
           withRowAnimation:UITableViewRowAnimationNone];
-      sectionToDelete++;
+      sectionIndexToDelete++;
       [self.tableViewModel
           removeSectionWithIdentifier:sectionIdentifierToRemove];
     }
-    sectionIdentifierToRemove++;
   }
 }
 
 #pragma mark Other Devices Section
 
 // Cleans up the model in order to update the Other devices section. Needs to be
-// called inside a [UITableView beginUpdates] block on iOS10, or
-// performBatchUpdates on iOS11+.
+// called inside a performBatchUpdates block.
 - (void)updateOtherDevicesSectionForState:(SessionsSyncUserState)newState {
   DCHECK_NE(newState,
             SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS);
@@ -700,6 +744,45 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
        toSectionWithIdentifier:SectionIdentifierOtherDevices];
 }
 
+#pragma mark Suggested Actions Section
+
+- (void)addSuggestedActionsSection {
+  DCHECK(IsTabsSearchEnabled());
+
+  TableViewModel* model = self.tableViewModel;
+
+  [model addSectionWithIdentifier:SectionIdentifierSuggestedActions];
+  TableViewTextHeaderFooterItem* header = [[TableViewTextHeaderFooterItem alloc]
+      initWithType:ItemTypeSuggestedActionsHeader];
+  header.text = l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS);
+  [model setHeader:header
+      forSectionWithIdentifier:SectionIdentifierSuggestedActions];
+
+  TableViewImageItem* searchWebItem = [[TableViewImageItem alloc]
+      initWithType:ItemTypeSuggestedActionSearchWeb];
+  searchWebItem.title =
+      l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_WEB);
+  searchWebItem.image = [[UIImage imageNamed:@"popup_menu_search"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  [model addItem:searchWebItem
+      toSectionWithIdentifier:SectionIdentifierSuggestedActions];
+
+  TableViewImageItem* searchOpenTabsItem = [[TableViewImageItem alloc]
+      initWithType:ItemTypeSuggestedActionSearchOpenTabs];
+  searchOpenTabsItem.title = l10n_util::GetNSString(
+      IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_OPEN_TABS);
+  searchOpenTabsItem.image = [[UIImage imageNamed:@"popup_menu_search"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  [model addItem:searchOpenTabsItem
+      toSectionWithIdentifier:SectionIdentifierSuggestedActions];
+
+  TableViewTabsSearchSuggestedHistoryItem* searchHistoryItem =
+      [[TableViewTabsSearchSuggestedHistoryItem alloc]
+          initWithType:ItemTypeSuggestedActionSearchHistory];
+  [model addItem:searchHistoryItem
+      toSectionWithIdentifier:SectionIdentifierSuggestedActions];
+}
+
 #pragma mark - TableViewModel Helpers
 
 // Ordered array of all section identifiers.
@@ -731,14 +814,26 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   return [NSIndexSet indexSetWithIndex:otherDevicesSection];
 }
 
-// Returns an IndexSet containing the all the Session Sections.
+// Returns an IndexSet containing all the Session Sections.
 - (NSIndexSet*)sessionSectionIndexSet {
   // Create a range of all Session Sections.
   NSRange rangeOfSessionSections =
-      NSMakeRange(kNumberOfSectionsBeforeSessions, [self numberOfSessions]);
+      NSMakeRange([self firstSessionSectionIndex], [self numberOfSessions]);
   NSIndexSet* sessionSectionIndexes =
       [NSIndexSet indexSetWithIndexesInRange:rangeOfSessionSections];
   return sessionSectionIndexes;
+}
+
+- (NSInteger)firstSessionSectionIndex {
+  if (!IsTabsSearchEnabled()) {
+    return kNumberOfSectionsBeforeSessions;
+  }
+
+  NSInteger firstSessionSectionIndex = 0;
+  if ([self recentlyClosedTabsSectionExists]) {
+    firstSessionSectionIndex++;
+  }
+  return firstSessionSectionIndex;
 }
 
 #pragma mark - Public
@@ -749,7 +844,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       [self.tableViewModel sectionForSectionIdentifier:sectionIdentifer];
   DCHECK([self isSessionSectionIdentifier:sectionIdentifer]);
   const synced_sessions::DistantTabsSet& tabsSet =
-      _displayedTabs[section - kNumberOfSectionsBeforeSessions];
+      _displayedTabs[section - [self firstSessionSectionIndex]];
   return _syncedSessions->GetSessionWithTag(tabsSet.session_tag);
 }
 
@@ -959,6 +1054,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if (self.preventUpdates)
     return;
 
+  // Do not try to reload section if it doesn't exist.
+  if (![self recentlyClosedTabsSectionExists]) {
+    return;
+  }
+
   [self.tableView performBatchUpdates:^{
     [self updateRecentlyClosedSection];
   }
@@ -1073,6 +1173,26 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if (itemTypeSelected == ItemTypeOtherDevicesSignedOut) {
     cell.separatorInset =
         UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);
+  }
+  // Update the history search result count once available.
+  if (itemTypeSelected == ItemTypeSuggestedActionSearchHistory) {
+    TabsSearchService* search_service =
+        TabsSearchServiceFactory::GetForBrowserState(self.browserState);
+    __weak TableViewTabsSearchSuggestedHistoryCell* weakCell =
+        base::mac::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
+            cell);
+
+    NSString* currentSearchTerm = self.searchTerms;
+    weakCell.searchTerm = currentSearchTerm;
+
+    const std::u16string& search_terms =
+        base::SysNSStringToUTF16(currentSearchTerm);
+    search_service->SearchHistory(
+        search_terms, base::BindOnce(^(size_t resultCount) {
+          if ([weakCell.searchTerm isEqualToString:currentSearchTerm]) {
+            [weakCell updateHistoryResultsCount:resultCount];
+          }
+        }));
   }
   return cell;
 }
