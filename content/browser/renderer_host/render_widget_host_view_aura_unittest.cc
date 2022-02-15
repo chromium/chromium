@@ -122,6 +122,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/wm/core/window_util.h"
+#include "ui/wm/public/activation_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/input_method.h"
@@ -407,6 +408,8 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   const ui::LatencyInfo& LastWheelOrTouchEventLatencyInfo() const {
     return last_wheel_or_touch_event_latency_info_;
   }
+
+  MockWidget& mock_widget() { return widget_; }
 
  private:
   MockRenderWidgetHostImpl(FrameTree* frame_tree,
@@ -1082,6 +1085,28 @@ class RenderWidgetHostViewAuraShutdownTest
     // No TearDownEnvironment here, we do this explicitly during the test.
   }
 };
+
+TEST_F(RenderWidgetHostViewAuraTest, ActiveWindow) {
+  InitViewForFrame(parent_view_->GetNativeView());
+  view_->SetBounds(gfx::Rect(0, 0, 400, 200));
+  view_->Hide();
+  view_->Show();
+  widget_host_->mock_widget().FlushWidgetForTesting();
+  EXPECT_EQ(false, widget_host_->mock_widget().IsHidden());
+  EXPECT_EQ(false, widget_host_->mock_widget().IsInActiveWindow());
+  aura::Window* aura_window = view_->GetNativeView();
+  wm::GetActivationClient(aura_window->GetRootWindow())
+      ->ActivateWindow(aura_window);
+  ASSERT_TRUE(view_->IsInActiveWindow());
+  widget_host_->mock_widget().FlushWidgetForTesting();
+  EXPECT_EQ(true, widget_host_->mock_widget().IsInActiveWindow());
+
+  wm::GetActivationClient(aura_window->GetRootWindow())
+      ->ActivateWindow(nullptr);
+  ASSERT_FALSE(view_->IsInActiveWindow());
+  widget_host_->mock_widget().FlushWidgetForTesting();
+  EXPECT_EQ(false, widget_host_->mock_widget().IsInActiveWindow());
+}
 
 // Checks that a popup is positioned correctly relative to its parent using
 // screen coordinates.

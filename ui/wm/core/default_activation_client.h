@@ -53,6 +53,8 @@ class WM_CORE_EXPORT DefaultActivationClient : public ActivationClient,
   void ActivateWindowImpl(ActivationChangeObserver::ActivationReason reason,
                           aura::Window* window);
 
+  void ClearActiveWindows();
+
   // This class explicitly does NOT store the active window in a window property
   // to make sure that ActivationChangeObserver is not treated as part of the
   // aura API. Assumptions to that end will cause tests that use this client to

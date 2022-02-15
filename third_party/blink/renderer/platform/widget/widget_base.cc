@@ -434,6 +434,7 @@ void WidgetBase::WasHidden() {
 }
 
 void WidgetBase::WasShown(bool was_evicted,
+                          bool in_active_window,
                           mojom::blink::RecordContentToVisibleTimeRequestPtr
                               record_tab_switch_time_request) {
   // The frame must be attached to the frame tree (which makes it no longer
@@ -458,6 +459,8 @@ void WidgetBase::WasShown(bool was_evicted,
 
   client_->WasShown(was_evicted);
 }
+
+void WidgetBase::OnActiveWindowChanged(bool in_active_window) {}
 
 void WidgetBase::RequestPresentationTimeForNextFrame(
     mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request) {
