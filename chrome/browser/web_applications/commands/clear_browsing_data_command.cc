@@ -30,7 +30,8 @@ void ClearWebAppBrowsingData(base::Time begin_time,
 
   WebAppSyncBridge* sync_bridge = &provider->sync_bridge();
   WebAppRegistrar* registrar = &provider->registrar();
-  std::vector<AppId> ids_to_notify;
+  std::vector<AppId> ids_to_notify_last_launch_time;
+  std::vector<AppId> ids_to_notify_last_badging_time;
   {
     ScopedRegistryUpdate update(sync_bridge);
     for (const WebApp& web_app : registrar->GetApps()) {
@@ -41,13 +42,25 @@ void ClearWebAppBrowsingData(base::Time begin_time,
         WebApp* mutable_web_app = update->UpdateApp(web_app.app_id());
         if (mutable_web_app) {
           mutable_web_app->SetLastLaunchTime(base::Time());
-          ids_to_notify.push_back(web_app.app_id());
+          ids_to_notify_last_launch_time.push_back(web_app.app_id());
+        }
+      }
+      if (!web_app.last_badging_time().is_null() &&
+          web_app.last_badging_time() >= begin_time &&
+          web_app.last_badging_time() <= end_time) {
+        WebApp* mutable_web_app = update->UpdateApp(web_app.app_id());
+        if (mutable_web_app) {
+          mutable_web_app->SetLastBadgingTime(base::Time());
+          ids_to_notify_last_badging_time.push_back(web_app.app_id());
         }
       }
     }
   }
-  for (const AppId& app_id : ids_to_notify) {
+  for (const AppId& app_id : ids_to_notify_last_launch_time) {
     registrar->NotifyWebAppLastLaunchTimeChanged(app_id, base::Time());
+  }
+  for (const AppId& app_id : ids_to_notify_last_badging_time) {
+    registrar->NotifyWebAppLastBadgingTimeChanged(app_id, base::Time());
   }
 
   std::move(done).Run();

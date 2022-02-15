@@ -141,4 +141,97 @@ TEST_F(ClearBrowsingDataCommandTest,
   EXPECT_TRUE(callback_invoked);
 }
 
+TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForAllTimes) {
+  Init();
+
+  auto web_app1 = test::CreateWebApp(GURL("https://example.com/path"));
+  auto badging_time1 = base::Time();
+  auto app_id1 = web_app1->app_id();
+
+  auto web_app2 = test::CreateWebApp(GURL("https://example.com/path2"));
+  auto badging_time2 = base::Time() + base::Seconds(10);
+  web_app2->SetLastBadgingTime(badging_time2);
+  auto app_id2 = web_app2->app_id();
+
+  auto web_app3 = test::CreateWebApp(GURL("https://example.com/path3"));
+  auto badging_time3 = base::Time() + base::Seconds(20);
+  web_app3->SetLastBadgingTime(badging_time3);
+  auto app_id3 = web_app3->app_id();
+
+  {
+    web_app::ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->CreateApp(std::move(web_app1));
+    update->CreateApp(std::move(web_app2));
+    update->CreateApp(std::move(web_app3));
+  }
+
+  EXPECT_EQ(3UL, provider()->registrar().GetAppIds().size());
+  EXPECT_EQ(badging_time1,
+            provider()->registrar().GetAppLastBadgingTime(app_id1));
+  EXPECT_EQ(badging_time2,
+            provider()->registrar().GetAppLastBadgingTime(app_id2));
+  EXPECT_EQ(badging_time3,
+            provider()->registrar().GetAppLastBadgingTime(app_id3));
+
+  bool callback_invoked = false;
+  web_app::ClearWebAppBrowsingData(
+      base::Time(), base::Time::Now(), provider(),
+      base::BindLambdaForTesting([&]() { callback_invoked = true; }));
+
+  EXPECT_EQ(base::Time(),
+            provider()->registrar().GetAppLastBadgingTime(app_id1));
+  EXPECT_EQ(base::Time(),
+            provider()->registrar().GetAppLastBadgingTime(app_id2));
+  EXPECT_EQ(base::Time(),
+            provider()->registrar().GetAppLastBadgingTime(app_id3));
+  EXPECT_TRUE(callback_invoked);
+}
+
+TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForSpecificTimeRange) {
+  Init();
+
+  auto web_app1 = test::CreateWebApp(GURL("https://example.com/path"));
+  auto badging_time1 = base::Time();
+  auto app_id1 = web_app1->app_id();
+
+  auto web_app2 = test::CreateWebApp(GURL("https://example.com/path2"));
+  auto badging_time2 = base::Time() + base::Seconds(10);
+  web_app2->SetLastBadgingTime(badging_time2);
+  auto app_id2 = web_app2->app_id();
+
+  auto web_app3 = test::CreateWebApp(GURL("https://example.com/path3"));
+  auto badging_time3 = base::Time() + base::Seconds(20);
+  web_app3->SetLastBadgingTime(badging_time3);
+  auto app_id3 = web_app3->app_id();
+
+  {
+    web_app::ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->CreateApp(std::move(web_app1));
+    update->CreateApp(std::move(web_app2));
+    update->CreateApp(std::move(web_app3));
+  }
+
+  EXPECT_EQ(3UL, provider()->registrar().GetAppIds().size());
+  EXPECT_EQ(badging_time1,
+            provider()->registrar().GetAppLastBadgingTime(app_id1));
+  EXPECT_EQ(badging_time2,
+            provider()->registrar().GetAppLastBadgingTime(app_id2));
+  EXPECT_EQ(badging_time3,
+            provider()->registrar().GetAppLastBadgingTime(app_id3));
+
+  bool callback_invoked = false;
+  web_app::ClearWebAppBrowsingData(
+      base::Time() + base::Seconds(5), base::Time() + base::Seconds(15),
+      provider(),
+      base::BindLambdaForTesting([&]() { callback_invoked = true; }));
+
+  EXPECT_EQ(badging_time1,
+            provider()->registrar().GetAppLastBadgingTime(app_id1));
+  EXPECT_EQ(base::Time(),
+            provider()->registrar().GetAppLastBadgingTime(app_id2));
+  EXPECT_EQ(badging_time3,
+            provider()->registrar().GetAppLastBadgingTime(app_id3));
+  EXPECT_TRUE(callback_invoked);
+}
+
 }  // namespace web_app

@@ -1404,15 +1404,19 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearWebAppData) {
   run_loop.Run();
 
   // Set-up: add a web app to the registry. Currently, only last_launch_time
-  // field is being cleared by ClearBrowsingDataCommand. So, we will check if
-  // that field is cleared as a heuristic to ClearBrowsingDataCommand being
-  // called.
+  // and last_badging_time fields are being cleared by ClearBrowsingDataCommand.
+  // So, we will check if these fields are cleared as a heuristic to
+  // ClearBrowsingDataCommand being called.
   auto web_app_id = web_app::test::InstallDummyWebApp(GetProfile(), "Web App",
                                                       GURL("http://some.url"));
   auto last_launch_time = base::Time() + base::Seconds(10);
   provider->sync_bridge().SetAppLastLaunchTime(web_app_id, last_launch_time);
   EXPECT_EQ(provider->registrar().GetAppById(web_app_id)->last_launch_time(),
             last_launch_time);
+  auto last_badging_time = base::Time() + base::Seconds(20);
+  provider->sync_bridge().SetAppLastBadgingTime(web_app_id, last_badging_time);
+  EXPECT_EQ(provider->registrar().GetAppById(web_app_id)->last_badging_time(),
+            last_badging_time);
 
   // Run RemoveEmbedderData, and wait for it to complete.
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
@@ -1421,6 +1425,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearWebAppData) {
   // Verify that web app's last launch time is cleared.
   EXPECT_EQ(provider->registrar().GetAppById(web_app_id)->last_launch_time(),
             base::Time());
+  // Verify that web app's last badging time is cleared.
+  EXPECT_EQ(provider->registrar().GetAppById(web_app_id)->last_badging_time(),
+            base::Time());
+
   EXPECT_EQ(constants::DATA_TYPE_HISTORY, GetRemovalMask());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
