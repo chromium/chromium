@@ -1276,7 +1276,7 @@ bool IsAXSetter(SEL selector) {
   if (![self instanceActive])
     return nil;
 
-  return _node->HasState(ax::mojom::State::kVisited) ? @1 : @0;
+  return @(_node->HasState(ax::mojom::State::kVisited));
 }
 
 - (NSString*)AXHelp {
