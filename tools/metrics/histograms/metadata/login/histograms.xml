@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Login.ArcBugReportBackupTime" units="ms"
-    expires_after="2022-03-30">
+    expires_after="2022-06-30">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
