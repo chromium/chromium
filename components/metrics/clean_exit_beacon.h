@@ -51,6 +51,26 @@ enum class BeaconFileState {
   kMaxValue = kMissingBeacon,
 };
 
+// Denotes whether Chrome is monitoring for browser crashes via the
+// CleanExitBeacon, and if so, whether the monitoring is due to the Extended
+// Variations Safe Mode experiment or the status quo code. Exposed for
+// testing.
+enum class BeaconMonitoringStage {
+  // The beacon file lacks a monitoring stage. This is possible because the
+  // monitoring stage was added in a later milestone. Used by only experiment
+  // group clients.
+  kMissing = 0,
+  // Chrome is not monitoring for crashes.
+  kNotMonitoring = 1,
+  // Chrome is monitoring for crashes earlier on in startup as a result of the
+  // experiment. Used by only experiment group clients.
+  kExtended = 2,
+  // Chrome is monitoring for crashes in the code covered by the status quo
+  // Variations Safe Mode mechanism.
+  kStatusQuo = 3,
+  kMaxValue = kStatusQuo,
+};
+
 // Reads and updates a beacon used to detect whether the previous browser
 // process exited cleanly.
 class CleanExitBeacon {
@@ -144,13 +164,17 @@ class CleanExitBeacon {
   // Returns true if the previous session exited cleanly. Either Local State
   // or |beacon_file_contents| is used to get this information. Which is used
   // depends on the client's Extended Variations Safe Mode experiment group in
-  // the previous session.
+  // the previous session. Also, records several metrics.
+  //
+  // Should be called only once: at startup.
+  //
   // TODO(crbug/1241702): Update this comment when experimentation is over.
   bool DidPreviousSessionExitCleanly(base::Value* beacon_file_contents);
 
-  // Writes |exited_cleanly| and the crash streak to the file located at
-  // |beacon_file_path_|.
-  void WriteBeaconFile(bool exited_cleanly) const;
+  // Writes |exited_cleanly|, |monitoring_stage|, and the crash streak to the
+  // file located at |beacon_file_path_|.
+  void WriteBeaconFile(bool exited_cleanly,
+                       BeaconMonitoringStage monitoring_stage) const;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   // Returns whether Chrome exited cleanly in the previous session according to

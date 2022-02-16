@@ -1332,8 +1332,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   EXPECT_EQ(active_group,
             base::FieldTrialList::FindValue(kExtendedSafeModeTrial));
 
-  // Verify that the Variations Safe Mode file was written and that the contents
-  // are correct.
+  // Verify that the beacon file was written and that the contents are correct.
   const base::FilePath variations_file_path =
       user_data_dir_path().Append(variations::kVariationsFilename);
   EXPECT_TRUE(base::PathExists(variations_file_path));
@@ -1341,7 +1340,8 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   ASSERT_TRUE(
       base::ReadFileToString(variations_file_path, &beacon_file_contents));
   EXPECT_EQ(beacon_file_contents,
-            "{\"user_experience_metrics.stability.exited_cleanly\":false,"
+            "{\"monitoring_stage\":2,"
+            "\"user_experience_metrics.stability.exited_cleanly\":false,"
             "\"variations_crash_streak\":0}");
 
   // Verify metrics.

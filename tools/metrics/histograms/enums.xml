@@ -8646,6 +8646,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="Missing clean exit beacon key"/>
 </enum>
 
+<enum name="BeaconMonitoringStage">
+  <int value="0" label="Missing"/>
+  <int value="1" label="Not monitoring">Not emitted</int>
+  <int value="2" label="Early monitoring"/>
+  <int value="3" label="Status quo monitoring"/>
+</enum>
+
 <enum name="BeforeUnloadDialogResult">
   <int value="0" label="No dialog: no string returned"/>
   <int value="1" label="No dialog: blocked, no user gesture"/>
