@@ -118,6 +118,8 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       const base::android::JavaParamRef<jobject>& obj);
 
  private:
+  bool IsDefaultSearchEngineGoogle();
+
   void OnTemplateURLServiceLoaded();
 
   // TemplateUrlServiceObserver:

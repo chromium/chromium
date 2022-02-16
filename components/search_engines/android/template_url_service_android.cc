@@ -129,11 +129,7 @@ jboolean TemplateUrlServiceAndroid::DoesDefaultSearchEngineHaveLogo(
 jboolean TemplateUrlServiceAndroid::IsDefaultSearchEngineGoogle(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  const TemplateURL* default_search_provider =
-      template_url_service_->GetDefaultSearchProvider();
-  return default_search_provider &&
-         default_search_provider->url_ref().HasGoogleBaseURLs(
-             template_url_service_->search_terms_data());
+  return IsDefaultSearchEngineGoogle();
 }
 
 jboolean
@@ -144,6 +140,14 @@ TemplateUrlServiceAndroid::IsSearchResultsPageFromDefaultSearchProvider(
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
   return template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
       *url);
+}
+
+bool TemplateUrlServiceAndroid::IsDefaultSearchEngineGoogle() {
+  const TemplateURL* default_search_provider =
+      template_url_service_->GetDefaultSearchProvider();
+  return default_search_provider &&
+         default_search_provider->url_ref().HasGoogleBaseURLs(
+             template_url_service_->search_terms_data());
 }
 
 void TemplateUrlServiceAndroid::OnTemplateURLServiceLoaded() {
@@ -226,7 +230,7 @@ TemplateUrlServiceAndroid::GetUrlForVoiceSearchQuery(
 
   if (!query.empty()) {
     GURL gurl(GetDefaultSearchURLForSearchTerms(template_url_service_, query));
-    if (google_util::IsGoogleSearchUrl(gurl))
+    if (IsDefaultSearchEngineGoogle())
       gurl = net::AppendQueryParameter(gurl, "inm", "vs");
     return url::GURLAndroid::FromNativeGURL(env, gurl);
   }
@@ -246,7 +250,7 @@ TemplateUrlServiceAndroid::GetUrlForContextualSearchQuery(
 
   if (!query.empty()) {
     GURL gurl(GetDefaultSearchURLForSearchTerms(template_url_service_, query));
-    if (google_util::IsGoogleSearchUrl(gurl)) {
+    if (IsDefaultSearchEngineGoogle()) {
       std::string protocol_version(
           base::android::ConvertJavaStringToUTF8(env, jprotocol_version));
       gurl = net::AppendQueryParameter(gurl, "ctxs", protocol_version);
