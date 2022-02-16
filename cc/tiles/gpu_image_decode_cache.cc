@@ -2986,9 +2986,6 @@ sk_sp<SkColorSpace> GpuImageDecodeCache::ColorSpaceForImageDecode(
   if (!SupportsColorSpaceConversion())
     return nullptr;
 
-  if (mode == DecodedDataMode::kCpu)
-    return image.target_color_space().ToSkColorSpace();
-
   // For kGpu or kTransferCache images color conversion is handled during
   // upload, so keep the original colorspace here.
   return sk_ref_sp(image.paint_image().color_space());

@@ -455,14 +455,18 @@ class GpuImageDecodeCacheTest
 
   // Create an image that's too large to upload and will trigger falling back to
   // software rendering and decoded data storage.
-  PaintImage CreateLargePaintImageForSoftwareFallback() {
-    return CreatePaintImageForFallbackToRGB(GetLargeImageSize());
+  PaintImage CreateLargePaintImageForSoftwareFallback(
+      sk_sp<SkColorSpace> image_color_space = SkColorSpace::MakeSRGB()) {
+    return CreatePaintImageForFallbackToRGB(GetLargeImageSize(),
+                                            image_color_space);
   }
 
-  PaintImage CreatePaintImageForFallbackToRGB(const gfx::Size test_image_size) {
-    SkImageInfo info = SkImageInfo::Make(
-        test_image_size.width(), test_image_size.height(), color_type_,
-        kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+  PaintImage CreatePaintImageForFallbackToRGB(
+      const gfx::Size test_image_size,
+      sk_sp<SkColorSpace> image_color_space = SkColorSpace::MakeSRGB()) {
+    SkImageInfo info =
+        SkImageInfo::Make(test_image_size.width(), test_image_size.height(),
+                          color_type_, kPremul_SkAlphaType, image_color_space);
     sk_sp<FakePaintImageGenerator> generator;
     if (do_yuv_decode_) {
       SkYUVAPixmapInfo yuva_pixmap_info =
@@ -2362,9 +2366,12 @@ TEST_P(GpuImageDecodeCacheTest, ImageBudgetingBySize) {
 TEST_P(GpuImageDecodeCacheTest,
        ColorConversionDuringDecodeForLargeImageNonSRGBColorSpace) {
   auto cache = CreateCache();
+  sk_sp<SkColorSpace> image_color_space =
+      gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace();
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateXYZD50();
 
-  PaintImage image = CreateLargePaintImageForSoftwareFallback();
+  PaintImage image =
+      CreateLargePaintImageForSoftwareFallback(image_color_space);
   DrawImage draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &color_space);
   ImageDecodeCache::TaskResult result =
@@ -2403,7 +2410,9 @@ TEST_P(GpuImageDecodeCacheTest,
     EXPECT_TRUE(decoded_image == decoded_draw_image.image());
     // Ensure that the SW decoded image had colorspace conversion applied.
     EXPECT_TRUE(SkColorSpace::Equals(decoded_image->colorSpace(),
-                                     target_color_space.get()));
+                                     cache->SupportsColorSpaceConversion()
+                                         ? image_color_space.get()
+                                         : nullptr));
   }
 
   cache->DrawWithImageFinished(draw_image, decoded_draw_image);
@@ -2517,33 +2526,25 @@ TEST_P(GpuImageDecodeCacheTest, NonLazyImageUploadTaskCancelled) {
   cache->UnrefImage(draw_image);
 }
 
-TEST_P(GpuImageDecodeCacheTest, NonLazyImageLargeImageColorConverted) {
+TEST_P(GpuImageDecodeCacheTest, NonLazyImageLargeImageNotColorConverted) {
   if (do_yuv_decode_) {
     // YUV bitmap images do not happen, so this test will always skip for YUV.
     return;
   }
   auto cache = CreateCache();
-  const bool should_cache_sw_image =
-      cache->SupportsColorSpaceConversion() && !use_transfer_cache_;
 
   PaintImage image = CreateBitmapImageInternal(GetLargeImageSize());
-  gfx::ColorSpace color_space = gfx::ColorSpace::CreateDisplayP3D65();
+  gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateDisplayP3D65();
   DrawImage draw_image = CreateDrawImageInternal(
-      image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &color_space);
+      image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &target_color_space);
   viz::ContextProvider::ScopedContextLock context_lock(context_provider());
   DecodedDrawImage decoded_draw_image =
       EnsureImageBacked(cache->GetDecodedImageForDraw(draw_image));
   EXPECT_TRUE(decoded_draw_image.image());
   EXPECT_TRUE(decoded_draw_image.is_budgeted());
   cache->DrawWithImageFinished(draw_image, decoded_draw_image);
-  // For non-lazy images color converted during scaling, cpu component should be
-  // cached.
   auto sw_image = cache->GetSWImageDecodeForTesting(draw_image);
-  ASSERT_EQ(!!sw_image, should_cache_sw_image);
-  if (should_cache_sw_image) {
-    EXPECT_TRUE(SkColorSpace::Equals(sw_image->colorSpace(),
-                                     color_space.ToSkColorSpace().get()));
-  }
+  ASSERT_EQ(!!sw_image, false);
 }
 
 TEST_P(GpuImageDecodeCacheTest, NonLazyImageUploadDownscaled) {
