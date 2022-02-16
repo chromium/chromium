@@ -32,9 +32,8 @@ struct VirtualCardEnrollmentFields {
   VirtualCardEnrollmentFields(const VirtualCardEnrollmentFields&);
   VirtualCardEnrollmentFields& operator=(const VirtualCardEnrollmentFields&);
   ~VirtualCardEnrollmentFields();
-  // Pointer to the credit card to enroll. The |credit_card| object is owned
-  // by PersonalDataManager.
-  raw_ptr<CreditCard> credit_card = nullptr;
+  // The credit card to enroll.
+  CreditCard credit_card;
   // Raw pointer to the image for the card art. The |card_art_image| object is
   // owned by PersonalDataManager.
   raw_ptr<gfx::Image> card_art_image = nullptr;
@@ -94,7 +93,7 @@ class VirtualCardEnrollmentManager {
   // ShowVirtualCardEnrollBubble() to differentiate different bubbles based on
   // the source we originated from.
   void OfferVirtualCardEnroll(
-      raw_ptr<CreditCard> credit_card,
+      const CreditCard& credit_card,
       VirtualCardEnrollmentSource virtual_card_enrollment_source);
 
   // Updates |avatar_animation_complete| to true if the user is beginning the

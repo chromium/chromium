@@ -108,7 +108,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, OfferVirtualCardEnroll) {
         SetValidCardArtImageForCard(card);
 
       virtual_card_enrollment_manager_->OfferVirtualCardEnroll(
-          &card, virtual_card_enrollment_source);
+          card, virtual_card_enrollment_source);
 
       raw_ptr<VirtualCardEnrollmentProcessState> state =
           virtual_card_enrollment_manager_
@@ -116,7 +116,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, OfferVirtualCardEnroll) {
 
       // CreditCard class overloads equality operator to check that GUIDs,
       // origins, and the contents of the two cards are equal.
-      EXPECT_EQ(card, *(state->virtual_card_enrollment_fields.credit_card));
+      EXPECT_EQ(card, state->virtual_card_enrollment_fields.credit_card);
       raw_ptr<gfx::Image> card_art_image =
           state->virtual_card_enrollment_fields.card_art_image;
       EXPECT_EQ(make_image_present, card_art_image != nullptr);
@@ -130,7 +130,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnRiskDataLoadedForVirtualCard) {
   state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
       VirtualCardEnrollmentSource::kUpstream;
   CreditCard card = SetUpCard();
-  state->virtual_card_enrollment_fields.credit_card = &card;
+  state->virtual_card_enrollment_fields.credit_card = card;
 
   virtual_card_enrollment_manager_->OnRiskDataLoadedForVirtualCard(
       kTestRiskData);
@@ -142,7 +142,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnRiskDataLoadedForVirtualCard) {
   EXPECT_EQ(request_details.risk_data, state->risk_data.value_or(""));
   EXPECT_EQ(request_details.app_locale, personal_data_manager_->app_locale());
   EXPECT_EQ(request_details.instrument_id,
-            state->virtual_card_enrollment_fields.credit_card->instrument_id());
+            state->virtual_card_enrollment_fields.credit_card.instrument_id());
   EXPECT_EQ(request_details.billing_customer_number,
             payments::GetBillingCustomerId(personal_data_manager_.get()));
   EXPECT_EQ(
@@ -156,7 +156,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
   SetValidCardArtImageForCard(card);
   raw_ptr<VirtualCardEnrollmentProcessState> state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  state->virtual_card_enrollment_fields.credit_card = &card;
+  state->virtual_card_enrollment_fields.credit_card = card;
 
   payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails response;
   response.vcn_context_token = kTestVcnContextToken;
@@ -263,7 +263,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, UpstreamAnimationSync_AnimationFirst) {
 
   raw_ptr<VirtualCardEnrollmentProcessState> state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  state->virtual_card_enrollment_fields.credit_card = &card;
+  state->virtual_card_enrollment_fields.credit_card = card;
   state->vcn_context_token = kTestVcnContextToken;
   state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
       VirtualCardEnrollmentSource::kUpstream;
@@ -299,7 +299,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, UpstreamAnimationSync_ResponseFirst) {
 
   raw_ptr<VirtualCardEnrollmentProcessState> state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  state->virtual_card_enrollment_fields.credit_card = &card;
+  state->virtual_card_enrollment_fields.credit_card = card;
   state->vcn_context_token = kTestVcnContextToken;
   state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
       VirtualCardEnrollmentSource::kUpstream;

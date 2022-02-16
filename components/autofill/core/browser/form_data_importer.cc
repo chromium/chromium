@@ -866,7 +866,7 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
     if (imported_credit_card->virtual_card_enrollment_state() ==
         CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
       virtual_card_enrollment_manager_->OfferVirtualCardEnroll(
-          imported_credit_card.get(), VirtualCardEnrollmentSource::kDownstream);
+          *imported_credit_card, VirtualCardEnrollmentSource::kDownstream);
       return true;
     }
   }

@@ -155,16 +155,16 @@ void VirtualCardEnrollBubbleViews::Init() {
 
   const VirtualCardEnrollmentFields* virtual_card_enrollment_fields =
       controller_->GetVirtualCardEnrollmentFields();
-  CreditCard* card = virtual_card_enrollment_fields->credit_card.get();
+  const CreditCard& card = virtual_card_enrollment_fields->credit_card;
   gfx::Image* card_image = virtual_card_enrollment_fields->card_art_image.get();
 
   auto* const card_network_icon =
       description_view->AddChildView(std::make_unique<views::ImageView>());
   card_network_icon->SetImage(card_image->AsImageSkia());
-  card_network_icon->SetTooltipText(card->NetworkForDisplay());
+  card_network_icon->SetTooltipText(card.NetworkForDisplay());
 
   const std::u16string card_info =
-      card->CardIdentifierStringForAutofillDisplay();
+      card.CardIdentifierStringForAutofillDisplay();
 
   const std::u16string card_label_text =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX) +

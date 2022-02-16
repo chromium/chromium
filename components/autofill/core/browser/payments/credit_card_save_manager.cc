@@ -355,7 +355,7 @@ void CreditCardSaveManager::OnDidUploadCard(
         uploaded_card->set_instrument_id(
             upload_card_response_details.instrument_id.value());
         client_->GetVirtualCardEnrollmentManager()->OfferVirtualCardEnroll(
-            uploaded_card, VirtualCardEnrollmentSource::kUpstream);
+            *uploaded_card, VirtualCardEnrollmentSource::kUpstream);
       }
     }
   } else if (show_save_prompt_.has_value() && show_save_prompt_.value()) {

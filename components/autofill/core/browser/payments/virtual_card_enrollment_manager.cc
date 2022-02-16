@@ -49,10 +49,9 @@ VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
 VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
 
 void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
-    raw_ptr<CreditCard> credit_card,
+    const CreditCard& credit_card,
     VirtualCardEnrollmentSource virtual_card_enrollment_source) {
   Reset();
-  DCHECK(credit_card);
   DCHECK_NE(virtual_card_enrollment_source, VirtualCardEnrollmentSource::kNone);
   state_.virtual_card_enrollment_fields.credit_card = credit_card;
 
@@ -64,7 +63,7 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
   // the local cache.
   state_.virtual_card_enrollment_fields.card_art_image =
       personal_data_manager_->GetCreditCardArtImageForUrl(
-          credit_card->card_art_url());
+          credit_card.card_art_url());
 
   state_.virtual_card_enrollment_fields.virtual_card_enrollment_source =
       virtual_card_enrollment_source;
@@ -160,10 +159,9 @@ void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
   request_details.billing_customer_number =
       payments::GetBillingCustomerId(personal_data_manager_);
   request_details.instrument_id =
-      state_.virtual_card_enrollment_fields.credit_card->instrument_id();
+      state_.virtual_card_enrollment_fields.credit_card.instrument_id();
   request_details.source =
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
-
   payments_client_->GetVirtualCardEnrollmentDetails(
       request_details,
       base::BindOnce(
@@ -211,7 +209,7 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
   if (!state_.virtual_card_enrollment_fields.card_art_image) {
     state_.virtual_card_enrollment_fields.card_art_image =
         personal_data_manager_->GetCachedCardArtImageForUrl(
-            state_.virtual_card_enrollment_fields.credit_card->card_art_url());
+            state_.virtual_card_enrollment_fields.credit_card.card_art_url());
   }
 
   if (state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==

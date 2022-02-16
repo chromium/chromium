@@ -652,8 +652,7 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
           ->GetVirtualCardEnrollmentManager();
 
   virtual_card_enrollment_manager->OfferVirtualCardEnroll(
-      raw_ptr<autofill::CreditCard>(card),
-      autofill::VirtualCardEnrollmentSource::kSettingsPage);
+      *card, autofill::VirtualCardEnrollmentSource::kSettingsPage);
   return RespondNow(NoArguments());
 }
 
