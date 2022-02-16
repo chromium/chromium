@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -120,9 +121,16 @@ std::string MakeBidScript(const url::Origin& seller,
           }
         }
       }
-      if (perBuyerSignals[seller + 'Signals'] !==
-          interestGroupName + 'Signals') {
-        throw new Error("wrong perBuyerSignals");
+      // Skip the `perBuyerSignals` check if the interest group name matches
+      // the bid. This is for auctions that use more than the two standard
+      // bidders, since there's currently no way to inject new perBuyerSignals
+      // into the top-level auction.
+      // TODO(mmenke): Worth fixing that?
+      if (interestGroupName !== bid + '') {
+        if (perBuyerSignals[seller + 'Signals'] !==
+            interestGroupName + 'Signals') {
+          throw new Error("wrong perBuyerSignals");
+        }
       }
       if (auctionSignals !== "auctionSignalsFor " + seller)
         throw new Error("wrong auctionSignals");
@@ -165,9 +173,16 @@ std::string MakeBidScript(const url::Origin& seller,
                        browserSignals) {
       if (auctionSignals !== "auctionSignalsFor " + seller)
         throw new Error("wrong auctionSignals");
-      if (perBuyerSignals[seller + 'Signals'] !==
-          interestGroupName + 'Signals') {
-        throw new Error("wrong perBuyerSignals");
+      // Skip the `perBuyerSignals` check if the interest group name matches
+      // the bid. This is for auctions that use more than the two standard
+      // bidders, since there's currently no way to inject new perBuyerSignals
+      // into the top-level auction.
+      // TODO(mmenke): Worth fixing that?
+      if (interestGroupName !== bid + '') {
+        if (perBuyerSignals[seller + 'Signals'] !==
+            interestGroupName + 'Signals') {
+          throw new Error("wrong perBuyerSignals");
+        }
       }
 
       // sellerSignals in these tests is just sellers' browserSignals, since
@@ -180,8 +195,6 @@ std::string MakeBidScript(const url::Origin& seller,
         throw new Error("wrong renderUrl");
       if (sellerSignals.bid !== bid)
         throw new Error("wrong bid");
-      if (sellerSignals.desirability !== (bid * 2))
-        throw new Error("wrong desirability");
 
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong browserSignals.topWindowHostname");
@@ -285,7 +298,7 @@ std::string MakeDecisionScript(
       if (debugWinReportUrl)
         forDebuggingOnly.reportAdAuctionWin(debugWinReportUrl + bid);
 
-      return bid * 2;
+      return computeScore(bid);
     }
 
     function reportResult(auctionConfig, browserSignals) {
@@ -297,11 +310,25 @@ std::string MakeDecisionScript(
         throw new Error("wrong decisionLogicUrl in auctionConfig");
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname in browserSignals");
+      if (browserSignals.desirability != computeScore(browserSignals.bid))
+        throw new Error("wrong bid or desirability in browserSignals");
       if (browserSignals.dataVersion !== undefined)
         throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
       if (sendReportUrl)
         sendReportTo(sendReportUrl + browserSignals.bid);
       return browserSignals;
+    }
+
+    // Use different scoring functions for the top-level seller and component
+    // sellers, so can verify that each ReportResult() method gets the score
+    // from the correct seller, and so that the the wrong bidder will win
+    // in some tests if either component auction scores are used for the
+    // top-level auction, or if all bidders from component auctions are passed
+    // to the top-level auction.
+    function computeScore(bid) {
+      if (decisionLogicUrl == "https://adstuff.publisher1.com/auction.js")
+        return 2 * bid;
+      return 100 - bid;
     }
   )";
 
@@ -627,6 +654,10 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
         << "ConnectDevToolsAgent should not be called on MockSellerWorklet";
   }
 
+  void ResetReceiverWithReason(const std::string& reason) {
+    receiver_.ResetWithReason(/*custom_reason_code=*/0, reason);
+  }
+
   // Waits until ScoreAd() has been invoked, if it hasn't been already. It's up
   // to the caller to invoke the returned ScoreAdParams::callback to continue
   // the auction.
@@ -656,11 +687,12 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   // Invokes the ReportResultCallback for the most recent ScoreAd() call with
   // the provided score. WaitForReportResult() must have been invoked first.
   void InvokeReportResultCallback(
-      absl::optional<GURL> report_url = absl::nullopt) {
+      absl::optional<GURL> report_url = absl::nullopt,
+      std::vector<std::string> errors = {}) {
     DCHECK(report_result_callback_);
     std::move(report_result_callback_)
         .Run(/*signals_for_winner=*/absl::nullopt, std::move(report_url),
-             /*errors=*/std::vector<std::string>());
+             errors);
   }
 
   void Flush() { receiver_.FlushForTesting(); }
@@ -767,25 +799,33 @@ class MockAuctionProcessManager
       const GURL& script_source_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
       const url::Origin& top_window_origin) override {
-    DCHECK(!seller_worklet_);
+    EXPECT_EQ(0u, seller_worklets_.count(script_source_url));
 
     // Make sure this request came over the right pipe.
     EXPECT_EQ(receiver_display_name_map_[receiver_set_.current_receiver()],
               ComputeDisplayName(AuctionProcessManager::WorkletType::kSeller,
                                  url::Origin::Create(script_source_url)));
 
-    seller_worklet_ =
-        std::make_unique<MockSellerWorklet>(std::move(seller_worklet_receiver));
+    seller_worklets_.emplace(std::make_pair(
+        script_source_url, std::make_unique<MockSellerWorklet>(
+                               std::move(seller_worklet_receiver))));
 
-    ASSERT_TRUE(waiting_on_seller_);
-    waiting_on_seller_ = false;
-    MaybeQuitWaitForWorkletsRunLoop();
+    // Whenever a worklet is created, one of the RunLoops should be waiting for
+    // worklet creation.
+    if (wait_for_seller_reload_run_loop_) {
+      wait_for_seller_reload_run_loop_->Quit();
+    } else {
+      EXPECT_GT(waiting_for_num_sellers_, 0);
+      --waiting_for_num_sellers_;
+      MaybeQuitWaitForWorkletsRunLoop();
+    }
   }
 
-  // Waits for a SellerWorklet and `num_bidders` bidder worklets to be created.
-  void WaitForWorklets(int num_bidders) {
-    waiting_on_seller_ = true;
+  // Waits for `num_bidders` bidder worklets and `num_sellers` seller worklets
+  // to be created.
+  void WaitForWorklets(int num_bidders, int num_sellers = 1) {
     waiting_for_num_bidders_ = num_bidders;
+    waiting_for_num_sellers_ = num_sellers;
     wait_for_worklets_run_loop_ = std::make_unique<base::RunLoop>();
     wait_for_worklets_run_loop_->Run();
     wait_for_worklets_run_loop_.reset();
@@ -802,6 +842,14 @@ class MockAuctionProcessManager
     EXPECT_EQ(1u, bidder_worklets_.size());
   }
 
+  void WaitForWinningSellerReload() {
+    EXPECT_TRUE(seller_worklets_.empty());
+    wait_for_seller_reload_run_loop_ = std::make_unique<base::RunLoop>();
+    wait_for_seller_reload_run_loop_->Run();
+    wait_for_seller_reload_run_loop_.reset();
+    EXPECT_EQ(1u, seller_worklets_.size());
+  }
+
   // Returns the MockBidderWorklet created for the specified script URL, if
   // there is one.
   std::unique_ptr<MockBidderWorklet> TakeBidderWorklet(
@@ -814,9 +862,25 @@ class MockAuctionProcessManager
     return out;
   }
 
-  // Returns the MockSellerWorklet, if one has been created.
-  std::unique_ptr<MockSellerWorklet> TakeSellerWorklet() {
-    return std::move(seller_worklet_);
+  // Returns the MockSellerWorklet created for the specified script URL, if
+  // there is one. If no URL is provided, and there's only one pending seller
+  // worklet, returns that seller worklet.
+  std::unique_ptr<MockSellerWorklet> TakeSellerWorklet(
+      GURL script_source_url = GURL()) {
+    if (seller_worklets_.empty())
+      return nullptr;
+
+    if (script_source_url.is_empty()) {
+      CHECK_EQ(1u, seller_worklets_.size());
+      script_source_url = seller_worklets_.begin()->first;
+    }
+
+    auto it = seller_worklets_.find(script_source_url);
+    if (it == seller_worklets_.end())
+      return nullptr;
+    std::unique_ptr<MockSellerWorklet> out = std::move(it->second);
+    seller_worklets_.erase(it);
+    return out;
   }
 
   void Flush() { receiver_set_.FlushForTesting(); }
@@ -824,22 +888,22 @@ class MockAuctionProcessManager
  private:
   void MaybeQuitWaitForWorkletsRunLoop() {
     DCHECK(wait_for_worklets_run_loop_);
-    if (!waiting_on_seller_ && waiting_for_num_bidders_ == 0)
+    if (waiting_for_num_bidders_ == 0 && waiting_for_num_sellers_ == 0)
       wait_for_worklets_run_loop_->Quit();
   }
 
-  // Map of script URLs to bidder worklets.
+  // Maps of script URLs to worklets.
   std::map<GURL, std::unique_ptr<MockBidderWorklet>> bidder_worklets_;
-
-  std::unique_ptr<MockSellerWorklet> seller_worklet_;
+  std::map<GURL, std::unique_ptr<MockSellerWorklet>> seller_worklets_;
 
   // Used to wait for the worklets to be loaded at the start of the auction.
   std::unique_ptr<base::RunLoop> wait_for_worklets_run_loop_;
-  bool waiting_on_seller_ = false;
   int waiting_for_num_bidders_ = 0;
+  int waiting_for_num_sellers_ = 0;
 
-  // Used to wait for a bidder worklet to be reloaded at the end of an auction.
+  // Used to wait for a worklet to be reloaded at the end of an auction.
   std::unique_ptr<base::RunLoop> wait_for_bidder_reload_run_loop_;
+  std::unique_ptr<base::RunLoop> wait_for_seller_reload_run_loop_;
 
   // Map from ReceiverSet IDs to display name when the process was launched.
   // Used to verify that worklets are created in the right process.
@@ -1005,6 +1069,11 @@ class AuctionRunnerTest : public testing::Test,
         CreateAuctionConfig(seller_decision_logic_url, interest_group_buyers_);
 
     auction_config->trusted_scoring_signals_url = trusted_scoring_signals_url_;
+
+    for (const auto& component_auction : component_auctions_) {
+      auction_config->component_auctions.emplace_back(
+          component_auction.Clone());
+    }
 
     interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
         base::FilePath(), /*in_memory=*/true,
@@ -1200,7 +1269,8 @@ class AuctionRunnerTest : public testing::Test,
   void StartStandardAuctionWithMockService() {
     UseMockWorkletService();
     StartStandardAuction();
-    mock_auction_process_manager_->WaitForWorklets(/*num_bidders=*/2);
+    mock_auction_process_manager_->WaitForWorklets(
+        /*num_bidders=*/2, /*num_sellers=*/1 + component_auctions_.size());
   }
 
   // AuctionWorkletManager::Delegate implementation:
@@ -1301,6 +1371,81 @@ class AuctionRunnerTest : public testing::Test,
     return disallowed_buyers_.find(origin) == disallowed_buyers_.end();
   }
 
+  // Creates a an auction with 1-2 component sellers and 2 bidders, and sets up
+  // `url_loader_factory_` to provide the standard responses needed to run the
+  // auction. `bidder1_seller` and `bidder2_seller` identify the seller whose
+  // auction each bidder is in, and must be one of kSeller, kComponentSeller1,
+  // and kComponentSeller2. kComponentSeller1 is always added to the auction,
+  // kComponentSeller2 is only added to the auction if one of the bidders uses
+  // it as a seller.
+  void SetUpComponentAuctionAndResponses(const url::Origin& bidder1_seller,
+                                         const url::Origin& bidder2_seller) {
+    interest_group_buyers_.emplace();
+    std::vector<url::Origin> component1_buyers;
+    std::vector<url::Origin> component2_buyers;
+
+    if (bidder1_seller == kSeller) {
+      interest_group_buyers_->push_back(kBidder1);
+    } else if (bidder1_seller == kComponentSeller1) {
+      component1_buyers.push_back(kBidder1);
+    } else if (bidder1_seller == kComponentSeller2) {
+      component2_buyers.push_back(kBidder1);
+    } else {
+      NOTREACHED();
+    }
+
+    if (bidder2_seller == kSeller) {
+      interest_group_buyers_->push_back(kBidder2);
+    } else if (bidder2_seller == kComponentSeller1) {
+      component1_buyers.push_back(kBidder2);
+    } else if (bidder2_seller == kComponentSeller2) {
+      component2_buyers.push_back(kBidder2);
+    } else {
+      NOTREACHED();
+    }
+
+    component_auctions_.emplace_back(CreateAuctionConfig(
+        kComponentSeller1Url, std::move(component1_buyers)));
+    auction_worklet::AddJavascriptResponse(
+        &url_loader_factory_, kComponentSeller1Url,
+        MakeDecisionScript(kComponentSeller1Url, /*send_report_url=*/GURL(
+                               "https://component1-report.test/")));
+
+    if (!component2_buyers.empty()) {
+      component_auctions_.emplace_back(CreateAuctionConfig(
+          kComponentSeller2Url, std::move(component2_buyers)));
+      auction_worklet::AddJavascriptResponse(
+          &url_loader_factory_, kComponentSeller2Url,
+          MakeDecisionScript(kComponentSeller2Url, /*send_report_url=*/GURL(
+                                 "https://component2-report.test/")));
+    }
+
+    auction_worklet::AddJavascriptResponse(
+        &url_loader_factory_, kBidder1Url,
+        MakeBidScript(bidder1_seller, "1", "https://ad1.com/",
+                      /*num_ad_components=*/2, kBidder1, kBidder1Name,
+                      /*has_signals=*/true, "k1", "a"));
+    auction_worklet::AddJsonResponse(
+        &url_loader_factory_,
+        GURL(kBidder1TrustedSignalsUrl.spec() +
+             "?hostname=publisher1.com&keys=k1,k2"),
+        R"({"k1":"a", "k2": "b", "extra": "c"})");
+
+    auction_worklet::AddJavascriptResponse(
+        &url_loader_factory_, kBidder2Url,
+        MakeBidScript(bidder2_seller, "2", "https://ad2.com/",
+                      /*num_ad_components=*/2, kBidder2, kBidder2Name,
+                      /*has_signals=*/true, "l2", "b"));
+    auction_worklet::AddJsonResponse(
+        &url_loader_factory_,
+        GURL(kBidder2TrustedSignalsUrl.spec() +
+             "?hostname=publisher1.com&keys=l1,l2"),
+        R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+    auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                           MakeAuctionScript());
+  }
+
   const url::Origin top_frame_origin_ =
       url::Origin::Create(GURL("https://publisher1.com"));
   const url::Origin frame_origin_ =
@@ -1308,6 +1453,13 @@ class AuctionRunnerTest : public testing::Test,
   const GURL kSellerUrl{"https://adstuff.publisher1.com/auction.js"};
   const url::Origin kSeller = url::Origin::Create(kSellerUrl);
   absl::optional<GURL> trusted_scoring_signals_url_;
+
+  const GURL kComponentSeller1Url{"https://component.seller1.test/foo.js"};
+  const url::Origin kComponentSeller1 =
+      url::Origin::Create(kComponentSeller1Url);
+  const GURL kComponentSeller2Url{"https://component.seller2.test/bar.js"};
+  const url::Origin kComponentSeller2 =
+      url::Origin::Create(kComponentSeller2Url);
 
   const GURL kBidder1Url{"https://adplatform.com/offers.js"};
   const url::Origin kBidder1 = url::Origin::Create(kBidder1Url);
@@ -1321,6 +1473,8 @@ class AuctionRunnerTest : public testing::Test,
 
   absl::optional<std::vector<url::Origin>> interest_group_buyers_ = {
       {kBidder1, kBidder2}};
+
+  std::vector<blink::mojom::AuctionAdConfigPtr> component_auctions_;
 
   // Origins which are not allowed to take part in auctions, as the
   // corresponding participant types.
@@ -1386,6 +1540,64 @@ TEST_F(AuctionRunnerTest, NullBuyers) {
                   /*expected_owners=*/absl::nullopt);
 }
 
+// Runs a component auction with all buyers fields null.
+TEST_F(AuctionRunnerTest, ComponentAuctionNullBuyers) {
+  interest_group_buyers_.reset();
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, /*buyers=*/absl::nullopt));
+  RunAuctionAndWait(kSellerUrl, std::vector<StorageInterestGroup>());
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_EQ(-1, result_.bidder1_bid_count);
+  EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(-1, result_.bidder2_bid_count);
+  EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+                  /*expected_interest_groups=*/absl::nullopt,
+                  /*expected_owners=*/absl::nullopt);
+}
+
+// Runs an auction with an empty buyers field.
+TEST_F(AuctionRunnerTest, EmptyBuyers) {
+  interest_group_buyers_->clear();
+  RunAuctionAndWait(kSellerUrl, std::vector<StorageInterestGroup>());
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_EQ(-1, result_.bidder1_bid_count);
+  EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(-1, result_.bidder2_bid_count);
+  EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+                  /*expected_interest_groups=*/absl::nullopt,
+                  /*expected_owners=*/absl::nullopt);
+}
+
+// Runs a component auction with all buyers fields empty.
+TEST_F(AuctionRunnerTest, ComponentAuctionEmptyBuyers) {
+  interest_group_buyers_->clear();
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, /*buyers=*/{}));
+  RunAuctionAndWait(kSellerUrl, std::vector<StorageInterestGroup>());
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_EQ(-1, result_.bidder1_bid_count);
+  EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(-1, result_.bidder2_bid_count);
+  EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+                  /*expected_interest_groups=*/absl::nullopt,
+                  /*expected_owners=*/absl::nullopt);
+}
+
 // Runs the standard auction, but without adding any interest groups to the
 // manager.
 TEST_F(AuctionRunnerTest, NoInterestGroups) {
@@ -1403,9 +1615,53 @@ TEST_F(AuctionRunnerTest, NoInterestGroups) {
                   /*expected_interest_groups=*/0, /*expected_owners=*/0);
 }
 
+// Runs a component auction, but without adding any interest groups to the
+// manager.
+TEST_F(AuctionRunnerTest, ComponentAuctionNoInterestGroups) {
+  interest_group_buyers_->clear();
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller2Url, {{kBidder2}}));
+  RunAuctionAndWait(kSellerUrl, std::vector<StorageInterestGroup>());
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_EQ(-1, result_.bidder1_bid_count);
+  EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(-1, result_.bidder2_bid_count);
+  EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+                  /*expected_interest_groups=*/0, /*expected_owners=*/0);
+}
+
 // Runs an standard auction, but with an interest group that does not list any
 // ads.
 TEST_F(AuctionRunnerTest, OneInterestGroupNoAds) {
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
+      {"k1", "k2"}, /*ad_url=*/absl::nullopt));
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(-1, result_.bidder2_bid_count);
+  EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+                  /*expected_interest_groups=*/0, /*expected_owners=*/1);
+}
+
+// Runs an auction with one component that has a buyer with an interest group,
+// but that group has no ads.
+TEST_F(AuctionRunnerTest, ComponentAuctionOneInterestGroupNoAds) {
   std::vector<StorageInterestGroup> bidders;
   bidders.emplace_back(MakeInterestGroup(
       kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
@@ -1787,12 +2043,277 @@ TEST_F(AuctionRunnerTest, PauseSeller) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
+// A component auction with two successful bids from different components.
+TEST_F(AuctionRunnerTest, ComponentAuction) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller2);
+
+  RunStandardAuction();
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
+            result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://reporting.example.com/2"),
+                  GURL("https://component2-report.test/2"),
+                  GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(6, result_.bidder2_bid_count);
+  ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+            result_.bidder2_prev_wins[3]->ad_json);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
+// A component auction with two buyers in the top-level auction. The component
+// seller has no buyers.
+TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersHaveNoBuyers) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kSeller,
+                                    /*bidder2_seller=*/kSeller);
+
+  RunStandardAuction();
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
+            result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://reporting.example.com/2"),
+                  GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(6, result_.bidder2_bid_count);
+  ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+            result_.bidder2_prev_wins[3]->ad_json);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
+// A component auction with one component. Both the top-level and component
+// auction have one buyer. The top-level seller worklet has the winning buyer.
+TEST_F(AuctionRunnerTest, ComponentAuctionTopLeverSellerBidWins) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kSeller);
+
+  RunStandardAuction();
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
+            result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://reporting.example.com/2"),
+                  GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(6, result_.bidder2_bid_count);
+  ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+            result_.bidder2_prev_wins[3]->ad_json);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
+// A component auction with one component. Both the top-level and component
+// auction have one buyer. The component seller worklet has the winning buyer.
+TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBidWins) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kSeller,
+                                    /*bidder2_seller=*/kComponentSeller1);
+
+  RunStandardAuction();
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
+            result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://reporting.example.com/2"),
+                  GURL("https://component1-report.test/2"),
+                  GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(6, result_.bidder2_bid_count);
+  ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+            result_.bidder2_prev_wins[3]->ad_json);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
+// Test case where the top-level and a component auction share the same buyer,
+// which makes different bids for both auctions. Tests both the case the bid
+// made in the main auction wins, and the case the bid made in the component
+// auction wins.
+//
+// This tests that parameters are separated, that bid counts are updated
+// correctly, and how histograms are updated in these cases.
+TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
+  const GURL kTopLevelBidUrl = GURL("https://top-level-bid.test/");
+  const GURL kComponentBidUrl = GURL("https://component-bid.test/");
+
+  // Bid script used in both auctions. The bid amount is based on the seller:
+  // It bids the most in auctions run by kComponentSeller2Url, and the least in
+  // auctions run by kComponentSeller1Url, so one script can handle both test
+  // cases.
+  const char kBidScript[] = R"(
+      function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                           trustedBiddingSignals, browserSignals) {
+        if (browserSignals.seller == "https://component.seller1.test")
+          return {ad: [], bid: 1, render: "https://component-bid.test/"};
+        if (browserSignals.seller == "https://component.seller2.test")
+          return {ad: [], bid: 3, render: "https://component-bid.test/"};
+        return {ad: [], bid: 2, render: "https://top-level-bid.test/"};
+      }
+
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/" + browserSignals.bid);
+    }
+  )";
+
+  // Script used for both sellers. Return different desireability scores based
+  // on bid and seller, to make sure correct values are plumbed through.
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      if (auctionConfig.seller == "https://adstuff.publisher1.com")
+        return 20 + bid;
+      return 10 + bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      sendReportTo(auctionConfig.seller + "/" +
+                   browserSignals.desirability);
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
+                                         kComponentSeller1Url, kSellerScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
+                                         kComponentSeller2Url, kSellerScript);
+
+  //--------------------------------------
+  // Case the top-level auction's bid wins
+  //--------------------------------------
+
+  interest_group_buyers_ = {{kBidder1}};
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+
+  // Custom interest group with two ads, so both bid URLs are valid.
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(
+      MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
+                        /*trusted_bidding_signals_url=*/absl::nullopt,
+                        /*trusted_bidding_signals_keys=*/{}, kTopLevelBidUrl));
+  bidders[0].interest_group.ads->push_back(
+      blink::InterestGroup::Ad(kComponentBidUrl, absl::nullopt));
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+
+  EXPECT_EQ(kTopLevelBidUrl, result_.ad_url);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://adstuff.publisher1.com/22"),
+                  GURL("https://buyer-reporting.example.com/2")));
+  // Bid count should only be incremented by 1.
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://top-level-bid.test/",)"
+            R"("metadata":{"ads": true}})",
+            result_.bidder1_prev_wins[3]->ad_json);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  // Currently an interest groups participating twice in an auction is counted
+  // twice.
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+
+  //--------------------------------------
+  // Case the component auction's bid wins
+  //--------------------------------------
+
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
+
+  // Add another kComponentSeller2Url as another seller, for a total of 2
+  // component sellers.
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller2Url, {{kBidder1}}));
+
+  // Custom interest group with two ads, so both bid URLs are valid.
+  bidders = std::vector<StorageInterestGroup>();
+  bidders.emplace_back(
+      MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
+                        /*trusted_bidding_signals_url=*/absl::nullopt,
+                        /*trusted_bidding_signals_keys=*/{}, kTopLevelBidUrl));
+  bidders[0].interest_group.ads->push_back(
+      blink::InterestGroup::Ad(kComponentBidUrl, absl::nullopt));
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+
+  EXPECT_EQ(kComponentBidUrl, result_.ad_url);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://adstuff.publisher1.com/23"),
+                  GURL("https://component.seller2.test/13"),
+                  GURL("https://buyer-reporting.example.com/3")));
+  // Bid count should only be incremented by 1.
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://component-bid.test/"})",
+            result_.bidder1_prev_wins[3]->ad_json);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  // Currently a bidder participating twice in an auction is counted as two
+  // participating interest groups.
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/3, /*expected_owners=*/3);
+}
+
+// A component auction with one component that has two buyers. In this auction,
+// the top-level auction would score kBidder2 higher (since it bids more), but
+// kBidder1 wins this auction, because the component auctions use a different
+// scoring function, which favors kBidder1's lower bid.
+TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller1);
+
+  RunStandardAuction();
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_EQ(std::vector<GURL>{GURL("https://ad1.com-component1.com")},
+            result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://reporting.example.com/1"),
+                  GURL("https://component1-report.test/1"),
+                  GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+            result_.bidder1_prev_wins[3]->ad_json);
+  EXPECT_EQ(6, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
 // An auction in which the seller origin is not allowed to use the interest
 // group API.
 TEST_F(AuctionRunnerTest, DisallowedSeller) {
+  disallowed_sellers_.insert(url::Origin::Create(kSellerUrl));
+
   // The lack of Javascript responses means the auction should hang if any
   // script URLs are incorrectly requested.
-  disallowed_sellers_.insert(url::Origin::Create(kSellerUrl));
   RunStandardAuction();
 
   EXPECT_FALSE(result_.ad_url);
@@ -1812,13 +2333,79 @@ TEST_F(AuctionRunnerTest, DisallowedSeller) {
   EXPECT_EQ(0, url_loader_factory_.NumPending());
 }
 
+// A component auction in which the component seller is disallowed, and the
+// top-level seller has no buyers.
+TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSeller) {
+  interest_group_buyers_.reset();
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+
+  disallowed_sellers_.insert(kComponentSeller1);
+
+  // The lack of Javascript responses means the auction should hang if any
+  // script URLs are incorrectly requested.
+  RunStandardAuction();
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+                  /*expected_interest_groups=*/absl::nullopt,
+                  /*expected_owners=*/absl::nullopt);
+
+  // No requests for the bidder worklet URLs should be made.
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, url_loader_factory_.NumPending());
+}
+
+// A component auction in which the one component seller is disallowed, but the
+// other is not.
+TEST_F(AuctionRunnerTest, DisallowedComponentAuctionOneSeller) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller2);
+
+  // Bidder 2 bids more, so would win the auction if component seller 2 were
+  // allowed to participate.
+  disallowed_sellers_.insert(kComponentSeller2);
+
+  RunAuctionAndWait(kSellerUrl, std::vector<StorageInterestGroup>());
+
+  // The lack of Javascript responses means the auction should hang if any
+  // script URLs are incorrectly requested.
+  RunStandardAuction();
+
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_EQ(std::vector<GURL>{GURL("https://ad1.com-component1.com")},
+            result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://reporting.example.com/1"),
+                  GURL("https://component1-report.test/1"),
+                  GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+            result_.bidder1_prev_wins[3]->ad_json);
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1);
+}
+
 // An auction in which the buyer origins are not allowed to use the interest
 // group API.
 TEST_F(AuctionRunnerTest, DisallowedBuyers) {
-  // The lack of Javascript responses means the auction should hang if any
-  // script URLs are incorrectly requested.
   disallowed_buyers_.insert(kBidder1);
   disallowed_buyers_.insert(kBidder2);
+
+  // The lack of Javascript responses means the auction should hang if any
+  // script URLs are incorrectly requested.
   RunStandardAuction();
 
   EXPECT_FALSE(result_.ad_url);
@@ -1877,6 +2464,68 @@ TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
   // No requests for bidder2's worklet URL should be made.
   task_environment_.RunUntilIdle();
   EXPECT_EQ(0, url_loader_factory_.NumPending());
+}
+
+// A component auction in which all buyers are disallowed.
+TEST_F(AuctionRunnerTest, DisallowedComponentAuctionBuyers) {
+  interest_group_buyers_->clear();
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller2Url, {{kBidder2}}));
+
+  disallowed_buyers_.insert(kBidder1);
+  disallowed_buyers_.insert(kBidder2);
+
+  // The lack of Javascript responses means the auction should hang if any
+  // script URLs are incorrectly requested.
+  RunStandardAuction();
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+                  /*expected_interest_groups=*/absl::nullopt,
+                  /*expected_owners=*/absl::nullopt);
+
+  // No requests for the bidder worklet URLs should be made.
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, url_loader_factory_.NumPending());
+}
+
+// A component auction in which a single buyer is disallowed.
+TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSingleBuyer) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller2);
+
+  disallowed_buyers_.insert(kBidder2);
+
+  // The lack of Javascript responses means the auction should hang if any
+  // script URLs are incorrectly requested.
+  RunStandardAuction();
+
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_EQ(std::vector<GURL>{GURL("https://ad1.com-component1.com")},
+            result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://reporting.example.com/1"),
+                  GURL("https://component1-report.test/1"),
+                  GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+            result_.bidder1_prev_wins[3]->ad_json);
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1);
 }
 
 // Disallow bidders as sellers and disallow seller as bidder. Auction should
@@ -1966,6 +2615,33 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
                   "Destroy https://adstuff.publisher1.com/auction.js",
                   "Create https://adplatform.com/offers.js",
                   "Destroy https://adplatform.com/offers.js"));
+}
+
+// An auction where one component seller fails to load, but the other loads, so
+// the auction succeeds.
+TEST_F(AuctionRunnerTest, ComponentAuctionOneSeller404) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller2);
+  url_loader_factory_.AddResponse(kComponentSeller2Url.spec(), "",
+                                  net::HTTP_NOT_FOUND);
+
+  RunStandardAuction();
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://reporting.example.com/1"),
+                  GURL("https://component1-report.test/1"),
+                  GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  // The bid send to the failing component seller worklet isn't counted,
+  // regardless of whether the bid completed before the worklet failed to load.
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_THAT(result_.errors,
+              testing::ElementsAre(
+                  "Failed to load https://component.seller2.test/bar.js "
+                  "HTTP status = 404 Not Found."));
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
 }
 
 // An auction where one bid is successful, another's script does not provide a
@@ -2681,6 +3357,158 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
   }
 }
 
+// Tests ComponentAuctions and their interactions with the ProcessManager
+// delaying worklet creation.
+TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller2);
+
+  // For both worklet types, in addition to testing the cases with no processes
+  // and at the process limit, also test the case where we're one below the
+  // limit, which should serialize worklet creation and execution.
+  for (size_t num_used_seller_worklet_processes :
+       {static_cast<size_t>(0), AuctionProcessManager::kMaxSellerProcesses - 1,
+        AuctionProcessManager::kMaxSellerProcesses}) {
+    SCOPED_TRACE(num_used_seller_worklet_processes);
+
+    bool seller_worklet_creation_delayed =
+        num_used_seller_worklet_processes ==
+        AuctionProcessManager::kMaxSellerProcesses;
+
+    for (size_t num_used_bidder_worklet_processes :
+         std::vector<size_t>{static_cast<size_t>(0),
+                             AuctionProcessManager::kMaxBidderProcesses - 1,
+                             AuctionProcessManager::kMaxBidderProcesses}) {
+      SCOPED_TRACE(num_used_bidder_worklet_processes);
+
+      bool bidder_worklet_creation_delayed =
+          num_used_bidder_worklet_processes ==
+          AuctionProcessManager::kMaxBidderProcesses;
+
+      // Create AuctionProcessManager in advance of starting the auction so can
+      // create worklets before the auction starts.
+      auction_process_manager_ =
+          std::make_unique<SameProcessAuctionProcessManager>();
+
+      AuctionProcessManager* auction_process_manager =
+          auction_process_manager_.get();
+
+      // Make `num_used_seller_worklet_processes` bidder worklet requests for
+      // different origins.
+      std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> sellers;
+      for (size_t i = 0; i < num_used_seller_worklet_processes; ++i) {
+        sellers.push_back(
+            std::make_unique<AuctionProcessManager::ProcessHandle>());
+        url::Origin origin = url::Origin::Create(
+            GURL(base::StringPrintf("https://%zu.test", i)));
+        EXPECT_TRUE(auction_process_manager->RequestWorkletService(
+            AuctionProcessManager::WorkletType::kSeller, origin,
+            &*sellers.back(), base::BindOnce([]() {
+              ADD_FAILURE() << "This should not be called";
+            })));
+      }
+
+      // Make `num_used_bidder_worklet_processes` bidder worklet requests for
+      // different origins.
+      std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> bidders;
+      for (size_t i = 0; i < num_used_bidder_worklet_processes; ++i) {
+        bidders.push_back(
+            std::make_unique<AuctionProcessManager::ProcessHandle>());
+        url::Origin origin = url::Origin::Create(
+            GURL(base::StringPrintf("https://blocking.bidder.%zu.test", i)));
+        EXPECT_TRUE(auction_process_manager->RequestWorkletService(
+            AuctionProcessManager::WorkletType::kBidder, origin,
+            &*bidders.back(), base::BindOnce([]() {
+              ADD_FAILURE() << "This should not be called";
+            })));
+      }
+
+      // If neither sellers nor bidders are at their limit, the auction should
+      // complete.
+      if (!seller_worklet_creation_delayed &&
+          !bidder_worklet_creation_delayed) {
+        RunStandardAuction();
+      } else {
+        // Otherwise, the auction should be blocked.
+        StartStandardAuction();
+        task_environment_.RunUntilIdle();
+
+        if (seller_worklet_creation_delayed) {
+          // In the case of `seller_worklet_creation_delayed`, only the two
+          // component worklet's loads should have been queued.
+          EXPECT_EQ(
+              2u,
+              auction_process_manager->GetPendingSellerRequestsForTesting());
+        } else if (num_used_seller_worklet_processes ==
+                       AuctionProcessManager::kMaxSellerProcesses - 1 &&
+                   bidder_worklet_creation_delayed) {
+          // IF there's only one available seller worklet process, and
+          // `bidder_worklet_creation_delayed` is true, one component seller
+          // should have been created, the component seller should be queued,
+          // waiting on a process slot, and the top-level seller should not have
+          // been requested yet, waiting on the component sellers to both be
+          // loaded.
+          EXPECT_EQ(
+              1u,
+              auction_process_manager->GetPendingSellerRequestsForTesting());
+        } else {
+          // Otherwise, no seller worklet requests should be pending..
+          EXPECT_EQ(
+              0u,
+              auction_process_manager->GetPendingSellerRequestsForTesting());
+        }
+
+        EXPECT_EQ(
+            bidder_worklet_creation_delayed ? 2u : 0u,
+            auction_process_manager->GetPendingBidderRequestsForTesting());
+
+        // Free up a seller slot, if needed.
+        if (seller_worklet_creation_delayed) {
+          sellers.pop_front();
+          task_environment_.RunUntilIdle();
+          if (bidder_worklet_creation_delayed) {
+            // If bidder creation was also delayed, one component seller should
+            // have been made, but is waiting on a bid. Creating the other
+            // component seller should be queued. The main seller should be
+            // blocked on loading that component seller.
+            EXPECT_EQ(
+                1u,
+                auction_process_manager->GetPendingSellerRequestsForTesting());
+            EXPECT_EQ(
+                2u,
+                auction_process_manager->GetPendingBidderRequestsForTesting());
+          } else {
+            // Otherwise, the auction should have completed.
+            EXPECT_TRUE(auction_complete_);
+          }
+        }
+
+        // Free up a single bidder slot, if needed.
+        if (bidder_worklet_creation_delayed) {
+          EXPECT_FALSE(auction_complete_);
+          bidders.pop_front();
+        }
+
+        // The auction should now be able to run to completion.
+        auction_run_loop_->Run();
+      }
+      EXPECT_TRUE(auction_complete_);
+
+      EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+      EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
+                result_.ad_component_urls);
+      EXPECT_THAT(result_.report_urls,
+                  testing::UnorderedElementsAre(
+                      GURL("https://reporting.example.com/2"),
+                      GURL("https://component2-report.test/2"),
+                      GURL("https://buyer-reporting.example.com/2")));
+      EXPECT_THAT(result_.errors, testing::ElementsAre());
+      CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                      /*expected_interest_groups=*/2, /*expected_owners=*/2);
+    }
+  }
+}
+
 // Test a seller worklet load failure while waiting on bidder worklet processes
 // to be allocated. Most of the tests for global seller worklet failures at a
 // particular phase use seller crashes instead of load errors (see SellerCrash
@@ -2723,6 +3551,88 @@ TEST_F(AuctionRunnerTest, SellerLoadErrorWhileWaitingForBidders) {
                   "Failed to load https://adstuff.publisher1.com/auction.js "
                   "HTTP status = 404 Not Found."));
   CheckHistograms(AuctionRunner::AuctionResult::kSellerWorkletLoadFailed,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
+// Tests ComponentAuction where a component seller worklet has a load error with
+// a hanging bidder worklet request. The auction runs when the process manager
+// only has 1 bidder and 1 seller slot, so this test makes sure that in this
+// case the bidder and seller processes are freed up, so they don't potentially
+// cause deadlock preventing the auction from completing.
+TEST_F(AuctionRunnerTest,
+       ComponentAuctionSellerWorkletLoadErrorWithPendingBidderLoad) {
+  interest_group_buyers_.emplace();
+
+  // First component seller worklet request fails. No response is returned for
+  // the bidder worklet, so it hangs.
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+  url_loader_factory_.AddResponse(kComponentSeller1Url.spec(), "",
+                                  net::HTTP_NOT_FOUND);
+
+  // Second component worklet loads as normal, as does its bidder.
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller2Url, {{kBidder2}}));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller2Url,
+      MakeDecisionScript(kComponentSeller2Url, /*send_report_url=*/GURL(
+                             "https://component2-report.test/")));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kComponentSeller2, "2", "https://ad2.com/",
+                    /*num_ad_components=*/2, kBidder2, kBidder2Name,
+                    /*has_signals=*/true, "l2", "b"));
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  // Top-level seller uses the default script.
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  auction_process_manager_ =
+      std::make_unique<SameProcessAuctionProcessManager>();
+
+  // Take up all but 1 of the seller worklet process slots.
+  std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> sellers;
+  for (size_t i = 0; i < AuctionProcessManager::kMaxSellerProcesses - 1; ++i) {
+    sellers.push_back(std::make_unique<AuctionProcessManager::ProcessHandle>());
+    url::Origin origin =
+        url::Origin::Create(GURL(base::StringPrintf("https://%zu.test", i)));
+    EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
+        AuctionProcessManager::WorkletType::kSeller, origin, &*sellers.back(),
+        base::BindOnce(
+            []() { ADD_FAILURE() << "This should not be called"; })));
+  }
+
+  // Take up but 1 of the bidder worklet process slots.
+  std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> bidders;
+  for (size_t i = 0; i < AuctionProcessManager::kMaxBidderProcesses - 1; ++i) {
+    bidders.push_back(std::make_unique<AuctionProcessManager::ProcessHandle>());
+    url::Origin origin = url::Origin::Create(
+        GURL(base::StringPrintf("https://blocking.bidder.%zu.test", i)));
+    EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
+        AuctionProcessManager::WorkletType::kBidder, origin, &*bidders.back(),
+        base::BindOnce(
+            []() { ADD_FAILURE() << "This should not be called"; })));
+  }
+
+  RunStandardAuction();
+
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
+            result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://reporting.example.com/2"),
+                  GURL("https://component2-report.test/2"),
+                  GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(result_.errors,
+              testing::UnorderedElementsAre(
+                  "Failed to load https://component.seller1.test/foo.js HTTP "
+                  "status = 404 Not Found."));
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2);
 }
 
@@ -3161,6 +4071,311 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
   }
 }
 
+TEST_F(AuctionRunnerTest, ComponentAuctionAllBiddersCrashBeforeBidding) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller2);
+  StartStandardAuctionWithMockService();
+
+  EXPECT_FALSE(auction_complete_);
+
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  bidder1_worklet.reset();
+
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+  bidder2_worklet.reset();
+
+  auction_run_loop_->Run();
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_THAT(
+      result_.errors,
+      testing::UnorderedElementsAre(
+          base::StringPrintf("%s crashed while trying to run generateBid().",
+                             kBidder1Url.spec().c_str()),
+          base::StringPrintf("%s crashed while trying to run generateBid().",
+                             kBidder2Url.spec().c_str())));
+
+  CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
+// Test the case that one component has both bidders, one of which crashes, to
+// make sure a single bidder crash doesn't result in the component auction
+// failing.
+TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller1);
+  StartStandardAuctionWithMockService();
+
+  EXPECT_FALSE(auction_complete_);
+
+  // Close the first bidder worklet's pipe, simulating a crash.
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  bidder1_worklet.reset();
+  // Wait for the AuctionRunner to observe the crash.
+  task_environment_.RunUntilIdle();
+
+  // The second bidder worklet bids.
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+  bidder2_worklet->InvokeGenerateBidCallback(2, GURL("https://ad2.com/"));
+
+  // Component worklet scores the bid.
+  auto component_seller_worklet =
+      mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
+  ASSERT_TRUE(component_seller_worklet);
+  auto score_ad_params = component_seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
+  EXPECT_EQ(2, score_ad_params.bid);
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/3, /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt,
+           /*errors=*/{});
+
+  // Top-level seller worklet scores the bid.
+  auto top_level_seller_worklet =
+      mock_auction_process_manager_->TakeSellerWorklet(kSellerUrl);
+  ASSERT_TRUE(top_level_seller_worklet);
+  score_ad_params = top_level_seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
+  EXPECT_EQ(2, score_ad_params.bid);
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/4, /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
+
+  // Top-level seller worklet returns a report url.
+  top_level_seller_worklet->WaitForReportResult();
+  top_level_seller_worklet->InvokeReportResultCallback(
+      GURL("https://report1.test/"));
+
+  // The component seller worklet should be reloaded and ReportResult() invoked.
+  mock_auction_process_manager_->WaitForWinningSellerReload();
+  component_seller_worklet =
+      mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
+  component_seller_worklet->set_expect_send_pending_signals_requests_called(
+      false);
+  ASSERT_TRUE(component_seller_worklet);
+  component_seller_worklet->WaitForReportResult();
+  component_seller_worklet->InvokeReportResultCallback(
+      GURL("https://report2.test/"));
+
+  // Bidder worklet 2 should be reloaded and ReportWin() invoked.
+  mock_auction_process_manager_->WaitForWinningBidderReload();
+  bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  bidder2_worklet->WaitForReportWin();
+  bidder2_worklet->InvokeReportWinCallback(GURL("https://report3.test/"));
+
+  // Bidder2 won, Bidder1 crashed.
+  auction_run_loop_->Run();
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(GURL("https://report1.test/"),
+                                            GURL("https://report2.test/"),
+                                            GURL("https://report3.test/")));
+  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(6, result_.bidder2_bid_count);
+  EXPECT_THAT(result_.errors,
+              testing::UnorderedElementsAre(base::StringPrintf(
+                  "%s crashed while trying to run generateBid().",
+                  kBidder1Url.spec().c_str())));
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
+// Test the three case where a component seller worklet fails during
+// ReportResult:
+//
+// * Crash
+// * Load failure
+// * Error running the script.
+//
+// Only the first case should fail the auction.
+TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
+  interest_group_buyers_.emplace();
+  // It's simpler to start a two bidder auction and throw away one of the
+  // bidders rather than start a one-bidder auction.
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller1);
+
+  enum class TestCase { kCrash, kLoadError, kScriptError };
+
+  // When false, simulates a seller workloet load failure instead.
+  for (auto test_case :
+       {TestCase::kCrash, TestCase::kLoadError, TestCase::kScriptError}) {
+    SCOPED_TRACE(static_cast<int>(test_case));
+
+    StartStandardAuctionWithMockService();
+
+    EXPECT_FALSE(auction_complete_);
+
+    // Bidder worklet 1 bids.
+    auto bidder1_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+    ASSERT_TRUE(bidder1_worklet);
+    bidder1_worklet->InvokeGenerateBidCallback(2, GURL("https://ad1.com/"));
+
+    // Bidder worklet 2 makes no bid.
+    auto bidder2_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+    ASSERT_TRUE(bidder2_worklet);
+    bidder2_worklet->InvokeGenerateBidCallback(absl::nullopt);
+
+    // Component worklet scores the bid.
+    auto component_seller_worklet =
+        mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
+    ASSERT_TRUE(component_seller_worklet);
+    auto score_ad_params = component_seller_worklet->WaitForScoreAd();
+    EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+    EXPECT_EQ(2, score_ad_params.bid);
+    std::move(score_ad_params.callback)
+        .Run(/*score=*/3, /*data_version=*/0, /*has_data_version=*/false,
+             /*debug_loss_report_url=*/absl::nullopt,
+             /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
+
+    // Top-level seller worklet scores the bid.
+    auto top_level_seller_worklet =
+        mock_auction_process_manager_->TakeSellerWorklet(kSellerUrl);
+    ASSERT_TRUE(top_level_seller_worklet);
+    score_ad_params = top_level_seller_worklet->WaitForScoreAd();
+    EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+    EXPECT_EQ(2, score_ad_params.bid);
+    std::move(score_ad_params.callback)
+        .Run(/*score=*/4, /*data_version=*/0, /*has_data_version=*/false,
+             /*debug_loss_report_url=*/absl::nullopt,
+             /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
+
+    // Top-level seller worklet returns a report url.
+    top_level_seller_worklet->WaitForReportResult();
+    top_level_seller_worklet->InvokeReportResultCallback(
+        GURL("https://report1.test/"));
+
+    // The component seller worklet should be reloaded and ReportResult()
+    // invoked.
+    mock_auction_process_manager_->WaitForWinningSellerReload();
+    component_seller_worklet =
+        mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
+    component_seller_worklet->set_expect_send_pending_signals_requests_called(
+        false);
+    ASSERT_TRUE(component_seller_worklet);
+    component_seller_worklet->WaitForReportResult();
+    if (test_case == TestCase::kCrash) {
+      // A crash in the winning component seller worklet will cause the auction
+      // to immediately abort at this phase of the auction.
+      component_seller_worklet.reset();
+      auction_run_loop_->Run();
+
+      EXPECT_FALSE(result_.ad_url);
+      EXPECT_EQ(6, result_.bidder1_bid_count);
+      EXPECT_THAT(result_.errors,
+                  testing::UnorderedElementsAre(base::StringPrintf(
+                      "%s crashed while trying to run reportResult().",
+                      kComponentSeller1Url.spec().c_str())));
+      CheckHistograms(
+          AuctionRunner::AuctionResult::kWinningComponentSellerWorkletCrashed,
+          /*expected_interest_groups=*/2, /*expected_owners=*/2);
+    } else if (test_case == TestCase::kLoadError) {
+      // A load error in the winning component seller worklet will cause the
+      // auction to continue to completion.
+      component_seller_worklet->ResetReceiverWithReason(
+          "Component seller reset reason");
+
+      // Winning bidder worklet should be reloaded and ReportWin() invoked.
+      mock_auction_process_manager_->WaitForWinningBidderReload();
+      bidder1_worklet =
+          mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+      bidder1_worklet->WaitForReportWin();
+      bidder1_worklet->InvokeReportWinCallback(GURL("https://report3.test/"));
+
+      // Auction completes.
+      auction_run_loop_->Run();
+
+      EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+      EXPECT_THAT(result_.report_urls,
+                  testing::UnorderedElementsAre(GURL("https://report1.test/"),
+                                                GURL("https://report3.test/")));
+      EXPECT_EQ(6, result_.bidder1_bid_count);
+      EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(
+                                      "Component seller reset reason"));
+      CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                      /*expected_interest_groups=*/2, /*expected_owners=*/2);
+    } else if (test_case == TestCase::kScriptError) {
+      // A script error in the winning component seller worklet will cause the
+      // auction to continue to completion.
+      const char kScriptError[] = "Script error";
+
+      component_seller_worklet->InvokeReportResultCallback(
+          /*report_url=*/absl::nullopt, {kScriptError});
+
+      // Winning bidder worklet should be reloaded and ReportWin() invoked.
+      mock_auction_process_manager_->WaitForWinningBidderReload();
+      bidder1_worklet =
+          mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+      bidder1_worklet->WaitForReportWin();
+      bidder1_worklet->InvokeReportWinCallback(GURL("https://report3.test/"));
+
+      // Auction completes.
+      auction_run_loop_->Run();
+
+      EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+      EXPECT_THAT(result_.report_urls,
+                  testing::UnorderedElementsAre(GURL("https://report1.test/"),
+                                                GURL("https://report3.test/")));
+      EXPECT_EQ(6, result_.bidder1_bid_count);
+      EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(kScriptError));
+      CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                      /*expected_interest_groups=*/2, /*expected_owners=*/2);
+    }
+  }
+}
+
+// Test the case that all component sellers crash.
+TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersAllCrash) {
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller2);
+  StartStandardAuctionWithMockService();
+
+  EXPECT_FALSE(auction_complete_);
+
+  // First component seller worklet crashes. Auction should not complete.
+  auto component_seller_worklet1 =
+      mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
+  component_seller_worklet1->set_expect_send_pending_signals_requests_called(
+      false);
+  component_seller_worklet1.reset();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_complete_);
+
+  // Second component seller worklet crashes. Auction should complete.
+  auto component_seller_worklet2 =
+      mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller2Url);
+  component_seller_worklet2->set_expect_send_pending_signals_requests_called(
+      false);
+  component_seller_worklet2.reset();
+  auction_run_loop_->Run();
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_THAT(result_.errors,
+              testing::UnorderedElementsAre(
+                  base::StringPrintf("%s crashed.",
+                                     kComponentSeller1Url.spec().c_str()),
+                  base::StringPrintf("%s crashed.",
+                                     kComponentSeller2Url.spec().c_str())));
+  CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
 TEST_F(AuctionRunnerTest, NullAdComponents) {
   const GURL kRenderUrl = GURL("https://ad1.com");
   const struct {
@@ -3510,6 +4725,80 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
   // report URL aborts the auction.
   seller_worklet->WaitForReportResult();
   seller_worklet->InvokeReportResultCallback(GURL("http://not.https.test/"));
+  auction_run_loop_->Run();
+
+  EXPECT_EQ("Invalid seller report URL", TakeBadMessage());
+
+  // No bidder won.
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
+// Test cases where bad a report URL is received over Mojo from the winning
+// component seller worklet. Bad report URLs should be rejected in the Mojo
+// process, so these are treated as security errors.
+TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
+  this->SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                          /*bidder2_seller=*/kComponentSeller1);
+  StartStandardAuctionWithMockService();
+
+  auto component_seller_worklet =
+      mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
+  ASSERT_TRUE(component_seller_worklet);
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+
+  // Only Bidder1 bids, to keep things simple.
+  bidder1_worklet->InvokeGenerateBidCallback(/*bid=*/5,
+                                             GURL("https://ad1.com/"));
+  bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
+
+  // Component seller scores the bid.
+  auto score_ad_params = component_seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(5, score_ad_params.bid);
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
+
+  // Top-level seller scores the bid.
+  score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(5, score_ad_params.bid);
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
+
+  // Top-level seller worklet returns a valid HTTPS report URL.
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback(GURL("https://ok.test/"));
+
+  mock_auction_process_manager_->WaitForWinningSellerReload();
+  component_seller_worklet =
+      mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
+  component_seller_worklet->set_expect_send_pending_signals_requests_called(
+      false);
+  component_seller_worklet->WaitForReportResult();
+  component_seller_worklet->InvokeReportResultCallback(GURL("Invalid URL"));
+
+  // Bidder1 never gets to report anything, since the seller providing a bad
+  // report URL aborts the auction.
   auction_run_loop_->Run();
 
   EXPECT_EQ("Invalid seller report URL", TakeBadMessage());
@@ -3926,6 +5215,217 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   EXPECT_EQ(0u, res.debug_win_report_urls.size());
 }
 
+// Test win/loss reporting in a component auction with two components with one
+// bidder each.
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportingComponentAuctionTwoComponents) {
+  interest_group_buyers_.emplace();
+
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url,
+      MakeDecisionScript(
+          kComponentSeller1Url,
+          /*send_report_url=*/GURL("https://component1-report.test/"),
+          /*debug_loss_report_url=*/"https://component1-loss-reporting.test/",
+          /*debug_win_report_url=*/"https://component1-win-reporting.test/"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kComponentSeller1, "1", "https://ad1.com/",
+                    /*num_ad_components=*/2, kBidder1, kBidder1Name,
+                    /*has_signals=*/true, "k1", "a", kBidder1DebugLossReportUrl,
+                    kBidder1DebugWinReportUrl));
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller2Url, {{kBidder2}}));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller2Url,
+      MakeDecisionScript(
+          kComponentSeller2Url,
+          /*send_report_url=*/GURL("https://component2-report.test/"),
+          /*debug_loss_report_url=*/"https://component2-loss-reporting.test/",
+          /*debug_win_report_url=*/"https://component2-win-reporting.test/"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kComponentSeller2, "2", "https://ad2.com/",
+                    /*num_ad_components=*/2, kBidder2, kBidder2Name,
+                    /*has_signals=*/true, "l2", "b", kBidder2DebugLossReportUrl,
+                    kBidder2DebugWinReportUrl));
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(
+          kSellerUrl,
+          /*debug_loss_report_url=*/"https://top-seller-loss-reporting.test/",
+          /*debug_win_report_url=*/"https://top-seller-win-reporting.test/"));
+
+  RunStandardAuction();
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
+  // Bidder 2 won the auction.
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+
+  EXPECT_THAT(result_.debug_loss_report_urls,
+              testing::UnorderedElementsAre(
+                  GURL(kBidder1DebugLossReportUrl),
+                  GURL("https://component1-loss-reporting.test/1"),
+                  GURL("https://top-seller-loss-reporting.test/1")));
+
+  EXPECT_THAT(result_.debug_win_report_urls,
+              testing::UnorderedElementsAre(
+                  GURL(kBidder2DebugWinReportUrl),
+                  GURL("https://component2-win-reporting.test/2"),
+                  GURL("https://top-seller-win-reporting.test/2")));
+}
+
+// Test win/loss reporting in a component auction with one component with two
+// bidders.
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportingComponentAuctionOneComponent) {
+  interest_group_buyers_.emplace();
+
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1, kBidder2}}));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url,
+      MakeDecisionScript(
+          kComponentSeller1Url,
+          /*send_report_url=*/GURL("https://component-report.test/"),
+          /*debug_loss_report_url=*/"https://component-loss-reporting.test/",
+          /*debug_win_report_url=*/"https://component-win-reporting.test/"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kComponentSeller1, "1", "https://ad1.com/",
+                    /*num_ad_components=*/2, kBidder1, kBidder1Name,
+                    /*has_signals=*/true, "k1", "a", kBidder1DebugLossReportUrl,
+                    kBidder1DebugWinReportUrl));
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kComponentSeller1, "2", "https://ad2.com/",
+                    /*num_ad_components=*/2, kBidder2, kBidder2Name,
+                    /*has_signals=*/true, "l2", "b", kBidder2DebugLossReportUrl,
+                    kBidder2DebugWinReportUrl));
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(
+          kSellerUrl,
+          /*debug_loss_report_url=*/"https://top-seller-loss-reporting.test/",
+          /*debug_win_report_url=*/"https://top-seller-win-reporting.test/"));
+
+  RunStandardAuction();
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
+  // Bidder 1 won the auction, since component auctions give lower bidders
+  // higher desireability scores.
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+
+  // Top seller doesn't report a loss, since it never saw the bid from the
+  // second bidder.
+  EXPECT_THAT(result_.debug_loss_report_urls,
+              testing::UnorderedElementsAre(
+                  GURL(kBidder2DebugLossReportUrl),
+                  GURL("https://component-loss-reporting.test/2")));
+
+  EXPECT_THAT(result_.debug_win_report_urls,
+              testing::UnorderedElementsAre(
+                  GURL(kBidder1DebugWinReportUrl),
+                  GURL("https://component-win-reporting.test/1"),
+                  GURL("https://top-seller-win-reporting.test/1")));
+}
+
+// Like above test, but top-level seller rejects all bidders.
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportingComponentAuctionNoWinner) {
+  interest_group_buyers_.emplace();
+
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url,
+      MakeDecisionScript(
+          kComponentSeller1Url,
+          /*send_report_url=*/GURL("https://component1-report.test/"),
+          /*debug_loss_report_url=*/"https://component1-loss-reporting.test/",
+          /*debug_win_report_url=*/"https://component1-win-reporting.test/"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kComponentSeller1, "1", "https://ad1.com/",
+                    /*num_ad_components=*/2, kBidder1, kBidder1Name,
+                    /*has_signals=*/true, "k1", "a", kBidder1DebugLossReportUrl,
+                    kBidder1DebugWinReportUrl));
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller2Url, {{kBidder2}}));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller2Url,
+      MakeDecisionScript(
+          kComponentSeller2Url,
+          /*send_report_url=*/GURL("https://component2-report.test/"),
+          /*debug_loss_report_url=*/"https://component2-loss-reporting.test/",
+          /*debug_win_report_url=*/"https://component2-win-reporting.test/"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kComponentSeller2, "2", "https://ad2.com/",
+                    /*num_ad_components=*/2, kBidder2, kBidder2Name,
+                    /*has_signals=*/true, "l2", "b", kBidder2DebugLossReportUrl,
+                    kBidder2DebugWinReportUrl));
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         R"(
+function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                 browserSignals) {
+  forDebuggingOnly.reportAdAuctionLoss(
+      "https://top-seller-loss-reporting.test/" + bid);
+  forDebuggingOnly.reportAdAuctionWin(
+      "https://top-seller-win-reporting.test/" + bid);
+  return 0;
+}
+  )");
+
+  RunStandardAuction();
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
+  // No interest group won the auction.
+  EXPECT_FALSE(result_.ad_url);
+
+  EXPECT_THAT(result_.debug_loss_report_urls,
+              testing::UnorderedElementsAre(
+                  GURL(kBidder1DebugLossReportUrl),
+                  GURL("https://component1-loss-reporting.test/1"),
+                  GURL("https://top-seller-loss-reporting.test/1"),
+                  GURL(kBidder2DebugLossReportUrl),
+                  GURL("https://component2-loss-reporting.test/2"),
+                  GURL("https://top-seller-loss-reporting.test/2")));
+
+  EXPECT_THAT(result_.debug_win_report_urls, testing::UnorderedElementsAre());
+}
+
 // Loss report URLs should be dropped when the seller worklet fails to load.
 TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingSellerWorkletFailToLoad) {
@@ -4164,6 +5664,149 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               testing::UnorderedElementsAre(
                   kBidder1DebugWinReportUrl,
                   "https://seller-debug-win-reporting.com/1"));
+}
+
+// This tests the component auction state machine in the case of a large
+// component auction. It uses the debug reporting API just to make sure all
+// scripts were run to completion. The main thing this test serves to do is to
+// validate the component auction state machinery works (Waits for all bids to
+// be generated/scored, doesn't abort them early, doesn't wait for extra bids).
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       LargeComponentAuction) {
+  const GURL kComponentSeller3Url{"https://component.seller3.test/baz.js"};
+
+  // Seller URLs and number of bidders for each Auction.
+  const struct {
+    GURL seller_url;
+    int num_bidders;
+  } kSellerInfo[] = {
+      {kSellerUrl, 2},
+      {kComponentSeller1Url, 3},
+      {kComponentSeller2Url, 5},
+      {kComponentSeller3Url, 7},
+  };
+
+  // Set up auction, including bidder and seller Javascript responses,
+  // AuctionConfig fields, etc.
+  size_t bidder_index = 1;
+  std::vector<StorageInterestGroup> all_bidders;
+  for (size_t i = 0; i < std::size(kSellerInfo); ++i) {
+    url::Origin seller = url::Origin::Create(kSellerInfo[i].seller_url);
+    GURL send_report_url =
+        GURL(base::StringPrintf("https://seller%zu.test/report/", i));
+    GURL debug_loss_report_url =
+        GURL(base::StringPrintf("https://seller%zu.test/loss/", i));
+    GURL debug_win_report_url =
+        GURL(base::StringPrintf("https://seller%zu.test/win/", i));
+
+    auction_worklet::AddJavascriptResponse(
+        &url_loader_factory_, kSellerInfo[i].seller_url,
+        MakeDecisionScript(kSellerInfo[i].seller_url, send_report_url,
+                           debug_loss_report_url.spec(),
+                           debug_win_report_url.spec()));
+
+    std::vector<url::Origin> bidders;
+    for (int j = 0; j < kSellerInfo[i].num_bidders; ++j, ++bidder_index) {
+      GURL bidder_url = GURL(
+          base::StringPrintf("https://bidder%zu.test/script.js", bidder_index));
+      url::Origin bidder = url::Origin::Create(bidder_url);
+      GURL ad_url =
+          GURL(base::StringPrintf("https://bidder%zu.ad.test/", bidder_index));
+      GURL bidder_debug_loss_report_url = GURL(
+          base::StringPrintf("https://bidder%zu.test/loss/", bidder_index));
+      GURL bidder_debug_win_report_url =
+          GURL(base::StringPrintf("https://bidder%zu.test/win/", bidder_index));
+
+      all_bidders.emplace_back(MakeInterestGroup(
+          bidder, /*name=*/base::NumberToString(bidder_index), bidder_url,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/{}, ad_url,
+          /*ad_component_urls=*/absl::nullopt));
+
+      auction_worklet::AddJavascriptResponse(
+          &url_loader_factory_, bidder_url,
+          MakeBidScript(
+              seller, /*bid=*/base::NumberToString(bidder_index), ad_url.spec(),
+              /*num_ad_components=*/0, bidder,
+              /*interest_group_name=*/base::NumberToString(bidder_index),
+              /*has_signals=*/false, /*signal_key=*/"", /*signal_val=*/"",
+              bidder_debug_loss_report_url.spec(),
+              bidder_debug_win_report_url.spec()));
+
+      bidders.push_back(bidder);
+    }
+
+    // For the top-most auction, only need to set `interest_group_buyers_`. For
+    // others, need to append to `component_auctions_`.
+    if (kSellerInfo[i].seller_url == kSellerUrl) {
+      interest_group_buyers_ = std::move(bidders);
+    } else {
+      component_auctions_.emplace_back(
+          CreateAuctionConfig(kSellerInfo[i].seller_url, std::move(bidders)));
+    }
+  }
+
+  StartAuction(kSellerInfo[0].seller_url, std::move(all_bidders));
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
+  // Bidder 11 won - the first bidder for the third component auction. Higher
+  // bidders bid more, but component sellers use a script that favors lower
+  // bidders, while the top-level seller favors higher bidders.
+  EXPECT_EQ(GURL("https://bidder11.ad.test/"), result_.ad_url);
+
+  // Top seller doesn't report a loss, since it never saw the bid from the
+  // second bidder.
+  EXPECT_THAT(result_.debug_loss_report_urls,
+              testing::UnorderedElementsAre(
+                  // kSeller's bidders.
+                  GURL("https://bidder1.test/loss/"),
+                  GURL("https://seller0.test/loss/1"),
+                  GURL("https://bidder2.test/loss/"),
+                  GURL("https://seller0.test/loss/2"),
+                  // kComponentSeller1's bidders. The first makes it to the
+                  // top-level auction, the others do not.
+                  GURL("https://bidder3.test/loss/"),
+                  GURL("https://seller1.test/loss/3"),
+                  GURL("https://seller0.test/loss/3"),
+                  GURL("https://bidder4.test/loss/"),
+                  GURL("https://seller1.test/loss/4"),
+                  GURL("https://bidder5.test/loss/"),
+                  GURL("https://seller1.test/loss/5"),
+                  // kComponentSeller2's bidders. The first makes it to the
+                  // top-level auction, the others do not.
+                  GURL("https://bidder6.test/loss/"),
+                  GURL("https://seller2.test/loss/6"),
+                  GURL("https://seller0.test/loss/6"),
+                  GURL("https://bidder7.test/loss/"),
+                  GURL("https://seller2.test/loss/7"),
+                  GURL("https://bidder8.test/loss/"),
+                  GURL("https://seller2.test/loss/8"),
+                  GURL("https://bidder9.test/loss/"),
+                  GURL("https://seller2.test/loss/9"),
+                  GURL("https://bidder10.test/loss/"),
+                  GURL("https://seller2.test/loss/10"),
+                  // kComponentSeller3's bidders. Bidder 11 won the entire
+                  // auction, all the others lose component seller 3's auction.
+                  GURL("https://bidder12.test/loss/"),
+                  GURL("https://seller3.test/loss/12"),
+                  GURL("https://bidder13.test/loss/"),
+                  GURL("https://seller3.test/loss/13"),
+                  GURL("https://bidder14.test/loss/"),
+                  GURL("https://seller3.test/loss/14"),
+                  GURL("https://bidder15.test/loss/"),
+                  GURL("https://seller3.test/loss/15"),
+                  GURL("https://bidder16.test/loss/"),
+                  GURL("https://seller3.test/loss/16"),
+                  GURL("https://bidder17.test/loss/"),
+                  GURL("https://seller3.test/loss/17")));
+
+  EXPECT_THAT(
+      result_.debug_win_report_urls,
+      testing::UnorderedElementsAre(GURL("https://bidder11.test/win/"),
+                                    GURL("https://seller3.test/win/11"),
+                                    GURL("https://seller0.test/win/11")));
 }
 
 }  // namespace

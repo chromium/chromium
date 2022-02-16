@@ -3524,6 +3524,103 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
   EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
 }
 
+// Use bidder and seller worklet files that validate their arguments all have
+// the expected values, in the case of an auction with one component auction.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       ComponentAuctionValidateWorkletParameters) {
+  // Use different hostnames for each participant.
+  //
+  // Match assignments in above test as closely as possible, to make scripts
+  // similar,
+  constexpr char kBidderHost[] = "a.test";
+  constexpr char kTopLevelSellerHost[] = "b.test";
+  constexpr char kTopFrameHost[] = "c.test";
+  constexpr char kComponentSellerHost[] = "d.test";
+
+  content_browser_client_.AddToAllowList(
+      {url::Origin::Create(https_server_->GetURL(kComponentSellerHost, "/"))});
+
+  GURL bidder_url = https_server_->GetURL(kBidderHost, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+
+  ASSERT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/bidder_origin,
+      /*name=*/"cars",
+      /*bidding_url=*/
+      https_server_->GetURL(
+          kBidderHost,
+          "/interest_group/component_auction_bidding_argument_validator.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/
+      https_server_->GetURL(kBidderHost,
+                            "/interest_group/trusted_bidding_signals.json"),
+      /*trusted_bidding_signals_keys=*/{{"key1"}},
+      /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2, 3]}}",
+      /*ads=*/
+      {{{GURL("https://example.com/render"), "{ad:'metadata', here:[1,2,3]}"}}},
+      /*ad_components=*/
+      {{{GURL("https://example.com/render-component"),
+         /*metadata=*/absl::nullopt}}})));
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server_->GetURL(kTopFrameHost, "/echo")));
+  GURL top_level_seller_script_url = https_server_->GetURL(
+      kTopLevelSellerHost,
+      "/interest_group/"
+      "component_auction_top_level_decision_argument_validator.js");
+  GURL component_seller_script_url = https_server_->GetURL(
+      kComponentSellerHost,
+      "/interest_group/"
+      "component_auction_component_decision_argument_validator.js");
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(
+      GURL(EvalJs(shell(),
+                  JsReplace(
+                      R"(
+(async function() {
+  return await navigator.runAdAuction({
+    seller: $1,
+    decisionLogicUrl: $2,
+    trustedScoringSignalsUrl: $3,
+    auctionSignals: ["top-level auction signals"],
+    sellerSignals: ["top-level seller signals"],
+    perBuyerSignals: {$7: ["top-level buyer signals"]},
+    componentAuctions: [{
+      seller: $4,
+      decisionLogicUrl: $5,
+      trustedScoringSignalsUrl: $6,
+      interestGroupBuyers: [$7],
+      auctionSignals: ["component auction signals"],
+      sellerSignals: ["component seller signals"],
+      perBuyerSignals: {$7: ["component buyer signals"]},
+    }],
+  });
+})())",
+                      url::Origin::Create(top_level_seller_script_url),
+                      top_level_seller_script_url,
+                      https_server_->GetURL(
+                          kTopLevelSellerHost,
+                          "/interest_group/trusted_scoring_signals.json"),
+                      url::Origin::Create(component_seller_script_url),
+                      component_seller_script_url,
+                      https_server_->GetURL(
+                          kComponentSellerHost,
+                          "/interest_group/trusted_scoring_signals2.json"),
+                      bidder_origin))
+               .ExtractString()),
+      &observer);
+  EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
+  WaitForURL(https_server_->GetURL(kTopLevelSellerHost,
+                                   "/echo?report_top_level_seller"));
+  WaitForURL(https_server_->GetURL(kComponentSellerHost,
+                                   "/echo?report_component_seller"));
+  WaitForURL(https_server_->GetURL(kBidderHost, "/echo?report_bidder"));
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        SellerWorkletThrowsFailsAuction) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");

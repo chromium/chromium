@@ -70,10 +70,10 @@ class CONTENT_EXPORT AuctionRunner {
           interest_group_api_operation,
       const url::Origin& origin)>;
 
-  // Result of an auction. Used for histograms. Only recorded for valid
-  // auctions. These are used in histograms, so values of existing entries must
-  // not change when adding/removing values, and obsolete values must not be
-  // reused.
+  // Result of an auction or a component auction. Used for histograms. Only
+  // recorded for valid auctions. These are used in histograms, so values of
+  // existing entries must not change when adding/removing values, and obsolete
+  // values must not be reused.
   enum class AuctionResult {
     // The auction succeeded, with a winning bidder.
     kSuccess = 0,
@@ -108,7 +108,15 @@ class CONTENT_EXPORT AuctionRunner {
     // The seller is not allowed to use the interest group API.
     kSellerRejected = 9,
 
-    kMaxValue = kSellerRejected
+    // The component auction completed with a winner, but that winner lost the
+    // top-level auction.
+    kComponentLostAuction = 10,
+
+    // The component seller worklet with the winning bidder crashed during the
+    // reporting phase.
+    kWinningComponentSellerWorkletCrashed = 11,
+
+    kMaxValue = kWinningComponentSellerWorkletCrashed
   };
 
   explicit AuctionRunner(const AuctionRunner&) = delete;
@@ -151,6 +159,8 @@ class CONTENT_EXPORT AuctionRunner {
   // auction.
   using InterestGroupSet = std::set<std::pair<url::Origin, std::string>>;
 
+  class Auction;
+
   // TODO(mmenke): Move BidState, Bid, and ScoredBid into Auction.
   struct BidState {
     BidState();
@@ -177,9 +187,18 @@ class CONTENT_EXPORT AuctionRunner {
     absl::optional<GURL> bidder_debug_win_report_url;
 
     // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
-    // forDebuggingOnly.reportAdAuctionWin(url) called in scoreAd().
+    // forDebuggingOnly.reportAdAuctionWin(url) called in scoreAd(). In the case
+    // of a component auction, these are the values from component seller that
+    // the scored ad was created in.
     absl::optional<GURL> seller_debug_loss_report_url;
     absl::optional<GURL> seller_debug_win_report_url;
+
+    // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
+    // forDebuggingOnly.reportAdAuctionWin(url) called in scoreAd() from the
+    // top-level seller, in the case this bidder was made in a component
+    // auction, won it, and was then scored by the top-level seller.
+    absl::optional<GURL> top_level_seller_debug_win_report_url;
+    absl::optional<GURL> top_level_seller_debug_loss_report_url;
   };
 
   // Result of generated a bid. Contains information that needs to score a bid
@@ -194,7 +213,10 @@ class CONTENT_EXPORT AuctionRunner {
         base::TimeDelta bid_duration,
         absl::optional<uint32_t> bidding_signals_data_version,
         const blink::InterestGroup::Ad* bid_ad,
-        BidState* bid_state);
+        BidState* bid_state,
+        Auction* auction);
+
+    Bid(Bid&);
 
     ~Bid();
 
@@ -217,6 +239,10 @@ class CONTENT_EXPORT AuctionRunner {
     // `bid_state` of the InterestGroup that made the bid. This should not be
     // written to, except for adding seller debug reporting URLs.
     const raw_ptr<BidState> bid_state;
+
+    // The Auction with the interest group that made this bid. Important in the
+    // case of component auctions.
+    const raw_ptr<Auction> auction;
   };
 
   // Combines a Bid with seller score and seller state needed to invoke its
@@ -262,11 +288,16 @@ class CONTENT_EXPORT AuctionRunner {
 
     // All passed in raw pointers must remain valid until the Auction is
     // destroyed. `config` is typically owned by the AuctionRunner's
-    // `owned_auction_config_` field.
+    // `owned_auction_config_` field. `is_component_auction` should be true
+    // if the Auction is a component of another auction.
     Auction(blink::mojom::AuctionAdConfig* config,
+            bool is_component_auction,
             AuctionWorkletManager* auction_worklet_manager,
             InterestGroupManagerImpl* interest_group_manager,
             base::Time auction_start_time);
+
+    Auction(const Auction&) = delete;
+    Auction& operator=(const Auction&) = delete;
 
     ~Auction();
 
@@ -285,16 +316,31 @@ class CONTENT_EXPORT AuctionRunner {
             is_interest_group_api_allowed_callback,
         AuctionPhaseCompletionCallback load_interest_groups_phase_callback);
 
-    // Starts bidding and scoring phase of the auction. Callback is invoked when
+    // Starts bidding and scoring phase of the auction.
+    //
+    // `on_seller_receiver_callback`, if non-null, is invoked once the seller
+    // worklet has been received, or if the seller worklet is no longer needed
+    // (e.g., if all bidders fail to bid before the seller worklet has
+    // been received). This is needed so that in the case of component auctions,
+    // the top-level seller worklet will only be requested once all component
+    // seller worklets have been received, to prevent deadlock (the top-level
+    // auction could be waiting on a bid from a seller, while the top-level
+    // seller worklet being is blocking a component seller worklet from being
+    // created, due to the process limit). Unlike other callbacks,
+    // `on_seller_receiver_callback` may be called synchronously.
+    //
+    // `bidding_and_scoring_phase_callback` is invoked asynchronously when
     // either the auction has failed to produce a winner, or the auction has a
-    // winner. `success` is only when there is a winner.
+    // winner. `success` is true only when there is a winner.
     void StartBiddingAndScoringPhase(
+        base::OnceClosure on_seller_receiver_callback,
         AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback);
 
-    // Starts the reporting phase of the auction. Callback is invoked when
-    // either the auction has encountered a fatal error, or until all reporting
-    // URLs (if any) have been retrieved from the applicable worklets. `success`
-    // is true if the fainl status of the auction is `kSuccess`.
+    // Starts the reporting phase of the auction. Callback is invoked
+    // asynchronously when either the auction has encountered a fatal error, or
+    // when all reporting URLs (if any) have been retrieved from the applicable
+    // worklets. `success` is true if the final status of the auction is
+    // `kSuccess`.
     void StartReportingPhase(
         AuctionPhaseCompletionCallback reporting_phase_callback);
 
@@ -308,7 +354,7 @@ class CONTENT_EXPORT AuctionRunner {
     // than the seller rejecting all bids.
     //
     // TODO(mmenke): Consider calling this after the reporting phase.
-    InterestGroupSet GetInterestGroupsThatBid() const;
+    void GetInterestGroupsThatBid(InterestGroupSet& interest_groups) const;
 
     // Retrieves any debug reporting URLs. May only be called once, since it
     // takes ownership of stored reporting URLs.
@@ -325,18 +371,30 @@ class CONTENT_EXPORT AuctionRunner {
     // takes ownership of stored errors.
     std::vector<std::string> TakeErrors();
 
-    // returns the top big of the auction. May only be invoked after an auction
-    // has succeeded.
+    // Returns the top bid of the auction. May only be invoked after the
+    // bidding and scoring phase has completed successfully.
     ScoredBid* top_bid();
 
    private:
+    using AuctionList = std::list<std::unique_ptr<Auction>>;
+
     // ---------------------------------
     // Load interest group phase methods
     // ---------------------------------
 
-    // Adds `interest_groups` to `bid_states_`. If all bidders have been loaded,
-    // calls OnStartLoadInterestGroupsPhaseComplete().
+    // Invoked whenever the interest groups for a buyer have loaded. Adds
+    // `interest_groups` to `bid_states_`.
     void OnInterestGroupRead(std::vector<StorageInterestGroup> interest_groups);
+
+    // Invoked when the interest groups for an entire component auction have
+    // loaded. If `success` is false, removes the component auction.
+    void OnComponentInterestGroupsRead(AuctionList::iterator component_auction,
+                                       bool success);
+
+    // Invoked when the interest groups for a buyer or for an entire component
+    // auction have loaded. Completes the loading phase if no pending loads
+    // remain.
+    void OnOneLoadCompleted();
 
     // Invoked once the interest group load phase has completed. Never called
     // synchronously from StartLoadInterestGroupsPhase(), to avoid reentrancy.
@@ -349,6 +407,11 @@ class CONTENT_EXPORT AuctionRunner {
     // -------------------------------------
     // Generate and score bids phase methods
     // -------------------------------------
+
+    // Called when a component auction has received a worklet. Calls
+    // RequestSellerWorklet() if all component auctions have received worklets.
+    // See StartBiddingAndScoringPhase() for discussion of this.
+    void OnComponentSellerWorkletReceived();
 
     // Requests a seller worklet from the AuctionWorkletManager.
     void RequestSellerWorklet();
@@ -405,8 +468,28 @@ class CONTENT_EXPORT AuctionRunner {
     // True if all bid results and the seller script load are complete.
     bool AllBidsScored() const { return outstanding_bids_ == 0; }
 
+    // Invoked when a component auction completes. If `success` is true, gets
+    // the Bid from `component_auction` and passes a copy of it to ScoreBid().
+    void OnComponentAuctionComplete(Auction* component_auction, bool success);
+
+    // Called when either a bidder worklet's GenerateBid() method or a component
+    // seller worklet's bid and scoring phase completes without creating a bid
+    // (this includes worklet crashes and load failures).
+    void OnNoBid();
+
+    // Validates that `mojo_bid` is valid and, if it is, creates a Bid
+    // corresponding to it, consuming it. Returns nullptr and calls
+    // ReportBadMessage() if it's not valid. Does not mutate `bid_state`, but
+    // the returned Bid has a non-const pointer to it.
+    std::unique_ptr<Bid> TryToCreateBid(
+        auction_worklet::mojom::BidderWorkletBidPtr mojo_bid,
+        BidState& bid_state,
+        const absl::optional<uint32_t>& bidding_signals_data_version,
+        const absl::optional<GURL>& debug_loss_report_url,
+        const absl::optional<GURL>& debug_win_report_url);
+
     // Calls into the seller asynchronously to score the passed in bid.
-    void ScoreBid(std::unique_ptr<Bid> bid);
+    void ScoreBidIfReady(std::unique_ptr<Bid> bid);
 
     // Callback from ScoreBid().
     void OnBidScored(std::unique_ptr<Bid> bid,
@@ -434,9 +517,10 @@ class CONTENT_EXPORT AuctionRunner {
     // Reporting phase methods
     // -----------------------
 
-    // Sequence of asynchronous methods to call into the bidder/seller results
-    // to report a a win. Will ultimately invoke ReportSuccess(), which will
-    // delete the auction.
+    // Sequence of asynchronous methods to call into the seller and then bidder
+    // worklet to report a a win. Will ultimately invoke
+    // `reporting_phase_callback_`, which will delete the auction.
+    void ReportSellerResult();
     void OnReportSellerResultComplete(
         const absl::optional<std::string>& signals_for_winner,
         const absl::optional<GURL>& seller_report_url,
@@ -447,11 +531,21 @@ class CONTENT_EXPORT AuctionRunner {
     void OnReportBidWinComplete(const absl::optional<GURL>& bidder_report_url,
                                 const std::vector<std::string>& error_msgs);
 
+    // Called when the component SellerWorklet with the bidder that won an
+    // auction has an out-of-band fatal error during the ReportResult() call.
+    void OnWinningComponentSellerWorkletFatalError(
+        AuctionWorkletManager::FatalErrorType fatal_error_type,
+        const std::vector<std::string>& errors);
+
     // Called when the BidderWorklet that won an auction has an out-of-band
     // fatal error during the ReportWin() call.
     void OnWinningBidderWorkletFatalError(
         AuctionWorkletManager::FatalErrorType fatal_error_type,
         const std::vector<std::string>& errors);
+
+    // Invoked when the nested component auction with the winning bid's
+    // reporting phase is complete. Completes the reporting phase for `this`.
+    void OnComponentAuctionReportingPhaseComplete(bool success);
 
     // Called when the final phase of the auction completes. Unconditionally
     // sets `final_auction_result`, even if `auction_result` is
@@ -461,7 +555,7 @@ class CONTENT_EXPORT AuctionRunner {
                                   const std::vector<std::string>& errors = {});
 
     // -----------------------------------
-    // Methods not associtaed with a phase
+    // Methods not associated with a phase
     // -----------------------------------
 
     // Requests a WorkletHandle for the interest group identified by
@@ -477,6 +571,14 @@ class CONTENT_EXPORT AuctionRunner {
 
     // Configuration of this auction.
     raw_ptr<const blink::mojom::AuctionAdConfig> config_;
+    const bool is_component_auction_;
+
+    // Component auctions that are part of this auction. This auction manages
+    // their state transition, and their bids may participate in this auction as
+    // well. Component auctions that fail in the load phase are removed from
+    // this list, to avoid trying to load their worklets during the scoring
+    // phase.
+    AuctionList component_auctions_;
 
     // Final result of the auction, once completed. Null before completion.
     absl::optional<AuctionResult> final_auction_result_;
@@ -487,10 +589,15 @@ class CONTENT_EXPORT AuctionRunner {
     AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback_;
     AuctionPhaseCompletionCallback reporting_phase_callback_;
 
-    // The number of buyers with pending interest group loads from storage.
-    // Decremented each time OnInterestGroupRead() is invoked.
+    // Invoked in the bidding and scoring phase, once the seller worklet has
+    // loaded. May be null.
+    base::OnceClosure on_seller_receiver_callback_;
+
+    // The number of buyers and component auctions with pending interest group
+    // loads from storage. Decremented each time either the interest groups for
+    // a buyer or all buyers for a component are read.
     // `load_interest_groups_phase_callback` is invoked once this hits 0.
-    size_t num_pending_buyers_ = 0;
+    size_t num_pending_loads_ = 0;
 
     // True once a seller worklet has been received from the
     // AuctionWorkletManager.
@@ -499,18 +606,23 @@ class CONTENT_EXPORT AuctionRunner {
     // Number of bids that have yet to be sent to the SellerWorklet. This
     // includes BidderWorklets that have not yet been loaded, those whose
     // GenerateBid() method is currently being run, and those that are waiting
-    // on the seller worklet to load. Decremented when GenerateBid() fails to
-    // generate a bid, or just after invoking the SellerWorklet's ScoreAd()
-    // method. When this reaches 0, the SellerWorklet's
+    // on the seller worklet to load, as well as component auctions that are
+    // still running. When this reaches 0, the SellerWorklet's
     // SendPendingSignalsRequests() should be invoked, so it can send any
     // pending scoring signals requests.
     int num_bids_not_sent_to_seller_worklet_;
-    // Number of bids which the seller has not yet finished scoring. These bids
-    // may be fetching URLs, generating bids, waiting for the seller worklet to
-    // load, or the seller worklet may be scoring their bids. When this reaches
-    // 0, the bid with the highest score is the winner, and the auction is
-    // completed, apart from reporting the result.
+
+    // Number of bids which the seller has not yet finished scoring. This
+    // includes bids included in `num_bids_not_sent_to_seller_worklet_`, as well
+    // as any bids waiting on the seller worklet to load, and bids the seller
+    // worklet is currently scoring. When this reaches 0, the bid with the
+    // highest score is the winner, and bidding and scoring phase is completed.
     int outstanding_bids_;
+
+    // The number of `component_auctions_` that have yet to request seller
+    // worklets. Once it hits 0, the seller worklet for `this` is loaded. See
+    // StartBiddingAndScoringPhase() for more details.
+    size_t pending_component_seller_worklet_requests_ = 0;
 
     // State of all loaded interest groups.
     std::vector<BidState> bid_states_;
@@ -524,7 +636,15 @@ class CONTENT_EXPORT AuctionRunner {
     // present a more consistent view of the universe.
     const base::Time auction_start_time_;
 
-    // The number of owners with InterestGroups participating in an auction.
+    // The number of buyers in the AuctionConfig that passed the
+    // IsInterestGroupApiAllowedCallback filter and interest groups were found
+    // for. Includes buyers from nested component auctions. Double-counts buyers
+    // in multiple Auctions.
+    int num_owners_loaded_ = 0;
+
+    // The number of buyers with InterestGroups participating in an auction.
+    // Includes buyers from nested component auctions. Double-counts buyers in
+    // multiple Auctions.
     int num_owners_with_interest_groups_ = 0;
 
     // The highest scoring bid so far. Null if no bid has been accepted yet.
@@ -559,17 +679,6 @@ class CONTENT_EXPORT AuctionRunner {
                 InterestGroupManagerImpl* interest_group_manager,
                 blink::mojom::AuctionAdConfigPtr auction_config,
                 RunAuctionCallback callback);
-
-  // Validates that `mojo_bid` is valid and, if it is, creates a Bid
-  // corresponding to it, consuming it. Returns nullptr and calls
-  // ReportBadMessage() if it's not valid. Does not mutate `bid_state`, but the
-  // returned Bid has a non-const pointer to it.
-  static std::unique_ptr<Bid> TryToCreateBid(
-      auction_worklet::mojom::BidderWorkletBidPtr mojo_bid,
-      BidState& bid_state,
-      const absl::optional<uint32_t>& bidding_signals_data_version,
-      const absl::optional<GURL>& debug_loss_report_url,
-      const absl::optional<GURL>& debug_win_report_url);
 
   // Tells `auction_` to start the loading interest groups phase.
   void StartAuction(
