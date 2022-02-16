@@ -692,6 +692,7 @@ bool IsAXSetter(SEL selector) {
     NSAccessibilityTopLevelUIElementAttribute,
     NSAccessibilityVisitedAttribute,
     NSAccessibilityWindowAttribute,
+    NSAccessibilityChromeAXNodeIdAttribute
   ];
   // Attributes required for user-editable controls.
   NSArray* const kValueAttributes = @[ NSAccessibilityValueAttribute ];
@@ -701,7 +702,7 @@ bool IsAXSetter(SEL selector) {
     NSAccessibilityNumberOfCharactersAttribute,
     NSAccessibilitySelectedTextAttribute,
     NSAccessibilitySelectedTextRangeAttribute,
-    NSAccessibilityVisibleCharacterRangeAttribute,
+    NSAccessibilityVisibleCharacterRangeAttribute
   ];
   // Required for all text, including protected textfields.
   NSString* const kTextAttributes = NSAccessibilityPlaceholderValueAttribute;
@@ -1528,6 +1529,10 @@ bool IsAXSetter(SEL selector) {
   // decorations, and BridgedContentView has a conversion function that creates
   // an NSAttributedString. Refactor things so they can be used here.
   return attributedString.autorelease();
+}
+
+- (NSString*)ChromeAXNodeId {
+  return [@(_node->GetNodeId()) stringValue];
 }
 
 - (NSString*)description {

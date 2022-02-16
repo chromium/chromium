@@ -297,6 +297,13 @@ absl::optional<int> AXPlatformNodeBase::CompareTo(AXPlatformNodeBase& other) {
   return absl::nullopt;
 }
 
+AXNodeID AXPlatformNodeBase::GetNodeId() const {
+  if (!delegate_)
+    return kInvalidAXNodeID;
+
+  return delegate_->GetData().id;
+}
+
 AXPlatformNodeBase* AXPlatformNodeBase::GetActiveDescendant() const {
   if (!delegate_)
     return nullptr;

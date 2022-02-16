@@ -189,7 +189,6 @@ NSString* const
         @"AXTextMarkerNodeDebugDescription";
 
 // Other private attributes.
-NSString* const NSAccessibilityIdentifierChromeAttribute = @"ChromeAXNodeId";
 NSString* const NSAccessibilitySelectTextWithCriteriaParameterizedAttribute =
     @"AXSelectTextWithCriteria";
 NSString* const NSAccessibilityIndexForChildUIElementParameterizedAttribute =
@@ -610,7 +609,6 @@ bool content::IsNSRange(id value) {
     NSString* methodName;
   } attributeToMethodNameContainer[] = {
       {NSAccessibilityChildrenAttribute, @"children"},
-      {NSAccessibilityIdentifierChromeAttribute, @"internalId"},
       {NSAccessibilityColumnsAttribute, @"columns"},
       {NSAccessibilityColumnIndexRangeAttribute, @"columnIndexRange"},
       {NSAccessibilityContentsAttribute, @"contents"},
@@ -2693,7 +2691,6 @@ bool content::IsNSRange(id value) {
   // General attributes.
   NSMutableArray* ret = [NSMutableArray
       arrayWithObjects:NSAccessibilityChildrenAttribute,
-                       NSAccessibilityIdentifierChromeAttribute,
                        NSAccessibilityDescriptionAttribute,
                        NSAccessibilityEnabledAttribute,
                        NSAccessibilityEndTextMarkerAttribute,
@@ -3102,10 +3099,6 @@ bool content::IsNSRange(id value) {
   if (![self instanceActive])
     return [super hash];
   return _owner->GetId();
-}
-
-- (NSString*)internalId {
-  return [@(_owner->GetId()) stringValue];
 }
 
 - (BOOL)accessibilityNotifiesWhenDestroyed {

@@ -48,6 +48,7 @@ bool IsValidAXAttribute(const std::string& attribute) {
        NSAccessibilityARIASetSizeAttribute,
        NSAccessibilityAutocompleteValueAttribute,
        NSAccessibilityBlockQuoteLevelAttribute,
+       NSAccessibilityChromeAXNodeIdAttribute,
        NSAccessibilityColumnHeaderUIElementsAttribute,
        NSAccessibilityDetailsElementsAttribute,
        NSAccessibilityDOMClassList,
