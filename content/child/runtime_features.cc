@@ -484,6 +484,7 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
       {wrf::EnableWebGPU, switches::kEnableUnsafeWebGPU, true},
       {wrf::ForceOverlayFullscreenVideo, switches::kForceOverlayFullscreenVideo,
        true},
+      {wrf::EnableDirectSockets, switches::kRestrictedApiOrigins, false},
   };
   for (const auto& mapping : switchToFeatureMapping) {
     if (command_line.HasSwitch(mapping.switch_name))
@@ -542,9 +543,6 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
 
   WebRuntimeFeatures::EnableBackForwardCache(
       content::IsBackForwardCacheEnabled());
-
-  if (base::FeatureList::IsEnabled(features::kDirectSockets))
-    WebRuntimeFeatures::EnableDirectSockets(true);
 
   if (base::FeatureList::IsEnabled(network::features::kTrustTokens)) {
     // See https://bit.ly/configuring-trust-tokens.

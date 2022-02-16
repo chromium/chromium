@@ -20,9 +20,6 @@ namespace content {
 
 class DirectSocketsUnitTest : public RenderViewHostTestHarness {
  public:
-  DirectSocketsUnitTest() {
-    feature_list_.InitAndEnableFeature(features::kDirectSockets);
-  }
   ~DirectSocketsUnitTest() override = default;
 
   void SetUp() override {

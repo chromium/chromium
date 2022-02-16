@@ -63,6 +63,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/browser/shared_worker_instance.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -737,8 +738,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
          mojo::PendingReceiver<blink::mojom::ContactsManager> receiver) {
         DCHECK(host);
 
-        // The object is bound to the lifetime of `render_frame_host`'s logical document
-        // by virtue of being a `DocumentService` implementation.
+        // The object is bound to the lifetime of `render_frame_host`'s logical
+        // document by virtue of being a `DocumentService` implementation.
         new ContactsManagerImpl(host, std::move(receiver));
       },
       base::Unretained(host)));
@@ -1076,7 +1077,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::CredentialManager>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::CredentialManager>));
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kDirectSockets)) {
+  if (SiteIsolationPolicy::IsApplicationIsolationLevelEnabled()) {
     map->Add<blink::mojom::DirectSocketsService>(
         base::BindRepeating(&DirectSocketsServiceImpl::CreateForFrame));
   }

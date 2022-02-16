@@ -208,9 +208,6 @@ class ReadWriteWaiter {
 
 class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
  public:
-  DirectSocketsTcpBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kDirectSockets);
-  }
   ~DirectSocketsTcpBrowserTest() override = default;
 
   GURL GetTestOpenPageURL() {

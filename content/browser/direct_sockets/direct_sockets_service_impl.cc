@@ -435,8 +435,6 @@ network::mojom::NetworkContext* DirectSocketsServiceImpl::GetNetworkContext() {
 
 net::Error DirectSocketsServiceImpl::ValidateOptions(
     const blink::mojom::DirectSocketOptions& options) {
-  DCHECK(base::FeatureList::IsEnabled(features::kDirectSockets));
-
   if (!frame_host_)
     return net::ERR_CONTEXT_SHUT_DOWN;
 

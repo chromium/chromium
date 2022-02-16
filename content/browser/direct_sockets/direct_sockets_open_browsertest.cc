@@ -353,9 +353,6 @@ net::Error UnconditionallyPermitConnection(
 
 class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
  public:
-  DirectSocketsOpenBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kDirectSockets);
-  }
   ~DirectSocketsOpenBrowserTest() override = default;
 
   GURL GetTestOpenPageURL() {

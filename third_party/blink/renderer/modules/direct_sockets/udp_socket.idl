@@ -7,7 +7,6 @@
 [
     Exposed=Window,
     ActiveScriptWrappable,
-    RuntimeEnabled=DirectSockets,
     DirectSocketEnabled
 ] interface UDPSocket {
   [RaisesException, CallWith=ScriptState, Measure]

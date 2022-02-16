@@ -37,9 +37,6 @@ class EnableDirectSocketsPolicyTest
     : public web_app::IsolatedAppBrowserTestHarness,
       public testing::WithParamInterface<PolicyVerdictPair> {
  public:
-  EnableDirectSocketsPolicyTest() {
-    feature_list_.InitAndEnableFeature(features::kDirectSockets);
-  }
   ~EnableDirectSocketsPolicyTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

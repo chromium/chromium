@@ -710,10 +710,6 @@ const base::Feature kProactivelySwapBrowsingInstance{
 const base::Feature kPushSubscriptionChangeEvent{
     "PushSubscriptionChangeEvent", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the Direct Sockets API.
-const base::Feature kDirectSockets{"DirectSockets",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Causes hidden tabs with crashed subframes to be marked for reload, meaning
 // that if a user later switches to that tab, the current page will be
 // reloaded.  This will hide crashed subframes from the user at the cost of

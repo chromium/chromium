@@ -435,8 +435,7 @@
     "prefix": "direct-sockets",
     "bases": ["external/wpt/direct-sockets",
     	      "wpt_internal/direct-sockets"],
-    "args": ["--enable-features=DirectSockets",
-             "--restricted-api-origins=https://web-platform.test"]
+    "args": ["--restricted-api-origins=https://web-platform.test"]
   },
   {
     "prefix": "webrtc-wpt-plan-b",

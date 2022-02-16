@@ -6,7 +6,6 @@
 
 [
     Exposed=Window,
-    RuntimeEnabled=DirectSockets,
     DirectSocketEnabled
 ] interface TCPSocket {
   [RaisesException, CallWith=ScriptState, Measure]

@@ -7,7 +7,6 @@
 
 [
   ImplementedAs=NavigatorSocket,
-  RuntimeEnabled=DirectSockets,
   DirectSocketEnabled
 ] partial interface Navigator {
   [SecureContext, RaisesException, CallWith=ScriptState, Measure]

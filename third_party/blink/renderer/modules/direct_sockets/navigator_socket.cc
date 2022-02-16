@@ -117,8 +117,6 @@ void NavigatorSocket::Trace(Visitor* visitor) const {
 }
 
 void NavigatorSocket::EnsureServiceConnected(LocalDOMWindow& window) {
-  DCHECK(RuntimeEnabledFeatures::DirectSocketsEnabled());
-
   if (!service_remote_.is_bound()) {
     window.GetFrame()->GetBrowserInterfaceBroker().GetInterface(
         service_remote_.BindNewPipeAndPassReceiver(
