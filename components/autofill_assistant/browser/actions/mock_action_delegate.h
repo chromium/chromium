@@ -55,9 +55,10 @@ class MockActionDelegate : public ActionDelegate {
       void(const Selector& selector,
            base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&));
 
-  MOCK_METHOD5(
+  MOCK_METHOD6(
       WaitForDom,
       void(base::TimeDelta max_wait_time,
+           bool allow_observer_mode,
            bool allow_interrupt,
            WaitForDomObserver* observer,
            base::RepeatingCallback<void(

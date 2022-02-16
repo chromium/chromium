@@ -132,6 +132,7 @@ class ScriptExecutor : public ActionDelegate,
       override;
   void WaitForDom(
       base::TimeDelta max_wait_time,
+      bool allow_observer_mode,
       bool allow_interrupt,
       WaitForDomObserver* observer,
       base::RepeatingCallback<
@@ -286,6 +287,7 @@ class ScriptExecutor : public ActionDelegate,
         ScriptExecutorDelegate* delegate,
         ScriptExecutorUiDelegate* ui_delegate,
         base::TimeDelta max_wait_time,
+        bool allow_observer_mode,
         bool allow_interrupt,
         WaitForDomObserver* observer,
         base::RepeatingCallback<

@@ -244,6 +244,7 @@ void ScriptExecutor::ShortWaitForElement(
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, ui_delegate_,
       delegate_->GetSettings().short_wait_for_element_deadline,
+      /* allow_observer_mode */ true,
       /* allow_interrupt= */ false, /* observer= */ nullptr,
       base::BindRepeating(&ScriptExecutor::CheckElementConditionMatches,
                           weak_ptr_factory_.GetWeakPtr(), selector),
@@ -258,6 +259,7 @@ void ScriptExecutor::ShortWaitForElementWithSlowWarning(
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, ui_delegate_,
       delegate_->GetSettings().short_wait_for_element_deadline,
+      /* allow_observer_mode */ true,
       /* allow_interrupt= */ false, /* observer= */ nullptr,
       base::BindRepeating(&ScriptExecutor::CheckElementConditionMatches,
                           weak_ptr_factory_.GetWeakPtr(), selector),
@@ -271,6 +273,7 @@ void ScriptExecutor::ShortWaitForElementWithSlowWarning(
 
 void ScriptExecutor::WaitForDom(
     base::TimeDelta max_wait_time,
+    bool allow_observer_mode,
     bool allow_interrupt,
     WaitForDomObserver* observer,
     base::RepeatingCallback<void(BatchElementChecker*,
@@ -278,8 +281,8 @@ void ScriptExecutor::WaitForDom(
         check_elements,
     base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
-      this, delegate_, ui_delegate_, max_wait_time, allow_interrupt, observer,
-      check_elements,
+      this, delegate_, ui_delegate_, max_wait_time, allow_observer_mode,
+      allow_interrupt, observer, check_elements,
       base::BindOnce(&ScriptExecutor::OnWaitForElementVisibleWithInterrupts,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   current_action_data_.wait_for_dom->Run();
@@ -294,7 +297,8 @@ void ScriptExecutor::WaitForDomWithSlowWarning(
         check_elements,
     base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
-      this, delegate_, ui_delegate_, max_wait_time, allow_interrupt, observer,
+      this, delegate_, ui_delegate_, max_wait_time,
+      /* allow_observer_mode= */ true, allow_interrupt, observer,
       check_elements,
       base::BindOnce(&ScriptExecutor::OnWaitForElementVisibleWithInterrupts,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -1069,6 +1073,7 @@ ScriptExecutor::WaitForDomOperation::WaitForDomOperation(
     ScriptExecutorDelegate* delegate,
     ScriptExecutorUiDelegate* ui_delegate,
     base::TimeDelta max_wait_time,
+    bool allow_observers,
     bool allow_interrupt,
     WaitForDomObserver* observer,
     base::RepeatingCallback<void(BatchElementChecker*,
@@ -1080,10 +1085,10 @@ ScriptExecutor::WaitForDomOperation::WaitForDomOperation(
       ui_delegate_(ui_delegate),
       max_wait_time_(max_wait_time),
       allow_interrupt_(allow_interrupt),
-      use_observers_(delegate->GetTriggerContext()
-                         ->GetScriptParameters()
-                         .GetEnableObserverWaitForDom()
-                         .value_or(false)),
+      use_observers_(allow_observers && delegate->GetTriggerContext()
+                                            ->GetScriptParameters()
+                                            .GetEnableObserverWaitForDom()
+                                            .value_or(false)),
       observer_(observer),
       check_elements_(std::move(check_elements)),
       callback_(std::move(callback)),

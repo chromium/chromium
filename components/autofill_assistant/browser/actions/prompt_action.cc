@@ -56,8 +56,13 @@ void PromptAction::InternalProcessAction(ProcessActionCallback callback) {
   wait_time_stopwatch_.Start();
   if (HasNonemptyPreconditions() || auto_select_ ||
       proto_.prompt().allow_interrupt()) {
+    // TODO(b/219004758): Enable observer-based WaitForDom, which would require
+    // negating the preconditions that matched in the previous check, so that we
+    // are alerted every time one changes instead of every time one becomes
+    // true.
     delegate_->WaitForDom(
-        base::TimeDelta::Max(), proto_.prompt().allow_interrupt(),
+        /* max_wait_time= */ base::TimeDelta::Max(),
+        /* allow_observer_mode = */ false, proto_.prompt().allow_interrupt(),
         /* observer= */ nullptr,
         base::BindRepeating(&PromptAction::RegisterChecks,
                             weak_ptr_factory_.GetWeakPtr()),

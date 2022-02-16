@@ -48,7 +48,7 @@ class PromptActionTest : public testing::Test {
           std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
                                   std::make_unique<ElementFinder::Result>());
         }));
-    EXPECT_CALL(mock_action_delegate_, WaitForDom(_, _, _, _, _))
+    EXPECT_CALL(mock_action_delegate_, WaitForDom)
         .WillRepeatedly(Invoke(this, &PromptActionTest::FakeWaitForDom));
     ON_CALL(mock_action_delegate_, Prompt(_, _, _, _, _))
         .WillByDefault(
@@ -68,6 +68,7 @@ class PromptActionTest : public testing::Test {
   // until it gets a successful callback, then calls done_waiting_callback.
   void FakeWaitForDom(
       base::TimeDelta max_wait_time,
+      bool allow_observer_mode,
       bool allow_interrupt,
       WaitForDomObserver* observer,
       base::RepeatingCallback<

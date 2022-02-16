@@ -120,6 +120,7 @@ class ActionDelegate {
   // If |allow_interrupt| interrupts can run while waiting.
   virtual void WaitForDom(
       base::TimeDelta max_wait_time,
+      bool allow_observer_mode,
       bool allow_interrupt,
       WaitForDomObserver* observer,
       base::RepeatingCallback<

@@ -123,9 +123,15 @@ void ShowGenericUiAction::OnViewInflationFinished(bool first_inflation,
       })) {
     has_pending_wait_for_dom_ = true;
 
+    // TODO(b/219004758): Enable observer-based WaitForDom, which would require
+    // negating the preconditions that matched in the previous check, so that we
+    // are alerted every time one changes instead of every time one becomes
+    // true.
     delegate_->WaitForDom(
-        base::TimeDelta::Max(), proto_.show_generic_ui().allow_interrupt(),
-        this,
+        /* max_wait_time= */ base::TimeDelta::Max(),
+        /* allow_observer_mode = */ false,
+        proto_.show_generic_ui().allow_interrupt(),
+        /* observer= */ this,
         base::BindRepeating(&ShowGenericUiAction::RegisterChecks,
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&ShowGenericUiAction::OnWaitForElementTimed,
