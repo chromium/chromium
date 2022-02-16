@@ -65,6 +65,8 @@ class LocalDeskDataManager : public DeskModel {
   bool IsReady() const override;
   bool IsSyncing() const override;
 
+  static void SetDisableMaxTemplateLimitForTesting(bool disabled);
+
  private:
   friend class ash::OverviewTestBase;
 

@@ -29,6 +29,10 @@ namespace desks_storage {
 
 namespace {
 
+// Setting this to true allows us to add more than the maximum number of
+// templates. Used only for testing.
+bool g_disable_max_template_limit = false;
+
 // File extension for templates.
 constexpr char kFileExtension[] = ".template";
 // Key used in base::Value generation for the template name field.
@@ -276,6 +280,11 @@ bool LocalDeskDataManager::IsSyncing() const {
   return false;
 }
 
+// static
+void LocalDeskDataManager::SetDisableMaxTemplateLimitForTesting(bool disabled) {
+  g_disable_max_template_limit = disabled;
+}
+
 void LocalDeskDataManager::EnsureCacheIsLoaded() {
   if (cache_status_ == CacheStatus::kOk) {
     // Cache is already loaded.
@@ -395,7 +404,7 @@ void LocalDeskDataManager::AddOrUpdateEntryTask(
     return;
   }
 
-  if (templates_.size() >= kMaxTemplateCount) {
+  if (!g_disable_max_template_limit && templates_.size() >= kMaxTemplateCount) {
     *status_ptr = DeskModel::AddOrUpdateEntryStatus::kHitMaximumLimit;
     return;
   }

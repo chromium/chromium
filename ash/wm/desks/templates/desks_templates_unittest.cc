@@ -2646,4 +2646,32 @@ TEST_F(DesksTemplatesTest, SnapWindowTest) {
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
+// Tests that we cap the number of template items shown, even if the backend has
+// more saved.
+TEST_F(DesksTemplatesTest, CapTemplateItemsShown) {
+  desks_storage::LocalDeskDataManager::SetDisableMaxTemplateLimitForTesting(
+      true);
+
+  constexpr unsigned long kMaxTemplateCount = 6;
+  // Create more than the maximum number of templates allowable.
+  for (unsigned long i = 1; i < kMaxTemplateCount + 20; i++) {
+    AddEntry(base::GUID::GenerateRandomV4(),
+             "template " + base::NumberToString(i), base::Time::Now());
+  }
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Check to make sure we are only showing up to the maximum number of items.
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  ASSERT_TRUE(grid_widget);
+  const DesksTemplatesGridView* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+  ASSERT_TRUE(templates_grid_view);
+
+  const std::vector<DesksTemplatesItemView*> grid_items =
+      templates_grid_view->grid_items();
+  EXPECT_EQ(kMaxTemplateCount, grid_items.size());
+}
+
 }  // namespace ash

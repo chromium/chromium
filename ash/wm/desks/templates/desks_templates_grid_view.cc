@@ -45,6 +45,18 @@ constexpr int kGridPaddingDp = 25;
 
 constexpr int kFeedbackButtonSpacingDp = 40;
 
+// This is the maximum number of templates we will show in the grid. This
+// constant is used instead of the Desk model `GetMaxEntryCount()` because that
+// takes into consideration the number of `policy_entries_`, which can cause it
+// to exceed 6 items.
+// Note: Because we are only showing a maximum number of templates, there are
+// cases that not all existing templates will be displayed, such as when a user
+// has more than the maximum count. Since we also don't update the grid whenever
+// there is a change, deleting a template may result in existing templates not
+// being shown as well, if the user originally exceeded the max template count
+// when the grid was first shown.
+constexpr std::size_t kMaxTemplateCount = 6u;
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -124,9 +136,6 @@ void DesksTemplatesGridView::PopulateGridUI(
     return;
   }
 
-  DCHECK_LE(desk_templates.size(),
-            DesksTemplatesPresenter::Get()->GetMaxEntryCount());
-
   AddOrUpdateTemplates(std::vector<const DeskTemplate*>(desk_templates.begin(),
                                                         desk_templates.end()));
 
@@ -159,7 +168,7 @@ void DesksTemplatesGridView::AddOrUpdateTemplates(
 
     if (iter != grid_items_.end()) {
       (*iter)->UpdateTemplate(*entry);
-    } else {
+    } else if (grid_items_.size() < kMaxTemplateCount) {
       grid_items_.push_back(
           AddChildView(std::make_unique<DesksTemplatesItemView>(entry)));
     }

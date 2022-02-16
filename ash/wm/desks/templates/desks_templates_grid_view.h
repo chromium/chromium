@@ -44,7 +44,8 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
                       const gfx::Rect& grid_bounds);
 
   // Updates existing templates and adds new templates to the grid. Also sorts
-  // `grid_items_` in alphabetical order.
+  // `grid_items_` in alphabetical order. Currently only allows a maximum of 6
+  // templates to be shown in the grid.
   void AddOrUpdateTemplates(const std::vector<const DeskTemplate*>& entries);
 
   // Removes templates from the grid by UUID.
