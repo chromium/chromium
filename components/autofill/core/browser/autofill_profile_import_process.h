@@ -78,7 +78,8 @@ class ProfileImportProcess {
                        const std::string& app_locale,
                        const GURL& form_source_url,
                        const PersonalDataManager* personal_data_manager,
-                       bool allow_only_silent_updates);
+                       bool allow_only_silent_updates,
+                       bool did_complement_country = false);
 
   ProfileImportProcess(const ProfileImportProcess&);
   ProfileImportProcess& operator=(const ProfileImportProcess& other);
@@ -220,6 +221,11 @@ class ProfileImportProcess {
 
   // If true, denotes that the import process allows only silent updates.
   bool allow_only_silent_updates_;
+
+  // Passed through from FormDataImporter, to collect metrics on whether the
+  // profile is accepted/edited.
+  // TODO(crbug.com/1297032): Cleanup when launched.
+  bool did_complement_country_;
 };
 
 }  // namespace autofill

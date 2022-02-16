@@ -1852,8 +1852,10 @@ void PersonalDataManager::LogStoredProfileMetrics() const {
 
     // If the user has stored addresses, log the distribution of days since
     // their last use and how many would be considered disused.
+    // Additionally, track the number of profiles without a country.
     if (!web_profiles_.empty()) {
       size_t num_disused_profiles = 0;
+      size_t num_profiles_without_country = 0;
       const base::Time now = AutofillClock::Now();
       for (const std::unique_ptr<AutofillProfile>& profile : web_profiles_) {
         const base::TimeDelta time_since_last_use = now - profile->use_date();
@@ -1861,8 +1863,12 @@ void PersonalDataManager::LogStoredProfileMetrics() const {
             time_since_last_use.InDays());
         if (time_since_last_use > kDisusedDataModelTimeDelta)
           ++num_disused_profiles;
+        if (profile->GetRawInfo(ADDRESS_HOME_COUNTRY).empty())
+          ++num_profiles_without_country;
       }
       AutofillMetrics::LogStoredProfileDisusedCount(num_disused_profiles);
+      AutofillMetrics::LogStoredProfilesWithoutCountry(
+          num_profiles_without_country);
     }
 
     // Only log this info once per chrome user profile load.

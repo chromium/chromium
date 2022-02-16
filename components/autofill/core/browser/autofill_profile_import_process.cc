@@ -29,13 +29,15 @@ ProfileImportProcess::ProfileImportProcess(
     const std::string& app_locale,
     const GURL& form_source_url,
     const PersonalDataManager* personal_data_manager,
-    bool allow_only_silent_updates)
+    bool allow_only_silent_updates,
+    bool did_complement_country)
     : import_id_(GetImportId()),
       observed_profile_(observed_profile),
       app_locale_(app_locale),
       form_source_url_(form_source_url),
       personal_data_manager_(personal_data_manager),
-      allow_only_silent_updates_(allow_only_silent_updates) {
+      allow_only_silent_updates_(allow_only_silent_updates),
+      did_complement_country_(did_complement_country) {
   DetermineProfileImportType();
 }
 
@@ -354,10 +356,18 @@ void ProfileImportProcess::CollectMetrics() const {
   // decision.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
     AutofillMetrics::LogNewProfileImportDecision(user_decision_);
+    if (did_complement_country_) {
+      AutofillMetrics::LogNewProfileWithComplementedCountryImportDecision(
+          user_decision_);
+    }
   } else if (import_type_ == AutofillProfileImportType::kConfirmableMerge ||
              import_type_ ==
                  AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
     AutofillMetrics::LogProfileUpdateImportDecision(user_decision_);
+    if (did_complement_country_) {
+      AutofillMetrics::LogProfileUpdateWithComplementedCountryImportDecision(
+          user_decision_);
+    }
 
     DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
 
@@ -387,8 +397,16 @@ void ProfileImportProcess::CollectMetrics() const {
     for (const auto& difference : edit_difference) {
       if (import_type_ == AutofillProfileImportType::kNewProfile) {
         AutofillMetrics::LogNewProfileEditedType(difference.type);
+        if (did_complement_country_ &&
+            difference.type == ServerFieldType::ADDRESS_HOME_COUNTRY) {
+          AutofillMetrics::LogNewProfileEditedComplementedCountry();
+        }
       } else {
         AutofillMetrics::LogProfileUpdateEditedType(difference.type);
+        if (did_complement_country_ &&
+            difference.type == ServerFieldType::ADDRESS_HOME_COUNTRY) {
+          AutofillMetrics::LogProfileUpdateEditedComplementedCountry();
+        }
       }
     }
     if (import_type_ == AutofillProfileImportType::kNewProfile) {

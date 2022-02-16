@@ -66,6 +66,7 @@ class TestAutofillClient : public AutofillClient {
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
+  std::string GetVariationConfigCountryCode() const override;
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(content::RenderFrameHost* rfh) override;
@@ -206,6 +207,11 @@ class TestAutofillClient : public AutofillClient {
 
   void set_last_committed_url(const GURL& url);
 
+  void SetVariationConfigCountryCode(
+      const std::string& variation_config_country_code) {
+    variation_config_country_code_ = variation_config_country_code;
+  }
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void set_allowed_merchants(
       const std::vector<std::string>& merchant_allowlist) {
@@ -287,6 +293,7 @@ class TestAutofillClient : public AutofillClient {
   std::unique_ptr<TestFormDataImporter> form_data_importer_;
   GURL form_origin_;
   ukm::SourceId source_id_ = -1;
+  std::string variation_config_country_code_;
 
   security_state::SecurityLevel security_level_ =
       security_state::SecurityLevel::NONE;

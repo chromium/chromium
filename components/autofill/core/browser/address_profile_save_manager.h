@@ -40,10 +40,14 @@ class AddressProfileSaveManager {
   // |allow_only_silent_updates| allows only for silent updates of profiles
   // that have either a structured name or address or both but do not fulfill
   // the import requirements.
+  // |did_complement_country| is passed through, to collect metrics on whether
+  // the profile is accepted/edited.
+  // TODO(crbug.com/1297032): Cleanup when launched.
   void ImportProfileFromForm(const AutofillProfile& profile,
                              const std::string& app_locale,
                              const GURL& url,
-                             bool allow_only_silent_updates);
+                             bool allow_only_silent_updates,
+                             bool did_complement_country = false);
 
  protected:
   // Initiates showing the prompt to the user.

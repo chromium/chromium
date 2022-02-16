@@ -102,6 +102,10 @@ translate::TranslateDriver* TestAutofillClient::GetTranslateDriver() {
   return &mock_translate_driver_;
 }
 
+std::string TestAutofillClient::GetVariationConfigCountryCode() const {
+  return variation_config_country_code_;
+}
+
 #if !BUILDFLAG(IS_IOS)
 std::unique_ptr<webauthn::InternalAuthenticator>
 TestAutofillClient::CreateCreditCardInternalAuthenticator(

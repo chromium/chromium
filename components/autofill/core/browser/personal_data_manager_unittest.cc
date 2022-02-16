@@ -5783,6 +5783,8 @@ TEST_F(PersonalDataManagerTest, LogStoredProfileMetrics_NoStoredProfiles) {
   histogram_tester.ExpectTotalCount("Autofill.StoredProfileCount", 1);
   histogram_tester.ExpectBucketCount("Autofill.StoredProfileCount", 0, 1);
   histogram_tester.ExpectTotalCount("Autofill.StoredProfileDisusedCount", 0);
+  histogram_tester.ExpectTotalCount("Autofill.StoredProfileWithoutCountryCount",
+                                    0);
   histogram_tester.ExpectTotalCount("Autofill.DaysSinceLastUse.StoredProfile",
                                     0);
 }
@@ -5795,11 +5797,11 @@ TEST_F(PersonalDataManagerTest, LogStoredProfileMetrics) {
   profile0.set_use_date(AutofillClock::Now() - base::Days(3));
   AddProfileToPersonalDataManager(profile0);
 
-  // Add a profile used a long time (200 days) ago.
+  // Add a profile used a long time (200 days) ago without a country.
   AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Seb", "", "Doe", "", "ACME",
                        "1234 Evergreen Terrace", "Bld. 5", "Springfield", "IL",
-                       "32801", "US", "15151231234");
+                       "32801", "", "15151231234");
   profile1.set_use_date(AutofillClock::Now() - base::Days(200));
   AddProfileToPersonalDataManager(profile1);
 
@@ -5814,6 +5816,11 @@ TEST_F(PersonalDataManagerTest, LogStoredProfileMetrics) {
   histogram_tester.ExpectTotalCount("Autofill.StoredProfileDisusedCount", 1);
   histogram_tester.ExpectBucketCount("Autofill.StoredProfileDisusedCount", 1,
                                      1);
+
+  histogram_tester.ExpectTotalCount("Autofill.StoredProfileWithoutCountryCount",
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.StoredProfileWithoutCountryCount", 1, 1);
 
   histogram_tester.ExpectTotalCount("Autofill.DaysSinceLastUse.StoredProfile",
                                     2);

@@ -25,7 +25,8 @@ void AddressProfileSaveManager::ImportProfileFromForm(
     const AutofillProfile& observed_profile,
     const std::string& app_locale,
     const GURL& url,
-    bool allow_only_silent_updates) {
+    bool allow_only_silent_updates,
+    bool did_complement_country) {
   // Without a personal data manager, profile storage is not possible.
   if (!personal_data_manager_)
     return;
@@ -44,7 +45,7 @@ void AddressProfileSaveManager::ImportProfileFromForm(
 
   auto process_ptr = std::make_unique<ProfileImportProcess>(
       observed_profile, app_locale, url, personal_data_manager_,
-      allow_only_silent_updates);
+      allow_only_silent_updates, did_complement_country);
 
   MaybeOfferSavePrompt(std::move(process_ptr));
 }

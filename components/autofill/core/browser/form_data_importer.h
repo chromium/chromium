@@ -127,6 +127,9 @@ class FormDataImporter {
     GURL url;
     // Indicates if all import requirements have been fulfilled.
     bool all_requirements_fulfilled;
+    // Whether the profile's country was complemented automatically.
+    // TODO(crbug.com/1297032): Cleanup when launched.
+    bool did_complement_country;
     AddressProfileImportCandidate(AddressProfileImportCandidate&& other) =
         default;
     AddressProfileImportCandidate& operator=(

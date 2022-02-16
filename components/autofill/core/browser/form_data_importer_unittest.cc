@@ -227,6 +227,15 @@ GetDefaultProfileTypeValuePairs() {
   };
 }
 
+// Same as |GetDefaultProfileTypeValuePairs()| but with ADDRESS_HOME_COUNTRY
+// set to |country|.
+std::vector<std::pair<ServerFieldType, std::string>>
+GetDefaultProfileTypeValuePairsWithCountry(const std::string& country) {
+  auto profile_typed_value_pairs = GetDefaultProfileTypeValuePairs();
+  profile_typed_value_pairs.emplace_back(ADDRESS_HOME_COUNTRY, country);
+  return profile_typed_value_pairs;
+}
+
 // Same as |GetDefaultProfileTypeValuePairs()| but with the second profile
 // information.
 std::vector<std::pair<ServerFieldType, std::string>>
@@ -266,6 +275,12 @@ AutofillProfile ConstructDefaultProfile() {
   return ConstructProfileFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
 }
 
+// Same as |ConstructDefaultProfile()| but with |country|.
+AutofillProfile ConstructDefaultProfileWithCountry(const std::string& country) {
+  return ConstructProfileFromTypeValuePairs(
+      GetDefaultProfileTypeValuePairsWithCountry(country));
+}
+
 // Returns the second AutofillProfile used in this test file.
 AutofillProfile ConstructSecondProfile() {
   return ConstructProfileFromTypeValuePairs(GetSecondProfileTypeValuePairs());
@@ -282,6 +297,13 @@ AutofillProfile ConstructThirdProfile() {
 std::unique_ptr<FormStructure> ConstructDefaultProfileFormStructure() {
   return ConstructFormStructureFromTypeValuePairs(
       GetDefaultProfileTypeValuePairs());
+}
+
+// Same as |ConstructDefaultFormStructure()| but with |country|.
+std::unique_ptr<FormStructure> ConstructDefaultProfileFormStructureWithCountry(
+    const std::string& country) {
+  return ConstructFormStructureFromTypeValuePairs(
+      GetDefaultProfileTypeValuePairsWithCountry(country));
 }
 
 // Same as |ConstructDefaultFormStructure()| but for the second profile.
@@ -666,6 +688,39 @@ TEST_P(FormDataImporterTest, GetPredictedCountryCode) {
   EXPECT_EQ(FormDataImporter::GetPredictedCountryCode(empty_profile, "",
                                                       "de-AT", nullptr),
             "AT");
+}
+
+TEST_P(FormDataImporterTest, ComplementCountry) {
+  base::test::ScopedFeatureList complement_country_feature;
+  complement_country_feature.InitAndEnableFeature(
+      features::kAutofillComplementCountryCodeOnImport);
+
+  auto import_with_country =
+      [this](const std::string& form_country,
+             const std::vector<AutofillProfile>& expected_profiles) {
+        // Remove existing profiles, to prevent an update instead of an import.
+        personal_data_manager_->ClearAllLocalData();
+
+        std::unique_ptr<FormStructure> form_structure =
+            form_country.empty()
+                ? ConstructDefaultProfileFormStructure()
+                : ConstructDefaultProfileFormStructureWithCountry(form_country);
+        ImportAddressProfilesAndVerifyExpectation(*form_structure,
+                                                  expected_profiles);
+      };
+
+  // Country part of the form:
+  // If a valid country was entered, use that.
+  import_with_country("Germany", {ConstructDefaultProfileWithCountry("DE")});
+  // Reject the profile if an invalid country was entered.
+  import_with_country("Somewhere", {});
+  // Country not part of the form: Complement using
+  // FormDataImporter::GetPredictedCountryCode
+  // If no variation config country code is available, default to locale (US)
+  import_with_country("", {ConstructDefaultProfileWithCountry("US")});
+  // Prefer variation config country code over locale
+  autofill_client_->SetVariationConfigCountryCode("DE");
+  import_with_country("", {ConstructDefaultProfileWithCountry("DE")});
 }
 
 // ImportAddressProfiles tests.
@@ -3072,8 +3127,7 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressOneCreditCard) {
   AutofillProfile expected_address(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&expected_address, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
-                       "San Francisco", "California", "94102", nullptr,
-                       nullptr);
+                       "San Francisco", "California", "94102", "", nullptr);
   const std::vector<AutofillProfile*>& results_addr =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results_addr.size());
@@ -3334,8 +3388,7 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressCreditCardDisabled) {
   AutofillProfile expected_address(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&expected_address, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
-                       "San Francisco", "California", "94102", nullptr,
-                       nullptr);
+                       "San Francisco", "California", "94102", "", nullptr);
   const std::vector<AutofillProfile*>& results_addr =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results_addr.size());
@@ -4184,7 +4237,7 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
 // |kAutofillEnableDependentLocalityParsing| and
 // |kAutofillConsiderVariationCountryCodeForPhoneNumbers| enabled and disabled.
 // TODO(crbug.com/1295721): Remove
-// kAutofillConsiderVariationCountryCodeForPhoneNumbers when launched.
+// |kAutofillConsiderVariationCountryCodeForPhoneNumbers| when launched.
 INSTANTIATE_TEST_SUITE_P(,
                          FormDataImporterTest,
                          testing::Combine(testing::Bool(),

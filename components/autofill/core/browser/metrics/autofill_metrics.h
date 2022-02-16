@@ -1665,9 +1665,13 @@ class AutofillMetrics {
   // This should be called each time a new chrome profile is launched.
   static void LogIsAutofillCreditCardEnabledAtStartup(bool enabled);
 
-  // Records the number of stored address profiles. This is be called each time
-  // a new chrome profile is launched.
+  // Records the number of stored address profiles. This is called each time a
+  // new Chrome profile is launched.
   static void LogStoredProfileCount(size_t num_profiles);
+
+  // Records the number of profiles without a country. This is called each time
+  // a new Chrome profile is launched.
+  static void LogStoredProfilesWithoutCountry(size_t num_profiles);
 
   // Records the number of stored address profiles which have not been used in
   // a long time. This is be called each time a new chrome profile is launched.
@@ -1931,18 +1935,34 @@ class AutofillMetrics {
   static void LogSilentUpdatesProfileImportType(
       AutofillProfileImportType import_type);
 
-  // Logs the user decision for importing a new profile
+  // Logs the user decision for importing a new profile.
   static void LogNewProfileImportDecision(
+      AutofillClient::SaveAddressProfileOfferUserDecision decision);
+
+  // Logs the user decision for importing a new profile with auto complemented
+  // country.
+  // TODO(crbug.com/1297032): Cleanup when launched.
+  static void LogNewProfileWithComplementedCountryImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
   // Logs that a specific type was edited in a save prompt.
   static void LogNewProfileEditedType(ServerFieldType edited_type);
+
+  // Logs that the auto complemented country was edited in a save prompt.
+  // TODO(crbug.com/1297032): Cleanup when launched.
+  static void LogNewProfileEditedComplementedCountry();
 
   // Logs the number of edited fields for an accepted profile save.
   static void LogNewProfileNumberOfEditedFields(int number_of_edited_fields);
 
   // Logs the user decision for updating an exiting profile.
   static void LogProfileUpdateImportDecision(
+      AutofillClient::SaveAddressProfileOfferUserDecision decision);
+
+  // Logs the user decision for updating an exiting profile with auto
+  // complemented country.
+  // TODO(crbug.com/1297032): Cleanup when launched.
+  static void LogProfileUpdateWithComplementedCountryImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
   // Logs that a specific type changed in a profile update that received the
@@ -1954,6 +1974,10 @@ class AutofillMetrics {
 
   // Logs that a specific type was edited in an update prompt.
   static void LogProfileUpdateEditedType(ServerFieldType edited_type);
+
+  // Logs that the auto complemented country was edited in an update prompt.
+  // TODO(crbug.com/1297032): Cleanup when launched.
+  static void LogProfileUpdateEditedComplementedCountry();
 
   // Logs the number of edited fields for an accepted profile update.
   static void LogUpdateProfileNumberOfEditedFields(int number_of_edited_fields);

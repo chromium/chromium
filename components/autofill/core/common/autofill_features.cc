@@ -84,6 +84,13 @@ const base::Feature kAutofillAllowDuplicateFormSubmissions{
 const base::Feature kAutofillAllowNonHttpActivation{
     "AutofillAllowNonHttpActivation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, whenever a form without a country field is parsed, the profile's
+// country code is complemented with the predicted country code, used to
+// determine the address requirements.
+// TODO(crbug.com/1297032): Cleanup when launched.
+const base::Feature kAutofillComplementCountryCodeOnImport{
+    "AutofillComplementCountryCodeOnImport", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the variation country code is used as the phone number's region,
 // instead of defaulting to app locale.
 // TODO(crbug.com/1295721): Cleanup when launched.
