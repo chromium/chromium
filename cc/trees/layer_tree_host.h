@@ -548,11 +548,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return pending_commit_state()->new_local_surface_id_request;
   }
 
-  // Records the amount of time spent performing an update in response to new
-  // blink::VisualProperties.
-  void SetVisualPropertiesUpdateDuration(
-      base::TimeDelta visual_properties_update_duration);
-
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& display_color_spaces);
   const gfx::DisplayColorSpaces& display_color_spaces() const {

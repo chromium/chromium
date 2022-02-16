@@ -1303,7 +1303,7 @@ void LayerTreeHost::SetViewportRectAndScale(
   // If a new viz::LocalSurfaceId has been provided, and the viewport has
   // changed, we need not begin new frames until it has activated.
   if (previous_local_surface_id != local_surface_id_from_parent &&
-      device_viewport_rect_changed && features::IsSurfaceSyncThrottling()) {
+      device_viewport_rect_changed) {
     SetTargetLocalSurfaceId(local_surface_id_from_parent);
   }
 
@@ -1523,12 +1523,6 @@ void LayerTreeHost::RequestNewLocalSurfaceId() {
     return;
   pending_commit_state()->new_local_surface_id_request = true;
   SetNeedsCommit();
-}
-
-void LayerTreeHost::SetVisualPropertiesUpdateDuration(
-    base::TimeDelta visual_properties_update_duration) {
-  pending_commit_state()->visual_properties_update_duration =
-      visual_properties_update_duration;
 }
 
 void LayerTreeHost::RegisterLayer(Layer* layer) {

@@ -5,7 +5,6 @@
 #include "cc/mojom/render_frame_metadata_mojom_traits.h"
 
 #include "build/build_config.h"
-#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/vertical_scroll_direction_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -56,9 +55,7 @@ bool StructTraits<
          data.ReadViewportSizeInPixels(&out->viewport_size_in_pixels) &&
          data.ReadLocalSurfaceId(&out->local_surface_id) &&
          data.ReadNewVerticalScrollDirection(
-             &out->new_vertical_scroll_direction) &&
-         data.ReadVisualPropertiesUpdateDuration(
-             &out->visual_properties_update_duration);
+             &out->new_vertical_scroll_direction);
 }
 
 }  // namespace mojo

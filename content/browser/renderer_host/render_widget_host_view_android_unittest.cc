@@ -386,12 +386,12 @@ TEST_F(RenderWidgetHostViewAndroidTest, RenderFrameSubmittedBeforeNavigation) {
   EXPECT_TRUE(post_nav_local_surface_id.IsNewerThan(initial_local_surface_id));
 }
 
-// Tests Rotation improvements that are behind the
-// features::kSurfaceSyncThrottling flag.
+// Tests Rotation improvements, where multiple updates to VisualProperties are
+// batched.
 class RenderWidgetHostViewAndroidRotationTest
     : public RenderWidgetHostViewAndroidTest {
  public:
-  RenderWidgetHostViewAndroidRotationTest();
+  RenderWidgetHostViewAndroidRotationTest() = default;
   ~RenderWidgetHostViewAndroidRotationTest() override {}
 
   void OnDidUpdateVisualPropertiesComplete(
@@ -402,15 +402,7 @@ class RenderWidgetHostViewAndroidRotationTest
   RenderWidgetHostViewAndroid* CreateRenderWidgetHostViewAndroid(
       RenderWidgetHostImpl* widget_host,
       gfx::NativeView parent_native_view) override;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-RenderWidgetHostViewAndroidRotationTest::
-    RenderWidgetHostViewAndroidRotationTest() {
-  scoped_feature_list_.InitAndEnableFeature(features::kSurfaceSyncThrottling);
-}
 
 void RenderWidgetHostViewAndroidRotationTest::
     OnDidUpdateVisualPropertiesComplete(
