@@ -140,17 +140,11 @@ class SupportToolHandlerTest : public ::testing::Test {
       ADD_FAILURE() << "Could not open " << zip_file;
       return {};
     }
-    while (reader.HasMore()) {
-      if (!reader.OpenCurrentEntryInZip()) {
-        ADD_FAILURE() << "Could not open entry in zip";
-        return {};
-      }
-      const zip::ZipReader::EntryInfo* entry = reader.current_entry_info();
-      std::string entry_file_name =
-          entry->file_path().BaseName().MaybeAsASCII();
-      if (entry->original_size() > kMaxEntrySize) {
+    while (const zip::ZipReader::Entry* const entry = reader.Next()) {
+      std::string entry_file_name = entry->path.BaseName().MaybeAsASCII();
+      if (entry->original_size > kMaxEntrySize) {
         ADD_FAILURE() << "Zip entry " << entry_file_name
-                      << " was too large: " << entry->original_size();
+                      << " was too large: " << entry->original_size;
         return {};
       }
 
@@ -161,11 +155,6 @@ class SupportToolHandlerTest : public ::testing::Test {
         return {};
       }
       result[entry_file_name] = entry_contents;
-
-      if (!reader.AdvanceToNextEntry()) {
-        ADD_FAILURE() << "Could not advance to next entry";
-        return {};
-      }
     }
     return result;
   }
