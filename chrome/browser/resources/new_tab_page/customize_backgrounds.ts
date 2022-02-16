@@ -7,12 +7,22 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import './mini_page.js';
 import './iframe.js';
 
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './customize_backgrounds.html.js';
 
 import {loadTimeData} from './i18n_setup.js';
 import {BackgroundCollection, CollectionImage, CustomizeDialogAction, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
+
+export interface CustomizeBackgroundsElement {
+  $: {
+    collections: HTMLElement,
+    images: HTMLElement,
+    imagesRepeat: DomRepeat,
+    noBackground: HTMLElement,
+    uploadFromDevice: HTMLElement,
+  };
+}
 
 /** Element that lets the user configure the background. */
 export class CustomizeBackgroundsElement extends PolymerElement {
@@ -160,6 +170,12 @@ export class CustomizeBackgroundsElement extends PolymerElement {
 
   confirmBackgroundChanges() {
     this.pageHandler_.confirmBackgroundChanges();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-customize-backgrounds': CustomizeBackgroundsElement;
   }
 }
 

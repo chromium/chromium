@@ -2,92 +2,90 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {BackgroundImage, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {assertEquals, assertNotEquals} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.js';
 
-/** @type {string} */
-export const NONE_ANIMATION = 'none 0s ease 0s 1 normal none running';
+export const NONE_ANIMATION: string = 'none 0s ease 0s 1 normal none running';
 
-/**
- * @param {!HTMLElement} element
- * @param {string} key
- */
-export function keydown(element, key) {
-  keyDownOn(element, '', [], key);
+export function keydown(element: HTMLElement, key: string) {
+  keyDownOn(element, 0, [], key);
 }
 
 /**
  * Asserts the computed style value for an element.
- * @param {!Element} element The element.
- * @param {string} name The name of the style to assert.
- * @param {string} expected The expected style value.
+ * @param name The name of the style to assert.
+ * @param expected The expected style value.
  */
-export function assertStyle(element, name, expected) {
+export function assertStyle(element: Element, name: string, expected: string) {
   const actual = window.getComputedStyle(element).getPropertyValue(name).trim();
   assertEquals(expected, actual);
 }
 
 /**
  * Asserts the computed style for an element is not value.
- * @param {!Element} element The element.
- * @param {string} name The name of the style to assert.
- * @param {string} not The value the style should not be.
+ * @param name The name of the style to assert.
+ * @param not The value the style should not be.
  */
-export function assertNotStyle(element, name, not) {
+export function assertNotStyle(element: Element, name: string, not: string) {
   const actual = window.getComputedStyle(element).getPropertyValue(name).trim();
   assertNotEquals(not, actual);
 }
 
-/**
- * Asserts that an element is focused.
- * @param {!HTMLElement} element The element to test.
- */
-export function assertFocus(element) {
+/** Asserts that an element is focused. */
+export function assertFocus(element: HTMLElement) {
   assertEquals(element, getDeepActiveElement());
 }
 
-/**
- * @param {!typeof T} clazz
- * @return {{mock: !T, callTracker: !TestBrowserProxy}}
- * @template T
- */
-export function createMock(clazz) {
+type Constructor<T> = new (...args: any[]) => T;
+
+export function createMock<T extends object>(clazz: Constructor<T>):
+    {mock: T, callTracker: TestBrowserProxy} {
   const callTracker = new TestBrowserProxy(
       Object.getOwnPropertyNames(clazz.prototype)
           .filter(methodName => methodName !== 'constructor'));
   const handler = {
-    get: function(target, prop, receiver) {
+    get: function(_target: T, prop: string) {
       if (clazz.prototype[prop] instanceof Function) {
-        return (...args) => callTracker.methodCalled(prop, ...args);
+        return (...args: any[]) => callTracker.methodCalled(prop, ...args);
       }
-      if (Object.getOwnPropertyDescriptor(clazz.prototype, prop).get) {
+      if (Object.getOwnPropertyDescriptor(clazz.prototype, prop)!.get) {
         return callTracker.methodCalled(prop);
       }
       return undefined;
     }
   };
-  return {mock: new Proxy({}, handler), callTracker};
+  return {mock: new Proxy<T>({} as unknown as T, handler), callTracker};
 }
 
-/**
- * @param {!typeof T} clazz
- * @param {!function(!T)=} installer
- * @return {!TestBrowserProxy}
- * @template T
- */
-export function installMock(clazz, installer) {
-  installer = installer || clazz.setInstance;
+type Installer<T> = (instance: T) => void;
+
+export function installMock<T extends object>(
+    clazz: Constructor<T>, installer?: Installer<T>): TestBrowserProxy {
+  installer = installer ||
+      (clazz as unknown as {setInstance: Installer<T>}).setInstance;
   const {mock, callTracker} = createMock(clazz);
-  installer(mock);
+  installer!(mock);
   return callTracker;
 }
 
-/** @return {!Theme} */
-export function createTheme() {
+export function createBackgroundImage(url: string): BackgroundImage {
+  return {
+    url: {url},
+    attributionUrl: undefined,
+    positionX: undefined,
+    positionY: undefined,
+    repeatX: undefined,
+    repeatY: undefined,
+    size: undefined,
+    url2x: undefined,
+  };
+}
+
+export function createTheme(): Theme {
   const mostVisited = {
     backgroundColor: {value: 0xff00ff00},
     isDark: false,
@@ -114,14 +112,14 @@ export function createTheme() {
   };
   return {
     backgroundColor: {value: 0xffff0000},
-    backgroundImage: null,
+    backgroundImage: undefined,
     backgroundImageAttribution1: '',
     backgroundImageAttribution2: '',
-    backgroundImageAttributionUrl: null,
+    backgroundImageAttributionUrl: undefined,
     dailyRefreshCollectionId: '',
     isDark: false,
     isDefault: true,
-    logoColor: null,
+    logoColor: undefined,
     mostVisited: mostVisited,
     searchBox: searchBox,
     textColor: {value: 0xff0000ff},
@@ -129,12 +127,10 @@ export function createTheme() {
   };
 }
 
-/** @type {!InitializeModuleCallback} */
-export async function initNullModule() {
+export async function initNullModule(): Promise<null> {
   return null;
 }
 
-/** @return {!HTMLElement} */
-export function createElement() {
-  return /** @type {!HTMLElement} */ (document.createElement('div'));
+export function createElement(): HTMLElement {
+  return document.createElement('div');
 }

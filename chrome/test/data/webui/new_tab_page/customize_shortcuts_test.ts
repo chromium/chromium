@@ -5,34 +5,29 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/lazy_load.js';
 
+import {CustomizeShortcutsElement} from 'chrome://new-tab-page/lazy_load.js';
 import {NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {installMock} from './test_support.js';
 
 suite('NewTabPageCustomizeShortcutsTest', () => {
-  /** @type {!CustomizeShortcutsElement} */
-  let customizeShortcuts;
-
-  /** @type {!TestBrowserProxy} */
-  let handler;
+  let customizeShortcuts: CustomizeShortcutsElement;
+  let handler: TestBrowserProxy;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     handler = installMock(
         PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+        (mock: PageHandlerRemote) =>
+            NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
   });
 
-  /**
-   * @param {boolean} customLinksEnabled
-   * @param {boolean} visible
-   * @return {!Promise}
-   * @private
-   */
-  async function setInitialSettings(customLinksEnabled, shortcutsVisible) {
+  async function setInitialSettings(
+      customLinksEnabled: boolean, shortcutsVisible: boolean): Promise<void> {
     handler.setResultFor('getMostVisitedSettings', Promise.resolve({
       customLinksEnabled,
       shortcutsVisible,
@@ -42,23 +37,15 @@ suite('NewTabPageCustomizeShortcutsTest', () => {
     await handler.whenCalled('getMostVisitedSettings');
   }
 
-  /**
-   * @param {boolean} selected
-   * @param {!HTMLElement} el
-   * @private
-   */
-  function assertIsSelected(selected, el) {
+  function assertIsSelected(selected: boolean, el: HTMLElement) {
     assertEquals(selected, el.classList.contains('selected'));
   }
 
-  /**
-   * @param {boolean} customLinksEnabled
-   * @param {boolean} useMostVisited
-   * @param {boolean} hidden
-   * @private
-   */
-  function assertSelection(customLinksEnabled, useMostVisited, hidden) {
-    assertEquals(1, customLinksEnabled + useMostVisited + hidden);
+  function assertSelection(
+      customLinksEnabled: boolean, useMostVisited: boolean, hidden: boolean) {
+    assertEquals(
+        1,
+        Number(customLinksEnabled) + Number(useMostVisited) + Number(hidden));
     assertIsSelected(
         customLinksEnabled, customizeShortcuts.$.optionCustomLinks);
     assertIsSelected(useMostVisited, customizeShortcuts.$.optionMostVisited);
@@ -66,21 +53,18 @@ suite('NewTabPageCustomizeShortcutsTest', () => {
     assertEquals(hidden, customizeShortcuts.$.hideToggle.checked);
   }
 
-  /** @private */
   function assertCustomLinksEnabled() {
     assertSelection(
         /* customLinksEnabled= */ true, /* useMostVisited= */ false,
         /* hidden= */ false);
   }
 
-  /** @private */
   function assertUseMostVisited() {
     assertSelection(
         /* customLinksEnabled= */ false, /* useMostVisited= */ true,
         /* hidden= */ false);
   }
 
-  /** @private */
   function assertHidden() {
     assertSelection(
         /* customLinksEnabled= */ false, /* useMostVisited= */ false,

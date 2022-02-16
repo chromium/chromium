@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {createTheme, installMock} from './test_support.js';
+import {createBackgroundImage, createTheme, installMock} from './test_support.js';
 
 suite('NewTabPageCustomizeDialogTest', () => {
   let customizeDialog: CustomizeDialogElement;
@@ -128,16 +128,8 @@ suite('NewTabPageCustomizeDialogTest', () => {
     setup(() => {
       const theme = createTheme();
       theme.dailyRefreshCollectionId = 'landscape';
-      theme.backgroundImage = {
-        url: {url: 'https://example.com/image.png'},
-        attributionUrl: undefined,
-        positionX: undefined,
-        positionY: undefined,
-        repeatX: undefined,
-        repeatY: undefined,
-        size: undefined,
-        url2x: undefined,
-      };
+      theme.backgroundImage =
+          createBackgroundImage('https://example.com/image.png');
       customizeDialog.theme = theme;
     });
 

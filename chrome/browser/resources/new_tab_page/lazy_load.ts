@@ -15,4 +15,8 @@ import './middle_slot_promo.js';
 import './voice_search_overlay.js';
 import 'chrome://resources/cr_components/most_visited/most_visited.js';
 
+export {CustomizeBackgroundsElement} from './customize_backgrounds.js';
 export {CustomizeDialogElement} from './customize_dialog.js';
+export {CustomizeModulesElement} from './customize_modules.js';
+export {CustomizeShortcutsElement} from './customize_shortcuts.js';
+export {MiddleSlotPromoElement} from './middle_slot_promo.js';

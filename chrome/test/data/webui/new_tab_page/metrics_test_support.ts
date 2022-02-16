@@ -4,40 +4,23 @@
 
 /** Tracks metrics calls to verify metric logging in tests. */
 export class MetricsTracker {
-  constructor() {
-    /** @private {!Map<string, !Array<*>>} */
-    this.histogramMap_ = new Map();
-  }
+  private histogramMap_: Map<string, any[]> = new Map();
 
-  /**
-   * @param {string} metricName
-   * @param {*=} value
-   * @return {number}
-   */
-  count(metricName, value) {
+  count(metricName: string, value?: any): number {
     return this.get_(metricName)
         .filter(v => value === undefined || v === value)
         .length;
   }
 
-  /**
-   * @param {string} metricName
-   * @param {*} value
-   */
-  record(metricName, value) {
+  record(metricName: string, value: any) {
     this.get_(metricName).push(value);
   }
 
-  /**
-   * @param {string} metricName
-   * @return {!Array<*>}
-   * @private
-   */
-  get_(metricName) {
+  private get_(metricName: string): any[] {
     if (!this.histogramMap_.has(metricName)) {
       this.histogramMap_.set(metricName, []);
     }
-    return this.histogramMap_.get(metricName);
+    return this.histogramMap_.get(metricName)!;
   }
 }
 
@@ -46,7 +29,7 @@ export class MetricsTracker {
  * returned |MetricsTracker| object.
  * @return {!MetricsTracker}
  */
-export function fakeMetricsPrivate() {
+export function fakeMetricsPrivate(): MetricsTracker {
   const metrics = new MetricsTracker();
   chrome.metricsPrivate.recordUserAction = (m) => metrics.record(m, 0);
   chrome.metricsPrivate.recordSparseHashable = (m, v) => metrics.record(m, v);

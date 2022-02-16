@@ -117,7 +117,7 @@ export async function renderPromo(): Promise<Element|null> {
 // Element that requests and renders the middle-slot promo. The element is
 // hidden until the promo is rendered, If no promo exists or the promo is empty,
 // the element remains hidden.
-class MiddleSlotPromoElement extends PolymerElement {
+export class MiddleSlotPromoElement extends PolymerElement {
   static get is() {
     return 'ntp-middle-slot-promo';
   }
@@ -135,6 +135,12 @@ class MiddleSlotPromoElement extends PolymerElement {
       this.dispatchEvent(new Event(
           'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-middle-slot-promo': MiddleSlotPromoElement;
   }
 }
 

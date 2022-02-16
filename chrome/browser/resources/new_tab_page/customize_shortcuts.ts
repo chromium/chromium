@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './customize_shortcuts.html.js';
@@ -14,8 +15,20 @@ import {getTemplate} from './customize_shortcuts.html.js';
 import {CustomizeDialogAction, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
+
+export interface CustomizeShortcutsElement {
+  $: {
+    hide: HTMLElement,
+    hideToggle: CrToggleElement,
+    optionCustomLinks: HTMLElement,
+    optionCustomLinksButton: HTMLElement,
+    optionMostVisited: HTMLElement,
+    optionMostVisitedButton: HTMLElement,
+  };
+}
+
 /** Element that lets the user configure shortcut settings. */
-class CustomizeShortcutsElement extends PolymerElement {
+export class CustomizeShortcutsElement extends PolymerElement {
   static get is() {
     return 'ntp-customize-shortcuts';
   }

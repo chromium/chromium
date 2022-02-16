@@ -5,23 +5,22 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {$$, BrowserCommandProxy, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {MiddleSlotPromoElement} from 'chrome://new-tab-page/lazy_load.js';
+import {$$, BrowserCommandProxy, CrAutoImgElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
 suite('NewTabPageMiddleSlotPromoTest', () => {
-  /** @type {!TestBrowserProxy} */
-  let newTabPageHandler;
-
-  /** @type {!TestBrowserProxy} */
-  let promoBrowserCommandHandler;
+  let newTabPageHandler: TestBrowserProxy;
+  let promoBrowserCommandHandler: TestBrowserProxy;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     newTabPageHandler = installMock(
         PageHandlerRemote,
         mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
@@ -31,11 +30,8 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
         mock => BrowserCommandProxy.setInstance({handler: mock}));
   });
 
-  /**
-   * @param {boolean} canShowPromo
-   * @return {!Element}
-   */
-  async function createMiddleSlotPromo(canShowPromo) {
+  async function createMiddleSlotPromo(canShowPromo: boolean):
+      Promise<MiddleSlotPromoElement> {
     newTabPageHandler.setResultFor('getPromo', Promise.resolve({
       promo: {
         middleSlotParts: [
@@ -90,12 +86,8 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     return middleSlotPromo;
   }
 
-  /**
-   * @param {boolean} hasContent
-   * @param {!Element} middleSlotPromo
-   * @private
-   */
-  function assertHasContent(hasContent, middleSlotPromo) {
+  function assertHasContent(
+      hasContent: boolean, middleSlotPromo: MiddleSlotPromoElement) {
     assertEquals(hasContent, !!$$(middleSlotPromo, '#container'));
   }
 
@@ -103,17 +95,27 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     const canShowPromo = true;
     const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
     assertHasContent(canShowPromo, middleSlotPromo);
-    const parts = $$(middleSlotPromo, '#container').children;
+    const parts = $$(middleSlotPromo, '#container')!.children;
     assertEquals(6, parts.length);
-    const [image, imageWithLink, imageWithCommand, text, link, command] = parts;
+
+    const image = parts[0] as CrAutoImgElement;
+    const imageWithLink = parts[1] as HTMLAnchorElement;
+    const imageWithCommand = parts[2] as HTMLAnchorElement;
+    const text = parts[3] as HTMLElement;
+    const link = parts[4] as HTMLAnchorElement;
+    const command = parts[5] as HTMLAnchorElement;
 
     assertEquals('https://image', image.autoSrc);
 
     assertEquals('https://link/', imageWithLink.href);
-    assertEquals('https://image', imageWithLink.children[0].autoSrc);
+    assertEquals(
+        'https://image',
+        (imageWithLink.children[0] as CrAutoImgElement).autoSrc);
 
     assertEquals('', imageWithCommand.href);
-    assertEquals('https://image', imageWithCommand.children[0].autoSrc);
+    assertEquals(
+        'https://image',
+        (imageWithCommand.children[0] as CrAutoImgElement).autoSrc);
 
     assertEquals('text', text.innerText);
     assertEquals('red', text.style.color);
@@ -127,7 +129,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     assertEquals('blue', command.style.color);
   });
 
-  test(`render canShowPromo=false`, async () => {
+  test('render canShowPromo=false', async () => {
     const canShowPromo = false;
     const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
     assertHasContent(canShowPromo, middleSlotPromo);
@@ -139,9 +141,12 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     assertHasContent(canShowPromo, middleSlotPromo);
     promoBrowserCommandHandler.setResultFor(
         'executeCommand', Promise.resolve());
-    const imageWithCommand = $$(middleSlotPromo, '#container').children[2];
-    const command = $$(middleSlotPromo, '#container').children[5];
-    await Promise.all([imageWithCommand, command].map(async el => {
+    const imageWithCommand =
+        $$(middleSlotPromo, '#container')!.children[2] as HTMLElement;
+    const command =
+        $$(middleSlotPromo, '#container')!.children[5] as HTMLElement;
+
+    async function testClick(el: HTMLElement) {
       promoBrowserCommandHandler.reset();
       el.click();
       // Make sure the command and click information are sent to the browser.
@@ -159,7 +164,10 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
             shiftKey: false,
           },
           expectedClickInfo);
-    }));
+    }
+
+    await testClick(imageWithCommand);
+    await testClick(command);
   });
 
   [null,

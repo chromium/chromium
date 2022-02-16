@@ -188,6 +188,9 @@ suite('NewTabPageAppTest', () => {
       // Arrange.
       $$(app, '#customizeButton').click();
       const theme = createTheme();
+      theme.backgroundImage = null;
+      theme.backgroundImageAttributionUrl = null;
+      theme.logoColor = null;
 
       // Act.
       callbackRouterRemote.setTheme(theme);

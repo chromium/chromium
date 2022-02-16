@@ -11,18 +11,18 @@ import("./realbox/realbox.gni")
 non_preprocessed_files = [
                            "app_test.js",
                            "background_manager_test.js",
-                           "customize_backgrounds_test.js",
+                           "customize_backgrounds_test.ts",
                            "customize_dialog_focus_test.ts",
                            "customize_dialog_test.ts",
-                           "customize_modules_test.js",
-                           "customize_shortcuts_test.js",
+                           "customize_modules_test.ts",
+                           "customize_shortcuts_test.ts",
                            "doodle_share_dialog_focus_test.ts",
                            "doodle_share_dialog_test.ts",
                            "logo_test.js",
-                           "metrics_test_support.js",
+                           "metrics_test_support.ts",
                            "metrics_utils_test.ts",
-                           "middle_slot_promo_test.js",
-                           "test_support.js",
+                           "middle_slot_promo_test.ts",
+                           "test_support.ts",
                            "utils_test.ts",
                            "voice_search_overlay_test.js",
                          ] + modules_test_files + realbox_test_files
@@ -49,6 +49,8 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = non_preprocessed_files
+
+  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 
   deps = [ "//chrome/browser/resources/new_tab_page:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]

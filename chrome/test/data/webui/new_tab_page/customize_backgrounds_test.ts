@@ -5,28 +5,32 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/lazy_load.js';
 
+import {CustomizeBackgroundsElement} from 'chrome://new-tab-page/lazy_load.js';
 import {NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {BackgroundCollection, CollectionImage, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {assertNotStyle, assertStyle, installMock} from './test_support.js';
+import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
-function createCollection(id = 0, label = '', url = '') {
-  return {id: id, label: label, previewImageUrl: {url: url}};
+function createCollection(
+    id: string = '0', label: string = '',
+    url: string = ''): BackgroundCollection {
+  return {id, label, previewImageUrl: {url}};
 }
 
 suite('NewTabPageCustomizeBackgroundsTest', () => {
-  /** @type {!TestBrowserProxy} */
-  let windowProxy;
+  let windowProxy: TestBrowserProxy;
+  let handler: TestBrowserProxy;
 
-  /** @type {!TestBrowserProxy} */
-  let handler;
-
-  async function createCustomizeBackgrounds() {
+  async function createCustomizeBackgrounds():
+      Promise<CustomizeBackgroundsElement> {
     const customizeBackgrounds =
         document.createElement('ntp-customize-backgrounds');
-    customizeBackgrounds.theme = {};
+    const theme = createTheme();
+    theme.isCustomBackground = false;
+    customizeBackgrounds.theme = theme;
     document.body.appendChild(customizeBackgrounds);
     await handler.whenCalled('getBackgroundCollections');
     await flushTasks();
@@ -34,7 +38,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
   }
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('createIframeSrc', '');
@@ -52,7 +56,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
 
   test('creating element shows background collection tiles', async () => {
     // Arrange.
-    const collection = createCollection(0, 'col_0', 'https://col_0.jpg');
+    const collection = createCollection('0', 'col_0', 'https://col_0.jpg');
     handler.setResultFor('getBackgroundCollections', Promise.resolve({
       collections: [collection],
     }));
@@ -64,12 +68,12 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
     assertTrue(isVisible(customizeBackgrounds.$.collections));
     assertStyle(customizeBackgrounds.$.images, 'display', 'none');
     const tiles =
-        customizeBackgrounds.shadowRoot.querySelectorAll('#collections .tile');
+        customizeBackgrounds.shadowRoot!.querySelectorAll('#collections .tile');
     assertEquals(3, tiles.length);
-    assertEquals('col_0', tiles[2].getAttribute('title'));
+    assertEquals('col_0', tiles[2]!.getAttribute('title'));
     assertEquals(
         'chrome-untrusted://new-tab-page/background_image?https://col_0.jpg',
-        tiles[2].querySelector('.image').src);
+        tiles[2]!.querySelector<HTMLImageElement>('.image')!.src);
   });
 
   test('clicking collection selects collection', async function() {
@@ -81,9 +85,8 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
     const customizeBackgrounds = await createCustomizeBackgrounds();
 
     // Act.
-    customizeBackgrounds.shadowRoot
-        .querySelector('#collections .tile:nth-child(3)')
-        .click();
+    customizeBackgrounds.shadowRoot!
+        .querySelector<HTMLElement>('#collections .tile:nth-child(3)')!.click();
 
     // Assert.
     assertDeepEquals(collection, customizeBackgrounds.selectedCollection);
@@ -103,39 +106,43 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
 
   test('Loading images shows image tiles', async function() {
     // Arrange.
-    const image = {
+    const image: CollectionImage = {
       attribution1: 'image_0',
       imageUrl: {url: 'https://a.com/i.png'},
       previewImageUrl: {url: 'https://a.com/p.png'},
+      attributionUrl: {url: ''},
+      attribution2: '',
     };
     handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [image],
     }));
     const customizeBackgrounds = await createCustomizeBackgrounds();
-    customizeBackgrounds.selectedCollection = createCollection(0);
+    customizeBackgrounds.selectedCollection = createCollection();
 
     // Act.
     const id = await handler.whenCalled('getBackgroundImages');
     await flushTasks();
 
     // Assert.
-    assertEquals(id, 0);
+    assertEquals(id, '0');
     assertFalse(isVisible(customizeBackgrounds.$.collections));
     assertTrue(isVisible(customizeBackgrounds.$.images));
     const tiles =
-        customizeBackgrounds.shadowRoot.querySelectorAll('#images .tile');
+        customizeBackgrounds.shadowRoot!.querySelectorAll('#images .tile');
     assertEquals(tiles.length, 1);
     assertEquals(
-        tiles[0].querySelector('.image').src,
+        tiles[0]!.querySelector<HTMLImageElement>('.image')!.src,
         'chrome-untrusted://new-tab-page/background_image?https://a.com/p.png');
   });
 
   test('Going back shows collections', async function() {
     // Arrange.
-    const image = {
+    const image: CollectionImage = {
       attribution1: 'image_0',
       imageUrl: {url: 'https://example.com/image.png'},
       previewImageUrl: {url: 'https://example.com/image.png'},
+      attributionUrl: {url: ''},
+      attribution2: '',
     };
     const customizeBackgrounds = await createCustomizeBackgrounds();
     handler.setResultFor('getBackgroundImages', Promise.resolve({
@@ -154,23 +161,24 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
   });
 
   test('select different image', async () => {
-    const image = {
+    const image: CollectionImage = {
       attribution1: 'image_0',
       imageUrl: {url: 'https://example.com/image.png'},
       previewImageUrl: {url: 'https://example.com/image.png'},
+      attributionUrl: {url: ''},
+      attribution2: '',
     };
     const customizeBackgrounds = await createCustomizeBackgrounds();
     handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [image],
     }));
     customizeBackgrounds.theme.isCustomBackground = true;
-    customizeBackgrounds.theme.backgroundImage = {
-      url: {url: 'https://example.com/notthesameimage.png'}
-    };
-    customizeBackgrounds.selectedCollection = createCollection(0);
+    customizeBackgrounds.theme.backgroundImage =
+        createBackgroundImage('https://example.com/notthesameimage.png');
+    customizeBackgrounds.selectedCollection = createCollection();
     await flushTasks();
-    const element =
-        customizeBackgrounds.shadowRoot.querySelector('#images .tile');
+    const element = customizeBackgrounds.shadowRoot!.querySelector<HTMLElement>(
+        '#images .tile')!;
     const item = customizeBackgrounds.$.imagesRepeat.itemForElement(element);
     assertEquals(image.attribution1, item.attribution1);
     assertFalse(element.classList.contains('selected'));
@@ -180,62 +188,66 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
   });
 
   test('select same image', async () => {
-    const image = {
+    const image: CollectionImage = {
       attribution1: 'image_0',
       imageUrl: {url: 'https://example.com/image.png'},
       previewImageUrl: {url: 'https://example.com/image.png'},
+      attributionUrl: {url: ''},
+      attribution2: '',
     };
     const customizeBackgrounds = await createCustomizeBackgrounds();
     handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [image],
     }));
     customizeBackgrounds.theme.isCustomBackground = true;
-    customizeBackgrounds.theme.backgroundImage = {
-      url: {url: 'https://example.com/image.png'}
-    };
-    customizeBackgrounds.selectedCollection = createCollection(0);
+    customizeBackgrounds.theme.backgroundImage =
+        createBackgroundImage('https://example.com/image.png');
+    customizeBackgrounds.selectedCollection = createCollection();
     await flushTasks();
-    const element =
-        customizeBackgrounds.shadowRoot.querySelector('#images .tile');
+    const element = customizeBackgrounds.shadowRoot!.querySelector<HTMLElement>(
+        '#images .tile')!;
     element.click();
     assertEquals(1, handler.getCallCount('setBackgroundImage'));
     assertEquals(0, handler.getCallCount('onCustomizeDialogAction'));
   });
 
   test('image selected by current theme', async () => {
-    const image = {
+    const image: CollectionImage = {
       attribution1: 'image_0',
       imageUrl: {url: 'https://example.com/image.png'},
       previewImageUrl: {url: 'https://example.com/image.png'},
+      attributionUrl: {url: ''},
+      attribution2: '',
     };
     const customizeBackgrounds = await createCustomizeBackgrounds();
-    customizeBackgrounds.theme.backgroundImage = {
-      url: {url: 'https://example.com/image.png'}
-    };
+    customizeBackgrounds.theme.backgroundImage =
+        createBackgroundImage('https://example.com/image.png');
     handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [image],
     }));
-    customizeBackgrounds.selectedCollection = createCollection(0);
+    customizeBackgrounds.selectedCollection = createCollection();
     await flushTasks();
     const element =
-        customizeBackgrounds.shadowRoot.querySelector('#images .tile');
+        customizeBackgrounds.shadowRoot!.querySelector('#images .tile')!;
     assertTrue(element.classList.contains('selected'));
   });
 
   test('deselected when background selection is not an image', async () => {
-    const image = {
+    const image: CollectionImage = {
       attribution1: 'image_0',
       imageUrl: {url: 'https://example.com/image.png'},
       previewImageUrl: {url: 'https://example.com/image.png'},
+      attributionUrl: {url: ''},
+      attribution2: '',
     };
     const customizeBackgrounds = await createCustomizeBackgrounds();
     handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [image],
     }));
-    customizeBackgrounds.selectedCollection = createCollection(0);
+    customizeBackgrounds.selectedCollection = createCollection();
     await flushTasks();
-    const element =
-        customizeBackgrounds.shadowRoot.querySelector('#images .tile');
+    const element = customizeBackgrounds.shadowRoot!.querySelector<HTMLElement>(
+        '#images .tile')!;
     element.click();
     assertEquals(1, handler.getCallCount('setBackgroundImage'));
   });
@@ -251,7 +263,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
   });
 
   suite('no background', () => {
-    let customizeBackgrounds;
+    let customizeBackgrounds: CustomizeBackgroundsElement;
 
     setup(async () => {
       customizeBackgrounds = await createCustomizeBackgrounds();
@@ -270,18 +282,24 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
     });
 
     test('no background selected when clicked', () => {
-      customizeBackgrounds.theme = {backgroundImage: {url: {url: 'http://a'}}};
+      const theme = createTheme();
+      theme.backgroundImage = createBackgroundImage('http://a');
+      customizeBackgrounds.theme = theme;
       customizeBackgrounds.$.noBackground.click();
       assertSetNoBackgroundImageCalled();
     });
 
     test('not selected when refresh collection set', () => {
-      customizeBackgrounds.theme = {dailyRefreshCollectionId: 'landscape'};
+      const theme = createTheme();
+      theme.dailyRefreshCollectionId = 'landscape';
+      customizeBackgrounds.theme = theme;
       assertSetNoBackgroundImageNotCalled();
     });
 
     test('not selected when refresh collection set', () => {
-      customizeBackgrounds.theme = {backgroundImage: {url: {url: 'http://a'}}};
+      const theme = createTheme();
+      theme.backgroundImage = createBackgroundImage('http://a');
+      customizeBackgrounds.theme = theme;
       assertSetNoBackgroundImageNotCalled();
     });
   });
