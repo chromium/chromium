@@ -225,8 +225,10 @@ struct LowercaseStringViewLookupTranslator {
 }  // namespace
 
 AtomicStringTable::AtomicStringTable() {
-  for (StringImpl* string : StringImpl::AllStaticStrings().Values())
-    Add(string);
+  for (StringImpl* string : StringImpl::AllStaticStrings().Values()) {
+    DCHECK(string->length());
+    AddNoLock(string);
+  }
 }
 
 AtomicStringTable::~AtomicStringTable() {
@@ -249,8 +251,9 @@ scoped_refptr<StringImpl> AtomicStringTable::AddToStringTable(const T& value) {
 
   // If the string is newly-translated, then we need to adopt it.
   // The boolean in the pair tells us if that is so.
-  return add_result.is_new_entry ? base::AdoptRef(*add_result.stored_value)
-                                 : *add_result.stored_value;
+  return add_result.is_new_entry
+             ? base::AdoptRef(*add_result.stored_value)
+             : base::WrapRefCounted(*add_result.stored_value);
 }
 
 scoped_refptr<StringImpl> AtomicStringTable::Add(const UChar* s,
@@ -295,17 +298,33 @@ scoped_refptr<StringImpl> AtomicStringTable::Add(const LChar* s,
   return AddToStringTable<LCharBuffer, LCharBufferTranslator>(buffer);
 }
 
-StringImpl* AtomicStringTable::Add(StringImpl* string) {
+StringImpl* AtomicStringTable::AddNoLock(StringImpl* string) {
+  auto result = table_.insert(string);
+  StringImpl* entry = *result.stored_value;
+  if (result.is_new_entry)
+    entry->SetIsAtomic();
+
+  DCHECK(!string->IsStatic() || entry->IsStatic());
+  return entry;
+}
+
+scoped_refptr<StringImpl> AtomicStringTable::Add(StringImpl* string) {
   if (!string->length())
     return StringImpl::empty_;
 
-  StringImpl* result = *table_.insert(string).stored_value;
+  return base::WrapRefCounted(AddNoLock(string));
+}
 
-  if (!result->IsAtomic())
-    result->SetIsAtomic();
+scoped_refptr<StringImpl> AtomicStringTable::Add(
+    scoped_refptr<StringImpl>&& string) {
+  if (!string->length())
+    return StringImpl::empty_;
 
-  DCHECK(!string->IsStatic() || result->IsStatic());
-  return result;
+  StringImpl* entry = AddNoLock(string.get());
+  if (entry == string.get())
+    return std::move(string);
+
+  return base::WrapRefCounted(entry);
 }
 
 scoped_refptr<StringImpl> AtomicStringTable::AddUTF8(
@@ -383,11 +402,20 @@ AtomicStringTable::WeakResult AtomicStringTable::WeakFind(const UChar* chars,
   return WeakResult(*it);
 }
 
-void AtomicStringTable::Remove(StringImpl* string) {
+bool AtomicStringTable::ReleaseAndRemoveIfNeeded(StringImpl* string) {
   DCHECK(string->IsAtomic());
+  // Double check that the refcount is still 0. Because Add() could
+  // have added a new reference after the fetch_sub in
+  // StringImpl::Release. This can be a relaxed load, since both
+  // AtomicStringTable::Add() and this logic will be under a lock.
+  if (!string->HasZeroRefRelaxed())
+    return false;
+
   auto iterator = table_.find(string);
   CHECK_NE(iterator, table_.end());
   table_.erase(iterator);
+  // Indicate that something was removed.
+  return true;
 }
 
 }  // namespace WTF

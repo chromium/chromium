@@ -53,10 +53,7 @@ AtomicString::AtomicString(const UChar* chars)
 scoped_refptr<StringImpl> AtomicString::AddSlowCase(
     scoped_refptr<StringImpl>&& string) {
   DCHECK(!string->IsAtomic());
-  StringImpl* result = AtomicStringTable::Instance().Add(string.get());
-  if (result == string.get())
-    return std::move(string);
-  return scoped_refptr<StringImpl>(result);
+  return AtomicStringTable::Instance().Add(std::move(string));
 }
 
 scoped_refptr<StringImpl> AtomicString::AddSlowCase(StringImpl* string) {

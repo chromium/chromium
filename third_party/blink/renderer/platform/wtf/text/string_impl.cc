@@ -73,14 +73,20 @@ void StringImpl::operator delete(void* ptr) {
 
 inline StringImpl::~StringImpl() {
   DCHECK(!IsStatic());
-
-  if (IsAtomic())
-    AtomicStringTable::Instance().Remove(this);
 }
 
-void StringImpl::DestroyIfNotStatic() const {
-  if (!IsStatic())
+void StringImpl::DestroyIfNeeded() const {
+  if (hash_and_flags_.load(std::memory_order_acquire) & kIsAtomic) {
+    if (AtomicStringTable::Instance().ReleaseAndRemoveIfNeeded(
+            const_cast<StringImpl*>(this))) {
+      delete this;
+    } else {
+      // AtomicStringTable::Add() revived this before we started really
+      // killing it.
+    }
+  } else {
     delete this;
+  }
 }
 
 unsigned StringImpl::ComputeASCIIFlags() const {

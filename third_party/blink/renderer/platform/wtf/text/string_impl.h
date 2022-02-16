@@ -268,13 +268,16 @@ class WTF_EXPORT StringImpl {
     return ref_count_.load(std::memory_order_acquire) == 1;
   }
 
+  ALWAYS_INLINE bool HasZeroRefRelaxed() const {
+    return ref_count_.load(std::memory_order_relaxed) == 0;
+  }
+
   ALWAYS_INLINE void AddRef() const {
     if (!IsStatic()) {
       uint32_t previous_ref_count =
           ref_count_.fetch_add(1, std::memory_order_relaxed);
       CHECK_NE(previous_ref_count, std::numeric_limits<uint32_t>::max());
 #if DCHECK_IS_ON()
-      DCHECK(verifier_.OnRef(previous_ref_count)) << AsciiForDebugging();
       ref_count_change_count_++;
 #endif
     }
@@ -290,12 +293,10 @@ class WTF_EXPORT StringImpl {
       // enough to catch implementation bugs, and that implementation bugs are
       // the only way we'd experience underflow.
       DCHECK_NE(previous_ref_count, 0u);
-      DCHECK(verifier_.OnDeref(previous_ref_count))
-          << AsciiForDebugging() << " " << CurrentThread();
       ref_count_change_count_++;
 #endif
       if (previous_ref_count == 1)
-        DestroyIfNotStatic();
+        DestroyIfNeeded();
     }
   }
 
@@ -555,7 +556,7 @@ class WTF_EXPORT StringImpl {
                                                              StripBehavior);
   NOINLINE wtf_size_t HashSlowCase() const;
 
-  void DestroyIfNotStatic() const;
+  void DestroyIfNeeded() const;
 
   // Calculates the kContainsOnlyAscii and kIsLowerAscii flags. Returns
   // a bitfield with those 2 values.
