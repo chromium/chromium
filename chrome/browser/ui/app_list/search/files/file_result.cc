@@ -132,9 +132,13 @@ FileResult::FileResult(const std::string& schema,
     SetDetails(details.value());
 
   // Launcher search results UI is light by default, so use icons for light
-  // background if dark/light mode feature is not enabled.
-  const bool dark_background = ash::features::IsDarkLightModeEnabled() &&
-                               ash::ColorProvider::Get()->IsDarkModeEnabled();
+  // background if dark/light mode feature is not enabled. Productivity launcher
+  // has dark background by default, so use icons for dark background in that
+  // case.
+  const bool dark_background =
+      ash::features::IsDarkLightModeEnabled()
+          ? ash::ColorProvider::Get()->IsDarkModeEnabled()
+          : ash::features::IsProductivityLauncherEnabled();
   if (display_type == DisplayType::kChip) {
     SetChipIcon(chromeos::GetChipIconForPath(filepath, dark_background));
   } else if (display_type == DisplayType::kContinue) {
