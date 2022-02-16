@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -48,6 +49,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.io.IOException;
 
@@ -57,6 +59,9 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
 public final class PrivacySandboxDialogTest {
+    @ClassRule
+    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -134,6 +139,18 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    public void testRenderConsentExpanded() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDialog = new PrivacySandboxDialogConsent(sActivityTestRule.getActivity());
+            mDialog.show();
+        });
+        onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_consent_dialog_expanded");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
     public void testRenderNotice() throws IOException {
         PrivacySandboxDialogNotice notice = null;
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -182,6 +199,17 @@ public final class PrivacySandboxDialogTest {
         onView(withText(R.string.privacy_sandbox_consent_title)).check(doesNotExist());
 
         launchDialog();
+        // Click on the expanding section and verify it worked correctly.
+        onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        assertEquals("Last dialog action", DialogAction.CONSENT_MORE_INFO_OPENED,
+                (int) mFakePrivacySandboxBridge.getLastDialogAction());
+        onView(withId(R.id.privacy_sandbox_consent_dropdown)).perform(scrollTo());
+        onView(withId(R.id.privacy_sandbox_consent_dropdown)).check(matches(isDisplayed()));
+        onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        assertEquals("Last dialog action", DialogAction.CONSENT_MORE_INFO_CLOSED,
+                (int) mFakePrivacySandboxBridge.getLastDialogAction());
+        onView(withId(R.id.privacy_sandbox_consent_dropdown)).check(doesNotExist());
+
         // Decline the consent and verify it worked correctly.
         onView(withText(R.string.privacy_sandbox_dialog_no_button)).perform(click());
         assertEquals("Last dialog action", DialogAction.CONSENT_DECLINED,

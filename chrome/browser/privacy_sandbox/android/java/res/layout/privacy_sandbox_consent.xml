@@ -68,9 +68,46 @@
                 style="@style/TextAppearance.TextMedium.Primary" />
 
             <TextView
+                android:layout_marginBottom="@dimen/list_item_default_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/privacy_sandbox_consent_description_two"
+                style="@style/TextAppearance.TextMedium.Secondary" />
+
+            <LinearLayout
+                android:layout_marginBottom="@dimen/list_item_default_margin"
+                android:id="@+id/dropdown_element"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_marginBottom="@dimen/list_item_default_margin"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy_sandbox_consent_dropdown_button"
+                    style="@style/TextAppearance.TextMedium.Secondary" />
+
+                <org.chromium.ui.widget.CheckableImageView
+                    android:id="@+id/expand_arrow"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dropdown_container"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_sandbox_consent_description_three"
                 style="@style/TextAppearance.TextMedium.Secondary" />
 
         </LinearLayout>

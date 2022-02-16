@@ -988,6 +988,24 @@ Privacy Sandbox trials are still in active development and are available in sele
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_DESCRIPTION_TWO" desc="Second paragraph for the Privacy Sandbox consent dialog text." translateable="false">
         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_BUTTON" desc="Text on the button for the dropdown element in the the Privacy Sandbox consent dialog" translateable="false">
+        Learn more about Lorem ipsum dolor sit
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_HEADING" desc="Heading for the dropdown element in the the Privacy Sandbox consent dialog" translateable="false">
+        Lorem ipsum dolor sit amet
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_ONE" desc="First element of the dropdown in the the Privacy Sandbox consent dialog" translateable="false">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_TWO" desc="Second element of the dropdown in the the Privacy Sandbox consent dialog" translateable="false">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_THREE" desc="Third element of the dropdown in the the Privacy Sandbox consent dialog" translateable="false">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DESCRIPTION_THREE" desc="Third paragraph for the Privacy Sandbox consent dialog text." translateable="false">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+      </message>
       <message name="IDS_PRIVACY_SANDBOX_NOTICE_TITLE" desc="Title for the Privacy Sandbox notice dialog." translateable="false">
         Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your data
       </message>
