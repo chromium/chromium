@@ -5069,14 +5069,6 @@ crbug.com/901271 external/wpt/dom/events/Event-dispatch-on-disabled-elements.htm
 # Test is flaky under load
 crbug.com/904389 http/tests/preload/delaying_onload_link_preload_after_discovery.html [ Failure Pass ]
 
-# Temporarily disabled to land DevTools CL (https://crrev.com/c/3461550).
-crbug.com/1066909 http/tests/devtools/console/console-link-to-snippet.js [ Failure Pass ]
-crbug.com/1066909 http/tests/devtools/console/console-log-eval-syntax-error.js [ Failure Pass ]
-crbug.com/1066909 http/tests/devtools/console/console-log-syntax-error.js [ Failure Pass ]
-crbug.com/1066909 http/tests/devtools/console/console-message-from-inline-with-url.js [ Failure Pass ]
-crbug.com/1066909 http/tests/devtools/console/console-worker-nested-imports-syntax-error.js [ Failure Pass ]
-crbug.com/1066909 http/tests/devtools/sources/debugger/debugger-autocontinue-on-syntax-error.js [ Failure Pass ]
-
 # Flaky crash due to "bad mojo message".
 crbug.com/906952 editing/pasteboard/file-drag-to-editable.html [ Crash Pass ]
 
