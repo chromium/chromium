@@ -100,7 +100,7 @@ class HpsNotifyControllerTestAbsent : public HpsNotifyControllerTestBase {
       : HpsNotifyControllerTestBase(
             /*service_available=*/true,
             /*service_state=*/false,
-            /*params=*/{{"filter_config_case", "1"}}) {}
+            /*params=*/{{"SnoopingProtection_filter_config_case", "1"}}) {}
 };
 
 // Test that icon is hidden by default.
@@ -222,7 +222,7 @@ class HpsNotifyControllerTestPresent : public HpsNotifyControllerTestBase {
       : HpsNotifyControllerTestBase(
             /*service_available=*/true,
             /*service_state=*/true,
-            /*params=*/{{"filter_config_case", "1"}}) {}
+            /*params=*/{{"SnoopingProtection_filter_config_case", "1"}}) {}
 };
 
 // Test that initial daemon state is considered.
@@ -343,7 +343,7 @@ class HpsNotifyControllerTestUnavailable : public HpsNotifyControllerTestBase {
       : HpsNotifyControllerTestBase(
             /*service_available=*/false,
             /*service_state=*/true,
-            /*params=*/{{"filter_config_case", "1"}}) {}
+            /*params=*/{{"SnoopingProtection_filter_config_case", "1"}}) {}
 };
 
 // Test that the controller waits for the DBus service to be available and
@@ -381,7 +381,7 @@ class HpsNotifyControllerTestBadParams : public HpsNotifyControllerTestBase {
       : HpsNotifyControllerTestBase(
             /*service_available=*/true,
             /*service_state=*/true,
-            /*params=*/{{"filter_config_case", "0"}}) {}
+            /*params=*/{{"SnoopingProtection_filter_config_case", "0"}}) {}
 };
 
 // Test that the controller gracefully handles invalid feature parameters.

@@ -2651,22 +2651,25 @@ const FeatureEntry::Choice kDocumentTransitionSlowdownFactorChoices[] = {
 // sample.
 
 const FeatureEntry::FeatureParam kSnoopingProtectionPrecision[] = {
-    {"filter_config_case", "2"},
-    {"count", "3"},
-    {"threshold", "40"},
-    {"initial_state", "false"}};
+    {"SnoopingProtection_filter_config_case", "3"},
+    {"SnoopingProtection_average_window_size", "3"},
+    {"SnoopingProtection_positive_score_threshold", "-30"},
+    {"SnoopingProtection_negative_score_threshold", "-30"},
+    {"SnoopingProtection_default_uncertain_score", "-128"}};
 
 const FeatureEntry::FeatureParam kSnoopingProtectionConfidence[] = {
-    {"filter_config_case", "2"},
-    {"count", "5"},
-    {"threshold", "40"},
-    {"initial_state", "false"}};
+    {"SnoopingProtection_filter_config_case", "3"},
+    {"SnoopingProtection_average_window_size", "5"},
+    {"SnoopingProtection_positive_score_threshold", "-30"},
+    {"SnoopingProtection_negative_score_threshold", "-30"},
+    {"SnoopingProtection_default_uncertain_score", "-128"}};
 
 const FeatureEntry::FeatureParam kSnoopingProtectionRecall[] = {
-    {"filter_config_case", "2"},
-    {"count", "3"},
-    {"threshold", "-40"},
-    {"initial_state", "false"}};
+    {"SnoopingProtection_filter_config_case", "3"},
+    {"SnoopingProtection_average_window_size", "3"},
+    {"SnoopingProtection_positive_score_threshold", "-70"},
+    {"SnoopingProtection_negative_score_threshold", "-70"},
+    {"SnoopingProtection_default_uncertain_score", "-128"}};
 
 const FeatureEntry::FeatureVariation kSnoopingProtectionVariations[] = {
     {"Precise", kSnoopingProtectionPrecision,
@@ -2676,30 +2679,89 @@ const FeatureEntry::FeatureVariation kSnoopingProtectionVariations[] = {
     {"Comprehensive", kSnoopingProtectionRecall,
      base::size(kSnoopingProtectionRecall), nullptr}};
 
-const FeatureEntry::FeatureParam kQuickDim120s[] = {{"quick_dim_ms", "120000"}};
+const FeatureEntry::FeatureParam kQuickDim120s[] = {
+    {"QuickDim_quick_dim_ms", "120000"},
+    {"QuickDim_filter_config_case", "2"},
+    {"QuickDim_positive_count_threshold", "1"},
+    {"QuickDim_negative_count_threshold", "2"},
+    {"QuickDim_uncertain_count_threshold", "2"},
+    {"QuickDim_positive_score_threshold", "0"},
+    {"QuickDim_negative_score_threshold", "0"},
+};
 
-const FeatureEntry::FeatureParam kQuickDim45s[] = {{"quick_dim_ms", "45000"}};
+const FeatureEntry::FeatureParam kQuickDim45s[] = {
+    {"QuickDim_quick_dim_ms", "45000"},
+    {"QuickDim_filter_config_case", "2"},
+    {"QuickDim_positive_count_threshold", "1"},
+    {"QuickDim_negative_count_threshold", "2"},
+    {"QuickDim_uncertain_count_threshold", "2"},
+    {"QuickDim_positive_score_threshold", "0"},
+    {"QuickDim_negative_score_threshold", "0"},
+};
 
-const FeatureEntry::FeatureParam kQuickDim10s[] = {{"quick_dim_ms", "10000"}};
+const FeatureEntry::FeatureParam kQuickDim10s[] = {
+    {"QuickDim_quick_dim_ms", "10000"},
+    {"QuickDim_filter_config_case", "2"},
+    {"QuickDim_positive_count_threshold", "1"},
+    {"QuickDim_negative_count_threshold", "2"},
+    {"QuickDim_uncertain_count_threshold", "2"},
+    {"QuickDim_positive_score_threshold", "0"},
+    {"QuickDim_negative_score_threshold", "0"},
+};
 
 const FeatureEntry::FeatureParam kQuickDimInstantly[] = {
-    {"quick_dim_ms", "1000"}};
+    {"QuickDim_quick_dim_ms", "1000"},
+    {"QuickDim_filter_config_case", "2"},
+    {"QuickDim_positive_count_threshold", "1"},
+    {"QuickDim_negative_count_threshold", "1"},
+    {"QuickDim_uncertain_count_threshold", "2"},
+    {"QuickDim_positive_score_threshold", "0"},
+    {"QuickDim_negative_score_threshold", "0"},
+};
 
 const FeatureEntry::FeatureParam kQuickDim10sQuickLock40s[] = {
-    {"quick_dim_ms", "10000"},
-    {"quick_lock_ms", "40000"}};
+    {"QuickDim_quick_dim_ms", "10000"},
+    {"QuickDim_quick_lock_ms", "40000"},
+    {"QuickDim_filter_config_case", "2"},
+    {"QuickDim_positive_count_threshold", "1"},
+    {"QuickDim_negative_count_threshold", "2"},
+    {"QuickDim_uncertain_count_threshold", "2"},
+    {"QuickDim_positive_score_threshold", "0"},
+    {"QuickDim_negative_score_threshold", "0"},
+};
 
 const FeatureEntry::FeatureParam kQuickDim10sQuickLock70s[] = {
-    {"quick_dim_ms", "10000"},
-    {"quick_lock_ms", "70000"}};
+    {"QuickDim_quick_dim_ms", "10000"},
+    {"QuickDim_quick_lock_ms", "70000"},
+    {"QuickDim_filter_config_case", "2"},
+    {"QuickDim_positive_count_threshold", "1"},
+    {"QuickDim_negative_count_threshold", "2"},
+    {"QuickDim_uncertain_count_threshold", "2"},
+    {"QuickDim_positive_score_threshold", "0"},
+    {"QuickDim_negative_score_threshold", "0"},
+};
 
 const FeatureEntry::FeatureParam kQuickDim45sQuickLock135s[] = {
-    {"quick_dim_ms", "45000"},
-    {"quick_lock_ms", "135000"}};
+    {"QuickDim_quick_dim_ms", "45000"},
+    {"QuickDim_quick_lock_ms", "135000"},
+    {"QuickDim_filter_config_case", "2"},
+    {"QuickDim_positive_count_threshold", "1"},
+    {"QuickDim_negative_count_threshold", "2"},
+    {"QuickDim_uncertain_count_threshold", "2"},
+    {"QuickDim_positive_score_threshold", "0"},
+    {"QuickDim_negative_score_threshold", "0"},
+};
 
 const FeatureEntry::FeatureParam kQuickDim120sQuickLock240s[] = {
-    {"quick_dim_ms", "120000"},
-    {"quick_lock_ms", "240000"}};
+    {"QuickDim_quick_dim_ms", "120000"},
+    {"QuickDim_quick_lock_ms", "240000"},
+    {"QuickDim_filter_config_case", "2"},
+    {"QuickDim_positive_count_threshold", "1"},
+    {"QuickDim_negative_count_threshold", "2"},
+    {"QuickDim_uncertain_count_threshold", "2"},
+    {"QuickDim_positive_score_threshold", "0"},
+    {"QuickDim_negative_score_threshold", "0"},
+};
 
 const FeatureEntry::FeatureVariation kQuickDimVariations[] = {
     {"QuickDim120s", kQuickDim120s, base::size(kQuickDim120s), nullptr},

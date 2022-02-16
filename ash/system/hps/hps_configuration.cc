@@ -5,7 +5,9 @@
 #include "ash/system/hps/hps_configuration.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
@@ -28,8 +30,11 @@ constexpr int kShouldSendFeedbackIfUndimmed = false;
 // Returns either the integer parameter with the given name, or nullopt if the
 // parameter can't be found or parsed.
 absl::optional<int> GetIntParam(const base::FieldTrialParams& params,
-                                const std::string& name) {
-  const auto it = params.find(name);
+                                const std::string& feature_name,
+                                const std::string& param_name) {
+  const std::string full_param_name =
+      base::StrCat({feature_name, "_", param_name});
+  const auto it = params.find(full_param_name);
   if (it == params.end())
     return absl::nullopt;
 
@@ -40,48 +45,34 @@ absl::optional<int> GetIntParam(const base::FieldTrialParams& params,
   return result;
 }
 
-// Returns either the boolean parameter with the given name, or nullopt if the
-// parameter can't be found or parsed.
-absl::optional<bool> GetBoolParam(const base::FieldTrialParams& params,
-                                  const std::string& name) {
-  const auto it = params.find(name);
-  if (it == params.end())
-    return absl::nullopt;
-
-  if (it->second == "true") {
-    return true;
-  } else if (it->second == "false") {
-    return false;
-  } else {
-    return absl::nullopt;
-  }
-}
-
 // The config to use when no parameters are specified. We need to ensure that
 // that empty params induce a working config (as required for, e.g., a
 // chrome:://flags entry).
-hps::FeatureConfig GetDefaultFeatureConfig() {
+hps::FeatureConfig GetDefaultHpsNotifyFeatureConfig() {
   hps::FeatureConfig config;
 
   auto& filter_config = *config.mutable_average_filter_config();
   filter_config.set_average_window_size(3);
-  filter_config.set_positive_score_threshold(40);
-  filter_config.set_negative_score_threshold(-40);
-  filter_config.set_default_uncertain_score(0);
+  filter_config.set_positive_score_threshold(-30);
+  filter_config.set_negative_score_threshold(-30);
+  filter_config.set_default_uncertain_score(-128);
 
   return config;
 }
 
-// Returns true if the given set of keys is the entire set of keys in the params
-// map.
-bool ParamKeysAre(const base::FieldTrialParams& params,
-                  const std::set<std::string> keys) {
-  for (const std::string& key : keys) {
-    if (params.find(key) == params.end())
-      return false;
-  }
-
-  return params.size() == keys.size();
+hps::FeatureConfig GetDefaultHpsSenseFeatureConfig() {
+  hps::FeatureConfig config;
+  auto& filter_config = *config.mutable_consecutive_results_filter_config();
+  // Any positive result will undim the screen.
+  filter_config.set_positive_count_threshold(1);
+  // Only dim if at least two consecutive negative result.
+  filter_config.set_negative_count_threshold(2);
+  // UNKNOWN will not undim, but it will block quick dim, so it should also be
+  // fired with confidence.
+  filter_config.set_uncertain_count_threshold(2);
+  filter_config.set_positive_score_threshold(0);
+  filter_config.set_negative_score_threshold(0);
+  return config;
 }
 
 // This function constructs a FeatureConfig proto from feature parameters..
@@ -93,70 +84,84 @@ bool ParamKeysAre(const base::FieldTrialParams& params,
 // More details can be found at:
 // src/platform2/hps/daemon/filters/filter_factory.h
 absl::optional<hps::FeatureConfig> ConstructHpsFilterConfigFromFeatureParams(
-    const base::Feature& feature) {
+    const base::Feature& feature,
+    const hps::FeatureConfig& default_value) {
   // Load current params map for the feature.
   base::FieldTrialParams params;
   base::GetFieldTrialParamsByFeature(feature, &params);
 
-  // Valid default case.
-  if (params.empty())
-    return GetDefaultFeatureConfig();
+  // Returns default if no params is set.
+  if (params.empty()) {
+    return default_value;
+  }
+
+  const std::string& feature_name = feature.name;
 
   const absl::optional<int> filter_config_case =
-      GetIntParam(params, "filter_config_case");
-  if (!filter_config_case.has_value())
+      GetIntParam(params, feature_name, "filter_config_case");
+  if (!filter_config_case.has_value()) {
+    LOG(ERROR) << "HpsFilterConfig error: missing param filter_config_case for "
+               << feature_name;
     return absl::nullopt;
+  }
 
   switch (*filter_config_case) {
     case hps::FeatureConfig::kBasicFilterConfig: {
-      // There are no parameters for the basic filter.
-      if (!ParamKeysAre(params, {"filter_config_case"}))
-        return absl::nullopt;
-
       hps::FeatureConfig config;
       config.mutable_basic_filter_config();
       return config;
     }
 
     case hps::FeatureConfig::kConsecutiveResultsFilterConfig: {
-      const absl::optional<int> count = GetIntParam(params, "count");
-      const absl::optional<int> threshold = GetIntParam(params, "threshold");
-      const absl::optional<bool> initial_state =
-          GetBoolParam(params, "initial_state");
+      const absl::optional<int> positive_count_threshold =
+          GetIntParam(params, feature_name, "positive_count_threshold");
+      const absl::optional<int> negative_count_threshold =
+          GetIntParam(params, feature_name, "negative_count_threshold");
+      const absl::optional<int> uncertain_count_threshold =
+          GetIntParam(params, feature_name, "uncertain_count_threshold");
+      const absl::optional<int> positive_score_threshold =
+          GetIntParam(params, feature_name, "positive_score_threshold");
+      const absl::optional<int> negative_score_threshold =
+          GetIntParam(params, feature_name, "negative_score_threshold");
 
-      if (!count.has_value() || !threshold.has_value() ||
-          !initial_state.has_value() ||
-          !ParamKeysAre(params, {"filter_config_case", "count", "threshold",
-                                 "initial_state"})) {
+      if (!positive_count_threshold.has_value() ||
+          !negative_count_threshold.has_value() ||
+          !uncertain_count_threshold.has_value() ||
+          !positive_score_threshold.has_value() ||
+          !negative_score_threshold.has_value()) {
+        LOG(ERROR) << "HpsFilterConfig error: missing params for "
+                      "ConsecutiveResultsFilterConfig for "
+                   << feature_name;
         return absl::nullopt;
       }
 
       hps::FeatureConfig config;
       auto& filter_config = *config.mutable_consecutive_results_filter_config();
-      filter_config.set_count(*count);
-      filter_config.set_threshold(*threshold);
-      filter_config.set_initial_state(*initial_state);
+      filter_config.set_positive_count_threshold(*positive_count_threshold);
+      filter_config.set_negative_count_threshold(*negative_count_threshold);
+      filter_config.set_uncertain_count_threshold(*uncertain_count_threshold);
+      filter_config.set_positive_score_threshold(*positive_score_threshold);
+      filter_config.set_negative_score_threshold(*negative_score_threshold);
       return config;
     }
 
     case hps::FeatureConfig::kAverageFilterConfig: {
       const absl::optional<int> average_window_size =
-          GetIntParam(params, "average_window_size");
+          GetIntParam(params, feature_name, "average_window_size");
       const absl::optional<int> positive_score_threshold =
-          GetIntParam(params, "positive_score_threshold");
+          GetIntParam(params, feature_name, "positive_score_threshold");
       const absl::optional<int> negative_score_threshold =
-          GetIntParam(params, "negative_score_threshold");
+          GetIntParam(params, feature_name, "negative_score_threshold");
       const absl::optional<int> default_uncertain_score =
-          GetIntParam(params, "default_uncertain_score");
+          GetIntParam(params, feature_name, "default_uncertain_score");
 
       if (!average_window_size.has_value() ||
           !positive_score_threshold.has_value() ||
           !negative_score_threshold.has_value() ||
-          !default_uncertain_score.has_value() ||
-          !ParamKeysAre(params,
-                        {"filter_config_case", "average_window_size",
-                         "positive_score_threshold", "negative_score_threshold",
-                         "default_uncertain_score"})) {
+          !default_uncertain_score.has_value()) {
+        LOG(ERROR) << "HpsFilterConfig error: missing params for "
+                      "AverageFilterConfig for "
+                   << feature_name;
         return absl::nullopt;
       }
 
@@ -177,32 +182,33 @@ absl::optional<hps::FeatureConfig> ConstructHpsFilterConfigFromFeatureParams(
 }  // namespace
 
 absl::optional<hps::FeatureConfig> GetEnableHpsSenseConfig() {
-  return ConstructHpsFilterConfigFromFeatureParams(features::kQuickDim);
+  return ConstructHpsFilterConfigFromFeatureParams(
+      features::kQuickDim, GetDefaultHpsSenseFeatureConfig());
 }
 
 absl::optional<hps::FeatureConfig> GetEnableHpsNotifyConfig() {
   return ConstructHpsFilterConfigFromFeatureParams(
-      features::kSnoopingProtection);
+      features::kSnoopingProtection, GetDefaultHpsNotifyFeatureConfig());
 }
 
 base::TimeDelta GetQuickDimDelay() {
   const int quick_dim_ms = base::GetFieldTrialParamByFeatureAsInt(
-      features::kQuickDim, "quick_dim_ms",
+      features::kQuickDim, "QuickDim_quick_dim_ms",
       kQuickDimDelayDefault.InMilliseconds());
   return base::Milliseconds(quick_dim_ms);
 }
 
 base::TimeDelta GetQuickLockDelay() {
   const int quick_lock_ms = base::GetFieldTrialParamByFeatureAsInt(
-      features::kQuickDim, "quick_lock_ms",
+      features::kQuickDim, "QuickDim_quick_lock_ms",
       kQuickLockDelayDefault.InMilliseconds());
   return base::Milliseconds(quick_lock_ms);
 }
 
 bool GetQuickDimFeedbackEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(features::kQuickDim,
-                                                 "send_feedback_if_undimmed",
-                                                 kShouldSendFeedbackIfUndimmed);
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kQuickDim, "QuickDim_send_feedback_if_undimmed",
+      kShouldSendFeedbackIfUndimmed);
 }
 
 }  // namespace ash
