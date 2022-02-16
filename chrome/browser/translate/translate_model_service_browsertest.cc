@@ -331,10 +331,10 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", true, 1);
 }
 
-// Disabled on macOS+ASAN, chromeOS+ASAN and windows due to high failure rate:
-// crbug.com/1199854.
-#if ((BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)) && \
-     defined(ADDRESS_SANITIZER)) ||                   \
+// Disabled on linux+ASAN, macOS+ASAN, chromeOS+ASAN and windows due to high
+// failure rate: crbug.com/1199854 crbug.com/1297485.
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)) && \
+     defined(ADDRESS_SANITIZER)) ||                                          \
     BUILDFLAG(IS_WIN)
 #define MAYBE_LanguageDetectionWithBackgroundTab \
   DISABLED_LanguageDetectionWithBackgroundTab
