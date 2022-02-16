@@ -187,7 +187,7 @@ class ASH_EXPORT TopRowView : public views::View {
       return views::Builder<views::AnimatedImageView>()
           .CopyAddressTo(&standby_animation_)
           .SetAnimatedImage(std::make_unique<lottie::Animation>(skottie))
-          .SetImageSize(gfx::Size(32, 16))
+          .SetImageSize(gfx::Size(18, 16))
           .Build();
     }
 
