@@ -26,10 +26,8 @@ class AwPingManagerFactory : public BrowserContextKeyedServiceFactory {
   AwPingManagerFactory();
   ~AwPingManagerFactory() override;
 
-  // BrowserContextKeyedServiceFactory overrides:
+  // BrowserContextKeyedServiceFactory override:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 
   std::string GetProtocolConfigClientName() const;

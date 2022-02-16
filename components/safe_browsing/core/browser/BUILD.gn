@@ -21,6 +21,7 @@ source_set("browser") {
     "//base",
     "//components/keyed_service/core",
     "//components/prefs",
+    "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/browser/db:util",

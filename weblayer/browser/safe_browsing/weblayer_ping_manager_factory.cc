@@ -7,10 +7,12 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
+#include "weblayer/browser/safe_browsing/safe_browsing_token_fetcher_impl.h"
 
 namespace weblayer {
 
@@ -43,17 +45,37 @@ KeyedService* WebLayerPingManagerFactory::BuildServiceInstanceFor(
       // kSafeBrowsingSeparateNetworkContexts feature?
       BrowserProcess::GetInstance()
           ->GetSafeBrowsingService()
-          ->GetURLLoaderFactory());
+          ->GetURLLoaderFactory(),
+      std::make_unique<SafeBrowsingTokenFetcherImpl>(base::BindRepeating(
+          &ProfileImpl::access_token_fetch_delegate,
+          base::Unretained(ProfileImpl::FromBrowserContext(context)))),
+      base::BindRepeating(
+          &WebLayerPingManagerFactory::ShouldFetchAccessTokenForReport,
+          base::Unretained(this), context));
 }
 
-content::BrowserContext* WebLayerPingManagerFactory::GetBrowserContextToUse(
+bool WebLayerPingManagerFactory::ShouldFetchAccessTokenForReport(
     content::BrowserContext* context) const {
-  return context;
+  PrefService* pref_service =
+      static_cast<BrowserContextImpl*>(context)->pref_service();
+  return base::FeatureList::IsEnabled(
+             safe_browsing::kSafeBrowsingCsbrrWithToken) &&
+         safe_browsing::IsEnhancedProtectionEnabled(*pref_service) &&
+         // TODO(crbug.com/1171215): Change this to production mechanism for
+         // enabling Gaia-keyed client reports once that mechanism is
+         // determined.
+         is_account_signed_in_for_testing_;
 }
 
 std::string WebLayerPingManagerFactory::GetProtocolConfigClientName() const {
   // Return a weblayer specific client name.
   return "weblayer";
+}
+
+// TODO(crbug.com/1171215): Remove this once browsertests can enable this
+// functionality via the production mechanism for doing so.
+void WebLayerPingManagerFactory::SignInAccountForTesting() {
+  is_account_signed_in_for_testing_ = true;
 }
 
 }  // namespace weblayer

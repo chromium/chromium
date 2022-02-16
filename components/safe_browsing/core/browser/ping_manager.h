@@ -17,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -36,7 +37,9 @@ class PingManager : public KeyedService {
   // Create an instance of the safe browsing ping manager.
   static PingManager* Create(
       const V4ProtocolConfig& config,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      base::RepeatingCallback<bool()> get_should_fetch_access_token);
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            std::unique_ptr<std::string> response_body);
@@ -53,13 +56,18 @@ class PingManager : public KeyedService {
   // Only used for tests
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  void SetTokenFetcherForTesting(
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
 
  protected:
   friend class PingManagerTest;
-  // Constructs a PingManager with the given |config| and |url_loader_factory|.
+  // Constructs a PingManager with the given |config|, |url_loader_factory|, and
+  // access token fetching information.
   explicit PingManager(
       const V4ProtocolConfig& config,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      base::RepeatingCallback<bool()> get_should_fetch_access_token);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSafeBrowsingHitUrl);
@@ -78,12 +86,26 @@ class PingManager : public KeyedService {
   // Generates URL for reporting threat details for users who opt-in.
   GURL ThreatDetailsUrl() const;
 
+  // Once the user's access_token has been fetched by ReportThreatDetails (or
+  // intentionally not fetched), attaches the token and sends the report.
+  void ReportThreatDetailsOnGotAccessToken(const std::string& report,
+                                           const std::string& access_token);
+
   // Track outstanding SafeBrowsing report fetchers for clean up.
   // We add both "hit" and "detail" fetchers in this set.
   Reports safebrowsing_reports_;
 
   // Used to issue network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // The token fetcher used for getting access token.
+  std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
+
+  // Determines whether it's relevant to fetch the access token for the user
+  // based on whether they're a signed-in ESB user.
+  base::RepeatingCallback<bool()> get_should_fetch_access_token_;
+
+  base::WeakPtrFactory<PingManager> weak_factory_{this};
 };
 
 }  // namespace safe_browsing

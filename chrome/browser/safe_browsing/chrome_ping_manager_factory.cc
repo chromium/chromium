@@ -8,11 +8,15 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
-
+#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 namespace safe_browsing {
 
 // static
@@ -31,7 +35,9 @@ PingManager* ChromePingManagerFactory::GetForBrowserContext(
 ChromePingManagerFactory::ChromePingManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "ChromeSafeBrowsingPingManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 ChromePingManagerFactory::~ChromePingManagerFactory() = default;
 
@@ -40,12 +46,22 @@ KeyedService* ChromePingManagerFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   return PingManager::Create(
       GetV4ProtocolConfig(),
-      g_browser_process->safe_browsing_service()->GetURLLoaderFactory(profile));
+      g_browser_process->safe_browsing_service()->GetURLLoaderFactory(profile),
+      std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
+          IdentityManagerFactory::GetForProfile(profile)),
+      base::BindRepeating(
+          &ChromePingManagerFactory::ShouldFetchAccessTokenForReport, profile));
 }
 
-content::BrowserContext* ChromePingManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+// static
+bool ChromePingManagerFactory::ShouldFetchAccessTokenForReport(
+    Profile* profile) {
+  PrefService* prefs = profile->GetPrefs();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  return base::FeatureList::IsEnabled(kSafeBrowsingCsbrrWithToken) &&
+         IsEnhancedProtectionEnabled(*prefs) && identity_manager &&
+         safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager);
 }
 
 }  // namespace safe_browsing

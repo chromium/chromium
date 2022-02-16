@@ -12,8 +12,8 @@
 
 namespace safe_browsing {
 
-// Factory for creating the KeyedService PingManager for chrome. It returns a
-// separate instance if the profile is in incognito mode.
+// Factory for creating the KeyedService PingManager for chrome. It returns null
+// for incognito mode.
 class ChromePingManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
   static ChromePingManagerFactory* GetInstance();
@@ -25,11 +25,11 @@ class ChromePingManagerFactory : public BrowserContextKeyedServiceFactory {
   ChromePingManagerFactory();
   ~ChromePingManagerFactory() override;
 
-  // BrowserContextKeyedServiceFactory overrides:
+  // BrowserContextKeyedServiceFactory override:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
+
+  static bool ShouldFetchAccessTokenForReport(Profile* profile);
 };
 
 }  // namespace safe_browsing

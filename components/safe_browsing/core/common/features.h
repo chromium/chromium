@@ -96,6 +96,10 @@ extern const base::Feature kPasswordProtectionForSignedInUsers;
 // scanning.
 extern const base::Feature kPromptEsbForDeepScanning;
 
+// Controls whether Client Safe Browsing Reports are sent with a GAIA-tied token
+// for Enhanced Safe Browsing users
+extern const base::Feature kSafeBrowsingCsbrrWithToken;
+
 // Controls whether users will see an account compromise specific warning
 // when Safe Browsing determines a file is associated with stealing cookies.
 extern const base::Feature kSafeBrowsingCTDownloadWarning;

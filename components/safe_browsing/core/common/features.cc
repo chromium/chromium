@@ -108,6 +108,9 @@ const base::Feature kPasswordProtectionForSignedInUsers{
 const base::Feature kPromptEsbForDeepScanning{
     "SafeBrowsingPromptEsbForDeepScanning", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kSafeBrowsingCsbrrWithToken{
+    "SafeBrowsingCsbrrWithToken", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSafeBrowsingCTDownloadWarning{
     "SafeBrowsingCTDownloadWarning", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -178,6 +181,7 @@ constexpr struct {
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kPasswordProtectionForSignedInUsers, true},
+    {&kSafeBrowsingCsbrrWithToken, true},
     {&kSafeBrowsingPageLoadToken, true},
     {&kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},

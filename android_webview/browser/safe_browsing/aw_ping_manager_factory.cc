@@ -33,15 +33,14 @@ AwPingManagerFactory::~AwPingManagerFactory() = default;
 
 KeyedService* AwPingManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  // Never fetch the access token for android_webview since ESB is unsupported
+  auto get_should_fetch_access_token =
+      base::BindRepeating([]() { return false; });
   return PingManager::Create(
       safe_browsing::GetV4ProtocolConfig(GetProtocolConfigClientName(),
                                          /*disable_auto_update=*/false),
-      GetURLLoaderFactory());
-}
-
-content::BrowserContext* AwPingManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context;
+      GetURLLoaderFactory(), /*token_fetcher=*/nullptr,
+      get_should_fetch_access_token);
 }
 
 std::string AwPingManagerFactory::GetProtocolConfigClientName() const {

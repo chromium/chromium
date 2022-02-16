@@ -10,7 +10,8 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "components/safe_browsing/core/browser/ping_manager.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -35,6 +36,8 @@ class AwPingManagerTest : public testing::Test {
 
   void TearDown() override { base::RunLoop().RunUntilIdle(); }
 
+  void RunReportThreatDetailsTest(bool is_remove_cookies_feature_enabled);
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<content::TestContentClientInitializer>
       test_content_client_initializer_;
@@ -42,12 +45,27 @@ class AwPingManagerTest : public testing::Test {
   std::unique_ptr<AwFeatureListCreator> aw_feature_list_creator_;
 };
 
-TEST_F(AwPingManagerTest, ReportThreatDetails) {
+void AwPingManagerTest::RunReportThreatDetailsTest(
+    bool is_remove_cookies_feature_enabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (is_remove_cookies_feature_enabled) {
+    scoped_feature_list.InitAndEnableFeature(
+        safe_browsing::kSafeBrowsingRemoveCookiesInAuthRequests);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        safe_browsing::kSafeBrowsingRemoveCookiesInAuthRequests);
+  }
+
   std::string report_content = "testing_report_content";
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         EXPECT_EQ(GetUploadData(request), report_content);
+        EXPECT_FALSE(
+            request.headers.HasHeader(net::HttpRequestHeaders::kAuthorization));
+        // Cookies should be attached when token is empty.
+        EXPECT_EQ(request.credentials_mode,
+                  network::mojom::CredentialsMode::kInclude);
       }));
   auto ref_counted_url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -58,6 +76,14 @@ TEST_F(AwPingManagerTest, ReportThreatDetails) {
   AwBrowserContext context;
   safe_browsing::AwPingManagerFactory::GetForBrowserContext(&context)
       ->ReportThreatDetails(report_content);
+}
+
+TEST_F(AwPingManagerTest, ReportThreatDetails_RemoveCookiesFeatureEnabled) {
+  RunReportThreatDetailsTest(/*is_remove_cookies_feature_enabled=*/true);
+}
+
+TEST_F(AwPingManagerTest, ReportThreatDetails_RemoveCookiesFeatureDisabled) {
+  RunReportThreatDetailsTest(/*is_remove_cookies_feature_enabled=*/false);
 }
 
 TEST_F(AwPingManagerTest, ReportSafeBrowsingHit) {
