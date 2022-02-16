@@ -361,7 +361,7 @@ public class StatusView extends LinearLayout {
             importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES;
         }
         mIconView.setContentDescription(description);
-        mIconView.setImportantForAccessibility(importantForAccessibility);
+        setImportantForAccessibility(importantForAccessibility);
     }
 
     /**

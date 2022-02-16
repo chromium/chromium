@@ -591,6 +591,11 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
     /** Return the resource id for the accessibility description or 0 if none apply. */
     private int getAccessibilityDescriptionRes() {
+        if (mUrlHasFocus
+                && mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                        mLocationBarDataProvider.isIncognito())) {
+            return 0;
+        }
         return (mSecurityIconRes != 0) ? mSecurityIconDescriptionRes : 0;
     }
 
