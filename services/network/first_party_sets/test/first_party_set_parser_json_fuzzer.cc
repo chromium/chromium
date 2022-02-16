@@ -19,7 +19,8 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   if (getenv("LPM_DUMP_NATIVE_INPUT"))
     std::cout << native_input << std::endl;
 
-  network::FirstPartySetParser::ParseSetsFromComponentUpdater(native_input);
+  std::istringstream stream(native_input);
+  network::FirstPartySetParser::ParseSetsFromStream(stream);
 
   // We deserialize -> serialize -> deserialize the input and make sure the
   // outcomes from the two deserialization matches.

@@ -9,7 +9,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/json/json_reader.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/base/schemeful_site.h"
@@ -66,32 +65,14 @@ TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidFile) {
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTest, ParsesJSON) {
-  SetComponentSets(loader(), "[]");
+TEST_F(FirstPartySetsLoaderTest, ParsesComponent) {
+  SetComponentSets(loader(), "");
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet("");
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
-  const std::string input =
-      R"([{
-        "owner": "https://example.test",
-        "members": ["https://aaaa.test"]
-        }])";
-  ASSERT_TRUE(base::JSONReader::Read(input));
-  SetComponentSets(loader(), input);
-  // Set required input to make sure callback gets called.
-  loader().SetManuallySpecifiedSet("");
-
-  EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://aaaa.test"),
-                                        SerializesTo("https://example.test"))));
-}
-
-TEST_F(FirstPartySetsLoaderTest, V2_AcceptsMinimal) {
   const std::string input =
       "{\"owner\": \"https://example.test\",\"members\": "
       "[\"https://aaaa.test\",],}";
@@ -107,35 +88,6 @@ TEST_F(FirstPartySetsLoaderTest, V2_AcceptsMinimal) {
 }
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": ["https://member1.test"]
-    },
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member2.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input));
-  SetComponentSets(loader(), input);
-  // Set required input to make sure callback gets called.
-  loader().SetManuallySpecifiedSet("");
-
-  EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://foo.test"),
-                                        SerializesTo("https://foo.test")),
-                                   Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://foo.test"))));
-}
-
-TEST_F(FirstPartySetsLoaderTest, V2_AcceptsMultipleSets) {
   const std::string input =
       "{\"owner\": \"https://example.test\",\"members\": "
       "[\"https://member1.test\"]}\n"
@@ -158,33 +110,13 @@ TEST_F(FirstPartySetsLoaderTest, V2_AcceptsMultipleSets) {
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
-  std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": ["https://member1.test"]
-    },
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member2.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  std::string input =
+      R"({"owner": "https://example.test", "members": ["https://member1.test"]}
+    {"owner": "https://foo.test", "members": ["https://member2.test"]})";
 
-  std::string input2 = R"(
-  [
-    {
-      "owner": "https://example2.test",
-      "members": ["https://member1.test"]
-    },
-    {
-      "owner": "https://foo2.test",
-      "members": ["https://member2.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input2));
+  std::string input2 = R"({ "owner": "https://example2.test", "members":)"
+                       R"( ["https://member1.test"]}
+    {"owner": "https://foo2.test", "members": ["https://member2.test"]})";
 
   SetComponentSets(loader(), input);
   SetComponentSets(loader(), input2);
@@ -204,19 +136,9 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
 }
 
 TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": ["https://example.test"]
-    },
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member2.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  const std::string input =
+      R"({"owner": "https://example.test", "members": ["https://example.test"]}
+    {"owner": "https://foo.test", "members": ["https://member2.test"]})";
 
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
@@ -226,19 +148,10 @@ TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
 }
 
 TEST_F(FirstPartySetsLoaderTest, OwnerIsMember) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": ["https://example.test", "https://member1.test"]
-    },
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member2.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  const std::string input =
+      R"({"owner": "https://example.test", "members":)"
+      R"( ["https://example.test", "https://member1.test"]}
+    {"owner": "https://foo.test", "members": ["https://member2.test"]})";
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet("");
@@ -247,23 +160,11 @@ TEST_F(FirstPartySetsLoaderTest, OwnerIsMember) {
 }
 
 TEST_F(FirstPartySetsLoaderTest, RepeatedMember) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": [
-        "https://member1.test",
-        "https://member2.test",
-        "https://member1.test"
-        ]
-    },
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member3.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  const std::string input =
+      R"({"owner": "https://example.test", "members":)"
+      R"( ["https://member1.test", "https://member2.test",)"
+      R"( "https://member1.test"]}
+    {"owner": "https://foo.test", "members": ["https://member3.test"]})";
 
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
@@ -275,7 +176,7 @@ TEST_F(FirstPartySetsLoaderTest, RepeatedMember) {
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_TooSmall) {
   loader().SetManuallySpecifiedSet("https://example.test");
   // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "[]");
+  SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
@@ -283,7 +184,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_TooSmall) {
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotOrigins) {
   loader().SetManuallySpecifiedSet("https://example.test,member1");
   // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "[]");
+  SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
@@ -291,7 +192,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotOrigins) {
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotHTTPS) {
   loader().SetManuallySpecifiedSet("https://example.test,http://member1.test");
   // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "[]");
+  SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
@@ -301,7 +202,7 @@ TEST_F(FirstPartySetsLoaderTest,
   loader().SetManuallySpecifiedSet(
       "https://www.example.test..,https://www.member.test");
   // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "[]");
+  SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
@@ -311,7 +212,7 @@ TEST_F(FirstPartySetsLoaderTest,
   loader().SetManuallySpecifiedSet(
       "https://www.example.test,https://www.member.test..");
   // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "[]");
+  SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
@@ -319,7 +220,7 @@ TEST_F(FirstPartySetsLoaderTest,
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_SingleMember) {
   loader().SetManuallySpecifiedSet("https://example.test,https://member.test");
   // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "[]");
+  SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
@@ -333,7 +234,7 @@ TEST_F(FirstPartySetsLoaderTest,
   loader().SetManuallySpecifiedSet(
       "https://www.example.test,https://www.member.test");
   // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "[]");
+  SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
@@ -346,7 +247,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
   loader().SetManuallySpecifiedSet(
       "https://example.test,https://member1.test,https://member2.test");
   // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "[]");
+  SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
@@ -361,7 +262,7 @@ TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_Valid_OwnerIsOnlyMember) {
   loader().SetManuallySpecifiedSet("https://example.test,https://example.test");
   // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "[]");
+  SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
@@ -370,7 +271,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_OwnerIsMember) {
   loader().SetManuallySpecifiedSet(
       "https://example.test,https://example.test,https://member1.test");
   // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "[]");
+  SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
@@ -385,7 +286,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_RepeatedMember) {
        https://member2.test,
        https://member1.test)");
   // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "[]");
+  SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
@@ -397,19 +298,9 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_RepeatedMember) {
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": ["https://member2.test", "https://member3.test"]
-    },
-    {
-      "owner": "https://bar.test",
-      "members": ["https://member4.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  const std::string input = R"({"owner": "https://example.test", "members": )"
+                            R"(["https://member2.test", "https://member3.test"]}
+    {"owner": "https://bar.test", "members": ["https://member4.test"]})";
   SetComponentSets(loader(), input);
   loader().SetManuallySpecifiedSet(
       "https://example.test,https://member1.test,https://member2.test");
@@ -429,19 +320,9 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
 
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesOwnerMember) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member1.test", "https://example.test"]
-    },
-    {
-      "owner": "https://bar.test",
-      "members": ["https://member2.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  const std::string input = R"({"owner": "https://foo.test", "members": )"
+                            R"(["https://member1.test", "https://example.test"]}
+    {"owner": "https://bar.test", "members": ["https://member2.test"]})";
   SetComponentSets(loader(), input);
   loader().SetManuallySpecifiedSet(
       "https://example.test,https://member1.test,https://member3.test");
@@ -461,19 +342,9 @@ TEST_F(FirstPartySetsLoaderTest,
 
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesMemberOwner) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member1.test", "https://member2.test"]
-    },
-    {
-      "owner": "https://member3.test",
-      "members": ["https://member4.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  const std::string input = R"({"owner": "https://foo.test", "members": )"
+                            R"(["https://member1.test", "https://member2.test"]}
+    {"owner": "https://member3.test", "members": ["https://member4.test"]})";
   SetComponentSets(loader(), input);
   loader().SetManuallySpecifiedSet("https://example.test,https://member3.test");
 
@@ -492,19 +363,9 @@ TEST_F(FirstPartySetsLoaderTest,
 
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesMemberMember) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member2.test", "https://member3.test"]
-    },
-    {
-      "owner": "https://bar.test",
-      "members": ["https://member4.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  const std::string input = R"({"owner": "https://foo.test", "members": )"
+                            R"(["https://member2.test", "https://member3.test"]}
+    {"owner": "https://bar.test", "members": ["https://member4.test"]})";
   SetComponentSets(loader(), input);
   loader().SetManuallySpecifiedSet(
       "https://example.test,https://member1.test,https://member2.test");
@@ -528,15 +389,8 @@ TEST_F(FirstPartySetsLoaderTest,
 
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_PrunesInducedSingletons) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member1.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  const std::string input =
+      R"({"owner": "https://foo.test", "members": ["https://member1.test"]})";
   SetComponentSets(loader(), input);
   loader().SetManuallySpecifiedSet("https://example.test,https://member1.test");
 

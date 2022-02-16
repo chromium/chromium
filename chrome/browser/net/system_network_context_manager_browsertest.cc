@@ -220,8 +220,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
 }
 
 class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
-    : public SystemNetworkContextManagerBrowsertest,
-      public testing::WithParamInterface<bool> {
+    : public SystemNetworkContextManagerBrowsertest {
  public:
   SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
@@ -268,30 +267,11 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
   }
 
  private:
-  bool UseV2Format() const { return GetParam(); }
-
   std::string GetComponentContents() const {
-    if (UseV2Format()) {
-      // Use the V2 format of the component.
-      return "{\"owner\": \"https://a.test\", \"members\": [ "
-             "\"https://b.test\", \"https://member1.test\"]}\n"
-             "{\"owner\": \"https://c.test\", \"members\": [ "
-             "\"https://d.test\", \"https://member2.test\"]}";
-    }
-    return R"([{
-          "owner": "https://a.test",
-          "members": [
-            "https://b.test",
-            "https://member1.test"
-            ]
-          },
-          {
-            "owner": "https://c.test",
-            "members": [
-              "https://d.test",
-              "https://member2.test"
-              ]
-          }])";
+    return "{\"owner\": \"https://a.test\", \"members\": [ "
+           "\"https://b.test\", \"https://member1.test\"]}\n"
+           "{\"owner\": \"https://c.test\", \"members\": [ "
+           "\"https://d.test\", \"https://member2.test\"]}";
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -299,7 +279,7 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
   net::test_server::EmbeddedTestServer https_server_;
 };
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
     PRE_ReloadsFirstPartySetsAfterCrash) {
   // Network service is not running out of process, so cannot be crashed.
@@ -322,7 +302,7 @@ IN_PROC_BROWSER_TEST_P(
                   testing::Key(kSamePartyCookieName))));
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
     ReloadsFirstPartySetsAfterCrash) {
   // Network service is not running out of process, so cannot be crashed.
@@ -348,11 +328,6 @@ IN_PROC_BROWSER_TEST_P(
               net::CookieStringIs(testing::UnorderedElementsAre(
                   testing::Key(kSamePartyCookieName))));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
-    testing::Bool());
 
 class SystemNetworkContextManagerReferrersFeatureBrowsertest
     : public SystemNetworkContextManagerBrowsertest,

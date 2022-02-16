@@ -10,7 +10,6 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -43,6 +42,11 @@ namespace network {
 MATCHER_P(SerializesTo, want, "") {
   const std::string got = arg.Serialize();
   return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
+}
+
+FirstPartySets::FlattenedSets ParseSetsFromStream(const std::string& sets) {
+  std::istringstream stream(sets);
+  return FirstPartySetParser::ParseSetsFromStream(stream);
 }
 
 class FirstPartySetsTest : public ::testing::Test {
@@ -108,20 +112,7 @@ class FirstPartySetsDisabledTest : public FirstPartySetsTest {
   FirstPartySetsDisabledTest() : FirstPartySetsTest(false) {}
 };
 
-TEST_F(FirstPartySetsDisabledTest, ParseAndSet_IgnoresValid) {
-  const std::string input =
-      R"([{
-        "owner": "https://example.test",
-        "members": ["https://aaaa.test"]
-        }])";
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  SetComponentSets(input);
-
-  EXPECT_THAT(SetsAndWait(), IsEmpty());
-}
-
-TEST_F(FirstPartySetsDisabledTest, ParseV2Format_IgnoresValid) {
+TEST_F(FirstPartySetsDisabledTest, Parse_IgnoresValid) {
   const std::string input =
       "{\"owner\": \"https://example.test\",\"members\": "
       "[\"https://aaaa.test\"]}";
@@ -215,29 +206,16 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesJoined) {
       {net::SchemefulSite(GURL("https://member3.test")),
        net::SchemefulSite(GURL("https://example.test"))}};
 
-  // Consistency check the reviewer-friendly JSON format matches the input.
-  ASSERT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(R"(
-    [
-      {
-        "owner": "https://example.test",
-        "members": ["https://member1.test", "https://member3.test"]
-      }
-    ]
-  )"),
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(
+                  R"({"owner": "https://example.test", "members": )"
+                  R"(["https://member1.test", "https://member3.test"]})"),
               old_sets);
 
-  SetComponentSets(R"(
-    [
-      {
-        "owner": "https://example.test",
-        "members": ["https://member1.test", "https://member3.test"]
-      },
-      {
-        "owner": "https://foo.test",
-        "members": ["https://member2.test"]
-      }
-    ]
-  )");
+  SetComponentSets(
+      R"({"owner": "https://example.test", )"
+      R"("members": ["https://member1.test", "https://member3.test"]}
+      {"owner": "https://foo.test", "members": ["https://member2.test"]})");
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
   sets().SetManuallySpecifiedSet("");
@@ -261,29 +239,15 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesLeft) {
       {net::SchemefulSite(GURL("https://member2.test")),
        net::SchemefulSite(GURL("https://foo.test"))}};
 
-  // Consistency check the reviewer-friendly JSON format matches the input.
-  ASSERT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(R"(
-    [
-      {
-        "owner": "https://example.test",
-        "members": ["https://member1.test", "https://member3.test"]
-      },
-      {
-        "owner": "https://foo.test",
-        "members": ["https://member2.test"]
-      },
-    ]
-  )"),
-              old_sets);
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
+                          R"(["https://member1.test", "https://member3.test"]}
+      { "owner": "https://foo.test", "members": ["https://member2.test"]})"),
+      old_sets);
 
-  SetComponentSets(R"(
-    [
-      {
-        "owner": "https://example.test",
-        "members": ["https://member1.test"]
-      },
-    ]
-  )");
+  SetComponentSets(R"({"owner": "https://example.test", )"
+                   R"("members": ["https://member1.test"]})");
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
   sets().SetManuallySpecifiedSet("");
@@ -309,33 +273,17 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerChanged) {
       {net::SchemefulSite(GURL("https://member3.test")),
        net::SchemefulSite(GURL("https://foo.test"))}};
 
-  // Consistency check the reviewer-friendly JSON format matches the input.
-  ASSERT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(R"(
-    [
-      {
-        "owner": "https://example.test",
-        "members": ["https://member1.test"]
-      },
-      {
-        "owner": "https://foo.test",
-        "members": ["https://member2.test", "https://member3.test"]
-      },
-    ]
-  )"),
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(
+                  R"({"owner": "https://example.test", "members": )"
+                  R"(["https://member1.test"]}
+      {"owner": "https://foo.test", "members": )"
+                  R"(["https://member2.test", "https://member3.test"]})"),
               old_sets);
 
-  SetComponentSets(R"(
-    [
-      {
-        "owner": "https://example.test",
-        "members": ["https://member1.test", "https://member3.test"]
-      },
-      {
-        "owner": "https://foo.test",
-        "members": ["https://member2.test"]
-      }
-    ]
-  )");
+  SetComponentSets(R"({"owner": "https://example.test", "members": )"
+                   R"(["https://member1.test", "https://member3.test"]}
+      {"owner": "https://foo.test", "members": ["https://member2.test"]})");
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
   sets().SetManuallySpecifiedSet("");
@@ -354,24 +302,14 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerLeft) {
       {net::SchemefulSite(GURL("https://bar.test")),
        net::SchemefulSite(GURL("https://example.test"))}};
 
-  // Consistency check the reviewer-friendly JSON format matches the input.
-  ASSERT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(R"(
-    [
-      {
-        "owner": "https://example.test",
-        "members": ["https://foo.test", "https://bar.test"]
-      }
-    ]
-  )"),
-              old_sets);
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
+                          R"(["https://foo.test", "https://bar.test"]})"),
+      old_sets);
 
   SetComponentSets(R"(
-    [
-      {
-        "owner": "https://foo.test",
-        "members": ["https://bar.test"]
-      }
-    ]
+      {"owner": "https://foo.test", "members": ["https://bar.test"]}
   )");
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
@@ -395,25 +333,14 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerMemberRotate) {
       {net::SchemefulSite(GURL("https://foo.test")),
        net::SchemefulSite(GURL("https://example.test"))}};
 
-  // Consistency check the reviewer-friendly JSON format matches the input.
-  ASSERT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(R"(
-    [
-      {
-        "owner": "https://example.test",
-        "members": ["https://foo.test"]
-      }
-    ]
-  )"),
-              old_sets);
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
+                          R"(["https://foo.test"]})"),
+      old_sets);
 
-  SetComponentSets(R"(
-    [
-      {
-        "owner": "https://foo.test",
-        "members": ["https://example.test"]
-      }
-    ]
-  )");
+  SetComponentSets(
+      R"({"owner": "https://foo.test", "members": ["https://example.test"]})");
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
   sets().SetManuallySpecifiedSet("");
@@ -428,14 +355,8 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerMemberRotate) {
 
 TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_EmptySets) {
   // Empty old_sets.
-  SetComponentSets(R"(
-    [
-      {
-        "owner": "https://example.test",
-        "members": ["https://member1.test"]
-      },
-    ]
-  )");
+  SetComponentSets(R"({"owner": "https://example.test", )"
+                   R"("members": ["https://member1.test"]})");
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
   sets().SetManuallySpecifiedSet("");
@@ -448,15 +369,9 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_EmptySets) {
        net::SchemefulSite(GURL("https://example.test"))},
       {net::SchemefulSite(GURL("https://member1.test")),
        net::SchemefulSite(GURL("https://example.test"))}};
-  // Consistency check the reviewer-friendly JSON format matches the input.
-  ASSERT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(R"(
-    [
-      {
-        "owner": "https://example.test",
-        "members": ["https://member1.test"]
-      }
-    ]
-  )"),
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
+                                  R"("members": ["https://member1.test"]})"),
               old_sets);
   FirstPartySets first_party_sets(true);
   first_party_sets.SetManuallySpecifiedSet("");
@@ -516,23 +431,18 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {
 // inputs from Component Updater and command line flag.
 TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_Ready) {
   int callback_calls = 0;
-  SetComponentSets(R"([
-       {
-         "owner": "https://example.test",
-         "members": ["https://member1.test"]
-       }
-     ])");
+  SetComponentSets(R"({"owner": "https://example.test", "members": )"
+                   R"(["https://member1.test"]})");
   sets().SetManuallySpecifiedSet("https://example2.test,https://member2.test");
   sets().SetPersistedSets(
       R"({"https://example.test":"https://example.test",
             "https://member1.test":"https://example.test"})");
-  sets().SetOnSiteDataCleared(base::BindLambdaForTesting([&](const std::string&
-                                                                 got) {
-    EXPECT_EQ(
-        got,
-        R"({"https://member1.test":"https://example.test","https://member2.test":"https://example2.test"})");
-    callback_calls++;
-  }));
+  sets().SetOnSiteDataCleared(
+      base::BindLambdaForTesting([&](const std::string& got) {
+        EXPECT_EQ(got, R"({"https://member1.test":"https://example.test",)"
+                       R"("https://member2.test":"https://example2.test"})");
+        callback_calls++;
+      }));
   env().RunUntilIdle();
   EXPECT_EQ(callback_calls, 1);
 }
@@ -540,19 +450,10 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_Ready) {
 class PopulatedFirstPartySetsTest : public FirstPartySetsEnabledTest {
  public:
   PopulatedFirstPartySetsTest() {
-    const std::string input = R"(
-      [
-        {
-          "owner": "https://example.test",
-          "members": ["https://member1.test", "https://member3.test"]
-        },
-        {
-          "owner": "https://foo.test",
-          "members": ["https://member2.test"]
-        }
-      ]
-      )";
-    CHECK(base::JSONReader::Read(input));
+    const std::string input =
+        R"({"owner": "https://example.test", "members": )"
+        R"(["https://member1.test", "https://member3.test"]}
+        {"owner": "https://foo.test", "members": ["https://member2.test"]})";
     SetComponentSets(input);
     // Set required input to be able to receive the merged sets from
     // FirstPartySetsLoader.

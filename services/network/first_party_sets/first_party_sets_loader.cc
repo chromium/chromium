@@ -113,18 +113,8 @@ void FirstPartySetsLoader::OnReadSetsFile(const std::string& raw_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(component_sets_parse_progress_, Progress::kStarted);
 
-  bool is_v1_format = raw_sets.find('[') < raw_sets.find('{');
-  if (is_v1_format) {
-    // The file is a single list of records; V1 format.
-    sets_ = FirstPartySetParser::ParseSetsFromComponentUpdater(raw_sets);
-  } else {
-    // The file is invalid, or is a newline-delimited sequence of
-    // records; V2 format.
-    std::istringstream stream(raw_sets);
-    sets_ = FirstPartySetParser::ParseSetsFromStream(stream);
-  }
-  base::UmaHistogramBoolean("Cookie.FirstPartySets.ComponentIsV1Format",
-                            is_v1_format);
+  std::istringstream stream(raw_sets);
+  sets_ = FirstPartySetParser::ParseSetsFromStream(stream);
 
   ApplyManuallySpecifiedSet();
   component_sets_parse_progress_ = Progress::kFinished;

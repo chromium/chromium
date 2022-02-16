@@ -250,6 +250,9 @@ chromium-metrics-reviews@google.com.
 
     This metric is sampled every time the component is loaded; i.e., on Chrome
     startup, or if the Network Service gets reconfigured after a crash.
+
+    This metric stopped being recorded in Chrome M100, when support for the V1
+    component format was removed.
   </summary>
 </histogram>
 

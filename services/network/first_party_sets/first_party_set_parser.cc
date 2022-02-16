@@ -189,25 +189,6 @@ FirstPartySetParser::CanonicalizeRegisteredDomain(
 }
 
 base::flat_map<net::SchemefulSite, net::SchemefulSite>
-FirstPartySetParser::ParseSetsFromComponentUpdater(base::StringPiece raw_sets) {
-  absl::optional<base::Value> maybe_value = base::JSONReader::Read(
-      raw_sets, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  if (!maybe_value.has_value())
-    return {};
-  if (!maybe_value->is_list())
-    return {};
-
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> map;
-  base::flat_set<net::SchemefulSite> elements;
-  for (const auto& value : maybe_value->GetListDeprecated()) {
-    if (!ParseSet(value, map, elements))
-      return {};
-  }
-
-  return map;
-}
-
-base::flat_map<net::SchemefulSite, net::SchemefulSite>
 FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
   base::flat_map<net::SchemefulSite, net::SchemefulSite> map;
   base::flat_set<net::SchemefulSite> elements;
