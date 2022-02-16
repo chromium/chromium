@@ -16,7 +16,6 @@ declare_args() {
   #
   # If changing the value of this, you MUST also update the following files depending on the
   # platform:
-  # Android: Internal expectations files that verify the native libraries compiled into the Android binary.
   # ChromeOS: //lib/chrome_util.py in the Chromite repo (ex: https://crrev.com/c/3437291)
   # Linux: Internal archive files. //chrome/installer/linux/common/installer.include handles the
   # relevant files not being present.
@@ -24,8 +23,8 @@ declare_args() {
   # Windows: //chrome/installer/mini_installer/chrome.release and internal archive files
   #
   # The library this pulls in depends on open-source LevelDB which is not supported for Fuchsia.
-  # iOS should just work but are not included in the set we release for, so we do not needlessly
-  # increase the binary.
+  # Android and iOS should just work but are not included in the set we release for, so we do
+  # not needlessly increase the binary.
   build_with_internal_optimization_guide =
-      is_chrome_branded && !is_ios && !is_fuchsia
+      is_chrome_branded && !is_android && !is_ios && !is_fuchsia
 }

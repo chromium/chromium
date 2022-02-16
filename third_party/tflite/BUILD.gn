@@ -14,9 +14,6 @@ proto_library("tflite-config-proto") {
 
 config("tflite_config") {
   include_dirs = [ "src" ]
-  if (is_android) {
-    libs = [ "log" ]
-  }
 }
 
 config("tflite_flags") {
