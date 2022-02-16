@@ -157,7 +157,9 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
   if (mode == kCopyClipList) {
     clip_list_ = other.clip_list_;
   }
-  if (realized_font_)
+  // Since FontSelector is weakly persistent with |font_|, the memory may be
+  // freed even |font_| is valid.
+  if (realized_font_ && font_.GetFontSelector())
     font_.GetFontSelector()->RegisterForInvalidationCallbacks(this);
   ValidateFilterState();
 }
