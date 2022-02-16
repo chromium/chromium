@@ -21,12 +21,16 @@ source_set("cpp") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "device_image_info_unittest.cc" ]
+  sources = [
+    "cros_bluetooth_config_util_unittest.cc",
+    "device_image_info_unittest.cc",
+  ]
 
   deps = [
     ":cpp",
     "//base",
     "//base/test:test_support",
+    "//chromeos/services/bluetooth_config/public/mojom",
     "//testing/gtest",
   ]
 }

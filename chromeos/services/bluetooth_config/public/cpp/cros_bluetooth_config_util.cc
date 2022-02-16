@@ -18,7 +18,7 @@ bool IsBluetoothEnabledOrEnabling(
 std::u16string GetPairedDeviceName(
     const mojom::PairedBluetoothDevicePropertiesPtr& paired_device_properties) {
   if (paired_device_properties->nickname.has_value())
-    return base::ASCIIToUTF16(paired_device_properties->nickname.value());
+    return base::UTF8ToUTF16(paired_device_properties->nickname.value());
   return paired_device_properties->device_properties->public_name;
 }
 
