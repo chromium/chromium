@@ -92,7 +92,9 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD0(NavigationStart, base::TimeTicks());
   MOCK_METHOD0(NavigationInputStart, base::TimeTicks());
   MOCK_METHOD0(GetNavigationHandleTiming, const NavigationHandleTiming&());
-  MOCK_METHOD0(WasStartedFromContextMenu, bool());
+  bool WasStartedFromContextMenu() override {
+    return was_started_from_context_menu_;
+  }
   MOCK_METHOD0(GetSearchableFormURL, const GURL&());
   MOCK_METHOD0(GetSearchableFormEncoding, const std::string&());
   ReloadType GetReloadType() override { return reload_type_; }
@@ -267,6 +269,9 @@ class MockNavigationHandle : public NavigationHandle {
     initiator_origin_ = initiator_origin;
   }
   void set_reload_type(ReloadType reload_type) { reload_type_ = reload_type; }
+  void set_was_started_from_context_menu(bool was_started_from_context_menu) {
+    was_started_from_context_menu_ = was_started_from_context_menu;
+  }
 
  private:
   int64_t navigation_id_;
@@ -302,6 +307,7 @@ class MockNavigationHandle : public NavigationHandle {
   absl::optional<blink::Impression> impression_;
   absl::optional<blink::LocalFrameToken> initiator_frame_token_;
   int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
+  bool was_started_from_context_menu_ = false;
 };
 
 }  // namespace content

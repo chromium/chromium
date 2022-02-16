@@ -85,6 +85,7 @@
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -1045,6 +1046,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
 // that it filters as expected.
 IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
                        OpenIncognitoUrlParamFilter) {
+  base::HistogramTester histogram_tester;
+
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1076,6 +1079,55 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
   // Verify that it loaded the filtered URL.
   GURL expected(embedded_test_server()->GetURL("/empty.html?nochanges=2"));
   ASSERT_EQ(expected, tab->GetLastCommittedURL());
+
+  // The response was a 200, and the navigation went from normal-->OTR browsing.
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental",
+      net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+}
+
+// Ensure that enabling URL param filtering does not apply to "Open in new tab"
+// and that cross-off-the-record metrics are not written in that case.
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+                       OpenTabNoUrlParamFilter) {
+  const char kPath[] = "/empty.html?plzblock=1&nochanges=2&plzblock1=2";
+  base::HistogramTester histogram_tester;
+
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(embedded_test_server()->GetURL(kPath));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in New Tab" and wait for the tab to be added.
+  TestRenderViewContextMenu menu(
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+
+  content::WebContents* tab = tab_added_waiter.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the original URL; open in new tab should not filter.
+  GURL expected(embedded_test_server()->GetURL(kPath));
+  ASSERT_EQ(expected, tab->GetLastCommittedURL());
+
+  // Ensure we did not erroneously record a cross-off-the-record metric; the
+  // navigation did not cross over.
+  histogram_tester.ExpectTotalCount(
+      "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental", 0);
 }
 
 // Enable "Open Link in Incognito Window" URL parameter filtering, and ensure

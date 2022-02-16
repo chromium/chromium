@@ -601,6 +601,17 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-01-02">
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>bcl@chromium.org</owner>
+  <summary>
+    Http response code seen when opening links from non-OTR to OTR browsing.
+    Logged when using the &quot;Open Link in Incognito Window&quot; menu item.
+    This metric is currently experimental and will likely be replaced.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.DownloadPolicy.LogArbitraryPolicyPerDownload"
     enum="NavigationDownloadPolicy" expires_after="2020-11-01">
   <owner>csharrison@chromium.org</owner>
