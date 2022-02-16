@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -427,16 +428,16 @@ class TransactionHelper {
 // Callback that allows a test to modify HttpResponseinfo
 // before the response is sent to the requester. This allows
 // response headers to be changed.
-typedef base::RepeatingCallback<void(URLRequest* request,
-                                     HttpResponseInfo* info)>
-    ResponseModifierCallback;
+using ResponseModifierCallback =
+    base::RepeatingCallback<void(URLRequest* request, HttpResponseInfo* info)>;
 
 // Callback that allows the test to substitute its own implementation
 // of URLRequestJob to handle the request.
-typedef base::RepeatingCallback<std::unique_ptr<URLRequestJob>(
-    URLRequest* request,
-    SocketDataProvider* data_provider)>
-    DohJobMakerCallback;
+using DohJobMakerCallback = base::RepeatingCallback<std::unique_ptr<
+    URLRequestJob>(URLRequest* request, SocketDataProvider* data_provider)>;
+
+// Callback to notify that URLRequestJob::Start has been called.
+using UrlRequestStartedCallback = base::RepeatingCallback<void()>;
 
 // Subclass of URLRequestJob which takes a SocketDataProvider with data
 // representing both a DNS over HTTPS query and response.
@@ -445,12 +446,14 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
   URLRequestMockDohJob(
       URLRequest* request,
       SocketDataProvider* data_provider,
-      ResponseModifierCallback response_modifier = ResponseModifierCallback())
+      ResponseModifierCallback response_modifier = ResponseModifierCallback(),
+      UrlRequestStartedCallback on_start = UrlRequestStartedCallback())
       : URLRequestJob(request),
         content_length_(0),
         leftover_data_len_(0),
         data_provider_(data_provider),
-        response_modifier_(response_modifier) {
+        response_modifier_(response_modifier),
+        on_start_(on_start) {
     data_provider_->Initialize(this);
     MatchQueryData(request, data_provider);
   }
@@ -496,6 +499,8 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
 
   // URLRequestJob implementation:
   void Start() override {
+    if (on_start_)
+      on_start_.Run();
     // Start reading asynchronously so that all error reporting and data
     // callbacks happen as they would for network requests.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -591,6 +596,7 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
   int leftover_data_len_;
   raw_ptr<SocketDataProvider> data_provider_;
   const ResponseModifierCallback response_modifier_;
+  const UrlRequestStartedCallback on_start_;
   raw_ptr<IOBuffer> pending_buf_;
   int pending_buf_size_;
 
@@ -862,8 +868,8 @@ class DnsTransactionTestBase : public testing::Test {
     if (doh_job_maker_)
       return doh_job_maker_.Run(request, provider);
 
-    return std::make_unique<URLRequestMockDohJob>(request, provider,
-                                                  response_modifier_);
+    return std::make_unique<URLRequestMockDohJob>(
+        request, provider, response_modifier_, on_start_);
   }
 
   class DohJobInterceptor : public URLRequestInterceptor {
@@ -891,6 +897,10 @@ class DnsTransactionTestBase : public testing::Test {
 
   void SetDohJobMakerCallback(DohJobMakerCallback doh_job_maker) {
     doh_job_maker_ = doh_job_maker;
+  }
+
+  void SetUrlRequestStartedCallback(UrlRequestStartedCallback on_start) {
+    on_start_ = on_start;
   }
 
   void SetUp() override {
@@ -944,6 +954,7 @@ class DnsTransactionTestBase : public testing::Test {
   scoped_refptr<DnsSession> session_;
   std::unique_ptr<DnsTransactionFactory> transaction_factory_;
   ResponseModifierCallback response_modifier_;
+  UrlRequestStartedCallback on_start_;
   DohJobMakerCallback doh_job_maker_;
 
   // Whether multiple IsolationInfos should be expected (due to there being
@@ -3330,6 +3341,36 @@ TEST_F(DnsTransactionTest, InvalidQuery) {
                            dns_protocol::kTypeA, false /* secure */,
                            resolve_context_.get());
   helper1.RunUntilComplete();
+}
+
+TEST_F(DnsTransactionTest, CheckAsync) {
+  ConfigureDohServers(false /* use_post */);
+  AddQueryAndResponse(0, kT0HostName, kT0Qtype, kT0ResponseDatagram,
+                      base::size(kT0ResponseDatagram), SYNCHRONOUS,
+                      Transport::HTTPS, nullptr /* opt_rdata */,
+                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                      false /* enqueue_transaction_id */);
+  TransactionHelper helper0(kT0RecordCount);
+  bool started = false;
+  SetUrlRequestStartedCallback(
+      base::BindLambdaForTesting([&] { started = true; }));
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           true /* secure */, resolve_context_.get());
+  EXPECT_FALSE(started);
+  EXPECT_FALSE(helper0.has_completed());
+  helper0.RunUntilComplete();
+  EXPECT_TRUE(started);
+}
+
+TEST_F(DnsTransactionTest, EarlyCancel) {
+  ConfigureDohServers(false /* use_post */);
+  TransactionHelper helper0(0);
+  SetUrlRequestStartedCallback(base::BindRepeating([] { FAIL(); }));
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           true /* secure */, resolve_context_.get());
+  EXPECT_FALSE(helper0.has_completed());
+  helper0.Cancel();
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(DnsTransactionTestWithMockTime, ProbeUntilSuccess) {

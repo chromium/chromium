@@ -246,7 +246,7 @@ int TransportClientSocketPool::RequestSocket(
 
   request->net_log().BeginEvent(NetLogEventType::SOCKET_POOL);
 
-  int rv = RequestSocketInternal(group_id, *request);
+  int rv = CheckedRequestSocketInternal(group_id, *request);
   if (rv != ERR_IO_PENDING) {
     if (rv == OK) {
       request->handle()->socket()->ApplySocketTag(request->socket_tag());
@@ -308,7 +308,7 @@ void TransportClientSocketPool::RequestSockets(
   for (int num_iterations_left = num_sockets;
        group->NumActiveSocketSlots() < num_sockets && num_iterations_left > 0;
        num_iterations_left--) {
-    rv = RequestSocketInternal(group_id, request);
+    rv = CheckedRequestSocketInternal(group_id, request);
     if (rv < 0 && rv != ERR_IO_PENDING) {
       // We're encountering a synchronous error.  Give up.
       if (!base::Contains(group_map_, group_id))
@@ -393,31 +393,24 @@ int TransportClientSocketPool::RequestSocketInternal(const GroupId& group_id,
   // We couldn't find a socket to reuse, and there's space to allocate one,
   // so allocate and connect a new one.
   group = GetOrCreateGroup(group_id);
-  connecting_socket_count_++;
-  std::unique_ptr<ConnectJob> owned_connect_job(
+  std::unique_ptr<ConnectJob> connect_job(
       CreateConnectJob(group_id, request.socket_params(), proxy_server_,
                        request.proxy_annotation_tag(), request.priority(),
                        request.socket_tag(), group));
-  owned_connect_job->net_log().AddEvent(
+  connect_job->net_log().AddEvent(
       NetLogEventType::SOCKET_POOL_CONNECT_JOB_CREATED, [&] {
         return NetLogCreateConnectJobParams(false /* backup_job */, &group_id);
       });
-  ConnectJob* connect_job = owned_connect_job.get();
-  bool was_group_empty = group->IsEmpty();
-  // Need to add the ConnectJob to the group before connecting, to ensure
-  // |group| is not empty.  Otherwise, if the ConnectJob calls back into the
-  // socket pool with a new socket request (Like for DNS over HTTPS), the pool
-  // would then notice the group is empty, and delete it. That would result in a
-  // UAF when group is referenced later in this function.
-  group->AddJob(std::move(owned_connect_job), preconnecting);
 
   int rv = connect_job->Connect();
   if (rv == ERR_IO_PENDING) {
     // If we didn't have any sockets in this group, set a timer for potentially
     // creating a new one.  If the SYN is lost, this backup socket may complete
     // before the slow socket, improving end user latency.
-    if (connect_backup_jobs_enabled_ && was_group_empty)
+    if (connect_backup_jobs_enabled_ && group->IsEmpty())
       group->StartBackupJobTimer(group_id);
+    group->AddJob(std::move(connect_job), preconnecting);
+    connecting_socket_count_++;
     return rv;
   }
 
@@ -428,7 +421,7 @@ int TransportClientSocketPool::RequestSocketInternal(const GroupId& group_id,
   } else {
     DCHECK(handle);
     if (rv != OK)
-      handle->SetAdditionalErrorState(connect_job);
+      handle->SetAdditionalErrorState(connect_job.get());
     std::unique_ptr<StreamSocket> socket = connect_job->PassSocket();
     if (socket) {
       HandOutSocket(std::move(socket), ClientSocketHandle::UNUSED,
@@ -437,11 +430,27 @@ int TransportClientSocketPool::RequestSocketInternal(const GroupId& group_id,
                     request.net_log());
     }
   }
-  RemoveConnectJob(connect_job, group);
   if (group->IsEmpty())
     RemoveGroup(group_id);
 
   return rv;
+}
+
+int TransportClientSocketPool::CheckedRequestSocketInternal(
+    const GroupId& group_id,
+    const Request& request) {
+#if DCHECK_IS_ON()
+  DCHECK(!request_in_process_);
+  request_in_process_ = true;
+#endif  // DCHECK_IS_ON()
+
+  int ret = RequestSocketInternal(group_id, request);
+
+#if DCHECK_IS_ON()
+  request_in_process_ = false;
+#endif  // DCHECK_IS_ON()
+
+  return ret;
 }
 
 bool TransportClientSocketPool::AssignIdleSocketToRequest(
@@ -1117,7 +1126,7 @@ void TransportClientSocketPool::ProcessPendingRequest(const GroupId& group_id,
     return;
   }
 
-  int rv = RequestSocketInternal(group_id, *next_request);
+  int rv = CheckedRequestSocketInternal(group_id, *next_request);
   if (rv != ERR_IO_PENDING) {
     std::unique_ptr<Request> request = group->PopNextUnboundRequest();
     DCHECK(request);

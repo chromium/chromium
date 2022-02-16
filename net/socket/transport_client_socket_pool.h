@@ -701,6 +701,10 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // |request|.
   int RequestSocketInternal(const GroupId& group_id, const Request& request);
 
+  // Wrapper around RequestSocketInternal that adds a reentrancy guard.
+  int CheckedRequestSocketInternal(const GroupId& group_id,
+                                   const Request& request);
+
   // Assigns an idle socket for the group to the request.
   // Returns |true| if an idle socket is available, false otherwise.
   bool AssignIdleSocketToRequest(const Request& request, Group* group);
@@ -799,6 +803,11 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   std::set<HigherLayeredPool*> higher_pools_;
 
   const raw_ptr<SSLClientContext> ssl_client_context_;
+
+#if DCHECK_IS_ON()
+  // Reentrancy guard for RequestSocketInternal().
+  bool request_in_process_ = false;
+#endif  // DCHECK_IS_ON()
 
   base::WeakPtrFactory<TransportClientSocketPool> weak_factory_{this};
 };

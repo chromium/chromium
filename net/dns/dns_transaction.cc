@@ -451,11 +451,13 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
 
   int Start(CompletionOnceCallback callback) override {
     callback_ = std::move(callback);
-    request_->Start();
+    // Start the request asynchronously to avoid reentrancy in
+    // the network stack.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&DnsHTTPAttempt::StartAsync,
+                                  weak_factory_.GetWeakPtr()));
     return ERR_IO_PENDING;
   }
-
-  void Cancel() { request_.reset(); }
 
   const DnsQuery* GetQuery() const override { return query_.get(); }
   const DnsResponse* GetResponse() const override {
@@ -561,6 +563,11 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
   bool IsPending() const override { return !callback_.is_null(); }
 
  private:
+  void StartAsync() {
+    DCHECK(request_);
+    request_->Start();
+  }
+
   void ResponseCompleted(int net_error) {
     request_.reset();
     std::move(callback_).Run(CompleteResponse(net_error));
