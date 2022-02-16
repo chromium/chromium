@@ -33,7 +33,7 @@ def process_emoticon_data(metadata):
                 "keywords": []
             },
             "alternates": []
-        } for emoticon in group["emoticon"][:10]]
+        } for emoticon in group["emoticon"]]
     } for group in metadata]
 
 
