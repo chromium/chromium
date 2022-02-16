@@ -149,8 +149,18 @@ class MessageStreamLookupImplTest : public testing::Test,
 
   void DeviceRemoved() { adapter_->NotifyDeviceRemoved(/*device=*/device_); }
 
-  void DevicePairedChanged(bool new_paired_status) {
+  void EmptyDeviceRemoved() {
+    adapter_->NotifyDeviceRemoved(/*device=*/nullptr);
+  }
+
+  void EmptyDevicePairedChanged(bool new_paired_status) {
     adapter_->NotifyDeviceConnectedStateChanged(
+        /*device=*/nullptr,
+        /*new_paired_status=*/new_paired_status);
+  }
+
+  void DevicePairedChanged(bool new_paired_status) {
+    adapter_->NotifyDevicePairedChanged(
         /*device=*/device_,
         /*new_paired_status=*/new_paired_status);
   }
@@ -281,6 +291,13 @@ TEST_F(MessageStreamLookupImplTest, DevicePaired_NoMessageStreamUUid) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
+}
+
+TEST_F(MessageStreamLookupImplTest, DevicePairedChanged_NoDevice) {
+  EXPECT_EQ(GetMessageStream(), nullptr);
+  EmptyDevicePairedChanged(/*new_paired_status=*/true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetMessageStream(), nullptr);
 }
 
 TEST_F(MessageStreamLookupImplTest, ConnectDevice_ConnectToServiceFailure) {
@@ -498,6 +515,24 @@ TEST_F(MessageStreamLookupImplTest, AddDevice_RemoveDevice) {
   EXPECT_NE(GetMessageStream(), nullptr);
 
   DeviceRemoved();
+  EXPECT_EQ(GetMessageStream(), nullptr);
+}
+
+TEST_F(MessageStreamLookupImplTest, RemoveDevice_NoMessageStream) {
+  device_->AddUUID(kMessageStreamUuid);
+
+  EXPECT_EQ(GetMessageStream(), nullptr);
+  DeviceRemoved();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(GetMessageStream(), nullptr);
+}
+
+TEST_F(MessageStreamLookupImplTest, EmptyDeviceRemoved) {
+  EXPECT_EQ(GetMessageStream(), nullptr);
+  EmptyDeviceRemoved();
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(GetMessageStream(), nullptr);
 }
 
