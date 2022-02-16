@@ -85,18 +85,11 @@
 
   __weak TextFragmentsCoordinator* weakSelf = self;
   [self.actionSheet
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE)
+      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SHARED_HIGHLIGHT_REMOVE)
                 action:^{
-                  id<ApplicationCommands> handler = HandlerForProtocol(
-                      weakSelf.browser->GetCommandDispatcher(),
-                      ApplicationCommands);
-                  [handler openURLInNewTab:[OpenNewTabCommand
-                                               commandWithURLFromChrome:
-                                                   GURL(shared_highlighting::
-                                                            kLearnMoreUrl)]];
+                  [weakSelf.mediator removeTextFragmentsInWebState:webState];
                 }
-                 style:UIAlertActionStyleDefault];
+                 style:UIAlertActionStyleDestructive];
   [self.actionSheet
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SHARED_HIGHLIGHT_RESHARE)
                 action:^{
@@ -120,11 +113,18 @@
                 }
                  style:UIAlertActionStyleDefault];
   [self.actionSheet
-      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SHARED_HIGHLIGHT_REMOVE)
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE)
                 action:^{
-                  [weakSelf.mediator removeTextFragmentsInWebState:webState];
+                  id<ApplicationCommands> handler = HandlerForProtocol(
+                      weakSelf.browser->GetCommandDispatcher(),
+                      ApplicationCommands);
+                  [handler openURLInNewTab:[OpenNewTabCommand
+                                               commandWithURLFromChrome:
+                                                   GURL(shared_highlighting::
+                                                            kLearnMoreUrl)]];
                 }
-                 style:UIAlertActionStyleDestructive];
+                 style:UIAlertActionStyleDefault];
   [self.actionSheet start];
 }
 
