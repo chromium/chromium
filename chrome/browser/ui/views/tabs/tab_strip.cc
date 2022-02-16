@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -988,7 +989,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 // TabStrip, public:
 
 TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
-    : tab_container_(AddChildView(std::make_unique<TabContainer>())),
+    : tab_container_(AddChildView(std::make_unique<TabContainer>(this))),
       controller_(std::move(controller)),
       layout_helper_(std::make_unique<TabStripLayoutHelper>(
           controller_.get(),
@@ -1032,7 +1033,7 @@ TabStrip::~TabStrip() {
 
   // The child tabs may call back to us from their destructors. Delete them so
   // that if they call back we aren't in a weird state.
-  tab_container_->RemoveAllChildViews();
+  RemoveAllChildViews();
 
   CHECK(!IsInObserverList());
 }
@@ -1137,11 +1138,9 @@ void TabStrip::UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) {
 }
 
 void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
-  Tab* tab = new Tab(this);
+  Tab* tab = tab_container_->AddTab(std::make_unique<Tab>(this), model_index);
   tab->set_context_menu_controller(&context_menu_controller_);
   tab->AddObserver(this);
-  tab_container_->AddChildViewAt(
-      tab, GetViewInsertionIndex(tab, absl::nullopt, model_index));
   const bool pinned = data.pinned;
   tabs_.Add(tab, model_index);
   selected_tabs_.IncrementFrom(model_index);
@@ -1206,9 +1205,7 @@ void TabStrip::MoveTab(int from_model_index,
   const bool pinned = data.pinned;
   moving_tab->SetData(std::move(data));
 
-  tab_container_->ReorderChildView(
-      moving_tab,
-      GetViewInsertionIndex(moving_tab, from_model_index, to_model_index));
+  tab_container_->MoveTab(moving_tab, from_model_index, to_model_index);
 
   tabs_.Move(from_model_index, to_model_index);
   selected_tabs_.Move(from_model_index, to_model_index, /*length=*/1);
@@ -1418,18 +1415,10 @@ void TabStrip::OnGroupMoved(const tab_groups::TabGroupId& group) {
   layout_helper_->UpdateGroupHeaderIndex(group);
 
   TabGroupHeader* group_header = group_views_[group]->header();
-  const int first_tab = controller_->GetFirstTabInGroup(group).value();
-  const int header_index = tab_container_->GetIndexOf(group_header);
-  const int first_tab_index = tab_container_->GetIndexOf(tab_at(first_tab));
+  const int first_tab_model_index =
+      controller_->GetFirstTabInGroup(group).value();
 
-  // The header should be just before the first tab. If it isn't, reorder the
-  // header such that it is. Note that the index to reorder to is different
-  // depending on whether the header is before or after the tab, since the
-  // header itself occupies an index.
-  if (header_index < first_tab_index - 1)
-    tab_container_->ReorderChildView(group_header, first_tab_index - 1);
-  if (header_index > first_tab_index - 1)
-    tab_container_->ReorderChildView(group_header, first_tab_index);
+  tab_container_->MoveGroupHeader(group_header, first_tab_model_index);
 }
 
 void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
@@ -2680,53 +2669,6 @@ const Tab* TabStrip::GetLastVisibleTab() const {
   // While in normal use the tabstrip should always be wide enough to have at
   // least one visible tab, it can be zero-width in tests, meaning we get here.
   return nullptr;
-}
-
-int TabStrip::GetViewInsertionIndex(Tab* tab,
-                                    absl::optional<int> from_model_index,
-                                    int to_model_index) const {
-  // -1 is treated a sentinel value to indicate a tab is newly added to the
-  // beginning of the tab strip.
-  if (to_model_index < 0)
-    return 0;
-
-  // If to_model_index is beyond the end of the tab strip, then the tab is newly
-  // added to the end of the tab strip. In that case we can just return one
-  // beyond the view index of the last existing tab.
-  if (to_model_index >= GetTabCount())
-    return (GetTabCount()
-                ? tab_container_->GetIndexOf(tab_at(GetTabCount() - 1)) + 1
-                : 0);
-
-  // If there is no from_model_index, then the tab is newly added in the middle
-  // of the tab strip. In that case we treat it as coming from the end of the
-  // tab strip, since new views are ordered at the end by default.
-  if (!from_model_index.has_value())
-    from_model_index = GetTabCount();
-
-  DCHECK_NE(to_model_index, from_model_index.value());
-
-  // Since we don't have an absolute mapping from model index to view index, we
-  // anchor on the last known view index at the given to_model_index.
-  Tab* other_tab = tab_at(to_model_index);
-  int other_view_index = tab_container_->GetIndexOf(other_tab);
-
-  if (other_view_index <= 0)
-    return 0;
-
-  // When moving to the right, just use the anchor index because the tab will
-  // replace that position in both the model and the view. This happens because
-  // the tab itself occupies a lower index that the other tabs will shift into.
-  if (to_model_index > from_model_index.value())
-    return other_view_index;
-
-  // When moving to the left, the tab may end up on either the left or right
-  // side of a group header, depending on if it's in that group. This affects
-  // its view index but not its model index, so we adjust the former only.
-  if (other_tab->group().has_value() && other_tab->group() != tab->group())
-    return other_view_index - 1;
-
-  return other_view_index;
 }
 
 void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
