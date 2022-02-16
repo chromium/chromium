@@ -78,8 +78,9 @@ constexpr char kDefaultZip[] = "94102";
 constexpr char kDefaultCity[] = "Los Angeles";
 constexpr char kDefaultDependentLocality[] = "Nob Hill";
 constexpr char kDefaultState[] = "California";
-constexpr char kDefaultPhone[] = "+16505550000";
-constexpr char kDefaultPhoneAlternativeFormatting[] = "+1-650-555-0000";
+constexpr char kDefaultPhone[] = "+1 650-555-0000";
+constexpr char kDefaultPhoneAlternativeFormatting[] = "650-555-0000";
+constexpr char kDefaultPhoneDomesticFormatting[] = "(650) 555-0000";
 constexpr char kDefaultPhoneAreaCode[] = "650";
 constexpr char kDefaultPhonePrefix[] = "555";
 constexpr char kDefaultPhoneSuffix[] = "0000";
@@ -93,7 +94,7 @@ constexpr char kSecondZip[] = "94106";
 constexpr char kSecondCity[] = "Los Angeles";
 constexpr char kSecondDependentLocality[] = "Down Town";
 constexpr char kSecondState[] = "California";
-constexpr char kSecondPhone[] = "+16516661111";
+constexpr char kSecondPhone[] = "+1 651-666-1111";
 constexpr char kSecondPhoneAreaCode[] = "651";
 constexpr char kSecondPhonePrefix[] = "666";
 constexpr char kSecondPhoneSuffix[] = "1111";
@@ -107,7 +108,7 @@ constexpr char kThirdZip[] = "65619";
 constexpr char kThirdCity[] = "Springfield";
 constexpr char kThirdDependentLocality[] = "Down Town";
 constexpr char kThirdState[] = "Oregon";
-constexpr char kThirdPhone[] = "+18517772222";
+constexpr char kThirdPhone[] = "+1 851-777-2222";
 
 constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
 
@@ -193,6 +194,12 @@ AutofillProfile ConstructProfileFromTypeValuePairs(
     std::vector<std::pair<ServerFieldType, std::string>> type_value_pairs) {
   AutofillProfile profile;
   for (const auto& type_value_pair : type_value_pairs) {
+    if (type_value_pair.first == ADDRESS_HOME_DEPENDENT_LOCALITY &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillEnableDependentLocalityParsing)) {
+      continue;
+    }
+
     profile.SetRawInfoWithVerificationStatus(
         type_value_pair.first, base::UTF8ToUTF16(type_value_pair.second),
         structured_address::VerificationStatus::kObserved);
@@ -444,12 +451,18 @@ class FormDataImporterTestBase {
   // Note, that order is taken into account.
   void VerifyExpectationForImportedAddressProfiles(
       const std::vector<AutofillProfile>& expected_profiles) {
-    std::vector<AutofillProfile> imported_profiles;
-    size_t expected_profile_index = 0;
-    for (const auto* profile : personal_data_manager_->GetProfiles()) {
-      ASSERT_LT(expected_profile_index, expected_profiles.size());
-      profile->Compare(expected_profiles[expected_profile_index++]);
+    std::vector<AutofillProfile> expected_non_const_copy = expected_profiles;
+
+    std::vector<AutofillProfile*> imported_profiles_ptrs =
+        personal_data_manager_->GetProfiles();
+    ASSERT_EQ(expected_profiles.size(), imported_profiles_ptrs.size());
+
+    std::vector<AutofillProfile*> expected_profile_ptrs;
+    for (auto& profile : expected_non_const_copy) {
+      expected_profile_ptrs.emplace_back(&profile);
     }
+
+    ExpectSameElements(expected_profile_ptrs, imported_profiles_ptrs);
   }
 
   // Convenience wrapper that calls |FormDataImporter::ImportFormData()| and
@@ -553,10 +566,15 @@ class FormDataImporterTestBase {
 class FormDataImporterTest
     : public FormDataImporterTestBase,
       public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  protected:
-  bool StructuredNames() const { return structured_names_enabled_; }
-  bool StructuredAddresses() const { return structured_addresses_enabled_; }
+  bool DependentLocalityParsingEnabled() {
+    return support_for_depending_locality_;
+  }
+
+  bool ConsiderVariationCountryCodeForPhoneNumbers() {
+    return consider_variation_country_code_for_phone_numbers_;
+  }
 
  private:
   void SetUp() override {
@@ -600,52 +618,34 @@ class FormDataImporterTest
   }
 
   void InitializeFeatures() {
-    structured_names_enabled_ = std::get<0>(GetParam());
-    structured_addresses_enabled_ = std::get<1>(GetParam());
-    support_for_apartment_numbers_ = std::get<2>(GetParam());
+    support_for_apartment_numbers_ = std::get<0>(GetParam());
+    support_for_depending_locality_ = std::get<1>(GetParam());
     consider_variation_country_code_for_phone_numbers_ =
-        std::get<3>(GetParam());
+        std::get<2>(GetParam());
 
-    std::vector<base::Feature> enabled_features;
+    // Enable all those features by default.
+    std::vector<base::Feature> enabled_features{
+        features::kAutofillEnableSupportForMoreStructureInAddresses,
+        features::kAutofillEnableSupportForMoreStructureInNames};
+
     std::vector<base::Feature> disabled_features;
 
-    if (structured_names_enabled_) {
-      enabled_features.push_back(
-          features::kAutofillEnableSupportForMoreStructureInNames);
-    } else {
-      disabled_features.push_back(
-          features::kAutofillEnableSupportForMoreStructureInNames);
-    }
+    (support_for_depending_locality_ ? enabled_features : disabled_features)
+        .push_back(features::kAutofillEnableDependentLocalityParsing);
 
-    if (structured_addresses_enabled_) {
-      enabled_features.push_back(
-          features::kAutofillEnableSupportForMoreStructureInAddresses);
-    } else {
-      disabled_features.push_back(
-          features::kAutofillEnableSupportForMoreStructureInAddresses);
-    }
+    (support_for_apartment_numbers_ ? enabled_features : disabled_features)
+        .push_back(features::kAutofillEnableSupportForApartmentNumbers);
 
-    if (support_for_apartment_numbers_) {
-      enabled_features.push_back(
-          features::kAutofillEnableSupportForApartmentNumbers);
-    } else {
-      disabled_features.push_back(
-          features::kAutofillEnableSupportForApartmentNumbers);
-    }
+    (consider_variation_country_code_for_phone_numbers_ ? enabled_features
+                                                        : disabled_features)
+        .push_back(
+            features::kAutofillConsiderVariationCountryCodeForPhoneNumbers);
 
-    if (consider_variation_country_code_for_phone_numbers_) {
-      enabled_features.push_back(
-          features::kAutofillConsiderVariationCountryCodeForPhoneNumbers);
-    } else {
-      disabled_features.push_back(
-          features::kAutofillConsiderVariationCountryCodeForPhoneNumbers);
-    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool structured_names_enabled_;
-  bool structured_addresses_enabled_;
   bool support_for_apartment_numbers_;
+  bool support_for_depending_locality_;
   bool consider_variation_country_code_for_phone_numbers_;
 };
 
@@ -823,10 +823,6 @@ TEST_P(
 
 TEST_P(FormDataImporterTest,
        ImportStructuredAddressProfile_GermanStreetNameAndHouseNumber) {
-  // This test is only applicable if structured addresses are enabled.
-  if (!StructuredAddresses())
-    return;
-
   FormData form;
   form.url = GURL("https://wwww.foo.com");
 
@@ -1118,7 +1114,20 @@ TEST_P(FormDataImporterTest,
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form_data);
-  ImportAddressProfileAndVerifyImportOfDefaultProfile(*form_structure);
+
+  ImportAddressProfilesAndVerifyExpectation(
+      *form_structure,
+      {ConstructProfileFromTypeValuePairs(
+          {{NAME_FIRST, kDefaultFirstName},
+           {NAME_LAST, kDefaultLastName},
+           {EMAIL_ADDRESS, kDefaultMail},
+           // Note that this formatting is without a country code.
+           {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneDomesticFormatting},
+           {ADDRESS_HOME_DEPENDENT_LOCALITY, kDefaultDependentLocality},
+           {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+           {ADDRESS_HOME_CITY, kDefaultCity},
+           {ADDRESS_HOME_STATE, kDefaultState},
+           {ADDRESS_HOME_ZIP, kDefaultZip}})});
 }
 
 // Tests that not enough filled fields will result in not importing an address.
@@ -1208,7 +1217,18 @@ TEST_P(FormDataImporterTest,
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form_data);
-  ImportAddressProfileAndVerifyImportOfDefaultProfile(*form_structure);
+  ImportAddressProfilesAndVerifyExpectation(
+      *form_structure,
+      {ConstructProfileFromTypeValuePairs(
+          {{NAME_FIRST, kDefaultFirstName},
+           {NAME_LAST, kDefaultLastName},
+           {EMAIL_ADDRESS, kDefaultMail},
+           {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneDomesticFormatting},
+           {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+           {ADDRESS_HOME_DEPENDENT_LOCALITY, kDefaultDependentLocality},
+           {ADDRESS_HOME_CITY, kDefaultCity},
+           {ADDRESS_HOME_STATE, kDefaultState},
+           {ADDRESS_HOME_ZIP, kDefaultZip}})});
 }
 
 TEST_P(FormDataImporterTest, ImportAddressProfiles_UnFocussableFields) {
@@ -1277,13 +1297,14 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_TwoValidProfilesSameForm) {
   std::vector<std::pair<ServerFieldType, std::string>>
       profile_type_value_pairs = GetDefaultProfileTypeValuePairs();
   std::vector<std::pair<ServerFieldType, std::string>>
-      second_profile_type_value_pairs = GetDefaultProfileTypeValuePairs();
+      second_profile_type_value_pairs = GetSecondProfileTypeValuePairs();
 
   // Now combine the two vectors and construct the single FormStructure that
   // holds both profiles.
   profile_type_value_pairs.insert(profile_type_value_pairs.end(),
                                   second_profile_type_value_pairs.begin(),
                                   second_profile_type_value_pairs.end());
+
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(profile_type_value_pairs);
 
@@ -1313,15 +1334,18 @@ TEST_P(FormDataImporterTest,
 }
 
 // A maximum of two address profiles are imported per form.
-TEST_P(FormDataImporterTest, ImportAddressProfiles_ThreeValidProfilesSameForm) {
+// This test is flaky for an unknown reason.
+// TODO(crbug.com/1297212): Understand flakiness.
+TEST_P(FormDataImporterTest,
+       DISABLED_ImportAddressProfiles_ThreeValidProfilesSameForm) {
   std::vector<std::pair<ServerFieldType, std::string>>
       profile_type_value_pairs = GetDefaultProfileTypeValuePairs();
 
   std::vector<std::pair<ServerFieldType, std::string>>
-      second_profile_type_value_pairs = GetDefaultProfileTypeValuePairs();
+      second_profile_type_value_pairs = GetSecondProfileTypeValuePairs();
 
   std::vector<std::pair<ServerFieldType, std::string>>
-      third_profile_type_value_pairs = GetDefaultProfileTypeValuePairs();
+      third_profile_type_value_pairs = GetThirdProfileTypeValuePairs();
 
   // Merge the type value pairs into one and construct the corresponding form
   // structure.
@@ -1331,6 +1355,7 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_ThreeValidProfilesSameForm) {
   profile_type_value_pairs.insert(profile_type_value_pairs.end(),
                                   third_profile_type_value_pairs.begin(),
                                   third_profile_type_value_pairs.end());
+
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(profile_type_value_pairs);
 
@@ -1348,7 +1373,7 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_SameProfileWithConflict) {
           {ADDRESS_HOME_CITY, kDefaultCity},
           {ADDRESS_HOME_STATE, kDefaultState},
           {ADDRESS_HOME_ZIP, kDefaultZip},
-          {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+          {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneDomesticFormatting},
       });
   AutofillProfile initial_profile =
       ConstructProfileFromTypeValuePairs(initial_type_value_pairs);
@@ -1377,13 +1402,25 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_SameProfileWithConflict) {
   // Verify that the initial profile and the conflicting profile are not the
   // same.
   ASSERT_FALSE(initial_profile.Compare(conflicting_profile) == 0);
-
   std::unique_ptr<FormStructure> conflicting_form_structure =
       ConstructFormStructureFromTypeValuePairs(conflicting_type_value_pairs);
+
+  std::vector<std::pair<ServerFieldType, std::string>>
+      resulting_type_value_pairs({{NAME_FULL, kDefaultFullName},
+                                  {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+                                  {ADDRESS_HOME_CITY, kDefaultCity},
+                                  {ADDRESS_HOME_STATE, kDefaultState},
+                                  {ADDRESS_HOME_ZIP, kDefaultZip},
+                                  // The phone number is spelled differently.
+                                  {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+                                  // Country information is added.
+                                  {ADDRESS_HOME_COUNTRY, "US"}});
+
   // Verify that importing the conflicting profile will result in an update of
   // the existing profile rather than creating a new one.
-  ImportAddressProfilesAndVerifyExpectation(*conflicting_form_structure,
-                                            {conflicting_profile});
+  ImportAddressProfilesAndVerifyExpectation(
+      *conflicting_form_structure,
+      {ConstructProfileFromTypeValuePairs(resulting_type_value_pairs)});
 }
 
 TEST_P(FormDataImporterTest, ImportAddressProfiles_MissingInfoInOld) {
@@ -3972,10 +4009,6 @@ TEST_P(FormDataImporterTest, ImportUpiIdIgnoreNonUpiId) {
 }
 
 TEST_P(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
-  // This test is only applicable when structured names are enabled.
-  if (!StructuredNames())
-    return;
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillSilentProfileUpdateForInsufficientImport);
@@ -4033,10 +4066,6 @@ TEST_P(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
 TEST_P(
     FormDataImporterTest,
     SilentlyUpdateExistingProfileByIncompleteProfile_DespiteDisallowedPrompts) {
-  // This test is only applicable when structured names are enabled.
-  if (!StructuredNames())
-    return;
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {features::kAutofillSilentProfileUpdateForInsufficientImport,
@@ -4096,10 +4125,6 @@ TEST_P(
 }
 
 TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
-  // This test is only applicable when structured names are enabled.
-  if (!StructuredNames())
-    return;
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillSilentProfileUpdateForInsufficientImport);
@@ -4155,16 +4180,14 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
   EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST), u"Morrison");
 }
 
-// Runs the suite with the feature |kAutofillSupportForMoreStructuredNames|,
-// |kAutofillSupportForMoreStructuredAddresses|,
-// |kAutofillEnableSupportForApartmentNumbers| and
+// Runs the suite with the feature |kAutofillEnableSupportForApartmentNumbers|,
+// |kAutofillEnableDependentLocalityParsing| and
 // |kAutofillConsiderVariationCountryCodeForPhoneNumbers| enabled and disabled.
 // TODO(crbug.com/1295721): Remove
 // kAutofillConsiderVariationCountryCodeForPhoneNumbers when launched.
 INSTANTIATE_TEST_SUITE_P(,
                          FormDataImporterTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
 
