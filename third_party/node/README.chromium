@@ -154,3 +154,32 @@ JSDoc linting rules for ESLint.
 
 Local Modifications:
 (none)
+
+
+Name: ESLint Plugin TypeScript
+Short Name: @typescript-eslint/eslint-plugin
+URL: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
+Version: 5.12.0
+License: BSD-2-Clause
+Security Critical: No. The ESLint checks are not shipped with Chrome and code are only linted with it.
+
+Description:
+An ESLint plugin which provides lint rules for TypeScript codebases.
+
+Local Modifications:
+(none)
+
+
+Name: TypeScript ESLint Parser
+Short Name: @typescript-eslint/parser
+URL: https://www.npmjs.com/package/@typescript-eslint/parser
+Version: 5.12.0
+License: BSD-2-Clause
+Security Critical: No. The ESLint checks are not shipped with Chrome and code are only linted with it.
+
+Description:
+An ESLint parser which leverages TypeScript ESTree to allow for ESLint to lint
+TypeScript source code.
+
+Local Modifications:
+(none)
