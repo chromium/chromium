@@ -174,7 +174,7 @@ Value::Value(Type type) {
       data_.emplace<int>(0);
       return;
     case Type::DOUBLE:
-      data_.emplace<DoubleStorage>(bit_cast<DoubleStorage>(0.0));
+      data_.emplace<DoubleStorage>(0.0);
       return;
     case Type::STRING:
       data_.emplace<std::string>();
@@ -197,13 +197,8 @@ Value::Value(bool value) : data_(value) {}
 
 Value::Value(int value) : data_(value) {}
 
-Value::Value(double value) : data_(bit_cast<DoubleStorage>(value)) {
-  if (!std::isfinite(value)) {
-    NOTREACHED() << "Non-finite (i.e. NaN or positive/negative infinity) "
-                 << "values cannot be represented in JSON";
-    data_ = bit_cast<DoubleStorage>(0.0);
-  }
-}
+Value::Value(double value)
+    : data_(absl::in_place_type_t<DoubleStorage>(), value) {}
 
 Value::Value(StringPiece value) : Value(std::string(value)) {}
 
@@ -274,8 +269,12 @@ Value::Value(absl::monostate) {}
 
 Value::Value(DoubleStorage storage) : data_(std::move(storage)) {}
 
-double Value::AsDoubleInternal() const {
-  return bit_cast<double>(absl::get<DoubleStorage>(data_));
+Value::DoubleStorage::DoubleStorage(double v) : v_(bit_cast<decltype(v_)>(v)) {
+  if (!std::isfinite(v)) {
+    NOTREACHED() << "Non-finite (i.e. NaN or positive/negative infinity) "
+                 << "values cannot be represented in JSON";
+    v_ = bit_cast<decltype(v_)>(0.0);
+  }
 }
 
 Value Value::Clone() const {
@@ -351,7 +350,7 @@ int Value::GetInt() const {
 
 double Value::GetDouble() const {
   if (is_double())
-    return AsDoubleInternal();
+    return absl::get<DoubleStorage>(data_).value();
   if (is_int())
     return GetInt();
   CHECK(false);
@@ -1399,32 +1398,7 @@ std::unique_ptr<Value> Value::CreateDeepCopy() const {
 }
 
 bool operator==(const Value& lhs, const Value& rhs) {
-  if (lhs.type() != rhs.type())
-    return false;
-
-  switch (lhs.type()) {
-    case Value::Type::NONE:
-      return true;
-    case Value::Type::BOOLEAN:
-      return lhs.GetBool() == rhs.GetBool();
-    case Value::Type::INTEGER:
-      return lhs.GetInt() == rhs.GetInt();
-    case Value::Type::DOUBLE:
-      // TODO(dcheng): Make DoubleStorage comparable so we can just default to
-      // absl::variant's operator==.
-      return lhs.AsDoubleInternal() == rhs.AsDoubleInternal();
-    case Value::Type::STRING:
-      return lhs.GetString() == rhs.GetString();
-    case Value::Type::BINARY:
-      return lhs.GetBlob() == rhs.GetBlob();
-    case Value::Type::DICTIONARY:
-      return lhs.GetDict() == rhs.GetDict();
-    case Value::Type::LIST:
-      return lhs.GetList() == rhs.GetList();
-  }
-
-  NOTREACHED();
-  return false;
+  return lhs.data_ == rhs.data_;
 }
 
 bool operator!=(const Value& lhs, const Value& rhs) {
@@ -1432,32 +1406,7 @@ bool operator!=(const Value& lhs, const Value& rhs) {
 }
 
 bool operator<(const Value& lhs, const Value& rhs) {
-  if (lhs.type() != rhs.type())
-    return lhs.type() < rhs.type();
-
-  switch (lhs.type()) {
-    case Value::Type::NONE:
-      return false;
-    case Value::Type::BOOLEAN:
-      return lhs.GetBool() < rhs.GetBool();
-    case Value::Type::INTEGER:
-      return lhs.GetInt() < rhs.GetInt();
-    case Value::Type::DOUBLE:
-      // TODO(dcheng): Make DoubleStorage comparable so we can just default to
-      // absl::variant's operator<.
-      return lhs.AsDoubleInternal() < rhs.AsDoubleInternal();
-    case Value::Type::STRING:
-      return lhs.GetString() < rhs.GetString();
-    case Value::Type::BINARY:
-      return lhs.GetBlob() < rhs.GetBlob();
-    case Value::Type::DICTIONARY:
-      return lhs.GetDict() < rhs.GetDict();
-    case Value::Type::LIST:
-      return lhs.GetList() < rhs.GetList();
-  }
-
-  NOTREACHED();
-  return false;
+  return lhs.data_ < rhs.data_;
 }
 
 bool operator>(const Value& lhs, const Value& rhs) {

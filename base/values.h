@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <initializer_list>
 #include <iosfwd>
 #include <memory>
@@ -17,6 +18,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/bit_cast.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/checked_range.h"
 #include "base/containers/cxx20_erase_vector.h"
@@ -1004,14 +1006,47 @@ class BASE_EXPORT Value {
   //
   // To override this, store the value as an array of 32-bit integers, and
   // perform the appropriate bit casts when reading / writing to it.
-  using DoubleStorage = struct { alignas(4) char v[sizeof(double)]; };
+  class DoubleStorage {
+   public:
+    explicit DoubleStorage(double v);
+    DoubleStorage(const DoubleStorage&) = default;
+    DoubleStorage& operator=(const DoubleStorage&) = default;
+
+    double value() const { return bit_cast<double>(v_); }
+
+   private:
+    friend bool operator==(const DoubleStorage& lhs, const DoubleStorage& rhs) {
+      return lhs.value() == rhs.value();
+    }
+
+    friend bool operator!=(const DoubleStorage& lhs, const DoubleStorage& rhs) {
+      return !(lhs == rhs);
+    }
+
+    friend bool operator<(const DoubleStorage& lhs, const DoubleStorage& rhs) {
+      return lhs.value() < rhs.value();
+    }
+
+    friend bool operator>(const DoubleStorage& lhs, const DoubleStorage& rhs) {
+      return rhs < lhs;
+    }
+
+    friend bool operator<=(const DoubleStorage& lhs, const DoubleStorage& rhs) {
+      return !(rhs < lhs);
+    }
+
+    friend bool operator>=(const DoubleStorage& lhs, const DoubleStorage& rhs) {
+      return !(lhs < rhs);
+    }
+
+    alignas(4) std::array<char, sizeof(double)> v_;
+  };
 
   // Internal constructors, allowing the simplify the implementation of Clone().
   explicit Value(absl::monostate);
   explicit Value(DoubleStorage storage);
 
   friend class ValuesTest_SizeOfValue_Test;
-  double AsDoubleInternal() const;
 
   absl::variant<absl::monostate,
                 bool,
