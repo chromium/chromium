@@ -110,10 +110,8 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
   }
 
   TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() {
-    return GetDocument()
-        .GetFrame()
-        ->GetTextFragmentHandler()
-        ->GetTextFragmentSelectorGenerator();
+    return MakeGarbageCollected<TextFragmentSelectorGenerator>(
+        GetDocument().GetFrame());
   }
 
  protected:

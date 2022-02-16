@@ -108,10 +108,8 @@ String TextFragmentGenerationNavigationTest::GenerateSelector(
     selector = generated_selector.ToString();
   };
   auto callback = WTF::Bind(lambda, std::ref(selector));
-  GetDocument()
-      .GetFrame()
-      ->GetTextFragmentHandler()
-      ->GetTextFragmentSelectorGenerator()
+
+  MakeGarbageCollected<TextFragmentSelectorGenerator>(GetDocument().GetFrame())
       ->Generate(selection_range, std::move(callback));
   base::RunLoop().RunUntilIdle();
   return selector;

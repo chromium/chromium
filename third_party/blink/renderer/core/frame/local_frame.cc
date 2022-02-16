@@ -1521,10 +1521,6 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
   is_subframe_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
-  if (IsMainFrame()) {
-    CreateTextFragmentHandler();
-  }
-
   Initialize();
 
   probe::FrameAttachedToParent(this);

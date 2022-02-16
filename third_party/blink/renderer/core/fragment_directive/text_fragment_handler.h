@@ -25,18 +25,15 @@ class CORE_EXPORT TextFragmentHandler final
     : public GarbageCollected<TextFragmentHandler>,
       public blink::mojom::blink::TextFragmentReceiver {
  public:
-  explicit TextFragmentHandler(LocalFrame* main_frame);
+  explicit TextFragmentHandler(LocalFrame* frame);
   TextFragmentHandler(const TextFragmentHandler&) = delete;
   TextFragmentHandler& operator=(const TextFragmentHandler&) = delete;
 
   // Determine if |result| represents a click on an existing highlight.
   static bool IsOverTextFragment(HitTestResult result);
 
-  // Returns whether preemptive generation should run for the given frame
-  static bool ShouldPreemptivelyGenerateFor(LocalFrame* frame);
-
   // Called to notify the frame's TextFragmentHandler on context menu open over
-  // a selection
+  // a selection. Will trigger preemptive generation if needed.
   static void OpenedContextMenuOverSelection(LocalFrame* frame);
 
   // mojom::blink::TextFragmentReceiver interface
@@ -48,10 +45,6 @@ class CORE_EXPORT TextFragmentHandler final
       ExtractTextFragmentsMatchesCallback callback) override;
   void ExtractFirstFragmentRect(
       ExtractFirstFragmentRectCallback callback) override;
-
-  // This starts the preemptive generation on the current selection if it is not
-  // empty.
-  void StartPreemptiveGenerationIfNeeded();
 
   void BindTextFragmentReceiver(
       mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> producer);
@@ -67,6 +60,9 @@ class CORE_EXPORT TextFragmentHandler final
  private:
   FRIEND_TEST_ALL_PREFIXES(TextFragmentHandlerTest,
                            IfGeneratorResetShouldRecordCorrectError);
+
+  // Returns whether preemptive generation should run for the given frame.
+  static bool ShouldPreemptivelyGenerateFor(LocalFrame* frame);
 
   // The callback passed to TextFragmentSelectorGenerator that will receive the
   // result.
@@ -84,9 +80,7 @@ class CORE_EXPORT TextFragmentHandler final
 
   TextFragmentAnchor* GetTextFragmentAnchor();
 
-  LocalFrame* GetFrame() {
-    return GetTextFragmentSelectorGenerator()->GetFrame();
-  }
+  LocalFrame* GetFrame() { return frame_; }
 
   // Class responsible for generating text fragment selectors for the current
   // selection.
@@ -116,6 +110,8 @@ class CORE_EXPORT TextFragmentHandler final
   HeapMojoReceiver<blink::mojom::blink::TextFragmentReceiver,
                    TextFragmentHandler>
       selector_producer_{this, nullptr};
+
+  Member<LocalFrame> frame_;
 };
 
 }  // namespace blink
