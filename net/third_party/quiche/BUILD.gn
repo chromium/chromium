@@ -31,6 +31,8 @@ source_set("quiche_public_deps") {
 
 source_set("quiche") {
   sources = [
+    "overrides/quiche_platform_impl/quic_flags_impl.cc",
+    "overrides/quiche_platform_impl/quic_flags_impl.h",
     "overrides/quiche_platform_impl/quic_mutex_impl.cc",
     "overrides/quiche_platform_impl/quic_mutex_impl.h",
     "overrides/quiche_platform_impl/quiche_bug_tracker_impl.h",

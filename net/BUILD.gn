@@ -778,8 +778,6 @@ component("net") {
     "quic/platform/impl/quic_containers_impl.h",
     "quic/platform/impl/quic_error_code_wrappers_impl.h",
     "quic/platform/impl/quic_file_utils_impl.h",
-    "quic/platform/impl/quic_flags_impl.cc",
-    "quic/platform/impl/quic_flags_impl.h",
     "quic/platform/impl/quic_hostname_utils_impl.cc",
     "quic/platform/impl/quic_hostname_utils_impl.h",
     "quic/platform/impl/quic_iovec_impl.h",

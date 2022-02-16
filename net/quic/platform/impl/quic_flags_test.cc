@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/cxx17_backports.h"
-#include "net/quic/platform/impl/quic_flags_impl.h"
+#include "net/third_party/quiche/overrides/quiche_platform_impl/quic_flags_impl.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_logging.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_test.h"
 

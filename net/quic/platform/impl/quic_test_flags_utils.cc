@@ -8,7 +8,7 @@
 #include "net/quic/platform/impl/quic_test_flags_utils.h"
 
 #include "base/check_op.h"
-#include "net/quic/platform/impl/quic_flags_impl.h"
+#include "net/third_party/quiche/overrides/quiche_platform_impl/quic_flags_impl.h"
 
 QuicFlagSaverImpl::QuicFlagSaverImpl() {
 #define QUIC_FLAG(flag, value) saved_##flag##_ = flag;
