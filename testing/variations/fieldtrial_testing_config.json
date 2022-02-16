@@ -6483,7 +6483,6 @@
             "platforms": [
                 "linux",
                 "windows",
-                "mac",
                 "chromeos_lacros",
                 "chromeos"
             ],
