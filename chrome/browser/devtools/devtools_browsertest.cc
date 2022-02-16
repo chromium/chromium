@@ -1744,20 +1744,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkSyncSize) {
   RunTest("testNetworkSyncSize", kChunkedTestPage);
 }
 
-// Tests raw headers text.
-// TODO(https://crbug.com/1199825): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TestNetworkRawHeadersText DISABLED_TestNetworkRawHeadersText
-#else
-#define MAYBE_TestNetworkRawHeadersText TestNetworkRawHeadersText
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkRawHeadersText) {
-  // This test expects headers to be exactly 112 bytes in length, so add an
-  // extra header to reach that length.
-  RunTest("testNetworkRawHeadersText",
-          "/set-header?Extra-Header: 1234567890123");
-}
-
 namespace {
 
 bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
