@@ -190,7 +190,7 @@ class NativeInputMethodEngine
     void FlushForTesting();
 
     // Returns whether this is connected to the input engine.
-    bool IsConnectedForTesting() const { return input_method_.is_bound(); }
+    bool IsConnectedForTesting() { return IsInputMethodBound(); }
 
     void OnProfileWillBeDestroyed();
 
@@ -223,6 +223,8 @@ class NativeInputMethodEngine
         chromeos::ime::mojom::ConnectionTarget connection_target,
         const std::string& engine_id);
 
+    bool IsInputMethodBound();
+    bool IsInputMethodConnected();
     bool IsTextClientActive();
     void ActivateTextClient(int context_id, bool on_focus_success);
 
@@ -231,9 +233,12 @@ class NativeInputMethodEngine
     std::unique_ptr<InputMethodEngineObserver> ime_base_observer_;
     mojo::Remote<chromeos::ime::mojom::InputEngineManager> remote_manager_;
     mojo::Remote<chromeos::ime::mojom::ConnectionFactory> connection_factory_;
-    mojo::AssociatedRemote<chromeos::ime::mojom::InputMethod> input_method_;
+    mojo::AssociatedRemote<chromeos::ime::mojom::InputMethod>
+        associated_input_method_;
     mojo::AssociatedReceiver<chromeos::ime::mojom::InputMethodHost>
-        host_receiver_{this};
+        associated_host_receiver_{this};
+    mojo::Remote<chromeos::ime::mojom::InputMethod> input_method_;
+    mojo::Receiver<chromeos::ime::mojom::InputMethodHost> host_receiver_{this};
 
     std::unique_ptr<AssistiveSuggester> assistive_suggester_;
     std::unique_ptr<AutocorrectManager> autocorrect_manager_;
