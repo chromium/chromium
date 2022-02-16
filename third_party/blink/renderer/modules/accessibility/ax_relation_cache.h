@@ -126,6 +126,7 @@ class AXRelationCache {
 
   void MapOwnedChildren(const AXObject* owner, const Vector<AXID>&);
   void GetReverseRelated(Node*, HeapVector<Member<AXObject>>& sources);
+  void MaybeRestoreParentOfOwnedChild(AXObject* removed_child);
 
   // Updates |aria_owner_to_children_mapping_| after calling UpdateAriaOwns for
   // either the content attribute or the attr associated elements.

@@ -1,0 +1,19 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer
+++++++++++region name='owner2'
+++++++++++++genericContainer
+++++++++++++++button name='1'
+++++++++++++++++staticText name='1'
+++++++++++++++++++inlineTextBox name='1'
+++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++staticText name='"'
+++++++++++++++inlineTextBox name='"'
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++staticText name='"'
+++++++++++++++inlineTextBox name='"'
