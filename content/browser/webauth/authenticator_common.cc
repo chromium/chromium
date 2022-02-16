@@ -380,20 +380,25 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
     transports.insert(device::FidoTransportProtocol::kInternal);
   }
 
-  if (base::FeatureList::IsEnabled(features::kWebAuthCable)) {
-    transports.insert(
-        device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
-  }
+  // caBLE devices don't yet support discoverable credentials and so we
+  // shouldn't offer them for such requests unless forced by a feature flag.
+  if (!uses_discoverable_creds ||
+      base::FeatureList::IsEnabled(device::kWebAuthCableDisco)) {
+    if (base::FeatureList::IsEnabled(features::kWebAuthCable)) {
+      transports.insert(
+          device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+    }
 
-  // kAndroidAccessory doesn't work on Windows because of USB stack issues.
-  // Note: even if this value were inserted it wouldn't take effect on Windows
-  // versions with a native API because FidoRequestHandlerBase filters out
-  // non-kCloudAssistedBluetoothLowEnergy transports in that case.
+    // kAndroidAccessory doesn't work on Windows because of USB stack issues.
+    // Note: even if this value were inserted it wouldn't take effect on Windows
+    // versions with a native API because FidoRequestHandlerBase filters out
+    // non-kCloudAssistedBluetoothLowEnergy transports in that case.
 #if !BUILDFLAG(IS_WIN)
-  // In order for AOA to be active the |AuthenticatorRequestClientDelegate|
-  // must still configure a |UsbDeviceManager|.
-  transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
+    // In order for AOA to be active the |AuthenticatorRequestClientDelegate|
+    // must still configure a |UsbDeviceManager|.
+    transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
 #endif
+  }
 
   return transports;
 }

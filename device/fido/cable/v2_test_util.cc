@@ -31,7 +31,8 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 
-namespace device::cablev2 {
+namespace device {
+namespace cablev2 {
 namespace {
 
 // TestNetworkContext intercepts WebSocket creation calls and simulates a
@@ -356,11 +357,9 @@ class DummyBLEAdvert
 class TestPlatform : public authenticator::Platform {
  public:
   TestPlatform(Discovery::AdvertEventStream::Callback ble_advert_callback,
-               device::VirtualCtap2Device* ctap2_device,
-               authenticator::Observer* observer)
+               device::VirtualCtap2Device* ctap2_device)
       : ble_advert_callback_(ble_advert_callback),
-        ctap2_device_(ctap2_device),
-        observer_(observer) {}
+        ctap2_device_(ctap2_device) {}
 
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr params,
@@ -401,17 +400,8 @@ class TestPlatform : public authenticator::Platform {
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void OnStatus(Status status) override {
-    if (observer_) {
-      observer_->OnStatus(status);
-    }
-  }
-
-  void OnCompleted(absl::optional<Error> maybe_error) override {
-    if (observer_) {
-      observer_->OnCompleted(maybe_error);
-    }
-  }
+  void OnStatus(Status status) override {}
+  void OnCompleted(absl::optional<Error> maybe_error) override {}
 
   std::unique_ptr<authenticator::Platform::BLEAdvert> SendBLEAdvert(
       base::span<const uint8_t, kAdvertSize> payload) override {
@@ -522,7 +512,6 @@ class TestPlatform : public authenticator::Platform {
 
   Discovery::AdvertEventStream::Callback ble_advert_callback_;
   const raw_ptr<device::VirtualCtap2Device> ctap2_device_;
-  authenticator::Observer* const observer_;
   base::WeakPtrFactory<TestPlatform> weak_factory_{this};
 };
 
@@ -537,11 +526,11 @@ namespace authenticator {
 
 std::unique_ptr<authenticator::Platform> NewMockPlatform(
     Discovery::AdvertEventStream::Callback ble_advert_callback,
-    device::VirtualCtap2Device* ctap2_device,
-    authenticator::Observer* observer) {
-  return std::make_unique<TestPlatform>(ble_advert_callback, ctap2_device,
-                                        observer);
+    device::VirtualCtap2Device* ctap2_device) {
+  return std::make_unique<TestPlatform>(ble_advert_callback, ctap2_device);
 }
 
 }  // namespace authenticator
-}  // namespace device::cablev2
+
+}  // namespace cablev2
+}  // namespace device
