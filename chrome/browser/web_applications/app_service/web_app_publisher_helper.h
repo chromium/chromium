@@ -298,6 +298,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void OnWebAppRunOnOsLoginModeChanged(
       const AppId& app_id,
       RunOnOsLoginMode run_on_os_login_mode) override;
+  void OnWebAppSettingsPolicyChanged() override;
+
 #if BUILDFLAG(IS_CHROMEOS)
   void OnWebAppDisabledStateChanged(const AppId& app_id,
                                     bool is_disabled) override;

@@ -1502,6 +1502,19 @@ void WebAppPublisherHelper::OnContentSettingChanged(
   }
 }
 
+void WebAppPublisherHelper::OnWebAppSettingsPolicyChanged() {
+  DCHECK(!IsShuttingDown());
+  // TODO(crbug.com/1293961): when more features are added to policy manager, we
+  // need to remove per-feature updates in favor of a full refresh, as each
+  // feature multiplicatively increases the complexity of this operation.
+  for (const WebApp& web_app : registrar().GetApps()) {
+    const auto login_mode =
+        registrar().GetAppRunOnOsLoginMode(web_app.app_id());
+
+    PublishRunOnOsLoginModeUpdate(web_app.app_id(), login_mode.value);
+  }
+}
+
 void WebAppPublisherHelper::Init(bool observe_media_requests) {
   // Allow for web app migration tests.
   if (!AreWebAppsEnabled(profile_)) {
