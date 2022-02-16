@@ -290,7 +290,10 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
 void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"enableLogging", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE},
-      {"enableLoggingDesc", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESC},
+      // TODO(crbug/1295789): Revert descriptions back to a single description
+      // once per-user crash is ready.
+      {"enableLoggingOwnerDesc", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_OWNER_DESC},
+      {"enableLoggingUserDesc", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_USER_DESC},
       {"enableContentProtectionAttestation",
        IDS_SETTINGS_ENABLE_CONTENT_PROTECTION_ATTESTATION},
       {"enableSuggestedContent", IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_TITLE},
