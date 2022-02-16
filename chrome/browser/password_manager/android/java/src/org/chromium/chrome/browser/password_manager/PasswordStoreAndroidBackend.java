@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.accounts.Account;
 
-import org.chromium.base.Callback;
+import com.google.common.base.Optional;
 
-import java.util.Optional;
+import org.chromium.base.Callback;
 
 /**
  * Interface to send backend requests to a downstream implementation to fulfill password store
