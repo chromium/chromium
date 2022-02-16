@@ -105,6 +105,13 @@ void TextFragmentsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
+  // Discard messages if we've navigated away.
+  auto sender_url = script_message.request_url();
+  GURL current_url = web_state->GetLastCommittedURL();
+  if (!sender_url || *sender_url != current_url) {
+    return;
+  }
+
   if (*command == "textFragments.processingComplete") {
     // Extract success metrics.
     absl::optional<double> optional_fragment_count =

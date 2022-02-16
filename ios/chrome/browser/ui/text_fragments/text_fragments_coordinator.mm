@@ -16,11 +16,13 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/text_fragments/text_fragments_mediator.h"
+#import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/text_fragments/text_fragments_manager.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -29,9 +31,12 @@
 #endif
 
 @interface TextFragmentsCoordinator () <DependencyInstalling,
-                                        TextFragmentsDelegate>
+                                        TextFragmentsDelegate,
+                                        CRWWebStateObserver>
 
 @property(nonatomic, strong, readonly) TextFragmentsMediator* mediator;
+
+@property(nonatomic, strong) ActionSheetCoordinator* actionSheet;
 
 @end
 
@@ -39,6 +44,10 @@
   // Bridge which observes WebStateList and alerts this coordinator when this
   // needs to register the Mediator with a new WebState.
   std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
+
+  // Used to observe the active WebState
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+  std::unique_ptr<ActiveWebStateObservationForwarder> _forwarder;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -49,6 +58,10 @@
     _dependencyInstallerBridge =
         std::make_unique<WebStateDependencyInstallerBridge>(
             self, browser->GetWebStateList());
+    _webStateObserverBridge =
+        std::make_unique<web::WebStateObserverBridge>(self);
+    _forwarder = std::make_unique<ActiveWebStateObservationForwarder>(
+        browser->GetWebStateList(), _webStateObserverBridge.get());
   }
   return self;
 }
@@ -61,7 +74,7 @@
 - (void)userTappedTextFragmentInWebState:(web::WebState*)webState
                               withSender:(CGRect)rect
                                 withText:(NSString*)text {
-  ActionSheetCoordinator* actionSheet = [[ActionSheetCoordinator alloc]
+  self.actionSheet = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:[self baseViewController]
                          browser:[self browser]
                            title:l10n_util::GetNSString(
@@ -70,28 +83,29 @@
                             rect:rect
                             view:[self.baseViewController view]];
 
-  [actionSheet
+  __weak TextFragmentsCoordinator* weakSelf = self;
+  [self.actionSheet
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE)
                 action:^{
-                  id<ApplicationCommands> handler =
-                      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                         ApplicationCommands);
+                  id<ApplicationCommands> handler = HandlerForProtocol(
+                      weakSelf.browser->GetCommandDispatcher(),
+                      ApplicationCommands);
                   [handler openURLInNewTab:[OpenNewTabCommand
                                                commandWithURLFromChrome:
                                                    GURL(shared_highlighting::
                                                             kLearnMoreUrl)]];
                 }
                  style:UIAlertActionStyleDefault];
-  [actionSheet
+  [self.actionSheet
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SHARED_HIGHLIGHT_RESHARE)
                 action:^{
-                  id<ActivityServiceCommands> handler =
-                      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                         ActivityServiceCommands);
+                  id<ActivityServiceCommands> handler = HandlerForProtocol(
+                      weakSelf.browser->GetCommandDispatcher(),
+                      ActivityServiceCommands);
 
                   auto* webState =
-                      self.browser->GetWebStateList()->GetActiveWebState();
+                      weakSelf.browser->GetWebStateList()->GetActiveWebState();
 
                   ShareHighlightCommand* command =
                       [[ShareHighlightCommand alloc]
@@ -105,13 +119,13 @@
                   [handler shareHighlight:command];
                 }
                  style:UIAlertActionStyleDefault];
-  [actionSheet
+  [self.actionSheet
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SHARED_HIGHLIGHT_REMOVE)
                 action:^{
-                  [self.mediator removeTextFragmentsInWebState:webState];
+                  [weakSelf.mediator removeTextFragmentsInWebState:webState];
                 }
                  style:UIAlertActionStyleDestructive];
-  [actionSheet start];
+  [self.actionSheet start];
 }
 
 #pragma mark - DependencyInstalling methods
@@ -123,9 +137,21 @@
 #pragma mark - ChromeCoordinator methods
 
 - (void)stop {
+  if ([self.actionSheet isVisible]) {
+    [self.actionSheet stop];
+  }
   // Reset this observer manually. We want this to go out of scope now, ensuring
   // it detaches before |browser| and its WebStateList get destroyed.
   _dependencyInstallerBridge.reset();
+}
+
+#pragma mark - CRWWebStateObserver methods
+
+- (void)webState:(web::WebState*)webState
+    didStartNavigation:(web::NavigationContext*)navigationContext {
+  if ([self.actionSheet isVisible]) {
+    [self.actionSheet stop];
+  }
 }
 
 @end

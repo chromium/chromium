@@ -222,4 +222,27 @@ void DismissMenu() {
                   @"Found wrong number of mark elements");
 }
 
+// Verify that navigating away from the page makes the menu go away.
+- (void)testMenuDismissesOnNavigation {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kURLWithFragment)];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
+
+  ClickMarkAndWaitForMenu();
+
+  // Navigation after the menu is already showing should cause it to disappear.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kTestURL2)];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:GetMenuTitleMatcher()];
+
+  // Go back to the original page.
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
+
+  // Clicking a link inside a highlight will fire both events at roughly the
+  // same time. Verify that the menu either goes away or never shows up to begin
+  // with.
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"document.getElementById('link').click();"];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:GetMenuTitleMatcher()];
+}
+
 @end
