@@ -704,22 +704,6 @@ bool GetModuleDir(HMODULE module, PathString* directory) {
   return true;
 }
 
-bool GetTempDir(PathString* directory, ProcessExitResult* exit_code) {
-  DWORD len = ::GetTempPath(static_cast<DWORD>(directory->capacity()),
-                            directory->get());
-  if (!len) {
-    *exit_code =
-        ProcessExitResult(UNABLE_TO_GET_WORK_DIRECTORY, ::GetLastError());
-    return false;
-  }
-  if (len >= directory->capacity()) {
-    *exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
-    return false;
-  }
-
-  return true;
-}
-
 // Creates a temporary directory under |base_path| and returns the full path
 // of created directory in |work_dir|. If successful return true, otherwise
 // false.  When successful, the returned |work_dir| will always have a trailing
@@ -800,14 +784,8 @@ bool GetWorkDir(HMODULE module,
                 ProcessExitResult* exit_code) {
   PathString base_path;
 
-  // Try to create a directory next to the current module.
-  if (GetModuleDir(module, &base_path) &&
-      CreateWorkDir(base_path.get(), work_dir, exit_code)) {
-    return true;
-  }
-
-  // Failing that, try to create one in the TMP directory.
-  return GetTempDir(&base_path, exit_code) &&
+  // Create a directory next to the current module.
+  return GetModuleDir(module, &base_path) &&
          CreateWorkDir(base_path.get(), work_dir, exit_code);
 }
 
