@@ -427,27 +427,20 @@ bool GetWorkDir(HMODULE module,
                 PathString* work_dir,
                 ProcessExitResult* exit_code) {
   PathString base_path;
-  DWORD len =
-      ::GetTempPath(static_cast<DWORD>(base_path.capacity()), base_path.get());
-  if (!len || len >= base_path.capacity() ||
-      !CreateWorkDir(base_path.get(), work_dir, exit_code)) {
-    // Problem creating the work dir under TEMP path, so try using the
-    // current directory as the base path.
-    len = ::GetModuleFileName(module, base_path.get(),
-                              static_cast<DWORD>(base_path.capacity()));
-    if (len >= base_path.capacity() || !len)
-      return false;  // Can't even get current directory? Return an error.
+  // Use the current module directory as a secure base path.
+  DWORD len = ::GetModuleFileName(module, base_path.get(),
+                                  static_cast<DWORD>(base_path.capacity()));
+  if (len >= base_path.capacity() || !len)
+    return false;  // Can't even get current directory? Return an error.
 
-    wchar_t* name = GetNameFromPathExt(base_path.get(), len);
-    if (name == base_path.get())
-      return false;  // There was no directory in the string!  Bail out.
+  wchar_t* name = GetNameFromPathExt(base_path.get(), len);
+  if (name == base_path.get())
+    return false;  // There was no directory in the string!  Bail out.
 
-    *name = L'\0';
+  *name = L'\0';
 
-    *exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
-    return CreateWorkDir(base_path.get(), work_dir, exit_code);
-  }
-  return true;
+  *exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
+  return CreateWorkDir(base_path.get(), work_dir, exit_code);
 }
 
 // Returns true for ".." and "." directories.
