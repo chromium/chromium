@@ -360,17 +360,6 @@ std::ostream& operator<<(std::ostream& out,
     }
     out << "]";
 
-    out << "\n (autofill_type, validity_states): [";
-    for (const auto& type_validities : field.autofill_type_validities()) {
-      out << "(type: " << type_validities.type() << ", validities: {";
-      for (int i = 0; i < type_validities.validity_size(); ++i) {
-        if (i)
-          out << ", ";
-        out << type_validities.validity(i);
-      }
-      out << "})";
-    }
-    out << "]\n";
     if (!field.name().empty())
       out << "\n name: " << field.name();
     if (!field.autocomplete().empty())
@@ -446,15 +435,6 @@ LogBuffer& operator<<(LogBuffer& out,
     for (int type : field.autofill_type())
       types_as_strings.emplace_back(FieldTypeToString(type));
     out << Tr{} << "autofill_type:" << types_as_strings;
-
-    LogBuffer validities;
-    validities << Tag{"span"} << "[";
-    for (const auto& type_validities : field.autofill_type_validities()) {
-      validities << "(type: " << type_validities.type()
-                 << ", validities: " << type_validities.validity() << ")";
-    }
-    validities << "]";
-    out << Tr{} << "validity_states" << std::move(validities);
 
     if (!field.name().empty())
       out << Tr{} << "name:" << field.name();

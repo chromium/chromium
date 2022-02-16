@@ -340,8 +340,10 @@ message AutofillUploadContents {
       repeated int32 validity = 2;
     }
     // A list of possible types for the field with their corresponding validity
-    // states based on the user's data.
-    repeated AutofillTypeValiditiesPair autofill_type_validities = 35;
+    // states based on the user's data. Deprecated in M99 after unsuccessful
+    // experiments.
+    repeated AutofillTypeValiditiesPair autofill_type_validities = 35
+        [deprecated = true];
 
     // A low-entropy hash of the field's initial value before user-interactions
     // or automatic fillings. This field is used to detect static
