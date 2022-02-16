@@ -47,8 +47,8 @@ public class PasswordChangeLauncher {
                     TriggerContext.newBuilder()
                             .addParameter(DEBUG_BUNDLE_ID, debugBundleId)
                             .addParameter(DEBUG_SOCKET_ID, debutSocketId)
-                            .addParameter(
-                                    PASSWORD_CHANGE_USERNAME_PARAMETER, URLEncoder.encode(username))
+                            .addParameter(PASSWORD_CHANGE_USERNAME_PARAMETER,
+                                    URLEncoder.encode(username, ENCODING))
                             .addParameter(PASSWORD_CHANGE_SKIP_LOGIN_PARAMETER, skipLogin)
                             .addParameter(INTENT_PARAMETER, INTENT)
                             .addParameter(TriggerContext.PARAMETER_START_IMMEDIATELY, true)
