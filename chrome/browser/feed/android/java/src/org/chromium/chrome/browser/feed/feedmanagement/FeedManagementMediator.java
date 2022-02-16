@@ -41,27 +41,30 @@ public class FeedManagementMediator {
     private final Context mContext;
     private final FollowManagementLauncher mFollowManagementLauncher;
     private final AutoplayManagementLauncher mAutoplayManagementLauncher;
+    private final @StreamKind int mInitiatingStreamKind;
 
     /**
      * Interface to supply a method which can launch the FollowManagementActivity.
      */
     public interface FollowManagementLauncher {
-        public void launchFollowManagement(Context mContext);
+        void launchFollowManagement(Context mContext);
     }
 
     /**
      * Interface to supply a method which can launch the AutoplayManagementActivity.
      */
     public interface AutoplayManagementLauncher {
-        public void launchAutoplayManagement(Context mContext);
+        void launchAutoplayManagement(Context mContext);
     }
 
     FeedManagementMediator(Context context, ModelList modelList,
-            FollowManagementLauncher followLauncher, AutoplayManagementLauncher autoplayLauncher) {
+            FollowManagementLauncher followLauncher, AutoplayManagementLauncher autoplayLauncher,
+            @StreamKind int initiatingStreamKind) {
         mModelList = modelList;
         mContext = context;
         mFollowManagementLauncher = followLauncher;
         mAutoplayManagementLauncher = autoplayLauncher;
+        mInitiatingStreamKind = initiatingStreamKind;
 
         // Add the menu items into the menu.
         PropertyModel activityModel = generateListItem(R.string.feed_manage_activity,
@@ -100,7 +103,6 @@ public class FeedManagementMediator {
     }
 
     // TODO(petewil): Borrowed these from code we can't link to.  How do I keep them in sync?
-    static final String EXTRA_UI_TYPE = "org.chromium.chrome.browser.customtabs.EXTRA_UI_TYPE";
     static final String TRUSTED_APPLICATION_CODE_EXTRA = "trusted_application_code_extra";
 
     // Launch a new activity in the same task with the given uri as a CCT.
@@ -139,25 +141,33 @@ public class FeedManagementMediator {
 
     @VisibleForTesting
     void handleActivityClick(View view) {
-        Log.d(TAG, "Activity click caught.");
+        Log.d(TAG, "Activity click caught." + mInitiatingStreamKind);
+        FeedServiceBridge.reportOtherUserAction(
+                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
         launchUriActivity("https://myactivity.google.com/myactivity?product=50");
     }
 
     @VisibleForTesting
     void handleInterestsClick(View view) {
         Log.d(TAG, "Interests click caught.");
+        FeedServiceBridge.reportOtherUserAction(
+                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
         launchUriActivity("https://www.google.com/preferences/interests/yourinterests?sh=n");
     }
 
     @VisibleForTesting
     void handleHiddenClick(View view) {
         Log.d(TAG, "Hidden click caught.");
+        FeedServiceBridge.reportOtherUserAction(
+                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
         launchUriActivity("https://www.google.com/preferences/interests/hidden?sh=n");
     }
 
     @VisibleForTesting
     void handleAutoplayClick(View view) {
         Log.d(TAG, "Autoplay click caught.");
+        FeedServiceBridge.reportOtherUserAction(
+                mInitiatingStreamKind, FeedUserActionType.OPENED_AUTOPLAY_SETTINGS);
         mAutoplayManagementLauncher.launchAutoplayManagement(mContext);
     }
 
@@ -165,7 +175,7 @@ public class FeedManagementMediator {
     void handleFollowingClick(View view) {
         Log.d(TAG, "Following click caught.");
         FeedServiceBridge.reportOtherUserAction(
-                StreamKind.UNKNOWN, FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
+                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
         mFollowManagementLauncher.launchFollowManagement(mContext);
     }
 }

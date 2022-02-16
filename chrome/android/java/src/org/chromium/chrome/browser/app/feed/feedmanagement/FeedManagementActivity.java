@@ -12,6 +12,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.app.feed.followmanagement.FollowManagementActivity;
 import org.chromium.chrome.browser.feed.FeedUma;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementCoordinator;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator;
 import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
@@ -25,12 +26,18 @@ public class FeedManagementActivity
         extends SnackbarActivity implements FeedManagementMediator.FollowManagementLauncher,
                                             FeedManagementMediator.AutoplayManagementLauncher {
     private static final String TAG = "FeedMActivity";
+    public static final String INITIATING_STREAM_TYPE_EXTRA =
+            "feed_management_initiating_stream_type_extra";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FeedManagementCoordinator coordinator = new FeedManagementCoordinator(this, this, this);
+        @StreamKind
+        int streamKind = getIntent().getIntExtra(INITIATING_STREAM_TYPE_EXTRA, StreamKind.UNKNOWN);
+
+        FeedManagementCoordinator coordinator =
+                new FeedManagementCoordinator(this, this, this, streamKind);
         setContentView(coordinator.getView());
     }
 

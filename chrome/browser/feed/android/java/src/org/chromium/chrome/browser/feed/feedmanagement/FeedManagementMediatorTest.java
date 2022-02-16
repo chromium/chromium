@@ -24,6 +24,8 @@ import org.robolectric.shadows.ShadowActivity;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
+import org.chromium.chrome.browser.feed.StreamKind;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -32,6 +34,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
  */
 @RunWith(LocalRobolectricTestRunner.class)
 public class FeedManagementMediatorTest {
+    private static final @StreamKind int TEST_STREAM_KIND = StreamKind.FOR_YOU;
     private Activity mActivity;
     private ShadowActivity mShadowActivity;
     private ModelList mModelList;
@@ -57,8 +60,8 @@ public class FeedManagementMediatorTest {
         MockitoAnnotations.initMocks(this);
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
 
-        mFeedManagementMediator = new FeedManagementMediator(
-                mActivity, mModelList, mFollowManagementLauncher, mAutoplayManagementLauncher);
+        mFeedManagementMediator = new FeedManagementMediator(mActivity, mModelList,
+                mFollowManagementLauncher, mAutoplayManagementLauncher, TEST_STREAM_KIND);
 
         verify(mFeedServiceBridgeJniMock).isAutoplayEnabled();
     }
@@ -72,6 +75,8 @@ public class FeedManagementMediatorTest {
         Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(
                 intent.getData(), Uri.parse("https://myactivity.google.com/myactivity?product=50"));
+        verify(mFeedServiceBridgeJniMock)
+                .reportOtherUserAction(TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
     }
 
     @Test
@@ -83,6 +88,9 @@ public class FeedManagementMediatorTest {
         Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/yourinterests?sh=n"));
+        verify(mFeedServiceBridgeJniMock)
+                .reportOtherUserAction(
+                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
     }
 
     @Test
@@ -94,6 +102,9 @@ public class FeedManagementMediatorTest {
         Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/hidden?sh=n"));
+        verify(mFeedServiceBridgeJniMock)
+                .reportOtherUserAction(
+                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
     }
 
     @Test
@@ -103,6 +114,9 @@ public class FeedManagementMediatorTest {
 
         // Assert
         verify(mFollowManagementLauncher).launchFollowManagement(mActivity);
+        verify(mFeedServiceBridgeJniMock)
+                .reportOtherUserAction(
+                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
     }
 
     @Test
@@ -112,5 +126,8 @@ public class FeedManagementMediatorTest {
 
         // Assert
         verify(mAutoplayManagementLauncher).launchAutoplayManagement(mActivity);
+        verify(mFeedServiceBridgeJniMock)
+                .reportOtherUserAction(
+                        TEST_STREAM_KIND, FeedUserActionType.OPENED_AUTOPLAY_SETTINGS);
     }
 }
