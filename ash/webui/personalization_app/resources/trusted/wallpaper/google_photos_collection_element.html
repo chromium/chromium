@@ -35,16 +35,16 @@
     width: 100%;
   }
 </style>
-<main id="main" aria-label$="[[i18n('googlePhotosLabel')]]" tabindex="-1">
+<main id="main" aria-label$="$i18n{googlePhotosLabel}" tabindex="-1">
   <template is="dom-if" if="[[isTabStripVisible_(albumId, albums_)]]">
     <div id="tabStrip">
       <cr-button id="photosTab" aria-pressed="[[isPhotosTabSelected_(tab_)]]"
         on-click="onTabSelected_">
-        <div class="text">[[i18n('googlePhotosPhotosTabLabel')]]</div>
+        <div class="text">$i18n{googlePhotosPhotosTabLabel}</div>
       </cr-button>
       <cr-button id="albumsTab" aria-pressed="[[isAlbumsTabSelected_(tab_)]]"
         on-click="onTabSelected_">
-        <div class="text">[[i18n('googlePhotosAlbumsTabLabel')]]</div>
+        <div class="text">$i18n{googlePhotosAlbumsTabLabel}</div>
       </cr-button>
     </div>
   </template>

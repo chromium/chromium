@@ -146,7 +146,7 @@
       <img src="[[getImageSrc_(image_)]]" aria-hidden="true">
     </div>
     <h2 id="textContainer" aria-live="polite" aria-label$="[[getAriaLabel_(image_)]]">
-      <span id="currentlySet" aria-hidden="true">[[i18n('currentlySet')]]</span>
+      <span id="currentlySet" aria-hidden="true">$i18n{currentlySet}</span>
       <span id="imageTitle" title$="[[imageTitle_]]" aria-hidden="true">
         [[imageTitle_]]
       </span>
@@ -162,32 +162,32 @@
           <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
               aria-pressed$="[[getFillAriaPressed_(image_)]]">
             <iron-icon icon="[[fillIcon_]]"></iron-icon>
-            <div class="text">[[i18n('fill')]]</div>
+            <div class="text">$i18n{fill}</div>
           </cr-button>
           <cr-button id="center" data-layout="CENTER"
               on-click="onClickLayoutIcon_"
               aria-pressed$="[[getCenterAriaPressed_(image_)]]">
             <iron-icon icon="[[centerIcon_]]"></iron-icon>
-            <div class="text">[[i18n('center')]]</div>
+            <div class="text">$i18n{center}</div>
           </cr-button>
         </div>
       </template>
       <template is="dom-if" if="[[showCollectionOptions_]]">
         <div id="collectionOptions">
           <cr-button id="dailyRefresh" data-collection-id$="[[collectionId]]"
-              aria-label$="[[i18n('ariaLabelChangeDaily')]]"
+              aria-label$="$i18n{ariaLabelChangeDaily}"
               data-daily-refresh-collection-id$="[[dailyRefreshCollectionId_]]"
               aria-pressed$="[[ariaPressed_]]"
               on-click="onClickDailyRefreshToggle_">
             <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
-            <div class="text">[[i18n('changeDaily')]]</div>
+            <div class="text">$i18n{changeDaily}</div>
           </cr-button>
           <cr-button id="refreshWallpaper"
-              aria-label$="[[i18n('ariaLabelRefresh')]]"
+              aria-label$="$i18n{ariaLabelRefresh}"
               on-click="onClickUpdateDailyRefreshWallpaper_"
               hidden$="[[!showRefreshButton_]]">
             <iron-icon icon="personalization:refresh"></iron-icon>
-            <div class="text">[[i18n('refresh')]]</div>
+            <div class="text">$i18n{refresh}</div>
           </cr-button>
         </div>
       </template>

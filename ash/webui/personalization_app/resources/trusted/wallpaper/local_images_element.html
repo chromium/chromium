@@ -9,7 +9,7 @@
     width: 100%;
   }
 </style>
-<main id="main" aria-label$="[[i18n('myImagesLabel')]]" tabindex="-1">
+<main id="main" aria-label$="$i18n{myImagesLabel}" tabindex="-1">
   <iron-list
       items="[[imagesToDisplay_]]" grid role="listbox"
       aria-setsize$="[[imagesToDisplay_.length]]">
@@ -21,7 +21,7 @@
               class="photo-inner-container placeholder"
               style$="[[getLoadingPlaceholderAnimationDelay_(index)]]"
               aria-posinset$="[[getAriaIndex_(index)]]"
-              aria-label$="[[i18n('ariaLabelLoading')]]"
+              aria-label$="$i18n{ariaLabelLoading}"
               aria-disabled="true">
           </div>
         </template>

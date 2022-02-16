@@ -2,7 +2,7 @@
 </style>
 <div id="weatherDiv">
   <h3 id="weatherTitle" aria-hidden="true">
-    [[i18n('ambientModeWeatherTitle')]]
+    $i18n{ambientModeWeatherTitle}
   </h3>
   <div class="weather-unit-list">
     <cr-radio-group
@@ -12,12 +12,12 @@
       <cr-radio-button
           name="[[temperatureUnit_.kFahrenheit]]"
           class="weather-unit-item"
-          label="[[i18n('ambientModeWeatherUnitFahrenheit')]]">
+          label="$i18n{ambientModeWeatherUnitFahrenheit}">
       </cr-radio-button>
       <cr-radio-button
           name="[[temperatureUnit_.kCelsius]]"
           class="weather-unit-item"
-          label="[[i18n('ambientModeWeatherUnitCelsius')]]">
+          label="$i18n{ambientModeWeatherUnitCelsius}">
       </cr-radio-button>
     </cr-radio-group>
   </div>
