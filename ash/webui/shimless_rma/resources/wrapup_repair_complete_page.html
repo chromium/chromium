@@ -3,22 +3,38 @@
     width: 700px;
   }
 
+  #buttonContainer {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    padding-inline-end: 24px;
+    width: 100%;
+  }
+
   .button-card {
     align-items: center;
-    border-radius: 4px;
+    border-radius: 8px;
     box-shadow: var(--cr-card-shadow);
-    height: 90px;
-    margin-bottom: 20px;
-    width: 350px;
+    height: 120px;
+    justify-content: start;
+    padding: 0;
+    width: 100%;
+  }
+
+  #diagnosticsButton {
+    margin-bottom: 16px;
+  }
+
+  #rmaLogButton {
+    margin-bottom: 16px;
   }
 
   :host([plugged-in_]) #batteryCutButton {
     opacity: 0.5;
   }
 
-  .button-text {
-    flex-basis: 250px;
-  }
 
   .button-label {
     color: var(--shimless-button-label-text-color);
@@ -35,23 +51,18 @@
     font-size: var(--shimless-instructions-font-size);
     font-weight: var(--shimless-regular-font-weight);
     line-height: var(--shimless-instructions-line-height);
+    padding-inline-end: 24px;
   }
 
   .button-icon {
-    flex-grow: 1;
-    height: 40px;
-    width: 40px;
+    height: 48px;
+    min-width: 48px;
+    padding-inline-end: 24px;
+    padding-inline-start: 24px;
   }
 
-  #diagnosticsIconDiv {
-    display: flex;
-    flex-grow: 1;
-    justify-content: center;
-  }
-
-  #diagnosticsIcon {
-    height: 40px;
-    width: 40px;
+  #batteryCutoffInfoIcon {
+    margin-inline-end: 8px;
   }
 
   .log {
@@ -75,61 +86,62 @@
     </cr-button>
   </div>
   <div slot="right-pane">
-    <cr-button id="diagnosticsButton" class="button-card"
-      on-click="onDiagnosticsButtonClick_" disabled="[[allButtonsDisabled]]">
-      <div id="diagnosticsIconDiv">
-        <img id="diagnosticsIcon" src="png/diagnostics_app_icon_192.png">
-      </div>
-      <div class="button-text">
-        <div class="button-label">
-          <span>[[i18n('repairCompletedDiagnosticsButtonText')]]</span>
-        </div>
-        <div class="button-description">
-          [[i18n('repairCompletedDiagnosticsDescriptionText')]]
-        </div>
-      </div>
-    </cr-button>
-    <cr-button id="rmaLogButton" class="button-card"
-      on-click="onRmaLogButtonClick_" disabled="[[allButtonsDisabled]]">
-      <iron-icon icon="shimless-icon:rma-log" class="button-icon"
-          hidden="[[!checked]]">
-      </iron-icon>
-      <div class="button-text">
-        <div class="button-label">
-          <span>[[i18n('repairCompletedLogsButtonText')]]</span>
-        </div>
-        <div class="button-description">
-          [[i18n('repairCompletedLogsDescriptionText')]]
-        </div>
-      </div>
-    </cr-button>
-    <div id="batteryCutoffTooltipWrapper">
-      <cr-button id="batteryCutButton" class="button-card"
-        on-click="onBatteryCutButtonClick_"
-        disabled$="[[disableBatteryCutButton_(pluggedIn_,
-            allButtonsDisabled)]]">
-        <iron-icon id="battery-cutoff-icon" icon="shimless-icon:battery-cutoff"
-            class="button-icon" hidden="[[!checked]]">
-        </iron-icon>
+    <div id="buttonContainer">
+      <cr-button id="diagnosticsButton" class="button-card"
+        on-click="onDiagnosticsButtonClick_" disabled="[[allButtonsDisabled]]">
+        <img id="diagnosticsIcon" class="button-icon" 
+            src="png/diagnostics_app_icon_192.png">
         <div class="button-text">
           <div class="button-label">
-            <span>[[i18n('repairCompletedShutoffButtonText')]]</span>
-            <iron-icon id="battery-cutoff-info-icon" hidden="[[!pluggedIn_]]"
-                icon="shimless-icon:info-grey">
-            </iron-icon>
+            <span>[[i18n('repairCompletedDiagnosticsButtonText')]]</span>
           </div>
           <div class="button-description">
-            [[i18n('repairCompletedShutoffDescriptionText')]]
-          </div>
-          <div class="button-description" hidden="[[!pluggedIn_]]">
-            [[i18n('repairCompletedShutoffInstructionsText')]]
+            [[i18n('repairCompletedDiagnosticsDescriptionText')]]
           </div>
         </div>
       </cr-button>
+      <cr-button id="rmaLogButton" class="button-card"
+          on-click="onRmaLogButtonClick_" disabled="[[allButtonsDisabled]]">
+        <iron-icon icon="shimless-icon:rma-log" class="button-icon"
+            hidden="[[!checked]]">
+        </iron-icon>
+        <div class="button-text">
+          <div class="button-label">
+            <span>[[i18n('repairCompletedLogsButtonText')]]</span>
+          </div>
+          <div class="button-description">
+            [[i18n('repairCompletedLogsDescriptionText')]]
+          </div>
+        </div>
+      </cr-button>
+      <div id="batteryCutoffTooltipWrapper">
+        <cr-button id="batteryCutButton" class="button-card"
+            on-click="onBatteryCutButtonClick_"
+            disabled$="[[disableBatteryCutButton_(pluggedIn_,
+            allButtonsDisabled)]]">
+          <iron-icon id="battery-cutoff-icon" icon="shimless-icon:battery-cutoff"
+              class="button-icon" hidden="[[!checked]]">
+          </iron-icon>
+          <div class="button-text">
+            <div class="button-label">
+              <iron-icon id="batteryCutoffInfoIcon" hidden="[[!pluggedIn_]]"
+                  icon="shimless-icon:info-grey">
+              </iron-icon>
+              <span>[[i18n('repairCompletedShutoffButtonText')]]</span>
+            </div>
+            <div class="button-description">
+              [[i18n('repairCompletedShutoffDescriptionText')]]
+            </div>
+            <div class="button-description" hidden="[[!pluggedIn_]]">
+              [[i18n('repairCompletedShutoffInstructionsText')]]
+            </div>
+          </div>
+        </cr-button>
+      </div>
+      <paper-tooltip for="batteryCutoffTooltipWrapper" hidden="[[!pluggedIn_]]">
+        [[i18n('batteryShutoffTooltipText')]]
+      </paper-tooltip>
     </div>
-    <paper-tooltip for="batteryCutoffTooltipWrapper" hidden="[[!pluggedIn_]]">
-      [[i18n('batteryShutoffTooltipText')]]
-    </paper-tooltip>
   </div>
 </base-page>
 
