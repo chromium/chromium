@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 #include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
 
+#include <string>
 #include <tuple>
+#include <vector>
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -27,6 +29,28 @@
 #include "url/gurl.h"
 
 namespace {
+
+const char kFakeGaiaId[] = "fake_gaia_id";
+const char kConsoleMessage[] = "setSyncEncryptionKeys:Done";
+
+// Executes JS to call chrome.setSyncEncryptionKeys().
+void ExecJsSetSyncEncryptionKeys(content::RenderFrameHost* render_frame_host,
+                                 const std::vector<uint8_t>& keys) {
+  // To simplify the test, it limits the size of `keys` to 1.
+  DCHECK_EQ(keys.size(), 1u);
+  const std::string set_encryption_keys_script = base::StringPrintf(
+      R"(
+      let buffer = new ArrayBuffer(1);
+      let view = new Uint8Array(buffer);
+      view[0] = %d;
+      chrome.setSyncEncryptionKeys(
+          () => {console.log('%s');},
+          "%s", [buffer], 0);
+    )",
+      keys[0], kConsoleMessage, kFakeGaiaId);
+
+  std::ignore = content::ExecJs(render_frame_host, set_encryption_keys_script);
+}
 
 std::vector<std::vector<uint8_t>> FetchTrustedVaultKeysForProfile(
     Profile* profile,
@@ -128,45 +152,57 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
       https_server()->GetURL("accounts.google.com", "/simple.html");
 
   int host_id = prerender_helper().AddPrerender(prerendering_url);
-  auto* prerendered_frame_host =
-      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  content::RenderFrameHostWrapper prerendered_frame_host(
+      prerender_helper().GetPrerenderedMainFrameHost(host_id));
+
   // EncryptionKeysApi is also created for prerendering since it's a main frame
   // as well.
-  EXPECT_TRUE(HasEncryptionKeysApi(prerendered_frame_host));
+  EXPECT_TRUE(HasEncryptionKeysApi(prerendered_frame_host.get()));
 
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
-  const char kSetEncryptionKeysScript[] =
-      "chrome.setSyncEncryptionKeys("
-      "() => {console.log('setSyncEncryptionKeys:Done');}, \"\","
-      "[new ArrayBuffer()], 0);";
+  {
+    content::WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsoleMessage);
 
-  content::WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetPattern("setSyncEncryptionKeys:Done");
-
-  // Calling setSyncEncryptionKeys() in the prerendered page triggers canceling
-  // the prerendering since it's a associated interface and the default
-  // policy is `MojoBinderAssociatedPolicy::kCancel`.
-  std::ignore =
-      content::ExecJs(prerendered_frame_host, kSetEncryptionKeysScript);
-  host_observer.WaitForDestroyed();
-  EXPECT_EQ(0u, console_observer.messages().size());
-  histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
-      4 /*PrerenderCancelledInterface::kSyncEncryptionKeysExtension*/, 1);
+    // Calling setSyncEncryptionKeys() in the prerendered page triggers
+    // canceling the prerendering since it's a associated interface and the
+    // default policy is `MojoBinderAssociatedPolicy::kCancel`.
+    const std::vector<uint8_t> kExpectedEncryptionKey = {7};
+    ExecJsSetSyncEncryptionKeys(prerendered_frame_host.get(),
+                                kExpectedEncryptionKey);
+    host_observer.WaitForDestroyed();
+    EXPECT_EQ(0u, console_observer.messages().size());
+    histogram_tester.ExpectUniqueSample(
+        "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
+        4 /*PrerenderCancelledInterface::kSyncEncryptionKeysExtension*/, 1);
+    EXPECT_TRUE(prerendered_frame_host.IsRenderFrameDeleted());
+  }
 
   prerender_helper().NavigatePrimaryPage(prerendering_url);
   // Ensure that loading `prerendering_url` is not activated from prerendering.
   EXPECT_FALSE(host_observer.was_activated());
+  auto* primary_main_frame = web_contents()->GetMainFrame();
   // Ensure that the main frame has EncryptionKeysApi.
-  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(HasEncryptionKeysApi(primary_main_frame));
 
-  // Calling setSyncEncryptionKeys() in the primary page works and it gets
-  // the callback by setSyncEncryptionKeys().
-  EXPECT_TRUE(content::ExecJs(web_contents()->GetMainFrame(),
-                              kSetEncryptionKeysScript));
-  console_observer.Wait();
-  EXPECT_EQ(1u, console_observer.messages().size());
+  {
+    content::WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsoleMessage);
+
+    // Calling setSyncEncryptionKeys() in the primary page works and it gets
+    // the callback by setSyncEncryptionKeys().
+    const std::vector<uint8_t> kExpectedEncryptionKey = {7};
+    ExecJsSetSyncEncryptionKeys(primary_main_frame, kExpectedEncryptionKey);
+    console_observer.Wait();
+    EXPECT_EQ(1u, console_observer.messages().size());
+
+    AccountInfo account;
+    account.gaia = kFakeGaiaId;
+    std::vector<std::vector<uint8_t>> actual_keys =
+        FetchTrustedVaultKeysForProfile(browser()->profile(), account);
+    EXPECT_THAT(actual_keys, testing::ElementsAre(kExpectedEncryptionKey));
+  }
 }
 
 // Tests that chrome.setSyncEncryptionKeys() works in a fenced frame.
@@ -186,26 +222,13 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   // frame as well.
   EXPECT_TRUE(HasEncryptionKeysApi(fenced_frame_host));
 
-  const char kFakeGaiaId[] = "fake_gaia_id";
-  const std::vector<uint8_t> kExpectedEncryptionKey = {7};
-  DCHECK_EQ(kExpectedEncryptionKey.size(), 1u);
-  const std::string set_encryption_keys_script = base::StringPrintf(
-      R"(
-      let buffer = new ArrayBuffer(1);
-      let view = new Uint8Array(buffer);
-      view[0] = %d;
-      chrome.setSyncEncryptionKeys(
-          () => {console.log('setSyncEncryptionKeys:Done');},
-          "%s", [buffer], 0);
-    )",
-      kExpectedEncryptionKey[0], kFakeGaiaId);
-
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern("setSyncEncryptionKeys:Done");
 
   // Calling setSyncEncryptionKeys() in the fenced frame works and it gets
   // the callback by setSyncEncryptionKeys().
-  EXPECT_TRUE(content::ExecJs(fenced_frame_host, set_encryption_keys_script));
+  const std::vector<uint8_t> kExpectedEncryptionKey = {7};
+  ExecJsSetSyncEncryptionKeys(fenced_frame_host, kExpectedEncryptionKey);
   console_observer.Wait();
   EXPECT_EQ(1u, console_observer.messages().size());
 
