@@ -268,5 +268,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.AVOID_UNNECESSARY_BEFORE_UNLOAD_CHECK,
                     "Avoids an unnecessary renderer ipc during navigation for before-unload "
                             + "handlers."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER,
+                    "Enables automatic insertion of XRequestedWith header "
+                            + "on all outgoing requests."),
     };
 }

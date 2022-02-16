@@ -13,6 +13,7 @@
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser_jni_headers/AwSettings_jni.h"
 #include "android_webview/common/aw_content_client.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
@@ -114,6 +115,25 @@ AwSettings* AwSettings::FromWebContents(content::WebContents* web_contents) {
 bool AwSettings::GetAllowSniffingFileUrls() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_AwSettings_getAllowSniffingFileUrls(env);
+}
+
+AwSettings::RequestedWithHeaderMode
+AwSettings::GetDefaultRequestedWithHeaderMode() {
+  if (base::FeatureList::IsEnabled(features::kWebViewXRequestedWithHeader)) {
+    int configuredValue = features::kWebViewXRequestedWithHeaderMode.Get();
+    switch (configuredValue) {
+      case AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW:
+        return AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW;
+      case AwSettings::RequestedWithHeaderMode::NO_HEADER:
+        return AwSettings::RequestedWithHeaderMode::NO_HEADER;
+      default:
+        // If the field trial config is broken for some reason, use the
+        // package name, since the feature is still enabled.
+        return AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
+    }
+  } else {
+    return AwSettings::RequestedWithHeaderMode::NO_HEADER;
+  }
 }
 
 AwRenderViewHostExt* AwSettings::GetAwRenderViewHostExt() {

@@ -35,8 +35,19 @@ class AwSettings : public content::WebContentsObserver {
     PREFER_MEDIA_QUERY_OVER_FORCE_DARK = 2,
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.settings
+  enum RequestedWithHeaderMode {
+    NO_HEADER = 0,
+    APP_PACKAGE_NAME = 1,
+    CONSTANT_WEBVIEW = 2,
+  };
+
   static AwSettings* FromWebContents(content::WebContents* web_contents);
   static bool GetAllowSniffingFileUrls();
+
+  // Static accessor to get the currently configured default value based
+  // on feature flags and trial config
+  static RequestedWithHeaderMode GetDefaultRequestedWithHeaderMode();
 
   AwSettings(JNIEnv* env, jobject obj, content::WebContents* web_contents);
   ~AwSettings() override;

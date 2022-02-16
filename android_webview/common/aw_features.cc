@@ -4,6 +4,7 @@
 
 #include "android_webview/common/aw_features.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace android_webview {
 namespace features {
@@ -104,6 +105,15 @@ const base::Feature kWebViewUseMetricsUploadService{
 // gamut activity.
 const base::Feature kWebViewWideColorGamutSupport{
     "WebViewWideColorGamutSupport", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Control the default behaviour for the XRequestedWith header
+const base::Feature kWebViewXRequestedWithHeader{
+    "WebViewXRequestedWithHeader", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Default value of the XRequestedWith header mode.
+// Must be value declared in in |AwSettings::RequestedWithHeaderMode|
+const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode{
+    &kWebViewXRequestedWithHeader, "WebViewXRequestedWithHeaderMode", 1};
 
 }  // namespace features
 }  // namespace android_webview

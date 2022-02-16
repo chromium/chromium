@@ -13,6 +13,7 @@
 #include "android_webview/browser/aw_contents_client_bridge.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
+#include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/network_service/aw_web_resource_intercept_response.h"
 #include "android_webview/browser/network_service/net_helpers.h"
 #include "android_webview/browser/renderer_host/auto_login_parser.h"
@@ -21,6 +22,7 @@
 #include "base/android/build_info.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/response_delegate_impl.h"
 #include "components/embedder_support/android/util/web_resource_response.h"
@@ -48,6 +50,7 @@ const char kResponseHeaderViaShouldInterceptRequestName[] = "Client-Via";
 const char kResponseHeaderViaShouldInterceptRequestValue[] =
     "shouldInterceptRequest";
 const char kAutoLoginHeaderName[] = "X-Auto-Login";
+const char kRequestedWithHeaderWebView[] = "WebView";
 
 // Handles intercepted, in-progress requests/responses, so that they can be
 // controlled and modified accordingly.
@@ -146,6 +149,8 @@ class InterceptedRequest : public network::mojom::URLLoader,
   // When true, the loader will not not proceed unless the
   // shouldInterceptRequest callback provided a non-null response.
   bool intercept_only_ = false;
+
+  AwSettings::RequestedWithHeaderMode requested_with_header_mode;
 
   absl::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options_;
 
@@ -264,6 +269,8 @@ InterceptedRequest::InterceptedRequest(
       request_id_(request_id),
       options_(options),
       intercept_only_(intercept_only),
+      requested_with_header_mode(
+          AwSettings::GetDefaultRequestedWithHeaderMode()),
       security_options_(security_options),
       request_(request),
       traffic_annotation_(traffic_annotation),
@@ -289,6 +296,10 @@ void InterceptedRequest::Restart() {
   if (ShouldBlockURL(request_.url, io_thread_client.get())) {
     SendErrorAndCompleteImmediately(net::ERR_ACCESS_DENIED);
     return;
+  }
+
+  if (io_thread_client) {
+    requested_with_header_mode = io_thread_client->GetRequestedWithHeaderMode();
   }
 
   request_.load_flags =
@@ -334,9 +345,25 @@ void InterceptedRequest::InterceptResponseReceived(
   // shouldInterceptRequest. It should also not trigger CORS prefetch if
   // OOR-CORS is enabled.
   std::string header = content::GetCorsExemptRequestedWithHeaderName();
+  // Only overwrite if the header hasn't already been set
   if (!request_.headers.HasHeader(header)) {
-    request_.cors_exempt_headers.SetHeader(
-        header, base::android::BuildInfo::GetInstance()->host_package_name());
+    switch (requested_with_header_mode) {
+      case AwSettings::RequestedWithHeaderMode::NO_HEADER:
+        break;  // Intentionally left empty
+      case AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME:
+        request_.cors_exempt_headers.SetHeader(
+            header,
+            base::android::BuildInfo::GetInstance()->host_package_name());
+        break;
+      case AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW:
+        request_.cors_exempt_headers.SetHeader(header,
+                                               kRequestedWithHeaderWebView);
+        break;
+      default:
+        NOTREACHED()
+            << "Invalid enum value for AwSettings:RequestedWithHeaderMode: "
+            << requested_with_header_mode;
+    }
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();

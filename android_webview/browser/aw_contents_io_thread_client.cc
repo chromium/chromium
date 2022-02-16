@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/network_service/aw_web_resource_intercept_response.h"
 #include "android_webview/browser/network_service/aw_web_resource_request.h"
 #include "android_webview/browser_jni_headers/AwContentsBackgroundThreadClient_jni.h"
@@ -480,6 +481,19 @@ bool AwContentsIoThreadClient::ShouldBlockNetworkLoads() const {
   JNIEnv* env = AttachCurrentThread();
   return Java_AwContentsIoThreadClient_shouldBlockNetworkLoads(env,
                                                                java_object_);
+}
+
+AwSettings::RequestedWithHeaderMode
+AwContentsIoThreadClient::GetRequestedWithHeaderMode() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (!java_object_)
+    return AwSettings::GetDefaultRequestedWithHeaderMode();
+
+  JNIEnv* env = AttachCurrentThread();
+
+  return static_cast<AwSettings::RequestedWithHeaderMode>(
+      Java_AwContentsIoThreadClient_getRequestedWithHeaderMode(env,
+                                                               java_object_));
 }
 
 }  // namespace android_webview

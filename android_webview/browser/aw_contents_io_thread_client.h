@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "android_webview/browser/aw_settings.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
@@ -133,6 +134,10 @@ class AwContentsIoThreadClient {
 
   // Retrieve the SafeBrowsingEnabled setting value of this AwContents.
   bool GetSafeBrowsingEnabled() const;
+
+  // Retrieve RequestedWithHeaderMode setting value of this AwContents.
+  // This method is called on the IO thread only.
+  AwSettings::RequestedWithHeaderMode GetRequestedWithHeaderMode() const;
 
  private:
   bool pending_association_;

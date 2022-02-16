@@ -92,6 +92,11 @@ public class AwServiceWorkerController {
         public boolean getSafeBrowsingEnabled() {
             return AwSafeBrowsingConfigHelper.getSafeBrowsingEnabledByManifest();
         }
+
+        @Override
+        public int getRequestedWithHeaderMode() {
+            return mServiceWorkerSettings.getRequestedWithHeaderMode();
+        }
     }
 
     private class ServiceWorkerBackgroundThreadClientImpl

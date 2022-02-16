@@ -21,6 +21,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
 import org.chromium.android_webview.settings.ForceDarkMode;
+import org.chromium.android_webview.settings.RequestedWithHeaderMode;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -78,6 +79,21 @@ public class AwSettings {
 
     @ForceDarkBehavior
     private int mForceDarkBehavior = ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
+
+    public static final int REQUESTED_WITH_NO_HEADER = RequestedWithHeaderMode.NO_HEADER;
+    public static final int REQUESTED_WITH_APP_PACKAGE_NAME =
+            RequestedWithHeaderMode.APP_PACKAGE_NAME;
+    public static final int REQUESTED_WITH_CONSTANT_WEBVIEW =
+            RequestedWithHeaderMode.CONSTANT_WEBVIEW;
+    public static final int REQUESTED_WITH_MODES_COUNT = 3;
+
+    @RequestedWithHeaderMode
+    private int mRequestedWithHeaderMode;
+
+    // Must match name of |kWebViewXRequestedWithHeaderMode| in
+    // android_webview/common/aw_features.cc
+    private static final String REQUESTED_WITH_HEADER_MODE_PARAM_NAME =
+            "WebViewXRequestedWithHeaderMode";
 
     private Context mContext;
 
@@ -297,8 +313,34 @@ public class AwSettings {
             mAllowFileUrlAccess =
                     ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
                     < Build.VERSION_CODES.R;
+
+            mRequestedWithHeaderMode = getDefaultXRequestedWithHeaderMode();
         }
         // Defer initializing the native side until a native WebContents instance is set.
+    }
+
+    /**
+     * Compute the default value to use for XRequestedWithHeaderMode.
+     *
+     * Implemented as package-local static to share with |AwServiceWorkerSettings.java|
+     * @return Default mode for XRequestedWith header.
+     */
+    @RequestedWithHeaderMode
+    static int getDefaultXRequestedWithHeaderMode() {
+        int defaultMode = REQUESTED_WITH_APP_PACKAGE_NAME;
+        if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER)) {
+            int headerMode = AwFeatureList.getFeatureParamValueAsInt(
+                    AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER,
+                    REQUESTED_WITH_HEADER_MODE_PARAM_NAME, defaultMode);
+            // Verify that the value is valid
+            if (headerMode >= 0 && headerMode < REQUESTED_WITH_MODES_COUNT) {
+                defaultMode = headerMode;
+            }
+        } else {
+            // If the feature is disabled, that's equivalent of setting the NO_HEADER behaviour
+            defaultMode = REQUESTED_WITH_NO_HEADER;
+        }
+        return defaultMode;
     }
 
     public int getUiModeNight() {
@@ -1228,6 +1270,20 @@ public class AwSettings {
     public int getLayoutAlgorithm() {
         synchronized (mAwSettingsLock) {
             return mLayoutAlgorithm;
+        }
+    }
+
+    public void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode) {
+        if (TRACE) Log.i(TAG, "setRequestedWithHeaderMode=" + mode);
+        synchronized (mAwSettingsLock) {
+            mRequestedWithHeaderMode = mode;
+        }
+    }
+
+    @RequestedWithHeaderMode
+    public int getRequestedWithHeaderMode() {
+        synchronized (mAwSettingsLock) {
+            return mRequestedWithHeaderMode;
         }
     }
 

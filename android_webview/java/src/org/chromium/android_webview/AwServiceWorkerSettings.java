@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.webkit.WebSettings;
 
+import org.chromium.android_webview.settings.RequestedWithHeaderMode;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -30,6 +31,9 @@ public class AwServiceWorkerSettings {
     private boolean mBlockNetworkLoads;  // Default depends on permission of the embedding APK
     private boolean mAcceptThirdPartyCookies;
 
+    @RequestedWithHeaderMode
+    private int mRequestedWithHeaderMode;
+
     // Lock to protect all settings.
     private final Object mAwServiceWorkerSettingsLock = new Object();
 
@@ -44,6 +48,7 @@ public class AwServiceWorkerSettings {
         synchronized (mAwServiceWorkerSettingsLock) {
             mHasInternetPermission = hasInternetPermission;
             mBlockNetworkLoads = !hasInternetPermission;
+            mRequestedWithHeaderMode = AwSettings.getDefaultXRequestedWithHeaderMode();
         }
     }
 
@@ -130,6 +135,26 @@ public class AwServiceWorkerSettings {
     public boolean getBlockNetworkLoads() {
         synchronized (mAwServiceWorkerSettingsLock) {
             return mBlockNetworkLoads;
+        }
+    }
+
+    /**
+     * See {@link androidx.webkit.ServiceWorkerWebSettingsCompat#setRequestedWithHeaderMode}
+     */
+    public void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode) {
+        if (TRACE) Log.i(TAG, "setRequestedWithHeaderMode=" + mode);
+        synchronized (mAwServiceWorkerSettingsLock) {
+            mRequestedWithHeaderMode = mode;
+        }
+    }
+
+    /**
+     * See {@link androidx.webkit.ServiceWorkerWebSettingsCompat#getRequestedWithHeaderMode}
+     */
+    @RequestedWithHeaderMode
+    public int getRequestedWithHeaderMode() {
+        synchronized (mAwServiceWorkerSettingsLock) {
+            return mRequestedWithHeaderMode;
         }
     }
 }

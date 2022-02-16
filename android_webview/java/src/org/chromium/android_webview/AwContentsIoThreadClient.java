@@ -35,4 +35,7 @@ public abstract class AwContentsIoThreadClient {
 
     @CalledByNative
     public abstract AwContentsBackgroundThreadClient getBackgroundThreadClient();
+
+    @CalledByNative
+    public abstract int getRequestedWithHeaderMode();
 }

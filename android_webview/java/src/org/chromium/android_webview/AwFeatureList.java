@@ -63,8 +63,35 @@ public final class AwFeatureList {
         return AwFeatureListJni.get().isEnabled(featureName);
     }
 
+    /**
+     * Returns the configured feature parameter value as an integer.
+     *
+     * If the feature is not enabled or the parameter does not exist, this method
+     * will return the |defaultValue|.
+     *
+     * Calling this method will mark the field trial as active. See details
+     * in base/metrics/field_trial_params.h
+     *
+     * Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in android_webview/browser/aw_feature_list.cc
+     *
+     * @param featureName The name of the feature to query.
+     * @param paramName The name of the feature parameter to query.
+     * @param defaultValue The default value to return if the feature or parameter is not found.
+     * @return The configured parameter value as an integer.
+     */
+    public static int getFeatureParamValueAsInt(
+            String featureName, String paramName, int defaultValue) {
+        assert featureName != null : "featureName should not be null";
+        assert paramName != null : "paramName should not be null";
+
+        return AwFeatureListJni.get().getFeatureParamValueAsInt(
+                featureName, paramName, defaultValue);
+    }
+
     @NativeMethods
     interface Natives {
         boolean isEnabled(String featureName);
+        int getFeatureParamValueAsInt(String featureName, String paramName, int defaultValue);
     }
 }
