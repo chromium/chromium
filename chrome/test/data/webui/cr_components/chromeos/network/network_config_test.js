@@ -152,6 +152,103 @@ suite('network-config', function() {
     });
   });
 
+  suite('L2TP/IPsec', function() {
+    setup(function() {
+      mojoApi_.resetForTest();
+      setNetworkType(chromeos.networkConfig.mojom.NetworkType.kVPN);
+    });
+
+    teardown(function() {
+      PolymerTest.clearBody();
+    });
+
+    test('No Certs', function() {
+      initNetworkConfig();
+      networkConfig.set('vpnType_', 'L2TP_IPsec_Cert');
+      return mojoApi_.whenCalled('getNetworkCertificates').then(() => {
+        return flushAsync().then(() => {
+          // Check that with no certificates, 'do-not-check' and 'no-certs' are
+          // selected.
+          assertEquals('do-not-check', networkConfig.selectedServerCaHash_);
+          assertEquals('no-certs', networkConfig.selectedUserCertHash_);
+        });
+      });
+    });
+
+    test('Certs', function() {
+      mojoApi_.setCertificatesForTest(
+          [{
+            hash: kCaHash,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: true
+          }],
+          [{
+            hash: kUserHash1,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: false
+          }]);
+      initNetworkConfig();
+      networkConfig.set('vpnType_', 'L2TP_IPsec_Cert');
+      return mojoApi_.whenCalled('getNetworkCertificates').then(() => {
+        return flushAsync().then(() => {
+          // The first Server CA and User certificate should be selected.
+          assertEquals(kCaHash, networkConfig.selectedServerCaHash_);
+          assertEquals(kUserHash1, networkConfig.selectedUserCertHash_);
+        });
+      });
+    });
+  });
+
+  suite('OpenVPN', function() {
+    setup(function() {
+      mojoApi_.resetForTest();
+      setNetworkType(chromeos.networkConfig.mojom.NetworkType.kVPN);
+    });
+
+    teardown(function() {
+      PolymerTest.clearBody();
+    });
+
+    test('No Certs', function() {
+      initNetworkConfig();
+      return mojoApi_.whenCalled('getNetworkCertificates').then(() => {
+        return flushAsync().then(() => {
+          // Check that with no certificates, 'do-not-check' and 'no-user-certs'
+          // are selected.
+          assertEquals('do-not-check', networkConfig.selectedServerCaHash_);
+          assertEquals('no-user-cert', networkConfig.selectedUserCertHash_);
+        });
+      });
+    });
+
+    test('Certs', function() {
+      mojoApi_.setCertificatesForTest(
+          [{
+            hash: kCaHash,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: true
+          }],
+          [{
+            hash: kUserHash1,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: false
+          }]);
+      initNetworkConfig();
+      return mojoApi_.whenCalled('getNetworkCertificates').then(() => {
+        return flushAsync().then(() => {
+          // The first Server CA should be selected.
+          assertEquals(kCaHash, networkConfig.selectedServerCaHash_);
+          // OpenVPN allows but does not require a user certificate.
+          assertEquals('no-user-cert', networkConfig.selectedUserCertHash_);
+        });
+      });
+    });
+  });
+
   suite('WireGuard', function() {
     setup(function() {
       mojoApi_.resetForTest();

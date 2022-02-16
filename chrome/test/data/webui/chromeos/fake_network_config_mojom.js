@@ -131,6 +131,9 @@
 
     this.vpnProviders_ = [];
 
+    this.serverCas_ = [];
+    this.userCerts_ = [];
+
     ['getNetworkState',
      'getNetworkStateList',
      'getDeviceStateList',
