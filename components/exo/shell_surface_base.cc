@@ -1394,7 +1394,8 @@ void ShellSurfaceBase::UpdateSurfaceBounds() {
   origin -= ToFlooredVector2d(ScaleVector2d(
       root_surface_origin().OffsetFromOrigin(), 1.f / GetScale()));
 
-  host_window()->SetBounds(gfx::Rect(origin, host_window()->bounds().size()));
+  if (host_window()->bounds().origin() != origin)
+    host_window()->SetBounds(gfx::Rect(origin, host_window()->bounds().size()));
 }
 
 void ShellSurfaceBase::UpdateShadow() {

@@ -331,9 +331,10 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   // applied.
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 
-  gfx::Rect bounds = root_surface_->surface_hierarchy_content_bounds();
-  host_window_->SetBounds(
-      gfx::Rect(host_window_->bounds().origin(), bounds.size()));
+  const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
+  if (bounds != host_window_->bounds())
+    host_window_->SetBounds({host_window_->bounds().origin(), bounds.size()});
+
   // TODO(yjliu): a) consolidate with ClientControlledShellSurface. b) use the
   // scale factor the buffer is created for to set the transform for
   // synchronization.
@@ -341,7 +342,8 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
     gfx::Transform tr;
     float scale = host_window_->layer()->device_scale_factor();
     tr.Scale(1.0f / scale, 1.0f / scale);
-    host_window_->SetTransform(tr);
+    if (host_window_->transform() != tr)
+      host_window_->SetTransform(tr);
   }
   const bool fills_bounds_opaquely =
       gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
@@ -349,8 +351,11 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   host_window_->SetTransparent(!fills_bounds_opaquely);
 
   root_surface_origin_ = gfx::Point() - bounds.OffsetFromOrigin();
-  root_surface_->window()->SetBounds(gfx::Rect(
-      root_surface_origin_, root_surface_->window()->bounds().size()));
+  const gfx::Rect& window_bounds = root_surface_->window()->bounds();
+  if (root_surface_origin_ != window_bounds.origin()) {
+    gfx::Rect updated_bounds(root_surface_origin_, window_bounds.size());
+    root_surface_->window()->SetBounds(updated_bounds);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

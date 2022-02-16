@@ -642,12 +642,16 @@ class TestEventHandler : public ui::EventHandler {
   ~TestEventHandler() override = default;
 
   // ui::EventHandler:
-  void OnMouseEvent(ui::MouseEvent* event) override { received_event_ = true; }
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    mouse_events_.push_back(*event);
+  }
 
-  bool received_event() const { return received_event_; }
+  const std::vector<ui::MouseEvent>& mouse_events() const {
+    return mouse_events_;
+  }
 
  private:
-  bool received_event_ = false;
+  std::vector<ui::MouseEvent> mouse_events_;
 };
 
 }  // namespace
@@ -656,9 +660,9 @@ TEST_F(ClientControlledShellSurfaceTest, NoSynthesizedEventOnFrameChange) {
   UpdateDisplay("800x600");
 
   gfx::Size buffer_size(256, 256);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<Buffer> buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  std::unique_ptr<Surface> surface = std::make_unique<Surface>();
 
   gfx::Rect fullscreen_bounds(0, 0, 800, 600);
 
@@ -684,8 +688,52 @@ TEST_F(ClientControlledShellSurfaceTest, NoSynthesizedEventOnFrameChange) {
   shell_surface->SetGeometry(cropped_fullscreen_bounds);
   surface->Commit();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(handler.received_event());
+  EXPECT_TRUE(handler.mouse_events().empty());
   env->RemovePreTargetHandler(&handler);
+}
+
+// Shell surfaces should not emit extra events on commit even if using pixel
+// coordinates and a cursor is hovering over the window.
+// https://crbug.com/1296315.
+TEST_F(ClientControlledShellSurfaceTest,
+       NoSynthesizedEventsForPixelCoordinates) {
+  TestEventHandler event_handler;
+
+  gfx::Size buffer_size(400, 400);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto surface = std::make_unique<Surface>();
+  surface->Attach(buffer.get());
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+  // Pixel coordinates add a transform to the underlying layer.
+  shell_surface->set_client_submits_surfaces_in_pixel_coordinates(true);
+
+  display::Display primary_display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  gfx::Rect initial_bounds(150, 10, 200, 200);
+  shell_surface->SetBounds(primary_display.id(), initial_bounds);
+
+  // Tested condition only happens when cursor is over the window.
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+  generator.MoveMouseTo(200, 110);
+
+  shell_surface->host_window()->AddPreTargetHandler(&event_handler);
+  shell_surface->Activate();
+  // Commit an arbitrary number of frames. We expect that this will not generate
+  // synthetic events.
+  for (int i = 0; i < 5; i++) {
+    surface->Commit();
+    task_environment()->RunUntilIdle();
+  }
+
+  // There should be 2 events.  One for mouse enter and the other for move.
+  const auto& events = event_handler.mouse_events();
+  ASSERT_EQ(events.size(), 2UL);
+  EXPECT_EQ(events[0].type(), ui::ET_MOUSE_ENTERED);
+  EXPECT_EQ(events[1].type(), ui::ET_MOUSE_MOVED);
+
+  shell_surface->host_window()->RemovePreTargetHandler(&event_handler);
 }
 
 TEST_F(ClientControlledShellSurfaceTest, CompositorLockInRotation) {
