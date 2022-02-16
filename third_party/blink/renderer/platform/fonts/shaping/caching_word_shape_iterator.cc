@@ -16,8 +16,7 @@ CachingWordShapeIterator::ShapeWordWithoutSpacing(const TextRun& word_run,
   if (cache_entry && *cache_entry)
     return *cache_entry;
 
-  const String word_text = word_run.NormalizedUTF16();
-  HarfBuzzShaper shaper(word_text);
+  HarfBuzzShaper shaper(word_run.NormalizedUTF16());
   scoped_refptr<const ShapeResult> shape_result =
       shaper.Shape(font, word_run.Direction());
   if (!shape_result)

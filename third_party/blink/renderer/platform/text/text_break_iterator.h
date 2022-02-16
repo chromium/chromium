@@ -138,7 +138,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   LazyLineBreakIterator(String string,
                         const AtomicString& locale = AtomicString(),
                         LineBreakType break_type = LineBreakType::kNormal)
-      : string_(string),
+      : string_(std::move(string)),
         locale_(locale),
         iterator_(nullptr),
         break_type_(break_type) {

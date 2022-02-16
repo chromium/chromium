@@ -725,7 +725,7 @@ bool NGLineBreaker::CanBreakAfterAtomicInline(const NGInlineItem& item) const {
   }
 
   DCHECK_EQ(Text(), break_iterator_.GetString());
-  LazyLineBreakIterator break_iterator(text_content.ToString(),
+  LazyLineBreakIterator break_iterator(text_content.ReleaseString(),
                                        break_iterator_.Locale(),
                                        break_iterator_.BreakType());
   break_iterator.SetBreakSpace(break_iterator_.BreakSpace());
@@ -782,7 +782,7 @@ bool NGLineBreaker::CanBreakAfter(const NGInlineItem& item) const {
   text_content.Append(text_combine->GetTextContent());
 
   DCHECK_EQ(Text(), break_iterator_.GetString());
-  LazyLineBreakIterator break_iterator(text_content.ToString(),
+  LazyLineBreakIterator break_iterator(text_content.ReleaseString(),
                                        break_iterator_.Locale(),
                                        break_iterator_.BreakType());
   break_iterator.SetBreakSpace(break_iterator_.BreakSpace());

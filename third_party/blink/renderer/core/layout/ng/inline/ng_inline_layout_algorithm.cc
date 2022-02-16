@@ -927,7 +927,8 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
     line_text_builder.Append(last_item_result.hyphen_string);
 
   // Compute the spacing to justify.
-  String line_text = line_text_builder.ToString();
+  // Releasing string, StringBuilder reset.
+  String line_text = line_text_builder.ReleaseString();
   DCHECK_GT(line_text.length(), 0u);
 
   ShapeResultSpacing<String> spacing(line_text, Node().IsSvgText());
