@@ -366,4 +366,19 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMove) {
   CheckProfileDirFinalState();
 }
 
+TEST_F(MoveMigratorMigrateTest, MigrateOutOfDisk) {
+  // Emulate the situation of out-of-disk.
+  browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting
+      scoped_extra_bytes(100);
+
+  migrator_->Migrate();
+  run_loop_->Run();
+
+  EXPECT_EQ(data_wipe_result_,
+            BrowserDataMigratorImpl::DataWipeResult::kFailed);
+  EXPECT_EQ(data_migration_result_.kind,
+            BrowserDataMigrator::ResultKind::kFailed);
+  EXPECT_EQ(100u, data_migration_result_.required_size);
+}
+
 }  // namespace ash

@@ -198,7 +198,8 @@ void MoveMigrator::OnPreMigrationCleanUp(
                << " bytes from " << original_profile_dir_.value();
     std::move(finished_callback_)
         .Run({BrowserDataMigratorImpl::DataWipeResult::kFailed,
-              {BrowserDataMigratorImpl::ResultKind::kFailed}});
+              {BrowserDataMigratorImpl::ResultKind::kFailed,
+               result.extra_bytes_required_to_be_freed}});
     return;
   }
 

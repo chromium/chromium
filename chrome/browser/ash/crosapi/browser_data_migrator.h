@@ -174,6 +174,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateCancelled);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
                            MigrateOutOfDiskForCopy);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
+                           MigrateOutOfDiskForMove);
 
   // Sets the value of `kMigrationStep` in Local State.
   static void SetMigrationStep(PrefService* local_state, MigrationStep step);

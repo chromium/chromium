@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
@@ -168,6 +169,39 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
 }
 
 TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDiskForCopy) {
+  // Emulate the situation of out-of-disk.
+  browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting
+      scoped_extra_bytes(100);
+
+  base::test::TaskEnvironment task_environment;
+  const std::string user_id_hash = "abcd";
+  BrowserDataMigratorImpl::SetMigrationStep(
+      &pref_service_, BrowserDataMigratorImpl::MigrationStep::kRestartCalled);
+  // Set migration attempt count to 1.
+  BrowserDataMigratorImpl::UpdateMigrationAttemptCountForUser(&pref_service_,
+                                                              user_id_hash);
+
+  base::RunLoop run_loop;
+  std::unique_ptr<BrowserDataMigratorImpl> migrator =
+      std::make_unique<BrowserDataMigratorImpl>(
+          from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
+  absl::optional<BrowserDataMigrator::Result> result;
+  migrator->Migrate(base::BindLambdaForTesting(
+      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
+        run_loop.Quit();
+        out_result = result;
+      }));
+  run_loop.Run();
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(BrowserDataMigrator::ResultKind::kFailed, result->kind);
+  // |required_size| should carry the data.
+  EXPECT_EQ(100u, result->required_size);
+}
+
+TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDiskForMove) {
+  base::test::ScopedFeatureList feature_list(kLacrosMoveProfileMigration);
+
   // Emulate the situation of out-of-disk.
   browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting
       scoped_extra_bytes(100);
