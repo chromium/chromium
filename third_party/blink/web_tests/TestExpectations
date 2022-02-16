@@ -5854,8 +5854,6 @@ crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-content-bo
 crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box.html [ Failure ]
 
 # Sheriff 2020-06-17
-crbug.com/1095969 [ Mac ] fast/canvas/OffscreenCanvas-MessageChannel-transfer.html [ Failure Pass ]
-crbug.com/1095969 [ Linux ] fast/canvas/OffscreenCanvas-MessageChannel-transfer.html [ Failure Pass ]
 crbug.com/1092975 http/tests/inspector-protocol/target/target-expose-devtools-protocol.js [ Failure Pass ]
 
 crbug.com/1096493 external/wpt/webaudio/the-audio-api/the-audiocontext-interface/processing-after-resume.https.html [ Failure ]
