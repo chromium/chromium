@@ -171,6 +171,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/dbus/power",
     "//chromeos/services/bluetooth_config/public/cpp",
+    "//chromeos/services/bluetooth_config/public/cpp:unit_tests",
     "//components/session_manager/core",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",
