@@ -59,13 +59,6 @@ const char kPlayStorePackage[] = "com.android.vending";
 
 constexpr bool kAddAppsToQuickLaunchBarByDefault = false;
 
-std::string ExtractQueryValueForName(const GURL& url, const std::string& name) {
-  for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-    if (it.GetKey() == name)
-      return std::string(it.GetValue());
-  }
-  return std::string();
-}
 #else
 constexpr bool kAddAppsToQuickLaunchBarByDefault = true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -672,13 +665,12 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
         continue;
       }
 
-      std::string id_from_app_url =
-          ExtractQueryValueForName(application.url, "id");
-
       if (id.empty()) {
-        if (id_from_app_url.empty())
+        // Fallback to ID in the URL.
+        if (!net::GetValueForKeyInQuery(application.url, "id", &id) ||
+            id.empty()) {
           continue;
-        id = id_from_app_url;
+        }
       }
 
       auto* arc_service_manager = arc::ArcServiceManager::Get();
@@ -687,11 +679,12 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
             arc_service_manager->arc_bridge_service()->app(), IsInstallable);
         if (instance) {
           // Attach the referrer value.
-          std::string referrer =
-              ExtractQueryValueForName(application.url, "referrer");
-          if (!referrer.empty())
+          std::string referrer;
+          if (net::GetValueForKeyInQuery(application.url, "referrer",
+                                         &referrer) &&
+              !referrer.empty()) {
             referrer = "&referrer=" + referrer;
-
+          }
           std::string intent = kPlayIntentPrefix + id + referrer;
           instance->IsInstallable(
               id,
