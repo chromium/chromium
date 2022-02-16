@@ -12,12 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "remoting/host/host_event_logger.h"
 #include "remoting/host/host_status_observer.h"
-
-namespace IPC {
-class Sender;
-}  // namespace IPC
 
 namespace remoting {
 
@@ -25,29 +22,28 @@ class HostStatusMonitor;
 
 class IpcHostEventLogger : public HostEventLogger, public HostStatusObserver {
  public:
-  // Initializes the logger. |daemon_channel| must outlive this object.
   IpcHostEventLogger(scoped_refptr<HostStatusMonitor> monitor,
-                     IPC::Sender* daemon_channel);
+                     mojo::AssociatedRemote<mojom::HostStatusObserver> remote);
 
   IpcHostEventLogger(const IpcHostEventLogger&) = delete;
   IpcHostEventLogger& operator=(const IpcHostEventLogger&) = delete;
 
   ~IpcHostEventLogger() override;
 
-  // HostStatusObserver interface.
-  void OnAccessDenied(const std::string& jid) override;
-  void OnClientAuthenticated(const std::string& jid) override;
-  void OnClientConnected(const std::string& jid) override;
-  void OnClientDisconnected(const std::string& jid) override;
-  void OnClientRouteChange(const std::string& jid,
+  // HostStatusObserver overrides.
+  void OnClientAccessDenied(const std::string& signaling_id) override;
+  void OnClientAuthenticated(const std::string& signaling_id) override;
+  void OnClientConnected(const std::string& signaling_id) override;
+  void OnClientDisconnected(const std::string& signaling_id) override;
+  void OnClientRouteChange(const std::string& signaling_id,
                            const std::string& channel_name,
                            const protocol::TransportRoute& route) override;
-  void OnStart(const std::string& xmpp_login) override;
-  void OnShutdown() override;
+  void OnHostStarted(const std::string& user_email) override;
+  void OnHostShutdown() override;
 
  private:
   // Used to report host status events to the daemon.
-  raw_ptr<IPC::Sender> daemon_channel_;
+  mojo::AssociatedRemote<mojom::HostStatusObserver> host_status_observer_;
 
   scoped_refptr<HostStatusMonitor> monitor_;
 

@@ -16,13 +16,13 @@
 #include "base/process/process.h"
 #include "base/time/time.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/config_watcher.h"
 #include "remoting/host/host_status_monitor.h"
+#include "remoting/host/host_status_observer.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
-
-struct SerializedTransportRoute;
 
 namespace base {
 class Location;
@@ -39,7 +39,8 @@ class ScreenResolution;
 // process running at lower privileges and maintains the list of desktop
 // sessions.
 class DaemonProcess : public ConfigWatcher::Delegate,
-                      public WorkerProcessIpcDelegate {
+                      public WorkerProcessIpcDelegate,
+                      public HostStatusObserver {
  public:
   typedef std::list<DesktopSession*> DesktopSessionList;
 
@@ -111,17 +112,16 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // less or equal to the highest ID we have seen so far.
   bool WasTerminalIdAllocated(int terminal_id);
 
-  // Handlers for the host status notifications received from the network
-  // process.
-  void OnAccessDenied(const std::string& jid);
-  void OnClientAuthenticated(const std::string& jid);
-  void OnClientConnected(const std::string& jid);
-  void OnClientDisconnected(const std::string& jid);
-  void OnClientRouteChange(const std::string& jid,
+  // HostStatusObserver overrides.
+  void OnClientAccessDenied(const std::string& signaling_id) override;
+  void OnClientAuthenticated(const std::string& signaling_id) override;
+  void OnClientConnected(const std::string& signaling_id) override;
+  void OnClientDisconnected(const std::string& signaling_id) override;
+  void OnClientRouteChange(const std::string& signaling_id,
                            const std::string& channel_name,
-                           const SerializedTransportRoute& route);
-  void OnHostStarted(const std::string& xmpp_login);
-  void OnHostShutdown();
+                           const protocol::TransportRoute& route) override;
+  void OnHostStarted(const std::string& owner_email) override;
+  void OnHostShutdown() override;
 
   // Creates a platform-specific desktop session and assigns a unique ID to it.
   // An implementation should validate |params| as they are received via IPC.
@@ -189,6 +189,9 @@ class DaemonProcess : public ConfigWatcher::Delegate,
 
   // Writes host status updates to the system event log.
   std::unique_ptr<HostEventLogger> host_event_logger_;
+
+  mojo::AssociatedReceiver<mojom::HostStatusObserver> host_status_observer_{
+      this};
 
   scoped_refptr<HostStatusMonitor> status_monitor_;
 };

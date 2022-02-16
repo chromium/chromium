@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/base/host_exit_codes.h"
@@ -92,20 +93,6 @@ bool DaemonProcess::OnMessageReceived(const IPC::Message& message) {
                         CloseDesktopSession)
     IPC_MESSAGE_HANDLER(ChromotingNetworkDaemonMsg_SetScreenResolution,
                         SetScreenResolution)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkDaemonMsg_AccessDenied,
-                        OnAccessDenied)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkDaemonMsg_ClientAuthenticated,
-                        OnClientAuthenticated)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkDaemonMsg_ClientConnected,
-                        OnClientConnected)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkDaemonMsg_ClientDisconnected,
-                        OnClientDisconnected)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkDaemonMsg_ClientRouteChange,
-                        OnClientRouteChange)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkDaemonMsg_HostStarted,
-                        OnHostStarted)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkDaemonMsg_HostShutdown,
-                        OnHostShutdown)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -125,15 +112,32 @@ void DaemonProcess::OnPermanentError(int exit_code) {
   Stop();
 }
 
-void DaemonProcess::OnWorkerProcessStopped() {}
+void DaemonProcess::OnWorkerProcessStopped() {
+  host_status_observer_.reset();
+}
 
 void DaemonProcess::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
-  // TODO(b/178114059): Implement this after migrating IPC macros to Mojo.
-  LOG(ERROR) << "Received unexpected associated interface request: "
-             << interface_name;
-  CrashNetworkProcess(FROM_HERE);
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+  if (interface_name == mojom::HostStatusObserver::Name_) {
+    if (host_status_observer_.is_bound()) {
+      LOG(ERROR) << "Receiver already bound for associated interface: "
+                 << mojom::HostStatusObserver::Name_;
+      CrashNetworkProcess(FROM_HERE);
+    }
+
+    mojo::PendingAssociatedReceiver<mojom::HostStatusObserver> pending_receiver(
+        std::move(handle));
+    host_status_observer_.Bind(std::move(pending_receiver));
+    // Set a disconnect handler in case the network process crashes or restarts
+    // itself (this can occur when new enterprise policies are applied).
+    host_status_observer_.reset_on_disconnect();
+  } else {
+    LOG(ERROR) << "Received unexpected associated interface request: "
+               << interface_name;
+    CrashNetworkProcess(FROM_HERE);
+  }
 }
 
 void DaemonProcess::CloseDesktopSession(int terminal_id) {
@@ -283,66 +287,55 @@ bool DaemonProcess::WasTerminalIdAllocated(int terminal_id) {
   return terminal_id < next_terminal_id_;
 }
 
-void DaemonProcess::OnAccessDenied(const std::string& jid) {
+void DaemonProcess::OnClientAccessDenied(const std::string& signaling_id) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   for (auto& observer : status_monitor_->observers())
-    observer.OnAccessDenied(jid);
+    observer.OnClientAccessDenied(signaling_id);
 }
 
-void DaemonProcess::OnClientAuthenticated(const std::string& jid) {
+void DaemonProcess::OnClientAuthenticated(const std::string& signaling_id) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   for (auto& observer : status_monitor_->observers())
-    observer.OnClientAuthenticated(jid);
+    observer.OnClientAuthenticated(signaling_id);
 }
 
-void DaemonProcess::OnClientConnected(const std::string& jid) {
+void DaemonProcess::OnClientConnected(const std::string& signaling_id) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   for (auto& observer : status_monitor_->observers())
-    observer.OnClientConnected(jid);
+    observer.OnClientConnected(signaling_id);
 }
 
-void DaemonProcess::OnClientDisconnected(const std::string& jid) {
+void DaemonProcess::OnClientDisconnected(const std::string& signaling_id) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   for (auto& observer : status_monitor_->observers())
-    observer.OnClientDisconnected(jid);
+    observer.OnClientDisconnected(signaling_id);
 }
 
-void DaemonProcess::OnClientRouteChange(const std::string& jid,
+void DaemonProcess::OnClientRouteChange(const std::string& signaling_id,
                                         const std::string& channel_name,
-                                        const SerializedTransportRoute& route) {
+                                        const protocol::TransportRoute& route) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  protocol::TransportRoute parsed_route;
-  parsed_route.type = route.type;
-
-  net::IPAddress remote_ip(route.remote_ip.data(), route.remote_ip.size());
-  CHECK(remote_ip.empty() || remote_ip.IsValid());
-  parsed_route.remote_address = net::IPEndPoint(remote_ip, route.remote_port);
-
-  net::IPAddress local_ip(route.local_ip.data(), route.local_ip.size());
-  CHECK(local_ip.empty() || local_ip.IsValid());
-  parsed_route.local_address = net::IPEndPoint(local_ip, route.local_port);
-
   for (auto& observer : status_monitor_->observers())
-    observer.OnClientRouteChange(jid, channel_name, parsed_route);
+    observer.OnClientRouteChange(signaling_id, channel_name, route);
 }
 
-void DaemonProcess::OnHostStarted(const std::string& xmpp_login) {
+void DaemonProcess::OnHostStarted(const std::string& owner_email) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   for (auto& observer : status_monitor_->observers())
-    observer.OnStart(xmpp_login);
+    observer.OnHostStarted(owner_email);
 }
 
 void DaemonProcess::OnHostShutdown() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   for (auto& observer : status_monitor_->observers())
-    observer.OnShutdown();
+    observer.OnHostShutdown();
 }
 
 void DaemonProcess::DeleteAllDesktopSessions() {

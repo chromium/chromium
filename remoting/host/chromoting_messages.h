@@ -13,14 +13,11 @@
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_start.h"
 #include "ipc/ipc_platform_file.h"
-#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/chromoting_param_traits.h"
-#include "remoting/proto/action.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/file_transfer_helpers.h"
-#include "remoting/protocol/transport.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -62,42 +59,6 @@ IPC_MESSAGE_CONTROL(ChromotingNetworkHostMsg_DisconnectTerminal,
 IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_SetScreenResolution,
                     int /* terminal_id */,
                     remoting::ScreenResolution /* resolution */)
-
-// Serialized remoting::protocol::TransportRoute structure.
-IPC_STRUCT_BEGIN(SerializedTransportRoute)
-  IPC_STRUCT_MEMBER(remoting::protocol::TransportRoute::RouteType, type)
-  IPC_STRUCT_MEMBER(std::vector<uint8_t>, remote_ip)
-  IPC_STRUCT_MEMBER(uint16_t, remote_port)
-  IPC_STRUCT_MEMBER(std::vector<uint8_t>, local_ip)
-  IPC_STRUCT_MEMBER(uint16_t, local_port)
-IPC_STRUCT_END()
-
-IPC_ENUM_TRAITS_MAX_VALUE(remoting::protocol::TransportRoute::RouteType,
-                          remoting::protocol::TransportRoute::ROUTE_TYPE_MAX)
-
-// Hosts status notifications (see HostStatusObserver interface) sent by
-// IpcHostEventLogger.
-IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_AccessDenied,
-                    std::string /* jid */)
-
-IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_ClientAuthenticated,
-                    std::string /* jid */)
-
-IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_ClientConnected,
-                    std::string /* jid */)
-
-IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_ClientDisconnected,
-                    std::string /* jid */)
-
-IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_ClientRouteChange,
-                    std::string /* jid */,
-                    std::string /* channel_name */,
-                    SerializedTransportRoute /* route */)
-
-IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_HostStarted,
-                    std::string /* xmpp_login */)
-
-IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_HostShutdown)
 
 //-----------------------------------------------------------------------------
 // Chromoting messages sent from the desktop to the network process.

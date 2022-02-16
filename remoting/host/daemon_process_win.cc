@@ -218,6 +218,8 @@ void DaemonProcessWin::OnWorkerProcessStopped() {
   // re-launched.
   remoting_host_control_.reset();
   desktop_session_connection_events_.reset();
+
+  DaemonProcess::OnWorkerProcessStopped();
 }
 
 bool DaemonProcessWin::OnDesktopSessionAgentAttached(

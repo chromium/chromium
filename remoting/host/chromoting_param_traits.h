@@ -7,12 +7,8 @@
 
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_param_traits.h"
-#include "net/base/ip_address.h"
-#include "net/base/ip_endpoint.h"
 #include "remoting/base/result.h"
-#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
-#include "remoting/proto/action.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/file_transfer.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"

@@ -287,13 +287,13 @@ void It2MeHost::ConnectOnNetworkThread(
   return;
 }
 
-void It2MeHost::OnAccessDenied(const std::string& jid) {
+void It2MeHost::OnClientAccessDenied(const std::string& signaling_id) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
 
   ++failed_login_attempts_;
   if (failed_login_attempts_ == kMaxLoginAttempts) {
     DisconnectOnNetworkThread();
-  } else if (connecting_jid_ == NormalizeSignalingId(jid)) {
+  } else if (connecting_jid_ == NormalizeSignalingId(signaling_id)) {
     DCHECK_EQ(state_, It2MeHostState::kConnecting);
     connecting_jid_.clear();
     confirmation_dialog_proxy_.reset();
@@ -301,7 +301,7 @@ void It2MeHost::OnAccessDenied(const std::string& jid) {
   }
 }
 
-void It2MeHost::OnClientConnected(const std::string& jid) {
+void It2MeHost::OnClientConnected(const std::string& signaling_id) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
 
   // ChromotingHost doesn't allow concurrent connections and the host is
@@ -309,9 +309,11 @@ void It2MeHost::OnClientConnected(const std::string& jid) {
   CHECK_NE(state_, It2MeHostState::kConnected);
 
   std::string client_username;
-  if (!SplitSignalingIdResource(jid, &client_username, /*resource=*/nullptr)) {
-    LOG(WARNING) << "Incorrectly formatted JID received: " << jid;
-    client_username = jid;
+  if (!SplitSignalingIdResource(signaling_id, &client_username,
+                                /*resource=*/nullptr)) {
+    LOG(WARNING) << "Incorrectly formatted signaling ID received: "
+                 << signaling_id;
+    client_username = signaling_id;
   }
 
   HOST_LOG << "Client " << client_username << " connected.";
@@ -324,7 +326,7 @@ void It2MeHost::OnClientConnected(const std::string& jid) {
   SetState(It2MeHostState::kConnected, ErrorCode::OK);
 }
 
-void It2MeHost::OnClientDisconnected(const std::string& jid) {
+void It2MeHost::OnClientDisconnected(const std::string& signaling_id) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
 
   DisconnectOnNetworkThread();

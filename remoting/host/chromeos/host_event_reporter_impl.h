@@ -41,15 +41,15 @@ class HostEventReporterImpl : public HostEventReporter,
 
   // HostStatusObserver implementation.  These methods will be called from the
   // network thread.
-  void OnAccessDenied(const std::string& jid) override;
-  void OnClientAuthenticated(const std::string& jid) override;
-  void OnClientConnected(const std::string& jid) override;
-  void OnClientDisconnected(const std::string& jid) override;
-  void OnClientRouteChange(const std::string& jid,
+  void OnClientAccessDenied(const std::string& signaling_id) override;
+  void OnClientAuthenticated(const std::string& signaling_id) override;
+  void OnClientConnected(const std::string& signaling_id) override;
+  void OnClientDisconnected(const std::string& signaling_id) override;
+  void OnClientRouteChange(const std::string& signaling_id,
                            const std::string& channel_name,
                            const protocol::TransportRoute& route) override;
-  void OnStart(const std::string& host_owner_email) override;
-  void OnShutdown() override;
+  void OnHostStarted(const std::string& owner_email) override;
+  void OnHostShutdown() override;
 
  private:
   void ReportEvent(::ash::reporting::CRDRecord record);

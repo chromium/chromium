@@ -29,25 +29,23 @@ HostEventReporterImpl::~HostEventReporterImpl() {
   monitor_->RemoveStatusObserver(this);
 }
 
-void HostEventReporterImpl::OnAccessDenied(const std::string& jid) {
-  // Do nothing.
+void HostEventReporterImpl::OnClientAccessDenied(
+    const std::string& signaling_id) {}
+
+void HostEventReporterImpl::OnClientAuthenticated(
+    const std::string& signaling_id) {}
+
+void HostEventReporterImpl::OnClientConnected(const std::string& signaling_id) {
 }
 
-void HostEventReporterImpl::OnClientAuthenticated(const std::string& jid) {
-  // Do nothing.
-}
-
-void HostEventReporterImpl::OnClientConnected(const std::string& jid) {
-  // Do nothing.
-}
-
-void HostEventReporterImpl::OnClientDisconnected(const std::string& jid) {
+void HostEventReporterImpl::OnClientDisconnected(
+    const std::string& signaling_id) {
   ::ash::reporting::CRDRecord record;
   ::ash::reporting::CRDClientDisconnected* const state =
       record.mutable_disconnected();
   state->set_host_ip(host_ip_);
   state->set_client_ip(client_ip_);
-  state->set_session_id(jid);
+  state->set_session_id(signaling_id);
   ReportEvent(std::move(record));
   host_ip_.clear();
   client_ip_.clear();
@@ -55,7 +53,7 @@ void HostEventReporterImpl::OnClientDisconnected(const std::string& jid) {
 }
 
 void HostEventReporterImpl::OnClientRouteChange(
-    const std::string& jid,
+    const std::string& signaling_id,
     const std::string& channel_name,
     const protocol::TransportRoute& route) {
   client_ip_ = route.remote_address.address().IsValid()
@@ -84,19 +82,19 @@ void HostEventReporterImpl::OnClientRouteChange(
       record.mutable_connected();
   state->set_host_ip(host_ip_);
   state->set_client_ip(client_ip_);
-  state->set_session_id(jid);
+  state->set_session_id(signaling_id);
   state->set_connection_type(connection_type);
   ReportEvent(std::move(record));
 }
 
-void HostEventReporterImpl::OnStart(const std::string& host_owner_email) {
-  host_user_ = host_owner_email;
+void HostEventReporterImpl::OnHostStarted(const std::string& owner_email) {
+  host_user_ = owner_email;
   ::ash::reporting::CRDRecord record;
   record.mutable_started();
   ReportEvent(std::move(record));
 }
 
-void HostEventReporterImpl::OnShutdown() {
+void HostEventReporterImpl::OnHostShutdown() {
   ::ash::reporting::CRDRecord record;
   record.mutable_ended();
   ReportEvent(std::move(record));

@@ -34,6 +34,7 @@
 #include "ipc/ipc_listener.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -1736,8 +1737,10 @@ void HostProcess::StartHost() {
 
   // Set up reporting the host status notifications.
 #if defined(REMOTING_MULTI_PROCESS)
+  mojo::AssociatedRemote<mojom::HostStatusObserver> remote;
+  daemon_channel_->GetRemoteAssociatedInterface(&remote);
   host_event_logger_ = std::make_unique<IpcHostEventLogger>(
-      host_->status_monitor(), daemon_channel_.get());
+      host_->status_monitor(), std::move(remote));
 #else  // !defined(REMOTING_MULTI_PROCESS)
   host_event_logger_ =
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);

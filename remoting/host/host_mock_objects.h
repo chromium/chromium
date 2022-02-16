@@ -227,7 +227,7 @@ class MockHostStatusObserver : public HostStatusObserver {
 
   ~MockHostStatusObserver() override;
 
-  MOCK_METHOD(void, OnAccessDenied, (const std::string&), (override));
+  MOCK_METHOD(void, OnClientAccessDenied, (const std::string&), (override));
   MOCK_METHOD(void, OnClientAuthenticated, (const std::string&), (override));
   MOCK_METHOD(void, OnClientConnected, (const std::string&), (override));
   MOCK_METHOD(void, OnClientDisconnected, (const std::string&), (override));
@@ -237,8 +237,8 @@ class MockHostStatusObserver : public HostStatusObserver {
                const std::string&,
                const protocol::TransportRoute&),
               (override));
-  MOCK_METHOD(void, OnStart, (const std::string&), (override));
-  MOCK_METHOD(void, OnShutdown, (), (override));
+  MOCK_METHOD(void, OnHostStarted, (const std::string&), (override));
+  MOCK_METHOD(void, OnHostShutdown, (), (override));
 };
 
 class MockSecurityKeyAuthHandler : public SecurityKeyAuthHandler {

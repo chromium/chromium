@@ -119,10 +119,10 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Disconnects and shuts down the host.
   virtual void Disconnect();
 
-  // remoting::HostStatusObserver implementation.
-  void OnAccessDenied(const std::string& jid) override;
-  void OnClientConnected(const std::string& jid) override;
-  void OnClientDisconnected(const std::string& jid) override;
+  // HostStatusObserver implementation.
+  void OnClientAccessDenied(const std::string& signaling_id) override;
+  void OnClientConnected(const std::string& signaling_id) override;
+  void OnClientDisconnected(const std::string& signaling_id) override;
 
   void SetStateForTesting(It2MeHostState state,
                           protocol::ErrorCode error_code) {

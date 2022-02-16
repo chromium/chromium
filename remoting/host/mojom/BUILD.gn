@@ -20,6 +20,7 @@ mojom("mojom") {
 
   deps = [
     "//mojo/public/mojom/base",
+    "//services/network/public/mojom:mojom_ip_address",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
@@ -79,6 +80,14 @@ mojom("mojom") {
           mojom = "remoting.mojom.TouchEventType"
           cpp = "::remoting::protocol::TouchEvent::TouchEventType"
         },
+        {
+          mojom = "remoting.mojom.TransportRoute"
+          cpp = "::remoting::protocol::TransportRoute"
+        },
+        {
+          mojom = "remoting.mojom.TransportRouteType"
+          cpp = "::remoting::protocol::TransportRoute::RouteType"
+        },
       ]
       traits_headers = [ "remoting_mojom_traits.h" ]
       traits_sources = [ "remoting_mojom_traits.cc" ]
@@ -87,6 +96,8 @@ mojom("mojom") {
         "//mojo/public/cpp/bindings",
         "//remoting/host/base",
         "//remoting/proto",
+        "//remoting/protocol:transport",
+        "//services/network/public/cpp:ip_address_mojom_support",
         "//third_party/webrtc_overrides:webrtc_component",
       ]
     },

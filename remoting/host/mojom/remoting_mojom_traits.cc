@@ -282,4 +282,24 @@ bool mojo::StructTraits<remoting::mojom::TouchEventDataView,
   return true;
 }
 
+// static
+bool mojo::StructTraits<remoting::mojom::TransportRouteDataView,
+                        ::remoting::protocol::TransportRoute>::
+    Read(remoting::mojom::TransportRouteDataView data_view,
+         ::remoting::protocol::TransportRoute* out_transport_route) {
+  if (!data_view.ReadType(&out_transport_route->type)) {
+    return false;
+  }
+
+  if (!data_view.ReadRemoteAddress(&out_transport_route->remote_address)) {
+    return false;
+  }
+
+  if (!data_view.ReadLocalAddress(&out_transport_route->local_address)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace mojo

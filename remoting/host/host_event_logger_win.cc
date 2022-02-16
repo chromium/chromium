@@ -37,15 +37,14 @@ class HostEventLoggerWin : public HostEventLogger, public HostStatusObserver {
 
   // HostStatusObserver implementation.  These methods will be called from the
   // network thread.
-  void OnClientAuthenticated(const std::string& jid) override;
-  void OnClientDisconnected(const std::string& jid) override;
-  void OnAccessDenied(const std::string& jid) override;
-  void OnClientRouteChange(
-      const std::string& jid,
-      const std::string& channel_name,
-      const protocol::TransportRoute& route) override;
-  void OnStart(const std::string& xmpp_login) override;
-  void OnShutdown() override;
+  void OnClientAuthenticated(const std::string& signaling_id) override;
+  void OnClientDisconnected(const std::string& signaling_id) override;
+  void OnClientAccessDenied(const std::string& signaling_id) override;
+  void OnClientRouteChange(const std::string& signaling_id,
+                           const std::string& channel_name,
+                           const protocol::TransportRoute& route) override;
+  void OnHostStarted(const std::string& user_email) override;
+  void OnHostShutdown() override;
 
  private:
   void LogString(WORD type, DWORD event_id, const std::string& string);
@@ -74,24 +73,26 @@ HostEventLoggerWin::~HostEventLoggerWin() {
   }
 }
 
-void HostEventLoggerWin::OnClientAuthenticated(const std::string& jid) {
-  LogString(EVENTLOG_INFORMATION_TYPE, MSG_HOST_CLIENT_CONNECTED, jid);
+void HostEventLoggerWin::OnClientAuthenticated(
+    const std::string& signaling_id) {
+  LogString(EVENTLOG_INFORMATION_TYPE, MSG_HOST_CLIENT_CONNECTED, signaling_id);
 }
 
-void HostEventLoggerWin::OnClientDisconnected(const std::string& jid) {
-  LogString(EVENTLOG_INFORMATION_TYPE, MSG_HOST_CLIENT_DISCONNECTED, jid);
+void HostEventLoggerWin::OnClientDisconnected(const std::string& signaling_id) {
+  LogString(EVENTLOG_INFORMATION_TYPE, MSG_HOST_CLIENT_DISCONNECTED,
+            signaling_id);
 }
 
-void HostEventLoggerWin::OnAccessDenied(const std::string& jid) {
-  LogString(EVENTLOG_ERROR_TYPE, MSG_HOST_CLIENT_ACCESS_DENIED, jid);
+void HostEventLoggerWin::OnClientAccessDenied(const std::string& signaling_id) {
+  LogString(EVENTLOG_ERROR_TYPE, MSG_HOST_CLIENT_ACCESS_DENIED, signaling_id);
 }
 
 void HostEventLoggerWin::OnClientRouteChange(
-    const std::string& jid,
+    const std::string& signaling_id,
     const std::string& channel_name,
     const protocol::TransportRoute& route) {
   std::vector<std::string> strings(5);
-  strings[0] = jid;
+  strings[0] = signaling_id;
   strings[1] = route.remote_address.address().IsValid()
                    ? route.remote_address.ToString()
                    : "unknown";
@@ -103,12 +104,12 @@ void HostEventLoggerWin::OnClientRouteChange(
   Log(EVENTLOG_INFORMATION_TYPE, MSG_HOST_CLIENT_ROUTING_CHANGED, strings);
 }
 
-void HostEventLoggerWin::OnShutdown() {
+void HostEventLoggerWin::OnHostShutdown() {
   // TODO(rmsousa): Fix host shutdown to actually call this, and add a log line.
 }
 
-void HostEventLoggerWin::OnStart(const std::string& xmpp_login) {
-  LogString(EVENTLOG_INFORMATION_TYPE, MSG_HOST_STARTED, xmpp_login);
+void HostEventLoggerWin::OnHostStarted(const std::string& user_email) {
+  LogString(EVENTLOG_INFORMATION_TYPE, MSG_HOST_STARTED, user_email);
 }
 
 void HostEventLoggerWin::Log(WORD type,

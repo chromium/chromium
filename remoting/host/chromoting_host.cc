@@ -103,7 +103,7 @@ ChromotingHost::~ChromotingHost() {
   // Notify observers.
   if (started_) {
     for (auto& observer : status_monitor_->observers())
-      observer.OnShutdown();
+      observer.OnHostShutdown();
   }
 }
 
@@ -114,7 +114,7 @@ void ChromotingHost::Start(const std::string& host_owner_email) {
   HOST_LOG << "Starting host";
   started_ = true;
   for (auto& observer : status_monitor_->observers())
-    observer.OnStart(host_owner_email);
+    observer.OnHostStarted(host_owner_email);
 
   session_manager_->AcceptIncoming(base::BindRepeating(
       &ChromotingHost::OnIncomingSession, base::Unretained(this)));
@@ -203,7 +203,7 @@ void ChromotingHost::OnSessionAuthenticationFailed(ClientSession* client) {
 
   // Notify observers.
   for (auto& observer : status_monitor_->observers())
-    observer.OnAccessDenied(client->client_jid());
+    observer.OnClientAccessDenied(client->client_jid());
 }
 
 void ChromotingHost::OnSessionClosed(ClientSession* client) {

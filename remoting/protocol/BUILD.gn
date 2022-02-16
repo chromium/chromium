@@ -14,6 +14,19 @@ static_library("errors") {
   deps = [ "//remoting/base:base" ]
 }
 
+static_library("transport") {
+  sources = [
+    "transport.cc",
+    "transport.h",
+  ]
+  deps = [
+    ":errors",
+    "//base",
+    "//net",
+    "//remoting/base:base",
+  ]
+}
+
 static_library("protocol") {
   sources = [
     "audio_decode_scheduler.cc",
@@ -182,8 +195,6 @@ static_library("protocol") {
     "third_party_host_authenticator.cc",
     "third_party_host_authenticator.h",
     "token_validator.h",
-    "transport.cc",
-    "transport.h",
     "transport_context.cc",
     "transport_context.h",
     "v2_authenticator.cc",
@@ -220,6 +231,7 @@ static_library("protocol") {
   public_deps = [
     ":errors",
     ":session_config",
+    ":transport",
     "//remoting/proto",
     "//third_party/webrtc_overrides:webrtc_component",
   ]

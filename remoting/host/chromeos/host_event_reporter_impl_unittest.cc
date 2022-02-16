@@ -53,7 +53,7 @@ class HostEventReporterTest : public ::testing::Test {
 };
 
 TEST_F(HostEventReporterTest, ReportConnectedAndDisconnected) {
-  reporter_.OnStart(kHostUser);
+  reporter_.OnHostStarted(kHostUser);
   reporter_.OnClientConnected(kHostIp);
 
   protocol::TransportRoute route;
@@ -63,7 +63,7 @@ TEST_F(HostEventReporterTest, ReportConnectedAndDisconnected) {
 
   reporter_.OnClientRouteChange(kSessionId, "", route);
   reporter_.OnClientDisconnected(kSessionId);
-  reporter_.OnShutdown();
+  reporter_.OnHostShutdown();
 
   auto received = delegate_->WaitForEvent();
   EXPECT_THAT(received.host_user().user_email(), StrEq(kHostUser));

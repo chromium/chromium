@@ -17,9 +17,12 @@
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
+#include "remoting/host/mojom/remoting_host.mojom-shared.h"
 #include "remoting/host/mojom/webrtc_types.mojom-shared.h"
 #include "remoting/host/mojom/wrapped_primitives.mojom-shared.h"
 #include "remoting/proto/event.pb.h"
+#include "remoting/protocol/transport.h"
+#include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -506,6 +509,70 @@ class mojo::StructTraits<remoting::mojom::TouchEventDataView,
 
   static bool Read(remoting::mojom::TouchEventDataView data_view,
                    ::remoting::protocol::TouchEvent* out_event);
+};
+
+template <>
+struct EnumTraits<remoting::mojom::TransportRouteType,
+                  ::remoting::protocol::TransportRoute::RouteType> {
+  static remoting::mojom::TransportRouteType ToMojom(
+      ::remoting::protocol::TransportRoute::RouteType input) {
+    switch (input) {
+      case ::remoting::protocol::TransportRoute::RouteType::DIRECT:
+        return remoting::mojom::TransportRouteType::kDirect;
+      case ::remoting::protocol::TransportRoute::RouteType::STUN:
+        return remoting::mojom::TransportRouteType::kStun;
+      case ::remoting::protocol::TransportRoute::RouteType::RELAY:
+        return remoting::mojom::TransportRouteType::kRelay;
+    }
+
+    NOTREACHED();
+    return remoting::mojom::TransportRouteType::kUndefined;
+  }
+
+  static bool FromMojom(remoting::mojom::TransportRouteType input,
+                        ::remoting::protocol::TransportRoute::RouteType* out) {
+    switch (input) {
+      case remoting::mojom::TransportRouteType::kUndefined:
+        // kUndefined does not map to a value in TransportRoute::RouteType so
+        // it should be treated the same as any other unknown value.
+        break;
+      case remoting::mojom::TransportRouteType::kDirect:
+        *out = ::remoting::protocol::TransportRoute::RouteType::DIRECT;
+        return true;
+      case remoting::mojom::TransportRouteType::kStun:
+        *out = ::remoting::protocol::TransportRoute::RouteType::STUN;
+        return true;
+      case remoting::mojom::TransportRouteType::kRelay:
+        *out = ::remoting::protocol::TransportRoute::RouteType::RELAY;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
+class mojo::StructTraits<remoting::mojom::TransportRouteDataView,
+                         ::remoting::protocol::TransportRoute> {
+ public:
+  static ::remoting::protocol::TransportRoute::RouteType type(
+      const ::remoting::protocol::TransportRoute& transport_route) {
+    return transport_route.type;
+  }
+
+  static const ::net::IPEndPoint& remote_address(
+      const ::remoting::protocol::TransportRoute& transport_route) {
+    return transport_route.remote_address;
+  }
+
+  static const ::net::IPEndPoint& local_address(
+      const ::remoting::protocol::TransportRoute& transport_route) {
+    return transport_route.local_address;
+  }
+
+  static bool Read(remoting::mojom::TransportRouteDataView data_view,
+                   ::remoting::protocol::TransportRoute* out_transport_route);
 };
 
 }  // namespace mojo

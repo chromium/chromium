@@ -92,7 +92,7 @@ class ChromotingHostTest : public testing::Test {
         DesktopEnvironmentOptions::CreateDefault());  // Video encode
     host_->status_monitor()->AddStatusObserver(&host_status_observer_);
 
-    xmpp_login_ = "host@domain";
+    owner_email_ = "host@domain";
     session1_ = new MockSession();
     session2_ = new MockSession();
     session_unowned1_ = std::make_unique<MockSession>();
@@ -188,16 +188,16 @@ class ChromotingHostTest : public testing::Test {
   }
 
   void ShutdownHost() {
-    EXPECT_CALL(host_status_observer_, OnShutdown());
+    EXPECT_CALL(host_status_observer_, OnHostShutdown());
     host_.reset();
     desktop_environment_factory_.reset();
   }
 
   // Starts the host.
   void StartHost() {
-    EXPECT_CALL(host_status_observer_, OnStart(xmpp_login_));
+    EXPECT_CALL(host_status_observer_, OnHostStarted(owner_email_));
     EXPECT_CALL(*session_manager_, AcceptIncoming(_));
-    host_->Start(xmpp_login_);
+    host_->Start(owner_email_);
   }
 
   // Expect a client to connect.
@@ -263,7 +263,7 @@ class ChromotingHostTest : public testing::Test {
   MockHostStatusObserver host_status_observer_;
   std::unique_ptr<ChromotingHost> host_;
   raw_ptr<protocol::MockSessionManager> session_manager_;
-  std::string xmpp_login_;
+  std::string owner_email_;
   raw_ptr<protocol::FakeConnectionToClient> connection1_;
   std::unique_ptr<protocol::FakeConnectionToClient> owned_connection1_;
   ClientSession* client1_;
@@ -313,7 +313,7 @@ TEST_F(ChromotingHostTest, Connect) {
 TEST_F(ChromotingHostTest, AuthenticationFailed) {
   StartHost();
 
-  EXPECT_CALL(host_status_observer_, OnAccessDenied(session_jid1_));
+  EXPECT_CALL(host_status_observer_, OnClientAccessDenied(session_jid1_));
   SimulateClientConnection(0, false, false);
 }
 
