@@ -2251,6 +2251,11 @@ const char kSecurePaymentConfirmationDebugDescription[] =
     "secure payment confirmation in PaymentRequest API must use user verifying "
     "platform authenticators.";
 
+const char kSendTabToSelfSigninPromoName[] = "Send tab to self sign-in promo";
+const char kSendTabToSelfSigninPromoDescription[] =
+    "Enables a sign-in promo if the user attempts to share a tab while being "
+    "signed out";
+
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
 

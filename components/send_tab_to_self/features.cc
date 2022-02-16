@@ -12,6 +12,9 @@
 
 namespace send_tab_to_self {
 
+const base::Feature kSendTabToSelfSigninPromo{
+    "SendTabToSelfSigninPromo", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 const base::Feature kSendTabToSelfV2{"SendTabToSelfV2",
                                      base::FEATURE_DISABLED_BY_DEFAULT};

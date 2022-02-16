@@ -50,7 +50,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_state/core/features.h"
 #import "components/send_tab_to_self/features.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/ios/browser/features.h"
@@ -797,6 +796,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableUnmaskCardRequestSetInstrumentId)},
+    {"send-tab-to-self-signin-promo",
+     flag_descriptions::kSendTabToSelfSigninPromoName,
+     flag_descriptions::kSendTabToSelfSigninPromoDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfSigninPromo)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

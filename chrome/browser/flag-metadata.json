@@ -5222,6 +5222,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "send-tab-to-self-signin-promo",
+    "owners": ["victorvianna@google.com", "harrisonsean@google.com"],
+    "expiry_milestone": 104
+  },
+  {
     "name": "send-tab-to-self-v2",
     "owners": ["kmilka", "chrome-sharing-eng@google.com"],
     "expiry_milestone": 100

@@ -472,6 +472,7 @@ public abstract class ChromeFeatureList {
     public static final String SEARCH_ENGINE_PROMO_NEW_DEVICE_V2 =
             "SearchEnginePromo.NewDeviceVer2";
     public static final String SEARCH_HISTORY_LINK = "SearchHistoryLink";
+    public static final String SEND_TAB_TO_SELF_SIGNIN_PROMO = "SendTabToSelfSigninPromo";
     public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
     public static final String SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH =
             "ServiceManagerForBackgroundPrefetch";

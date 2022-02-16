@@ -457,6 +457,11 @@ const char kSearchHistoryLinkIOSDescription[] =
     "Changes the Clear Browsing Data "
     "UI to display a link to clear search history on My Google Activity.";
 
+const char kSendTabToSelfSigninPromoName[] = "Send tab to self sign-in promo";
+const char kSendTabToSelfSigninPromoDescription[] =
+    "Enables a sign-in promo if the user attempts to share a tab while being "
+    "signed out";
+
 const char kSendUmaOverAnyNetwork[] =
     "Send UMA data over any network available.";
 const char kSendUmaOverAnyNetworkDescription[] =
