@@ -1107,7 +1107,23 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       // taps "show full history" and "enable sync". The sync settings UI
       // appears first and we should not dismiss it to display history.
       if (!self.presentedViewController) {
-        [self.presentationDelegate showHistoryFromRecentTabs];
+        [self.presentationDelegate
+            showHistoryFromRecentTabsFilteredBySearchTerms:nil];
+      }
+      break;
+    case ItemTypeSuggestedActionSearchHistory:
+      base::RecordAction(
+          base::UserMetricsAction("TabsSearch.SuggestedActions.SearchHistory"));
+      [tableView deselectRowAtIndexPath:indexPath animated:NO];
+
+      // Tapping "show full history" attempts to dismiss recent tabs to show the
+      // history UI. It is reasonable to ignore this if a modal UI is already
+      // showing above recent tabs. This can happen when a user simultaneously
+      // taps "show full history" and "enable sync". The sync settings UI
+      // appears first and we should not dismiss it to display history.
+      if (!self.presentedViewController) {
+        [self.presentationDelegate
+            showHistoryFromRecentTabsFilteredBySearchTerms:self.searchTerms];
       }
       break;
     case ItemTypeSuggestedActionSearchWeb:

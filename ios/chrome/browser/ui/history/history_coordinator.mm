@@ -78,6 +78,7 @@
   self.historyTableViewController = [[HistoryTableViewController alloc] init];
   self.historyTableViewController.browser = self.browser;
   self.historyTableViewController.loadStrategy = self.loadStrategy;
+  self.historyTableViewController.searchTerms = self.searchTerms;
 
   self.historyTableViewController.menuProvider = self;
 

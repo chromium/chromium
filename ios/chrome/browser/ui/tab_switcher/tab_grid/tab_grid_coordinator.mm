@@ -942,13 +942,14 @@
 
 #pragma mark - RecentTabsPresentationDelegate
 
-- (void)showHistoryFromRecentTabs {
+- (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms {
   // A history coordinator from main_controller won't work properly from the
   // tab grid. Using a local coordinator works better and we need to set
   // |loadStrategy| to YES to ALWAYS_NEW_FOREGROUND_TAB.
   self.historyCoordinator = [[HistoryCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.regularBrowser];
+  self.historyCoordinator.searchTerms = searchTerms;
   self.historyCoordinator.loadStrategy =
       UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
   self.historyCoordinator.presentationDelegate = self;

@@ -212,6 +212,10 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   self.searchController.searchBar.backgroundColor = UIColor.clearColor;
   self.searchController.searchBar.accessibilityIdentifier =
       kHistorySearchControllerSearchBarIdentifier;
+  if (self.searchTerms.length) {
+    self.searchController.searchBar.text = self.searchTerms;
+    self.searchInProgress = YES;
+  }
   // UIKit needs to know which controller will be presenting the
   // searchController. If we don't add this trying to dismiss while
   // SearchController is active will fail.
