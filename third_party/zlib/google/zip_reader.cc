@@ -153,7 +153,9 @@ bool ZipReader::OpenFromString(const std::string& data) {
 
 void ZipReader::Close() {
   if (zip_file_) {
-    unzClose(zip_file_);
+    if (const int err = unzClose(zip_file_); err != UNZ_OK) {
+      LOG(ERROR) << "Error while closing ZIP archive: " << UnzipError(err);
+    }
   }
   Reset();
 }
