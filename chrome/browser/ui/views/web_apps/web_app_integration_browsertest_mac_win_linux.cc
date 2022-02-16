@@ -32,7 +32,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
 
 // Disabled due to flakiness. crbug.com/1294464
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       DISABLED_CheckRunOnOsLoginModeOnPolicyAppWorks) {
+                       CheckRunOnOsLoginModeOnPolicyAppWorks) {
   helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
   helper_.CheckPlatformShortcutNotExists("SiteA");
   helper_.EnableRunOnOSLoginMode("SiteA");
@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       DISABLED_CheckRunOnOsLoginWorksOnPolicyAppAllowed) {
+                       CheckRunOnOsLoginWorksOnPolicyAppAllowed) {
   helper_.InstallPolicyAppOsLoginModeAllowed("SiteA");
   helper_.EnableRunOnOSLoginMode("SiteA");
   helper_.CheckRunOnOSLoginModeEnabled("SiteA");
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       DISABLED_CheckRunOnOsLoginWorksOnPolicyAppBlocked) {
+                       CheckRunOnOsLoginWorksOnPolicyAppBlocked) {
   helper_.InstallPolicyAppOsLoginModeBlocked("SiteA");
   helper_.EnableRunOnOSLoginMode("SiteA");
   helper_.CheckRunOnOSLoginModeDisabled("SiteA");

@@ -14,6 +14,10 @@ class WebAppRegistrar;
 class OsIntegrationManager;
 class WebAppSyncBridge;
 
+// Sets the callback for the test to wait until the OS integration state is set.
+void SetRunOnOsLoginOsHooksChangedCallbackForTesting(
+    base::OnceClosure callback);
+
 // Updates the Run On OS state for the given app. If necessary, it also updates
 // the registration with the OS. This will take into account the enterprise
 // policy for the given app.

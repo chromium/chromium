@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
+#include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -1915,10 +1916,14 @@ void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
   mojo::Remote<app_management::mojom::PageHandler> handler;
   auto delegate =
       WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
+  base::RunLoop run_loop;
+  web_app::SetRunOnOsLoginOsHooksChangedCallbackForTesting(
+      run_loop.QuitClosure());
   AppManagementPageHandler app_management_page_handler(
       handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
       profile(), *delegate);
   app_management_page_handler.SetRunOnOsLoginMode(app_state->id, login_mode);
+  run_loop.Run();
 #endif
 }
 
