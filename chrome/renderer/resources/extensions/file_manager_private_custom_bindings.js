@@ -221,10 +221,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         var sourceUrls = entries.map(getEntryURL);
         var destinationUrl = getEntryURL(destinationEntry);
         fileManagerPrivateInternal.getDisallowedTransfers(
-            sourceUrls, destinationUrl,
-            callback(entryDescriptions.map(function(description) {
-              return GetExternalFileEntry(description);
-            })));
+            sourceUrls, destinationUrl, callback);
       });
 
   apiFunctions.setHandleRequest('startCopy', function(

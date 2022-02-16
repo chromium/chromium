@@ -937,7 +937,7 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
       source_urls_, destination_url_,
       base::BindOnce(&FileManagerPrivateInternalGetDisallowedTransfersFunction::
                          OnGetDisallowedFiles,
-                     base::Unretained(this)));
+                     this));
 
   return RespondLater();
 }
@@ -961,7 +961,7 @@ void FileManagerPrivateInternalGetDisallowedTransfersFunction::
       file_definition_list,  // Safe, since copied internally.
       base::BindOnce(&FileManagerPrivateInternalGetDisallowedTransfersFunction::
                          OnConvertFileDefinitionListToEntryDefinitionList,
-                     base::Unretained(this)));
+                     this));
 }
 
 void FileManagerPrivateInternalGetDisallowedTransfersFunction::

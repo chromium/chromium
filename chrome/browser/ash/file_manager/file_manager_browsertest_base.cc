@@ -1793,6 +1793,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFilesTrash);
   }
 
+  if (options.enable_dlp_files_restriction) {
+    enabled_features.push_back(features::kDataLeakPreventionFilesRestriction);
+  } else {
+    disabled_features.push_back(features::kDataLeakPreventionFilesRestriction);
+  }
+
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage) &&
       options.guest_mode != IN_INCOGNITO) {
     devtools_code_coverage_dir_ =

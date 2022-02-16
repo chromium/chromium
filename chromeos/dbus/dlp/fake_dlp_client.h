@@ -11,6 +11,7 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -35,10 +36,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeDlpClient
 
   // DlpClient::TestInterface implementation:
   int GetSetDlpFilesPolicyCount() const override;
+  void SetFakeSource(const std::string& fake_source) override;
 
  private:
   int set_dlp_files_policy_count_ = 0;
   base::flat_map<ino_t, std::string> files_database_;
+  absl::optional<std::string> fake_source_;
 };
 
 }  // namespace chromeos

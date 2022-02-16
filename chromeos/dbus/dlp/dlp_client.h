@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_DBUS_DLP_DLP_CLIENT_H_
 #define CHROMEOS_DBUS_DLP_DLP_CLIENT_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -34,6 +36,9 @@ class COMPONENT_EXPORT(DLP) DlpClient {
    public:
     // Returns how many times |SetDlpFilesPolicyCount| was called.
     virtual int GetSetDlpFilesPolicyCount() const = 0;
+
+    // Sets source url string to be returned for any file inode.
+    virtual void SetFakeSource(const std::string&) = 0;
 
    protected:
     virtual ~TestInterface() {}

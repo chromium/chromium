@@ -111,6 +111,10 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test should run with the new Banners framework feature.
     bool enable_banners_framework = false;
+
+    // Whether test should enable DLP (Data Leak Prevention) files restrictions
+    // feature.
+    bool enable_dlp_files_restriction = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;

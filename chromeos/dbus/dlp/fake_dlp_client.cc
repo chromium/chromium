@@ -4,6 +4,8 @@
 
 #include "chromeos/dbus/dlp/fake_dlp_client.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -51,11 +53,12 @@ void FakeDlpClient::GetFilesSources(const dlp::GetFilesSourcesRequest request,
   dlp::GetFilesSourcesResponse response;
   for (const auto& file_inode : request.files_inodes()) {
     auto file_itr = files_database_.find(file_inode);
-    if (file_itr != files_database_.end()) {
-      dlp::FileMetadata* file_metadata = response.add_files_metadata();
-      file_metadata->set_inode(file_itr->first);
-      file_metadata->set_source_url(file_itr->second);
-    }
+    if (file_itr == files_database_.end() && !fake_source_.has_value())
+      continue;
+
+    dlp::FileMetadata* file_metadata = response.add_files_metadata();
+    file_metadata->set_inode(file_inode);
+    file_metadata->set_source_url(fake_source_.value_or(file_itr->second));
   }
   std::move(callback).Run(response);
 }
@@ -70,6 +73,10 @@ DlpClient::TestInterface* FakeDlpClient::GetTestInterface() {
 
 int FakeDlpClient::GetSetDlpFilesPolicyCount() const {
   return set_dlp_files_policy_count_;
+}
+
+void FakeDlpClient::SetFakeSource(const std::string& fake_source) {
+  fake_source_ = fake_source;
 }
 
 }  // namespace chromeos

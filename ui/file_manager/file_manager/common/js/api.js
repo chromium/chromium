@@ -87,6 +87,19 @@ export async function getHoldingSpaceState() {
   return promisify(chrome.fileManagerPrivate.getHoldingSpaceState);
 }
 
+/**
+ * Wrap the chrome.fileManagerPrivate.getDisallowedTransfers function in an
+ * async/await compatible style.
+ * @param {!Array<!Entry>} entries entries to be transferred
+ * @param {!DirectoryEntry} destinationEntry destination entry
+ * @return {!Promise<!Array<!Entry>>} disallowed transfers
+ */
+export async function getDisallowedTransfers(entries, destinationEntry) {
+  return promisify(
+      chrome.fileManagerPrivate.getDisallowedTransfers, entries,
+      destinationEntry);
+}
+
 /*
  * FileSystemEntry helpers
  */

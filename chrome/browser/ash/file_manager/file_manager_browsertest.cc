@@ -10,8 +10,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -126,6 +130,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableDlp() {
+    options.enable_dlp_files_restriction = true;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -224,6 +233,52 @@ IN_PROC_BROWSER_TEST_P(ExtendedFilesAppBrowserTest, PRE_Test) {
 }
 
 IN_PROC_BROWSER_TEST_P(ExtendedFilesAppBrowserTest, Test) {
+  StartTest();
+}
+
+// A version of FilesAppBrowserTest that supports DLP files restrictions.
+class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
+ protected:
+  DlpFilesAppBrowserTest() = default;
+
+  DlpFilesAppBrowserTest(const DlpFilesAppBrowserTest&) = delete;
+  DlpFilesAppBrowserTest& operator=(const DlpFilesAppBrowserTest&) = delete;
+
+  ~DlpFilesAppBrowserTest() override = default;
+
+  std::unique_ptr<KeyedService> SetDlpRulesManager(
+      content::BrowserContext* context) {
+    auto dlp_rules_manager =
+        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
+    mock_rules_manager_ = dlp_rules_manager.get();
+    return dlp_rules_manager;
+  }
+
+  void SetUpOnMainThread() override {
+    FilesAppBrowserTest::SetUpOnMainThread();
+    policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+        profile(),
+        base::BindRepeating(&DlpFilesAppBrowserTest::SetDlpRulesManager,
+                            base::Unretained(this)));
+  }
+
+  // MockDlpRulesManager is owned by KeyedService and is guaranteed to outlive
+  // this class.
+  policy::MockDlpRulesManager* mock_rules_manager_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_P(DlpFilesAppBrowserTest, Test) {
+  chromeos::DlpClient::Get()->GetTestInterface()->SetFakeSource("example1.com");
+
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  ON_CALL(*mock_rules_manager_, IsRestricted)
+      .WillByDefault(::testing::Return(policy::DlpRulesManager::Level::kAllow));
+  ON_CALL(*mock_rules_manager_, GetReportingManager)
+      .WillByDefault(::testing::Return(nullptr));
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedDestination)
+      .WillRepeatedly(
+          ::testing::Return(policy::DlpRulesManager::Level::kBlock));
+
   StartTest();
 }
 
@@ -1064,6 +1119,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferUpdateSamePanelItem").FilesSwa(),
         TestCase("transferShowPendingMessageForZeroRemainingTime").FilesSwa(),
         TestCase("transferShowPendingMessageForZeroRemainingTime")));
+
+WRAPPED_INSTANTIATE_TEST_SUITE_P(
+    Transfer, /* transfer.js */
+    DlpFilesAppBrowserTest,
+    ::testing::Values(TestCase("transferShowDlpToast").EnableDlp()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     RestorePrefs, /* restore_prefs.js */
