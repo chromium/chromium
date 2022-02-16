@@ -37,6 +37,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
   helper_.CheckAppTitleSiteA("Site A - Updated name");
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, LaunchFromMenuOption) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.LaunchFromMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+}
+
 // Automated tests:
 
 // TODO(crbug.com/1279704): Test is consistently failing on Mac and Win7.

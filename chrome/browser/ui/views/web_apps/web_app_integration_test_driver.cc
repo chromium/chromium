@@ -755,6 +755,27 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::LaunchFromMenuOption(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  NavigateBrowser(site_mode);
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  auto app_id = app_state->id;
+
+  content::WindowedNotificationObserver app_loaded_observer(
+      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+      content::NotificationService::AllSources());
+  CHECK(chrome::ExecuteCommand(browser(), IDC_OPEN_IN_PWA_WINDOW));
+  app_loaded_observer.Wait();
+
+  app_browser_ = BrowserList::GetInstance()->GetLastActive();
+  active_app_id_ = app_id;
+  ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), active_app_id_));
+  ASSERT_EQ(GetBrowserWindowTitle(app_browser()), app_state->name);
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::LaunchFromShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction();
@@ -788,10 +809,7 @@ void WebAppIntegrationTestDriver::LaunchFromShortcut(
   app_browsers.push_back(BrowserList::GetInstance()->GetLastActive());
 
   for (auto* app_browser : app_browsers) {
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-    const std::string window_title =
-        convert.to_bytes(app_browser->GetWindowTitleForCurrentTab(false));
-    ASSERT_EQ(window_title, app_state->name);
+    ASSERT_EQ(GetBrowserWindowTitle(app_browser), app_state->name);
   }
   AfterStateChangeAction();
 }
@@ -1666,6 +1684,12 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
         profile, ProfileState(std::move(browser_state), std::move(app_state)));
   }
   return std::make_unique<StateSnapshot>(std::move(profile_state_map));
+}
+
+std::string WebAppIntegrationTestDriver::GetBrowserWindowTitle(
+    Browser* browser) {
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+  return convert.to_bytes(browser->GetWindowTitleForCurrentTab(false));
 }
 
 content::WebContents* WebAppIntegrationTestDriver::GetCurrentTab(

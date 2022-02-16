@@ -164,6 +164,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void InstallPolicyAppOsLoginModeBlocked(const std::string& site_mode);
   void LaunchFromChromeApps(const std::string& site_mode);
   void LaunchFromLaunchIcon(const std::string& site_mode);
+  void LaunchFromMenuOption(const std::string& site_mode);
   void LaunchFromShortcut(const std::string& site_mode);
   void LaunchAppSettingsFromChromeApps(const std::string& site_mode);
   void LaunchAppSettingsFromAppMenu(const std::string& site_mode);
@@ -236,6 +237,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   std::unique_ptr<StateSnapshot> ConstructStateSnapshot();
 
+  std::string GetBrowserWindowTitle(Browser* browser);
   content::WebContents* GetCurrentTab(Browser* browser);
   GURL GetInScopeURL(const std::string& site_mode);
   GURL GetScopeForSiteMode(const std::string& site_mode);
