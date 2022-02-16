@@ -81,5 +81,5 @@ bool OSSettingsSystemAppDelegate::PreferManifestBackgroundColor() const {
 }
 
 bool OSSettingsSystemAppDelegate::ShouldAnimateThemeChanges() const {
-  return ash::features::IsDarkLightModeEnabled();
+  return ash::features::IsSettingsAppThemeChangeAnimationEnabled();
 }
