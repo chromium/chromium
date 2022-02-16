@@ -1319,6 +1319,10 @@ iframe {
     border: 2px inset
 }
 
+fencedframe {
+    border: 2px inset
+}
+
 details {
     display: block
 }

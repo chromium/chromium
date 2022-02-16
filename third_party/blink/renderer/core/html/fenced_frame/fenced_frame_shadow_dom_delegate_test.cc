@@ -13,19 +13,23 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
 class FencedFrameShadowDOMDelegateTest : private ScopedFencedFramesForTest,
                                          public RenderingTest {
  public:
-  FencedFrameShadowDOMDelegateTest() : ScopedFencedFramesForTest(true) {}
+  FencedFrameShadowDOMDelegateTest()
+      : ScopedFencedFramesForTest(true),
+        RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
  protected:
   void SetUp() override {
-    PageTestBase::SetUp();
+    RenderingTest::SetUp();
     base::FieldTrialParams params;
     params["implementation_type"] = "shadow_dom";
     enabled_feature_list_.InitAndEnableFeatureWithParameters(
@@ -112,16 +116,71 @@ TEST_F(FencedFrameShadowDOMDelegateTest, AppendRemoveAppend) {
 }
 
 TEST_F(FencedFrameShadowDOMDelegateTest, PresentationAttributes) {
+  HTMLCollection* collection = nullptr;
+
   SetBodyInnerHTML(R"HTML(
     <fencedframe width="123" height="456"></fencedframe>
 )HTML");
-  HTMLFencedFrameElement& fenced_frame = FencedFrame();
-  const auto* box = fenced_frame.GetLayoutBox();
-  ASSERT_TRUE(box);
-  EXPECT_EQ(box->StyleRef().Width(), Length::Fixed(123));
-  EXPECT_EQ(box->StyleRef().Height(), Length::Fixed(456));
-  EXPECT_EQ(box->OffsetWidth(), LayoutUnit(123));
-  EXPECT_EQ(box->OffsetHeight(), LayoutUnit(456));
+  collection = GetDocument().getElementsByTagName("fencedframe");
+  {
+    DCHECK(collection->HasExactlyOneItem());
+    Element* element = *collection->begin();
+    HTMLFencedFrameElement& fenced_frame = To<HTMLFencedFrameElement>(*element);
+    const LayoutBox* box = fenced_frame.GetLayoutBox();
+    ASSERT_TRUE(box);
+    EXPECT_EQ(box->StyleRef().Width(), Length::Fixed(123));
+    EXPECT_EQ(box->StyleRef().Height(), Length::Fixed(456));
+    EXPECT_EQ(box->OffsetWidth(), LayoutUnit(127));
+    EXPECT_EQ(box->OffsetHeight(), LayoutUnit(460));
+  }
+
+  SetBodyInnerHTML(R"HTML(
+    <fencedframe style="border: 3px inset;" width="123" height="456"></fencedframe>
+)HTML");
+  collection = GetDocument().getElementsByTagName("fencedframe");
+  {
+    DCHECK(collection->HasExactlyOneItem());
+    Element* element = *collection->begin();
+    HTMLFencedFrameElement& fenced_frame = To<HTMLFencedFrameElement>(*element);
+    const LayoutBox* box = fenced_frame.GetLayoutBox();
+    ASSERT_TRUE(box);
+    EXPECT_EQ(box->StyleRef().Width(), Length::Fixed(123));
+    EXPECT_EQ(box->StyleRef().Height(), Length::Fixed(456));
+    EXPECT_EQ(box->OffsetWidth(), LayoutUnit(129));
+    EXPECT_EQ(box->OffsetHeight(), LayoutUnit(462));
+  }
+
+  SetBodyInnerHTML(R"HTML(
+    <iframe width="123" height="456"></iframe>
+)HTML");
+  collection = GetDocument().getElementsByTagName("iframe");
+  {
+    DCHECK(collection->HasExactlyOneItem());
+    Element* element = *collection->begin();
+    HTMLIFrameElement& iframe = To<HTMLIFrameElement>(*element);
+    const LayoutBox* content = iframe.GetLayoutEmbeddedContent();
+    ASSERT_TRUE(content);
+    EXPECT_EQ(content->StyleRef().Width(), Length::Fixed(123));
+    EXPECT_EQ(content->StyleRef().Height(), Length::Fixed(456));
+    EXPECT_EQ(content->OffsetWidth(), LayoutUnit(127));
+    EXPECT_EQ(content->OffsetHeight(), LayoutUnit(460));
+  }
+
+  SetBodyInnerHTML(R"HTML(
+    <iframe style="border: 3px inset;" width="123" height="456"></iframe>
+)HTML");
+  collection = GetDocument().getElementsByTagName("iframe");
+  {
+    DCHECK(collection->HasExactlyOneItem());
+    Element* element = *collection->begin();
+    HTMLIFrameElement& iframe = To<HTMLIFrameElement>(*element);
+    const LayoutBox* content = iframe.GetLayoutEmbeddedContent();
+    ASSERT_TRUE(content);
+    EXPECT_EQ(content->StyleRef().Width(), Length::Fixed(123));
+    EXPECT_EQ(content->StyleRef().Height(), Length::Fixed(456));
+    EXPECT_EQ(content->OffsetWidth(), LayoutUnit(129));
+    EXPECT_EQ(content->OffsetHeight(), LayoutUnit(462));
+  }
 }
 
 // This test tests navigations with respect to the DOM-connectedness of the

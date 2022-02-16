@@ -45,6 +45,7 @@ iframe {
   width: 100%;
   height: 100%;
   transform-origin: left top;
+  border: 0;
 }
 )CSS");
   root.AppendChild(style);
