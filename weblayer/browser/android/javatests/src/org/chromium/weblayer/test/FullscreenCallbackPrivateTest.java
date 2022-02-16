@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.FullscreenCallback;
 import org.chromium.weblayer.TestWebLayer;
@@ -65,6 +66,7 @@ public class FullscreenCallbackPrivateTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1293419")
     public void testToastShown() throws Throwable {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivity.getTab().setFullscreenCallback(new FullscreenCallback() {
