@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/cxx17_backports.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
 #include "chromeos/components/sharesheet/constants.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -225,8 +225,9 @@ void SharesheetBubbleView::ShowBubble(
   if (targets.empty()) {
     auto* image =
         body_view_->AddChildView(std::make_unique<views::ImageView>());
-    image->SetImage(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-        IDR_SHARESHEET_EMPTY));
+    image->SetImage(
+        ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+            IDR_SHARESHEET_EMPTY_STATE_IMAGE));
     image->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, kSpacing, 0));
     ScopedLightModeAsDefault scoped_light_mode_as_default;
     auto* color_provider = AshColorProvider::Get();

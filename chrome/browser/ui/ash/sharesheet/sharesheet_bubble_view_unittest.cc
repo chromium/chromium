@@ -33,6 +33,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/lottie/resource.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -94,6 +95,10 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     widget->GetContentsView()->AddChildView(content_view);
 
     parent_window_ = widget->GetNativeWindow();
+
+    ui::ResourceBundle::SetLottieParsingFunctions(
+        &lottie::ParseLottieAsStillImage,
+        &lottie::ParseLottieAsThemedStillImage);
   }
 
   void ShowAndVerifyBubble(apps::mojom::IntentPtr intent,
