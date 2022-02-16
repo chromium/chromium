@@ -27,9 +27,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
-#include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/paths.h"
-#include "components/viz/test/test_gpu_service_holder.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -44,14 +42,9 @@
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/gl_in_process_context.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
-#include "ipc/common/gpu_client_ids.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkGraphics.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
-#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
@@ -115,12 +108,23 @@ class OopPixelTest : public testing::Test,
 
   void SetUp() override {
     InitializeOOPContext();
+    // Needs RasterInterface for ScopedRasterContextLock
     gles2_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
             /*enable_gles2_interface=*/true, /*support_locking=*/true,
-            viz::RasterInterfaceType::None);
+            viz::RasterInterfaceType::LEGACY_GPU);
     gpu::ContextResult result = gles2_context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
+    const int gles2_max_texture_size =
+        gles2_context_provider_->ContextCapabilities().max_texture_size;
+    gpu_image_cache_ = std::make_unique<GpuImageDecodeCache>(
+        gles2_context_provider_.get(), false, kRGBA_8888_SkColorType,
+        kWorkingSetSize, gles2_max_texture_size,
+        PaintImage::kDefaultGeneratorClientId, nullptr);
+
+    const int raster_max_texture_size =
+        raster_context_provider_->ContextCapabilities().max_texture_size;
+    ASSERT_EQ(raster_max_texture_size, gles2_max_texture_size);
   }
 
   // gpu::raster::GrShaderCache::Client implementation.
@@ -335,6 +339,76 @@ class OopPixelTest : public testing::Test,
     gl->DeleteTextures(1, &texture);
   }
 
+  SkBitmap RasterExpectedBitmap(
+      scoped_refptr<DisplayItemList> display_item_list,
+      const RasterOptions& options) {
+    viz::TestInProcessContextProvider::ScopedRasterContextLock lock(
+        gles2_context_provider_.get());
+    gles2_context_provider_->GrContext()->resetContext();
+
+    // Generate bitmap via the "in process" raster path.  This verifies
+    // that the preamble setup in RasterSource::PlaybackToCanvas matches
+    // the same setup done in GLES2Implementation::RasterCHROMIUM.
+    RecordingSource recording;
+    recording.UpdateDisplayItemList(display_item_list, 1.f);
+    recording.SetBackgroundColor(options.background_color);
+    Region fake_invalidation;
+    gfx::Rect layer_rect(gfx::Size(options.full_raster_rect.right(),
+                                   options.full_raster_rect.bottom()));
+    recording.UpdateAndExpandInvalidation(&fake_invalidation, layer_rect.size(),
+                                          layer_rect);
+    recording.SetRequiresClear(options.requires_clear);
+
+    if (options.shader_with_animated_images)
+      options.shader_with_animated_images->set_has_animated_images(true);
+
+    PlaybackImageProvider image_provider(gpu_image_cache_.get(),
+                                         options.target_color_params,
+                                         PlaybackImageProvider::Settings());
+
+    auto raster_source = recording.CreateRasterSource();
+    RasterSource::PlaybackSettings settings;
+    settings.use_lcd_text = options.use_lcd_text;
+    settings.image_provider = &image_provider;
+
+    uint32_t flags = 0;
+    SkSurfaceProps surface_props(flags, kUnknown_SkPixelGeometry);
+    if (options.use_lcd_text) {
+      surface_props = SkSurfaceProps(flags, kRGB_H_SkPixelGeometry);
+    }
+    SkImageInfo image_info = SkImageInfo::MakeN32Premul(
+        options.resource_size.width(), options.resource_size.height(),
+        options.target_color_params.color_space.ToSkColorSpace());
+    auto surface = SkSurface::MakeRenderTarget(
+        gles2_context_provider_->GrContext(), SkBudgeted::kYes, image_info, 0,
+        &surface_props);
+    SkCanvas* canvas = surface->getCanvas();
+    if (options.preclear)
+      canvas->drawColor(options.preclear_color);
+    else
+      canvas->drawColor(options.background_color);
+
+    gfx::AxisTransform2d raster_transform(options.post_scale,
+                                          options.post_translate);
+    raster_source->PlaybackToCanvas(
+        canvas, options.content_size, options.full_raster_rect,
+        options.playback_rect, raster_transform, settings);
+    surface->flushAndSubmit();
+    EXPECT_EQ(gles2_context_provider_->ContextGL()->GetError(),
+              static_cast<unsigned>(GL_NO_ERROR));
+
+    SkBitmap bitmap;
+    SkImageInfo info = SkImageInfo::Make(
+        options.resource_size.width(), options.resource_size.height(),
+        SkColorType::kBGRA_8888_SkColorType, SkAlphaType::kPremul_SkAlphaType);
+    bitmap.allocPixels(info, options.resource_size.width() * 4);
+    bool success = surface->readPixels(bitmap, 0, 0);
+    CHECK(success);
+    EXPECT_EQ(gles2_context_provider_->ContextGL()->GetError(),
+              static_cast<unsigned>(GL_NO_ERROR));
+    return bitmap;
+  }
+
   // Verifies |actual| matches the expected PNG image.
   void ExpectEquals(const SkBitmap& actual,
                     const base::FilePath::StringType& ref_filename,
@@ -365,6 +439,7 @@ class OopPixelTest : public testing::Test,
   static constexpr size_t kWorkingSetSize = 64 * 1024 * 1024;
   scoped_refptr<viz::TestInProcessContextProvider> raster_context_provider_;
   scoped_refptr<viz::TestInProcessContextProvider> gles2_context_provider_;
+  std::unique_ptr<GpuImageDecodeCache> gpu_image_cache_;
   std::unique_ptr<GpuImageDecodeCache> oop_image_cache_;
   gl::DisableNullDrawGLBindings enable_pixel_output_;
   std::unique_ptr<ImageProvider> image_provider_;
@@ -1534,8 +1609,6 @@ sk_sp<SkTextBlob> BuildTextBlob(
   font.setTypeface(typeface);
   font.setHinting(SkFontHinting::kNormal);
   font.setSize(8.f);
-  font.setBaselineSnap(false);
-  font.setLinearMetrics(true);
   if (use_lcd_text) {
     font.setSubpixel(true);
     font.setEdging(SkFont::Edging::kSubpixelAntiAlias);
@@ -1590,7 +1663,7 @@ class OopTextBlobPixelTest
 
     // Set matrix before any image filter is applied, which may force the
     // matrix to be decomposed into a transform compatible with the filter.
-    display_item_list->push<ConcatOp>(GetMatrix());
+    SetMatrix(display_item_list);
 
     const bool save_layer =
         GetFilterStrategy(GetParam()) == FilterStrategy::kSaveLayer;
@@ -1612,7 +1685,7 @@ class OopTextBlobPixelTest
     display_item_list->Finalize();
 
     auto actual = Raster(display_item_list, options);
-    auto expected = GetExpected(options.resource_size);
+    auto expected = RasterExpectedBitmap(display_item_list, options);
 
     // Drawing text into an image and then transforming that can lead to small
     // flakiness in devices, although in practice they are very imperceptible,
@@ -1637,42 +1710,18 @@ class OopTextBlobPixelTest
     // for each glyph. Additionally, record filters require higher tolerance
     // because oop-r converts raster-at-scale to fixed-scale.
     float avg_error = max_abs_error;
-
+    const bool is_record_filter =
+        GetTextBlobStrategy(GetParam()) == TextBlobStrategy::kRecordFilter;
     if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kComplex) {
-      const bool is_record_filter =
-          GetTextBlobStrategy(GetParam()) == TextBlobStrategy::kRecordFilter;
       error_pixels_percentage =
           std::max(is_record_filter ? 12.f : 0.2f, error_pixels_percentage);
       max_abs_error = std::max(is_record_filter ? 220 : 2, max_abs_error);
       avg_error = std::max(is_record_filter ? 50.f : 2.f, avg_error);
     } else if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kPerspective) {
-      switch (GetTextBlobStrategy(GetParam())) {
-        case TextBlobStrategy::kRecordFilter:
-          error_pixels_percentage = std::max(13.f, error_pixels_percentage);
-          max_abs_error = std::max(255, max_abs_error);
-          avg_error = std::max(60.f, avg_error);
-          break;
-        case TextBlobStrategy::kRecordShader:
-          // For kRecordShader+kPerspective the scale factor used to draw the
-          // shader ends up being different for OOP-R vs using SkCanvas
-          // directly. This causes some larger pixel differences as text spacing
-          // subtly varies between `expected` and `actual`.
-          error_pixels_percentage = std::max(18.3f, error_pixels_percentage);
-          max_abs_error = std::max(228, max_abs_error);
-#if BUILDFLAG(IS_ANDROID)
-          // For some reason the text spacing is less consistent on Android
-          // causing larger average difference between pixels.
-          avg_error = std::max(60.9f, avg_error);
-#else
-          avg_error = std::max(40.2f, avg_error);
-#endif
-          break;
-        default:
-          error_pixels_percentage = std::max(4.0f, error_pixels_percentage);
-          max_abs_error = std::max(36, max_abs_error);
-          avg_error = std::max(36.0f, avg_error);
-          break;
-      }
+      error_pixels_percentage =
+          std::max(is_record_filter ? 13.f : 4.f, error_pixels_percentage);
+      max_abs_error = std::max(is_record_filter ? 255 : 36, max_abs_error);
+      avg_error = std::max(is_record_filter ? 60.f : 36.f, avg_error);
     }
 
     FuzzyPixelComparator comparator(
@@ -1685,146 +1734,6 @@ class OopTextBlobPixelTest
     ExpectEquals(actual, expected, comparator);
   }
 
-  // Generates the expected image to compare against. This will draw on the GPU
-  // thread and waits the current thread until results are ready.
-  SkBitmap GetExpected(const gfx::Size& image_size) {
-    SkBitmap bitmap;
-    base::WaitableEvent waitable;
-    auto* gpu_service = viz::TestGpuServiceHolder::GetInstance();
-
-    // Draw the expected image to a GPU accelerated SkCanvas. This must be done
-    // from the GPU thread so wait until that is done here.
-    gpu_service->gpu_thread_task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&OopTextBlobPixelTest::DrawExpectedOnGpuThread,
-                       base::Unretained(this), image_size, std::ref(bitmap),
-                       std::ref(waitable)));
-    waitable.Wait();
-
-    DCHECK(!bitmap.drawsNothing());
-    return bitmap;
-  }
-
-  void DrawExpectedOnGpuThread(const gfx::Size& image_size,
-                               SkBitmap& expected,
-                               base::WaitableEvent& waitable) {
-    auto* gpu_service = viz::TestGpuServiceHolder::GetInstance()->gpu_service();
-
-    // Must make context current before drawing.
-    auto context_state = gpu_service->GetContextState();
-    ASSERT_TRUE(context_state->MakeCurrent(nullptr));
-
-    gpu::raster::GrShaderCache::ScopedCacheUse cache_use(
-        gpu_service->gr_shader_cache(), gpu::kDisplayCompositorClientId);
-
-    // Setup a GPU accelerated SkSurface to draw to.
-    SkImageInfo image_info =
-        SkImageInfo::MakeN32Premul(image_size.width(), image_size.height());
-    SkSurfaceProps surface_props =
-        UseLcdText() ? skia::LegacyDisplayGlobals::GetSkSurfaceProps(0)
-                     : SkSurfaceProps(0, kUnknown_SkPixelGeometry);
-    auto surface = SkSurface::MakeRenderTarget(
-        context_state->gr_context(), SkBudgeted::kNo, image_info, 0,
-        kTopLeft_GrSurfaceOrigin, &surface_props);
-
-    SkCanvas* canvas = surface->getCanvas();
-    canvas->clear(SK_ColorBLACK);
-    DrawExpectedToCanvas(*canvas);
-    surface->flushAndSubmit();
-
-    // Readback the expected image into `expected`.
-    expected.allocPixels(image_info);
-    bool success = surface->readPixels(expected, 0, 0);
-    ASSERT_TRUE(success);
-
-    waitable.Signal();
-  }
-
-  // Draws the expected image to SkCanvas directly.
-  void DrawExpectedToCanvas(SkCanvas& canvas) {
-    TextBlobTestConfig config = GetParam();
-
-    // Set matrix before any image filter is applied, which may force the
-    // matrix to be decomposed into a transform compatible with the filter.
-    canvas.setMatrix(GetMatrix());
-
-    TextBlobStrategy strategy = GetTextBlobStrategy(config);
-
-    sk_sp<SkImageFilter> filter;
-    if (GetFilterStrategy(config) != FilterStrategy::kNone) {
-      filter =
-          SkImageFilters::Blur(.1f, .1f, SkTileMode::kDecal, nullptr, nullptr);
-    }
-
-    const bool save_layer =
-        GetFilterStrategy(config) == FilterStrategy::kSaveLayer;
-
-    SkPaint save_paint;
-    if (save_layer) {
-      save_paint.setImageFilter(std::move(filter));
-      filter = nullptr;
-      canvas.saveLayer(nullptr, &save_paint);
-    }
-
-    SkPaint text_paint;
-    text_paint.setColor(SK_ColorGREEN);
-    if (filter && (strategy == TextBlobStrategy::kDirect ||
-                   strategy == TextBlobStrategy::kDrawRecord)) {
-      text_paint.setImageFilter(std::move(filter));
-      filter = nullptr;
-    }
-
-    auto text_blob = BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText());
-
-    if (strategy == TextBlobStrategy::kDirect) {
-      // Draw text directly to the SkSurface.
-      canvas.drawTextBlob(std::move(text_blob), 0, kTextBlobY, text_paint);
-    } else {
-      // All other strategies draw text to a SkPicture.
-      SkPictureRecorder recorder;
-      SkCanvas* record_canvas =
-          recorder.beginRecording(SkRect::MakeWH(100, 100));
-      record_canvas->drawTextBlob(std::move(text_blob), 0, kTextBlobY,
-                                  text_paint);
-      sk_sp<SkPicture> recording = recorder.finishRecordingAsPicture();
-
-      if (strategy == TextBlobStrategy::kDrawRecord) {
-        // Draw recorded SkPicture to SkSurface.
-        canvas.drawPicture(recording.get());
-      } else if (strategy == TextBlobStrategy::kRecordShader) {
-        // Convert SkPicture to a shader and then draw the shader to SkSurface.
-        SkRect shader_rect = SkRect::MakeWH(25, 25);
-        auto draw_as_shader =
-            recording->makeShader(SkTileMode::kRepeat, SkTileMode::kRepeat,
-                                  SkFilterMode::kLinear, nullptr, &shader_rect);
-        SkPaint shader_paint;
-        shader_paint.setShader(std::move(draw_as_shader));
-        if (filter) {
-          shader_paint.setImageFilter(std::move(filter));
-          filter = nullptr;
-        }
-        canvas.drawRect(SkRect::MakeWH(50, 50), shader_paint);
-      } else {
-        // Convert SkPicture to an image filter and then draw the filter to
-        // SkSurface.
-        DCHECK_EQ(strategy, TextBlobStrategy::kRecordFilter);
-        sk_sp<SkImageFilter> draw_as_filter =
-            SkImageFilters::Picture(std::move(recording));
-        if (filter) {
-          draw_as_filter = SkImageFilters::Compose(std::move(filter),
-                                                   std::move(draw_as_filter));
-          filter = nullptr;
-        }
-        SkPaint filter_paint;
-        filter_paint.setImageFilter(std::move(draw_as_filter));
-        canvas.drawRect(SkRect::MakeWH(50, 50), filter_paint);
-      }
-    }
-
-    if (save_layer)
-      canvas.restore();
-  }
-
   sk_sp<PaintFilter> MakeFilter() {
     if (GetFilterStrategy(GetParam()) == FilterStrategy::kNone) {
       return nullptr;
@@ -1835,7 +1744,7 @@ class OopTextBlobPixelTest
     }
   }
 
-  SkM44 GetMatrix() {
+  void SetMatrix(scoped_refptr<DisplayItemList> display_list) {
     MatrixStrategy strategy = GetMatrixStrategy(GetParam());
 
     SkM44 m;  // Default constructed to identity
@@ -1855,7 +1764,7 @@ class OopTextBlobPixelTest
       }
     }
 
-    return m;
+    display_list->push<ConcatOp>(m);
   }
 
   void PushDrawOp(scoped_refptr<DisplayItemList> display_list,
@@ -2089,35 +1998,15 @@ TEST_F(OopPixelTest, DrawTextBlobPersistentShaderCache) {
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
   display_item_list->Finalize();
 
+  auto expected = RasterExpectedBitmap(display_item_list, options);
   auto actual = Raster(display_item_list, options);
-
-  // Perform the same operations on a software SkCanvas to produce an expected
-  // bitmap.
-  SkBitmap expected =
-      MakeSolidColorBitmap(options.resource_size, SK_ColorBLACK);
-  SkCanvas canvas(expected, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorBLACK);
-  SkPaint paint;
-  paint.setColor(SK_ColorGREEN);
-  canvas.drawTextBlob(BuildTextBlob(), 0, kTextBlobY, paint);
-
-  // Allow 1% of pixels to be off by 1 due to differences between software and
-  // GPU canvas.
-  FuzzyPixelComparator comparator(
-      /*discard_alpha=*/false,
-      /*error_pixels_percentage_limit=*/1.0f,
-      /*small_error_pixels_percentage_limit=*/0.0f,
-      /*avg_abs_error_limit=*/1.0f,
-      /*max_abs_error_limit=*/1,
-      /*small_error_threshold=*/0);
-
-  ExpectEquals(actual, expected, comparator);
+  ExpectEquals(actual, expected);
 
   // Re-create the context so we start with an uninitialized skia memory cache
   // and use shaders from the persistent cache.
   InitializeOOPContext();
   actual = Raster(display_item_list, options);
-  ExpectEquals(actual, expected, comparator);
+  ExpectEquals(actual, expected);
 }
 
 TEST_F(OopPixelTest, WritePixels) {
