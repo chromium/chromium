@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.price_tracking.proto.Notifications.ExpandedVi
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.PriceDropNotificationPayload;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.commerce.PriceTracking.ProductPrice;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 
 import java.util.ArrayList;
@@ -177,9 +178,10 @@ public class PriceTrackingNotificationBridge {
             return null;
         }
 
-        // Must have destination URL to ensure clicking to function.
+        // Must have valid destination URL to ensure clicking to function.
         if (!priceDropPayload.hasDestinationUrl()
-                || TextUtils.isEmpty(priceDropPayload.getDestinationUrl())) {
+                || TextUtils.isEmpty(priceDropPayload.getDestinationUrl())
+                || !UrlUtilities.isHttpOrHttps(priceDropPayload.getDestinationUrl())) {
             return null;
         }
 
