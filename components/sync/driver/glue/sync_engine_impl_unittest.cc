@@ -347,8 +347,13 @@ class SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest
         /*disabled_features=*/{});
   }
 
+  SyncInvalidationsService* GetSyncInvalidationsService() override {
+    return &mock_sync_invalidations_service_;
+  }
+
  protected:
   base::test::ScopedFeatureList override_features_;
+  NiceMock<MockSyncInvalidationsService> mock_sync_invalidations_service_;
 };
 
 // Test basic initialization with no initial types (first time initialization).
@@ -719,6 +724,13 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
 
   EXPECT_CALL(invalidator_, UpdateInterestedTopics).Times(0);
   ConfigureDataTypes();
+}
+
+TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
+       ShouldEnableInvalidationsWhenInitialized) {
+  InitializeBackend(/*expect_success=*/true);
+  fake_manager_->WaitForSyncThread();
+  EXPECT_TRUE(fake_manager_->IsInvalidatorEnabled());
 }
 
 TEST_F(SyncEngineImplTest, GenerateCacheGUID) {

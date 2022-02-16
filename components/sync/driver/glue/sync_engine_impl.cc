@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidation_service.h"
+#include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/sync/base/bind_to_task_runner.h"
 #include "components/sync/base/features.h"
@@ -420,8 +421,14 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
 
     // Fake a state change to initialize the SyncManager's cached invalidator
     // state.
-    // TODO(crbug.com/1132868): Do this for the new invalidations as well.
     OnInvalidatorStateChange(invalidator_->GetInvalidatorState());
+  } else {
+    DCHECK(sync_invalidations_service_);
+    // TODO(crbug.com/1297919): clean up the state in OnInvalidatorStateChange
+    // once fully migrated to new invalidations. Also clean up the logic for
+    // disabled invalidations since it's not used in new invalidations anymore.
+    OnInvalidatorStateChange(
+        invalidation::InvalidatorState::INVALIDATIONS_ENABLED);
   }
 
   if (sync_invalidations_service_) {

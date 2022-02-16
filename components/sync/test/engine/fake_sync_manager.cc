@@ -180,7 +180,7 @@ ModelTypeSet FakeSyncManager::GetLastRefreshRequestTypes() {
 }
 
 void FakeSyncManager::SetInvalidatorEnabled(bool invalidator_enabled) {
-  // Do nothing.
+  invalidator_enabled_ = invalidator_enabled;
 }
 
 void FakeSyncManager::OnCookieJarChanged(bool account_mismatch) {}

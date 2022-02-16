@@ -48,6 +48,21 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 const char kSyncedBookmarkURL[] = "http://www.mybookmark.com";
+const char kSyncedBookmarkTitle[] = "Title";
+
+// Injects a new bookmark into the |fake_server| and returns a GUID of a created
+// entity. Note that this trigges an invalidations from the server.
+base::GUID InjectSyncedBookmark(fake_server::FakeServer* fake_server) {
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  fake_server::BookmarkEntityBuilder bookmark_builder =
+      entity_builder_factory.NewBookmarkEntityBuilder(kSyncedBookmarkTitle);
+  std::unique_ptr<syncer::LoopbackServerEntity> bookmark_entity =
+      bookmark_builder.BuildBookmark(GURL(kSyncedBookmarkURL));
+  base::GUID bookmark_guid = base::GUID::ParseLowercase(
+      bookmark_entity->GetSpecifics().bookmark().guid());
+  fake_server->InjectEntity(std::move(bookmark_entity));
+  return bookmark_guid;
+}
 
 MATCHER_P(HasBeenUpdatedAfter, last_updated_timestamp, "") {
   return arg.specifics().device_info().last_updated_timestamp() >
@@ -319,6 +334,38 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+                       ShouldProvideNotificationsEnabledInGetUpdates) {
+  ASSERT_TRUE(SetupSync());
+
+  // Trigger a new sync cycle by a server-side change to initiate GU_TRIGGER
+  // GetUpdates.
+  base::GUID bookmark_guid = InjectSyncedBookmark(GetFakeServer());
+  ASSERT_TRUE(
+      bookmarks_helper::BookmarksGUIDChecker(/*profile=*/0, bookmark_guid)
+          .Wait());
+
+  sync_pb::ClientToServerMessage message;
+  ASSERT_TRUE(GetFakeServer()->GetLastGetUpdatesMessage(&message));
+
+  // Verify that the latest GetUpdates happened due to an invalidation.
+  ASSERT_EQ(message.get_updates().get_updates_origin(),
+            sync_pb::SyncEnums::GU_TRIGGER);
+  EXPECT_TRUE(message.get_updates().caller_info().notifications_enabled());
+
+  ASSERT_GT(message.get_updates().from_progress_marker_size(), 0);
+  ASSERT_TRUE(
+      message.get_updates().from_progress_marker(0).has_get_update_triggers());
+  ASSERT_TRUE(message.get_updates()
+                  .from_progress_marker(0)
+                  .get_update_triggers()
+                  .has_invalidations_out_of_sync());
+  EXPECT_FALSE(message.get_updates()
+                   .from_progress_marker(0)
+                   .get_update_triggers()
+                   .invalidations_out_of_sync());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
                        PRE_ShouldNotSendAdditionalGetUpdates) {
   ASSERT_TRUE(SetupSync());
 }
@@ -408,16 +455,8 @@ class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest
   ~SingleClientWithUseSyncInvalidationsForWalletAndOfferTest() override =
       default;
 
-  void InjectSyncedBookmark() {
-    fake_server::BookmarkEntityBuilder bookmark_builder =
-        entity_builder_factory_.NewBookmarkEntityBuilder("My Bookmark");
-    GetFakeServer()->InjectEntity(
-        bookmark_builder.BuildBookmark(GURL(kSyncedBookmarkURL)));
-  }
-
  private:
   base::test::ScopedFeatureList override_features_;
-  fake_server::EntityBuilderFactory entity_builder_factory_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -454,6 +493,39 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
+    ShouldProvideNotificationsEnabledInGetUpdates) {
+  ASSERT_TRUE(SetupSync());
+
+  // Trigger a new sync cycle by a server-side change to initiate GU_TRIGGER
+  // GetUpdates.
+  base::GUID bookmark_guid = InjectSyncedBookmark(GetFakeServer());
+  ASSERT_TRUE(
+      bookmarks_helper::BookmarksGUIDChecker(/*profile=*/0, bookmark_guid)
+          .Wait());
+
+  sync_pb::ClientToServerMessage message;
+  ASSERT_TRUE(GetFakeServer()->GetLastGetUpdatesMessage(&message));
+
+  // Verify that the latest GetUpdates happened due to an invalidation.
+  ASSERT_EQ(message.get_updates().get_updates_origin(),
+            sync_pb::SyncEnums::GU_TRIGGER);
+  EXPECT_TRUE(message.get_updates().caller_info().notifications_enabled());
+
+  ASSERT_GT(message.get_updates().from_progress_marker_size(), 0);
+  ASSERT_TRUE(
+      message.get_updates().from_progress_marker(0).has_get_update_triggers());
+  ASSERT_TRUE(message.get_updates()
+                  .from_progress_marker(0)
+                  .get_update_triggers()
+                  .has_invalidations_out_of_sync());
+  EXPECT_FALSE(message.get_updates()
+                   .from_progress_marker(0)
+                   .get_update_triggers()
+                   .invalidations_out_of_sync());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
     EnableAndDisableADataType) {
   ASSERT_TRUE(SetupSync());
 
@@ -476,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(
           .Wait());
 
   // Create a bookmark on the server.
-  InjectSyncedBookmark();
+  InjectSyncedBookmark(GetFakeServer());
   // Enable BOOKMARKS again.
   ASSERT_TRUE(
       GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kBookmarks));

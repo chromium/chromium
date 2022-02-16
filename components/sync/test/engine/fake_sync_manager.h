@@ -66,6 +66,8 @@ class FakeSyncManager : public SyncManager {
   // Block until the sync thread has finished processing any pending messages.
   void WaitForSyncThread();
 
+  bool IsInvalidatorEnabled() const { return invalidator_enabled_; }
+
   // SyncManager implementation.
   // Note: we treat whatever message loop this is called from as the sync
   // loop for purposes of callbacks.
@@ -111,6 +113,7 @@ class FakeSyncManager : public SyncManager {
   std::string cache_guid_;
   std::string birthday_;
   std::string bag_of_chips_;
+  bool invalidator_enabled_ = false;
 
   // Faked data state.
   ModelTypeSet initial_sync_ended_types_;
