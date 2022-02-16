@@ -14,13 +14,12 @@ constexpr int kFaviconDimension = 18;
 constexpr int kThumbnailDimension = 28;
 constexpr int kSystemIconDimension = 20;
 
-constexpr SkColor kOmniboxGenericIconColor = gfx::kGoogleGrey700;
-
 // The following dimensions depend on whether the productivity launcher is
 // enabled or not.
 int GetAnswerCardIconDimension();
 int GetAppIconDimension();
 int GetImageIconDimension();
+SkColor GetGenericIconColor();
 
 }  // namespace app_list
 

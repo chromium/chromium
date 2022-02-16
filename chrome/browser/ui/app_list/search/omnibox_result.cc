@@ -273,12 +273,12 @@ void OmniboxResult::UpdateIcon() {
   if (bookmark_model && bookmark_model->IsBookmarked(match_.destination_url)) {
     SetIcon(IconInfo(
         gfx::CreateVectorIcon(omnibox::kBookmarkIcon, kSystemIconDimension,
-                              kOmniboxGenericIconColor),
+                              GetGenericIconColor()),
         kSystemIconDimension));
   } else {
     SetIcon(IconInfo(
         gfx::CreateVectorIcon(TypeToVectorIcon(match_.type),
-                              kSystemIconDimension, kOmniboxGenericIconColor),
+                              kSystemIconDimension, GetGenericIconColor()),
         kSystemIconDimension));
   }
 }
@@ -374,17 +374,17 @@ void OmniboxResult::InitializeButtonActions(
 
     switch (button_action) {
       case ash::SearchResultActionType::kRemove:
-        button_image = gfx::CreateVectorIcon(ash::kSearchResultRemoveIcon,
-                                             kImageButtonIconSize,
-                                             kOmniboxGenericIconColor);
+        button_image =
+            gfx::CreateVectorIcon(ash::kSearchResultRemoveIcon,
+                                  kImageButtonIconSize, GetGenericIconColor());
         button_tooltip = l10n_util::GetStringFUTF16(
             IDS_APP_LIST_REMOVE_SUGGESTION_ACCESSIBILITY_NAME, title());
         visible_on_hover = true;  // visible upon hovering
         break;
       case ash::SearchResultActionType::kAppend:
-        button_image = gfx::CreateVectorIcon(ash::kSearchResultAppendIcon,
-                                             kImageButtonIconSize,
-                                             kOmniboxGenericIconColor);
+        button_image =
+            gfx::CreateVectorIcon(ash::kSearchResultAppendIcon,
+                                  kImageButtonIconSize, GetGenericIconColor());
         button_tooltip = l10n_util::GetStringFUTF16(
             IDS_APP_LIST_APPEND_SUGGESTION_ACCESSIBILITY_NAME, title());
         visible_on_hover = false;  // always visible

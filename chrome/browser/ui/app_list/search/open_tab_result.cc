@@ -114,7 +114,7 @@ void OpenTabResult::UpdateIcon() {
   // TODO(crbug.com/1293702): WIP. Decide on the right generic icon here.
   SetIcon(
       IconInfo(gfx::CreateVectorIcon(omnibox::kSwitchIcon, kSystemIconDimension,
-                                     kOmniboxGenericIconColor),
+                                     GetGenericIconColor()),
                kSystemIconDimension));
 }
 
