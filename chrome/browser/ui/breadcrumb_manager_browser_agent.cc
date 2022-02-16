@@ -14,9 +14,10 @@
 namespace {
 
 int GetTabId(const content::WebContents* const web_contents) {
+  CHECK(web_contents);
   const BreadcrumbManagerTabHelper* const tab_helper =
       BreadcrumbManagerTabHelper::FromWebContents(web_contents);
-  DCHECK(tab_helper);
+  CHECK(tab_helper);
   return tab_helper->GetUniqueId();
 }
 
