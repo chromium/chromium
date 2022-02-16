@@ -37,7 +37,8 @@ interface SyncExplicitPassphraseClientObserver {
 // Next ordinal value: 3
 [Stable, Uuid="4d13845c-a628-404b-8a88-c39a0aeea298"]
 interface SyncExplicitPassphraseClient {
-  // Adds a new observer.
+  // Adds a new observer. Immediately fires OnPassphraseRequired()
+  // or OnPassphraseAvailable() if needed.
   AddObserver@0(pending_remote<SyncExplicitPassphraseClientObserver> observer);
 
   // Attempts to retrieve explicit passphrase key. |account_key| is used to

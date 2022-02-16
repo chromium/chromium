@@ -71,7 +71,13 @@ void SyncExplicitPassphraseClientAsh::BindReceiver(
 void SyncExplicitPassphraseClientAsh::AddObserver(
     mojo::PendingRemote<crosapi::mojom::SyncExplicitPassphraseClientObserver>
         observer) {
-  observers_.Add(std::move(observer));
+  auto observer_id = observers_.Add(std::move(observer));
+  // Immediately notify observer if passphrase is required or available.
+  if (previous_passphrase_required_state_) {
+    observers_.Get(observer_id)->OnPassphraseRequired();
+  } else if (sync_service_->GetUserSettings()->GetDecryptionNigoriKey()) {
+    observers_.Get(observer_id)->OnPassphraseAvailable();
+  }
 }
 
 void SyncExplicitPassphraseClientAsh::GetDecryptionNigoriKey(

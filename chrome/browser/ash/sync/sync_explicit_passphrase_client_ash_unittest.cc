@@ -233,5 +233,39 @@ TEST_F(SyncExplicitPassphraseClientAshTest, ShouldNotifyObserver) {
   EXPECT_THAT(observer.GetNumOnPassphraseRequiredCalls(), Eq(1));
 }
 
+TEST_F(SyncExplicitPassphraseClientAshTest,
+       ShouldNotifyNewObserverAboutPassphraseRequired) {
+  // Mimic entering passphrase required state.
+  ON_CALL(*sync_user_settings(), IsPassphraseRequired())
+      .WillByDefault(Return(true));
+  client()->OnStateChanged(sync_service());
+  client()->FlushMojoForTesting();
+
+  // Add new observer and ensure it's notified about passphrase required state.
+  TestSyncExplicitPassphraseClientObserver observer;
+  observer.Observe(client());
+  client()->FlushMojoForTesting();
+  EXPECT_THAT(observer.GetNumOnPassphraseAvailableCalls(), Eq(0));
+  EXPECT_THAT(observer.GetNumOnPassphraseRequiredCalls(), Eq(1));
+}
+
+TEST_F(SyncExplicitPassphraseClientAshTest,
+       ShouldNotifyNewObserverAboutPassphraseAvailable) {
+  // Mimic passphrase being entered by the user.
+  ON_CALL(*sync_user_settings(), IsPassphraseRequired())
+      .WillByDefault(Return(false));
+  ON_CALL(*sync_user_settings(), GetDecryptionNigoriKey())
+      .WillByDefault(MakeTestNigoriKey);
+  client()->OnStateChanged(sync_service());
+  client()->FlushMojoForTesting();
+
+  // Add new observer and ensure it's notified about passphrase available state.
+  TestSyncExplicitPassphraseClientObserver observer;
+  observer.Observe(client());
+  client()->FlushMojoForTesting();
+  EXPECT_THAT(observer.GetNumOnPassphraseAvailableCalls(), Eq(1));
+  EXPECT_THAT(observer.GetNumOnPassphraseRequiredCalls(), Eq(0));
+}
+
 }  // namespace
 }  // namespace ash
