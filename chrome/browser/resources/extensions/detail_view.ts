@@ -24,7 +24,6 @@ import './shared_vars.js';
 import './strings.m.js';
 import './toggle_row.js';
 
-import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
@@ -50,8 +49,7 @@ export interface ExtensionsDetailViewElement {
   };
 }
 
-const ExtensionsDetailViewElementBase =
-    CrContainerShadowMixin(ItemMixin(PolymerElement));
+const ExtensionsDetailViewElementBase = ItemMixin(PolymerElement);
 
 export class ExtensionsDetailViewElement extends
     ExtensionsDetailViewElementBase {
@@ -110,14 +108,6 @@ export class ExtensionsDetailViewElement extends
 
   connectedCallback() {
     super.connectedCallback();
-
-    if (document.documentElement.hasAttribute('enable-branding-update')) {
-      // Always show the top shadow, regardless of scroll position.
-      // TODO(crbug.com/1177509): Remove CrContainerShadowMixin completely and
-      // add a fixed shadow after feature is launched.
-      this.enableShadowBehavior(false);
-      this.showDropShadows();
-    }
   }
 
   ready() {
