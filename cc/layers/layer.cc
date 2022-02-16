@@ -233,8 +233,7 @@ bool Layer::IsPropertyChangeAllowed() const {
     return true;
   DCHECK(IsMainThread());
 
-  return !layer_tree_host()->in_paint_layer_contents() &&
-         !layer_tree_host()->InProtectedSequence();
+  return !layer_tree_host()->in_paint_layer_contents();
 }
 
 void Layer::CaptureContent(const gfx::Rect& rect,
