@@ -283,18 +283,15 @@ crbug.com/852089 [ chromeos ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ fuchsia ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ win7 ] Pixel_WebGPU* [ Skip ]
 
+# WebGPU pixel tests fail on Win10+SkiaRenderer+Dawn.
+crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPU* [ Failure ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
 # The "Skip" expectations in this section are expected to be removable at some
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
-
-# WebGPU pixel tests hang on mac bots which mostly run older versions of mac os.
-crbug.com/1213170 [ mac ] Pixel_WebGPUImport* [ Skip ]
-crbug.com/1213170 [ mac ] Pixel_WebGPUCanvas* [ Skip ]
-crbug.com/1213170 [ mac ] Pixel_WebGPUWebGL* [ Skip ]
-crbug.com/1213170 [ mac ] Pixel_WebGPUCopyExternalImage* [ Skip ]
 
 # WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
 crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPU* [ Skip ]
@@ -413,9 +410,6 @@ crbug.com/1175753 [ mac release apple-apple-m1 ] Pixel_Video_BackdropFilter [ Fa
 crbug.com/1209344 [ linux display-server-wayland intel skia-renderer-gl ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 crbug.com/1271184 [ linux display-server-wayland intel skia-renderer-gl ] Pixel_Video_Context_Loss_MP4 [ RetryOnFailure ]
 
-# WebGPU pixel tests fail on Win10+SkiaRenderer+Dawn.
-crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPU* [ Failure ]
-
 # Flaky on Pixel 4
 crbug.com/1215747 [ android android-pixel-4 skia-renderer-gl android-webview-instrumentation ] Pixel_OffscreenCanvasWebGLDefault [ RetryOnFailure ]
 crbug.com/1276605 [ android android-pixel-4 skia-renderer-gl android-webview-instrumentation ] Pixel_OffscreenCanvasTransferToImageBitmap [ RetryOnFailure ]
@@ -427,6 +421,8 @@ crbug.com/1295079 [ linux skia-renderer-vulkan intel-0x5912 ] Pixel_CanvasDispla
 
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
 crbug.com/1268120 [ mac ] Pixel_WebGPUToDataURL [ Failure ]
+
+crbug.com/1297636 [ mac ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
 
 # Failures on Sherlock
 # These two tests causes a crash on Swarming. Skipping so that we have a signal for other tests.
