@@ -135,6 +135,16 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   // Returns AutomationEventRouter.
   extensions::AutomationEventRouterInterface* GetAutomationEventRouter() const;
 
+  // Computes the smallest rect that encloses all of the descendants of
+  // |info_data|.
+  gfx::Rect ComputeEnclosingBounds(
+      AccessibilityInfoDataWrapper* info_data) const;
+
+  // Helper to recursively compute bounds for |info_data|. Returns true if
+  // non-empty bounds were encountered.
+  void ComputeEnclosingBoundsInternal(AccessibilityInfoDataWrapper* info_data,
+                                      gfx::Rect* computed_bounds) const;
+
   // Find the most top-left focusable node under the given node in full focus
   // mode.
   AccessibilityInfoDataWrapper* FindFirstFocusableNodeInFullFocusMode(
