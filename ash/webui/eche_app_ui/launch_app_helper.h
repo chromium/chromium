@@ -91,7 +91,7 @@ class LaunchAppHelper {
 
   // Exposed virtual for testing.
   virtual LaunchAppHelper::AppLaunchProhibitedReason
-  checkAppLaunchProhibitedReason(FeatureStatus status) const;
+  CheckAppLaunchProhibitedReason(FeatureStatus status) const;
 
   // Exposed virtual for testing.
   // The notification could be generated from webUI or native layer, for the
@@ -114,9 +114,6 @@ class LaunchAppHelper {
   CloseEcheAppFunction close_eche_app_function_;
   LaunchNotificationFunction launch_notification_function_;
 };
-
-std::ostream& operator<<(std::ostream& stream,
-                         LaunchAppHelper::AppLaunchProhibitedReason reasons);
 
 }  // namespace eche_app
 }  // namespace ash

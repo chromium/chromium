@@ -33,8 +33,9 @@ class TestableLaunchAppHelper : public LaunchAppHelper {
   ~TestableLaunchAppHelper() override = default;
   TestableLaunchAppHelper(const TestableLaunchAppHelper&) = delete;
   TestableLaunchAppHelper& operator=(const TestableLaunchAppHelper&) = delete;
+
   // LaunchAppHelper:
-  LaunchAppHelper::AppLaunchProhibitedReason checkAppLaunchProhibitedReason(
+  LaunchAppHelper::AppLaunchProhibitedReason CheckAppLaunchProhibitedReason(
       FeatureStatus status) const override {
     return LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited;
   }

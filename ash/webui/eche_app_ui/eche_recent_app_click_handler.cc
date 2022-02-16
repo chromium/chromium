@@ -42,7 +42,7 @@ void EcheRecentAppClickHandler::HandleNotificationClick(
     int64_t notification_id,
     const phonehub::Notification::AppMetadata& app_metadata) {
   const LaunchAppHelper::AppLaunchProhibitedReason prohibited_reason =
-      launch_app_helper_->checkAppLaunchProhibitedReason(
+      launch_app_helper_->CheckAppLaunchProhibitedReason(
           feature_status_provider_->GetStatus());
   if (recent_apps_handler_ &&
       prohibited_reason ==
@@ -55,7 +55,7 @@ void EcheRecentAppClickHandler::HandleNotificationClick(
 void EcheRecentAppClickHandler::OnRecentAppClicked(
     const phonehub::Notification::AppMetadata& app_metadata) {
   const LaunchAppHelper::AppLaunchProhibitedReason prohibited_reason =
-      launch_app_helper_->checkAppLaunchProhibitedReason(
+      launch_app_helper_->CheckAppLaunchProhibitedReason(
           feature_status_provider_->GetStatus());
   switch (prohibited_reason) {
     case LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited:
