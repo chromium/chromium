@@ -22,11 +22,13 @@
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/layout.h"
-#include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/base/models/image_model.h"
+#endif
 
 class SkBitmap;
 
@@ -152,10 +154,12 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     virtual ~Delegate() = default;
   };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   using LottieImageParseFunction =
       gfx::ImageSkia (*)(const std::string& bytes_string);
   using LottieThemedImageParseFunction =
       ui::ImageModel (*)(const std::string& bytes_string);
+#endif
 
   // Initialize the ResourceBundle for this process. Does not take ownership of
   // the |delegate| value. Returns the language selected or an empty string if
