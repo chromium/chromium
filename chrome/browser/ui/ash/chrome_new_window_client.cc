@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -304,7 +305,56 @@ void ChromeNewWindowClient::NewWindowForDetachingTab(
 }
 
 void ChromeNewWindowClient::OpenUrl(const GURL& url, OpenUrlFrom from) {
-  OpenUrlImpl(url, from == OpenUrlFrom::kUserInteraction);
+  // Opens a URL in a new tab. If the URL is for a chrome://settings page,
+  // opens settings in a new window.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if ((url.SchemeIs(url::kAboutScheme) ||
+       url.SchemeIs(content::kChromeUIScheme))) {
+    // Show browser settings (e.g. chrome://settings). This may open in a window
+    // or a tab depending on feature SplitSettings.
+    if (url.host() == chrome::kChromeUISettingsHost) {
+      std::string sub_page = GetPathAndQuery(url);
+      chrome::ShowSettingsSubPageForProfile(profile, sub_page);
+      return;
+    }
+    // OS settings are shown in a window.
+    if (url.host() == chrome::kChromeUIOSSettingsHost) {
+      std::string sub_page = GetPathAndQuery(url);
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
+                                                                   sub_page);
+      return;
+    }
+  }
+
+  NavigateParams navigate_params(
+      profile, url,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_FROM_API));
+
+  // If the |from| is kUserInteraction, then the page will load with a user
+  // activation. This means it will be able to autoplay media without
+  // restriction.
+  if (from == OpenUrlFrom::kUserInteraction)
+    navigate_params.was_activated = blink::mojom::WasActivatedOption::kYes;
+
+  Navigate(&navigate_params);
+
+  if (navigate_params.browser) {
+    // The browser window might be on another user's desktop, and hence not
+    // visible. Ensure the browser becomes visible on this user's desktop.
+    multi_user_util::MoveWindowToCurrentDesktop(
+        navigate_params.browser->window()->GetNativeWindow());
+  }
+
+  auto* tab = navigate_params.navigated_or_inserted_contents;
+  if (from == OpenUrlFrom::kArc && tab) {
+    // Add a flag to remember this tab originated in the ARC context.
+    tab->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
+                     std::make_unique<arc::ArcWebContentsData>(tab));
+
+    apps::IntentHandlingMetrics::RecordOpenBrowserMetrics(
+        apps::IntentHandlingMetrics::AppType::kArc);
+  }
 }
 
 void ChromeNewWindowClient::OpenCalculator() {
@@ -458,59 +508,6 @@ void ChromeNewWindowClient::OpenPersonalizationHub() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   web_app::LaunchSystemWebAppAsync(profile,
                                    web_app::SystemAppType::PERSONALIZATION);
-}
-
-bool ChromeNewWindowClient::OpenUrlFromArc(const GURL& url) {
-  content::WebContents* tab =
-      OpenUrlImpl(url, false /* from_user_interaction */);
-  if (!tab)
-    return false;
-
-  // Add a flag to remember this tab originated in the ARC context.
-  tab->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
-                   std::make_unique<arc::ArcWebContentsData>(tab));
-  return true;
-}
-
-content::WebContents* ChromeNewWindowClient::OpenUrlImpl(
-    const GURL& url,
-    bool from_user_interaction) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if ((url.SchemeIs(url::kAboutScheme) ||
-       url.SchemeIs(content::kChromeUIScheme))) {
-    // Show browser settings (e.g. chrome://settings). This may open in a window
-    // or a tab depending on feature SplitSettings.
-    if (url.host() == chrome::kChromeUISettingsHost) {
-      std::string sub_page = GetPathAndQuery(url);
-      chrome::ShowSettingsSubPageForProfile(profile, sub_page);
-      return nullptr;
-    }
-    // OS settings are shown in a window.
-    if (url.host() == chrome::kChromeUIOSSettingsHost) {
-      std::string sub_page = GetPathAndQuery(url);
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
-                                                                   sub_page);
-      return nullptr;
-    }
-  }
-
-  NavigateParams navigate_params(
-      profile, url,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
-                                ui::PAGE_TRANSITION_FROM_API));
-
-  if (from_user_interaction)
-    navigate_params.was_activated = blink::mojom::WasActivatedOption::kYes;
-
-  Navigate(&navigate_params);
-
-  if (navigate_params.browser) {
-    // The browser window might be on another user's desktop, and hence not
-    // visible. Ensure the browser becomes visible on this user's desktop.
-    multi_user_util::MoveWindowToCurrentDesktop(
-        navigate_params.browser->window()->GetNativeWindow());
-  }
-  return navigate_params.navigated_or_inserted_contents;
 }
 
 void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,

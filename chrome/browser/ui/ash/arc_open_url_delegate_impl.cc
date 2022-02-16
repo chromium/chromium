@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/safe_base_name.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
@@ -26,7 +26,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/ash/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -189,13 +188,9 @@ void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
   if (!url.is_valid())
     return;
 
-  DCHECK(ChromeNewWindowClient::Get());
-
   GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
-  if (ChromeNewWindowClient::Get()->OpenUrlFromArc(url_to_open)) {
-    apps::IntentHandlingMetrics::RecordOpenBrowserMetrics(
-        apps::IntentHandlingMetrics::AppType::kArc);
-  }
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url_to_open, ash::NewWindowDelegate::OpenUrlFrom::kArc);
 }
 
 void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {

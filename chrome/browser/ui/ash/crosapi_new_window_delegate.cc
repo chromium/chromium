@@ -123,8 +123,12 @@ void CrosapiNewWindowDelegate::NewWindowForDetachingTab(
 }
 
 void CrosapiNewWindowDelegate::OpenUrl(const GURL& url, OpenUrlFrom from) {
-  // TODO(crbug.com/1291192): Support ARC.
-  crosapi::BrowserManager::Get()->OpenUrl(url);
+  if (from == NewWindowDelegate::OpenUrlFrom::kArc) {
+    // TODO(crbug.com/1291192): Support ARC.
+    delegate_->OpenUrl(url, from);
+  } else {
+    crosapi::BrowserManager::Get()->OpenUrl(url);
+  }
 }
 
 void CrosapiNewWindowDelegate::OpenCalculator() {

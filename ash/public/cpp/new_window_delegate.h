@@ -73,7 +73,7 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   enum class OpenUrlFrom {
     kUnspecified,
     kUserInteraction,
-    // TODO(crbug.com/1291192): Add kArc support.
+    kArc,
   };
   virtual void OpenUrl(const GURL& url, OpenUrlFrom from) = 0;
 
