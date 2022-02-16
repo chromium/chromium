@@ -10,6 +10,8 @@
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "base/i18n/rtl.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -32,6 +34,8 @@ using TextItem = ash::SearchResultTextItem;
 using TextType = ash::SearchResultTextItemType;
 using IconCode = ash::SearchResultTextItem::IconCode;
 using KeyboardCode = ui::KeyboardCode;
+
+constexpr char kKeyboardShortcutScheme[] = "keyboard_shortcut://";
 
 TextItem CreateStringTextItem(const std::u16string& text) {
   TextItem text_item(TextType::kString);
@@ -165,6 +169,8 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
                                                const KeyboardShortcutData& data,
                                                double relevance)
     : profile_(profile) {
+  set_id(base::StrCat({kKeyboardShortcutScheme,
+                       base::NumberToString(data.description_message_id)}));
   set_relevance(relevance);
   SetTitle(data.description);
   SetResultType(ResultType::kKeyboardShortcut);
