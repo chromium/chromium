@@ -2929,6 +2929,25 @@
             ]
         }
     ],
+    "ExtensionDeferredIndividualSettings": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExtensionDeferredIndividualSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "FasterSetCookie": [
         {
             "platforms": [
