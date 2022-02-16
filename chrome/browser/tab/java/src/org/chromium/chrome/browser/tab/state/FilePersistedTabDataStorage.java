@@ -241,7 +241,14 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
         @Override
         public Void executeSyncTask() {
-            ByteBuffer data = mDataSupplier.get();
+            ByteBuffer data = null;
+            try {
+                data = mDataSupplier.get();
+            } catch (OutOfMemoryError e) {
+                // Log and exit FileSaveRequest early on OutOfMemoryError.
+                // Not saving a Tab is better than crashing the app.
+                Log.e(TAG, "OutOfMemoryError. Details: " + e.getMessage());
+            }
             if (data == null) {
                 mDataSupplier = null;
                 return null;
