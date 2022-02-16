@@ -2236,8 +2236,6 @@ ExtensionPrefs::ExtensionPrefs(
   MigrateYoutubeOffBookmarkApps();
 
   MigrateDeprecatedDisableReasons();
-
-  MigrateOldBlocklistPrefs();
 }
 
 AppSorting* ExtensionPrefs::app_sorting() const {
@@ -2676,62 +2674,6 @@ void ExtensionPrefs::MigrateToNewExternalUninstallPref() {
       current_ids->Append(id);
 
     DeleteExtensionPrefs(id);
-  }
-}
-
-void ExtensionPrefs::MigrateOldBlocklistPrefs() {
-  static constexpr char kLegacyBlocklistPref[] = "blacklist";
-  static constexpr char kLegacyBlocklistAcknowledgedPref[] = "ack_blacklist";
-  std::unique_ptr<ExtensionsInfo> extensions_info(GetInstalledExtensionsInfo());
-
-  for (const auto& info : *extensions_info) {
-    const ExtensionId& extension_id = info->extension_id;
-    bool was_blocklisted = false;
-    bool was_blocklist_acknowledged = false;
-    bool legacy_pref_cleared = false;
-
-    if (ReadPrefAsBoolean(extension_id, kLegacyBlocklistPref,
-                          &was_blocklisted)) {
-      // Migrate the old value.
-      if (was_blocklisted) {
-        // Keep the blocklist acknowledged pref unchanged as it will be updated
-        // below.
-        blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
-            extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
-      }
-      // Clear the legacy pref.
-      UpdateExtensionPref(extension_id, kLegacyBlocklistPref, nullptr);
-      legacy_pref_cleared = true;
-    }
-
-    if (ReadPrefAsBoolean(extension_id, kLegacyBlocklistAcknowledgedPref,
-                          &was_blocklist_acknowledged)) {
-      // Migrate the old value.
-      if (was_blocklist_acknowledged) {
-        blocklist_prefs::AddAcknowledgedBlocklistState(
-            extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
-      }
-      // Clear the legacy pref.
-      UpdateExtensionPref(extension_id, kLegacyBlocklistAcknowledgedPref,
-                          nullptr);
-      legacy_pref_cleared = true;
-    }
-
-    if (HasDisableReason(
-            extension_id,
-            disable_reason::DEPRECATED_DISABLE_REMOTELY_FOR_MALWARE)) {
-      // Migrate the old value.
-      blocklist_prefs::AddOmahaBlocklistState(
-          extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
-      // Clear the legacy pref.
-      RemoveDisableReason(
-          extension_id,
-          disable_reason::DEPRECATED_DISABLE_REMOTELY_FOR_MALWARE);
-      legacy_pref_cleared = true;
-    }
-
-    if (legacy_pref_cleared)
-      DeleteExtensionPrefsIfPrefEmpty(extension_id);
   }
 }
 

@@ -744,11 +744,6 @@ class ExtensionPrefs : public KeyedService {
   // TODO(devlin): Remove this once clients are migrated over, around M84.
   void MigrateToNewExternalUninstallPref();
 
-  // Migrates kPrefBlocklist with kPrefBlocklistState.
-  // TODO(crbug.com/1232243): Remove this once clients are migrated over, around
-  // M97.
-  void MigrateOldBlocklistPrefs();
-
   // Returns true if the given component extension should be installed, even
   // though it has been obsoleted. Installing it allows us to ensure it is
   // cleaned/deleted up properly. After that cleanup is done, this will return
@@ -810,11 +805,6 @@ class ExtensionPrefs : public KeyedService {
       const std::string& extension_id,
       const base::Value* extension,
       bool include_component_extensions) const;
-
-  // Deprecated kPrefBlocklistAcknowledged kPrefBlocklist. Use
-  // kPrefBlocklistState instead.
-  // TODO(crbug.com/1193695): Remove kPrefBlocklistAcknowledged kPrefBlocklist
-  // once all clients are updated.
 
   // Read the boolean preference entry and return true if the preference exists
   // and the preference's value is true; false otherwise.
