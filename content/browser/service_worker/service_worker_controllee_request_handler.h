@@ -84,6 +84,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       const blink::StorageKey& storage_key);
 
   void ContinueWithRegistration(
+      base::TimeTicks start_time,
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration);
   void ContinueWithActivatedVersion(

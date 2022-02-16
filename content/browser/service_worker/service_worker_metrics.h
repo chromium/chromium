@@ -184,6 +184,12 @@ class ServiceWorkerMetrics {
   // Records the size of Service-Worker-Navigation-Preload header when the
   // navigation preload request is to be sent.
   static void RecordNavigationPreloadRequestHeaderSize(size_t size);
+
+  static void RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
+      bool skip_service_worker);
+
+  static void RecordFirstFindRegistrationForClientUrlTimeOnBrowserStartup(
+      base::TimeDelta time);
 };
 
 }  // namespace content

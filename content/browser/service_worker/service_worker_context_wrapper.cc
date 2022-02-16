@@ -19,10 +19,12 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -258,8 +260,9 @@ void ServiceWorkerContextWrapper::InitInternal(
       std::move(non_network_pending_loader_factory_bundle_for_update_check),
       core_observer_list_.get(), this);
 
-  context()->registry()->GetRegisteredStorageKeys(base::BindOnce(
-      &ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys, this));
+  context()->registry()->GetRegisteredStorageKeys(
+      base::BindOnce(&ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys,
+                     this, base::TimeTicks::Now()));
 }
 
 void ServiceWorkerContextWrapper::Shutdown() {
@@ -1617,6 +1620,7 @@ void ServiceWorkerContextWrapper::WaitForRegistrationsInitializedForTest() {
 }
 
 void ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys(
+    base::TimeTicks start_time,
     const std::vector<blink::StorageKey>& storage_keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const blink::StorageKey& storage_key : storage_keys)
@@ -1624,6 +1628,10 @@ void ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys(
   registrations_initialized_ = true;
   if (on_registrations_initialized_)
     std::move(on_registrations_initialized_).Run();
+
+  UMA_HISTOGRAM_MEDIUM_TIMES(
+      "ServiceWorker.Storage.RegisteredStorageKeyCacheInitialization.Time",
+      base::TimeTicks::Now() - start_time);
 }
 
 void ServiceWorkerContextWrapper::ClearRunningServiceWorkers() {

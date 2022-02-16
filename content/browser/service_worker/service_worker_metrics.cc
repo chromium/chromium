@@ -464,4 +464,32 @@ void ServiceWorkerMetrics::RecordStartWorkerTimingClockConsistency(
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartTiming.ClockConsistency", type);
 }
 
+void ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
+    bool skip_service_worker) {
+  static bool is_first_call = true;
+  if (is_first_call) {
+    is_first_call = false;
+    if (!GetContentClient()->browser()->IsBrowserStartupComplete()) {
+      base::UmaHistogramBoolean(
+          "ServiceWorker.OnBrowserStartup.SkipServiceWorkerOnFirstNavigation",
+          skip_service_worker);
+    }
+  }
+}
+
+void ServiceWorkerMetrics::
+    RecordFirstFindRegistrationForClientUrlTimeOnBrowserStartup(
+        base::TimeDelta time) {
+  static bool is_first_call = true;
+  if (is_first_call) {
+    is_first_call = false;
+    if (!GetContentClient()->browser()->IsBrowserStartupComplete()) {
+      base::UmaHistogramMediumTimes(
+          "ServiceWorker.OnBrowserStartup.FirstFindRegistrationForClientUrl."
+          "Time",
+          time);
+    }
+  }
+}
+
 }  // namespace content

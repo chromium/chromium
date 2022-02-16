@@ -644,6 +644,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ServiceWorker.OnBrowserStartup.FirstFindRegistrationForClientUrl.Time"
+    units="ms" expires_after="2022-12-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Execution time of FindRegistrationForClientUrl until continuation is called.
+    It is recorded only once on browser startup.
+  </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.OnBrowserStartup.SkipServiceWorkerOnFirstNavigation"
+    enum="BooleanSkipped" expires_after="2022-12-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Whether the first navigation requires checking the existence of service
+    worker registration in DB. It is recorded only once on browser startup.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.PaymentRequestEvent.Time" units="ms"
     expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
@@ -954,6 +976,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records successes and failures of purging a stale resource in
     ServiceWorkerStorage.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.Storage.ReadInitialDataFromDB.Time" units="ms"
+    expires_after="2022-12-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Execution time of ServiceWorkerStorage::ReadInitialDataFromDB which reads
+    RegisteredStorageKey from a database.
+  </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.Storage.RegisteredStorageKeyCacheInitialization.Time"
+    units="ms" expires_after="2022-12-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The cache creation time of service worker registration key on UI thread.
+    Includes asynchronous call, thread hopping and the time of
+    ServiceWorker.Storage.ReadInitialDataFromDB.Time.
   </summary>
 </histogram>
 

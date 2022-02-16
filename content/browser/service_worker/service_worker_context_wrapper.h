@@ -472,6 +472,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // This is used as a callback of GetRegisteredStorageKeys when initialising to
   // store a list of storage keys that have registered service workers.
   void DidGetRegisteredStorageKeys(
+      base::TimeTicks start_time,
       const std::vector<blink::StorageKey>& storage_keys);
 
   // Temporary for https://crbug.com/1161153.
