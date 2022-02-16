@@ -4,8 +4,6 @@
 
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
 
-#include <memory>
-
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "cc/base/features.h"
@@ -89,7 +87,6 @@ std::unique_ptr<ScrollOffsetAnimationCurve>
 ScrollOffsetAnimationCurveFactory::CreateImpulseAnimation(
     const gfx::PointF& target_value) {
   return base::WrapUnique(new ScrollOffsetAnimationCurve(
-      target_value, ScrollOffsetAnimationCurve::AnimationType::kImpulse,
-      ScrollOffsetAnimationCurve::DurationBehavior::INVERSE_DELTA));
+      target_value, ScrollOffsetAnimationCurve::AnimationType::kImpulse));
 }
 }  // namespace cc

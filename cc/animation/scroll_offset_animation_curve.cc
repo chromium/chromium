@@ -140,8 +140,7 @@ ScrollOffsetAnimationCurve::ScrollOffsetAnimationCurve(
       animation_type_(animation_type),
       duration_behavior_(duration_behavior),
       has_set_initial_value_(false) {
-  DCHECK_EQ((animation_type == AnimationType::kEaseInOut ||
-             animation_type == AnimationType::kImpulse),
+  DCHECK_EQ(animation_type == AnimationType::kEaseInOut,
             duration_behavior.has_value());
   switch (animation_type) {
     case AnimationType::kEaseInOut:
@@ -167,8 +166,7 @@ ScrollOffsetAnimationCurve::ScrollOffsetAnimationCurve(
       animation_type_(animation_type),
       duration_behavior_(duration_behavior),
       has_set_initial_value_(false) {
-  DCHECK_EQ((animation_type == AnimationType::kEaseInOut ||
-             animation_type == AnimationType::kImpulse),
+  DCHECK_EQ(animation_type == AnimationType::kEaseInOut,
             duration_behavior.has_value());
 }
 
@@ -419,7 +417,9 @@ void ScrollOffsetAnimationCurve::UpdateTarget(base::TimeDelta t,
   }
 
   const base::TimeDelta new_duration =
-      EaseInOutBoundedSegmentDuration(new_delta, t, delayed_by);
+      (animation_type_ == AnimationType::kEaseInOut)
+          ? EaseInOutBoundedSegmentDuration(new_delta, t, delayed_by)
+          : ImpulseSegmentDuration(new_delta, delayed_by);
   if (new_duration.InSecondsF() < kEpsilon) {
     // The duration is (close to) 0, so stop the animation.
     target_value_ = new_target;
@@ -433,17 +433,19 @@ void ScrollOffsetAnimationCurve::UpdateTarget(base::TimeDelta t,
   double new_slope =
       velocity * (new_duration.InSecondsF() / MaximumDimension(new_delta));
 
-  DCHECK(animation_type_ == AnimationType::kImpulse ||
-         animation_type_ == AnimationType::kEaseInOut);
-  if (animation_type_ == AnimationType::kImpulse &&
-      IsNewTargetInOppositeDirection(current_position, target_value_,
-                                     new_target)) {
-    // Prevent any rubber-banding by setting the velocity (and subsequently, the
-    // slope) to 0 when moving in the opposite direciton.
-    new_slope = 0;
+  if (animation_type_ == AnimationType::kEaseInOut) {
+    timing_function_ = EaseInOutWithInitialSlope(new_slope);
+  } else {
+    DCHECK_EQ(animation_type_, AnimationType::kImpulse);
+    if (IsNewTargetInOppositeDirection(current_position, target_value_,
+                                       new_target)) {
+      // Prevent any rubber-banding by setting the velocity (and subsequently,
+      // the slope) to 0 when moving in the opposite direciton.
+      new_slope = 0;
+    }
+    timing_function_ = ImpulseCurveWithInitialSlope(new_slope);
   }
 
-  timing_function_ = EaseInOutWithInitialSlope(new_slope);
   initial_value_ = current_position;
   target_value_ = new_target;
   total_animation_duration_ = t + new_duration;

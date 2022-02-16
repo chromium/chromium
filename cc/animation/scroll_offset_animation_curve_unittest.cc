@@ -184,8 +184,8 @@ TEST(ScrollOffsetAnimationCurveTest, ImpulseUpdateTarget) {
   gfx::Vector2dF new_delta =
       new_target_value - distance_halfway_through_initial_animation;
   base::TimeDelta updated_segment_duration =
-      curve->EaseInOutBoundedSegmentDuration(new_delta, base::TimeDelta(),
-                                             base::TimeDelta());
+      ScrollOffsetAnimationCurve::ImpulseSegmentDuration(new_delta,
+                                                         base::TimeDelta());
 
   base::TimeDelta overall_duration = time_of_update + updated_segment_duration;
   EXPECT_NEAR(overall_duration.InSecondsF(), curve->Duration().InSecondsF(),
@@ -233,19 +233,18 @@ TEST(ScrollOffsetAnimationCurveTest, ImpulseUpdateTargetSwitchDirections) {
               curve->GetValue(base::Seconds(initial_duration / 2.0)).y(),
               0.01f);
 
-  // Once the impulse style curve is updated, it turns to an ease-in ease-out
-  // type curve.
-  double updated_duration = curve
-                                ->EaseInOutBoundedSegmentDuration(
-                                    updated_initial_value.OffsetFromOrigin(),
-                                    base::TimeDelta(), base::TimeDelta())
-                                .InSecondsF();
-  EXPECT_NEAR(updated_initial_value.y() * 0.5,
-              curve
-                  ->GetValue(base::Seconds(initial_duration / 2.0 +
-                                           updated_duration / 2.0))
-                  .y(),
-              0.01f);
+  double updated_duration =
+      ScrollOffsetAnimationCurve::ImpulseSegmentDuration(
+          gfx::Vector2dF(updated_initial_value.x(), updated_initial_value.y()),
+          base::TimeDelta())
+          .InSecondsF();
+  EXPECT_NEAR(
+      updated_initial_value.y() * (1.0 - halfway_through_default_impulse_curve),
+      curve
+          ->GetValue(
+              base::Seconds(initial_duration / 2.0 + updated_duration / 2.0))
+          .y(),
+      0.01f);
   EXPECT_NEAR(
       0.0,
       curve->GetValue(base::Seconds(initial_duration / 2.0 + updated_duration))
@@ -404,5 +403,4 @@ TEST(ScrollOffsetAnimationCurveTest, UpdateTargetZeroLastSegmentDuration) {
   curve->UpdateTarget(base::Seconds(-0.1), gfx::PointF(0.f, 500.f));
   EXPECT_NEAR(expected_duration, curve->Duration().InSecondsF(), 0.0002f);
 }
-
 }  // namespace cc
