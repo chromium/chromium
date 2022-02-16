@@ -13,12 +13,16 @@ namespace blink {
 struct NGFlexBreakTokenData final : NGBlockBreakTokenData {
   NGFlexBreakTokenData(const NGBlockBreakTokenData* break_token_data,
                        const Vector<NGFlexLine>& flex_lines,
+                       const Vector<EBreakBetween>& row_break_between,
                        LayoutUnit intrinsic_block_size)
       : NGBlockBreakTokenData(kFlexBreakTokenData, break_token_data),
         flex_lines(flex_lines),
+        row_break_between(row_break_between),
         intrinsic_block_size(intrinsic_block_size) {}
 
   Vector<NGFlexLine> flex_lines;
+  // |row_break_between| is only used in the case of row flex containers.
+  Vector<EBreakBetween> row_break_between;
   LayoutUnit intrinsic_block_size;
 };
 

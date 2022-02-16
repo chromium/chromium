@@ -75,9 +75,11 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   void ConstructAndAppendFlexItems();
   void ApplyFinalAlignmentAndReversals(Vector<NGFlexLine>* flex_line_outputs);
   NGLayoutResult::EStatus GiveItemsFinalPositionAndSize(
-      Vector<NGFlexLine>* flex_line_outputs);
+      Vector<NGFlexLine>* flex_line_outputs,
+      Vector<EBreakBetween>* row_break_between_outputs);
   NGLayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
-      Vector<NGFlexLine>* flex_line_outputs);
+      Vector<NGFlexLine>* flex_line_outputs,
+      Vector<EBreakBetween>* row_break_between_outputs);
   NGLayoutResult::EStatus PropagateFlexItemInfo(FlexItem* flex_item,
                                                 wtf_size_t flex_line_idx,
                                                 LogicalOffset offset,
@@ -110,6 +112,17 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // https://www.w3.org/TR/css-break-3/#box-splitting
   void ConsumeRemainingFragmentainerSpace(LogicalOffset item_offset,
                                           NGFlexItem* flex_item);
+
+  // Insert a fragmentainer break before a row if necessary. Rows do not produce
+  // a layout result, so when breaking before a row, we will insert a
+  // fragmentainer break before the first child in a row. |child| and
+  // |layout_result| should be those associated with the first child in the row.
+  // |row_break_between| and |has_container_separation| are specific to the row
+  // itself. See |::blink::BreakBeforeChildIfNeeded()| for more documentation.
+  NGBreakStatus BreakBeforeRowIfNeeded(EBreakBetween row_break_between,
+                                       NGLayoutInputNode child,
+                                       const NGLayoutResult& layout_result,
+                                       bool has_container_separation);
 
 #if DCHECK_IS_ON()
   void CheckFlexLines(const Vector<NGFlexLine>& flex_line_outputs) const;
