@@ -622,6 +622,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PageContentAnnotationsService.ModelThreadExecutionLatency.PageEntities"
+    units="ms" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the model execution latency for the PageEntities model. This does
+    not include any thread hop or queuing delay. Recorded once per model
+    execution attempt. This is effectively the same as
+    OptimizationGuide.PageContentAnnotationsService.ModelExecutionLatency.PageEntities
+    but uses `base::ElapsedThreadTimer` to calculate the timing.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PageContentAnnotationsService.PageEntitiesExecutionLatency"
     units="ms" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
