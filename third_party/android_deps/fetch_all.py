@@ -426,6 +426,20 @@ def _CreateAarInfos(aar_files):
 
         logging.debug('- %s', aar_info_name)
         cmd = [_AAR_PY, 'list', aar_file, '--output', aar_info_path]
+
+        if aar_info_name == 'com_google_android_material_material.info':
+            # Keep in sync with copy in BuildConfigGenerator.groovy.
+            resource_exclusion_glbos = [
+                'res/layout*/*calendar*',
+                'res/layout*/*chip_input*',
+                'res/layout*/*clock*',
+                'res/layout*/*picker*',
+                'res/layout*/*time*',
+            ]
+            cmd += [
+                '--resource-exclusion-globs',
+                repr(resource_exclusion_glbos).replace("'", '"')
+            ]
         proc = subprocess.Popen(cmd)
         jobs.append((cmd, proc))
 
