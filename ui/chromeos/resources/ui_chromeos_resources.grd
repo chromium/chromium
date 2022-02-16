@@ -120,7 +120,6 @@
 
       <!-- Assistant images. -->
       <structure type="chrome_html" name="IDR_ASSISTANT_VOICE_MATCH_ANIMATION" file="vector/voice_laptop.json" compress="gzip" />
-      <structure type="chrome_html" name="IDR_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_ANIMATION" file="vector/connecting_loop.json" compress="gzip" />
     </structures>
   </release>
 </grit>

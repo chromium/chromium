@@ -144,7 +144,6 @@ const char* kKnownDisplayTypes[] = {
     OobeUI::kLoginDisplay, OobeUI::kOobeDisplay};
 
 // Sorted
-constexpr char kArcAssistantLogoPath[] = "assistant_logo.png";
 constexpr char kArcOverlayCSSPath[] = "overlay.css";
 constexpr char kArcPlaystoreCSSPath[] = "playstore.css";
 constexpr char kArcPlaystoreJSPath[] = "playstore.js";
@@ -187,7 +186,6 @@ constexpr char kArcAppDownloadingVideoPath[] = "res/arc_app_dowsnloading.mp4";
 // Adds various product logo resources.
 void AddProductLogoResources(content::WebUIDataSource* source) {
   // Required for Assistant OOBE.
-  source->AddResourcePath(kArcAssistantLogoPath, IDR_ASSISTANT_LOGO_PNG);
   source->AddResourcePath(kArcSupervisionIconPath, IDR_SUPERVISION_ICON_PNG);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -236,8 +234,6 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
 void AddAssistantScreensResources(content::WebUIDataSource* source) {
   source->AddResourcePath("voice_match_animation.json",
                           IDR_ASSISTANT_VOICE_MATCH_ANIMATION);
-  source->AddResourcePath("voice_match_already_setup_animation.json",
-                          IDR_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_ANIMATION);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
