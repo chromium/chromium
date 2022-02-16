@@ -456,7 +456,8 @@ void ArcMetricsService::ReportDnsQueryResult(mojom::ArcDnsQuery query,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::string metric_name =
       base::StrCat({"Arc.Net.DnsQuery.", DnsQueryToString(query)});
-  VLOG(3) << metric_name << ": " << success;
+  if (!success)
+      VLOG(4) << metric_name << ": " << success;
   base::UmaHistogramBoolean(metric_name, success);
 }
 
