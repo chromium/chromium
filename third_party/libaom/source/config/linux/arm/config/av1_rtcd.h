@@ -934,29 +934,109 @@ void cdef_copy_rect8_8bit_to_16bit_c(uint16_t* dst,
                                      int h);
 #define cdef_copy_rect8_8bit_to_16bit cdef_copy_rect8_8bit_to_16bit_c
 
-void cdef_filter_block_c(void* dst8,
-                         int dstride,
-                         const uint16_t* in,
-                         int pri_strength,
-                         int sec_strength,
-                         int dir,
-                         int pri_damping,
-                         int sec_damping,
-                         int bsize,
-                         int coeff_shift);
-#define cdef_filter_block cdef_filter_block_c
+void cdef_filter_16_0_c(void* dst16,
+                        int dstride,
+                        const uint16_t* in,
+                        int pri_strength,
+                        int sec_strength,
+                        int dir,
+                        int pri_damping,
+                        int sec_damping,
+                        int coeff_shift,
+                        int block_width,
+                        int block_height);
+#define cdef_filter_16_0 cdef_filter_16_0_c
 
-void cdef_filter_block_highbd_c(void* dst16,
-                                int dstride,
-                                const uint16_t* in,
-                                int pri_strength,
-                                int sec_strength,
-                                int dir,
-                                int pri_damping,
-                                int sec_damping,
-                                int bsize,
-                                int coeff_shift);
-#define cdef_filter_block_highbd cdef_filter_block_highbd_c
+void cdef_filter_16_1_c(void* dst16,
+                        int dstride,
+                        const uint16_t* in,
+                        int pri_strength,
+                        int sec_strength,
+                        int dir,
+                        int pri_damping,
+                        int sec_damping,
+                        int coeff_shift,
+                        int block_width,
+                        int block_height);
+#define cdef_filter_16_1 cdef_filter_16_1_c
+
+void cdef_filter_16_2_c(void* dst16,
+                        int dstride,
+                        const uint16_t* in,
+                        int pri_strength,
+                        int sec_strength,
+                        int dir,
+                        int pri_damping,
+                        int sec_damping,
+                        int coeff_shift,
+                        int block_width,
+                        int block_height);
+#define cdef_filter_16_2 cdef_filter_16_2_c
+
+void cdef_filter_16_3_c(void* dst16,
+                        int dstride,
+                        const uint16_t* in,
+                        int pri_strength,
+                        int sec_strength,
+                        int dir,
+                        int pri_damping,
+                        int sec_damping,
+                        int coeff_shift,
+                        int block_width,
+                        int block_height);
+#define cdef_filter_16_3 cdef_filter_16_3_c
+
+void cdef_filter_8_0_c(void* dst8,
+                       int dstride,
+                       const uint16_t* in,
+                       int pri_strength,
+                       int sec_strength,
+                       int dir,
+                       int pri_damping,
+                       int sec_damping,
+                       int coeff_shift,
+                       int block_width,
+                       int block_height);
+#define cdef_filter_8_0 cdef_filter_8_0_c
+
+void cdef_filter_8_1_c(void* dst8,
+                       int dstride,
+                       const uint16_t* in,
+                       int pri_strength,
+                       int sec_strength,
+                       int dir,
+                       int pri_damping,
+                       int sec_damping,
+                       int coeff_shift,
+                       int block_width,
+                       int block_height);
+#define cdef_filter_8_1 cdef_filter_8_1_c
+
+void cdef_filter_8_2_c(void* dst8,
+                       int dstride,
+                       const uint16_t* in,
+                       int pri_strength,
+                       int sec_strength,
+                       int dir,
+                       int pri_damping,
+                       int sec_damping,
+                       int coeff_shift,
+                       int block_width,
+                       int block_height);
+#define cdef_filter_8_2 cdef_filter_8_2_c
+
+void cdef_filter_8_3_c(void* dst8,
+                       int dstride,
+                       const uint16_t* in,
+                       int pri_strength,
+                       int sec_strength,
+                       int dir,
+                       int pri_damping,
+                       int sec_damping,
+                       int coeff_shift,
+                       int block_width,
+                       int block_height);
+#define cdef_filter_8_3 cdef_filter_8_3_c
 
 int cdef_find_dir_c(const uint16_t* img,
                     int stride,
