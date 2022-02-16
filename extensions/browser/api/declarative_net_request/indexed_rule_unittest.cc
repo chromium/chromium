@@ -345,8 +345,8 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
     std::unique_ptr<DomainVec> excluded_domains;
     const ParseResult expected_result;
     // Only valid if |expected_result| is SUCCESS.
-    const DomainVec expected_domains;
-    const DomainVec expected_excluded_domains;
+    const DomainVec expected_initiator_domains;
+    const DomainVec expected_excluded_initiator_domains;
   } cases[] = {
       {nullptr, nullptr, ParseResult::SUCCESS, {}, {}},
       {std::make_unique<DomainVec>(),
@@ -397,9 +397,10 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
 
     EXPECT_EQ(cases[i].expected_result, result);
     if (result == ParseResult::SUCCESS) {
-      EXPECT_EQ(cases[i].expected_domains, indexed_rule.domains);
-      EXPECT_EQ(cases[i].expected_excluded_domains,
-                indexed_rule.excluded_domains);
+      EXPECT_EQ(cases[i].expected_initiator_domains,
+                indexed_rule.initiator_domains);
+      EXPECT_EQ(cases[i].expected_excluded_initiator_domains,
+                indexed_rule.excluded_initiator_domains);
     }
   }
 }

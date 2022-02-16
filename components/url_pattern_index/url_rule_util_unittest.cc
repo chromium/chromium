@@ -39,7 +39,7 @@ proto::UrlRule MakeProtoRule(proto::RuleSemantics semantics,
   rule.set_match_case(url_pattern.match_case());
   rule.set_url_pattern(std::string(url_pattern.url_pattern()));
 
-  testing::AddDomains(domains, &rule);
+  testing::AddInitiatorDomains(domains, &rule);
 
   return rule;
 }

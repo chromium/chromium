@@ -245,7 +245,10 @@ class ProtoToJSONRuleConverter {
   bool PopulateDomainsInternal(base::StringPiece sub_key, bool exclude_value) {
     base::Value domains(base::Value::Type::LIST);
 
-    for (const proto::DomainListItem& item : input_rule_.domains()) {
+    // Note: This isn't always correct. Filters consider the $domain option to
+    //       match the request domain for main_frame requests - not the
+    //       initiator domain.
+    for (const proto::DomainListItem& item : input_rule_.initiator_domains()) {
       if (item.exclude() == exclude_value)
         domains.Append(item.domain());
     }

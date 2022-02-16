@@ -402,7 +402,7 @@ TEST_F(UrlPatternIndexTest, OneRuleWithThirdParty) {
   }
 }
 
-TEST_F(UrlPatternIndexTest, OneRuleWithDomainList) {
+TEST_F(UrlPatternIndexTest, OneRuleWithInitiatorDomainList) {
   constexpr const char* kUrl = "http://example.com";
 
   const struct {
@@ -499,11 +499,12 @@ TEST_F(UrlPatternIndexTest, OneRuleWithDomainList) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(::testing::Message()
-                 << "Domains: " << ::testing::PrintToString(test_case.domains)
+                 << "Initiator Domains: "
+                 << ::testing::PrintToString(test_case.domains)
                  << "; DocumentOrigin: " << test_case.document_origin);
 
     auto rule = MakeUrlRule(UrlPattern(kUrl, kSubstring));
-    testing::AddDomains(test_case.domains, &rule);
+    testing::AddInitiatorDomains(test_case.domains, &rule);
     ASSERT_TRUE(AddUrlRule(rule));
     Finish();
 
@@ -533,7 +534,7 @@ TEST_F(UrlPatternIndexTest, OneRuleWithLongDomainList) {
   }
 
   auto rule = MakeUrlRule(UrlPattern(kUrl, kSubstring));
-  testing::AddDomains(domains, &rule);
+  testing::AddInitiatorDomains(domains, &rule);
   ASSERT_TRUE(AddUrlRule(rule));
   Finish();
 
@@ -735,7 +736,7 @@ TEST_F(UrlPatternIndexTest, MultipleRuleMatches) {
 TEST_F(UrlPatternIndexTest, MatchWithDisableGenericRules) {
   const struct {
     const char* url_pattern;
-    std::vector<std::string> domains;
+    std::vector<std::string> initiator_domains;
   } kRules[] = {
       // Generic rules.
       {"some_text", std::vector<std::string>()},
@@ -749,10 +750,10 @@ TEST_F(UrlPatternIndexTest, MatchWithDisableGenericRules) {
 
   for (const auto& rule_data : kRules) {
     auto rule = MakeUrlRule(UrlPattern(rule_data.url_pattern, kSubstring));
-    testing::AddDomains(rule_data.domains, &rule);
+    testing::AddInitiatorDomains(rule_data.initiator_domains, &rule);
     ASSERT_TRUE(AddUrlRule(rule))
-        << "UrlPattern: " << rule_data.url_pattern
-        << "; Domains: " << ::testing::PrintToString(rule_data.domains);
+        << "UrlPattern: " << rule_data.url_pattern << "; Initiator Domains: "
+        << ::testing::PrintToString(rule_data.initiator_domains);
   }
 
   // Note: Some of the rules have common domains (e.g., example1.com), which are

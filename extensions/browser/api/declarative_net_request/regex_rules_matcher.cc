@@ -53,9 +53,9 @@ bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
     return false;
   }
 
-  // Compares included and excluded domains.
-  return url_pattern_index::DoesOriginMatchDomainList(
-      params.first_party_origin, rule, false /* disable_generic_rules */);
+  // Compares included and excluded initiator domains.
+  return url_pattern_index::DoesOriginMatchInitiatorDomainList(
+      params.first_party_origin, rule);
 }
 
 bool IsBeforeRequestAction(flat::ActionType action_type) {

@@ -33,16 +33,17 @@ proto::UrlRule CreateRuleImpl(base::StringPiece substring,
   return rule;
 }
 
-proto::UrlRule CreateRuleForDocumentImpl(base::StringPiece substring,
-                                         int32_t activation_types,
-                                         std::vector<std::string> domains,
-                                         bool is_allowlist_rule,
-                                         bool is_suffix_rule) {
+proto::UrlRule CreateRuleForDocumentImpl(
+    base::StringPiece substring,
+    int32_t activation_types,
+    std::vector<std::string> initiator_domains,
+    bool is_allowlist_rule,
+    bool is_suffix_rule) {
   proto::UrlRule rule =
       CreateRuleImpl(substring, is_allowlist_rule, is_suffix_rule);
   rule.set_activation_types(activation_types);
-  for (std::string& domain : domains) {
-    rule.add_domains()->set_domain(std::move(domain));
+  for (std::string& domain : initiator_domains) {
+    rule.add_initiator_domains()->set_domain(std::move(domain));
   }
   return rule;
 }
@@ -64,10 +65,11 @@ proto::UrlRule CreateAllowlistSuffixRule(base::StringPiece suffix) {
                         /*is_suffix_rule=*/true);
 }
 
-proto::UrlRule CreateRuleForDocument(base::StringPiece pattern,
-                                     int32_t activation_types,
-                                     std::vector<std::string> domains) {
-  return CreateRuleForDocumentImpl(pattern, activation_types, domains,
+proto::UrlRule CreateRuleForDocument(
+    base::StringPiece pattern,
+    int32_t activation_types,
+    std::vector<std::string> initiator_domains) {
+  return CreateRuleForDocumentImpl(pattern, activation_types, initiator_domains,
                                    /*is_allowlist_rule=*/false,
                                    /*is_suffix_rule=*/false);
 }
@@ -75,8 +77,8 @@ proto::UrlRule CreateRuleForDocument(base::StringPiece pattern,
 proto::UrlRule CreateAllowlistRuleForDocument(
     base::StringPiece pattern,
     int32_t activation_types,
-    std::vector<std::string> domains) {
-  return CreateRuleForDocumentImpl(pattern, activation_types, domains,
+    std::vector<std::string> initiator_domains) {
+  return CreateRuleForDocumentImpl(pattern, activation_types, initiator_domains,
                                    /*is_allowlist_rule=*/true,
                                    /*is_suffix_rule=*/false);
 }

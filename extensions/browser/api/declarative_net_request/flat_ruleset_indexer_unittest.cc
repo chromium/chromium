@@ -195,8 +195,8 @@ IndexedRule CreateIndexedRule(
   rule.anchor_left = anchor_left;
   rule.anchor_right = anchor_right;
   rule.url_pattern = std::move(url_pattern);
-  rule.domains = std::move(domains);
-  rule.excluded_domains = std::move(excluded_domains);
+  rule.initiator_domains = std::move(domains);
+  rule.excluded_initiator_domains = std::move(excluded_domains);
   rule.redirect_url = std::move(redirect_url);
   rule.action_type = action_type;
   rule.url_transform = std::move(url_transform);
@@ -223,8 +223,10 @@ bool AreRulesEqual(const IndexedRule* indexed_rule,
          indexed_rule->anchor_left == rule->anchor_left() &&
          indexed_rule->anchor_right == rule->anchor_right() &&
          indexed_rule->url_pattern == ToString(rule->url_pattern()) &&
-         indexed_rule->domains == ToVector(rule->domains_included()) &&
-         indexed_rule->excluded_domains == ToVector(rule->domains_excluded());
+         indexed_rule->initiator_domains ==
+             ToVector(rule->initiator_domains_included()) &&
+         indexed_rule->excluded_initiator_domains ==
+             ToVector(rule->initiator_domains_excluded());
 }
 
 // Returns all UrlRule(s) in the given |index|.

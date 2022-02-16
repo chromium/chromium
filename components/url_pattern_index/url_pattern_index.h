@@ -248,19 +248,18 @@ class UrlPatternIndexMatcher {
   mutable absl::optional<size_t> rules_count_;
 };
 
-// Returns whether the |origin| matches the domain list of the |rule|. A match
-// means that the longest domain in |domains| that |origin| is a sub-domain of
-// is not an exception OR all the |domains| are exceptions and neither matches
-// the |origin|. Thus, domain filters with more domain components trump filters
-// with fewer domain components, i.e. the more specific a filter is, the higher
-// the priority.
-//
-// A rule whose domain list is empty or contains only negative domains is still
-// considered a "generic" rule. Therefore, if |disable_generic_rules| is set,
-// this function will always return false for such rules.
-bool DoesOriginMatchDomainList(const url::Origin& origin,
-                               const flat::UrlRule& rule,
-                               bool disable_generic_rules);
+// Returns whether the `rule` is considered "generic". A generic rule is one
+// whose initator domain list is either empty or contains only negative domains.
+bool IsRuleGeneric(const flat::UrlRule& rule);
+
+// Returns whether the `origin` matches the initiator domain list of the `rule`.
+// A match means that the longest domain in `domains` that `origin` is a
+// sub-domain of is not an exception OR all the `domains` are exceptions and
+// neither matches the `origin`. Thus, domain filters with more domain
+// components trump filters with fewer domain components, i.e. the more specific
+// a filter is, the higher the priority.
+bool DoesOriginMatchInitiatorDomainList(const url::Origin& origin,
+                                        const flat::UrlRule& rule);
 
 // Returns whether the request matches flags of the specified `rule`. Takes into
 // account:

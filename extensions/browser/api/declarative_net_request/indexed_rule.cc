@@ -652,12 +652,12 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
   }
 
   if (!CanonicalizeDomains(std::move(parsed_rule.condition.domains),
-                           &indexed_rule->domains)) {
+                           &indexed_rule->initiator_domains)) {
     return ParseResult::ERROR_NON_ASCII_DOMAIN;
   }
 
   if (!CanonicalizeDomains(std::move(parsed_rule.condition.excluded_domains),
-                           &indexed_rule->excluded_domains)) {
+                           &indexed_rule->excluded_initiator_domains)) {
     return ParseResult::ERROR_NON_ASCII_EXCLUDED_DOMAIN;
   }
 

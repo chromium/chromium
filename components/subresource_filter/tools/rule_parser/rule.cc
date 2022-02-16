@@ -105,7 +105,8 @@ url_pattern_index::proto::UrlRule UrlRule::ToProtobuf() const {
   }
 
   for (const std::string& domain : domains) {
-    url_pattern_index::proto::DomainListItem* list_item = result.add_domains();
+    url_pattern_index::proto::DomainListItem* list_item =
+        result.add_initiator_domains();
     if (domain.empty())
       continue;
     if (domain[0] == '~') {
@@ -306,9 +307,9 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
   if (rule.match_case())
     options.push_back("match-case");
 
-  if (rule.domains_size()) {
+  if (rule.initiator_domains_size()) {
     std::string domains = "domain=";
-    DomainListJoin(rule.domains(), '|', &domains);
+    DomainListJoin(rule.initiator_domains(), '|', &domains);
     options.push_back(std::move(domains));
   }
 
