@@ -42,7 +42,7 @@
 namespace {
 
 // Checks the supported ozone platform with Scenic if no arg is specified.
-// TODO(crbug.com/1230150): Delete this after Flatland migration is completed.
+// TODO(fxbug.dev/94001): Delete this after Flatland migration is completed.
 void HandleOzonePlatformArgs() {
   base::CommandLine* const launch_args = base::CommandLine::ForCurrentProcess();
   if (launch_args->HasSwitch(switches::kOzonePlatform))
@@ -88,7 +88,7 @@ bool NotifyNewBrowserWindow(const base::CommandLine& command_line) {
 // ViewProvider implementation that provides a single view and exposes all
 // requested views from OzonePlatformScenic inside it. This class owns the top
 // level Scenic session.
-// TODO(crbug.com/1230150): Delete ViewProviderScenic after Flatland migration
+// TODO(fxbug.dev/94001): Delete ViewProviderScenic after Flatland migration
 // is completed.
 class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
  public:
@@ -567,7 +567,7 @@ class ChromeBrowserMainPartsFuchsia::UseGraphicalPresenter final {
 
 // ViewProvider implementation that delegates calls to the correct Ozone
 // platform's ViewProvider.
-// TODO(crbug.com/1230150): Delete ViewProviderRouter after moving |binding_|
+// TODO(fxbug.dev/94001): Delete ViewProviderRouter after moving |binding_|
 // to ViewProviderFlatland after migration is completed.
 class ChromeBrowserMainPartsFuchsia::ViewProviderRouter
     : public fuchsia::ui::app::ViewProvider {

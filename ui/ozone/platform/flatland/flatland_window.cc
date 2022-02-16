@@ -318,11 +318,9 @@ void FlatlandWindow::UpdateSize() {
   bounds_ = gfx::Rect(ceilf(width * device_pixel_ratio_),
                       ceilf(height * device_pixel_ratio_));
 
-  // TODO(crbug.com/1230150): Handle zero size scenario.
-
   PlatformWindowDelegate::BoundsChange bounds;
   bounds.bounds = bounds_;
-  // TODO(crbug.com/1230150): Calculate insets and update.
+  // TODO(fxbug.dev/93998): Calculate insets and update.
   window_delegate_->OnBoundsChanged(bounds);
 }
 

@@ -21,7 +21,7 @@ namespace ui {
 namespace {
 
 // Default interval used for vsync callback.
-// TODO(crbug.com/1230150): Remove the usage of this by calculating fps through
+// TODO(fxbug.dev/93998): Remove the usage of this by calculating fps through
 // Display API and present callbacks.
 constexpr base::TimeDelta kDefaultVsyncInterval = base::Seconds(1) / 60;
 

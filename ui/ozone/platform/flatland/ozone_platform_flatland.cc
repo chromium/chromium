@@ -108,7 +108,7 @@ class OzonePlatformFlatland : public OzonePlatform,
               std::move(parent_token));
     }
 
-    // TODO(crbug.com/1230150): Add a hook for the RootPresenter equivalent of
+    // TODO(fxbug.dev/93998): Add a hook for the RootPresenter equivalent of
     // Flatland to ui::fuchsia::InitializeViewTokenAndPresentView() create a
     // window.
     CHECK(properties.view_creation_token.value.is_valid());
@@ -192,7 +192,7 @@ class OzonePlatformFlatland : public OzonePlatform,
       surface_factory_->Initialize(std::move(flatland_gpu_host_remote));
     }
 
-    // TODO(crbug.com/1230150): Add overlay manager.
+    // TODO(crbug.com/1146006): Add overlay manager.
   }
 
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {

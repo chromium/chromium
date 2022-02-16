@@ -152,7 +152,7 @@ FlatlandSurfaceFactory::CreatePlatformWindowSurface(
 
 std::unique_ptr<SurfaceOzoneCanvas>
 FlatlandSurfaceFactory::CreateCanvasForWidget(gfx::AcceleratedWidget widget) {
-  // TODO(crbug.com/1230150): Add FlatlandWindowCanvas implementation.
+  // TODO(fxbug.dev/93998): Add FlatlandWindowCanvas implementation.
   NOTREACHED();
   return nullptr;
 }
