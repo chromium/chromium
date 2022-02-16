@@ -27,6 +27,7 @@
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/simple_url_loader_throttle.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -243,6 +244,9 @@ void HttpBridge::MakeAsynchronousPost() {
   fetch_state_.url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   network::SimpleURLLoader* url_loader = fetch_state_.url_loader.get();
+
+  if (network::SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation))
+    url_loader->SetAllowBatching();
 
   std::string request_to_send;
   compression::GzipCompress(request_content_, &request_to_send);
