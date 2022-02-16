@@ -115,6 +115,8 @@ void EmojiUI::Show(Profile* profile) {
   // eventually call ShowUI().
   contents_wrapper->ReloadWebContents();
   contents_wrapper->GetWebUIController()->incognito_mode_ = incognito_mode;
+  contents_wrapper->GetWebUIController()->no_text_field_ =
+      input_client == nullptr;
 
   auto bubble_view =
       std::make_unique<EmojiiBubbleDialogView>(std::move(contents_wrapper));
@@ -137,7 +139,7 @@ void EmojiUI::BindInterface(
 void EmojiUI::CreatePageHandler(
     mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<EmojiPageHandler>(
-      std::move(receiver), web_ui(), this, incognito_mode_);
+      std::move(receiver), web_ui(), this, incognito_mode_, no_text_field_);
 }
 
 }  // namespace chromeos

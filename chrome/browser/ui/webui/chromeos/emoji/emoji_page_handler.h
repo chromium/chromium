@@ -19,7 +19,8 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
       mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver,
       content::WebUI* web_ui,
       EmojiUI* webui_controller,
-      bool incognito_mode);
+      bool incognito_mode,
+      bool no_text_field);
   EmojiPageHandler(const EmojiPageHandler&) = delete;
   EmojiPageHandler& operator=(const EmojiPageHandler&) = delete;
   ~EmojiPageHandler() override;
@@ -38,6 +39,7 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   base::TimeTicks shown_time_;
   EmojiUI* const webui_controller_;
   bool incognito_mode_;
+  bool no_text_field_;
 };
 }  // namespace chromeos
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_EMOJI_EMOJI_PAGE_HANDLER_H_
