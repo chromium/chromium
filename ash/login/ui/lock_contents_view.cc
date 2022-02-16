@@ -35,6 +35,7 @@
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
+#include "ash/public/cpp/smartlock_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -1079,6 +1080,11 @@ void LockContentsView::OnFingerprintAuthResult(const AccountId& account_id,
 
 void LockContentsView::OnSmartLockStateChanged(const AccountId& account_id,
                                                SmartLockState state) {
+  UserState* user_state = FindStateForUser(account_id);
+  if (!user_state)
+    return;
+
+  user_state->smart_lock_state = state;
   LoginBigUserView* big_view =
       TryToFindBigUser(account_id, true /*require_auth_active*/);
   if (!big_view || !big_view->auth_user())
@@ -1097,6 +1103,20 @@ void LockContentsView::OnSmartLockAuthResult(const AccountId& account_id,
 
   big_view->auth_user()->NotifySmartLockAuthResult(success);
   LayoutAuth(big_view, /*opt_to_hide=*/nullptr, /*animate=*/true);
+}
+
+void LockContentsView::OnAuthFactorIsHidingPasswordChanged(
+    const AccountId& account_id,
+    bool auth_factor_is_hiding_password) {
+  UserState* user_state = FindStateForUser(account_id);
+  if (!user_state)
+    return;
+
+  user_state->auth_factor_is_hiding_password = auth_factor_is_hiding_password;
+
+  // Do not call LayoutAuth() here. This event is triggered by
+  // OnSmartLockStateChanged, which calls LayoutAuth(). Calling LayoutAuth() a
+  // second time will prevent animations from running properly.
 }
 
 void LockContentsView::OnAuthEnabledForUser(const AccountId& user) {
@@ -1164,6 +1184,9 @@ void LockContentsView::OnSetTpmLockedState(const AccountId& user,
 
 void LockContentsView::OnTapToUnlockEnabledForUserChanged(const AccountId& user,
                                                           bool enabled) {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
+
   LockContentsView::UserState* state = FindStateForUser(user);
   if (!state) {
     LOG(ERROR) << "Unable to find user enabling click to auth";
@@ -2027,6 +2050,10 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
           to_update_auth |= LoginAuthUserView::AUTH_TAP;
         if (state->fingerprint_state != FingerprintState::UNAVAILABLE)
           to_update_auth |= LoginAuthUserView::AUTH_FINGERPRINT;
+        if (state->auth_factor_is_hiding_password) {
+          to_update_auth |=
+              LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD;
+        }
       }
       view->auth_user()->SetAuthMethods(to_update_auth, auth_metadata);
     } else if (view->public_account()) {
@@ -2330,6 +2357,10 @@ std::unique_ptr<LoginBigUserView> LockContentsView::AllocateLoginBigUserView(
       &LockContentsView::OnEasyUnlockIconHovered, base::Unretained(this));
   auth_user_callbacks.on_easy_unlock_icon_tapped = base::BindRepeating(
       &LockContentsView::OnEasyUnlockIconTapped, base::Unretained(this));
+  auth_user_callbacks.on_auth_factor_is_hiding_password_changed =
+      base::BindRepeating(
+          &LockContentsView::OnAuthFactorIsHidingPasswordChanged,
+          base::Unretained(this), user.basic_user_info.account_id);
 
   LoginPublicAccountUserView::Callbacks public_account_callbacks;
   public_account_callbacks.on_tap = auth_user_callbacks.on_tap;

@@ -51,7 +51,9 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
     LoginAuthFactorsView* const view_;
   };
 
-  LoginAuthFactorsView(base::RepeatingClosure on_click_to_enter_callback);
+  LoginAuthFactorsView(base::RepeatingClosure on_click_to_enter_callback,
+                       base::RepeatingCallback<void(bool)>
+                           on_auth_factor_is_hiding_password_changed_callback);
   LoginAuthFactorsView(LoginAuthFactorsView&) = delete;
   LoginAuthFactorsView& operator=(LoginAuthFactorsView&) = delete;
   ~LoginAuthFactorsView() override;
@@ -112,6 +114,12 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   // Sets visibility of |arrow_icon_container_|, |arrow_button_|, and
   // |arrow_nudge_animation_| and starts/stops arrow animations accordingly.
   void SetArrowVisibility(bool is_visible);
+
+  // Sets |should_hide_password_field_| and invokes
+  // |auth_factor_click_changed_callback_| if |should_hide_password_field_| has
+  // changed.
+  void UpdateShouldHidePasswordField(const AuthFactorModel& active_auth_factor);
+
   /////////////////////////////////////////////////////////////////////////////
   // Child views, owned by the Views hierarchy
 
@@ -152,6 +160,8 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   bool should_hide_password_field_ = false;
 
   base::RepeatingClosure on_click_to_enter_callback_;
+  base::RepeatingCallback<void(bool)>
+      on_auth_factor_is_hiding_password_changed_callback_;
   base::OneShotTimer error_timer_;
 };
 

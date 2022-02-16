@@ -10,6 +10,7 @@
 #include "ash/login/ui/auth_factor_model.h"
 #include "ash/login/ui/fake_smart_lock_auth_factor_model.h"
 #include "ash/login/ui/fingerprint_auth_factor_model.h"
+#include "ash/login/ui/login_auth_factors_view.h"
 #include "ash/login/ui/login_password_view.h"
 #include "ash/login/ui/login_pin_input_view.h"
 #include "ash/login/ui/login_pin_view.h"
@@ -142,6 +143,8 @@ class LoginAuthUserViewUnittest : public LoginTestBase,
     auth_callbacks.on_tap = base::DoNothing();
     auth_callbacks.on_remove_warning_shown = base::DoNothing();
     auth_callbacks.on_remove = base::DoNothing();
+    auth_callbacks.on_auth_factor_is_hiding_password_changed =
+        base::DoNothing();
     view_ = new LoginAuthUserView(user_, auth_callbacks);
 
     // We proxy |view_| inside of |container_| so we can control layout.
@@ -616,6 +619,63 @@ TEST_F(LoginAuthUserViewAuthFactorsUnittest, VerifySmartLockArrowTapCallback) {
   EXPECT_CALL(*client,
               AuthenticateUserWithEasyUnlock(user.basic_user_info.account_id));
   auth_test.smart_lock_auth_factor_model()->OnArrowButtonTapOrClickEvent();
+}
+
+// Regression test for b/215630674. The transform applied to
+// LoginAuthFactorsView was getting applied multiple times on suspend/wake,
+// causing the auth factors to slide up farther than they should. This checks
+// that multiple calls to SetAuthMethods() has no further effect on the
+// y-offset.
+TEST_F(LoginAuthUserViewAuthFactorsUnittest,
+       SmartLockPasswordCollapseAnimationAppliedOnce) {
+  auto user = CreateUser("user@domain.com");
+  InitializeViewForUser(user);
+  LoginAuthUserView::TestApi auth_test(view_);
+  auto* auth_factors_view = auth_test.auth_factors_view();
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
+                 LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
+  container_->Layout();
+
+  int auth_factors_y_offset_1 =
+      auth_factors_view
+          ->ConvertRectToWidget(auth_factors_view->GetLocalBounds())
+          .y();
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
+                 LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
+  container_->Layout();
+
+  int auth_factors_y_offset_2 =
+      auth_factors_view
+          ->ConvertRectToWidget(auth_factors_view->GetLocalBounds())
+          .y();
+
+  EXPECT_EQ(auth_factors_y_offset_1, auth_factors_y_offset_2);
+}
+
+// Check that LoginAuthUserView hides/shows elements appropriately when the
+// AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD bit is set/unset.
+TEST_F(LoginAuthUserViewAuthFactorsUnittest,
+       SmartLockPasswordPinHiddenWhenAuthFactorIsHidingPasswordBitSet) {
+  auto user = CreateUser("user@domain.com");
+  InitializeViewForUser(user);
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PASSWORD_ONLY);
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
+                 LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::NONE);
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
+                 LoginAuthUserView::AUTH_PIN);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_AND_PASSWORD);
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
+                 LoginAuthUserView::AUTH_PIN |
+                 LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::NONE);
 }
 
 }  // namespace ash

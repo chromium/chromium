@@ -135,10 +135,13 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
 
-    view_ = container_->AddChildView(
-        std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
+    view_ = container_->AddChildView(std::make_unique<LoginAuthFactorsView>(
+        base::BindRepeating(
             &LoginAuthFactorsViewUnittest::set_click_to_enter_called,
-            base::Unretained(this), true)));
+            base::Unretained(this), /*click_to_enter_called=*/true),
+        base::BindRepeating(
+            &LoginAuthFactorsViewUnittest::set_auth_factor_is_hiding_password,
+            base::Unretained(this))));
     SetWidget(CreateWidgetWithContent(container_));
   }
 
@@ -169,8 +172,12 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
 
   bool ShouldHidePasswordField() { return view_->ShouldHidePasswordField(); }
 
-  void set_click_to_enter_called(bool called) {
-    click_to_enter_called_ = called;
+  void set_click_to_enter_called(bool click_to_enter_called) {
+    click_to_enter_called_ = click_to_enter_called;
+  }
+
+  void set_auth_factor_is_hiding_password(bool auth_factor_is_hiding_password) {
+    auth_factor_is_hiding_password_ = auth_factor_is_hiding_password;
   }
 
   void VerifyAuthenticatedUiState(
@@ -213,6 +220,7 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
   LoginAuthFactorsView* view_ = nullptr;  // Owned by container.
   std::vector<FakeAuthFactorModel*> auth_factors_;
   bool click_to_enter_called_ = false;
+  bool auth_factor_is_hiding_password_ = false;
 };
 
 TEST_F(LoginAuthFactorsViewUnittest, NotVisibleIfNoAuthFactors) {

@@ -954,7 +954,8 @@ struct LoginAuthUserView::UiState {
         view->HasAuthMethod(LoginAuthUserView::AUTH_DISABLED_TPM_LOCKED);
     force_online_sign_in =
         view->HasAuthMethod(LoginAuthUserView::AUTH_ONLINE_SIGN_IN);
-
+    auth_factor_is_hiding_password = view->HasAuthMethod(
+        LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
     non_pin_y_start_in_screen = view->GetBoundsInScreen().y();
     pin_start_in_screen = view->pin_view_->GetBoundsInScreen().origin();
   }
@@ -968,6 +969,7 @@ struct LoginAuthUserView::UiState {
   bool auth_disabled = false;
   bool tpm_is_locked = false;
   bool force_online_sign_in = false;
+  bool auth_factor_is_hiding_password = false;
   // Used for this view's animation in `ApplyAnimationPostLayout`.
   int non_pin_y_start_in_screen = 0;
   gfx::Point pin_start_in_screen;
@@ -1063,6 +1065,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   DCHECK(callbacks.on_remove_warning_shown);
   DCHECK(callbacks.on_remove);
   DCHECK(callbacks.on_easy_unlock_icon_hovered);
+  DCHECK(callbacks.on_auth_factor_is_hiding_password_changed);
   DCHECK_NE(user.basic_user_info.type, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
 
   // Build child views.
@@ -1164,10 +1167,11 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
 
     // Note: at the moment, between Fingerprint and Smart Lock, Smart Lock
     // is the only auth factor which considers an "arrow button" tap event.
-    auth_factors_view =
-        std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
+    auth_factors_view = std::make_unique<LoginAuthFactorsView>(
+        base::BindRepeating(
             &SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent,
-            base::Unretained(smart_lock_auth_factor_model_)));
+            base::Unretained(smart_lock_auth_factor_model_)),
+        callbacks.on_auth_factor_is_hiding_password_changed);
 
     auth_factors_view_ = auth_factors_view.get();
     auth_factors_view_->AddAuthFactor(std::move(fingerprint_auth_factor_model));
@@ -1591,14 +1595,12 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
     }
   }
 
-  ////////
-  // Slide the auth factors view up/down when entering/leaving a state of
-  // |auth_factors_view_| that requests the password field to be hidden.
   if (smart_lock_ui_revamp_enabled_) {
-    bool should_hide_password_field =
-        auth_factors_view_->ShouldHidePasswordField();
-
-    {
+    ////////
+    // Slide the auth factors view up/down when entering/leaving a state of
+    // |auth_factors_view_| that requests the password field to be hidden.
+    if (previous_state_->auth_factor_is_hiding_password !=
+        current_state.auth_factor_is_hiding_password) {
       CHECK(auth_factors_view_);
       ui::ScopedLayerAnimationSettings settings(
           auth_factors_view_->layer()->GetAnimator());
@@ -1608,23 +1610,26 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
 
       gfx::Transform transform;
       transform.Translate(/*x=*/0,
-                          /*y=*/should_hide_password_field
+                          /*y=*/current_state.auth_factor_is_hiding_password
                               ? -kAuthFactorHidingPasswordFieldSlideUpDistanceDp
                               : 0);
-      auth_factors_view_->layer()->GetAnimator()->SetTransform(transform);
+      auth_factors_view_->layer()->SetTransform(transform);
     }
 
     // Translate the user view to its previous position when in the auth factor
     // view requests to hide the password field. This prevents the user view
-    // from moving when the password view collapses.
-    if (should_hide_password_field) {
+    // from moving when the password view collapses. Note that this transform is
+    // applied even if |auth_factor_is_hiding_password| hasn't changed; the
+    // user view should not move on subsequent LayoutAuth() calls if an auth
+    // factor still wants to hide the password.
+    if (current_state.auth_factor_is_hiding_password) {
       layer()->GetAnimator()->StopAnimating();
       int non_pin_y_end_in_screen = GetBoundsInScreen().y();
       gfx::Transform transform;
       transform.Translate(/*x=*/0,
                           /*y=*/previous_state_->non_pin_y_start_in_screen -
                               non_pin_y_end_in_screen);
-      layer()->GetAnimator()->SetTransform(transform);
+      layer()->SetTransform(transform);
     }
   }
 
@@ -1934,7 +1939,6 @@ void LoginAuthUserView::OnSwitchButtonClicked() {
   ApplyAnimationPostLayout(/*animate*/ true);
 }
 
-// TODO(b/213926876): Write a unit test for ShouldHidePasswordField() usage.
 void LoginAuthUserView::UpdateInputFieldMode() {
   // There isn't an input field when any of the following is true:
   // - Challenge response is active (Smart Card)
@@ -1945,7 +1949,8 @@ void LoginAuthUserView::UpdateInputFieldMode() {
   if (HasAuthMethod(AUTH_CHALLENGE_RESPONSE) ||
       HasAuthMethod(AUTH_ONLINE_SIGN_IN) || HasAuthMethod(AUTH_DISABLED) ||
       !HasAuthMethod(AUTH_PASSWORD) ||
-      (auth_factors_view_ && auth_factors_view_->ShouldHidePasswordField())) {
+      (smart_lock_ui_revamp_enabled_ &&
+       HasAuthMethod(AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD))) {
     input_field_mode_ = InputFieldMode::NONE;
     return;
   }

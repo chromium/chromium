@@ -277,6 +277,8 @@ class ASH_EXPORT LockContentsView
     size_t autosubmit_pin_length = 0;
     absl::optional<EasyUnlockIconInfo> easy_unlock_icon_info = absl::nullopt;
     FingerprintState fingerprint_state;
+    SmartLockState smart_lock_state;
+    bool auth_factor_is_hiding_password = false;
     // When present, indicates that the TPM is locked.
     absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
   };
@@ -386,6 +388,11 @@ class ASH_EXPORT LockContentsView
   void OnEasyUnlockIconHovered();
   // Called when the easy unlock icon is tapped.
   void OnEasyUnlockIconTapped();
+
+  // Called when LoginAuthFactorsView enters/exits a state where an auth
+  // factor wants to hide the password and pin fields.
+  void OnAuthFactorIsHidingPasswordChanged(const AccountId& account_id,
+                                           bool auth_factor_is_hiding_password);
 
   // Called when parent access validation finished for the user with
   // |account_id|.

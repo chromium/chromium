@@ -50,7 +50,8 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     AUTH_NONE = 0,                     // No extra auth methods.
     AUTH_PASSWORD = 1 << 0,            // Display password.
     AUTH_PIN = 1 << 1,                 // Display PIN keyboard.
-    AUTH_TAP = 1 << 2,                 // Tap to unlock.
+    AUTH_TAP = 1 << 2,                 // [DEPRECATED] Tap to unlock.
+                                       // TODO(b/217970801): Remove this field.
     AUTH_ONLINE_SIGN_IN = 1 << 3,      // Force online sign-in.
     AUTH_FINGERPRINT = 1 << 4,         // Use fingerprint to unlock.
     AUTH_CHALLENGE_RESPONSE = 1 << 5,  // Authenticate via challenge-response
@@ -59,6 +60,12 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
                              // message to user.
     AUTH_DISABLED_TPM_LOCKED = 1 << 7,  // Disable all the auth methods due
                                         // to the TPM being locked
+    AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD =
+        1 << 8,  // Hide the password/pin fields and slide the auth factors
+                 // up. This happens, for example,  when an auth factor requires
+                 // the user to click a button as a final step. Note that if
+                 // this bit is set, the password/pin will be hidden even if
+                 // AUTH_PASSWORD and/or AUTH_PIN are set.
   };
 
   // Extra control parameters to be passed when setting the auth methods.
@@ -139,6 +146,10 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     OnEasyUnlockIconHovered on_easy_unlock_icon_hovered;
     // Called when the easy unlock icon is tapped.
     views::Button::PressedCallback on_easy_unlock_icon_tapped;
+    // Called when LoginAuthFactorsView enters/exits a state where an auth
+    // factor wants to hide the password and pin.
+    base::RepeatingCallback<void(bool)>
+        on_auth_factor_is_hiding_password_changed;
   };
 
   LoginAuthUserView(const LoginUserInfo& user, const Callbacks& callbacks);

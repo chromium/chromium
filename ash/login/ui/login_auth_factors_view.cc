@@ -166,9 +166,14 @@ AuthIconView* LoginAuthFactorsView::TestApi::checkmark_icon() {
 }
 
 LoginAuthFactorsView::LoginAuthFactorsView(
-    base::RepeatingClosure on_click_to_enter_callback)
-    : on_click_to_enter_callback_(on_click_to_enter_callback) {
+    base::RepeatingClosure on_click_to_enter_callback,
+    base::RepeatingCallback<void(bool)>
+        on_auth_factor_is_hiding_password_changed_callback)
+    : on_click_to_enter_callback_(on_click_to_enter_callback),
+      on_auth_factor_is_hiding_password_changed_callback_(
+          on_auth_factor_is_hiding_password_changed_callback) {
   DCHECK(on_click_to_enter_callback);
+  DCHECK(on_auth_factor_is_hiding_password_changed_callback);
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -280,16 +285,7 @@ void LoginAuthFactorsView::UpdateState() {
     error_timer_.Stop();
   }
 
-  // Update |should_hide_password_field_| when entering/leaving a state that
-  // requires hiding/showing the password/PIN fields.
-  //
-  // At the moment, Smart Lock is the only auth factor which needs to hide
-  // the password field, and it does so only during states kClickRequired and
-  // kAuthenticated.
-  should_hide_password_field_ =
-      active_auth_factor->GetType() == AuthFactorType::kSmartLock &&
-      (state == PrioritizedAuthFactorViewState::kClickRequired ||
-       state == PrioritizedAuthFactorViewState::kAuthenticated);
+  UpdateShouldHidePasswordField(*active_auth_factor);
 
   int ready_label_id;
   size_t num_factors_in_error_background_state;
@@ -541,6 +537,28 @@ void LoginAuthFactorsView::SetArrowVisibility(bool is_visible) {
     arrow_nudge_animation_->StopAnimating();
     arrow_button_->StopAnimating();
   }
+}
+
+void LoginAuthFactorsView::UpdateShouldHidePasswordField(
+    const AuthFactorModel& active_auth_factor) {
+  PrioritizedAuthFactorViewState state =
+      GetPrioritizedAuthFactorViewState(active_auth_factor);
+
+  // At the moment, Smart Lock is the only auth factor which needs to hide
+  // the password field, and it does so only during states kClickRequired
+  // and kAuthenticated.
+  bool should_hide_password_field =
+      active_auth_factor.GetType() == AuthFactorType::kSmartLock &&
+      (state == PrioritizedAuthFactorViewState::kClickRequired ||
+       state == PrioritizedAuthFactorViewState::kAuthenticated);
+
+  if (should_hide_password_field == should_hide_password_field_) {
+    return;
+  }
+  should_hide_password_field_ = should_hide_password_field;
+
+  on_auth_factor_is_hiding_password_changed_callback_.Run(
+      should_hide_password_field);
 }
 
 }  // namespace ash
