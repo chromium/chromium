@@ -440,6 +440,7 @@
       light:"rgba($google_grey_900_rgb, 0.8)",
       dark:"rgba($white_rgb, 0.8)",
     },
+    tooltip_icon_color: "$color_primary_inverted",
     tooltip_label_color: {
       light:"$google_grey_100",
       dark:"$google_grey_900",
