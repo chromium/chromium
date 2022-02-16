@@ -48,7 +48,8 @@ bool operator==(const PolicyContainerPolicies& lhs,
                     rhs.content_security_policies.begin(),
                     rhs.content_security_policies.end()) &&
          lhs.cross_origin_opener_policy == rhs.cross_origin_opener_policy &&
-         lhs.cross_origin_embedder_policy == rhs.cross_origin_embedder_policy;
+         lhs.cross_origin_embedder_policy == rhs.cross_origin_embedder_policy &&
+         lhs.sandbox_flags == rhs.sandbox_flags;
 }
 
 bool operator!=(const PolicyContainerPolicies& lhs,
@@ -99,6 +100,8 @@ std::ostream& operator<<(std::ostream& out,
              .value_or("<null>")
       << " }";
 
+  out << ", sandbox_flags: " << policies.sandbox_flags;
+
   return out << " }";
 }
 
@@ -111,13 +114,15 @@ PolicyContainerPolicies::PolicyContainerPolicies(
     std::vector<network::mojom::ContentSecurityPolicyPtr>
         content_security_policies,
     const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
-    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy)
+    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    network::mojom::WebSandboxFlags sandbox_flags)
     : referrer_policy(referrer_policy),
       ip_address_space(ip_address_space),
       is_web_secure_context(is_web_secure_context),
       content_security_policies(std::move(content_security_policies)),
       cross_origin_opener_policy(cross_origin_opener_policy),
-      cross_origin_embedder_policy(cross_origin_embedder_policy) {}
+      cross_origin_embedder_policy(cross_origin_embedder_policy),
+      sandbox_flags(sandbox_flags) {}
 
 PolicyContainerPolicies::~PolicyContainerPolicies() = default;
 
@@ -126,7 +131,7 @@ std::unique_ptr<PolicyContainerPolicies> PolicyContainerPolicies::Clone()
   return std::make_unique<PolicyContainerPolicies>(
       referrer_policy, ip_address_space, is_web_secure_context,
       mojo::Clone(content_security_policies), cross_origin_opener_policy,
-      cross_origin_embedder_policy);
+      cross_origin_embedder_policy, sandbox_flags);
 }
 
 void PolicyContainerPolicies::AddContentSecurityPolicies(

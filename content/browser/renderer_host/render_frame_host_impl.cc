@@ -1394,17 +1394,23 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     // Creating a RFH in kActive state implies that it is the RFH for a
     // newly-created FTN, which should still be on its initial empty document.
     DCHECK(frame_tree_node_->is_on_initial_empty_document());
-
-    // The initial empty document gets its sandbox flags from either:
-    // 1. The parent + iframe.sandbox for <iframe>.
-    // 2. The opener for popup, when "allow-popups-to-escape-sandbox" isn't set.
-    //
-    // Both are already computed and stored in the FrameTreeNode. So only a copy
-    // is needed here.
-    active_sandbox_flags_ = browsing_context_state_->active_sandbox_flags();
   }
 
   InitializePolicyContainerHost(renderer_initiated_creation_of_main_frame);
+
+  if (policy_container_host_) {
+    // The initial empty documents sandbox flags is the union from:
+    // - The parent or opener document's sandbox flags inherited by policy
+    //   container.
+    // - The frame's sandbox flags, contained in browsing_context_state. This
+    //   are either:
+    //   1. For iframe: the parent + iframe.sandbox attribute.
+    //   2. For popups: the opener if "allow-popups-to-escape-sandbox" isn't
+    //   set.
+    policy_container_host_->set_sandbox_flags(
+        browsing_context_state_->effective_frame_policy().sandbox_flags);
+  }
+
   InitializePrivateNetworkRequestPolicy();
 
   unload_event_monitor_timeout_ =
@@ -2264,7 +2270,7 @@ void RenderFrameHostImpl::MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
 }
 
 bool RenderFrameHostImpl::IsSandboxed(network::mojom::WebSandboxFlags flags) {
-  return static_cast<int>(active_sandbox_flags_) & static_cast<int>(flags);
+  return static_cast<int>(active_sandbox_flags()) & static_cast<int>(flags);
 }
 
 blink::web_pref::WebPreferences
@@ -3525,7 +3531,7 @@ void RenderFrameHostImpl::DidNavigate(
     // local) when initializing child's security context, so the update to
     // proxies is needed.
     browsing_context_state_->UpdateFramePolicyHeaders(
-        active_sandbox_flags_, permissions_policy_header_);
+        active_sandbox_flags(), permissions_policy_header_);
     // Document policy's inheritance from parent frame's required document
     // policy is done at |HTMLFrameOwnerElement::UpdateRequiredPolicy|. Parent
     // frame owns both parent's required document policy and child frame's frame
@@ -6909,7 +6915,7 @@ void RenderFrameHostImpl::CreatePortal(
 
   // TODO(crbug.com/1051639): We need to find a long term solution to when/how
   // portals should work in sandboxed documents.
-  if (active_sandbox_flags_ != network::mojom::WebSandboxFlags::kNone) {
+  if (active_sandbox_flags() != network::mojom::WebSandboxFlags::kNone) {
     frame_host_associated_receiver_.ReportBadMessage(
         "RFHI::CreatePortal called in a sandboxed browsing context");
     return;
@@ -10795,13 +10801,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   DCHECK(!navigation_request->IsPageActivation());
 
   ResetPermissionsPolicy();
-  // There are two type of navigations committing new documents:
-  // 1. The regular ones. They can change sandbox_flags.
-  // 2. The synchronous re-navigation to about:blank. A second about:blank
-  //    document commits on top of initial one. No properties are changed,
-  //    including sandbox_flags.
-  if (navigation_request->IsWaitingToCommit())
-    active_sandbox_flags_ = navigation_request->SandboxFlagsToCommit();
+
   permissions_policy_header_ = params.permissions_policy_header;
   permissions_policy_->SetHeaderPolicy(params.permissions_policy_header);
   document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy({

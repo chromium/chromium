@@ -1412,11 +1412,6 @@ class CONTENT_EXPORT NavigationRequest
   // response.
   void ComputePoliciesToCommitForError();
 
-  // Compute the sandbox policy of the document to be loaded. This is called
-  // once the final response is known. It is based on the current FramePolicy,
-  // the response's CSP and the embedder's HTMLIframeElement.csp.
-  void ComputeSandboxFlagsToCommit();
-
   // DCHECK that tranistioning from the current state to |state| valid. This
   // does nothing in non-debug builds.
   void CheckStateTransition(NavigationState state) const;
@@ -1889,9 +1884,6 @@ class CONTENT_EXPORT NavigationRequest
   // Observers listening to cookie access notifications for the network requests
   // made by this navigation.
   mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;
-
-  // The sandbox flags of the document to be loaded.
-  absl::optional<network::mojom::WebSandboxFlags> sandbox_flags_to_commit_;
 
   OriginAgentClusterEndResult origin_agent_cluster_end_result_ =
       OriginAgentClusterEndResult::kNotRequestedAndNotOriginKeyed;

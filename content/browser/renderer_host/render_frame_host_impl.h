@@ -1370,9 +1370,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetKeepAliveTimeoutForTesting(base::TimeDelta timeout);
 
   network::mojom::WebSandboxFlags active_sandbox_flags() {
-    return active_sandbox_flags_;
+    return policy_container_host_->sandbox_flags();
   }
-
   bool is_mhtml_document() { return is_mhtml_document_; }
 
   bool is_overriding_user_agent() { return is_overriding_user_agent_; }
@@ -3692,15 +3691,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // A bitwise OR of bindings types that have been enabled for this RenderFrame.
   // See BindingsPolicy for details.
   int enabled_bindings_ = 0;
-
-  // Tracks the sandbox flags which are in effect on this frame. This includes
-  // any flags which have been set by a Content-Security-Policy header, in
-  // addition to those which are set by the embedding frame. This is initially a
-  // copy of the active sandbox flags which are stored in the FrameTreeNode for
-  // this RenderFrameHost, but may diverge if this RenderFrameHost is pending
-  // deletion.
-  network::mojom::WebSandboxFlags active_sandbox_flags_ =
-      network::mojom::WebSandboxFlags::kNone;
 
   // Parsed permissions policy header. It is parsed from blink, received during
   // DidCommitProvisionalLoad. This is constant during the whole lifetime of

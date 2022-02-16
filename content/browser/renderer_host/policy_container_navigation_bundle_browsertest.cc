@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
 
-  bundle.ComputePolicies(GURL());
+  bundle.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone);
 
   // This must be called on a task runner, hence the need for this test to be
   // a browser test and not a simple unit test.
@@ -232,7 +232,8 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   // is using the history policies.
   bundle.AddContentSecurityPolicy(MakeTestCSP());
 
-  bundle.ComputePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *history_policies);
 }
@@ -276,7 +277,8 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   // is using the history policies.
   bundle.AddContentSecurityPolicy(MakeTestCSP());
 
-  bundle.ComputePolicies(AboutSrcdocUrl());
+  bundle.ComputePolicies(AboutSrcdocUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *history_policies);
 }
@@ -295,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   PolicyContainerNavigationBundle bundle(
       nullptr, nullptr, GetLastCommittedFrameNavigationEntry());
 
-  bundle.ComputePoliciesForError();
+  bundle.ComputePoliciesForError(false, network::mojom::WebSandboxFlags::kNone);
 
   // Error pages commit with default policies, ignoring the history policies.
   EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
@@ -319,10 +321,11 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   std::unique_ptr<PolicyContainerPolicies> history_policies =
       bundle.HistoryPolicies()->Clone();
 
-  bundle.ComputePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
   EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
 
-  bundle.ComputePoliciesForError();
+  bundle.ComputePoliciesForError(false, network::mojom::WebSandboxFlags::kNone);
   EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
 }
 
@@ -414,14 +417,16 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   std::unique_ptr<PolicyContainerPolicies> history_policies =
       bundle.HistoryPolicies()->Clone();
 
-  bundle.ComputePolicies(GURL("http://foo.test"));
+  bundle.ComputePolicies(GURL("http://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
 
   bundle.ResetForCrossDocumentRestart();
   EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
 
-  bundle.ComputePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *history_policies);
 }

@@ -2255,7 +2255,6 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
   SetState(NOT_STARTED);
   is_navigation_started_ = false;
   processing_navigation_throttle_ = false;
-  sandbox_flags_to_commit_.reset();
 
 #if BUILDFLAG(IS_ANDROID)
   if (navigation_handle_proxy_)
@@ -2767,7 +2766,7 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
   // This needs to be computed separately from origin.opaque() because, per
   // https://crbug.com/1041376, we don't have a notion of the true origin yet.
   const bool is_opaque_origin_because_sandbox =
-      (sandbox_flags_to_commit_.value() &
+      (policy_container_navigation_bundle_->FinalPolicies().sandbox_flags &
        network::mojom::WebSandboxFlags::kOrigin) ==
       network::mojom::WebSandboxFlags::kOrigin;
 
@@ -2940,7 +2939,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
     if (state_ >= WILL_PROCESS_RESPONSE) {
       is_origin_restricted_sandbox =
-          (sandbox_flags_to_commit_.value() &
+          (policy_container_navigation_bundle_->FinalPolicies().sandbox_flags &
            network::mojom::WebSandboxFlags::kOrigin) ==
           network::mojom::WebSandboxFlags::kOrigin;
     } else {
@@ -3090,11 +3089,11 @@ void NavigationRequest::OnResponseStarted(
   // can be determined. This is needed for enforcing COOP below.
 
   {
-    const url::Origin origin =
-        GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
-            sandbox_flags_to_commit_.value());
     const PolicyContainerPolicies& policies =
         policy_container_navigation_bundle_->FinalPolicies();
+    const url::Origin origin =
+        GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
+            policies.sandbox_flags);
     coop_status_.EnforceCOOP(policies.cross_origin_opener_policy, origin,
                              network_isolation_key);
   }
@@ -3569,7 +3568,6 @@ void NavigationRequest::OnRequestFailedInternal(
   }
 
   is_mhtml_or_subframe_ = false;
-  sandbox_flags_to_commit_.reset();
   // TODO(https://crbug.com/1158370): Apparently, error pages inherit sandbox
   // flags from their parent/opener. Document loaded from the network
   // shouldn't have any influence over Chrome's internal error page. We should
@@ -3965,7 +3963,7 @@ network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsToCommit() {
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
   DCHECK(!IsSameDocument());
   DCHECK(!IsPageActivation());
-  return sandbox_flags_to_commit_.value();
+  return policy_container_navigation_bundle_->FinalPolicies().sandbox_flags;
 }
 
 void NavigationRequest::OnRedirectChecksComplete(
@@ -4361,7 +4359,6 @@ void NavigationRequest::CommitNavigation() {
          (was_redirected_ && common_params_->url.IsAboutBlank()));
   DCHECK(!common_params_->url.SchemeIs(url::kJavaScriptScheme));
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
-  DCHECK(sandbox_flags_to_commit_);
 
   AddOldPageInfoToCommitParamsIfNeeded();
 
@@ -5940,8 +5937,8 @@ NavigationRequest::GetOriginForURLLoaderFactoryWithFinalFrameHost() {
   if (IsSameDocument() || IsPageActivation())
     return GetRenderFrameHost()->GetLastCommittedOrigin();
 
-  url::Origin origin = GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
-      sandbox_flags_to_commit_.value());
+  url::Origin origin =
+      GetOriginForURLLoaderFactoryWithoutFinalFrameHost(SandboxFlagsToCommit());
 
   // MHTML documents should commit as an opaque origin. They should not be able
   // to make network request on behalf of the real origin.
@@ -7013,42 +7010,16 @@ void NavigationRequest::ComputePoliciesToCommit() {
   policy_container_navigation_bundle_->SetCrossOriginEmbedderPolicy(
       ComputeCrossOriginEmbedderPolicy());
 
-  policy_container_navigation_bundle_->ComputePolicies(url);
-
-  ComputeSandboxFlagsToCommit();
-}
-
-void NavigationRequest::ComputePoliciesToCommitForError() {
-  policy_container_navigation_bundle_->ComputePoliciesForError();
-  ComputeSandboxFlagsToCommit();
-}
-
-void NavigationRequest::ComputeSandboxFlagsToCommit() {
   DCHECK(commit_params_);
   DCHECK(!HasCommitted());
   DCHECK(!IsErrorPage());
-  DCHECK(!sandbox_flags_to_commit_);
 
-  // Inherit sandbox from the frame.
-  sandbox_flags_to_commit_ = commit_params_->frame_policy.sandbox_flags;
+  policy_container_navigation_bundle_->ComputePolicies(
+      url, IsMhtmlOrSubframe(), commit_params_->frame_policy.sandbox_flags);
 
-  // The document can also restrict sandbox further, via its CSP.
-  const PolicyContainerPolicies& policies_to_commit =
-      policy_container_navigation_bundle_->FinalPolicies();
-  for (const auto& csp : policies_to_commit.content_security_policies)
-    *sandbox_flags_to_commit_ |= csp->sandbox;
+  commit_params_->sandbox_flags =
+      policy_container_navigation_bundle_->FinalPolicies().sandbox_flags;
 
-  // The URL of a document loaded from a MHTML archive is controlled by the
-  // Content-Location header. This can be set to an arbitrary URL. This is
-  // potentially dangerous. For this reason we force the document to be
-  // sandboxed, providing exceptions only for creating new windows. This
-  // includes disallowing javascript and using an opaque origin.
-  if (IsMhtmlOrSubframe()) {
-    *sandbox_flags_to_commit_ |= ~network::mojom::WebSandboxFlags::kPopups &
-                                 ~network::mojom::WebSandboxFlags::
-                                     kPropagatesToAuxiliaryBrowsingContexts;
-  }
-  commit_params_->sandbox_flags = *sandbox_flags_to_commit_;
   // For about: urls this function should not change the kOrigin flag. We rely
   // on this when deciding on process isolation for sandboxed frames with these
   // URLs, see NavigationRequest::GetUrlInfo().
@@ -7056,8 +7027,16 @@ void NavigationRequest::ComputeSandboxFlagsToCommit() {
     CHECK_EQ(
         commit_params_->frame_policy.sandbox_flags &
             network::mojom::WebSandboxFlags::kOrigin,
-        *sandbox_flags_to_commit_ & network::mojom::WebSandboxFlags::kOrigin);
+        policy_container_navigation_bundle_->FinalPolicies().sandbox_flags &
+            network::mojom::WebSandboxFlags::kOrigin);
   }
+}
+
+void NavigationRequest::ComputePoliciesToCommitForError() {
+  policy_container_navigation_bundle_->ComputePoliciesForError(
+      IsMhtmlOrSubframe(), commit_params_->frame_policy.sandbox_flags);
+  commit_params_->sandbox_flags =
+      policy_container_navigation_bundle_->FinalPolicies().sandbox_flags;
 }
 
 void NavigationRequest::CheckStateTransition(NavigationState state) const {

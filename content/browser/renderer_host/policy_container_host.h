@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -32,7 +33,8 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies,
       const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy);
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      network::mojom::WebSandboxFlags sandbox_flags);
   PolicyContainerPolicies(const PolicyContainerPolicies&) = delete;
   PolicyContainerPolicies operator=(const PolicyContainerPolicies&) = delete;
   ~PolicyContainerPolicies();
@@ -80,6 +82,12 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // See:
   // https://html.spec.whatwg.org/multipage/origin.html#coep
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+
+  // Tracks the sandbox flags which are in effect on this document. This
+  // includes any flags which have been set by a Content-Security-Policy header,
+  // in addition to those which are set by the embedding frame.
+  network::mojom::WebSandboxFlags sandbox_flags =
+      network::mojom::WebSandboxFlags::kNone;
 };
 
 // PolicyContainerPolicies structs are comparable for equality.
@@ -164,6 +172,10 @@ class CONTENT_EXPORT PolicyContainerHost
     return policies_->cross_origin_embedder_policy;
   }
 
+  network::mojom::WebSandboxFlags sandbox_flags() const {
+    return policies_->sandbox_flags;
+  }
+
   void AddContentSecurityPolicies(
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies) final;
@@ -171,6 +183,11 @@ class CONTENT_EXPORT PolicyContainerHost
   void set_cross_origin_opener_policy(
       const network::CrossOriginOpenerPolicy& policy) {
     policies_->cross_origin_opener_policy = policy;
+  }
+
+  // Merges the provided sandbox flags with the existing flags.
+  void set_sandbox_flags(network::mojom::WebSandboxFlags sandbox_flags) {
+    policies_->sandbox_flags = sandbox_flags;
   }
 
   // Return a PolicyContainer containing copies of the policies and a pending
