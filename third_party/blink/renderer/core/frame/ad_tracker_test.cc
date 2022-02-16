@@ -197,15 +197,15 @@ class AdTrackerTest : public testing::Test {
     if (ad_tracker_)
       ad_tracker_->Shutdown();
     ad_tracker_ = MakeGarbageCollected<TestAdTracker>(GetFrame());
-    ad_tracker_->SetExecutionContext(ExecutionContext());
+    ad_tracker_->SetExecutionContext(GetExecutionContext());
   }
 
   void WillExecuteScript(const String& script_url) {
-    ad_tracker_->WillExecuteScript(ExecutionContext(), String(script_url),
+    ad_tracker_->WillExecuteScript(GetExecutionContext(), String(script_url),
                                    v8::Message::kNoScriptIdInfo);
   }
 
-  ExecutionContext* ExecutionContext() {
+  ExecutionContext* GetExecutionContext() {
     return page_holder_->GetFrame().DomWindow();
   }
 
@@ -222,7 +222,7 @@ class AdTrackerTest : public testing::Test {
   }
 
   void AppendToKnownAdScripts(const String& url) {
-    ad_tracker_->AppendToKnownAdScripts(*ExecutionContext(), url);
+    ad_tracker_->AppendToKnownAdScripts(*GetExecutionContext(), url);
   }
 
   Persistent<TestAdTracker> ad_tracker_;
