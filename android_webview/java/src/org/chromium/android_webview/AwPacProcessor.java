@@ -10,6 +10,7 @@ import android.net.LinkAddress;
 import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkRequest;
+import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
@@ -24,7 +25,7 @@ import java.net.InetAddress;
  * Class to evaluate PAC scripts.
  */
 @JNINamespace("android_webview")
-@RequiresApi(28)
+@RequiresApi(Build.VERSION_CODES.P)
 // TODO(amalova): remove UsedByReflection
 @UsedByReflection("Android")
 public class AwPacProcessor {
