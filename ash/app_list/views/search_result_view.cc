@@ -473,7 +473,7 @@ void SearchResultView::UpdateBigTitleContainer() {
     big_title_label_tags_ = SetupContainerViewForTextVector(
         big_title_container_, result()->big_title_text_vector(),
         LabelType::kBigTitle);
-    StyleBigTitleLabel();
+    StyleBigTitleContainer();
     big_title_container_->SetVisible(true);
   }
 }
@@ -490,7 +490,7 @@ void SearchResultView::UpdateTitleContainer() {
     // Create title labels from text vector metadata.
     title_label_tags_ = SetupContainerViewForTextVector(
         title_container_, result()->title_text_vector(), LabelType::kTitle);
-    StyleTitleLabel();
+    StyleTitleContainer();
     text_container_->SetVisible(true);
     title_and_details_container_->SetVisible(true);
     title_container_->SetVisible(true);
@@ -509,7 +509,7 @@ void SearchResultView::UpdateDetailsContainer() {
     details_label_tags_ = SetupContainerViewForTextVector(
         details_container_, result()->details_text_vector(),
         LabelType::kDetails);
-    StyleDetailsLabel();
+    StyleDetailsContainer();
     details_container_->SetVisible(true);
     switch (view_type_) {
       case SearchResultViewType::kDefault:
@@ -535,15 +535,8 @@ void SearchResultView::UpdateKeyboardShortcutContainer() {
   keyboard_shortcut_container_tags_.clear();
 
   DCHECK(view_type_ != SearchResultViewType::kClassic);
-  // TODO(crbug/1216079): Fetch keyboard shortcut text vector once available.
-  if (app_list_features::IsSearchResultInlineIconEnabled()) {
-    keyboard_shortcut_container_->SetVisible(true);
-    has_keyboard_shortcut_contents_ = true;
-    // Override `title_and_details_container_` orientation if the keyboard
-    // shortcut text vector has valid contents.
-    title_and_details_container_->SetOrientation(
-        views::LayoutOrientation::kHorizontal);
-  } else {
+  if (!app_list_features::IsSearchResultInlineIconEnabled() || !result() ||
+      result()->keyboard_shortcut_text_vector().empty()) {
     keyboard_shortcut_container_->SetVisible(false);
     has_keyboard_shortcut_contents_ = false;
     // Reset `title_and_details_container_` orientation.
@@ -558,6 +551,17 @@ void SearchResultView::UpdateKeyboardShortcutContainer() {
             views::LayoutOrientation::kVertical);
         break;
     }
+  } else {
+    keyboard_shortcut_container_tags_ = SetupContainerViewForTextVector(
+        keyboard_shortcut_container_, result()->keyboard_shortcut_text_vector(),
+        LabelType::kKeyboardShortcut);
+    StyleKeyboardShortcutContainer();
+    keyboard_shortcut_container_->SetVisible(true);
+    has_keyboard_shortcut_contents_ = true;
+    // Override `title_and_details_container_` orientation if the keyboard
+    // shortcut text vector has valid contents.
+    title_and_details_container_->SetOrientation(
+        views::LayoutOrientation::kHorizontal);
   }
 }
 
@@ -630,20 +634,26 @@ void SearchResultView::StyleLabel(views::Label* label,
   }
 }
 
-void SearchResultView::StyleBigTitleLabel() {
+void SearchResultView::StyleBigTitleContainer() {
   for (auto& span : big_title_label_tags_) {
     StyleLabel(span.GetLabel(), true /*is_title_label*/, span.GetTags());
   }
 }
 
-void SearchResultView::StyleTitleLabel() {
+void SearchResultView::StyleTitleContainer() {
   for (auto& span : title_label_tags_) {
     StyleLabel(span.GetLabel(), false /*is_title_label*/, span.GetTags());
   }
 }
 
-void SearchResultView::StyleDetailsLabel() {
+void SearchResultView::StyleDetailsContainer() {
   for (auto& span : details_label_tags_) {
+    StyleLabel(span.GetLabel(), false /*is_title_label*/, span.GetTags());
+  }
+}
+
+void SearchResultView::StyleKeyboardShortcutContainer() {
+  for (auto& span : keyboard_shortcut_container_tags_) {
     StyleLabel(span.GetLabel(), false /*is_title_label*/, span.GetTags());
   }
 }
@@ -845,12 +855,15 @@ void SearchResultView::VisibilityChanged(View* starting_from, bool is_visible) {
 }
 
 void SearchResultView::OnThemeChanged() {
-  if (result()) {
-    if (!result()->title().empty())
-      StyleTitleLabel();
-    if (!result()->details().empty())
-      StyleDetailsLabel();
-  }
+  if (!big_title_label_tags_.empty())
+    StyleBigTitleContainer();
+  if (!title_label_tags_.empty())
+    StyleTitleContainer();
+  if (!details_label_tags_.empty())
+    StyleDetailsContainer();
+  if (!keyboard_shortcut_container_tags_.empty())
+    StyleKeyboardShortcutContainer();
+
   separator_label_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
           kDeprecatedSearchBoxTextDefaultColor));

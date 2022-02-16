@@ -92,6 +92,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
     kBigTitle,
     kTitle,
     kDetails,
+    kKeyboardShortcut,
   };
 
   // Internal class name.
@@ -143,9 +144,10 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void StyleLabel(views::Label* label,
                   bool is_title_label,
                   const SearchResult::Tags& tags);
-  void StyleBigTitleLabel();
-  void StyleTitleLabel();
-  void StyleDetailsLabel();
+  void StyleBigTitleContainer();
+  void StyleTitleContainer();
+  void StyleDetailsContainer();
+  void StyleKeyboardShortcutContainer();
 
   // Callback for query suggstion removal confirmation.
   void OnQueryRemovalAccepted(bool accepted);
