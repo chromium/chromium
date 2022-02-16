@@ -271,7 +271,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     return recorder_ ? recorder_->TotalOpCount() : 0;
   }
   size_t TotalOpBytesUsed() const {
-    return recorder_ ? recorder_->BytesUsed() : 0;
+    return recorder_ ? recorder_->OpBytesUsed() : 0;
   }
   size_t TotalPinnedImageBytes() const { return total_pinned_image_bytes_; }
 
@@ -411,7 +411,7 @@ ALWAYS_INLINE void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   // vector mode.
   if (IsPrinting() && clear_frame_)
     return;
-  if (recorder_ && ((recorder_->BytesUsed() > kMaxRecordedOpBytes) ||
+  if (recorder_ && ((TotalOpBytesUsed() > kMaxRecordedOpBytes) ||
                     total_pinned_image_bytes_ > max_pinned_image_bytes_)) {
     FlushCanvas();
   }

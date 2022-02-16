@@ -160,6 +160,7 @@ class CC_PAINT_EXPORT DisplayItemList
     // TODO(vmpstr): Probably DiscardableImageMap is worth counting here.
     return sizeof(*this) + paint_op_buffer_.bytes_used();
   }
+  size_t OpBytesUsed() const { return paint_op_buffer_.paint_ops_size(); }
 
   const DiscardableImageMap& discardable_image_map() const {
     return image_map_;
