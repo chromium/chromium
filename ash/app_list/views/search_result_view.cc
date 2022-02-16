@@ -765,7 +765,7 @@ void SearchResultView::Layout() {
         text_container_->SetBoundsRect(centered_text_bounds);
       }
     }
-  } else if (title_label_tags_.empty()) {
+  } else if (!title_label_tags_.empty()) {
     gfx::Size text_size(text_bounds.width(), PrimaryTextHeight());
     gfx::Rect centered_text_bounds(text_bounds);
     centered_text_bounds.ClampToCenteredSize(text_size);
