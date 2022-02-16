@@ -37,18 +37,6 @@ OCSPResponseData::~OCSPResponseData() = default;
 OCSPResponse::OCSPResponse() = default;
 OCSPResponse::~OCSPResponse() = default;
 
-der::Input BasicOCSPResponseOid() {
-  // From RFC 6960:
-  //
-  // id-pkix-ocsp           OBJECT IDENTIFIER ::= { id-ad-ocsp }
-  // id-pkix-ocsp-basic     OBJECT IDENTIFIER ::= { id-pkix-ocsp 1 }
-  //
-  // In dotted notation: 1.3.6.1.5.5.7.48.1.1
-  static const uint8_t oid[] = {0x2b, 0x06, 0x01, 0x05, 0x05,
-                                0x07, 0x30, 0x01, 0x01};
-  return der::Input(oid);
-}
-
 // CertID ::= SEQUENCE {
 //    hashAlgorithm           AlgorithmIdentifier,
 //    issuerNameHash          OCTET STRING, -- Hash of issuer's DN
@@ -431,7 +419,7 @@ bool ParseOCSPResponse(const der::Input& raw_tlv, OCSPResponse* out) {
     der::Input type_oid;
     if (!bytes_parser.ReadTag(der::kOid, &type_oid))
       return false;
-    if (type_oid != BasicOCSPResponseOid())
+    if (type_oid != der::Input(kBasicOCSPResponseOid))
       return false;
 
     // As per RFC 6960 Section 4.2.1, the value of |response| SHALL be the DER

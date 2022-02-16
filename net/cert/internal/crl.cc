@@ -21,10 +21,7 @@ namespace {
 
 // id-ce-issuingDistributionPoint OBJECT IDENTIFIER ::= { id-ce 28 }
 // In dotted notation: 2.5.29.28
-der::Input IssuingDistributionPointOid() {
-  static const uint8_t oid[] = {0x55, 0x1d, 0x1c};
-  return der::Input(oid);
-}
+inline constexpr uint8_t kIssuingDistributionPointOid[] = {0x55, 0x1d, 0x1c};
 
 [[nodiscard]] bool NormalizeNameTLV(const der::Input& name_tlv,
                                     std::string* out_normalized_name) {
@@ -470,7 +467,7 @@ CRLRevocationStatus CheckCRL(base::StringPiece raw_crl,
     // 6.3.3 (b) (2) If the complete CRL includes an issuing distribution point
     //               (IDP) CRL extension, check the following:
     ParsedExtension idp_extension;
-    if (ConsumeExtension(IssuingDistributionPointOid(), &extensions,
+    if (ConsumeExtension(der::Input(kIssuingDistributionPointOid), &extensions,
                          &idp_extension)) {
       std::unique_ptr<GeneralNames> distribution_point_names;
       ContainedCertsType only_contains_cert_type;

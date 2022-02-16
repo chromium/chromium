@@ -230,7 +230,8 @@ struct NET_EXPORT OCSPResponse {
 // id-pkix-ocsp-basic     OBJECT IDENTIFIER ::= { id-pkix-ocsp 1 }
 //
 // In dotted notation: 1.3.6.1.5.5.7.48.1.1
-NET_EXPORT der::Input BasicOCSPResponseOid();
+inline constexpr uint8_t kBasicOCSPResponseOid[] = {
+    0x2b, 0x06, 0x01, 0x05, 0x05, 0x07, 0x30, 0x01, 0x01};
 
 // Parses a DER-encoded OCSP "CertID" as specified by RFC 6960. Returns true on
 // success and sets the results in |out|.

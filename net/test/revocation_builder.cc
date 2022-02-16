@@ -395,7 +395,7 @@ std::string BuildOCSPResponseWithResponseData(
   // certs field not currently supported.
 
   return EncodeOCSPResponse(OCSPResponse::ResponseStatus::SUCCESSFUL,
-                            BasicOCSPResponseOid(),
+                            der::Input(kBasicOCSPResponseOid),
                             FinishCBB(basic_ocsp_response_cbb.get()));
 }
 
