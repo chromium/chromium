@@ -836,6 +836,10 @@ class CalendarViewAnimationTest : public AshTestBase {
     calendar_view_->ScrollOneMonthWithAnimation(/*scroll_up=*/false);
   }
 
+  void ResetToTodayWithAnimation() {
+    calendar_view_->ResetToTodayWithAnimation();
+  }
+
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
@@ -1027,6 +1031,32 @@ TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
   EXPECT_EQ(u"2021", header_year()->GetText());
+}
+
+TEST_F(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Creates calendar view and waits for the creation animation to finish.
+  CreateCalendarView();
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  // Expect header visible before starting animation.
+  EXPECT_EQ(1.0f, header()->layer()->opacity());
+
+  // Fades out on-screen date, and fades in today's date.
+  ResetToTodayWithAnimation();
+
+  // Expect header opacity less than 1 when fading out on-screen date.
+  task_environment()->FastForwardBy(
+      calendar_utils::kResetToTodayFadeAnimationDuration);
+  EXPECT_GT(1.0f, header()->layer()->opacity());
+
+  // Expect header visible after today's date fades in.
+  task_environment()->FastForwardBy(
+      calendar_utils::kResetToTodayFadeAnimationDuration);
+  EXPECT_LT(0.0f, header()->layer()->opacity());
 }
 
 }  // namespace ash

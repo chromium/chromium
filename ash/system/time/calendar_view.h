@@ -195,8 +195,24 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Scrolls up/down one row based on `scroll_up`.
   void ScrollOneRowWithAnimation(bool scroll_up);
 
-  // Back to the landing view.
+  // Sets opacity for header, previous, current and next month with their
+  // labels.
+  void SetHeaderAndMonthsOpacity(float opacity);
+
+  // Enables or disables `should_months_animate_` and `scroll_view_` vertical
+  // scroll bar mode.
+  void SetShouldMonthsAnimateAndScrollEnabled(bool enabled);
+
+  // Fades out on-screen month, sets date to today by calling `ResetToToday` and
+  // fades in updated views after.
+  void ResetToTodayWithAnimation();
+
+  // Removes on-screen month and adds today's date month and label views without
+  // animation.
   void ResetToToday();
+
+  // Fades in current month.
+  void FadeInCurrentMonth();
 
   // Updates the `header_`'s month and year to the current month and year.
   void UpdateHeaders();

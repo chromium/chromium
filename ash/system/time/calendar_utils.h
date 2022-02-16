@@ -38,6 +38,10 @@ constexpr gfx::Insets kDateCellInsets{kDateVerticalPadding,
 constexpr base::TimeDelta kAnimationDurationForVisibility =
     base::Milliseconds(100);
 
+// Fade-out and fade-in duration for resetting to today animation.
+constexpr base::TimeDelta kResetToTodayFadeAnimationDuration =
+    base::Milliseconds(100);
+
 // Duration of moving animation.
 constexpr base::TimeDelta kAnimationDurationForMoving = base::Milliseconds(300);
 
