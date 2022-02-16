@@ -275,11 +275,7 @@ def main():
     if args.test_summary_json_file:
       symbolize_snippets_in_json(args.test_summary_json_file, loop)
     else:
-      # Process stdin.
-      if sys.version_info.major > 2:
-        asan_symbolize.logfile = CheckUTF8(sys.stdin)
-      else:
-        asan_symbolize.logfile = sys.stdin
+      asan_symbolize.logfile = CheckUTF8(sys.stdin)
       loop.process_logfile()
 
 
