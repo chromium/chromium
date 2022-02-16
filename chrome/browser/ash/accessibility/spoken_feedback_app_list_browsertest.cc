@@ -150,12 +150,15 @@ void InitializeTestSearchProviders(
 
 enum SpokenFeedbackAppListTestVariant { kTestAsNormalUser, kTestAsGuestUser };
 
-class SpokenFeedbackAppListTest
+class SpokenFeedbackAppListBaseTest
     : public LoggedInSpokenFeedbackTest,
       public ::testing::WithParamInterface<SpokenFeedbackAppListTestVariant> {
- protected:
-  SpokenFeedbackAppListTest() = default;
-  ~SpokenFeedbackAppListTest() override = default;
+ public:
+  explicit SpokenFeedbackAppListBaseTest(bool productivity_launcher_enabled) {
+    feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
+                                       productivity_launcher_enabled);
+  }
+  ~SpokenFeedbackAppListBaseTest() override = default;
 
   // LoggedInSpokenFeedbackTest:
   void SetUp() override {
@@ -232,6 +235,16 @@ class SpokenFeedbackAppListTest
 
  private:
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests with feature ProductivityLauncher disabled.
+class SpokenFeedbackAppListTest : public SpokenFeedbackAppListBaseTest {
+ public:
+  SpokenFeedbackAppListTest()
+      : SpokenFeedbackAppListBaseTest(/*productivity_launcher_enabled=*/false) {
+  }
+  ~SpokenFeedbackAppListTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
@@ -241,6 +254,9 @@ INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
 
 class SpokenFeedbackAppListSearchTest : public SpokenFeedbackAppListTest {
  public:
+  SpokenFeedbackAppListSearchTest() = default;
+  ~SpokenFeedbackAppListSearchTest() override = default;
+
   // SpokenFeedbackAppListTest:
   void SetUpOnMainThread() override {
     SpokenFeedbackAppListTest::SetUpOnMainThread();
@@ -279,7 +295,7 @@ INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
 class TabletModeSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
  protected:
   TabletModeSpokenFeedbackAppListTest() = default;
-  ~TabletModeSpokenFeedbackAppListTest() = default;
+  ~TabletModeSpokenFeedbackAppListTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SpokenFeedbackAppListTest::SetUpCommandLine(command_line);
@@ -301,7 +317,7 @@ INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
 class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
  protected:
   NotificationSpokenFeedbackAppListTest() = default;
-  ~NotificationSpokenFeedbackAppListTest() = default;
+  ~NotificationSpokenFeedbackAppListTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SpokenFeedbackAppListTest::SetUpCommandLine(command_line);
@@ -316,10 +332,11 @@ INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
 
 // Tests with feature ProductivityLauncher enabled.
 class SpokenFeedbackAppListProductivityLauncherTest
-    : public SpokenFeedbackAppListTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      ash::features::kProductivityLauncher};
+    : public SpokenFeedbackAppListBaseTest {
+ public:
+  SpokenFeedbackAppListProductivityLauncherTest()
+      : SpokenFeedbackAppListBaseTest(/*productivity_launcher_enabled=*/true) {}
+  ~SpokenFeedbackAppListProductivityLauncherTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
@@ -330,6 +347,9 @@ INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
 class SpokenFeedbackAppListSearchProductivityLauncherTest
     : public SpokenFeedbackAppListProductivityLauncherTest {
  public:
+  SpokenFeedbackAppListSearchProductivityLauncherTest() = default;
+  ~SpokenFeedbackAppListSearchProductivityLauncherTest() override = default;
+
   // SpokenFeedbackAppListProductivityLauncherTest:
   void SetUpOnMainThread() override {
     SpokenFeedbackAppListProductivityLauncherTest::SetUpOnMainThread();
@@ -410,7 +430,7 @@ IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
       SendKeyPressWithSearch(ui::VKEY_RIGHT);
   });
 
-  // Check that the announcmenet for items with a notification badge occurs.
+  // Check that the announcement for items with a notification badge occurs.
   sm_.ExpectSpeech("app 0 requests your attention.");
   sm_.Replay();
 }
@@ -456,7 +476,7 @@ IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
       SendKeyPressWithSearch(ui::VKEY_RIGHT);
   });
 
-  // Check that the announcmenet for items with a pause badge occurs.
+  // Check that the announcement for items with a pause badge occurs.
   sm_.ExpectSpeech("app 0");
   sm_.ExpectSpeech("Paused");
   sm_.Replay();
@@ -503,7 +523,7 @@ IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
       SendKeyPressWithSearch(ui::VKEY_RIGHT);
   });
 
-  // Check that the announcmenet for items with a block badge occurs.
+  // Check that the announcement for items with a block badge occurs.
   sm_.ExpectSpeech("app 0");
   sm_.ExpectSpeech("Blocked");
   sm_.Replay();
@@ -1067,6 +1087,165 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest,
   sm_.Replay();
 }
 
+// Checks that when an app list item with a notification badge is focused, an
+// announcement is made that the item requests your attention.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
+                       AppListItemNotificationBadgeAnnounced) {
+  PopulateApps(1);
+
+  int test_item_index = 0;
+  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  ASSERT_TRUE(test_item);
+  test_item->UpdateNotificationBadgeForTesting(true);
+
+  EnableChromeVox();
+
+  // Focus the shelf. This selects the launcher button.
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
+  sm_.ExpectSpeechPattern("Launcher");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Shelf");
+  sm_.ExpectSpeech("Tool bar");
+
+  // Activate the launcher button. This opens bubble launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeech("Edit text");
+
+  // Skip over apps that were installed before the test item.
+  sm_.Call([this, &test_item_index]() {
+    for (int i = 0; i < test_item_index + 1; ++i)
+      SendKeyPressWithSearch(ui::VKEY_RIGHT);
+  });
+
+  // Check that the announcement for items with a notification badge occurs.
+  sm_.ExpectSpeech("app 0 requests your attention.");
+  sm_.Replay();
+}
+
+// Checks that when a paused app list item is focused, an announcement 'Paused'
+// is made.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
+                       AppListItemPausedAppAnnounced) {
+  PopulateApps(1);
+
+  int test_item_index = 0;
+  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  ASSERT_TRUE(test_item);
+  test_item->UpdateAppStatusForTesting(AppStatus::kPaused);
+
+  EnableChromeVox();
+
+  // Focus the shelf. This selects the launcher button.
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
+  sm_.ExpectSpeechPattern("Launcher");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Shelf");
+  sm_.ExpectSpeech("Tool bar");
+
+  // Activate the launcher button. This opens bubble launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeech("Edit text");
+
+  // Skip over apps that were installed before the test item.
+  sm_.Call([this, &test_item_index]() {
+    for (int i = 0; i < test_item_index + 1; ++i)
+      SendKeyPressWithSearch(ui::VKEY_RIGHT);
+  });
+
+  // Check that the announcement for items with a pause badge occurs.
+  sm_.ExpectSpeech("app 0");
+  sm_.ExpectSpeech("Paused");
+  sm_.Replay();
+}
+
+// Checks that when a blocked app list item is focused, an announcement
+// 'Blocked' is made.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
+                       AppListItemBlockedAppAnnounced) {
+  PopulateApps(1);
+
+  int test_item_index = 0;
+  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  ASSERT_TRUE(test_item);
+  test_item->UpdateAppStatusForTesting(AppStatus::kBlocked);
+
+  EnableChromeVox();
+
+  // Focus the shelf. This selects the launcher button.
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
+  sm_.ExpectSpeechPattern("Launcher");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Shelf");
+  sm_.ExpectSpeech("Tool bar");
+
+  // Activate the launcher button. This opens bubble launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeech("Edit text");
+
+  // Skip over apps that were installed before the test item.
+  sm_.Call([this, &test_item_index]() {
+    for (int i = 0; i < test_item_index + 1; ++i)
+      SendKeyPressWithSearch(ui::VKEY_RIGHT);
+  });
+
+  // Check that the announcement for items with a block badge occurs.
+  sm_.ExpectSpeech("app 0");
+  sm_.ExpectSpeech("Blocked");
+  sm_.Replay();
+}
+
+// Checks that entering and exiting tablet mode with a browser window open does
+// not generate an accessibility event.
+IN_PROC_BROWSER_TEST_P(
+    SpokenFeedbackAppListProductivityLauncherTest,
+    HiddenAppListDoesNotCreateAccessibilityEventWhenTransitioningToTabletMode) {
+  EnableChromeVox();
+
+  sm_.Call([]() { ShellTestApi().SetTabletModeEnabledForTest(true); });
+  sm_.ExpectNextSpeechIsNot("Launcher, all apps");
+  sm_.Call([]() { ShellTestApi().SetTabletModeEnabledForTest(false); });
+  sm_.ExpectNextSpeechIsNot("Launcher, all apps");
+  sm_.Replay();
+}
+
+// Checks that rotating the display in tablet mode does not generate an
+// accessibility event.
+IN_PROC_BROWSER_TEST_P(
+    SpokenFeedbackAppListProductivityLauncherTest,
+    LauncherAppListScreenRotationDoesNotCreateAccessibilityEvent) {
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const int display_id = display_manager->GetDisplayAt(0).id();
+  EnableChromeVox();
+
+  sm_.Call([]() { ShellTestApi().SetTabletModeEnabledForTest(true); });
+
+  sm_.Call([this]() { browser()->window()->Minimize(); });
+  // Set screen rotation to 90 degrees. No ChromeVox event should be created.
+  sm_.Call([&, display_manager, display_id]() {
+    display_manager->SetDisplayRotation(display_id, display::Display::ROTATE_90,
+                                        display::Display::RotationSource::USER);
+  });
+  sm_.ExpectNextSpeechIsNot("Launcher, all apps");
+
+  // Set screen rotation to 0 degrees. No ChromeVox event should be created.
+  sm_.Call([&, display_manager, display_id]() {
+    display_manager->SetDisplayRotation(display_id, display::Display::ROTATE_0,
+                                        display::Display::RotationSource::USER);
+  });
+  sm_.ExpectNextSpeechIsNot("Launcher, all apps");
+
+  sm_.Replay();
+}
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
                        ClamshellLauncher) {
   std::vector<std::string> suggestion_chips = GetPublishedSuggestionChips();
@@ -1120,6 +1299,158 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
   sm_.ExpectSpeech(base::SStringPrintf(
       &expected_text, "Moved to row 1, column %d.", test_item_index + 2));
 
+  sm_.Replay();
+}
+
+// Checks that app list keyboard reordering is announced.
+// TODO(mmourgos): The current method of accessibility announcements for item
+// reordering uses alerts, this works for spoken feedback but does not work as
+// well for braille users. The preferred way to handle this is to actually
+// change focus as the user navigates, and to have each object's
+// accessible name describe its position. (See crbug.com/1098495)
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
+                       AppListReordering) {
+  PopulateApps(22);
+  int test_item_index = 0;
+  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  ASSERT_TRUE(test_item);
+
+  EnableChromeVox();
+
+  // Focus the shelf. This selects the launcher button.
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
+  sm_.ExpectSpeechPattern("Launcher");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Shelf");
+  sm_.ExpectSpeech("Tool bar");
+
+  // Activate the launcher button. This opens bubble launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeech("Edit text");
+
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Button");
+
+  // Skip over apps that were installed before the test item.
+  // This selects the first app installed by the test.
+  for (int i = 0; i < test_item_index; ++i) {
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  }
+  sm_.ExpectSpeech("app 0");
+  sm_.ExpectSpeech("Button");
+
+  // The default column of app 0.
+  const int original_column = test_item_index + 1;
+
+  // The column of app 0 after rightward move.
+  const int column_after_horizontal_move = original_column + 1;
+
+  // Move the first item to the right.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_RIGHT); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+
+  std::string expected_text;
+  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
+                                       "Moved to row 1, column %d.",
+                                       column_after_horizontal_move));
+
+  // Move the focused item down.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
+                                       "Moved to row 2, column %d.",
+                                       column_after_horizontal_move));
+
+  // Move the focused item down.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
+                                       "Moved to row 3, column %d.",
+                                       column_after_horizontal_move));
+
+  // Move the focused item down.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech(base::SStringPrintf(&expected_text,
+                                       "Moved to row 4, column %d.",
+                                       column_after_horizontal_move));
+
+  // Move the focused item left.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_LEFT); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech(base::SStringPrintf(
+      &expected_text, "Moved to row 4, column %d.", original_column));
+
+  // Move the focused item back up.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_UP); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech(base::SStringPrintf(
+      &expected_text, "Moved to row 3, column %d.", original_column));
+
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
+                       AppListFoldering) {
+  // Add 3 apps.
+  PopulateApps(3);
+
+  int test_item_index = 0;
+  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  ASSERT_TRUE(test_item);
+
+  EnableChromeVox();
+
+  // Focus the shelf. This selects the launcher button.
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
+  sm_.ExpectSpeechPattern("Launcher");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Shelf");
+  sm_.ExpectSpeech("Tool bar");
+
+  // Activate the launcher button. This opens bubble launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeech("Edit text");
+
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Button");
+
+  // Skip over apps that were installed before the test item.
+  // This selects the first app installed by the test.
+  for (int i = 0; i < test_item_index; ++i) {
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  }
+  sm_.ExpectSpeech("app 0");
+  sm_.ExpectSpeech("Button");
+
+  // Combine items and create a new folder.
+  sm_.Call([]() { SendKeyPressWithShiftAndControl(ui::VKEY_RIGHT); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech("Folder Unnamed");
+  sm_.ExpectSpeech("Expanded");
+  sm_.ExpectSpeech("app 0 combined with app 1 to create new folder.");
+
+  // Move focus to the first item in folder.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("app 1");
+  sm_.ExpectSpeech("Button");
+
+  // Remove the first item from the folder back to the top level app list.
+  sm_.Call([]() { SendKeyPressWithShiftAndControl(ui::VKEY_LEFT); });
+
+  sm_.ExpectSpeech("app 1");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectNextSpeechIsNot("Alert");
+
+  std::string expected_text;
+  sm_.ExpectSpeech(base::SStringPrintf(
+      &expected_text, "Moved to row 1, column %d.", test_item_index + 1));
   sm_.Replay();
 }
 

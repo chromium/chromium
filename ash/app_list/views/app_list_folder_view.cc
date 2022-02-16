@@ -34,11 +34,13 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -766,11 +768,6 @@ void AppListFolderView::ConfigureForFolderItemView(
 
 void AppListFolderView::ScheduleShowHideAnimation(bool show,
                                                   bool hide_for_reparent) {
-  if (show)
-    a11y_announcer_->AnnounceFolderOpened();
-  else
-    a11y_announcer_->AnnounceFolderClosed();
-
   show_hide_metrics_tracker_ =
       GetWidget()->GetCompositor()->RequestNewThroughputTracker();
   show_hide_metrics_tracker_->Start(
@@ -786,6 +783,12 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
   }
 
   folder_visibility_animations_.clear();
+
+  shown_ = show;
+  if (show) {
+    GetViewAccessibility().OverrideName(folder_item_view_->GetAccessibleName());
+  }
+  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
 
   // Animate the background corner radius, opacity and bounds.
   folder_visibility_animations_.push_back(
@@ -812,7 +815,7 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
         folder_visibility_animations_.size(),
         base::BindOnce(&AppListFolderView::OnHideAnimationDone,
                        weak_ptr_factory_.GetWeakPtr(), hide_for_reparent));
-  } else if (animation_done_test_callback_) {
+  } else {
     animation_completion_callback = base::BarrierClosure(
         folder_visibility_animations_.size(),
         base::BindOnce(&AppListFolderView::OnShowAnimationDone,
@@ -936,6 +939,8 @@ void AppListFolderView::OnShowAnimationDone() {
 }
 
 void AppListFolderView::OnHideAnimationDone(bool hide_for_reparent) {
+  a11y_announcer_->AnnounceFolderClosed();
+
   // If the folder view is hiding for folder closure, reset the
   // folder state when the animations complete. Not resetting state
   // immediately so the folder view keeps tracking folder item
@@ -1195,6 +1200,12 @@ bool AppListFolderView::IsPointWithinBottomDragBuffer(
 
 void AppListFolderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kGenericContainer;
+
+  if (shown_) {
+    node_data->AddState(ax::mojom::State::kExpanded);
+  } else {
+    node_data->AddState(ax::mojom::State::kCollapsed);
+  }
 }
 
 void AppListFolderView::OnGestureEvent(ui::GestureEvent* event) {

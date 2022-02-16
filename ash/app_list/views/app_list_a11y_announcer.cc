@@ -76,11 +76,6 @@ void AppListA11yAnnouncer::AnnounceAppsGridReorder(int target_row,
       base::NumberToString16(target_column)));
 }
 
-void AppListA11yAnnouncer::AnnounceFolderOpened() {
-  Announce(l10n_util::GetStringUTF16(
-      IDS_APP_LIST_FOLDER_OPEN_FOLDER_ACCESSIBILE_NAME));
-}
-
 void AppListA11yAnnouncer::AnnounceFolderClosed() {
   Announce(l10n_util::GetStringUTF16(
       IDS_APP_LIST_FOLDER_CLOSE_FOLDER_ACCESSIBILE_NAME));

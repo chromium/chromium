@@ -275,6 +275,9 @@ class ASH_EXPORT AppListFolderView
   AppListViewDelegate* const view_delegate_;
   AppListFolderItem* folder_item_ = nullptr;  // Not owned.
 
+  // Whether the folder view is currently shown, or showing.
+  bool shown_ = false;
+
   // The folder item in the root apps grid associated with this folder.
   AppListItemView* folder_item_view_ = nullptr;
 

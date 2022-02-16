@@ -66,10 +66,6 @@ class AppListA11yAnnouncer {
   // As above, but does not announce a page. Used for single-page apps grids.
   void AnnounceAppsGridReorder(int target_row, int target_column);
 
-  // Modifies the announcement view to verbalize that a folder was opened in the
-  // apps container.
-  void AnnounceFolderOpened();
-
   // Modifies the announcement view to verbalize that a folder was closed in the
   // apps container.
   void AnnounceFolderClosed();
