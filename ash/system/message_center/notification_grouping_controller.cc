@@ -260,6 +260,9 @@ NotificationGroupingController::CreateCopyForParentNotification(
       parent_notification.rich_notification_data().settings_button_handler);
   copy->set_delegate(parent_notification.delegate());
 
+  // After copying, set to be a group parent.
+  copy->SetGroupParent();
+
   return copy;
 }
 

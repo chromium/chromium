@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/metrics_utils.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/message_center/unified_message_center_view.h"
@@ -11,6 +12,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
@@ -19,11 +21,40 @@
 
 using message_center::Notification;
 
+namespace {
+
+constexpr char kNotificationViewTypeHistogramName[] =
+    "Ash.NotificationView.NotificationAdded.Type";
+
+const gfx::Image CreateTestImage() {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(/*width=*/80, /*height=*/80);
+  bitmap.eraseColor(SK_ColorGREEN);
+  return gfx::Image::CreateFrom1xBitmap(bitmap);
+}
+
+void CheckNotificationViewTypeRecorded(
+    std::unique_ptr<Notification> notification,
+    ash::metrics_utils::NotificationViewType type) {
+  base::HistogramTester histograms;
+
+  // Add the notification. Expect that the corresponding notification type is
+  // recorded.
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+  histograms.ExpectBucketCount(kNotificationViewTypeHistogramName, type, 1);
+}
+
+}  // namespace
+
 namespace ash {
 
 class MessageCenterMetricsUtilsTest : public AshTestBase {
  public:
-  MessageCenterMetricsUtilsTest() = default;
+  MessageCenterMetricsUtilsTest() {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitAndEnableFeature(features::kNotificationsRefresh);
+  }
   MessageCenterMetricsUtilsTest(const MessageCenterMetricsUtilsTest&) = delete;
   MessageCenterMetricsUtilsTest& operator=(
       const MessageCenterMetricsUtilsTest&) = delete;
@@ -36,7 +67,8 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
         base::MakeRefCounted<message_center::NotificationDelegate>();
   }
 
-  // Create a test notification that is used in the view.
+  // Create a test notification. Noted that the notifications are using the same
+  // url so that they are grouped together.
   std::unique_ptr<Notification> CreateTestNotification() {
     message_center::RichNotificationData data;
     data.settings_button_handler =
@@ -45,7 +77,7 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
     return std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_BASE_FORMAT,
         base::NumberToString(current_id_++), u"title", u"message", gfx::Image(),
-        u"display source", GURL(),
+        u"display source", GURL(u"http://test-url.com"),
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    "extension_id"),
         data, /*delegate=*/nullptr);
@@ -86,6 +118,7 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
 
  private:
   scoped_refptr<message_center::NotificationDelegate> test_delegate_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 
   // Used to create test notification. This represents the current available
   // number that we can use to create the next test notification. This id will
@@ -150,6 +183,125 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordHover) {
   // recorded.
   HoverOnView(notification_view);
   histograms.ExpectTotalCount("Notifications.Cros.Actions.Tray.Hover", 1);
+}
+
+TEST_F(MessageCenterMetricsUtilsTest, RecordNotificationViewTypeSimple) {
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
+
+  auto simple_notification = CreateTestNotification();
+  CheckNotificationViewTypeRecorded(
+      std::move(simple_notification),
+      metrics_utils::NotificationViewType::SIMPLE);
+
+  auto grouped_simple_notification = CreateTestNotification();
+  CheckNotificationViewTypeRecorded(
+      std::move(grouped_simple_notification),
+      metrics_utils::NotificationViewType::GROUPED_SIMPLE);
+}
+
+TEST_F(MessageCenterMetricsUtilsTest, RecordNotificationViewTypeImage) {
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
+
+  auto image_notification = CreateTestNotification();
+  image_notification->set_image(CreateTestImage());
+  CheckNotificationViewTypeRecorded(
+      std::move(image_notification),
+      metrics_utils::NotificationViewType::HAS_IMAGE);
+
+  auto grouped_image_notification = CreateTestNotification();
+  grouped_image_notification->set_image(CreateTestImage());
+  CheckNotificationViewTypeRecorded(
+      std::move(grouped_image_notification),
+      metrics_utils::NotificationViewType::GROUPED_HAS_IMAGE);
+}
+
+TEST_F(MessageCenterMetricsUtilsTest, RecordNotificationViewTypeActionButtons) {
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
+
+  auto notification = CreateTestNotification();
+  notification->set_buttons({message_center::ButtonInfo(u"Test button")});
+  CheckNotificationViewTypeRecorded(
+      std::move(notification), metrics_utils::NotificationViewType::HAS_ACTION);
+
+  auto grouped_notification = CreateTestNotification();
+  grouped_notification->set_buttons(
+      {message_center::ButtonInfo(u"Test button")});
+  CheckNotificationViewTypeRecorded(
+      std::move(grouped_notification),
+      metrics_utils::NotificationViewType::GROUPED_HAS_ACTION);
+}
+
+TEST_F(MessageCenterMetricsUtilsTest, RecordNotificationViewTypeInlineReply) {
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
+
+  auto create_inline_reply_button = []() {
+    message_center::ButtonInfo button(u"Test button");
+    button.placeholder = std::u16string();
+    return button;
+  };
+  auto notification = CreateTestNotification();
+  notification->set_buttons({create_inline_reply_button()});
+
+  CheckNotificationViewTypeRecorded(
+      std::move(notification),
+      metrics_utils::NotificationViewType::HAS_INLINE_REPLY);
+
+  auto grouped_notification = CreateTestNotification();
+  grouped_notification->set_buttons({create_inline_reply_button()});
+  CheckNotificationViewTypeRecorded(
+      std::move(grouped_notification),
+      metrics_utils::NotificationViewType::GROUPED_HAS_INLINE_REPLY);
+}
+
+TEST_F(MessageCenterMetricsUtilsTest,
+       RecordNotificationViewTypeImageActionButtons) {
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
+
+  auto notification = CreateTestNotification();
+  notification->set_image(CreateTestImage());
+  notification->set_buttons({message_center::ButtonInfo(u"Test button")});
+  CheckNotificationViewTypeRecorded(
+      std::move(notification),
+      metrics_utils::NotificationViewType::HAS_IMAGE_AND_ACTION);
+
+  auto grouped_notification = CreateTestNotification();
+  grouped_notification->set_image(CreateTestImage());
+  grouped_notification->set_buttons(
+      {message_center::ButtonInfo(u"Test button")});
+  CheckNotificationViewTypeRecorded(
+      std::move(grouped_notification),
+      metrics_utils::NotificationViewType::GROUPED_HAS_IMAGE_AND_ACTION);
+}
+
+TEST_F(MessageCenterMetricsUtilsTest,
+       RecordNotificationViewTypeImageInlineReply) {
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
+
+  auto create_inline_reply_button = []() {
+    message_center::ButtonInfo button(u"Test button");
+    button.placeholder = std::u16string();
+    return button;
+  };
+  auto notification = CreateTestNotification();
+  notification->set_image(CreateTestImage());
+  notification->set_buttons({create_inline_reply_button()});
+
+  CheckNotificationViewTypeRecorded(
+      std::move(notification),
+      metrics_utils::NotificationViewType::HAS_IMAGE_AND_INLINE_REPLY);
+
+  auto grouped_notification = CreateTestNotification();
+  grouped_notification->set_image(CreateTestImage());
+  grouped_notification->set_buttons({create_inline_reply_button()});
+  CheckNotificationViewTypeRecorded(
+      std::move(grouped_notification),
+      metrics_utils::NotificationViewType::GROUPED_HAS_IMAGE_AND_INLINE_REPLY);
 }
 
 }  // namespace ash

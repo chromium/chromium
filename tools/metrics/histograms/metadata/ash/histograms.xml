@@ -2165,6 +2165,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.NotificationView.NotificationAdded.Type"
+    enum="NotificationViewType" expires_after="2023-02-15">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded the types of notification view added to the system. Emitted when
+    each notification is added.
+  </summary>
+</histogram>
+
 <histogram name="Ash.NotificationView.{ChildView}.FadeIn.AnimationSmoothness"
     units="%" expires_after="2023-01-28">
   <owner>leandre@chromium.org</owner>

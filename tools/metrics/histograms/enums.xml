@@ -65123,6 +65123,25 @@ Called by update_net_trust_anchors.py.-->
   <int value="43" label="PhoneHub priority=2"/>
 </enum>
 
+<enum name="NotificationViewType">
+  <int value="0" label="Simple (no image, action buttons) and ungrouped"/>
+  <int value="1" label="Simple (no image, action buttons) and grouped"/>
+  <int value="2" label="Has image, no action buttons and ungrouped"/>
+  <int value="3" label="Has image, no action buttons and grouped"/>
+  <int value="4"
+      label="Has action buttons, no image, inline reply and ungrouped"/>
+  <int value="5"
+      label="Has action buttons, no image, inline reply and grouped"/>
+  <int value="6" label="Has inline reply, no image and ungrouped"/>
+  <int value="7" label="Has inline reply, no image and grouped"/>
+  <int value="8"
+      label="Has image and action buttons, no inline reply and ungrouped"/>
+  <int value="9"
+      label="Has image and action buttons, no inline reply and grouped"/>
+  <int value="10" label="Has image and inline reply and ungrouped"/>
+  <int value="11" label="Has image and inline reply and grouped"/>
+</enum>
+
 <enum name="NotifierType">
   <int value="0" label="Application"/>
   <int value="1" label="Arc++"/>

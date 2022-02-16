@@ -239,7 +239,7 @@ void MessageCenterImpl::AddNotification(
   }
 
   auto* parent = FindParentNotificationForOriginUrl(notification->origin_url());
-  if (notification->allow_group() && parent) {
+  if (notification->allow_group() && parent && !notification->group_parent()) {
     parent->SetGroupParent();
     notification->SetGroupChild();
   }
