@@ -24,7 +24,12 @@ namespace web_app {
 class PreinstalledWebAppDuplicationFixer
     : public apps::AppRegistryCache::Observer {
  public:
+  static const char kHistogramWebAppAbsentChromeAppAbsent[];
+  static const char kHistogramWebAppAbsentChromeAppPresent[];
+  static const char kHistogramWebAppPresentChromeAppAbsent[];
+  static const char kHistogramWebAppPresentChromeAppPresent[];
   static const char kHistogramAppDuplicationFixApplied[];
+
   static void SkipStartupForTesting();
 
   explicit PreinstalledWebAppDuplicationFixer(Profile& profile);
@@ -44,6 +49,9 @@ class PreinstalledWebAppDuplicationFixer
   void ScanForDuplication();
 
   Profile& profile_;
+
+  bool web_apps_ready_ = false;
+  bool chrome_apps_ready_ = false;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

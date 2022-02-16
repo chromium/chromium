@@ -125,6 +125,23 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
         PreinstalledWebAppDuplicationFixer::kHistogramAppDuplicationFixApplied);
   }
 
+  std::array<int64_t, 4> GetDuplicationMetrics() {
+    return {
+        histogram_tester_.GetTotalSum(
+            PreinstalledWebAppDuplicationFixer::
+                kHistogramWebAppAbsentChromeAppAbsent),
+        histogram_tester_.GetTotalSum(
+            PreinstalledWebAppDuplicationFixer::
+                kHistogramWebAppAbsentChromeAppPresent),
+        histogram_tester_.GetTotalSum(
+            PreinstalledWebAppDuplicationFixer::
+                kHistogramWebAppPresentChromeAppAbsent),
+        histogram_tester_.GetTotalSum(
+            PreinstalledWebAppDuplicationFixer::
+                kHistogramWebAppPresentChromeAppPresent),
+    };
+  }
+
   void InstallChromeApp() {
     const extensions::Extension* extension =
         InstallExtension(test_data_dir_.AppendASCII("hosted_app.crx"), 1);
@@ -173,6 +190,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
     EXPECT_TRUE(IsWebAppInstalled());
     EXPECT_FALSE(IsChromeAppInstalled());
     EXPECT_EQ(GetFixCountMetrics(), (std::vector<base::Bucket>{{0, 1}}));
+    EXPECT_EQ(GetDuplicationMetrics(), (std::array<int64_t, 4>{0, 0, 1, 0}));
     EXPECT_TRUE(IsWebAppExternalInstallPrefSet());
   }
 
@@ -195,11 +213,20 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
     EXPECT_TRUE(IsChromeAppInstalled());
     EXPECT_EQ(GetFixCountMetrics(),
               (std::vector<base::Bucket>{{0, 1}, {1, 1}}));
+    EXPECT_EQ(GetDuplicationMetrics(), (std::array<int64_t, 4>{0, 0, 1, 1}));
     EXPECT_FALSE(IsWebAppExternalInstallPrefSet());
 
     SyncPreinstalledWebAppsAwaitChromeAppUninstall();
     EXPECT_TRUE(IsWebAppInstalled());
     EXPECT_FALSE(IsChromeAppInstalled());
+  }
+
+  // Metrics now counts the web app as present and the Chrome app absent.
+  {
+    RunAppDuplicationFix();
+    EXPECT_EQ(GetFixCountMetrics(),
+              (std::vector<base::Bucket>{{0, 2}, {1, 1}}));
+    EXPECT_EQ(GetDuplicationMetrics(), (std::array<int64_t, 4>{0, 0, 2, 1}));
   }
 }
 
@@ -220,6 +247,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
   EXPECT_FALSE(IsWebAppInstalled());
   EXPECT_TRUE(IsChromeAppInstalled());
   EXPECT_EQ(GetFixCountMetrics(), (std::vector<base::Bucket>{{1, 1}}));
+  EXPECT_EQ(GetDuplicationMetrics(), (std::array<int64_t, 4>{0, 1, 0, 0}));
   EXPECT_FALSE(IsWebAppExternalInstallPrefSet());
 
   // Running the preinstalled web app sync should remigrate the old Chrome app
@@ -228,6 +256,14 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
     SyncPreinstalledWebAppsAwaitChromeAppUninstall();
     EXPECT_TRUE(IsWebAppInstalled());
     EXPECT_FALSE(IsChromeAppInstalled());
+  }
+
+  // Metrics now counts the web app as present and the Chrome app absent.
+  {
+    RunAppDuplicationFix();
+    EXPECT_EQ(GetFixCountMetrics(),
+              (std::vector<base::Bucket>{{0, 1}, {1, 1}}));
+    EXPECT_EQ(GetDuplicationMetrics(), (std::array<int64_t, 4>{0, 1, 1, 0}));
   }
 }
 

@@ -120,6 +120,10 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
     migration.old_chrome_app_id = options.uninstall_and_replace[0];
     migrations.push_back(std::move(migration));
   }
+
+  if (g_preinstalled_app_data_for_testing)
+    return migrations;
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
   // Manually hard coded entries from
   // https://chrome-internal.googlesource.com/chromeos/overlays/chromeos-overlay/+/main/chromeos-base/chromeos-default-apps/files/web_apps

@@ -23,6 +23,18 @@ namespace {
 bool g_skip_startup_for_testing = false;
 }
 
+const char PreinstalledWebAppDuplicationFixer::
+    kHistogramWebAppAbsentChromeAppAbsent[] =
+        "WebApp.Preinstalled.MigratingWebAppAbsentChromeAppAbsent";
+const char PreinstalledWebAppDuplicationFixer::
+    kHistogramWebAppAbsentChromeAppPresent[] =
+        "WebApp.Preinstalled.MigratingWebAppAbsentChromeAppPresent";
+const char PreinstalledWebAppDuplicationFixer::
+    kHistogramWebAppPresentChromeAppAbsent[] =
+        "WebApp.Preinstalled.MigratingWebAppPresentChromeAppAbsent";
+const char PreinstalledWebAppDuplicationFixer::
+    kHistogramWebAppPresentChromeAppPresent[] =
+        "WebApp.Preinstalled.MigratingWebAppPresentChromeAppPresent";
 const char
     PreinstalledWebAppDuplicationFixer::kHistogramAppDuplicationFixApplied[] =
         "WebApp.Preinstalled.AppDuplicationFixApplied";
@@ -40,7 +52,11 @@ PreinstalledWebAppDuplicationFixer::PreinstalledWebAppDuplicationFixer(
   apps::AppRegistryCache& app_registry_cache =
       apps::AppServiceProxyFactory::GetForProfile(&profile_)
           ->AppRegistryCache();
-  if (app_registry_cache.IsAppTypeInitialized(apps::AppType::kChromeApp)) {
+  web_apps_ready_ =
+      app_registry_cache.IsAppTypeInitialized(apps::AppType::kWeb);
+  chrome_apps_ready_ =
+      app_registry_cache.IsAppTypeInitialized(apps::AppType::kChromeApp);
+  if (web_apps_ready_ && chrome_apps_ready_) {
     ScanForDuplication();
   } else {
     // Await OnAppTypeInitialized().
@@ -56,11 +72,16 @@ void PreinstalledWebAppDuplicationFixer::OnAppUpdate(
 
 void PreinstalledWebAppDuplicationFixer::OnAppTypeInitialized(
     apps::AppType app_type) {
-  if (app_type != apps::AppType::kChromeApp)
-    return;
+  if (app_type == apps::AppType::kWeb)
+    web_apps_ready_ = true;
 
-  ScanForDuplication();
-  scoped_observation_.Reset();
+  if (app_type == apps::AppType::kChromeApp)
+    chrome_apps_ready_ = true;
+
+  if (web_apps_ready_ && chrome_apps_ready_) {
+    ScanForDuplication();
+    scoped_observation_.Reset();
+  }
 }
 
 void PreinstalledWebAppDuplicationFixer::OnAppRegistryCacheWillBeDestroyed(
@@ -73,29 +94,57 @@ void PreinstalledWebAppDuplicationFixer::ScanForDuplicationForTesting() {
 }
 
 void PreinstalledWebAppDuplicationFixer::ScanForDuplication() {
-  std::vector<PreinstalledWebAppMigration> migrations =
-      GetPreinstalledWebAppMigrations(profile_);
-  size_t fix_count = 0;
+  std::vector<std::string> installed_web_apps;
+  std::vector<std::string> installed_chrome_apps;
   apps::AppServiceProxyFactory::GetForProfile(&profile_)
       ->AppRegistryCache()
-      .ForEachApp(
-          [this, &migrations, &fix_count](const apps::AppUpdate& update) {
-            if (update.AppType() != apps::mojom::AppType::kChromeApp)
-              return;
+      .ForAllApps([&installed_web_apps,
+                   &installed_chrome_apps](const apps::AppUpdate& update) {
+        if (update.GetReadiness() != apps::Readiness::kReady)
+          return;
 
-            if (update.Readiness() != apps::mojom::Readiness::kReady)
-              return;
+        if (update.GetAppType() == apps::AppType::kWeb)
+          installed_web_apps.push_back(update.GetAppId());
+        else if (update.GetAppType() == apps::AppType::kChromeApp)
+          installed_chrome_apps.push_back(update.GetAppId());
+      });
 
-            for (const PreinstalledWebAppMigration& migration : migrations) {
-              if (update.AppId() != migration.old_chrome_app_id)
-                continue;
-              // Remove evidence of web app installation causing
-              // PreinstalledWebAppManager::Synchronize() to reinstall the web
-              // app and re-trigger migration.
-              fix_count += ExternallyInstalledWebAppPrefs(profile_.GetPrefs())
-                               .Remove(migration.install_url);
-            }
-          });
+  size_t fix_count = 0;
+  base::flat_set<std::string> installed_web_apps_set(
+      std::move(installed_web_apps));
+  base::flat_set<std::string> installed_chrome_apps_set(
+      std::move(installed_chrome_apps));
+
+  int installed_tally[2][2] = {};
+
+  for (const PreinstalledWebAppMigration& migration :
+       GetPreinstalledWebAppMigrations(profile_)) {
+    bool web_app_installed =
+        installed_web_apps_set.contains(migration.expected_web_app_id);
+    bool chrome_app_installed =
+        installed_chrome_apps_set.contains(migration.old_chrome_app_id);
+
+    if (chrome_app_installed) {
+      // Remove evidence of web app installation causing
+      // PreinstalledWebAppManager::Synchronize() to reinstall the web
+      // app and re-trigger migration.
+      if (ExternallyInstalledWebAppPrefs(profile_.GetPrefs())
+              .Remove(migration.install_url)) {
+        ++fix_count;
+      }
+    }
+
+    ++installed_tally[web_app_installed][chrome_app_installed];
+  }
+
+  base::UmaHistogramCounts100(kHistogramWebAppAbsentChromeAppAbsent,
+                              installed_tally[false][false]);
+  base::UmaHistogramCounts100(kHistogramWebAppAbsentChromeAppPresent,
+                              installed_tally[false][true]);
+  base::UmaHistogramCounts100(kHistogramWebAppPresentChromeAppAbsent,
+                              installed_tally[true][false]);
+  base::UmaHistogramCounts100(kHistogramWebAppPresentChromeAppPresent,
+                              installed_tally[true][true]);
 
   base::UmaHistogramCounts100(kHistogramAppDuplicationFixApplied, fix_count);
 }

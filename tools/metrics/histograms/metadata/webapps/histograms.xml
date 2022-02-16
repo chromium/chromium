@@ -607,6 +607,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Preinstalled.MigratingWebAppAbsentChromeAppAbsent"
+    units="apps" expires_after="2022-07-03">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web apps that are migrating from Chrome apps
+    are not installed and their Chrome app is not installed either. This is
+    recorded at start up.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.MigratingWebAppAbsentChromeAppPresent"
+    units="apps" expires_after="2022-07-03">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web apps that are migrating from Chrome apps
+    are not installed and their Chrome app is installed. This is recorded at
+    start up.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.MigratingWebAppPresentChromeAppAbsent"
+    units="apps" expires_after="2022-07-03">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web apps that are migrating from Chrome apps
+    are installed and their Chrome app is not installed. This is recorded at
+    start up.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.MigratingWebAppPresentChromeAppPresent"
+    units="apps" expires_after="2022-07-03">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web apps that are migrating from Chrome apps
+    are installed and their Chrome app is installed as well. This is recorded at
+    start up.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Preinstalled.UninstallAndReplaceCount" units="apps"
     expires_after="2022-06-19">
   <owner>alancutter@chromium.org</owner>
