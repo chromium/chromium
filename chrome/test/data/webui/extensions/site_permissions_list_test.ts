@@ -7,7 +7,7 @@ import 'chrome://extensions/extensions.js';
 
 import {ExtensionsSitePermissionsListElement} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
@@ -41,5 +41,29 @@ suite('SitePermissionsList', function() {
         element.shadowRoot!.querySelector('site-permissions-add-site-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
+  });
+
+  test('removing sites through action menu', async function() {
+    element.sites = ['https://google.com', 'http://www.example.com'];
+    flush();
+
+    const openEditSites =
+        element!.shadowRoot!.querySelectorAll<HTMLElement>('.icon-more-vert');
+    assertEquals(2, openEditSites.length);
+    openEditSites[1]!.click();
+
+    const actionMenu = element.$.siteActionMenu;
+    assertTrue(!!actionMenu);
+    assertTrue(actionMenu.open);
+
+    const remove = actionMenu.querySelector<HTMLElement>('#remove-site');
+    assertTrue(!!remove);
+
+    remove.click();
+    const [siteSet, host] =
+        await delegate.whenCalled('removeUserSpecifiedSite');
+    assertEquals(chrome.developerPrivate.UserSiteSet.RESTRICTED, siteSet);
+    assertEquals('http://www.example.com', host);
+    assertFalse(actionMenu.open);
   });
 });

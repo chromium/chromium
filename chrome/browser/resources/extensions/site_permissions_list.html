@@ -46,10 +46,19 @@
       <span class="site">[[item]]</span>
       <cr-icon-button class="subpage-arrow no-overlap"></cr-icon-button>
       <div class="separator"></div>
-      <cr-icon-button class="icon-more-vert no-overlap"></cr-icon-button>
+      <cr-icon-button class="icon-more-vert no-overlap" on-click="onDotsClick_">
+      </cr-icon-button>
     </div>
   </template>
 </div>
+
+<cr-action-menu id="siteActionMenu">
+  <button class="dropdown-item" id="remove-site"
+      on-click="onActionMenuRemoveClick_">
+    $i18n{remove}
+  </button>
+</cr-action-menu>
+
 <template is="dom-if" if="[[showAddSiteDialog_]]" restamp>
   <site-permissions-add-site-dialog
       delegate="[[delegate]]"

@@ -489,6 +489,15 @@ export class Service implements ServiceInterface {
     });
   }
 
+  removeUserSpecifiedSite(
+      siteSet: chrome.developerPrivate.UserSiteSet,
+      host: string): Promise<void> {
+    return new Promise(function(resolve) {
+      chrome.developerPrivate.removeUserSpecifiedSite(
+          {siteList: siteSet, host}, resolve);
+    });
+  }
+
   getUserSiteSettingsChangedTarget() {
     return chrome.developerPrivate.onUserSiteSettingsChanged;
   }

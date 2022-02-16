@@ -47,6 +47,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'recordUserAction',
       'reloadItem',
       'removeRuntimeHostPermission',
+      'removeUserSpecifiedSite',
       'repairItem',
       'requestFileSource',
       'retryLoadUnpacked',
@@ -327,6 +328,12 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   addUserSpecifiedSite(
       siteSet: chrome.developerPrivate.UserSiteSet, host: string) {
     this.methodCalled('addUserSpecifiedSite', [siteSet, host]);
+    return Promise.resolve();
+  }
+
+  removeUserSpecifiedSite(
+      siteSet: chrome.developerPrivate.UserSiteSet, host: string) {
+    this.methodCalled('removeUserSpecifiedSite', [siteSet, host]);
     return Promise.resolve();
   }
 }

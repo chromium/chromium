@@ -445,6 +445,8 @@ declare global {
           callback: (result: UserSiteSettings) => void): void;
       export function addUserSpecifiedSite(
           options: UserSiteSettingsOptions, callback?: VoidCallback): void;
+      export function removeUserSpecifiedSite(
+          options: UserSiteSettingsOptions, callback?: VoidCallback): void;
 
       export const onItemStateChanged: ChromeEvent<(data: EventData) => void>;
       export const onProfileStateChanged:

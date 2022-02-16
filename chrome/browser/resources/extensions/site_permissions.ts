@@ -21,6 +21,9 @@ export interface SitePermissionsDelegate {
   addUserSpecifiedSite(
       siteSet: chrome.developerPrivate.UserSiteSet,
       host: string): Promise<void>;
+  removeUserSpecifiedSite(
+      siteSet: chrome.developerPrivate.UserSiteSet,
+      host: string): Promise<void>;
 }
 
 export interface ExtensionsSitePermissionsElement {
