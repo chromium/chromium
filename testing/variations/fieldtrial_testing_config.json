@@ -7384,6 +7384,21 @@
             ]
         }
     ],
+    "WebViewTempTrustTokens": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TrustTokens"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewThreadSafeMedia": [
         {
             "platforms": [
