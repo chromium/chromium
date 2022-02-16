@@ -764,4 +764,18 @@ Additional details:
   <message name="IDS_POLICY_REBOOT_BUTTON" desc="Notification button label for restarting the device.">
     Restart now
   </message>
+  <message name="IDS_POLICY_DEVICE_SCHEDULED_REBOOT_DIALOG_MESSAGE" desc="The message of the dialog informing the user that the device will restart soon.">
+    Your administrator will restart your device automatically at <ph name="TIME">$1<ex>3:20 PM</ex></ph> on <ph name="DATE">$2<ex>Nov 29, 2021</ex></ph>. Save any open items before your device restarts.
+  </message>
+  <message name="IDS_REBOOT_SCHEDULED_TITLE_MINUTES" desc="The title of a dialog that tells users the device will be restarted within one or more minutes.">
+        {0, plural,
+          =1 {Your device will restart in 1 minute}
+          other {Your device will restart in # minutes}}
+  </message>
+  <message name="IDS_REBOOT_SCHEDULED_TITLE_SECONDS" desc="The title of a dialog that tells users the device will be restarted within some number of seconds.">
+        {0, plural,
+          =0 {Your device will restart now}
+          =1 {Your device will restart in 1 second}
+          other {Your device will restart in # seconds}}
+  </message>
 </grit-part>
