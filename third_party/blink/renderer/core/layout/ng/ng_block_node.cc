@@ -640,6 +640,13 @@ const NGLayoutResult* NGBlockNode::SimplifiedLayout(
       previous_result->GetConstraintSpaceForCaching());
   const NGLayoutResult* result = Layout(space, /* break_token */ nullptr);
 
+  if (result->Status() != NGLayoutResult::kSuccess) {
+    // TODO(crbug.com/1297864): The optimistic BFC block-offsets aren't being
+    // set correctly for block-in-inline causing these layouts to fail.
+    NOTREACHED();
+    return nullptr;
+  }
+
   const auto& old_fragment =
       To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment());
   const auto& new_fragment =
