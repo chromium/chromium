@@ -163,8 +163,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "org.chromium.chrome.browser.customtabs.AGA_EXPERIMENT_IDS";
 
     /**
-     * Extra that, if set, makes the Custom Tab activity's height x% of the screen height. The value
-     * is an integer, range from 1 to 100.
+     * Extra that, if set, makes the Custom Tab Activity's height to be x pixels, the Custom Tab
+     * will behave as a bottom sheet. x will be clamped between 50% and 100% of screen height.
      */
     public static final String EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL =
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL";
