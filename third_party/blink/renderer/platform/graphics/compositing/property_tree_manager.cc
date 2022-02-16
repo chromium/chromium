@@ -99,6 +99,7 @@ static void SetTransformTreePageScaleFactor(
 bool PropertyTreeManager::DirectlyUpdateCompositedOpacityValue(
     cc::LayerTreeHost& host,
     const EffectPaintPropertyNode& effect) {
+  host.WaitForProtectedSequenceCompletion();
   auto* property_trees = host.property_trees();
   auto* cc_effect = property_trees->effect_tree_mutable().Node(
       effect.CcNodeId(property_trees->sequence_number()));
@@ -120,6 +121,7 @@ bool PropertyTreeManager::DirectlyUpdateCompositedOpacityValue(
 bool PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
     cc::LayerTreeHost& host,
     const TransformPaintPropertyNode& transform) {
+  host.WaitForProtectedSequenceCompletion();
   auto* scroll_node = transform.ScrollNode();
   // Only handle scroll adjustments.
   if (!scroll_node)
@@ -154,6 +156,7 @@ bool PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
 bool PropertyTreeManager::DirectlyUpdateTransform(
     cc::LayerTreeHost& host,
     const TransformPaintPropertyNode& transform) {
+  host.WaitForProtectedSequenceCompletion();
   // If we have a ScrollNode, we should be using
   // DirectlyUpdateScrollOffsetTransform().
   DCHECK(!transform.ScrollNode());
@@ -180,6 +183,7 @@ bool PropertyTreeManager::DirectlyUpdateTransform(
 bool PropertyTreeManager::DirectlyUpdatePageScaleTransform(
     cc::LayerTreeHost& host,
     const TransformPaintPropertyNode& transform) {
+  host.WaitForProtectedSequenceCompletion();
   DCHECK(!transform.ScrollNode());
 
   auto* property_trees = host.property_trees();
@@ -201,6 +205,7 @@ void PropertyTreeManager::DirectlySetScrollOffset(
     cc::LayerTreeHost& host,
     CompositorElementId element_id,
     const gfx::PointF& scroll_offset) {
+  host.WaitForProtectedSequenceCompletion();
   auto* property_trees = host.property_trees();
   if (property_trees->scroll_tree_mutable().SetScrollOffset(element_id,
                                                             scroll_offset)) {

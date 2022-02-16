@@ -696,26 +696,14 @@ class CC_EXPORT PropertyTrees final {
     return synchronizer_;
   }
 
-  const ClipTree& clip_tree() const { return clip_tree_.Read(synchronizer()); }
-  ClipTree& clip_tree_mutable() { return clip_tree_.Write(synchronizer()); }
-  const EffectTree& effect_tree() const {
-    return effect_tree_.Read(synchronizer());
-  }
-  EffectTree& effect_tree_mutable() {
-    return effect_tree_.Write(synchronizer());
-  }
-  const ScrollTree& scroll_tree() const {
-    return scroll_tree_.Read(synchronizer());
-  }
-  ScrollTree& scroll_tree_mutable() {
-    return scroll_tree_.Write(synchronizer());
-  }
-  const TransformTree& transform_tree() const {
-    return transform_tree_.Read(synchronizer());
-  }
-  TransformTree& transform_tree_mutable() {
-    return transform_tree_.Write(synchronizer());
-  }
+  const ClipTree& clip_tree() const { return clip_tree_; }
+  ClipTree& clip_tree_mutable() { return clip_tree_; }
+  const EffectTree& effect_tree() const { return effect_tree_; }
+  EffectTree& effect_tree_mutable() { return effect_tree_; }
+  const ScrollTree& scroll_tree() const { return scroll_tree_; }
+  ScrollTree& scroll_tree_mutable() { return scroll_tree_; }
+  const TransformTree& transform_tree() const { return transform_tree_; }
+  TransformTree& transform_tree_mutable() { return transform_tree_; }
 
   void set_needs_rebuild(bool value) {
     needs_rebuild_.Write(synchronizer()) = value;
@@ -812,10 +800,10 @@ class CC_EXPORT PropertyTrees final {
  private:
   const ProtectedSequenceSynchronizer& synchronizer_;
 
-  ProtectedSequenceReadable<TransformTree> transform_tree_;
-  ProtectedSequenceReadable<EffectTree> effect_tree_;
-  ProtectedSequenceReadable<ClipTree> clip_tree_;
-  ProtectedSequenceReadable<ScrollTree> scroll_tree_;
+  TransformTree transform_tree_;
+  EffectTree effect_tree_;
+  ClipTree clip_tree_;
+  ScrollTree scroll_tree_;
 
   ProtectedSequenceReadable<bool> needs_rebuild_;
   // Change tracking done on property trees needs to be preserved across commits
