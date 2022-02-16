@@ -26,7 +26,7 @@
 namespace ash {
 namespace {
 constexpr char kLacrosDataMigrationId[] = "lacros-data-migration";
-const test::UIPath kSkipButton = {kLacrosDataMigrationId, "cancelButton"};
+const test::UIPath kSkipButton = {kLacrosDataMigrationId, "skipButton"};
 const test::UIPath kUpdating = {kLacrosDataMigrationId, "updating"};
 const test::UIPath kLowBattery = {kLacrosDataMigrationId, "lowBattery"};
 

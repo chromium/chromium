@@ -44,7 +44,7 @@
         <p>
           [[i18nDynamic(locale, 'lacrosDataMigrationSubtitle', progressValue_)]]
         </p>
-        <p hidden="[[!canCancel_]]">
+        <p hidden="[[!canSkip_]]">
           [[i18nDynamic(locale, 'lacrosDataMigrationSkipSuggestion')]]
         </p>
       </div>
@@ -67,10 +67,10 @@
         </oobe-slide>
       </div>
 
-      <!-- Cancel button -->
+      <!-- Skip button -->
       <div slot="bottom-buttons" class="flex layout horizontal end-justified">
-        <oobe-text-button id="cancelButton"  hidden="[[!canCancel_]]"
-            on-click="onCancelButtonClicked_"
+        <oobe-text-button id="skipButton"  hidden="[[!canSkip_]]"
+            on-click="onSkipButtonClicked_"
             text-key="lacrosDataMigrationSkipButton">
         </oobe-text-button>
       </div>

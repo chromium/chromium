@@ -22,7 +22,7 @@
 
 namespace ash {
 namespace {
-constexpr char kUserActionCancel[] = "cancel";
+constexpr char kUserActionSkip[] = "skip";
 constexpr base::TimeDelta kShowSkipButtonDuration = base::Seconds(20);
 
 // If the battery percent is lower than this ratio, and the charger is not
@@ -128,9 +128,12 @@ void LacrosDataMigrationScreen::ShowSkipButton() {
 }
 
 void LacrosDataMigrationScreen::OnUserAction(const std::string& action_id) {
-  if (action_id == kUserActionCancel) {
+  if (action_id == kUserActionSkip) {
+    LOG(WARNING) << "User has skipped the migration.";
     if (migrator_) {
-      LOG(WARNING) << "User has cancelled the migration.";
+      // Here migrator should be running. Trigger to cancel, then the migrator
+      // will report completion (actual completion or cancel) some time soon,
+      // which triggers Chrome to restart.
       migrator_->Cancel();
     }
   } else {

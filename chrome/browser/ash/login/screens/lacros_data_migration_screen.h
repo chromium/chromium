@@ -32,10 +32,6 @@ class LacrosDataMigrationScreen : public BaseScreen,
   // the `view` it should call view->Unbind().
   void OnViewDestroyed(LacrosDataMigrationScreenView* view);
 
-  // Called from `LacrosDataMigratorScreenHandler::OnCancelClicked()`. It runs
-  // `cancel_callback_` to cancel migration.
-  void OnCancelClicked();
-
   // Passed to `BrowserDataMigrator` as a callback to transmit the progress
   // value. `progress` is then passed to `LacrosDataMigrationView`.
   void OnProgressUpdate(int progress);
@@ -69,9 +65,6 @@ class LacrosDataMigrationScreen : public BaseScreen,
 
   LacrosDataMigrationScreenView* view_;
   std::unique_ptr<BrowserDataMigrator> migrator_;
-  // Callback to cancel migration. Stores the return value from
-  // `migrator_delegate->Migrate()`.
-  base::OnceClosure cancel_callback_;
   bool skip_post_show_button_for_testing_ = false;
 
   // PowerManagerClient::Observer is used only when screen is shown.
