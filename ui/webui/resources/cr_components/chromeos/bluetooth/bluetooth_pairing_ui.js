@@ -270,6 +270,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   onDiscoveredDevicesListChanged(discoveredDevices) {
     this.discoveredDevices_ = discoveredDevices;
 
+    this.updateLastFailedPairingDeviceId_(discoveredDevices);
+
     // Check if this dialog needs to pair to a specific device.
     if (!this.pairingDeviceAddress) {
       return;
@@ -284,6 +286,19 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     // occurring, search for the device with address |this.pairingDeviceAddress|
     // and attempt to pair with it.
     this.attemptPairDeviceByAddress_();
+  }
+
+  /**
+   * @param {Array<!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties>}
+   *     devices
+   * @private
+   */
+  updateLastFailedPairingDeviceId_(devices) {
+    if (devices.some(device => device.id === this.lastFailedPairingDeviceId_)) {
+      return;
+    }
+
+    this.lastFailedPairingDeviceId_ = '';
   }
 
   /** @override */

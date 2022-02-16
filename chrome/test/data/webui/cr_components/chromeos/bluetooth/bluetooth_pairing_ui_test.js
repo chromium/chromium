@@ -1004,17 +1004,68 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     assertTrue(!!getDeviceSelectionPage());
     assertEquals(getDeviceSelectionPage().failedPairingDeviceId, deviceId);
 
-    // Disable and re-enable.
+    // Disable Bluetooth.
     bluetoothConfig.setSystemState(
         chromeos.bluetoothConfig.mojom.BluetoothSystemState.kDisabled);
     await flushTasks();
 
     assertFalse(getDeviceSelectionPage().isBluetoothEnabled);
+
+    // Re-enable Bluetooth.
+    onBluetoothDiscoveryStartedPromise =
+        bluetoothPairingUi.waitForOnBluetoothDiscoveryStartedForTest();
     bluetoothConfig.setSystemState(
         chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled);
-    await flushTasks();
+    await onBluetoothDiscoveryStartedPromise;
 
     assertTrue(getDeviceSelectionPage().isBluetoothEnabled);
+
+    // Error text should no longer be showing.
+    assertEquals(getDeviceSelectionPage().failedPairingDeviceId, '');
+  });
+
+  test('Error message is not preserved', async function() {
+    // Test to ensure error message is not preserved if pairing fails and
+    // device is removed and readded to device list.
+
+    await init();
+    assertTrue(!!getDeviceSelectionPage());
+    assertTrue(getDeviceSelectionPage().isBluetoothEnabled);
+
+    const deviceId = '123456';
+    const device = createDefaultBluetoothDevice(
+        deviceId,
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+    bluetoothConfig.appendToDiscoveredDeviceList([device.deviceProperties]);
+    await flushTasks();
+
+    // Select the device.
+    await selectDevice(device.deviceProperties);
+    await flushTasks();
+
+    // Simulate pairing failing.
+    let deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+    deviceHandler.completePairDevice(/*success=*/ false);
+    await flushTasks();
+    await waitAfterNextRender(bluetoothPairingUi);
+
+    // Error text should be showing.
+    assertTrue(!!getDeviceSelectionPage());
+    assertEquals(getDeviceSelectionPage().failedPairingDeviceId, deviceId);
+
+    // Reset device list.
+    bluetoothConfig.resetDiscoveredDeviceList();
+    await flushTasks();
+
+    // Add device back.
+    bluetoothConfig.appendToDiscoveredDeviceList([device.deviceProperties]);
+    await flushTasks();
 
     // Error text should no longer be showing.
     assertEquals(getDeviceSelectionPage().failedPairingDeviceId, '');
