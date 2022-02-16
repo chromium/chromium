@@ -3705,6 +3705,29 @@
             ]
         }
     ],
+    "IncognitoParamFilterExperiment": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "classifications": "H4sIAEkgDGIC%2F+NS4uJKz89Pz0nVS87PFWCS4uXizk0sKSlPLM5ILUqVYuZiLAQAaThOnyQAAAA="
+                    },
+                    "enable_features": [
+                        "IncognitoParamFilterEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeyboardAccessoryAddressIPH": [
         {
             "platforms": [
