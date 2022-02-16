@@ -46,6 +46,17 @@
       <td class="skipped-eviction-rounds"></td>
     </tr>
   </template>
+
+  <h2>Test Storage Pressure Behavior</h2>
+  <form>
+    <label>Origin to test: </label>
+    <input type="url" name="origin-to-test" id="origin-to-test"
+        placeholder="https://example.com" pattern="https://.*"
+        size="30"required>
+    <button name="trigger-notification" id="trigger-notification" type="submit">
+      Trigger Storage Pressure Notification
+    </button>
+  </form>
 </body>
 </html>
 

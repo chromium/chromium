@@ -10,6 +10,8 @@ mojom("mojo_bindings") {
 
   public_deps = [ "//url/mojom:url_mojom_origin" ]
 
+  disable_variants = true
+
   component_output_prefix = "storage_browser_interfaces"
   component_macro_prefix = "STORAGE_BROWSER_INTERFACES"
 }

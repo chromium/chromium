@@ -629,7 +629,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                        int64_t available_space);
   // Used from quota-internals page to test behavior of the storage pressure
   // callback.
-  void SimulateStoragePressure(const blink::StorageKey& storage_key);
+  void SimulateStoragePressure(const url::Origin& origin_url) override;
 
   // Evaluates disk statistics to identify storage pressure
   // (low disk space availability) and starts the storage

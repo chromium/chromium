@@ -3,7 +3,6 @@
     "compilerOptions": {
       "allowJs": true,
       "noUncheckedIndexedAccess": false,
-      "noUnusedLocals": false,
-      "strictPropertyInitialization": false
+      "noUnusedLocals": false
     }
   }

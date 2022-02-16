@@ -57,4 +57,6 @@ async function renderEvictionStats() {
 document.addEventListener('DOMContentLoaded', () => {
   renderDiskAvailability();
   renderEvictionStats();
+  document.body.querySelector('#trigger-notification')!.addEventListener(
+      'click', () => getProxy().simulateStoragePressure());
 });

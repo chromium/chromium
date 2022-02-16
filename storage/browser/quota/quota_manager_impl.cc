@@ -2016,8 +2016,9 @@ void QuotaManagerImpl::MaybeRunStoragePressureCallback(
   }
 }
 
-void QuotaManagerImpl::SimulateStoragePressure(const StorageKey& storage_key) {
-  storage_pressure_callback_.Run(storage_key);
+void QuotaManagerImpl::SimulateStoragePressure(const url::Origin& origin_url) {
+  StorageKey key(origin_url);
+  storage_pressure_callback_.Run(key);
 }
 
 void QuotaManagerImpl::DetermineStoragePressure(int64_t total_space,

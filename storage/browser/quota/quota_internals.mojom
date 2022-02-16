@@ -4,6 +4,8 @@
 
 module storage.mojom;
 
+import "url/mojom/origin.mojom";
+
 // Interface for controlling Quota Internals.
 // Hosted on chrome://quota-internals" for WebUI content::QuotaInternalsUI.
 interface QuotaInternalsHandler {
@@ -15,4 +17,8 @@ interface QuotaInternalsHandler {
     // Errors on Getting Usage and Quota, Evicted Buckets, Evicted Rounds
     // and Skipped Eviction Rounds.
     GetStatistics() => (map<string, string> eviction_statistics);
+
+    // Used by the quota-internals page to test behavior of the storage pressure
+    // callback and trigger a storage pressure notification.
+    SimulateStoragePressure(url.mojom.Origin origin_url);
 };
