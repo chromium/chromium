@@ -322,6 +322,7 @@ class CiceroneClientImpl : public CiceroneClient {
       LOG(ERROR) << "Failed to encode StopLxdContainerRequest protobuf";
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      return;
     }
 
     cicerone_proxy_->CallMethod(
