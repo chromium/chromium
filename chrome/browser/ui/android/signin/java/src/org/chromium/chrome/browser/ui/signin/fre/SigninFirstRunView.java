@@ -54,7 +54,7 @@ public class SigninFirstRunView extends LinearLayout {
         mFooter = findViewById(R.id.signin_fre_footer);
 
         if (FREMobileIdentityConsistencyFieldTrial.shouldHideTitleUntilPoliciesAreLoaded()) {
-            mTitle.setVisibility(GONE);
+            mTitle.setVisibility(INVISIBLE);
         }
     }
 
