@@ -270,8 +270,8 @@ class WebViewTest : public testing::Test {
                      const std::string& html_file);
   void TestInputAction(ui::TextInputAction expected_input_action,
                        const std::string& html_file);
-  bool TapElement(WebInputEvent::Type, Element*);
-  bool TapElementById(WebInputEvent::Type, const WebString& id);
+  bool SimulateGestureAtElement(WebInputEvent::Type, Element*);
+  bool SimulateGestureAtElementById(WebInputEvent::Type, const WebString& id);
   gfx::Size PrintICBSizeFromPageSize(const gfx::Size& page_size);
 
   ExternalDateTimeChooser* GetExternalDateTimeChooser(
@@ -1198,7 +1198,8 @@ TEST_F(WebViewTest, LongPressOutsideInputShouldNotSelectPlaceholderText) {
   WebString input_id = WebString::FromUTF8("input");
 
   // Focus in input.
-  EXPECT_TRUE(TapElementById(WebInputEvent::Type::kGestureTap, input_id));
+  EXPECT_TRUE(
+      SimulateGestureAtElementById(WebInputEvent::Type::kGestureTap, input_id));
 
   // Long press below input.
   WebGestureEvent event(WebInputEvent::Type::kGestureLongPress,
@@ -2681,7 +2682,8 @@ TEST_F(WebViewTest, DragDropURL) {
             web_view->MainFrameImpl()->GetDocument().Url().GetString().Utf8());
 }
 
-bool WebViewTest::TapElement(WebInputEvent::Type type, Element* element) {
+bool WebViewTest::SimulateGestureAtElement(WebInputEvent::Type type,
+                                           Element* element) {
   if (!element || !element->GetLayoutObject())
     return false;
 
@@ -2706,12 +2708,12 @@ bool WebViewTest::TapElement(WebInputEvent::Type type, Element* element) {
   return true;
 }
 
-bool WebViewTest::TapElementById(WebInputEvent::Type type,
-                                 const WebString& id) {
+bool WebViewTest::SimulateGestureAtElementById(WebInputEvent::Type type,
+                                               const WebString& id) {
   DCHECK(web_view_helper_.GetWebView());
   Element* element = static_cast<Element*>(
       web_view_helper_.LocalMainFrame()->GetDocument().GetElementById(id));
-  return TapElement(type, element);
+  return SimulateGestureAtElement(type, element);
 }
 
 gfx::Size WebViewTest::PrintICBSizeFromPageSize(const gfx::Size& page_size) {
@@ -2949,8 +2951,8 @@ TEST_F(WebViewTest, TouchCancelOnStartDragging) {
   WebString target_id = WebString::FromUTF8("target");
 
   // Send long press to start dragging
-  EXPECT_TRUE(
-      TapElementById(WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
   EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
 
   // Check pointer cancel is sent to dom.
@@ -2991,8 +2993,8 @@ TEST_F(WebViewTest, TouchDragContextMenuWithoutDrag) {
   WebString target_id = WebString::FromUTF8("target");
 
   // Simulate long press to start dragging.
-  EXPECT_TRUE(
-      TapElementById(WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
   EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
 
   // Simulate the end of a non-moving drag.
@@ -3032,8 +3034,8 @@ TEST_F(WebViewTest, TouchDragContextMenuAtDragEnd) {
   WebString target_id = WebString::FromUTF8("target");
 
   // Simulate long press to start dragging.
-  EXPECT_TRUE(
-      TapElementById(WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
   EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
 
   // Simulate the end of a drag.
@@ -3067,12 +3069,12 @@ TEST_F(WebViewTest, ContextMenuOnLinkAndImageLongPress) {
   WebString anchor_tag_id = WebString::FromUTF8("anchorTag");
   WebString image_tag_id = WebString::FromUTF8("imageTag");
 
-  EXPECT_TRUE(
-      TapElementById(WebInputEvent::Type::kGestureLongPress, anchor_tag_id));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, anchor_tag_id));
   EXPECT_EQ("contextmenu@a,", web_view->MainFrameImpl()->GetDocument().Title());
 
-  EXPECT_TRUE(
-      TapElementById(WebInputEvent::Type::kGestureLongPress, image_tag_id));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, image_tag_id));
   EXPECT_EQ("contextmenu@a,contextmenu@img,",
             web_view->MainFrameImpl()->GetDocument().Title());
 }
@@ -3094,8 +3096,12 @@ TEST_F(WebViewTest, ContextMenuAndDragOnImageLongPress) {
 
   WebString image_tag_id = WebString::FromUTF8("imageTag");
 
-  EXPECT_TRUE(
-      TapElementById(WebInputEvent::Type::kGestureLongPress, image_tag_id));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureShortPress, image_tag_id));
+  EXPECT_EQ("dragstart@img,",
+            web_view->MainFrameImpl()->GetDocument().Title().Ascii());
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, image_tag_id));
   EXPECT_EQ("dragstart@img,contextmenu@img,",
             web_view->MainFrameImpl()->GetDocument().Title().Ascii());
 }
@@ -3118,8 +3124,12 @@ TEST_F(WebViewTest, ContextMenuAndDragOnLinkLongPress) {
 
   WebString anchor_tag_id = WebString::FromUTF8("anchorTag");
 
-  EXPECT_TRUE(
-      TapElementById(WebInputEvent::Type::kGestureLongPress, anchor_tag_id));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureShortPress, anchor_tag_id));
+  EXPECT_EQ("dragstart@a,",
+            web_view->MainFrameImpl()->GetDocument().Title().Ascii());
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, anchor_tag_id));
   EXPECT_EQ("dragstart@a,contextmenu@a,",
             web_view->MainFrameImpl()->GetDocument().Title().Ascii());
 }
@@ -3180,10 +3190,11 @@ TEST_F(WebViewTest, LongPressSelection) {
   WebString onselectstartfalse = WebString::FromUTF8("onselectstartfalse");
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
 
-  EXPECT_TRUE(TapElementById(WebInputEvent::Type::kGestureLongPress,
-                             onselectstartfalse));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, onselectstartfalse));
   EXPECT_EQ("", frame->SelectionAsText().Utf8());
-  EXPECT_TRUE(TapElementById(WebInputEvent::Type::kGestureLongPress, target));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target));
   EXPECT_EQ("testword", frame->SelectionAsText().Utf8());
 }
 
@@ -3201,7 +3212,8 @@ TEST_F(WebViewTest, FinishComposingTextDoesNotDismissHandles) {
   web_view->SetPageFocus(true);
   WebInputMethodController* active_input_method_controller =
       frame->FrameWidget()->GetActiveWebInputMethodController();
-  EXPECT_TRUE(TapElementById(WebInputEvent::Type::kGestureTap, target));
+  EXPECT_TRUE(
+      SimulateGestureAtElementById(WebInputEvent::Type::kGestureTap, target));
   WebVector<ui::ImeTextSpan> empty_ime_text_spans;
   frame->SetEditableSelectionOffsets(8, 8);
   EXPECT_TRUE(active_input_method_controller->SetComposition(
@@ -3211,7 +3223,8 @@ TEST_F(WebViewTest, FinishComposingTextDoesNotDismissHandles) {
   EXPECT_FALSE(frame->GetFrame()->Selection().IsHandleVisible());
   EXPECT_TRUE(frame->GetFrame()->GetInputMethodController().HasComposition());
 
-  EXPECT_TRUE(TapElementById(WebInputEvent::Type::kGestureLongPress, target));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target));
   EXPECT_EQ("testword12345", frame->SelectionAsText().Utf8());
   EXPECT_TRUE(frame->GetFrame()->Selection().IsHandleVisible());
   EXPECT_TRUE(frame->GetFrame()->GetInputMethodController().HasComposition());
@@ -3236,8 +3249,8 @@ TEST_F(WebViewTest, TouchDoesntSelectEmptyTextarea) {
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
 
   // Long-press on carriage returns.
-  EXPECT_TRUE(TapElementById(WebInputEvent::Type::kGestureLongPress,
-                             blanklinestextbox));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, blanklinestextbox));
   EXPECT_TRUE(frame->SelectionAsText().IsEmpty());
 
   // Double-tap on carriage returns.
@@ -3258,8 +3271,8 @@ TEST_F(WebViewTest, TouchDoesntSelectEmptyTextarea) {
   text_area_element->setValue("hello");
 
   // Long-press past last word of textbox.
-  EXPECT_TRUE(TapElementById(WebInputEvent::Type::kGestureLongPress,
-                             blanklinestextbox));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, blanklinestextbox));
   EXPECT_TRUE(frame->SelectionAsText().IsEmpty());
 
   // Double-tap past last word of textbox.
@@ -3280,7 +3293,8 @@ TEST_F(WebViewTest, LongPressImageTextarea) {
 
   WebString image = WebString::FromUTF8("purpleimage");
 
-  EXPECT_TRUE(TapElementById(WebInputEvent::Type::kGestureLongPress, image));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, image));
   WebRange range = web_view->MainFrameImpl()
                        ->GetInputMethodController()
                        ->GetSelectionOffsets();
@@ -3301,7 +3315,8 @@ TEST_F(WebViewTest, BlinkCaretAfterLongPress) {
   WebString target = WebString::FromUTF8("target");
   WebLocalFrameImpl* main_frame = web_view->MainFrameImpl();
 
-  EXPECT_TRUE(TapElementById(WebInputEvent::Type::kGestureLongPress, target));
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target));
   EXPECT_FALSE(main_frame->GetFrame()->Selection().IsCaretBlinkingSuspended());
 }
 
@@ -4889,7 +4904,8 @@ class ShowUnhandledTapTest : public WebViewTest {
   // Tap on the given element by ID.
   void Tap(const String& element_id) {
     mock_notifier_.Reset();
-    EXPECT_TRUE(TapElementById(WebInputEvent::Type::kGestureTap, element_id));
+    EXPECT_TRUE(SimulateGestureAtElementById(WebInputEvent::Type::kGestureTap,
+                                             element_id));
   }
 
   // Set up a test script for the given |operation| with the given |handler|.

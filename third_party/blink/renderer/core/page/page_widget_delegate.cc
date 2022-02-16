@@ -169,6 +169,7 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
     case WebInputEvent::Type::kGestureTapCancel:
     case WebInputEvent::Type::kGestureDoubleTap:
     case WebInputEvent::Type::kGestureTwoFingerTap:
+    case WebInputEvent::Type::kGestureShortPress:
     case WebInputEvent::Type::kGestureLongPress:
     case WebInputEvent::Type::kGestureLongTap:
       return handler.HandleGestureEvent(

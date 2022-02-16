@@ -73,6 +73,8 @@ class CORE_EXPORT GestureManager final
   WebInputEventResult HandleGestureTapDown(
       const GestureEventWithHitTestResults&);
   WebInputEventResult HandleGestureTap(const GestureEventWithHitTestResults&);
+  WebInputEventResult HandleGestureShortPress(
+      const GestureEventWithHitTestResults&);
   WebInputEventResult HandleGestureLongPress(
       const GestureEventWithHitTestResults&);
   WebInputEventResult HandleGestureLongTap(
@@ -121,6 +123,7 @@ class CORE_EXPORT GestureManager final
   bool gesture_context_menu_deferred_;
 
   gfx::PointF long_press_position_in_root_frame_;
+  bool drag_in_progress_;
 
   // Pair of the unique_touch_id for the first gesture in the sequence and
   // the pointerId associated.

@@ -911,9 +911,10 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
         // Queue a highlight animation, then hand off to regular handler.
         web_view->EnableTapHighlightAtPoint(targeted_event);
         break;
+      case WebInputEvent::Type::kGestureShortPress:
+      case WebInputEvent::Type::kGestureLongPress:
       case WebInputEvent::Type::kGestureTapCancel:
       case WebInputEvent::Type::kGestureTap:
-      case WebInputEvent::Type::kGestureLongPress:
         GetPage()->GetLinkHighlight().StartHighlightAnimationIfNeeded();
         break;
       default:
@@ -984,6 +985,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
       break;
     case WebInputEvent::Type::kGestureShowPress:
     case WebInputEvent::Type::kGestureTapUnconfirmed:
+    case WebInputEvent::Type::kGestureShortPress:
       event_result =
           frame->GetEventHandler().HandleGestureEvent(targeted_event);
       break;
@@ -2441,10 +2443,12 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
   }
 
   // If a drag-and-drop operation is in progress, ignore input events except
-  // PointerCancel.
+  // PointerCancel and GestureLongPress.
   if (doing_drag_and_drop_ &&
-      input_event.GetType() != WebInputEvent::Type::kPointerCancel)
+      input_event.GetType() != WebInputEvent::Type::kPointerCancel &&
+      input_event.GetType() != WebInputEvent::Type::kGestureLongPress) {
     return WebInputEventResult::kHandledSuppressed;
+  }
 
   // Don't handle events once we've started shutting down.
   if (!GetPage())

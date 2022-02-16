@@ -2031,6 +2031,7 @@ void EventHandler::ApplyTouchAdjustment(WebGestureEvent* gesture_event,
       adjusted = BestClickableNodeForHitTestResult(
           location, *hit_test_result, adjusted_point, adjusted_node);
       break;
+    case WebInputEvent::Type::kGestureShortPress:
     case WebInputEvent::Type::kGestureLongPress:
     case WebInputEvent::Type::kGestureLongTap:
     case WebInputEvent::Type::kGestureTwoFingerTap:

@@ -157,6 +157,7 @@ bool StructTraits<blink::mojom::EventDataView,
           gesture_event->data.tap.width = gesture_data->contact_size->width();
           gesture_event->data.tap.height = gesture_data->contact_size->height();
           break;
+        case blink::WebInputEvent::Type::kGestureShortPress:
         case blink::WebInputEvent::Type::kGestureLongPress:
         case blink::WebInputEvent::Type::kGestureLongTap:
           gesture_event->data.long_press.width =
@@ -461,6 +462,7 @@ StructTraits<blink::mojom::EventDataView,
           blink::mojom::TapData::New(gesture_event->data.tap.tap_count,
                                      gesture_event->data.tap.needs_wheel_event);
       break;
+    case blink::WebInputEvent::Type::kGestureShortPress:
     case blink::WebInputEvent::Type::kGestureLongPress:
     case blink::WebInputEvent::Type::kGestureLongTap:
       gesture_data->contact_size =

@@ -197,7 +197,8 @@ gfx::SizeF WebGestureEvent::TapAreaInRootFrame() const {
   if (type_ == WebInputEvent::Type::kGestureTwoFingerTap) {
     return gfx::SizeF(data.two_finger_tap.first_finger_width / frame_scale_,
                       data.two_finger_tap.first_finger_height / frame_scale_);
-  } else if (type_ == WebInputEvent::Type::kGestureLongPress ||
+  } else if (type_ == WebInputEvent::Type::kGestureShortPress ||
+             type_ == WebInputEvent::Type::kGestureLongPress ||
              type_ == WebInputEvent::Type::kGestureLongTap) {
     return gfx::SizeF(data.long_press.width / frame_scale_,
                       data.long_press.height / frame_scale_);
@@ -260,6 +261,7 @@ void WebGestureEvent::FlattenTransform() {
         data.two_finger_tap.first_finger_width /= frame_scale_;
         data.two_finger_tap.first_finger_height /= frame_scale_;
         break;
+      case WebInputEvent::Type::kGestureShortPress:
       case WebInputEvent::Type::kGestureLongPress:
       case WebInputEvent::Type::kGestureLongTap:
         data.long_press.width /= frame_scale_;
