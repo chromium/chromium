@@ -246,8 +246,7 @@ void StartupAppLauncher::BeginInstall(bool finalize_only) {
     delegate_->OnAppInstalling();
   }
   installer_ = std::make_unique<ChromeAppKioskAppInstaller>(
-      profile_, KioskAppManager::Get()->CreatePrimaryAppInstallData(app_id_),
-      delegate_, finalize_only);
+      profile_, app_id_, delegate_, finalize_only);
   installer_->BeginInstall(base::BindOnce(
       &StartupAppLauncher::OnInstallComplete, weak_ptr_factory_.GetWeakPtr()));
 }

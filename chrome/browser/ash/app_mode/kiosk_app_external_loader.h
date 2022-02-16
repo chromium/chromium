@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "chrome/browser/extensions/external_loader.h"
 
 namespace ash {
@@ -29,9 +28,6 @@ class KioskAppExternalLoader : public extensions::ExternalLoader {
  public:
   enum class AppClass { kPrimary, kSecondary };
 
-  using InstallDataChangeCallback =
-      base::RepeatingCallback<void(std::unique_ptr<base::DictionaryValue>)>;
-
   explicit KioskAppExternalLoader(AppClass app_class);
   KioskAppExternalLoader(const KioskAppExternalLoader&) = delete;
   KioskAppExternalLoader& operator=(const KioskAppExternalLoader&) = delete;
@@ -45,12 +41,17 @@ class KioskAppExternalLoader : public extensions::ExternalLoader {
  private:
   enum class State { kInitial, kLoading, kLoaded };
 
-  // Registers callback for handling kiosk apps prefs changes.
-  void SetPrefsChangedHandler(InstallDataChangeCallback handler);
+  // Gets prefs describing appropriate set of external extensions (depending
+  // on the class of kiosk apps handled by |this|) from KioskAppManager.
+  std::unique_ptr<base::DictionaryValue> GetAppsPrefs();
 
-  // Sends |prefs| through to the external loader owner (using
-  // extensions::ExternalLoader interface).
-  void SendPrefs(std::unique_ptr<base::DictionaryValue> prefs);
+  // Registers callback for handling kiosk apps prefs changes.
+  void SetPrefsChangedHandler(base::RepeatingClosure handler);
+
+  // If prefs for the set of kiosk apps handled by |this| are available, sends
+  // them to the external loader owner (using extensions::ExternalLoader
+  // interface).
+  void SendPrefsIfAvailable();
 
   // The class of kiosk apps this external extensions loader handles.
   const AppClass app_class_;
