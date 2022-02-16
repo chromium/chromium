@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
@@ -44,9 +45,6 @@ class PendingSreencastManager : public session_manager::SessionManagerObserver,
       const drivefs::mojom::SyncingStatus& status) override;
   void OnError(const drivefs::mojom::DriveError& error) override;
 
-  // session_manager::SessionManagerObserver:
-  void OnUserProfileLoaded(const AccountId& account_id) override;
-
   // Returns a list of pending screencast from `pending_screencast_cache_`.
   const ash::PendingScreencastSet& GetPendingScreencasts() const;
 
@@ -54,6 +52,9 @@ class PendingSreencastManager : public session_manager::SessionManagerObserver,
   // Updates `pending_screencast_cache_` and notifies pending screencast change.
   void OnProcessAndGenerateNewScreencastsFinished(
       const ash::PendingScreencastSet& screencasts);
+
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // A set that caches current pending screencast.
   ash::PendingScreencastSet pending_screencast_cache_;
@@ -64,8 +65,12 @@ class PendingSreencastManager : public session_manager::SessionManagerObserver,
   // A blocking task runner for file IO operations.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
-  // True if DriveFS host has been observed.
-  bool observed_drive_fs_host_ = false;
+  base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHostObserver>
+      drivefs_observation_{this};
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
 
   base::WeakPtrFactory<PendingSreencastManager> weak_ptr_factory_{this};
 };

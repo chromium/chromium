@@ -322,6 +322,9 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   chrome_shelf_controller_initializer_.reset();
   desks_templates_client_.reset();
 
+  projector_client_.reset();
+  projector_app_client_.reset();
+
   wallpaper_controller_client_.reset();
   vpn_list_forwarder_.reset();
 

@@ -66,6 +66,11 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
         base::Unretained(this)));
   }
 
+  void TearDownOnMainThread() override {
+    pending_screencast_manager_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   virtual drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
@@ -209,6 +214,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
   EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
   syncing_status.item_events.clear();
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+  content::RunAllTasksUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, InvalidScreencasts) {

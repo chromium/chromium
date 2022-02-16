@@ -176,19 +176,10 @@ PendingSreencastManager::PendingSreencastManager(
   session_manager::SessionManager* session_manager =
       session_manager::SessionManager::Get();
   if (session_manager)
-    session_manager->AddObserver(this);
+    session_observation_.Observe(session_manager);
 }
 
-PendingSreencastManager::~PendingSreencastManager() {
-  session_manager::SessionManager* session_manager =
-      session_manager::SessionManager::Get();
-  if (session_manager) {
-    session_manager->RemoveObserver(this);
-    auto* drivefs_host = GetDriveFsHostForActiveProfile();
-    if (observed_drive_fs_host_ && drivefs_host)
-      drivefs_host->RemoveObserver(this);
-  }
-}
+PendingSreencastManager::~PendingSreencastManager() = default;
 
 void PendingSreencastManager::OnUnmounted() {
   if (!pending_screencast_cache_.empty()) {
@@ -239,21 +230,6 @@ void PendingSreencastManager::OnSyncingStatusUpdate(
 void PendingSreencastManager::OnError(const drivefs::mojom::DriveError& error) {
 }
 
-void PendingSreencastManager::OnUserProfileLoaded(const AccountId& account_id) {
-  if (observed_drive_fs_host_)
-    return;
-
-  auto* profile = ProfileManager::GetActiveUserProfile();
-  if (!IsProjectorAllowedForProfile(profile))
-    return;
-
-  auto* drivefs_host = GetDriveFsHostForActiveProfile();
-  if (drivefs_host) {
-    GetDriveFsHostForActiveProfile()->AddObserver(this);
-    observed_drive_fs_host_ = true;
-  }
-}
-
 const ash::PendingScreencastSet&
 PendingSreencastManager::GetPendingScreencasts() const {
   return pending_screencast_cache_;
@@ -268,4 +244,16 @@ void PendingSreencastManager::OnProcessAndGenerateNewScreencastsFinished(
 
   // Notifies pending screencast status changed.
   pending_screencast_change_callback_.Run(pending_screencast_cache_);
+}
+
+void PendingSreencastManager::OnUserProfileLoaded(const AccountId& account_id) {
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  if (!IsProjectorAllowedForProfile(profile))
+    return;
+  auto* drivefs_host = GetDriveFsHostForActiveProfile();
+  // DriveFs could be mounted for different profiles.
+  // TODO(b/215199269): Observe ActiveUserChanged for switching between
+  // different profiles.
+  if (drivefs_host && !drivefs_observation_.IsObserving())
+    drivefs_observation_.Observe(drivefs_host);
 }
