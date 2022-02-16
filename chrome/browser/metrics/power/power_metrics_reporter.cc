@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/metrics/power/power_details_provider.h"
+#include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -81,21 +82,12 @@ int64_t GetBucketForSample(base::TimeDelta value) {
       kOverflowBucket);
 }
 
-// Returns the scenario-specific suffix to use for metrics captured during an
-// interval described by |interval_data|.
-const char* GetScenarioSuffix(
+const char* GetScenarioSuffixWithVisibleWindows(
     const UsageScenarioDataStore::IntervalData& interval_data) {
-  // Important: The order of the conditions is important. See the full
-  // description of each scenario in the histograms.xml file.
-  if (interval_data.max_tab_count == 0)
-    return ".ZeroWindow";
-  if (interval_data.max_visible_window_count == 0) {
-    if (!interval_data.time_capturing_video.is_zero())
-      return ".AllTabsHidden_VideoCapture";
-    if (!interval_data.time_playing_audio.is_zero())
-      return ".AllTabsHidden_Audio";
-    return ".AllTabsHidden_NoVideoCaptureOrAudio";
-  }
+  // The order of the conditions is important. See the full description of each
+  // scenario in the histograms.xml file.
+  DCHECK_GT(interval_data.max_visible_window_count, 0);
+
   if (!interval_data.time_capturing_video.is_zero())
     return ".VideoCapture";
   if (!interval_data.time_playing_video_full_screen_single_monitor.is_zero())
@@ -118,27 +110,120 @@ const char* GetScenarioSuffix(
   return ".Passive";
 }
 
-// Returns the histogram suffixes to use for metrics captured during an interval
-// described by |interval_data|.
-std::vector<const char*> GetSuffixes(
+// Helper function for GetLongIntervalSuffixes().
+const char* GetLongIntervalScenarioSuffix(
     const UsageScenarioDataStore::IntervalData& interval_data) {
-  // Histograms are recorded without suffix and with a scenario-specific suffix.
-  return std::vector<const char*>{"", GetScenarioSuffix(interval_data)};
+  // The order of the conditions is important. See the full description of each
+  // scenario in the histograms.xml file.
+  if (interval_data.max_tab_count == 0)
+    return ".ZeroWindow";
+  if (interval_data.max_visible_window_count == 0) {
+    if (!interval_data.time_capturing_video.is_zero())
+      return ".AllTabsHidden_VideoCapture";
+    if (!interval_data.time_playing_audio.is_zero())
+      return ".AllTabsHidden_Audio";
+    return ".AllTabsHidden_NoVideoCaptureOrAudio";
+  }
+  return GetScenarioSuffixWithVisibleWindows(interval_data);
 }
+
+// Returns suffixes to use for histograms related to a long interval described
+// by `interval_data`.
+std::vector<const char*> GetLongIntervalSuffixes(
+    const UsageScenarioDataStore::IntervalData& interval_data) {
+  // Histograms are recorded without suffix and with a scenario-specific
+  // suffix.
+  return {"", GetLongIntervalScenarioSuffix(interval_data)};
+}
+
+#if BUILDFLAG(IS_MAC)
+// Helper function for GetShortIntervalSuffixes (). See comment on that function
+// for why both `short_interval_data` and `long_interval_data` are required.
+const char* GetShortIntervalScenarioSuffix(
+    const UsageScenarioDataStore::IntervalData& short_interval_data,
+    const UsageScenarioDataStore::IntervalData& pre_interval_data) {
+  // The order of the conditions is important. See the full description of each
+  // scenario in the histograms.xml file.
+  if (short_interval_data.max_tab_count == 0) {
+    if (pre_interval_data.max_tab_count != 0)
+      return ".ZeroWindow_Recent";
+    return ".ZeroWindow";
+  }
+  if (short_interval_data.max_visible_window_count == 0) {
+    if (!short_interval_data.time_capturing_video.is_zero())
+      return ".AllTabsHidden_VideoCapture";
+    if (!short_interval_data.time_playing_audio.is_zero())
+      return ".AllTabsHidden_Audio";
+    if (pre_interval_data.max_visible_window_count != 0 ||
+        !pre_interval_data.time_capturing_video.is_zero() ||
+        !pre_interval_data.time_playing_audio.is_zero()) {
+      return ".AllTabsHidden_NoVideoCaptureOrAudio_Recent";
+    }
+    return ".AllTabsHidden_NoVideoCaptureOrAudio";
+  }
+
+  return GetScenarioSuffixWithVisibleWindows(short_interval_data);
+}
+
+// Returns suffixes to use for histograms related to a short interval described
+// by `interval_data`. `pre_interval_data` describes a long interval ending
+// simultaneously with the short interval.
+//
+// `pre_interval_data` is required to decide whether "_Recent" is appended to
+// the ".ZeroWindow" or ".AllTabsHidden_NoVideoCaptureOrAudio" suffixes.
+// Appending "_Recent" is useful  to isolate cases where the scenario changed
+// recently (e.g. CPU usage in a short interval with zero window might be
+// affected by cleanup tasks from recently closed tabs).
+std::vector<const char*> GetShortIntervalSuffixes(
+    const UsageScenarioDataStore::IntervalData& short_interval_data,
+    const UsageScenarioDataStore::IntervalData& pre_interval_data) {
+  // Histograms are recorded without a suffix and with a scenario-specific
+  // suffix.
+  return {"", GetShortIntervalScenarioSuffix(short_interval_data,
+                                             pre_interval_data)};
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
 PowerMetricsReporter::PowerMetricsReporter(
-    UsageScenarioDataStore* usage_scenario_data_store,
-    std::unique_ptr<BatteryLevelProvider> battery_level_provider)
-    : data_store_(usage_scenario_data_store),
-      battery_level_provider_(std::move(battery_level_provider)) {
+    UsageScenarioDataStore* short_usage_scenario_data_store,
+    UsageScenarioDataStore* long_usage_scenario_data_store,
+    std::unique_ptr<BatteryLevelProvider> battery_level_provider
+#if BUILDFLAG(IS_MAC)
+    ,
+    std::unique_ptr<CoalitionResourceUsageProvider>
+        coalition_resource_usage_provider
+#endif  // BUILDFLAG(IS_MAC)
+    )
+    : short_usage_scenario_data_store_(short_usage_scenario_data_store),
+      long_usage_scenario_data_store_(long_usage_scenario_data_store),
+      battery_level_provider_(std::move(battery_level_provider))
+#if BUILDFLAG(IS_MAC)
+      ,
+      short_interval_timer_(
+          FROM_HERE,
+          performance_monitor::ProcessMonitor::kGatherInterval -
+              kShortIntervalDuration,
+          base::BindRepeating(&PowerMetricsReporter::OnShortIntervalBegin,
+                              base::Unretained(this))),
+      coalition_resource_usage_provider_(
+          std::move(coalition_resource_usage_provider))
+#endif  // BUILDFLAG(IS_MAC)
+{
   DCHECK(ProcessMonitor::Get());
   ProcessMonitor::Get()->AddObserver(this);
 
-  if (!data_store_) {
-    usage_scenario_tracker_ = std::make_unique<UsageScenarioTracker>();
-    data_store_ = usage_scenario_tracker_->data_store();
+  if (!short_usage_scenario_data_store_) {
+    short_usage_scenario_tracker_ = std::make_unique<UsageScenarioTracker>();
+    short_usage_scenario_data_store_ =
+        short_usage_scenario_tracker_->data_store();
+  }
+
+  if (!long_usage_scenario_data_store_) {
+    long_usage_scenario_tracker_ = std::make_unique<UsageScenarioTracker>();
+    long_usage_scenario_data_store_ =
+        long_usage_scenario_tracker_->data_store();
   }
 
   battery_level_provider_->GetBatteryState(
@@ -151,7 +236,8 @@ PowerMetricsReporter::PowerMetricsReporter(
       base::BindRepeating(&PowerMetricsReporter::OnIOPMPowerSourceSamplingEvent,
                           base::Unretained(this)));
 
-  coalition_resource_usage_provider_.Init();
+  coalition_resource_usage_provider_->Init();
+  short_interval_timer_.Reset();
 #endif
 }
 
@@ -182,14 +268,19 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
       &PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled,
       weak_factory_.GetWeakPtr(), metrics,
       /* battery_sample_begin_time=*/base::TimeTicks::Now()));
+
+#if BUILDFLAG(IS_MAC)
+  short_interval_timer_.Reset();
+#endif  // BUILDFLAG(IS_MAC)
 }
 
-std::vector<const char*> PowerMetricsReporter::GetSuffixesForTesting(
+std::vector<const char*>
+PowerMetricsReporter::GetLongIntervalSuffixesForTesting(
     const UsageScenarioDataStore::IntervalData& interval_data) {
-  return GetSuffixes(interval_data);
+  return GetLongIntervalSuffixes(interval_data);
 }
 
-void PowerMetricsReporter::ReportHistograms(
+void PowerMetricsReporter::ReportLongIntervalHistograms(
     const UsageScenarioDataStore::IntervalData& interval_data,
     const ProcessMonitor::Metrics& aggregated_process_metrics,
     base::TimeDelta interval_duration,
@@ -200,7 +291,7 @@ void PowerMetricsReporter::ReportHistograms(
         coalition_resource_usage_rate
 #endif
 ) {
-  const std::vector<const char*> suffixes = GetSuffixes(interval_data);
+  const auto suffixes = GetLongIntervalSuffixes(interval_data);
   ReportAggregatedProcessMetricsHistograms(aggregated_process_metrics,
                                            suffixes);
 
@@ -212,6 +303,26 @@ void PowerMetricsReporter::ReportHistograms(
   }
 #endif
 }
+
+#if BUILDFLAG(IS_MAC)
+void PowerMetricsReporter::ReportShortIntervalHistograms(
+    const UsageScenarioDataStore::IntervalData& short_interval_data,
+    const UsageScenarioDataStore::IntervalData& long_interval_data,
+    absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate) {
+  if (!coalition_resource_usage_rate.has_value())
+    return;
+
+  const auto suffixes =
+      GetShortIntervalSuffixes(/* short_interval_data=*/short_interval_data,
+                               /* pre_interval_data=*/long_interval_data);
+  for (const char* suffix : suffixes) {
+    UsageTimeHistogram(
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", suffix}),
+        coalition_resource_usage_rate->cpu_time_per_second, kMaxCPUProportion);
+  }
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 void PowerMetricsReporter::ReportBatteryHistograms(
     base::TimeDelta interval_duration,
@@ -283,8 +394,8 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
       GetBatteryDischargeDuringInterval(battery_state, interval_duration);
 
   // Get usage scenario data.
-  UsageScenarioDataStore::IntervalData interval_data =
-      data_store_->ResetIntervalData();
+  auto long_interval_data =
+      long_usage_scenario_data_store_->ResetIntervalData();
 
   // Evaluate and report main screen brightness.
   absl::optional<int64_t> main_screen_brightness;
@@ -307,19 +418,34 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
   base::UmaHistogramBoolean(kMainScreenBrightnessAvailableHistogramName,
                             main_screen_brightness.has_value());
 
+#if BUILDFLAG(IS_MAC)
+  // Sample coalition resource usage rate.
+  absl::optional<power_metrics::CoalitionResourceUsageRate>
+      short_interval_resource_usage_rate;
+  absl::optional<power_metrics::CoalitionResourceUsageRate>
+      long_interval_resource_usage_rate;
+  coalition_resource_usage_provider_->EndIntervals(
+      &short_interval_resource_usage_rate, &long_interval_resource_usage_rate);
+#endif  // BUILDFLAG(IS_MAC)
+
   // Report UKMs.
-  ReportUKMs(interval_data, aggregated_process_metrics, interval_duration,
+  ReportUKMs(long_interval_data, aggregated_process_metrics, interval_duration,
              battery_discharge, main_screen_brightness);
 
   // Report histograms.
-  ReportHistograms(
-      interval_data, aggregated_process_metrics, interval_duration,
-      battery_discharge
+  ReportLongIntervalHistograms(long_interval_data, aggregated_process_metrics,
+                               interval_duration, battery_discharge
 #if BUILDFLAG(IS_MAC)
-      ,
-      coalition_resource_usage_provider_.GetCoalitionResourceUsageRate()
+                               ,
+                               long_interval_resource_usage_rate
 #endif
   );
+#if BUILDFLAG(IS_MAC)
+  auto short_interval_data =
+      short_usage_scenario_data_store_->ResetIntervalData();
+  ReportShortIntervalHistograms(short_interval_data, long_interval_data,
+                                short_interval_resource_usage_rate);
+#endif  // BUILDFLAG(IS_MAC)
 
   if (on_battery_sampled_for_testing_)
     std::move(on_battery_sampled_for_testing_).Run();
@@ -551,6 +677,11 @@ PowerMetricsReporter::GetBatteryDischargeDuringInterval(
 }
 
 #if BUILDFLAG(IS_MAC)
+void PowerMetricsReporter::OnShortIntervalBegin() {
+  short_usage_scenario_data_store_->ResetIntervalData();
+  coalition_resource_usage_provider_->StartShortInterval();
+}
+
 void PowerMetricsReporter::OnIOPMPowerSourceSamplingEvent() {
   base::TimeTicks now_ticks = base::TimeTicks::Now();
 

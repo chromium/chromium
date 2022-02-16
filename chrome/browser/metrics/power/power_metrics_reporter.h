@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -24,11 +25,20 @@
 #include "components/power_metrics/iopm_power_source_sampling_event_source.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-// Reports metrics related to power (battery discharge, cpu time, etc.) to
-// understand what impacts Chrome's power consumption over an interval of time.
+// Reports metrics related to power (battery discharge, cpu time, etc.).
 //
-// This class and its associated data store should be created shortly after
-// ProcessMonitor.
+// Metrics are reported for 2 minutes intervals, with suffixes describing what
+// the user did during the interval. These intervals are long enough to capture
+// most side-effects of what the user did (e.g. a navigation increases memory
+// usage which may cause a major GC after some time).
+//
+// A few metrics are also reported for 10 seconds intervals. They are meant to
+// be used as triggers to upload traces from the field. Traces from the field
+// only cover a few seconds and it is only possible to correctly analyze a trace
+// if it covers the full interval associated with the trigger metric.
+//
+// This class should be created shortly after
+// performance_monitor::ProcessMonitor.
 class PowerMetricsReporter
     : public performance_monitor::ProcessMonitor::Observer {
  public:
@@ -37,15 +47,25 @@ class PowerMetricsReporter
   using CoalitionResourceUsageRate = power_metrics::CoalitionResourceUsageRate;
 #endif  // BUILDFLAG(IS_MAC)
 
+  static constexpr base::TimeDelta kShortIntervalDuration = base::Seconds(10);
+
   // Use the default arguments in production. In tests, use arguments to provide
-  // mocks. If specified, |usage_scenario_data_store| is queried to determine
-  // the usage scenario for an interval. It must outlive the
+  // mocks. |(short|long)_usage_scenario_data_store| are queried to determine
+  // the scenario for short and long reporting intervals. They must outlive the
   // PowerMetricsReporter. |battery_level_provider| is used to obtain the
   // battery level.
   explicit PowerMetricsReporter(
-      UsageScenarioDataStore* usage_scenario_data_store = nullptr,
+      UsageScenarioDataStore* short_usage_scenario_data_store = nullptr,
+      UsageScenarioDataStore* long_usage_scenario_data_store = nullptr,
       std::unique_ptr<BatteryLevelProvider> battery_level_provider =
-          BatteryLevelProvider::Create());
+          BatteryLevelProvider::Create()
+#if BUILDFLAG(IS_MAC)
+          ,
+      std::unique_ptr<CoalitionResourceUsageProvider>
+          coalition_resource_usage_provider =
+              std::make_unique<CoalitionResourceUsageProvider>()
+#endif  // BUILDFLAG(IS_MAC)
+  );
   PowerMetricsReporter(const PowerMetricsReporter& rhs) = delete;
   PowerMetricsReporter& operator=(const PowerMetricsReporter& rhs) = delete;
   ~PowerMetricsReporter() override;
@@ -64,7 +84,7 @@ class PowerMetricsReporter
   void OnFirstSampleForTesting(base::OnceClosure callback);
 
   static int64_t GetBucketForSampleForTesting(base::TimeDelta value);
-  static std::vector<const char*> GetSuffixesForTesting(
+  static std::vector<const char*> GetLongIntervalSuffixesForTesting(
       const UsageScenarioDataStore::IntervalData& interval_data);
 
   void set_power_details_provider_for_testing(
@@ -93,9 +113,7 @@ class PowerMetricsReporter
     absl::optional<int64_t> rate;
   };
 
-  // Report metrics to generic histograms and histograms with a scenario suffix
-  // derived from |interval_data|.
-  static void ReportHistograms(
+  static void ReportLongIntervalHistograms(
       const UsageScenarioDataStore::IntervalData& interval_data,
       const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
@@ -106,6 +124,13 @@ class PowerMetricsReporter
           coalition_resource_usage_rate
 #endif
   );
+
+#if BUILDFLAG(IS_MAC)
+  static void ReportShortIntervalHistograms(
+      const UsageScenarioDataStore::IntervalData& short_interval_data,
+      const UsageScenarioDataStore::IntervalData& long_interval_data,
+      absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate);
+#endif  // BUILDFLAG(IS_MAC)
 
   // Report battery metrics to histograms with |suffixes|.
   static void ReportBatteryHistograms(base::TimeDelta interval_duration,
@@ -152,21 +177,24 @@ class PowerMetricsReporter
       base::TimeDelta interval_duration);
 
 #if BUILDFLAG(IS_MAC)
+  // Invoked at the beginning of a "short" interval (~10 seconds before
+  // OnAggregatedMetricsSampled).
+  void OnShortIntervalBegin();
+
   void OnIOPMPowerSourceSamplingEvent();
 #endif  // BUILDFLAG(IS_MAC)
 
-  // Tracks usage scenario for the reporting interval. In production, the data
-  // store is obtained from the tracker, but in tests it may be a mock injected
-  // via the constructor.
-  std::unique_ptr<UsageScenarioTracker> usage_scenario_tracker_;
-  raw_ptr<UsageScenarioDataStore> data_store_;
+  // Track usage scenarios over 10-seconds and 2-minutes intervals. In
+  // production, the data stores are obtained from the trackers, but in tests
+  // they may be mocks injected via the constructor.
+  std::unique_ptr<UsageScenarioTracker> short_usage_scenario_tracker_;
+  raw_ptr<UsageScenarioDataStore> short_usage_scenario_data_store_;
+  std::unique_ptr<UsageScenarioTracker> long_usage_scenario_tracker_;
+  raw_ptr<UsageScenarioDataStore> long_usage_scenario_data_store_;
 
   std::unique_ptr<BatteryLevelProvider> battery_level_provider_;
 
   std::unique_ptr<PowerDetailsProvider> power_details_provider_;
-
-  // Time that should elapse between calls to OnAggregatedMetricsSampled.
-  base::TimeDelta desired_reporting_interval_;
 
   BatteryLevelProvider::BatteryState battery_state_{0, 0, absl::nullopt, false,
                                                     base::TimeTicks::Now()};
@@ -176,13 +204,18 @@ class PowerMetricsReporter
   base::OnceClosure on_battery_sampled_for_testing_;
 
 #if BUILDFLAG(IS_MAC)
+  // Timer that fires at the beginning of a "short" interval. This is 10 seconds
+  // before a call to OnAggregatedMetricsSampled() is expected.
+  base::RetainingOneShotTimer short_interval_timer_;
+
   power_metrics::IOPMPowerSourceSamplingEventSource
       iopm_power_source_sampling_event_source_;
 
   // The time ticks from when the last IOPMPowerSource event was received.
   absl::optional<base::TimeTicks> last_event_time_ticks_;
 
-  CoalitionResourceUsageProvider coalition_resource_usage_provider_;
+  std::unique_ptr<CoalitionResourceUsageProvider>
+      coalition_resource_usage_provider_;
 #endif  // BUILDFLAG(IS_MAC)
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -29,29 +29,55 @@ TEST(CoalitionResourceUsageProviderTest, Availability) {
 // this test only has expectations for one field. This test is still important
 // to ensure that data is sampled and passed to
 // `power_metrics::GetCoalitionResourceUsageRate` correctly.
-TEST(CoalitionResourceUsageProviderTest, GetCoalitionResourceUsageRate) {
+TEST(CoalitionResourceUsageProviderTest, StartAndEndIntervals) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestCoalitionResourceUsageProvider provider;
 
+  absl::optional<power_metrics::CoalitionResourceUsageRate> short_rate;
+  absl::optional<power_metrics::CoalitionResourceUsageRate> long_rate;
+
+  // Begin long interval.
   auto cru1 = std::make_unique<coalition_resource_usage>();
-  cru1->interrupt_wakeups = 10;
+  cru1->interrupt_wakeups = 8;
   provider.SetCoalitionResourceUsage(std::move(cru1));
   provider.Init();
 
+  // Begin short interval.
   task_environment.FastForwardBy(base::Seconds(10));
   auto cru2 = std::make_unique<coalition_resource_usage>();
   cru2->interrupt_wakeups = 42;
   provider.SetCoalitionResourceUsage(std::move(cru2));
-  auto rate1 = provider.GetCoalitionResourceUsageRate();
-  ASSERT_TRUE(rate1.has_value());
-  EXPECT_EQ(rate1->interrupt_wakeups_per_second, 3.2);
+  provider.StartShortInterval();
 
-  task_environment.FastForwardBy(base::Seconds(20));
+  // End long and short intervals. Start long interval.
+  task_environment.FastForwardBy(base::Seconds(5));
   auto cru3 = std::make_unique<coalition_resource_usage>();
-  cru3->interrupt_wakeups = 100;
+  cru3->interrupt_wakeups = 50;
   provider.SetCoalitionResourceUsage(std::move(cru3));
-  auto rate2 = provider.GetCoalitionResourceUsageRate();
-  ASSERT_TRUE(rate2.has_value());
-  EXPECT_EQ(rate2->interrupt_wakeups_per_second, 2.9);
+  provider.EndIntervals(&short_rate, &long_rate);
+  ASSERT_TRUE(short_rate.has_value());
+  ASSERT_TRUE(long_rate.has_value());
+  EXPECT_EQ(short_rate->interrupt_wakeups_per_second, 1.6);
+  EXPECT_EQ(long_rate->interrupt_wakeups_per_second, 2.8);
+  short_rate.reset();
+  long_rate.reset();
+
+  // Begin short interval.
+  task_environment.FastForwardBy(base::Seconds(100));
+  auto cru4 = std::make_unique<coalition_resource_usage>();
+  cru4->interrupt_wakeups = 100;
+  provider.SetCoalitionResourceUsage(std::move(cru4));
+  provider.StartShortInterval();
+
+  // End long and short intervals. Start long interval.
+  task_environment.FastForwardBy(base::Seconds(25));
+  auto cru5 = std::make_unique<coalition_resource_usage>();
+  cru5->interrupt_wakeups = 170;
+  provider.SetCoalitionResourceUsage(std::move(cru5));
+  provider.EndIntervals(&short_rate, &long_rate);
+  ASSERT_TRUE(short_rate.has_value());
+  ASSERT_TRUE(long_rate.has_value());
+  EXPECT_EQ(short_rate->interrupt_wakeups_per_second, 2.8);
+  EXPECT_EQ(long_rate->interrupt_wakeups_per_second, 0.96);
 }

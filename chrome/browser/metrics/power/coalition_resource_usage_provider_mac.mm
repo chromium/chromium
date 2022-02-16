@@ -79,35 +79,70 @@ void CoalitionResourceUsageProvider::Init() {
 
   ReportCoalitionAvailability(CoalitionAvailability::kAvailable);
   coalition_id_ = cid.value();
-  last_sample_ = std::move(sample);
-  last_sample_time_ = base::TimeTicks::Now();
+  long_interval_begin_time_ = base::TimeTicks::Now();
+  long_interval_begin_sample_ = std::move(sample);
 }
 
-absl::optional<power_metrics::CoalitionResourceUsageRate>
-CoalitionResourceUsageProvider::GetCoalitionResourceUsageRate() {
+void CoalitionResourceUsageProvider::StartShortInterval() {
+#if DCHECK_IS_ON()
+  DCHECK(initialized_);
+#endif
+  DCHECK(short_interval_begin_time_.is_null());
+  DCHECK(!short_interval_begin_sample_);
+
+  if (!coalition_id_.has_value())
+    return;
+
+  short_interval_begin_time_ = base::TimeTicks::Now();
+  short_interval_begin_sample_ =
+      GetCoalitionResourceUsage(coalition_id_.value());
+}
+
+void CoalitionResourceUsageProvider::EndIntervals(
+    absl::optional<power_metrics::CoalitionResourceUsageRate>*
+        short_interval_resource_usage_rate,
+    absl::optional<power_metrics::CoalitionResourceUsageRate>*
+        long_interval_resource_usage_rate) {
 #if DCHECK_IS_ON()
   DCHECK(initialized_);
 #endif
 
   if (!coalition_id_.has_value())
-    return absl::nullopt;
-
-  DCHECK(last_sample_);
-  DCHECK(!last_sample_time_.is_null());
+    return;
 
   const base::TimeTicks now = base::TimeTicks::Now();
-  const base::TimeDelta interval_duration = now - last_sample_time_;
   std::unique_ptr<coalition_resource_usage> sample =
       GetCoalitionResourceUsage(coalition_id_.value());
 
-  auto rate = power_metrics::GetCoalitionResourceUsageRate(
-      *last_sample_, *sample, interval_duration, timebase_,
-      energy_impact_coefficients_);
+  // `coalition_id_` being non-nullptr (see above) indicates that
+  // GetCoalitionResourceUsage() succeeded from Init(). It should succeed again
+  // unless this is a test.
+  DCHECK(sample || ignore_not_alone_for_testing_);
 
-  last_sample_.swap(sample);
-  last_sample_time_ = now;
+  if (sample) {
+    DCHECK(!short_interval_begin_time_.is_null());
+    DCHECK(short_interval_begin_sample_);
+    DCHECK(!long_interval_begin_time_.is_null());
+    DCHECK(long_interval_begin_sample_);
 
-  return rate;
+    *short_interval_resource_usage_rate =
+        power_metrics::GetCoalitionResourceUsageRate(
+            *short_interval_begin_sample_, *sample,
+            now - short_interval_begin_time_, timebase_,
+            energy_impact_coefficients_);
+
+    *long_interval_resource_usage_rate =
+        power_metrics::GetCoalitionResourceUsageRate(
+            *long_interval_begin_sample_, *sample,
+            now - long_interval_begin_time_, timebase_,
+            energy_impact_coefficients_);
+  }
+
+  short_interval_begin_sample_.reset();
+  short_interval_begin_time_ = base::TimeTicks();
+
+  long_interval_begin_sample_.swap(sample);
+  long_interval_begin_time_ = now;
 }
 
 std::unique_ptr<coalition_resource_usage>

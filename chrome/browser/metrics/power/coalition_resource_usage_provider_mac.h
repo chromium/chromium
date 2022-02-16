@@ -20,7 +20,20 @@ struct CoalitionResourceUsageRate;
 
 struct coalition_resource_usage;
 
-// Provides resource usage rate for the current process' coalition.
+// Provides resource usage rate for the current process' coalition over "short"
+// and "long" intervals.
+//
+// Init() must be invoked before any other method. It starts a "long" interval.
+// After that, StartShortInterval() and EndInterval() should be invoked in
+// alternance to start a "short" interval, end both intervals and start a new
+// "long" interval:
+//
+//  |         Long          |         Long          |         Long          |
+//                  | Short |               | Short |               | Short |
+//  Init            SSI     EI              SSI     EI              SSI     EI
+//
+//      SSI = StartShortInterval
+//      EI  = EndIntervals
 //
 // See //components/power_metrics/resource_coalition_mac.h for more details
 // about resource coalitions.
@@ -34,15 +47,20 @@ class CoalitionResourceUsageProvider {
   virtual ~CoalitionResourceUsageProvider();
 
   // Initializes the coalition resource usage id. Reports whether it is
-  // available to UMA. Must be invoked once before
-  // GetCoalitionResourceUsageRate().
+  // available to UMA. Starts a "long" interval. Must be invoked once
+  // before any other method.
   void Init();
 
-  // Returns resource usage rate for the current process' coalition, since the
-  // last call to Init() or GetCoalitionResourceUsageRate(). Returns nullopt if
-  // not available.
-  absl::optional<power_metrics::CoalitionResourceUsageRate>
-  GetCoalitionResourceUsageRate();
+  // Starts a "short" interval.
+  void StartShortInterval();
+
+  // Ends the current "short" and "long" intervals. Returns the resource usage
+  // rate for these intervals via arguments (or nullopt if not available).
+  // Starts a new "long" interval.
+  void EndIntervals(absl::optional<power_metrics::CoalitionResourceUsageRate>*
+                        short_interval_resource_usage_rate,
+                    absl::optional<power_metrics::CoalitionResourceUsageRate>*
+                        long_interval_resource_usage_rate);
 
  protected:
   // Used to convert `coalition_resource_usage` time fields from
@@ -69,11 +87,17 @@ class CoalitionResourceUsageProvider {
   const absl::optional<power_metrics::EnergyImpactCoefficients>
       energy_impact_coefficients_;
 
-  // Last coalition resource usage sample.
-  std::unique_ptr<coalition_resource_usage> last_sample_;
+  // Start time of the current "long" interval.
+  base::TimeTicks long_interval_begin_time_;
 
-  // Time at which `last_sample_` was sampled.
-  base::TimeTicks last_sample_time_;
+  // Sample collected at the beginning of the current "long" interval.
+  std::unique_ptr<coalition_resource_usage> long_interval_begin_sample_;
+
+  // Start time of the current "short" interval.
+  base::TimeTicks short_interval_begin_time_;
+
+  // Sample collected at the beginning of the current "short" interval.
+  std::unique_ptr<coalition_resource_usage> short_interval_begin_sample_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_POWER_COALITION_RESOURCE_USAGE_PROVIDER_MAC_H_

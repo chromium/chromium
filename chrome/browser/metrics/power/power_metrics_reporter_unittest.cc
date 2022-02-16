@@ -23,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/metrics/power/coalition_resource_usage_provider_test_util_mac.h"
 #include "components/power_metrics/resource_coalition_mac.h"
 #endif
 
@@ -95,21 +96,23 @@ using UkmEntry = ukm::builders::PowerUsageScenariosIntervalData;
 
 class PowerMetricsReporterAccess : public PowerMetricsReporter {
  public:
+  using PowerMetricsReporter::PowerMetricsReporter;
+
   // Expose members of PowerMetricsReporter publicly on
   // PowerMetricsReporterAccess.
   using PowerMetricsReporter::BatteryDischarge;
   using PowerMetricsReporter::BatteryDischargeMode;
   using PowerMetricsReporter::ReportBatteryHistograms;
-  using PowerMetricsReporter::ReportHistograms;
+  using PowerMetricsReporter::ReportLongIntervalHistograms;
 #if BUILDFLAG(IS_MAC)
   using PowerMetricsReporter::ReportResourceCoalitionHistograms;
+  using PowerMetricsReporter::ReportShortIntervalHistograms;
 #endif  // BUILDFLAG(IS_MAC)
 };
 
 using BatteryDischargeMode = PowerMetricsReporterAccess::BatteryDischargeMode;
 using BatteryDischarge = PowerMetricsReporterAccess::BatteryDischarge;
 
-// TODO(sebmarchand|etiennep): Move this to a test util file.
 class FakeBatteryLevelProvider : public BatteryLevelProvider {
  public:
   explicit FakeBatteryLevelProvider(
@@ -198,12 +201,26 @@ class PowerMetricsReporterUnitTest : public testing::Test {
     // Start with a half-full battery.
     battery_states_.push(BatteryLevelProvider::BatteryState{
         1, 1, 0.5, true, base::TimeTicks::Now()});
-    std::unique_ptr<BatteryLevelProvider> battery_provider =
+    auto battery_provider =
         std::make_unique<FakeBatteryLevelProvider>(&battery_states_);
     battery_provider_ = battery_provider.get();
+#if BUILDFLAG(IS_MAC)
+    auto coalition_resource_usage_provider =
+        std::make_unique<TestCoalitionResourceUsageProvider>();
+    // Ensure that coalition resource usage is available from Init().
+    coalition_resource_usage_provider->SetCoalitionResourceUsage(
+        std::make_unique<coalition_resource_usage>());
+    coalition_resource_usage_provider_ =
+        coalition_resource_usage_provider.get();
+#endif  // BUILDFLAG(IS_MAC)
     base::RunLoop run_loop;
     power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
-        &data_store_, std::move(battery_provider));
+        &short_data_store_, &long_data_store_, std::move(battery_provider)
+#if BUILDFLAG(IS_MAC)
+                                                   ,
+        std::move(coalition_resource_usage_provider)
+#endif  // BUILDFLAG(IS_MAC)
+    );
     power_metrics_reporter_->set_power_details_provider_for_testing(
         std::make_unique<TestPowerDetailsProvider>());
     power_metrics_reporter_->OnFirstSampleForTesting(run_loop.QuitClosure());
@@ -222,10 +239,15 @@ class PowerMetricsReporterUnitTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestProcessMonitor process_monitor_;
-  TestUsageScenarioDataStoreImpl data_store_;
+  TestUsageScenarioDataStoreImpl short_data_store_;
+  TestUsageScenarioDataStoreImpl long_data_store_;
   std::queue<BatteryLevelProvider::BatteryState> battery_states_;
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
   raw_ptr<BatteryLevelProvider> battery_provider_;
+#if BUILDFLAG(IS_MAC)
+  raw_ptr<TestCoalitionResourceUsageProvider>
+      coalition_resource_usage_provider_;
+#endif  // BUILDFLAG(IS_MAC)
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
@@ -266,7 +288,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 0.30, true, base::TimeTicks::Now()});
 
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
   fake_metrics.cpu_usage = ++fake_value * 0.01;
@@ -378,7 +400,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 0.50, true, base::TimeTicks::Now()});
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
   fake_metrics.cpu_usage = 0.5;
@@ -418,7 +440,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample({});
 
@@ -446,7 +468,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample({});
 
@@ -473,7 +495,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample({});
 
@@ -501,7 +523,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample({});
 
@@ -533,7 +555,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsMacFullyCharged) {
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample({});
 
@@ -565,7 +587,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample({});
 
@@ -589,7 +611,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_ZeroWindow) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 0;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -631,7 +653,7 @@ TEST_F(PowerMetricsReporterUnitTest,
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -671,7 +693,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden_Audio) {
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -712,7 +734,7 @@ TEST_F(PowerMetricsReporterUnitTest,
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -754,7 +776,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_VideoCapture) {
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -795,7 +817,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_FullscreenVideo) {
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -837,7 +859,7 @@ TEST_F(PowerMetricsReporterUnitTest,
   interval_data.time_playing_audio = base::Seconds(1);
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -879,7 +901,7 @@ TEST_F(PowerMetricsReporterUnitTest,
   interval_data.time_playing_audio = base::Seconds(1);
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -921,7 +943,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Audio) {
   interval_data.user_interaction_count = 1;
   interval_data.top_level_navigation_count = 1;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -962,7 +984,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Navigation) {
   // Values below should be ignored.
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -1002,7 +1024,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Interaction) {
   interval_data.top_level_navigation_count = 0;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -1042,7 +1064,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Passive) {
   interval_data.top_level_navigation_count = 0;
   interval_data.user_interaction_count = 0;
 
-  PowerMetricsReporterAccess::ReportHistograms(
+  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
       BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
@@ -1077,7 +1099,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooEarly) {
       (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) -
           base::Seconds(1),
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
-      PowerMetricsReporter::GetSuffixesForTesting(interval_data));
+      PowerMetricsReporter::GetLongIntervalSuffixesForTesting(interval_data));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
@@ -1092,7 +1114,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsEarly) {
       (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) +
           base::Seconds(1),
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
-      PowerMetricsReporter::GetSuffixesForTesting(interval_data));
+      PowerMetricsReporter::GetLongIntervalSuffixesForTesting(interval_data));
 
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
                                        1);
@@ -1107,7 +1129,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
       (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) +
           base::Seconds(1),
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
-      PowerMetricsReporter::GetSuffixesForTesting(interval_data));
+      PowerMetricsReporter::GetLongIntervalSuffixesForTesting(interval_data));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
@@ -1122,7 +1144,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
       (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) -
           base::Seconds(1),
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
-      PowerMetricsReporter::GetSuffixesForTesting(interval_data));
+      PowerMetricsReporter::GetLongIntervalSuffixesForTesting(interval_data));
 
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
                                        1);
@@ -1142,7 +1164,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoTab) {
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 0.50, true, base::TimeTicks::Now()});
 
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample(GetFakeProcessMetrics());
 
@@ -1166,7 +1188,7 @@ TEST_F(PowerMetricsReporterUnitTest, DurationsLongerThanIntervalAreCapped) {
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 0.50, true, base::TimeTicks::Now()});
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   WaitForNextSample(GetFakeProcessMetrics());
 
@@ -1194,7 +1216,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMBrightnessLevel) {
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
   WaitForNextSample({});
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
@@ -1210,7 +1232,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsWithSleepEvent) {
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 0.50, true, base::TimeTicks::Now()});
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
   performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
   WaitForNextSample(fake_metrics);
 
@@ -1235,7 +1257,7 @@ TEST_F(PowerMetricsReporterUnitTest, MainScreenBrightnessHistogram) {
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 0.50, true, base::TimeTicks::Now()});
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
   performance_monitor::ProcessMonitor::Metrics fake_metrics =
       GetFakeProcessMetrics();
@@ -1251,7 +1273,7 @@ TEST_F(PowerMetricsReporterUnitTest, MainScreenBrightnessHistogram) {
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 0.50, true, base::TimeTicks::Now()});
-  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
   WaitForNextSample(fake_metrics);
 
   histogram_tester_.ExpectBucketCount(kMainScreenBrightnessHistogramName,
@@ -1261,7 +1283,370 @@ TEST_F(PowerMetricsReporterUnitTest, MainScreenBrightnessHistogram) {
 }
 
 #if BUILDFLAG(IS_MAC)
-TEST_F(PowerMetricsReporterUnitTest, ReportResourceCoalitionHistograms) {
+// Verify that "_10sec" resource coalition histograms are recorded when time
+// advances and resource coalition data is available.
+TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_EndToEnd) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 0;
+  short_data_store_.SetIntervalDataToReturn(interval_data);
+
+  auto cru1 = std::make_unique<coalition_resource_usage>();
+  cru1->cpu_time = base::Seconds(4).InNanoseconds();
+  coalition_resource_usage_provider_->SetCoalitionResourceUsage(
+      std::move(cru1));
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval -
+                                  PowerMetricsReporter::kShortIntervalDuration);
+
+  auto cru2 = std::make_unique<coalition_resource_usage>();
+  cru2->cpu_time = base::Seconds(10).InNanoseconds();
+  coalition_resource_usage_provider_->SetCoalitionResourceUsage(
+      std::move(cru2));
+  task_environment_.FastForwardBy(PowerMetricsReporter::kShortIntervalDuration);
+
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.30, true, base::TimeTicks::Now()});
+  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  WaitForNextSample(aggregated_process_metrics);
+
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 6000, 1);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_ZeroWindow) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 0;
+
+  UsageScenarioDataStore::IntervalData long_interval_data;
+  long_interval_data.max_tab_count = 0;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", ".ZeroWindow"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest,
+       ShortIntervalHistograms_ZeroWindow_Recent) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 0;
+
+  UsageScenarioDataStore::IntervalData long_interval_data;
+  long_interval_data.max_tab_count = 1;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", ".ZeroWindow_Recent"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest,
+       ShortIntervalHistograms_AllTabsHidden_VideoCapture) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 0;
+  short_interval_data.time_capturing_video = base::Seconds(1);
+  // Values below should be ignored.
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(1);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  short_interval_data.time_playing_audio = base::Seconds(1);
+  short_interval_data.top_level_navigation_count = 1;
+  short_interval_data.user_interaction_count = 1;
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+  long_interval_data.max_visible_window_count = 1;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", ".AllTabsHidden_VideoCapture"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest,
+       ShortIntervalHistograms_AllTabsHidden_Audio) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 0;
+  short_interval_data.time_capturing_video = base::Seconds(0);
+  short_interval_data.time_playing_audio = base::Seconds(1);
+  // Values below should be ignored.
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(1);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  short_interval_data.top_level_navigation_count = 1;
+  short_interval_data.user_interaction_count = 1;
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+  long_interval_data.max_visible_window_count = 1;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", ".AllTabsHidden_Audio"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest,
+       ShortIntervalHistograms_AllTabsHidden_NoVideoCaptureOrAudio) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 0;
+  short_interval_data.time_capturing_video = base::Seconds(0);
+  short_interval_data.time_playing_audio = base::Seconds(0);
+  // Values below should be ignored.
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(1);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  short_interval_data.top_level_navigation_count = 1;
+  short_interval_data.user_interaction_count = 1;
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes(
+      {"", ".AllTabsHidden_NoVideoCaptureOrAudio"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest,
+       ShortIntervalHistograms_AllTabsHidden_NoVideoCaptureOrAudio_Recent) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 0;
+  short_interval_data.time_capturing_video = base::Seconds(0);
+  short_interval_data.time_playing_audio = base::Seconds(0);
+  // Values below should be ignored.
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(1);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  short_interval_data.top_level_navigation_count = 1;
+  short_interval_data.user_interaction_count = 1;
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+  long_interval_data.max_visible_window_count = 1;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes(
+      {"", ".AllTabsHidden_NoVideoCaptureOrAudio_Recent"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_VideoCapture) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 1;
+  short_interval_data.time_capturing_video = base::Seconds(1);
+  // Values below should be ignored.
+  short_interval_data.time_playing_audio = base::Seconds(1);
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(1);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  short_interval_data.top_level_navigation_count = 1;
+  short_interval_data.user_interaction_count = 1;
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", ".VideoCapture"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_FullscreenVideo) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 1;
+  short_interval_data.time_capturing_video = base::Seconds(0);
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(1);
+  // Values below should be ignored.
+  short_interval_data.time_playing_audio = base::Seconds(1);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  short_interval_data.top_level_navigation_count = 1;
+  short_interval_data.user_interaction_count = 1;
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", ".FullscreenVideo"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest,
+       ShortIntervalHistograms_EmbeddedVideo_NoNavigation) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 1;
+  short_interval_data.time_capturing_video = base::Seconds(0);
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(0);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  short_interval_data.top_level_navigation_count = 0;
+  // Values below should be ignored.
+  short_interval_data.time_playing_audio = base::Seconds(1);
+  short_interval_data.user_interaction_count = 1;
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", ".EmbeddedVideo_NoNavigation"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest,
+       ShortIntervalHistograms_EmbeddedVideo_WithNavigation) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 1;
+  short_interval_data.time_capturing_video = base::Seconds(0);
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(0);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  short_interval_data.top_level_navigation_count = 1;
+  // Values below should be ignored.
+  short_interval_data.time_playing_audio = base::Seconds(1);
+  short_interval_data.user_interaction_count = 1;
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes(
+      {"", ".EmbeddedVideo_WithNavigation"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Audio) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 1;
+  short_interval_data.time_capturing_video = base::Seconds(0);
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(0);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(0);
+  short_interval_data.time_playing_audio = base::Seconds(1);
+  // Values below should be ignored.
+  short_interval_data.top_level_navigation_count = 1;
+  short_interval_data.user_interaction_count = 1;
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", ".Audio"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Navigation) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 1;
+  short_interval_data.time_capturing_video = base::Seconds(0);
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(0);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(0);
+  short_interval_data.time_playing_audio = base::Seconds(0);
+  short_interval_data.top_level_navigation_count = 1;
+  // Values below should be ignored.
+  short_interval_data.user_interaction_count = 1;
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", ".Navigation"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Interaction) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 1;
+  short_interval_data.time_capturing_video = base::Seconds(0);
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(0);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(0);
+  short_interval_data.time_playing_audio = base::Seconds(0);
+  short_interval_data.top_level_navigation_count = 0;
+  short_interval_data.user_interaction_count = 1;
+  // Values below should be ignored.
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", ".Interaction"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Passive) {
+  UsageScenarioDataStore::IntervalData short_interval_data;
+  short_interval_data.max_tab_count = 1;
+  short_interval_data.max_visible_window_count = 1;
+  short_interval_data.time_capturing_video = base::Seconds(0);
+  short_interval_data.time_playing_video_full_screen_single_monitor =
+      base::Seconds(0);
+  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(0);
+  short_interval_data.time_playing_audio = base::Seconds(0);
+  short_interval_data.top_level_navigation_count = 0;
+  short_interval_data.user_interaction_count = 0;
+  // Values below should be ignored.
+
+  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
+
+  PowerMetricsReporterAccess::ReportShortIntervalHistograms(
+      short_interval_data, long_interval_data, GetFakeResourceUsageRate());
+
+  const std::vector<const char*> suffixes({"", ".Passive"});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
+}
+
+TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms) {
   base::HistogramTester histogram_tester;
 
   const std::vector<const char*> suffixes = {"", ".Foo", ".Bar"};
