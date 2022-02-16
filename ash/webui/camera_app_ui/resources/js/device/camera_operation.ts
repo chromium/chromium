@@ -348,6 +348,7 @@ export class OperationScheduler {
     if (this.ongoingOperationType !== null) {
       const event = new CancelableEvent<boolean>();
       this.pendingReconfigureWaiters.push(event);
+      this.stopCapture();
       return event.wait();
     }
     return this.startReconfigure();
