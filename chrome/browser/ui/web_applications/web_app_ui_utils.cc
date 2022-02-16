@@ -29,7 +29,7 @@ absl::optional<AppId> GetAppIdForManagementLinkInWebContents(
 #if BUILDFLAG(IS_CHROMEOS)
   bool show_app_link_in_app_window = true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1208258): implement `ShowAppManagementPage()` for lacros.
+  // TODO(crbug.com/1297868): implement `ShowAppManagementPage()` for lacros.
   bool show_app_link_in_app_window = false;
 #else
   bool show_app_link_in_app_window =
@@ -93,7 +93,7 @@ bool HandleAppManagementLinkClickedInPageInfo(
       ash::settings::AppManagementEntryPoint::kPageInfoView);
   return true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1208258): implement for lacros.
+  // TODO(crbug.com/1297868): implement for lacros.
   return false;
 #else
   chrome::ShowWebAppSettings(chrome::FindBrowserWithWebContents(web_contents),
