@@ -251,7 +251,7 @@ class Element : public Node {
 
  protected:
   void ParseJson(const base::DictionaryValue& dict) override {
-    CHECK(dict.HasKey("e"));
+    CHECK(dict.FindKey("e"));
     dict.GetString("e", &tag_name_);
 
     const base::ListValue* list;
@@ -304,7 +304,7 @@ class Text : public Node {
   }
 
   void ParseJson(const base::DictionaryValue& dict) override {
-    CHECK(dict.HasKey("t"));
+    CHECK(dict.FindKey("t"));
     dict.GetString("t", &text_);
   }
 
@@ -380,9 +380,9 @@ std::unique_ptr<Node> Node::ParseJson(const base::Value& value) {
 
   std::unique_ptr<Node> node;
 
-  if (dict->HasKey("t")) {
+  if (dict->FindKey("t")) {
     node.reset(new Text());
-  } else if (dict->HasKey("e")) {
+  } else if (dict->FindKey("e")) {
     node.reset(new Element());
   } else {
     LOG(ERROR) << "Bad node";
