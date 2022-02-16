@@ -61,6 +61,10 @@ mojom("mojom") {
           cpp = "::remoting::protocol::MouseEvent"
         },
         {
+          mojom = "remoting.mojom.ProtocolErrorCode"
+          cpp = "::remoting::protocol::ErrorCode"
+        },
+        {
           mojom = "remoting.mojom.ScreenResolution"
           cpp = "::remoting::ScreenResolution"
         },
@@ -96,6 +100,7 @@ mojom("mojom") {
         "//mojo/public/cpp/bindings",
         "//remoting/host/base",
         "//remoting/proto",
+        "//remoting/protocol:errors",
         "//remoting/protocol:transport",
         "//services/network/public/cpp:ip_address_mojom_support",
         "//third_party/webrtc_overrides:webrtc_component",

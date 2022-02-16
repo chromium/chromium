@@ -211,6 +211,7 @@ source_set("unit_tests") {
     "//remoting/host:test_support",
     "//remoting/host/base",
     "//remoting/host/it2me:common",
+    "//remoting/host/mojom",
     "//remoting/host/native_messaging",
     "//remoting/host/security_key:unit_tests",
     "//remoting/host/setup:common",

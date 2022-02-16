@@ -317,8 +317,9 @@ const std::string& DesktopSessionAgent::client_jid() const {
 }
 
 void DesktopSessionAgent::DisconnectSession(protocol::ErrorCode error) {
-  SendToNetwork(
-      std::make_unique<ChromotingDesktopNetworkMsg_DisconnectSession>(error));
+  if (desktop_session_state_handler_) {
+    desktop_session_state_handler_->DisconnectSession(error);
+  }
 }
 
 void DesktopSessionAgent::OnLocalKeyPressed(uint32_t usb_keycode) {
@@ -380,9 +381,11 @@ void DesktopSessionAgent::Start(
   started_ = true;
   client_jid_ = authenticated_jid;
 
-  // Hook up the associated interface.
+  // Hook up the associated interfaces.
   network_channel_->GetRemoteAssociatedInterface(
       &desktop_session_event_handler_);
+  network_channel_->GetRemoteAssociatedInterface(
+      &desktop_session_state_handler_);
 
   // Create a desktop environment for the new session.
   desktop_environment_ = delegate_->desktop_environment_factory().Create(
@@ -579,6 +582,7 @@ void DesktopSessionAgent::Stop() {
     client_jid_.clear();
 
     desktop_session_event_handler_.reset();
+    desktop_session_state_handler_.reset();
     desktop_session_control_.reset();
     desktop_session_agent_.reset();
 

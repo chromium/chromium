@@ -21,11 +21,13 @@
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/chromoting_messages.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -195,6 +197,9 @@ class WorkerProcessLauncherTest
   // The worker process launcher.
   std::unique_ptr<WorkerProcessLauncher> launcher_;
 
+  mojo::AssociatedRemote<mojom::DesktopSessionStateHandler>
+      desktop_session_state_handler_;
+
   // An event that is used to emulate the worker process's handle.
   ScopedHandle worker_process_;
 };
@@ -296,6 +301,10 @@ void WorkerProcessLauncherTest::ConnectClient() {
       client_channel_handle_.release(), IPC::Channel::MODE_CLIENT,
       &client_listener_, task_runner_, base::ThreadTaskRunnerHandle::Get());
 
+  desktop_session_state_handler_.reset();
+  channel_client_->GetRemoteAssociatedInterface(
+      &desktop_session_state_handler_);
+
   // Pretend that |kLaunchSuccessTimeoutSeconds| passed since launching
   // the worker process. This will make the backoff algorithm think that this
   // launch attempt was successful and it will not delay the next launch.
@@ -306,6 +315,7 @@ void WorkerProcessLauncherTest::DisconnectClient() {
   if (channel_client_) {
     channel_client_->Close();
     channel_client_.reset();
+    desktop_session_state_handler_.reset();
   }
 }
 
@@ -326,9 +336,8 @@ void WorkerProcessLauncherTest::SendToProcess(IPC::Message* message) {
 }
 
 void WorkerProcessLauncherTest::SendFakeMessageToLauncher() {
-  if (channel_client_) {
-    channel_client_->Send(
-        new ChromotingDesktopNetworkMsg_DisconnectSession(protocol::OK));
+  if (desktop_session_state_handler_) {
+    desktop_session_state_handler_->DisconnectSession(protocol::OK);
   }
 }
 

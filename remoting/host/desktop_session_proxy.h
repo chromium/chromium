@@ -82,7 +82,8 @@ class DesktopSessionProxy
                                         DesktopSessionProxyTraits>,
       public IPC::Listener,
       public IpcFileOperations::RequestHandler,
-      public mojom::DesktopSessionEventHandler {
+      public mojom::DesktopSessionEventHandler,
+      public mojom::DesktopSessionStateHandler {
  public:
   DesktopSessionProxy(
       scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner,
@@ -125,9 +126,6 @@ class DesktopSessionProxy
   // Closes the connection to the desktop session agent and cleans up
   // the associated resources.
   void DetachFromDesktop();
-
-  // Disconnects the client session that owns |this|.
-  void DisconnectSession(protocol::ErrorCode error);
 
   // Stores |audio_capturer| to be used to post captured audio packets. Called
   // on the |audio_capture_task_runner_| thread.
@@ -183,6 +181,9 @@ class DesktopSessionProxy
   // mojom::DesktopSessionEventHandler implementation.
   void OnClipboardEvent(const protocol::ClipboardEvent& event) override;
   void OnUrlForwarderStateChange(mojom::UrlForwarderState state) override;
+
+  // mojom::DesktopSessionStateHandler implementation.
+  void DisconnectSession(protocol::ErrorCode error) override;
 
   // API used to implement the UrlForwarderConfigurator interface.
   void IsUrlForwarderSetUp(
@@ -312,8 +313,11 @@ class DesktopSessionProxy
   // desktop) so the validity of this remote must be checked before calling a
   // method on it.
   mojo::AssociatedRemote<mojom::DesktopSessionControl> desktop_session_control_;
+
   mojo::AssociatedReceiver<mojom::DesktopSessionEventHandler>
       desktop_session_event_handler_{this};
+  mojo::AssociatedReceiver<mojom::DesktopSessionStateHandler>
+      desktop_session_state_handler_{this};
 
   UrlForwarderConfigurator::IsUrlForwarderSetUpCallback
       is_url_forwarder_set_up_callback_;

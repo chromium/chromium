@@ -295,7 +295,6 @@ interface DesktopSessionControl {
 // Allows the desktop process to forward events and data to the network process
 // which may process it (e.g. encode a video frame) or forward it to the client
 // (in the case of updated clipboard contents).
-// Forwards local clipboard events from the host to the client.
 // The remote for this interface is owned in the high-privilege desktop
 // integration process and the receiver is bound in the low-privilege network
 // process.
@@ -307,4 +306,41 @@ interface DesktopSessionEventHandler {
   // starts to provide the initial state, then it will be called to report state
   // changes caused by calling DesktopSessionControl::SetUpUrlForwarder().
   OnUrlForwarderStateChange(UrlForwarderState state);
+};
+
+// This enum mirrors the remoting::protocol::ErrorCode enum.
+enum ProtocolErrorCode {
+  kOk = 0,
+  kPeerIsOffline = 1,
+  kSessionRejected = 2,
+  kIncompatibleProtocol = 3,
+  kAuthenticationFailed = 4,
+  kInvalidAccount = 5,
+  kChannelConnectionError = 6,
+  kSignalingError = 7,
+  kSignalingTimeout = 8,
+  kHostOverload = 9,
+  kMaxSessionLength = 10,
+  kHostConfigurationError = 11,
+  kUnknownError = 12,
+  kElevationError = 13,
+  kHostCertificateError = 14,
+  kHostRegistrationError = 15,
+  kExistingAdminSession = 16,
+  kAuthzPolicyCheckFailed = 17,
+  kDisallowedByPolicy = 18,
+};
+
+// Provides the desktop integration process with a mechanism for controlling the
+// client session owned by the network process.
+// The remote for this interface is owned in the high-privilege desktop
+// integration process and the receiver is bound in the low-privilege network
+// process.
+interface DesktopSessionStateHandler {
+  // Disconnects the remote client from the host machine, |error_code| is
+  // passed to the remote client as the reason for the disconnection. An example
+  // usage is when the 'disconnect' button is clicked on the local disconnect
+  // window. The desktop process should expect to be terminated shortly after
+  // calling this method.
+  DisconnectSession(ProtocolErrorCode error_code);
 };

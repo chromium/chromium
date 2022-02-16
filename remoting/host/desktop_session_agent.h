@@ -260,6 +260,8 @@ class DesktopSessionAgent
 
   mojo::AssociatedRemote<mojom::DesktopSessionEventHandler>
       desktop_session_event_handler_;
+  mojo::AssociatedRemote<mojom::DesktopSessionStateHandler>
+      desktop_session_state_handler_;
   mojo::AssociatedReceiver<mojom::DesktopSessionAgent> desktop_session_agent_{
       this};
   mojo::AssociatedReceiver<mojom::DesktopSessionControl>

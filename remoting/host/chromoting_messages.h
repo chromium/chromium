@@ -15,7 +15,6 @@
 #include "ipc/ipc_platform_file.h"
 #include "remoting/host/chromoting_param_traits.h"
 #include "remoting/proto/control.pb.h"
-#include "remoting/protocol/errors.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -98,13 +97,6 @@ IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_MouseCursor,
 // Notifies the network process that the active keyboard layout has changed.
 IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_KeyboardChanged,
                     remoting::protocol::KeyboardLayout /* layout */)
-
-IPC_ENUM_TRAITS_MAX_VALUE(remoting::protocol::ErrorCode,
-                          remoting::protocol::ERROR_CODE_MAX)
-
-// Requests the network process to terminate the client session.
-IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_DisconnectSession,
-                    remoting::protocol::ErrorCode /* error */)
 
 // Carries an audio packet from the desktop session agent to the client.
 // |serialized_packet| is a serialized AudioPacket.

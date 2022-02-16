@@ -246,8 +246,6 @@ bool DesktopSessionProxy::OnMessageReceived(const IPC::Message& message) {
                         OnReleaseSharedBuffer)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_KeyboardChanged,
                         OnKeyboardChanged)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_DisconnectSession,
-                        DisconnectSession)
     IPC_MESSAGE_FORWARD(ChromotingDesktopNetworkMsg_FileResult,
                         &ipc_file_operations_factory_,
                         IpcFileOperations::ResultHandler::OnResult)
@@ -295,6 +293,16 @@ void DesktopSessionProxy::OnAssociatedInterfaceRequest(
     mojo::PendingAssociatedReceiver<mojom::DesktopSessionEventHandler>
         pending_receiver(std::move(handle));
     desktop_session_event_handler_.Bind(std::move(pending_receiver));
+  } else if (interface_name == mojom::DesktopSessionStateHandler::Name_) {
+    if (desktop_session_state_handler_.is_bound()) {
+      LOG(ERROR) << "Receiver already bound for associated interface: "
+                 << mojom::DesktopSessionStateHandler::Name_;
+      CrashProcess(base::Location::Current());
+    }
+
+    mojo::PendingAssociatedReceiver<mojom::DesktopSessionStateHandler>
+        pending_receiver(std::move(handle));
+    desktop_session_state_handler_.Bind(std::move(pending_receiver));
   } else {
     LOG(ERROR) << "Unknown associated interface requested: " << interface_name
                << ", crashing this process";
@@ -336,6 +344,7 @@ void DesktopSessionProxy::DetachFromDesktop() {
   desktop_session_agent_.reset();
   desktop_session_control_.reset();
   desktop_session_event_handler_.reset();
+  desktop_session_state_handler_.reset();
   desktop_session_id_ = UINT32_MAX;
 
   current_url_forwarder_state_ = mojom::UrlForwarderState::kUnknown;
