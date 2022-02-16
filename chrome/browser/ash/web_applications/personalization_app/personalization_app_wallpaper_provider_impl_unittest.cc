@@ -81,10 +81,11 @@ constexpr char kGooglePhotosAlbumsFullResponse[] =
 constexpr char kGooglePhotosPhotosFullResponse[] =
     "{"
     "   \"item\": [ {"
-    "      \"creationTimestamp\": \"2021-12-31T07:07:07.000Z\","
     "      \"itemId\": {"
     "         \"mediaKey\": \"photoId\""
     "      },"
+    "      \"filename\": \"photoName.png\","
+    "      \"creationTimestamp\": \"2021-12-31T07:07:07.000Z\","
     "      \"photo\": {"
     "         \"servingUrl\": \"https://www.google.com/\""
     "      }"
@@ -671,8 +672,8 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
               wallpaper_handlers::MockGooglePhotosPhotosFetcher>>(profile())));
 
   // Parse one-photo responses where one of the photo's fields is missing.
-  for (const auto* const path :
-       {"itemId.mediaKey", "creationTimestamp", "photo.servingUrl"}) {
+  for (const auto* const path : {"itemId.mediaKey", "filename",
+                                 "creationTimestamp", "photo.servingUrl"}) {
     auto response = base::JSONReader::Read(kGooglePhotosPhotosFullResponse);
     auto& photo = GetPhotoFromGooglePhotosPhotosResponse(response);
     photo.RemovePath(path);
@@ -723,9 +724,9 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   // Parse a response with a valid photo and a resume token.
   auto valid_photos_vector = std::vector<GooglePhotosPhotoPtr>();
-  valid_photos_vector.push_back(
-      GooglePhotosPhoto::New("photoId", u"Friday, December 31, 2021",
-                             GURL("https://www.google.com/")));
+  valid_photos_vector.push_back(GooglePhotosPhoto::New(
+      "photoId", "photoName", u"Friday, December 31, 2021",
+      GURL("https://www.google.com/")));
   EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(
                 mojo::Clone(valid_photos_vector), kResumeToken),
             google_photos_photos_fetcher->ParseResponse(
