@@ -1,5 +1,8 @@
 include_rules = [
   "+ipc",
+  "+components/metrics",
+  "+third_party/metrics_proto",
+  "+content/public/browser/background_tracing_manager.h",
 ]
 
 specific_include_rules = {

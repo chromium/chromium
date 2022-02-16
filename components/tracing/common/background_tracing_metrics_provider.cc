@@ -1,27 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/tracing/background_tracing_metrics_provider.h"
+#include "components/tracing/common/background_tracing_metrics_provider.h"
 
-#include <memory>
-#include <utility>
-
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
+
 #include "components/metrics/content/gpu_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
-#include "components/metrics/field_trials_provider.h"
-#include "components/metrics/metrics_service.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/trace_log.pb.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/metrics/antivirus_metrics_provider_win.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 namespace tracing {
 
@@ -29,34 +18,11 @@ BackgroundTracingMetricsProvider::BackgroundTracingMetricsProvider() = default;
 BackgroundTracingMetricsProvider::~BackgroundTracingMetricsProvider() = default;
 
 void BackgroundTracingMetricsProvider::Init() {
-  // TODO(ssid): SetupBackgroundTracingFieldTrial() should be called here.
-#if BUILDFLAG(IS_WIN)
-  // AV metrics provider is initialized asynchronously. It might not be
-  // initialized when reporting metrics, in which case it'll just not add any AV
-  // metrics to the proto.
-  system_profile_providers_.emplace_back(
-      std::make_unique<AntiVirusMetricsProvider>());
-  av_metrics_provider_ = system_profile_providers_.back().get();
-#endif  // BUILDFLAG(IS_WIN)
-  variations::SyntheticTrialRegistry* registry = nullptr;
-  if (g_browser_process->metrics_service() != nullptr) {
-    registry = g_browser_process->metrics_service()->synthetic_trial_registry();
-  }
-  system_profile_providers_.emplace_back(
-      std::make_unique<variations::FieldTrialsProvider>(registry,
-                                                        base::StringPiece()));
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::CPUMetricsProvider>());
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::GPUMetricsProvider>());
 }
-
-#if BUILDFLAG(IS_WIN)
-void BackgroundTracingMetricsProvider::AsyncInit(
-    base::OnceClosure done_callback) {
-  av_metrics_provider_->AsyncInit(std::move(done_callback));
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 bool BackgroundTracingMetricsProvider::HasIndependentMetrics() {
   return content::BackgroundTracingManager::GetInstance()->HasTraceToUpload();
@@ -67,6 +33,11 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
     metrics::ChromeUserMetricsExtension* uma_proto,
     base::HistogramSnapshotManager* snapshot_manager) {
   auto* tracing_manager = content::BackgroundTracingManager::GetInstance();
+  // TODO(crbug.com/1290887): remove this when
+  // content::BackgroundTracingManager::GetInstance() is updated to return a
+  // reference.
+  DCHECK(tracing_manager);
+
   auto serialized_trace = tracing_manager->GetLatestTraceToUpload();
   if (serialized_trace.empty()) {
     std::move(done_callback).Run(false);
@@ -76,12 +47,18 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
   log->set_raw_data(std::move(serialized_trace));
 
   auto* system_profile = uma_proto->mutable_system_profile();
+
   for (auto& provider : system_profile_providers_) {
-    provider->ProvideSystemProfileMetricsWithLogCreationTime(base::TimeTicks(),
-                                                             system_profile);
+    provider->ProvideSystemProfileMetricsWithLogCreationTime(
+        base::TimeTicks::Now(), system_profile);
   }
 
+  ProvideEmbedderMetrics(uma_proto, snapshot_manager);
   std::move(done_callback).Run(true);
 }
+
+void BackgroundTracingMetricsProvider::ProvideEmbedderMetrics(
+    metrics::ChromeUserMetricsExtension* uma_proto,
+    base::HistogramSnapshotManager* snapshot_manager) {}
 
 }  // namespace tracing

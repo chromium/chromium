@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/tracing/background_tracing_metrics_provider.h"
+#include "chrome/browser/tracing/chrome_background_tracing_metrics_provider.h"
 
 #include <utility>
 
@@ -22,9 +22,9 @@ namespace {
 const char kDummyTrace[] = "Trace bytes as serialized proto";
 }  // namespace
 
-class BackgroundTracingMetricsProviderTest : public testing::Test {
+class ChromeBackgroundTracingMetricsProviderTest : public testing::Test {
  public:
-  BackgroundTracingMetricsProviderTest()
+  ChromeBackgroundTracingMetricsProviderTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
@@ -58,13 +58,13 @@ class BackgroundTracingMetricsProviderTest : public testing::Test {
   ScopedTestingLocalState local_state_;
 };
 
-TEST_F(BackgroundTracingMetricsProviderTest, NoTraceData) {
-  BackgroundTracingMetricsProvider provider;
+TEST_F(ChromeBackgroundTracingMetricsProviderTest, NoTraceData) {
+  ChromeBackgroundTracingMetricsProvider provider;
   ASSERT_FALSE(provider.HasIndependentMetrics());
 }
 
-TEST_F(BackgroundTracingMetricsProviderTest, UploadsTraceLog) {
-  BackgroundTracingMetricsProvider provider;
+TEST_F(ChromeBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
+  ChromeBackgroundTracingMetricsProvider provider;
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
   content::BackgroundTracingManager::GetInstance()->SetTraceToUploadForTesting(
@@ -86,8 +86,8 @@ TEST_F(BackgroundTracingMetricsProviderTest, UploadsTraceLog) {
   EXPECT_FALSE(provider.HasIndependentMetrics());
 }
 
-TEST_F(BackgroundTracingMetricsProviderTest, HandleMissingTrace) {
-  BackgroundTracingMetricsProvider provider;
+TEST_F(ChromeBackgroundTracingMetricsProviderTest, HandleMissingTrace) {
+  ChromeBackgroundTracingMetricsProvider provider;
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
   content::BackgroundTracingManager::GetInstance()->SetTraceToUploadForTesting(

@@ -262,6 +262,7 @@ source_set("browser") {
     "//components/security_interstitials/core",
     "//components/services/heap_profiling/public/cpp",
     "//components/spellcheck:buildflags",
+    "//components/tracing:background_tracing_metrics_provider",
     "//components/url_formatter",
     "//components/user_prefs",
     "//components/variations",
