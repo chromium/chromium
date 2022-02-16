@@ -4154,7 +4154,10 @@
                         "RichAutocompletionAutocompleteNonPrefixAll": "true",
                         "RichAutocompletionAutocompleteTitles": "true",
                         "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3",
-                        "UIMaxAutocompleteMatches": "8"
+                        "UIMaxAutocompleteMatches": "8",
+                        "ZeroSuggestCacheCounterfactual": "true",
+                        "ZeroSuggestCacheDurationSec": "180",
+                        "ZeroSuggestPrefetchBypassCache": "true"
                     },
                     "enable_features": [
                         "OmniboxAggregateShortcuts",
@@ -4171,7 +4174,8 @@
                         "OmniboxRemoveSuggestionsFromClipboard",
                         "OmniboxRichAutocompletion",
                         "OmniboxShortBookmarkSuggestionsByTotalInputLength",
-                        "OmniboxUIExperimentMaxAutocompleteMatches"
+                        "OmniboxUIExperimentMaxAutocompleteMatches",
+                        "ZeroSuggestPrefetching"
                     ],
                     "disable_features": []
                 }
