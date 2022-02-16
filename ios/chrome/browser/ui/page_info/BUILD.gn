@@ -138,6 +138,7 @@ source_set("eg2_tests") {
     "//ios/third_party/earl_grey2:test_lib",
     "//ios/web/common",
     "//ios/web/public/permissions",
+    "//net:test_support",
     "//ui/base",
   ]
 }

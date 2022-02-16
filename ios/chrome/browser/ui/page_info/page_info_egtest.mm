@@ -17,6 +17,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/permissions/permissions.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,13 +39,8 @@
 
 // Tests that rotating the device will don't dismiss the page info view.
 - (void)testShowPageInfoRotation {
-// TODO(crbug.com/1209345): test failing on ipad device
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
-  [ChromeEarlGrey loadURL:GURL("https://invalid")];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI openPageInfo];
 
   // Checks that the page info view has appeared.
@@ -88,13 +84,9 @@
 // Tests that the Permissions section is not displayed, as there isn't any
 // accessible permissions.
 - (void)testShowPageInfoWithNoAccessiblePermission {
-  // TODO(crbug.com/1296203): Test fails on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
-  }
-
   if (@available(iOS 15.0, *)) {
-    [ChromeEarlGrey loadURL:GURL("https://chromium.org/")];
+    GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+    [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
     [ChromeEarlGreyUI openPageInfo];
     // Checks that permission header is visible.
     [[EarlGrey
@@ -114,7 +106,8 @@
           return @{@(web::PermissionMicrophone) : @YES};
         });
 
-    [ChromeEarlGrey loadURL:GURL("https://chromium.org/")];
+    GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+    [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
     [ChromeEarlGreyUI openPageInfo];
 
     // Check that permission header is visible.
