@@ -17,6 +17,8 @@
 #include "chrome/common/extensions/api/scripting.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "extensions/browser/api/extension_types_utils.h"
 #include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
@@ -233,34 +235,74 @@ bool CheckAndLoadFiles(std::vector<std::string> files,
   return true;
 }
 
+// Returns an error message string for when an extension cannot access a page it
+// is attempting to.
+std::string GetCannotAccessPageErrorMessage(const PermissionsData& permissions,
+                                            const GURL& url) {
+  if (permissions.HasAPIPermission(mojom::APIPermissionID::kTab)) {
+    return ErrorUtils::FormatErrorMessage(
+        manifest_errors::kCannotAccessPageWithUrl, url.spec());
+  }
+  return manifest_errors::kCannotAccessPage;
+}
+
 // Returns true if the `permissions` allow for injection into the given `frame`.
 // If false, populates `error`.
 bool HasPermissionToInjectIntoFrame(const PermissionsData& permissions,
                                     int tab_id,
                                     content::RenderFrameHost* frame,
                                     std::string* error) {
-  GURL url = frame->GetLastCommittedURL();
+  GURL committed_url = frame->GetLastCommittedURL();
+  if (committed_url.is_empty()) {
+    if (!frame->IsInPrimaryMainFrame()) {
+      // We can't check the pending URL for subframes from the //chrome layer.
+      // Assume the injection is allowed; the renderer has additional checks
+      // later on.
+      return true;
+    }
+    // Unknown URL, e.g. because no load was committed yet. In this case we look
+    // for any pending entry on the NavigationController associated with the
+    // WebContents for the frame.
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(frame);
+    content::NavigationEntry* pending_entry =
+        web_contents->GetController().GetPendingEntry();
+    if (!pending_entry) {
+      *error = manifest_errors::kCannotAccessPage;
+      return false;
+    }
+    GURL pending_url = pending_entry->GetURL();
+    if (pending_url.SchemeIsHTTPOrHTTPS() &&
+        !permissions.CanAccessPage(pending_url, tab_id, error)) {
+      // This catches the majority of cases where an extension tried to inject
+      // on a newly-created navigating tab, saving us a potentially-costly IPC
+      // and, maybe, slightly reducing (but not by any stretch eliminating) an
+      // attack surface.
+      *error = GetCannotAccessPageErrorMessage(permissions, pending_url);
+      return false;
+    }
+
+    // Otherwise allow for now. The renderer has additional checks and will
+    // fail the injection if needed.
+    return true;
+  }
 
   // TODO(devlin): Add more schemes here, in line with
   // https://crbug.com/55084.
-  if (url.SchemeIs(url::kAboutScheme) || url.SchemeIs(url::kDataScheme)) {
+  if (committed_url.SchemeIs(url::kAboutScheme) ||
+      committed_url.SchemeIs(url::kDataScheme)) {
     url::Origin origin = frame->GetLastCommittedOrigin();
     const url::SchemeHostPort& tuple_or_precursor_tuple =
         origin.GetTupleOrPrecursorTupleIfOpaque();
     if (!tuple_or_precursor_tuple.IsValid()) {
-      if (permissions.HasAPIPermission(mojom::APIPermissionID::kTab)) {
-        *error = ErrorUtils::FormatErrorMessage(
-            manifest_errors::kCannotAccessPageWithUrl, url.spec());
-      } else {
-        *error = manifest_errors::kCannotAccessPage;
-      }
+      *error = GetCannotAccessPageErrorMessage(permissions, committed_url);
       return false;
     }
 
-    url = tuple_or_precursor_tuple.GetURL();
+    committed_url = tuple_or_precursor_tuple.GetURL();
   }
 
-  return permissions.CanAccessPage(url, tab_id, error);
+  return permissions.CanAccessPage(committed_url, tab_id, error);
 }
 
 // Returns true if the `target` can be accessed with the given `permissions`.
