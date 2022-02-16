@@ -134,7 +134,6 @@ void CoreOobeHandler::RegisterMessages() {
   AddCallback("startDemoModeSetupForTesting",
               &CoreOobeHandler::HandleStartDemoModeSetupForTesting);
 
-  AddCallback("hideOobeDialog", &CoreOobeHandler::HandleHideOobeDialog);
   AddCallback("updateOobeUIState", &CoreOobeHandler::HandleUpdateOobeUIState);
   AddCallback("enableShelfButtons", &CoreOobeHandler::HandleEnableShelfButtons);
 }
@@ -203,11 +202,6 @@ void CoreOobeHandler::HandleUpdateCurrentScreen(
   GetOobeUI()->CurrentScreenChanged(screen);
   ash::EventRewriterController::Get()->SetArrowToTabRewritingEnabled(
       screen == EulaView::kScreenId);
-}
-
-void CoreOobeHandler::HandleHideOobeDialog() {
-  if (LoginDisplayHost::default_host())
-    LoginDisplayHost::default_host()->HideOobeDialog();
 }
 
 void CoreOobeHandler::HandleEnableShelfButtons(bool enable) {

@@ -140,18 +140,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Show user-pods.
-     */
-    static showUserPods() {
-      if (Oobe.getInstance().showingViewsLogin) {
-        chrome.send('hideOobeDialog');
-        return;
-      }
-      this.showSigninUI("");
-      this.resetSigninUI(true);
-    }
-
-    /**
      * Sets the current size of the client area (display size).
      * @param {number} width client area width
      * @param {number} height client area height

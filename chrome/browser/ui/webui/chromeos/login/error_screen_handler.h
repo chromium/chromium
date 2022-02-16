@@ -58,9 +58,6 @@ class ErrorScreenView {
   // Sets current UI state of the screen.
   virtual void SetUIState(NetworkError::UIState ui_state) = 0;
 
-  // Returns to user pods screen.
-  virtual void OnCancelButtonClicked() = 0;
-
   // Reloads gaia.
   virtual void OnReloadGaiaClicked() = 0;
 };
@@ -91,7 +88,6 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   void SetShowConnectingIndicator(bool value) override;
   void SetIsPersistentError(bool is_persistent) override;
   void SetUIState(NetworkError::UIState ui_state) override;
-  void OnCancelButtonClicked() override;
   void OnReloadGaiaClicked() override;
 
   // BaseScreenHandler:

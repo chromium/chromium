@@ -367,8 +367,8 @@ void ErrorScreen::OnRebootButtonClicked() {
 }
 
 void ErrorScreen::OnCancelButtonClicked() {
-  if (view_)
-    view_->OnCancelButtonClicked();
+  DCHECK(LoginDisplayHost::default_host()->HasUserPods());
+  LoginDisplayHost::default_host()->HideOobeDialog();
   Hide();
 }
 
