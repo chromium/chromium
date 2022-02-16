@@ -15,13 +15,14 @@ import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_util
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getTemplate} from './app.html.js';
+import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './app.html.js';
 import {BackgroundManager} from './background_manager.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
 import {loadTimeData} from './i18n_setup.js';
 import {IframeElement} from './iframe.js';
+import {LogoElement} from './logo.js';
 import {recordLoadDuration} from './metrics_utils.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
@@ -74,13 +75,15 @@ function ensureLazyLoaded() {
   document.body.appendChild(script);
 }
 
-interface AppElement {
+export interface AppElement {
   $: {
+    customizeDialogIf: DomIf,
     oneGoogleBarClipPath: HTMLElement,
+    logo: LogoElement,
   };
 }
 
-class AppElement extends PolymerElement {
+export class AppElement extends PolymerElement {
   static get is() {
     return 'ntp-app';
   }
@@ -695,6 +698,12 @@ class AppElement extends PolymerElement {
       }
     }
     recordClick(NtpElement.kOther);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-app': AppElement;
   }
 }
 

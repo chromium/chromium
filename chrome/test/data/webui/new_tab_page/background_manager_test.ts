@@ -5,38 +5,32 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {BackgroundManager} from 'chrome://new-tab-page/new_tab_page.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {createBackgroundImage} from './test_support.js';
 
 class FakeIFrameElement extends HTMLIFrameElement {
-  constructor() {
-    super();
-    this.url = null;
-  }
+  url: string|null = null;
 
   get contentWindow() {
-    return {location: {replace: url => this.url = url}};
+    return {location: {replace: (url: string) => this.url = url}} as unknown as
+        Window;
   }
 }
 
 customElements.define('fake-iframe', FakeIFrameElement, {extends: 'iframe'});
 
 suite('NewTabPageBackgroundManagerTest', () => {
-  /** @type {!BackgroundManager} */
-  let backgroundManager;
+  let backgroundManager: BackgroundManager;
+  let backgroundImage: FakeIFrameElement;
 
-  /** @type {Element} */
-  let backgroundImage;
-
-  /**
-   * @param {string} url
-   * @return {string}
-   */
-  function wrapImageUrl(url) {
+  function wrapImageUrl(url: string): string {
     return `chrome-untrusted://new-tab-page/custom_background_image?url=${
         encodeURIComponent(url)}`;
   }
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     backgroundImage = new FakeIFrameElement();
     backgroundImage.id = 'backgroundImage';
@@ -66,7 +60,8 @@ suite('NewTabPageBackgroundManagerTest', () => {
 
   test('setting url updates src', () => {
     // Act.
-    backgroundManager.setBackgroundImage({url: {url: 'https://example.com'}});
+    backgroundManager.setBackgroundImage(
+        createBackgroundImage('https://example.com'));
 
     // Assert.
     assertEquals(wrapImageUrl('https://example.com'), backgroundImage.url);
@@ -74,12 +69,12 @@ suite('NewTabPageBackgroundManagerTest', () => {
 
   test('setting same url does not update src', () => {
     // Arrange.
-    const url = {url: {url: 'https://example.com'}};
-    backgroundManager.setBackgroundImage(url);
+    const image = createBackgroundImage('https://example.com');
+    backgroundManager.setBackgroundImage(image);
     backgroundImage.url = null;
 
     // Act.
-    backgroundManager.setBackgroundImage(url);
+    backgroundManager.setBackgroundImage(image);
 
     // Assert.
     assertEquals(null, backgroundImage.url);
@@ -95,6 +90,7 @@ suite('NewTabPageBackgroundManagerTest', () => {
       repeatY: 'repeat',
       positionX: 'left',
       positionY: 'top',
+      attributionUrl: undefined,
     });
 
     // Assert.
@@ -109,7 +105,8 @@ suite('NewTabPageBackgroundManagerTest', () => {
 
   test.skip('receiving load time resolves promise', async () => {
     // Arrange.
-    backgroundManager.setBackgroundImage({url: {url: 'https://example.com'}});
+    backgroundManager.setBackgroundImage(
+        createBackgroundImage('https://example.com'));
 
     // Act.
     const promise = backgroundManager.getBackgroundImageLoadTime();
@@ -128,7 +125,8 @@ suite('NewTabPageBackgroundManagerTest', () => {
 
   test.skip('receiving load time resolves multiple promises', async () => {
     // Arrange.
-    backgroundManager.setBackgroundImage({url: {url: 'https://example.com'}});
+    backgroundManager.setBackgroundImage(
+        createBackgroundImage('https://example.com'));
 
     // Act.
     const promises = [
@@ -154,15 +152,17 @@ suite('NewTabPageBackgroundManagerTest', () => {
 
   test.skip('setting new url rejects promise', async () => {
     // Arrange.
-    backgroundManager.setBackgroundImage({url: {url: 'https://example.com'}});
+    backgroundManager.setBackgroundImage(
+        createBackgroundImage('https://example.com'));
 
     // Act.
     const promise = backgroundManager.getBackgroundImageLoadTime();
-    backgroundManager.setBackgroundImage({url: {url: 'https://other.com'}});
+    backgroundManager.setBackgroundImage(
+        createBackgroundImage('https://other.com'));
 
     // Assert.
     return promise.then(
-        assertNotReached,
+        () => assertNotReached(),
         () => {
             // Success. Nothing to do here.
         });

@@ -13,10 +13,12 @@
 export {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 export {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 export {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-export {NtpElement} from './app.js';
+export {AppElement, NtpElement} from './app.js';
 export {BackgroundManager} from './background_manager.js';
 export {CustomizeDialogPage} from './customize_dialog_types.js';
 export {DoodleShareDialogElement} from './doodle_share_dialog.js';
+export {IframeElement} from './iframe.js';
+export {LogoElement} from './logo.js';
 export {recordDuration, recordLoadDuration, recordOccurence, recordPerdecage} from './metrics_utils.js';
 export {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
 export {chromeCartDescriptor, ChromeCartModuleElement} from './modules/cart/module.js';

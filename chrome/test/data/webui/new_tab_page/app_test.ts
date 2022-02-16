@@ -4,48 +4,33 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {$$, BackgroundManager, BrowserCommandProxy, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {$$, AppElement, BackgroundManager, BrowserCommandProxy, CustomizeDialogPage, Module, ModuleDescriptor, ModuleRegistry, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {PageCallbackRouter, PageHandlerRemote, PageInterface} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {fakeMetricsPrivate, MetricsTracker} from './metrics_test_support.js';
-import {assertNotStyle, assertStyle, createTheme, installMock} from './test_support.js';
+import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
 suite('NewTabPageAppTest', () => {
-  /** @type {!AppElement} */
-  let app;
+  let app: AppElement;
+  let windowProxy: TestBrowserProxy;
+  let handler: TestBrowserProxy;
+  let callbackRouterRemote: PageHandlerRemote&PageInterface;
+  let metrics: MetricsTracker;
+  let moduleRegistry: TestBrowserProxy;
+  let backgroundManager: TestBrowserProxy;
+  let moduleResolver: PromiseResolver<Module[]>;
 
-  /** @type {!TestBrowserProxy} */
-  let windowProxy;
-
-  /** @type {!TestBrowserProxy} */
-  let handler;
-
-  /** @type {!PageHandlerRemote} */
-  let callbackRouterRemote;
-
-  /** @type {!MetricsTracker} */
-  let metrics;
-
-  /** @type {!TestBrowserProxy} */
-  let moduleRegistry;
-
-  /** @type {!TestBrowserProxy} */
-  let backgroundManager;
-
-  /** @type {!PromiseResolver} */
-  let moduleResolver;
-
-  /** @type {URL} */
-  let url = new URL(location.href);
+  let url: URL = new URL(location.href);
 
   setup(async () => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     windowProxy = installMock(WindowProxy);
     handler = installMock(
@@ -88,16 +73,16 @@ suite('NewTabPageAppTest', () => {
   suite('misc', () => {
     test('customize dialog closed on start', () => {
       // Assert.
-      assertFalse(!!app.shadowRoot.querySelector('ntp-customize-dialog'));
+      assertFalse(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
     });
 
     test('clicking customize button opens customize dialog', async () => {
       // Act.
-      $$(app, '#customizeButton').click();
+      $$<HTMLElement>(app, '#customizeButton')!.click();
       await flushTasks();
 
       // Assert.
-      assertTrue(!!app.shadowRoot.querySelector('ntp-customize-dialog'));
+      assertTrue(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
     });
 
     test('logs height', async () => {
@@ -112,23 +97,23 @@ suite('NewTabPageAppTest', () => {
 
     test('realbox is not visible by default', async () => {
       // Assert.
-      assertStyle($$(app, '#realbox'), 'visibility', 'hidden');
+      assertStyle($$(app, '#realbox')!, 'visibility', 'hidden');
 
       // Act.
       callbackRouterRemote.setTheme(createTheme());
       await callbackRouterRemote.$.flushForTesting();
 
       // Assert.
-      assertStyle($$(app, '#realbox'), 'visibility', 'visible');
+      assertStyle($$(app, '#realbox')!, 'visibility', 'visible');
     });
 
     test('open voice search event opens voice search overlay', async () => {
       // Act.
-      $$(app, '#realbox').dispatchEvent(new Event('open-voice-search'));
+      $$(app, '#realbox')!.dispatchEvent(new Event('open-voice-search'));
       await flushTasks();
 
       // Assert.
-      assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
+      assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
       assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
       assertEquals(
           1,
@@ -147,7 +132,7 @@ suite('NewTabPageAppTest', () => {
       await flushTasks();
 
       // Assert.
-      assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
+      assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
       assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
       assertEquals(
           1,
@@ -164,7 +149,7 @@ suite('NewTabPageAppTest', () => {
       await flushTasks();
 
       // Assert.
-      assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
+      assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
     });
 
     if (isMac) {
@@ -178,7 +163,7 @@ suite('NewTabPageAppTest', () => {
         await flushTasks();
 
         // Assert.
-        assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
+        assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
       });
     }
   });
@@ -186,10 +171,19 @@ suite('NewTabPageAppTest', () => {
   suite('theming', () => {
     test('setting theme updates customize dialog', async () => {
       // Arrange.
-      $$(app, '#customizeButton').click();
+      $$<HTMLElement>(app, '#customizeButton')!.click();
       const theme = createTheme();
+
+      // TypeScript definitions for Mojo are not perfect, and the following
+      // fields are incorrectly marked as non-optional and non-nullable, when
+      // in reality they are optional and nullable.
+      // TODO(crbug.com/1002798): Remove ignore statements if/when proper Mojo
+      // TS support is added.
+      // @ts-ignore:next-line
       theme.backgroundImage = null;
+      // @ts-ignore:next-line
       theme.backgroundImageAttributionUrl = null;
+      // @ts-ignore:next-line
       theme.logoColor = null;
 
       // Act.
@@ -198,7 +192,7 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertDeepEquals(
-          theme, app.shadowRoot.querySelector('ntp-customize-dialog').theme);
+          theme, app.shadowRoot!.querySelector('ntp-customize-dialog')!.theme);
     });
 
     test('setting theme updates ntp', async () => {
@@ -212,36 +206,36 @@ suite('NewTabPageAppTest', () => {
           0xffff0000 /* red */,
           (await backgroundManager.whenCalled('setBackgroundColor')).value);
       assertStyle(
-          $$(app, '#content'), '--ntp-theme-text-color', 'rgba(0, 0, 255, 1)');
+          $$(app, '#content')!, '--ntp-theme-text-color', 'rgba(0, 0, 255, 1)');
       assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
       assertFalse(await backgroundManager.whenCalled('setShowBackgroundImage'));
-      assertStyle($$(app, '#backgroundImageAttribution'), 'display', 'none');
-      assertStyle($$(app, '#backgroundImageAttribution2'), 'display', 'none');
-      assertFalse($$(app, '#logo').singleColored);
-      assertFalse($$(app, '#logo').dark);
-      assertEquals(0xffff0000, $$(app, '#logo').backgroundColor.value);
+      assertStyle($$(app, '#backgroundImageAttribution')!, 'display', 'none');
+      assertStyle($$(app, '#backgroundImageAttribution2')!, 'display', 'none');
+      assertFalse(app.$.logo.singleColored);
+      assertFalse(app.$.logo.dark);
+      assertEquals(0xffff0000, app.$.logo.backgroundColor.value);
     });
 
     test('setting 3p theme shows attribution', async () => {
       // Arrange.
       const theme = createTheme();
-      theme.backgroundImage = {
-        url: {url: 'https://foo.com'},
-        attributionUrl: {url: 'chrome://theme/foo'},
-      };
+      theme.backgroundImage = createBackgroundImage('https://foo.com');
+      theme.backgroundImage.attributionUrl = {url: 'chrome://theme/foo'};
 
       // Act.
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
 
-      assertNotStyle($$(app, '#themeAttribution'), 'display', 'none');
-      assertEquals('chrome://theme/foo', $$(app, '#themeAttribution img').src);
+      assertNotStyle($$(app, '#themeAttribution')!, 'display', 'none');
+      assertEquals(
+          'chrome://theme/foo',
+          $$<HTMLImageElement>(app, '#themeAttribution img')!.src);
     });
 
     test('setting background image shows image', async () => {
       // Arrange.
       const theme = createTheme();
-      theme.backgroundImage = {url: {url: 'https://img.png'}};
+      theme.backgroundImage = createBackgroundImage('https://img.png');
 
       // Act.
       backgroundManager.resetResolver('setShowBackgroundImage');
@@ -252,12 +246,12 @@ suite('NewTabPageAppTest', () => {
       assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
       assertTrue(await backgroundManager.whenCalled('setShowBackgroundImage'));
       assertNotStyle(
-          $$(app, '#backgroundImageAttribution'), 'text-shadow', 'none');
+          $$(app, '#backgroundImageAttribution')!, 'text-shadow', 'none');
       assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
       assertEquals(
           'https://img.png',
           (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-      assertEquals(null, $$(app, '#logo').backgroundColor);
+      assertEquals(null, app.$.logo.backgroundColor);
     });
 
     test('setting attributions shows attributions', async function() {
@@ -272,16 +266,17 @@ suite('NewTabPageAppTest', () => {
       await callbackRouterRemote.$.flushForTesting();
 
       // Assert.
-      assertNotStyle($$(app, '#backgroundImageAttribution'), 'display', 'none');
       assertNotStyle(
-          $$(app, '#backgroundImageAttribution2'), 'display', 'none');
+          $$(app, '#backgroundImageAttribution')!, 'display', 'none');
+      assertNotStyle(
+          $$(app, '#backgroundImageAttribution2')!, 'display', 'none');
       assertEquals(
           'https://info.com',
-          $$(app, '#backgroundImageAttribution').getAttribute('href'));
+          $$(app, '#backgroundImageAttribution')!.getAttribute('href'));
       assertEquals(
-          'foo', $$(app, '#backgroundImageAttribution1').textContent.trim());
+          'foo', $$(app, '#backgroundImageAttribution1')!.textContent!.trim());
       assertEquals(
-          'bar', $$(app, '#backgroundImageAttribution2').textContent.trim());
+          'bar', $$(app, '#backgroundImageAttribution2')!.textContent!.trim());
     });
 
     test('setting logo color colors logo', async function() {
@@ -294,8 +289,8 @@ suite('NewTabPageAppTest', () => {
       await callbackRouterRemote.$.flushForTesting();
 
       // Assert.
-      assertTrue($$(app, '#logo').singleColored);
-      assertStyle($$(app, '#logo'), '--ntp-logo-color', 'rgba(255, 0, 0, 1)');
+      assertTrue(app.$.logo.singleColored);
+      assertStyle(app.$.logo, '--ntp-logo-color', 'rgba(255, 0, 0, 1)');
     });
 
     test('theme updates add shortcut color', async () => {
@@ -303,6 +298,7 @@ suite('NewTabPageAppTest', () => {
       theme.mostVisited.useWhiteTileIcon = true;
       callbackRouterRemote.setTheme(theme);
       const mostVisited = $$(app, '#mostVisited');
+      assertTrue(!!mostVisited);
       assertFalse(mostVisited.hasAttribute('use-white-tile-icon_'));
       await callbackRouterRemote.$.flushForTesting();
       assertTrue(mostVisited.hasAttribute('use-white-tile-icon_'));
@@ -313,6 +309,7 @@ suite('NewTabPageAppTest', () => {
       theme.mostVisited.useTitlePill = true;
       callbackRouterRemote.setTheme(theme);
       const mostVisited = $$(app, '#mostVisited');
+      assertTrue(!!mostVisited);
       assertFalse(mostVisited.hasAttribute('use-title-pill_'));
       await callbackRouterRemote.$.flushForTesting();
       assertTrue(mostVisited.hasAttribute('use-title-pill_'));
@@ -323,6 +320,7 @@ suite('NewTabPageAppTest', () => {
       theme.mostVisited.isDark = true;
       callbackRouterRemote.setTheme(theme);
       const mostVisited = $$(app, '#mostVisited');
+      assertTrue(!!mostVisited);
       assertFalse(mostVisited.hasAttribute('is-dark_'));
       await callbackRouterRemote.$.flushForTesting();
       assertTrue(mostVisited.hasAttribute('is-dark_'));
@@ -405,28 +403,30 @@ suite('NewTabPageAppTest', () => {
       });
     });
 
-    [['#content', NtpElement.kBackground],
-     ['ntp-logo', NtpElement.kLogo],
-     ['ntp-realbox', NtpElement.kRealbox],
-     ['cr-most-visited', NtpElement.kMostVisited],
-     ['ntp-middle-slot-promo', NtpElement.kMiddleSlotPromo],
-     ['ntp-modules', NtpElement.kModule],
-    ].forEach(([selector, element]) => {
-      test(`clicking '${selector}' records click`, () => {
-        // Act.
-        $$(app, selector).click();
+    ([
+      ['#content', NtpElement.kBackground],
+      ['ntp-logo', NtpElement.kLogo],
+      ['ntp-realbox', NtpElement.kRealbox],
+      ['cr-most-visited', NtpElement.kMostVisited],
+      ['ntp-middle-slot-promo', NtpElement.kMiddleSlotPromo],
+      ['ntp-modules', NtpElement.kModule],
+    ] as [string, NtpElement][])
+        .forEach(([selector, element]) => {
+          test(`clicking '${selector}' records click`, () => {
+            // Act.
+            $$<HTMLElement>(app, selector)!.click();
 
-        // Assert.
-        assertEquals(1, metrics.count('NewTabPage.Click'));
-        assertEquals(1, metrics.count('NewTabPage.Click', element));
-      });
-    });
+            // Assert.
+            assertEquals(1, metrics.count('NewTabPage.Click'));
+            assertEquals(1, metrics.count('NewTabPage.Click', element));
+          });
+        });
 
     test('clicking customize records click', () => {
       // Act.
-      $$(app, '#customizeButton').click();
-      $$(app, '#customizeDialogIf').render();
-      $$(app, 'ntp-customize-dialog').click();
+      $$<HTMLElement>(app, '#customizeButton')!.click();
+      app.$.customizeDialogIf.render();
+      $$<HTMLElement>(app, 'ntp-customize-dialog')!.click();
 
       // Assert.
       assertEquals(2, metrics.count('NewTabPage.Click'));
@@ -458,14 +458,14 @@ suite('NewTabPageAppTest', () => {
 
     test('modules can open customize dialog', async () => {
       // Act.
-      $$(app, 'ntp-modules').dispatchEvent(new Event('customize-module'));
-      $$(app, '#customizeDialogIf').render();
+      $$(app, 'ntp-modules')!.dispatchEvent(new Event('customize-module'));
+      app.$.customizeDialogIf.render();
 
       // Assert.
       assertTrue(!!$$(app, 'ntp-customize-dialog'));
       assertEquals(
           CustomizeDialogPage.MODULES,
-          $$(app, 'ntp-customize-dialog').selectedPage);
+          $$(app, 'ntp-customize-dialog')!.selectedPage);
     });
 
     test('promo and modules coordinate', async () => {
@@ -473,7 +473,9 @@ suite('NewTabPageAppTest', () => {
       loadTimeData.overrideValues({navigationStartTime: 0.0});
       windowProxy.setResultFor('now', 123.0);
       const middleSlotPromo = $$(app, 'ntp-middle-slot-promo');
+      assertTrue(!!middleSlotPromo);
       const modules = $$(app, 'ntp-modules');
+      assertTrue(!!modules);
 
       // Assert.
       assertStyle(middleSlotPromo, 'display', 'none');
@@ -507,14 +509,18 @@ suite('NewTabPageAppTest', () => {
 
     test('modules loaded but not rendered if counterfactual', async () => {
       // Act.
+      const fooElement = document.createElement('div');
+      const barElement = document.createElement('div');
       moduleResolver.resolve([
         {
-          descriptor: {id: 'foo'},
-          element: document.createElement('div'),
+          descriptor: new ModuleDescriptor(
+              'foo', 'foo', () => Promise.resolve(fooElement)),
+          element: fooElement,
         },
         {
-          descriptor: {id: 'bar'},
-          element: document.createElement('div'),
+          descriptor: new ModuleDescriptor(
+              'bar', 'bar', () => Promise.resolve(barElement)),
+          element: barElement,
         }
       ]);
       await flushTasks();
@@ -523,7 +529,7 @@ suite('NewTabPageAppTest', () => {
       assertEquals(1, moduleRegistry.getCallCount('initializeModules'));
       assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
       assertEquals(
-          0, app.shadowRoot.querySelectorAll('ntp-module-wrapper').length);
+          0, app.shadowRoot!.querySelectorAll('ntp-module-wrapper').length);
     });
   });
 
@@ -536,13 +542,13 @@ suite('NewTabPageAppTest', () => {
 
     test('URL opens customize dialog', () => {
       // Act.
-      $$(app, '#customizeDialogIf').render();
+      app.$.customizeDialogIf.render();
 
       // Assert.
       assertTrue(!!$$(app, 'ntp-customize-dialog'));
       assertEquals(
           CustomizeDialogPage.THEMES,
-          $$(app, 'ntp-customize-dialog').selectedPage);
+          $$(app, 'ntp-customize-dialog')!.selectedPage);
     });
   });
 });

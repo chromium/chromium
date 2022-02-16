@@ -9,8 +9,8 @@ import("./realbox/realbox.gni")
 
 # Test files that do not require preprocessing.
 non_preprocessed_files = [
-                           "app_test.js",
-                           "background_manager_test.js",
+                           "app_test.ts",
+                           "background_manager_test.ts",
                            "customize_backgrounds_test.ts",
                            "customize_dialog_focus_test.ts",
                            "customize_dialog_test.ts",
@@ -18,13 +18,13 @@ non_preprocessed_files = [
                            "customize_shortcuts_test.ts",
                            "doodle_share_dialog_focus_test.ts",
                            "doodle_share_dialog_test.ts",
-                           "logo_test.js",
+                           "logo_test.ts",
                            "metrics_test_support.ts",
                            "metrics_utils_test.ts",
                            "middle_slot_promo_test.ts",
                            "test_support.ts",
                            "utils_test.ts",
-                           "voice_search_overlay_test.js",
+                           "voice_search_overlay_test.ts",
                          ] + modules_test_files + realbox_test_files
 
 generate_grd("build_grdp") {
@@ -50,7 +50,10 @@ ts_library("build_ts") {
   ]
   in_files = non_preprocessed_files
 
-  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
 
   deps = [ "//chrome/browser/resources/new_tab_page:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]

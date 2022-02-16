@@ -20,3 +20,4 @@ export {CustomizeDialogElement} from './customize_dialog.js';
 export {CustomizeModulesElement} from './customize_modules.js';
 export {CustomizeShortcutsElement} from './customize_shortcuts.js';
 export {MiddleSlotPromoElement} from './middle_slot_promo.js';
+export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

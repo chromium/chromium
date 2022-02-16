@@ -173,14 +173,16 @@ declare global {
   }
 }
 
-interface VoiceSearchOverlayElement {
+export interface VoiceSearchOverlayElement {
   $: {
     dialog: HTMLDialogElement,
+    micContainer: HTMLElement,
+    micVolume: HTMLElement,
   };
 }
 
 // Overlay that lats the user perform voice searches.
-class VoiceSearchOverlayElement extends PolymerElement {
+export class VoiceSearchOverlayElement extends PolymerElement {
   static get is() {
     return 'ntp-voice-search-overlay';
   }
@@ -543,6 +545,12 @@ class VoiceSearchOverlayElement extends PolymerElement {
       default:
         return '';
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-voice-search-overlay': VoiceSearchOverlayElement;
   }
 }
 

@@ -24,7 +24,7 @@ import {WindowProxy} from './window_proxy.js';
 const SHARE_BUTTON_SIZE_PX: number = 26;
 
 // Shows the Google logo or a doodle if available.
-class LogoElement extends PolymerElement {
+export class LogoElement extends PolymerElement {
   static get is() {
     return 'ntp-logo';
   }
@@ -403,6 +403,12 @@ class LogoElement extends PolymerElement {
             (this.isCtaImageShown_() || this.doodle_.image.onClickUrl)) ?
         0 :
         -1;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-logo': LogoElement;
   }
 }
 
