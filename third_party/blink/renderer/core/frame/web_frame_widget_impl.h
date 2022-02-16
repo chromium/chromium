@@ -194,9 +194,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   // is fired with the submission (aka swap) timestamp when the frame is
   // submitted to Viz; `presentation_callback` is fired with the presentation
   // timestamp after the frame is presented to the user.
-  void NotifySwapAndPresentationTimeForTesting(
-      base::OnceCallback<void(base::TimeTicks)> swap_callback,
-      base::OnceCallback<void(base::TimeTicks)> presentation_callback);
+  void NotifySwapAndPresentationTimeForTesting(PromiseCallbacks callbacks);
 
   // Process the input event, invoking the callback when complete. This
   // method will call the callback synchronously.

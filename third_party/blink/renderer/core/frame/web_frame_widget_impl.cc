@@ -2985,11 +2985,8 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
 };
 
 void WebFrameWidgetImpl::NotifySwapAndPresentationTimeForTesting(
-    base::OnceCallback<void(base::TimeTicks)> swap_callback,
-    base::OnceCallback<void(base::TimeTicks)> presentation_callback) {
-  NotifySwapAndPresentationTime(
-      {.swap_time_callback = std::move(swap_callback),
-       .presentation_time_callback = std::move(presentation_callback)});
+    PromiseCallbacks callbacks) {
+  NotifySwapAndPresentationTime(std::move(callbacks));
 }
 
 void WebFrameWidgetImpl::NotifyPresentationTimeInBlink(
