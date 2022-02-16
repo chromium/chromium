@@ -13,7 +13,7 @@ without error.
 """
 
 # Don't make a habit of this - it isn't public API
-load("@stdlib//internal/luci/proto.star", "scheduler_pb")
+load("@stdlib//internal/luci/proto.star", "realms_pb", "scheduler_pb")
 load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
@@ -38,6 +38,7 @@ _TESTER_NOOP_JOBS = [scheduler_pb.Job(
     id = builder,
     schedule = "triggered",
     acl_sets = ["ci"],
+    realm = "ci",
     acls = [scheduler_pb.Acl(
         role = scheduler_pb.Acl.TRIGGERER,
         granted_to = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
@@ -51,5 +52,22 @@ def _add_noop_jobs(ctx):
     cfg = ctx.output["luci/luci-scheduler.cfg"]
     for j in _TESTER_NOOP_JOBS:
         cfg.job.append(j)
+    for realm in ctx.output["luci/realms.cfg"].realms:
+        if realm.name == "ci":
+            realm.bindings.append(realms_pb.Binding(
+                role = "role/scheduler.triggerer",
+                principals = [
+                    "user:chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+                ],
+                conditions = [
+                    realms_pb.Condition(
+                        restrict = realms_pb.Condition.AttributeRestriction(
+                            attribute = "scheduler.job.name",
+                            values = sorted(set([j.id for j in _TESTER_NOOP_JOBS])),
+                        ),
+                    ),
+                ],
+            ))
+            break
 
 lucicfg.generator(_add_noop_jobs)
