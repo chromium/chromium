@@ -7,10 +7,17 @@ import {BrowserProxy} from 'chrome://resources/cr_components/app_management/brow
 import {OptionalBool, Permission, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/types.mojom-webui.js';
 
 export class FakePageHandler implements PageHandlerInterface {
-  private app: App|null = null;
+  private app_: App;
+  private page_: PageRemote;
+
+  constructor(page: PageRemote, app: App) {
+    this.page_ = page;
+    this.app_ = app;
+  }
 
   setApp(app: App) {
-    this.app = app;
+    this.app_ = app;
+    this.page_.onAppChanged(this.app_);
   }
 
   getApps() {
@@ -18,7 +25,7 @@ export class FakePageHandler implements PageHandlerInterface {
   }
 
   getApp(_appId: string) {
-    return Promise.resolve({app: this.app});
+    return Promise.resolve({app: this.app_});
   }
 
   getExtensionAppPermissionMessages(_appId: string) {
@@ -27,7 +34,10 @@ export class FakePageHandler implements PageHandlerInterface {
 
   setPinned(_appId: string, _pinned: OptionalBool) {}
 
-  setPermission(_appId: string, _permission: Permission) {}
+  setPermission(_appId: string, permission: Permission) {
+    this.app_.permissions[permission.permissionType] = permission;
+    this.page_.onAppChanged(this.app_);
+  }
 
   setResizeLocked(_appId: string, _locked: boolean) {}
 
@@ -41,9 +51,15 @@ export class FakePageHandler implements PageHandlerInterface {
     return Promise.resolve({appIds: []});
   }
 
-  setWindowMode(_appId: string, _windowMode: WindowMode) {}
+  setWindowMode(_appId: string, windowMode: WindowMode) {
+    this.app_.windowMode = windowMode;
+    this.page_.onAppChanged(this.app_);
+  }
 
-  setRunOnOsLoginMode(_appId: string, _loginMode: RunOnOsLoginMode) {}
+  setRunOnOsLoginMode(_appId: string, loginMode: RunOnOsLoginMode) {
+    this.app_.runOnOsLogin!.loginMode = loginMode;
+    this.page_.onAppChanged(this.app_);
+  }
 }
 
 export class TestAppManagementBrowserProxy implements BrowserProxy {
@@ -52,13 +68,13 @@ export class TestAppManagementBrowserProxy implements BrowserProxy {
   handler: PageHandlerInterface;
   fakeHandler: FakePageHandler;
 
-  constructor() {
+  constructor(app: App) {
     this.callbackRouter = new PageCallbackRouter();
 
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
 
-    this.fakeHandler = new FakePageHandler();
+    this.fakeHandler = new FakePageHandler(this.callbackRouterRemote, app);
     this.handler = this.fakeHandler;
   }
 }

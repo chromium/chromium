@@ -43,6 +43,13 @@ export class AppManagementMorePermissionsItemElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-more-permissions-item':
+        AppManagementMorePermissionsItemElement;
+  }
+}
+
 customElements.define(
     AppManagementMorePermissionsItemElement.is,
     AppManagementMorePermissionsItemElement);

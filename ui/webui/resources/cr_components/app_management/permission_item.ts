@@ -16,7 +16,7 @@ import {AppManagementToggleRowElement} from './toggle_row.js';
 import {Permission} from './types.mojom-webui.js';
 import {getPermission, getPermissionValueBool, recordAppManagementUserAction} from './util.js';
 
-export class AppManamentPermissionItemElement extends PolymerElement {
+export class AppManagementPermissionItemElement extends PolymerElement {
   static get is() {
     return 'app-management-permission-item';
   }
@@ -255,5 +255,11 @@ export class AppManamentPermissionItemElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-permission-item': AppManagementPermissionItemElement;
+  }
+}
+
 customElements.define(
-    AppManamentPermissionItemElement.is, AppManamentPermissionItemElement);
+    AppManagementPermissionItemElement.is, AppManagementPermissionItemElement);

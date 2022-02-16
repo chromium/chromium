@@ -108,5 +108,11 @@ export class AppManagementWindowModeElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-window-mode': AppManagementWindowModeElement;
+  }
+}
+
 customElements.define(
     AppManagementWindowModeElement.is, AppManagementWindowModeElement);

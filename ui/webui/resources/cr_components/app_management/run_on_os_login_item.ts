@@ -141,6 +141,12 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-run-on-os-login-item': AppManagementRunOnOsLoginItemElement;
+  }
+}
+
 customElements.define(
     AppManagementRunOnOsLoginItemElement.is,
     AppManagementRunOnOsLoginItemElement);
