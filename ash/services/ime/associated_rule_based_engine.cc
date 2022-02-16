@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/services/ime/rule_based_engine.h"
+#include "ash/services/ime/associated_rule_based_engine.h"
 
 #include "base/i18n/icu_string_conversions.h"
 #include "base/notreached.h"
@@ -45,7 +45,7 @@ uint8_t GenerateModifierValue(const mojom::ModifierStatePtr& modifier_state,
 
 mojom::KeyEventResult HandleEngineResult(
     const rulebased::ProcessKeyResult& result,
-    mojo::Remote<mojom::InputMethodHost>& host) {
+    mojo::AssociatedRemote<mojom::InputMethodHost>& host) {
   if (!result.commit_text.empty()) {
     host->CommitText(ConvertToUtf16AndNormalize(result.commit_text),
                      mojom::CommitTextCursorBehavior::kMoveCursorAfterText);
@@ -90,38 +90,40 @@ bool IsImeSupportedByRulebased(const std::string& ime_spec) {
 
 }  // namespace
 
-std::unique_ptr<RuleBasedEngine> RuleBasedEngine::Create(
+std::unique_ptr<AssociatedRuleBasedEngine> AssociatedRuleBasedEngine::Create(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputMethod> receiver,
-    mojo::PendingRemote<mojom::InputMethodHost> host) {
+    mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+    mojo::PendingAssociatedRemote<mojom::InputMethodHost> host) {
   // RuleBasedEngine constructor is private, so have to use WrapUnique here.
   return IsImeSupportedByRulebased(ime_spec)
-             ? base::WrapUnique(new RuleBasedEngine(
+             ? base::WrapUnique(new AssociatedRuleBasedEngine(
                    ime_spec, std::move(receiver), std::move(host)))
              : nullptr;
 }
 
-RuleBasedEngine::~RuleBasedEngine() = default;
+AssociatedRuleBasedEngine::~AssociatedRuleBasedEngine() = default;
 
-void RuleBasedEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info,
-                              mojom::InputMethodSettingsPtr settings,
-                              OnFocusCallback callback) {
+void AssociatedRuleBasedEngine::OnFocus(
+    mojom::InputFieldInfoPtr input_field_info,
+    mojom::InputMethodSettingsPtr settings,
+    OnFocusCallback callback) {
   std::move(callback).Run(false);
 }
 
-bool RuleBasedEngine::IsConnected() {
+bool AssociatedRuleBasedEngine::IsConnected() {
   // `receiver_` will reset upon disconnection, so bound state is equivalent to
   // connected state.
   return receiver_.is_bound();
 }
 
-void RuleBasedEngine::OnCompositionCanceledBySystem() {
+void AssociatedRuleBasedEngine::OnCompositionCanceledBySystem() {
   engine_.Reset();
   is_alt_right_key_down_ = false;
 }
 
-void RuleBasedEngine::ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
-                                      ProcessKeyEventCallback callback) {
+void AssociatedRuleBasedEngine::ProcessKeyEvent(
+    mojom::PhysicalKeyEventPtr event,
+    ProcessKeyEventCallback callback) {
   // According to the W3C spec, |altKey| is false if the AltGr key
   // is pressed [1]. However, all rule-based input methods on Chrome OS use
   // the US QWERTY layout as a base layout, with AltGr implemented at this
@@ -135,7 +137,8 @@ void RuleBasedEngine::ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
     is_alt_right_key_down_ = event->type == mojom::KeyEventType::kKeyDown;
   }
 
-  const bool is_alt_down = event->modifier_state->alt && !is_alt_right_key_down_;
+  const bool is_alt_down =
+      event->modifier_state->alt && !is_alt_right_key_down_;
 
   // - Shift/AltRight/Caps/Ctrl are modifier keys for the characters which the
   // Mojo service may accept, but don't send the keys themselves to Mojo.
@@ -155,22 +158,23 @@ void RuleBasedEngine::ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
       host_));
 }
 
-void RuleBasedEngine::OnCandidateSelected(uint32_t selected_candidate_index) {
+void AssociatedRuleBasedEngine::OnCandidateSelected(
+    uint32_t selected_candidate_index) {
   // Rule-based engines don't use candidates.
   NOTREACHED();
 }
 
-RuleBasedEngine::RuleBasedEngine(
+AssociatedRuleBasedEngine::AssociatedRuleBasedEngine(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputMethod> receiver,
-    mojo::PendingRemote<mojom::InputMethodHost> host)
+    mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+    mojo::PendingAssociatedRemote<mojom::InputMethodHost> host)
     : receiver_(this, std::move(receiver)), host_(std::move(host)) {
   DCHECK(IsImeSupportedByRulebased(ime_spec));
 
   engine_.Activate(GetIdFromImeSpec(ime_spec));
 
   receiver_.set_disconnect_handler(
-      base::BindOnce(&mojo::Receiver<mojom::InputMethod>::reset,
+      base::BindOnce(&mojo::AssociatedReceiver<mojom::InputMethod>::reset,
                      base::Unretained(&receiver_)));
 }
 

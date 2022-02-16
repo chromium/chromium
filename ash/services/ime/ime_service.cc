@@ -49,6 +49,10 @@ std::string ResolveDownloadPath(const base::FilePath& file) {
   return target.MaybeAsASCII();
 }
 
+bool IsRuleBasedInputMethod(const std::string& engine_id) {
+  return base::StartsWith(engine_id, "m17n:", base::CompareCase::SENSITIVE);
+}
+
 }  // namespace
 
 ImeService::ImeService(mojo::PendingReceiver<mojom::ImeService> receiver,
@@ -103,10 +107,21 @@ void ImeService::ConnectToInputMethod(
     mojo::PendingReceiver<mojom::InputMethod> input_method,
     mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
     ConnectToInputMethodCallback callback) {
-  // DEPRECATED: This method is now deprecated. If you would like to connect to
-  //   an input method in the ime service, please do so via the
-  //   InitializeConnectionFactory method below.
-  std::move(callback).Run(/*bound=*/false);
+  decoder_engine_.reset();
+
+  if (IsRuleBasedInputMethod(ime_spec)) {
+    input_engine_ = RuleBasedEngine::Create(ime_spec, std::move(input_method),
+                                            std::move(input_method_host));
+    std::move(callback).Run(/*bound=*/input_engine_ != nullptr);
+    return;
+  }
+
+  auto system_engine = std::make_unique<SystemEngine>(
+      this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
+  bool bound = system_engine->BindRequest(ime_spec, std::move(input_method),
+                                          std::move(input_method_host));
+  input_engine_ = std::move(system_engine);
+  std::move(callback).Run(bound);
 }
 
 void ImeService::InitializeConnectionFactory(

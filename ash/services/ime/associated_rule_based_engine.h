@@ -1,19 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SERVICES_IME_RULE_BASED_ENGINE_H_
-#define ASH_SERVICES_IME_RULE_BASED_ENGINE_H_
+#ifndef ASH_SERVICES_IME_ASSOCIATED_RULE_BASED_ENGINE_H_
+#define ASH_SERVICES_IME_ASSOCIATED_RULE_BASED_ENGINE_H_
 
 #include "ash/services/ime/input_engine.h"
 #include "ash/services/ime/public/cpp/rulebased/engine.h"
 #include "ash/services/ime/public/cpp/suggestions.h"
 #include "ash/services/ime/public/mojom/input_method.mojom.h"
 #include "ash/services/ime/public/mojom/input_method_host.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace chromeos {
 namespace ime {
@@ -21,17 +21,19 @@ namespace ime {
 // Handles rule-based input methods such as Arabic and Vietnamese.
 // Rule-based input methods are based off deterministic rules and do not
 // provide features such as suggestions.
-class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
+class AssociatedRuleBasedEngine : public InputEngine,
+                                  public mojom::InputMethod {
  public:
   // Returns nullptr if |ime_spec| is not valid for this RuleBasedEngine.
-  static std::unique_ptr<RuleBasedEngine> Create(
+  static std::unique_ptr<AssociatedRuleBasedEngine> Create(
       const std::string& ime_spec,
-      mojo::PendingReceiver<mojom::InputMethod> receiver,
-      mojo::PendingRemote<mojom::InputMethodHost> host);
+      mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+      mojo::PendingAssociatedRemote<mojom::InputMethodHost> host);
 
-  RuleBasedEngine(const RuleBasedEngine& other) = delete;
-  RuleBasedEngine& operator=(const RuleBasedEngine& other) = delete;
-  ~RuleBasedEngine() override;
+  AssociatedRuleBasedEngine(const AssociatedRuleBasedEngine& other) = delete;
+  AssociatedRuleBasedEngine& operator=(const AssociatedRuleBasedEngine& other) =
+      delete;
+  ~AssociatedRuleBasedEngine() override;
 
   // InputEngine:
   bool IsConnected() override;
@@ -57,12 +59,13 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 
  private:
-  RuleBasedEngine(const std::string& ime_spec,
-                  mojo::PendingReceiver<mojom::InputMethod> receiver,
-                  mojo::PendingRemote<mojom::InputMethodHost> host);
+  AssociatedRuleBasedEngine(
+      const std::string& ime_spec,
+      mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+      mojo::PendingAssociatedRemote<mojom::InputMethodHost> host);
 
-  mojo::Receiver<mojom::InputMethod> receiver_;
-  mojo::Remote<mojom::InputMethodHost> host_;
+  mojo::AssociatedReceiver<mojom::InputMethod> receiver_;
+  mojo::AssociatedRemote<mojom::InputMethodHost> host_;
 
   rulebased::Engine engine_;
 
@@ -73,4 +76,4 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
 }  // namespace ime
 }  // namespace chromeos
 
-#endif  // ASH_SERVICES_IME_RULE_BASED_ENGINE_H_
+#endif  // ASH_SERVICES_IME_ASSOCIATED_RULE_BASED_ENGINE_H_

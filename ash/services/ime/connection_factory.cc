@@ -21,9 +21,9 @@ void ConnectionFactory::ConnectToInputMethod(
     mojo::PendingAssociatedRemote<mojom::InputMethodHost>
         pending_input_method_host,
     ConnectToInputMethodCallback callback) {
-  rule_based_engine_ =
-      RuleBasedEngine::Create(ime_spec, std::move(pending_input_method),
-                              std::move(pending_input_method_host));
+  rule_based_engine_ = AssociatedRuleBasedEngine::Create(
+      ime_spec, std::move(pending_input_method),
+      std::move(pending_input_method_host));
   std::move(callback).Run(/*bound=*/true);
 }
 
