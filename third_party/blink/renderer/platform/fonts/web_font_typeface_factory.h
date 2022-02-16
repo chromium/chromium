@@ -31,6 +31,7 @@ class WebFontTypefaceFactory {
   static sk_sp<SkFontMgr> FontManagerForSbix();
   static sk_sp<SkFontMgr> FreeTypeFontManager();
   static sk_sp<SkFontMgr> FontManagerForColrCpal();
+  static sk_sp<SkFontMgr> FontManagerForColrV0Variations();
 
  private:
   // These values are written to logs.  New enum values can be added, but

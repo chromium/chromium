@@ -87,8 +87,21 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
     return typeface.get();
   }
 
-  // Variable COLR/CPAL fonts must go through the Variations
-  // FontManager, which is FreeType on Windows.
+  // We need to have a separate method for retrieving the COLRv0 compatible font
+  // manager with platform specific decisions. This is because: If we would
+  // always use the FontManagerForVariations(), then on Mac COLRv0 fonts would
+  // not have variation parameters applied. If we would always prefer the COLRv0
+  // font manager, then this may lack variations support on Windows if we are on
+  // a Windows versions that did not support variations yet. Windows supported
+  // COLRv0 before variations.
+  if (format_check.IsVariableFont() && format_check.IsColrCpalColorFontV0()) {
+    typeface =
+        FontManagerForColrV0Variations()->makeFromStream(std::move(stream));
+    if (typeface)
+      ReportInstantiationResult(InstantiationResult::kSuccessColrCpalFont);
+    return typeface.get();
+  }
+
   if (format_check.IsVariableFont()) {
     typeface = FontManagerForVariations()->makeFromStream(std::move(stream));
     if (typeface) {
@@ -160,6 +173,15 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForColrCpal() {
 #else
   return DefaultFontManager();
 #endif
+}
+
+sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForColrV0Variations() {
+#if BUILDFLAG(IS_WIN)
+  if (DWriteVersionSupportsVariations() &&
+      blink::DWriteRasterizerSupport::IsDWriteFactory2Available())
+    return DefaultFontManager();
+#endif
+  return FreeTypeFontManager();
 }
 
 void WebFontTypefaceFactory::ReportInstantiationResult(
