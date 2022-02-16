@@ -92,7 +92,9 @@ CalendarDateCellView::CalendarDateCellView(
 
   DisableFocus();
   if (!grayed_out_) {
-    event_number_ = GetEventNumber();
+    if (calendar_utils::IsActiveUser()) {
+      event_number_ = GetEventNumber();
+    }
     SetTooltipAndAccessibleName();
   }
   scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
@@ -145,7 +147,7 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
         base::TimeFormatWithPattern(date_, "d")));
   }
 
-  if (is_selected_) {
+  if (is_selected_ && calendar_utils::IsActiveUser()) {
     // Change text color to the background color.
     const SkColor text_color = color_provider->GetBaseLayerColor(
         AshColorProvider::BaseLayerType::kTransparent90);
@@ -210,12 +212,16 @@ void CalendarDateCellView::DisableFocus() {
 }
 
 void CalendarDateCellView::SetTooltipAndAccessibleName() {
-  const int tooltip_id = event_number_ == 1
-                             ? IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP
-                             : IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP;
-  tool_tip_ = l10n_util::GetStringFUTF16(
-      tooltip_id, base::TimeFormatWithPattern(date_, "MMMMdyyyy"),
-      base::UTF8ToUTF16(base::NumberToString(event_number_)));
+  if (!calendar_utils::IsActiveUser()) {
+    tool_tip_ = base::TimeFormatWithPattern(date_, "MMMMdyyyy");
+  } else {
+    const int tooltip_id =
+        event_number_ == 1 ? IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP
+                           : IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP;
+    tool_tip_ = l10n_util::GetStringFUTF16(
+        tooltip_id, base::TimeFormatWithPattern(date_, "MMMMdyyyy"),
+        base::UTF8ToUTF16(base::NumberToString(event_number_)));
+  }
   SetTooltipText(tool_tip_);
   SetAccessibleName(tool_tip_);
 }
@@ -225,6 +231,11 @@ void CalendarDateCellView::MaybeSchedulePaint() {
   // for them.
   if (grayed_out_)
     return;
+
+  if (!calendar_utils::IsActiveUser()) {
+    SetTooltipAndAccessibleName();
+    return;
+  }
 
   // Early return if the event number doesn't change.
   const int event_number = GetEventNumber();
@@ -277,7 +288,7 @@ void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
-  if (grayed_out_)
+  if (grayed_out_ || !calendar_utils::IsActiveUser())
     return;
 
   calendar_metrics::RecordCalendarDateCellActivated(event);

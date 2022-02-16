@@ -63,6 +63,8 @@ class CalendarMonthViewTest : public AshTestBase {
   }
 
   void CreateMonthView(base::Time date) {
+    AccountId user_account = AccountId::FromUserEmail("user@test");
+    GetSessionControllerClient()->SwitchActiveUser(user_account);
     calendar_month_view_.reset();
     controller_->UpdateMonth(date);
     calendar_month_view_ =
@@ -255,6 +257,55 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
   EXPECT_EQ(u"August 18, 2021, 4 events",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetTooltipText());
+}
+
+TEST_F(CalendarMonthViewTest, InactiveUserSession) {
+  // Create a monthview based on Aug,1st 2021. Today is set to 18th.
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
+
+  // Set "Now" to a date that is in this month.
+  base::Time today;
+  ASSERT_TRUE(base::Time::FromString("18 Aug 2021 10:00 GMT", &today));
+  SetFakeNow(today);
+  base::subtle::ScopedTimeClockOverrides in_month_time_override(
+      &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateMonthView(date);
+  TriggerPaint();
+  UploadEvents();
+  month_view()->SchedulePaintChildren();
+  TriggerPaint();
+  EXPECT_EQ(u"18",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetText());
+  EXPECT_EQ(u"August 18, 2021, 4 events",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetTooltipText());
+
+  // Changes user session to inactive. Should not show event number.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+  month_view()->SchedulePaintChildren();
+  TriggerPaint();
+  EXPECT_EQ(u"18",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetText());
+  EXPECT_EQ(u"August 18, 2021",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetTooltipText());
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  month_view()->SchedulePaintChildren();
+  TriggerPaint();
+  EXPECT_EQ(u"18",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetText());
+  EXPECT_EQ(u"August 18, 2021",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 }

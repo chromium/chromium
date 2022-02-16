@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/close_button.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_month_view.h"
@@ -26,6 +27,12 @@
 #include "ui/views/controls/label.h"
 
 namespace ash {
+
+namespace {
+
+constexpr char kTestUser[] = "user@test";
+
+}  // namespace
 
 class CalendarViewTest : public AshTestBase {
  public:
@@ -66,6 +73,9 @@ class CalendarViewTest : public AshTestBase {
   }
 
   void CreateCalendarView() {
+    AccountId user_account = AccountId::FromUserEmail(kTestUser);
+    GetSessionControllerClient()->SwitchActiveUser(user_account);
+
     auto calendar_view =
         std::make_unique<CalendarView>(delegate_.get(), tray_controller_.get());
 
@@ -140,6 +150,7 @@ class CalendarViewTest : public AshTestBase {
   views::ImageButton* close_button() {
     return calendar_view_->event_list_view_->close_button_;
   }
+  views::View* event_list_view() { return calendar_view_->event_list_view_; }
 
   void ScrollUpOneMonth() {
     calendar_view_->ScrollOneMonthAndAutoScroll(/*scroll_up=*/true);
@@ -682,6 +693,46 @@ TEST_F(CalendarViewTest, RecordDwellTimeMetric) {
   calendar_view()->calendar_view_controller()->UpdateMonth(date);
   histogram_tester.ExpectTotalCount("Ash.Calendar.MonthDwellTime",
                                     /*expected_count=*/1);
+}
+
+TEST_F(CalendarViewTest, OnSessionBlocked) {
+  base::Time date;
+  // Create a monthview based on Jun,7th 2021.
+  ASSERT_TRUE(base::Time::FromString("7 Jun 2021 10:00 GMT", &date));
+
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+
+  // The third child cell in the month, which is the non-grayed out 1st date
+  // cell.
+  EXPECT_EQ(u"1",
+            static_cast<views::LabelButton*>(current_month()->children()[2])
+                ->GetText());
+
+  GestureTapOn(
+      static_cast<views::LabelButton*>(current_month()->children()[2]));
+  bool is_showing_event_list_view = event_list_view();
+  EXPECT_FALSE(is_showing_event_list_view);
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  EXPECT_EQ(u"1",
+            static_cast<views::LabelButton*>(current_month()->children()[2])
+                ->GetText());
+
+  GestureTapOn(
+      static_cast<views::LabelButton*>(current_month()->children()[2]));
+
+  is_showing_event_list_view = event_list_view();
+  EXPECT_TRUE(is_showing_event_list_view);
+  GestureTapOn(close_button());
 }
 
 // Tests multiple scenarios that should record the metric when scrolling.

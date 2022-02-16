@@ -82,6 +82,10 @@ bool CalendarModel::IsMonthAlreadyFetched(base::Time start_of_month) const {
 }
 
 void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
+  // Early returns if it's not a valid user/user-session.
+  if (!calendar_utils::IsActiveUser())
+    return;
+
   // Bail out early if we have no CalendarClient.  This will be the case in most
   // unit tests.
   CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();

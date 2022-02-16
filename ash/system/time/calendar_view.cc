@@ -709,6 +709,10 @@ void CalendarView::OnEventsFetched(
 }
 
 void CalendarView::OpenEventList() {
+  // Don't show the the `event_list_` view for unlogged in users.
+  if (!calendar_utils::IsActiveUser())
+    return;
+
   // If the event list is already open or the months are moving/animation,
   // do nothing.
   if (event_list_view_ || is_calendar_view_scrolling_)

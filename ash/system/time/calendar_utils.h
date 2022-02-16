@@ -90,6 +90,9 @@ base::Time GetStartOfPreviousMonthUTC(base::Time date);
 // |date|.
 base::Time GetStartOfNextMonthUTC(base::Time date);
 
+// Returns true if it's a regular user or the user session is not blocked.
+bool IsActiveUser();
+
 }  // namespace calendar_utils
 
 }  // namespace ash

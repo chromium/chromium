@@ -6,10 +6,13 @@
 
 #include <string>
 
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/layout/table_layout.h"
 
@@ -122,6 +125,13 @@ ASH_EXPORT base::Time GetStartOfPreviousMonthUTC(base::Time date) {
 ASH_EXPORT base::Time GetStartOfNextMonthUTC(base::Time date) {
   // Adds over 31 days to make sure it goes to the next month.
   return GetStartOfMonthUTC(GetStartOfMonthUTC(date) + base::Days(33));
+}
+
+bool IsActiveUser() {
+  absl::optional<user_manager::UserType> user_type =
+      Shell::Get()->session_controller()->GetUserType();
+  return (user_type && *user_type == user_manager::USER_TYPE_REGULAR) &&
+         !Shell::Get()->session_controller()->IsUserSessionBlocked();
 }
 
 }  // namespace calendar_utils
