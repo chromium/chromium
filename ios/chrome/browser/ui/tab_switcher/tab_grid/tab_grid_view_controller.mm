@@ -627,8 +627,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (IsTabsSearchEnabled() && previousMode == TabGridModeSearch) {
     self.remoteTabsViewController.searchTerms = nil;
     [self.regularTabsDelegate resetToAllItems];
-    // TODO(crbug.com/1287190): Reset incognitoTabs items as well, once the
-    // search is implemented on them.
+    [self.incognitoTabsDelegate resetToAllItems];
     [self hideScrim];
   }
 
@@ -1858,8 +1857,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
-      // TODO(crbug.com/1287190): Use the search text for the search and reload
-      // data.
+      [self.incognitoTabsDelegate searchItemsWithText:searchText];
       break;
     case TabGridPageRegularTabs:
       [self.regularTabsDelegate searchItemsWithText:searchText];
