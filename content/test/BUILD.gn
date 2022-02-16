@@ -1205,6 +1205,7 @@ test("content_browsertests") {
     "../browser/net/http_cookie_browsertest.cc",
     "../browser/net/network_field_trial_browsertest.cc",
     "../browser/net/sandboxed_http_cache_browsertest.cc",
+    "../browser/net/sandboxed_nqe_browsertest.cc",
     "../browser/net/split_cache_browsertest.cc",
     "../browser/net/trust_token_browsertest.cc",
     "../browser/net/trust_token_browsertest.h",
