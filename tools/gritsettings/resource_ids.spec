@@ -593,7 +593,7 @@
   # thus not rushing to update it for now.
   "ash/components/arc/input_overlay/resources/input_overlay_resources.grd": {
     # Big alignment at start of section.
-    "META": {"align": 1000},
+    "META": {"join": 2, "align": 1000},
     "includes": [3500],
   },
   # Chromium strings and Google Chrome strings must start at the same id.
