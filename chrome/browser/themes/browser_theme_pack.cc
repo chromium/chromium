@@ -1072,6 +1072,8 @@ void BrowserThemePack::AddColorMixers(
   } kThemePropertiesMap[] = {
       {TP::COLOR_BOOKMARK_TEXT, kColorBookmarkBarForeground},
       {TP::COLOR_DOWNLOAD_SHELF, kColorDownloadShelf},
+      {TP::COLOR_FRAME_ACTIVE, ui::kColorFrameActive},
+      {TP::COLOR_FRAME_INACTIVE, ui::kColorFrameInactive},
       {TP::COLOR_OMNIBOX_TEXT, kColorOmniboxText},
       {TP::COLOR_OMNIBOX_BACKGROUND, kColorOmniboxBackground},
       {TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
