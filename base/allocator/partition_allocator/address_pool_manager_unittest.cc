@@ -6,7 +6,6 @@
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/address_space_stats.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/bits.h"
@@ -14,28 +13,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal {
-
-class AddressSpaceStatsDumperForTesting final : public AddressSpaceStatsDumper {
- public:
-  AddressSpaceStatsDumperForTesting() = default;
-  ~AddressSpaceStatsDumperForTesting() = default;
-
-  void DumpStats(
-      const partition_alloc::AddressSpaceStats* address_space_stats) override {
-    regular_pool_usage_ = address_space_stats->regular_pool_stats.usage;
-#if defined(PA_HAS_64_BITS_POINTERS)
-    regular_pool_largest_reservation_ =
-        address_space_stats->regular_pool_stats.largest_available_reservation;
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
-#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
-    blocklist_size_ = address_space_stats->blocklist_size;
-#endif  // !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
-  }
-
-  size_t regular_pool_usage_ = 0;
-  size_t regular_pool_largest_reservation_ = 0;
-  size_t blocklist_size_ = 0;
-};
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 
@@ -241,32 +218,6 @@ TEST_F(PartitionAllocAddressPoolManagerTest, DecommittedDataIsErased) {
                                                 kSuperPageSize);
 }
 
-TEST_F(PartitionAllocAddressPoolManagerTest, RegularPoolUsageChanges) {
-  AddressSpaceStatsDumperForTesting dumper{};
-
-  GetAddressPoolManager()->DumpStats(&dumper);
-  ASSERT_EQ(dumper.regular_pool_usage_, 0ull);
-  ASSERT_EQ(dumper.regular_pool_largest_reservation_, kPageCnt);
-
-  // Bisect the pool by reserving a super page in the middle.
-  const uintptr_t midpoint_address =
-      base_address_ + (kPageCnt / 2) * kSuperPageSize;
-  ASSERT_EQ(
-      GetAddressPoolManager()->Reserve(pool_, midpoint_address, kSuperPageSize),
-      midpoint_address);
-
-  GetAddressPoolManager()->DumpStats(&dumper);
-  ASSERT_EQ(dumper.regular_pool_usage_, 1ull);
-  ASSERT_EQ(dumper.regular_pool_largest_reservation_, kPageCnt / 2);
-
-  GetAddressPoolManager()->UnreserveAndDecommit(pool_, midpoint_address,
-                                                kSuperPageSize);
-
-  GetAddressPoolManager()->DumpStats(&dumper);
-  ASSERT_EQ(dumper.regular_pool_usage_, 0ull);
-  ASSERT_EQ(dumper.regular_pool_largest_reservation_, kPageCnt);
-}
-
 #else   // defined(PA_HAS_64_BITS_POINTERS)
 
 TEST(PartitionAllocAddressPoolManagerTest, IsManagedByRegularPool) {
@@ -365,45 +316,7 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
     EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(addrs[i]));
   }
 }
-
-TEST(PartitionAllocAddressPoolManagerTest, BRPBlocklistSizeIncreases) {
-  constexpr uintptr_t address = 1 << kSuperPageShift;
-  AddressSpaceStatsDumperForTesting dumper{};
-  AddressPoolManager::GetInstance()->DumpStats(&dumper);
-  const size_t blocklist_size_before = dumper.blocklist_size_;
-
-  // Simulates case where `raw_ptr<T>` is created outside BRP pool.
-  // Once grown, the blocklist cannot be shrunk, so this taints the
-  // unit test state.
-  AddressPoolManagerBitmap::IncrementOutsideOfBRPPoolPtrRefCount(address);
-
-  AddressPoolManager::GetInstance()->DumpStats(&dumper);
-  EXPECT_GT(dumper.blocklist_size_, blocklist_size_before);
-}
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-
-TEST(PartitionAllocAddressPoolManagerTest, RegularPoolUsageChanges) {
-  AddressSpaceStatsDumperForTesting dumper{};
-  AddressPoolManager::GetInstance()->DumpStats(&dumper);
-  const size_t usage_before = dumper.regular_pool_usage_;
-
-  const uintptr_t address = AddressPoolManager::GetInstance()->Reserve(
-      GetRegularPool(), 0, kSuperPageSize);
-  ASSERT_TRUE(address);
-  AddressPoolManager::GetInstance()->MarkUsed(GetRegularPool(), address,
-                                              kSuperPageSize);
-
-  AddressPoolManager::GetInstance()->DumpStats(&dumper);
-  EXPECT_GT(dumper.regular_pool_usage_, usage_before);
-
-  AddressPoolManager::GetInstance()->MarkUnused(GetRegularPool(), address,
-                                                kSuperPageSize);
-  AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-      GetRegularPool(), address, kSuperPageSize);
-
-  AddressPoolManager::GetInstance()->DumpStats(&dumper);
-  EXPECT_EQ(dumper.regular_pool_usage_, usage_before);
-}
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 

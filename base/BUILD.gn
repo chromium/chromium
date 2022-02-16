@@ -1993,7 +1993,6 @@ mixed_component("base") {
         "allocator/partition_allocator/address_pool_manager_types.h",
         "allocator/partition_allocator/address_space_randomization.cc",
         "allocator/partition_allocator/address_space_randomization.h",
-        "allocator/partition_allocator/address_space_stats.h",
         "allocator/partition_allocator/allocation_guard.cc",
         "allocator/partition_allocator/allocation_guard.h",
         "allocator/partition_allocator/dangling_raw_ptr_checks.cc",

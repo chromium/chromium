@@ -61,10 +61,8 @@ bool AreAllowedSuperPagesForBRPPool(uintptr_t start, uintptr_t end) {
        super_page += kSuperPageSize) {
     // If any blocked super page is found inside the given memory region,
     // the memory region is blocked.
-    if (!AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page)) {
-      AddressPoolManagerBitmap::IncrementBlocklistHitCount();
+    if (!AddressPoolManagerBitmap::IsAllowedSuperPageForBRPPool(super_page))
       return false;
-    }
   }
   return true;
 }
