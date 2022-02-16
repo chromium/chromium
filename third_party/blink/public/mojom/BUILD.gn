@@ -808,6 +808,7 @@ mojom("android_mojo_bindings") {
     "//mojo/public/mojom/base",
     "//services/media_session/public/mojom",
     "//services/network/public/mojom",
+    "//services/network/public/mojom:mojom_schemeful_site",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]

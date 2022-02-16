@@ -13,6 +13,7 @@ void FakeBlobURLStore::Register(
     const KURL& url,
     // TODO(https://crbug.com/1224926): Remove this once experiment is over.
     const base::UnguessableToken& unsafe_agent_cluster_id,
+    const absl::optional<BlinkSchemefulSite>& unsafe_top_level_site,
     RegisterCallback callback) {
   registrations.insert(url, mojo::Remote<mojom::blink::Blob>(std::move(blob)));
   agent_registrations.insert(url, unsafe_agent_cluster_id);

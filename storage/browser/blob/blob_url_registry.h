@@ -12,6 +12,7 @@
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/schemeful_site.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
@@ -34,8 +35,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   bool AddUrlMapping(
       const GURL& url,
       mojo::PendingRemote<blink::mojom::Blob> blob,
-      // TODO(https://crbug.com/1224926): Remove this once experiment is over.
-      const base::UnguessableToken& unsafe_agent_cluster_id);
+      // TODO(https://crbug.com/1224926): Remove these once experiment is over.
+      const base::UnguessableToken& unsafe_agent_cluster_id,
+      const absl::optional<net::SchemefulSite>& unsafe_top_level_site);
 
   // Removes the given URL mapping. Returns false if the url wasn't mapped.
   bool RemoveUrlMapping(const GURL& url);
@@ -45,6 +47,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
 
   // TODO(https://crbug.com/1224926): Remove this once experiment is over.
   absl::optional<base::UnguessableToken> GetUnsafeAgentClusterID(
+      const GURL& blob_url) const;
+  absl::optional<net::SchemefulSite> GetUnsafeTopLevelSite(
       const GURL& blob_url) const;
 
   // Returns the blob from the given url. Returns a null remote if the mapping
@@ -77,6 +81,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   std::map<GURL, mojo::PendingRemote<blink::mojom::Blob>> url_to_blob_;
   // TODO(https://crbug.com/1224926): Remove this once experiment is over.
   std::map<GURL, base::UnguessableToken> url_to_unsafe_agent_cluster_id_;
+  std::map<GURL, net::SchemefulSite> url_to_unsafe_top_level_site_;
   std::map<base::UnguessableToken,
            std::pair<GURL, mojo::PendingRemote<blink::mojom::Blob>>>
       token_to_url_and_blob_;

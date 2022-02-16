@@ -3487,6 +3487,8 @@ enum WebFeature {
   kFederatedCredentialManagement = 4166,
   kFetchEventSourceLastEventIdCorsUnSafe = 4167,
   kWrongBaselineOfMultiLineButtonWithNonSpace = 4168,
+  kBlobStoreAccessAcrossTopLevelSite = 4169,
+  kBlobStoreAccessUnknownTopLevelSite = 4170,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

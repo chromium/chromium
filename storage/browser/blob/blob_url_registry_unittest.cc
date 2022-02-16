@@ -40,6 +40,10 @@ TEST(BlobUrlRegistry, URLRegistration) {
   const GURL kURL2 = GURL("blob://Blob2");
   base::UnguessableToken kTokenId1 = base::UnguessableToken::Create();
   base::UnguessableToken kTokenId2 = base::UnguessableToken::Create();
+  net::SchemefulSite kTopLevelSite1 =
+      net::SchemefulSite(GURL("https://example.com"));
+  net::SchemefulSite kTopLevelSite2 =
+      net::SchemefulSite(GURL("https://foobar.com"));
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
@@ -52,24 +56,32 @@ TEST(BlobUrlRegistry, URLRegistration) {
   EXPECT_FALSE(registry.RemoveUrlMapping(kURL1));
   EXPECT_EQ(0u, registry.url_count());
 
-  EXPECT_TRUE(registry.AddUrlMapping(kURL1, blob1.Clone(), kTokenId1));
-  EXPECT_FALSE(registry.AddUrlMapping(kURL1, blob2.Clone(), kTokenId1));
+  EXPECT_TRUE(
+      registry.AddUrlMapping(kURL1, blob1.Clone(), kTokenId1, kTopLevelSite1));
+  EXPECT_FALSE(
+      registry.AddUrlMapping(kURL1, blob2.Clone(), kTokenId1, kTopLevelSite1));
   EXPECT_EQ(kTokenId1, registry.GetUnsafeAgentClusterID(kURL1));
+  EXPECT_EQ(kTopLevelSite1, registry.GetUnsafeTopLevelSite(kURL1));
 
   EXPECT_TRUE(registry.IsUrlMapped(kURL1));
   EXPECT_EQ(kBlobId1, UuidFromBlob(registry.GetBlobFromUrl(kURL1)));
   EXPECT_EQ(1u, registry.url_count());
 
-  EXPECT_TRUE(registry.AddUrlMapping(kURL2, blob2.Clone(), kTokenId2));
+  EXPECT_TRUE(
+      registry.AddUrlMapping(kURL2, blob2.Clone(), kTokenId2, kTopLevelSite2));
   EXPECT_EQ(kTokenId2, registry.GetUnsafeAgentClusterID(kURL2));
+  EXPECT_EQ(kTopLevelSite2, registry.GetUnsafeTopLevelSite(kURL2));
   EXPECT_EQ(2u, registry.url_count());
   EXPECT_TRUE(registry.RemoveUrlMapping(kURL2));
   EXPECT_FALSE(registry.IsUrlMapped(kURL2));
   EXPECT_EQ(absl::nullopt, registry.GetUnsafeAgentClusterID(kURL2));
+  EXPECT_EQ(absl::nullopt, registry.GetUnsafeTopLevelSite(kURL2));
 
   // Both urls point to the same blob.
-  EXPECT_TRUE(registry.AddUrlMapping(kURL2, blob1.Clone(), kTokenId2));
+  EXPECT_TRUE(
+      registry.AddUrlMapping(kURL2, blob1.Clone(), kTokenId2, kTopLevelSite2));
   EXPECT_EQ(kTokenId2, registry.GetUnsafeAgentClusterID(kURL2));
+  EXPECT_EQ(kTopLevelSite2, registry.GetUnsafeTopLevelSite(kURL2));
   EXPECT_EQ(UuidFromBlob(registry.GetBlobFromUrl(kURL1)),
             UuidFromBlob(registry.GetBlobFromUrl(kURL2)));
 }
