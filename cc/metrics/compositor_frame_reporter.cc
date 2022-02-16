@@ -1386,6 +1386,9 @@ base::WeakPtr<CompositorFrameReporter> CompositorFrameReporter::GetWeakPtr() {
 
 FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   FrameFinalState final_state = FrameFinalState::kNoUpdateDesired;
+  auto smooth_thread = smooth_thread_;
+  auto scrolling_thread = scrolling_thread_;
+
   switch (frame_termination_status_) {
     case FrameTerminationStatus::kPresentedFrame:
       if (has_partial_update_) {
@@ -1421,6 +1424,27 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
       } else {
         final_state = FrameFinalState::kNoUpdateDesired;
       }
+
+      // If the compositor-thread is running an animation, and it ends with
+      // 'did not produce frame', then that implies that the compositor
+      // animation did not cause any visual changes. So for such cases, update
+      // the `smooth_thread` for the FrameInfo created to exclude the compositor
+      // thread. However, it is important to keep `final_state` unchanged,
+      // because the main-thread update (if any) did get dropped.
+      if (frame_skip_reason_.has_value() &&
+          frame_skip_reason() == FrameSkippedReason::kWaitingOnMain) {
+        if (smooth_thread == SmoothThread::kSmoothBoth) {
+          smooth_thread = SmoothThread::kSmoothMain;
+        } else if (smooth_thread == SmoothThread::kSmoothCompositor) {
+          smooth_thread = SmoothThread::kSmoothNone;
+        }
+
+        if (scrolling_thread ==
+            FrameInfo::SmoothEffectDrivingThread::kCompositor) {
+          scrolling_thread = FrameInfo::SmoothEffectDrivingThread::kUnknown;
+        }
+      }
+
       break;
     }
 
@@ -1430,8 +1454,8 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
 
   FrameInfo info;
   info.final_state = final_state;
-  info.smooth_thread = smooth_thread_;
-  info.scroll_thread = scrolling_thread_;
+  info.smooth_thread = smooth_thread;
+  info.scroll_thread = scrolling_thread;
   info.has_missing_content = has_missing_content_;
 
   if (frame_skip_reason_.has_value() &&
