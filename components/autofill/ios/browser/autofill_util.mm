@@ -240,10 +240,10 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
     auto value_it = value_list.begin();
     auto content_it = content_list.begin();
     while (value_it != value_list.end() && content_it != content_list.end()) {
-      std::u16string value;
-      std::u16string content;
-      if (value_it->GetAsString(&value) && content_it->GetAsString(&content)) {
-        field_data->options.push_back({.value = value, .content = content});
+      if (value_it->is_string() && content_it->is_string()) {
+        field_data->options.push_back(
+            {.value = base::UTF8ToUTF16(value_it->GetString()),
+             .content = base::UTF8ToUTF16(content_it->GetString())});
       }
       ++value_it;
       ++content_it;
@@ -309,11 +309,10 @@ bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids) {
     return false;
 
   for (const auto& unique_id : ids_value->GetListDeprecated()) {
-    std::string id_string;
-    if (!unique_id.GetAsString(&id_string))
+    if (!unique_id.is_string())
       return false;
     uint32_t id_num = 0;
-    StringToUint(id_string, &id_num);
+    StringToUint(unique_id.GetString(), &id_num);
     ids->push_back(FieldRendererId(id_num));
   }
   return true;
@@ -336,9 +335,7 @@ bool ExtractFillingResults(
     std::string id_string = result.first;
     uint32_t id_num = 0;
     StringToUint(id_string, &id_num);
-    std::u16string value;
-    result.second.GetAsString(&value);
-    (*filling_results)[id_num] = value;
+    (*filling_results)[id_num] = base::UTF8ToUTF16(result.second.GetString());
   }
   return true;
 }
