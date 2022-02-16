@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -35,7 +36,7 @@ namespace {
 
 struct FinalizeInstallResult {
   AppId installed_app_id;
-  InstallResultCode code;
+  webapps::InstallResultCode code;
   OsHooksErrors os_hooks_errors;
 };
 
@@ -121,7 +122,7 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
     finalizer().FinalizeInstall(
         info, options,
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                       InstallResultCode code,
+                                       webapps::InstallResultCode code,
                                        OsHooksErrors os_hooks_errors) {
           result.installed_app_id = installed_app_id;
           result.code = code;
@@ -172,7 +173,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
             GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
   EXPECT_EQ(0u, os_integration_manager().num_register_run_on_os_login_calls());
@@ -199,9 +200,9 @@ TEST_F(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
     finalizer().FinalizeInstall(
         *info1, options,
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                       InstallResultCode code,
+                                       webapps::InstallResultCode code,
                                        OsHooksErrors os_hooks_errors) {
-          EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
           EXPECT_EQ(
               installed_app_id,
               GenerateAppId(/*manifest_id=*/absl::nullopt, info1->start_url));
@@ -217,9 +218,9 @@ TEST_F(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
     finalizer().FinalizeInstall(
         *info2, options,
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                       InstallResultCode code,
+                                       webapps::InstallResultCode code,
                                        OsHooksErrors os_hooks_errors) {
-          EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
           EXPECT_EQ(
               installed_app_id,
               GenerateAppId(/*manifest_id=*/absl::nullopt, info2->start_url));
@@ -262,7 +263,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
   finalizer_->FinalizeUpdate(
       *info,
       base::BindLambdaForTesting(
-          [&](const web_app::AppId& app_id, web_app::InstallResultCode code,
+          [&](const web_app::AppId& app_id, webapps::InstallResultCode code,
               web_app::OsHooksErrors os_hooks_errors) { runloop.Quit(); }));
   runloop.Run();
   EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
@@ -278,7 +279,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoDesktopShortcut) {
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
             GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
 
@@ -298,7 +299,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoQuickLaunchBarShortcut) {
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
             GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
 
@@ -320,7 +321,7 @@ TEST_F(WebAppInstallFinalizerUnitTest,
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
             GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
 
@@ -343,7 +344,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoCreateOsShorcuts) {
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
             GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
 
@@ -360,7 +361,7 @@ TEST_F(WebAppInstallFinalizerUnitTest,
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
             GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
 
@@ -376,7 +377,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
             GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
 
@@ -397,9 +398,9 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
   finalizer_->FinalizeUpdate(
       *info,
       base::BindLambdaForTesting([&](const web_app::AppId& app_id,
-                                     web_app::InstallResultCode code,
+                                     webapps::InstallResultCode code,
                                      web_app::OsHooksErrors os_hooks_errors) {
-        EXPECT_EQ(InstallResultCode::kSuccessAlreadyInstalled, code);
+        EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, code);
         EXPECT_TRUE(os_hooks_errors.none());
         runloop.Quit();
       }));

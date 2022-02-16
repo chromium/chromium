@@ -26,13 +26,16 @@ namespace content {
 class WebContents;
 }
 
+namespace webapps {
+enum class InstallResultCode;
+}
+
 namespace web_app {
 
 class WebAppUrlLoader;
 class WebAppInstallFinalizer;
 class WebAppInstallManager;
 class WebAppUiManager;
-enum class InstallResultCode;
 
 // Class to install WebApp from a WebContents. A queue of such tasks is owned by
 // ExternallyManagedAppManager. Can only be called from the UI thread.
@@ -107,12 +110,12 @@ class ExternallyManagedAppInstallTask {
                          bool offline_install,
                          ResultCallback result_callback,
                          const AppId& app_id,
-                         InstallResultCode code);
+                         webapps::InstallResultCode code);
   void OnWebAppInstalledWithHooksErrors(bool is_placeholder,
                                         bool offline_install,
                                         ResultCallback result_callback,
                                         const AppId& app_id,
-                                        InstallResultCode code,
+                                        webapps::InstallResultCode code,
                                         OsHooksErrors os_hooks_errors);
   void TryAppInfoFactoryOnFailure(
       ResultCallback result_callback,

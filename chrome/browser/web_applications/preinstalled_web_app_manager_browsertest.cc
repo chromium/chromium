@@ -218,7 +218,7 @@ class PreinstalledWebAppManagerBrowserTest
   }
 
   // Mocks "icon.png" as chrome/test/data/web_apps/blue-192.png.
-  absl::optional<InstallResultCode> SyncPreinstalledAppConfig(
+  absl::optional<webapps::InstallResultCode> SyncPreinstalledAppConfig(
       const GURL& install_url,
       base::StringPiece app_config_string) {
     base::FilePath test_config_dir(FILE_PATH_LITERAL("test_dir"));
@@ -244,7 +244,7 @@ class PreinstalledWebAppManagerBrowserTest
     app_configs.push_back(*std::move(json_parse_result.value));
     PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
-    absl::optional<InstallResultCode> code;
+    absl::optional<webapps::InstallResultCode> code;
     base::RunLoop sync_run_loop;
     WebAppProvider::GetForTest(profile())
         ->preinstalled_web_app_manager()
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   std::string app_config = base::ReplaceStringPlaceholders(
       kAppConfigTemplate, {start_url.spec()}, nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(start_url, app_config),
-            InstallResultCode::kSuccessNewInstall);
+            webapps::InstallResultCode::kSuccessNewInstall);
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   std::string app_config = base::ReplaceStringPlaceholders(
       kAppConfigTemplate, {install_url.spec()}, nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(install_url, app_config),
-            InstallResultCode::kSuccessNewInstall);
+            webapps::InstallResultCode::kSuccessNewInstall);
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   std::string app_config = base::ReplaceStringPlaceholders(
       kAppConfigTemplate, {start_url.spec()}, nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(start_url, app_config),
-            InstallResultCode::kSuccessNewInstall);
+            webapps::InstallResultCode::kSuccessNewInstall);
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   std::string app_config = base::ReplaceStringPlaceholders(
       kAppConfigTemplate, {install_url.spec()}, nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(install_url, app_config),
-            InstallResultCode::kSuccessNewInstall);
+            webapps::InstallResultCode::kSuccessNewInstall);
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerExtensionBrowserTest,
   std::string app_config = base::ReplaceStringPlaceholders(
       kAppConfigTemplate, {GetAppUrl().spec(), app->id()}, nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
-            InstallResultCode::kSuccessNewInstall);
+            webapps::InstallResultCode::kSuccessNewInstall);
 
   // Chrome app should get uninstalled.
   scoped_refptr<const extensions::Extension> uninstalled_app =
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   std::string app_config = base::ReplaceStringPlaceholders(
       kAppConfigTemplate, {GetAppUrl().spec()}, nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
-            InstallResultCode::kSuccessNewInstall);
+            webapps::InstallResultCode::kSuccessNewInstall);
 }
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // The user had the app installed.
   EXPECT_EQ(
       SyncPreinstalledAppConfig(GURL{kSimpleManifestStartUrl}, prev_app_config),
-      InstallResultCode::kSuccessNewInstall);
+      webapps::InstallResultCode::kSuccessNewInstall);
 
   AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
                                GURL{kSimpleManifestStartUrl});
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // The user still has the app.
   EXPECT_EQ(
       SyncPreinstalledAppConfig(GURL{kSimpleManifestStartUrl}, next_app_config),
-      InstallResultCode::kSuccessAlreadyInstalled);
+      webapps::InstallResultCode::kSuccessAlreadyInstalled);
 
   AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
                                GURL{kSimpleManifestStartUrl});
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 
   EXPECT_EQ(SyncPreinstalledAppConfig(GURL{kNoManifestTestPageStartUrl},
                                       prev_app_config),
-            InstallResultCode::kNotValidManifestForWebApp);
+            webapps::InstallResultCode::kNotValidManifestForWebApp);
 
   AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
                                GURL{kNoManifestTestPageStartUrl});
@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       kFeatureNameOrInstalledConfig, {GetAppUrl().spec()}, nullptr);
 
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
-            InstallResultCode::kSuccessNewInstall);
+            webapps::InstallResultCode::kSuccessNewInstall);
 
   AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
   EXPECT_TRUE(registrar().IsInstalled(app_id));
@@ -657,14 +657,14 @@ IN_PROC_BROWSER_TEST_F(
     base::AutoReset<bool> enable_feature =
         SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
     EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
-              InstallResultCode::kSuccessNewInstall);
+              webapps::InstallResultCode::kSuccessNewInstall);
 
     EXPECT_TRUE(registrar().IsInstalled(app_id));
   }
 
   {
     EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
-              InstallResultCode::kSuccessAlreadyInstalled);
+              webapps::InstallResultCode::kSuccessAlreadyInstalled);
 
     EXPECT_TRUE(registrar().IsInstalled(app_id));
   }
@@ -704,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       kAppConfigTemplate, {kAppInstallUrl, kAppName, kAppStartUrl, kAppScope},
       nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(GURL(kAppInstallUrl), app_config),
-            InstallResultCode::kSuccessOfflineFallbackInstall);
+            webapps::InstallResultCode::kSuccessOfflineFallbackInstall);
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppShortName(app_id), kAppName);
@@ -755,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       kAppConfigTemplate,
       {install_url.spec(), offline_start_url.spec(), scope.spec()}, nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(install_url, app_config),
-            InstallResultCode::kSuccessNewInstall);
+            webapps::InstallResultCode::kSuccessNewInstall);
 
   EXPECT_FALSE(registrar().IsInstalled(offline_app_id));
 
@@ -801,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       kAppConfigTemplate, {kAppInstallUrl, kAppName, kAppStartUrl, kAppScope},
       nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(GURL(kAppInstallUrl), app_config),
-            InstallResultCode::kSuccessOfflineOnlyInstall);
+            webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppShortName(app_id), kAppName);
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       kAppConfigTemplate,
       {install_url.spec(), kAppName, start_url.spec(), scope.spec()}, nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(install_url, app_config),
-            InstallResultCode::kSuccessOfflineOnlyInstall);
+            webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppShortName(app_id), kAppName);
@@ -905,7 +905,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // New user should have the app installed.
   EXPECT_EQ(SyncPreinstalledAppConfig(GURL(kOnlyForNewUsersInstallUrl),
                                       kOnlyForNewUsersConfig),
-            InstallResultCode::kSuccessOfflineOnlyInstall);
+            webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
 }
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
@@ -913,7 +913,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // App should persist after user stops being a new user.
   EXPECT_EQ(SyncPreinstalledAppConfig(GURL(kOnlyForNewUsersInstallUrl),
                                       kOnlyForNewUsersConfig),
-            InstallResultCode::kSuccessAlreadyInstalled);
+            webapps::InstallResultCode::kSuccessAlreadyInstalled);
 }
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
@@ -944,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
                 "user_type": ["unmanaged"]
               })",
                                           {GetAppUrl().spec()}, nullptr)),
-            InstallResultCode::kSuccessNewInstall);
+            webapps::InstallResultCode::kSuccessNewInstall);
 
   AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
   EXPECT_TRUE(registrar().WasInstalledByOem(app_id));
@@ -1026,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
       {CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, true)});
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
-            InstallResultCode::kSuccessNewInstall);
+            webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(disabled_configs.size(), 3u);
 }
@@ -1063,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   std::string app_config = base::ReplaceStringPlaceholders(
       kAppConfigTemplate, {preinstalled_app_start_url.spec()}, nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(preinstalled_app_start_url, app_config),
-            InstallResultCode::kSuccessOfflineOnlyInstall);
+            webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
   AppId preinstalled_app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, preinstalled_app_start_url);
 
@@ -1150,7 +1150,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
        "https://overwrite.scope/"},
       nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(install_url, app_config),
-            InstallResultCode::kSuccessOfflineOnlyInstall);
+            webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
 
   EXPECT_EQ(web_app, registrar().GetAppById(app_id));
 

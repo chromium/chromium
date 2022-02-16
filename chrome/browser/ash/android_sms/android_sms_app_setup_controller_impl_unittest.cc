@@ -24,10 +24,10 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_cookie_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -242,7 +242,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     base::HistogramTester histogram_tester;
 
     SetInstallResultCode(
-        web_app::InstallResultCode::kGetWebAppInstallInfoFailed);
+        webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
 
     setup_controller_->SetUpApp(
         app_url, install_url,
@@ -278,7 +278,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     }
 
     // Send success code for last attempt.
-    SetInstallResultCode(web_app::InstallResultCode::kSuccessNewInstall);
+    SetInstallResultCode(webapps::InstallResultCode::kSuccessNewInstall);
     task_environment_.FastForwardBy(
         AndroidSmsAppSetupControllerImpl::kInstallRetryDelay *
         (1 << (num_failure_tries - 1)));
@@ -336,7 +336,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     if (num_expected_app_installs) {
       histogram_tester.ExpectBucketCount(
           "AndroidSms.PWAInstallationResult",
-          web_app::InstallResultCode::kSuccessNewInstall,
+          webapps::InstallResultCode::kSuccessNewInstall,
           num_expected_app_installs);
       histogram_tester.ExpectBucketCount(
           "AndroidSms.EffectivePWAInstallationSuccess", true, 1);
@@ -415,7 +415,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     return *fake_registry_controller_;
   }
 
-  void SetInstallResultCode(web_app::InstallResultCode result_code) {
+  void SetInstallResultCode(webapps::InstallResultCode result_code) {
     install_result_code_ = result_code;
   }
 
@@ -445,8 +445,8 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
-  web_app::InstallResultCode install_result_code_ =
-      web_app::InstallResultCode::kSuccessNewInstall;
+  webapps::InstallResultCode install_result_code_ =
+      webapps::InstallResultCode::kSuccessNewInstall;
 
   content::BrowserTaskEnvironment task_environment_;
 

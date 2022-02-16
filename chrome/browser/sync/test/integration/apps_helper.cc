@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -239,8 +240,8 @@ web_app::AppId InstallWebApp(Profile* profile, const WebAppInstallInfo& info) {
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       base::BindLambdaForTesting(
           [&run_loop, &app_id](const web_app::AppId& new_app_id,
-                               web_app::InstallResultCode code) {
-            DCHECK_EQ(code, web_app::InstallResultCode::kSuccessNewInstall);
+                               webapps::InstallResultCode code) {
+            DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             app_id = new_app_id;
             run_loop.Quit();
           }));

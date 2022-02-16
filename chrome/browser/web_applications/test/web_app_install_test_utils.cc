@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -73,10 +73,10 @@ AppId InstallDummyWebApp(Profile* profile,
   WebAppProvider::GetForTest(profile)->install_finalizer().FinalizeInstall(
       web_app_info, options,
       base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                     InstallResultCode code,
+                                     webapps::InstallResultCode code,
                                      OsHooksErrors os_hooks_errors) {
         EXPECT_EQ(installed_app_id, app_id);
-        EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
+        EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -102,8 +102,8 @@ AppId InstallWebApp(Profile* profile,
       std::move(web_app_info), overwrite_existing_manifest_fields,
       ForInstallableSite::kYes, install_source,
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
             app_id = installed_app_id;
             run_loop.Quit();
           }));

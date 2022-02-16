@@ -59,8 +59,8 @@ void StandaloneBrowserTestController::InstallWebApp(
 void StandaloneBrowserTestController::WebAppInstallationDone(
     InstallWebAppCallback callback,
     const web_app::AppId& installed_app_id,
-    web_app::InstallResultCode code) {
-  std::move(callback).Run(code == web_app::InstallResultCode::kSuccessNewInstall
+    webapps::InstallResultCode code) {
+  std::move(callback).Run(code == webapps::InstallResultCode::kSuccessNewInstall
                               ? installed_app_id
                               : "");
 }

@@ -30,7 +30,6 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -46,6 +45,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/common/content_switches.h"
@@ -535,7 +535,7 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
                std::inserter(results_to_report, results_to_report.end()),
                [](const auto& url_and_result) {
                  return url_and_result.second.code !=
-                        InstallResultCode::kSuccessAlreadyInstalled;
+                        webapps::InstallResultCode::kSuccessAlreadyInstalled;
                });
 
   for (const auto& url_and_result : results_to_report) {
@@ -543,14 +543,14 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
     base::UmaHistogramEnumeration(
         kInstallResultHistogramName,
         shutting_down_
-            ? InstallResultCode::kCancelledOnWebAppProviderShuttingDown
+            ? webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown
             : url_and_result.second.code);
 
     // Record per-profile result.
     base::UmaHistogramEnumeration(
         install_result_per_profile_histogram_name_,
         shutting_down_
-            ? InstallResultCode::kCancelledOnWebAppProviderShuttingDown
+            ? webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown
             : url_and_result.second.code);
   }
 
@@ -563,10 +563,10 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
           std::string(kInstallResultHistogramName) + ".Apps." +
           type_and_app_info.second->GetInternalName();
       base::UmaHistogramEnumeration(
-          app_histogram_name,
-          shutting_down_
-              ? InstallResultCode::kCancelledOnWebAppProviderShuttingDown
-              : url_and_result->second.code);
+          app_histogram_name, shutting_down_
+                                  ? webapps::InstallResultCode::
+                                        kCancelledOnWebAppProviderShuttingDown
+                                  : url_and_result->second.code);
     }
   }
 }

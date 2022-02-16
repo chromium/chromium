@@ -17,13 +17,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/installable_params.h"
@@ -117,7 +117,8 @@ void ExternallyManagedAppInstallTask::OnUrlLoaded(
   if (load_url_result == WebAppUrlLoader::Result::kFailedWebContentsDestroyed)
     return;
 
-  InstallResultCode code = InstallResultCode::kInstallURLLoadFailed;
+  webapps::InstallResultCode code =
+      webapps::InstallResultCode::kInstallURLLoadFailed;
 
   switch (load_url_result) {
     case WebAppUrlLoader::Result::kUrlLoaded:
@@ -126,16 +127,16 @@ void ExternallyManagedAppInstallTask::OnUrlLoaded(
       NOTREACHED();
       break;
     case WebAppUrlLoader::Result::kRedirectedUrlLoaded:
-      code = InstallResultCode::kInstallURLRedirected;
+      code = webapps::InstallResultCode::kInstallURLRedirected;
       break;
     case WebAppUrlLoader::Result::kFailedUnknownReason:
-      code = InstallResultCode::kInstallURLLoadFailed;
+      code = webapps::InstallResultCode::kInstallURLLoadFailed;
       break;
     case WebAppUrlLoader::Result::kFailedPageTookTooLong:
-      code = InstallResultCode::kInstallURLLoadTimeOut;
+      code = webapps::InstallResultCode::kInstallURLLoadTimeOut;
       break;
     case WebAppUrlLoader::Result::kFailedErrorPageLoaded:
-      code = InstallResultCode::kInstallURLLoadFailed;
+      code = webapps::InstallResultCode::kInstallURLLoadFailed;
       break;
   }
 
@@ -196,7 +197,7 @@ void ExternallyManagedAppInstallTask::OnPlaceholderUninstalled(
                << install_options_.install_url;
     std::move(result_callback)
         .Run(ExternallyManagedAppManager::InstallResult(
-            InstallResultCode::kFailedPlaceholderUninstall));
+            webapps::InstallResultCode::kFailedPlaceholderUninstall));
     return;
   }
   ContinueWebAppInstall(web_contents, std::move(result_callback));
@@ -229,9 +230,10 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
     // No need to install a placeholder app again.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       ExternallyManagedAppManager::InstallResult(
-                           InstallResultCode::kSuccessNewInstall, app_id)));
+        base::BindOnce(
+            std::move(callback),
+            ExternallyManagedAppManager::InstallResult(
+                webapps::InstallResultCode::kSuccessNewInstall, app_id)));
     return;
   }
 
@@ -319,7 +321,7 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
     bool offline_install,
     ResultCallback result_callback,
     const AppId& app_id,
-    InstallResultCode code) {
+    webapps::InstallResultCode code) {
   OnWebAppInstalledWithHooksErrors(is_placeholder, offline_install,
                                    std::move(result_callback), app_id, code,
                                    OsHooksErrors());
@@ -330,7 +332,7 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalledWithHooksErrors(
     bool offline_install,
     ResultCallback result_callback,
     const AppId& app_id,
-    InstallResultCode code,
+    webapps::InstallResultCode code,
     OsHooksErrors os_hooks_errors) {
   if (!IsNewInstall(code)) {
     std::move(result_callback)
@@ -349,8 +351,8 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalledWithHooksErrors(
 
   if (offline_install) {
     code = install_options().only_use_app_info_factory
-               ? InstallResultCode::kSuccessOfflineOnlyInstall
-               : InstallResultCode::kSuccessOfflineFallbackInstall;
+               ? webapps::InstallResultCode::kSuccessOfflineOnlyInstall
+               : webapps::InstallResultCode::kSuccessOfflineFallbackInstall;
   }
 
   std::move(result_callback)

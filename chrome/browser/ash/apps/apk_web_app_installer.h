@@ -18,7 +18,7 @@
 class GURL;
 class Profile;
 
-namespace web_app {
+namespace webapps {
 enum class InstallResultCode;
 }
 
@@ -32,7 +32,7 @@ class ApkWebAppInstaller {
       const web_app::AppId&,
       const bool is_web_only_twa,
       const absl::optional<std::string> sha256_fingerprint,
-      web_app::InstallResultCode)>;
+      webapps::InstallResultCode)>;
 
   // Do nothing class purely for the purpose of allowing us to specify
   // a WeakPtr<Owner> member as a proxy for a profile lifetime observer.
@@ -65,12 +65,12 @@ class ApkWebAppInstaller {
 
   // Calls |callback_| with |id|, and deletes this object. Virtual for testing.
   virtual void CompleteInstallation(const web_app::AppId& id,
-                                    web_app::InstallResultCode code);
+                                    webapps::InstallResultCode code);
 
   // Callback method for installation completed response.
   void OnWebAppCreated(const GURL& start_url,
                        const web_app::AppId& app_id,
-                       web_app::InstallResultCode code);
+                       webapps::InstallResultCode code);
 
   // Callback method for data_decoder::DecodeImage.
   void OnImageDecoded(const SkBitmap& decoded_image);

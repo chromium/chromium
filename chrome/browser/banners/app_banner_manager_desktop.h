@@ -21,11 +21,8 @@ namespace extensions {
 class ExtensionRegistry;
 }
 
-namespace web_app {
-enum class InstallResultCode;
-}
-
 namespace webapps {
+enum class InstallResultCode;
 class TestAppBannerManagerDesktop;
 
 // Manages web app banners for desktop platforms.
@@ -72,7 +69,7 @@ class AppBannerManagerDesktop
 
   // Called when the web app install initiated by a banner has completed.
   virtual void DidFinishCreatingWebApp(const web_app::AppId& app_id,
-                                       web_app::InstallResultCode code);
+                                       webapps::InstallResultCode code);
 
  private:
   friend class content::WebContentsUserData<AppBannerManagerDesktop>;

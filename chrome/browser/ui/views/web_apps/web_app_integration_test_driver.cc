@@ -57,7 +57,6 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -71,6 +70,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -617,7 +617,7 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(
   base::RunLoop run_loop;
   web_app::SetInstalledCallbackForTesting(base::BindLambdaForTesting(
       [&app_id, &run_loop](const web_app::AppId& installed_app_id,
-                           web_app::InstallResultCode code) {
+                           webapps::InstallResultCode code) {
         app_id = installed_app_id;
         run_loop.Quit();
       }));

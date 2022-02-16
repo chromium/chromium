@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -55,6 +54,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -301,9 +301,9 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ManifestUpdate) {
     provider().install_finalizer().FinalizeUpdate(
         *web_app_info,
         base::BindLambdaForTesting([&run_loop](const AppId& app_id,
-                                               InstallResultCode code,
+                                               webapps::InstallResultCode code,
                                                OsHooksErrors os_hooks_errors) {
-          EXPECT_EQ(code, InstallResultCode::kSuccessAlreadyInstalled);
+          EXPECT_EQ(code, webapps::InstallResultCode::kSuccessAlreadyInstalled);
           EXPECT_TRUE(os_hooks_errors.none());
           run_loop.Quit();
         }));

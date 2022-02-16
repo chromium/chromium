@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
+#include "components/webapps/browser/install_result_code.h"
 
 namespace web_app {
 
@@ -47,7 +47,7 @@ class FakeExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
 
   // Set a callback to handle install requests. If set, this callback will be
   // used in place of the real installation process. The callback takes a const
-  // ExternalInstallOptions& and should return a InstallResultCode.
+  // ExternalInstallOptions& and should return a webapps::InstallResultCode.
   void SetHandleInstallRequestCallback(HandleInstallRequestCallback callback);
 
   // Set a callback to handle uninstall requests. If set, this callback will be

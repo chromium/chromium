@@ -177,7 +177,7 @@ class PreinstalledWebAppMigrationBrowserTest
                            bool pass_config = true) {
     base::RunLoop run_loop;
 
-    absl::optional<InstallResultCode> code;
+    absl::optional<webapps::InstallResultCode> code;
 
     auto callback = base::BindLambdaForTesting(
         [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
@@ -185,9 +185,11 @@ class PreinstalledWebAppMigrationBrowserTest
             std::map<GURL, bool> uninstall_results) {
           if (expect_install) {
             code = install_results.at(GetWebAppUrl()).code;
-            EXPECT_TRUE(*code == InstallResultCode::kSuccessNewInstall ||
-                        *code == InstallResultCode::kSuccessAlreadyInstalled ||
-                        *code == InstallResultCode::kSuccessOfflineOnlyInstall);
+            EXPECT_TRUE(
+                *code == webapps::InstallResultCode::kSuccessNewInstall ||
+                *code == webapps::InstallResultCode::kSuccessAlreadyInstalled ||
+                *code ==
+                    webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
           } else {
             EXPECT_EQ(install_results.find(GetWebAppUrl()),
                       install_results.end());
@@ -307,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
       histograms.ExpectUniqueSample(
           PreinstalledWebAppManager::kHistogramInstallResult,
-          InstallResultCode::kSuccessNewInstall, 1);
+          webapps::InstallResultCode::kSuccessNewInstall, 1);
       histograms.ExpectUniqueSample(
           PreinstalledWebAppManager::kHistogramUninstallAndReplaceCount, 1, 1);
 
@@ -362,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
     histograms.ExpectUniqueSample(
         PreinstalledWebAppManager::kHistogramInstallResult,
-        InstallResultCode::kSuccessNewInstall, 1);
+        webapps::InstallResultCode::kSuccessNewInstall, 1);
     histograms.ExpectUniqueSample(
         PreinstalledWebAppManager::kHistogramUninstallAndReplaceCount, 1, 1);
 
@@ -449,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
       EXPECT_FALSE(IsExtensionAppInstalled());
       histograms.ExpectUniqueSample(
           PreinstalledWebAppManager::kHistogramInstallResult,
-          InstallResultCode::kSuccessNewInstall, 1);
+          webapps::InstallResultCode::kSuccessNewInstall, 1);
       histograms.ExpectUniqueSample(
           PreinstalledWebAppManager::kHistogramUninstallAndReplaceCount, 1, 1);
     }
@@ -711,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
           PreinstalledWebAppManager::kHistogramConfigErrorCount, 0, 1);
       histograms.ExpectUniqueSample(
           PreinstalledWebAppManager::kHistogramInstallResult,
-          InstallResultCode::kSuccessOfflineOnlyInstall, 1);
+          webapps::InstallResultCode::kSuccessOfflineOnlyInstall, 1);
       histograms.ExpectUniqueSample(
           PreinstalledWebAppManager::kHistogramUninstallAndReplaceCount, 1, 1);
     }

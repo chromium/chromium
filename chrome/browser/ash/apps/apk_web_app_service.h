@@ -28,8 +28,11 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace web_app {
+namespace webapps {
 enum class InstallResultCode;
+}  // namespace webapps
+
+namespace web_app {
 class WebAppProvider;
 }  // namespace web_app
 
@@ -114,7 +117,7 @@ class ApkWebAppService : public KeyedService,
                           const web_app::AppId& web_app_id,
                           bool is_web_only_twa,
                           const absl::optional<std::string> sha256_fingerprint,
-                          web_app::InstallResultCode code);
+                          webapps::InstallResultCode code);
   void UpdatePackageInfo(const std::string& app_id,
                          const arc::mojom::WebAppInfoPtr& web_app_info);
 

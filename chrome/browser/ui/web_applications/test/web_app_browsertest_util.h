@@ -18,10 +18,13 @@
 class Browser;
 class Profile;
 
+namespace webapps {
+enum class InstallResultCode;
+}
+
 namespace web_app {
 
 struct ExternalInstallOptions;
-enum class InstallResultCode;
 
 // For InstallWebAppFromInfo see web_app_install_test_utils.h
 
@@ -49,8 +52,9 @@ Browser* LaunchBrowserForWebAppInTab(Profile*, const AppId&);
 ExternalInstallOptions CreateInstallOptions(const GURL& url);
 
 // Synchronous version of ExternallyManagedAppManager::Install.
-InstallResultCode ExternallyManagedAppManagerInstall(Profile*,
-                                                     ExternalInstallOptions);
+webapps::InstallResultCode ExternallyManagedAppManagerInstall(
+    Profile*,
+    ExternalInstallOptions);
 
 // If |proceed_through_interstitial| is true, asserts that a security
 // interstitial is shown, and clicks through it, before returning.

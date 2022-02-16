@@ -32,7 +32,6 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -43,6 +42,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -282,7 +282,7 @@ class WebAppInstallManagerTest
 
   struct InstallResult {
     AppId app_id;
-    InstallResultCode code;
+    webapps::InstallResultCode code;
   };
 
   InstallResult InstallWebAppFromManifestWithFallback() {
@@ -292,12 +292,12 @@ class WebAppInstallManagerTest
         web_contents(), /*force_shortcut_app=*/false,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         base::BindOnce(test::TestAcceptDialogCallback),
-        base::BindLambdaForTesting(
-            [&](const AppId& installed_app_id, InstallResultCode code) {
-              result.app_id = installed_app_id;
-              result.code = code;
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       webapps::InstallResultCode code) {
+          result.app_id = installed_app_id;
+          result.code = code;
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return result;
   }
@@ -313,12 +313,12 @@ class WebAppInstallManagerTest
     base::RunLoop run_loop;
     install_manager().InstallSubApp(
         parent_app_id, install_url,
-        base::BindLambdaForTesting(
-            [&](const AppId& installed_app_id, InstallResultCode code) {
-              result.app_id = installed_app_id;
-              result.code = code;
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       webapps::InstallResultCode code) {
+          result.app_id = installed_app_id;
+          result.code = code;
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return result;
   }
@@ -329,7 +329,7 @@ class WebAppInstallManagerTest
     install_manager().InstallWebAppsAfterSync(
         std::move(web_apps),
         base::BindLambdaForTesting(
-            [&](const AppId& app_id, InstallResultCode code) {
+            [&](const AppId& app_id, webapps::InstallResultCode code) {
               result.app_id = app_id;
               result.code = code;
               run_loop.Quit();
@@ -347,12 +347,12 @@ class WebAppInstallManagerTest
     install_manager().InstallWebAppFromInfo(
         std::move(web_application_info), overwrite_existing_manifest_fields,
         ForInstallableSite::kYes, install_source,
-        base::BindLambdaForTesting(
-            [&](const AppId& installed_app_id, InstallResultCode code) {
-              result.app_id = installed_app_id;
-              result.code = code;
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       webapps::InstallResultCode code) {
+          result.app_id = installed_app_id;
+          result.code = code;
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return result;
   }
@@ -567,13 +567,14 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   // Enqueue a request to install the 1st app.
   install_manager().InstallWebAppsAfterSync(
-      {web_app1}, base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                                 InstallResultCode code) {
-        EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
-        EXPECT_EQ(app1_id, installed_app_id);
-        event_order.push_back(Event::App1_CallbackCalled);
-        app1_installed_run_loop.Quit();
-      }));
+      {web_app1},
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+            EXPECT_EQ(app1_id, installed_app_id);
+            event_order.push_back(Event::App1_CallbackCalled);
+            app1_installed_run_loop.Quit();
+          }));
 
   EXPECT_TRUE(install_manager().has_web_contents_for_testing());
   EXPECT_EQ(0, GetNumFullyInstalledApps());
@@ -582,13 +583,14 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   // Immediately enqueue a request to install the 2nd app, WebContents is not
   // ready.
   install_manager().InstallWebAppsAfterSync(
-      {web_app2}, base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                                 InstallResultCode code) {
-        EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
-        EXPECT_EQ(app2_id, installed_app_id);
-        event_order.push_back(Event::App2_CallbackCalled);
-        app2_installed_run_loop.Quit();
-      }));
+      {web_app2},
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+            EXPECT_EQ(app2_id, installed_app_id);
+            event_order.push_back(Event::App2_CallbackCalled);
+            app2_installed_run_loop.Quit();
+          }));
 
   EXPECT_TRUE(install_manager().has_web_contents_for_testing());
   EXPECT_EQ(2u, task_data_retrievers.size());
@@ -660,9 +662,11 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   bool callback_called = false;
   install_manager().InstallWebAppsAfterSync(
-      {web_app}, base::BindLambdaForTesting(
-                     [&](const AppId& installed_app_id,
-                         InstallResultCode code) { callback_called = true; }));
+      {web_app},
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            callback_called = true;
+          }));
   EXPECT_TRUE(install_manager().has_web_contents_for_testing());
 
   // Wait for the task to start.
@@ -737,7 +741,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
       }));
 
   InstallResult result = InstallWebAppsAfterSync({app});
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(app->app_id(), result.app_id);
 
   EXPECT_EQ(1u, registrar().GetAppIds().size());
@@ -819,7 +823,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
       }));
 
   InstallResult result = InstallWebAppsAfterSync({app});
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(app->app_id(), result.app_id);
 
   EXPECT_EQ(1u, registrar().GetAppIds().size());
@@ -1131,7 +1135,7 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppFromInfo) {
   InstallResult result = InstallWebAppFromInfo(
       std::move(server_web_app_info),
       /*overwrite_existing_manifest_fields=*/false, install_source);
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(expected_app_id, result.app_id);
 
   const WebApp* web_app = registrar().GetAppById(expected_app_id);
@@ -1171,7 +1175,7 @@ TEST_P(WebAppInstallManagerTest, TaskQueueWebContentsReadyRace) {
   url_loader().SetPrepareForLoadResultLoaded();
   install_manager().OnQueuedTaskCompleted(
       task_a_ptr, base::DoNothing(), AppId(),
-      InstallResultCode::kSuccessNewInstall);
+      webapps::InstallResultCode::kSuccessNewInstall);
 
   // Task B needs to wait for WebContents to return ready.
   EXPECT_FALSE(task_b_started);
@@ -1211,7 +1215,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   UseDefaultDataRetriever(start_url);
 
   InstallResult result = InstallWebAppFromManifestWithFallback();
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(app_id, result.app_id);
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
@@ -1245,7 +1249,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
                             /*overwrite_existing_manifest_fields=*/false,
                             webapps::WebappInstallSource::ARC);
 
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(app_id, result.app_id);
 
   const WebApp* web_app = registrar().GetAppById(app_id);
@@ -1357,7 +1361,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallSubApp) {
   // Install a sub-app and verify a bunch of things.
   InstallResult result = InstallSubApp(parent_app_id, install_url);
 
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(app_id, result.app_id);
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
@@ -1375,7 +1379,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallSubApp) {
 
   // Check that we get |kSuccessAlreadyInstalled| if we try installing the same
   // app again.
-  EXPECT_EQ(InstallResultCode::kSuccessAlreadyInstalled,
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
             InstallSubApp(parent_app_id, install_url).code);
 
   // Still one sub-app.
@@ -1383,7 +1387,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallSubApp) {
 
   // Install a different sub-app and verify count equals 2.
   result = InstallSubApp(parent_app_id, second_install_url);
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(second_app_id, result.app_id);
 
   // Two sub-apps.

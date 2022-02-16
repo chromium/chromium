@@ -107,7 +107,8 @@ void FakeWebAppRegistryController::InstallWebAppsAfterSync(
     install_web_apps_after_sync_delegate_.Run(std::move(web_apps), callback);
   } else {
     for (WebApp* web_app : web_apps)
-      callback.Run(web_app->app_id(), InstallResultCode::kSuccessNewInstall);
+      callback.Run(web_app->app_id(),
+                   webapps::InstallResultCode::kSuccessNewInstall);
   }
 }
 

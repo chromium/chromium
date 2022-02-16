@@ -39,7 +39,6 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -48,6 +47,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -555,15 +555,15 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
         SystemWebAppManager::kInstallResultHistogramName, 1);
     histograms.ExpectBucketCount(
         SystemWebAppManager::kInstallResultHistogramName,
-        InstallResultCode::kSuccessOfflineOnlyInstall, 1);
+        webapps::InstallResultCode::kSuccessOfflineOnlyInstall, 1);
     histograms.ExpectTotalCount(settings_app_install_result_histogram, 1);
-    histograms.ExpectBucketCount(settings_app_install_result_histogram,
-                                 InstallResultCode::kSuccessOfflineOnlyInstall,
-                                 1);
+    histograms.ExpectBucketCount(
+        settings_app_install_result_histogram,
+        webapps::InstallResultCode::kSuccessOfflineOnlyInstall, 1);
     histograms.ExpectTotalCount(profile_install_result_histogram, 1);
-    histograms.ExpectBucketCount(profile_install_result_histogram,
-                                 InstallResultCode::kSuccessOfflineOnlyInstall,
-                                 1);
+    histograms.ExpectBucketCount(
+        profile_install_result_histogram,
+        webapps::InstallResultCode::kSuccessOfflineOnlyInstall, 1);
     histograms.ExpectTotalCount(
         SystemWebAppManager::kInstallDurationHistogramName, 1);
   }
@@ -573,7 +573,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
           [](const ExternalInstallOptions&)
               -> ExternallyManagedAppManager::InstallResult {
             return ExternallyManagedAppManager::InstallResult(
-                InstallResultCode::kWebAppDisabled);
+                webapps::InstallResultCode::kWebAppDisabled);
           }));
 
   {
@@ -594,12 +594,14 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
         SystemWebAppManager::kInstallResultHistogramName, 3);
     histograms.ExpectBucketCount(
         SystemWebAppManager::kInstallResultHistogramName,
-        InstallResultCode::kWebAppDisabled, 2);
+        webapps::InstallResultCode::kWebAppDisabled, 2);
     histograms.ExpectTotalCount(settings_app_install_result_histogram, 2);
     histograms.ExpectBucketCount(settings_app_install_result_histogram,
-                                 InstallResultCode::kWebAppDisabled, 1);
+                                 webapps::InstallResultCode::kWebAppDisabled,
+                                 1);
     histograms.ExpectBucketCount(camera_app_install_result_histogram,
-                                 InstallResultCode::kWebAppDisabled, 1);
+                                 webapps::InstallResultCode::kWebAppDisabled,
+                                 1);
   }
 
   {
@@ -614,10 +616,10 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
         SystemWebAppManager::kInstallDurationHistogramName, 2);
     histograms.ExpectBucketCount(
         settings_app_install_result_histogram,
-        InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 0);
+        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 0);
     histograms.ExpectBucketCount(
         profile_install_result_histogram,
-        InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 0);
+        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 0);
 
     {
       SystemWebAppWaiter waiter(&system_web_app_manager());
@@ -628,17 +630,17 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
 
     histograms.ExpectBucketCount(
         SystemWebAppManager::kInstallResultHistogramName,
-        InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 1);
+        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 1);
     histograms.ExpectBucketCount(
         SystemWebAppManager::kInstallResultHistogramName,
-        InstallResultCode::kWebAppDisabled, 2);
+        webapps::InstallResultCode::kWebAppDisabled, 2);
 
     histograms.ExpectBucketCount(
         settings_app_install_result_histogram,
-        InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 1);
+        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 1);
     histograms.ExpectBucketCount(
         profile_install_result_histogram,
-        InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 1);
+        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 1);
     // If install was interrupted by shutdown, do not report duration.
     histograms.ExpectTotalCount(
         SystemWebAppManager::kInstallDurationHistogramName, 2);
@@ -677,9 +679,9 @@ TEST_F(SystemWebAppManagerTest,
               -> ExternallyManagedAppManager::InstallResult {
             if (opts.install_url == AppUrl1())
               return ExternallyManagedAppManager::InstallResult(
-                  InstallResultCode::kSuccessAlreadyInstalled);
+                  webapps::InstallResultCode::kSuccessAlreadyInstalled);
             return ExternallyManagedAppManager::InstallResult(
-                InstallResultCode::kSuccessNewInstall);
+                webapps::InstallResultCode::kSuccessNewInstall);
           }));
 
   StartAndWaitForAppsToSynchronize();
@@ -717,9 +719,9 @@ TEST_F(SystemWebAppManagerTest,
                 -> ExternallyManagedAppManager::InstallResult {
               if (opts.install_url == AppUrl1())
                 return ExternallyManagedAppManager::InstallResult(
-                    InstallResultCode::kWriteDataFailed);
+                    webapps::InstallResultCode::kWriteDataFailed);
               return ExternallyManagedAppManager::InstallResult(
-                  InstallResultCode::kSuccessNewInstall);
+                  webapps::InstallResultCode::kSuccessNewInstall);
             }));
 
     StartAndWaitForAppsToSynchronize();
@@ -737,9 +739,9 @@ TEST_F(SystemWebAppManagerTest,
                 -> ExternallyManagedAppManager::InstallResult {
               if (opts.install_url == AppUrl1())
                 return ExternallyManagedAppManager::InstallResult(
-                    InstallResultCode::kSuccessNewInstall);
+                    webapps::InstallResultCode::kSuccessNewInstall);
               return ExternallyManagedAppManager::InstallResult(
-                  InstallResultCode::kSuccessAlreadyInstalled);
+                  webapps::InstallResultCode::kSuccessAlreadyInstalled);
             }));
     StartAndWaitForAppsToSynchronize();
 

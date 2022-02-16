@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -50,9 +51,9 @@ GURL ResolvePathWithOrigin(const std::string& path, GURL origin) {
 
 void OnAdd(SubAppsServiceImpl::AddCallback result_callback,
            const AppId& app_id,
-           InstallResultCode code) {
-  if (code == InstallResultCode::kSuccessAlreadyInstalled ||
-      code == InstallResultCode::kSuccessNewInstall) {
+           webapps::InstallResultCode code) {
+  if (code == webapps::InstallResultCode::kSuccessAlreadyInstalled ||
+      code == webapps::InstallResultCode::kSuccessNewInstall) {
     std::move(result_callback).Run(SubAppsServiceResult::kSuccess);
   } else {
     std::move(result_callback).Run(SubAppsServiceResult::kFailure);

@@ -32,7 +32,6 @@
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -45,6 +44,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -117,11 +117,12 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     registrar_->registry().erase(it);
   }
 
-  void SetNextFinalizeInstallResult(const GURL& url, InstallResultCode code) {
+  void SetNextFinalizeInstallResult(const GURL& url,
+                                    webapps::InstallResultCode code) {
     DCHECK(!base::Contains(next_finalize_install_results_, url));
 
     AppId app_id;
-    if (code == InstallResultCode::kSuccessNewInstall) {
+    if (code == webapps::InstallResultCode::kSuccessNewInstall) {
       app_id = GetAppIdForUrl(url);
     }
     next_finalize_install_results_[url] = {app_id, code};
@@ -160,7 +161,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     finalize_options_list_.push_back(options);
 
     AppId app_id;
-    InstallResultCode code;
+    webapps::InstallResultCode code;
     std::tie(app_id, code) =
         next_finalize_install_results_[web_app_info.start_url];
     next_finalize_install_results_.erase(web_app_info.start_url);
@@ -266,7 +267,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
 
   size_t num_reparent_tab_calls_ = 0;
 
-  std::map<GURL, std::pair<AppId, InstallResultCode>>
+  std::map<GURL, std::pair<AppId, webapps::InstallResultCode>>
       next_finalize_install_results_;
 
   // Maps app URLs to the id of the app that would have been installed for that
@@ -370,7 +371,7 @@ class ExternallyManagedAppInstallTaskTest
     data_retriever_->SetIcons(IconsMap{});
 
     install_finalizer_->SetNextFinalizeInstallResult(
-        options.install_url, InstallResultCode::kSuccessNewInstall);
+        options.install_url, webapps::InstallResultCode::kSuccessNewInstall);
 
     auto task = std::make_unique<ExternallyManagedAppInstallTask>(
         profile(), url_loader_.get(), registrar_, ui_manager_,
@@ -420,7 +421,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
                 ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                     .LookupAppId(kWebAppUrl);
 
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                      result.code);
             EXPECT_TRUE(result.app_id.has_value());
 
             EXPECT_FALSE(IsPlaceholderApp(profile(), kWebAppUrl));
@@ -458,7 +460,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFails) {
                           ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                               .LookupAppId(kWebAppUrl);
 
-                      EXPECT_EQ(InstallResultCode::kGetWebAppInstallInfoFailed,
+                      EXPECT_EQ(webapps::InstallResultCode::
+                                    kGetWebAppInstallInfoFailed,
                                 result.code);
                       EXPECT_FALSE(result.app_id.has_value());
 
@@ -484,7 +487,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerWindow) {
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
                     [&](ExternallyManagedAppManager::InstallResult result) {
-                      EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
+                      EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
                                 result.code);
                       EXPECT_TRUE(result.app_id.has_value());
                       EXPECT_EQ(web_app_info().user_display_mode,
@@ -509,7 +512,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerTab) {
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
                     [&](ExternallyManagedAppManager::InstallResult result) {
-                      EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
+                      EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
                                 result.code);
                       EXPECT_TRUE(result.app_id.has_value());
                       EXPECT_EQ(web_app_info().user_display_mode,
@@ -534,7 +537,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPreinstalledApp) {
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
                     [&](ExternallyManagedAppManager::InstallResult result) {
-                      EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
+                      EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
                                 result.code);
                       EXPECT_TRUE(result.app_id.has_value());
 
@@ -560,7 +563,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallAppFromPolicy) {
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
                     [&](ExternallyManagedAppManager::InstallResult result) {
-                      EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
+                      EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
                                 result.code);
                       EXPECT_TRUE(result.app_id.has_value());
 
@@ -587,7 +590,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
       web_contents(),
       base::BindLambdaForTesting(
           [&](ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                      result.code);
             EXPECT_TRUE(result.app_id.has_value());
 
             EXPECT_TRUE(IsPlaceholderApp(profile(), kWebAppUrl));
@@ -624,7 +628,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderDefaultSource) {
       web_contents(),
       base::BindLambdaForTesting(
           [&](ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                      result.code);
             EXPECT_TRUE(result.app_id.has_value());
 
             EXPECT_TRUE(IsPlaceholderApp(profile(), kWebAppUrl));
@@ -665,7 +670,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
         web_contents(),
         base::BindLambdaForTesting(
             [&](ExternallyManagedAppManager::InstallResult result) {
-              EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                        result.code);
               placeholder_app_id = result.app_id.value();
 
               EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
@@ -681,18 +687,19 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
       kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
 
   base::RunLoop run_loop;
-  task->Install(
-      web_contents(),
-      base::BindLambdaForTesting(
-          [&](ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-            EXPECT_EQ(placeholder_app_id, result.app_id.value());
+  task->Install(web_contents(),
+                base::BindLambdaForTesting(
+                    [&](ExternallyManagedAppManager::InstallResult result) {
+                      EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                                result.code);
+                      EXPECT_EQ(placeholder_app_id, result.app_id.value());
 
-            // There shouldn't be a second call to the finalizer.
-            EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
+                      // There shouldn't be a second call to the finalizer.
+                      EXPECT_EQ(1u,
+                                finalizer()->finalize_options_list().size());
 
-            run_loop.Quit();
-          }));
+                      run_loop.Quit();
+                    }));
   run_loop.Run();
 }
 
@@ -715,7 +722,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
         web_contents(),
         base::BindLambdaForTesting(
             [&](ExternallyManagedAppManager::InstallResult result) {
-              EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                        result.code);
               placeholder_app_id = result.app_id.value();
 
               EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
@@ -737,7 +745,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
       web_contents(),
       base::BindLambdaForTesting(
           [&](ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                      result.code);
             EXPECT_TRUE(result.app_id.has_value());
             EXPECT_FALSE(IsPlaceholderApp(profile(), kWebAppUrl));
 
@@ -770,7 +779,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
         web_contents(),
         base::BindLambdaForTesting(
             [&](ExternallyManagedAppManager::InstallResult result) {
-              EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                        result.code);
               placeholder_app_id = result.app_id.value();
 
               EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
@@ -794,7 +804,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
       web_contents(),
       base::BindLambdaForTesting(
           [&](ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kFailedPlaceholderUninstall,
+            EXPECT_EQ(webapps::InstallResultCode::kFailedPlaceholderUninstall,
                       result.code);
             EXPECT_FALSE(result.app_id.has_value());
             EXPECT_TRUE(IsPlaceholderApp(profile(), kWebAppUrl));
@@ -830,7 +840,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderCustomName) {
       web_contents(),
       base::BindLambdaForTesting(
           [&](ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                      result.code);
 
             const WebAppInstallInfo& web_app_info =
                 finalizer()->web_app_info_list().at(0);
@@ -864,7 +875,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
             [&](ExternallyManagedAppManager::InstallResult result) {
               app_id = result.app_id.value();
 
-              EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                        result.code);
               EXPECT_EQ(result.app_id,
                         *ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                              .LookupAppId(kWebAppUrl));
@@ -890,7 +902,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
         web_contents(),
         base::BindLambdaForTesting(
             [&](ExternallyManagedAppManager::InstallResult result) {
-              EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                        result.code);
               EXPECT_EQ(app_id, result.app_id.value());
 
               EXPECT_TRUE(ui_manager()->DidUninstallAndReplace("app3", app_id));
@@ -904,13 +917,13 @@ TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallURLLoadFailed) {
   struct ResultPair {
     WebAppUrlLoader::Result loader_result;
-    InstallResultCode install_result;
+    webapps::InstallResultCode install_result;
   } result_pairs[] = {{WebAppUrlLoader::Result::kRedirectedUrlLoaded,
-                       InstallResultCode::kInstallURLRedirected},
+                       webapps::InstallResultCode::kInstallURLRedirected},
                       {WebAppUrlLoader::Result::kFailedUnknownReason,
-                       InstallResultCode::kInstallURLLoadFailed},
+                       webapps::InstallResultCode::kInstallURLLoadFailed},
                       {WebAppUrlLoader::Result::kFailedPageTookTooLong,
-                       InstallResultCode::kInstallURLLoadTimeOut}};
+                       webapps::InstallResultCode::kInstallURLLoadTimeOut}};
 
   for (const auto& result_pair : result_pairs) {
     base::RunLoop run_loop;
@@ -973,7 +986,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
                                        install_manager(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
-      kWebAppUrl, InstallResultCode::kSuccessNewInstall);
+      kWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
 
   base::RunLoop run_loop;
   task.Install(
@@ -983,7 +996,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
         absl::optional<AppId> id =
             ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                 .LookupAppId(kWebAppUrl);
-        EXPECT_EQ(InstallResultCode::kSuccessOfflineOnlyInstall, result.code);
+        EXPECT_EQ(webapps::InstallResultCode::kSuccessOfflineOnlyInstall,
+                  result.code);
         EXPECT_TRUE(result.app_id.has_value());
 
         EXPECT_FALSE(IsPlaceholderApp(profile(), kWebAppUrl));
@@ -1019,7 +1033,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
                                        install_manager(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
-      kWebAppUrl, InstallResultCode::kWriteDataFailed);
+      kWebAppUrl, webapps::InstallResultCode::kWriteDataFailed);
 
   base::RunLoop run_loop;
 
@@ -1030,7 +1044,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
                          ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                              .LookupAppId(kWebAppUrl);
 
-                     EXPECT_EQ(InstallResultCode::kWriteDataFailed,
+                     EXPECT_EQ(webapps::InstallResultCode::kWriteDataFailed,
                                result.code);
                      EXPECT_FALSE(result.app_id.has_value());
 

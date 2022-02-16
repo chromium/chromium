@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -113,12 +114,12 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
             browser->tab_strip_model()->GetActiveWebContents(),
             /*force_shortcut_app=*/false, source,
             base::BindOnce(test::TestAcceptDialogCallback),
-            base::BindLambdaForTesting(
-                [&](const AppId& new_app_id, InstallResultCode code) {
-                  EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
-                  app_id = new_app_id;
-                  run_loop.Quit();
-                }));
+            base::BindLambdaForTesting([&](const AppId& new_app_id,
+                                           webapps::InstallResultCode code) {
+              EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+              app_id = new_app_id;
+              run_loop.Quit();
+            }));
     run_loop.Run();
     return app_id;
   }
@@ -142,13 +143,13 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
             std::make_unique<WebAppInstallInfo>(info),
             /*overwrite_existing_manifest_fields=*/true,
             ForInstallableSite::kYes, source,
-            base::BindLambdaForTesting(
-                [&run_loop, &app_id](const AppId& new_app_id,
-                                     InstallResultCode code) {
-                  DCHECK_EQ(code, InstallResultCode::kSuccessNewInstall);
-                  app_id = new_app_id;
-                  run_loop.Quit();
-                }));
+            base::BindLambdaForTesting([&run_loop, &app_id](
+                                           const AppId& new_app_id,
+                                           webapps::InstallResultCode code) {
+              DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+              app_id = new_app_id;
+              run_loop.Quit();
+            }));
     run_loop.Run();
 
     const WebAppRegistrar& registrar = GetRegistrar(profile);

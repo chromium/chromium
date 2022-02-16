@@ -34,6 +34,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -237,7 +238,7 @@ class PreinstalledAppsMigrationBrowserTest
   bool WasWebAppInstalledInThisRun() {
     auto iter = install_results_.find(GetAppUrl());
     return iter != install_results_.end() &&
-           iter->second.code == web_app::InstallResultCode::kSuccessNewInstall;
+           iter->second.code == webapps::InstallResultCode::kSuccessNewInstall;
   }
 
   // Returns true if the web app is currently installed in this profile (even if

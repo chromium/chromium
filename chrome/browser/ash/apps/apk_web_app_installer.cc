@@ -11,10 +11,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
@@ -63,7 +63,7 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!weak_owner_.get()) {
     CompleteInstallation(web_app::AppId(),
-                         web_app::InstallResultCode::kApkWebAppInstallFailed);
+                         webapps::InstallResultCode::kApkWebAppInstallFailed);
     return;
   }
 
@@ -73,7 +73,7 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
       !icon->icon_png_data.has_value() || icon->icon_png_data->empty()) {
     LOG(ERROR) << "Insufficient data to install a web app";
     CompleteInstallation(web_app::AppId(),
-                         web_app::InstallResultCode::kApkWebAppInstallFailed);
+                         webapps::InstallResultCode::kApkWebAppInstallFailed);
     return;
   }
 
@@ -111,24 +111,24 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
 }
 
 void ApkWebAppInstaller::CompleteInstallation(const web_app::AppId& id,
-                                              web_app::InstallResultCode code) {
+                                              webapps::InstallResultCode code) {
   std::move(callback_).Run(id, is_web_only_twa_, sha256_fingerprint_, code);
   delete this;
 }
 
 void ApkWebAppInstaller::OnWebAppCreated(const GURL& start_url,
                                          const web_app::AppId& app_id,
-                                         web_app::InstallResultCode code) {
+                                         webapps::InstallResultCode code) {
   // It is assumed that if |weak_owner_| is gone, |profile_| is gone too. The
   // web app will be automatically cleaned up by provider.
   if (!weak_owner_.get()) {
     CompleteInstallation(
         web_app::AppId(),
-        web_app::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
+        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
     return;
   }
 
-  if (code != web_app::InstallResultCode::kSuccessNewInstall) {
+  if (code != webapps::InstallResultCode::kSuccessNewInstall) {
     CompleteInstallation(app_id, code);
     return;
   }
@@ -153,7 +153,7 @@ void ApkWebAppInstaller::OnImageDecoded(const SkBitmap& decoded_image) {
     // terminate.
     CompleteInstallation(
         web_app::AppId(),
-        web_app::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
+        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
     return;
   }
   DoInstall();

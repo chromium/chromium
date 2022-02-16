@@ -238,7 +238,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
     base::RunLoop run_loop;
     web_app::SetInstalledCallbackForTesting(base::BindLambdaForTesting(
         [&app_id, &run_loop](const web_app::AppId& installed_app_id,
-                             web_app::InstallResultCode code) {
+                             webapps::InstallResultCode code) {
           app_id = installed_app_id;
           run_loop.Quit();
         }));

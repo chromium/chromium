@@ -30,9 +30,12 @@ namespace content {
 class WebContents;
 }
 
+namespace webapps {
+enum class InstallResultCode;
+}
+
 namespace web_app {
 
-enum class InstallResultCode;
 class WebAppInstallFinalizer;
 class OsIntegrationManager;
 class WebAppDataRetriever;
@@ -179,7 +182,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
       std::unique_ptr<WebAppInstallInfo> web_application_info,
       OnceInstallCallback callback,
       const AppId& web_app_id,
-      InstallResultCode code);
+      webapps::InstallResultCode code);
 
   void EnqueueTask(std::unique_ptr<WebAppInstallTask> task,
                    base::OnceClosure start_task);
@@ -190,18 +193,18 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   void OnInstallTaskCompleted(WebAppInstallTask* task,
                               OnceInstallCallback callback,
                               const AppId& app_id,
-                              InstallResultCode code);
+                              webapps::InstallResultCode code);
   void OnQueuedTaskCompleted(WebAppInstallTask* task,
                              OnceInstallCallback callback,
                              const AppId& app_id,
-                             InstallResultCode code);
+                             webapps::InstallResultCode code);
 
   void OnLoadWebAppAndCheckManifestCompleted(
       WebAppInstallTask* task,
       WebAppManifestCheckCallback callback,
       std::unique_ptr<content::WebContents> web_contents,
       const AppId& app_id,
-      InstallResultCode code);
+      webapps::InstallResultCode code);
 
   content::WebContents* EnsureWebContentsCreated();
 

@@ -36,7 +36,6 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -52,6 +51,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "net/http/http_status_code.h"
@@ -260,7 +260,7 @@ class WebAppInstallTaskTest : public WebAppTest {
 
   struct InstallResult {
     AppId app_id;
-    InstallResultCode code;
+    webapps::InstallResultCode code;
     OsHooksErrors os_hooks_errors;
   };
 
@@ -272,12 +272,12 @@ class WebAppInstallTaskTest : public WebAppTest {
         web_contents(), force_shortcut_app,
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
         base::BindOnce(test::TestAcceptDialogCallback),
-        base::BindLambdaForTesting(
-            [&](const AppId& installed_app_id, InstallResultCode code) {
-              result.app_id = installed_app_id;
-              result.code = code;
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       webapps::InstallResultCode code) {
+          result.app_id = installed_app_id;
+          result.code = code;
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return result;
   }
@@ -287,12 +287,12 @@ class WebAppInstallTaskTest : public WebAppTest {
     base::RunLoop run_loop;
     install_task_->LoadAndInstallWebAppFromManifestWithFallback(
         url, web_contents(), &url_loader(), webapps::WebappInstallSource::SYNC,
-        base::BindLambdaForTesting(
-            [&](const AppId& installed_app_id, InstallResultCode code) {
-              result.app_id = installed_app_id;
-              result.code = code;
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       webapps::InstallResultCode code) {
+          result.app_id = installed_app_id;
+          result.code = code;
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return result;
   }
@@ -314,7 +314,7 @@ class WebAppInstallTaskTest : public WebAppTest {
 
   AppId InstallWebAppFromManifestWithFallback() {
     InstallResult result = InstallWebAppFromManifestWithFallbackAndGetResults();
-    DCHECK_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+    DCHECK_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     return result.app_id;
   }
 
@@ -323,12 +323,12 @@ class WebAppInstallTaskTest : public WebAppTest {
     base::RunLoop run_loop;
     install_task_->InstallWebAppWithParams(
         web_contents(), params, webapps::WebappInstallSource::EXTERNAL_DEFAULT,
-        base::BindLambdaForTesting(
-            [&](const AppId& installed_app_id, InstallResultCode code) {
-              ASSERT_EQ(InstallResultCode::kSuccessNewInstall, code);
-              app_id = installed_app_id;
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       webapps::InstallResultCode code) {
+          ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+          app_id = installed_app_id;
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return app_id;
   }
@@ -456,8 +456,8 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
             EXPECT_EQ(app_id, installed_app_id);
             callback_called = true;
             run_loop.Quit();
@@ -510,16 +510,16 @@ TEST_F(WebAppInstallTaskTest, ForceReinstall) {
       web_contents(), force_shortcut_app,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
-      base::BindLambdaForTesting(
-          [&](const AppId& force_installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
-            EXPECT_EQ(app_id, force_installed_app_id);
-            const WebApp* web_app = registrar().GetAppById(app_id);
-            EXPECT_EQ(web_app->name(), "Manifest Name2");
-            EXPECT_EQ(web_app->description(), "Renderer Description2");
-            callback_called = true;
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](const AppId& force_installed_app_id,
+                                     webapps::InstallResultCode code) {
+        EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+        EXPECT_EQ(app_id, force_installed_app_id);
+        const WebApp* web_app = registrar().GetAppById(app_id);
+        EXPECT_EQ(web_app->name(), "Manifest Name2");
+        EXPECT_EQ(web_app->description(), "Renderer Description2");
+        callback_called = true;
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   EXPECT_TRUE(callback_called);
@@ -537,8 +537,9 @@ TEST_F(WebAppInstallTaskTest, GetWebAppInstallInfoFailed) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kGetWebAppInstallInfoFailed, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kGetWebAppInstallInfoFailed,
+                      code);
             EXPECT_EQ(AppId(), installed_app_id);
             callback_called = true;
             run_loop.Quit();
@@ -562,8 +563,8 @@ TEST_F(WebAppInstallTaskTest, WebContentsDestroyed) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kWebContentsDestroyed, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kWebContentsDestroyed, code);
             EXPECT_EQ(AppId(), installed_app_id);
             callback_called = true;
             run_loop.Quit();
@@ -592,8 +593,8 @@ TEST_F(WebAppInstallTaskTest, InstallTaskDestroyed) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kInstallTaskDestroyed, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kInstallTaskDestroyed, code);
             EXPECT_EQ(AppId(), installed_app_id);
             callback_called = true;
             run_loop.Quit();
@@ -645,8 +646,8 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
             EXPECT_EQ(app_id, installed_app_id);
             callback_called = true;
             run_loop.Quit();
@@ -930,8 +931,8 @@ TEST_F(WebAppInstallTaskTest, WriteDataToDiskFailed) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kWriteDataFailed, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kWriteDataFailed, code);
             EXPECT_EQ(AppId(), installed_app_id);
             callback_called = true;
             run_loop.Quit();
@@ -965,8 +966,8 @@ TEST_F(WebAppInstallTaskTest, UserInstallDeclined) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestDeclineDialogCallback),
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kUserInstallDeclined, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kUserInstallDeclined, code);
             EXPECT_EQ(installed_app_id, AppId());
             callback_called = true;
             run_loop.Quit();
@@ -990,12 +991,12 @@ TEST_F(WebAppInstallTaskTest, FinalizerMethodsCalled) {
 TEST_F(WebAppInstallTaskTest, FinalizerMethodsNotCalled) {
   PrepareTestAppInstall();
   fake_install_finalizer().SetNextFinalizeInstallResult(
-      AppId(), InstallResultCode::kInstallURLLoadTimeOut);
+      AppId(), webapps::InstallResultCode::kInstallURLLoadTimeOut);
 
   InstallResult result = InstallWebAppFromManifestWithFallbackAndGetResults();
 
   EXPECT_TRUE(result.app_id.empty());
-  EXPECT_EQ(InstallResultCode::kInstallURLLoadTimeOut, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kInstallURLLoadTimeOut, result.code);
 
   EXPECT_EQ(0, fake_install_finalizer().num_reparent_tab_calls());
 }
@@ -1017,8 +1018,8 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_Success) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
             EXPECT_EQ(app_id, installed_app_id);
             run_loop.Quit();
           }));
@@ -1043,8 +1044,8 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_Success) {
       std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
       ForInstallableSite::kYes, webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
             EXPECT_EQ(app_id, installed_app_id);
 
             std::unique_ptr<WebAppInstallInfo> final_web_app_info =
@@ -1076,7 +1077,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_GenerateIcons) {
       std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
       ForInstallableSite::kYes, webapps::WebappInstallSource::ARC,
       base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                     InstallResultCode code) {
+                                     webapps::InstallResultCode code) {
         std::unique_ptr<WebAppInstallInfo> final_web_app_info =
             fake_install_finalizer().web_app_info();
 
@@ -1112,8 +1113,8 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifestWithFallback_NoIcons) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                     InstallResultCode code) {
-        EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+                                     webapps::InstallResultCode code) {
+        EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
 
         std::unique_ptr<WebAppInstallInfo> final_web_app_info =
             fake_install_finalizer().web_app_info();
@@ -1165,8 +1166,8 @@ TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kIntentToPlayStore, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kIntentToPlayStore, code);
             EXPECT_EQ(AppId(), installed_app_id);
             run_loop.Quit();
           }));
@@ -1196,8 +1197,8 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_GuestProfile) {
       web_contents(), MakeParams(),
       webapps::WebappInstallSource::EXTERNAL_DEFAULT,
       base::BindLambdaForTesting(
-          [&](const AppId& app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          [&](const AppId& app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -1255,7 +1256,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_ExpectAppId) {
     CreateDefaultDataToRetrieve(url1);
     install_task().ExpectAppId(app_id1);
     InstallResult result = InstallWebAppFromManifestWithFallbackAndGetResults();
-    EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     EXPECT_EQ(app_id1, result.app_id);
     EXPECT_TRUE(registrar().GetAppById(app_id1));
   }
@@ -1264,7 +1265,8 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_ExpectAppId) {
     CreateDefaultDataToRetrieve(url2);
     install_task().ExpectAppId(app_id1);
     InstallResult result = InstallWebAppFromManifestWithFallbackAndGetResults();
-    EXPECT_EQ(InstallResultCode::kExpectedAppIdCheckFailed, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kExpectedAppIdCheckFailed,
+              result.code);
     EXPECT_EQ(app_id2, result.app_id);
     EXPECT_FALSE(registrar().GetAppById(app_id2));
   }
@@ -1279,7 +1281,7 @@ TEST_F(WebAppInstallTaskTest, LoadAndInstallWebAppFromManifestWithFallback) {
         url, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
 
     InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(InstallResultCode::kInstallURLRedirected, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kInstallURLRedirected, result.code);
     EXPECT_TRUE(result.app_id.empty());
     EXPECT_FALSE(registrar().GetAppById(app_id));
   }
@@ -1290,7 +1292,7 @@ TEST_F(WebAppInstallTaskTest, LoadAndInstallWebAppFromManifestWithFallback) {
         url, WebAppUrlLoader::Result::kFailedPageTookTooLong);
 
     InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(InstallResultCode::kInstallURLLoadTimeOut, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kInstallURLLoadTimeOut, result.code);
     EXPECT_TRUE(result.app_id.empty());
     EXPECT_FALSE(registrar().GetAppById(app_id));
   }
@@ -1300,7 +1302,7 @@ TEST_F(WebAppInstallTaskTest, LoadAndInstallWebAppFromManifestWithFallback) {
     url_loader().SetNextLoadUrlResult(url, WebAppUrlLoader::Result::kUrlLoaded);
 
     InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     EXPECT_EQ(app_id, result.app_id);
     EXPECT_TRUE(registrar().GetAppById(app_id));
   }
@@ -1310,7 +1312,7 @@ TEST_F(WebAppInstallTaskTest, LoadAndInstallWebAppFromManifestWithFallback) {
     url_loader().SetNextLoadUrlResult(url, WebAppUrlLoader::Result::kUrlLoaded);
 
     InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     EXPECT_EQ(app_id, result.app_id);
     EXPECT_TRUE(registrar().GetAppById(app_id));
   }
@@ -1405,8 +1407,8 @@ TEST_F(WebAppInstallTaskTest, StorageIsolationFlagSaved) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
             EXPECT_EQ(app_id, installed_app_id);
             callback_called = true;
             run_loop.Quit();
@@ -1458,8 +1460,8 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
             EXPECT_EQ(app_id, installed_app_id);
             callback_called = true;
             run_loop.Quit();
@@ -1530,7 +1532,7 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
         base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                       InstallResultCode code) {
+                                       webapps::InstallResultCode code) {
           result.app_id = installed_app_id;
           result.code = code;
           std::unique_ptr<WebAppInstallInfo> final_web_app_info =
@@ -1606,7 +1608,7 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
     fake_install_finalizer().FinalizeUpdate(
         *web_app_info,
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                       InstallResultCode code,
+                                       webapps::InstallResultCode code,
                                        OsHooksErrors os_hooks_errors) {
           result.app_id = installed_app_id;
           result.code = code;
@@ -1666,7 +1668,7 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
       url, kInitialThemeColor, "shortcut",
       GURL("https://example.com/path/page"), kIconSize,
       GURL("https://example.com/icons/shortcut.png"));
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(app_id, result.app_id);
 }
 
@@ -1680,7 +1682,7 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
     CreateDefaultDataToRetrieve(url);
     install_task().ExpectAppId(app_id);
     InstallResult result = InstallWebAppFromManifestWithFallbackAndGetResults();
-    EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     EXPECT_EQ(app_id, result.app_id);
   }
   ResetInstallTask();
@@ -1690,7 +1692,8 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
     InstallResult result = UpdateWebAppWithShortcutsMenuValidateAndGetResults(
         url, kInitialThemeColor, "shortcut",
         GURL("https://example.com/path/page"), kIconSize, ShortcutIconUrl());
-    EXPECT_EQ(InstallResultCode::kSuccessAlreadyInstalled, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+              result.code);
     EXPECT_EQ(app_id, result.app_id);
   }
 }
@@ -1706,7 +1709,7 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
         url, kInitialThemeColor, "shortcut",
         GURL("https://example.com/path/page"), 2 * kIconSize,
         GURL("https://example.com/icons/shortcut.png"));
-    EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     EXPECT_EQ(app_id, result.app_id);
   }
   ResetInstallTask();
@@ -1716,7 +1719,8 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
     InstallResult result = UpdateWebAppWithShortcutsMenuValidateAndGetResults(
         url, kInitialThemeColor, kShortcutItemName, ShortcutItemUrl(),
         kIconSize, ShortcutIconUrl());
-    EXPECT_EQ(InstallResultCode::kSuccessAlreadyInstalled, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+              result.code);
     EXPECT_EQ(app_id, result.app_id);
   }
 }
@@ -1731,7 +1735,7 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
     InstallResult result = InstallWebAppWithShortcutsMenuValidateAndGetResults(
         url, kInitialThemeColor, kShortcutItemName, ShortcutItemUrl(),
         kIconSize, ShortcutIconUrl());
-    EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     EXPECT_EQ(app_id, result.app_id);
   }
   ResetInstallTask();
@@ -1742,7 +1746,8 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
     InstallResult result = UpdateWebAppWithShortcutsMenuValidateAndGetResults(
         url, kFinalThemeColor, kShortcutItemName, ShortcutItemUrl(), kIconSize,
         ShortcutIconUrl());
-    EXPECT_EQ(InstallResultCode::kSuccessAlreadyInstalled, result.code);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+              result.code);
     EXPECT_EQ(app_id, result.app_id);
   }
 }
@@ -1789,14 +1794,14 @@ class WebAppInstallTaskTestWithFileHandlers : public WebAppInstallTaskTest {
     install_task_->InstallWebAppFromManifest(
         web_contents(), /*bypass_service_worker_check=*/false, source,
         base::BindOnce(test::TestAcceptDialogCallback),
-        base::BindLambdaForTesting(
-            [&](const AppId& installed_app_id, InstallResultCode code) {
-              result.app_id = installed_app_id;
-              result.code = code;
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       webapps::InstallResultCode code) {
+          result.app_id = installed_app_id;
+          result.code = code;
 
-              callback_called = true;
-              run_loop.Quit();
-            }));
+          callback_called = true;
+          run_loop.Quit();
+        }));
 
     run_loop.Run();
     EXPECT_TRUE(callback_called);
@@ -1813,7 +1818,7 @@ class WebAppInstallTaskTestWithFileHandlers : public WebAppInstallTaskTest {
     install_finalizer_->FinalizeUpdate(
         *app_info,
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                       InstallResultCode code,
+                                       webapps::InstallResultCode code,
                                        OsHooksErrors os_hooks_errors) {
           result.app_id = installed_app_id;
           result.code = code;
@@ -1840,7 +1845,8 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
   // Install the app.
   InstallResult install_result = InstallWebAppFromManifest(
       CreateManifest(url), webapps::WebappInstallSource::MENU_BROWSER_TAB);
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, install_result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            install_result.code);
   EXPECT_EQ(app_id, install_result.app_id);
   EXPECT_EQ(1u, fake_os_integration_manager().num_create_file_handlers_calls());
 
@@ -1854,7 +1860,8 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
 
   InstallResult update_result =
       UpdateWebAppFromInfo(app_id, std::move(app_info));
-  EXPECT_EQ(InstallResultCode::kSuccessAlreadyInstalled, update_result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+            update_result.code);
   EXPECT_EQ(app_id, update_result.app_id);
   EXPECT_EQ(1u, fake_os_integration_manager().num_update_file_handlers_calls());
 }
@@ -1867,7 +1874,8 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
   // Install the app.
   InstallResult install_result = InstallWebAppFromManifest(
       CreateManifest(url), webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, install_result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            install_result.code);
   EXPECT_EQ(app_id, install_result.app_id);
 #if BUILDFLAG(IS_CHROMEOS)
   // OS integration is always enabled in ChromeOS
@@ -1886,7 +1894,8 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
 
   InstallResult update_result =
       UpdateWebAppFromInfo(app_id, std::move(app_info));
-  EXPECT_EQ(InstallResultCode::kSuccessAlreadyInstalled, update_result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+            update_result.code);
   EXPECT_EQ(app_id, update_result.app_id);
 #if BUILDFLAG(IS_CHROMEOS)
   // OS integration is always enabled in ChromeOS

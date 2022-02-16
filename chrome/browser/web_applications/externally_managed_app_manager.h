@@ -18,9 +18,11 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "url/gurl.h"
 
-namespace web_app {
-
+namespace webapps {
 enum class InstallResultCode;
+}
+
+namespace web_app {
 
 class WebAppRegistrar;
 class WebAppInstallFinalizer;
@@ -53,7 +55,7 @@ class ExternallyManagedAppManager {
  public:
   struct InstallResult {
     InstallResult();
-    explicit InstallResult(InstallResultCode code,
+    explicit InstallResult(webapps::InstallResultCode code,
                            absl::optional<AppId> app_id = absl::nullopt,
                            bool did_uninstall_and_replace = false);
     InstallResult(const InstallResult&);
@@ -61,7 +63,7 @@ class ExternallyManagedAppManager {
 
     bool operator==(const InstallResult& other) const;
 
-    InstallResultCode code;
+    webapps::InstallResultCode code;
     absl::optional<AppId> app_id;
     bool did_uninstall_and_replace = false;
   };

@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -98,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         base::BindLambdaForTesting(
             [&app_id, &run_loop](const AppId& installed_app_id,
-                                 InstallResultCode code) {
-              EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+                                 webapps::InstallResultCode code) {
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
               app_id = installed_app_id;
               run_loop.Quit();
             }));

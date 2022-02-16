@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/background_color_change_waiter.h"
@@ -161,8 +162,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
         /*callback=*/
         base::BindLambdaForTesting(
             [&run_loop, &app_id](const AppId& installed_app_id,
-                                 InstallResultCode code) {
-              DCHECK_EQ(code, InstallResultCode::kSuccessNewInstall);
+                                 webapps::InstallResultCode code) {
+              DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
               app_id = installed_app_id;
               run_loop.Quit();
             }));

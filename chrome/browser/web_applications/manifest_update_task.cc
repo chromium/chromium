@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -34,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -737,7 +737,7 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
 }
 
 void ManifestUpdateTask::OnInstallationComplete(const AppId& app_id,
-                                                InstallResultCode code,
+                                                webapps::InstallResultCode code,
                                                 OsHooksErrors os_hooks_errors) {
   DCHECK_EQ(stage_, Stage::kPendingInstallation);
 
@@ -748,7 +748,7 @@ void ManifestUpdateTask::OnInstallationComplete(const AppId& app_id,
 
   DCHECK_EQ(app_id_, app_id);
   DCHECK(!IsUpdateNeededForManifest());
-  DCHECK_EQ(code, InstallResultCode::kSuccessAlreadyInstalled);
+  DCHECK_EQ(code, webapps::InstallResultCode::kSuccessAlreadyInstalled);
 
   sync_bridge_->SetAppManifestUpdateTime(app_id, base::Time::Now());
 

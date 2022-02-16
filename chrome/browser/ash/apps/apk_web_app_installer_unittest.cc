@@ -12,10 +12,10 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "url/gurl.h"
 
@@ -69,7 +69,7 @@ class FakeApkWebAppInstaller : public ApkWebAppInstaller {
 
  private:
   void CompleteInstallation(const web_app::AppId& id,
-                            web_app::InstallResultCode code) override {
+                            webapps::InstallResultCode code) override {
     id_ = id;
     complete_installation_called_ = true;
     std::move(quit_closure_).Run();

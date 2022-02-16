@@ -59,7 +59,7 @@ WebAppInstalledCallback& GetInstalledCallbackForTesting() {
 
 void OnWebAppInstalled(WebAppInstalledCallback callback,
                        const AppId& installed_app_id,
-                       InstallResultCode code) {
+                       webapps::InstallResultCode code) {
   if (GetInstalledCallbackForTesting())
     std::move(GetInstalledCallbackForTesting()).Run(installed_app_id, code);
 

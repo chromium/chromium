@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -46,6 +45,7 @@
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_context.h"
@@ -231,9 +231,9 @@ class ManagementUninstallFunctionUninstallDialogDelegate
 void OnGenerateAppForLinkCompleted(
     extensions::ManagementGenerateAppForLinkFunction* function,
     const web_app::AppId& app_id,
-    web_app::InstallResultCode code) {
+    webapps::InstallResultCode code) {
   const bool install_success =
-      code == web_app::InstallResultCode::kSuccessNewInstall;
+      code == webapps::InstallResultCode::kSuccessNewInstall;
   function->FinishCreateWebApp(app_id, install_success);
 }
 
@@ -374,7 +374,7 @@ void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
 
 void OnWebAppInstallCompleted(InstallOrLaunchWebAppCallback callback,
                               const web_app::AppId& app_id,
-                              web_app::InstallResultCode code) {
+                              webapps::InstallResultCode code) {
   InstallOrLaunchWebAppResult result =
       IsSuccess(code) ? InstallOrLaunchWebAppResult::kSuccess
                       : InstallOrLaunchWebAppResult::kUnknownError;

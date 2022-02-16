@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -55,6 +54,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -404,8 +404,8 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting(
-            [&](const AppId& new_app_id, InstallResultCode code) {
-              EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
+            [&](const AppId& new_app_id, webapps::InstallResultCode code) {
+              EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
               app_id = new_app_id;
               run_loop.Quit();
             }));
@@ -429,7 +429,8 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
             [&](const GURL& installed_app_url,
                 ExternallyManagedAppManager::InstallResult result) {
               EXPECT_EQ(installed_app_url, app_url);
-              EXPECT_EQ(result.code, InstallResultCode::kSuccessNewInstall);
+              EXPECT_EQ(result.code,
+                        webapps::InstallResultCode::kSuccessNewInstall);
               run_loop.Quit();
             }));
     run_loop.Run();
@@ -452,7 +453,8 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
             [&](const GURL& installed_app_url,
                 ExternallyManagedAppManager::InstallResult result) {
               EXPECT_EQ(installed_app_url, app_url);
-              EXPECT_EQ(result.code, InstallResultCode::kSuccessNewInstall);
+              EXPECT_EQ(result.code,
+                        webapps::InstallResultCode::kSuccessNewInstall);
               run_loop.Quit();
             }));
     run_loop.Run();

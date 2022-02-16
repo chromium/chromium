@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -110,7 +109,8 @@ WebAppInstallTask::~WebAppInstallTask() {
   // If this task is still observing a WebContents, then the callbacks haven't
   // yet been run.  Run them before the task is destroyed.
   if (web_contents())
-    CallInstallCallback(AppId(), InstallResultCode::kInstallTaskDestroyed);
+    CallInstallCallback(AppId(),
+                        webapps::InstallResultCode::kInstallTaskDestroyed);
 }
 
 void WebAppInstallTask::ExpectAppId(const AppId& expected_app_id) {
@@ -380,7 +380,8 @@ base::WeakPtr<WebAppInstallTask> WebAppInstallTask::GetWeakPtr() {
 }
 
 void WebAppInstallTask::WebContentsDestroyed() {
-  CallInstallCallback(AppId(), InstallResultCode::kWebContentsDestroyed);
+  CallInstallCallback(AppId(),
+                      webapps::InstallResultCode::kWebContentsDestroyed);
 }
 
 base::Value WebAppInstallTask::TakeErrorDict() {
@@ -416,7 +417,7 @@ void WebAppInstallTask::RecordInstallEvent() {
 }
 
 void WebAppInstallTask::CallInstallCallback(const AppId& app_id,
-                                            InstallResultCode code) {
+                                            webapps::InstallResultCode code) {
   Observe(nullptr);
   dialog_callback_.Reset();
 
@@ -449,17 +450,20 @@ void WebAppInstallTask::OnWebAppUrlLoadedGetWebAppInstallInfo(
     LogUrlLoaderError("OnWebAppUrlLoaded", url_to_load.spec(), result);
 
   if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
-    CallInstallCallback(AppId(), InstallResultCode::kInstallURLRedirected);
+    CallInstallCallback(AppId(),
+                        webapps::InstallResultCode::kInstallURLRedirected);
     return;
   }
 
   if (result == WebAppUrlLoader::Result::kFailedPageTookTooLong) {
-    CallInstallCallback(AppId(), InstallResultCode::kInstallURLLoadTimeOut);
+    CallInstallCallback(AppId(),
+                        webapps::InstallResultCode::kInstallURLLoadTimeOut);
     return;
   }
 
   if (result != WebAppUrlLoader::Result::kUrlLoaded) {
-    CallInstallCallback(AppId(), InstallResultCode::kInstallURLLoadFailed);
+    CallInstallCallback(AppId(),
+                        webapps::InstallResultCode::kInstallURLLoadFailed);
     return;
   }
 
@@ -480,17 +484,20 @@ void WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest(
     LogUrlLoaderError("OnWebAppUrlLoaded", url_to_load.spec(), result);
 
   if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
-    CallInstallCallback(AppId(), InstallResultCode::kInstallURLRedirected);
+    CallInstallCallback(AppId(),
+                        webapps::InstallResultCode::kInstallURLRedirected);
     return;
   }
 
   if (result == WebAppUrlLoader::Result::kFailedPageTookTooLong) {
-    CallInstallCallback(AppId(), InstallResultCode::kInstallURLLoadTimeOut);
+    CallInstallCallback(AppId(),
+                        webapps::InstallResultCode::kInstallURLLoadTimeOut);
     return;
   }
 
   if (result != WebAppUrlLoader::Result::kUrlLoaded) {
-    CallInstallCallback(AppId(), InstallResultCode::kInstallURLLoadFailed);
+    CallInstallCallback(AppId(),
+                        webapps::InstallResultCode::kInstallURLLoadFailed);
     return;
   }
 
@@ -512,9 +519,9 @@ void WebAppInstallTask::OnWebAppInstallabilityChecked(
   if (is_installable) {
     DCHECK(opt_manifest);
     CallInstallCallback(GenerateAppIdFromManifest(*opt_manifest),
-                        InstallResultCode::kSuccessNewInstall);
+                        webapps::InstallResultCode::kSuccessNewInstall);
   } else {
-    CallInstallCallback(AppId(), InstallResultCode::kNotInstallable);
+    CallInstallCallback(AppId(), webapps::InstallResultCode::kNotInstallable);
   }
 }
 
@@ -526,8 +533,8 @@ void WebAppInstallTask::OnGetWebAppInstallInfo(
     return;
 
   if (!web_app_info) {
-    CallInstallCallback(AppId(),
-                        InstallResultCode::kGetWebAppInstallInfoFailed);
+    CallInstallCallback(
+        AppId(), webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
     return;
   }
 
@@ -591,7 +598,8 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
       !valid_manifest_for_web_app) {
     LOG(WARNING) << "Did not install " << web_app_info->start_url.spec()
                  << " because it didn't have a manifest for web app";
-    CallInstallCallback(AppId(), InstallResultCode::kNotValidManifestForWebApp);
+    CallInstallCallback(AppId(),
+                        webapps::InstallResultCode::kNotValidManifestForWebApp);
     return;
   }
 
@@ -611,7 +619,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
     LogExpectedAppIdError("OnDidPerformInstallableCheck",
                           web_app_info->start_url.spec(), app_id);
     CallInstallCallback(std::move(app_id),
-                        InstallResultCode::kExpectedAppIdCheckFailed);
+                        webapps::InstallResultCode::kExpectedAppIdCheckFailed);
     return;
   }
 
@@ -624,7 +632,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
     DCHECK(install_params_ && install_params_->parent_app_id.has_value());
     if (registrar_->WasInstalledBySubApp(app_id)) {
       CallInstallCallback(std::move(app_id),
-                          InstallResultCode::kSuccessAlreadyInstalled);
+                          webapps::InstallResultCode::kSuccessAlreadyInstalled);
       return;
     }
   }
@@ -721,7 +729,8 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStore(
           HandleUrl);
       if (instance) {
         instance->HandleUrl(intent, kPlayStorePackage);
-        CallInstallCallback(AppId(), InstallResultCode::kIntentToPlayStore);
+        CallInstallCallback(AppId(),
+                            webapps::InstallResultCode::kIntentToPlayStore);
         return;
       }
     }
@@ -825,13 +834,15 @@ void WebAppInstallTask::OnDialogCompleted(
     return;
 
   if (!user_accepted) {
-    CallInstallCallback(AppId(), InstallResultCode::kUserInstallDeclined);
+    CallInstallCallback(AppId(),
+                        webapps::InstallResultCode::kUserInstallDeclined);
     return;
   }
 
   if (only_retrieve_web_application_info_) {
     web_application_info_ = std::move(web_app_info);
-    CallInstallCallback(AppId(), InstallResultCode::kSuccessNewInstall);
+    CallInstallCallback(AppId(),
+                        webapps::InstallResultCode::kSuccessNewInstall);
     return;
   }
 
@@ -881,7 +892,7 @@ void WebAppInstallTask::OnDialogCompleted(
 }
 
 void WebAppInstallTask::OnInstallFinalized(const AppId& app_id,
-                                           InstallResultCode code,
+                                           webapps::InstallResultCode code,
                                            OsHooksErrors os_hooks_errors) {
   CallInstallCallback(app_id, code);
 }
@@ -889,12 +900,12 @@ void WebAppInstallTask::OnInstallFinalized(const AppId& app_id,
 void WebAppInstallTask::OnInstallFinalizedMaybeReparentTab(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     const AppId& app_id,
-    InstallResultCode code,
+    webapps::InstallResultCode code,
     OsHooksErrors os_hooks_errors) {
   if (ShouldStopInstall())
     return;
 
-  if (code != InstallResultCode::kSuccessNewInstall) {
+  if (code != webapps::InstallResultCode::kSuccessNewInstall) {
     CallInstallCallback(app_id, code);
     return;
   }
@@ -922,7 +933,7 @@ void WebAppInstallTask::OnInstallFinalizedMaybeReparentTab(
       install_finalizer_->ReparentTab(app_id, !error, web_contents());
     }
   }
-  CallInstallCallback(app_id, InstallResultCode::kSuccessNewInstall);
+  CallInstallCallback(app_id, webapps::InstallResultCode::kSuccessNewInstall);
 }
 
 void WebAppInstallTask::RecordDownloadedIconsResultAndHttpStatusCodes(

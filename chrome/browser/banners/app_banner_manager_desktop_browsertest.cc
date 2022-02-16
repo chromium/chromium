@@ -27,13 +27,13 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -146,8 +146,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
 
     web_app::SetInstalledCallbackForTesting(
         base::BindLambdaForTesting([&](const web_app::AppId& installed_app_id,
-                                       web_app::InstallResultCode code) {
-          EXPECT_EQ(web_app::InstallResultCode::kSuccessNewInstall, code);
+                                       webapps::InstallResultCode code) {
+          EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
           EXPECT_EQ(installed_app_id,
                     web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, url));
           callback_called = true;
@@ -195,8 +195,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest, MAYBE_DestroyWebConte
 
     web_app::SetInstalledCallbackForTesting(
         base::BindLambdaForTesting([&](const web_app::AppId& installed_app_id,
-                                       web_app::InstallResultCode code) {
-          EXPECT_EQ(web_app::InstallResultCode::kWebContentsDestroyed, code);
+                                       webapps::InstallResultCode code) {
+          EXPECT_EQ(webapps::InstallResultCode::kWebContentsDestroyed, code);
           callback_called = true;
           run_loop.Quit();
         }));

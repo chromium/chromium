@@ -17,9 +17,9 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/browser/install_result_code.h"
 
 namespace web_app {
 
@@ -57,7 +57,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
                 ++deduped_install_count_;
               }
               return ExternallyManagedAppManager::InstallResult(
-                  InstallResultCode::kSuccessNewInstall);
+                  webapps::InstallResultCode::kSuccessNewInstall);
             }));
     externally_managed_app_manager().SetHandleUninstallRequestCallback(
         base::BindLambdaForTesting(

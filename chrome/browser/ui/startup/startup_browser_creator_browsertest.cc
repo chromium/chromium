@@ -74,7 +74,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -100,6 +99,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -2213,10 +2213,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
     web_app_finalizer.FinalizeInstall(
         info, options,
         base::BindLambdaForTesting([&](const web_app::AppId& app_id,
-                                       web_app::InstallResultCode code,
+                                       webapps::InstallResultCode code,
                                        web_app::OsHooksErrors os_hooks_errors) {
           EXPECT_EQ(app_id, kAppId);
-          EXPECT_EQ(code, web_app::InstallResultCode::kSuccessNewInstall);
+          EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
           EXPECT_TRUE(os_hooks_errors.none());
           run_loop.Quit();
         }));

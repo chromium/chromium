@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -265,8 +265,8 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
       // yet installed the app. This is fine (for now) because |callback| is
       // only used in tests.
       IsAppIdAlreadyEnqueued(sync_app_id)) {
-    std::move(callback).Run(sync_app_id,
-                            InstallResultCode::kSuccessAlreadyInstalled);
+    std::move(callback).Run(
+        sync_app_id, webapps::InstallResultCode::kSuccessAlreadyInstalled);
     return;
   }
 
@@ -397,7 +397,7 @@ void WebAppInstallManager::
         std::unique_ptr<WebAppInstallInfo> web_application_info,
         OnceInstallCallback callback,
         const AppId& web_app_id,
-        InstallResultCode code) {
+        webapps::InstallResultCode code) {
   // TODO(loyso): Record |code| for this specific case in
   // Webapp.BookmarkAppInstalledAfterSyncResult UMA.
   if (IsSuccess(code)) {
@@ -408,8 +408,8 @@ void WebAppInstallManager::
 
   // The install task or web contents getting destroyed indicates we could be
   // shutting down; don't enqueue another task.
-  if (code == InstallResultCode::kWebContentsDestroyed ||
-      code == InstallResultCode::kInstallTaskDestroyed) {
+  if (code == webapps::InstallResultCode::kWebContentsDestroyed ||
+      code == webapps::InstallResultCode::kInstallTaskDestroyed) {
     return;
   }
 
@@ -489,18 +489,20 @@ void WebAppInstallManager::DeleteTask(WebAppInstallTask* task) {
   tasks_.erase(task);
 }
 
-void WebAppInstallManager::OnInstallTaskCompleted(WebAppInstallTask* task,
-                                                  OnceInstallCallback callback,
-                                                  const AppId& app_id,
-                                                  InstallResultCode code) {
+void WebAppInstallManager::OnInstallTaskCompleted(
+    WebAppInstallTask* task,
+    OnceInstallCallback callback,
+    const AppId& app_id,
+    webapps::InstallResultCode code) {
   DeleteTask(task);
   std::move(callback).Run(app_id, code);
 }
 
-void WebAppInstallManager::OnQueuedTaskCompleted(WebAppInstallTask* task,
-                                                 OnceInstallCallback callback,
-                                                 const AppId& app_id,
-                                                 InstallResultCode code) {
+void WebAppInstallManager::OnQueuedTaskCompleted(
+    WebAppInstallTask* task,
+    OnceInstallCallback callback,
+    const AppId& app_id,
+    webapps::InstallResultCode code) {
   DCHECK(current_queued_task_);
   DCHECK_EQ(current_queued_task_, task);
   current_queued_task_ = nullptr;
@@ -520,7 +522,7 @@ void WebAppInstallManager::OnLoadWebAppAndCheckManifestCompleted(
     WebAppManifestCheckCallback callback,
     std::unique_ptr<content::WebContents> web_contents,
     const AppId& app_id,
-    InstallResultCode code) {
+    webapps::InstallResultCode code) {
   DeleteTask(task);
 
   InstallableCheckResult result;

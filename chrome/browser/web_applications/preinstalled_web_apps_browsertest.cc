@@ -133,13 +133,14 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
                         kOfflineOnlyExpectedCount + kOnlineOnlyExpectedCount);
 
               for (const auto& expectation : kOfflineOnlyExpectations) {
-                EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
-                          InstallResultCode::kSuccessOfflineOnlyInstall);
+                EXPECT_EQ(
+                    install_results[GURL(expectation.install_url)].code,
+                    webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
               }
 
               for (const auto& expectation : kOnlineOnlyExpectations) {
                 EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
-                          InstallResultCode::kInstallURLLoadFailed);
+                          webapps::InstallResultCode::kInstallURLLoadFailed);
               }
             } else {
               EXPECT_EQ(install_results.size(), 0u);

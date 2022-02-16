@@ -67,7 +67,7 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  absl::optional<InstallResultCode> result_code_;
+  absl::optional<webapps::InstallResultCode> result_code_;
 };
 
 // Verify that the MIME type registration callback is called and that
@@ -107,7 +107,8 @@ IN_PROC_BROWSER_TEST_F(
   install_options.install_source = ExternalInstallSource::kExternalPolicy;
   InstallApp(install_options);
   run_loop.Run();
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result_code_.value());
   ASSERT_TRUE(path_reached);
 }
 

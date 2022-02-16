@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -29,6 +28,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "url/gurl.h"
 
@@ -536,9 +536,9 @@ void ApkWebAppService::OnDidFinishInstall(
     const web_app::AppId& web_app_id,
     bool is_web_only_twa,
     const absl::optional<std::string> sha256_fingerprint,
-    web_app::InstallResultCode code) {
+    webapps::InstallResultCode code) {
   // Do nothing: any error cancels installation.
-  if (code != web_app::InstallResultCode::kSuccessNewInstall)
+  if (code != webapps::InstallResultCode::kSuccessNewInstall)
     return;
 
   // Set a pref to map |web_app_id| to |package_name| for future uninstallation.

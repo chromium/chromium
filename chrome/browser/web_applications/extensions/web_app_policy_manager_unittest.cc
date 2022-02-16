@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -37,6 +36,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -466,7 +466,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     controller().UnregisterApp(app_id);
   }
 
-  void SetInstallResultCode(InstallResultCode result_code) {
+  void SetInstallResultCode(webapps::InstallResultCode result_code) {
     install_result_code_ = result_code;
   }
 
@@ -477,8 +477,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
   }
 
  private:
-  InstallResultCode install_result_code_ =
-      InstallResultCode::kSuccessNewInstall;
+  webapps::InstallResultCode install_result_code_ =
+      webapps::InstallResultCode::kSuccessNewInstall;
 
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
@@ -1071,14 +1071,14 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
         WebAppPolicyManager::kInstallResultHistogramName, 1);
     histograms.ExpectBucketCount(
         WebAppPolicyManager::kInstallResultHistogramName,
-        InstallResultCode::kSuccessNewInstall, 1);
+        webapps::InstallResultCode::kSuccessNewInstall, 1);
   }
   {
     base::Value list(base::Value::Type::LIST);
     list.Append(GetTabbedItem());
     list.Append(GetNoContainerItem());
     SetInstallResultCode(
-        InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
+        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
 
     profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
@@ -1087,7 +1087,7 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
         WebAppPolicyManager::kInstallResultHistogramName, 3);
     histograms.ExpectBucketCount(
         WebAppPolicyManager::kInstallResultHistogramName,
-        InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 2);
+        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 2);
   }
 }
 

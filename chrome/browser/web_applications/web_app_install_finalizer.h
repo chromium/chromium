@@ -14,11 +14,11 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/web_app_uninstall_job.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -48,7 +48,7 @@ class WebAppInstallFinalizer {
  public:
   using InstallFinalizedCallback =
       base::OnceCallback<void(const AppId& app_id,
-                              InstallResultCode code,
+                              webapps::InstallResultCode code,
                               OsHooksErrors os_hooks_errors)>;
   using UninstallWebAppCallback = base::OnceCallback<void(bool uninstalled)>;
   using RepeatingUninstallCallback =

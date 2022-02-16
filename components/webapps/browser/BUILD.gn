@@ -12,6 +12,8 @@ source_set("browser") {
     "banners/app_banner_metrics.h",
     "banners/app_banner_settings_helper.cc",
     "banners/app_banner_settings_helper.h",
+    "install_result_code.cc",
+    "install_result_code.h",
     "installable/installable_data.cc",
     "installable/installable_data.h",
     "installable/installable_logging.cc",
@@ -135,6 +137,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "banners/app_banner_settings_helper_unittest.cc",
+    "install_result_code_unittest.cc",
     "installable/installable_manager_unittest.cc",
     "installable/installable_task_queue_unittest.cc",
     "pwa_install_path_tracker_unittest.cc",

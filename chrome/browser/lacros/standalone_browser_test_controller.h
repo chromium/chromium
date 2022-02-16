@@ -7,11 +7,11 @@
 
 #include <string>
 
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -32,7 +32,7 @@ class StandaloneBrowserTestController
  private:
   void WebAppInstallationDone(InstallWebAppCallback callback,
                               const web_app::AppId& installed_app_id,
-                              web_app::InstallResultCode code);
+                              webapps::InstallResultCode code);
 
   mojo::Receiver<crosapi::mojom::StandaloneBrowserTestController>
       controller_receiver_{this};

@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -71,7 +72,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   using LoadWebAppAndCheckManifestCallback = base::OnceCallback<void(
       std::unique_ptr<content::WebContents> web_contents,
       const AppId& app_id,
-      InstallResultCode code)>;
+      webapps::InstallResultCode code)>;
   // Load a web app from the given URL and check for valid manifest.
   void LoadWebAppAndCheckManifest(const GURL& url,
                                   webapps::WebappInstallSource install_source,
@@ -175,7 +176,8 @@ class WebAppInstallTask : content::WebContentsObserver {
 
   // Calling the callback may destroy |this| task. Callers shouldn't work with
   // any |this| class members after calling it.
-  void CallInstallCallback(const AppId& app_id, InstallResultCode code);
+  void CallInstallCallback(const AppId& app_id,
+                           webapps::InstallResultCode code);
 
   // Checks if any errors occurred while |this| was async awaiting. All On*
   // completion handlers below must return early if this is true. Also, if
@@ -249,12 +251,12 @@ class WebAppInstallTask : content::WebContentsObserver {
                          bool user_accepted,
                          std::unique_ptr<WebAppInstallInfo> web_app_info);
   void OnInstallFinalized(const AppId& app_id,
-                          InstallResultCode code,
+                          webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
   void OnInstallFinalizedMaybeReparentTab(
       std::unique_ptr<WebAppInstallInfo> web_app_info,
       const AppId& app_id,
-      InstallResultCode code,
+      webapps::InstallResultCode code,
       OsHooksErrors os_hooks_errors);
   void OnOsHooksCreated(DisplayMode user_display_mode,
                         const AppId& app_id,
