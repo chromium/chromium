@@ -197,7 +197,7 @@ void AttributionSrcLoader::HandleSourceRegistration(
     return;
   source_data->destination = std::move(destination);
 
-  // Treat invalid expiry and priority as if they were not set.
+  // Treat invalid expiry, priority, and debug key as if they were not set.
   String priority_string;
   if (object->GetString("source_priority", &priority_string)) {
     bool priority_is_valid = false;
@@ -212,6 +212,16 @@ void AttributionSrcLoader::HandleSourceRegistration(
     int64_t expiry = expiry_string.ToInt64Strict(&expiry_is_valid);
     if (expiry_is_valid)
       source_data->expiry = base::Seconds(expiry);
+  }
+
+  String debug_key_string;
+  if (object->GetString("debug_key", &debug_key_string)) {
+    bool debug_key_is_valid = false;
+    uint64_t debug_key = debug_key_string.ToUInt64Strict(&debug_key_is_valid);
+    if (debug_key_is_valid) {
+      source_data->debug_key =
+          mojom::blink::AttributionDebugKey::New(debug_key);
+    }
   }
 
   it->value->SourceDataAvailable(std::move(source_data));

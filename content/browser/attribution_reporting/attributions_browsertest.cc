@@ -88,6 +88,7 @@ struct ExpectedReportWaiter {
 
   GURL expected_url;
   base::Value expected_body;
+  std::string source_debug_key;
   std::unique_ptr<net::test_server::ControllableHttpResponse> response;
 
   bool HasRequest() { return !!response->http_request(); }
@@ -118,6 +119,12 @@ struct ExpectedReportWaiter {
     EXPECT_TRUE(base::GUID::ParseLowercase(*report_id).is_valid());
 
     EXPECT_TRUE(body.FindDoubleKey("randomized_trigger_rate"));
+
+    if (source_debug_key.empty()) {
+      EXPECT_FALSE(body.FindStringKey("source_debug_key"));
+    } else {
+      base::ExpectDictStringValue(source_debug_key, body, "source_debug_key");
+    }
 
     // Clear the port as it is assigned by the EmbeddedTestServer at runtime.
     replace_host.SetPortStr("");
@@ -725,6 +732,48 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
       ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 0,
                                        origin: $1,
                                        eventSourceTriggerData: 123});)",
+                                       url::Origin::Create(impression_url))));
+
+  expected_report.WaitForReport();
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       EventSourceImpressionWithDebugKeyConversion_ReportSent) {
+  // Expected reports must be registered before the server starts.
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-attribution"),
+      /*attribution_destination=*/"https://b.test",
+      /*source_event_id=*/"5", /*source_type=*/"event", /*trigger_data=*/"1",
+      https_server());
+  expected_report.source_debug_key = "789";
+  ASSERT_TRUE(https_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL(
+          "a.test", "/set-cookie?ar_debug=1;HttpOnly;Secure;SameSite=None")));
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  GURL register_url = https_server()->GetURL(
+      "a.test",
+      "/attribution_reporting/register_source_headers_debug_key.html");
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("createAttributionSourceImg($1);", register_url)));
+
+  GURL conversion_url = https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 0,
+                                       origin: $1,
+                                       eventSourceTriggerData: 1});)",
                                        url::Origin::Create(impression_url))));
 
   expected_report.WaitForReport();

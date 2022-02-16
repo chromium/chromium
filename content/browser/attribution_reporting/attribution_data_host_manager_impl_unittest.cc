@@ -59,7 +59,8 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
               HandleSource(AllOf(
                   SourceTypeIs(CommonSourceInfo::SourceType::kEvent),
                   SourceEventIdIs(10), ConversionOriginIs(destination_origin),
-                  ImpressionOriginIs(page_origin), SourcePriorityIs(20))));
+                  ImpressionOriginIs(page_origin), SourcePriorityIs(20),
+                  SourceDebugKeyIs(789))));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -70,6 +71,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
   source_data->destination = destination_origin;
   source_data->reporting_origin = reporting_origin;
   source_data->priority = 20;
+  source_data->debug_key = blink::mojom::AttributionDebugKey::New(789);
   data_host_remote->SourceDataAvailable(std::move(source_data));
   data_host_remote.FlushForTesting();
 }

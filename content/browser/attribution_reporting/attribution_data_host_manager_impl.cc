@@ -66,15 +66,14 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     return;
   }
 
-  // TODO(apaseltiner): Set this based on field in `data`.
-  absl::optional<int64_t> debug_key;
-
-  StorableSource storable_source(
-      CommonSourceInfo(data->source_event_id, context.context_origin,
-                       data->destination, reporting_origin, source_time,
-                       GetExpiryTimeForImpression(data->expiry, source_time,
-                                                  context.source_type),
-                       context.source_type, data->priority, debug_key));
+  StorableSource storable_source(CommonSourceInfo(
+      data->source_event_id, context.context_origin, data->destination,
+      reporting_origin, source_time,
+      GetExpiryTimeForImpression(data->expiry, source_time,
+                                 context.source_type),
+      context.source_type, data->priority,
+      data->debug_key ? absl::make_optional(data->debug_key->value)
+                      : absl::nullopt));
 
   attribution_manager_->HandleSource(std::move(storable_source));
 }

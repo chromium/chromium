@@ -192,6 +192,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
             url::Origin::Create(GURL("https://advertiser.example")));
   EXPECT_EQ(source_data.front()->priority, 0);
   EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
+  EXPECT_FALSE(source_data.front()->debug_key);
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
@@ -228,6 +229,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
             url::Origin::Create(GURL("https://advertiser.example")));
   EXPECT_EQ(source_data.front()->priority, 10);
   EXPECT_EQ(source_data.front()->expiry, base::Seconds(1000));
+  EXPECT_EQ(source_data.front()->debug_key,
+            blink::mojom::AttributionDebugKey::New(789));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,

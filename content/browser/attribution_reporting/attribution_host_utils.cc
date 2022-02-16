@@ -57,17 +57,14 @@ VerifyResult VerifyAndStoreImpression(CommonSourceInfo::SourceType source_type,
     return VerifyResult{.allowed = true, .stored = false};
   }
 
-  // TODO(apaseltiner): Set this based on field in `impression`.
-  absl::optional<int64_t> debug_key;
-
   StorableSource storable_impression(
       // Impression data doesn't need to be sanitized.
-      CommonSourceInfo(impression.impression_data, impression_origin,
-                       impression.conversion_destination, reporting_origin,
-                       impression_time,
-                       GetExpiryTimeForImpression(impression.expiry,
-                                                  impression_time, source_type),
-                       source_type, impression.priority, debug_key));
+      CommonSourceInfo(
+          impression.impression_data, impression_origin,
+          impression.conversion_destination, reporting_origin, impression_time,
+          GetExpiryTimeForImpression(impression.expiry, impression_time,
+                                     source_type),
+          source_type, impression.priority, /*debug_key=*/absl::nullopt));
 
   // TODO(apaseltiner): It would be nice to be able to report an issue in
   // DevTools in the event that a debug key is present but the corresponding

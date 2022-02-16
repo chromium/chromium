@@ -7,6 +7,10 @@ module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
 
+struct AttributionDebugKey {
+  uint64 value;
+};
+
 struct AttributionSourceData {
   // Target site where this source will be triggered.
   //
@@ -26,6 +30,10 @@ struct AttributionSourceData {
 
   // Priority for this source.
   int64 priority = 0;
+
+  // A key that is propagated through the Attribution Reporting API for
+  // debugging purposes.
+  AttributionDebugKey? debug_key;
 };
 
 // Browser-process interface responsible for processing attribution
