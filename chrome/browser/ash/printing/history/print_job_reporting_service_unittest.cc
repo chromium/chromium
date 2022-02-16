@@ -257,13 +257,13 @@ class PrintJobEventMatcher : public MatcherInterface<const em::PrintJobEvent&> {
   std::string id_;
   std::string title_;
   ::reporting::error::Code status_;
-  uint64_t creation_timestamp_ms_;
-  uint64_t completion_timestamp_ms_;
-  uint32_t pages_;
+  int64_t creation_timestamp_ms_;
+  int64_t completion_timestamp_ms_;
+  int pages_;
   em::PrintJobEvent_PrintSettings_ColorMode color_;
   em::PrintJobEvent_PrintSettings_DuplexMode duplex_;
   em::PrintJobEvent_PrintSettings_MediaSize media_size_;
-  uint32_t copies_;
+  int32_t copies_;
   std::string printer_uri_;
   std::string printer_name_;
   em::PrintJobEvent_UserType user_type_;

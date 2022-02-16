@@ -162,7 +162,7 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
                    DlpRulesManager::Level level,
                    size_t count) {
     EXPECT_EQ(events_.size(), count);
-    for (int i = 0; i < count; ++i) {
+    for (size_t i = 0; i < count; ++i) {
       EXPECT_THAT(events_[i], IsDlpPolicyEvent(CreateDlpPolicyEvent(
                                   kSrcPattern, restriction, level)));
     }

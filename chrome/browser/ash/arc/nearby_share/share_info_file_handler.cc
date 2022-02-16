@@ -231,7 +231,7 @@ void ShareInfoFileHandler::OnShareDirectoryPathCreated(
     return;
   }
 
-  for (auto i = 0; i < urls_size; i++) {
+  for (size_t i = 0; i < urls_size; i++) {
     const GURL& url = file_config_.external_urls[i];
     const std::string file_name = file_config_.names[i];
     int64_t file_size = file_config_.sizes[i];

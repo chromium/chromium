@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -201,8 +202,9 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
 
   // Do not show suggestion when the cursor is within an auto correct range.
   const gfx::Range range = input_context->GetAutocorrectRange();
-  if (!range.is_empty() && cursor_pos >= range.start() &&
-      cursor_pos <= range.end()) {
+  if (!range.is_empty() &&
+      cursor_pos >= base::checked_cast<int32_t>(range.start()) &&
+      cursor_pos <= base::checked_cast<int32_t>(range.end())) {
     return;
   }
 

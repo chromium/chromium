@@ -86,9 +86,9 @@ TEST(BrowserDataMigratorUtilTest, NoPathOverlaps) {
     return true;
   };
 
-  for (int i = 0; i < paths_groups.size() - 1; i++) {
-    for (int j = i + 1; j < paths_groups.size(); j++) {
-      SCOPED_TRACE(base::StringPrintf("i %d j %d", i, j));
+  for (size_t i = 0; i < paths_groups.size() - 1; i++) {
+    for (size_t j = i + 1; j < paths_groups.size(); j++) {
+      SCOPED_TRACE(base::StringPrintf("i %zu j %zu", i, j));
       EXPECT_TRUE(overlap_checker(paths_groups[i], paths_groups[j]));
     }
   }
@@ -369,7 +369,7 @@ TEST_F(BrowserDataMigratorUtilWithTargetsTest, GetTargetItems) {
   ASSERT_EQ(lacros_items.items.size(), expected_lacros_items.size());
   std::sort(lacros_items.items.begin(), lacros_items.items.end(),
             TargetItemComparator());
-  for (int i = 0; i < lacros_items.items.size(); i++) {
+  for (size_t i = 0; i < lacros_items.items.size(); i++) {
     SCOPED_TRACE(lacros_items.items[i].path.value());
     EXPECT_EQ(lacros_items.items[i], expected_lacros_items[i]);
   }

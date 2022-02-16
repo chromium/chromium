@@ -1553,7 +1553,7 @@ TEST_F(NearbyFilesHoldingSpaceTest, ShowSuccess_Files) {
   ASSERT_EQ(share_target.file_attachments.size(),
             holding_space_model->items().size());
 
-  for (int i = 0; i < share_target.file_attachments.size(); ++i) {
+  for (size_t i = 0; i < share_target.file_attachments.size(); ++i) {
     ash::HoldingSpaceItem* holding_space_item =
         holding_space_model->items()[i].get();
     EXPECT_EQ(ash::HoldingSpaceItem::Type::kNearbyShare,

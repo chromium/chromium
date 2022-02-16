@@ -938,7 +938,7 @@ TEST_F(InputMethodManagerImplTest,
   std::unique_ptr<icu::Collator> collator(
       icu::Collator::createInstance(error_code));
 
-  for (int i = 1; i < result->size(); ++i) {
+  for (size_t i = 1; i < result->size(); ++i) {
     std::string prev_name = util->GetLocalizedDisplayName(result->at(i - 1));
     std::string name = util->GetLocalizedDisplayName(result->at(i));
     ASSERT_EQ(UCOL_LESS, base::i18n::CompareString16WithCollator(

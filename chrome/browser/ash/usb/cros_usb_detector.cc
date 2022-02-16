@@ -17,6 +17,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -568,8 +569,10 @@ void CrosUsbDetector::OnMountEvent(
 
   for (auto& it : usb_devices_) {
     UsbDevice& device = it.second;
-    if (device.info->bus_number == disk->bus_number() &&
-        device.info->port_number == disk->device_number()) {
+    if (disk->bus_number() ==
+            base::checked_cast<int64_t>(device.info->bus_number) &&
+        disk->device_number() ==
+            base::checked_cast<int64_t>(device.info->port_number)) {
       bool was_empty = device.mount_points.empty();
       if (event == disks::DiskMountManager::MOUNTING) {
         device.mount_points.insert(mount_info.mount_path);
@@ -612,8 +615,10 @@ void CrosUsbDetector::OnDeviceChecked(
 
   // Storage devices already plugged in at log-in time will already be mounted.
   for (const auto& iter : disks::DiskMountManager::GetInstance()->disks()) {
-    if (iter.second->bus_number() == device_info->bus_number &&
-        iter.second->device_number() == device_info->port_number &&
+    if (iter.second->bus_number() ==
+            base::checked_cast<int64_t>(device_info->bus_number) &&
+        iter.second->device_number() ==
+            base::checked_cast<int64_t>(device_info->port_number) &&
         iter.second->is_mounted()) {
       new_device.mount_points.insert(iter.second->mount_path());
     }

@@ -67,7 +67,7 @@ TEST_F(SignalStrengthTrackerTest, Samples) {
 // size.
 TEST_F(SignalStrengthTrackerTest, SamplesSize) {
   auto num_samples = kSignalStrengthListSize + 10;
-  for (int i = 0; i < num_samples; i++) {
+  for (size_t i = 0; i < num_samples; i++) {
     tracker()->AddSample(i);
   }
 
