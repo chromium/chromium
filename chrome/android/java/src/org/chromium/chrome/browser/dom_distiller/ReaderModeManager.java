@@ -37,6 +37,8 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.infobar.ReaderModeInfoBar;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -50,6 +52,7 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -85,6 +88,28 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
         /** STARTED means reader mode is currently in reader mode. */
         int STARTED = 2;
+    }
+
+    /**
+     * Conditions under which the Reader Mode message was dismissed in conjunction with the
+     * accessibility setting.
+     *
+     * Note: These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused.
+     */
+    @IntDef({MessageDismissalCondition.ACCEPTED_WITH_ACCESSIBILITY_SETTING_SELECTED,
+            MessageDismissalCondition.ACCEPTED_WITH_ACCESSIBILITY_SETTING_DESELECTED,
+            MessageDismissalCondition.IGNORED_WITH_ACCESSIBILITY_SETTING_SELECTED,
+            MessageDismissalCondition.IGNORED_WITH_ACCESSIBILITY_SETTING_DESELECTED,
+            MessageDismissalCondition.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MessageDismissalCondition {
+        int ACCEPTED_WITH_ACCESSIBILITY_SETTING_SELECTED = 0;
+        int ACCEPTED_WITH_ACCESSIBILITY_SETTING_DESELECTED = 1;
+        int IGNORED_WITH_ACCESSIBILITY_SETTING_SELECTED = 2;
+        int IGNORED_WITH_ACCESSIBILITY_SETTING_DESELECTED = 3;
+        // Number of entries
+        int NUM_ENTRIES = 4;
     }
 
     /** The key to access this object from a {@Tab}. */
@@ -355,6 +380,35 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         mIsDismissed = true;
     }
 
+    /**
+     * Records the conditions under which the Reader Mode message was dismissed.
+     * @param dismissReason The message dismissal reason.
+     */
+    public void recordDismissalConditions(@DismissReason int dismissReason) {
+        if (mTab == null) return;
+
+        Profile profile = Profile.fromWebContents(mTab.getWebContents());
+        if (profile == null) return;
+        boolean a11ySettingSelected =
+                UserPrefs.get(profile).getBoolean(Pref.READER_FOR_ACCESSIBILITY);
+
+        if (dismissReason == DismissReason.PRIMARY_ACTION) {
+            RecordHistogram.recordEnumeratedHistogram("DomDistiller.MessageDismissalCondition",
+                    a11ySettingSelected
+                            ? MessageDismissalCondition.ACCEPTED_WITH_ACCESSIBILITY_SETTING_SELECTED
+                            : MessageDismissalCondition
+                                      .ACCEPTED_WITH_ACCESSIBILITY_SETTING_DESELECTED,
+                    MessageDismissalCondition.NUM_ENTRIES);
+        } else {
+            RecordHistogram.recordEnumeratedHistogram("DomDistiller.MessageDismissalCondition",
+                    a11ySettingSelected
+                            ? MessageDismissalCondition.IGNORED_WITH_ACCESSIBILITY_SETTING_SELECTED
+                            : MessageDismissalCondition
+                                      .IGNORED_WITH_ACCESSIBILITY_SETTING_DESELECTED,
+                    MessageDismissalCondition.NUM_ENTRIES);
+        }
+    }
+
     private WebContentsObserver createWebContentsObserver() {
         return new WebContentsObserver(mTab.getWebContents()) {
             /** Whether or not the previous navigation should be removed. */
@@ -520,6 +574,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         if (dismissReason == DismissReason.GESTURE) {
             onClosed();
         }
+
+        recordDismissalConditions(dismissReason);
+
         int mode = getThrottleMode();
         if (dismissReason != DismissReason.PRIMARY_ACTION
                 && (mode == ThrottleMode.URL || mode == ThrottleMode.DOMAIN)) {
