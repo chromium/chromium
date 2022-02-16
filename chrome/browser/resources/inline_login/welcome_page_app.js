@@ -27,10 +27,11 @@ Polymer({
     },
 
     /*
-     * True if the ARC toggle should be hidden.
+     * True if the 'Add account' flow is opened from ARC.
+     * In this case we will hide the toggle and show different welcome message.
      * @private
      */
-    isArcToggleHidden_: {
+    isArcFlow_: {
       type: Boolean,
       value: false,
     },
@@ -50,13 +51,41 @@ Polymer({
 
   /** @override */
   ready() {
-    [this.$$('#osSettingsLink'), this.$$('#appsSettingsLink')]
+    if (this.isArcAccountRestrictionsEnabled_) {
+      const options = getAccountAdditionOptionsFromJSON(
+          InlineLoginBrowserProxyImpl.getInstance().getDialogArguments());
+      if (!options) {
+        // Options are not available during reauthentication.
+        return;
+      }
+
+      // Set the default value.
+      this.isAvailableInArc = options.isAvailableInArc;
+      if (options.showArcAvailabilityPicker) {
+        this.isArcFlow_ = true;
+        assert(this.isAvailableInArc);
+      }
+    }
+
+    this.setUpLinkCallbacks_();
+  },
+
+  /** @return {boolean} */
+  isSkipCheckboxChecked() {
+    return !!this.$.checkbox && this.$.checkbox.checked;
+  },
+
+  /** @private */
+  setUpLinkCallbacks_() {
+    [this.$$('#osSettingsLink'), this.$$('#appsSettingsLink'),
+     this.$$('#newPersonLink')]
         .filter(link => !!link)
         .forEach(link => {
           link.addEventListener(
               'click',
               () => this.dispatchEvent(new CustomEvent('opened-new-window')));
         });
+
     if (this.isArcAccountRestrictionsEnabled_) {
       const guestModeLink = this.$$('#guestModeLink');
       if (guestModeLink) {
@@ -71,38 +100,12 @@ Polymer({
     }
   },
 
-  /** @override */
-  attached() {
-    if (!this.isArcAccountRestrictionsEnabled_) {
-      return;
-    }
-
-    const options = getAccountAdditionOptionsFromJSON(
-        InlineLoginBrowserProxyImpl.getInstance().getDialogArguments());
-    if (!options) {
-      // Options are not available during reauthentication.
-      return;
-    }
-
-    // Set the default value.
-    this.isAvailableInArc = options.isAvailableInArc;
-    if (options.showArcAvailabilityPicker) {
-      this.isArcToggleHidden_ = true;
-      assert(this.isAvailableInArc);
-    }
-  },
-
-  /** @return {boolean} */
-  isSkipCheckboxChecked() {
-    return !!this.$.checkbox && this.$.checkbox.checked;
-  },
-
   /**
    * @return {boolean}
    * @private
    */
   isArcToggleVisible_() {
-    return this.isArcAccountRestrictionsEnabled_ && !this.isArcToggleHidden_;
+    return this.isArcAccountRestrictionsEnabled_ && !this.isArcFlow_;
   },
 
   /**
@@ -112,6 +115,18 @@ Polymer({
   getWelcomeTitle_() {
     return loadTimeData.getStringF(
         'accountManagerDialogWelcomeTitle', loadTimeData.getString('userName'));
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getWelcomeBody_() {
+    const welcomeBodyKey =
+        (this.isArcAccountRestrictionsEnabled_ && this.isArcFlow_) ?
+        'accountManagerDialogWelcomeBodyArc' :
+        'accountManagerDialogWelcomeBody';
+    return loadTimeData.getString(welcomeBodyKey);
   },
 
   /** @private */

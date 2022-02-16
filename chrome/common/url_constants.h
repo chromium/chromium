@@ -282,6 +282,9 @@ extern const char kAccountManagerLearnMoreURL[];
 // The URL for the "Account recovery" page.
 extern const char kAccountRecoveryURL[];
 
+// The URL for the "How to add a new user account on a Chromebook" page.
+extern const char kAddNewUserURL[];
+
 // The URL for the "learn more" link for Google Play Store (ARC) settings.
 extern const char kAndroidAppsLearnMoreURL[];
 

@@ -230,9 +230,28 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
         "accountManagerDialogWelcomeBody",
         l10n_util::GetStringFUTF16(
             message_id,
+            // "add a new person" link:
+            base::ASCIIToUTF16(chrome::kAddNewUserURL),
+            // Device type:
+            ui::GetChromeOSDeviceName(),
+            // Settings > Accounts link:
             base::UTF8ToUTF16(
                 chrome::GetOSSettingsUrl(
                     chromeos::settings::mojom::kMyAccountsSubpagePath)
+                    .spec())));
+
+    source->AddString(
+        "accountManagerDialogWelcomeBodyArc",
+        l10n_util::GetStringFUTF16(
+            IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_ARC,
+            // "add a new person" link:
+            base::ASCIIToUTF16(chrome::kAddNewUserURL),
+            // Device type:
+            ui::GetChromeOSDeviceName(),
+            // "Apps Settings" link:
+            base::UTF8ToUTF16(
+                chrome::GetOSSettingsUrl(
+                    chromeos::settings::mojom::kAppManagementSubpagePath)
                     .spec())));
   } else {
     bool is_incognito_enabled =
