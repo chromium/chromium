@@ -97,8 +97,8 @@ bool FontCache::lcd_text_enabled_ = false;
 bool FontCache::use_skia_font_fallback_ = false;
 #endif  // BUILDFLAG(IS_WIN)
 
-FontCache* FontCache::GetFontCache(CreateIfNeeded create) {
-  return FontGlobalContext::GetFontCache(create);
+FontCache* FontCache::GetFontCache() {
+  return &FontGlobalContext::GetFontCache();
 }
 
 FontCache::FontCache()
@@ -441,20 +441,17 @@ void FontCache::Invalidate() {
 }
 
 void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
-  FontCache* font_cache = nullptr;
   SkFontMgr* font_mgr = nullptr;
   int num_families = std::numeric_limits<int>::min();
   bool is_test_font_mgr = false;
-  if (FontGlobalContext::Get(kDoNotCreate)) {
-    font_cache = FontCache::GetFontCache();
-    if (font_cache) {
+  if (FontGlobalContext::TryGet()) {
+    FontCache& font_cache = FontGlobalContext::GetFontCache();
 #if BUILDFLAG(IS_WIN)
-      is_test_font_mgr = font_cache->is_test_font_mgr_;
+    is_test_font_mgr = font_cache.is_test_font_mgr_;
 #endif
-      font_mgr = font_cache->font_manager_.get();
-      if (font_mgr)
-        num_families = font_mgr->countFamilies();
-    }
+    font_mgr = font_cache.font_manager_.get();
+    if (font_mgr)
+      num_families = font_mgr->countFamilies();
   }
 
   // In production, these 3 font managers must match.

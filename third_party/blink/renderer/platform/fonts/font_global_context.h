@@ -28,15 +28,14 @@ class PLATFORM_EXPORT FontGlobalContext {
   USING_FAST_MALLOC(FontGlobalContext);
 
  public:
-  static FontGlobalContext* Get(CreateIfNeeded = kCreate);
+  // TODO(yosin): Make |Get()| to return |FontGlobalContext&|.
+  static FontGlobalContext* Get();
+  static FontGlobalContext* TryGet();
 
   FontGlobalContext(const FontGlobalContext&) = delete;
   FontGlobalContext& operator=(const FontGlobalContext&) = delete;
 
-  static inline FontCache* GetFontCache(CreateIfNeeded create = kCreate) {
-    FontGlobalContext* context = Get(create);
-    return context ? &context->font_cache_ : nullptr;
-  }
+  static inline FontCache& GetFontCache() { return Get()->font_cache_; }
 
   static HarfBuzzFontCache* GetHarfBuzzFontCache();
 

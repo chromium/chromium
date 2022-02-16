@@ -96,8 +96,6 @@ enum class AlternateFontName {
   kLastResort
 };
 
-enum CreateIfNeeded { kDoNotCreate, kCreate };
-
 typedef HashMap<unsigned,
                 std::unique_ptr<FontPlatformData>,
                 WTF::IntHash<unsigned>,
@@ -128,7 +126,9 @@ class PLATFORM_EXPORT FontCache {
   // configured through a call from the browser process. CreateIfNeeded helps
   // avoid early creation of a font cache when these globals have not yet
   // been set.
-  static FontCache* GetFontCache(CreateIfNeeded = kCreate);
+  // TODO(yosin): Make |GetFontCache()| to return |FontCache&|.
+  // TODO(yosin): Rename |GetFontCache()| to return |Get()|.
+  static FontCache* GetFontCache();
 
   void ReleaseFontData(const SimpleFontData*);
 
