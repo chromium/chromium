@@ -44,6 +44,8 @@ static_library("test_support") {
   sources = [
     "fast_pair/fake_fast_pair_scanner.cc",
     "fast_pair/fake_fast_pair_scanner.h",
+    "fast_pair/fake_quick_pair_process_manager.cc",
+    "fast_pair/fake_quick_pair_process_manager.h",
     "fast_pair/fast_pair_scanner.h",
     "mock_scanner_broker.cc",
     "mock_scanner_broker.h",
@@ -52,9 +54,12 @@ static_library("test_support") {
 
   deps = [
     "//ash/quick_pair/common",
+    "//ash/services/quick_pair",
+    "//ash/services/quick_pair:test_support",
     "//base",
     "//base/test:test_support",
     "//device/bluetooth",
+    "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
 }
