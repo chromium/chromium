@@ -7,6 +7,7 @@ package org.chromium.ui.resources.dynamics;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.HardwareRenderer;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RenderNode;
@@ -162,12 +163,14 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
 
             assert renderNode != null;
             mTaskRunner.postTask(() -> {
+                HardwareRenderer mRenderer = new HardwareRenderer();
                 try (TraceEvent e = TraceEvent.scoped("AcceleratedImageReader::requestDraw")) {
                     mCurrentBitmapRequestId.incrementAndGet();
                     Surface s = mReaderDelegate.getSurface();
-                    Canvas hwCanvas = s.lockHardwareCanvas();
-                    hwCanvas.drawRenderNode(renderNode);
-                    s.unlockCanvasAndPost(hwCanvas);
+                    mRenderer.setContentRoot(renderNode);
+                    mRenderer.setSurface(s);
+                    mRenderer.createRenderRequest().syncAndDraw();
+                    mRenderer.destroy();
                 }
             });
         }
