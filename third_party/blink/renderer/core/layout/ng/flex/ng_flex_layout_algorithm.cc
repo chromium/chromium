@@ -1455,7 +1455,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
 
   const LayoutObject* parent = Node().GetLayoutBox()->Parent();
   if (!LayoutButton::ShouldCountWrongBaseline(
-          Style(), parent ? parent->Style() : nullptr))
+          *Node().GetLayoutBox(), Style(), parent ? parent->Style() : nullptr))
     return;
 
   // The button should have at most one child.

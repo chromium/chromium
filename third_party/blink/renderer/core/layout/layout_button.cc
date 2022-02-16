@@ -116,7 +116,7 @@ LayoutUnit LayoutButton::BaselinePosition(
   // See crbug.com/690036 and crbug.com/304848.
   LayoutUnit correct_baseline = LayoutBlock::InlineBlockBaseline(direction);
   if (correct_baseline != result_baseline &&
-      ShouldCountWrongBaseline(StyleRef(),
+      ShouldCountWrongBaseline(*this, StyleRef(),
                                Parent() ? Parent()->Style() : nullptr)) {
     for (LayoutBox* child = FirstChildBox(); child;
          child = child->NextSiblingBox()) {
@@ -132,8 +132,11 @@ LayoutUnit LayoutButton::BaselinePosition(
   return result_baseline;
 }
 
-bool LayoutButton::ShouldCountWrongBaseline(const ComputedStyle& style,
+bool LayoutButton::ShouldCountWrongBaseline(const LayoutBox& button_box,
+                                            const ComputedStyle& style,
                                             const ComputedStyle* parent_style) {
+  if (button_box.IsFloatingOrOutOfFlowPositioned())
+    return false;
   if (parent_style) {
     EDisplay display = parent_style->Display();
     if (display == EDisplay::kFlex || display == EDisplay::kInlineFlex ||
