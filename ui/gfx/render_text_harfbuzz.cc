@@ -1021,10 +1021,18 @@ RangeF TextRunHarfBuzz::GetGraphemeBounds(RenderTextHarfBuzz* render_text,
   Range chars;
   Range glyphs;
   GetClusterAt(text_index, &chars, &glyphs);
-  const float cluster_begin_x = shape.positions[glyphs.start()].x();
-  const float cluster_end_x = glyphs.end() < shape.glyph_count
-                                  ? shape.positions[glyphs.end()].x()
-                                  : SkFloatToScalar(shape.width);
+  // Obscured glyphs are centered in their allotted space by adjusting their
+  // positions during shaping. Include the space preceding the glyph when
+  // calculating grapheme bounds.
+  const float half_obscured_spacing =
+      render_text->obscured() ? render_text->obscured_glyph_spacing() / 2.0f
+                              : 0.0f;
+  const float cluster_begin_x =
+      shape.positions[glyphs.start()].x() - half_obscured_spacing;
+  const float cluster_end_x =
+      glyphs.end() < shape.glyph_count
+          ? shape.positions[glyphs.end()].x() - half_obscured_spacing
+          : SkFloatToScalar(shape.width);
   DCHECK_LE(cluster_begin_x, cluster_end_x);
 
   // A cluster consists of a number of code points and corresponds to a number
@@ -1329,9 +1337,14 @@ void ShapeRunWithFont(const ShapeRunWithFontInput& in,
       out->missing_glyph_count += 1;
     DCHECK_GE(infos[i].cluster, in.range.start());
     out->glyph_to_char[i] = infos[i].cluster - in.range.start();
-    const SkScalar x_offset =
-        force_zero_offset ? 0
-                          : HarfBuzzUnitsToSkiaScalar(hb_positions[i].x_offset);
+
+    SkScalar x_offset = HarfBuzzUnitsToSkiaScalar(hb_positions[i].x_offset);
+
+    if (in.obscured)
+      // Place obscured glyphs in the middle of the allotted spacing.
+      x_offset += in.obscured_glyph_spacing / 2.0f;
+    if (force_zero_offset)
+      x_offset = 0;
     const SkScalar y_offset =
         HarfBuzzUnitsToSkiaScalar(hb_positions[i].y_offset);
     out->positions[i].set(out->width + x_offset, -y_offset);
