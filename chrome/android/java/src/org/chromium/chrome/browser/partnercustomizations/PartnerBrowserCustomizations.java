@@ -11,7 +11,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
@@ -77,13 +76,7 @@ public class PartnerBrowserCustomizations {
     /**
      * Provider of partner customizations.
      */
-    public interface Provider {
-        @Nullable
-        String getHomepage();
-
-        boolean isIncognitoModeDisabled();
-        boolean isBookmarksEditingDisabled();
-    }
+    public interface Provider extends CustomizationProviderDelegate {}
 
     /**
      * Partner customizations provided by ContentProvider package.
