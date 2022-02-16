@@ -4990,6 +4990,18 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBlockInsecurePrivateNetworkRequestsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kBlockInsecurePrivateNetworkRequests)},
 
+    {"private-network-access-send-preflights",
+     flag_descriptions::kPrivateNetworkAccessSendPreflightsName,
+     flag_descriptions::kPrivateNetworkAccessSendPreflightsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kPrivateNetworkAccessSendPreflights)},
+
+    {"private-network-access-respect-preflight-results",
+     flag_descriptions::kPrivateNetworkAccessRespectPreflightResultsName,
+     flag_descriptions::kPrivateNetworkAccessRespectPreflightResultsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         features::kPrivateNetworkAccessRespectPreflightResults)},
+
     {"disable-keepalive-fetch", flag_descriptions::kDisableKeepaliveFetchName,
      flag_descriptions::kDisableKeepaliveFetchDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kDisableKeepaliveFetch)},

@@ -1088,11 +1088,25 @@ const char kEnableWindowsGamingInputDataFetcherDescription[] =
 const char kBlockInsecurePrivateNetworkRequestsName[] =
     "Block insecure private network requests.";
 const char kBlockInsecurePrivateNetworkRequestsDescription[] =
-    "Prevents non-secure contexts from making sub-resource requests to "
-    "more-private IP addresses. An IP address IP1 is more private than IP2 if "
-    "1) IP1 is localhost and IP2 is not, or 2) IP1 is private and IP2 is "
-    "public. This is a first step towards full enforcement of CORS-RFC1918: "
-    "https://wicg.github.io/cors-rfc1918";
+    "Prevents non-secure contexts from making subresource requests to "
+    "more-private IP addresses. See also: "
+    "https://developer.chrome.com/blog/private-network-access-update/";
+
+const char kPrivateNetworkAccessSendPreflightsName[] =
+    "Send Private Network Access preflights";
+const char kPrivateNetworkAccessSendPreflightsDescription[] =
+    "Enables sending Private Network Access preflights ahead of requests to "
+    "more-private IP addresses. Failed preflights display warnings in DevTools "
+    "without failing entire request. See also: "
+    "https://developer.chrome.com/blog/private-network-access-preflight/";
+
+const char kPrivateNetworkAccessRespectPreflightResultsName[] =
+    "Respect the result of Private Network Access preflights";
+const char kPrivateNetworkAccessRespectPreflightResultsDescription[] =
+    "Enables sending Private Network Access preflights ahead of requests to "
+    "more-private IP addresses. These preflight requests must succeed in order "
+    "for the request to proceed. See also: "
+    "https://developer.chrome.com/blog/private-network-access-preflight/";
 
 const char kDeprecateAltClickName[] =
     "Enable Alt+Click deprecation notifications";

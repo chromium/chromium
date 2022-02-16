@@ -52336,6 +52336,8 @@ from previous Chrome versions.
   <int value="-1399753480" label="disable-harfbuzz-rendertext"/>
   <int value="-1399419572" label="enable-app-list"/>
   <int value="-1396974542" label="UserMediaScreenCapturing:enabled"/>
+  <int value="-1396595854"
+      label="PrivateNetworkAccessRespectPreflightResults:enabled"/>
   <int value="-1396434715" label="AssistMultiWord:disabled"/>
   <int value="-1392689905" label="ServiceWorkerLongRunningMessage:enabled"/>
   <int value="-1392673888"
@@ -54022,6 +54024,8 @@ from previous Chrome versions.
   <int value="-199690952" label="PageInfoV2:enabled"/>
   <int value="-198002129" label="MetricsSettingsAndroid:disabled"/>
   <int value="-196110497" label="force-text-direction"/>
+  <int value="-195242003"
+      label="PrivateNetworkAccessRespectPreflightResults:disabled"/>
   <int value="-195029497" label="MediaRemoting:disabled"/>
   <int value="-192919826" label="ViewsSimplifiedFullscreenUI:enabled"/>
   <int value="-192389983" label="NoStatePrefetch:enabled"/>
@@ -54317,6 +54321,7 @@ from previous Chrome versions.
   <int value="4588113" label="CacheOneGoogleBar:disabled"/>
   <int value="5654819" label="CrostiniGpuSupport:disabled"/>
   <int value="6041813" label="PermissionChipGestureSensitive:disabled"/>
+  <int value="6332888" label="PrivateNetworkAccessSendPreflights:enabled"/>
   <int value="6523501" label="lacros-availability-ignore"/>
   <int value="7310536" label="WebFeedSort:enabled"/>
   <int value="7444737" label="NTPSuggestionsStandaloneUI:disabled"/>
@@ -56890,6 +56895,7 @@ from previous Chrome versions.
   <int value="1836557489" label="EnableDangerousDownloadDialog:disabled"/>
   <int value="1837330563" label="WebPaymentsMinimalUI:disabled"/>
   <int value="1837847580" label="MutingCompromisedCredentials:disabled"/>
+  <int value="1838110766" label="PrivateNetworkAccessSendPreflights:disabled"/>
   <int value="1838990777" label="V8Future:enabled"/>
   <int value="1839005510" label="MutingCompromisedCredentials:enabled"/>
   <int value="1839740266" label="LocationHardReload:disabled"/>
