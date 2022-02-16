@@ -203,6 +203,20 @@ void FastPairScannerImpl::DeviceChanged(device::BluetoothAdapter* adapter,
     return;
   }
 
+  // TODO(b/219600346): Handle Subsequent pair service data changing more
+  // robustly. During Subsequent pair, the service data can change during
+  // handshake--we can differentiate this from other pairing scenarios by
+  // checking that the service data is the same size. Don't notify observers in
+  // this case.
+  if (!device_address_advertisement_data_map_[device_address].empty() &&
+      (device_address_advertisement_data_map_[device_address]
+           .rbegin()
+           ->size() == service_data->size())) {
+    device_address_advertisement_data_map_[device_address].insert(
+        *service_data);
+    return;
+  }
+
   device_address_advertisement_data_map_[device_address].insert(*service_data);
   NotifyDeviceFound(device);
 }

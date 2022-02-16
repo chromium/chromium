@@ -53,11 +53,18 @@ std::unique_ptr<device::MockBluetoothDevice> CreateTestBluetoothDevice(
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
  public:
-  void ChangeDevice(const std::string& address) {
+  void ChangeDevice(const std::string& address, bool change_service_data_len) {
     auto mock_device = CreateTestBluetoothDevice(address);
     auto* mock_device_ptr = mock_device.get();
-    mock_device->SetServiceDataForUUID(ash::quick_pair::kFastPairBluetoothUuid,
-                                       {4, 5, 6});
+    // The length of the service data changes between Initial/Subsequent pairing
+    // which is used to detect if we should trigger OnDeviceFound or not.
+    if (change_service_data_len) {
+      mock_device->SetServiceDataForUUID(
+          ash::quick_pair::kFastPairBluetoothUuid, {4, 5, 6, 7});
+    } else {
+      mock_device->SetServiceDataForUUID(
+          ash::quick_pair::kFastPairBluetoothUuid, {4, 5, 6});
+    }
 
     for (auto& observer : GetObservers())
       observer.DeviceChanged(this, mock_device_ptr);
@@ -214,11 +221,24 @@ TEST_F(FastPairScannerImplTest, DeviceLostNotifiesObservers) {
       kTestBleDeviceAddress1));
 }
 
-TEST_F(FastPairScannerImplTest, DeviceChangedNotifiesObservors) {
+TEST_F(FastPairScannerImplTest, DeviceChangedNewServiceDataLength) {
   TriggerOnDeviceFound(kTestBleDeviceAddress1);
   EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
-  adapter().ChangeDevice(kTestBleDeviceAddress1);
+  // This simulates a change in service data from Initial to Subsequent pairing.
+  // We should notify observers in this case.
+  adapter().ChangeDevice(kTestBleDeviceAddress1,
+                         /* change_service_data_len= */ true);
   EXPECT_EQ(scanner_observer().on_device_found_count(), 2);
+}
+
+TEST_F(FastPairScannerImplTest, DeviceChangedSameServiceDataLength) {
+  TriggerOnDeviceFound(kTestBleDeviceAddress1);
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
+  // This simulates a change of service data within one of the ongoing pairing
+  // scenarios, in which case we do not notify observers.
+  adapter().ChangeDevice(kTestBleDeviceAddress1,
+                         /* change_service_data_len= */ false);
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
 }
 
 TEST_F(FastPairScannerImplTest, IgnoresEventDuringActiveHandshake) {
