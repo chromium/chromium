@@ -3141,11 +3141,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enterprise-reporting-extension-manifest-version",
-    "owners": [ "igorruvinov", "zmin" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "esim-policy",
     "owners": [ "azeemarshad", "jiajunz@google.com", "cros-connectivity@google.com" ],
     "expiry_milestone": 100

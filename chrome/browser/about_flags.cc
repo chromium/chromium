@@ -6068,13 +6068,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          browsing_data::features::kEnableRemovingAllThirdPartyCookies)},
 
-    {"enterprise-reporting-extension-manifest-version",
-     flag_descriptions::kEnterpriseReportingExtensionManifestVersionName,
-     flag_descriptions::kEnterpriseReportingExtensionManifestVersionDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         features::kEnterpriseReportingExtensionManifestVersion)},
-
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
      flag_descriptions::kUnsafeWebGPUDescription,
      kOsMac | kOsLinux | kOsWin | kOsFuchsia,

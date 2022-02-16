@@ -413,12 +413,6 @@ const base::Feature kEnableRestrictedWebApis{"EnableRestrictedWebApis",
 const base::Feature kEnableWebAppUninstallFromOsSettings{
     "EnableWebAppUninstallFromOsSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Causes extension manifest versions to be included in the extension info
-// section of CBCM reports.
-const base::Feature kEnterpriseReportingExtensionManifestVersion{
-    "EnterpriseReportingExtensionManifestVersion",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if !BUILDFLAG(IS_ANDROID)
 // Lazy initialize IndividualSettings for extensions from enterprise policy
 // that are not installed.

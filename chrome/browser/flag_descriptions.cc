@@ -2875,12 +2875,6 @@ const char kExtensionWorkflowJustificationDescription[] =
     "Enables users to justify their extension requests by causing a text field "
     "to appear on the extension request dialog.";
 
-const char kEnterpriseReportingExtensionManifestVersionName[] =
-    "Enterprise reporting of extension manifest versions";
-const char kEnterpriseReportingExtensionManifestVersionDescription[] =
-    "Causes extension manifest versions to be included in the extension info "
-    "section of Chrome Browser Cloud Management reports.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kShareContextMenuName[] = "Share context menu";
 const char kShareContextMenuDescription[] =

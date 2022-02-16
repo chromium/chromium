@@ -284,9 +284,6 @@ extern const base::Feature kExtensionDeferredIndividualSettings;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kExtensionWorkflowJustification;
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kEnterpriseReportingExtensionManifestVersion;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnterpriseReportingInChromeOS;
