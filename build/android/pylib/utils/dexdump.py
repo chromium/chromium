@@ -42,7 +42,7 @@ def Dump(apk_path):
                                            dexfile_dir,
                                            pattern='*classes*.dex'):
       output_xml = cmd_helper.GetCmdOutput(
-          [DEXDUMP_PATH, '-l', 'xml', dex_file])
+          [DEXDUMP_PATH, '-j', '-l', 'xml', dex_file])
       # Dexdump doesn't escape its XML output very well; decode it as utf-8 with
       # invalid sequences replaced, then remove forbidden characters and
       # re-encode it (as etree expects a byte string as input so it can figure
