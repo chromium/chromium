@@ -558,6 +558,7 @@ class ChromiumDepGraph {
                 group: dependency.module.id.group,
                 name: dependency.module.id.name,
                 version: dependency.module.id.version,
+                extension: 'group',
                 children: Collections.unmodifiableList(new ArrayList<>(childModules)),
                 directoryName: id.toLowerCase(),
                 displayName: dependency.module.id.name,

@@ -382,7 +382,7 @@ class BuildConfigGenerator extends DefaultTask {
             dependencyForLogging.artifact = null
 
             logger.debug "Processing ${dependency.name}: \n${jsonDump(dependencyForLogging)}"
-            String depDir = computeDepDir(dependency)
+            String depDir = BuildConfigGenerator.computeDepDir(dependency)
             String absoluteDepDir = "${normalisedRepoPath}/${depDir}"
 
             dependencyDirectories.add(depDir)
@@ -453,26 +453,14 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         String targetName = translateTargetName(dependency.id) + '_java'
-        List<String> javaGroupTargets = computeJavaGroupForwardingTargets(dependency)
-        if (javaGroupTargets) {
-            sb.append("""
-                java_group("${targetName}") {
-                  deps = [""")
-            javaGroupTargets.each { forwardTarget ->
-                sb.append("""
-                    "${forwardTarget}_java",""")
-            }
-            sb.append('''
-                  ]''')
-            if (dependency.testOnly) {
-                sb.append('  testonly = true\n')
-            }
-            sb.append('}\n\n')
-            return
-        }
+        List<String> javaDeps = computeJavaGroupForwardingTargets(dependency) ?: dependency.children
 
         String depsStr = ''
-        dependency.children?.each { childDep ->
+        javaDeps?.each { childDep ->
+            if (childDep.startsWith('//')) {
+                depsStr += "\"${childDep}\","
+                return
+            }
             ChromiumDepGraph.DependencyDescription dep = allDependencies[childDep]
             if (dep.exclude) {
                 return
@@ -519,9 +507,13 @@ class BuildConfigGenerator extends DefaultTask {
                   aar_path = "${libPath}/${dependency.fileName}"
                   info_path = "${libPath}/${dependency.id}.info"
             """.stripIndent())
+        } else if (dependency.extension == 'group') {
+            sb.append("""\
+                java_group("${targetName}") {
+            """.stripIndent())
         } else {
             throw new IllegalStateException('Dependency type should be JAR or AAR')
-                }
+        }
 
         sb.append(generateBuildTargetVisibilityDeclaration(dependency))
 
@@ -534,7 +526,7 @@ class BuildConfigGenerator extends DefaultTask {
         addSpecialTreatment(sb, dependency.id, dependency.extension)
 
         sb.append('}\n\n')
-                }
+    }
 
     String generateBuildTargetVisibilityDeclaration(ChromiumDepGraph.DependencyDescription dependency) {
         StringBuilder sb = new StringBuilder()
@@ -587,10 +579,10 @@ class BuildConfigGenerator extends DefaultTask {
 
     /** If |dependency| should be a java_group(), returns target to forward to. Returns null otherwise. */
     List<String> computeJavaGroupForwardingTargets(ChromiumDepGraph.DependencyDescription dependency) {
-        String targetName = translateTargetName(dependency.id)
+        String targetName = translateTargetName(dependency.id) + '_java'
         if (repositoryPath != AUTOROLLED_REPO_PATH && isTargetAutorolled(targetName)) {
             return ["//${AUTOROLLED_REPO_PATH}:${targetName}"]
-        } else if (dependency.artifact == null) {
+        } else if (dependency.extension == 'group') {
             return dependency.children
         }
         return []
