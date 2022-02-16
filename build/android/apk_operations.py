@@ -1656,7 +1656,7 @@ class _PrintCertsCommand(_Command):
       env['PATH'] = os.path.pathsep.join(
           [os.path.join(_JAVA_HOME, 'bin'),
            env.get('PATH')])
-      stdout = subprocess.check_output(cmd, env=env)
+      stdout = subprocess.check_output(cmd, env=env, universal_newlines=True)
       print(stdout)
       if self.args.full_cert:
         if 'v1 scheme (JAR signing): true' not in stdout:
@@ -1666,7 +1666,9 @@ class _PrintCertsCommand(_Command):
         cmd = [keytool, '-printcert', '-jarfile', self.apk_helper.path, '-rfc']
         # Redirect stderr to hide a keytool warning about using non-standard
         # keystore format.
-        full_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        full_output = subprocess.check_output(cmd,
+                                              stderr=subprocess.STDOUT,
+                                              universal_newlines=True)
 
     if self.args.full_cert:
       m = re.search(
