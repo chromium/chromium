@@ -45,7 +45,7 @@ constexpr base::TimeDelta kSaveDelay = base::Seconds(3);
 constexpr size_t kMaxLocalFiles = 10u;
 
 // A file needs to have been modified more recently than this to be returned.
-constexpr base::TimeDelta kMaxLastModifiedTime = base::Days(7);
+constexpr base::TimeDelta kMaxLastModifiedTime = base::Days(8);
 
 // Given the output of MrfuCache::GetAll, partition files into:
 // - valid files that exist on-disk and have been modified in the last 7 days
@@ -94,7 +94,7 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
     : profile_(profile), thumbnail_loader_(profile) {
   DCHECK(profile_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+      {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   auto* notifier =

@@ -55,7 +55,9 @@ int ProviderTypes() {
   // duplication with search results from DriveFS.
   int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
                   ~AutocompleteProvider::TYPE_DOCUMENT;
-  if (ash::features::IsProductivityLauncherEnabled()) {
+  if (ash::features::IsProductivityLauncherEnabled() &&
+      base::GetFieldTrialParamByFeatureAsBool(
+          ash::features::kProductivityLauncher, "enable_open_tab", false)) {
     providers |= AutocompleteProvider::TYPE_OPEN_TAB;
   }
   return providers;
