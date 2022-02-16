@@ -12,7 +12,13 @@ import android.content.res.Resources;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
@@ -22,17 +28,23 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Calendar;
+import java.util.LinkedList;
+
 /**
  * Helper methods that can be used across multiple Autofill UIs.
  */
@@ -340,5 +352,75 @@ public class AutofillUiUtils {
      */
     public static void updateColorForInput(EditText input, ColorFilter filter) {
         input.getBackground().mutate().setColorFilter(filter);
+    }
+
+    /**
+     * Appends the title string with a logo and sets it as the text on the TextView.
+     *
+     * @param context The context used for fetching the required resources.
+     * @param titleTextView The TextView containing the title that the title and the logo should be
+     *         set on.
+     * @param title The title string for the TextView.
+     * @param logoResourceId The resource id for the icon to inlined within the title string.
+     */
+    public static void inlineTitleStringWithLogo(
+            Context context, TextView titleTextView, String title, int logoResourceId) {
+        Drawable mInlineTitleIcon = ResourcesCompat.getDrawable(
+                context.getResources(), logoResourceId, context.getTheme());
+        // The first character will be replaced by the logo, and the consecutive spaces after
+        // are used as padding.
+        SpannableString titleWithLogo = new SpannableString("   " + title);
+        // How much the original logo should scale up in size to match height of text.
+        float scaleFactor = titleTextView.getTextSize() / mInlineTitleIcon.getIntrinsicHeight();
+        mInlineTitleIcon.setBounds(
+                /* left */ 0, /* top */
+                0,
+                /* right */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicWidth()),
+                /* bottom */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicHeight()));
+        titleWithLogo.setSpan(new ImageSpan(mInlineTitleIcon, ImageSpan.ALIGN_CENTER),
+                /* start */ 0,
+                /* end */ 1,
+                /* flags */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        titleTextView.setText(titleWithLogo, TextView.BufferType.SPANNABLE);
+    }
+
+    /**
+     * Generates a SpannableString from a list of {@link LegalMessageLine}.
+     *
+     * @param context The context used for fetching the required resources.
+     * @param legalMessageLines The list of LegalMessageLines to be represented as a string.
+     * @return A {@link SpannableStringBuilder} that can directly be set on a TextView.
+     */
+    public static SpannableStringBuilder getSpannableStringForLegalMessageLines(
+            Context context, LinkedList<LegalMessageLine> legalMessageLines) {
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+        for (LegalMessageLine line : legalMessageLines) {
+            SpannableString text = new SpannableString(line.text);
+            for (final LegalMessageLine.Link link : line.links) {
+                text.setSpan(new NoUnderlineClickableSpan(context.getResources(),
+                                     (view) -> CustomTabActivity.showInfoPage(context, link.url)),
+                        link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            }
+            spannableStringBuilder.append(text);
+        }
+        return spannableStringBuilder;
+    }
+
+    /**
+     * Returns a {@link SpannableString} containing a {@link NoUnderlineClickableSpan} for the text
+     * contained within the tags <link1></link1> and defaults to opening a the provided url in a
+     * custom tab.
+     * @param context The context required to fetch the resources.
+     * @param stringResourceId The resource id of the string on which the clickable span should be
+     *         applied.
+     * @param url The url that should be opened when the clickable span is clicked.
+     * @return {@link SpannableString} that can be directly set on the TextView.
+     */
+    public static SpannableString getSpannableStringWithClickableSpansToOpenLinksInCustomTabs(
+            Context context, int stringResourceId, String url) {
+        return SpanApplier.applySpans(context.getString(stringResourceId),
+                new SpanApplier.SpanInfo("<link1>", "</link1>",
+                        new NoUnderlineClickableSpan(context.getResources(),
+                                (view) -> CustomTabActivity.showInfoPage(context, url))));
     }
 }
