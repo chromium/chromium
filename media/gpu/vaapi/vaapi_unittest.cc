@@ -15,6 +15,7 @@
 #include <va/va.h>
 #include <va/va_drmcommon.h>
 #include <va/va_str.h>
+#include <xf86drm.h>
 
 #include "base/bits.h"
 #include "base/callback_helpers.h"
@@ -745,12 +746,33 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
 
   // Now open minigbm pointing to the DRM primary node, allocate a gbm_bo, and
   // compare its width/height/stride/etc with the |va_descriptor|s.
-  base::File drm_fd(
-      base::FilePath("/dev/dri/card0"),
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
+  constexpr char kPrimaryNodeFilePattern[] = "/dev/dri/card%d";
+  struct gbm_device* gbm = nullptr;
+  base::File drm_fd;
+  // This loop ends on either the first card that does not exist or the first
+  // primary node that is not vgem.
+  for (int i = 0;; i++) {
+    base::FilePath dev_path(FILE_PATH_LITERAL(
+        base::StringPrintf(kPrimaryNodeFilePattern, i).c_str()));
+    drm_fd =
+        base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_WRITE);
+    ASSERT_TRUE(drm_fd.IsValid());
+    // Skip the virtual graphics memory manager device.
+    drmVersionPtr version = drmGetVersion(drm_fd.GetPlatformFile());
+    if (!version)
+      continue;
+    std::string version_name(
+        version->name,
+        base::checked_cast<std::string::size_type>(version->name_len));
+    drmFreeVersion(version);
+    if (base::LowerCaseEqualsASCII(version_name, "vgem"))
+      continue;
 
-  ASSERT_TRUE(drm_fd.IsValid());
-  struct gbm_device* gbm = gbm_create_device(drm_fd.GetPlatformFile());
+    gbm = gbm_create_device(drm_fd.GetPlatformFile());
+    break;
+  }
+
   ASSERT_TRUE(gbm);
 
   const auto gbm_format = ToGBMFormat(va_rt_format);
