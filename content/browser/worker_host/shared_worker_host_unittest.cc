@@ -403,12 +403,19 @@ TEST_F(SharedWorkerHostTest,
 // Enable PrivateNetworkAccessForWorkers.
 class SharedWorkerHostTestWithPNAEnabled : public SharedWorkerHostTest {
  public:
-  SharedWorkerHostTestWithPNAEnabled() = default;
+  SharedWorkerHostTestWithPNAEnabled() {
+    feature_list_.InitWithFeatures(
+        {
+            features::kPrivateNetworkAccessSendPreflights,
+            features::kPrivateNetworkAccessForWorkers,
+        },
+        {});
+  }
+
   ~SharedWorkerHostTestWithPNAEnabled() override = default;
 
  private:
-  base::test::ScopedFeatureList feature_list{
-      /*enable_feature=*/features::kPrivateNetworkAccessForWorkers};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SharedWorkerHostTestWithPNAEnabled,
