@@ -6,18 +6,11 @@
 // TODO(dewittj) Refactor custom binding to reduce redundancy between the
 // extension action APIs.
 
-var setIcon = require('setIcon').setIcon;
+var getSetIconHandler = require('setIcon').getSetIconHandler;
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setHandleRequest(
-      'setIcon', function(details, successCallback, failureCallback) {
-        var onIconRetrieved = function(iconSpec) {
-          bindingUtil.sendRequest(
-              'systemIndicator.setIcon', [iconSpec, successCallback],
-              /*options=*/ undefined);
-        };
-        setIcon(details, onIconRetrieved, failureCallback);
-      });
+      'setIcon', getSetIconHandler('systemIndicator.setIcon'));
 });

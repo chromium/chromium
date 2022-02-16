@@ -158,4 +158,21 @@ function setIcon(details, callback, failureCallback) {
   throw new Error('Either the path or imageData property must be specified.');
 }
 
+// Returns a common handler function used by several extension APIs when setting
+// the extension icon.
+function getSetIconHandler(methodName) {
+  return function(details, successCallback, failureCallback) {
+    var onIconRetrieved = function(iconSpec) {
+      bindingUtil.sendRequest(
+          methodName, [iconSpec, successCallback],
+          /*options=*/ undefined);
+    };
+    setIcon(details, onIconRetrieved, failureCallback);
+  };
+}
+
+// TODO(crbug.com/462542): The setIcon export is only used by the declarative
+// content custom bindings and it actually has some major problems with how it
+// uses it. When that is resolved we can likely remove this export.
 exports.$set('setIcon', setIcon);
+exports.$set('getSetIconHandler', getSetIconHandler);
