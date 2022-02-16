@@ -282,6 +282,9 @@ crbug.com/619103 paint/invalidation/background/background-resize-width.html [ Fa
 
 crbug.com/784956 fast/history/frameset-repeated-name.html [ Failure Pass ]
 
+# These are both related to images not painting as expected, and are primarily CQ hidden flakes
+crbug.com/1284609 images/image-load-reset-on-new-base.html [ Failure Pass ]
+crbug.com/1271092 paint/invalidation/scroll/fixed-img-src-change-after-scroll.html [ Failure Pass ]
 
 ########## Genuinely flaky ##########
 crbug.com/624233 virtual/gpu-rasterization/images/color-profile-background-clip-text.html [ Failure Pass ]
