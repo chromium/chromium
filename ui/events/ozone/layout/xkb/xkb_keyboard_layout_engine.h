@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
                       uint32_t locked,
                       uint32_t group);
 
-  DomCode GetDomCodeByKeysym(uint32_t keysym) const;
+  DomCode GetDomCodeByKeysym(uint32_t keysym, uint32_t modifiers) const;
 
   static void ParseLayoutName(const std::string& layout_name,
                               std::string* layout_id,
@@ -74,11 +74,14 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   };
   std::vector<XkbFlagMapEntry> xkb_flag_map_;
 
-  // Table from xkb_keysym to xkb_keycode on the current keymap.
-  // Note that there could be multiple keycodes mapped to the same
+  // Table from (xkb_keysym, xkb_modifier) to xkb_keycode for the current
+  // keymap. Note that there could be multiple keycodes mapped to the same
   // keysym. In the case, the first one (smallest keycode) will be
   // kept.
-  base::flat_map<uint32_t, uint32_t> xkb_keysym_map_;
+  // The first element is keysym value. The second element is a bit-mask of
+  // modifiers.
+  using XkbKeysymMapKey = std::pair<uint32_t, uint32_t>;
+  base::flat_map<XkbKeysymMapKey, uint32_t> xkb_keysym_map_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Flag mask for num lock, which is always considered enabled in ChromeOS.

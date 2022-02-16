@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <xkbcommon/xkbcommon-names.h>
 
 #include <tuple>
 
@@ -16,6 +17,9 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
+
+extern "C" __attribute__((weak)) decltype(
+    xkb_keymap_key_get_mods_for_level) xkb_keymap_key_get_mods_for_level;
 
 namespace ui {
 
@@ -938,20 +942,39 @@ TEST_F(XkbLayoutEngineVkTest, GetDomCodeByKeysym) {
                                                std::strlen(layout.get()));
   }
 
+  constexpr uint32_t kShiftMask = 1;
   constexpr struct {
     uint32_t keysym;
+    uint32_t modifiers;
     DomCode dom_code;
   } kTestCases[] = {
-      {65307, ui::DomCode::ESCAPE}, {65288, ui::DomCode::BACKSPACE},
-      {65293, ui::DomCode::ENTER},  {65289, ui::DomCode::TAB},
-      {65056, ui::DomCode::TAB},  // SHIFT+TAB.
-      {65289, ui::DomCode::TAB},  // CTRL+TAB.
+      {65307, 0, ui::DomCode::ESCAPE},       {65288, 0, ui::DomCode::BACKSPACE},
+      {65293, 0, ui::DomCode::ENTER},        {65289, 0, ui::DomCode::TAB},
+      {65056, kShiftMask, ui::DomCode::TAB},
   };
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.keysym);
-    EXPECT_EQ(test_case.dom_code,
-              layout_engine_->GetDomCodeByKeysym(test_case.keysym));
+    EXPECT_EQ(test_case.dom_code, layout_engine_->GetDomCodeByKeysym(
+                                      test_case.keysym, test_case.modifiers));
+  }
+
+  // Test conflict keysym case. We use '<' as a testing sample.
+  constexpr uint32_t kLessThanCode = 60;
+  if (xkb_keymap_key_get_mods_for_level) {
+    // If there's no modifier, on pc101 us layout, intl_backslash is expected.
+    EXPECT_EQ(ui::DomCode::INTL_BACKSLASH,
+              layout_engine_->GetDomCodeByKeysym(kLessThanCode, 0));
+    // If there's shift modifier, comma key is expected.
+    EXPECT_EQ(ui::DomCode::COMMA,
+              layout_engine_->GetDomCodeByKeysym(kLessThanCode, kShiftMask));
+  } else {
+    // If xkb_keymap_key_get_mods_for_level is unavailable, fallback to older
+    // implementation, which ignores modifiers.
+    EXPECT_EQ(ui::DomCode::COMMA,
+              layout_engine_->GetDomCodeByKeysym(kLessThanCode, 0));
+    EXPECT_EQ(ui::DomCode::COMMA,
+              layout_engine_->GetDomCodeByKeysym(kLessThanCode, kShiftMask));
   }
 }
 
