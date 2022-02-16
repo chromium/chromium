@@ -1604,9 +1604,14 @@ class PolicyTemplateChecker(object):
       new_policy = policy_definitions_dict.get(original_policy['name'])
 
       # A policy that has at least one released platform cannot be removed.
-      if new_policy is None and original_released_platforms:
-        self._Error('Released policy \'%s\' has been removed.' %
-                    original_policy['name'])
+      if new_policy is None:
+        name = original_policy['name']
+        if original_released_platforms:
+          self._Error(f'Released policy {name} has been removed.')
+        else:
+          self._Warning(f'Unreleased Policy {name} has been removed. If the '
+                        'policy is available in Beta, please cleanup the Beta '
+                        'branch as well.')
         continue
 
       (new_released_platforms,
