@@ -8,30 +8,15 @@ found in the LICENSE file.
 
 -->
 <head>
-  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-  <style>
-    #first {
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      top: 0px;
-      left: 0px;
-      background-color: green;
-      transform: translate3d(0, 0, 0);
-    }
-  </style>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <script>
-    function openHello(e) {
+    function openHello() {
       window.location = 'hello.html';
-      e.preventDefault();
-    };
-
-    function setup() {
-      first.ontouchend = openHello;
     };
   </script>
 </head>
-<body onload='setup();'>
-  <div id='first'>Some text so the document is ready for input.</div>
+<body style='height:10000px;' onclick='openHello();'>
+  Click page.
 </body>
 </html>

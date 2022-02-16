@@ -1855,7 +1855,8 @@ public class ContextualSearchManager
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mSearchPanel.hideCaption();
+                        // We may have been destroyed.
+                        if (mSearchPanel != null) mSearchPanel.hideCaption();
                         mInternalStateController.notifyFinishedWorkOn(
                                 InternalState.WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS);
                     }

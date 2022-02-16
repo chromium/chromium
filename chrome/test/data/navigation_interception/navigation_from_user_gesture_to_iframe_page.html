@@ -8,31 +8,15 @@ found in the LICENSE file.
 
 -->
 <head>
-  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-  <style>
-    #first {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0px;
-      left: 0px;
-      background-color: green;
-      transform: translate3d(0, 0, 0);
-    }
-  </style>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <script>
-    function openIFrameContainerPage(e) {
+    function openIFrameContainerPage() {
       window.location = 'iframe_container_page.html';
-      e.preventDefault();
-    };
-
-    function setup() {
-      first.ontouchend = openIFrameContainerPage;
-      first.onclick = openIFrameContainerPage;
     };
   </script>
 </head>
-<body onload='setup();'>
-  <div id='first'>Some text so the document is ready for input.</div>
+<body style='height:10000px;' onclick='openIFrameContainerPage();'>
+  Click page.
 </body>
 </html>
