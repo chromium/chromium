@@ -72,8 +72,10 @@ VideoFrame* MakeVideoFrame(
 VideoFrame* MakeVideoFrame(ScriptState* script_state,
                            const wc_fuzzer::VideoFrameBitmapInit& proto);
 
-AudioData* MakeAudioData(ScriptState* script_state,
-                         const wc_fuzzer::AudioDataInit& proto);
+AudioData* MakeAudioData(const wc_fuzzer::AudioDataInit& proto);
+
+AudioDataCopyToOptions* MakeAudioDataCopyToOptions(
+    const wc_fuzzer::AudioDataCopyToOptions& proto);
 
 VideoEncoderEncodeOptions* MakeEncodeOptions(
     const wc_fuzzer::EncodeVideo_EncodeOptions& proto);

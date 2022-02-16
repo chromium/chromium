@@ -95,8 +95,7 @@ DEFINE_TEXT_PROTO_FUZZER(
             break;
           }
           case wc_fuzzer::AudioEncoderApiInvocation::kEncode: {
-            AudioData* data =
-                MakeAudioData(script_state, invocation.encode().data());
+            AudioData* data = MakeAudioData(invocation.encode().data());
             if (!data)
               return;
 
