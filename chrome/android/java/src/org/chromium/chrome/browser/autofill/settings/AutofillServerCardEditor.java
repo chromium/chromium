@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
@@ -21,6 +23,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -33,11 +36,17 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     private View mLocalCopyLabel;
     private View mClearLocalCopy;
     private TextView mVirtualCardEnrollmentButton;
-
     private boolean mVirtualCardEnrollmentButtonShowsUnenroll;
+    private AutofillPaymentMethodsDelegate mDelegate;
 
     @UsedByReflection("AutofillPaymentMethodsFragment.java")
     public AutofillServerCardEditor() {}
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mDelegate = new AutofillPaymentMethodsDelegate(Profile.getLastUsedRegularProfile());
+    }
 
     @Override
     public View onCreateView(
@@ -66,6 +75,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
             mVirtualCardEnrollmentButton.setOnClickListener(view -> {
                 if (!mVirtualCardEnrollmentButtonShowsUnenroll) {
                     // TODO (crbug/1281695): Implement enroll dialog.
+                    mDelegate.offerVirtualCardEnrollment(mCard.getInstrumentId());
 
                     // Change button label and behavior to Unenroll.
                     setVirtualCardEnrollmentButtonLabel(true);
@@ -76,7 +86,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                             new AutofillVirtualCardUnenrollmentDialog(
                                     getActivity(), modalDialogManager, unenrollRequested -> {
                                         if (unenrollRequested) {
-                                            // TODO(crbug/1281695): Implement unenroll action.
+                                            mDelegate.unenrollVirtualCard(mCard.getInstrumentId());
 
                                             // Change button label and behavior to Enroll.
                                             setVirtualCardEnrollmentButtonLabel(false);
@@ -106,6 +116,13 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
 
         initializeButtons(v);
         return v;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Ensure that the native AutofillPaymentMethodsDelegateMobile instance is cleaned up.
+        mDelegate.cleanup();
     }
 
     private void removeLocalCopyViews() {
