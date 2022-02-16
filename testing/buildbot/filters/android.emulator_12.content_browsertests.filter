@@ -66,3 +66,6 @@
 -WebRtcBrowserTest.NegotiateOfferWithBLine
 -WebRtcBrowserTest.NoCrashWhenConnectChromiumSinkToRemoteTrack
 -WebRtcDataBrowserTest.CallWithSctpDataAndMedia
+
+# crbug.com/1096612
+-All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/*
