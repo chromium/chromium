@@ -62,6 +62,7 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
   title_->SetTextContext(views::style::CONTEXT_DIALOG_TITLE);
   title_->SetTextStyle(ash::STYLE_EMPHASIZED);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_->SetAutoColorReadabilityEnabled(false);
   // Needs to paint to layer so it's stacked above `this` view.
   title_->SetPaintToLayer();
   title_->layer()->SetFillsBoundsOpaquely(false);
@@ -76,6 +77,7 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
   body_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   body_->SetMultiLine(true);
   body_->SetAllowCharacterBreak(true);
+  body_->SetAutoColorReadabilityEnabled(false);
   // Needs to paint to layer so it's stacked above `this` view.
   body_->SetPaintToLayer();
   body_->layer()->SetFillsBoundsOpaquely(false);
