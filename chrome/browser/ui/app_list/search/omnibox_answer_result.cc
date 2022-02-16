@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -46,6 +47,13 @@ ChromeSearchResult::IconInfo CreateAnswerIconInfo(
   return ChromeSearchResult::IconInfo(icon, dimension);
 }
 
+TextItem CreateTextItem(const std::u16string& text) {
+  TextItem text_item(TextType::kString);
+  text_item.SetText(text);
+  text_item.SetTextTags({});
+  return text_item;
+}
+
 std::u16string GetAdditionalText(const SuggestionAnswer::ImageLine& line) {
   if (line.additional_text()) {
     const auto& additional_text = line.additional_text()->text();
@@ -76,6 +84,9 @@ std::vector<TextItem> ImageLineToTextVector(
     const SuggestionAnswer::ImageLine& line) {
   std::vector<TextItem> text_vector;
   for (const auto& text_field : line.text_fields()) {
+    if (!text_vector.empty())
+      text_vector.push_back(CreateTextItem(u" "));
+
     TextItem text_item(TextType::kString);
     text_item.SetText(text_field.text());
     text_item.SetTextTags(TextFieldToTags(text_field));
@@ -98,14 +109,6 @@ std::vector<TextItem> AddBoldTags(std::vector<TextItem> text_vector) {
   return bolded_vector;
 }
 
-// TODO(crbug.com/1250154): Consider moving this to a more general util file.
-TextItem CreateTextItem(const std::u16string& text) {
-  TextItem text_item(TextType::kString);
-  text_item.SetText(text);
-  text_item.SetTextTags({});
-  return text_item;
-}
-
 // TODO(crbug.com/1250154): Remove non-a11y references to this once the
 // productivity launcher is enabled.
 std::u16string TextVectorToString(const std::vector<TextItem>& text_vector) {
@@ -115,7 +118,7 @@ std::u16string TextVectorToString(const std::vector<TextItem>& text_vector) {
       text.push_back(text_item.GetText());
     }
   }
-  return base::JoinString(text, u" ");
+  return base::StrCat(text);
 }
 
 std::u16string ComputeAccessibleName(
@@ -212,15 +215,19 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
     const auto& second_line = match_.answer->second_line();
     auto title_vector = ImageLineToTextVector(second_line);
     const auto& additional_title = GetAdditionalText(second_line);
-    if (!additional_title.empty())
+    if (!additional_title.empty()) {
+      title_vector.push_back(CreateTextItem(u" "));
       title_vector.push_back(CreateTextItem(additional_title));
+    }
     SetTitleTextVector(title_vector);
 
     const auto& first_line = match_.answer->first_line();
     std::vector<TextItem> details_vector = {CreateTextItem(match_.contents)};
     const auto& additional_details = GetAdditionalText(first_line);
-    if (!additional_details.empty())
+    if (!additional_details.empty()) {
+      details_vector.push_back(CreateTextItem(u" "));
       details_vector.push_back(CreateTextItem(additional_details));
+    }
     SetDetailsTextVector(details_vector);
   }
 
