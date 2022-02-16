@@ -19,6 +19,8 @@ import org.gradle.api.logging.Logger
  */
 class ChromiumDepGraph {
 
+    private static final String DEFAULT_CIPD_SUFFIX = 'cr0'
+
     // Some libraries don't properly fill their POM with the appropriate licensing information. It is provided here from
     // manual lookups. Note that licenseUrl must provide textual content rather than be an html page.
     static final Map<String, PropertyOverride> PROPERTY_OVERRIDES = [
@@ -484,18 +486,9 @@ class ChromiumDepGraph {
             }
         }
 
-        if (dependency.moduleArtifacts.empty ||
-            !areAllModuleArtifactsSameFile(dependency.moduleArtifacts)) {
-            throw new IllegalStateException("The dependency ${id} does not have exactly one " +
-                                            "artifact: ${dependency.moduleArtifacts}")
-        }
-        ResolvedArtifact artifact = dependency.moduleArtifacts[0]
-        if (artifact.extension != 'jar' && artifact.extension != 'aar') {
-            throw new IllegalStateException("Type ${artifact.extension} of ${id} not supported.")
-        }
-
+        List<ResolvedDependency> childDependenciesWithArtifacts = []
+        List<String> childModules = []
         if (recurse) {
-            List<ResolvedDependency> childDependenciesWithArtifacts = []
 
             dependency.children.each { childDependency ->
                 // Replace dependency which acts as a redirect (ex: org.jetbrains.kotlinx:kotlinx-coroutines-core) with
@@ -511,16 +504,34 @@ class ChromiumDepGraph {
                 }
             }
 
-            List<String> childModules = []
             childDependenciesWithArtifacts.each { childDependency ->
                 childModules += makeModuleId(childDependency.module)
             }
-            dependencies.put(id, buildDepDescription(id, dependency, artifact, childModules))
+        }
+
+        if (dependency.moduleArtifacts.empty) {
+            assert childModules : "${id} has no children and no artifacts."
+            assert recurse : "${id} has no artifacts so it needs to have child modules."
+            dependencies.put(id, buildDepDescriptionNoArtifact(id, dependency, childModules))
             childDependenciesWithArtifacts.each {
                 childDependency -> collectDependenciesInternal(childDependency)
             }
+        } else if (!areAllModuleArtifactsSameFile(dependency.moduleArtifacts)) {
+            throw new IllegalStateException("The dependency ${id} has multiple different artifacts: " +
+                                            "${dependency.moduleArtifacts}")
         } else {
-            dependencies.put(id, buildDepDescription(id, dependency, artifact, []))
+            ResolvedArtifact artifact = dependency.moduleArtifacts[0]
+            if (artifact.extension != 'jar' && artifact.extension != 'aar') {
+                throw new IllegalStateException("Type ${artifact.extension} of ${id} not supported.")
+            }
+            if (recurse) {
+                dependencies.put(id, buildDepDescription(id, dependency, artifact, childModules))
+                childDependenciesWithArtifacts.each {
+                    childDependency -> collectDependenciesInternal(childDependency)
+                }
+            } else {
+                dependencies.put(id, buildDepDescription(id, dependency, artifact, []))
+            }
         }
     }
 
@@ -537,6 +548,22 @@ class ChromiumDepGraph {
             }
         }
         return true
+    }
+
+    private DependencyDescription buildDepDescriptionNoArtifact(
+            String id, ResolvedDependency dependency, List<String> childModules) {
+
+        return customizeDep(new DependencyDescription(
+                id: id,
+                group: dependency.module.id.group,
+                name: dependency.module.id.name,
+                version: dependency.module.id.version,
+                children: Collections.unmodifiableList(new ArrayList<>(childModules)),
+                directoryName: id.toLowerCase(),
+                displayName: dependency.module.id.name,
+                exclude: false,
+                cipdSuffix: DEFAULT_CIPD_SUFFIX,
+        ))
     }
 
     private DependencyDescription buildDepDescription(
@@ -577,7 +604,7 @@ class ChromiumDepGraph {
                 url: pomContent.url?.text(),
                 displayName: displayName,
                 exclude: false,
-                cipdSuffix: 'cr0',
+                cipdSuffix: DEFAULT_CIPD_SUFFIX,
         ))
     }
 

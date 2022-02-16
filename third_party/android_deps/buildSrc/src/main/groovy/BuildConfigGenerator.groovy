@@ -373,7 +373,7 @@ class BuildConfigGenerator extends DefaultTask {
         List<Future> downloadTasks = []
         List<ChromiumDepGraph.DependencyDescription> mergeLicensesDeps = []
         graph.dependencies.values().each { dependency ->
-            if (excludeDependency(dependency) || computeJavaGroupForwardingTarget(dependency) != null) {
+            if (excludeDependency(dependency) || computeJavaGroupForwardingTargets(dependency)) {
                 return
             }
 
@@ -453,19 +453,23 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         String targetName = translateTargetName(dependency.id) + '_java'
-        String javaGroupTarget = computeJavaGroupForwardingTarget(dependency)
-        if (javaGroupTarget != null) {
-            assert dependency.extension == 'jar' || dependency.extension == 'aar'
+        List<String> javaGroupTargets = computeJavaGroupForwardingTargets(dependency)
+        if (javaGroupTargets) {
             sb.append("""
                 java_group("${targetName}") {
-                  deps = [ "${javaGroupTarget}" ]
-                """.stripIndent())
+                  deps = [""")
+            javaGroupTargets.each { forwardTarget ->
+                sb.append("""
+                    "${forwardTarget}_java",""")
+            }
+            sb.append('''
+                  ]''')
             if (dependency.testOnly) {
                 sb.append('  testonly = true\n')
             }
             sb.append('}\n\n')
             return
-                }
+        }
 
         String depsStr = ''
         dependency.children?.each { childDep ->
@@ -582,10 +586,14 @@ class BuildConfigGenerator extends DefaultTask {
     }
 
     /** If |dependency| should be a java_group(), returns target to forward to. Returns null otherwise. */
-    String computeJavaGroupForwardingTarget(ChromiumDepGraph.DependencyDescription dependency) {
-        String targetName = translateTargetName(dependency.id) + '_java'
-        return repositoryPath != AUTOROLLED_REPO_PATH && isTargetAutorolled(targetName) ?
-               "//${AUTOROLLED_REPO_PATH}:${targetName}" : null
+    List<String> computeJavaGroupForwardingTargets(ChromiumDepGraph.DependencyDescription dependency) {
+        String targetName = translateTargetName(dependency.id)
+        if (repositoryPath != AUTOROLLED_REPO_PATH && isTargetAutorolled(targetName)) {
+            return ["//${AUTOROLLED_REPO_PATH}:${targetName}"]
+        } else if (dependency.artifact == null) {
+            return dependency.children
+        }
+        return []
     }
 
     private static String makeGnArray(String[] values) {
@@ -1009,7 +1017,8 @@ class BuildConfigGenerator extends DefaultTask {
     private void validateDependencies(
             Collection<ChromiumDepGraph.DependencyDescription> dependencies) {
         dependencies.each { dependency ->
-            if (dependency.id.contains('androidx') && !dependency.fileName.contains('SNAPSHOT')) {
+            if (dependency.id.contains('androidx') &&
+                    dependency.fileName && !dependency.fileName.contains('SNAPSHOT')) {
                 boolean hasAllowedDep = ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES.any {
                     allowedPrefix -> dependency.id.startsWith(allowedPrefix)
                 }
@@ -1041,7 +1050,7 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         depGraph.dependencies.values().sort(dependencyComparator).each { dependency ->
-            if (excludeDependency(dependency) || computeJavaGroupForwardingTarget(dependency)) {
+            if (excludeDependency(dependency) || computeJavaGroupForwardingTargets(dependency)) {
                 return
             }
             String depPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
