@@ -496,6 +496,9 @@ double LayoutShiftTracker::SubframeWeightingFactor() const {
   gfx::Size subframe_visible_size = subframe_rect.PixelSnappedSize();
   gfx::Size main_frame_size = frame.GetPage()->GetVisualViewport().Size();
 
+  if (main_frame_size.Area64() == 0) {
+    return 0;
+  }
   // TODO(crbug.com/940711): This comparison ignores page scale and CSS
   // transforms above the local root.
   return static_cast<double>(subframe_visible_size.Area64()) /
