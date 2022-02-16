@@ -8,6 +8,7 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -32,9 +33,10 @@ class DownloadTask : public BitmapFetcherDelegate {
   DownloadTask(const GURL& url,
                const net::NetworkTrafficAnnotationTag& annotation_tag,
                const net::HttpRequestHeaders& additional_headers,
+               absl::optional<AccountId> credentials_account_id,
                ash::ImageDownloader::DownloadCallback callback)
       : callback_(std::move(callback)) {
-    StartTask(url, annotation_tag, additional_headers);
+    StartTask(url, annotation_tag, additional_headers, credentials_account_id);
   }
 
   DownloadTask(const DownloadTask&) = delete;
@@ -52,8 +54,15 @@ class DownloadTask : public BitmapFetcherDelegate {
  private:
   void StartTask(const GURL& url,
                  const net::NetworkTrafficAnnotationTag& annotation_tag,
-                 const net::HttpRequestHeaders& additional_headers) {
-    auto* profile = GetProfileForActiveUser();
+                 const net::HttpRequestHeaders& additional_headers,
+                 absl::optional<AccountId> credentials_account_id) {
+    Profile* profile;
+    if (credentials_account_id.has_value()) {
+      profile = ash::ProfileHelper::Get()->GetProfileByAccountId(
+          credentials_account_id.value());
+    } else {
+      profile = GetProfileForActiveUser();
+    }
     if (!profile) {
       std::move(callback_).Run(gfx::ImageSkia());
       return;
@@ -62,8 +71,11 @@ class DownloadTask : public BitmapFetcherDelegate {
     bitmap_fetcher_ =
         std::make_unique<BitmapFetcher>(url, this, annotation_tag);
 
-    bitmap_fetcher_->Init(net::ReferrerPolicy::NEVER_CLEAR,
-                          network::mojom::CredentialsMode::kOmit,
+    auto credentials_mode = credentials_account_id.has_value()
+                                ? network::mojom::CredentialsMode::kInclude
+                                : network::mojom::CredentialsMode::kOmit;
+
+    bitmap_fetcher_->Init(net::ReferrerPolicy::NEVER_CLEAR, credentials_mode,
                           additional_headers);
 
     bitmap_fetcher_->Start(profile->GetURLLoaderFactory().get());
@@ -85,15 +97,17 @@ void ImageDownloaderImpl::Download(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     ash::ImageDownloader::DownloadCallback callback) {
-  Download(url, annotation_tag, /*additional_headers=*/{}, std::move(callback));
+  Download(url, annotation_tag, /*additional_headers=*/{},
+           /*credentials_account_id=*/absl::nullopt, std::move(callback));
 }
 
 void ImageDownloaderImpl::Download(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     const net::HttpRequestHeaders& additional_headers,
+    absl::optional<AccountId> credentials_account_id,
     ash::ImageDownloader::DownloadCallback callback) {
   // The download task will delete itself upon task completion.
   new DownloadTask(url, annotation_tag, additional_headers,
-                   std::move(callback));
+                   credentials_account_id, std::move(callback));
 }

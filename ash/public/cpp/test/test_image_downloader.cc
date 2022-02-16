@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -21,13 +22,15 @@ void TestImageDownloader::Download(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     DownloadCallback callback) {
-  Download(url, annotation_tag, /*additional_headers=*/{}, std::move(callback));
+  Download(url, annotation_tag, /*additional_headers=*/{},
+           /*credentials_account_id=*/absl::nullopt, std::move(callback));
 }
 
 void TestImageDownloader::Download(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     const net::HttpRequestHeaders& additional_headers,
+    absl::optional<AccountId> credentials_account_id,
     DownloadCallback callback) {
   last_request_headers_ = additional_headers;
   // Pretend to respond asynchronously.

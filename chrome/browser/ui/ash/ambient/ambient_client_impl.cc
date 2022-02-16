@@ -180,15 +180,16 @@ void AmbientClientImpl::DownloadImage(
           }
           net::HttpRequestHeaders headers;
           headers.SetHeader("Authorization", "Bearer " + access_token);
-          ash::ImageDownloader::Get()->Download(GURL(url),
-                                                kAmbientClientNetworkTag,
-                                                headers, std::move(callback));
+          ash::ImageDownloader::Get()->Download(
+              GURL(url), kAmbientClientNetworkTag, headers,
+              /*credentials_account_id=*/absl::nullopt, std::move(callback));
         },
         url, std::move(callback)));
   } else {
-    ash::ImageDownloader::Get()->Download(GURL(url), kAmbientClientNetworkTag,
-                                          /*additional_headers=*/{},
-                                          std::move(callback));
+    ash::ImageDownloader::Get()->Download(
+        GURL(url), kAmbientClientNetworkTag,
+        /*additional_headers=*/{},
+        /*credentials_account_id=*/absl::nullopt, std::move(callback));
   }
 }
 

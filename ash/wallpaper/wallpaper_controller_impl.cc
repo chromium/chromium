@@ -70,6 +70,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
@@ -2167,6 +2168,8 @@ void WallpaperControllerImpl::OnGooglePhotosMetadataFetched(
       std::move(callback));
   // TODO(angusmclean): Use a real traffic annotation below.
   ImageDownloader::Get()->Download(GURL(metadata), NO_TRAFFIC_ANNOTATION_YET,
+                                   /*additional_headers=*/{},
+                                   /*credentials_account_id=*/params.account_id,
                                    std::move(download_callback));
 }
 
