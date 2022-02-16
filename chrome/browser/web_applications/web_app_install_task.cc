@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,6 +81,44 @@ bool IsEmptyIconBitmapsForIconUrl(const IconsMap& icons_map,
 
   return true;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+struct PlayStoreIntent {
+  std::string app_id;
+  std::string intent;
+};
+
+// Find the first Chrome OS app in related_applications of |manifest| and return
+// the details necessary to redirect the user to the app's listing in the Play
+// Store.
+absl::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
+    const blink::mojom::Manifest& manifest) {
+  for (const auto& app : manifest.related_applications) {
+    std::string id = base::UTF16ToUTF8(app.id.value_or(std::u16string()));
+    if (!base::EqualsASCII(app.platform.value_or(std::u16string()),
+                           kChromeOsPlayPlatform)) {
+      continue;
+    }
+
+    if (id.empty()) {
+      // Fallback to ID in the URL.
+      if (!net::GetValueForKeyInQuery(app.url, "id", &id) || id.empty()) {
+        continue;
+      }
+    }
+
+    std::string referrer;
+    if (net::GetValueForKeyInQuery(app.url, "referrer", &referrer) &&
+        !referrer.empty()) {
+      referrer = "&referrer=" + referrer;
+    }
+
+    std::string intent = kPlayIntentPrefix + id + referrer;
+    return PlayStoreIntent{id, intent};
+  }
+  return absl::nullopt;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -657,41 +696,20 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
   // cannot be sent to the store.
   if (for_installable_site == ForInstallableSite::kYes &&
       !background_installation_ && opt_manifest) {
-    for (const auto& application : opt_manifest->related_applications) {
-      std::string id =
-          base::UTF16ToUTF8(application.id.value_or(std::u16string()));
-      if (!base::EqualsASCII(application.platform.value_or(std::u16string()),
-                             kChromeOsPlayPlatform)) {
-        continue;
-      }
-
-      if (id.empty()) {
-        // Fallback to ID in the URL.
-        if (!net::GetValueForKeyInQuery(application.url, "id", &id) ||
-            id.empty()) {
-          continue;
-        }
-      }
-
+    absl::optional<PlayStoreIntent> intent =
+        GetPlayStoreIntentFromManifest(*opt_manifest);
+    if (intent) {
       auto* arc_service_manager = arc::ArcServiceManager::Get();
       if (arc_service_manager) {
         auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
             arc_service_manager->arc_bridge_service()->app(), IsInstallable);
         if (instance) {
-          // Attach the referrer value.
-          std::string referrer;
-          if (net::GetValueForKeyInQuery(application.url, "referrer",
-                                         &referrer) &&
-              !referrer.empty()) {
-            referrer = "&referrer=" + referrer;
-          }
-          std::string intent = kPlayIntentPrefix + id + referrer;
           instance->IsInstallable(
-              id,
+              intent->app_id,
               base::BindOnce(&WebAppInstallTask::OnDidCheckForIntentToPlayStore,
                              GetWeakPtr(), std::move(web_app_info),
                              std::move(icon_urls), for_installable_site,
-                             skip_page_favicons, intent));
+                             skip_page_favicons, intent->intent));
           return;
         }
       }
