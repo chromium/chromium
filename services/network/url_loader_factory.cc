@@ -278,15 +278,20 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
         // TrustTokenRequestHelperFactory.
         base::BindRepeating(&NetworkContext::client,
                             base::Unretained(context_)),
-        // It's safe to use Unretained here because
+        // It's safe to access cookie manager for |context_| here because
         // NetworkContext::CookieManager outlives the URLLoaders associated with
         // the NetworkContext.
         base::BindRepeating(
-            [](const CookieManager* manager) {
-              return !manager->cookie_settings()
-                          .are_third_party_cookies_blocked();
+            [](NetworkContext* context) {
+              // Trust tokens will be blocked if the user has either disabled
+              // the Trust Token Privacy Sandbox setting, or if the user has
+              // disabled third party cookies.
+              return !(context->cookie_manager()
+                           ->cookie_settings()
+                           .are_third_party_cookies_blocked() ||
+                       context->are_trust_tokens_blocked());
             },
-            base::Unretained(context_->cookie_manager())));
+            base::Unretained(context_)));
   }
 
   mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;

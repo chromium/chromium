@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
@@ -33,6 +34,7 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 #endif
+  DependsOn(PrivacySandboxSettingsFactory::GetInstance());
 }
 
 ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() {}

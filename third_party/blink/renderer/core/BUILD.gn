@@ -1564,7 +1564,7 @@ source_set("unit_tests") {
     "//mojo/public/cpp/system",
     "//mojo/public/cpp/test_support:test_utils",
     "//services/metrics/public/cpp:ukm_builders",
-    "//services/network/trust_tokens:test_support",
+    "//services/network:test_support",
     "//skia",
     "//skia:skcms",
     "//testing/gmock",

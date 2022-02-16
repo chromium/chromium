@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "content/public/common/trust_tokens.mojom.h"
 #include "content/public/test/content_browser_test.h"
-#include "services/network/trust_tokens/test/trust_token_request_handler.h"
+#include "services/network/test/trust_token_request_handler.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"

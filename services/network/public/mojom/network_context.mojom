@@ -511,6 +511,9 @@ struct NetworkContextParams {
   // disabled. See the above definition of each inner field for details of these
   // behaviors.
   NetworkContextFilePaths? file_paths;
+
+  // Is true, Trust Token operations should be blocked.
+  bool block_trust_tokens;
 };
 
 struct NetworkConditions {
@@ -877,6 +880,9 @@ interface NetworkContext {
   // also clears out Redemption Records.
   DeleteStoredTrustTokens(url.mojom.Origin issuer)
       => (DeleteStoredTrustTokensStatus status);
+
+  // Set Trust Token blocking to |block|.
+  SetBlockTrustTokens(bool block);
 
   // Clears network objects with implicit URL history information. Data related
   // to events that happened prior to |start_time| and after |end_time| may be

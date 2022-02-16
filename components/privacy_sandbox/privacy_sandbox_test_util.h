@@ -24,6 +24,7 @@ class MockPrivacySandboxObserver : public PrivacySandboxSettings::Observer {
   MockPrivacySandboxObserver();
   ~MockPrivacySandboxObserver();
   MOCK_METHOD1(OnFlocDataAccessibleSinceUpdated, void(bool));
+  MOCK_METHOD1(OnTrustTokenBlockingChanged, void(bool));
 };
 
 // Define an additional content setting value to simulate an unmanaged default

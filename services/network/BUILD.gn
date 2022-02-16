@@ -519,6 +519,12 @@ source_set("test_support") {
     "test/test_url_loader_network_observer.h",
     "test/test_utils.cc",
     "test/test_utils.h",
+    "test/trust_token_request_handler.cc",
+    "test/trust_token_request_handler.h",
+    "test/trust_token_test_server_handler_registration.cc",
+    "test/trust_token_test_server_handler_registration.h",
+    "test/trust_token_test_util.cc",
+    "test/trust_token_test_util.h",
     "test/udp_socket_test_util.cc",
     "test/udp_socket_test_util.h",
     "test/url_loader_context_for_tests.cc",
@@ -537,11 +543,13 @@ source_set("test_support") {
     "//services/network/public/cpp:buildflags",
     "//services/network/public/mojom",
     "//services/network/trust_tokens:test_support",
+    "//services/network/trust_tokens:trust_tokens",
   ]
 
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/cbor:cbor",
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:test_support",

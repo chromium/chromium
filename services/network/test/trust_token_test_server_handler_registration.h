@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_TRUST_TOKENS_TEST_TEST_SERVER_HANDLER_REGISTRATION_H_
-#define SERVICES_NETWORK_TRUST_TOKENS_TEST_TEST_SERVER_HANDLER_REGISTRATION_H_
+#ifndef SERVICES_NETWORK_TEST_TRUST_TOKEN_TEST_SERVER_HANDLER_REGISTRATION_H_
+#define SERVICES_NETWORK_TEST_TRUST_TOKEN_TEST_SERVER_HANDLER_REGISTRATION_H_
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -34,4 +34,4 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_TRUST_TOKENS_TEST_TEST_SERVER_HANDLER_REGISTRATION_H_
+#endif  // SERVICES_NETWORK_TEST_TRUST_TOKEN_TEST_SERVER_HANDLER_REGISTRATION_H_

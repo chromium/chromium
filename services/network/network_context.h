@@ -239,6 +239,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void DeleteStoredTrustTokens(
       const url::Origin& issuer,
       DeleteStoredTrustTokensCallback callback) override;
+  void SetBlockTrustTokens(bool block) override;
   void ClearNetworkingHistoryBetween(
       base::Time start_time,
       base::Time end_time,
@@ -558,6 +559,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   const PendingTrustTokenStore* trust_token_store() const {
     return trust_token_store_.get();
   }
+  bool are_trust_tokens_blocked() const { return block_trust_tokens_; }
 
   WebBundleManager& GetWebBundleManager() { return web_bundle_manager_; }
 
@@ -721,6 +723,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // |trust_token_store_|.
   mojo::UniqueReceiverSet<mojom::HasTrustTokensAnswerer>
       has_trust_tokens_answerers_;
+
+  // Whether the user is blocking Trust Tokens, value provided by the
+  // PrivacySandboxSettings service.
+  bool block_trust_tokens_ = false;
 
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<WebSocketFactory> websocket_factory_;

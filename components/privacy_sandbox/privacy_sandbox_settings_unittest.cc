@@ -682,6 +682,37 @@ TEST_P(PrivacySandboxSettingsTest, FledgeJoinSettingTimeRangeDeletion) {
       url::Origin::Create(GURL("https://third.com"))));
 }
 
+TEST_P(PrivacySandboxSettingsTest, TrustTokensAllowed) {
+  // IsTrustTokensAllowed() should follow the top level privacy sandbox setting
+  // as long as the release 3 feature is enabled, always returning true
+  // otherwise
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(privacy_sandbox::kPrivacySandboxSettings3);
+  privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
+  privacy_sandbox_settings()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnTrustTokenBlockingChanged(/*blocked=*/true));
+
+  privacy_sandbox_settings()->SetPrivacySandboxEnabled(false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTrustTokensAllowed());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnTrustTokenBlockingChanged(/*blocked=*/false));
+  privacy_sandbox_settings()->SetPrivacySandboxEnabled(true);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTrustTokensAllowed());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
+      privacy_sandbox::kPrivacySandboxSettings3);
+  EXPECT_CALL(observer, OnTrustTokenBlockingChanged(testing::_)).Times(0);
+
+  privacy_sandbox_settings()->SetPrivacySandboxEnabled(false);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTrustTokensAllowed());
+
+  privacy_sandbox_settings()->SetPrivacySandboxEnabled(true);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTrustTokensAllowed());
+}
+
 INSTANTIATE_TEST_SUITE_P(PrivacySandboxSettingsTestInstance,
                          PrivacySandboxSettingsTest,
                          testing::Bool());

@@ -93,6 +93,12 @@ PrivacySandboxSettings::PrivacySandboxSettings(
   // was shut down).
   if (IsCookiesClearOnExitEnabled(host_content_settings_map_))
     OnCookiesCleared();
+
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      prefs::kPrivacySandboxApisEnabledV2,
+      base::BindRepeating(&PrivacySandboxSettings::OnPrivacySandboxPrefChanged,
+                          base::Unretained(this)));
 }
 
 PrivacySandboxSettings::~PrivacySandboxSettings() = default;
@@ -311,8 +317,27 @@ void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {
   }
 }
 
+bool PrivacySandboxSettings::IsTrustTokensAllowed() {
+  // The PrivacySandboxSettings is only involved in Trust Token access
+  // decisions when the Release 3 flag is enabled.
+  if (!base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3))
+    return true;
+
+  return IsPrivacySandboxEnabled();
+}
+
 void PrivacySandboxSettings::OnCookiesCleared() {
   SetFlocDataAccessibleFromNow(/*reset_calculate_timer=*/false);
+}
+
+void PrivacySandboxSettings::OnPrivacySandboxPrefChanged() {
+  // The PrivacySandboxSettings is only involved in Trust Token access
+  // decisions when the Release 3 flag is enabled.
+  if (!base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3))
+    return;
+
+  for (auto& observer : observers_)
+    observer.OnTrustTokenBlockingChanged(!IsTrustTokensAllowed());
 }
 
 void PrivacySandboxSettings::AddObserver(Observer* observer) {

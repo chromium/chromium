@@ -75,6 +75,7 @@ class TestNetworkContext : public mojom::NetworkContext {
   void DeleteStoredTrustTokens(
       const url::Origin& issuer,
       DeleteStoredTrustTokensCallback callback) override {}
+  void SetBlockTrustTokens(bool block) override {}
 #if BUILDFLAG(ENABLE_REPORTING)
   void AddReportingApiObserver(
       mojo::PendingRemote<network::mojom::ReportingApiObserver> observer)

@@ -28,6 +28,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
@@ -246,6 +247,8 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
                           base::Unretained(this)));
   cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
   cookie_settings_observation_.Observe(cookie_settings_.get());
+  privacy_sandbox_settings_observer_.Observe(
+      PrivacySandboxSettingsFactory::GetForProfile(profile));
 
   DisableQuicIfNotAllowed();
 
@@ -385,6 +388,17 @@ void ProfileNetworkContextService::OnThirdPartyCookieBlockingChanged(
             ->BlockThirdPartyCookies(block_third_party_cookies);
       },
       block_third_party_cookies));
+}
+
+void ProfileNetworkContextService::OnTrustTokenBlockingChanged(
+    bool block_trust_tokens) {
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](bool block_trust_tokens,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()->SetBlockTrustTokens(
+            block_trust_tokens);
+      },
+      block_trust_tokens));
 }
 
 std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
@@ -920,6 +934,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   // All consumers of the main NetworkContext must provide NetworkIsolationKeys
   // / IsolationInfos, so storage can be isolated on a per-site basis.
   network_context_params->require_network_isolation_key = true;
+
+  network_context_params->block_trust_tokens =
+      !PrivacySandboxSettingsFactory::GetForProfile(profile_)
+           ->IsTrustTokensAllowed();
 }
 
 base::FilePath ProfileNetworkContextService::GetPartitionPath(

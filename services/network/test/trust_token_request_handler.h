@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_TRUST_TOKENS_TEST_TRUST_TOKEN_REQUEST_HANDLER_H_
-#define SERVICES_NETWORK_TRUST_TOKENS_TEST_TRUST_TOKEN_REQUEST_HANDLER_H_
+#ifndef SERVICES_NETWORK_TEST_TRUST_TOKEN_REQUEST_HANDLER_H_
+#define SERVICES_NETWORK_TEST_TRUST_TOKEN_REQUEST_HANDLER_H_
 
 #include <set>
 #include <string>
@@ -156,4 +156,4 @@ class TrustTokenRequestHandler {
 }  // namespace test
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_TRUST_TOKENS_TEST_TRUST_TOKEN_REQUEST_HANDLER_H_
+#endif  // SERVICES_NETWORK_TEST_TRUST_TOKEN_REQUEST_HANDLER_H_

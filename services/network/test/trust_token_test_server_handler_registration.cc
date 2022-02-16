@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/trust_tokens/test/test_server_handler_registration.h"
+#include "services/network/test/trust_token_test_server_handler_registration.h"
 
 #include <memory>
 
@@ -15,8 +15,8 @@
 #include "net/http/http_request_headers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/test/trust_token_request_handler.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
-#include "services/network/trust_tokens/test/trust_token_request_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {

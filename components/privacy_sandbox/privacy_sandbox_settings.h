@@ -36,7 +36,9 @@ class PrivacySandboxSettings : public KeyedService {
  public:
   class Observer {
    public:
-    virtual void OnFlocDataAccessibleSinceUpdated(bool reset_compute_timer) = 0;
+    virtual void OnFlocDataAccessibleSinceUpdated(bool reset_compute_timer) {}
+
+    virtual void OnTrustTokenBlockingChanged(bool blocked) {}
   };
 
   PrivacySandboxSettings(
@@ -127,10 +129,18 @@ class PrivacySandboxSettings : public KeyedService {
   // specific APIs are available in specific contexts.
   void SetPrivacySandboxEnabled(bool enabled);
 
+  // Returns whether Trust Tokens are "generally" available. A return value of
+  // false is authoritative, while a value of true must be followed by the
+  // appropriate context specific check.
+  bool IsTrustTokensAllowed();
+
   // Called when there's a broad cookies clearing action. For example, this
   // should be called on "Clear browsing data", but shouldn't be called on the
   // Clear-Site-Data header, as it's restricted to a specific site.
   void OnCookiesCleared();
+
+  // Called when the main privacy sandbox preference is changed.
+  void OnPrivacySandboxPrefChanged();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -152,6 +162,7 @@ class PrivacySandboxSettings : public KeyedService {
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;
+  PrefChangeRegistrar pref_change_registrar_;
   bool incognito_profile_;
 };
 

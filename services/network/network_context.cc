@@ -535,6 +535,8 @@ NetworkContext::NetworkContext(
 
   CreateURLLoaderFactoryForCertNetFetcher(
       std::move(url_loader_factory_for_cert_net_fetcher_receiver));
+
+  SetBlockTrustTokens(params_->block_trust_tokens);
 }
 
 NetworkContext::NetworkContext(
@@ -797,6 +799,10 @@ void NetworkContext::DeleteStoredTrustTokens(
         std::move(callback).Run(status);
       },
       std::move(*suitable_issuer_origin), std::move(callback)));
+}
+
+void NetworkContext::SetBlockTrustTokens(bool block) {
+  block_trust_tokens_ = block;
 }
 
 void NetworkContext::OnProxyLookupComplete(

@@ -11,6 +11,6 @@ specific_include_rules = {
         "+url/origin.h",
     ],
     "trust_token_attribute_parsing_test.cc": [
-        "+services/network/trust_tokens/test",
+        "+services/network/test",
     ],
 }

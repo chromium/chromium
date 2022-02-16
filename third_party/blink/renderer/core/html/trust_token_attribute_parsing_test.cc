@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/html/trust_token_attribute_parsing.h"
 
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
-#include "services/network/trust_tokens/test/trust_token_test_util.h"
+#include "services/network/test/trust_token_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
