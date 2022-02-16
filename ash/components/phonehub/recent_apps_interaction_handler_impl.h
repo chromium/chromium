@@ -64,6 +64,7 @@ class RecentAppsInteractionHandlerImpl
   void SaveRecentAppMetadataListToPref();
   void ComputeAndUpdateUiState();
   void ClearRecentAppMetadataListAndPref();
+  base::flat_set<int64_t> GetUserIdsWithDisplayRecentApps();
 
   // Whether this class has finished loading |recent_app_metadata_list_| from
   // pref.

@@ -23,6 +23,7 @@ class MutablePhoneModel;
 class NotificationAccessManager;
 class NotificationProcessor;
 class ScreenLockManager;
+class RecentAppsInteractionHandler;
 
 // Responsible for receiving incoming protos and calling on clients to update
 // their models.
@@ -40,7 +41,8 @@ class PhoneStatusProcessor
       ScreenLockManager* screen_lock_manager,
       NotificationProcessor* notification_processor_,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      MutablePhoneModel* phone_model);
+      MutablePhoneModel* phone_model,
+      RecentAppsInteractionHandler* recent_apps_interaction_handler);
   ~PhoneStatusProcessor() override;
 
   PhoneStatusProcessor(const PhoneStatusProcessor&) = delete;
@@ -83,6 +85,7 @@ class PhoneStatusProcessor
   NotificationProcessor* notification_processor_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   MutablePhoneModel* phone_model_;
+  RecentAppsInteractionHandler* recent_apps_interaction_handler_;
 };
 
 }  // namespace phonehub

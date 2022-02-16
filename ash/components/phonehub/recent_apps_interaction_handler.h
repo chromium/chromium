@@ -39,6 +39,13 @@ class RecentAppsInteractionHandler {
     ITEMS_VISIBLE,
   };
 
+  // Records each users' quiet mode to decide showing recent apps or not.
+  struct UserState {
+    int64_t user_id;
+    // The state when user turn on/off work apps/notification.
+    bool is_enabled;
+  };
+
   RecentAppsInteractionHandler(const RecentAppsInteractionHandler&) = delete;
   RecentAppsInteractionHandler& operator=(const RecentAppsInteractionHandler&) =
       delete;
@@ -47,6 +54,10 @@ class RecentAppsInteractionHandler {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
   RecentAppsUiState ui_state() { return ui_state_; }
+  std::vector<UserState> user_states() { return user_states_; }
+  void set_user_states(const std::vector<UserState>& user_states) {
+    user_states_ = user_states;
+  }
 
   virtual void AddRecentAppClickObserver(RecentAppClickObserver* observer);
   virtual void RemoveRecentAppClickObserver(RecentAppClickObserver* observer);
@@ -68,6 +79,7 @@ class RecentAppsInteractionHandler {
  private:
   base::ObserverList<RecentAppClickObserver> recent_app_click_observer_list_;
   base::ObserverList<Observer> observer_list_;
+  std::vector<UserState> user_states_;
 };
 
 }  // namespace phonehub

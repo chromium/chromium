@@ -22,6 +22,7 @@ using FeatureStatesMap =
     ::chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap;
 
 const size_t kMaxMostRecentApps = 5;
+const size_t kMaxSavedRecentApps = 10;
 
 // static
 void RecentAppsInteractionHandlerImpl::RegisterPrefs(
@@ -98,16 +99,31 @@ void RecentAppsInteractionHandlerImpl::NotifyRecentAppAddedOrUpdated(
   ComputeAndUpdateUiState();
 }
 
+base::flat_set<int64_t>
+RecentAppsInteractionHandlerImpl::GetUserIdsWithDisplayRecentApps() {
+  base::flat_set<int64_t> user_ids;
+  for (auto& user : user_states()) {
+    if (user.is_enabled) {
+      user_ids.emplace(user.user_id);
+    }
+  }
+  return user_ids;
+}
+
 std::vector<Notification::AppMetadata>
 RecentAppsInteractionHandlerImpl::FetchRecentAppMetadataList() {
   LoadRecentAppMetadataListFromPrefIfNeed();
 
-  // At most |kMaxMostRecentApps| recent apps can be displayed.
-  size_t num_recent_apps_to_display =
-      std::min(recent_app_metadata_list_.size(), kMaxMostRecentApps);
+  base::flat_set<int64_t> active_user_ids = GetUserIdsWithDisplayRecentApps();
   std::vector<Notification::AppMetadata> app_metadata_list;
-  for (size_t i = 0; i < num_recent_apps_to_display; ++i) {
-    app_metadata_list.push_back(recent_app_metadata_list_[i].first);
+
+  for (auto const& it : recent_app_metadata_list_) {
+    if (active_user_ids.contains(it.first.user_id)) {
+      app_metadata_list.push_back(it.first);
+      // At most |kMaxMostRecentApps| recent apps can be displayed.
+      if (app_metadata_list.size() == kMaxMostRecentApps)
+        break;
+    }
   }
   return app_metadata_list;
 }
@@ -130,10 +146,10 @@ void RecentAppsInteractionHandlerImpl::
 
 void RecentAppsInteractionHandlerImpl::SaveRecentAppMetadataListToPref() {
   PA_LOG(INFO) << "SaveRecentAppMetadataListToPref";
-  size_t num_recent_apps_to_display =
-      std::min(recent_app_metadata_list_.size(), kMaxMostRecentApps);
+  size_t num_recent_apps_to_save =
+      std::min(recent_app_metadata_list_.size(), kMaxSavedRecentApps);
   std::vector<base::Value> app_metadata_value_list;
-  for (size_t i = 0; i < num_recent_apps_to_display; ++i) {
+  for (size_t i = 0; i < num_recent_apps_to_save; ++i) {
     app_metadata_value_list.push_back(
         recent_app_metadata_list_[i].first.ToValue());
   }

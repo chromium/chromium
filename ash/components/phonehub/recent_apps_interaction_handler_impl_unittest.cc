@@ -113,6 +113,49 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
             : NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
   }
 
+  std::vector<RecentAppsInteractionHandler::UserState> GetDefaultUserStates() {
+    RecentAppsInteractionHandler::UserState user_state1;
+    user_state1.user_id = 1;
+    user_state1.is_enabled = true;
+    RecentAppsInteractionHandler::UserState user_state2;
+    user_state2.user_id = 2;
+    user_state2.is_enabled = true;
+    std::vector<RecentAppsInteractionHandler::UserState> user_states;
+    user_states.push_back(user_state1);
+    user_states.push_back(user_state2);
+    return user_states;
+  }
+
+  std::vector<RecentAppsInteractionHandler::UserState>
+  GetWorkProfileTurnedOffUserStates() {
+    RecentAppsInteractionHandler::UserState user_state1;
+    user_state1.user_id = 1;
+    user_state1.is_enabled = true;
+    RecentAppsInteractionHandler::UserState user_state2;
+    user_state2.user_id = 2;
+    user_state2.is_enabled = false;
+    std::vector<RecentAppsInteractionHandler::UserState> user_states;
+    user_states.push_back(user_state1);
+    user_states.push_back(user_state2);
+    return user_states;
+  }
+
+  void GenerateDefaultAppMetadata() {
+    const base::Time now = base::Time::Now();
+    const char16_t app_visible_name1[] = u"Fake App1";
+    const char package_name1[] = "com.fakeapp1";
+    const int64_t expected_user_id1 = 1;
+    auto app_metadata1 = Notification::AppMetadata(
+        app_visible_name1, package_name1, gfx::Image(), expected_user_id1);
+    const char16_t app_visible_name2[] = u"Fake App2";
+    const char package_name2[] = "com.fakeapp2";
+    const int64_t expected_user_id2 = 2;
+    auto app_metadata2 = Notification::AppMetadata(
+        app_visible_name2, package_name2, gfx::Image(), expected_user_id2);
+    handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
+    handler().NotifyRecentAppAddedOrUpdated(app_metadata2, now);
+  }
+
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
 
@@ -174,13 +217,13 @@ TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
 
   const char16_t app_visible_name2[] = u"Fake App2";
   const char package_name2[] = "com.fakeapp2";
-  const int64_t expected_user_id2 = 2;
+  const int64_t expected_user_id2 = 1;
   auto app_metadata2 = Notification::AppMetadata(
       app_visible_name2, package_name2, gfx::Image(), expected_user_id2);
 
   const char16_t app_visible_name3[] = u"Fake App3";
   const char package_name3[] = "com.fakeapp3";
-  const int64_t expected_user_id3 = 3;
+  const int64_t expected_user_id3 = 1;
   auto app_metadata3 = Notification::AppMetadata(
       app_visible_name3, package_name3, gfx::Image(), expected_user_id3);
 
@@ -192,6 +235,10 @@ TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
   handler().NotifyRecentAppAddedOrUpdated(app_metadata2, next_minute);
   handler().NotifyRecentAppAddedOrUpdated(app_metadata3, next_hour);
 
+  std::vector<RecentAppsInteractionHandler::UserState> user_states =
+      GetDefaultUserStates();
+  handler().set_user_states(user_states);
+
   std::vector<Notification::AppMetadata> recent_apps_metadata_result =
       handler().FetchRecentAppMetadataList();
 
@@ -202,19 +249,19 @@ TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
 
   const char16_t app_visible_name4[] = u"Fake App4";
   const char package_name4[] = "com.fakeapp4";
-  const int64_t expected_user_id4 = 4;
+  const int64_t expected_user_id4 = 1;
   auto app_metadata4 = Notification::AppMetadata(
       app_visible_name4, package_name4, gfx::Image(), expected_user_id4);
 
   const char16_t app_visible_name5[] = u"Fake App5";
   const char package_name5[] = "com.fakeapp5";
-  const int64_t expected_user_id5 = 5;
+  const int64_t expected_user_id5 = 1;
   auto app_metadata5 = Notification::AppMetadata(
       app_visible_name5, package_name5, gfx::Image(), expected_user_id5);
 
   const char16_t app_visible_name6[] = u"Fake App6";
   const char package_name6[] = "com.fakeapp6";
-  const int64_t expected_user_id6 = 6;
+  const int64_t expected_user_id6 = 1;
   auto app_metadata6 = Notification::AppMetadata(
       app_visible_name6, package_name6, gfx::Image(), expected_user_id6);
 
@@ -240,6 +287,10 @@ TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
 TEST_F(RecentAppsInteractionHandlerTest,
        FetchRecentAppMetadataListFromPreference) {
   SaveRecentAppsToPref();
+
+  std::vector<RecentAppsInteractionHandler::UserState> user_states =
+      GetDefaultUserStates();
+  handler().set_user_states(user_states);
 
   const char package_name1[] = "com.fakeapp";
   const char package_name2[] = "com.fakeapp2";
@@ -425,6 +476,39 @@ TEST_F(
       handler().FetchRecentAppMetadataList();
 
   EXPECT_EQ(recent_apps_metadata_result.size(), 0u);
+}
+
+TEST_F(RecentAppsInteractionHandlerTest,
+       ShowAllRecentAppsOfAllUsersWithQuietModeOff) {
+  GenerateDefaultAppMetadata();
+
+  std::vector<RecentAppsInteractionHandler::UserState> user_states =
+      GetDefaultUserStates();
+  handler().set_user_states(user_states);
+
+  std::vector<Notification::AppMetadata> recent_apps_metadata_result =
+      handler().FetchRecentAppMetadataList();
+
+  EXPECT_EQ(recent_apps_metadata_result.size(), 2u);
+  EXPECT_EQ(1, recent_apps_metadata_result[0].user_id);
+  EXPECT_EQ("com.fakeapp1", recent_apps_metadata_result[0].package_name);
+  EXPECT_EQ(2, recent_apps_metadata_result[1].user_id);
+  EXPECT_EQ("com.fakeapp2", recent_apps_metadata_result[1].package_name);
+}
+
+TEST_F(RecentAppsInteractionHandlerTest, ShowRecentAppsOfUserWithQuietModeOn) {
+  GenerateDefaultAppMetadata();
+
+  std::vector<RecentAppsInteractionHandler::UserState> user_states =
+      GetWorkProfileTurnedOffUserStates();
+  handler().set_user_states(user_states);
+
+  std::vector<Notification::AppMetadata> recent_apps_metadata_result =
+      handler().FetchRecentAppMetadataList();
+
+  EXPECT_EQ(recent_apps_metadata_result.size(), 1u);
+  EXPECT_EQ(1, recent_apps_metadata_result[0].user_id);
+  EXPECT_EQ("com.fakeapp1", recent_apps_metadata_result[0].package_name);
 }
 
 }  // namespace phonehub
