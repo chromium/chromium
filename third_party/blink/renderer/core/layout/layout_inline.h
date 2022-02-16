@@ -199,6 +199,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   PhysicalOffset OffsetForInFlowPositionedInline(const LayoutBox& child) const;
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
   // The following methods are called from the container if it has already added

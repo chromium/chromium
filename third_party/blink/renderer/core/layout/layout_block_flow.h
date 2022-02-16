@@ -599,6 +599,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void DetermineLogicalLeftPositionForChild(LayoutBox& child);
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
 

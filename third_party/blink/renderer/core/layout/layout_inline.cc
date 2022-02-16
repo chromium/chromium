@@ -1103,7 +1103,7 @@ PhysicalRect LayoutInline::AbsoluteBoundingBoxRectHandlingEmptyInline(
     MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects = OutlineRects(
-      PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
   PhysicalRect rect = UnionRect(rects);
   // When empty LayoutInline is not culled, |rect| is empty but |rects| is not.
   if (rect.IsEmpty())
@@ -1519,7 +1519,7 @@ PhysicalRect LayoutInline::VisualRectInDocument(VisualRectFlags flags) const {
     rect = PhysicalVisualOverflowRect();
   } else {
     // Should also cover continuations.
-    rect = UnionRect(OutlineRects(PhysicalOffset(),
+    rect = UnionRect(OutlineRects(nullptr, PhysicalOffset(),
                                   NGOutlineType::kIncludeBlockVisualOverflow));
   }
   MapToVisualRectInAncestorSpace(View(), rect, flags);
@@ -1546,7 +1546,8 @@ PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
   NOT_DESTROYED();
   PhysicalRect overflow_rect = LinesVisualOverflowBoundingBox();
   const ComputedStyle& style = StyleRef();
-  LayoutUnit outline_outset(OutlinePainter::OutlineOutsetExtent(style));
+  LayoutUnit outline_outset(OutlinePainter::OutlineOutsetExtent(
+      style, OutlineInfo::GetFromStyle(style)));
   if (outline_outset) {
     Vector<PhysicalRect> rects;
     if (GetDocument().InNoQuirksMode()) {
@@ -1561,7 +1562,7 @@ PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
       // LayoutBlock::minLineHeightForReplacedObject(),
       // linesVisualOverflowBoundingBox() may not cover outline rects of lines
       // containing replaced objects.
-      AddOutlineRects(rects, PhysicalOffset(),
+      AddOutlineRects(rects, nullptr, PhysicalOffset(),
                       style.OutlineRectsShouldIncludeBlockVisualOverflow());
     }
     if (!rects.IsEmpty()) {
@@ -1859,6 +1860,7 @@ void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
 
 void LayoutInline::AddOutlineRects(
     Vector<PhysicalRect>& rects,
+    OutlineInfo* info,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
   NOT_DESTROYED();
@@ -1878,6 +1880,8 @@ void LayoutInline::AddOutlineRects(
   });
   AddOutlineRectsForChildrenAndContinuations(rects, additional_offset,
                                              include_block_overflows);
+  if (info)
+    *info = OutlineInfo::GetFromStyle(StyleRef());
 }
 
 void LayoutInline::AddOutlineRectsForChildrenAndContinuations(
@@ -1914,14 +1918,15 @@ void LayoutInline::AddOutlineRectsForContinuations(
     else
       offset += To<LayoutBox>(continuation)->PhysicalLocation();
     offset -= ContainingBlock()->PhysicalLocation();
-    continuation->AddOutlineRects(rects, offset, include_block_overflows);
+    continuation->AddOutlineRects(rects, nullptr, offset,
+                                  include_block_overflows);
   }
 }
 
 gfx::RectF LayoutInline::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects = OutlineRects(
-      PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
   return gfx::RectF(FlipForWritingMode(UnionRect(rects).ToLayoutRect()));
 }
 

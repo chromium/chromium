@@ -4823,6 +4823,7 @@ void LayoutBlockFlow::ShowLineTreeAndMark(const InlineBox* marked_box1,
 
 void LayoutBlockFlow::AddOutlineRects(
     Vector<PhysicalRect>& rects,
+    OutlineInfo* info,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
   NOT_DESTROYED();
@@ -4851,7 +4852,7 @@ void LayoutBlockFlow::AddOutlineRects(
     }
   }
 
-  LayoutBlock::AddOutlineRects(rects, additional_offset,
+  LayoutBlock::AddOutlineRects(rects, info, additional_offset,
                                include_block_overflows);
 
   if (include_block_overflows == NGOutlineType::kIncludeBlockVisualOverflow &&
@@ -4881,7 +4882,7 @@ void LayoutBlockFlow::AddOutlineRects(
 
   if (inline_element_continuation) {
     inline_element_continuation->AddOutlineRects(
-        rects,
+        rects, info,
         additional_offset + (inline_element_continuation->ContainingBlock()
                                  ->PhysicalLocation() -
                              PhysicalLocation()),

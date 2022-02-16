@@ -2482,8 +2482,8 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
         style.OutlineRectsShouldIncludeBlockVisualOverflow());
     if (!outline_rects.IsEmpty()) {
       PhysicalRect outline_bounds = UnionRect(outline_rects);
-      outline_bounds.Inflate(
-          LayoutUnit(OutlinePainter::OutlineOutsetExtent(style)));
+      outline_bounds.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(
+          style, OutlineInfo::GetFromStyle(style))));
       outline_bounds_of_all_continuations.Unite(outline_bounds);
     }
   }

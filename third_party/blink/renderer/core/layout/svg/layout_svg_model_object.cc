@@ -80,6 +80,7 @@ void LayoutSVGModelObject::AbsoluteQuads(Vector<gfx::QuadF>& quads,
 // This method is called from inside PaintOutline(), and since we call
 // PaintOutline() while transformed to our coord system, return local coords.
 void LayoutSVGModelObject::AddOutlineRects(Vector<PhysicalRect>& rects,
+                                           OutlineInfo* info,
                                            const PhysicalOffset&,
                                            NGOutlineType) const {
   NOT_DESTROYED();
@@ -91,6 +92,8 @@ void LayoutSVGModelObject::AddOutlineRects(Vector<PhysicalRect>& rects,
   if (!was_empty && visual_rect.IsEmpty())
     return;
   rects.push_back(PhysicalRect::EnclosingRect(visual_rect));
+  if (info)
+    *info = OutlineInfo::GetUnzoomedFromStyle(StyleRef());
 }
 
 gfx::RectF LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility() const {

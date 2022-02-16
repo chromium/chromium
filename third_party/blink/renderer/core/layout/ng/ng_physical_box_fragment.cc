@@ -1198,12 +1198,13 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
 
   if (style.HasOutline() && IsOutlineOwner()) {
     Vector<PhysicalRect> outline_rects;
+    LayoutObject::OutlineInfo info;
     // The result rects are in coordinates of this object's border box.
     AddSelfOutlineRects(PhysicalOffset(),
                         style.OutlineRectsShouldIncludeBlockVisualOverflow(),
-                        &outline_rects);
+                        &outline_rects, &info);
     PhysicalRect rect = UnionRect(outline_rects);
-    rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style)));
+    rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
     ink_overflow.Unite(rect);
   }
   return ink_overflow;
@@ -1218,7 +1219,15 @@ void NGPhysicalBoxFragment::InvalidateInkOverflow() {
 void NGPhysicalBoxFragment::AddSelfOutlineRects(
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type,
-    Vector<PhysicalRect>* outline_rects) const {
+    Vector<PhysicalRect>* outline_rects,
+    LayoutObject::OutlineInfo* info) const {
+  if (info) {
+    if (IsSvgText())
+      *info = LayoutObject::OutlineInfo::GetUnzoomedFromStyle(Style());
+    else
+      *info = LayoutObject::OutlineInfo::GetFromStyle(Style());
+  }
+
   AddOutlineRects(additional_offset, outline_type,
                   /* container_relative */ false, outline_rects);
 }

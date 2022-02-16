@@ -4937,7 +4937,7 @@ Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
       if (const NGPhysicalBoxFragment* box_fragment = item->BoxFragment()) {
         box_fragment->AddSelfOutlineRects(
             paint_offset + item->OffsetInContainerFragment(), outline_type,
-            &outline_rects);
+            &outline_rects, nullptr);
       } else {
         PhysicalRect rect;
         rect = item->RectInContainerFragment();
@@ -4953,9 +4953,9 @@ Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
     if (const NGPhysicalBoxFragment* box_fragment =
             iterator.GetPhysicalBoxFragment()) {
       box_fragment->AddSelfOutlineRects(paint_offset, outline_type,
-                                        &outline_rects);
+                                        &outline_rects, nullptr);
     } else {
-      outline_rects = OutlineRects(paint_offset, outline_type);
+      outline_rects = OutlineRects(nullptr, paint_offset, outline_type);
     }
     iterator.Advance();
   }
@@ -4964,11 +4964,12 @@ Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
 }
 
 Vector<PhysicalRect> LayoutObject::OutlineRects(
+    OutlineInfo* info,
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> outline_rects;
-  AddOutlineRects(outline_rects, additional_offset, outline_type);
+  AddOutlineRects(outline_rects, info, additional_offset, outline_type);
   return outline_rects;
 }
 

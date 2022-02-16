@@ -486,7 +486,7 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
 
   if (descendant.HasLayer()) {
     Vector<PhysicalRect> layer_outline_rects;
-    descendant.AddOutlineRects(layer_outline_rects, PhysicalOffset(),
+    descendant.AddOutlineRects(layer_outline_rects, nullptr, PhysicalOffset(),
                                include_block_overflows);
     descendant.LocalToAncestorRects(layer_outline_rects, this, PhysicalOffset(),
                                     additional_offset);
@@ -496,7 +496,8 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
 
   if (descendant.IsBox()) {
     descendant.AddOutlineRects(
-        rects, additional_offset + To<LayoutBox>(descendant).PhysicalLocation(),
+        rects, nullptr,
+        additional_offset + To<LayoutBox>(descendant).PhysicalLocation(),
         include_block_overflows);
     return;
   }
@@ -514,7 +515,8 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
     return;
   }
 
-  descendant.AddOutlineRects(rects, additional_offset, include_block_overflows);
+  descendant.AddOutlineRects(rects, nullptr, additional_offset,
+                             include_block_overflows);
 }
 
 void LayoutBoxModelObject::RecalcVisualOverflow() {

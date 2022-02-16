@@ -164,15 +164,19 @@ void LayoutSVGInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
 }
 
 void LayoutSVGInline::AddOutlineRects(Vector<PhysicalRect>& rect_list,
+                                      OutlineInfo* info,
                                       const PhysicalOffset& additional_offset,
                                       NGOutlineType outline_type) const {
   if (!IsInLayoutNGInlineFormattingContext()) {
-    LayoutInline::AddOutlineRects(rect_list, additional_offset, outline_type);
-    return;
+    LayoutInline::AddOutlineRects(rect_list, nullptr, additional_offset,
+                                  outline_type);
+  } else {
+    auto rect = PhysicalRect::EnclosingRect(ObjectBoundingBox());
+    rect.Move(additional_offset);
+    rect_list.push_back(rect);
   }
-  auto rect = PhysicalRect::EnclosingRect(ObjectBoundingBox());
-  rect.Move(additional_offset);
-  rect_list.push_back(rect);
+  if (info)
+    *info = OutlineInfo::GetUnzoomedFromStyle(StyleRef());
 }
 
 void LayoutSVGInline::WillBeDestroyed() {

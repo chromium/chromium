@@ -91,6 +91,7 @@ class LayoutSVGModelObject : public LayoutObject {
   void GetNode() const = delete;
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 };

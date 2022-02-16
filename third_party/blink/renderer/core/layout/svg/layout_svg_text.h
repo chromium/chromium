@@ -50,6 +50,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
   bool IsObjectBoundingBoxValid() const;
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
 

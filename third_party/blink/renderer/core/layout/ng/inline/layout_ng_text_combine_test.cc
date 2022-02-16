@@ -738,14 +738,14 @@ TEST_F(LayoutNGTextCombineTest, Outline) {
   // Sample 1 with text-combine-upright:all
   const auto& sample1 = *GetLayoutObjectByElementId("t1");
   Vector<PhysicalRect> standard_outlines1;
-  sample1.AddOutlineRects(standard_outlines1, PhysicalOffset(),
+  sample1.AddOutlineRects(standard_outlines1, nullptr, PhysicalOffset(),
                           NGOutlineType::kDontIncludeBlockVisualOverflow);
   EXPECT_THAT(
       standard_outlines1,
       ElementsAre(PhysicalRect(PhysicalOffset(0, 0), PhysicalSize(150, 200))));
 
   Vector<PhysicalRect> focus_outlines1;
-  sample1.AddOutlineRects(focus_outlines1, PhysicalOffset(),
+  sample1.AddOutlineRects(focus_outlines1, nullptr, PhysicalOffset(),
                           NGOutlineType::kIncludeBlockVisualOverflow);
   EXPECT_THAT(
       focus_outlines1,
@@ -763,14 +763,14 @@ TEST_F(LayoutNGTextCombineTest, Outline) {
   // Sample 1 without text-combine-upright:all
   const auto& sample2 = *GetLayoutObjectByElementId("t2");
   Vector<PhysicalRect> standard_outlines2;
-  sample2.AddOutlineRects(standard_outlines2, PhysicalOffset(),
+  sample2.AddOutlineRects(standard_outlines2, nullptr, PhysicalOffset(),
                           NGOutlineType::kDontIncludeBlockVisualOverflow);
   EXPECT_THAT(
       standard_outlines2,
       ElementsAre(PhysicalRect(PhysicalOffset(0, 0), PhysicalSize(150, 100))));
 
   Vector<PhysicalRect> focus_outlines2;
-  sample1.AddOutlineRects(focus_outlines2, PhysicalOffset(),
+  sample1.AddOutlineRects(focus_outlines2, nullptr, PhysicalOffset(),
                           NGOutlineType::kIncludeBlockVisualOverflow);
   EXPECT_THAT(
       focus_outlines2,

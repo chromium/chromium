@@ -426,10 +426,13 @@ gfx::RectF LayoutSVGText::VisualRectInLocalSVGCoordinates() const {
 }
 
 void LayoutSVGText::AddOutlineRects(Vector<PhysicalRect>& rects,
+                                    OutlineInfo* info,
                                     const PhysicalOffset&,
                                     NGOutlineType) const {
   NOT_DESTROYED();
   rects.push_back(PhysicalRect::EnclosingRect(ObjectBoundingBox()));
+  if (info)
+    *info = OutlineInfo::GetUnzoomedFromStyle(StyleRef());
 }
 
 bool LayoutSVGText::IsObjectBoundingBoxValid() const {

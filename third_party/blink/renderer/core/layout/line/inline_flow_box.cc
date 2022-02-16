@@ -1083,7 +1083,8 @@ inline void InlineFlowBox::AddOutlineVisualOverflow(
   if (!style.HasOutline())
     return;
 
-  logical_visual_overflow.Inflate(OutlinePainter::OutlineOutsetExtent(style));
+  logical_visual_overflow.Inflate(OutlinePainter::OutlineOutsetExtent(
+      style, LayoutObject::OutlineInfo::GetFromStyle(style)));
 }
 
 inline void InlineFlowBox::AddTextBoxVisualOverflow(

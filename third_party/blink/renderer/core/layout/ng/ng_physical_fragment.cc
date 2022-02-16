@@ -981,7 +981,8 @@ void NGPhysicalFragment::AddOutlineRectsForDescendant(
 
     if (!descendant_box->IsInlineBox()) {
       descendant_box->AddSelfOutlineRects(
-          additional_offset + descendant.Offset(), outline_type, outline_rects);
+          additional_offset + descendant.Offset(), outline_type, outline_rects,
+          nullptr);
       return;
     }
 

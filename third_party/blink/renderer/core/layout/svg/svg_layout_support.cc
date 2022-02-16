@@ -68,8 +68,11 @@ gfx::RectF SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
     return gfx::RectF();
 
   gfx::RectF visual_rect = object.VisualRectInLocalSVGCoordinates();
-  if (int outset = OutlinePainter::OutlineOutsetExtent(object.StyleRef()))
+  if (int outset = OutlinePainter::OutlineOutsetExtent(
+          object.StyleRef(),
+          LayoutObject::OutlineInfo::GetUnzoomedFromStyle(object.StyleRef()))) {
     visual_rect.Outset(outset);
+  }
   return visual_rect;
 }
 

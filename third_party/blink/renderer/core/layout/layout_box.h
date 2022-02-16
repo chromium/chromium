@@ -536,6 +536,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
 

@@ -66,6 +66,7 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
 #endif
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       LayoutObject::OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 

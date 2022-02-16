@@ -208,10 +208,13 @@ float LayoutTextControl::GetAvgCharWidth(const ComputedStyle& style) {
 }
 
 void LayoutTextControl::AddOutlineRects(Vector<PhysicalRect>& rects,
+                                        OutlineInfo* info,
                                         const PhysicalOffset& additional_offset,
                                         NGOutlineType) const {
   NOT_DESTROYED();
   rects.emplace_back(additional_offset, Size());
+  if (info)
+    *info = OutlineInfo::GetFromStyle(StyleRef());
 }
 
 LayoutObject* LayoutTextControl::LayoutSpecialExcludedChild(

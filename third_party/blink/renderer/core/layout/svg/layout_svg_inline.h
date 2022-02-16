@@ -59,6 +59,7 @@ class LayoutSVGInline : public LayoutInline {
   void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const final;
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 

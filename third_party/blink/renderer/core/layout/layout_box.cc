@@ -1632,10 +1632,13 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
 }
 
 void LayoutBox::AddOutlineRects(Vector<PhysicalRect>& rects,
+                                OutlineInfo* info,
                                 const PhysicalOffset& additional_offset,
                                 NGOutlineType) const {
   NOT_DESTROYED();
   rects.emplace_back(additional_offset, Size());
+  if (info)
+    *info = OutlineInfo::GetFromStyle(StyleRef());
 }
 
 bool LayoutBox::CanResize() const {
@@ -7273,12 +7276,14 @@ LayoutRectOutsets LayoutBox::ComputeVisualEffectOverflowOutsets() {
   LayoutRectOutsets outsets = style.BoxDecorationOutsets();
 
   if (style.HasOutline()) {
-    Vector<PhysicalRect> outline_rects = OutlineRects(
-        PhysicalOffset(), style.OutlineRectsShouldIncludeBlockVisualOverflow());
+    OutlineInfo info;
+    Vector<PhysicalRect> outline_rects =
+        OutlineRects(&info, PhysicalOffset(),
+                     style.OutlineRectsShouldIncludeBlockVisualOverflow());
     PhysicalRect rect = UnionRect(outline_rects);
     bool outline_affected = rect.size != PhysicalSizeToBeNoop(Size());
     SetOutlineMayBeAffectedByDescendants(outline_affected);
-    rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style)));
+    rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
     outsets.Unite(LayoutRectOutsets(-rect.Y(), rect.Right() - Size().Width(),
                                     rect.Bottom() - Size().Height(),
                                     -rect.X()));
@@ -7550,7 +7555,8 @@ void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
   // changes. Update to the actual value here.
   const ComputedStyle& style = StyleRef();
   if (style.HasOutline()) {
-    const LayoutUnit outline_extent(OutlinePainter::OutlineOutsetExtent(style));
+    const LayoutUnit outline_extent(OutlinePainter::OutlineOutsetExtent(
+        style, OutlineInfo::GetFromStyle(style)));
     SetOutlineMayBeAffectedByDescendants(
         outsets.Top() != outline_extent || outsets.Right() != outline_extent ||
         outsets.Bottom() != outline_extent || outsets.Left() != outline_extent);

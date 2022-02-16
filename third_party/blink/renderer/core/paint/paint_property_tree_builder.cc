@@ -2410,8 +2410,9 @@ static PhysicalRect BoundingBoxInPaginationContainer(
   // The link highlight covers block visual overflows, continuations, etc. which
   // may intersect with more fragments than the object itself.
   if (IsLinkHighlighted(object)) {
-    local_bounds.Unite(UnionRect(object.OutlineRects(
-        PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow)));
+    local_bounds.Unite(UnionRect(
+        object.OutlineRects(nullptr, PhysicalOffset(),
+                            NGOutlineType::kIncludeBlockVisualOverflow)));
   }
 
   // Compute the bounding box without transforms.

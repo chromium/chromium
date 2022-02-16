@@ -2915,13 +2915,38 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       NGOutlineType,
       FragmentDataIterator& iterator) const;
 
-  Vector<PhysicalRect> OutlineRects(const PhysicalOffset& additional_offset,
+  struct OutlineInfo {
+    int width = 0;
+    int offset = 0;
+
+    // Convenience functions to initialize outline info.
+    static OutlineInfo GetFromStyle(const ComputedStyle& style) {
+      return {style.OutlineWidth().ToInt(), style.OutlineOffset().ToInt()};
+    }
+
+    // Unzoomed values modifies the style values by effective zoom. This is
+    // used when the outline rects are specified in a space that does not
+    // include EffectiveZoom, such as SVG.
+    static OutlineInfo GetUnzoomedFromStyle(const ComputedStyle& style) {
+      return {static_cast<int>(
+                  std::floor(style.OutlineWidth() / style.EffectiveZoom())),
+              static_cast<int>(
+                  std::floor(style.OutlineOffset() / style.EffectiveZoom()))};
+    }
+  };
+
+  // OutlineInfo, if specified, is filled in with the outline width and offset
+  // in the same space as the physical rects returned.
+  Vector<PhysicalRect> OutlineRects(OutlineInfo*,
+                                    const PhysicalOffset& additional_offset,
                                     NGOutlineType) const;
 
   // Collects rectangles that the outline of this object would be drawing along
-  // the outside of, even if the object isn't styled with a outline for now. The
-  // rects also cover continuations.
+  // the outside of, even if the object isn't styled with a outline for now.
+  // The rects also cover continuations. Note that the OutlineInfo, if
+  // specified, is filled in in the same space as the rects.
   virtual void AddOutlineRects(Vector<PhysicalRect>&,
+                               OutlineInfo*,
                                const PhysicalOffset& additional_offset,
                                NGOutlineType) const {
     NOT_DESTROYED();

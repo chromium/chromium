@@ -2146,6 +2146,7 @@ LayoutRect LayoutBlock::LocalCaretRect(
 }
 
 void LayoutBlock::AddOutlineRects(Vector<PhysicalRect>& rects,
+                                  OutlineInfo* info,
                                   const PhysicalOffset& additional_offset,
                                   NGOutlineType include_block_overflows) const {
   NOT_DESTROYED();
@@ -2172,6 +2173,8 @@ void LayoutBlock::AddOutlineRects(Vector<PhysicalRect>& rects,
                                      include_block_overflows);
     }
   }
+  if (info)
+    *info = OutlineInfo::GetFromStyle(StyleRef());
 }
 
 LayoutBox* LayoutBlock::CreateAnonymousBoxWithSameTypeAs(

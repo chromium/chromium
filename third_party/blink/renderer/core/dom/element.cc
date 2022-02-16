@@ -1989,7 +1989,7 @@ Vector<gfx::Rect> Element::OutlineRectsInVisualViewport(
     return rects;
 
   Vector<PhysicalRect> outline_rects = layout_object->OutlineRects(
-      PhysicalOffset(),
+      nullptr, PhysicalOffset(),
       layout_object->StyleRef().OutlineRectsShouldIncludeBlockVisualOverflow());
   for (auto& r : outline_rects) {
     PhysicalRect physical_rect = layout_object->LocalToAbsoluteRect(r);
