@@ -8,6 +8,10 @@
 #include "ash/quick_pair/ui/actions.h"
 #include "base/callback.h"
 
+namespace message_center {
+class MessageCenter;
+}  // namespace message_center
+
 namespace ash {
 namespace quick_pair {
 

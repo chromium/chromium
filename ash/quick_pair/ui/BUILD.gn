@@ -62,6 +62,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "fast_pair/fast_pair_notification_controller_unittest.cc",
     "fast_pair/fast_pair_presenter_impl_unittest.cc",
     "ui_broker_impl_unittest.cc",
   ]

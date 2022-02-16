@@ -69,6 +69,8 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
 
   void RemoveNotification(const std::string& id, bool by_user) override {
     notification_.reset();
+    for (auto& observer : observer_list())
+      observer.OnNotificationRemoved(id, by_user);
   }
 
   message_center::Notification* FindVisibleNotificationById(
