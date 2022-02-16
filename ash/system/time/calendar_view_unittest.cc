@@ -15,6 +15,7 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -42,6 +43,7 @@ class CalendarViewTest : public AshTestBase {
         base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
+    controller_ = std::make_unique<CalendarViewController>();
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
   }
@@ -50,9 +52,17 @@ class CalendarViewTest : public AshTestBase {
     widget_.reset();
     delegate_.reset();
     tray_controller_.reset();
+    controller_.reset();
     tray_model_.reset();
 
     AshTestBase::TearDown();
+  }
+
+  void CreateEventListView(base::Time date) {
+    event_list_view_.reset();
+    controller_->selected_date_ = date;
+    event_list_view_ =
+        std::make_unique<CalendarEventListView>(controller_.get());
   }
 
   void CreateCalendarView() {
@@ -61,6 +71,10 @@ class CalendarViewTest : public AshTestBase {
 
     calendar_view_ = widget_->SetContentsView(std::move(calendar_view));
   }
+
+  void DestroyCalendarViewWidget() { widget_.reset(); }
+
+  void DestroyEventListView() { event_list_view_.reset(); }
 
   CalendarView* calendar_view() { return calendar_view_; }
   views::ScrollView* scroll_view() { return calendar_view_->scroll_view_; }
@@ -180,6 +194,8 @@ class CalendarViewTest : public AshTestBase {
   std::unique_ptr<DetailedViewDelegate> delegate_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
+  std::unique_ptr<CalendarViewController> controller_;
+  std::unique_ptr<CalendarEventListView> event_list_view_;
   static base::Time fake_time_;
 };
 
@@ -648,6 +664,61 @@ TEST_F(CalendarViewTest, ExpandableViewFocusing) {
   // Moves to the next focusable view. Today's button.
   PressTab();
   EXPECT_EQ(reset_to_today_button(), focus_manager->GetFocusedView());
+}
+
+// Tests that the metric is recorded when calling `UpdateMonth`.
+TEST_F(CalendarViewTest, RecordDwellTimeMetric) {
+  base::HistogramTester histogram_tester;
+  CreateCalendarView();
+
+  // Does not record metric if `UpdateMonth` is called with same month as the
+  // one in `current_date_`.
+  calendar_view()->calendar_view_controller()->UpdateMonth(base::Time::Now());
+  histogram_tester.ExpectTotalCount("Ash.Calendar.MonthDwellTime",
+                                    /*expected_count=*/0);
+
+  // Records metric when `UpdateMonth` is called with a month different than the
+  // one in `current_date_`.
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("24 Aug 2021 10:00 GMT", &date));
+  calendar_view()->calendar_view_controller()->UpdateMonth(date);
+  histogram_tester.ExpectTotalCount("Ash.Calendar.MonthDwellTime",
+                                    /*expected_count=*/1);
+}
+
+// Tests multiple scenarios that should record the metric when scrolling.
+TEST_F(CalendarViewTest, RecordDwellTimeMetricWhenScrolling) {
+  base::HistogramTester histogram_tester;
+  CreateCalendarView();
+
+  // Scroll up two times.
+  ScrollUpOneMonth();
+  ScrollUpOneMonth();
+  histogram_tester.ExpectTotalCount("Ash.Calendar.MonthDwellTime",
+                                    /*expected_count=*/2);
+
+  // Scroll down three times.
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  histogram_tester.ExpectTotalCount("Ash.Calendar.MonthDwellTime",
+                                    /*expected_count=*/5);
+
+  // Reset to today.
+  ResetToToday();
+  histogram_tester.ExpectTotalCount("Ash.Calendar.MonthDwellTime",
+                                    /*expected_count=*/6);
+
+  // Opening and closing event list view does not record the metric.
+  CreateEventListView(base::Time::Now());
+  DestroyEventListView();
+  histogram_tester.ExpectTotalCount("Ash.Calendar.MonthDwellTime",
+                                    /*expected_count=*/6);
+
+  // Closing the calendar view should record the metric.
+  DestroyCalendarViewWidget();
+  histogram_tester.ExpectTotalCount("Ash.Calendar.MonthDwellTime",
+                                    /*expected_count=*/7);
 }
 
 // A test class for testing animation. This class cannot set fake now since it's

@@ -9,6 +9,10 @@ namespace ui {
 class Event;
 }  // namespace ui
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace ash {
 
 namespace calendar_metrics {
@@ -51,6 +55,8 @@ void RecordCalendarDateCellActivated(const ui::Event& event);
 void RecordMonthArrowButtonActivated(bool up, const ui::Event& event);
 
 void RecordEventListItemActivated(const ui::Event& event);
+
+void RecordMonthDwellTime(const base::TimeDelta& dwell_time);
 
 }  // namespace calendar_metrics
 
