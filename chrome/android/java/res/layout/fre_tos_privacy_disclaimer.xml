@@ -14,7 +14,7 @@
     android:drawableStart="@drawable/ic_business"
     android:text="@string/fre_browser_managed_by_organization"
     android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-    app:chromeDrawableTint="@color/default_text_color_secondary"
+    app:chromeDrawableTint="@macro/default_text_color_secondary"
     app:drawableWidth="@dimen/fre_policy_privacy_disclaimer_icon_size"
     app:drawableHeight="@dimen/fre_policy_privacy_disclaimer_icon_size"
     tools:showIn="@layout/lightweight_fre_tos" />

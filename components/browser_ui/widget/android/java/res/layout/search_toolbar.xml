@@ -25,7 +25,7 @@
         android:inputType="text"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-        android:textColorHint="@color/search_box_hint"/>
+        android:textColorHint="@macro/search_box_hint"/>
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/clear_text_button"

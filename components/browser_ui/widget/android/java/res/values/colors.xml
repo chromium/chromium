@@ -7,7 +7,8 @@
     <color name="modal_dialog_scrim_color">@color/black_alpha_65</color>
     <color name="toolbar_shadow_color">@color/black_alpha_11</color>
     <color name="toolbar_text_box_background">@color/omnibox_bg_color</color>
-    <color name="search_box_hint">@color/default_text_color_secondary</color>
+    <macro name="search_box_hint" tools:ignore="UnusedResources">@macro/default_text_color_secondary</macro>
+    <color name="search_box_hint_baseline">@color/default_text_color_secondary_baseline</color>
 
     <!-- Chip Colors -->
     <color name="default_chip_assistive_text_color">@color/default_text_color_baseline</color>

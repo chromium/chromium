@@ -63,8 +63,7 @@ public class FindToolbarPhone extends FindToolbar {
         }
         mFindQuery.setTextColor(
                 AppCompatResources.getColorStateList(getContext(), queryTextColorId));
-        mFindQuery.setHintTextColor(
-                ApiCompatibilityUtils.getColor(getContext().getResources(), queryHintTextColorId));
+        mFindQuery.setHintTextColor(getContext().getColor(queryHintTextColorId));
     }
 
     @Override

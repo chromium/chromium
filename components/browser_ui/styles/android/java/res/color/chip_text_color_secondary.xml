@@ -9,7 +9,7 @@
         android:color="@macro/default_text_color_on_accent2_container"
         android:state_selected="true" android:state_enabled="false" />
     <item android:alpha="@dimen/default_disabled_alpha"
-        android:color="@color/default_chip_assistive_text_color_secondary" android:state_enabled="false" />
+        android:color="@macro/default_chip_assistive_text_color_secondary" android:state_enabled="false" />
     <item android:color="@macro/default_text_color_on_accent2_container" android:state_selected="true" />
-    <item android:color="@color/default_chip_assistive_text_color_secondary" />
+    <item android:color="@macro/default_chip_assistive_text_color_secondary" />
 </selector>

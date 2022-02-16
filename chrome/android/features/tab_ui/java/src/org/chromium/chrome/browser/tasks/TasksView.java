@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
@@ -176,7 +175,6 @@ class TasksView extends CoordinatorLayoutForPointer {
      * @param isIncognito Whether it's in incognito mode.
      */
     void setIncognitoMode(boolean isIncognito) {
-        Resources resources = mContext.getResources();
         int backgroundColor = ChromeColors.getPrimaryBackgroundColor(mContext, isIncognito);
         setBackgroundColor(backgroundColor);
         mHeaderView.setBackgroundColor(backgroundColor);
@@ -200,9 +198,8 @@ class TasksView extends CoordinatorLayoutForPointer {
             }
         }
         mSearchBoxCoordinator.setBackground(searchBackground);
-        int hintTextColor = isIncognito
-                ? ApiCompatibilityUtils.getColor(resources, R.color.locationbar_light_hint_text)
-                : ApiCompatibilityUtils.getColor(resources, R.color.locationbar_dark_hint_text);
+        int hintTextColor = mContext.getColor(isIncognito ? R.color.locationbar_light_hint_text
+                                                          : R.color.locationbar_dark_hint_text);
         mSearchBoxCoordinator.setSearchBoxHintColor(hintTextColor);
         mIsIncognito = isIncognito;
     }

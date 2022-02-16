@@ -5,6 +5,6 @@
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:alpha="@dimen/default_disabled_alpha"
-        android:color="@color/default_text_color_secondary" android:state_enabled="false"/>
-    <item android:color="@color/default_text_color_secondary" />
+        android:color="@color/default_text_color_secondary_baseline" android:state_enabled="false"/>
+    <item android:color="@color/default_text_color_secondary_baseline" />
 </selector>

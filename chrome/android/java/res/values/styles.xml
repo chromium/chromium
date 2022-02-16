@@ -346,9 +346,19 @@
          can not use android:textAppearance="...".  textColorHint is defined
          in a parent theme therefore can not be overridden by appearance.
     -->
-    <style name="TextAppearance.NewTabPageSearchBoxText">
+    <style name="TextAppearance.SearchBoxText">
         <item name="android:textSize">@dimen/location_bar_url_text_size</item>
-        <item name="android:textColorHint">@color/search_box_hint</item>
+    </style>
+
+    <style name="TextAppearance.SearchBoxText.NewTabPage">
+        <item name="android:textSize">@dimen/location_bar_url_text_size</item>
+        <item name="android:textColorHint">@macro/search_box_hint</item>
+    </style>
+
+    <!-- Launcher widgets can't use theme attributes, so this should use the baseline colors for
+         android:textColorHint -->
+    <style name="TextAppearance.SearchBoxText.Widget">
+        <item name="android:textColorHint">@color/search_box_hint_baseline</item>
     </style>
 
     <!-- Bookmarks -->

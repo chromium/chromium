@@ -56,6 +56,12 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorPrimary, R.color.default_text_color_blue_baseline, context);
     }
 
+    /** Returns the semantic color value that corresponds to default_text_color_secondary. */
+    public static @ColorInt int getDefaultTextColorSecondary(Context context) {
+        return resolve(R.attr.colorOnSurfaceVariant, R.color.default_text_color_secondary_baseline,
+                context);
+    }
+
     /** Returns the semantic color value that corresponds to default_icon_color. */
     public static @ColorInt int getDefaultIconColor(Context context) {
         return resolve(R.attr.colorOnSurface, R.color.default_icon_color_baseline, context);

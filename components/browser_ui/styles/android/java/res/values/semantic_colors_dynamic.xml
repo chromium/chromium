@@ -20,6 +20,7 @@
     <macro name="default_text_color_accent1">?attr/colorPrimary</macro>
     <macro name="default_text_color_on_accent1">?attr/colorOnPrimary</macro>
     <macro name="default_text_color_on_accent2_container">?attr/colorOnSecondaryContainer</macro>
+    <macro name="default_text_color_secondary" tools:ignore="UnusedResources">?attr/colorOnSurfaceVariant</macro>
 
     <macro name="switch_enabled_unchecked_color_dark">?attr/colorOutline</macro>
     <macro name="switch_enabled_unchecked_color_light">?attr/colorOnSurface</macro>
@@ -57,6 +58,7 @@
     <macro name="default_text_color_accent1">@color/default_text_color_blue_baseline</macro>
     <macro name="default_text_color_on_accent1">@color/default_text_color_on_accent1_baseline</macro>
     <macro name="default_text_color_on_accent2_container">@color/default_text_color_on_accent2_container_baseline</macro>
+    <macro name="default_text_color_secondary">@color/default_text_color_secondary_baseline</macro>
 
     <macro name="switch_enabled_unchecked_color_dark">@color/switch_enabled_unchecked_color_baseline_dark</macro>
     <macro name="switch_enabled_unchecked_color_light">@color/switch_enabled_unchecked_color_baseline_light</macro>

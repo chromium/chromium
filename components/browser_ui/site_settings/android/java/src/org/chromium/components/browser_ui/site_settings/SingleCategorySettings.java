@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -36,7 +37,6 @@ import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -302,8 +302,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         // Gray out the total count of items.
-        int gray = ApiCompatibilityUtils.getColor(
-                getResources(), R.color.default_text_color_secondary);
+        final @ColorInt int gray = SemanticColorUtils.getDefaultTextColorSecondary(getContext());
         spannable.setSpan(new ForegroundColorSpan(gray), spannable.length() - prefCount.length(),
                 spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannable;

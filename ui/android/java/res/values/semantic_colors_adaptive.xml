@@ -10,7 +10,7 @@
     <color name="default_text_color_baseline">@color/default_text_color_dark</color>
     <!-- Text color used on dark background on light theme, and light background on dark theme. -->
     <color name="default_text_color_inverse">@color/default_text_color_light</color>
-    <color name="default_text_color_secondary">@color/default_text_color_secondary_dark</color>
+    <color name="default_text_color_secondary_baseline">@color/default_text_color_secondary_dark</color>
     <!-- Text color for non-clickable blue text. -->
     <color name="default_text_color_blue_baseline" tools:ignore="UnusedResources">@color/default_text_color_blue_dark</color>
     <!-- Text color for clickable text. -->

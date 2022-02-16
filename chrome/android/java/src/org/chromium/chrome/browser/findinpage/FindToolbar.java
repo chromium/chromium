@@ -35,7 +35,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -46,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
 import org.chromium.components.find_in_page.FindInPageBridge;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
@@ -780,9 +780,8 @@ public class FindToolbar extends LinearLayout {
      * @return          The color of the status text.
      */
     protected int getStatusColor(boolean failed, boolean incognito) {
-        int colorResourceId = failed ? R.color.find_in_page_failed_results_status_color
-                                     : R.color.default_text_color_secondary;
-        return ApiCompatibilityUtils.getColor(getContext().getResources(), colorResourceId);
+        return failed ? getContext().getColor(R.color.find_in_page_failed_results_status_color)
+                      : SemanticColorUtils.getDefaultTextColorSecondary(getContext());
     }
 
     protected void setPrevNextEnabled(boolean enable) {

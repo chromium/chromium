@@ -48,7 +48,7 @@
     <color name="find_in_page_query_white_color">@android:color/white</color>
     <color name="find_in_page_query_incognito_hint_color">@color/white_alpha_70</color>
     <color name="find_in_page_failed_results_status_color">@color/default_red</color>
-    <color name="find_in_page_query_default_hint_color">@color/search_box_hint</color>
+    <color name="find_in_page_query_default_hint_color">@color/default_text_color_secondary_list</color>
 
     <!-- App Background Colors -->
     <color name="light_background_color">@android:color/white</color>

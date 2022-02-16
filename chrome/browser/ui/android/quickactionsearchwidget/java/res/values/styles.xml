@@ -31,7 +31,7 @@
         <item name="android:scaleType">fitCenter</item>
     </style>
 
-    <style name="TextAppearance.QuickActionSearchWidgetXSmallHintText" parent="TextAppearance.NewTabPageSearchBoxText">
+    <style name="TextAppearance.QuickActionSearchWidgetXSmallHintText" parent="TextAppearance.SearchBoxText.Widget">
         <item name="android:textSize">@dimen/quick_action_search_widget_xsmall_search_bar_text_size</item>
     </style>
 </resources>
