@@ -2652,7 +2652,11 @@ void StyleEngine::ViewportDefiningElementDidChange() {
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
   if (!body || body->NeedsReattachLayoutTree())
     return;
-  LayoutObject* layout_object = body->GetLayoutObject();
+  FirstBodyElementChanged(*body);
+}
+
+void StyleEngine::FirstBodyElementChanged(HTMLBodyElement& body) {
+  LayoutObject* layout_object = body.GetLayoutObject();
   if (layout_object && layout_object->IsLayoutBlock()) {
     // When the overflow style for documentElement changes to or from visible,
     // it changes whether the body element's box should have scrollable overflow
@@ -2661,6 +2665,9 @@ void StyleEngine::ViewportDefiningElementDidChange() {
     // ComputedStyle on the LayoutObject. Force a SetStyle for body when the
     // ViewportDefiningElement changes in order to trigger an update of
     // IsScrollContainer() and the PaintLayer in StyleDidChange().
+    //
+    // This update is also necessary if the first body element changes because
+    // another body element is inserted or removed.
     layout_object->SetStyle(ComputedStyle::Clone(*layout_object->Style()));
   }
 }
