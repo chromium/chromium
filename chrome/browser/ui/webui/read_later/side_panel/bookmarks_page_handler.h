@@ -34,10 +34,10 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
 
  private:
   mojo::Receiver<side_panel::mojom::BookmarksPageHandler> receiver_;
-  raw_ptr<BookmarksSidePanelUI> bookmarks_ui_;
+  raw_ptr<BookmarksSidePanelUI> bookmarks_ui_ = nullptr;
   // TODO(corising): Remove use of ReadLaterUI which is only needed prior to
   // kUnifiedSidePanel.
-  raw_ptr<ReadLaterUI> read_later_ui_;
+  raw_ptr<ReadLaterUI> read_later_ui_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_BOOKMARKS_PAGE_HANDLER_H_
