@@ -52,7 +52,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
-#include "ash/wm/cursor_manager_chromeos.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
@@ -181,18 +180,6 @@ void SetUpFileDeletionVerifier(base::RunLoop* loop) {
             EXPECT_FALSE(base::PathExists(path));
             loop->Quit();
           }));
-}
-
-// Moves the mouse and updates the cursor's display manually to imitate what a
-// real mouse move event does in shell.
-// TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
-// without having to call |CursorManager::SetDisplay|.
-void MoveMouseToAndUpdateCursorDisplay(
-    const gfx::Point& point,
-    ui::test::EventGenerator* event_generator) {
-  Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestPoint(point));
-  event_generator->MoveMouseTo(point);
 }
 
 bool IsLayerStackedRightBelow(ui::Layer* layer, ui::Layer* sibling) {

@@ -524,6 +524,9 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
   user_capture_region_ = region;
   if (!user_capture_region_.IsEmpty() && by_user)
     last_capture_region_update_time_ = base::TimeTicks::Now();
+
+  if (camera_controller_ && !is_recording_in_progress())
+    camera_controller_->MaybeReparentPreviewWidget();
 }
 
 bool CaptureModeController::CanShowFolderSelectionNudge() const {
@@ -715,13 +718,32 @@ bool CaptureModeController::IsAndroidFilesPath(
 }
 
 aura::Window* CaptureModeController::GetCameraPreviewParentWindow() const {
-  if (IsActive())
-    return capture_mode_session_->GetCameraPreviewParentWindow();
-
+  // Trying to get camera preview's parent from `video_recording_watcher_` first
+  // if a video recording is in progress. As a capture session can be started
+  // with `kImage` type while recording, and we should get the parent of the
+  // camera preview with the settings inside VideoRecordingWatcher in this case,
+  // e.g, CaptureModeSource for taking the video.
   if (is_recording_in_progress())
     return video_recording_watcher_->GetCameraPreviewParentWindow();
 
+  if (IsActive())
+    return capture_mode_session_->GetCameraPreviewParentWindow();
+
   return nullptr;
+}
+
+gfx::Rect CaptureModeController::GetCameraPreviewConfineBounds() const {
+  // Getting the bounds from `video_recording_watcher_` first if a video
+  // recording is in progress. As a capture session can be started with `kImage`
+  // type while recording, and we should get the bounds with the settings inside
+  // VideoRecordingWatcher in this case, e.g, user-selected region.
+  if (is_recording_in_progress())
+    return video_recording_watcher_->GetCameraPreviewConfineBounds();
+
+  if (IsActive())
+    return capture_mode_session_->GetCameraPreviewConfineBounds();
+
+  return gfx::Rect();
 }
 
 void CaptureModeController::OnRecordingEnded(

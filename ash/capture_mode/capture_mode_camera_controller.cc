@@ -8,6 +8,7 @@
 #include <cstring>
 
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -198,14 +199,42 @@ void CaptureModeCameraController::MaybeReparentPreviewWidget() {
   if (!camera_preview_widget_)
     return;
 
-  auto* parent = CaptureModeController::Get()->GetCameraPreviewParentWindow();
+  auto* controller = CaptureModeController::Get();
+  DCHECK(!controller->is_recording_in_progress());
+  auto* parent = controller->GetCameraPreviewParentWindow();
   DCHECK(parent);
   auto* native_window = camera_preview_widget_->GetNativeWindow();
-  if (parent == native_window->parent())
+  if (parent != native_window->parent()) {
+    views::Widget::ReparentNativeView(native_window, parent);
+    StackingPreviewAtTop(camera_preview_widget_.get());
+  }
+  // TODO(minch): Revisit to see whether it is better to separate this from
+  // MaybeReparentPreviewWidget and do the widget bounds updates when needed.
+  MaybeUpdatePreviewWidgetBounds();
+}
+
+void CaptureModeCameraController::SetCameraPreviewSnapPosition(
+    CameraPreviewSnapPosition value) {
+  if (camera_preview_snap_position_ == value)
     return;
 
-  views::Widget::ReparentNativeView(native_window, parent);
-  StackingPreviewAtTop(camera_preview_widget_.get());
+  camera_preview_snap_position_ = value;
+  MaybeUpdatePreviewWidgetBounds();
+}
+
+void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds() {
+  if (!camera_preview_widget_)
+    return;
+
+  // The widget will be hidden if being parented to
+  // `kShellWindowId_UnparentedContainer`, we do not need to update its bounds
+  // in this case.
+  if (camera_preview_widget_->GetNativeWindow()->parent()->GetId() ==
+      kShellWindowId_UnparentedContainer) {
+    return;
+  }
+
+  camera_preview_widget_->SetBounds(GetPreviewWidgetBounds());
 }
 
 void CaptureModeCameraController::OnDevicesChanged(
@@ -303,8 +332,8 @@ void CaptureModeCameraController::RefreshCameraPreview() {
   }
 
   if (!camera_preview_widget_) {
-    camera_preview_widget_ = CreateCameraPreviewWidget(
-        CameraPreviewView::CalculateCameraPreviewWidgetBounds());
+    camera_preview_widget_ =
+        CreateCameraPreviewWidget(GetPreviewWidgetBounds());
     camera_preview_view_ = camera_preview_widget_->SetContentsView(
         std::make_unique<CameraPreviewView>());
   }
@@ -318,6 +347,38 @@ void CaptureModeCameraController::OnSelectedCameraDisconnected() {
       << "Selected camera: " << selected_camera_.ToString()
       << " remained disconnected for longer than the grace period. Clearing.";
   SetSelectedCamera(CameraId());
+}
+
+gfx::Rect CaptureModeCameraController::GetPreviewWidgetBounds() const {
+  auto* controller = CaptureModeController::Get();
+  DCHECK_EQ(CaptureModeType::kVideo, controller->type());
+  DCHECK(controller->IsActive() || controller->is_recording_in_progress());
+  const gfx::Rect confine_bounds = controller->GetCameraPreviewConfineBounds();
+  const gfx::Size preview_size = camera_preview_view_
+                                     ? camera_preview_view_->GetPreferredSize()
+                                     : capture_mode::kCameraPreviewSize;
+  if (confine_bounds.IsEmpty())
+    return gfx::Rect(preview_size);
+
+  gfx::Point origin;
+  switch (camera_preview_snap_position_) {
+    case CameraPreviewSnapPosition::kTopLeft:
+      origin = confine_bounds.origin();
+      break;
+    case CameraPreviewSnapPosition::kBottomLeft:
+      origin = gfx::Point(confine_bounds.x(),
+                          confine_bounds.bottom() - preview_size.height());
+      break;
+    case CameraPreviewSnapPosition::kBottomRight:
+      origin = gfx::Point(confine_bounds.right() - preview_size.width(),
+                          confine_bounds.bottom() - preview_size.height());
+      break;
+    case CameraPreviewSnapPosition::kTopRight:
+      origin = gfx::Point(confine_bounds.right() - preview_size.width(),
+                          confine_bounds.y());
+      break;
+  }
+  return gfx::Rect(origin, preview_size);
 }
 
 }  // namespace ash

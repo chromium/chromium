@@ -6,8 +6,11 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "ash/shell.h"
+#include "ash/wm/cursor_manager_chromeos.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/view.h"
 
@@ -44,6 +47,14 @@ void WaitForRecordingToStart() {
   test_delegate->set_on_recording_started_callback(run_loop.QuitClosure());
   run_loop.Run();
   ASSERT_TRUE(controller->is_recording_in_progress());
+}
+
+void MoveMouseToAndUpdateCursorDisplay(
+    const gfx::Point& point,
+    ui::test::EventGenerator* event_generator) {
+  Shell::Get()->cursor_manager()->SetDisplay(
+      display::Screen::GetScreen()->GetDisplayNearestPoint(point));
+  event_generator->MoveMouseTo(point);
 }
 
 }  // namespace ash

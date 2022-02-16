@@ -16,6 +16,7 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -94,12 +95,15 @@ class CaptureModeCameraTest : public AshTestBase {
     scoped_feature_list_.InitAndEnableFeature(
         features::kCaptureModeSelfieCamera);
     AshTestBase::SetUp();
+    window_ = CreateTestWindow(gfx::Rect(30, 40, 300, 200));
   }
 
   void TearDown() override {
     window_.reset();
     AshTestBase::TearDown();
   }
+
+  aura::Window* window() const { return window_.get(); }
 
   void StartRecordingFromSource(CaptureModeSource source) {
     auto* controller = CaptureModeController::Get();
@@ -110,7 +114,6 @@ class CaptureModeCameraTest : public AshTestBase {
       case CaptureModeSource::kRegion:
         break;
       case CaptureModeSource::kWindow:
-        window_ = CreateTestWindow(gfx::Rect(30, 40, 300, 200));
         GetEventGenerator()->MoveMouseTo(
             window_->GetBoundsInScreen().CenterPoint());
         break;
@@ -557,24 +560,23 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInRegion) {
   EXPECT_TRUE(camera_preview_widget);
 
   auto* preview_window = camera_preview_widget->GetNativeWindow();
-  const auto* overlay_container = preview_window->GetRootWindow()->GetChildById(
-      kShellWindowId_OverlayContainer);
-  auto* parent = preview_window->parent();
-  // Parent of the preview should be the OverlayContainer when capture mode
-  // session is active with `kRegion` type. And the preview window should
-  // be the top-most child of it.
-  EXPECT_EQ(parent, overlay_container);
-  EXPECT_EQ(overlay_container->children().back(), preview_window);
+  // Parent of the preview should be the UnparentedContainer when the user
+  // capture region is not set.
+  EXPECT_TRUE(controller->user_capture_region().IsEmpty());
+  EXPECT_EQ(preview_window->parent(),
+            preview_window->GetRootWindow()->GetChildById(
+                kShellWindowId_UnparentedContainer));
+  EXPECT_FALSE(camera_preview_widget->IsVisible());
 
   controller->SetUserCaptureRegion(gfx::Rect(10, 20, 80, 60),
                                    /*by_user=*/true);
   StartRecordingFromSource(CaptureModeSource::kRegion);
-  preview_window = camera_preview_widget->GetNativeWindow();
-  parent = preview_window->parent();
+  const auto* overlay_container = preview_window->GetRootWindow()->GetChildById(
+      kShellWindowId_OverlayContainer);
   // Parent of the preview should be the OverlayContainer when video recording
   // in progress with `kRegion` type. And the preview window should be the
   // top-most child of it.
-  ASSERT_EQ(parent, overlay_container);
+  ASSERT_EQ(preview_window->parent(), overlay_container);
   EXPECT_EQ(overlay_container->children().back(), preview_window);
 }
 
@@ -588,17 +590,19 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInWindow) {
       camera_controller->camera_preview_widget();
   EXPECT_TRUE(camera_preview_widget);
 
-  // The parent of the preview widget should be nullptr when selected window is
-  // not set.
+  auto* preview_window = camera_preview_widget->GetNativeWindow();
+  // The parent of the preview should be the UnparentedContainer when selected
+  // window is not set.
   ASSERT_FALSE(controller->capture_mode_session()->GetSelectedWindow());
-  EXPECT_FALSE(camera_preview_widget->parent());
+  EXPECT_EQ(preview_window->parent(),
+            preview_window->GetRootWindow()->GetChildById(
+                kShellWindowId_UnparentedContainer));
   EXPECT_FALSE(camera_preview_widget->IsVisible());
 
   StartRecordingFromSource(CaptureModeSource::kWindow);
   // Parent of the preview widget should be the window being recorded when video
   // recording in progress with `kWindow` type. And the preview window should be
   // the top-most child of it.
-  const auto* preview_window = camera_preview_widget->GetNativeWindow();
   const auto* parent = preview_window->parent();
   const auto* window_being_recorded =
       controller->video_recording_watcher_for_testing()
@@ -636,6 +640,128 @@ TEST_F(CaptureModeCameraTest, CheckCameraMenuVisibility) {
   EXPECT_TRUE(camera_menu_group && !camera_menu_group->GetVisible());
   EXPECT_FALSE(test_api.GetCameraOption(kCameraOff));
   EXPECT_FALSE(test_api.GetCameraOption(kCameraDevicesBegin));
+}
+
+TEST_F(CaptureModeCameraTest, CameraPreviewWidgetBounds) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  ASSERT_EQ(CameraPreviewSnapPosition::kBottomRight,
+            camera_controller->camera_preview_snap_position());
+
+  const auto* preview_widget = camera_controller->camera_preview_widget();
+  EXPECT_TRUE(preview_widget);
+
+  // When snap position is `kBottomRight` and capture source is `kFullscreen`,
+  // the preview should at the bottom right corner of screen.
+  const auto* capture_mode_session = controller->capture_mode_session();
+  const gfx::Rect screen_bounds =
+      capture_mode_session->current_root()->GetBoundsInScreen();
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_right(),
+            screen_bounds.bottom_right());
+
+  // Switching to `kRegion` without capture region set, the preview widget
+  // should not be shown.
+  controller->SetSource(CaptureModeSource::kRegion);
+  EXPECT_TRUE(controller->user_capture_region().IsEmpty());
+  EXPECT_FALSE(preview_widget->IsVisible());
+
+  // The preview should be shown at the bottom right corner of the capture
+  // region when it is set.
+  const gfx::Rect capture_region(10, 20, 300, 200);
+  controller->SetUserCaptureRegion(capture_region, /*by_user=*/true);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_right(),
+            capture_region.bottom_right());
+
+  // Switching back to `kFullscreen`, the preview should be shown at the bottom
+  // right of the screen again.
+  controller->SetSource(CaptureModeSource::kFullscreen);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_right(),
+            screen_bounds.bottom_right());
+
+  // Switching back to `kRegion`, the preview should be shown at the bottom
+  // right of the current capture region again.
+  controller->SetSource(CaptureModeSource::kRegion);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_right(),
+            capture_region.bottom_right());
+
+  // Update the snap position should update the preview to the corresponding
+  // position.
+  camera_controller->SetCameraPreviewSnapPosition(
+      CameraPreviewSnapPosition::kBottomLeft);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_left(),
+            capture_region.bottom_left());
+
+  // Set capture region to empty, the preview should be hidden again.
+  controller->SetUserCaptureRegion(gfx::Rect(), /*by_user=*/true);
+  EXPECT_FALSE(preview_widget->IsVisible());
+
+  // Switching to `kWindow` and start the video recording. The preview should
+  // stay at the bottom left corner of the recording window's bounds.
+  StartRecordingFromSource(CaptureModeSource::kWindow);
+  const auto* window_being_recorded =
+      controller->video_recording_watcher_for_testing()
+          ->window_being_recorded();
+  DCHECK(window_being_recorded);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_left(),
+            window_being_recorded->GetBoundsInScreen().bottom_left());
+}
+
+TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
+  UpdateDisplay("800x700,801+0-800x700");
+
+  const gfx::Point point_in_second_display = gfx::Point(1000, 500);
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
+
+  // Start the capture session in the second display.
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  const gfx::Rect second_display_bounds(801, 0, 800, 700);
+  // The camera preview should reside inside the second display when we start
+  // capture session in the second display.
+  const auto* preview_widget = camera_controller->camera_preview_widget();
+  EXPECT_TRUE(second_display_bounds.Contains(
+      preview_widget->GetWindowBoundsInScreen()));
+
+  // Move the capture session to the primary display should move the camera
+  // preview to the primary display as well.
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(10, 20), event_generator);
+  EXPECT_TRUE(gfx::Rect(0, 0, 800, 700)
+                  .Contains(preview_widget->GetWindowBoundsInScreen()));
+
+  // Move back to the second display, switch to `kRegion` and set the capture
+  // region. The camera preview should be moved back to the second display and
+  // inside the capture region.
+  MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
+  controller->SetSource(CaptureModeSource::kRegion);
+  // The capture region set through `controller` is in root coordinate.
+  const gfx::Rect capture_region(100, 0, 200, 150);
+  controller->SetUserCaptureRegion(capture_region, /*by_user=*/true);
+  const gfx::Rect capture_region_in_screen(901, 0, 200, 150);
+  const gfx::Rect preview_bounds = preview_widget->GetWindowBoundsInScreen();
+  EXPECT_TRUE(second_display_bounds.Contains(preview_bounds));
+  EXPECT_TRUE(capture_region_in_screen.Contains(preview_bounds));
+
+  // Start the window recording inside the second display, the camera preview
+  // should be inside the window that is being recorded inside the second
+  // display.
+  window()->SetBoundsInScreen(
+      gfx::Rect(900, 0, 300, 200),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          Shell::GetAllRootWindows()[1]));
+  StartRecordingFromSource(CaptureModeSource::kWindow);
+  const auto* window_being_recorded =
+      controller->video_recording_watcher_for_testing()
+          ->window_being_recorded();
+  EXPECT_TRUE(window_being_recorded->GetBoundsInScreen().Contains(
+      preview_widget->GetWindowBoundsInScreen()));
 }
 
 }  // namespace ash

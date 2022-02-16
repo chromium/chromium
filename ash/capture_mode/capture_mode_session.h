@@ -151,6 +151,10 @@ class ASH_EXPORT CaptureModeSession
   // session is active.
   aura::Window* GetCameraPreviewParentWindow() const;
 
+  // Returns the confine bounds for the camera preview when capture session is
+  // active.
+  gfx::Rect GetCameraPreviewConfineBounds() const;
+
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,

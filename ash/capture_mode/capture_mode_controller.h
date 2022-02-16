@@ -211,6 +211,12 @@ class ASH_EXPORT CaptureModeController
   // `CaptureModeCameraController::camera_preview_widget_`.
   aura::Window* GetCameraPreviewParentWindow() const;
 
+  // Returns the camera preview's confine bounds, which actually indicates the
+  // bounds of the surface that will be recorded. The bounds is in screen
+  // coordinate when capture source is `kFullscreen` or 'kRegion', but in
+  // window's coordinate when it is 'kWindow' type.
+  gfx::Rect GetCameraPreviewConfineBounds() const;
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;

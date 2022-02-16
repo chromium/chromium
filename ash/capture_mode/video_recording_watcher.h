@@ -83,6 +83,10 @@ class ASH_EXPORT VideoRecordingWatcher
   // progress.
   aura::Window* GetCameraPreviewParentWindow() const;
 
+  // Returns the confine bounds for the camera preview when recording is in
+  // progress.
+  gfx::Rect GetCameraPreviewConfineBounds() const;
+
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;

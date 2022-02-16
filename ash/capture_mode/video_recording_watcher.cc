@@ -287,6 +287,21 @@ aura::Window* VideoRecordingWatcher::GetCameraPreviewParentWindow() const {
              : window_being_recorded_;
 }
 
+gfx::Rect VideoRecordingWatcher::GetCameraPreviewConfineBounds() const {
+  DCHECK(window_being_recorded_);
+  switch (recording_source_) {
+    case CaptureModeSource::kFullscreen:
+      return window_being_recorded_->GetBoundsInScreen();
+    case CaptureModeSource::kRegion: {
+      gfx::Rect capture_region = partial_region_bounds_;
+      wm::ConvertRectToScreen(current_root_, &capture_region);
+      return capture_region;
+    }
+    case CaptureModeSource::kWindow:
+      return gfx::Rect(window_being_recorded_->bounds().size());
+  }
+}
+
 void VideoRecordingWatcher::OnWindowParentChanged(aura::Window* window,
                                                   aura::Window* parent) {
   DCHECK_EQ(window, window_being_recorded_);

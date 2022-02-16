@@ -20,10 +20,6 @@ class CameraPreviewView : public views::View {
   CameraPreviewView(const CameraPreviewView&) = delete;
   CameraPreviewView& operator=(const CameraPreviewView&) = delete;
   ~CameraPreviewView() override;
-
-  // Calculates and returns the bounds in screen coordinates of the camera
-  // preview widget.
-  static gfx::Rect CalculateCameraPreviewWidgetBounds();
 };
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -128,6 +129,9 @@ class ASH_EXPORT CaptureModeCameraController
     return camera_preview_widget_.get();
   }
   bool should_show_preview() const { return should_show_preview_; }
+  CameraPreviewSnapPosition camera_preview_snap_position() const {
+    return camera_preview_snap_position_;
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -144,6 +148,14 @@ class ASH_EXPORT CaptureModeCameraController
   // Updates the parent of the `camera_preview_widget_` when necessary. E.g,
   // capture source type changes, selected recording window changes etc.
   void MaybeReparentPreviewWidget();
+
+  // Sets `camera_preview_snap_position_` and updates the preview widget's
+  // bounds accordingly.
+  void SetCameraPreviewSnapPosition(CameraPreviewSnapPosition value);
+
+  // Updates the bounds of `camera_preview_widget_` to current
+  // GetPreviewWidgetBounds() when necessary.
+  void MaybeUpdatePreviewWidgetBounds();
 
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
@@ -184,6 +196,11 @@ class ASH_EXPORT CaptureModeCameraController
   // previously `selected_camera_` remained disconnected for longer than the
   // allowed grace period, and therefore it will be cleared.
   void OnSelectedCameraDisconnected();
+
+  // Gets the bounds of the preview widget in parent's coordinate system. Its
+  // bounds depend on the surface being recorded and current preview snap
+  // position.
+  gfx::Rect GetPreviewWidgetBounds() const;
 
   // Owned by CaptureModeController and guaranteed to be not null and to outlive
   // `this`.
@@ -234,6 +251,9 @@ class ASH_EXPORT CaptureModeCameraController
   // to get the list of cameras in GetCameraDevices(). More recent requests will
   // have a larger value IDs than older requests.
   RequestId most_recent_request_id_ = 0;
+
+  CameraPreviewSnapPosition camera_preview_snap_position_ =
+      CameraPreviewSnapPosition::kBottomRight;
 
   base::WeakPtrFactory<CaptureModeCameraController> weak_ptr_factory_{this};
 };

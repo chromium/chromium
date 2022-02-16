@@ -7,6 +7,10 @@
 
 #include "ash/capture_mode/capture_mode_types.h"
 
+namespace gfx {
+class Point;
+}  // namespace gfx
+
 namespace ui::test {
 class EventGenerator;
 }  // namespace ui::test
@@ -31,6 +35,14 @@ void ClickOnView(const views::View* view,
 
 // Waits until the recording is in progress.
 void WaitForRecordingToStart();
+
+// Moves the mouse and updates the cursor's display manually to imitate what a
+// real mouse move event does in shell.
+// TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
+// without having to call |CursorManager::SetDisplay|.
+void MoveMouseToAndUpdateCursorDisplay(
+    const gfx::Point& point,
+    ui::test::EventGenerator* event_generator);
 
 }  // namespace ash
 

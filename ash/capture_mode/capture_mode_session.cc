@@ -820,15 +820,43 @@ void CaptureModeSession::OnDefaultCaptureFolderSelectionChanged() {
 
 aura::Window* CaptureModeSession::GetCameraPreviewParentWindow() const {
   auto* controller = CaptureModeController::Get();
+  DCHECK(!controller->is_recording_in_progress());
+  auto* overlay_container =
+      current_root_->GetChildById(kShellWindowId_OverlayContainer);
+  auto* unparented_container =
+      current_root_->GetChildById(kShellWindowId_UnparentedContainer);
+
   switch (controller->source()) {
     case CaptureModeSource::kFullscreen:
+      return overlay_container;
     case CaptureModeSource::kRegion:
-      return current_root_->GetChildById(kShellWindowId_OverlayContainer);
+      return controller_->user_capture_region().IsEmpty() ? unparented_container
+                                                          : overlay_container;
     case CaptureModeSource::kWindow:
       aura::Window* selected_window = GetSelectedWindow();
-      return selected_window ? selected_window
-                             : current_root_->GetChildById(
-                                   kShellWindowId_UnparentedContainer);
+      return selected_window ? selected_window : unparented_container;
+  }
+}
+
+gfx::Rect CaptureModeSession::GetCameraPreviewConfineBounds() const {
+  auto* controller = CaptureModeController::Get();
+  DCHECK(!controller->is_recording_in_progress());
+  switch (controller->source()) {
+    case CaptureModeSource::kFullscreen: {
+      auto* parent = GetCameraPreviewParentWindow();
+      DCHECK(parent);
+      return parent->GetBoundsInScreen();
+    }
+    case CaptureModeSource::kWindow: {
+      aura::Window* selected_window = GetSelectedWindow();
+      return selected_window ? gfx::Rect(selected_window->bounds().size())
+                             : gfx::Rect();
+    }
+    case CaptureModeSource::kRegion: {
+      gfx::Rect capture_region = controller->user_capture_region();
+      wm::ConvertRectToScreen(current_root_, &capture_region);
+      return capture_region;
+    }
   }
 }
 

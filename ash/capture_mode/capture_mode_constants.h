@@ -35,6 +35,8 @@ constexpr SkColor kRegionBorderColor = SK_ColorWHITE;
 // The space between the `image_toggle_button_` and `video_toggle_button_`.
 constexpr int kSpaceBetweenCaptureModeTypeButtons = 2;
 
+constexpr gfx::Size kCameraPreviewSize{96, 96};
+
 }  // namespace capture_mode
 
 }  // namespace ash
