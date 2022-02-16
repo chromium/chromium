@@ -518,7 +518,7 @@ TEST_F(ToastManagerImplTest,
   // By default, the animation duration is zero in tests. Set the animation
   // duration to non-zero so that toasts don't immediately close.
   ui::ScopedAnimationDurationScaleMode animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::string id1 = ShowToast(/*text=*/"TEXT1", ToastData::kInfiniteDuration);
   std::string id2 = ShowToast(/*text=*/"TEXT2", ToastData::kInfiniteDuration);
