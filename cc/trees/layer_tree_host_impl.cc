@@ -595,8 +595,9 @@ void LayerTreeHostImpl::BeginCommit(int source_frame_number) {
 // safety violations.  Any information that is needed from LayerTreeHost should
 // instead be plumbed through CommitState (see
 // LayerTreeHost::ActivateCommitState() for reference).
-void LayerTreeHostImpl::FinishCommit(CommitState& state,
-                                     ThreadUnsafeCommitState& unsafe_state) {
+void LayerTreeHostImpl::FinishCommit(
+    CommitState& state,
+    const ThreadUnsafeCommitState& unsafe_state) {
   TRACE_EVENT0("cc,benchmark", "LayerTreeHostImpl::FinishCommit");
   LayerTreeImpl* tree = sync_tree();
   tree->PullPropertiesFrom(state, unsafe_state);
@@ -608,8 +609,6 @@ void LayerTreeHostImpl::FinishCommit(CommitState& state,
 
   for (auto& benchmark : state.benchmarks)
     ScheduleMicroBenchmark(std::move(benchmark));
-
-  unsafe_state.property_trees.ResetAllChangeTracking();
 
   // Dump property trees and layers if run with:
   //   --vmodule=layer_tree_host=3
@@ -3313,8 +3312,8 @@ void LayerTreeHostImpl::ActivateSyncTree() {
     pending_tree_raster_duration_timer_.reset();
 
     // Process any requests in the UI resource queue.  The request queue is
-    // given in LayerTreeHost::FinishCommitOnImplThread.  This must take place
-    // before the swap.
+    // given in LayerTreeHost::FinishCommit.  This must take place before the
+    // swap.
     pending_tree_->ProcessUIResourceRequestQueue();
 
     if (pending_tree_->needs_full_tree_sync()) {

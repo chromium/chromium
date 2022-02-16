@@ -897,30 +897,8 @@ void EffectTree::AddCopyRequest(
   copy_requests_.insert(std::make_pair(node_id, std::move(request)));
 }
 
-void EffectTree::PushCopyRequestsTo(EffectTree* other_tree) {
-  // If other_tree still has copy requests, this means there was a commit
-  // without a draw. This only happens in some edge cases during lost context or
-  // visibility changes, so don't try to handle preserving these output
-  // requests.
-  if (!other_tree->copy_requests_.empty()) {
-    // Destroying these copy requests will abort them.
-    other_tree->copy_requests_.clear();
-  }
-
-  if (copy_requests_.empty())
-    return;
-
-  for (auto& request : copy_requests_) {
-    other_tree->copy_requests_.insert(
-        std::make_pair(request.first, std::move(request.second)));
-  }
-  copy_requests_.clear();
-
-  // Property trees need to get rebuilt since effect nodes (and render surfaces)
-  // that were created only for the copy requests we just pushed are no longer
-  // needed.
-  if (property_trees()->is_main_thread())
-    property_trees()->set_needs_rebuild(true);
+void EffectTree::PullCopyRequestsFrom(CopyRequestMap& new_copy_requests) {
+  copy_requests_ = std::move(new_copy_requests);
 }
 
 void EffectTree::TakeCopyRequestsAndTransformToSurface(
@@ -1026,6 +1004,28 @@ void EffectTree::ClearCopyRequests() {
   // result) on destruction.
   copy_requests_.clear();
   set_needs_update(true);
+}
+
+void EffectTree::GetRenderSurfaceChangedFlags(
+    std::vector<RenderSurfacePropertyChangedFlags>& flags) const {
+  flags.resize(size());
+  for (int id = kContentsRootPropertyNodeId; id < static_cast<int>(size());
+       ++id) {
+    if (render_surfaces_[id])
+      flags[id] = render_surfaces_[id]->GetPropertyChangeFlags();
+    else
+      flags[id] = {false, false};
+  }
+}
+
+void EffectTree::ApplyRenderSurfaceChangedFlags(
+    const std::vector<RenderSurfacePropertyChangedFlags>& flags) {
+  DCHECK_EQ(flags.size(), size());
+  for (int id = kContentsRootPropertyNodeId; id < static_cast<int>(size());
+       ++id) {
+    if (render_surfaces_[id])
+      render_surfaces_[id]->ApplyPropertyChangeFlags(flags[id]);
+  }
 }
 
 int EffectTree::LowestCommonAncestorWithRenderSurface(int id_1,
@@ -1180,6 +1180,15 @@ bool EffectTree::HitTestMayBeAffectedByMask(int effect_id) const {
       return true;
   }
   return false;
+}
+
+EffectTree::CopyRequestMap EffectTree::TakeCopyRequests() {
+  // Property trees need to get rebuilt since effect nodes (and render surfaces)
+  // that were created only for the copy requests we just pushed are no longer
+  // needed.
+  if (property_trees()->is_main_thread() && !copy_requests_.empty())
+    property_trees()->set_needs_rebuild(true);
+  return std::move(copy_requests_);
 }
 
 ClipTree::ClipTree(PropertyTrees* property_trees)
@@ -1551,12 +1560,12 @@ void ScrollTree::CollectScrollDeltasForTesting(bool use_fractional_deltas) {
 }
 
 void ScrollTree::PushScrollUpdatesFromMainThread(
-    PropertyTrees* main_property_trees,
+    const PropertyTrees& main_property_trees,
     LayerTreeImpl* sync_tree,
     bool use_fractional_deltas) {
   DCHECK(!property_trees()->is_main_thread());
   const ScrollOffsetMap& main_scroll_offset_map =
-      main_property_trees->scroll_tree().scroll_offset_map_;
+      main_property_trees.scroll_tree().scroll_offset_map_;
 
   // We first want to clear SyncedProperty instances for layers which were
   // destroyed or became non-scrollable on the main thread.
@@ -1753,6 +1762,9 @@ PropertyTreesCachedData::PropertyTreesCachedData()
 }
 
 PropertyTreesCachedData::~PropertyTreesCachedData() = default;
+
+PropertyTreesChangeState::PropertyTreesChangeState() = default;
+PropertyTreesChangeState::~PropertyTreesChangeState() = default;
 
 PropertyTrees::PropertyTrees(const ProtectedSequenceSynchronizer& synchronizer)
     : synchronizer_(synchronizer),
@@ -1984,28 +1996,45 @@ void PropertyTrees::UpdateChangeTracking() {
   }
 }
 
-void PropertyTrees::PushChangeTrackingTo(PropertyTrees* tree) const {
+void PropertyTrees::GetChangedNodes(std::vector<int>& effect_nodes,
+                                    std::vector<int>& transform_nodes) const {
   for (int id = kContentsRootPropertyNodeId;
        id < static_cast<int>(effect_tree().size()); ++id) {
-    const EffectNode* node = effect_tree().Node(id);
-    if (node->effect_changed) {
-      EffectNode* target_node = tree->effect_tree_mutable().Node(node->id);
-      target_node->effect_changed = true;
-    }
+    if (effect_tree().Node(id)->effect_changed)
+      effect_nodes.push_back(id);
   }
   for (int id = kContentsRootPropertyNodeId;
        id < static_cast<int>(transform_tree().size()); ++id) {
-    const TransformNode* node = transform_tree().Node(id);
-    if (node->transform_changed) {
-      TransformNode* target_node =
-          tree->transform_tree_mutable().Node(node->id);
-      target_node->transform_changed = true;
-    }
+    if (transform_tree().Node(id)->transform_changed)
+      transform_nodes.push_back(id);
   }
-  // Ensure that change tracking is updated even if property trees don't have
-  // other reasons to get updated.
-  tree->UpdateChangeTracking();
-  tree->set_full_tree_damaged(full_tree_damaged());
+}
+
+void PropertyTrees::ApplyChangedNodes(
+    const std::vector<int>& changed_effect_nodes,
+    const std::vector<int>& changed_transform_nodes) {
+  if (changed_effect_nodes.size() || changed_transform_nodes.size()) {
+    for (int i : changed_effect_nodes)
+      effect_tree_mutable().Node(i)->effect_changed = true;
+    for (int i : changed_transform_nodes)
+      transform_tree_mutable().Node(i)->transform_changed = true;
+    UpdateChangeTracking();
+  }
+}
+
+void PropertyTrees::GetChangeState(PropertyTreesChangeState& change_state) {
+  change_state.changed = changed();
+  change_state.needs_rebuild = needs_rebuild();
+  change_state.full_tree_damaged = full_tree_damaged();
+  // Note that EffectTree::TakeCopyRequest() can flip the value of
+  // needs_rebuild(), but the prior value is the one we need to propagate, so we
+  // snapshot that first.
+  change_state.effect_tree_copy_requests =
+      effect_tree_mutable().TakeCopyRequests();
+  GetChangedNodes(change_state.changed_effect_nodes,
+                  change_state.changed_transform_nodes);
+  effect_tree().GetRenderSurfaceChangedFlags(
+      change_state.surface_property_changed_flags);
 }
 
 void PropertyTrees::ResetAllChangeTracking() {

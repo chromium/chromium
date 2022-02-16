@@ -289,7 +289,7 @@ void ProxyImpl::FrameSinksToThrottleUpdated(
 void ProxyImpl::NotifyReadyToCommitOnImpl(
     CompletionEvent* completion_event,
     std::unique_ptr<CommitState> commit_state,
-    ThreadUnsafeCommitState* unsafe_state,
+    const ThreadUnsafeCommitState* unsafe_state,
     base::TimeTicks main_thread_start_time,
     const viz::BeginFrameArgs& commit_args,
     CommitTimestamps* commit_timestamps) {
@@ -899,7 +899,7 @@ void ProxyImpl::SetEnableFrameRateThrottling(
 ProxyImpl::DataForCommit::DataForCommit(
     std::unique_ptr<ScopedCommitCompletionEvent> commit_completion_event,
     std::unique_ptr<CommitState> commit_state,
-    ThreadUnsafeCommitState* unsafe_state,
+    const ThreadUnsafeCommitState* unsafe_state,
     CommitTimestamps* commit_timestamps)
     : commit_completion_event(std::move(commit_completion_event)),
       commit_state(std::move(commit_state)),

@@ -527,7 +527,16 @@ OwnedLayerImplList LayerTreeImpl::DetachLayersKeepingRootLayerForTesting() {
   return layers;
 }
 
-void LayerTreeImpl::SetPropertyTrees(PropertyTrees& property_trees) {
+void LayerTreeImpl::SetPropertyTrees(PropertyTrees& property_trees,
+                                     bool preserve_change_tracking) {
+  PropertyTreesChangeState change_state;
+  property_trees.GetChangeState(change_state);
+  SetPropertyTrees(property_trees, change_state, preserve_change_tracking);
+}
+
+void LayerTreeImpl::SetPropertyTrees(const PropertyTrees& property_trees,
+                                     PropertyTreesChangeState& change_state,
+                                     bool preserve_change_tracking) {
   // Updating the scroll tree shouldn't clobber the currently scrolling node so
   // stash it and restore it at the end of this method.  To maintain the
   // current scrolling node we need to use element ids which are stable across
@@ -541,14 +550,29 @@ void LayerTreeImpl::SetPropertyTrees(PropertyTrees& property_trees) {
   std::vector<std::unique_ptr<RenderSurfaceImpl>> old_render_surfaces;
   property_trees_.effect_tree_mutable().TakeRenderSurfaces(
       &old_render_surfaces);
+
+  if (preserve_change_tracking) {
+    change_state.full_tree_damaged |= property_trees_.full_tree_damaged();
+    property_trees_.GetChangedNodes(change_state.changed_effect_nodes,
+                                    change_state.changed_transform_nodes);
+  }
+
   property_trees_ = property_trees;
+
+  property_trees_.ApplyChangedNodes(change_state.changed_effect_nodes,
+                                    change_state.changed_transform_nodes);
+  property_trees_.set_changed(change_state.changed);
+  property_trees_.set_needs_rebuild(change_state.needs_rebuild);
+  property_trees_.set_full_tree_damaged(change_state.full_tree_damaged);
+  property_trees_.effect_tree_mutable().ApplyRenderSurfaceChangedFlags(
+      change_state.surface_property_changed_flags);
   bool render_surfaces_changed =
       property_trees_.effect_tree_mutable().CreateOrReuseRenderSurfaces(
           &old_render_surfaces, this);
   if (render_surfaces_changed)
     set_needs_update_draw_properties();
-  property_trees.effect_tree_mutable().PushCopyRequestsTo(
-      &property_trees_.effect_tree_mutable());
+  property_trees_.effect_tree_mutable().PullCopyRequestsFrom(
+      change_state.effect_tree_copy_requests);
   property_trees_.set_is_main_thread(false);
   property_trees_.set_is_active(IsActiveTree());
   // The value of some effect node properties (like is_drawn) depends on
@@ -565,8 +589,9 @@ void LayerTreeImpl::SetPropertyTrees(PropertyTrees& property_trees) {
   SetCurrentlyScrollingNode(scrolling_node);
 }
 
-void LayerTreeImpl::PullPropertiesFrom(CommitState& commit_state,
-                                       ThreadUnsafeCommitState& unsafe_state) {
+void LayerTreeImpl::PullPropertiesFrom(
+    CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
   lifecycle().AdvanceTo(LayerTreeLifecycle::kBeginningSync);
 
   if (commit_state.next_commit_forces_redraw)
@@ -579,7 +604,7 @@ void LayerTreeImpl::PullPropertiesFrom(CommitState& commit_state,
   }
 
   if (commit_state.needs_full_tree_sync)
-    TreeSynchronizer::SynchronizeTrees(unsafe_state, this);
+    TreeSynchronizer::SynchronizeTrees(commit_state, unsafe_state, this);
 
   if (commit_state.clear_caches_on_next_commit) {
     host_impl_->ClearHistory();
@@ -588,8 +613,7 @@ void LayerTreeImpl::PullPropertiesFrom(CommitState& commit_state,
 
   TRACE_EVENT0("cc", "LayerTreeImpl::PullProperties");
 
-  PullPropertyTreesFrom(unsafe_state.root_layer.get(),
-                        unsafe_state.property_trees);
+  PullPropertyTreesFrom(commit_state, unsafe_state);
   lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedPropertyTrees);
 
   if (commit_state.needs_surface_ranges_sync) {
@@ -610,7 +634,7 @@ void LayerTreeImpl::PullPropertiesFrom(CommitState& commit_state,
   // properties, which updates the clobber_active_value flag.
   // TODO(pdr): Enforce this comment with DCHECKS and a lifecycle state.
   property_trees()->scroll_tree_mutable().PushScrollUpdatesFromMainThread(
-      &unsafe_state.property_trees, this,
+      unsafe_state.property_trees, this,
       settings().commit_fractional_scroll_deltas);
 
   // This must happen after synchronizing property trees and after push
@@ -626,18 +650,7 @@ void LayerTreeImpl::PullPropertiesFrom(CommitState& commit_state,
   unsafe_state.mutator_host->PushPropertiesTo(mutator_host(),
                                               unsafe_state.property_trees);
 
-  if (IsActiveTree() && property_trees()->changed()) {
-    if (unsafe_state.root_layer) {
-      if (unsafe_state.property_trees.sequence_number() ==
-          property_trees()->sequence_number()) {
-        property_trees()->PushChangeTrackingTo(&unsafe_state.property_trees);
-      } else {
-        MoveChangeTrackingToLayers();
-      }
-    }
-  } else {
-    MoveChangeTrackingToLayers();
-  }
+  MoveChangeTrackingToLayers();
 
   // Updating elements affects whether animations are in effect based on their
   // properties so run after pushing updated animation properties.
@@ -646,19 +659,25 @@ void LayerTreeImpl::PullPropertiesFrom(CommitState& commit_state,
   lifecycle().AdvanceTo(LayerTreeLifecycle::kNotSyncing);
 }
 
-void LayerTreeImpl::PullPropertyTreesFrom(Layer* root_layer,
-                                          PropertyTrees& property_trees) {
+void LayerTreeImpl::PullPropertyTreesFrom(
+    CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
   // Property trees may store damage status. We preserve the sync tree damage
   // status by pushing the damage status from sync tree property trees to main
   // thread property trees or by moving it onto the layers.
-  if (root_layer && IsActiveTree() && property_trees_.changed()) {
-    if (property_trees.sequence_number() == property_trees_.sequence_number())
-      property_trees_.PushChangeTrackingTo(&property_trees);
-    else
+  bool preserve_change_tracking = false;
+  if (unsafe_state.root_layer && IsActiveTree() && property_trees_.changed()) {
+    if (unsafe_state.property_trees.sequence_number() ==
+        property_trees_.sequence_number()) {
+      preserve_change_tracking = true;
+    } else {
       MoveChangeTrackingToLayers();
+    }
   }
 
-  SetPropertyTrees(property_trees);
+  SetPropertyTrees(unsafe_state.property_trees,
+                   commit_state.property_trees_change_state,
+                   preserve_change_tracking);
 }
 
 void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
@@ -746,16 +765,17 @@ void LayerTreeImpl::PushPropertyTreesTo(LayerTreeImpl* target_tree) {
   // Property trees may store damage status. We preserve the active tree
   // damage status by pushing the damage status from active tree property
   // trees to pending tree property trees or by moving it onto the layers.
+  bool preserve_change_tracking = false;
   if (target_tree->property_trees()->changed()) {
     if (property_trees()->sequence_number() ==
         target_tree->property_trees()->sequence_number()) {
-      target_tree->property_trees()->PushChangeTrackingTo(property_trees());
+      preserve_change_tracking = true;
     } else {
       target_tree->MoveChangeTrackingToLayers();
     }
   }
 
-  target_tree->SetPropertyTrees(property_trees_);
+  target_tree->SetPropertyTrees(property_trees_, preserve_change_tracking);
 
   EventMetrics::List events_metrics;
   events_metrics.swap(events_metrics_from_main_thread_);

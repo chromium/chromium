@@ -105,8 +105,8 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreateLayerImplTree() {
   // from layer_tree_host_->active_commit_state(); we use pending_commit_state()
   // just to keep the test code simple.
   host_impl_->BeginCommit(pending_commit_state()->source_frame_number);
-  TreeSynchronizer::SynchronizeTrees(thread_unsafe_commit_state(),
-                                     active_tree());
+  TreeSynchronizer::SynchronizeTrees(
+      *pending_commit_state(), thread_unsafe_commit_state(), active_tree());
   active_tree()->SetPropertyTrees(*property_trees());
   TreeSynchronizer::PushLayerProperties(
       *pending_commit_state(), thread_unsafe_commit_state(), active_tree());
@@ -117,7 +117,7 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreateLayerImplTree() {
       ->property_trees()
       ->scroll_tree_mutable()
       .PushScrollUpdatesFromMainThread(
-          property_trees(), active_tree(),
+          *property_trees(), active_tree(),
           GetSettings().commit_fractional_scroll_deltas);
 
   return active_tree()->root_layer();
@@ -127,8 +127,8 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreatePendingTree() {
   // pending_commit_state() is used here because this is a phony commit that
   // doesn't actually call WillCommit() or ActivateCommitState().
   pending_tree()->set_source_frame_number(SourceFrameNumber());
-  TreeSynchronizer::SynchronizeTrees(thread_unsafe_commit_state(),
-                                     pending_tree());
+  TreeSynchronizer::SynchronizeTrees(
+      *pending_commit_state(), thread_unsafe_commit_state(), pending_tree());
   pending_tree()->SetPropertyTrees(*property_trees());
   TreeSynchronizer::PushLayerProperties(
       *pending_commit_state(), thread_unsafe_commit_state(), pending_tree());
@@ -139,7 +139,7 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreatePendingTree() {
       ->property_trees()
       ->scroll_tree_mutable()
       .PushScrollUpdatesFromMainThread(
-          property_trees(), pending_tree(),
+          *property_trees(), pending_tree(),
           GetSettings().commit_fractional_scroll_deltas);
   return pending_tree()->root_layer();
 }

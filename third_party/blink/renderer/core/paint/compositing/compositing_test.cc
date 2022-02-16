@@ -649,25 +649,31 @@ TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateEarlierLayers) {
 
   // Initially, neither a nor b should have a layer that should push properties.
   const cc::LayerTreeHost& host = *Compositor().LayerTreeHost();
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(a_layer));
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
 
   // Modifying b should only cause the b layer to need to push properties.
   b_element->setAttribute(html_names::kStyleAttr, "opacity: 0.2");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(a_layer));
-  EXPECT_TRUE(host.thread_unsafe_commit_state()
-                  .layers_that_should_push_properties.count(b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_TRUE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
 
   // After a frame, no layers should need to push properties again.
   Compositor().BeginFrame();
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(a_layer));
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
 }
 
 TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateLaterLayers) {
@@ -697,33 +703,42 @@ TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateLaterLayers) {
 
   // Initially, no layer should need to push properties.
   const cc::LayerTreeHost& host = *Compositor().LayerTreeHost();
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(a_layer));
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(b_layer));
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(c_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          c_layer));
 
   // Modifying a and b (adding opacity to a and removing opacity from b) should
   // not cause the c layer to push properties.
   a_element->setAttribute(html_names::kStyleAttr, "opacity: 0.3");
   b_element->setAttribute(html_names::kStyleAttr, "");
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(host.thread_unsafe_commit_state()
-                  .layers_that_should_push_properties.count(a_layer));
-  EXPECT_TRUE(host.thread_unsafe_commit_state()
-                  .layers_that_should_push_properties.count(b_layer));
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(c_layer));
+  EXPECT_TRUE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_TRUE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          c_layer));
 
   // After a frame, no layers should need to push properties again.
   Compositor().BeginFrame();
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(a_layer));
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(b_layer));
-  EXPECT_FALSE(host.thread_unsafe_commit_state()
-                   .layers_that_should_push_properties.count(c_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          a_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          b_layer));
+  EXPECT_FALSE(
+      host.pending_commit_state()->layers_that_should_push_properties.count(
+          c_layer));
 }
 
 TEST_P(CompositingSimTest,

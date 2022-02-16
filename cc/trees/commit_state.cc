@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "cc/trees/commit_state.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 
 namespace cc {
 

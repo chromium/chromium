@@ -145,6 +145,8 @@ struct CC_EXPORT CommitState {
   std::vector<std::unique_ptr<SwapPromise>> swap_promises;
   std::vector<UIResourceRequest> ui_resource_request_queue;
   base::flat_map<UIResourceId, gfx::Size> ui_resource_sizes;
+  PropertyTreesChangeState property_trees_change_state;
+  base::flat_set<Layer*> layers_that_should_push_properties;
 };
 
 struct CC_EXPORT ThreadUnsafeCommitState {
@@ -160,8 +162,6 @@ struct CC_EXPORT ThreadUnsafeCommitState {
   }
   LayerListConstIterator end() const { return LayerListConstIterator(nullptr); }
 
-  // Set of layers that need to push properties.
-  base::flat_set<Layer*> layers_that_should_push_properties;
   MutatorHost* mutator_host;
   PropertyTrees property_trees;
   scoped_refptr<Layer> root_layer;

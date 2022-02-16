@@ -333,7 +333,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       const BeginMainFrameMetrics* begin_main_frame_metrics);
   virtual void BeginCommit(int source_frame_number);
   virtual void FinishCommit(CommitState& commit_state,
-                            ThreadUnsafeCommitState& unsafe_state);
+                            const ThreadUnsafeCommitState& unsafe_state);
   virtual void CommitComplete();
   virtual void UpdateAnimationState(bool start_ready_animations);
   void PullLayerTreeHostPropertiesFrom(const CommitState&);

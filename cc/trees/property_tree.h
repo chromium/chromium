@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
@@ -49,6 +50,7 @@ namespace cc {
 
 class LayerTreeImpl;
 class RenderSurfaceImpl;
+struct RenderSurfacePropertyChangedFlags;
 struct CompositorCommitData;
 
 using SyncedScrollOffset =
@@ -346,14 +348,22 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
 
   void UpdateHasFilters(EffectNode* node, EffectNode* parent_node);
 
+  typedef std::unordered_multimap<int, std::unique_ptr<viz::CopyOutputRequest>>
+      CopyRequestMap;
+
   void AddCopyRequest(int node_id,
                       std::unique_ptr<viz::CopyOutputRequest> request);
+  void PullCopyRequestsFrom(CopyRequestMap& new_copy_requests);
   void PushCopyRequestsTo(EffectTree* other_tree);
   void TakeCopyRequestsAndTransformToSurface(
       int node_id,
       std::vector<std::unique_ptr<viz::CopyOutputRequest>>* requests);
   bool HasCopyRequests() const;
   void ClearCopyRequests();
+  void GetRenderSurfaceChangedFlags(
+      std::vector<RenderSurfacePropertyChangedFlags>& flags) const;
+  void ApplyRenderSurfaceChangedFlags(
+      const std::vector<RenderSurfacePropertyChangedFlags>& flags);
 
   // Given the ids of two effect nodes that have render surfaces, returns the
   // id of the lowest common ancestor effect node that also has a render
@@ -402,6 +412,8 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
   // This function checks if the associated layer can use its layer bounds to
   // correctly hit test. It returns true if the layer bounds cannot be trusted.
   bool HitTestMayBeAffectedByMask(int effect_node_id) const;
+
+  CopyRequestMap TakeCopyRequests();
 
  private:
   void UpdateOpacities(EffectNode* node, EffectNode* parent_node);
@@ -508,7 +520,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
 
   // Pushes scroll updates from the ScrollTree on the main thread onto the
   // impl thread associated state.
-  void PushScrollUpdatesFromMainThread(PropertyTrees* main_property_trees,
+  void PushScrollUpdatesFromMainThread(const PropertyTrees& main_property_trees,
                                        LayerTreeImpl* sync_tree,
                                        bool use_fractional_deltas);
 
@@ -652,6 +664,18 @@ struct PropertyTreesCachedData {
   ~PropertyTreesCachedData();
 };
 
+struct PropertyTreesChangeState {
+  PropertyTreesChangeState();
+  ~PropertyTreesChangeState();
+  bool changed = false;
+  bool needs_rebuild = false;
+  bool full_tree_damaged = false;
+  EffectTree::CopyRequestMap effect_tree_copy_requests;
+  std::vector<int> changed_effect_nodes;
+  std::vector<int> changed_transform_nodes;
+  std::vector<RenderSurfacePropertyChangedFlags> surface_property_changed_flags;
+};
+
 class CC_EXPORT PropertyTrees final {
  public:
   explicit PropertyTrees(const ProtectedSequenceSynchronizer& synchronizer);
@@ -735,7 +759,12 @@ class CC_EXPORT PropertyTrees final {
   void SetInnerViewportContainerBoundsDelta(gfx::Vector2dF bounds_delta);
   void SetOuterViewportContainerBoundsDelta(gfx::Vector2dF bounds_delta);
   void UpdateChangeTracking();
-  void PushChangeTrackingTo(PropertyTrees* tree) const;
+  void GetChangedNodes(std::vector<int>& effect_nodes,
+                       std::vector<int>& transform_nodes) const;
+  void ApplyChangedNodes(const std::vector<int>& effect_nodes,
+                         const std::vector<int>& transform_nodes);
+  // Note that GetChangeState mutates the state of effect_tree_.
+  void GetChangeState(PropertyTreesChangeState& change_state);
   void ResetAllChangeTracking();
 
   gfx::Vector2dF inner_viewport_container_bounds_delta() const {
@@ -783,23 +812,23 @@ class CC_EXPORT PropertyTrees final {
  private:
   const ProtectedSequenceSynchronizer& synchronizer_;
 
-  ProtectedSequenceWritable<TransformTree> transform_tree_;
-  ProtectedSequenceWritable<EffectTree> effect_tree_;
+  ProtectedSequenceReadable<TransformTree> transform_tree_;
+  ProtectedSequenceReadable<EffectTree> effect_tree_;
   ProtectedSequenceReadable<ClipTree> clip_tree_;
   ProtectedSequenceReadable<ScrollTree> scroll_tree_;
 
-  ProtectedSequenceWritable<bool> needs_rebuild_;
+  ProtectedSequenceReadable<bool> needs_rebuild_;
   // Change tracking done on property trees needs to be preserved across commits
   // (when they are not rebuild). We cache a global bool which stores whether
   // we did any change tracking so that we can skip copying the change status
   // between property trees when this bool is false.
-  ProtectedSequenceWritable<bool> changed_;
+  ProtectedSequenceReadable<bool> changed_;
   // We cache a global bool for full tree damages to avoid walking the entire
   // tree.
   // TODO(jaydasika): Changes to transform and effects that damage the entire
   // tree should be tracked by this bool. Currently, they are tracked by the
   // individual nodes.
-  ProtectedSequenceWritable<bool> full_tree_damaged_;
+  ProtectedSequenceReadable<bool> full_tree_damaged_;
   ProtectedSequenceReadable<bool> is_main_thread_;
   ProtectedSequenceReadable<bool> is_active_;
 

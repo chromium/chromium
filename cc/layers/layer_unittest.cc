@@ -64,20 +64,20 @@ using ::testing::_;
   EXPECT_TRUE(top->subtree_property_changed());                               \
   EXPECT_TRUE(                                                                \
       base::Contains(const_cast<const LayerTreeHost*>(top->layer_tree_host()) \
-                         ->thread_unsafe_commit_state()                       \
-                         .layers_that_should_push_properties,                 \
+                         ->pending_commit_state()                             \
+                         ->layers_that_should_push_properties,                \
                      top.get()));                                             \
   EXPECT_TRUE(child->subtree_property_changed());                             \
   EXPECT_TRUE(base::Contains(                                                 \
       const_cast<const LayerTreeHost*>(child->layer_tree_host())              \
-          ->thread_unsafe_commit_state()                                      \
-          .layers_that_should_push_properties,                                \
+          ->pending_commit_state()                                            \
+          ->layers_that_should_push_properties,                               \
       child.get()));                                                          \
   EXPECT_TRUE(grand_child->subtree_property_changed());                       \
   EXPECT_TRUE(base::Contains(                                                 \
       const_cast<const LayerTreeHost*>(grand_child->layer_tree_host())        \
-          ->thread_unsafe_commit_state()                                      \
-          .layers_that_should_push_properties,                                \
+          ->pending_commit_state()                                            \
+          ->layers_that_should_push_properties,                               \
       grand_child.get()));
 
 #define EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET(code_to_test) \
@@ -667,8 +667,8 @@ TEST_F(LayerTest, ReorderChildren) {
   EXPECT_EQ(child3, parent->children()[2]);
 
   // This is normally done by TreeSynchronizer::PushLayerProperties().
-  auto& unsafe_state = layer_tree_host_->GetThreadUnsafeCommitState();
-  unsafe_state.layers_that_should_push_properties.clear();
+  layer_tree_host_->GetPendingCommitState()
+      ->layers_that_should_push_properties.clear();
 
   LayerList new_children_order;
   new_children_order.emplace_back(child3);
@@ -680,8 +680,8 @@ TEST_F(LayerTest, ReorderChildren) {
   EXPECT_EQ(child2, parent->children()[2]);
 
   for (const auto& child : parent->children()) {
-    EXPECT_FALSE(base::Contains(layer_tree_host_->GetThreadUnsafeCommitState()
-                                    .layers_that_should_push_properties,
+    EXPECT_FALSE(base::Contains(layer_tree_host_->GetPendingCommitState()
+                                    ->layers_that_should_push_properties,
                                 child.get()));
     EXPECT_TRUE(child->subtree_property_changed());
   }
@@ -1692,26 +1692,27 @@ TEST_F(LayerTest, SetElementIdNotUsingLayerLists) {
 TEST_F(LayerTest, UpdateMirrorCount) {
   scoped_refptr<Layer> test_layer = Layer::Create();
   test_layer->SetLayerTreeHost(layer_tree_host_.get());
-  auto& unsafe_state = layer_tree_host_->GetThreadUnsafeCommitState();
 
   // This is normally done by TreeSynchronizer::PushLayerProperties().
-  unsafe_state.layers_that_should_push_properties.clear();
+  layer_tree_host_->GetPendingCommitState()
+      ->layers_that_should_push_properties.clear();
 
   layer_tree_host_->property_trees()->set_needs_rebuild(false);
   EXPECT_EQ(0, test_layer->mirror_count());
   EXPECT_FALSE(layer_tree_host_->property_trees()->needs_rebuild());
-  EXPECT_EQ(0u, layer_tree_host_->GetThreadUnsafeCommitState()
-                    .layers_that_should_push_properties.size());
+  EXPECT_EQ(0u, layer_tree_host_->GetPendingCommitState()
+                    ->layers_that_should_push_properties.size());
 
   // Incrementing mirror count from zero should trigger property trees rebuild.
   test_layer->IncrementMirrorCount();
   EXPECT_EQ(1, test_layer->mirror_count());
   EXPECT_TRUE(layer_tree_host_->property_trees()->needs_rebuild());
-  EXPECT_TRUE(base::Contains(layer_tree_host_->GetThreadUnsafeCommitState()
-                                 .layers_that_should_push_properties,
+  EXPECT_TRUE(base::Contains(layer_tree_host_->GetPendingCommitState()
+                                 ->layers_that_should_push_properties,
                              test_layer.get()));
 
-  unsafe_state.layers_that_should_push_properties.clear();
+  layer_tree_host_->GetPendingCommitState()
+      ->layers_that_should_push_properties.clear();
   layer_tree_host_->property_trees()->set_needs_rebuild(false);
 
   // Incrementing mirror count from non-zero should not trigger property trees
@@ -1719,27 +1720,28 @@ TEST_F(LayerTest, UpdateMirrorCount) {
   test_layer->IncrementMirrorCount();
   EXPECT_EQ(2, test_layer->mirror_count());
   EXPECT_FALSE(layer_tree_host_->property_trees()->needs_rebuild());
-  EXPECT_TRUE(base::Contains(layer_tree_host_->GetThreadUnsafeCommitState()
-                                 .layers_that_should_push_properties,
+  EXPECT_TRUE(base::Contains(layer_tree_host_->GetPendingCommitState()
+                                 ->layers_that_should_push_properties,
                              test_layer.get()));
 
-  unsafe_state.layers_that_should_push_properties.clear();
+  layer_tree_host_->GetPendingCommitState()
+      ->layers_that_should_push_properties.clear();
 
   // Decrementing mirror count to non-zero should not trigger property trees
   // rebuild.
   test_layer->DecrementMirrorCount();
   EXPECT_EQ(1, test_layer->mirror_count());
   EXPECT_FALSE(layer_tree_host_->property_trees()->needs_rebuild());
-  EXPECT_TRUE(base::Contains(layer_tree_host_->GetThreadUnsafeCommitState()
-                                 .layers_that_should_push_properties,
+  EXPECT_TRUE(base::Contains(layer_tree_host_->GetPendingCommitState()
+                                 ->layers_that_should_push_properties,
                              test_layer.get()));
 
   // Decrementing mirror count to zero should trigger property trees rebuild.
   test_layer->DecrementMirrorCount();
   EXPECT_EQ(0, test_layer->mirror_count());
   EXPECT_TRUE(layer_tree_host_->property_trees()->needs_rebuild());
-  EXPECT_TRUE(base::Contains(layer_tree_host_->GetThreadUnsafeCommitState()
-                                 .layers_that_should_push_properties,
+  EXPECT_TRUE(base::Contains(layer_tree_host_->GetPendingCommitState()
+                                 ->layers_that_should_push_properties,
                              test_layer.get()));
 
   test_layer->SetLayerTreeHost(nullptr);

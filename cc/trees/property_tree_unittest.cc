@@ -692,7 +692,7 @@ TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
   // Push main scroll to pending.
   main_scroll_tree.SetScrollOffset(element_id, gfx::PointF(0, 1));
   pending_scroll_tree.PushScrollUpdatesFromMainThread(
-      &property_trees, host_impl.pending_tree(), use_fractional_deltas);
+      property_trees, host_impl.pending_tree(), use_fractional_deltas);
   const SyncedScrollOffset* scroll_offset =
       pending_scroll_tree.GetSyncedScrollOffset(element_id);
   EXPECT_TRUE(scroll_offset);
@@ -708,13 +708,13 @@ TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
   // Rounding logic turned on should not cause property change on push.
   host_impl.pending_tree()->property_trees()->set_changed(false);
   pending_scroll_tree.PushScrollUpdatesFromMainThread(
-      &property_trees, host_impl.pending_tree(), use_fractional_deltas);
+      property_trees, host_impl.pending_tree(), use_fractional_deltas);
   EXPECT_FALSE(host_impl.pending_tree()->property_trees()->changed());
 
   // Rounding logic turned off should cause property change on push.
   host_impl.pending_tree()->property_trees()->set_changed(false);
   pending_scroll_tree.PushScrollUpdatesFromMainThread(
-      &property_trees, host_impl.pending_tree(), true);
+      property_trees, host_impl.pending_tree(), true);
   EXPECT_TRUE(host_impl.pending_tree()->property_trees()->changed());
 }
 

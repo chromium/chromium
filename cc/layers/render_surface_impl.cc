@@ -380,6 +380,17 @@ gfx::Rect RenderSurfaceImpl::GetDamageRect() const {
   return damage_rect;
 }
 
+RenderSurfacePropertyChangedFlags RenderSurfaceImpl::GetPropertyChangeFlags()
+    const {
+  return {surface_property_changed_, ancestor_property_changed_};
+}
+
+void RenderSurfaceImpl::ApplyPropertyChangeFlags(
+    const RenderSurfacePropertyChangedFlags& flags) {
+  surface_property_changed_ = flags.self_changed();
+  ancestor_property_changed_ = flags.ancestor_changed();
+}
+
 void RenderSurfaceImpl::ResetPropertyChangedFlags() {
   surface_property_changed_ = false;
   ancestor_property_changed_ = false;

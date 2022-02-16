@@ -190,7 +190,13 @@ class CC_EXPORT LayerTreeImpl {
   OwnedLayerImplList DetachLayers();
   OwnedLayerImplList DetachLayersKeepingRootLayerForTesting();
 
-  void SetPropertyTrees(PropertyTrees& property_trees);
+  void SetPropertyTrees(const PropertyTrees& property_trees,
+                        PropertyTreesChangeState& change_state,
+                        bool preserve_change_tracking);
+
+  void SetPropertyTrees(PropertyTrees& property_trees,
+                        bool preserve_change_tracking = false);
+
   PropertyTrees* property_trees() {
     // TODO(pdr): We should enable this DCHECK because it will catch uses of
     // stale property trees, but it currently fails too many existing tests.
@@ -200,8 +206,9 @@ class CC_EXPORT LayerTreeImpl {
   const PropertyTrees* property_trees() const { return &property_trees_; }
 
   void PullPropertiesFrom(CommitState& commit_state,
-                          ThreadUnsafeCommitState& unsafe_state);
-  void PullPropertyTreesFrom(Layer* root_layer, PropertyTrees& property_trees);
+                          const ThreadUnsafeCommitState& unsafe_state);
+  void PullPropertyTreesFrom(CommitState& commit_state,
+                             const ThreadUnsafeCommitState& unsafe_state);
   void PullLayerTreePropertiesFrom(CommitState& commit_state);
   void PushPropertyTreesTo(LayerTreeImpl* tree_impl);
   void PushPropertiesTo(LayerTreeImpl* tree_impl);

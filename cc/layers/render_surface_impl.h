@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -37,6 +38,19 @@ class Occlusion;
 class LayerImpl;
 class LayerTreeImpl;
 class PictureLayerImpl;
+
+struct RenderSurfacePropertyChangedFlags {
+ public:
+  RenderSurfacePropertyChangedFlags() = default;
+  RenderSurfacePropertyChangedFlags(bool self_changed, bool ancestor_changed)
+      : self_changed_(self_changed), ancestor_changed_(ancestor_changed) {}
+  bool self_changed() const { return self_changed_; }
+  bool ancestor_changed() const { return ancestor_changed_; }
+
+ private:
+  bool self_changed_ = false;
+  bool ancestor_changed_ = false;
+};
 
 class CC_EXPORT RenderSurfaceImpl {
  public:
@@ -194,6 +208,11 @@ class CC_EXPORT RenderSurfaceImpl {
   // it has copy requests, should be cached, or has a valid subtree capture ID),
   // and should be e.g. immune from occlusion, etc. Returns false otherise.
   bool CopyOfOutputRequired() const;
+
+  // These are to enable commit, where we need to snapshot these flags from the
+  // main thread property trees, and then apply them to the sync tree.
+  RenderSurfacePropertyChangedFlags GetPropertyChangeFlags() const;
+  void ApplyPropertyChangeFlags(const RenderSurfacePropertyChangedFlags& flags);
 
   void ResetPropertyChangedFlags();
   bool SurfacePropertyChanged() const;
