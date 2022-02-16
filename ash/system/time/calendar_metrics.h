@@ -42,6 +42,18 @@ enum class CalendarViewShowSource {
   kMaxValue = kAccelerator
 };
 
+// Sources of scrolling inside the calendar view. These are used in histograms,
+// do not remove/renumber entries. If you're adding to this enum with the
+// intention that it will be logged, update the CalendarViewScrollSource token
+// variant in enums.xml.
+enum class CalendarViewScrollSource {
+  kByMouseWheel = 0,
+  kByGesture = 1,
+  kByFling = 2,
+  kByStylus = 3,
+  kMaxValue = kByStylus
+};
+
 // Converts the given event into an appropriate CalendarEventSource.
 CalendarEventSource GetEventType(const ui::Event& event);
 
@@ -57,6 +69,8 @@ void RecordMonthArrowButtonActivated(bool up, const ui::Event& event);
 void RecordEventListItemActivated(const ui::Event& event);
 
 void RecordMonthDwellTime(const base::TimeDelta& dwell_time);
+
+void RecordScrollSource(CalendarViewScrollSource source);
 
 }  // namespace calendar_metrics
 

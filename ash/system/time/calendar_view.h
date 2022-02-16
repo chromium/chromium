@@ -107,6 +107,49 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // this view.
   class MonthHeaderLabelView;
 
+  // Content view of calendar's scroll view, used for metrics recording.
+  // TODO(crbug.com/1297376): Add unit tests for metrics recording.
+  class ScrollContentsView : public views::View {
+   public:
+    explicit ScrollContentsView(CalendarViewController* controller);
+    ScrollContentsView(const ScrollContentsView& other) = delete;
+    ScrollContentsView& operator=(const ScrollContentsView& other) = delete;
+    ~ScrollContentsView() override = default;
+
+    // Update the value of current month based on the controller.
+    void OnMonthChanged();
+
+    // views::View:
+    void OnEvent(ui::Event* event) override;
+
+    // Called when a stylus touch event is triggered.
+    void OnStylusEvent(const ui::TouchEvent& event);
+
+   private:
+    // Used as a Shell pre-target handler to notify the owner of stylus events.
+    class StylusEventHandler : public ui::EventHandler {
+     public:
+      explicit StylusEventHandler(ScrollContentsView* content_view);
+      StylusEventHandler(const StylusEventHandler&) = delete;
+      StylusEventHandler& operator=(const StylusEventHandler&) = delete;
+      ~StylusEventHandler() override;
+
+      // ui::EventHandler:
+      void OnTouchEvent(ui::TouchEvent* event) override;
+
+     private:
+      ScrollContentsView* content_view_;
+    };
+
+    CalendarViewController* const controller_;
+    StylusEventHandler stylus_event_handler_;
+
+    // Since we only record metrics once when we scroll through a particular
+    // month. This keeps track the current month in display that we have already
+    // recorded metrics.
+    std::u16string current_month_;
+  };
+
   // The types to create the `MonthHeaderLabelView` which are in corresponding
   // to the 3 months: `previous_month_`, `current_month_` and `next_month_`.
   enum LabelType { PREVIOUS, CURRENT, NEXT };
@@ -214,7 +257,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // The content of the `scroll_view_`, which carries months and month labels.
   // Owned by `CalendarView`.
-  views::View* content_view_ = nullptr;
+  ScrollContentsView* content_view_ = nullptr;
 
   // The following is owned by `CalendarView`.
   views::ScrollView* scroll_view_ = nullptr;

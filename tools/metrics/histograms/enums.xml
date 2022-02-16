@@ -11491,6 +11491,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="Stylus"/>
 </enum>
 
+<enum name="CalendarViewScrollSource">
+  <int value="0" label="By Mouse Wheel"/>
+  <int value="1" label="By Gesture"/>
+  <int value="2" label="By Fling"/>
+  <int value="3" label="By Stylus"/>
+</enum>
+
 <enum name="CameraPrivacySwitchEvent">
   <int value="0" label="Camera privacy switch toggled on"/>
   <int value="1" label="Camera privacy switch toggled off"/>

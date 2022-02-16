@@ -26,6 +26,7 @@ constexpr char kCalendarMonthDownArrowButtonActivated[] =
 constexpr char kCalendarMonthUpArrowButtonActivated[] =
     "Ash.Calendar.MonthUpArrowButton.Activated";
 constexpr char kCalendarMonthDwellTime[] = "Ash.Calendar.MonthDwellTime";
+constexpr char kCalendarScrollSource[] = "Ash.Calendar.ScrollSource";
 
 }  // namespace
 
@@ -83,6 +84,10 @@ void RecordEventListItemActivated(const ui::Event& event) {
 
 void RecordMonthDwellTime(const base::TimeDelta& dwell_time) {
   UMA_HISTOGRAM_TIMES(kCalendarMonthDwellTime, dwell_time);
+}
+
+void RecordScrollSource(CalendarViewScrollSource source) {
+  base::UmaHistogramEnumeration(kCalendarScrollSource, source);
 }
 
 }  // namespace calendar_metrics

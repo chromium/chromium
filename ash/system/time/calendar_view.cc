@@ -27,6 +27,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/transform.h"
@@ -34,6 +35,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
@@ -198,6 +200,66 @@ class CalendarView::MonthHeaderLabelView : public views::View {
   views::Label* const month_label_ = nullptr;
 };
 
+CalendarView::ScrollContentsView::ScrollContentsView(
+    CalendarViewController* controller)
+    : controller_(controller),
+      stylus_event_handler_(this),
+      current_month_(controller_->GetOnScreenMonthName()) {}
+
+void CalendarView::ScrollContentsView::OnMonthChanged() {
+  current_month_ = controller_->GetOnScreenMonthName();
+}
+
+void CalendarView::ScrollContentsView::OnEvent(ui::Event* event) {
+  views::View::OnEvent(event);
+
+  if (controller_->GetOnScreenMonthName() == current_month_)
+    return;
+  OnMonthChanged();
+
+  if (event->IsMouseWheelEvent()) {
+    calendar_metrics::RecordScrollSource(
+        calendar_metrics::CalendarViewScrollSource::kByMouseWheel);
+  }
+
+  if (event->IsScrollGestureEvent()) {
+    calendar_metrics::RecordScrollSource(
+        calendar_metrics::CalendarViewScrollSource::kByGesture);
+  }
+
+  if (event->IsFlingScrollEvent()) {
+    calendar_metrics::RecordScrollSource(
+        calendar_metrics::CalendarViewScrollSource::kByFling);
+  }
+}
+
+void CalendarView::ScrollContentsView::OnStylusEvent(
+    const ui::TouchEvent& event) {
+  if (controller_->GetOnScreenMonthName() == current_month_)
+    return;
+  OnMonthChanged();
+
+  calendar_metrics::RecordScrollSource(
+      calendar_metrics::CalendarViewScrollSource::kByStylus);
+}
+
+CalendarView::ScrollContentsView::StylusEventHandler::StylusEventHandler(
+    ScrollContentsView* content_view)
+    : content_view_(content_view) {
+  Shell::Get()->AddPreTargetHandler(this);
+}
+
+CalendarView::ScrollContentsView::StylusEventHandler::~StylusEventHandler() {
+  Shell::Get()->RemovePreTargetHandler(this);
+}
+
+void CalendarView::ScrollContentsView::StylusEventHandler::OnTouchEvent(
+    ui::TouchEvent* event) {
+  if (event->pointer_details().pointer_type == ui::EventPointerType::kPen) {
+    content_view_->OnStylusEvent(*event);
+  }
+}
+
 CalendarHeaderView::CalendarHeaderView(const std::u16string& month,
                                        const std::u16string& year)
     : header_(AddChildView(std::make_unique<views::Label>())),
@@ -328,7 +390,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
       scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
           &CalendarView::OnContentsScrolled, base::Unretained(this)));
 
-  content_view_ = scroll_view_->SetContents(std::make_unique<views::View>());
+  content_view_ = scroll_view_->SetContents(
+      std::make_unique<ScrollContentsView>(calendar_view_controller_.get()));
   content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   content_view_->SetBorder(views::CreateEmptyBorder(
@@ -1232,6 +1295,7 @@ void CalendarView::OnMonthArrowButtonActivated(bool up,
                                                const ui::Event& event) {
   calendar_metrics::RecordMonthArrowButtonActivated(up, event);
   ScrollOneMonthWithAnimation(up);
+  content_view_->OnMonthChanged();
 }
 
 void CalendarView::AdjustDateCellVoxBounds() {
