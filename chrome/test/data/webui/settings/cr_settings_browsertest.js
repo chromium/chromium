@@ -334,8 +334,8 @@ var CrSettingsPasswordsCheckTest = class extends CrSettingsBrowserTest {
   }
 };
 
-// Flaky on Mac builds https://crbug.com/1143801
-GEN('#if (BUILDFLAG(IS_MAC)) || (BUILDFLAG(IS_LINUX))');
+// Flaky https://crbug.com/1143801
+GEN('#if (BUILDFLAG(IS_MAC)) || (BUILDFLAG(IS_LINUX)) || (BUILDFLAG(IS_WIN))');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_All All');
