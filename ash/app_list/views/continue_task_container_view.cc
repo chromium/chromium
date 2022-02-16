@@ -13,10 +13,13 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/views/continue_task_view.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -81,6 +84,9 @@ ContinueTaskContainerView::ContinueTaskContainerView(
     columns_ = columns;
     InitializeTableLayout();
   }
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kList);
+  GetViewAccessibility().OverrideName(
+      l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL));
 }
 
 ContinueTaskContainerView::~ContinueTaskContainerView() {}

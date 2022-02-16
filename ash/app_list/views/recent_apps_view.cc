@@ -20,10 +20,12 @@
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
@@ -146,6 +148,10 @@ RecentAppsView::RecentAppsView(Delegate* delegate,
   layout_->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+  // TODO(https://crbug.com/1298211): This needs a designated string resource.
+  GetViewAccessibility().OverrideName(
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_RECENT_APPS_TITLE));
   SetVisible(false);
 }
 

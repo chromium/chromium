@@ -36,6 +36,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
@@ -48,6 +49,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -339,6 +341,12 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
   bounds_animator_ = std::make_unique<views::BoundsAnimator>(
       items_container_, /*use_transforms=*/true);
   bounds_animator_->AddObserver(this);
+
+  if (features::IsProductivityLauncherEnabled()) {
+    GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+    GetViewAccessibility().OverrideName(
+        l10n_util::GetStringUTF16(IDS_ALL_APPS_INDICATOR));
+  }
 
   context_menu_ = std::make_unique<AppsGridContextMenu>();
   set_context_menu_controller(context_menu_.get());
