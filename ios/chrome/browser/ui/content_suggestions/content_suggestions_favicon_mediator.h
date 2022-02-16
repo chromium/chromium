@@ -15,6 +15,7 @@ class LargeIconService;
 
 @protocol ContentSuggestionsConsumer;
 @class ContentSuggestionsMostVisitedItem;
+@class ContentSuggestionsParentItem;
 @class FaviconAttributesProvider;
 class LargeIconCache;
 
@@ -44,6 +45,11 @@ class LargeIconCache;
 
 // Fetches the favicon for this |item|.
 - (void)fetchFaviconForMostVisited:(ContentSuggestionsMostVisitedItem*)item;
+// Fetches the favicon for |item| within |parentItem|.
+// TODO(crbug.com/1285378): Remove this after fully migrating ContentSuggestions
+// to UIViewController.
+- (void)fetchFaviconForMostVisited:(ContentSuggestionsMostVisitedItem*)item
+                        parentItem:(ContentSuggestionsParentItem*)parentItem;
 
 @end
 

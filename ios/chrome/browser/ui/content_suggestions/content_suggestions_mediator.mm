@@ -322,7 +322,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     item.index = index;
     DCHECK(index < kShortcutMinimumIndex);
     index++;
-    [self.faviconMediator fetchFaviconForMostVisited:item];
+    if (IsSingleCellContentSuggestionsEnabled()) {
+      [self.faviconMediator fetchFaviconForMostVisited:item
+                                            parentItem:self.parentItem];
+    } else {
+      [self.faviconMediator fetchFaviconForMostVisited:item];
+    }
     [self.freshMostVisitedItems addObject:item];
   }
 
@@ -349,7 +354,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
   for (ContentSuggestionsMostVisitedItem* item in self.mostVisitedItems) {
     if (item.URL == siteURL) {
-      [self.faviconMediator fetchFaviconForMostVisited:item];
+      if (IsSingleCellContentSuggestionsEnabled()) {
+        [self.faviconMediator fetchFaviconForMostVisited:item
+                                              parentItem:self.parentItem];
+      } else {
+        [self.faviconMediator fetchFaviconForMostVisited:item];
+      }
       return;
     }
   }
