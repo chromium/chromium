@@ -60,7 +60,9 @@ void ClearAppUsageStats(const std::string& app_id, UpdaterScope scope) {
   LONG outcome =
       base::win::RegKey(
           scope == UpdaterScope::kUser ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE,
-          CLIENT_STATE_MEDIUM_KEY, Wow6432(KEY_WRITE))
+          scope == UpdaterScope::kUser ? CLIENT_STATE_KEY
+                                       : CLIENT_STATE_MEDIUM_KEY,
+          Wow6432(KEY_WRITE))
           .DeleteKey(base::SysUTF8ToWide(app_id).c_str());
   ASSERT_TRUE(outcome == ERROR_SUCCESS || outcome == ERROR_FILE_NOT_FOUND);
 #endif
@@ -90,7 +92,9 @@ class UpdateUsageStatsTaskTest : public testing::Test {
     base::win::RegKey key = base::win::RegKey(
         GetTestScope() == UpdaterScope::kUser ? HKEY_CURRENT_USER
                                               : HKEY_LOCAL_MACHINE,
-        CLIENT_STATE_MEDIUM_KEY, Wow6432(KEY_WRITE));
+        GetTestScope() == UpdaterScope::kUser ? CLIENT_STATE_KEY
+                                              : CLIENT_STATE_MEDIUM_KEY,
+        Wow6432(KEY_WRITE));
     ASSERT_EQ(
         key.CreateKey(base::SysUTF8ToWide(app_id).c_str(), Wow6432(KEY_WRITE)),
         ERROR_SUCCESS);

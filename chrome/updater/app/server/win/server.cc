@@ -28,7 +28,9 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/win/atl.h"
 #include "base/win/registry.h"
+#include "base/win/windows_types.h"
 #include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/com_classes.h"
@@ -107,6 +109,60 @@ bool CreateSecureTempDir(UpdaterScope scope,
   }
 
   VLOG(1) << "Created temp path " << temp_path.path().value();
+  return true;
+}
+
+HRESULT AddAllowedAce(HANDLE object,
+                      SE_OBJECT_TYPE object_type,
+                      const CSid& sid,
+                      ACCESS_MASK required_permissions,
+                      UINT8 required_ace_flags) {
+  CDacl dacl;
+  if (!AtlGetDacl(object, object_type, &dacl)) {
+    return HRESULTFromLastError();
+  }
+
+  int ace_count = dacl.GetAceCount();
+  for (int i = 0; i < ace_count; ++i) {
+    CSid sid_entry;
+    ACCESS_MASK existing_permissions = 0;
+    BYTE existing_ace_flags = 0;
+    dacl.GetAclEntry(i, &sid_entry, &existing_permissions, NULL,
+                     &existing_ace_flags);
+    if (sid_entry == sid &&
+        required_permissions == (existing_permissions & required_permissions) &&
+        required_ace_flags == (existing_ace_flags & ~INHERITED_ACE)) {
+      return S_OK;
+    }
+  }
+
+  if (!dacl.AddAllowedAce(sid, required_permissions, required_ace_flags) ||
+      !AtlSetDacl(object, object_type, dacl)) {
+    return HRESULTFromLastError();
+  }
+
+  return S_OK;
+}
+
+bool CreateClientStateMedium() {
+  base::win::RegKey key;
+  LONG result = key.Create(HKEY_LOCAL_MACHINE, CLIENT_STATE_MEDIUM_KEY,
+                           Wow6432(KEY_WRITE));
+  if (result != ERROR_SUCCESS) {
+    VLOG(2) << __func__ << " failed: CreateKey returned " << result;
+    return false;
+  }
+  // Authenticated non-admins may read, write, create subkeys and values.
+  // The override privileges apply to all subkeys and values but not to the
+  // ClientStateMedium key itself.
+  HRESULT hr = AddAllowedAce(
+      key.Handle(), SE_REGISTRY_KEY, Sids::Interactive(),
+      KEY_READ | KEY_SET_VALUE | KEY_CREATE_SUB_KEY,
+      CONTAINER_INHERIT_ACE | INHERIT_ONLY_ACE | OBJECT_INHERIT_ACE);
+  if (FAILED(hr)) {
+    VLOG(2) << __func__ << " failed: AddAllowedAce returned " << hr;
+    return false;
+  }
   return true;
 }
 
@@ -249,6 +305,10 @@ bool ComServerApp::SwapInNewVersion() {
 
   installer::SelfCleaningTempDir temp_dir;
   if (!CreateSecureTempDir(updater_scope(), temp_dir)) {
+    return false;
+  }
+
+  if (updater_scope() == UpdaterScope::kSystem && !CreateClientStateMedium()) {
     return false;
   }
 
