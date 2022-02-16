@@ -187,10 +187,12 @@ class TestHintsFetcher : public HintsFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       GURL optimization_guide_service_url,
       PrefService* pref_service,
-      const std::vector<HintsFetcherEndState>& fetch_states)
+      const std::vector<HintsFetcherEndState>& fetch_states,
+      OptimizationGuideLogger* optimization_guide_logger)
       : HintsFetcher(url_loader_factory,
                      optimization_guide_service_url,
-                     pref_service),
+                     pref_service,
+                     optimization_guide_logger),
         fetch_states_(fetch_states) {
     DCHECK(!fetch_states_.empty());
   }
@@ -267,10 +269,11 @@ class TestHintsFetcherFactory : public HintsFetcherFactory {
                             pref_service),
         fetch_states_(fetch_states) {}
 
-  std::unique_ptr<HintsFetcher> BuildInstance() override {
-    return std::make_unique<TestHintsFetcher>(url_loader_factory_,
-                                              optimization_guide_service_url_,
-                                              pref_service_, fetch_states_);
+  std::unique_ptr<HintsFetcher> BuildInstance(
+      OptimizationGuideLogger* optimization_guide_logger) override {
+    return std::make_unique<TestHintsFetcher>(
+        url_loader_factory_, optimization_guide_service_url_, pref_service_,
+        fetch_states_, optimization_guide_logger);
   }
 
  private:

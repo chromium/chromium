@@ -717,7 +717,7 @@ void HintsManager::FetchHintsForActiveTabs() {
   if (!active_tabs_batch_update_hints_fetcher_) {
     DCHECK(hints_fetcher_factory_);
     active_tabs_batch_update_hints_fetcher_ =
-        hints_fetcher_factory_->BuildInstance();
+        hints_fetcher_factory_->BuildInstance(optimization_guide_logger_);
   }
   active_tabs_batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
       top_hosts, active_tab_urls_to_refresh, registered_optimization_types_,
@@ -1149,7 +1149,7 @@ std::pair<int32_t, HintsFetcher*>
 HintsManager::CreateAndTrackBatchUpdateHintsFetcher() {
   DCHECK(hints_fetcher_factory_);
   std::unique_ptr<HintsFetcher> hints_fetcher =
-      hints_fetcher_factory_->BuildInstance();
+      hints_fetcher_factory_->BuildInstance(optimization_guide_logger_);
   HintsFetcher* hints_fetcher_ptr = hints_fetcher.get();
   batch_update_hints_fetchers_.Put(batch_update_hints_fetcher_request_id_++,
                                    std::move(hints_fetcher));
@@ -1481,7 +1481,7 @@ void HintsManager::MaybeFetchHintsForNavigation(
 
   DCHECK(hints_fetcher_factory_);
   auto it = page_navigation_hints_fetchers_.Put(
-      url, hints_fetcher_factory_->BuildInstance());
+      url, hints_fetcher_factory_->BuildInstance(optimization_guide_logger_));
 
   UMA_HISTOGRAM_COUNTS_100(
       "OptimizationGuide.HintsManager.ConcurrentPageNavigationFetches",

@@ -55,7 +55,7 @@ class HintsFetcherTest : public testing::Test,
 
     hints_fetcher_ = std::make_unique<HintsFetcher>(
         shared_url_loader_factory_, GURL(optimization_guide_service_url),
-        pref_service_.get());
+        pref_service_.get(), /*optimization_guide_logger=*/nullptr);
     hints_fetcher_->SetTimeClockForTesting(task_environment_.GetMockClock());
   }
 

@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "url/gurl.h"
 
+class OptimizationGuideLogger;
 class PrefService;
 
 namespace network {
@@ -35,7 +36,8 @@ class HintsFetcherFactory {
 
   // Creates a new instance of HintsFetcher. Virtualized for testing so that the
   // testing code can override this to provide a mocked instance.
-  virtual std::unique_ptr<HintsFetcher> BuildInstance();
+  virtual std::unique_ptr<HintsFetcher> BuildInstance(
+      OptimizationGuideLogger* optimization_guide_logger);
 
   // Override the optimization guide hints server URL. Used for testing.
   void OverrideOptimizationGuideServiceUrlForTesting(
