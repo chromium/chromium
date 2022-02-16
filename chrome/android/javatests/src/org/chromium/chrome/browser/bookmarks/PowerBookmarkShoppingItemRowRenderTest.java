@@ -30,7 +30,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -180,7 +179,6 @@ public class PowerBookmarkShoppingItemRowRenderTest extends BlankUiTestActivityT
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/1282173")
     public void testShoppingRebindUI() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
