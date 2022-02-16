@@ -128,11 +128,12 @@ void DlpContentManagerLacros::OnScreenShareStarted(
     std::vector<content::DesktopMediaID> screen_share_ids,
     const std::u16string& application_title,
     base::RepeatingClosure stop_callback,
-    content::MediaStreamUI::StateChangeCallback state_change_callback) {
+    content::MediaStreamUI::StateChangeCallback state_change_callback,
+    content::MediaStreamUI::SourceCallback source_callback) {
   for (const content::DesktopMediaID& media_id : screen_share_ids) {
     if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
       AddScreenShare(label, media_id, application_title, stop_callback,
-                     state_change_callback);
+                     state_change_callback, source_callback);
     } else {
       crosapi::mojom::ScreenShareAreaPtr area =
           ConvertToScreenShareArea(media_id);

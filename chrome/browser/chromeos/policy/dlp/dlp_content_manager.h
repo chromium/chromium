@@ -75,13 +75,16 @@ class DlpContentManager : public DlpContentObserver {
   // Called when screen share is started.
   // |state_change_callback| will be called when restricted content will appear
   // or disappear in the captured area to pause/resume the share.
+  // |source_callback| will be called only to update the source for a tab share
+  // before resuming the capture.
   // |stop_callback| will be called after a user dismisses a warning.
   virtual void OnScreenShareStarted(
       const std::string& label,
       std::vector<content::DesktopMediaID> screen_share_ids,
       const std::u16string& application_title,
       base::RepeatingClosure stop_callback,
-      content::MediaStreamUI::StateChangeCallback state_change_callback) = 0;
+      content::MediaStreamUI::StateChangeCallback state_change_callback,
+      content::MediaStreamUI::SourceCallback source_callback) = 0;
 
   // Called when screen share is stopped.
   virtual void OnScreenShareStopped(
@@ -111,7 +114,8 @@ class DlpContentManager : public DlpContentObserver {
         const content::DesktopMediaID& media_id,
         const std::u16string& application_title,
         base::OnceClosure stop_callback,
-        content::MediaStreamUI::StateChangeCallback state_change_callback);
+        content::MediaStreamUI::StateChangeCallback state_change_callback,
+        content::MediaStreamUI::SourceCallback source_callback);
     ~ScreenShareInfo();
 
     bool operator==(const ScreenShareInfo& other) const;
@@ -165,6 +169,7 @@ class DlpContentManager : public DlpContentObserver {
     std::u16string application_title_;
     base::OnceClosure stop_callback_;
     content::MediaStreamUI::StateChangeCallback state_change_callback_;
+    content::MediaStreamUI::SourceCallback source_callback_;
     State state_ = State::kRunning;
     NotificationState notification_state_ =
         NotificationState::kNotShowingNotification;
@@ -240,12 +245,15 @@ class DlpContentManager : public DlpContentObserver {
       content::WebContents* web_contents) const = 0;
 
   // Adds screen share to be tracked in |running_screen_shares_|.
+  // Callbacks are used to control the screen share state in case it should be
+  // paused, resumed or completely stopped by DLP.
   void AddScreenShare(
       const std::string& label,
       const content::DesktopMediaID& media_id,
       const std::u16string& application_title,
       base::RepeatingClosure stop_callback,
-      content::MediaStreamUI::StateChangeCallback state_change_callback);
+      content::MediaStreamUI::StateChangeCallback state_change_callback,
+      content::MediaStreamUI::SourceCallback source_callback);
 
   // Removes screen share from |running_screen_shares_|.
   void RemoveScreenShare(const std::string& label,

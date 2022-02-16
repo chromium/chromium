@@ -24,6 +24,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "url/gurl.h"
@@ -168,12 +169,14 @@ DlpContentManager::ScreenShareInfo::ScreenShareInfo(
     const content::DesktopMediaID& media_id,
     const std::u16string& application_title,
     base::OnceClosure stop_callback,
-    content::MediaStreamUI::StateChangeCallback state_change_callback)
+    content::MediaStreamUI::StateChangeCallback state_change_callback,
+    content::MediaStreamUI::SourceCallback source_callback)
     : label_(label),
       media_id_(media_id),
       application_title_(application_title),
       stop_callback_(std::move(stop_callback)),
-      state_change_callback_(std::move(state_change_callback)) {
+      state_change_callback_(std::move(state_change_callback)),
+      source_callback_(std::move(source_callback)) {
   auto* web_contents = GetWebContentsFromMediaId(media_id);
   web_contents_ = web_contents ? web_contents->GetWeakPtr() : nullptr;
 }
@@ -227,6 +230,18 @@ void DlpContentManager::ScreenShareInfo::Pause() {
 
 void DlpContentManager::ScreenShareInfo::Resume() {
   DCHECK_EQ(state_, State::kPaused);
+  // In case of a tab share try to update the source to the current WebContents
+  // frame id in case it was navigated to a different page with another frame.
+  if (media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
+      web_contents_ && source_callback_) {
+    content::RenderFrameHost* main_frame = web_contents_->GetMainFrame();
+    DCHECK(main_frame);
+    source_callback_.Run(content::DesktopMediaID(
+        content::DesktopMediaID::TYPE_WEB_CONTENTS,
+        content::DesktopMediaID::kNullId,
+        content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
+                                           main_frame->GetRoutingID())));
+  }
   state_change_callback_.Run(media_id_,
                              blink::mojom::MediaStreamStateChange::PLAY);
   state_ = State::kRunning;
@@ -449,10 +464,11 @@ void DlpContentManager::AddScreenShare(
     const content::DesktopMediaID& media_id,
     const std::u16string& application_title,
     base::RepeatingClosure stop_callback,
-    content::MediaStreamUI::StateChangeCallback state_change_callback) {
+    content::MediaStreamUI::StateChangeCallback state_change_callback,
+    content::MediaStreamUI::SourceCallback source_callback) {
   auto screen_share_info = std::make_unique<ScreenShareInfo>(
       label, media_id, application_title, std::move(stop_callback),
-      state_change_callback);
+      state_change_callback, source_callback);
   DCHECK(
       std::find_if(running_screen_shares_.begin(), running_screen_shares_.end(),
                    [&screen_share_info](

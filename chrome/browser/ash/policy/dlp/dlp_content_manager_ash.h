@@ -92,8 +92,8 @@ class DlpContentManagerAsh : public DlpContentManager,
       std::vector<content::DesktopMediaID> screen_share_ids,
       const std::u16string& application_title,
       base::RepeatingClosure stop_callback,
-      content::MediaStreamUI::StateChangeCallback state_change_callback)
-      override;
+      content::MediaStreamUI::StateChangeCallback state_change_callback,
+      content::MediaStreamUI::SourceCallback source_callback) override;
   void OnScreenShareStopped(const std::string& label,
                             const content::DesktopMediaID& media_id) override;
 

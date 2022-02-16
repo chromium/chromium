@@ -64,11 +64,18 @@ const DlpContentRestrictionSet kPrintReported(DlpContentRestriction::kPrint,
                                               DlpRulesManager::Level::kReport);
 const DlpContentRestrictionSet kPrintWarned(DlpContentRestriction::kPrint,
                                             DlpRulesManager::Level::kWarn);
+const DlpContentRestrictionSet kScreenShareWarned(
+    DlpContentRestriction::kScreenShare,
+    DlpRulesManager::Level::kWarn);
 
 constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
 
 constexpr char kExampleUrl[] = "https://example.com";
 constexpr char kSrcPattern[] = "example.com";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kLabel[] = "label";
+const std::u16string kApplicationTitle = u"example.com";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
 class DlpContentManagerBrowserTest : public InProcessBrowserTest {
@@ -127,8 +134,6 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<DlpContentManagerTestHelper> helper_;
   base::HistogramTester histogram_tester_;
   MockDlpRulesManager* mock_rules_manager_;
-
- private:
   std::vector<DlpPolicyEvent> events_;
 };
 
@@ -602,6 +607,66 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   EXPECT_TRUE(helper_->HasContentCachedForRestriction(
       web_contents, DlpRulesManager::Restriction::kPrinting));
 }
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
+                       TabShareWarnedDuringAllowed) {
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const content::DesktopMediaID media_id(
+      content::DesktopMediaID::TYPE_WEB_CONTENTS,
+      content::DesktopMediaID::kNullId,
+      content::WebContentsMediaCaptureId(
+          web_contents->GetMainFrame()->GetProcess()->GetID(),
+          web_contents->GetMainFrame()->GetRoutingID()));
+
+  DlpContentManager* manager = helper_->GetContentManager();
+  base::MockCallback<content::MediaStreamUI::StateChangeCallback>
+      state_change_cb;
+  base::MockCallback<base::RepeatingClosure> stop_cb;
+  base::MockCallback<content::MediaStreamUI::SourceCallback> source_cb;
+  // Explicitly specify that the stop callback should never be invoked.
+  EXPECT_CALL(stop_cb, Run()).Times(0);
+  testing::InSequence s;
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+  EXPECT_CALL(source_cb, Run(testing::_)).Times(1);
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
+      .Times(1);
+
+  manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
+                                stop_cb.Get(), state_change_cb.Get(),
+                                source_cb.Get());
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kWarn, 1u);
+
+  // Hit Enter to "Share anyway".
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_RETURN, /*control=*/false,
+      /*shift=*/false, /*alt=*/false, /*command=*/false));
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[1],
+              IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kScreenShare)));
+
+  EXPECT_TRUE(helper_->HasContentCachedForRestriction(
+      web_contents, DlpRulesManager::Restriction::kScreenShare));
+  // The contents should already be cached as allowed by the user, so this
+  // should not trigger a new warning.
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_EQ(events_.size(), 2u);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace policy

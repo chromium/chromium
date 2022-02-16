@@ -40,7 +40,8 @@ class MockDlpContentManager : public DlpContentManager {
                std::vector<content::DesktopMediaID>,
                const std::u16string&,
                base::RepeatingClosure,
-               content::MediaStreamUI::StateChangeCallback),
+               content::MediaStreamUI::StateChangeCallback,
+               content::MediaStreamUI::SourceCallback),
               (override));
   MOCK_METHOD(void,
               OnScreenShareStopped,

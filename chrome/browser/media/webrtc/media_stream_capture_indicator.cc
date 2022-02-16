@@ -243,7 +243,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 #if BUILDFLAG(IS_CHROMEOS)
     policy::DlpContentManager::Get()->OnScreenShareStarted(
         label, screen_capture_ids, application_title_, stop_callback,
-        state_change_callback);
+        state_change_callback, source_callback);
 #endif
 
     // If a custom |ui_| is specified, notify it that the stream started and let

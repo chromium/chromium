@@ -213,7 +213,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerLacrosBrowserTest,
       {content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
                                content::DesktopMediaID::kFakeId)},
       kAppId, base::BindLambdaForTesting([&]() { stopped_run_loop.Quit(); }),
-      base::DoNothing());
+      /*state_change_callback=*/base::DoNothing(),
+      /*source_callback=*/base::DoNothing());
 
   // Bind remote delegate.
   bound_loop.Run();
@@ -259,7 +260,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerLacrosBrowserTest,
   content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
                                    content::DesktopMediaID::kFakeId);
   manager()->OnScreenShareStarted(
-      kScreenShareLabel, {media_id}, kAppId, base::DoNothing(),
+      kScreenShareLabel, {media_id}, kAppId,
+      /*stop_callback=*/base::DoNothing(),
       base::BindLambdaForTesting(
           [&](const content::DesktopMediaID& in_media_id,
               blink::mojom::MediaStreamStateChange new_state) {
@@ -272,7 +274,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerLacrosBrowserTest,
             } else {
               NOTREACHED();
             }
-          }));
+          }),
+      /*source_callback=*/base::DoNothing());
 
   // Bind remote delegate.
   bound_loop.Run();

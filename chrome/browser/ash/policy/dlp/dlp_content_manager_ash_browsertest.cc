@@ -788,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       kLabel, {media_id}, kApplicationTitle, base::BindRepeating([]() {
         FAIL() << "Stop callback should not be called.";
       }),
-      base::DoNothing());
+      base::DoNothing(), base::DoNothing());
 
   EXPECT_FALSE(
       display_service_tester.GetNotification(kScreenSharePausedNotificationId));
@@ -901,7 +901,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       .Times(1);
 
   manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
-                                stop_cb.Get(), state_change_cb.Get());
+                                stop_cb.Get(), state_change_cb.Get(),
+                                /*source_callback=*/base::DoNothing());
 
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
@@ -957,7 +958,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   EXPECT_CALL(stop_cb, Run()).Times(1);
 
   manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
-                                stop_cb.Get(), state_change_cb.Get());
+                                stop_cb.Get(), state_change_cb.Get(),
+                                /*source_callback=*/base::DoNothing());
 
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
@@ -1005,7 +1007,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       .Times(1);
 
   manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
-                                stop_cb.Get(), state_change_cb.Get());
+                                stop_cb.Get(), state_change_cb.Get(),
+                                /*source_callback=*/base::DoNothing());
 
   manager->OnWindowRestrictionChanged(browser()->window()->GetNativeWindow(),
                                       kScreenShareWarned);

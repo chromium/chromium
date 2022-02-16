@@ -133,9 +133,11 @@ void DlpAsh::OnScreenShareStarted(
   policy::DlpContentManagerAsh* dlp_content_manager =
       policy::DlpContentManagerAsh::Get();
   DCHECK(dlp_content_manager);
+  // Source change callback should not be called for screen or window shares
+  // that are controlled over crosapi.
   dlp_content_manager->OnScreenShareStarted(
       label, {media_id}, application_title, std::move(stop_callback),
-      std::move(state_change_callback));
+      std::move(state_change_callback), /*source_callback=*/base::DoNothing());
 }
 
 void DlpAsh::OnScreenShareStopped(const std::string& label,

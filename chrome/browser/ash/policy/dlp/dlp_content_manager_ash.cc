@@ -214,12 +214,13 @@ void DlpContentManagerAsh::OnScreenShareStarted(
     std::vector<content::DesktopMediaID> screen_share_ids,
     const std::u16string& application_title,
     base::RepeatingClosure stop_callback,
-    content::MediaStreamUI::StateChangeCallback state_change_callback) {
+    content::MediaStreamUI::StateChangeCallback state_change_callback,
+    content::MediaStreamUI::SourceCallback source_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (const content::DesktopMediaID& id : screen_share_ids) {
     AddScreenShare(label, id, application_title, stop_callback,
-                   state_change_callback);
+                   state_change_callback, source_callback);
   }
   CheckRunningScreenShares();
 }

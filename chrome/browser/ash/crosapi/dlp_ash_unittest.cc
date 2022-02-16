@@ -120,20 +120,20 @@ TEST_F(DlpAshTest, ScreenShareStarted) {
   content::DesktopMediaID media_id;
 
   EXPECT_CALL(mock_dlp_content_manager, OnScreenShareStarted)
-      .WillOnce(
-          [&](const std::string& label,
-              std::vector<content::DesktopMediaID> ids,
-              const std::u16string& application_title,
-              base::RepeatingClosure stop_cb,
-              content::MediaStreamUI::StateChangeCallback state_change_cb) {
-            EXPECT_EQ(kScreenShareLabel, label);
-            EXPECT_EQ(1u, ids.size());
-            EXPECT_EQ(kAppId, application_title);
-            stop_callback = std::move(stop_cb);
-            state_change_callback = std::move(state_change_cb);
-            media_id = ids[0];
-            EXPECT_EQ(content::DesktopMediaID::TYPE_SCREEN, media_id.type);
-          });
+      .WillOnce([&](const std::string& label,
+                    std::vector<content::DesktopMediaID> ids,
+                    const std::u16string& application_title,
+                    base::RepeatingClosure stop_cb,
+                    content::MediaStreamUI::StateChangeCallback state_change_cb,
+                    content::MediaStreamUI::SourceCallback source_cb) {
+        EXPECT_EQ(kScreenShareLabel, label);
+        EXPECT_EQ(1u, ids.size());
+        EXPECT_EQ(kAppId, application_title);
+        stop_callback = std::move(stop_cb);
+        state_change_callback = std::move(state_change_cb);
+        media_id = ids[0];
+        EXPECT_EQ(content::DesktopMediaID::TYPE_SCREEN, media_id.type);
+      });
 
   mojom::ScreenShareAreaPtr area = mojom::ScreenShareArea::New();
 
