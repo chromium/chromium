@@ -1514,7 +1514,8 @@ bool IsCryptohomeRecoveryFlowEnabled() {
 }
 
 bool IsDarkLightModeEnabled() {
-  return chromeos::features::IsDarkLightModeEnabled();
+  return base::FeatureList::IsEnabled(kNotificationsRefresh) ||
+         chromeos::features::IsDarkLightModeEnabled();
 }
 
 bool IsDemoModeSWAEnabled() {
