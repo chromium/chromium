@@ -44,6 +44,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.AccessibilityUtil;
 
 /**
@@ -101,7 +102,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
             @NonNull AssistantBrowserControlsFactory browserControlsFactory,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
             @Nullable AssistantProfileImageUtil profileImageUtil, ImageFetcher imageFetcher,
-            AssistantEditorFactory editorFactory) {
+            AssistantEditorFactory editorFactory, WindowAndroid windowAndroid) {
         mAccessibilityUtil = accessibilityUtil;
         mModel = model;
         mOverlayCoordinator = overlayCoordinator;
@@ -145,7 +146,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         AssistantDetailsCoordinator detailsCoordinator = new AssistantDetailsCoordinator(
                 activity, infoPageUtil, model.getDetailsModel(), imageFetcher);
         mCollectUserDataCoordinator = new AssistantCollectUserDataCoordinator(
-                activity, model.getCollectUserDataModel(), editorFactory);
+                activity, model.getCollectUserDataModel(), editorFactory, windowAndroid);
         AssistantFormCoordinator formCoordinator =
                 new AssistantFormCoordinator(activity, model.getFormModel());
         mActionsCoordinator =

@@ -136,6 +136,7 @@ content::WebContents* Controller::GetWebContents() {
 std::string Controller::GetEmailAddressForAccessTokenAccount() {
   return client_->GetEmailAddressForAccessTokenAccount();
 }
+
 ukm::UkmRecorder* Controller::GetUkmRecorder() {
   return ukm_recorder_;
 }

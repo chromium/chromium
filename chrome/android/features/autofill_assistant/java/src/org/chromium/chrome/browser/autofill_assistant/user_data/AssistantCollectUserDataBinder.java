@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.autofill_assistant.user_data.additional_secti
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -56,6 +57,7 @@ class AssistantCollectUserDataBinder
         private final Object mDividerTag;
         private final Activity mActivity;
         private final AssistantEditorFactory mEditorFactory;
+        private final WindowAndroid mWindowAndroid;
 
         public ViewHolder(View rootView, AssistantVerticalExpanderAccordion accordion,
                 int sectionPadding, AssistantLoginSection loginSection,
@@ -69,7 +71,8 @@ class AssistantCollectUserDataBinder
                 AssistantAdditionalSectionContainer appendedSections,
                 ViewGroup genericUserInterfaceContainerPrepended,
                 ViewGroup genericUserInterfaceContainerAppended, Object dividerTag,
-                Activity activity, AssistantEditorFactory editorFactory) {
+                Activity activity, AssistantEditorFactory editorFactory,
+                WindowAndroid windowAndroid) {
             mRootView = rootView;
             mPaymentRequestExpanderAccordion = accordion;
             mSectionToSectionPadding = sectionPadding;
@@ -88,6 +91,7 @@ class AssistantCollectUserDataBinder
             mDividerTag = dividerTag;
             mActivity = activity;
             mEditorFactory = editorFactory;
+            mWindowAndroid = windowAndroid;
         }
     }
 
@@ -562,7 +566,9 @@ class AssistantCollectUserDataBinder
                 && propertyKey != AssistantCollectUserDataModel.REQUEST_EMAIL
                 && propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE
                 && propertyKey != AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS
-                && propertyKey != AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES) {
+                && propertyKey != AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES
+                && propertyKey != AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS
+                && propertyKey != AssistantCollectUserDataModel.ACCOUNT_EMAIL) {
             return false;
         }
 
@@ -578,19 +584,35 @@ class AssistantCollectUserDataBinder
                 model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES);
 
         if (shouldShowContactDetails(model)) {
-            view.mContactDetailsSection.setEditor(view.mEditorFactory.createContactEditor(
-                    webContents, view.mActivity,
-                    model.get(AssistantCollectUserDataModel.REQUEST_NAME),
-                    model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
-                    model.get(AssistantCollectUserDataModel.REQUEST_EMAIL), shouldStoreChanges));
+            updateContactEditors(model, view, webContents, shouldStoreChanges);
         }
+
         view.mShippingAddressSection.setEditor(view.mEditorFactory.createAddressEditor(
                 webContents, view.mActivity, shouldStoreChanges));
+
         view.mPaymentMethodSection.setEditor(
                 view.mEditorFactory.createPaymentInstrumentEditor(webContents, view.mActivity,
                         model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS),
                         shouldStoreChanges));
 
         return true;
+    }
+
+    private void updateContactEditors(AssistantCollectUserDataModel model, ViewHolder view,
+            WebContents webContents, boolean shouldStoreChanges) {
+        view.mContactDetailsSection.setRequestReloadOnChange(
+                model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS));
+        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+            view.mContactDetailsSection.setEditor(
+                    view.mEditorFactory.createAccountEditor(view.mActivity, view.mWindowAndroid,
+                            model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
+                            model.get(AssistantCollectUserDataModel.REQUEST_EMAIL)));
+        } else {
+            view.mContactDetailsSection.setEditor(view.mEditorFactory.createContactEditor(
+                    webContents, view.mActivity,
+                    model.get(AssistantCollectUserDataModel.REQUEST_NAME),
+                    model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
+                    model.get(AssistantCollectUserDataModel.REQUEST_EMAIL), shouldStoreChanges));
+        }
     }
 }

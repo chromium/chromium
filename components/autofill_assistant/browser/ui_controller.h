@@ -125,17 +125,19 @@ class UiController : public ScriptExecutorUiDelegate,
   const std::vector<UserAction>& GetUserActions() const override;
   bool PerformUserAction(int index) override;
   const CollectUserDataOptions* GetCollectUserDataOptions() const override;
-  void SetShippingAddress(std::unique_ptr<autofill::AutofillProfile> address,
-                          UserDataEventType event_type) override;
-  void SetContactInfo(std::unique_ptr<autofill::AutofillProfile> profile,
-                      UserDataEventType event_type) override;
-  void SetPhoneNumber(std::unique_ptr<autofill::AutofillProfile> profile,
-                      UserDataEventType event_type) override;
-  void SetCreditCard(std::unique_ptr<autofill::CreditCard> card,
-                     std::unique_ptr<autofill::AutofillProfile> billing_profile,
-                     UserDataEventType event_type) override;
-  void ReloadUserData(UserDataEventField event_field,
-                      UserDataEventType event_type) override;
+  void HandleShippingAddressChange(
+      std::unique_ptr<autofill::AutofillProfile> address,
+      UserDataEventType event_type) override;
+  void HandleContactInfoChange(
+      std::unique_ptr<autofill::AutofillProfile> profile,
+      UserDataEventType event_type) override;
+  void HandlePhoneNumberChange(
+      std::unique_ptr<autofill::AutofillProfile> profile,
+      UserDataEventType event_type) override;
+  void HandleCreditCardChange(
+      std::unique_ptr<autofill::CreditCard> card,
+      std::unique_ptr<autofill::AutofillProfile> billing_profile,
+      UserDataEventType event_type) override;
   void SetTermsAndConditions(
       TermsAndConditionsState terms_and_conditions) override;
   void SetLoginOption(const std::string& identifier) override;
@@ -234,6 +236,9 @@ class UiController : public ScriptExecutorUiDelegate,
   void SetProfile(const std::string& key,
                   UserData::FieldChange field_change,
                   std::unique_ptr<autofill::AutofillProfile> profile);
+
+  void ReloadUserData(UserDataEventField event_field,
+                      UserDataEventType event_type);
 
   bool StateNeedsUI(AutofillAssistantState state);
 

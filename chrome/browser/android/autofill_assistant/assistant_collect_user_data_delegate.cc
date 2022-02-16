@@ -38,15 +38,13 @@ void AssistantCollectUserDataDelegate::OnContactInfoChanged(
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobject>& jcontact_profile,
     jint event_type) {
-  if (!jcontact_profile) {
-    NOTREACHED() << "Selected contact is null";
-    return;
+  std::unique_ptr<autofill::AutofillProfile> contact_profile;
+  if (jcontact_profile) {
+    contact_profile = std::make_unique<autofill::AutofillProfile>();
+    ui_controller_android_utils::PopulateAutofillProfileFromJava(
+        jcontact_profile, env, contact_profile.get(),
+        base::android::GetDefaultLocaleString());
   }
-
-  auto contact_profile = std::make_unique<autofill::AutofillProfile>();
-  ui_controller_android_utils::PopulateAutofillProfileFromJava(
-      jcontact_profile, env, contact_profile.get(),
-      base::android::GetDefaultLocaleString());
 
   ui_controller_->OnContactInfoChanged(
       std::move(contact_profile), static_cast<UserDataEventType>(event_type));
@@ -57,15 +55,13 @@ void AssistantCollectUserDataDelegate::OnPhoneNumberChanged(
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobject>& jphone_number,
     jint event_type) {
-  if (!jphone_number) {
-    NOTREACHED() << "Selected phone number is null";
-    return;
+  std::unique_ptr<autofill::AutofillProfile> phone_number_profile;
+  if (jphone_number) {
+    phone_number_profile = std::make_unique<autofill::AutofillProfile>();
+    ui_controller_android_utils::PopulateAutofillProfileFromJava(
+        jphone_number, env, phone_number_profile.get(),
+        base::android::GetDefaultLocaleString());
   }
-
-  auto phone_number_profile = std::make_unique<autofill::AutofillProfile>();
-  ui_controller_android_utils::PopulateAutofillProfileFromJava(
-      jphone_number, env, phone_number_profile.get(),
-      base::android::GetDefaultLocaleString());
 
   ui_controller_->OnPhoneNumberChanged(
       std::move(phone_number_profile),
@@ -77,17 +73,17 @@ void AssistantCollectUserDataDelegate::OnShippingAddressChanged(
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobject>& jaddress,
     jint event_type) {
-  if (!jaddress) {
-    NOTREACHED() << "Selected address is null";
-    return;
+  std::unique_ptr<autofill::AutofillProfile> shipping_address_profile;
+  if (jaddress) {
+    shipping_address_profile = std::make_unique<autofill::AutofillProfile>();
+    ui_controller_android_utils::PopulateAutofillProfileFromJava(
+        jaddress, env, shipping_address_profile.get(),
+        base::android::GetDefaultLocaleString());
   }
 
-  auto shipping_address = std::make_unique<autofill::AutofillProfile>();
-  ui_controller_android_utils::PopulateAutofillProfileFromJava(
-      jaddress, env, shipping_address.get(),
-      base::android::GetDefaultLocaleString());
   ui_controller_->OnShippingAddressChanged(
-      std::move(shipping_address), static_cast<UserDataEventType>(event_type));
+      std::move(shipping_address_profile),
+      static_cast<UserDataEventType>(event_type));
 }
 
 void AssistantCollectUserDataDelegate::OnCreditCardChanged(
@@ -96,14 +92,12 @@ void AssistantCollectUserDataDelegate::OnCreditCardChanged(
     const base::android::JavaParamRef<jobject>& jcard,
     const base::android::JavaParamRef<jobject>& jbilling_profile,
     jint event_type) {
-  if (!jcard) {
-    NOTREACHED() << "Selected credit card is null";
-    return;
+  std::unique_ptr<autofill::CreditCard> credit_card;
+  if (jcard) {
+    credit_card = std::make_unique<autofill::CreditCard>();
+    ui_controller_android_utils::PopulateAutofillCreditCardFromJava(
+        jcard, env, credit_card.get(), base::android::GetDefaultLocaleString());
   }
-
-  auto card = std::make_unique<autofill::CreditCard>();
-  ui_controller_android_utils::PopulateAutofillCreditCardFromJava(
-      jcard, env, card.get(), base::android::GetDefaultLocaleString());
 
   std::unique_ptr<autofill::AutofillProfile> billing_profile;
   if (jbilling_profile) {
@@ -114,7 +108,7 @@ void AssistantCollectUserDataDelegate::OnCreditCardChanged(
   }
 
   ui_controller_->OnCreditCardChanged(
-      std::move(card), std::move(billing_profile),
+      std::move(credit_card), std::move(billing_profile),
       static_cast<UserDataEventType>(event_type));
 }
 

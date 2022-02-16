@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantA
 import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantContactEditor;
 import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
 
@@ -21,6 +22,9 @@ public interface AssistantEditorFactory {
     AssistantContactEditor createContactEditor(WebContents webContents, Activity activity,
             boolean requestName, boolean requestPhone, boolean requestEmail,
             boolean shouldStoreChanges);
+
+    AssistantContactEditor createAccountEditor(Activity activity, WindowAndroid windowAndroid,
+            String accountEmail, boolean requestEmail);
 
     AssistantAddressEditor createAddressEditor(
             WebContents webContents, Activity activity, boolean shouldStoreChanges);

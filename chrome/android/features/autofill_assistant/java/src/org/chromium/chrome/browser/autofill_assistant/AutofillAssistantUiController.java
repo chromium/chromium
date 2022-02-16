@@ -89,7 +89,8 @@ public class AutofillAssistantUiController {
                 dependencies.getAccessibilityUtil(), dependencies.createInfoPageUtil(),
                 dependencies.createProfileImageUtilOrNull(
                         mActivity, R.dimen.autofill_assistant_profile_size),
-                dependencies.createImageFetcher(), dependencies.createEditorFactory());
+                dependencies.createImageFetcher(), dependencies.createEditorFactory(),
+                dependencies.getWindowAndroid());
 
         mTabChangeObserverDestroyer =
                 dependencies.observeTabChanges(new AssistantTabChangeObserver() {

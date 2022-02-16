@@ -309,6 +309,7 @@ struct CollectUserDataOptions {
 
   bool should_store_data_changes = false;
   bool can_edit_contacts = true;
+  bool use_gms_core_edit_dialogs = false;
 
   // If empty, terms and conditions should not be shown.
   std::string accept_terms_and_conditions_text;

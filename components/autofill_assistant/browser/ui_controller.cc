@@ -811,10 +811,14 @@ void UiController::SetAdditionalValue(const std::string& client_memory_key,
       UserData::FieldChange::ADDITIONAL_VALUES);
 }
 
-void UiController::SetShippingAddress(
+void UiController::HandleShippingAddressChange(
     std::unique_ptr<autofill::AutofillProfile> address,
     UserDataEventType event_type) {
   if (collect_user_data_options_ == nullptr) {
+    return;
+  }
+  if (collect_user_data_options_->use_gms_core_edit_dialogs) {
+    ReloadUserData(UserDataEventField::SHIPPING_EVENT, event_type);
     return;
   }
 
@@ -825,10 +829,14 @@ void UiController::SetShippingAddress(
              UserData::FieldChange::SHIPPING_ADDRESS, std::move(address));
 }
 
-void UiController::SetContactInfo(
+void UiController::HandleContactInfoChange(
     std::unique_ptr<autofill::AutofillProfile> profile,
     UserDataEventType event_type) {
   if (collect_user_data_options_ == nullptr) {
+    return;
+  }
+  if (collect_user_data_options_->use_gms_core_edit_dialogs) {
+    ReloadUserData(UserDataEventField::CONTACT_EVENT, event_type);
     return;
   }
 
@@ -839,12 +847,17 @@ void UiController::SetContactInfo(
              UserData::FieldChange::CONTACT_PROFILE, std::move(profile));
 }
 
-void UiController::SetPhoneNumber(
+void UiController::HandlePhoneNumberChange(
     std::unique_ptr<autofill::AutofillProfile> profile,
     UserDataEventType event_type) {
   if (collect_user_data_options_ == nullptr) {
     return;
   }
+  if (collect_user_data_options_->use_gms_core_edit_dialogs) {
+    ReloadUserData(UserDataEventField::CONTACT_EVENT, event_type);
+    return;
+  }
+
   // We don't notify the UserDataEvent in this case since we currently don't log
   // metrics for the phone number.
 
@@ -853,21 +866,25 @@ void UiController::SetPhoneNumber(
       UserData::FieldChange::PHONE_NUMBER);
 }
 
-void UiController::SetCreditCard(
+void UiController::HandleCreditCardChange(
     std::unique_ptr<autofill::CreditCard> card,
     std::unique_ptr<autofill::AutofillProfile> billing_profile,
     UserDataEventType event_type) {
   if (collect_user_data_options_ == nullptr) {
     return;
   }
+  if (collect_user_data_options_->use_gms_core_edit_dialogs) {
+    ReloadUserData(UserDataEventField::CREDIT_CARD_EVENT, event_type);
+    return;
+  }
 
   collect_user_data_options_->selected_user_data_changed_callback.Run(
       CREDIT_CARD_EVENT, event_type);
   DCHECK(!collect_user_data_options_->billing_address_name.empty());
-  GetUserModel()->SetSelectedCreditCard(std::move(card), GetUserData());
   SetProfile(collect_user_data_options_->billing_address_name,
              UserData::FieldChange::BILLING_ADDRESS,
              std::move(billing_profile));
+  GetUserModel()->SetSelectedCreditCard(std::move(card), GetUserData());
   execution_delegate_->NotifyUserDataChange(UserData::FieldChange::CARD);
 }
 
@@ -891,7 +908,6 @@ void UiController::ReloadUserData(UserDataEventField event_field,
       event_field, event_type);
 
   auto callback = std::move(collect_user_data_options_->reload_data_callback);
-  SetCollectUserDataOptions(nullptr);
   std::move(callback).Run(GetUserData());
 }
 

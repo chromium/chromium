@@ -180,6 +180,12 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableBooleanPropertyKey SHOULD_STORE_USER_DATA_CHANGES =
             new WritableBooleanPropertyKey();
 
+    public static final WritableObjectPropertyKey<String> ACCOUNT_EMAIL =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableBooleanPropertyKey USE_GMS_CORE_EDIT_DIALOGS =
+            new WritableBooleanPropertyKey();
+
     public AssistantCollectUserDataModel() {
         super(DELEGATE, WEB_CONTENTS, VISIBLE, SELECTED_SHIPPING_ADDRESS,
                 SELECTED_PAYMENT_INSTRUMENT, SELECTED_CONTACT_DETAILS, SELECTED_PHONE_NUMBER,
@@ -194,7 +200,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
                 PRIVACY_NOTICE_TEXT, INFO_SECTION_TEXT, INFO_SECTION_TEXT_CENTER,
                 GENERIC_USER_INTERFACE_PREPENDED, GENERIC_USER_INTERFACE_APPENDED,
                 CONTACT_SUMMARY_DESCRIPTION_OPTIONS, CONTACT_FULL_DESCRIPTION_OPTIONS,
-                SHOULD_STORE_USER_DATA_CHANGES);
+                SHOULD_STORE_USER_DATA_CHANGES, USE_GMS_CORE_EDIT_DIALOGS, ACCOUNT_EMAIL);
 
         /*
          * Set initial state for basic type properties (others are implicitly null).
@@ -218,6 +224,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         set(AVAILABLE_SHIPPING_ADDRESSES, Collections.emptyList());
         set(AVAILABLE_BILLING_ADDRESSES, Collections.emptyList());
         set(INFO_SECTION_TEXT, "");
+        set(ACCOUNT_EMAIL, "");
     }
 
     @CalledByNative
@@ -560,5 +567,15 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private void setContactFullDescriptionOptions(ContactDescriptionOptions options) {
         set(CONTACT_FULL_DESCRIPTION_OPTIONS, options);
+    }
+
+    @CalledByNative
+    private void setUseGmsCoreEditDialogs(boolean useGmsCoreEditDialogs) {
+        set(USE_GMS_CORE_EDIT_DIALOGS, useGmsCoreEditDialogs);
+    }
+
+    @CalledByNative
+    private void setAccountEmail(String accountEmail) {
+        set(ACCOUNT_EMAIL, accountEmail);
     }
 }

@@ -932,6 +932,8 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
       !collect_user_data.has_user_data();
   collect_user_data_options_->can_edit_contacts =
       !collect_user_data.has_user_data();
+  collect_user_data_options_->use_gms_core_edit_dialogs =
+      collect_user_data.has_user_data();
 
   collect_user_data_options_->request_login_choice =
       collect_user_data.has_login_details();

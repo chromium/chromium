@@ -76,33 +76,30 @@ class UiDelegate {
   // options describing the request.
   virtual const CollectUserDataOptions* GetCollectUserDataOptions() const = 0;
 
-  // Sets shipping address, in response to the current collect user data
-  // options.
-  virtual void SetShippingAddress(
+  // Handles a change in shipping address, in response to the current collect
+  // user data options.
+  virtual void HandleShippingAddressChange(
       std::unique_ptr<autofill::AutofillProfile> address,
       UserDataEventType event_type) = 0;
 
-  // Sets contact info, in response to the current collect user data options.
-  virtual void SetContactInfo(
+  // Handles a change in contact info, in response to the current collect user
+  // data options.
+  virtual void HandleContactInfoChange(
       std::unique_ptr<autofill::AutofillProfile> profile,
       UserDataEventType event_type) = 0;
 
-  // Sets the phone number, in response to the current collect user data
-  // options.
-  virtual void SetPhoneNumber(
-      std::unique_ptr<autofill::AutofillProfile> profile,
-      UserDataEventType event_type) = 0;
-
-  // Sets credit card and billing profile, in response to the current collect
+  // Handles a change in the phone number, in response to the current collect
   // user data options.
-  virtual void SetCreditCard(
+  virtual void HandlePhoneNumberChange(
+      std::unique_ptr<autofill::AutofillProfile> profile,
+      UserDataEventType event_type) = 0;
+
+  // Handles a change in credit card and billing profile, in response to the
+  // current collect user data options.
+  virtual void HandleCreditCardChange(
       std::unique_ptr<autofill::CreditCard> card,
       std::unique_ptr<autofill::AutofillProfile> billing_profile,
       UserDataEventType event_type) = 0;
-
-  // Reload the user data for the collect user data action.
-  virtual void ReloadUserData(UserDataEventField event_field,
-                              UserDataEventType event_type) = 0;
 
   // Sets the state of the third party terms & conditions, pertaining to the
   // current collect user data options.

@@ -16,6 +16,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.AccessibilityUtil;
 
 /**
@@ -37,7 +38,7 @@ public class AssistantCoordinator {
             @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
             @Nullable AssistantProfileImageUtil profileImageUtil, ImageFetcher imageFetcher,
-            AssistantEditorFactory editorFactory) {
+            AssistantEditorFactory editorFactory, WindowAndroid windowAndroid) {
         if (overlayCoordinator != null) {
             mModel = new AssistantModel(overlayCoordinator.getModel());
             mOverlayCoordinator = overlayCoordinator;
@@ -51,7 +52,7 @@ public class AssistantCoordinator {
         mBottomBarCoordinator = new AssistantBottomBarCoordinator(activity, mModel,
                 mOverlayCoordinator, controller, applicationBottomInsetProvider, tabObscuringUtil,
                 browserControlsFactory, accessibilityUtil, infoPageUtil, profileImageUtil,
-                imageFetcher, editorFactory);
+                imageFetcher, editorFactory, windowAndroid);
         mKeyboardCoordinator = new AssistantKeyboardCoordinator(activity, keyboardDelegate,
                 rootView, mModel, keyboardCoordinatorDelegate, controller);
     }

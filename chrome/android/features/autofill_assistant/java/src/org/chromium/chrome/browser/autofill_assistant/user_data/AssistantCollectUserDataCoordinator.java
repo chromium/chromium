@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.autofill_assistant.AssistantEditorFactory;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 // TODO(crbug.com/806868): Use mCarouselCoordinator to show chips.
@@ -29,7 +30,8 @@ public class AssistantCollectUserDataCoordinator {
     private AssistantCollectUserDataBinder.ViewHolder mViewHolder;
 
     public AssistantCollectUserDataCoordinator(Activity activity,
-            AssistantCollectUserDataModel model, AssistantEditorFactory editorFactory) {
+            AssistantCollectUserDataModel model, AssistantEditorFactory editorFactory,
+            WindowAndroid windowAndroid) {
         mActivity = activity;
         mModel = model;
         int sectionToSectionPadding = activity.getResources().getDimensionPixelSize(
@@ -120,7 +122,8 @@ public class AssistantCollectUserDataCoordinator {
                 contactDetailsSection, phoneNumberSection, paymentMethodSection,
                 shippingAddressSection, termsSection, termsAsCheckboxSection, infoSection,
                 prependedSections, appendedSections, genericUserInterfaceContainerPrepended,
-                genericUserInterfaceContainerAppended, DIVIDER_TAG, mActivity, editorFactory);
+                genericUserInterfaceContainerAppended, DIVIDER_TAG, mActivity, editorFactory,
+                windowAndroid);
         AssistantCollectUserDataBinder binder = new AssistantCollectUserDataBinder();
         PropertyModelChangeProcessor.create(model, mViewHolder, binder);
 

@@ -112,10 +112,13 @@ public class AutofillAssistantCollectUserDataUiTest {
     /** Creates a coordinator for use in UI tests, and adds it to the global view hierarchy. */
     private AssistantCollectUserDataCoordinator createCollectUserDataCoordinator(
             AssistantCollectUserDataModel model) throws Exception {
+        AssistantStaticDependencies staticDependencies = new AssistantStaticDependenciesChrome();
         AssistantCollectUserDataCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> new AssistantCollectUserDataCoordinator(mTestRule.getActivity(), model,
-                                new AssistantStaticDependenciesChrome().createEditorFactory()));
+                                staticDependencies.createEditorFactory(),
+                                staticDependencies.createDependencies(mTestRule.getActivity())
+                                        .getWindowAndroid()));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()

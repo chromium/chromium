@@ -136,6 +136,13 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
         mDelegate = delegate;
     }
 
+    void notifyDataChanged(@Nullable T item, @AssistantUserDataEventType int eventType) {
+        if (mDelegate == null) {
+            return;
+        }
+        mDelegate.onUserDataChanged(item, eventType);
+    }
+
     void setTitle(String title) {
         TextView titleView = mSectionExpander.findViewById(R.id.section_title);
         AssistantTextUtils.applyVisualAppearanceTags(titleView, title, null);
@@ -331,8 +338,8 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
         updateSummaryView(mSummaryView, item.mOption);
         updateVisibility();
 
-        if (mDelegate != null && notify) {
-            mDelegate.onUserDataChanged(item.mOption, eventType);
+        if (notify) {
+            notifyDataChanged(item.mOption, eventType);
         }
     }
 

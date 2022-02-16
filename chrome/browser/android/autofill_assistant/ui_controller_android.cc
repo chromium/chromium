@@ -1111,27 +1111,27 @@ UiControllerAndroid::GetCollectUserDataModel() {
 void UiControllerAndroid::OnShippingAddressChanged(
     std::unique_ptr<autofill::AutofillProfile> address,
     UserDataEventType event_type) {
-  ui_delegate_->SetShippingAddress(std::move(address), event_type);
+  ui_delegate_->HandleShippingAddressChange(std::move(address), event_type);
 }
 
 void UiControllerAndroid::OnContactInfoChanged(
     std::unique_ptr<autofill::AutofillProfile> profile,
     UserDataEventType event_type) {
-  ui_delegate_->SetContactInfo(std::move(profile), event_type);
+  ui_delegate_->HandleContactInfoChange(std::move(profile), event_type);
 }
 
 void UiControllerAndroid::OnPhoneNumberChanged(
     std::unique_ptr<autofill::AutofillProfile> profile,
     UserDataEventType event_type) {
-  ui_delegate_->SetPhoneNumber(std::move(profile), event_type);
+  ui_delegate_->HandlePhoneNumberChange(std::move(profile), event_type);
 }
 
 void UiControllerAndroid::OnCreditCardChanged(
     std::unique_ptr<autofill::CreditCard> card,
     std::unique_ptr<autofill::AutofillProfile> billing_profile,
     UserDataEventType event_type) {
-  ui_delegate_->SetCreditCard(std::move(card), std::move(billing_profile),
-                              event_type);
+  ui_delegate_->HandleCreditCardChange(std::move(card),
+                                       std::move(billing_profile), event_type);
 }
 
 void UiControllerAndroid::OnTermsAndConditionsChanged(
@@ -1190,8 +1190,15 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
     return;
   }
 
+  Java_AssistantCollectUserDataModel_setAccountEmail(
+      env, jmodel,
+      base::android::ConvertUTF8ToJavaString(
+          env, client_->GetEmailAddressForAccessTokenAccount()));
+
   Java_AssistantCollectUserDataModel_setShouldStoreUserDataChanges(
       env, jmodel, collect_user_data_options->should_store_data_changes);
+  Java_AssistantCollectUserDataModel_setUseGmsCoreEditDialogs(
+      env, jmodel, collect_user_data_options->use_gms_core_edit_dialogs);
   Java_AssistantCollectUserDataModel_setRequestName(
       env, jmodel, collect_user_data_options->request_payer_name);
   Java_AssistantCollectUserDataModel_setRequestEmail(

@@ -39,7 +39,7 @@ public interface AssistantEditor<T extends AssistantOptionModel> {
          * Adds information from the contact to the UI of the editor.
          * @param contact The {@link AssistantAutofillProfile} to add information for.
          */
-        void addContactInformationForAutocomplete(AssistantAutofillProfile contact);
+        default void addContactInformationForAutocomplete(AssistantAutofillProfile contact) {}
     }
 
     /**
@@ -55,6 +55,6 @@ public interface AssistantEditor<T extends AssistantOptionModel> {
          * Adds information from the address to the UI of the editor.
          * @param address The {@link AssistantAutofillProfile} to add information for.
          */
-        void addAddressInformationForAutocomplete(AssistantAutofillProfile address);
+        default void addAddressInformationForAutocomplete(AssistantAutofillProfile address) {}
     }
 }
