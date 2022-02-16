@@ -436,7 +436,7 @@
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1431188203598586230">Останнє оновлення програмного забезпечення</translation>
 <translation id="1431432486300429272">Google може використовувати твою історію веб-перегляду, щоб персоналізувати Пошук та інші сервіси Google. Ти або твої батьки можете змінити це налаштування на сторінці myaccount.google.com/activitycontrols/search</translation>
-<translation id="1432581352905426595">Керування пошуковими системами</translation>
+<translation id="1432581352905426595">Керувати пошуковими системами</translation>
 <translation id="1433811987160647649">Запитувати дозвіл, перш ніж надавати доступ</translation>
 <translation id="1434696352799406980">Стартову сторінку, сторінку нової вкладки, пошукову систему та закріплені вкладки буде скинуто. Також буде вимкнено всі розширення та видалено тимчасові дані, як-от файли cookie. Історія закладок і збережені паролі не видалятимуться.</translation>
 <translation id="1434886155212424586">Головна сторінка – це сторінка нової вкладки</translation>
@@ -3301,7 +3301,7 @@
 <translation id="431076611119798497">&amp;Деталі</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 обліковий запис Google}one{<ph name="EXTRA_ACCOUNTS" /> обліковий запис Google}few{<ph name="EXTRA_ACCOUNTS" /> облікові записи Google}many{<ph name="EXTRA_ACCOUNTS" /> облікових записів Google}other{<ph name="EXTRA_ACCOUNTS" /> облікового запису Google}}</translation>
 <translation id="4312866146174492540">Блокувати (за умовчанням)</translation>
-<translation id="4314815835985389558">Керування синхронізацією</translation>
+<translation id="4314815835985389558">Керувати синхронізацією</translation>
 <translation id="4315933848520197627">Від’єднати обліковий запис</translation>
 <translation id="4316850752623536204">Веб-сайт розробника</translation>
 <translation id="4317820549299924617">Не підтверджено</translation>

@@ -72,7 +72,7 @@
 <translation id="3087734570205094154">Nederst</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">Återställ</translation>
-<translation id="3183922693828471536">Rulla hit</translation>
+<translation id="3183922693828471536">Scrolla hit</translation>
 <translation id="3234408098842461169">Nedpil</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 dag}other{# dagar}}</translation>
 <translation id="3295886253693811851">Ring från</translation>
@@ -185,14 +185,14 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{för 1 timme sedan}other{för # timmar sedan}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sek kvar}other{# sek kvar}}</translation>
 <translation id="8134065097954893699">Sidan läses in igen</translation>
-<translation id="815598010540052116">Rulla nedåt</translation>
+<translation id="815598010540052116">Scrolla nedåt</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">Flik</translation>
 <translation id="8259556432390118667">Hexadecimalt färgvärde</translation>
 <translation id="8328145009876646418">Vänsterkant</translation>
-<translation id="8331626408530291785">Rulla uppåt</translation>
+<translation id="8331626408530291785">Scrolla uppåt</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 år}other{# år}}</translation>
 <translation id="8393700583063109961">Skicka meddelande</translation>
 <translation id="8394908167088220973">Spela upp/Pausa</translation>

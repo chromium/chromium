@@ -31,7 +31,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Kopplade enheter</translation>
 <translation id="1165712434476988950">Enheten måste startas om för att uppdateringen ska tillämpas.</translation>
-<translation id="1175572348579024023">Rulla</translation>
+<translation id="1175572348579024023">Scrolla</translation>
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="118437560755358292">Ange lösenordet eller pinkoden för ökad säkerhet</translation>
@@ -462,7 +462,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3995138139523574647">USB-C-enhet (bakre porten på högra sidan)</translation>
 <translation id="40062176907008878">Handskrift</translation>
 <translation id="4017989525502048489">Laserpekare</translation>
-<translation id="4021716437419160885">Rulla ned</translation>
+<translation id="4021716437419160885">Scrolla ned</translation>
 <translation id="4028481283645788203">Du måste ange lösenord för större säkerhet</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Skärmen delas</translation>
@@ -606,7 +606,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4925542575807923399">Administratören för kontot kräver att kontot är det första i en session med multiinloggning.</translation>
 <translation id="4945196315133970626">Inaktivera aviseringar</translation>
 <translation id="4946376291507881335">Skärmbild/skärminspelning</translation>
-<translation id="495046168593986294">Rulla upp</translation>
+<translation id="495046168593986294">Scrolla upp</translation>
 <translation id="4952936045814352993">Funktionen Hitta telefonen är inte tillgänglig när ljudet är avstängt för alarmet</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> kräver att du byter till en tidigare version av <ph name="DEVICE_TYPE" />. Enheten återställs och all data raderas.</translation>
 <translation id="4961318399572185831">Casta skärmen</translation>
