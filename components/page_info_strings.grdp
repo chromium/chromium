@@ -482,6 +482,9 @@
     <message name="IDS_PAGE_INFO_HID_DEVICE_SECONDARY_LABEL" desc="The label displayed underneath the device name to inform the user that the permission listed refers to a HID device.">
       HID device
     </message>
+    <message name="IDS_PAGE_INFO_HID_DEVICE_ALLOWED_BY_POLICY_LABEL" desc="The label displayed underneath the device name to inform the user that the item listed is refering to a HID device explicitly allowed by the user's enterprise policy.">
+      HID device allowed by your administrator
+    </message>
     <message name="IDS_PAGE_INFO_DELETE_HID_DEVICE" desc="The tooltip displayed when hovering over the button that will remove permission to access a HID device that the user previously granted to the site.">
       Revoke access
     </message>
