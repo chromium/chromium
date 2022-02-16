@@ -1942,6 +1942,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridOpenIncognitoTab"));
   }
+
+  if (IsTabsSearchEnabled()) {
+    // TODO(crbug.com/1297859): Log selecting tabs as a result of search.
+    if (self.tabGridMode == TabGridModeSearch &&
+        [self.regularTabsDelegate isItemWithIDSelected:itemID]) {
+      // That can happen when the search result that was selected is from
+      // another window. In that case don't change the active page for this
+      // window and don't close the tab grid.
+      // TODO(crbug.com/1297859): Log selecting tabs from other windows.
+      return;
+    }
+  }
   self.activePage = self.currentPage;
   // When the tab grid is peeked, selecting an item should not close the grid
   // unless the user has selected an already selected tab.

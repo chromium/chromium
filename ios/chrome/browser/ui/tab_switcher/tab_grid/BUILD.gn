@@ -16,6 +16,7 @@ source_set("tab_grid") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":features",
     ":tab_grid_paging",
     ":tab_grid_ui",
     "grid:grid_ui",
