@@ -22,6 +22,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
 #include "components/power_metrics/resource_coalition_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -526,12 +527,20 @@ void PowerMetricsReporter::ReportResourceCoalitionHistograms(
                       kEnergyImpactScalingFactor));
     }
 
-    constexpr int kNanoWattToMilliWatt = 1000 * 1000;
-    // Use a maximum of 100 watts, or 100 * 1000 milliwatts.
-    base::UmaHistogramCounts100000(
-        base::StrCat(
-            {"PerformanceMonitor.ResourceCoalition.Power", scenario_suffix}),
-        std::roundl(rate.power_nw / kNanoWattToMilliWatt));
+    // As of Feb 2, 2022, the value of `rate->power_nw` is always zero on Intel.
+    // Don't report it to avoid polluting the data.
+    if (base::mac::GetCPUType() == base::mac::CPUType::kArm) {
+      constexpr int kMilliWattPerWatt = 1000;
+      constexpr int kNanoWattPerMilliWatt = 1000 * 1000;
+      // The maximum is 10 watts, which is larger than the 99.99th percentile
+      // as of Feb 2, 2022.
+      base::UmaHistogramCustomCounts(
+          base::StrCat(
+              {"PerformanceMonitor.ResourceCoalition.Power2", scenario_suffix}),
+          std::roundl(rate.power_nw / kNanoWattPerMilliWatt),
+          /* min=*/1, /* exclusive_max=*/10 * kMilliWattPerWatt,
+          /* buckets=*/50);
+    }
 
     auto record_qos_level = [&](size_t index, const char* qos_suffix) {
       UsageTimeHistogram(

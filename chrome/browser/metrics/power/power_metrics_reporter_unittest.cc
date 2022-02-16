@@ -23,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
 #include "chrome/browser/metrics/power/coalition_resource_usage_provider_test_util_mac.h"
 #include "components/power_metrics/resource_coalition_mac.h"
 #endif
@@ -1672,9 +1673,6 @@ TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms) {
        // EI is reported in centi-EI so the data needs to be multiplied by
        // 100.0.
        {"PerformanceMonitor.ResourceCoalition.EnergyImpact", 1500},
-       // Power is reported in milliwatts (mj/s), the data is in nj/s so it
-       // has to be divided by 1000000.
-       {"PerformanceMonitor.ResourceCoalition.Power", 1},
        // The QoS histograms also reports the CPU times as a percentage of
        // time with a permyriad granularity.
        {"PerformanceMonitor.ResourceCoalition.QoSLevel.Default", 0},
@@ -1685,6 +1683,17 @@ TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms) {
        {"PerformanceMonitor.ResourceCoalition.QoSLevel.UserInitiated", 5000},
        {"PerformanceMonitor.ResourceCoalition.QoSLevel.UserInteractive",
         6000}});
+
+  if (base::mac::GetCPUType() == base::mac::CPUType::kArm) {
+    ExpectHistogramSamples(
+        &histogram_tester, suffixes,
+        {// Power is reported in milliwatts (mj/s), the data
+         // is in nj/s so it has to be divided by 1000000.
+         {"PerformanceMonitor.ResourceCoalition.Power2", 1}});
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "PerformanceMonitor.ResourceCoalition.Power2", 0);
+  }
 }
 
 // Verify that no energy impact histogram is reported when

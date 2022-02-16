@@ -9224,13 +9224,13 @@ chromium-metrics-reviews@google.com.
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.ResourceCoalition.Power{UsageScenario}"
+<histogram name="PerformanceMonitor.ResourceCoalition.Power2{UsageScenario}"
     units="milliwatts" expires_after="2022-11-30">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The power usage reported by the resource coalition mechanism on macOS. Only
-    available on devices with an ARM CPU. This is recorded for {UsageScenario}
+    reported on devices with an ARM CPU. This is recorded for {UsageScenario}
     (see go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
