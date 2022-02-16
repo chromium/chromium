@@ -116,9 +116,14 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     const GURL& url,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     ResolveAsURLLoaderFactoryCallback callback) {
-  BlobURLLoaderFactory::Create(
-      registry_ ? registry_->GetBlobFromUrl(url) : mojo::NullRemote(), url,
-      std::move(receiver));
+  if (!registry_) {
+    BlobURLLoaderFactory::Create(mojo::NullRemote(), url, std::move(receiver));
+    std::move(callback).Run(absl::nullopt, absl::nullopt);
+    return;
+  }
+
+  BlobURLLoaderFactory::Create(registry_->GetBlobFromUrl(url), url,
+                               std::move(receiver));
   std::move(callback).Run(registry_->GetUnsafeAgentClusterID(url),
                           registry_->GetUnsafeTopLevelSite(url));
 }
