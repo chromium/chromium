@@ -404,13 +404,16 @@
     label="$i18n{monoAudioLabel}"
     deep-link-focus-id$="[[Setting.kMonoAudio]]">
 </settings-toggle-button>
-<settings-toggle-button id="startupSoundEnabled"
-    class="hr"
-    pref=" "
-    on-change="toggleStartupSoundEnabled_"
-    label="$i18n{startupSoundLabel}"
-    deep-link-focus-id$="[[Setting.kStartupSound]]">
-</settings-toggle-button>
+<div class="settings-box">
+  <div class="start settings-box-text" id="startupSoundEnabledLabel">
+    $i18n{startupSoundLabel}
+  </div>
+  <cr-toggle id="startupSoundEnabled"
+      aria-labelledby="startupSoundEnabledLabel"
+      deep-link-focus-id$="[[Setting.kStartupSound]]"
+      on-change="toggleStartupSoundEnabled_">
+  </cr-toggle>
+</div>
 
 <template is="dom-if"
     if="[[shouldShowAdditionalFeaturesLink_(isGuest_, isKioskModeActive_)]]">
