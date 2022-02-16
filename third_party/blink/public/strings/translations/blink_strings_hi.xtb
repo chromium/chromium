@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">मान <ph name="MINIMUM" /> से कम या इसके बराबर होना चाहिए.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">चुना नहीं गया. ग्रुप में, <ph name="COUNT" /> में से विकल्प <ph name="INDEX" /></translation>
 <translation id="5307600278924710095">कृपया '<ph name="ATSIGN" />' के पहले वाला भाग डालें. '<ph name="INVALIDADDRESS" />' अधूरा है.</translation>
 <translation id="5334352251556557839">मीडिया नहीं चला पा रहे हैं.</translation>
 <translation id="537648784377940524">शुरुआती तारीख (<ph name="MIN_DATE_OR_TIME" />), आखिरी तारीख (<ph name="MAX_DATE_OR_TIME" />) से पहले की होनी चाहिए.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">अन्य...</translation>
 <translation id="6709093583001123835">अंक <ph name="VALUE" /> होना चाहिए.</translation>
 <translation id="6709570249143506788">खराब वीडियो क्वालिटी</translation>
+<translation id="6719914554879143100">चुना गया. ग्रुप में, <ph name="COUNT" /> में से विकल्प <ph name="INDEX" /></translation>
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="6820355525329141109">प्लग इन लोड नहीं किया जा सका.</translation>
 <translation id="6831465880655513317">कलर वेल में दो डाइमेंशन वाला स्लाइडर होता है, जिससे रंग को गहरा या फीका किया जाता है</translation>

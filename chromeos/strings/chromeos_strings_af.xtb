@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Misluk – Filter het misluk</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ek het 'n sleutelpaar</translation>
+<translation id="1442433966118452622">Prentbron</translation>
 <translation id="1451536289672181509">Toestel is 'n sleutelbord.</translation>
 <translation id="1468664791493211953">Aanbiedings</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> bestuur hierdie toestel en sal dalk jou aktiwiteit kan monitor.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Herlaai daagliks</translation>
 <translation id="2620436844016719705">Stelsel</translation>
 <translation id="2695514675076754339">Voer die 8-karakterontsluitingkode in</translation>
+<translation id="2712812801627182647">TLS-stawingsleutel</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP se fase 2-stawing</translation>
 <translation id="2783010256799387990">GESLAAG</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Misluk – Deur is oop</translation>
 <translation id="3283504360622356314">{0,plural, =1{Wysig lêer}other{Wysig lêers}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Sleutelrigting</translation>
 <translation id="3310640316857623290">DNS-traagheid is aansienlik bo toelaatbare drempel</translation>
 <translation id="3328783797891415197">Toets loop tans</translation>
 <translation id="3340011300870565703">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag in regterknoppie.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome-bedryfstelselwagwoord is opgedateer</translation>
 <translation id="4773299976671772492">Gestop</translation>
 <translation id="4782311465517282004">Kry definisies, vertalings of eenheidomskakelings wanneer jy regsklik of teks raak en hou</translation>
+<translation id="4793756956024303490">Saampersingalgoritme</translation>
 <translation id="4794140124556169553">As jy 'n CPU-toets doen, kan dit jou stelselwerkverrigting affekteer</translation>
 <translation id="4808449224298348341">Gekanselleerde druktaak <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">My prente</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS-resolusie</translation>
 <translation id="4848429997038228357">LOOP TANS</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} poging oor}other{<ph name="ERROR_MESSAGE" /> {0} pogings oor}}</translation>
+<translation id="4873827928179867585">Stawingalgoritme</translation>
 <translation id="4880328057631981605">Toegangspuntnaam</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Kies onmiddellik 'n nuwe een</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Versteek verslag</translation>
 <translation id="500920857929044050">Stop toets</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Wys foto's, die tyd, die weer, en media-inligting wanneer jou skerm onaktief is.</translation>
 <translation id="5039804452771397117">Laat toe</translation>
 <translation id="5049856988445523908">SIM is gesluit (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Groepnaam</translation>
@@ -436,6 +442,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6618744767048954150">Werk tans</translation>
 <translation id="6620487321149975369">Druktake sal in geskiedenis verskyn tensy hulle handmatig verwyder word</translation>
 <translation id="6643016212128521049">Vee uit</translation>
+<translation id="6647510110698214773">Enkripsie-algoritme</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6692996468359469499">Kry inligting wat met jou keuse verband hou</translation>
 <translation id="6704062477274546131">DNS-ontbinding</translation>

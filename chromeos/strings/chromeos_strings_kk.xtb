@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Сәтсіз: сүзгі қатесі шықты</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Кілттер жұбы өзімде бар</translation>
+<translation id="1442433966118452622">Сурет дереккөзі</translation>
 <translation id="1451536289672181509">Бұл — пернетақта.</translation>
 <translation id="1468664791493211953">Ұсыныстар</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> құрылғыңызды басқарады және әрекетіңізді де бақылауы мүмкін.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Күн сайын жаңарту</translation>
 <translation id="2620436844016719705">Жүйе</translation>
 <translation id="2695514675076754339">8 таңбалы құлыпты ашу кодын енгізіңіз.</translation>
+<translation id="2712812801627182647">TLS аутентификация кілті</translation>
 <translation id="2740531572673183784">Жарайды</translation>
 <translation id="2751739896257479635">EAP 2-фаза аутентификациясы</translation>
 <translation id="2783010256799387990">ӨТТІ</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Сәтсіз: есігі ашық</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлды өзгерту}other{Файлдарды өзгерту}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
+<translation id="3291996639387199448">Кілт бағыты</translation>
 <translation id="3310640316857623290">DNS кідірісі рұқсат етілетін шектен әлдеқайда жоғары.</translation>
 <translation id="3328783797891415197">Тексерілуде</translation>
 <translation id="3340011300870565703">Оң құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS құпия сөзі жаңартылды</translation>
 <translation id="4773299976671772492">Тоқтатылды</translation>
 <translation id="4782311465517282004">Тінтуірдің оң жақ түймесін басқанда немесе мәтінді басып тұрғанда мәтіннің анықтамасын, аудармасын немесе өлшем бірліктерін көріңіз.</translation>
+<translation id="4793756956024303490">Сығу алгоритмі</translation>
 <translation id="4794140124556169553">Орталық процессор сынағын қоссаңыз, жүйенің өнімділігіне кері әсер болуы мүмкін.</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> құжатын басып шығарудан бас тартылды.</translation>
 <translation id="4813136279048157860">Суреттерім</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">DNS ажыратымдылығы (Android)</translation>
 <translation id="4848429997038228357">ТЕКСЕРІЛУДЕ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}other{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}}</translation>
+<translation id="4873827928179867585">Аутентификация алгоритмі</translation>
 <translation id="4880328057631981605">Кіру нүктесінің атауы</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Дереу жаңа құпия сөз таңдаңыз.</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Есепті жасыру</translation>
 <translation id="500920857929044050">Тексеруді тоқтату</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Экран пайдаланылмай тұрғанда, фотосуреттерді, уақытты, ауа райын және медиа ақпаратын көрсетеді.</translation>
 <translation id="5039804452771397117">Рұқсат беру</translation>
 <translation id="5049856988445523908">SIM құлыпталған (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Топ атауы</translation>
@@ -435,6 +441,7 @@
 <translation id="6618744767048954150">Жұмыс істеп тұр</translation>
 <translation id="6620487321149975369">Қолмен өшірмесеңіз, баспа жұмыстары тарихта сақтала береді.</translation>
 <translation id="6643016212128521049">Тазалау</translation>
+<translation id="6647510110698214773">Шифрлау алгоритмі</translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6692996468359469499">Таңдауға қатысты ақпарат алу</translation>
 <translation id="6704062477274546131">DNS ажыратымдылығы</translation>

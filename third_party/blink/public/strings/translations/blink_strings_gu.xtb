@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">મૂલ્ય <ph name="MINIMUM" /> જેટલું અથવા આનાથી વધુ હોવું આવશ્યક છે.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">ચેક કર્યું નથી. ગ્રૂપમાં, <ph name="COUNT" />માંથી વિકલ્પ <ph name="INDEX" /></translation>
 <translation id="5307600278924710095">કૃપા કરીને '<ph name="ATSIGN" />' ની આગળનો ભાગ દાખલ કરો. '<ph name="INVALIDADDRESS" />' અપૂર્ણ છે.</translation>
 <translation id="5334352251556557839">મીડિયા ચલાવવામાં નિષ્ફળ રહ્યાં.</translation>
 <translation id="537648784377940524">ન્યૂનતમ તારીખ (<ph name="MIN_DATE_OR_TIME" />) એ મહત્તમ તારીખ (<ph name="MAX_DATE_OR_TIME" />) કરતાં પહેલાંની હોવી આવશ્યક છે.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">અન્ય...</translation>
 <translation id="6709093583001123835">મૂલ્ય <ph name="VALUE" /> હોવું આવશ્યક છે.</translation>
 <translation id="6709570249143506788">ખરાબ પ્લેબૅક ક્વૉલિટી</translation>
+<translation id="6719914554879143100">ચેક કરેલું. ગ્રૂપમાં, <ph name="COUNT" />માંથી વિકલ્પ <ph name="INDEX" /></translation>
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6820355525329141109">પ્લગિન લોડ કરી શક્યાં નથી.</translation>
 <translation id="6831465880655513317">રંગને ઘાટો કે ફીકો કરવાનું અને ઝાંખપ પસંદ કરવા માટે દ્વિ-પરિમાણ્વિય સ્લાઇડરવાળું કલર વેલ</translation>

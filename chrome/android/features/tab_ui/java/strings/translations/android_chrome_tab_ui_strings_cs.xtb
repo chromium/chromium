@@ -45,6 +45,7 @@
 <translation id="492284538114688557">Byla zjištěna nižší cena</translation>
 <translation id="5007392906805964215">Zkontrolovat</translation>
 <translation id="5073204694187207510">Skrýt celoobrazovkovou mřížku</translation>
+<translation id="5076161749301278626">Zobrazit recenze obchodu?</translation>
 <translation id="5082793167783849073">Rychle stránky porovnejte tím, že vytvoříte skupinu. Chcete-li začít, podržte odkaz.</translation>
 <translation id="5490235265819901748">Skupina byla rozbalena</translation>
 <translation id="5533021382642990449">Zobrazit později</translation>
@@ -71,6 +72,7 @@
 <translation id="7326879924029668159">Zobrazit zásady vracení zboží a další</translation>
 <translation id="7352298686197644113">Podívejte se, která položka na otevřených kartách má nižší cenu</translation>
 <translation id="753732157349120914">Přepínač karet</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recenze od Googlu}few{<ph name="REVIEWS_COUNT_MANY" /> recenze od Googlu}many{<ph name="REVIEWS_COUNT_MANY" /> recenze od Googlu}other{<ph name="REVIEWS_COUNT_MANY" /> recenzí od Googlu}}</translation>
 <translation id="7559245342362162951">Zobrazit karty skupiny v mřížce na celou obrazovku</translation>
 <translation id="7792771145871471484">Zkontrolovat návrhy.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Seskupit <ph name="TABS_COUNT_ONE" /> vybranou kartu}few{Seskupit <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Seskupit <ph name="TABS_COUNT_MANY" /> vybrané karty}other{Seskupit <ph name="TABS_COUNT_MANY" /> vybraných karet}}</translation>

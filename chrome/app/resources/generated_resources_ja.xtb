@@ -497,6 +497,7 @@
 <translation id="1506061864768559482">検索エンジン</translation>
 <translation id="1507170440449692343">このページはカメラへのアクセスを禁止されています。</translation>
 <translation id="1507246803636407672">破棄(&amp;D)</translation>
+<translation id="1507884455975553832">ストリーム メッセージ アプリ</translation>
 <translation id="1509163368529404530">グループを復元(&amp;R)</translation>
 <translation id="1509281256533087115">あらゆる <ph name="DEVICE_NAME_AND_VENDOR" /> からの USB 経由のアクセス</translation>
 <translation id="1510238584712386396">ランチャー</translation>
@@ -599,6 +600,7 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> との接続を解除</translation>
 <translation id="1603914832182249871">（シークレット モード）</translation>
 <translation id="1604432177629086300">印刷できませんでした。プリンタを確認してもう一度お試しください。</translation>
+<translation id="1604576689725077412">Chromebook で通知を閉じると、スマートフォンでも閉じられます。</translation>
 <translation id="1605744057217831567">すべてのサイトデータと権限を表示</translation>
 <translation id="1606077700029460857">マウスの設定を変更</translation>
 <translation id="1606566847233779212">追加したサイトを削除しますか？</translation>
@@ -708,6 +710,7 @@
 <translation id="1697150536837697295">アート</translation>
 <translation id="1697686431566694143">ファイルを編集</translation>
 <translation id="1700079447639026019">Cookie を使用できないサイト</translation>
+<translation id="1700201317341192482">仮想カードを削除</translation>
 <translation id="1703331064825191675">パスワードを気にする必要はありません</translation>
 <translation id="1703666494654169921">サイトにバーチャル リアリティ デバイスとデータの使用を許可しない</translation>
 <translation id="1704097193565924901">大文字にする</translation>
@@ -1020,6 +1023,7 @@
 <translation id="2006638907958895361"><ph name="APP" /> でリンクを開く</translation>
 <translation id="2007404777272201486">問題の報告...</translation>
 <translation id="2010501376126504057">対応デバイス</translation>
+<translation id="2011968031299471357">メッセージの受信と返信</translation>
 <translation id="2015232545623037616">PC と Chromecast が同じ Wi-Fi ネットワークに接続している</translation>
 <translation id="2016473077102413275">画像を必要とする機能は動作しなくなります</translation>
 <translation id="2016574333161572915">Google Meet ハードウェアの準備ができました</translation>
@@ -1260,6 +1264,7 @@
 <translation id="2241053333139545397">多数のウェブサイト上にある自分のデータの読み取りと変更</translation>
 <translation id="2241634353105152135">一回限り</translation>
 <translation id="2242687258748107519">ファイル情報</translation>
+<translation id="2243381895573964397">スマートフォンの通知を受信する</translation>
 <translation id="2246549592927364792">Google から画像の説明を取得しますか？</translation>
 <translation id="2247738527273549923">このデバイスは組織によって管理されています</translation>
 <translation id="2249111429176737533">タブ付きウィンドウとして開く</translation>
@@ -2076,6 +2081,7 @@
 <translation id="3036546437875325427">Flash を有効にする</translation>
 <translation id="3037754279345160234">ドメインの参加設定を解析できません。管理者にお問い合わせください。</translation>
 <translation id="3038612606416062604">プリンタを手動で追加</translation>
+<translation id="3039409644314251320">会話の確認、メッセージへの返信、グループ チャットへのユーザーの追加</translation>
 <translation id="3039491566278747710">オフライン ポリシーをデバイスにインストールできませんでした。</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> より</translation>
@@ -2613,6 +2619,7 @@
 <translation id="362266093274784978">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
 <translation id="362333465072914957">CA による証明書の発行を待機しています</translation>
 <translation id="3624567683873126087">デバイスのロックを解除して Google アカウントにログインする</translation>
+<translation id="3624583033347146597">サードパーティ Cookie の設定を選択してください</translation>
 <translation id="3625481642044239431">無効なファイルが選択されています。もう一度お試しください。</translation>
 <translation id="3626296069957678981">この Chromebook を充電するには、対応する Dell のバッテリーを使用してください。</translation>
 <translation id="3627320433825461852">あと 1 分未満</translation>
@@ -3293,6 +3300,7 @@
 <translation id="431076611119798497">詳細(&amp;D)</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 件の Google アカウント}other{<ph name="EXTRA_ACCOUNTS" /> 件の Google アカウント}}</translation>
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>
+<translation id="4314497418046265427">スマートフォンと <ph name="DEVICE_TYPE" /> を接続すると、生産性が向上します</translation>
 <translation id="4314815835985389558">同期の管理</translation>
 <translation id="4315933848520197627">アカウントのリンク解除</translation>
 <translation id="4316850752623536204">デベロッパーのウェブサイト</translation>
@@ -3485,6 +3493,7 @@
 <translation id="4519935350946509010">接続エラーが発生しました。</translation>
 <translation id="4520385623207007473">使用中の Cookie</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> の不明なデバイス</translation>
+<translation id="4522351342209941760">スマートフォンでいくつかのアクセス許可を確認してください。</translation>
 <translation id="4522570452068850558">詳細</translation>
 <translation id="4522600456902129422">このサイトによるクリップボードへのアクセスを今後も許可する</translation>
 <translation id="4522890784888918985">子アカウントはサポートされていません</translation>
@@ -4795,6 +4804,7 @@
 
   公開指数（<ph name="PUBLIC_EXPONENT_NUM_BITS" /> ビット）:
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">スマートフォンと <ph name="DEVICE_TYPE" /> が接続されました</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="59174027418879706">有効</translation>
 <translation id="5920543303088087579">このネットワークへの接続は管理者によって無効にされています</translation>
@@ -5332,6 +5342,7 @@
 <translation id="6466258437571594570">通知を送信するかどうかをサイトが確認できないようにします</translation>
 <translation id="6466988389784393586">すべてのブックマークを開く(&amp;O)</translation>
 <translation id="6467304607960172345">動画の全画面表示を最適化</translation>
+<translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> で次の操作を実行できます。</translation>
 <translation id="6468485451923838994">フォント</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> 個のファイル</translation>
 <translation id="6469557521904094793">モバイル ネットワークをオンにする</translation>
@@ -6573,6 +6584,7 @@
 <translation id="7754704193130578113">ダウンロード前に各ファイルの保存場所を確認する</translation>
 <translation id="7755287808199759310">ブロックの解除は保護者が行うことができます</translation>
 <translation id="7757592200364144203">デバイス名の変更</translation>
+<translation id="7757739382819740102">近くにいる連絡先のユーザーが共有できます。承認が必要です。</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> からテキストが共有されました</translation>
 <translation id="7758143121000533418">ファミリー リンク</translation>
 <translation id="7758450972308449809">ディスプレイの外枠を調整します</translation>
@@ -6640,6 +6652,7 @@
 <translation id="7814458197256864873">コピー(&amp;C)</translation>
 <translation id="7815680994978050279">危険なダウンロードがブロックされました</translation>
 <translation id="7817361223956157679">画面キーボードは現在のところ Linux アプリでは使用できません</translation>
+<translation id="7817671927108102061">スマートフォンで設定を完了する</translation>
 <translation id="7818135753970109980">新しいテーマが追加されました（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="7819992334107904369">Chrome 同期</translation>
 <translation id="7820561748632634942">スイッチを追加で割り当てますか？</translation>
@@ -7430,6 +7443,7 @@
 <translation id="8631032106121706562">デイジー</translation>
 <translation id="863109444997383731">サイトによる通知の確認をブロックします。サイトで通知がリクエストされた場合、ブロックされたことを示すインジケーターがアドレスバーに表示されます。</translation>
 <translation id="8633025649649592204">最近のアクティビティ</translation>
+<translation id="8634348081024879304">Google Pay で仮想カードを使用できなくなります。<ph name="BEGIN_LINK" />仮想カードについて<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">再読み込みしています...</translation>
 <translation id="8636284842992792762">拡張機能を初期化しています…</translation>
 <translation id="8636500887554457830">サイトにポップアップの送信やリダイレクトの使用を許可しない</translation>
@@ -7649,6 +7663,7 @@
 <translation id="8838770651474809439">ハンバーガー</translation>
 <translation id="8838778928843281408">スマートフォンの管理</translation>
 <translation id="883911313571074303">画像に注釈を付ける</translation>
+<translation id="8840427996758894516">スマートフォンが近くにあってロックが解除され、Bluetooth と Wi−Fi がオンになっていることを確認してください。</translation>
 <translation id="8841843049738266382">許可リストに登録されたユーザーの読み取りと変更</translation>
 <translation id="8842594465773264717">この指紋を削除</translation>
 <translation id="8845001906332463065">ヘルプ</translation>

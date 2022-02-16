@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Waarde moet groter as of gelyk aan <ph name="MINIMUM" /> wees.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Nie gemerk nie. In groep, opsie <ph name="INDEX" /> van <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Voer asseblief 'n deel gevolg deur "<ph name="ATSIGN" />" in. "<ph name="INVALIDADDRESS" />" is onvolledig.</translation>
 <translation id="5334352251556557839">Kan nie media speel nie.</translation>
 <translation id="537648784377940524">Minimum datum (<ph name="MIN_DATE_OR_TIME" />) moet voor maksimum datum (<ph name="MAX_DATE_OR_TIME" />) wees.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Ander …</translation>
 <translation id="6709093583001123835">Waarde moet <ph name="VALUE" /> wees.</translation>
 <translation id="6709570249143506788">Swak terugspeelgehalte</translation>
+<translation id="6719914554879143100">Gemerk. In groep, opsie <ph name="INDEX" /> van <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6820355525329141109">Kon nie inprop laai nie.</translation>
 <translation id="6831465880655513317">Kleurbron met tweedimensionele glyer om kleurdiepte en helderheid te kies</translation>

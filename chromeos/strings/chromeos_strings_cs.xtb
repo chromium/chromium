@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Tisk selhal – selhal filtr</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Mám dvojici klíčů</translation>
+<translation id="1442433966118452622">Zdroj obrázku</translation>
 <translation id="1451536289672181509">Zařízení je klávesnice.</translation>
 <translation id="1468664791493211953">Nabídky</translation>
 <translation id="1476467821656042872">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která také může sledovat vaši aktivitu.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Denní obnovení</translation>
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2695514675076754339">Zadejte osmiznakový odemykací kód</translation>
+<translation id="2712812801627182647">Ověřovací klíč TLS</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Ověření EAP Phase 2</translation>
 <translation id="2783010256799387990">V POŘÁDKU</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Tisk selhal – jsou otevřená dvířka</translation>
 <translation id="3283504360622356314">{0,plural, =1{Upravit soubor}few{Upravit soubory}many{Upravit soubory}other{Upravit soubory}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Směr klíče</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
 <translation id="3328783797891415197">Běží test</translation>
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Heslo Chrome OS byla aktualizováno</translation>
 <translation id="4773299976671772492">Zastaveno</translation>
 <translation id="4782311465517282004">Když podržíte text nebo na něj kliknete pravým tlačítkem, mohou se zobrazit definice, překlad nebo převod jednotek</translation>
+<translation id="4793756956024303490">Kompresní algoritmus</translation>
 <translation id="4794140124556169553">Test procesoru může mít vliv na výkon systému</translation>
 <translation id="4808449224298348341">Byla zrušena tisková úloha <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Moje obrázky</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) Překlad záznamu DNS</translation>
 <translation id="4848429997038228357">PROBÍHÁ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zbývají {0} pokusy}many{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusu}other{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusů}}</translation>
+<translation id="4873827928179867585">Ověřovací algoritmus</translation>
 <translation id="4880328057631981605">Název přístupového bodu</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Ihned si zvolte nové</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Skrýt přehled</translation>
 <translation id="500920857929044050">Zastavit test</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Když je obrazovka nečinná, zobrazovat fotky, čas, počasí a informace z médií.</translation>
 <translation id="5039804452771397117">Povolit</translation>
 <translation id="5049856988445523908">Zamknutá SIM karta (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Název skupiny</translation>
@@ -436,6 +442,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6618744767048954150">Probíhá</translation>
 <translation id="6620487321149975369">Tiskové úlohy se budou zobrazovat v historii, pokud je ručně neodstraníte</translation>
 <translation id="6643016212128521049">Vymazat</translation>
+<translation id="6647510110698214773">Šifrovací algoritmus</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6692996468359469499">Získejte informace týkající se vybraného obsahu</translation>
 <translation id="6704062477274546131">Překlad DNS</translation>

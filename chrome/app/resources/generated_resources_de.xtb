@@ -497,6 +497,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1506061864768559482">Suchmaschine</translation>
 <translation id="1507170440449692343">Diese Seite darf nicht auf Ihre Kamera zugreifen.</translation>
 <translation id="1507246803636407672">&amp;Verwerfen</translation>
+<translation id="1507884455975553832">Messaging-Apps streamen</translation>
 <translation id="1509163368529404530">Gruppe wiederherstellen</translation>
 <translation id="1509281256533087115">Auf <ph name="DEVICE_NAME_AND_VENDOR" /> per USB zugreifen</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -596,6 +597,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> entfernen</translation>
 <translation id="1603914832182249871">(Anonym)</translation>
 <translation id="1604432177629086300">Drucken nicht möglich. Überprüfen Sie den Drucker und versuchen Sie es noch einmal.</translation>
+<translation id="1604576689725077412">Hinweis: Wenn Sie Benachrichtigungen auf dem Chromebook schließen, werden sie auch auf dem Smartphone geschlossen.</translation>
 <translation id="1605744057217831567">Alle Websitedaten und -berechtigungen ansehen</translation>
 <translation id="1606077700029460857">Mauseinstellungen ändern</translation>
 <translation id="1606566847233779212">Die bestimmten Websites entfernen, die Sie hinzugefügt haben?</translation>
@@ -706,6 +708,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1697150536837697295">Kunst</translation>
 <translation id="1697686431566694143">Datei bearbeiten</translation>
 <translation id="1700079447639026019">Websites, die nie Cookies verwenden dürfen</translation>
+<translation id="1700201317341192482">Virtuelle Karte entfernen</translation>
 <translation id="1703331064825191675">Sie müssen sich keine Sorgen mehr um Ihre Passwörter machen</translation>
 <translation id="1703666494654169921">Websites dürfen keine Virtual-Reality-Geräte oder ‑Daten verwenden</translation>
 <translation id="1704097193565924901">Großschreibung</translation>
@@ -1018,6 +1021,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2006638907958895361">Link in <ph name="APP" /> öffnen</translation>
 <translation id="2007404777272201486">Problem melden...</translation>
 <translation id="2010501376126504057">Kompatible Geräte</translation>
+<translation id="2011968031299471357">Nachrichten empfangen und beantworten</translation>
 <translation id="2015232545623037616">Der PC und Chromecast befinden sich im gleichen WLAN</translation>
 <translation id="2016473077102413275">Funktionen, die Bilder erfordern, funktionieren dann nicht</translation>
 <translation id="2016574333161572915">Ihre Google Meet-Hardware kann eingerichtet werden</translation>
@@ -1258,6 +1262,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2241053333139545397">Eigene Daten auf verschiedenen Websites lesen und ändern</translation>
 <translation id="2241634353105152135">Nur einmal</translation>
 <translation id="2242687258748107519">Dateiinformationen</translation>
+<translation id="2243381895573964397">Smartphone-Benachrichtigungen erhalten</translation>
 <translation id="2246549592927364792">Bildbeschreibungen von Google verwenden?</translation>
 <translation id="2247738527273549923">Dein Gerät wird von deiner Organisation verwaltet</translation>
 <translation id="2249111429176737533">Als Tab-Fenster öffnen</translation>
@@ -2076,6 +2081,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3036546437875325427">Flash aktivieren</translation>
 <translation id="3037754279345160234">Die Konfiguration zum Domainbeitritt kann nicht geparst werden. Bitte wenden Sie sich an Ihren Administrator.</translation>
 <translation id="3038612606416062604">Drucker manuell hinzufügen</translation>
+<translation id="3039409644314251320">Unterhaltungen ansehen, auf Nachrichten reagieren und Personen zu Gruppenchats hinzufügen</translation>
 <translation id="3039491566278747710">Fehler beim Installieren der Offlinerichtlinie auf dem Gerät.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Von <ph name="ORIGIN" /></translation>
@@ -3297,6 +3303,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="431076611119798497">&amp;Details</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-Konto}other{<ph name="EXTRA_ACCOUNTS" /> Google-Konten}}</translation>
 <translation id="4312866146174492540">Blockieren (Standard)</translation>
+<translation id="4314497418046265427">Mehr Produktivität, wenn Sie Ihr Smartphone mit <ph name="DEVICE_TYPE" /> verbinden</translation>
 <translation id="4314815835985389558">Synchronisierung verwalten</translation>
 <translation id="4315933848520197627">Kontoverknüpfung aufheben</translation>
 <translation id="4316850752623536204">Website des Entwicklers</translation>
@@ -3489,6 +3496,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4519935350946509010">Verbindungsfehler.</translation>
 <translation id="4520385623207007473">Verwendete Cookies</translation>
 <translation id="452039078290142656">unbekannte Geräte von <ph name="VENDOR_NAME" /></translation>
+<translation id="4522351342209941760">Überprüfen Sie weitere Berechtigungen auf Ihrem Smartphone.</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4522600456902129422">Weiterhin zulassen, dass diese Website die Zwischenablage abruft</translation>
 <translation id="4522890784888918985">Untergeordnete Konten werden nicht unterstützt</translation>
@@ -4801,6 +4809,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 
   Öffentlicher Exponent (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> Bits):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">Ihr Smartphone und <ph name="DEVICE_TYPE" /> sind miteinander verbunden</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="59174027418879706">Aktiviert</translation>
 <translation id="5920543303088087579">Die Möglichkeit einer Verbindung zu diesem Netzwerk wurde von Ihrem Administrator deaktiviert</translation>
@@ -5341,6 +5350,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6466258437571594570">Websites können Sie nicht unterbrechen, wenn sie fragen, ob Sie Benachrichtigungen erhalten möchten</translation>
 <translation id="6466988389784393586">&amp;Alle Lesezeichen öffnen</translation>
 <translation id="6467304607960172345">Vollbildvideos optimieren</translation>
+<translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> kann dann folgende Aktionen ausführen:</translation>
 <translation id="6468485451923838994">Schriftarten</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> Dateien</translation>
 <translation id="6469557521904094793">Mobilfunknetz einschalten</translation>
@@ -6585,6 +6595,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7754704193130578113">Vor dem Download von Dateien nach dem Speicherort fragen</translation>
 <translation id="7755287808199759310">Deine Eltern können die Blockierung aufheben</translation>
 <translation id="7757592200364144203">Gerätenamen ändern</translation>
+<translation id="7757739382819740102">Kontakte in Ihrer Nähe können etwas mit Ihnen teilen. Hierfür ist eine Genehmigung erforderlich.</translation>
 <translation id="7757787379047923882">Text geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Bildschirmränder anpassen</translation>
@@ -6652,6 +6663,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7814458197256864873">&amp;Kopieren</translation>
 <translation id="7815680994978050279">Gefährlicher Download blockiert</translation>
 <translation id="7817361223956157679">Die Bildschirmtastatur funktioniert noch nicht in Linux-Apps</translation>
+<translation id="7817671927108102061">Einrichtung auf dem Smartphone abschließen</translation>
 <translation id="7818135753970109980">Neues Design hinzugefügt (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome-Synchronisierung</translation>
 <translation id="7820561748632634942">Weitere Schalter zuweisen?</translation>
@@ -7443,6 +7455,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8631032106121706562">Margerite</translation>
 <translation id="863109444997383731">Websites können Sie nicht mehr darum bitten, Benachrichtigungen anzeigen zu dürfen. Wenn eine Website fragt, wird die Blockierung in der Adressleiste angezeigt.</translation>
 <translation id="8633025649649592204">Letzte Aktivität</translation>
+<translation id="8634348081024879304">Sie können Ihre virtuelle Karte dann nicht mehr mit Google Pay verwenden. <ph name="BEGIN_LINK" />Informationen zu virtuellen Karten<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Wird neu geladen…</translation>
 <translation id="8636284842992792762">Erweiterungen werden initialisiert…</translation>
 <translation id="8636500887554457830">Websites dürfen keine Pop-up-Fenster senden oder Weiterleitungen verwenden</translation>
@@ -7662,6 +7675,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Smartphones verwalten</translation>
 <translation id="883911313571074303">Bild mit Anmerkung versehen</translation>
+<translation id="8840427996758894516">Ihr Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="8841843049738266382">Nutzer auf der Zulassungsliste ansehen und ändern</translation>
 <translation id="8842594465773264717">Diesen Fingerabdruck löschen</translation>
 <translation id="8845001906332463065">Hilfe aufrufen</translation>

@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">ବିଫଳ ହୋଇଛି - ଫିଲ୍ଟର୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ମୋ ପାଖରେ ଏକ କୀପେୟାର ଅଛି</translation>
+<translation id="1442433966118452622">ଇମେଜ ସୋର୍ସ</translation>
 <translation id="1451536289672181509">ଡିଭାଇସଟି ଏକ କୀବୋର୍ଡ ଅଟେ।</translation>
 <translation id="1468664791493211953">ଅଫରଗୁଡ଼ିକ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ଏହି ଡିଭାଇସକୁ ପରିଚାଳନା କରିଥାଏ ଏବଂ ଆପଣଙ୍କର କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରିବା ପାଇଁ ସକ୍ଷମ ହୋଇପାରେ।</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">ଦୈନିକ ରିଫ୍ରେଶ୍</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
 <translation id="2695514675076754339">8-ଅକ୍ଷର ବିଶିଷ୍ଟ ଅନଲକ କୋଡ ଲେଖନ୍ତୁ</translation>
+<translation id="2712812801627182647">TLS ପ୍ରମାଣୀକରଣ କୀ</translation>
 <translation id="2740531572673183784">ଠିକ୍ ଅଛି</translation>
 <translation id="2751739896257479635">EAP ଫେଜ୍‍ 2 ପ୍ରମାଣିକରଣ</translation>
 <translation id="2783010256799387990">ପାସ୍ ହୋଇଛି</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟରର କଭର୍ ଖୋଲା ଅଛି</translation>
 <translation id="3283504360622356314">{0,plural, =1{ଫାଇଲକୁ ଏଡିଟ୍ କରନ୍ତୁ}other{ଫାଇଲଗୁଡ଼ିକୁ ଏଡିଟ୍ କରନ୍ତୁ}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">ପ୍ରମାଣୀକରଣ କୀ'ର ଦିଗ</translation>
 <translation id="3310640316857623290">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଉଲ୍ଲେଖଯୋଗ୍ୟ ଭାବରେ ଉପରେ ଅଛି</translation>
 <translation id="3328783797891415197">ଟେଷ୍ଟ ଚାଲୁଛି</translation>
 <translation id="3340011300870565703">ଡିଭାଇସର ଡାହାଣପଟ ବଡରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OSର ପାସୱାର୍ଡ ଅପଡେଟ୍ ହୋଇଛି</translation>
 <translation id="4773299976671772492">ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="4782311465517282004">ଯେତେବେଳେ ଆପଣ ଟେକ୍ସଟରେ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତି କିମ୍ବା ଏହାକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତି, ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ୍ ରୂପାନ୍ତରଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
+<translation id="4793756956024303490">କମ୍ପ୍ରେସନ ଆଲଗୋରିଦମ</translation>
 <translation id="4794140124556169553">ଏକ CPU ଟେଷ୍ଟ ଚଲାଇବା ଫଳରେ ଏହା ଆପଣଙ୍କ ସିଷ୍ଟମର ପରଫରମାନ୍ସକୁ ପ୍ରଭାବିତ କରିପାରେ</translation>
 <translation id="4808449224298348341">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ <ph name="DOCUMENT_TITLE" /> ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="4813136279048157860">ମୋ ଛବି</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="4848429997038228357">ଚାଲୁଛି</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}other{<ph name="ERROR_MESSAGE" />{0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}}</translation>
+<translation id="4873827928179867585">ପ୍ରମାଣୀକରଣ ଆଲଗୋରିଦମ</translation>
 <translation id="4880328057631981605">ଆକ୍ସେସ୍ ପଏଣ୍ଟର ନାମ</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">ତୁରନ୍ତ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">ରିପୋର୍ଟ ଲୁଚାନ୍ତୁ</translation>
 <translation id="500920857929044050">ଟେଷ୍ଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">ଆପଣଙ୍କ ସ୍କ୍ରିନ ନିଷ୍କ୍ରିୟ ଥିବା ବେଳେ ଫଟୋ, ସମୟ, ପାଣିପାଗ ଏବଂ ମିଡିଆ ସମ୍ବନ୍ଧିତ ସୂଚନା ଦେଖାନ୍ତୁ।</translation>
 <translation id="5039804452771397117">ଅନୁମତି</translation>
 <translation id="5049856988445523908">SIM ଲକ୍ କରାଯାଇଛି (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ଗୋଷ୍ଠୀର ନାମ</translation>
@@ -436,6 +442,7 @@
 <translation id="6618744767048954150">ଚାଲୁଛି</translation>
 <translation id="6620487321149975369">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ମାନୁଆଲୀ କାଢ଼ି ନଦିଆଯିବା ପର୍ଯ୍ୟନ୍ତ ସେଗୁଡ଼ିକ ଇତିହାସରେ ଦେଖାଯିବ</translation>
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
+<translation id="6647510110698214773">ଏନକ୍ରିପସନ ଆଲଗୋରିଦମ</translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="6692996468359469499">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="6704062477274546131">DNS ରିଜୋଲ୍ୟୁସନ୍</translation>

@@ -45,6 +45,7 @@
 <translation id="492284538114688557">Árcsökkenés észlelve</translation>
 <translation id="5007392906805964215">Áttekintés</translation>
 <translation id="5073204694187207510">Teljes képernyős rács elrejtése</translation>
+<translation id="5076161749301278626">Lát véleményeket az üzletről?</translation>
 <translation id="5082793167783849073">Csoport kialakításával gyorsan összehasonlíthat oldalakat. A kezdéshez tartsa lenyomva ujját a kívánt linken.</translation>
 <translation id="5490235265819901748">Lapcsoport kibontva</translation>
 <translation id="5533021382642990449">Máskor megjelenhet</translation>
@@ -71,6 +72,7 @@
 <translation id="7326879924029668159">Visszaküldési irányelvek és egyebek megjelenítése</translation>
 <translation id="7352298686197644113">Láthatja, hogy a megnyitott lapokon lévő termékek közül melyiknek alacsonyabb az ára</translation>
 <translation id="753732157349120914">Lapváltó</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> vélemény a Google-on}other{<ph name="REVIEWS_COUNT_MANY" /> vélemény a Google-on}}</translation>
 <translation id="7559245342362162951">A csoportban lévő lapok teljes képernyős rácsszerkezetben való megjelenítése</translation>
 <translation id="7792771145871471484">Javaslatok áttekintése.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap csoportba helyezése}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap csoportba helyezése}}</translation>

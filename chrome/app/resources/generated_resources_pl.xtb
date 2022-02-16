@@ -2613,6 +2613,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="362266093274784978">{COUNT,plural, =1{aplikację}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
 <translation id="362333465072914957">Czekam na wygenerowanie certyfikatu CA</translation>
 <translation id="3624567683873126087">Odblokuj urządzenie i zaloguj się na konto Google</translation>
+<translation id="3624583033347146597">Wybierz preferencje dotyczące plików cookie innych firm</translation>
 <translation id="3625481642044239431">Wybrany plik jest nieprawidłowy. Spróbuj ponownie.</translation>
 <translation id="3626296069957678981">Aby naładować tego Chromebooka, użyj przeznaczonej do niego baterii firmy Dell.</translation>
 <translation id="3627320433825461852">Została mniej niż 1 minuta</translation>
@@ -6434,7 +6435,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7616214729753637086">Rejestruję urządzenie…</translation>
 <translation id="7617263010641145920">Włącz Sklep Play</translation>
 <translation id="7617366389578322136">Łączę się z urządzeniem „<ph name="DEVICE_NAME" />”</translation>
-<translation id="7617648809369507487">Powiadamiaj ciszej</translation>
+<translation id="7617648809369507487">Pokazuj wiadomości dyskretnie</translation>
 <translation id="7618774594543487847">Neutralny</translation>
 <translation id="7621382409404463535">Systemowi nie udało się zapisać konfiguracji urządzenia.</translation>
 <translation id="7622114377921274169">Ładuję.</translation>

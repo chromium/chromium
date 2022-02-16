@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">값은 <ph name="MINIMUM" /> 이상이어야 합니다.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
+<translation id="5272594226096532950">선택 안 함. 그룹 내 옵션 <ph name="COUNT" />개 중 <ph name="INDEX" /></translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' 앞 부분을 입력해 주세요. '<ph name="INVALIDADDRESS" />'(이)가 완전하지 않습니다.</translation>
 <translation id="5334352251556557839">미디어를 재생할 수 없습니다.</translation>
 <translation id="537648784377940524">최소 날짜(<ph name="MIN_DATE_OR_TIME" />)는 최대 날짜(<ph name="MAX_DATE_OR_TIME" />) 이전이어야 합니다.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">기타...</translation>
 <translation id="6709093583001123835">값이 <ph name="VALUE" />여야 합니다.</translation>
 <translation id="6709570249143506788">재생 품질 나쁨</translation>
+<translation id="6719914554879143100">선택함. 그룹 내 옵션 <ph name="COUNT" />개 중 <ph name="INDEX" /></translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="6820355525329141109">플러그인을 로드할 수 없습니다.</translation>
 <translation id="6831465880655513317">2차원 슬라이더가 포함된 채도 및 명암 선택용 색상환입니다.</translation>

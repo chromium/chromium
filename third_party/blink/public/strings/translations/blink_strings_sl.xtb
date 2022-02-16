@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Vrednost mora biti večja od <ph name="MINIMUM" /> ali enaka.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Ni potrjeno. <ph name="INDEX" />. možnost od <ph name="COUNT" /> v skupini.</translation>
 <translation id="5307600278924710095">Vnesite nekaj in nato <ph name="ATSIGN" />. Naslov »<ph name="INVALIDADDRESS" />« je nepopoln.</translation>
 <translation id="5334352251556557839">Predstavnosti ni mogoče predvajati.</translation>
 <translation id="537648784377940524">Najzgodnejši datum (<ph name="MIN_DATE_OR_TIME" />) mora biti pred najpoznejšim datumom (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Drugo ...</translation>
 <translation id="6709093583001123835">Vrednost mora biti <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Slaba kakovost predvajanja</translation>
+<translation id="6719914554879143100">Potrjeno. <ph name="INDEX" />. možnost od <ph name="COUNT" /> v skupini.</translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6820355525329141109">Vtičnika ni bilo mogoče naložiti.</translation>
 <translation id="6831465880655513317">Barvni krog z dvorazsežnim drsnikom za izbiranje nasičenosti in svetlosti</translation>

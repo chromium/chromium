@@ -45,6 +45,7 @@
 <translation id="492284538114688557">ମୂଲ୍ୟରେ ହ୍ରାସର ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="5007392906805964215">ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="5073204694187207510">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍‌ ଗ୍ରୀଡ୍‌କୁ ଲୁଚାନ୍ତୁ</translation>
+<translation id="5076161749301278626">ଷ୍ଟୋର ସମୀକ୍ଷାଗୁଡ଼ିକୁ ଦେଖିବେ?</translation>
 <translation id="5082793167783849073">ଗୋଟିଏ ଗୋଷ୍ଠୀ ତିଆରି କରି ପୃଷ୍ଠାଗୁଡ଼ିକୁ ତୁରନ୍ତ ତୁଳନା କରନ୍ତୁ। ଆରମ୍ଭ କରିବା ପାଇଁ, ଗୋଟିଏ ଲିଙ୍କ୍‍କୁ ଦାବି ଧରନ୍ତୁ।</translation>
 <translation id="5490235265819901748">ଟାବ୍ ଗ୍ରୁପର ବିସ୍ତାର କରାଯାଇଛି</translation>
 <translation id="5533021382642990449">ପରେ ଦେଖାନ୍ତୁ</translation>
@@ -71,6 +72,7 @@
 <translation id="7326879924029668159">ରିଟର୍ଣ୍ଣ ନୀତି ଏବଂ ଆହୁରି ଅନେକ କିଛି ଦେଖନ୍ତୁ</translation>
 <translation id="7352298686197644113">ଆପଣଙ୍କ ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକରେ କେଉଁ ଆଇଟମର ମୂଲ୍ୟ କମ୍ ତାହା ଦେଖନ୍ତୁ</translation>
 <translation id="753732157349120914">ଟାବ୍ ସ୍ୱିଚର୍</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{Googleରୁ <ph name="REVIEWS_COUNT_ONE" />ଟି ସମୀକ୍ଷା}other{Googleରୁ <ph name="REVIEWS_COUNT_MANY" />ଟି ସମୀକ୍ଷା}}</translation>
 <translation id="7559245342362162951">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ ଗ୍ରୀଡ୍‌ରେ ଗୋଷ୍ଠୀର ଟାବ୍‌ଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="7792771145871471484">ପ୍ରସ୍ତାବଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{ଚୟନ କରାଯାଇଥିବା <ph name="TABS_COUNT_ONE" />ଟି ଟାବକୁ ଗ୍ରୁପ୍ କରନ୍ତୁ}other{ଚୟନ କରାଯାଇଥିବା <ph name="TABS_COUNT_MANY" />ଟି ଟାବକୁ ଗ୍ରୁପ୍ କରନ୍ତୁ}}</translation>

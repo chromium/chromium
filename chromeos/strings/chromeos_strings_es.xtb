@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">No se ha podido imprimir - Error de filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Tengo un par de claves</translation>
+<translation id="1442433966118452622">Fuente de la imagen</translation>
 <translation id="1451536289672181509">El dispositivo es un teclado.</translation>
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestiona este dispositivo y es posible que monitorice tu actividad.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Actualiz. diaria</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2695514675076754339">Introduce el código de desbloqueo de 8 caracteres</translation>
+<translation id="2712812801627182647">Clave de autenticación TLS</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
 <translation id="2783010256799387990">SUPERADA</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">No se ha podido imprimir - Cierra la cubierta</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar archivo}other{Editar archivos}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Dirección de la clave</translation>
 <translation id="3310640316857623290">La latencia DNS supera considerablemente el umbral permitido</translation>
 <translation id="3328783797891415197">Prueba en curso</translation>
 <translation id="3340011300870565703">Nivel de batería del auricular derecho del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Contraseña de Chrome OS actualizada</translation>
 <translation id="4773299976671772492">Detenido</translation>
 <translation id="4782311465517282004">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado</translation>
+<translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">Si ejecutas una prueba de CPU, es posible que el rendimiento del sistema se vea afectado</translation>
 <translation id="4808449224298348341">Trabajo de impresión <ph name="DOCUMENT_TITLE" /> cancelado</translation>
 <translation id="4813136279048157860">Mis imágenes</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) Resolución de DNS</translation>
 <translation id="4848429997038228357">EN CURSO</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos.}}</translation>
+<translation id="4873827928179867585">Algoritmo de autenticación</translation>
 <translation id="4880328057631981605">Nombre del punto de acceso</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Selecciona otra inmediatamente</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Ocultar informe</translation>
 <translation id="500920857929044050">Detener prueba</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Cuando la pantalla está inactiva, muestra fotos, la hora, el tiempo e información multimedia.</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nombre del grupo</translation>
@@ -435,6 +441,7 @@
 <translation id="6618744767048954150">En curso</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial a menos que se quiten de forma manual</translation>
 <translation id="6643016212128521049">Borrar</translation>
+<translation id="6647510110698214773">Algoritmo de cifrado</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6692996468359469499">Obtener información sobre tu selección</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>

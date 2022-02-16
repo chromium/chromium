@@ -500,6 +500,7 @@
 <translation id="1506061864768559482">Μηχανή αναζήτησης</translation>
 <translation id="1507170440449692343">Αυτή η σελίδα δεν έχει πρόσβαση στην κάμερά σας.</translation>
 <translation id="1507246803636407672">&amp;Απόρριψη</translation>
+<translation id="1507884455975553832">Εφαρμογή ανταλλαγής μηνυμάτων ροής</translation>
 <translation id="1509163368529404530">&amp;Επαναφορά ομάδας</translation>
 <translation id="1509281256533087115">Πρόσβαση σε οποιαδήποτε συσκευή <ph name="DEVICE_NAME_AND_VENDOR" /> μέσω USB</translation>
 <translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
@@ -602,6 +603,7 @@
 <translation id="1603411913360944381">Κατάργηση απομνημόνευσης <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Ανώνυμη περιήγηση)</translation>
 <translation id="1604432177629086300">Δεν ήταν δυνατή η εκτύπωση. Ελέγξτε τον εκτυπωτή και δοκιμάστε ξανά.</translation>
+<translation id="1604576689725077412">Λάβετε υπόψη ότι παραβλέποντας τις ειδοποιήσεις στο Chromebook, παραβλέπονται και στο τηλέφωνό σας.</translation>
 <translation id="1605744057217831567">Εμφάνιση όλων των δεδομένων και των αδειών ιστοτόπου</translation>
 <translation id="1606077700029460857">Αλλαγή ρυθμίσεων ποντικιού</translation>
 <translation id="1606566847233779212">Κατάργηση των συγκεκριμένων ιστοτόπων που προσθέσατε;</translation>
@@ -712,6 +714,7 @@
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Επεξεργασία αρχείου</translation>
 <translation id="1700079447639026019">Ιστότοποι που δεν μπορούν να χρησιμοποιούν ποτέ cookie</translation>
+<translation id="1700201317341192482">Καταργήστε την εικονική σας κάρτα</translation>
 <translation id="1703331064825191675">Δεν χρειάζεται να ανησυχείτε πλέον για τους κωδικούς πρόσβασής σας</translation>
 <translation id="1703666494654169921">Να μην επιτρέπεται στους ιστοτόπους να χρησιμοποιούν συσκευές ή δεδομένα εικονικής πραγματικότητας</translation>
 <translation id="1704097193565924901">Χρήση κεφαλαίων</translation>
@@ -1033,6 +1036,7 @@
 <translation id="2006638907958895361">Άνοιγμα Συνδέσμου στην εφαρμογή <ph name="APP" /></translation>
 <translation id="2007404777272201486">Αναφορά προβλήματος...</translation>
 <translation id="2010501376126504057">Συμβατές συσκευές</translation>
+<translation id="2011968031299471357">Λήψη και απάντηση σε μηνύματα</translation>
 <translation id="2015232545623037616">PC και Chromecast στο ίδιο δίκτυο Wi-Fi</translation>
 <translation id="2016473077102413275">Οι λειτουργίες που απαιτούν εικόνες δεν θα είναι διαθέσιμες</translation>
 <translation id="2016574333161572915">Ο εξοπλισμός Google Meet είναι έτοιμος για ρύθμιση</translation>
@@ -1273,6 +1277,7 @@
 <translation id="2241053333139545397">Διαβάστε και αλλάξτε τα δεδομένα σας σε διάφορους ιστότοπους</translation>
 <translation id="2241634353105152135">Μόνο μία φορά</translation>
 <translation id="2242687258748107519">Πληροφορίες αρχείου</translation>
+<translation id="2243381895573964397">Λήψη ειδοποιήσεων τηλεφώνου</translation>
 <translation id="2246549592927364792">Να λαμβάνονται περιγραφές εικόνων από το Google;</translation>
 <translation id="2247738527273549923">Η διαχείριση της συσκευής σας γίνεται από τον οργανισμό σας</translation>
 <translation id="2249111429176737533">Άνοιγμα ως παραθύρου με καρτέλες</translation>
@@ -2094,6 +2099,7 @@
 <translation id="3036546437875325427">Ενεργοποίηση Flash</translation>
 <translation id="3037754279345160234">Δεν είναι δυνατή η ανάλυση της διαμόρφωσης για συμμετοχή σε τομέα. Επικοινωνήστε με τον διαχειριστή σας.</translation>
 <translation id="3038612606416062604">Μη αυτόματη προσθήκη εκτυπωτή</translation>
+<translation id="3039409644314251320">Προβολή συζητήσεων, αντίδραση σε μηνύματα και προσθήκη ατόμων σε ομαδικές συζητήσεις</translation>
 <translation id="3039491566278747710">Αποτυχία εγκατάστασης πολιτικής εκτός σύνδεσης στη συσκευή.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Από <ph name="ORIGIN" /></translation>
@@ -3316,6 +3322,7 @@
 <translation id="431076611119798497">&amp;Λεπτομέρειες</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Λογαριασμός Google}other{<ph name="EXTRA_ACCOUNTS" /> Λογαριασμοί Google}}</translation>
 <translation id="4312866146174492540">Αποκλεισμός (προεπιλογή)</translation>
+<translation id="4314497418046265427">Βελτιώστε την παραγωγικότητά σας κατά τη σύνδεση του τηλεφώνου σας με τη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314815835985389558">Διαχείριση συγχρονισμού</translation>
 <translation id="4315933848520197627">Αποσύνδεση λογαριασμού</translation>
 <translation id="4316850752623536204">Ιστότοπος προγραμματιστή</translation>
@@ -3509,6 +3516,7 @@
 <translation id="4519935350946509010">Σφάλμα σύνδεσης.</translation>
 <translation id="4520385623207007473">Χρησιμοποιούνται cookie</translation>
 <translation id="452039078290142656">άγνωστες συσκευές από τον πάροχο υπηρεσιών <ph name="VENDOR_NAME" /></translation>
+<translation id="4522351342209941760">Ελέγξτε μερικές ακόμη άδειες από το τηλέφωνό σας.</translation>
 <translation id="4522570452068850558">Λεπτομέρειες</translation>
 <translation id="4522600456902129422">Να συνεχίσει να επιτρέπεται σε αυτόν τον ιστότοπο να βλέπει το πρόχειρο</translation>
 <translation id="4522890784888918985">Δεν υποστηρίζονται οι θυγατρικοί λογαριασμοί.</translation>
@@ -4824,6 +4832,7 @@
 
   Δημόσιος εκθέτης (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">Το τηλέφωνό σας και η συσκευή <ph name="DEVICE_TYPE" /> έχουν συνδεθεί</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="59174027418879706">Ενεργοποιημένο</translation>
 <translation id="5920543303088087579">Η σύνδεση σε αυτό το δίκτυο έχει απενεργοποιηθεί από τον διαχειριστή σας</translation>
@@ -5364,6 +5373,7 @@
 <translation id="6466258437571594570">Η διακοπή από ιστοτόπους όταν ζητούν να στείλουν ειδοποιήσεις αποκλείεται</translation>
 <translation id="6466988389784393586">Άνοιγμα Όλων των Σελιδοδεικτών</translation>
 <translation id="6467304607960172345">Βελτιστοποίηση βίντεο πλήρους οθόνης</translation>
+<translation id="6467377768028664108">Η συσκευή <ph name="DEVICE_TYPE" /> θα μπορεί:</translation>
 <translation id="6468485451923838994">Γραμματοσειρές</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> αρχεία</translation>
 <translation id="6469557521904094793">Ενεργοποίηση δικτύου κινητής τηλεφωνίας</translation>
@@ -6608,6 +6618,7 @@
 <translation id="7754704193130578113">Εμφάνιση ερώτησης για τη θέση αποθήκευσης κάθε αρχείου πριν από τη λήψη</translation>
 <translation id="7755287808199759310">Ο γονέας σας μπορεί να καταργήσει τον αποκλεισμό του για εσάς</translation>
 <translation id="7757592200364144203">Αλλαγή ονόματος συσκευής</translation>
+<translation id="7757739382819740102">Οι κοντινές επαφές μπορούν να μοιραστούν περιεχόμενο μαζί σας. Θα απαιτηθεί έγκριση.</translation>
 <translation id="7757787379047923882">Το κείμενο κοινοποιήθηκε από τη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Προσαρμόστε τα όρια της οθόνης σας</translation>
@@ -6675,6 +6686,7 @@
 <translation id="7814458197256864873">&amp;Αντιγραφή</translation>
 <translation id="7815680994978050279">Αποκλεισμός επικίνδυνης λήψης</translation>
 <translation id="7817361223956157679">Το πληκτρολόγιο οθόνης δεν λειτουργεί ακόμη σε εφαρμογές Linux.</translation>
+<translation id="7817671927108102061">Ολοκληρώστε τη ρύθμιση στο τηλέφωνό σας</translation>
 <translation id="7818135753970109980">Προστέθηκε νέο θέμα (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Συγχρονισμός Chrome</translation>
 <translation id="7820561748632634942">Αντιστοίχιση επιπλέον διακοπτών;</translation>
@@ -7467,6 +7479,7 @@
 <translation id="8631032106121706562">Πέταλα</translation>
 <translation id="863109444997383731">Οι ιστότοποι δεν θα μπορούν να σας ρωτήσουν εάν θέλετε να λαμβάνετε ειδοποιήσεις. Εάν κάποιος ιστότοπος απαιτεί τις ειδοποιήσεις, θα εμφανιστεί η ένδειξη αποκλεισμού στο κάτω μέρος της σελίδας.</translation>
 <translation id="8633025649649592204">Πρόσφατη δραστηριότητα</translation>
+<translation id="8634348081024879304">Δεν θα μπορείτε πλέον να χρησιμοποιήσετε την εικονική σας κάρτα με το Google Pay. <ph name="BEGIN_LINK" />Μάθετε σχετικά με τις εικονικές κάρτες<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Επανάληψη φόρτωσης…</translation>
 <translation id="8636284842992792762">Προετοιμασία επεκτάσεων…</translation>
 <translation id="8636500887554457830">Να μην επιτρέπεται στους ιστοτόπους να στέλνουν αναδυόμενα ή να χρησιμοποιούν ανακατευθύνσεις</translation>
@@ -7684,6 +7697,7 @@
 <translation id="8838770651474809439">Χάμπουργκερ</translation>
 <translation id="8838778928843281408">Διαχείριση τηλεφώνων</translation>
 <translation id="883911313571074303">Σχολιασμός εικόνας</translation>
+<translation id="8840427996758894516">Βεβαιωθείτε ότι το τηλέφωνό σας βρίσκεται κοντά σας και είναι ξεκλειδωμένο και ότι το Bluetooth και το Wi-Fi έχουν ενεργοποιηθεί.</translation>
 <translation id="8841843049738266382">Ανάγνωση και αλλαγή χρηστών λίστας επιτρεπομένων</translation>
 <translation id="8842594465773264717">Διαγραφή αυτού του δακτυλικού αποτυπώματος</translation>
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>

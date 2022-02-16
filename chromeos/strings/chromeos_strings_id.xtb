@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Gagal - Filter gagal</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Saya memiliki pasangan kunci</translation>
+<translation id="1442433966118452622">Sumber gambar</translation>
 <translation id="1451536289672181509">Perangkat adalah keyboard.</translation>
 <translation id="1468664791493211953">Penawaran</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> akan mengelola perangkat ini dan mungkin dapat memantau aktivitas Anda.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Muat Ulang Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2695514675076754339">Masukkan kode buka kunci 8 karakter</translation>
+<translation id="2712812801627182647">Kunci autentikasi TLS</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2751739896257479635">Autentikasi tahap 2 EAP</translation>
 <translation id="2783010256799387990">LULUS</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Gagal - Tutup terbuka</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit file}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Arah kunci</translation>
 <translation id="3310640316857623290">Latensi DNS jauh melebihi ambang batas yang diizinkan</translation>
 <translation id="3328783797891415197">Pengujian sedang berjalan</translation>
 <translation id="3340011300870565703">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kanan.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Sandi Chrome OS diperbarui</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4782311465517282004">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks</translation>
+<translation id="4793756956024303490">Algoritme kompresi</translation>
 <translation id="4794140124556169553">Menjalankan pengujian CPU dapat memengaruhi performa sistem Anda</translation>
 <translation id="4808449224298348341">Tugas pencetakan <ph name="DOCUMENT_TITLE" /> dibatalkan</translation>
 <translation id="4813136279048157860">Gambar Saya</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) Resolusi DNS</translation>
 <translation id="4848429997038228357">BERJALAN</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} kesempatan lagi}other{<ph name="ERROR_MESSAGE" /> {0} kesempatan lagi}}</translation>
+<translation id="4873827928179867585">Algoritme autentikasi</translation>
 <translation id="4880328057631981605">Nama titik akses</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Segera pilih satu sandi baru</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Sembunyikan laporan</translation>
 <translation id="500920857929044050">Hentikan pengujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Jika layar tidak ada aktivitas, akan ditampilkan foto, waktu, cuaca, dan info media.</translation>
 <translation id="5039804452771397117">Izinkan</translation>
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nama grup</translation>
@@ -436,6 +442,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6618744767048954150">Sedang berjalan</translation>
 <translation id="6620487321149975369">Tugas pencetakan akan muncul di histori, kecuali dihapus secara manual</translation>
 <translation id="6643016212128521049">Hapus</translation>
+<translation id="6647510110698214773">Algoritme enkripsi</translation>
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="6692996468359469499">Dapatkan info terkait pilihan Anda</translation>
 <translation id="6704062477274546131">Resolusi DNS</translation>

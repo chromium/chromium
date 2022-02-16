@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">విలువ ఖచ్చితంగా <ph name="MINIMUM" /> కంటే ఎక్కువగా లేదా సమానంగా ఉండాలి.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">ఎంచుకోబడలేదు. గ్రూప్‌లో, <ph name="COUNT" />లో <ph name="INDEX" />వది</translation>
 <translation id="5307600278924710095">దయచేసి '<ph name="ATSIGN" />'కి ముందు ఉన్న భాగాన్ని నమోదు చేయండి. '<ph name="INVALIDADDRESS" />' అసంపూర్ణంగా ఉంది.</translation>
 <translation id="5334352251556557839">మీడియాను ప్లే చేయడం సాధ్యపడలేదు.</translation>
 <translation id="537648784377940524">కనిష్ఠ తేదీ (<ph name="MIN_DATE_OR_TIME" />) తప్పనిసరిగా గరిష్ఠ తేదీ (<ph name="MAX_DATE_OR_TIME" />) కంటే ముందు ఉండాలి.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">ఇతర...</translation>
 <translation id="6709093583001123835">విలువ ఖచ్చితంగా <ph name="VALUE" /> అయ్యి ఉండాలి.</translation>
 <translation id="6709570249143506788">ప్లేబ్యాక్ క్వాలిటీ బాగాలేదు</translation>
+<translation id="6719914554879143100">ఎంచుకోబడింది. గ్రూప్‌లో, <ph name="COUNT" />లో <ph name="INDEX" />వది</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6820355525329141109">ప్లగ్ఇన్‌‌ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="6831465880655513317">శాచురేషన్, కాంట్రాస్ట్‌ను ఎంచుకోవడానికి రంగు వృత్తాన్ని 2-డైమెన్షనల్ స్లయిడర్‌తో ఉపయోగించండి</translation>

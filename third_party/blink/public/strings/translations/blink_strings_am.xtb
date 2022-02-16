@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">ዋጋ ከ<ph name="MINIMUM" /> የሚበልጥ ወይም ከእሱ እኩል መሆን አለበት።</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ፔታ</translation>
+<translation id="5272594226096532950">ምልክት አልተደረገበትም። በቡድን አማራጭ <ph name="INDEX" /> ከ <ph name="COUNT" /> ውስጥ</translation>
 <translation id="5307600278924710095">እባክዎ አንድ ክፍል ያስገቡና «<ph name="ATSIGN" />»ን ያስከትሉ። «<ph name="INVALIDADDRESS" />» ያልተሟላ ነው።</translation>
 <translation id="5334352251556557839">ሚዲያን ማጫወት አልተቻለም።</translation>
 <translation id="537648784377940524">አነስተኛው ቀን (<ph name="MIN_DATE_OR_TIME" />) ከከፍተኛው ቀን (<ph name="MAX_DATE_OR_TIME" />) በፊት መምጣት አለበት።</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">ሌላ…</translation>
 <translation id="6709093583001123835">እሴት <ph name="VALUE" /> መሆን አለበት።</translation>
 <translation id="6709570249143506788">ደካማ የመልሶ ማጫወት ጥራት</translation>
+<translation id="6719914554879143100">ምልክት ተደርጎበታል። በቡድን አማራጭ <ph name="INDEX" /> ከ <ph name="COUNT" /> ውስጥ</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6820355525329141109">ተሰኪን መጫን አልተቻለም።</translation>
 <translation id="6831465880655513317">የቀለም ሙሌትን እና ፍካትን ለመምረጥ በሚያገለግሎት ባለሁለት ልኬት ተንሸራታቹ በደንብ አድርገው ያቅልሙ</translation>

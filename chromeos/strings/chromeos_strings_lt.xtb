@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Nepavyko – filtras neveikia tinkamai</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Turiu raktų porą</translation>
+<translation id="1442433966118452622">Vaizdo šaltinis</translation>
 <translation id="1451536289672181509">Įrenginys yra klaviatūra.</translation>
 <translation id="1468664791493211953">Pasiūlymai</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> tvarko šį įrenginį ir gali stebėti jūsų veiklą.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Atnaujinimas per dieną</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2695514675076754339">Įveskite aštuonių simbolių atrakinimo kodą</translation>
+<translation id="2712812801627182647">TLS autentifikavimo raktas</translation>
 <translation id="2740531572673183784">Gerai</translation>
 <translation id="2751739896257479635">EAP 2 tapatybės nustatymo etapas</translation>
 <translation id="2783010256799387990">PAVYKO</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Nepavyko – atidarytos durelės</translation>
 <translation id="3283504360622356314">{0,plural, =1{Redaguoti failą}one{Redaguoti failus}few{Redaguoti failus}many{Redaguoti failus}other{Redaguoti failus}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Rakto kryptis</translation>
 <translation id="3310640316857623290">DNS delsa gerokai viršija leistiną slenksčio vertę</translation>
 <translation id="3328783797891415197">Vykdomas bandymas</translation>
 <translation id="3340011300870565703">Įrenginio dešiniosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Atnaujintas „Chrome OS“ slaptažodis</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
 <translation id="4782311465517282004">Spustelėkite dešiniuoju klavišu arba palieskite ir palaikykite tekstą, kad būtų pateiktos apibrėžtys, vertimai ar vienetų konvertavimas.</translation>
+<translation id="4793756956024303490">Glaudinimo algoritmas</translation>
 <translation id="4794140124556169553">Centrinio procesoriaus testavimas gali turėti įtakos sistemos našumui</translation>
 <translation id="4808449224298348341">Spausdinimo užduotis atšaukta: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Mano vaizdai</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(„Android“) DNS pavadinimų konvertavimas</translation>
 <translation id="4848429997038228357">VYKDOMA</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}one{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}few{<ph name="ERROR_MESSAGE" /> Liko {0} bandymai}many{<ph name="ERROR_MESSAGE" /> Liko {0} bandymo}other{<ph name="ERROR_MESSAGE" /> Liko {0} bandymų}}</translation>
+<translation id="4873827928179867585">Autentifikavimo algoritmas</translation>
 <translation id="4880328057631981605">Prieigos taško pavadinimas</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Nedelsdami pasirinkite naują</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Slėpti ataskaitą</translation>
 <translation id="500920857929044050">Stabdyti bandymą</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Kai ekranas neaktyvus, rodomos nuotraukos, laikas, orų ir medijos informacija.</translation>
 <translation id="5039804452771397117">Leisti</translation>
 <translation id="5049856988445523908">SIM kortelė užrakinta (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grupės pavadinimas</translation>
@@ -436,6 +442,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6618744767048954150">Vykdoma</translation>
 <translation id="6620487321149975369">Spausdinimo užduotys bus rodomos istorijoje, nebent bus pašalintos neautomatiškai</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
+<translation id="6647510110698214773">Šifruotės algoritmas</translation>
 <translation id="6657585470893396449">Slaptažodis</translation>
 <translation id="6692996468359469499">Su pasirinkimu susijusios informacijos gavimas</translation>
 <translation id="6704062477274546131">DNS pavadinimų vertimas</translation>

@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Nije uspelo – filter je otkazao</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Imam par ključeva</translation>
+<translation id="1442433966118452622">Izvor slike</translation>
 <translation id="1451536289672181509">Uređaj je tastatura.</translation>
 <translation id="1468664791493211953">Ponude</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja ovim uređajem i može da prati vaše aktivnosti.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Dnevno osvežavanje</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2695514675076754339">Unesite kôd za otključavanje od 8 znakova</translation>
+<translation id="2712812801627182647">Ključ za TLS potvrdu identiteta</translation>
 <translation id="2740531572673183784">Potvrdi</translation>
 <translation id="2751739896257479635">EAP potvrda identiteta 2. faze:</translation>
 <translation id="2783010256799387990">PROŠLO</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Nije uspelo – vrata su otvorena</translation>
 <translation id="3283504360622356314">{0,plural, =1{Izmeni fajl}one{Izmeni fajlove}few{Izmeni fajlove}other{Izmeni fajlove}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Smer ključa</translation>
 <translation id="3310640316857623290">Kašnjenje DNS-a znatno premašuje dozvoljenu graničnu vrednost</translation>
 <translation id="3328783797891415197">Test je u toku</translation>
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije desne slušalice.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS lozinka je ažurirana</translation>
 <translation id="4773299976671772492">Zaustavljeno je</translation>
 <translation id="4782311465517282004">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnete i zadržite</translation>
+<translation id="4793756956024303490">Algoritam komprimovanja</translation>
 <translation id="4794140124556169553">Pokretanje testa procesora može da utiče na učinak sistema</translation>
 <translation id="4808449224298348341">Otkazan je zadatak štampanja <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Moje slike</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS razrešavanje</translation>
 <translation id="4848429997038228357">U TOKU</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostaju {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaja}}</translation>
+<translation id="4873827928179867585">Algoritam potvrde identiteta</translation>
 <translation id="4880328057631981605">Naziv pristupne tačke</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Odmah odaberite novu</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Sakrij izveštaj</translation>
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Kada je ekran neaktivan, prikazuju se slike, vreme, vremenska prognoza i informacije o medijskom sadržaju.</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Naziv grupe</translation>
@@ -436,6 +442,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6618744767048954150">U toku je</translation>
 <translation id="6620487321149975369">Zadaci štampanja će se pojaviti u istoriji ako ih ne uklonite ručno</translation>
 <translation id="6643016212128521049">Obriši</translation>
+<translation id="6647510110698214773">Algoritam šifrovanja</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6692996468359469499">Pronađite informacije u vezi sa vašim izborom</translation>
 <translation id="6704062477274546131">DNS razrešavanje</translation>

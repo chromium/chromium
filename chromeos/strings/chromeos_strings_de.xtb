@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Fehlgeschlagen – Filter funktioniert nicht</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ich habe ein Schlüsselpaar</translation>
+<translation id="1442433966118452622">Bildquelle</translation>
 <translation id="1451536289672181509">Das Gerät ist eine Tastatur.</translation>
 <translation id="1468664791493211953">Angebote</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> verwaltet dieses Gerät und kann möglicherweise deine Aktivitäten überwachen.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Tägliche Aktualisierung</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2695514675076754339">Achtstelligen Code zum Entsperren eingeben</translation>
+<translation id="2712812801627182647">TLS-Authentifizierungsschlüssel</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP-Phase 2-Authentifizierung</translation>
 <translation id="2783010256799387990">BESTANDEN</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Fehlgeschlagen – Druckerklappe offen</translation>
 <translation id="3283504360622356314">{0,plural, =1{Datei bearbeiten}other{Dateien bearbeiten}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Schlüsselrichtung</translation>
 <translation id="3310640316857623290">Die DNS-Latenz liegt deutlich über dem zulässigen Grenzwert</translation>
 <translation id="3328783797891415197">Test wird ausgeführt</translation>
 <translation id="3340011300870565703">Der Akkustand des rechten Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Das Passwort für Chrome OS wurde aktualisiert</translation>
 <translation id="4773299976671772492">Angehalten</translation>
 <translation id="4782311465517282004">Sie können Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem Sie Text gedrückt halten oder mit der rechten Maustaste darauf klicken</translation>
+<translation id="4793756956024303490">Komprimierungsalgorithmus</translation>
 <translation id="4794140124556169553">Der CPU-Test kann sich auf die Leistung Ihres Systems auswirken</translation>
 <translation id="4808449224298348341">Druckauftrag für "<ph name="DOCUMENT_TITLE" />" wurde abgebrochen</translation>
 <translation id="4813136279048157860">Meine Bilder</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS-Auflösung</translation>
 <translation id="4848429997038228357">LÄUFT</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Noch {0} Versuch}other{<ph name="ERROR_MESSAGE" /> Noch {0} Versuche}}</translation>
+<translation id="4873827928179867585">Authentifizierungsalgorithmus</translation>
 <translation id="4880328057631981605">Name des Zugangspunkts</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Legen Sie so schnell wie möglich ein neues fest</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Bericht ausblenden</translation>
 <translation id="500920857929044050">Test beenden</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Wenn der Bildschirm inaktiv ist, können Sie sich Fotos, die Zeit sowie Wetter- und Medieninformationen anzeigen lassen.</translation>
 <translation id="5039804452771397117">Zulassen</translation>
 <translation id="5049856988445523908">SIM-Karte gesperrt (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenname</translation>
@@ -436,6 +442,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6618744767048954150">Läuft</translation>
 <translation id="6620487321149975369">Druckaufträge erscheinen im Verlauf, solange sie nicht manuell gelöscht werden</translation>
 <translation id="6643016212128521049">Löschen</translation>
+<translation id="6647510110698214773">Verschlüsselungsalgorithmus</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6692996468359469499">Informationen zu Ihrer Auswahl erhalten</translation>
 <translation id="6704062477274546131">DNS-Auflösung</translation>

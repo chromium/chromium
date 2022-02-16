@@ -497,6 +497,7 @@
 <translation id="1506061864768559482">เครื่องมือค้นหา</translation>
 <translation id="1507170440449692343">หน้านี้ถูกบล็อกไม่ให้เข้าถึงกล้องของคุณ</translation>
 <translation id="1507246803636407672">&amp;ยกเลิก</translation>
+<translation id="1507884455975553832">สตรีมแอปรับส่งข้อความ</translation>
 <translation id="1509163368529404530">&amp;กู้คืนกลุ่ม</translation>
 <translation id="1509281256533087115">เข้าถึง <ph name="DEVICE_NAME_AND_VENDOR" /> ใดก็ได้ผ่าน USB</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
@@ -599,6 +600,7 @@
 <translation id="1603411913360944381">เลิกจำ <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(โหมดไม่ระบุตัวตน)</translation>
 <translation id="1604432177629086300">พิมพ์ไม่สำเร็จ ตรวจสอบเครื่องพิมพ์แล้วลองอีกครั้ง</translation>
+<translation id="1604576689725077412">โปรดทราบว่าการปิดการแจ้งเตือนใน Chromebook จะปิดการแจ้งเตือนในโทรศัพท์ด้วย</translation>
 <translation id="1605744057217831567">ดูข้อมูลและสิทธิ์ทั้งหมดของเว็บไซต์</translation>
 <translation id="1606077700029460857">เปลี่ยนการตั้งค่าเมาส์</translation>
 <translation id="1606566847233779212">นำเว็บไซต์ที่คุณเพิ่มออกใช่ไหม</translation>
@@ -709,6 +711,7 @@
 <translation id="1697150536837697295">ศิลปะ</translation>
 <translation id="1697686431566694143">แก้ไขไฟล์</translation>
 <translation id="1700079447639026019">เว็บไซต์ที่จะใช้คุกกี้ไม่ได้เลย</translation>
+<translation id="1700201317341192482">นำบัตรเสมือนออก</translation>
 <translation id="1703331064825191675">ไม่ต้องกังวลเกี่ยวกับรหัสผ่านอีกต่อไป</translation>
 <translation id="1703666494654169921">ไม่อนุญาตให้เว็บไซต์ใช้อุปกรณ์หรือข้อมูล Virtual Reality</translation>
 <translation id="1704097193565924901">Capitalize</translation>
@@ -1021,6 +1024,7 @@
 <translation id="2006638907958895361">เปิดลิงก์ใน <ph name="APP" /></translation>
 <translation id="2007404777272201486">รายงานปัญหา...</translation>
 <translation id="2010501376126504057">อุปกรณ์ที่เข้ากันได้</translation>
+<translation id="2011968031299471357">รับและตอบข้อความ</translation>
 <translation id="2015232545623037616">PC และ Chromecast ใช้เครือข่าย Wi-Fi เดียวกัน</translation>
 <translation id="2016473077102413275">ฟีเจอร์ที่ต้องใช้รูปภาพจะไม่ทำงาน</translation>
 <translation id="2016574333161572915">ฮาร์ดแวร์ของ Google Meet พร้อมตั้งค่าแล้ว</translation>
@@ -1260,6 +1264,7 @@
 <translation id="2241053333139545397">อ่านและเปลี่ยนแปลงข้อมูลของคุณในหลายเว็บไซต์</translation>
 <translation id="2241634353105152135">เพียงครั้งเดียว</translation>
 <translation id="2242687258748107519">ข้อมูลไฟล์</translation>
+<translation id="2243381895573964397">รับการแจ้งเตือนในโทรศัพท์</translation>
 <translation id="2246549592927364792">รับคำอธิบายรูปภาพจาก Google ไหม</translation>
 <translation id="2247738527273549923">อุปกรณ์นี้จัดการโดยองค์กรของคุณ</translation>
 <translation id="2249111429176737533">เปิดเป็นหน้าต่างแท็บ</translation>
@@ -2078,6 +2083,7 @@
 <translation id="3036546437875325427">เปิดใช้ Flash</translation>
 <translation id="3037754279345160234">แยกวิเคราะห์การกำหนดค่าเพื่อเข้าร่วมโดเมนไม่ได้ โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="3038612606416062604">เพิ่มเครื่องพิมพ์ด้วยตนเอง</translation>
+<translation id="3039409644314251320">ดูการสนทนา แสดงความรู้สึกต่อข้อความ และเพิ่มผู้คนลงในการแชทเป็นกลุ่ม</translation>
 <translation id="3039491566278747710">ติดตั้งนโยบายออฟไลน์ในอุปกรณ์นี้ไม่สำเร็จ</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">จาก <ph name="ORIGIN" /></translation>
@@ -3300,6 +3306,7 @@
 <translation id="431076611119798497">&amp;รายละเอียด</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{บัญชี Google 1 บัญชี}other{บัญชี Google <ph name="EXTRA_ACCOUNTS" /> บัญชี}}</translation>
 <translation id="4312866146174492540">บล็อก (ค่าเริ่มต้น)</translation>
+<translation id="4314497418046265427">เพิ่มประสิทธิภาพการทำงานเมื่อคุณเชื่อมต่อโทรศัพท์กับ <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314815835985389558">จัดการการซิงค์</translation>
 <translation id="4315933848520197627">ยกเลิกการลิงก์บัญชี</translation>
 <translation id="4316850752623536204">เว็บไซต์นักพัฒนาซอฟต์แวร์</translation>
@@ -3492,6 +3499,7 @@
 <translation id="4519935350946509010">เกิดข้อผิดพลาดในการเชื่อมต่อ</translation>
 <translation id="4520385623207007473">คุกกี้ที่ใช้งานอยู่</translation>
 <translation id="452039078290142656">อุปกรณ์ที่ไม่รู้จักจาก <ph name="VENDOR_NAME" /></translation>
+<translation id="4522351342209941760">ไปที่โทรศัพท์เพื่อดูสิทธิ์อื่นๆ เพิ่มเติม</translation>
 <translation id="4522570452068850558">รายละเอียด</translation>
 <translation id="4522600456902129422">อนุญาตให้เว็บไซต์นี้ดูคลิปบอร์ดต่อไปได้</translation>
 <translation id="4522890784888918985">ไม่รองรับบัญชีย่อย</translation>
@@ -4806,6 +4814,7 @@
 
   Public Exponent (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> บิต):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">โทรศัพท์กับ <ph name="DEVICE_TYPE" /> เชื่อมต่อกันแล้ว</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="59174027418879706">เปิดใช้งาน</translation>
 <translation id="5920543303088087579">ผู้ดูแลระบบปิดใช้การเชื่อมต่อเครือข่ายนี้</translation>
@@ -5346,6 +5355,7 @@
 <translation id="6466258437571594570">เว็บไซต์ถูกบล็อกไม่ให้รบกวนคุณด้วยการขอส่งการแจ้งเตือน</translation>
 <translation id="6466988389784393586">&amp;เปิดบุ๊กมาร์กทั้งหมด</translation>
 <translation id="6467304607960172345">เพิ่มประสิทธิภาพวิดีโอเต็มหน้าจอ</translation>
+<translation id="6467377768028664108">จากนั้น <ph name="DEVICE_TYPE" /> จะสามารถ</translation>
 <translation id="6468485451923838994">แบบอักษร</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ไฟล์</translation>
 <translation id="6469557521904094793">เปิดเครือข่ายมือถือ</translation>
@@ -6589,6 +6599,7 @@
 <translation id="7754704193130578113">สอบถามที่เก็บไฟล์ก่อนดาวน์โหลด</translation>
 <translation id="7755287808199759310">ผู้ปกครองสามารถเลิกบล็อกเว็บไซต์ให้คุณ</translation>
 <translation id="7757592200364144203">เปลี่ยนชื่ออุปกรณ์</translation>
+<translation id="7757739382819740102">รายชื่อติดต่อที่อยู่ใกล้เคียงจะแชร์กับคุณได้ โดยจะต้องมีการอนุมัติ</translation>
 <translation id="7757787379047923882">ข้อความที่แชร์จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">ปรับขอบเขตของการแสดงผล</translation>
@@ -6656,6 +6667,7 @@
 <translation id="7814458197256864873">&amp;คัดลอก</translation>
 <translation id="7815680994978050279">บล็อกการดาวน์โหลดที่เป็นอันตรายแล้ว</translation>
 <translation id="7817361223956157679">แป้นพิมพ์บนหน้าจอยังใช้ไม่ได้ในแอป Linux</translation>
+<translation id="7817671927108102061">ตั้งค่าให้เสร็จในโทรศัพท์</translation>
 <translation id="7818135753970109980">เพิ่มธีมใหม่แล้ว (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">การซิงค์ของ Chrome</translation>
 <translation id="7820561748632634942">กำหนดสวิตช์เพิ่มอีกไหม</translation>
@@ -7447,6 +7459,7 @@
 <translation id="8631032106121706562">พีทอล</translation>
 <translation id="863109444997383731">ระบบจะบล็อกไม่ให้เว็บไซต์ขอแสดงการแจ้งเตือน หากเว็บไซต์ขอส่งการแจ้งเตือน สัญญาณที่บ่งบอกว่าเว็บไซต์ถูกบล็อกจะปรากฏในแถบที่อยู่</translation>
 <translation id="8633025649649592204">กิจกรรมล่าสุด</translation>
+<translation id="8634348081024879304">คุณจะใช้บัตรเสมือนกับ Google Pay ไม่ได้อีกต่อไป <ph name="BEGIN_LINK" />ดูข้อมูลเกี่ยวกับบัตรเสมือน<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">กำลังโหลดซ้ำ...</translation>
 <translation id="8636284842992792762">กำลังเริ่มการทำงานของส่วนขยาย...</translation>
 <translation id="8636500887554457830">ไม่อนุญาตให้เว็บไซต์ส่งป๊อปอัปหรือใช้การเปลี่ยนเส้นทาง</translation>
@@ -7666,6 +7679,7 @@
 <translation id="8838770651474809439">แฮมเบอร์เกอร์</translation>
 <translation id="8838778928843281408">จัดการโทรศัพท์</translation>
 <translation id="883911313571074303">ใส่หมายเหตุในรูปภาพ</translation>
+<translation id="8840427996758894516">ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกแล้ว และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
 <translation id="8841843049738266382">อ่านและเปลี่ยนผู้ใช้ในรายการที่อนุญาต</translation>
 <translation id="8842594465773264717">ลบลายนิ้วมือนี้</translation>
 <translation id="8845001906332463065">ขอความช่วยเหลือ</translation>

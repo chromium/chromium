@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">실패 - 필터링 실패</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">키 쌍 있음</translation>
+<translation id="1442433966118452622">이미지 출처</translation>
 <translation id="1451536289672181509">키보드 기기입니다.</translation>
 <translation id="1468664791493211953">혜택</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" />에서 이 기기를 관리하며 내 활동을 모니터링할 수도 있습니다.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">매일 새로고침</translation>
 <translation id="2620436844016719705">시스템</translation>
 <translation id="2695514675076754339">8자리 잠금 해제 코드 입력</translation>
+<translation id="2712812801627182647">TLS 인증 키</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2751739896257479635">EAP 2단계 인증</translation>
 <translation id="2783010256799387990">통과</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">실패 - 덮개 열림</translation>
 <translation id="3283504360622356314">{0,plural, =1{파일 수정}other{파일 수정}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">키 방향</translation>
 <translation id="3310640316857623290">DNS 지연 시간이 허용되는 기준을 훨씬 초과했습니다.</translation>
 <translation id="3328783797891415197">테스트 실행 중</translation>
 <translation id="3340011300870565703">기기의 오른쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS 비밀번호 업데이트됨</translation>
 <translation id="4773299976671772492">중지됨</translation>
 <translation id="4782311465517282004">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다</translation>
+<translation id="4793756956024303490">압축 알고리즘</translation>
 <translation id="4794140124556169553">CPU 테스트를 실행하면 시스템 성능에 영향을 줄 수 있습니다.</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> 인쇄 작업 취소됨</translation>
 <translation id="4813136279048157860">내 이미지</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS 변환</translation>
 <translation id="4848429997038228357">실행 중</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />, 남은 시도 {0}회}other{<ph name="ERROR_MESSAGE" />, 남은 시도 {0}회}}</translation>
+<translation id="4873827928179867585">인증 알고리즘</translation>
 <translation id="4880328057631981605">액세스포인트 네임(APN)</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">지금 바로 새 비밀번호를 선택하세요.</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">보고서 숨기기</translation>
 <translation id="500920857929044050">테스트 중지</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">화면이 유휴 상태일 때 사진, 시간, 날씨, 미디어 정보를 표시합니다.</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5049856988445523908">SIM 잠김(<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">그룹 이름</translation>
@@ -436,6 +442,7 @@
 <translation id="6618744767048954150">실행 중</translation>
 <translation id="6620487321149975369">수동으로 삭제하지 않으면 인쇄 작업이 기록에 나타납니다.</translation>
 <translation id="6643016212128521049">삭제</translation>
+<translation id="6647510110698214773">암호화 알고리즘</translation>
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="6692996468359469499">선택 항목과 관련된 정보 얻기</translation>
 <translation id="6704062477274546131">DNS 변환</translation>

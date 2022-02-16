@@ -2630,6 +2630,7 @@
 <translation id="362266093274784978">{COUNT,plural, =1{1 個應用程式}other{# 個應用程式}}</translation>
 <translation id="362333465072914957">正在等待 CA 發出憑證</translation>
 <translation id="3624567683873126087">解鎖裝置和登入 Google 帳戶</translation>
+<translation id="3624583033347146597">選擇第三方 Cookie 偏好設定</translation>
 <translation id="3625481642044239431">所選的檔案無效，請再試一次。</translation>
 <translation id="3626296069957678981">如要為此 Chromebook 充電，請使用兼容的 Dell 電池。</translation>
 <translation id="3627320433825461852">還有不到 1 分鐘</translation>

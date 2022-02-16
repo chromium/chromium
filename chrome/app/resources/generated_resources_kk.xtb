@@ -497,6 +497,7 @@
 <translation id="1506061864768559482">Іздеу жүйесі</translation>
 <translation id="1507170440449692343">Бұл бетке камераны пайдалануға тыйым салынған.</translation>
 <translation id="1507246803636407672">&amp;Алып тастау</translation>
+<translation id="1507884455975553832">Хабар алмасу қолданбаларын трансляциялау</translation>
 <translation id="1509163368529404530">&amp;Топты қалпына келтіру</translation>
 <translation id="1509281256533087115">USB арқылы <ph name="DEVICE_NAME_AND_VENDOR" /> кез келгеніне өту</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
@@ -596,6 +597,7 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> құрылғысын ұмыту</translation>
 <translation id="1603914832182249871">(Инкогнито)</translation>
 <translation id="1604432177629086300">Басып шығарылмады. Принтерді тексеріп, қайталап көріңіз.</translation>
+<translation id="1604576689725077412">Chromebook-та хабарландыруларды қабылдамасаңыз, олар телефонда да қабылданбайтынын ұмытпаңыз.</translation>
 <translation id="1605744057217831567">Барлық сайт дерегі мен рұқсаттарды көру</translation>
 <translation id="1606077700029460857">Тінтуір параметрлерін өзгерту</translation>
 <translation id="1606566847233779212">Өзіңіз қосқан арнайы сайттар өшірілсін бе?</translation>
@@ -706,6 +708,7 @@
 <translation id="1697150536837697295">Өнер</translation>
 <translation id="1697686431566694143">Файлды өңдеу</translation>
 <translation id="1700079447639026019">Cookie файлдарын пайдалана алмайтын сайттар</translation>
+<translation id="1700201317341192482">Виртуалды картаны жою</translation>
 <translation id="1703331064825191675">Құпия сөздеріңіз жайлы уайымдамаңыз</translation>
 <translation id="1703666494654169921">Сайттардың виртуалды шындық құрылғыларын немесе деректерді пайдалануына рұқсат бермеу</translation>
 <translation id="1704097193565924901">Бас әріпке өзгерту</translation>
@@ -1018,6 +1021,7 @@
 <translation id="2006638907958895361">Сілтемені <ph name="APP" /> қолданбасында ашу</translation>
 <translation id="2007404777272201486">Ақау туралы хабарлау…</translation>
 <translation id="2010501376126504057">Үйлесімді құрылғылар</translation>
+<translation id="2011968031299471357">Хабарлар алу және оларға жауап беру</translation>
 <translation id="2015232545623037616">ДК және Chromecast бір Wi-Fi желісінде</translation>
 <translation id="2016473077102413275">Суреттерді қажет ететін функциялар жұмыс істемейді.</translation>
 <translation id="2016574333161572915">Google Meet жабдығы реттеуге дайын.</translation>
@@ -1258,6 +1262,7 @@
 <translation id="2241053333139545397">Бірнеше сайттағы деректеріңізді оқу және өзгерту</translation>
 <translation id="2241634353105152135">Бір-ақ рет</translation>
 <translation id="2242687258748107519">Файл ақпараты</translation>
+<translation id="2243381895573964397">Телефон хабарландыруларын алу</translation>
 <translation id="2246549592927364792">Google-дан кескін сипаттамаларын алу керек пе?</translation>
 <translation id="2247738527273549923">Құрылғыңызды ұйымыңыз басқарады.</translation>
 <translation id="2249111429176737533">Қойындысы бар терезе етіп ашу</translation>
@@ -2075,6 +2080,7 @@
 <translation id="3036546437875325427">Flash қолданбасын қосу</translation>
 <translation id="3037754279345160234">Доменге қосылу үшін конфигурацияны талдау мүмкін емес. Әкімшіге хабарласыңыз.</translation>
 <translation id="3038612606416062604">Принтерді қолмен енгізу</translation>
+<translation id="3039409644314251320">Әңгімелерді көру, хабарларға жауап беру және топ чаттарына адамдар қосу</translation>
 <translation id="3039491566278747710">Офлайн саясат құрылғыға орнатылмады.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> сайтынан</translation>
@@ -3296,6 +3302,7 @@
 <translation id="431076611119798497">&amp;Мәліметтер</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google аккаунты}other{<ph name="EXTRA_ACCOUNTS" /> Google аккаунты}}</translation>
 <translation id="4312866146174492540">Бөгеу (әдепкі)</translation>
+<translation id="4314497418046265427">Телефонды <ph name="DEVICE_TYPE" /> құрылғысына жалғап, жұмыс өнімділігін арттырыңыз</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
 <translation id="4315933848520197627">Аккаунт байланысын жою</translation>
 <translation id="4316850752623536204">Әзірлеуші веб-сайты</translation>
@@ -3488,6 +3495,7 @@
 <translation id="4519935350946509010">Байланыс қатесі шықты.</translation>
 <translation id="4520385623207007473">Пайдаланылатын cookie файлдары</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> ұсынған белгісіз құрылғылар</translation>
+<translation id="4522351342209941760">Тағы бірнеше рұқсатты қарау үшін телефонға өтіңіз.</translation>
 <translation id="4522570452068850558">Мәліметтер</translation>
 <translation id="4522600456902129422">Бұл сайттың буферді әрі қарай көре беруіне рұқсат беру</translation>
 <translation id="4522890784888918985">Туынды аккаунттарға қолдау көрсетілмейді.</translation>
@@ -4802,6 +4810,7 @@
 
   Ортақ көрсеткіш (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> бит):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">Телефоныңыз бен <ph name="DEVICE_TYPE" /> жалғанды</translation>
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="59174027418879706">Қосылған</translation>
 <translation id="5920543303088087579">Әкімшіңіз бұл желіге қосылу мүмкіндігін өшіріп қойған</translation>
@@ -5342,6 +5351,7 @@
 <translation id="6466258437571594570">Сайттар хабарландырулар жіберуді сұрау кезінде мазаламайтындай етіп бөгеледі.</translation>
 <translation id="6466988389784393586">&amp;Барлық бетбелгілерді ашу</translation>
 <translation id="6467304607960172345">Толық экрандық бейнелерді оңтайландыру</translation>
+<translation id="6467377768028664108">Мұндайда <ph name="DEVICE_TYPE" /> құрылғысы келесілерді орындай алады:</translation>
 <translation id="6468485451923838994">Қаріптер</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> файл</translation>
 <translation id="6469557521904094793">Ұялы байланыс желісін қосу</translation>
@@ -6586,6 +6596,7 @@
 <translation id="7754704193130578113">Жүктеу алдында әр файлды сақтау орнын сұрау</translation>
 <translation id="7755287808199759310">Ата-анаңыз оны сіз үшін бөгеуден шығара алады</translation>
 <translation id="7757592200364144203">Құрылғы атауын өзгерту</translation>
+<translation id="7757739382819740102">Маңайдағы контактілер сізбен дерек бөлісе алады. Мақұлдау талап етіледі.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> бөліскен мәтін</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Дисплей жиектерін реттеңіз</translation>
@@ -6653,6 +6664,7 @@
 <translation id="7814458197256864873">&amp;Көшіру</translation>
 <translation id="7815680994978050279">Қауіпті жүктеп алу әрекеті бөгелді</translation>
 <translation id="7817361223956157679">Экрандағы пернетақта Linux қолданбаларында жұмыс істемейді.</translation>
+<translation id="7817671927108102061">Телефондағы реттеу процесін аяқтаңыз</translation>
 <translation id="7818135753970109980">Жаңа тақырып қосылды (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome Sync</translation>
 <translation id="7820561748632634942">Қосымша ауыстырғыштар тағайындалсын ба?</translation>
@@ -7443,6 +7455,7 @@
 <translation id="8631032106121706562">Гүл</translation>
 <translation id="863109444997383731">Сайттардың сізге хабарландырулар көрсету туралы сұрауына тыйым салынады. Сайт хабарландырулар жіберуге рұқсат сұраса, мекенжай жолағында тыйым салынғаны туралы индикатор пайда болады.</translation>
 <translation id="8633025649649592204">Соңғы іс-әрекеттер</translation>
+<translation id="8634348081024879304">Бұдан былай виртуалды картаны Google Pay қызметінде пайдалана алмайтын боласыз. <ph name="BEGIN_LINK" />Виртуалды карта туралы толығырақ<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Қайта жүктелуде…</translation>
 <translation id="8636284842992792762">Кеңейтімдер дайындалуда…</translation>
 <translation id="8636500887554457830">Сайттардың қалқымалы терезелерді жіберуіне немесе бағытты ауыстыру тәсілдерін пайдалануына рұқсат бермеу</translation>
@@ -7662,6 +7675,7 @@
 <translation id="8838770651474809439">Гамбургер</translation>
 <translation id="8838778928843281408">Телефондарды басқару</translation>
 <translation id="883911313571074303">Кескінді аннотациялау</translation>
+<translation id="8840427996758894516">Телефоныңыз жаныңызда болуы, оның құлпы ашық болуы және Bluetooth бен Wi-Fi қосылып тұруы керек.</translation>
 <translation id="8841843049738266382">Рұқсаты бар пайдаланушылар тізімін оқу және өзгерту</translation>
 <translation id="8842594465773264717">Осы саусақ ізін жою</translation>
 <translation id="8845001906332463065">Анықтама алу</translation>

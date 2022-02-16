@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">قدر <ph name="MINIMUM" /> سے زیادہ یا اس کے برابر ہونا ضروری ہے۔</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650">‎<ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">نشان زد نہیں کیا گیا۔ گروپ میں، <ph name="COUNT" /> میں سے <ph name="INDEX" /> اختیار</translation>
 <translation id="5307600278924710095">براہ کرم '<ph name="ATSIGN" />' کے بعد ایک حصہ درج کریں۔ '<ph name="INVALIDADDRESS" />' نامکمل ہے۔</translation>
 <translation id="5334352251556557839">میڈیا چلانے سے قاصر۔</translation>
 <translation id="537648784377940524">کم سے کم تاریخ (<ph name="MIN_DATE_OR_TIME" />) زیادہ سے زیادہ تاریخ (<ph name="MAX_DATE_OR_TIME" />) سے پہلے آنی چاہیے۔</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">دیگر…</translation>
 <translation id="6709093583001123835">قدر <ph name="VALUE" /> ہونی چاہیے۔</translation>
 <translation id="6709570249143506788">پلے بیک کا خراب معیار</translation>
+<translation id="6719914554879143100">نشان زد کر دیا گیا۔ گروپ میں، <ph name="COUNT" /> میں سے <ph name="INDEX" /> اختیار</translation>
 <translation id="6790428901817661496">چلائیں</translation>
 <translation id="6820355525329141109">پلگ ان لوڈ نہیں ہو سکا۔</translation>
 <translation id="6831465880655513317">سیچوریشن اور روشن کو منتخب کرنے کے ليے دو جہتی سلائیڈر والا کلر ویل</translation>

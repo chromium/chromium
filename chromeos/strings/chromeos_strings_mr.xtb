@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">अयशस्वी झाले - फिल्टर अयशस्वी झाले</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">माझ्याकडे कीपेअर आहे</translation>
+<translation id="1442433966118452622">इमेजचा स्रोत</translation>
 <translation id="1451536289672181509">डिव्हाइस हे कीबोर्ड आहे.</translation>
 <translation id="1468664791493211953">ऑफर</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> हे डिव्हाइस व्यवस्थापित करतो आणि तो तुमच्या अ‍ॅक्टिव्हिटीचे निरीक्षण करू शकतो.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">दैनिक रिफ्रेश</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2695514675076754339">८ वर्णांचा अनलॉक कोड एंटर करा</translation>
+<translation id="2712812801627182647">TLS ऑथेंटिकेशन की</translation>
 <translation id="2740531572673183784">ठीक आहे</translation>
 <translation id="2751739896257479635">EAP टप्पा 2 ऑथेंटिकेशन</translation>
 <translation id="2783010256799387990">पास झाले</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">अयशस्वी झाले - दार उघडे आहे</translation>
 <translation id="3283504360622356314">{0,plural, =1{फाइल संपादित करा}other{फाइल संपादित करा}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">कीची दिशा</translation>
 <translation id="3310640316857623290">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा लक्षणीयरीत्या जास्त आहे</translation>
 <translation id="3328783797891415197">चाचणी रन होत आहे</translation>
 <translation id="3340011300870565703">डिव्हाइसच्या उजव्या बडच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS चा पासवर्ड अपडेट करण्यात आला</translation>
 <translation id="4773299976671772492">थांबविले</translation>
 <translation id="4782311465517282004">तुम्ही मजकुरावर राइट-क्लिक करता तेव्हा किंवा त्याला स्पर्श करून तो धरून ठेवता तेव्हा व्याख्या, भाषांतरे किंवा युनिट रूपांतरे मिळवा</translation>
+<translation id="4793756956024303490">काँप्रेशन अल्गोरिदम</translation>
 <translation id="4794140124556169553">सीपीयू चाचणी रन केल्याने तुमच्या सिस्टमच्या परफॉर्मन्सवर परिणाम होऊ शकतो</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> हे प्रिंट कार्य रद्द केले</translation>
 <translation id="4813136279048157860">माझ्या इमेज</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS रिझोल्यूशन</translation>
 <translation id="4848429997038228357">रन होत आहे</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} प्रयत्न शिल्लक}other{<ph name="ERROR_MESSAGE" /> {0} प्रयत्न शिल्लक}}</translation>
+<translation id="4873827928179867585">ऑथेंटिकेशन अल्गोरिदम</translation>
 <translation id="4880328057631981605">ॲक्सेसबिंदूचे नाव</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">तत्काळ नवीन निवडा</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">अहवाल लपवा</translation>
 <translation id="500920857929044050">चाचणी थांबवा</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">तुमची स्क्रीन निष्क्रिय असते, तेव्‍हा फोटो, वेळ, हवामान आणि मीडियाशी संबंधित माहिती दाखवा.</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5049856988445523908">सिम लॉक केले (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">गट नाव</translation>
@@ -436,6 +442,7 @@
 <translation id="6618744767048954150">रन होत आहे</translation>
 <translation id="6620487321149975369">प्रिंट जॉब मॅन्‍युअली काढून टाकेपर्यंत इतिहासामध्ये दिसतील</translation>
 <translation id="6643016212128521049">साफ करा</translation>
+<translation id="6647510110698214773">एंक्रिप्शन अल्गोरिदम</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
 <translation id="6704062477274546131">DNS रिझोल्युशन</translation>

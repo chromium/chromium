@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Yehlulekile - Isihlungi sehlulekile</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Nginokhiye obhanqwayo</translation>
+<translation id="1442433966118452622">Umthombo wesithombe</translation>
 <translation id="1451536289672181509">Idivayisi iyikhibhodi.</translation>
 <translation id="1468664791493211953">Ukunikezwa</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> iphatha le divayisi futhi ingakwazi ukwengamela umsebenzi wakho.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Ukuvuselela kwansuku zonke</translation>
 <translation id="2620436844016719705">Isistimu</translation>
 <translation id="2695514675076754339">Faka ikhodi yokuvula enezinhlamvu eziyi-8</translation>
+<translation id="2712812801627182647">Ukhiye wokufakazela ubuqiniso be-TLS</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">Ukufakazela ubuqiniso kabili kwesigaba se-EAP</translation>
 <translation id="2783010256799387990">KUPHUMELELE</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Yehlulekile - Umnyango uvuliwe</translation>
 <translation id="3283504360622356314">{0,plural, =1{Hlela ifayela}one{Hlela amafayela}other{Hlela amafayela}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">Isikhombisi-ndlela esiwukhiye</translation>
 <translation id="3310640316857623290">Ukubambezeleka kwe-DNS kungaphezulu kakhulu komkhawulo ovumelekile</translation>
 <translation id="3328783797891415197">Ukuhlolwa kuyaqhubeka</translation>
 <translation id="3340011300870565703">Idivayisi ine-bud yebhethri engakwesokudla engu-<ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Iphasiwedi ye-Chrome OS ibuyekeziwe</translation>
 <translation id="4773299976671772492">Imisiwe</translation>
 <translation id="4782311465517282004">Thola izincazelo, ukuhunyushwa, noma ukuguqulwa kweyunithi lapho uchofoza ngakwesokudla noma uthinta uphinde ubambe umbhalo</translation>
+<translation id="4793756956024303490">Ukuminyaniswa kwe-algorithm</translation>
 <translation id="4794140124556169553">Ukuqalisa ukuhlola kwe-CPU kungaphazamisa ukusebenza kwesistimu yakho</translation>
 <translation id="4808449224298348341">Umsebenzi wokuphrinta i-<ph name="DOCUMENT_TITLE" /> ukhanseliwe</translation>
 <translation id="4813136279048157860">Izithombe zami</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) ukucaca kwe-DNS</translation>
 <translation id="4848429997038228357">IYAQHUBEKA</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> kusele umzamo ongu-{0}}one{<ph name="ERROR_MESSAGE" /> kusele imizamo engu-{0}}other{<ph name="ERROR_MESSAGE" /> kusele imizamo engu-{0}}}</translation>
+<translation id="4873827928179867585">Ukufakazela ubuqiniso be-algorithm</translation>
 <translation id="4880328057631981605">Igama lephoyinti lokufinyelela</translation>
 <translation id="4885705234041587624">I-MSCHAPv2</translation>
 <translation id="4890353053343094602">Khetha elisha elilodwa ngokushesha</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Fihla umbiko</translation>
 <translation id="500920857929044050">Misa ukuhlola</translation>
 <translation id="5017508259293544172">I-LEAP</translation>
+<translation id="5019310272469539976">Uma isikrini sakho singasebenzi, bonisa izithombe, isikhathi, isimo sezulu, nolwazi lwemidiya.</translation>
 <translation id="5039804452771397117">Vumela</translation>
 <translation id="5049856988445523908">I-SIM Ikhiyiwe (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Igama leqembu</translation>
@@ -436,6 +442,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="6618744767048954150">Uyagijima</translation>
 <translation id="6620487321149975369">Imisebenzi yokuphrinta izovela emlandweni ngaphandle kwalapho uma isuswe mathupha</translation>
 <translation id="6643016212128521049">Sula</translation>
+<translation id="6647510110698214773">Ukubethela i-algorithm</translation>
 <translation id="6657585470893396449">Igama lokungena</translation>
 <translation id="6692996468359469499">Thola ukwaziswa okuhlobene nokhetho lwakho</translation>
 <translation id="6704062477274546131">Ukulungiswa kwe-DNS</translation>

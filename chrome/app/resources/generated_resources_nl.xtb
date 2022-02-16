@@ -497,6 +497,7 @@
 <translation id="1506061864768559482">Zoekmachine</translation>
 <translation id="1507170440449692343">Deze pagina heeft geen toegang tot je camera.</translation>
 <translation id="1507246803636407672">&amp;Annuleren</translation>
+<translation id="1507884455975553832">Berichten-apps streamen</translation>
 <translation id="1509163368529404530">G&amp;roep herstellen</translation>
 <translation id="1509281256533087115">Toegang tot <ph name="DEVICE_NAME_AND_VENDOR" /> via USB</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -599,6 +600,7 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> vergeten</translation>
 <translation id="1603914832182249871">(Incognito)</translation>
 <translation id="1604432177629086300">Kan niet afdrukken. Controleer de printer en probeer het opnieuw.</translation>
+<translation id="1604576689725077412">Houd er rekening mee dat als je meldingen sluit op je Chromebook, ze ook worden gesloten op je telefoon.</translation>
 <translation id="1605744057217831567">Alle sitegegevens en -rechten bekijken</translation>
 <translation id="1606077700029460857">Muisinstellingen wijzigen</translation>
 <translation id="1606566847233779212">De specifieke sites verwijderen die je hebt toegevoegd?</translation>
@@ -709,6 +711,7 @@
 <translation id="1697150536837697295">Kunst</translation>
 <translation id="1697686431566694143">Bestand bewerken</translation>
 <translation id="1700079447639026019">Sites die nooit cookies mogen gebruiken</translation>
+<translation id="1700201317341192482">Je virtuele kaart verwijderen</translation>
 <translation id="1703331064825191675">Maak je nooit meer zorgen over je wachtwoorden</translation>
 <translation id="1703666494654169921">Niet toestaan dat sites virtualreality-apparaten of -gegevens gebruiken</translation>
 <translation id="1704097193565924901">Beginhoofdletters van maken</translation>
@@ -1021,6 +1024,7 @@
 <translation id="2006638907958895361">Link openen in <ph name="APP" /></translation>
 <translation id="2007404777272201486">Een probleem melden...</translation>
 <translation id="2010501376126504057">Geschikte apparaten</translation>
+<translation id="2011968031299471357">Berichten ontvangen en erop reageren</translation>
 <translation id="2015232545623037616">Pc en Chromecast op hetzelfde wifi-netwerk</translation>
 <translation id="2016473077102413275">Functies die afhankelijk zijn van afbeeldingen, werken niet</translation>
 <translation id="2016574333161572915">Je Google Meet-hardware kan worden ingesteld</translation>
@@ -1261,6 +1265,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2241053333139545397">Je gegevens lezen en wijzigen op een aantal websites</translation>
 <translation id="2241634353105152135">Slechts één keer</translation>
 <translation id="2242687258748107519">Bestandsinformatie</translation>
+<translation id="2243381895573964397">Telefoonmeldingen krijgen</translation>
 <translation id="2246549592927364792">Afbeeldingsbeschrijvingen ophalen van Google?</translation>
 <translation id="2247738527273549923">Je apparaat wordt beheerd door je organisatie</translation>
 <translation id="2249111429176737533">Openen als venster met tabbladen</translation>
@@ -2078,6 +2083,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3036546437875325427">Flitser aanzetten</translation>
 <translation id="3037754279345160234">Kan de configuratie voor domeinkoppeling niet parseren. Neem contact op met je beheerder.</translation>
 <translation id="3038612606416062604">Handmatig een printer toevoegen</translation>
+<translation id="3039409644314251320">Gesprekken bekijken, reageren op berichten en mensen toevoegen aan groepschats</translation>
 <translation id="3039491566278747710">Offline beleid instellen op het apparaat is mislukt.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Van <ph name="ORIGIN" /></translation>
@@ -2615,6 +2621,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="362266093274784978">{COUNT,plural, =1{een app}other{# apps}}</translation>
 <translation id="362333465072914957">Wachten tot de certificeringsinstantie (CA) een certificaat uitgeeft</translation>
 <translation id="3624567683873126087">Apparaat ontgrendelen en inloggen op Google-account</translation>
+<translation id="3624583033347146597">Je voorkeuren voor cookies van derden kiezen</translation>
 <translation id="3625481642044239431">Ongeldig bestand geselecteerd. Probeer het opnieuw.</translation>
 <translation id="3626296069957678981">Gebruik een geschikte Dell-batterij voor het opladen van deze Chromebook.</translation>
 <translation id="3627320433825461852">Minder dan 1 minuut resterend</translation>
@@ -3299,6 +3306,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="431076611119798497">&amp;Details</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-account}other{<ph name="EXTRA_ACCOUNTS" /> Google-accounts}}</translation>
 <translation id="4312866146174492540">Blokkeren (standaard)</translation>
+<translation id="4314497418046265427">Wees productiever door je telefoon te verbinden met je <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314815835985389558">Synchronisatie beheren</translation>
 <translation id="4315933848520197627">Account ontkoppelen</translation>
 <translation id="4316850752623536204">Website van ontwikkelaar</translation>
@@ -3491,6 +3499,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4519935350946509010">Verbindingsfout.</translation>
 <translation id="4520385623207007473">Gebruikte cookies</translation>
 <translation id="452039078290142656">onbekende apparaten van <ph name="VENDOR_NAME" /></translation>
+<translation id="4522351342209941760">Check nog een paar rechten op je telefoon.</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4522600456902129422">Bekijken van het klembord door deze site blijven toestaan</translation>
 <translation id="4522890784888918985">Onderliggende accounts worden niet ondersteund</translation>
@@ -4803,6 +4812,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 
   Openbare exponent (<ph name="PUBLIC_EXPONENT_NUM_BITS" />-bits):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">Je telefoon en <ph name="DEVICE_TYPE" /> zijn verbonden</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="59174027418879706">Aangezet</translation>
 <translation id="5920543303088087579">Verbinding met dit netwerk is uitgezet door je beheerder</translation>
@@ -5343,6 +5353,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6466258437571594570">Sites mogen je niet storen met de vraag of ze je meldingen mogen sturen</translation>
 <translation id="6466988389784393586">Alle bookmarks &amp;openen</translation>
 <translation id="6467304607960172345">Video's op volledig scherm optimaliseren</translation>
+<translation id="6467377768028664108">Je <ph name="DEVICE_TYPE" /> kan dan het volgende doen:</translation>
 <translation id="6468485451923838994">Lettertypen</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> bestanden</translation>
 <translation id="6469557521904094793">Mobiel netwerk aanzetten</translation>
@@ -6587,6 +6598,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7754704193130578113">Voorafgaand aan een download vragen waar een bestand moet worden opgeslagen</translation>
 <translation id="7755287808199759310">Je ouder of voogd kan de blokkering van deze site opheffen</translation>
 <translation id="7757592200364144203">Apparaatnaam wijzigen</translation>
+<translation id="7757739382819740102">Contacten in de buurt kunnen content met je delen. Goedkeuring is vereist.</translation>
 <translation id="7757787379047923882">Tekst gedeeld vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">De grenzen van je display aanpassen</translation>
@@ -6653,6 +6665,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7814458197256864873">&amp;Kopiëren</translation>
 <translation id="7815680994978050279">Gevaarlijke download geblokkeerd</translation>
 <translation id="7817361223956157679">Het schermtoetsenbord werkt nog niet in Linux-apps</translation>
+<translation id="7817671927108102061">Rond het instellen af op je telefoon</translation>
 <translation id="7818135753970109980">Nieuw thema toegevoegd (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome-synchronisatie</translation>
 <translation id="7820561748632634942">Extra schakelaars toewijzen?</translation>
@@ -7444,6 +7457,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8631032106121706562">Madeliefje</translation>
 <translation id="863109444997383731">We voorkomen dat sites je vragen om meldingen te bekijken. Als een site om meldingen vraagt, zie je in de adresbalk de indicator Geblokkeerd.</translation>
 <translation id="8633025649649592204">Recente activiteit</translation>
+<translation id="8634348081024879304">Je kunt je virtuele kaart niet meer gebruiken met Google Pay. <ph name="BEGIN_LINK" />Meer informatie over virtuele kaarten<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Opnieuw laden...</translation>
 <translation id="8636284842992792762">Extensies initialiseren…</translation>
 <translation id="8636500887554457830">Niet toestaan dat sites pop-ups sturen of omleidingen gebruiken</translation>
@@ -7664,6 +7678,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Telefoons beheren</translation>
 <translation id="883911313571074303">Afbeelding annoteren</translation>
+<translation id="8840427996758894516">Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="8841843049738266382">Gebruikers op de toelatingslijst lezen en wijzigen</translation>
 <translation id="8842594465773264717">Deze vingerafdruk verwijderen</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>

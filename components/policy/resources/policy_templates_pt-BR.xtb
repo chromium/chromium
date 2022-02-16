@@ -2840,6 +2840,26 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for definida como "Desativada", nenhuma política será ignorada por causa da origem. As políticas serão ignoradas apenas se houver um conflito e a política não tiver a maior prioridade.
 
       Se a política for definida com base em uma origem na nuvem, ela não poderá ser destinada a um usuário específico.</translation>
+<translation id="4166865262840412074">Esta política permite por padrão o clustering do agente com origin-key.
+
+      O cabeçalho HTTP Origin-Agent-Cluster: controla se um documento está
+      isolado em um cluster de agente com origin-key ou
+      com site-key. Como um cluster de agente com origin-key permite o isolamento de
+      documentos por origem, esse processo afeta a segurança. A consequência visível
+      para o desenvolvedor é a impossibilidade de definir o acessador
+      document.domain.
+
+      O comportamento padrão, quando nenhum cabeçalho Origin-Agent-Cluster: tiver sido definido,
+      muda de site-key para origin-key na versão M106. Se esta política
+      for ativada ou for deixada sem definição, o navegador vai seguir o novo padrão dessa
+      versão em diante. Se a política for desativada, a mudança será revertida e os
+      documentos sem cabeçalhos Origin-Agent-Cluster: serão atribuídos a
+      clusters de agente com site-key. Consequentemente, o acessador document.domain
+      vai permanecer definível por padrão. Esse comportamento é correspondente ao legado.
+
+      Veja mais detalhes em https://developer.chrome.com/blog/immutable-document-domain/
+      (link em inglês).
+      </translation>
 <translation id="4169692397912242417">Ativar o recurso de acessibilidade de feedback falado na tela de login.
 
           Se esta política for definida como verdadeira, o feedback falado sempre ficará ativado na tela de login.
@@ -3273,6 +3293,33 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="475479145997699293">Se a política for definida como <ph name="ASK_FILE_HANDLING" />, os apps da Web poderão solicitar acesso a tipos de arquivos usando a API File Handling. Se a política for definida como <ph name="BLOCK_FILE_HANDLING" />, o acesso será negado.
 
       Se ela não for definida, os apps da Web solicitarão acesso, mas os usuários poderão mudar a configuração.</translation>
+<translation id="4755492101519343259">Configura uma lista de regras para evitar vazamentos de dados no <ph name="PRODUCT_OS_NAME" />.
+      Vazamentos de dados podem acontecer ao copiar e colar dados, transferir arquivos, imprimir, compartilhar ou capturar a tela etc.
+
+      Cada regra consiste no seguinte:
+      - Uma lista de origens definidas como URLs. Qualquer dado nas origens será considerado confidencial, e as restrições serão aplicadas a eles.
+      - Uma lista de destinos definidos como URLs ou componentes, em que os dados confidenciais terão permissão ou não para serem compartilhados.
+      - Uma lista de restrições a serem aplicadas aos dados das origens.
+
+      As regras podem ser aplicadas para:
+      - controlar os dados na área de transferência compartilhados entre as origens e os destinos;
+      - controlar as capturas de telas de qualquer uma das origens;
+      - controlar a impressão de qualquer uma das origens;
+      - controlar a tela de privacidade quando qualquer uma das origens estiver visível.
+      - controlar o compartilhamento de tela de qualquer uma das origens.
+
+      O nível de restrição pode ser definido como BLOCK, ALLOW, REPORT ou WARN (bloquear, autorizar, denunciar ou alertar).
+      - Se a restrição for definida como BLOCK, a ação não será autorizada. Se <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> for definida como verdadeira, a ação bloqueada será denunciada para o administrador.
+      - Se a restrição for definida como ALLOW, a ação será autorizada.
+      - Se a restrição for definida como REPORT e <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> for definida como verdadeira, a ação será denunciada para o administrador.
+      - Se a restrição for definida como WARN, o usuário será alertado e poderá escolher entre continuar ou cancelar a ação. Se <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> for definida como verdadeira, a exibição do alerta será enviada ao administrador. Se o usuário continuar a ação, essa informação também será enviada.
+
+      Observações:
+      - Restrições PRIVACY_SCREEN não bloqueiam a capacidade de ativar a tela de privacidade, mas forçam o uso dela quando a classe de restrição é definida como BLOCK.
+      - Os destinos não podem ficar vazios caso uma das restrições seja CLIPBOARD, mas eles não vão afetar as outras restrições.
+      - Formate o padrões de URL da maneira descrita em https://www.chromium.org/administrators/url-blocklist-filter-format.
+
+      Se a política não for definida, nenhuma restrição será aplicada.</translation>
 <translation id="4757053978738874325">Ativar o recurso de acessibilidade de áudio mono.
 
           Este recurso é responsável pela saída de áudio estéreo, que inclui os canais esquerdo e direito, para que cada ouvido possa receber sons diferentes.

@@ -128,6 +128,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1698760176351776263">Anwani ya IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Eneokazi: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Mipangilio ya Mtandao</translation>
+<translation id="1715293566947629045">Inazima wasifu. Subiri dakika kadhaa.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Kipengele cha Manukuu Papo Hapo kimewashwa.</translation>
 <translation id="1720011244392820496">Washa kipengele cha Usawazishaji Wi-Fi</translation>
@@ -273,6 +274,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2750932254614666392">"Futa"</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> inadhibitiwa na <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Funga hali ya kupiga picha</translation>
+<translation id="2791421900609674576">Utaona mapendekezo ili uweze kuendelea ulipoachia. Unaweza kugusa na ushikilie ili kuondoa mapendekezo.</translation>
 <translation id="2792498699870441125">Alt + Utafutaji</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2803313416453193357">Fungua folda</translation>
@@ -396,6 +398,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Sasisha kifaa ndani ya dakika moja}other{Sasisha kifaa ndani ya dakika #}}</translation>
 <translation id="353086728817903341">Imeunganishwa kwenye vifaa <ph name="NUM_DEVICES" /></translation>
+<translation id="3542066395059568317">Utaona mapendekezo ili uweze kuendelea ulipoachia. Unaweza kubofya kulia ili kuondoa mapendekezo.</translation>
 <translation id="3552189655002856821">Wi-Fi imezimwa</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> imebandikwa</translation>
 <translation id="3560866052109807830">Zana za kuchora za kitia alama</translation>

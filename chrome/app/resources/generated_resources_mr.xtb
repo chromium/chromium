@@ -500,6 +500,7 @@
 <translation id="1506061864768559482">शोध इंजीन</translation>
 <translation id="1507170440449692343">हे पृष्ठ आपल्या कॅमेर्‍यावर प्रवेश करण्यापासून अवरोधित केले गेले आहे.</translation>
 <translation id="1507246803636407672">&amp;टाकून द्या</translation>
+<translation id="1507884455975553832">मेसेजिंग ॲप्स स्ट्रीम करा</translation>
 <translation id="1509163368529404530">&amp;गट रिस्टोअर करा</translation>
 <translation id="1509281256533087115">USB द्वारे कोणतेही <ph name="DEVICE_NAME_AND_VENDOR" /> ॲक्सेस करा</translation>
 <translation id="1510238584712386396">लाँचर</translation>
@@ -601,6 +602,7 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> विसरा</translation>
 <translation id="1603914832182249871">(गुप्त)</translation>
 <translation id="1604432177629086300">प्रिंट करू शकलो नाही. प्रिंटर तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="1604576689725077412">लक्षात ठेवा, की तुमच्या Chromebook वर सूचना डिसमिस केल्याने त्या तुमच्या फोनवरूनदेखील डिसमिस होतील.</translation>
 <translation id="1605744057217831567">सर्व साइट डेटा आणि परवानग्या पहा</translation>
 <translation id="1606077700029460857">माउस सेटिंग्ज बदला</translation>
 <translation id="1606566847233779212">तुम्ही जोडलेल्या विशिष्ट साइट काढून टाकायच्या आहेत का?</translation>
@@ -711,6 +713,7 @@
 <translation id="1697150536837697295">कला</translation>
 <translation id="1697686431566694143">फाइल संपादित करा</translation>
 <translation id="1700079447639026019">कधीही कुकी वापरू न शकणार्‍या साइट</translation>
+<translation id="1700201317341192482">तुमचे व्हर्च्युअल कार्ड काढून टाका</translation>
 <translation id="1703331064825191675">तुमच्या पासवर्डची कधीही चिंता करू नका</translation>
 <translation id="1703666494654169921">साइटना आभासी वास्तविकता डिव्हाइस किंवा डेटा वापरण्याची अनुमती देऊ नका</translation>
 <translation id="1704097193565924901">कॅपिटल करणे</translation>
@@ -1032,6 +1035,7 @@
 <translation id="2006638907958895361">लिंक <ph name="APP" /> मध्ये उघडा</translation>
 <translation id="2007404777272201486">समस्या नोंदवा...</translation>
 <translation id="2010501376126504057">कंपॅटिबल डिव्हाइस</translation>
+<translation id="2011968031299471357">मेसेज मिळवा आणि त्यांना प्रतिसाद द्या</translation>
 <translation id="2015232545623037616">PC आणि Chromecast एकाच वाय-फाय नेटवर्कशी कनेक्ट केले आहेत</translation>
 <translation id="2016473077102413275">इमेजची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="2016574333161572915">तुमचे Google Meet हार्डवेअर सेट करण्यासाठी तयार आहे</translation>
@@ -1272,6 +1276,7 @@
 <translation id="2241053333139545397">अनेक वेबसाइटवर तुमचा डेटा वाचा आणि बदला</translation>
 <translation id="2241634353105152135">फक्त एकदाच</translation>
 <translation id="2242687258748107519">फाईल माहिती</translation>
+<translation id="2243381895573964397">फोनशी संबंधित सूचना मिळवणे</translation>
 <translation id="2246549592927364792">Google वरून इमेज वर्णन मिळवायचे आहे का?</translation>
 <translation id="2247738527273549923">हे डिव्हाइस तुमच्या संस्थेने व्यवस्थापित केलेले आहे</translation>
 <translation id="2249111429176737533">टॅब असलेली विंडो म्हणून उघडा</translation>
@@ -2093,6 +2098,7 @@
 <translation id="3036546437875325427">फ्लॅश सुरू करा</translation>
 <translation id="3037754279345160234">डोमेनला कॉंफिगरेशनमध्ये सामील करण्यासाठी पार्स करू शकत नाही. कृपया तुमच्या ॲडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="3038612606416062604">एक प्रिंटर व्यक्तिचलितपणे जोडा</translation>
+<translation id="3039409644314251320">संभाषणे पहा, मेसेजवर प्रतिक्रिया द्या आणि लोकांना गट चॅटमध्ये जोडा</translation>
 <translation id="3039491566278747710">डिव्हाइसवर ऑफलाइन धोरण इंस्टॉल करता आले नाही.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> वरून</translation>
@@ -3312,6 +3318,7 @@
 <translation id="431076611119798497">&amp;तपशील</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{एक Google खाते}other{<ph name="EXTRA_ACCOUNTS" /> Google खाती}}</translation>
 <translation id="4312866146174492540">अवरोधित करा (डीफॉल्ट)</translation>
+<translation id="4314497418046265427">तुम्ही तुमचा फोन तुमच्या <ph name="DEVICE_TYPE" /> शी कनेक्ट करताना आणखी उत्पादनक्षम व्हा</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापित करा</translation>
 <translation id="4315933848520197627">खात्याची लिंक काढून टाका</translation>
 <translation id="4316850752623536204">डेव्हलपर वेबसाइट</translation>
@@ -3505,6 +3512,7 @@
 <translation id="4519935350946509010">कनेक्शन एरर.</translation>
 <translation id="4520385623207007473">वापरात असलेल्या कुकीज</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> कडील अज्ञात डिव्हाइस</translation>
+<translation id="4522351342209941760">आणखी परवानग्यांचे पुनरावलोकन करण्यासाठी, तुमच्या फोनवर जा.</translation>
 <translation id="4522570452068850558">तपशील</translation>
 <translation id="4522600456902129422">या साइटला क्लिपबोर्ड पाहण्याची नेहमी अनुमती द्या</translation>
 <translation id="4522890784888918985">लहान मुलाच्या खात्यांना सपोर्ट नाही</translation>
@@ -4819,6 +4827,7 @@
 
   सार्वजनिक एक्सपोनेंट (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> बिट):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">तुमचा फोन आणि <ph name="DEVICE_TYPE" /> हे कनेक्ट केले आहे</translation>
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="59174027418879706">सक्षम</translation>
 <translation id="5920543303088087579">तुमच्या ॲडमिनिस्ट्रेटरने या नेटवर्कशी कनेक्‍ट करणे अक्षम केले आहे</translation>
@@ -5360,6 +5369,7 @@
 <translation id="6466258437571594570">साइट या सूचना पाठवण्याची विनंती करतात तेव्हा त्यांना तुमच्या कामामध्ये व्यत्यय आणण्यापासून ब्लॉक केले जाते</translation>
 <translation id="6466988389784393586">सर्व बुकमार्क &amp;उघडा</translation>
 <translation id="6467304607960172345">फुलस्क्रीन व्हिडिओ ऑप्टिमाइझ करा</translation>
+<translation id="6467377768028664108">त्यानंतर तुमचे <ph name="DEVICE_TYPE" /> पुढील गोष्टी करू शकते:</translation>
 <translation id="6468485451923838994">फॉंट</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> फाइल</translation>
 <translation id="6469557521904094793">मोबाइल नेटवर्क सुरू करा</translation>
@@ -6604,6 +6614,7 @@
 <translation id="7754704193130578113">डाउनलोड करण्यापूर्वी प्रत्येक फाइल कुठे सेव्ह करावी ते विचारा</translation>
 <translation id="7755287808199759310">तुमचे पालक तुमच्यासाठी ती अनावरोधित करू शकतात</translation>
 <translation id="7757592200364144203">डिव्हाइसचे नाव बदला</translation>
+<translation id="7757739382819740102">जवळपास असलेले संपर्क तुमच्यासोबत शेअर करू शकतात. मंजुरी आवश्यक असेल.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> वरून शेअर केलेला मजकूर</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">तुमच्या डिस्प्लेच्या सीमा समायोजित करा</translation>
@@ -6669,6 +6680,7 @@
 <translation id="7814458197256864873">&amp;कॉपी करा</translation>
 <translation id="7815680994978050279">धोकादायक डाउनलोड ब्लॉक केले</translation>
 <translation id="7817361223956157679">ऑन-स्क्रीन कीबोर्ड सध्या Linux ॲप्समध्ये काम करत नाही</translation>
+<translation id="7817671927108102061">तुमच्या फोनवर सेटअप पूर्ण करणे</translation>
 <translation id="7818135753970109980">नवीन थीम जोडली (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome सिंक</translation>
 <translation id="7820561748632634942">अतिरिक्त स्विच असाइन करायचे आहेत का?</translation>
@@ -7461,6 +7473,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8631032106121706562">पाकळ्या</translation>
 <translation id="863109444997383731">तुम्हाला सूचना दाखवण्यास सांगण्यापासून साइट ब्लॉक केल्या जातील. साइटने सूचनांची विनंती केल्यास, अ‍ॅड्रेस बारमध्ये ब्लॉक केलेले इंडिकेटर दिसेल.</translation>
 <translation id="8633025649649592204">अलीकडील अ‍ॅक्टिव्हिटी</translation>
+<translation id="8634348081024879304">तुम्ही यापुढे तुमचे व्हर्च्युअल कार्ड Google Pay सोबत वापरू शकणार नाही. <ph name="BEGIN_LINK" />व्हर्च्युअल कार्डबद्दल जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">रीलोड करत आहे…</translation>
 <translation id="8636284842992792762">एक्स्टेंशनला सुरुवात करत आहे...</translation>
 <translation id="8636500887554457830">साइटना पॉप-अप पाठवण्याची किंवा रीडिरेक्‍ट वापरण्याची अनुमती देऊ नका</translation>
@@ -7681,6 +7694,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8838770651474809439">हॅमबर्गर</translation>
 <translation id="8838778928843281408">फोन व्यवस्थापित करा</translation>
 <translation id="883911313571074303">इमेजवर भाष्य करा</translation>
+<translation id="8840427996758894516">तुमचा फोन जवळपास असल्याची, तो अनलॉक केला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू केले असल्याची खात्री करा.</translation>
 <translation id="8841843049738266382">अनुमती दिलेल्या सूची मधील वापरकर्ते पहा आणि बदला</translation>
 <translation id="8842594465773264717">हे फिंगरप्रिंट हटवा</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>

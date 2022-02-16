@@ -241,6 +241,7 @@
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> кеңейтімін бөлісу</translation>
 <translation id="3083975830683400843">Chromebit құрылғылары</translation>
 <translation id="3085752524577180175">SOCKS хосты</translation>
+<translation id="3104793765551262433">Желі: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімші бөгеген, мәліметтер</translation>
 <translation id="3113153474486991170">Бұл орыннан "<ph name="PATH" />" файлы ашылмады. Ашу үшін "Менің файлдарым" қалтасына көшіріңіз.</translation>
 <translation id="3113592018909187986">1 әрекет қалды. Жаңа PIN кодын орнатпайынша, бұл желіні пайдалана алмайсыз.</translation>
 <translation id="3124404833828281817">Қиялдап жатқан адам</translation>
@@ -882,6 +883,7 @@
 <translation id="8551494947769799688">латыш</translation>
 <translation id="8560515948038859357">Кантон</translation>
 <translation id="8561206103590473338">Піл</translation>
+<translation id="8566466896628108558">Желі: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімші бөгеген, мәліметтер</translation>
 <translation id="8569764466147087991">Ашу үшін файлды таңдаңыз</translation>
 <translation id="8577897833047451336">Хорват</translation>
 <translation id="8578308463707544055">Индонезия</translation>

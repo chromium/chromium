@@ -45,6 +45,7 @@
 <translation id="492284538114688557">가격 인하 항목 발견</translation>
 <translation id="5007392906805964215">검토</translation>
 <translation id="5073204694187207510">전체화면 그리드 숨기기</translation>
+<translation id="5076161749301278626">매장 리뷰를 확인하시겠습니까?</translation>
 <translation id="5082793167783849073">그룹을 만들어서 페이지를 빠르게 비교하세요. 시작하려면 링크를 길게 터치합니다.</translation>
 <translation id="5490235265819901748">탭 그룹 펼침</translation>
 <translation id="5533021382642990449">계속 표시</translation>
@@ -71,6 +72,7 @@
 <translation id="7326879924029668159">반품 정책 등 확인하기</translation>
 <translation id="7352298686197644113">열려 있는 탭의 상품 중 가격이 더 낮은 상품을 확인합니다.</translation>
 <translation id="753732157349120914">탭 전환 도구</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{Google에서 찾은 리뷰 <ph name="REVIEWS_COUNT_ONE" />개}other{Google에서 찾은 리뷰 <ph name="REVIEWS_COUNT_MANY" />개}}</translation>
 <translation id="7559245342362162951">그룹 탭을 전체화면 그리드로 표시</translation>
 <translation id="7792771145871471484">추천을 검토합니다.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 그룹화}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 그룹화}}</translation>

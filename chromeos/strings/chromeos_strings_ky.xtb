@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Басылып чыгарылган жок - Чыпка иштебей калды</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Менде жуп ачкыч бар</translation>
+<translation id="1442433966118452622">Сүрөттүн булагы</translation>
 <translation id="1451536289672181509">Түзмөк — баскычтоп.</translation>
 <translation id="1468664791493211953">Сунуштар</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> бул түзмөктү башкарат жана аракеттериңизди да көзөмөлдөшү мүмкүн.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Күн сайын жаңыртуу</translation>
 <translation id="2620436844016719705">Тутум</translation>
 <translation id="2695514675076754339">8 символдон турган кодду киргизип, кулпусун ачыңыз</translation>
+<translation id="2712812801627182647">TLS аутентификация ачкычы</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP 2-фазадагы аныктыгын текшерүү</translation>
 <translation id="2783010256799387990">ТЕКШЕРҮҮДӨН ӨТТҮ</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Басылып чыгарылган жок - Принтердин эшиги ачык</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлды түзөтүү}other{Файлдарды түзөтүү}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
+<translation id="3291996639387199448">Ачкычтын багыты</translation>
 <translation id="3310640316857623290">DNS күтүү убакыты уруксат берилген босогодон бир кыйла жогору</translation>
 <translation id="3328783797891415197">Сыноо аткарылууда</translation>
 <translation id="3340011300870565703">Түзмөктүн оң кулакчынынын батареясынын деңгээли: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS сырсөзү өзгөрдү</translation>
 <translation id="4773299976671772492">Токтотулду</translation>
 <translation id="4782311465517282004">Текстти коё бербей басып же оң баскычты чыкылдатканыңызда бирдиктер которулуп же аныктамаларды жана котормолорду аласыз</translation>
+<translation id="4793756956024303490">Кысуунун алгоритми</translation>
 <translation id="4794140124556169553">CPU сыноосу иштетилсе, тутумдун ишине кедергиси тийиши мүмкүн</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> документин басып чыгаруу токтотулду</translation>
 <translation id="4813136279048157860">Менин сүрөттөрүм</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS дааналыгы</translation>
 <translation id="4848429997038228357">АТКАРЫЛУУДА</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} аракет калды}other{<ph name="ERROR_MESSAGE" /> {0} аракет калды}}</translation>
+<translation id="4873827928179867585">Аутентификациянын алгоритми</translation>
 <translation id="4880328057631981605">Жетки чекитинин аты</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Дароо жаңы сырсөз тандаңыз</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Отчётту жашыруу</translation>
 <translation id="500920857929044050">Сынакты токтотуу</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Сенек мезгилде экранда сүрөттөрдү, убакытты, аба ырайын жана медиа маалыматты көрсөтүү.</translation>
 <translation id="5039804452771397117">Уруксат берүү</translation>
 <translation id="5049856988445523908">SIM карта кулпуланды (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Топтун аталышы:</translation>
@@ -436,6 +442,7 @@
 <translation id="6618744767048954150">Иштеп жатат</translation>
 <translation id="6620487321149975369">Басып чыгаруу тапшырмаларын кол менен өчүрмөйүнчө, алар таржымалда сакталат</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
+<translation id="6647510110698214773">Шифрлөөнүн алгоритми</translation>
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6692996468359469499">Сиз тандаган нерсеге тиешелүү маалыматты алуу</translation>
 <translation id="6704062477274546131">DNS дааналыгы</translation>

@@ -840,6 +840,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8591976964826315682">Bloquer les témoins tiers en navigation privée</translation>
 <translation id="8605219856220328675">Fermer l'onglet.</translation>
 <translation id="8620640915598389714">Modifier</translation>
+<translation id="8626393685701737946">Vous pouvez modifier l'affichage du site par défaut pour le mode Bureau dans Paramètres &gt; Paramètres de contenu</translation>
 <translation id="863090005774946393">Votre navigateur est géré par votre organisation. Certaines fonctionnalités peuvent être désactivées.</translation>
 <translation id="8636825310635137004">Pour synchroniser vos onglets sur vos autres appareils, activez la synchronisation.</translation>
 <translation id="8654802032646794042">Annuler</translation>
@@ -859,6 +860,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8803639129939845298">Sécuritaire</translation>
 <translation id="8806823403540278281">Votre organisation vous demande de naviguer en mode privé. Les onglets ne sont pas enregistrés en mode de navigation privée.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="8810413591309742901">Affichage du site par défaut</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté(e) de votre compte Google.</translation>
 <translation id="8843129975935593190">Votre organisation impose une limite quant à ce que vous pouvez synchroniser.</translation>

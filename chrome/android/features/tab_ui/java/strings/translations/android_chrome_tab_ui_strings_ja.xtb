@@ -45,6 +45,7 @@
 <translation id="492284538114688557">値下げ情報が見つかりました</translation>
 <translation id="5007392906805964215">内容を確認</translation>
 <translation id="5073204694187207510">全画面グリッドを非表示</translation>
+<translation id="5076161749301278626">店舗の審査を確認しますか？</translation>
 <translation id="5082793167783849073">グループを作成して簡単にページを比較できます。グループを作成するには、リンクを長押しします。</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>
 <translation id="5533021382642990449">後で表示</translation>
@@ -71,6 +72,7 @@
 <translation id="7326879924029668159">返品に関するポリシーなどを確認</translation>
 <translation id="7352298686197644113">開いているタブに値下げされた商品があります</translation>
 <translation id="753732157349120914">タブ切り替え機能</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{Google による審査 <ph name="REVIEWS_COUNT_ONE" /> 件}other{Google による審査 <ph name="REVIEWS_COUNT_MANY" /> 件}}</translation>
 <translation id="7559245342362162951">グループのタブを全画面グリッドで表示</translation>
 <translation id="7792771145871471484">提案を確認します。</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをグループ化する}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをグループ化する}}</translation>

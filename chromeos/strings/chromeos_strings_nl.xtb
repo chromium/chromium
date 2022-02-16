@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Mislukt - Filter mislukt</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ik heb een sleutelpaar</translation>
+<translation id="1442433966118452622">Afbeeldingsbron</translation>
 <translation id="1451536289672181509">Apparaat is een toetsenbord.</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="2695514675076754339">Geef de ontgrendelingscode van 8 tekens op</translation>
+<translation id="2712812801627182647">TLS-verificatiesleutel</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP Phase 2-verificatie</translation>
 <translation id="2783010256799387990">GESLAAGD</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
 <translation id="3283504360622356314">{0,plural, =1{Bestand bewerken}other{Bestanden bewerken}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Sleutelrichting</translation>
 <translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
 <translation id="3328783797891415197">Test actief</translation>
 <translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Wachtwoord voor Chrome OS geüpdatet</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
 <translation id="4782311465517282004">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen</translation>
+<translation id="4793756956024303490">Compressiealgoritme</translation>
 <translation id="4794140124556169553">Als je een CPU-test uitvoert, kan dit je systeemprestaties beïnvloeden</translation>
 <translation id="4808449224298348341">Afdruktaak <ph name="DOCUMENT_TITLE" /> geannuleerd</translation>
 <translation id="4813136279048157860">Mijn afbeeldingen</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS-omzetting</translation>
 <translation id="4848429997038228357">ACTIEF</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Nog {0} poging}other{<ph name="ERROR_MESSAGE" /> Nog {0} pogingen}}</translation>
+<translation id="4873827928179867585">Verificatiealgoritme</translation>
 <translation id="4880328057631981605">Naam van toegangspunt</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Kies onmiddellijk een nieuw wachtwoord</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Rapport verbergen</translation>
 <translation id="500920857929044050">Test stoppen</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Foto's, tijd, weer en mediagegevens bekijken als je scherm inactief is.</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5049856988445523908">Simkaart vergrendeld (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Groepsnaam</translation>
@@ -436,6 +442,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6618744767048954150">Wordt uitgevoerd</translation>
 <translation id="6620487321149975369">Afdruktaken zie je in de geschiedenis, tenzij ze handmatig worden verwijderd</translation>
 <translation id="6643016212128521049">Wissen</translation>
+<translation id="6647510110698214773">Versleutelingsalgoritme</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6692996468359469499">Informatie over je selectie bekijken</translation>
 <translation id="6704062477274546131">DNS-resolutie</translation>

@@ -501,6 +501,7 @@
 <translation id="1506061864768559482">Пребарувач</translation>
 <translation id="1507170440449692343">Страницата е блокирана да не пристапува до фотоапаратот.</translation>
 <translation id="1507246803636407672">&amp;Отфрли</translation>
+<translation id="1507884455975553832">Апликации за разменување пораки преку стрим</translation>
 <translation id="1509163368529404530">&amp;Врати ја групата</translation>
 <translation id="1509281256533087115">Пристапи на секој <ph name="DEVICE_NAME_AND_VENDOR" /> преку USB</translation>
 <translation id="1510238584712386396">Стартер</translation>
@@ -603,6 +604,7 @@
 <translation id="1603411913360944381">Заборави го <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Инкогнито)</translation>
 <translation id="1604432177629086300">Не може да се отпечати. Проверете го печатачот и обидете се повторно.</translation>
+<translation id="1604576689725077412">Имајте предвид, ако ги отфрлите известувањата на вашиот Chromebook, ќе се отфрлат и на вашиот телефон.</translation>
 <translation id="1605744057217831567">Видете ги сите податоци од сајтот и дозволите</translation>
 <translation id="1606077700029460857">Променете ги поставките за глувчето</translation>
 <translation id="1606566847233779212">Да се отстранат конкретните сајтови што ги додадовте?</translation>
@@ -713,6 +715,7 @@
 <translation id="1697150536837697295">Уметност</translation>
 <translation id="1697686431566694143">Измени датотека</translation>
 <translation id="1700079447639026019">Сајтови што никогаш не може да користат колачиња</translation>
+<translation id="1700201317341192482">Отстранете ја виртуелната картичка</translation>
 <translation id="1703331064825191675">Не грижете се за своите лозинки</translation>
 <translation id="1703666494654169921">Не им дозволувај на сајтовите да ги користат уредите за виртуелна реалност или мобилниот интернет</translation>
 <translation id="1704097193565924901">Почетна голема буква</translation>
@@ -1034,6 +1037,7 @@
 <translation id="2006638907958895361">Отвори го линкот во <ph name="APP" /></translation>
 <translation id="2007404777272201486">Пријави проблем…</translation>
 <translation id="2010501376126504057">Компатибилни уреди</translation>
+<translation id="2011968031299471357">да прима и да одговара на пораки</translation>
 <translation id="2015232545623037616">Компјутер и Chromecast на истата Wi-Fi мрежа</translation>
 <translation id="2016473077102413275">Функциите на коишто им требаат слики нема да работат</translation>
 <translation id="2016574333161572915">Хардверот за Google Meet е спремен за поставување</translation>
@@ -1274,6 +1278,7 @@
 <translation id="2241053333139545397">Прочитајте ги и променете ги вашите податоци на повеќе веб-локации</translation>
 <translation id="2241634353105152135">Само еднаш</translation>
 <translation id="2242687258748107519">Информации за датотека</translation>
+<translation id="2243381895573964397">Добивајте известувања на телефонот</translation>
 <translation id="2246549592927364792">Сакате да добивате описи за слики од Google?</translation>
 <translation id="2247738527273549923">Со уредот управува вашата организација</translation>
 <translation id="2249111429176737533">Отвори како прозорец со картички</translation>
@@ -2095,6 +2100,7 @@
 <translation id="3036546437875325427">Овозможи Flash</translation>
 <translation id="3037754279345160234">Не може да се анализира конфигурацијата за приклучување на доменот. Контактирајте со вашиот администратор.</translation>
 <translation id="3038612606416062604">Додај печатач рачно</translation>
+<translation id="3039409644314251320">да прегледува разговори, да реагира на пораки и да додава луѓе во групни разговори</translation>
 <translation id="3039491566278747710">Не успеа да се инсталира офлајн правило на уредот.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Од <ph name="ORIGIN" /></translation>
@@ -2632,6 +2638,7 @@
 <translation id="362266093274784978">{COUNT,plural, =1{апликација}one{# апликација}other{# апликации}}</translation>
 <translation id="362333465072914957">Се чека CA да издаде сертификат</translation>
 <translation id="3624567683873126087">Отклучи го уредот и најави се на сметката на Google</translation>
+<translation id="3624583033347146597">Изберете ги поставките за колаче од трета страна</translation>
 <translation id="3625481642044239431">Избравте неважечка датотека. Обидете се повторно.</translation>
 <translation id="3626296069957678981">За да го наполните овој Chromebook, користете компатибилна батерија од Dell.</translation>
 <translation id="3627320433825461852">Преостанува помалку од 1 минута</translation>
@@ -3316,6 +3323,7 @@
 <translation id="431076611119798497">&amp;Детали</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 сметка на Google}one{<ph name="EXTRA_ACCOUNTS" /> сметка на Google}other{<ph name="EXTRA_ACCOUNTS" /> сметки на Google}}</translation>
 <translation id="4312866146174492540">Блокирај (стандардно)</translation>
+<translation id="4314497418046265427">Поврзете го телефонот со вашиот <ph name="DEVICE_TYPE" /> и бидете попродуктивни</translation>
 <translation id="4314815835985389558">Управувајте со синхронизацијата</translation>
 <translation id="4315933848520197627">Прекинете ја врската со сметката</translation>
 <translation id="4316850752623536204">Вебсајт на програмерот</translation>
@@ -3509,6 +3517,7 @@
 <translation id="4519935350946509010">Грешка при поврзувањето.</translation>
 <translation id="4520385623207007473">Колачиња во употреба</translation>
 <translation id="452039078290142656">непознати уреди од <ph name="VENDOR_NAME" /></translation>
+<translation id="4522351342209941760">Одете на телефонот за да прегледате уште неколку дозволи</translation>
 <translation id="4522570452068850558">Детали</translation>
 <translation id="4522600456902129422">Продолжи да дозволуваш страницава да ја гледа привремената меморија</translation>
 <translation id="4522890784888918985">Детските сметки не се поддржани</translation>
@@ -4823,6 +4832,7 @@
 
   Јавен експонент (бита: <ph name="PUBLIC_EXPONENT_NUM_BITS" />):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">Вашиот телефон и <ph name="DEVICE_TYPE" /> се поврзани</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="59174027418879706">Овозможено</translation>
 <translation id="5920543303088087579">Администраторот оневозможил поврзување на оваа мрежа</translation>
@@ -5363,6 +5373,7 @@
 <translation id="6466258437571594570">Сајтовите се блокирани за да не ве прекинуваат кога прашуваат дали да испраќаат известувања</translation>
 <translation id="6466988389784393586">&amp;Отвори ги сите обележувачи</translation>
 <translation id="6467304607960172345">Оптимизирајте ги видеата на цел екран</translation>
+<translation id="6467377768028664108">Вашиот <ph name="DEVICE_TYPE" /> тогаш може:</translation>
 <translation id="6468485451923838994">Фонтови</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> датотеки</translation>
 <translation id="6469557521904094793">Вклучување мобилна мрежа</translation>
@@ -6607,6 +6618,7 @@
 <translation id="7754704193130578113">Прашај каде да се зачува секоја датотека пред преземање</translation>
 <translation id="7755287808199759310">Родителот може да го одблокира</translation>
 <translation id="7757592200364144203">Променете го името на уредот</translation>
+<translation id="7757739382819740102">Контактите во близина може да споделуваат со вас. Ќе биде потребно одобрување.</translation>
 <translation id="7757787379047923882">Текстот е споделен од <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Приспособете ги границите на екранот</translation>
@@ -6674,6 +6686,7 @@
 <translation id="7814458197256864873">&amp;Копирај</translation>
 <translation id="7815680994978050279">Блокирано е опасно преземање</translation>
 <translation id="7817361223956157679">Тастатурата на екран сѐ уште не функционира во апликациите на Linux</translation>
+<translation id="7817671927108102061">Завршете го поставувањето на телефонот</translation>
 <translation id="7818135753970109980">Додадена е нова тема (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Синхронизација на Chrome</translation>
 <translation id="7820561748632634942">Да се доделат дополнителни прекинувачи?</translation>
@@ -7468,6 +7481,7 @@
 <translation id="8631032106121706562">Цвеќе</translation>
 <translation id="863109444997383731">Сајтовите ќе бидат спречени да ве прашуваат дали да ви прикажуваат известувања. Ако сајтот побара известувања, ќе се појави индикатор за блокирано во лентата за адреси.</translation>
 <translation id="8633025649649592204">Неодамнешна активност</translation>
+<translation id="8634348081024879304">Веќе нема да може да ја користите вашата виртуелна картичка со Google Pay. <ph name="BEGIN_LINK" />Дознајте повеќе за виртуелните картички<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Се вчитува повторно…</translation>
 <translation id="8636284842992792762">Се иницијализираат екстензиите…</translation>
 <translation id="8636500887554457830">Не им дозволувај на сајтовите да испраќаат скокачки програми или да користат пренасочувања</translation>
@@ -7688,6 +7702,7 @@
 <translation id="8838770651474809439">Хамбургер</translation>
 <translation id="8838778928843281408">Управувајте со телефоните</translation>
 <translation id="883911313571074303">Стави прибелешка на слика</translation>
+<translation id="8840427996758894516">Проверете дали телефонот е во близина, отклучен и со вклучени Bluetooth и Wi-Fi.</translation>
 <translation id="8841843049738266382">Читај и менувај ги корисниците од списокот на дозволен пристап</translation>
 <translation id="8842594465773264717">Избришете го отпечатоков</translation>
 <translation id="8845001906332463065">Побарајте помош</translation>

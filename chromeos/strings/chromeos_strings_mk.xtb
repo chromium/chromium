@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Неуспешно - филтерот не успеа</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Имам пар клучеви</translation>
+<translation id="1442433966118452622">Извор на сликата</translation>
 <translation id="1451536289672181509">Уредот е тастатура.</translation>
 <translation id="1468664791493211953">Понуди</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> управува со уредов и може да ја набљудува вашата активност.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Дневно освежување</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2695514675076754339">Внесете го 8-цифрениот код за отклучување</translation>
+<translation id="2712812801627182647">Клуч за TLS-проверка</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2751739896257479635">Автентикација со EAP во фаза 2</translation>
 <translation id="2783010256799387990">УСПЕШЕН</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Неуспешно - вратата е отворена</translation>
 <translation id="3283504360622356314">{0,plural, =1{Измени датотека}one{Измени датотеки}other{Измени датотеки}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Насока на клучот</translation>
 <translation id="3310640316857623290">Латенцијата на DNS е значително над дозволениот праг</translation>
 <translation id="3328783797891415197">Тестот се извршува</translation>
 <translation id="3340011300870565703">Нивото на батерија на десната слушалка е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Лозинката за Chrome OS е ажурирана</translation>
 <translation id="4773299976671772492">Сопрено</translation>
 <translation id="4782311465517282004">Добивајте дефиниции, преводи или конверзија на вредности кога ќе кликнете со десно копче или ќе допрете и задржите текст</translation>
+<translation id="4793756956024303490">Алгоритам за компримирање</translation>
 <translation id="4794140124556169553">Извршувањето CPU-тест може да влијае врз изведбата на системот</translation>
 <translation id="4808449224298348341">Откажан налог за печатење: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Мои слики</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) Одредување со DNS</translation>
 <translation id="4848429997038228357">СЕ ИЗВРШУВА</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Уште {0} обид}one{<ph name="ERROR_MESSAGE" /> Уште {0} обид}other{<ph name="ERROR_MESSAGE" /> Уште {0} обиди}}</translation>
+<translation id="4873827928179867585">Алгоритам за проверка</translation>
 <translation id="4880328057631981605">Име на пристапна точка</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Веднаш изберете нова</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Сокриј го извештајот</translation>
 <translation id="500920857929044050">Запри го тестот</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Кога екранот е неактивен, прикажувај фотографии, време, временска прогноза и вести.</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5049856988445523908">SIM-картичката е заклучена (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Име на групата</translation>
@@ -436,6 +442,7 @@
 <translation id="6618744767048954150">Се извршува</translation>
 <translation id="6620487321149975369">Задачите за печатење ќе се појавуваат во историјата, освен ако не се отстранат рачно</translation>
 <translation id="6643016212128521049">Исчисти</translation>
+<translation id="6647510110698214773">Алгоритам за шифрирање</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6692996468359469499">Добивајте информации поврзани со вашиот избор</translation>
 <translation id="6704062477274546131">Одредување со DNS</translation>

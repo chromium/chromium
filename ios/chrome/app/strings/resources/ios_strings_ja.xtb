@@ -840,6 +840,7 @@
 <translation id="8591976964826315682">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="8605219856220328675">タブを閉じる。</translation>
 <translation id="8620640915598389714">編集</translation>
+<translation id="8626393685701737946">[設定] &gt; [コンテンツの設定] で、デフォルトのサイトビューをデスクトップに変更できます</translation>
 <translation id="863090005774946393">お使いのブラウザは組織によって管理されています。一部の機能が無効になっている可能性があります。</translation>
 <translation id="8636825310635137004">他のデバイスと同じタブを使用するには、同期を有効にします。</translation>
 <translation id="8654802032646794042">キャンセル</translation>
@@ -859,6 +860,7 @@
 <translation id="8803639129939845298">この通信は保護されています</translation>
 <translation id="8806823403540278281">組織がシークレット モードで閲覧するよう求めています。シークレット モードではタブは保存されません。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="8810413591309742901">デフォルトのサイトビュー</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8840513115188359703">Google アカウントへのログイン状態は維持されます。</translation>
 <translation id="8843129975935593190">同期できるアイテムは組織によって制限されています。</translation>

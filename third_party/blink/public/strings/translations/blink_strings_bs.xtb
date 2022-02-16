@@ -84,7 +84,7 @@
 <translation id="5164977714490026579">Vrijednost mora biti veća od ili jednaka <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5272594226096532950">Nije označeno. Opcija <ph name="INDEX" /> od <ph name="COUNT" /> u grupi</translation>
+<translation id="5272594226096532950">Neoznačeno. <ph name="INDEX" />. opcija od <ph name="COUNT" /> u grupi</translation>
 <translation id="5307600278924710095">Unesite dio adrese ispred znaka "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" nije potpuna e-adresa.</translation>
 <translation id="5334352251556557839">Nije moguće reproducirati medijski sadržaj.</translation>
 <translation id="537648784377940524">Najraniji datum (<ph name="MIN_DATE_OR_TIME" />) mora doći prije najkasnijeg datuma (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -124,7 +124,7 @@
 <translation id="668171684555832681">Drugo…</translation>
 <translation id="6709093583001123835">Vrijednost mora biti <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Slab kvalitet reprodukcije</translation>
-<translation id="6719914554879143100">Označeno. Opcija <ph name="INDEX" /> od <ph name="COUNT" /> u grupi</translation>
+<translation id="6719914554879143100">Označeno. <ph name="INDEX" />. opcija od <ph name="COUNT" /> u grupi</translation>
 <translation id="6790428901817661496">Pokreni</translation>
 <translation id="6820355525329141109">Učitavanje dodatka nije uspjelo.</translation>
 <translation id="6831465880655513317">Točak boja s dvodimenzionalnim klizačem za odabir zasićenosti i svjetlosti</translation>

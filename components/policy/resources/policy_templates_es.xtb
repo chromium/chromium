@@ -2838,6 +2838,26 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se inhabilita la política, no se ignorará ninguna política a causa de su fuente. Las políticas solo se ignoran si hay un conflicto y no tienen la prioridad más alta.
 
       Si esta política se configura desde la nube, no se podrá aplicar a un usuario concreto.</translation>
+<translation id="4166865262840412074">Esta política permite los clústeres de agentes con clave de origen de forma predeterminada.
+
+      El encabezado HTTP Origin-Agent-Cluster controla si un documento se aísla en
+      un clúster de agentes con clave de origen o en un clúster de agentes
+      con clave de sitio. Esto afecta a la seguridad, ya que un clúster de agentes
+      con clave de origen permite aislar los documentos según el origen. La consecuencia que
+      tiene para el desarrollador es que el descriptor de acceso document.domain ya no se podrá
+      establecer.
+
+      El comportamiento predeterminado (cuando no hay ningún encabezado
+      Origin-Agent-Cluster establecido) cambia en M106 de clave de sitio a clave de origen. Si esta política
+      se habilita o no se establece, el navegador adoptará este nuevo comportamiento
+      predeterminado a partir de esa versión. Si esta política se inhabilita, el cambio se revertirá y
+      los documentos sin encabezados Origin-Agent-Cluster se asignarán a
+      clústeres de agentes con clave de sitio. Como consecuencia, el descriptor de acceso document.domain
+      podrá establecerse de manera predeterminada. Esto coincide con el comportamiento anterior.
+
+      Consulta https://developer.chrome.com/blog/immutable-document-domain/
+      para obtener más información.
+      </translation>
 <translation id="4169692397912242417">Habilita la función de accesibilidad de mensajes de voz en la pantalla de inicio de sesión.
 
           Si se asigna el valor "true" a esta política, siempre se habilitarán los mensajes de voz en la pantalla de inicio de sesión.
@@ -3271,6 +3291,33 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="475479145997699293">Si se le asigna el valor <ph name="ASK_FILE_HANDLING" /> a la política, las aplicaciones web podrán solicitar acceso a ciertos tipos de archivo a través de la API File Handling. Si se le asigna el valor <ph name="BLOCK_FILE_HANDLING" />, se denegará el acceso a ciertos tipos de archivo.
 
       Si no se le asigna ningún valor, las aplicaciones web podrán solicitar acceso, pero los usuarios podrán cambiar este ajuste.</translation>
+<translation id="4755492101519343259">Configura una lista de reglas para evitar las filtraciones de datos en <ph name="PRODUCT_OS_NAME" />.
+      Se pueden producir filtraciones de datos cuando se copia y pega información, se transfieren archivos, se imprime, se comparte pantalla o se hacen capturas de pantalla, entre otras acciones.
+
+      Cada regla se compone de lo siguiente:
+      - Una lista de fuentes definidas como URLs. Los datos de las fuentes se considerarán confidenciales y se les aplicarán las restricciones.
+      - Una lista de destinos definidos como URLs o componentes con los que se permite o no compartir los datos confidenciales.
+      - Una lista de restricciones que deben aplicarse a los datos de las fuentes.
+
+      Se pueden añadir reglas para:
+      - Controlar los datos del portapapeles compartidos entre las fuentes y los destinos.
+      - Controlar que se puedan hacer capturas de pantalla de cualquiera de las fuentes.
+      - Controlar la impresión de cualquiera de las fuentes.
+      - Controlar la pantalla de privacidad cuando se muestra alguna de las fuentes.
+      - Controlar la pantalla compartida de cualquiera de las fuentes.
+
+      Al nivel de restricción se le puede asignar uno de estos valores: BLOCK, ALLOW, REPORT o WARN.
+      - Si se asigna el valor BLOCK al nivel de restricción, la acción no se permitirá. Si se asigna el valor True a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />, se informará de la acción bloqueada al administrador.
+      - Si se asigna el valor ALLOW al nivel de restricción, la acción se permitirá.
+      - Si se asigna el valor REPORT al nivel de restricción y se asigna el valor True a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />, se informará de la acción al administrador.
+      - Si se asigna el valor WARN al nivel de restricción, se advertirá al usuario, que podrá elegir si continúa con la acción o la cancela. Si se asigna el valor True a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />, se informará al administrador de que se ha mostrado la advertencia. También se le informará si se continúa con la acción.
+
+      Notas:
+      - La restricción PRIVACY_SCREEN no bloquea la opción de activar la pantalla de privacidad, sino que la requiere cuando la clase de la restricción se define en BLOCK.
+      - Los destinos no pueden estar vacíos en caso de que alguna de las restricciones sea CLIPBOARD, pero no afectan al resto de las restricciones.
+      - Los patrones de URL deben tener el formato que se indica en esta página: https://www.chromium.org/administrators/url-blocklist-filter-format.
+
+      Si no se asigna ningún valor a esta política, no se aplicará ninguna restricción.</translation>
 <translation id="4757053978738874325">Habilita la función de accesibilidad de audio en mono.
 
           Esta función permite la salida de audio en estéreo, es decir, audio en el que el canal izquierdo es distinto del derecho, de manera que cada oído escucha diferentes sonidos.

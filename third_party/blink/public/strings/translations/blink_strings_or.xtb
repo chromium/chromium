@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">ମୂଲ୍ୟ <ph name="MINIMUM" />ଠାରୁ ନିଶ୍ଚିତରୂପେ ବଡ କିମ୍ବା ସମାନ ହେବା ଉଚିତ।</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">ଯାଞ୍ଚ କରାଯାଇନାହିଁ। ଗୋଷ୍ଠୀରେ, <ph name="COUNT" />ଟିରୁ <ph name="INDEX" /> ନମ୍ବର ବିକଳ୍ପ</translation>
 <translation id="5307600278924710095">ଦୟାକରି '<ph name="ATSIGN" />' ପୂର୍ବର ଅଂଶ ଲେଖନ୍ତୁ। '<ph name="INVALIDADDRESS" />' ଅସମ୍ପୂର୍ଣ୍ଣ ଅଟେ।</translation>
 <translation id="5334352251556557839">ମିଡିଆ ଚଲାଇବା ପାଇଁ ଅକ୍ଷମ।</translation>
 <translation id="537648784377940524">ସର୍ବନିମ୍ନ ତାରିଖ (<ph name="MIN_DATE_OR_TIME" />) ନିଶ୍ଚିତରୂପେ ସର୍ବାଧିକ ତାରିଖ (<ph name="MAX_DATE_OR_TIME" />) ପୂର୍ବରୁ ଆସିବା ଆବଶ୍ୟକ।</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">ଅନ୍ୟ...</translation>
 <translation id="6709093583001123835">ମୂଲ୍ୟ ନିଶ୍ଚିତ ଭାବରେ <ph name="VALUE" /> ହେବା ଆବଶ୍ୟକ।</translation>
 <translation id="6709570249143506788">ପ୍ଲେବ୍ୟାକ୍‍ର ଗୁଣବତ୍ତା ନିମ୍ନ ମାନର ଅଟେ</translation>
+<translation id="6719914554879143100">ଯାଞ୍ଚ କରାଯାଇଛି। ଗୋଷ୍ଠୀରେ, <ph name="COUNT" />ଟିରୁ <ph name="INDEX" /> ନମ୍ବର ବିକଳ୍ପ</translation>
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
 <translation id="6820355525329141109">ପ୍ଲଗ୍‍ଇନ୍ ଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="6831465880655513317">ସାଚୁରେସନ୍ ଏବଂ ହାଲୁକା ରଙ୍ଗ ଚୟନ କରିବା ପାଇଁ ଟୁ-ଡାଇମେନସନାଲ୍ ସ୍ଲାଇଡର୍ ସହିତ କଲର୍ ୱେଲ୍</translation>

@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">ਵੈਲਯੂ <ph name="MINIMUM" /> ਤੋਂ ਵੱਧ ਜਾਂ ਇਸਦੇ ਬਰਾਬਰ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">ਨਿਸ਼ਾਨਬੱਧ ਨਹੀਂ ਕੀਤਾ ਗਿਆ। ਗਰੁੱਪ ਵਿੱਚ, <ph name="COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" /> ਵਿਕਲਪ</translation>
 <translation id="5307600278924710095">ਕਿਰਪਾ ਕਰਕੇ  '<ph name="ATSIGN" />' ਤੋਂ ਬਾਅਦ ਇੱਕ ਭਾਗ ਦਰਜ ਕਰੋ। '<ph name="INVALIDADDRESS" />' ਅਧੂਰਾ ਹੈ।</translation>
 <translation id="5334352251556557839">ਮੀਡੀਆ ਚਲਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ।</translation>
 <translation id="537648784377940524">ਘੱਟੋ ਘੱਟ ਤਾਰੀਖ (<ph name="MIN_DATE_OR_TIME" />) ਵੱਧ ਤੋਂ ਵੱਧ ਤਾਰੀਖ (<ph name="MAX_DATE_OR_TIME" />) ਤੋਂ ਪਹਿਲਾਂ ਆਉਣੀ ਲਾਜ਼ਮੀ ਹੈ।</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">ਹੋਰ...</translation>
 <translation id="6709093583001123835">ਮੁੱਲ <ph name="VALUE" /> ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="6709570249143506788">ਘਟੀਆ ਪਲੇਬੈਕ ਗੁਣਵੱਤਾ</translation>
+<translation id="6719914554879143100">ਨਿਸ਼ਾਨਬੱਧ ਕੀਤਾ ਗਿਆ। ਗਰੁੱਪ ਵਿੱਚ, <ph name="COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" /> ਵਿਕਲਪ</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="6820355525329141109">ਪਲੱਗਇਨ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕਿਆ</translation>
 <translation id="6831465880655513317">ਸੈਚੂਰੇਸ਼ਨ ਅਤੇ ਫਿੱਕੇਪਨ ਸੰਬੰਧੀ ਚੋਣ ਲਈ ਦੋ-ਆਯਾਮੀ ਸਲਾਈਡਰ ਵਾਲਾ ਰੰਗ ਭੰਡਾਰ</translation>

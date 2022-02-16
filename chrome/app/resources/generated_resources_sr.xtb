@@ -499,6 +499,7 @@
 <translation id="1506061864768559482">Претраживач</translation>
 <translation id="1507170440449692343">Овој страници је забрањен приступ камери.</translation>
 <translation id="1507246803636407672">&amp;Одбаци</translation>
+<translation id="1507884455975553832">Стримујте апликације за размену порука</translation>
 <translation id="1509163368529404530">&amp;Врати групу</translation>
 <translation id="1509281256533087115">Приступај било ком уређају <ph name="DEVICE_NAME_AND_VENDOR" /> преко USB-а</translation>
 <translation id="1510238584712386396">Покретач</translation>
@@ -598,6 +599,7 @@
 <translation id="1603411913360944381">Заборавите <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Без архивирања)</translation>
 <translation id="1604432177629086300">Штампање није успело. Проверите штампач и пробајте поново.</translation>
+<translation id="1604576689725077412">Имајте на уму да ћете одбацити обавештења и на телефону ако их одбаците на Chromebook-у.</translation>
 <translation id="1605744057217831567">Прикажи све податке о сајтовима и дозволе</translation>
 <translation id="1606077700029460857">Промените подешавања миша</translation>
 <translation id="1606566847233779212">Желите да уклоните конкретне сајтове које сте додали?</translation>
@@ -708,6 +710,7 @@
 <translation id="1697150536837697295">Уметност</translation>
 <translation id="1697686431566694143">Измени датотеку</translation>
 <translation id="1700079447639026019">Сајтови који никада не могу да користе колачиће</translation>
+<translation id="1700201317341192482">Уклоните виртуелну картицу</translation>
 <translation id="1703331064825191675">Никада не брините о лозинкама</translation>
 <translation id="1703666494654169921">Не дозвољавај сајтовима да користе уређаје и податке виртуелне реалности</translation>
 <translation id="1704097193565924901">Велика слова</translation>
@@ -1020,6 +1023,7 @@
 <translation id="2006638907958895361">Отвори линк у <ph name="APP" /></translation>
 <translation id="2007404777272201486">Пријави проблем...</translation>
 <translation id="2010501376126504057">Компатибилни уређаји</translation>
+<translation id="2011968031299471357">Примајте и одговарајте на поруке</translation>
 <translation id="2015232545623037616">Рачунар и Chromecast на истој WiFi мрежи</translation>
 <translation id="2016473077102413275">Функције којима требају слике неће радити</translation>
 <translation id="2016574333161572915">Хардвер за Google Meet је спреман за подешавања</translation>
@@ -1260,6 +1264,7 @@
 <translation id="2241053333139545397">Читање и мењање података на више веб-сајтова</translation>
 <translation id="2241634353105152135">Само једном</translation>
 <translation id="2242687258748107519">Информације о датотеци</translation>
+<translation id="2243381895573964397">Добијајте обавештења на телефону</translation>
 <translation id="2246549592927364792">Желите ли да преузимате описе слика са Google-а?</translation>
 <translation id="2247738527273549923">Овим уређајем управља организација</translation>
 <translation id="2249111429176737533">Отвори као прозор са картицама</translation>
@@ -2078,6 +2083,7 @@
 <translation id="3036546437875325427">Омогући Flash</translation>
 <translation id="3037754279345160234">Не можемо да рашчланимо конфигурацију ради придруживања домену. Обратите се администратору.</translation>
 <translation id="3038612606416062604">Ручно додајте штампач</translation>
+<translation id="3039409644314251320">Прегледајте конверзације, реагујте на поруке и додајте људе у групна ћаскања</translation>
 <translation id="3039491566278747710">Инсталирање офлајн смерница на уређају није успело.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Са <ph name="ORIGIN" /></translation>
@@ -3300,6 +3306,7 @@
 <translation id="431076611119798497">&amp;Детаљи</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google налог}one{<ph name="EXTRA_ACCOUNTS" /> Google налог}few{<ph name="EXTRA_ACCOUNTS" /> Google налога}other{<ph name="EXTRA_ACCOUNTS" /> Google налога}}</translation>
 <translation id="4312866146174492540">Блокирај (подразумевано)</translation>
+<translation id="4314497418046265427">Будите продуктивнији када повежете телефон и <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314815835985389558">Управљајте синхронизацијом</translation>
 <translation id="4315933848520197627">Опозови везу са налогом</translation>
 <translation id="4316850752623536204">Веб-сајт програмера</translation>
@@ -3492,6 +3499,7 @@
 <translation id="4519935350946509010">Грешка при повезивању.</translation>
 <translation id="4520385623207007473">Колачићи у употреби</translation>
 <translation id="452039078290142656">непознати уређаји продавца <ph name="VENDOR_NAME" /></translation>
+<translation id="4522351342209941760">Идите на телефон да бисте прегледали још неколико дозвола.</translation>
 <translation id="4522570452068850558">Детаљи</translation>
 <translation id="4522600456902129422">Настави да дозвољаваш овом сајту да види привремену меморију</translation>
 <translation id="4522890784888918985">Дечји налози нису подржани</translation>
@@ -4806,6 +4814,7 @@
 
   Јавни експонент (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> бит(ов)а):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">Телефон и <ph name="DEVICE_TYPE" /> су повезани</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="59174027418879706">Омогућено</translation>
 <translation id="5920543303088087579">Администратор је онемогућио повезивање са овом мрежом</translation>
@@ -5346,6 +5355,7 @@
 <translation id="6466258437571594570">Сајтовима је онемогућено да вас ометају упитима о слању обавештења</translation>
 <translation id="6466988389784393586">&amp;Отвори све обележиваче</translation>
 <translation id="6467304607960172345">Оптимизујте видео снимке преко целог екрана</translation>
+<translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> онда може:</translation>
 <translation id="6468485451923838994">Фонтови</translation>
 <translation id="6468773105221177474">Фајлова: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Укључи мобилну мрежу</translation>
@@ -6590,6 +6600,7 @@
 <translation id="7754704193130578113">Питај где треба сачувати сваку датотеку пре преузимања</translation>
 <translation id="7755287808199759310">Родитељ може да га одблокира за тебе</translation>
 <translation id="7757592200364144203">Промените назив уређаја</translation>
+<translation id="7757739382819740102">Контакти у близини могу да деле садржај са вама. То треба да одобрите.</translation>
 <translation id="7757787379047923882">Текст дељен са уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Прилагодите границе приказа</translation>
@@ -6657,6 +6668,7 @@
 <translation id="7814458197256864873">&amp;Копирај</translation>
 <translation id="7815680994978050279">Опасно преузимање је блокирано</translation>
 <translation id="7817361223956157679">Тастатура на екрану још увек не ради у Linux апликацијама</translation>
+<translation id="7817671927108102061">Довршите подешавање на телефону</translation>
 <translation id="7818135753970109980">Додата је нова тема (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome синхронизација</translation>
 <translation id="7820561748632634942">Желите да доделите додатне прекидаче?</translation>
@@ -7448,6 +7460,7 @@
 <translation id="8631032106121706562">Латице</translation>
 <translation id="863109444997383731">Сајтови неће моћи да вас питају да ли да вам приказују обавештења. Ако сајт захтева обавештења, икона блокирања се приказује на траци за адресу.</translation>
 <translation id="8633025649649592204">Недавна активност</translation>
+<translation id="8634348081024879304">Више нећете моћи да користите виртуелну картицу уз Google Pay. <ph name="BEGIN_LINK" />Сазнајте више о виртуелним картицама<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Поново се учитава...</translation>
 <translation id="8636284842992792762">Додаци се покрећу...</translation>
 <translation id="8636500887554457830">Не дозвољавај сајтовима да шаљу искачуће прозоре или користе преусмеравања</translation>
@@ -7669,6 +7682,7 @@
 <translation id="8838770651474809439">Хамбургер</translation>
 <translation id="8838778928843281408">Управљајте телефонима</translation>
 <translation id="883911313571074303">Додај напомену у слику</translation>
+<translation id="8840427996758894516">Уверите се да је телефон у близини, да је откључан и да су Bluetooth и WiFi укључени.</translation>
 <translation id="8841843049738266382">Читање и мењање корисника на листи дозвољених</translation>
 <translation id="8842594465773264717">Избриши овај дигитални отисак</translation>
 <translation id="8845001906332463065">Затражите помоћ</translation>

@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Waarde moet groter dan of gelijk zijn aan <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Niet aangevinkt. In groep, optie <ph name="INDEX" /> van <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Geef een naamgedeelte op, gevolgd door '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' is onvolledig.</translation>
 <translation id="5334352251556557839">Kan media niet afspelen.</translation>
 <translation id="537648784377940524">De minimum datum (<ph name="MIN_DATE_OR_TIME" />) moet voor de maximum datum (<ph name="MAX_DATE_OR_TIME" />) liggen.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Anders...</translation>
 <translation id="6709093583001123835">Waarde moet <ph name="VALUE" /> zijn.</translation>
 <translation id="6709570249143506788">Slechte afspeelkwaliteit</translation>
+<translation id="6719914554879143100">Aangevinkt. In groep, optie <ph name="INDEX" /> van <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6820355525329141109">Kan plug-in niet laden.</translation>
 <translation id="6831465880655513317">Kleurenwiel met tweedimensionale schuifregelaar om verzadiging en lichtheid te selecteren</translation>

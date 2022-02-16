@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">يجب أن تكون القيمة أكبر من أو تساوي <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> بيتابايت</translation>
+<translation id="5272594226096532950">لم يتم تحديد الخيار بعلامة. ضمن مجموعة في الخيار <ph name="INDEX" /> من إجمالي <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">يُرجى إدخال جزء متبوع بعلامة "<ph name="ATSIGN" />"، حيث إن "<ph name="INVALIDADDRESS" />" غير مكتمل.</translation>
 <translation id="5334352251556557839">تعذّر تشغيل الوسائط</translation>
 <translation id="537648784377940524">يجب أن يكون الحد الأدنى للتاريخ (<ph name="MIN_DATE_OR_TIME" />
@@ -124,6 +125,7 @@
 <translation id="668171684555832681">ملف تعريف آخر...</translation>
 <translation id="6709093583001123835">يجب أن تكون القيمة <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">جودة التشغيل ضعيفة.</translation>
+<translation id="6719914554879143100">تم تحديد الخيار بعلامة. ضمن مجموعة في الخيار <ph name="INDEX" /> من إجمالي <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6820355525329141109">تعذر تحميل المكوّن الإضافي.</translation>
 <translation id="6831465880655513317">يمكنك استخدام مجموعة خيارات الألوان المتاحة من خلال شريط تمرير ثنائي الأبعاد لاختيار تشبُّع اللون والإضاءة.</translation>

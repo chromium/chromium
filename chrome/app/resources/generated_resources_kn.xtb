@@ -501,6 +501,7 @@
 <translation id="1506061864768559482">ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
 <translation id="1507170440449692343">ನಿಮ್ಮ ಕ್ಯಾಮೆರಾವನ್ನು ಪ್ರವೇಶಿಸುವುದರಿಂದ ಈ ಪುಟವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="1507246803636407672">&amp;ತ್ಯಜಿಸು</translation>
+<translation id="1507884455975553832">ಮೆಸೇಜಿಂಗ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಸ್ಟ್ರೀಮ್ ಮಾಡಿ</translation>
 <translation id="1509163368529404530">&amp;ಗುಂಪನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="1509281256533087115">USB ಮೂಲಕ ಯಾವುದೇ <ph name="DEVICE_NAME_AND_VENDOR" /> ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
@@ -604,6 +605,7 @@
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> ಅನ್ನು ಮರೆತುಬಿಡಿ</translation>
 <translation id="1603914832182249871">(ಅದೃಶ್ಯ)</translation>
 <translation id="1604432177629086300">ಪ್ರಿಂಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪ್ರಿಂಟರ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="1604576689725077412">ನೆನಪಿನಲ್ಲಿಡಿ, ನಿಮ್ಮ Chromebook ನಲ್ಲಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ವಜಾಗೊಳಿಸುವುದರಿಂದ ಅವುಗಳನ್ನು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ವಜಾಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1605744057217831567">ಎಲ್ಲಾ ಸೈಟ್ ಡೇಟಾ ಮತ್ತು ಅನುಮತಿಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="1606077700029460857">ಮೌಸ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಿಸಿ</translation>
 <translation id="1606566847233779212">ನೀವು ಸೇರಿಸಿದ ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?</translation>
@@ -714,6 +716,7 @@
 <translation id="1697150536837697295">ಕಲೆ</translation>
 <translation id="1697686431566694143">ಫೈಲ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="1700079447639026019">ಎಂದಿಗೂ ಕುಕೀಗಳನ್ನು ಬಳಸದ ಸೈಟ್‌ಗಳು</translation>
+<translation id="1700201317341192482">ನಿಮ್ಮ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1703331064825191675">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ಬಗ್ಗೆ ಎಂದಿಗೂ ಚಿಂತಿಸಬೇಡಿ</translation>
 <translation id="1703666494654169921">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಅಥವಾ ಡೇಟಾವನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="1704097193565924901">ದೊಡ್ಡಕ್ಷರ</translation>
@@ -1026,6 +1029,7 @@
 <translation id="2006638907958895361">ಲಿಂಕ್‌ ಅನ್ನು <ph name="APP" /> ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="2007404777272201486">ಸಮಸ್ಯೆ ವರದಿಮಾಡಿ...</translation>
 <translation id="2010501376126504057">ಹೊಂದಾಣಿಕೆ ಸಾಧನಗಳು</translation>
+<translation id="2011968031299471357">ಸಂದೇಶಗಳನ್ನು ಸ್ವೀಕರಿಸಿ ಮತ್ತು ಅವುಗಳಿಗೆ ಪ್ರತಿಕ್ರಿಯೆ ನೀಡಿ</translation>
 <translation id="2015232545623037616">PC ಮತ್ತು Chromecast ಒಂದೇ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿವೆ</translation>
 <translation id="2016473077102413275">ಚಿತ್ರಗಳ ಅಗತ್ಯವಿರುವ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ</translation>
 <translation id="2016574333161572915">ನಿಮ್ಮ Google Meet ಹಾರ್ಡ್‌ವೇರ್ ಸೆಟಪ್‌ಗೆ ಸಿದ್ಧವಾಗಿದೆ</translation>
@@ -1266,6 +1270,7 @@
 <translation id="2241053333139545397">ಹಲವಾರು ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
 <translation id="2241634353105152135">ಕೇವಲ ಒಂದು ಬಾರಿ</translation>
 <translation id="2242687258748107519">ಫೈಲ್ ಮಾಹಿತಿ</translation>
+<translation id="2243381895573964397">ಫೋನ್ ಅಧಿಸೂಚನೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="2246549592927364792">Google ನಿಂದ ಚಿತ್ರದ ವಿವರಣೆಗಳನ್ನು ಪಡೆಯುವುದೇ?</translation>
 <translation id="2247738527273549923">ನಿಮ್ಮ ಸಾಧನವನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2249111429176737533">ಟ್ಯಾಬ್ ಆಗಿರುವ ವಿಂಡೋದ ಹಾಗೆ ತೆರೆಯಿರಿ</translation>
@@ -2086,6 +2091,7 @@
 <translation id="3036546437875325427">ಫ್ಲ್ಯಾಶ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3037754279345160234">ಡೊಮೇನ್ ಜೋಡಣೆ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ವಿಶ್ಲೇಷಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="3038612606416062604">ಹಸ್ತಚಾಲಿತವಾಗಿ ಪ್ರಿಂಟರ್ ಸೇರಿಸಿ</translation>
+<translation id="3039409644314251320">ಸಂವಾದಗಳನ್ನು ವೀಕ್ಷಿಸಿ, ಸಂದೇಶಗಳಿಗೆ ಪ್ರತಿಕ್ರಿಯಿಸಿ ಮತ್ತು ಗುಂಪು ಚಾಟ್‌ಗಳಿಗೆ ಜನರನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3039491566278747710">ಸಾಧನದಲ್ಲಿ ಆಫ್‌ಲೈನ್ ಕಾರ್ಯನೀತಿಯನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> ನಿಂದ</translation>
@@ -3309,6 +3315,7 @@
 <translation id="431076611119798497">&amp;ವಿವರಗಳು</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google ಖಾತೆ}one{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳು}other{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳು}}</translation>
 <translation id="4312866146174492540">ನಿರ್ಬಂಧಿಸು (ಡಿಫಾಲ್ಟ್)</translation>
+<translation id="4314497418046265427">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ನಿಮ್ಮ ಫೋನ್ ಕನೆಕ್ಟ್ ಮಾಡಿದಾಗ ಹೆಚ್ಚಿನ ಪ್ರಯೋಜನಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4314815835985389558">ಸಿಂಕ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4315933848520197627">ಖಾತೆ ಲಿಂಕ್ ರದ್ದುಮಾಡಿ</translation>
 <translation id="4316850752623536204">ಡೆವಲಪರ್ ವೆಬ್‌ಸೈಟ್</translation>
@@ -3501,6 +3508,7 @@
 <translation id="4519935350946509010">ಸಂಪರ್ಕ ದೋಷ.</translation>
 <translation id="4520385623207007473">ಬಳಕೆಯಲ್ಲಿರುವ ಕುಕೀಗಳು</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> ರಿಂದ ಅಪರಿಚಿತ ಸಾಧನಗಳು</translation>
+<translation id="4522351342209941760">ಇನ್ನೂ ಕೆಲವು ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಹೋಗಿ.</translation>
 <translation id="4522570452068850558">ವಿವರಗಳು</translation>
 <translation id="4522600456902129422">ಈ ಸೈಟ್‌ಗೆ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ನೋಡಲು ಅನುಮತಿಯನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="4522890784888918985">ಮಕ್ಕಳ ಖಾತೆಗಳು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
@@ -4817,6 +4825,7 @@
 
   ಸಾರ್ವಜನಿಕ ಪ್ರತಿಪಾದಕ (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> ಬಿಟ್‍ಗಳು):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
+<translation id="591556859191968540">ನಿಮ್ಮ ಫೋನ್ ಮತ್ತು <ph name="DEVICE_TYPE" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5916664084637901428">ಆನ್‌</translation>
 <translation id="59174027418879706">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5920543303088087579">ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸುವುದನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
@@ -5357,6 +5366,7 @@
 <translation id="6466258437571594570">ಸೈಟ್‌ಗಳು ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸುವಂತೆ ಕೇಳುವಾಗ ನಿಮಗೆ ಅಡಚಣೆ ಉಂಟುಮಾಡದಂತೆ ಅವುಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6466988389784393586">ಎಲ್ಲ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು &amp;ತೆರೆಯಿರಿ</translation>
 <translation id="6467304607960172345">ಫುಲ್‌ಸ್ಕ್ರೀನ್ ವೀಡಿಯೊಗಳನ್ನು ಆಪ್ಟಿಮೈಸ್‌ ಮಾಡಿ</translation>
+<translation id="6467377768028664108">ನಂತರ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಹೀಗೆ ಮಾಡಬಹುದು:</translation>
 <translation id="6468485451923838994">ಫಾಂಟ್‍ಗಳು</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ಫೈಲ್‌ಗಳು</translation>
 <translation id="6469557521904094793">ಸೆಲ್ಯುಲರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
@@ -6602,6 +6612,7 @@
 <translation id="7754704193130578113">ಡೌನ್‌ಲೋಡ್ ಮಾಡುವ ಮೊದಲು ಪ್ರತಿ ಫೈಲ್ ಅನ್ನು ಎಲ್ಲಿ ಉಳಿಸಬೇಕೆಂದು ಕೇಳು</translation>
 <translation id="7755287808199759310">ನಿಮ್ಮ ಪೋಷಕರು ನಿಮಗಾಗಿ ಅದನ್ನು ಅನಿರ್ಬಂಧಿಸಬಹುದಾಗಿದೆ</translation>
 <translation id="7757592200364144203">ಸಾಧನದ ಹೆಸರನ್ನು ಬದಲಾಯಿಸಿ</translation>
+<translation id="7757739382819740102">ಸಮೀಪದ ಸಂಪರ್ಕಗಳು ನಿಮ್ಮೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಬಹುದು. ಅನುಮೋದನೆ ಮಾಡುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ಮೂಲಕ ಪಠ್ಯವನ್ನು ಹಂಚಲಾಗಿದೆ</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">ನಿಮ್ಮ ಡಿಸ್‌ಪ್ಲೇನ ಗಡಿಗಳನ್ನು ಹೊಂದಿಸಿ</translation>
@@ -6668,6 +6679,7 @@
 <translation id="7814458197256864873">&amp;ನಕಲಿಸಿ</translation>
 <translation id="7815680994978050279">ಅಪಾಯಕಾರಿ ಡೌನ್‌ಲೋಡ್ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="7817361223956157679">ಆನ್-ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್, Linux ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಈಗಲೂ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ</translation>
+<translation id="7817671927108102061">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಸೆಟಪ್‌ ಅನ್ನು ಮುಕ್ತಾಯಗೊಳಿಸಿ</translation>
 <translation id="7818135753970109980">ಹೊಸ ಥೀಮ್ ಸೇರಿಸಲಾಗಿದೆ (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome ಸಿಂಕ್</translation>
 <translation id="7820561748632634942">ಹೆಚ್ಚುವರಿ ಸ್ವಿಚ್‌ಗಳನ್ನು ನಿಯೋಜಿಸಬೇಕೆ?</translation>
@@ -7457,6 +7469,7 @@
 <translation id="8631032106121706562">ಪೆಟಲ್ಸ್</translation>
 <translation id="863109444997383731">ನಿಮಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ತೋರಿಸಲು ಕೇಳಿಕೊಳ್ಳದ ಹಾಗೆ ಸೈಟ್‌ಗಳನ್ನು ತಡೆಯಲಾಗುತ್ತದೆ. ಅಧಿಸೂಚನೆಗಳನ್ನು ತೋರಿಸಲು ಸೈಟ್ ವಿನಂತಿಸಿದರೆ, ’ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ’ ಸೂಚಕವು ವಿಳಾಸಪಟ್ಟಿಯಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="8633025649649592204">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ</translation>
+<translation id="8634348081024879304">Google Pay ಜೊತೆಗೆ ನಿಮ್ಮ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಇನ್ನು ಮುಂದೆ ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. <ph name="BEGIN_LINK" />ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">ಮರುಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8636284842992792762">ವಿಸ್ತರಣೆಗಳನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8636500887554457830">ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು ಅಥವಾ ಮರುನಿರ್ದೇಶನಗಳನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
@@ -7677,6 +7690,7 @@
 <translation id="8838770651474809439">ಹ್ಯಾಂಬರ್ಗರ್</translation>
 <translation id="8838778928843281408">ಫೋನ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="883911313571074303">ಚಿತ್ರವನ್ನು ಟಿಪ್ಪಣಿ ಮಾಡಿ</translation>
+<translation id="8840427996758894516">ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ, ಅನ್‌ಲಾಕ್ ಆಗಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಮತ್ತು ವೈ-ಫೈ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="8841843049738266382">ಅನುಮತಿಪಟ್ಟಿಯಲ್ಲಿರುವ ಬಳಕೆದಾರರನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
 <translation id="8842594465773264717">ಈ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="8845001906332463065">ಸಹಾಯ ಪಡೆಯಿರಿ</translation>

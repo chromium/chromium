@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Σφάλμα - Πρόβλημα φίλτρου</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Έχω ένα ζεύγος κλειδιών</translation>
+<translation id="1442433966118452622">Προέλευση εικόνας</translation>
 <translation id="1451536289672181509">Η συσκευή είναι πληκτρολόγιο.</translation>
 <translation id="1468664791493211953">Προσφορές</translation>
 <translation id="1476467821656042872">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και μπορεί να έχει τη δυνατότητα να παρακολουθεί τη δραστηριότητά σας.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Ημερήσια ανανέωση</translation>
 <translation id="2620436844016719705">Σύστημα</translation>
 <translation id="2695514675076754339">Εισαγάγετε τον κωδικό ξεκλειδώματος 8 χαρακτήρων</translation>
+<translation id="2712812801627182647">Κλειδί ελέγχου ταυτότητας TLS</translation>
 <translation id="2740531572673183784">ΟK</translation>
 <translation id="2751739896257479635">2η φάση ελέγχου ταυτότητας EAP:</translation>
 <translation id="2783010256799387990">ΕΠΙΤΥΧΗΣ ΟΛΟΚΛΗΡΩΣΗ</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Σφάλμα - Η θύρα είναι ανοικτή</translation>
 <translation id="3283504360622356314">{0,plural, =1{Επεξεργασία αρχείου}other{Επεξεργασία αρχείων}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Κατεύθυνση κλειδιού</translation>
 <translation id="3310640316857623290">Ο λανθάνων χρόνος DNS έχει υπερβεί σημαντικά το επιτρεπόμενο ελάχιστο όριο.</translation>
 <translation id="3328783797891415197">Η δοκιμή εκτελείται</translation>
 <translation id="3340011300870565703">Η μπαταρία δεξιού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Ο κωδικός πρόσβασης του Chrome OS ενημερώθηκε</translation>
 <translation id="4773299976671772492">Διακόπηκε</translation>
 <translation id="4782311465517282004">Λάβετε ορισμούς, μεταφράσεις ή μετατροπές μονάδων κάνοντας δεξί κλικ ή αγγίζοντας παρατεταμένα κείμενο.</translation>
+<translation id="4793756956024303490">Αλγόριθμος συμπίεσης</translation>
 <translation id="4794140124556169553">Η εκτέλεση μιας δοκιμής CPU μπορεί να επηρεάσει την απόδοση του συστήματος</translation>
 <translation id="4808449224298348341">Ακυρώθηκε η εργασία εκτύπωσης <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Οι εικόνες μου</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) Επίλυση DNS</translation>
 <translation id="4848429997038228357">ΕΚΤΕΛΕΙΤΑΙ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Απομένει {0} προσπάθεια}other{<ph name="ERROR_MESSAGE" /> Απομένουν {0} προσπάθειες}}</translation>
+<translation id="4873827928179867585">Αλγόριθμος ελέγχου ταυτότητας</translation>
 <translation id="4880328057631981605">Όνομα σημείου πρόσβασης</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Επιλέξτε άμεσα έναν νέο</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Απόκρυψη αναφοράς</translation>
 <translation id="500920857929044050">Διακοπή δοκιμής</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Όταν η οθόνη είναι αδρανής, να εμφανίζονται φωτογραφίες, η ώρα καθώς και πληροφορίες καιρού και μέσων.</translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
 <translation id="5049856988445523908">Κλειδωμένη SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Όνομα ομάδας</translation>
@@ -436,6 +442,7 @@
 <translation id="6618744767048954150">Σε εξέλιξη</translation>
 <translation id="6620487321149975369">Οι εργασίες εκτύπωσης θα εμφανίζονται στο ιστορικό, εκτός εάν καταργηθούν μη αυτόματα.</translation>
 <translation id="6643016212128521049">Διαγραφή</translation>
+<translation id="6647510110698214773">Αλγόριθμος κρυπτογράφησης</translation>
 <translation id="6657585470893396449">Κωδικός Πρόσβασης</translation>
 <translation id="6692996468359469499">Λάβετε πληροφορίες σχετικά με την επιλογή σας.</translation>
 <translation id="6704062477274546131">Επίλυση DNS</translation>

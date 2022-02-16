@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Minimal qiymat <ph name="MINIMUM" /> bo‘lishi mumkin.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Belgisi olib tashlandi. Guruhda. <ph name="INDEX" />/<ph name="COUNT" /> ta variant</translation>
 <translation id="5307600278924710095">Elektron manzilning “<ph name="ATSIGN" />” belgisidan keyingi qismini kiriting. “<ph name="INVALIDADDRESS" />” manzili to‘liq emas.</translation>
 <translation id="5334352251556557839">Media fayl ijro etilmadi.</translation>
 <translation id="537648784377940524">Minimal sana (<ph name="MIN_DATE_OR_TIME" />) maksimal sanadan (<ph name="MAX_DATE_OR_TIME" />) oldin boʻlsin.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Boshqa...</translation>
 <translation id="6709093583001123835">Qiymat formati: <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Ijro sifati past</translation>
+<translation id="6719914554879143100">Belgilandi. Guruhda. <ph name="INDEX" />/<ph name="COUNT" /> ta variant</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6820355525329141109">Plagin yuklanmadi.</translation>
 <translation id="6831465880655513317">2D slayder uchun rang toʻqligi va yorqinligini tanlash</translation>

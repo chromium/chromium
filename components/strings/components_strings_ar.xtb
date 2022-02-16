@@ -1067,7 +1067,7 @@
 <translation id="4250680216510889253">لا</translation>
 <translation id="4253168017788158739">ملاحظة</translation>
 <translation id="425582637250725228">قد لا يتم حفظ التغييرات التي أجريتها.</translation>
-<translation id="425869179292622354">هل تريد توفير المزيد من الحماية باستخدام بطاقة افتراضية؟</translation>
+<translation id="425869179292622354">هل تريد الحصول على حماية إضافية باستخدام بطاقة افتراضية؟</translation>
 <translation id="4258748452823770588">توقيع غير صالح</translation>
 <translation id="4261046003697461417">يتعذّر إضافة تعليق توضيحي إلى المستندات المحمية</translation>
 <translation id="4265872034478892965">تم السماح من قبل المشرف</translation>
@@ -2549,6 +2549,7 @@
 <translation id="9150045010208374699">استخدام الكاميرا</translation>
 <translation id="9150685862434908345">‏يمكن لمشرفك تغيير إعداد المتصفِّح عن بُعد. وقد تتم أيضًا إدارة النشاط على هذا الجهاز خارج Chrome. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">تم التحديث</translation>
+<translation id="9155211586651734179">تم ربط أجهزة صوتية ملحقة.</translation>
 <translation id="9157595877708044936">جارٍ الإعداد...</translation>
 <translation id="9158625974267017556">‏C6 (مغلف)</translation>
 <translation id="9164029392738894042">التحقّق من دقّة البيانات</translation>

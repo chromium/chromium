@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Failed – Filter failed</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">I have a keypair</translation>
+<translation id="1442433966118452622">Image source</translation>
 <translation id="1451536289672181509">Device is a keyboard.</translation>
 <translation id="1468664791493211953">Offers</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> manages this device and may be able to monitor your activity.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Daily Refresh</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2695514675076754339">Enter the 8-character unlock code</translation>
+<translation id="2712812801627182647">TLS authentication key</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP Phase 2 authentication</translation>
 <translation id="2783010256799387990">PASSED</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Failed – Door open</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit files}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Key direction</translation>
 <translation id="3310640316857623290">DNS latency significantly above allowable threshold</translation>
 <translation id="3328783797891415197">Test running</translation>
 <translation id="3340011300870565703">Device has <ph name="BATTERY_PERCENTAGE" />% right bud battery.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS password updated</translation>
 <translation id="4773299976671772492">Stopped</translation>
 <translation id="4782311465517282004">Get definitions, translations or unit conversions when you right-click or touch &amp; hold text</translation>
+<translation id="4793756956024303490">Compression algorithm</translation>
 <translation id="4794140124556169553">Running a CPU test may affect your system performance</translation>
 <translation id="4808449224298348341">Cancelled print job <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">My Images</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS resolution</translation>
 <translation id="4848429997038228357">RUNNING</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} attempt left}other{<ph name="ERROR_MESSAGE" /> {0} attempts left}}</translation>
+<translation id="4873827928179867585">Authentication algorithm</translation>
 <translation id="4880328057631981605">Access point name</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Choose a new one immediately</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Hide report</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">When your screen is idle, show photos, time, weather and media info.</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5049856988445523908">SIM locked (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Group name</translation>
@@ -436,6 +442,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6618744767048954150">Running</translation>
 <translation id="6620487321149975369">Print jobs will appear in history unless they are removed manually</translation>
 <translation id="6643016212128521049">Clear</translation>
+<translation id="6647510110698214773">Encryption algorithm</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6692996468359469499">Get info related to your selection</translation>
 <translation id="6704062477274546131">DNS resolution</translation>

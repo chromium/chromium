@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">失敗 - フィルタエラー</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">入力した鍵ペアを使用</translation>
+<translation id="1442433966118452622">画像ソース</translation>
 <translation id="1451536289672181509">デバイスの種類はキーボードです。</translation>
 <translation id="1468664791493211953">クーポン</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> はこのデバイスを管理しており、アクティビティを監視できる可能性があります。</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">毎日更新する</translation>
 <translation id="2620436844016719705">システム</translation>
 <translation id="2695514675076754339">8 文字の解除コードを入力</translation>
+<translation id="2712812801627182647">TLS 認証鍵</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP フェーズ 2 認証</translation>
 <translation id="2783010256799387990">合格</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
 <translation id="3283504360622356314">{0,plural, =1{ファイルを編集}other{ファイルを編集}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">鍵の方向</translation>
 <translation id="3310640316857623290">DNS の応答時間が許容値を大幅に超えています</translation>
 <translation id="3328783797891415197">テスト実行中</translation>
 <translation id="3340011300870565703">デバイスの右イヤフォンのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS のパスワードが更新されました</translation>
 <translation id="4773299976671772492">停止しました</translation>
 <translation id="4782311465517282004">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます</translation>
+<translation id="4793756956024303490">圧縮アルゴリズム</translation>
 <translation id="4794140124556169553">CPU のテストを行うと、システムのパフォーマンスに響することがあります</translation>
 <translation id="4808449224298348341">キャンセルされた印刷ジョブ <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">自分の画像</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">（Android）DNS の解決</translation>
 <translation id="4848429997038228357">実行中</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}other{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}}</translation>
+<translation id="4873827928179867585">認証アルゴリズム</translation>
 <translation id="4880328057631981605">アクセス ポイント名</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">新しいパスワードを今すぐ選択してください</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">レポートを非表示</translation>
 <translation id="500920857929044050">テストを停止</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">画面がアイドル状態のときに、写真、時刻、天気、メディア情報を表示します。</translation>
 <translation id="5039804452771397117">許可</translation>
 <translation id="5049856988445523908">SIM はロックされています（<ph name="LOCK_TYPE" />）</translation>
 <translation id="5050042263972837708">グループ名</translation>
@@ -436,6 +442,7 @@
 <translation id="6618744767048954150">実行中</translation>
 <translation id="6620487321149975369">印刷ジョブは、手動で削除するまで履歴に表示されます</translation>
 <translation id="6643016212128521049">削除</translation>
+<translation id="6647510110698214773">暗号化アルゴリズム</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
 <translation id="6704062477274546131">DNS の解決</translation>

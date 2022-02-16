@@ -241,6 +241,7 @@
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> と共有</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS ホスト</translation>
+<translation id="3104793765551262433"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によってブロック、詳細</translation>
 <translation id="3113153474486991170">この場所から「<ph name="PATH" />」を開くことができません。[マイファイル] にコピーして開いてください。</translation>
 <translation id="3113592018909187986">入力できるのはあと 1 回です。新しい PIN を設定するまでこのネットワークは使用できません。</translation>
 <translation id="3124404833828281817">空想にふけっている人</translation>
@@ -883,6 +884,7 @@
 <translation id="8551494947769799688">ラトビア語</translation>
 <translation id="8560515948038859357">広東語</translation>
 <translation id="8561206103590473338">ゾウ</translation>
+<translation id="8566466896628108558"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によってブロック、詳細</translation>
 <translation id="8569764466147087991">ファイルを選択して開く</translation>
 <translation id="8577897833047451336">クロアチア語</translation>
 <translation id="8578308463707544055">インドネシア語</translation>

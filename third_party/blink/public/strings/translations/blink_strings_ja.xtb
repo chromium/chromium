@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">値は <ph name="MINIMUM" /> 以上にする必要があります。</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">選択を解除しました。グループ内のオプション <ph name="COUNT" /> 件中の <ph name="INDEX" /> 件目です</translation>
 <translation id="5307600278924710095">「<ph name="ATSIGN" />」の前の文字列を入力してください。「<ph name="INVALIDADDRESS" />」は完全なメール アドレスではありません。</translation>
 <translation id="5334352251556557839">メディアを再生できません。</translation>
 <translation id="537648784377940524">最小の日付（<ph name="MIN_DATE_OR_TIME" />）には、最大の日付（<ph name="MAX_DATE_OR_TIME" />）より前の日付を指定してください。</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">その他...</translation>
 <translation id="6709093583001123835">値は <ph name="VALUE" /> とする必要があります。</translation>
 <translation id="6709570249143506788">低再生画質</translation>
+<translation id="6719914554879143100">選択しました。グループ内のオプション <ph name="COUNT" /> 件中の <ph name="INDEX" /> 件目です</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6820355525329141109">プラグインを読み込むことができませんでした。</translation>
 <translation id="6831465880655513317">彩度や明度を選択できる 2 次元スライダー付きの色選択ツールです</translation>

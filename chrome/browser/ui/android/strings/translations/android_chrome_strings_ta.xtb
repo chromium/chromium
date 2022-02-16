@@ -166,6 +166,7 @@
 <translation id="2000419248597011803">முகவரிப் பட்டியிலிருந்தும், தேடல் பெட்டியிலிருந்தும் சில குக்கீகளையும் தேடல்களையும் உங்கள் இயல்புத் தேடல் இன்ஜினுக்கு அனுப்பும்</translation>
 <translation id="200114059308480249">சுற்றியுள்ள வார்த்தைகளையும் Google தேடல்களில் சேர்க்கவா?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ஃபைல்}other{# ஃபைல்கள் }}</translation>
+<translation id="2015836039326522978"><ph name="APP_NAME" /> ஆப்ஸ் Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள். <ph name="BEGIN_LINK3" />தனியுரிமைக் கொள்கையையும்<ph name="END_LINK3" /> ஏற்கிறீர்கள்.</translation>
 <translation id="2020309681647789787">ஒத்திசைக்கப்பட்டுள்ள சாதனங்கள் அனைத்திலும் உங்கள் தேடல் விவரங்கள் சேமிக்கப்படுவதால் விட்ட இடத்திலிருந்து செயல்பாட்டைத் தொடரலாம்</translation>
 <translation id="2021896219286479412">முழுத் திரை தளக் கட்டுப்பாடுகள்</translation>
 <translation id="2038563949887743358">டெஸ்க்டாப் தளத்திற்கான கோரிக்கையை இயக்கு</translation>
@@ -1224,6 +1225,7 @@
 <translation id="8037750541064988519"><ph name="DAYS" /> நாட்கள் மீதமுள்ளன</translation>
 <translation id="8037801708772278989">சரிபார்த்தது: சற்று முன்பு</translation>
 <translation id="804335162455518893">SD கார்டு இல்லை</translation>
+<translation id="8046319826565374740">Chromeமைப் பயன்படுத்துவதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள். <ph name="BEGIN_LINK3" />தனியுரிமைக் கொள்கையையும்<ph name="END_LINK3" /> ஏற்கிறீர்கள்.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> மறைநிலைப் பக்கம்}other{<ph name="TAB_COUNT_NORMAL" /> மறைநிலைப் பக்கங்கள்}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> மெ.பை கிடைக்கிறது</translation>
 <translation id="8058655154417507695">காலாவதியாகும் ஆண்டு</translation>

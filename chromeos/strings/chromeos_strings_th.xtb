@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">ไม่สำเร็จ - ตัวกรองล้มเหลว</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ฉันมีคู่คีย์</translation>
+<translation id="1442433966118452622">แหล่งที่มาของภาพ</translation>
 <translation id="1451536289672181509">อุปกรณ์เป็นแป้นพิมพ์</translation>
 <translation id="1468664791493211953">ข้อเสนอ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และอาจตรวจสอบกิจกรรมของคุณได้</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">รีเฟรชทุกวัน</translation>
 <translation id="2620436844016719705">ระบบ</translation>
 <translation id="2695514675076754339">ป้อนรหัสปลดล็อก 8 อักขระ</translation>
+<translation id="2712812801627182647">คีย์การตรวจสอบสิทธิ์ TLS</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2751739896257479635">การตรวจสอบสิทธิ์ขั้นที่ 2 ของ EAP</translation>
 <translation id="2783010256799387990">ผ่าน</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">ไม่สำเร็จ - ฝาเครื่องเปิดอยู่</translation>
 <translation id="3283504360622356314">{0,plural, =1{แก้ไขไฟล์}other{แก้ไขไฟล์}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">ทิศทางของคีย์</translation>
 <translation id="3310640316857623290">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้อย่างมีนัยสำคัญ</translation>
 <translation id="3328783797891415197">กำลังทดสอบ</translation>
 <translation id="3340011300870565703">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างขวา <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">อัปเดตรหัสผ่าน Chrome OS แล้ว</translation>
 <translation id="4773299976671772492">หยุดแล้ว</translation>
 <translation id="4782311465517282004">รับคำจำกัดความ คำแปล หรือการแปลงหน่วยเมื่อคุณคลิกขวาหรือแตะข้อความค้างไว้</translation>
+<translation id="4793756956024303490">อัลกอริทึมการบีบอัด</translation>
 <translation id="4794140124556169553">การทดสอบ CPU อาจส่งผลต่อประสิทธิภาพของระบบ</translation>
 <translation id="4808449224298348341">ยกเลิกงานพิมพ์ <ph name="DOCUMENT_TITLE" /> แล้ว</translation>
 <translation id="4813136279048157860">รูปภาพของฉัน</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) การแปลง DNS</translation>
 <translation id="4848429997038228357">กำลังดำเนินการ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}other{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}}</translation>
+<translation id="4873827928179867585">อัลกอริทึมการตรวจสอบสิทธิ์</translation>
 <translation id="4880328057631981605">ชื่อจุดเข้าใช้งาน</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">อย่ารอช้า รีบเลือกรหัสผ่านใหม่</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">ซ่อนรายงาน</translation>
 <translation id="500920857929044050">หยุดการทดสอบ</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">ระบบจะแสดงรูปภาพ เวลา สภาพอากาศ และข้อมูลสื่อเมื่อไม่มีการใช้งานหน้าจอ</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
 <translation id="5049856988445523908">ล็อกซิมแล้ว (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ชื่อกลุ่ม</translation>
@@ -436,6 +442,7 @@
 <translation id="6618744767048954150">กำลังดำเนินการ</translation>
 <translation id="6620487321149975369">งานพิมพ์จะปรากฏในประวัติการพิมพ์ เว้นแต่จะมีผู้ใช้นำออกไปด้วยตนเอง</translation>
 <translation id="6643016212128521049">ล้าง</translation>
+<translation id="6647510110698214773">อัลกอริทึมการเข้ารหัส</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6692996468359469499">ดูข้อมูลที่เกี่ยวข้องกับการเลือกของคุณ</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>

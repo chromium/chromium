@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">مقدار باید بیشتر یا مساوی با <ph name="MINIMUM" /> باشد.</translation>
 <translation id="5196716972587102051">۲</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> پتابایت</translation>
+<translation id="5272594226096532950">بدون علامت. در گروه، گزینه <ph name="INDEX" /> از <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">لطفاً قسمت قبل از «<ph name="ATSIGN" />» را وارد کنید. «<ph name="INVALIDADDRESS" />» ناقص است.</translation>
 <translation id="5334352251556557839">رسانه پخش نشد.</translation>
 <translation id="537648784377940524">حداقل تاریخ (<ph name="MIN_DATE_OR_TIME" />) باید قبل از حداکثر تاریخ باشد (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">دیگر...</translation>
 <translation id="6709093583001123835">مقدار باید <ph name="VALUE" /> باشد.</translation>
 <translation id="6709570249143506788">کیفیت پخش ضعیف</translation>
+<translation id="6719914554879143100">علامت زده‌شده. در گروه، گزینه <ph name="INDEX" /> از <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6820355525329141109">افزایه بارگیری نشد.</translation>
 <translation id="6831465880655513317">مخزن رنگ با لغزنده دوبعدی برای انتخاب اشباع رنگ و روشنایی</translation>

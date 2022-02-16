@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">انجام نشد - فیلتر کار نکرد</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">جفت‌کلید دارم</translation>
+<translation id="1442433966118452622">منبع تصویر</translation>
 <translation id="1451536289672181509">دستگاه صفحه‌کلید است.</translation>
 <translation id="1468664791493211953">پیشنهادها</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و ممکن است بتواند بر فعالیتتان نظارت داشته باشد.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">بازخوانی روزانه</translation>
 <translation id="2620436844016719705">سیستم</translation>
 <translation id="2695514675076754339">کد قفل‌گشایی ۸ رقمی را وارد کنید</translation>
+<translation id="2712812801627182647">کلید اصالت‌سنجی «امنیت لایه انتقال»</translation>
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2751739896257479635">‏اصالت‌سنجی مرحله ۲ EAP</translation>
 <translation id="2783010256799387990">موفق</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
 <translation id="3283504360622356314">{0,plural, =1{ویرایش فایل}one{ویرایش فایل}other{ویرایش فایل‌ها}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> گیگاهرتز</translation>
+<translation id="3291996639387199448">جهت کلید</translation>
 <translation id="3310640316857623290">تأخیر در ساناد به‌میزان قابل‌توجهی از آستانه مجاز بالاتر است</translation>
 <translation id="3328783797891415197">درحال اجرای آزمایش</translation>
 <translation id="3340011300870565703">باتری هدفون توگوشی سمت راست دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">‏گذرواژه Chrome OS به‌روزرسانی شد</translation>
 <translation id="4773299976671772492">متوقف شد</translation>
 <translation id="4782311465517282004">وقتی روی نوشتار کلیک راست می‌کنید یا آن را لمس می‌کنید و نگه می‌دارید، تعاریف، ترجمه‌ها، یا تبدیل واحدها را دریافت می‌کنید</translation>
+<translation id="4793756956024303490">الگوریتم فشرده‌سازی</translation>
 <translation id="4794140124556169553">‏انجام آزمایش CPU ممکن است بر عملکرد سیستم تأثیر بگذارد</translation>
 <translation id="4808449224298348341">کار چاپ <ph name="DOCUMENT_TITLE" /> لغو شد</translation>
 <translation id="4813136279048157860">تصاویر من</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">‏(Android) حل‌وفصل ساناد</translation>
 <translation id="4848429997038228357">درحال اجرا</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}one{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}other{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}}</translation>
+<translation id="4873827928179867585">الگوریتم اصالت‌سنجی</translation>
 <translation id="4880328057631981605">نام نقطه دسترسی</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">انتخاب فوری موردی جدید</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">پنهان کردن گزارش</translation>
 <translation id="500920857929044050">توقف آزمایش</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">وقتی صفحه‌نمایش بدون فعالیت است، عکس، ساعت، وضعیت آب‌وهوا، و اطلاعات رسانه نمایش داده می‌شود.</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5049856988445523908">سیم‌کارت قفل است (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">نام گروه</translation>
@@ -436,6 +442,7 @@
 <translation id="6618744767048954150">درحال اجرا</translation>
 <translation id="6620487321149975369">کارهای چاپ تا زمانی‌که به‌طور دستی برداشته نشوند در سابقه نشان داده می‌شوند</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
+<translation id="6647510110698214773">الگوریتم رمزگذاری</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6692996468359469499">دریافت اطلاعاتی که با انتخابتان مرتبط است</translation>
 <translation id="6704062477274546131">وضوح ساناد</translation>

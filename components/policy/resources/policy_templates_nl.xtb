@@ -190,6 +190,20 @@
 <translation id="1223789468190631420">Inschakelstatus van Safe Browsing voor vertrouwde bronnen</translation>
 <translation id="123018742985150697">Vereisen dat de lokale gebruiker en de eigenaar van de host voor externe toegang overeenkomen</translation>
 <translation id="123081309365616809">Casten van content naar apparaat aanzetten</translation>
+<translation id="1239526922294123540">Hiermee bepaal je of websites op een onbeveiligde manier verzoeken mogen sturen naar netwerkeindpunten die meer privé zijn.
+
+          Als je dit beleid instelt op True, worden alle <ph name="PRIVATE_NETWORK_ACCESS" />-checks uitgezet voor alle oorsprongen. Hierdoor kunnen aanvallers <ph name="CSRF" />-aanvallen uitvoeren op privé-netwerkservers.
+
+          Als je dit beleid niet instelt of instelt op False, hangt het standaardgedrag voor verzoeken naar netwerkeindpunten die meer privé zijn af van de persoonlijke instellingen van de gebruiker voor de functievlaggen <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> en <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" />, die kunnen worden ingesteld via praktijktests of via de opdrachtregel.
+
+          Dit beleid heeft betrekking op de <ph name="PRIVATE_NETWORK_ACCESS" />-specificatie. Zie https://wicg.github.io/private-network-access/ voor meer informatie.
+
+          Een netwerkeindpunt is meer privé dan een ander eindpunt als:
+1) het IP-adres van het netwerkeindpunt localhost is en het andere niet,
+          2) het IP-adres van het netwerkeindpunt privé is en het andere openbaar.
+          Afhankelijk van hoe de specificatie zich ontwikkelt, kan dit beleid in de toekomt van toepassing zijn op alle cross-origin-verzoeken naar privé-IP-adressen of localhost.
+
+          Als je dit beleid instelt op True, mogen websites verzoeken sturen naar elk willekeurig netwerkeindpunt (hiervoor worden andere cross-origin-checks uitgevoerd).</translation>
 <translation id="1240722269871366886">Met dit beleid kan <ph name="PRODUCT_OS_NAME" /> emoji's voorstellen als gebruikers tekst typen met hun virtuele of fysieke toetsenborden.
       Als dit beleid is ingesteld op 'waar', staat de functie aan en kunnen gebruikers het wijzigen.
       Dit beleid is standaard ingesteld op 'onwaar'. Er worden geen suggesties voor emoji's getoond en gebruikers kunnen dit niet overschrijven.</translation>
@@ -2788,6 +2802,14 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
       Als je het beleid niet toepast, worden er geen beleidsregels genegeerd vanwege de bron. Beleidsregels worden alleen genegeerd als er een conflict is en het beleid niet de hoogste prioriteit heeft.
 
       Als je dit beleid instelt vanuit een cloudbron, kan het geen specifieke gebruiker targeten.</translation>
+<translation id="4166865262840412074">Dit beleid staat origin-keyed agentclustering standaard toe.
+
+      De HTTP-header Origin-Agent-Cluster: bepaalt of een document wordt geïsoleerd in een origin-keyed agentcluster of in een site-keyed agentcluster. Dit heeft beveiligingsimplicaties omdat een origin-keyed agentcluster isolatie van documenten op basis van oorsprong toestaat. Het voor de ontwikkelaar zichtbare gevolg hiervan is dat de accessor document.domain niet meer kan worden ingesteld.
+
+      Het standaardgedrag (wanneer er geen header Origin-Agent-Cluster: is ingesteld) verandert in M106 van site-keyed naar origin-keyed. Als je dit beleid toepast of niet instelt, volgt de browser deze nieuwe standaardwaarde vanaf die versie. Als je dit beleid niet toepast, wordt deze wijziging teruggedraaid en worden documenten zonder een header Origin-Agent-Cluster: toegewezen aan site-keyed agentclusters. Als gevolg hiervan blijft de accessor document.domain standaard instelbaar. Dit komt overeen met het verouderde gedrag.
+
+      Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer informatie.
+      </translation>
 <translation id="4169692397912242417">Zet de toegankelijkheidsfunctie voor gesproken feedback op het inlogscherm aan.
 
           Als dit beleid is ingesteld op True, staat gesproken feedback altijd aan op het inlogscherm.
@@ -3219,6 +3241,33 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="475479145997699293">Als je het beleid instelt op <ph name="ASK_FILE_HANDLING" />, kunnen web-apps toegang vragen tot bestandstypen via de File Handling API. Als je het beleid instelt op <ph name="BLOCK_FILE_HANDLING" />, wordt toegang tot bestandstypen geweigerd.
 
       Als dit beleid niet is ingesteld, kunnen web-apps toegang vragen, maar gebruikers kunnen deze instelling wijzigen.</translation>
+<translation id="4755492101519343259">Hiermee stel je een lijst op met regels om datalekken op <ph name="PRODUCT_OS_NAME" /> te voorkomen.
+      Een datalek kan optreden als je gegevens kopieert en plakt, gegevens overdraagt, afdrukt, je scherm deelt of screenshots maakt, enzovoort.
+
+Elke regel bevat het volgende:
+- Een lijst met bronnen die zijn gedefinieerd als URL's. Alle gegevens in de bronnen worden beschouwd als vertrouwelijk en hierop worden de beperkingen toegepast.
+      - Een lijst met bestemmingen die zijn gedefinieerd als URL's of componenten, waarmee de vertrouwelijke gegevens wel of niet mogen worden gedeeld.
+      - Een lijst met beperkingen die op de gegevens van de bronnen moeten worden toegepast.
+
+      Regels kunnen om deze redenen worden toegevoegd:
+- Bepalen welke klembordgegevens mogen worden gedeeld tussen de bronnen en de bestemmingen.
+      - Bepalen of er screenshots van de bronnen mogen worden gemaakt.
+      - Bepalen of er bronnen mogen worden afgedrukt.
+      - Bepalen of het privacyscherm moet worden gebruikt als er bronnen zichtbaar zijn.
+      - Bepalen of de bronnen het scherm mogen delen.
+
+      Het beperkingsniveau kan worden ingesteld op BLOCK, ALLOW, REPORT of WARN.
+      - Als het beperkingsniveau is ingesteld op BLOCK, is de actie niet toegestaan. Als <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> is ingesteld op True, wordt de geblokkeerde actie gemeld aan de beheerder.
+      - Als het beperkingsniveau is ingesteld op ALLOW, is de actie toegestaan.
+      - Als het beperkingsniveau is ingesteld op REPORT en <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> is ingesteld op True, wordt de actie gemeld aan de beheerder.
+      - Als het beperkingsniveau is ingesteld op WARN, krijgt de gebruiker een waarschuwing en kan die ervoor kiezen door te gaan met de actie of deze te annuleren. Als <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> is ingesteld op True, wordt het tonen van de waarschuwing gemeld aan de beheerder. Doorgaan met de actie wordt ook gemeld.
+
+      Opmerkingen:
+- Met de beperking PRIVACY_SCREEN blokkeer je niet de mogelijkheid om het privacyscherm aan te zetten maar dwing je dit af als de beperkingsklasse is ingesteld op BLOCK.
+      - Bestemmingen mogen niet leeg zijn als een van de beperkingen CLIPBOARD is, maar ze maken geen verschil voor de overige beperkingen.
+      - Gebruik een notatie voor de URL-patronen volgens deze indeling (https://www.chromium.org/administrators/url-blocklist-filter-format).
+
+Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</translation>
 <translation id="4757053978738874325">Zet de toegankelijkheidsfunctie voor monogeluid aan.
 
           Met deze functie wordt stereogeluid met verschillende linker- en rechterkanalen uitgevoerd, zodat verschillende oren verschillende geluiden horen.
@@ -5952,6 +6001,13 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="7904177352786629708">Als je het beleid toepast, wordt CNAME-lookup overgeslagen. De servernaam wordt gebruikt zoals deze is opgegeven tijdens het genereren van de Kerberos SPN.
 
       Als je het beleid niet toepast of niet instelt, wordt de canonieke naam van de server bepaald tijdens het genereren van de Kerberos SPN.</translation>
+<translation id="7904434413881624417">Lijst met URL-patronen. Verzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden niet onderworpen aan <ph name="PRIVATE_NETWORK_ACCESS" />-checks.
+
+          Als je dit beleid niet instelt, gedraagt het zich alsof het is ingesteld op de lege lijst.
+
+          Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, wordt de algemene standaardwaarde gebruikt op basis van het beleid <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> (als dit is ingesteld) of anders op basis van de persoonlijke instellingen van de gebruiker.
+
+          Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
 <translation id="7906983682927840536">Keepalive-duur bij afsluiten ophalen</translation>
 <translation id="7908384265697653397">Tijd in dagen waarna de gebruiker wordt uitgelogd als de <ph name="PRODUCT_OS_NAME" />-versie lager is dan de opgegeven <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /></translation>
 <translation id="7912255076272890813">Toegestane typen apps/extensies configureren</translation>

@@ -45,6 +45,7 @@
 <translation id="492284538114688557">किमतीतील घट आढळली</translation>
 <translation id="5007392906805964215">पुनरावलोकन करा</translation>
 <translation id="5073204694187207510">फुलस्क्रीन ग्रिड लपवा</translation>
+<translation id="5076161749301278626">स्टोअरशी संबंधित पुनरावलोकने पहायची आहेत का?</translation>
 <translation id="5082793167783849073">गट बनवून त्वरित पेजशी तुलना करा. सुरू करण्यासाठी, लिंकला स्पर्श करा आणि धरून ठेवा.</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5533021382642990449">नंतर दाखवा</translation>
@@ -71,6 +72,7 @@
 <translation id="7326879924029668159">रिटर्न धोरण आणि आणखी बरेच काही पहा</translation>
 <translation id="7352298686197644113">तुमच्या उघड्या असलेल्या टॅबमध्ये कोणत्या आयटमची किंमत आणखी कमी आहे ते पहा</translation>
 <translation id="753732157349120914">टॅब स्विचर</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{Google कडून <ph name="REVIEWS_COUNT_ONE" /> पुनरावलोकन}other{Google कडून <ph name="REVIEWS_COUNT_MANY" /> पुनरावलोकने}}</translation>
 <translation id="7559245342362162951">फुलस्क्रीन ग्रिडमध्ये गटाचे टॅब दाखवा</translation>
 <translation id="7792771145871471484">सूचनांचे पुनरावलोकन करा.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{निवडलेल्या <ph name="TABS_COUNT_ONE" /> टॅबचा गट बनवा}other{निवडलेल्या <ph name="TABS_COUNT_MANY" /> टॅबचा गट बनवा}}</translation>

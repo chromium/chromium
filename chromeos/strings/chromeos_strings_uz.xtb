@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">Bajarilmadi - Filtr ishlamadi</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Kalitlar juftligim bor</translation>
+<translation id="1442433966118452622">Rasm manbasi</translation>
 <translation id="1451536289672181509">Qurilma — klaviatura.</translation>
 <translation id="1468664791493211953">Takliflar</translation>
 <translation id="1476467821656042872">Bu qurilma <ph name="MANAGER" /> domenida boshqariladi va faoliyatingiz kuzatilishi mumkin.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">Kundalik yangilash</translation>
 <translation id="2620436844016719705">Tizim</translation>
 <translation id="2695514675076754339">8 ta belgidan iborat kodni kiriting</translation>
+<translation id="2712812801627182647">TLS autentifikatsiya kaliti</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP autentifikatsiya 2-bosqichi</translation>
 <translation id="2783010256799387990">TUGADI</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
 <translation id="3283504360622356314">{0,plural, =1{Faylni tahrirlash}other{Fayllarni tahrirlash}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Kalit yoʻnalishi</translation>
 <translation id="3310640316857623290">DNS kutish vaqti ruxsat etilgan chegaradan juda baland</translation>
 <translation id="3328783797891415197">Tekshirilmoqda</translation>
 <translation id="3340011300870565703">Qurilmaning oʻng quloqlik batareyasi quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS paroli yangilandi</translation>
 <translation id="4773299976671772492">To‘xtatildi</translation>
 <translation id="4782311465517282004">Tavsif olish, tarjima qilish yoki birlik konversiyasi uchun matn ustiga oʻng klik yoki biroz bosib turing</translation>
+<translation id="4793756956024303490">Arxivlash algoritmi</translation>
 <translation id="4794140124556169553">Protsessorni tekshirish (CPU test) tizim unumdorligiga taʼsir qilishi mumkin</translation>
 <translation id="4808449224298348341">Chop etilishi bekor qilindi: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Rasmlarim</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS parametrlari</translation>
 <translation id="4848429997038228357">BAJARILMOQDA</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}other{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}}</translation>
+<translation id="4873827928179867585">Autentifikatsiya algoritmi</translation>
 <translation id="4880328057631981605">Internetga ulanish nuqtasi (APN)</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Tezda yangi parol tanlang</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">Hisobotni yopish</translation>
 <translation id="500920857929044050">Tekshiruvni toʻxtatish</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Qurilma kutish rejimiga oʻtganda rasmlar, vaqt, ob-havo va media axboroti chiqsin.</translation>
 <translation id="5039804452771397117">Ruxsat berish</translation>
 <translation id="5049856988445523908">Qulflangan SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Guruh nomi</translation>
@@ -436,6 +442,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6618744767048954150">Bajarilmoqda</translation>
 <translation id="6620487321149975369">Chop etish vazifalari mustaqil olib tashlanmagucha tarix sahifasida chiqadi</translation>
 <translation id="6643016212128521049">Tozalash</translation>
+<translation id="6647510110698214773">Shifrlash algoritmi</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6692996468359469499">Tanlovingizga aloqador axborot olish</translation>
 <translation id="6704062477274546131">DNS parametrlari</translation>
