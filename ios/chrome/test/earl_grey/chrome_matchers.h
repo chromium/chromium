@@ -13,7 +13,7 @@
 
 namespace chrome_test_util {
 
-// Matcher for a window with a given number.
+// Returns a matcher for a window with a given number.
 // Window numbers are assigned at scene creation. Normally, each EGTest will
 // start with exactly one window with number 0. Each time a window is created,
 // it is assigned an accessibility identifier equal to the number of connected
@@ -31,80 +31,81 @@ id<GREYMatcher> MatchInWindowWithNumber(int window_number,
 id<GREYMatcher> MatchInBlockerWindowWithNumber(int window_number,
                                                id<GREYMatcher> matcher);
 
-// Matcher for element with accessibility label corresponding to |message_id|
-// and accessibility trait UIAccessibilityTraitButton.
+// Returns a matcher for element with accessibility label corresponding to
+// |message_id| and accessibility trait UIAccessibilityTraitButton.
 id<GREYMatcher> ButtonWithAccessibilityLabelId(int message_id);
 
-// Matcher for element with accessibility label corresponding to |label| and
-// accessibility trait UIAccessibilityTraitButton.
+// Returns a matcher for element with accessibility label corresponding to
+// |label| and accessibility trait UIAccessibilityTraitButton.
 id<GREYMatcher> ButtonWithAccessibilityLabel(NSString* label);
 
-// Matcher for element with an image corresponding to |image_id|.
+// Returns a matcher for element with an image corresponding to |image_id|.
 id<GREYMatcher> ImageViewWithImage(int image_id);
 
-// Matcher for element with an image defined by its name in the main bundle.
+// Returns a matcher for element with an image defined by its name in the main
+// bundle.
 id<GREYMatcher> ImageViewWithImageNamed(NSString* imageName);
 
-// Matcher for element with an image corresponding to |image_id| and
+// Returns a matcher for element with an image corresponding to |image_id| and
 // accessibility trait UIAccessibilityTraitButton.
 id<GREYMatcher> ButtonWithImage(int image_id);
 
-// Matcher for element with accessibility label corresponding to |message_id|
-// and accessibility trait UIAccessibilityTraitStaticText.
+// Returns a matcher for element with accessibility label corresponding to
+// |message_id| and accessibility trait UIAccessibilityTraitStaticText.
 id<GREYMatcher> StaticTextWithAccessibilityLabelId(int message_id);
 
-// Matcher for element with accessibility label corresponding to |label| and
-// accessibility trait UIAccessibilityTraitStaticText.
+// Returns a matcher for element with accessibility label corresponding to
+// |label| and accessibility trait UIAccessibilityTraitStaticText.
 id<GREYMatcher> StaticTextWithAccessibilityLabel(NSString* label);
 
-// Matcher for a text element (label, field, etc) whose text contains |text| as
-// a substring. (contrast with grey_text() which tests for a complete string
-// match).
+// Returns a matcher for a text element (label, field, etc) whose text contains
+// |text| as a substring. (contrast with grey_text() which tests for a complete
+// string match).
 id<GREYMatcher> ContainsPartialText(NSString* text);
 
-// Matcher for element with accessibility label corresponding to |message_id|
-// and accessibility trait UIAccessibilityTraitHeader.
+// Returns a matcher for element with accessibility label corresponding to
+// |message_id| and accessibility trait UIAccessibilityTraitHeader.
 id<GREYMatcher> HeaderWithAccessibilityLabelId(int message_id);
 
-// Matcher for element with accessibility label corresponding to |label| and
-// accessibility trait UIAccessibilityTraitHeader.
+// Returns a matcher for element with accessibility label corresponding to
+// |label| and accessibility trait UIAccessibilityTraitHeader.
 id<GREYMatcher> HeaderWithAccessibilityLabel(NSString* label);
 
-// Matcher for navigation bar title element with accessibility label
+// Returns a matcher for navigation bar title element with accessibility label
 // corresponding to |label_id|.
 id<GREYMatcher> NavigationBarTitleWithAccessibilityLabelId(int label_id);
 
-// Matcher for text field of a cell with |message_id|.
+// Returns a matcher for text field of a cell with |message_id|.
 id<GREYMatcher> TextFieldForCellWithLabelId(int message_id);
 
-// Matcher for icon view of a cell with |message_id|.
+// Returns a matcher for icon view of a cell with |message_id|.
 id<GREYMatcher> IconViewForCellWithLabelId(int message_id, NSString* icon_type);
 
-// Returns matcher for the primary toolbar.
+// Returns a matcher for the primary toolbar.
 id<GREYMatcher> PrimaryToolbar();
 
-// Returns matcher for a cancel button.
+// Returns a matcher for a cancel button.
 id<GREYMatcher> CancelButton();
 
 // Returns the matcher for an enabled cancel button in a navigation bar.
 id<GREYMatcher> NavigationBarCancelButton();
 
-// Returns matcher for a close button.
+// Returns a matcher for a close button.
 id<GREYMatcher> CloseButton();
 
-// Returns matcher for close tab menu button.
+// Returns a matcher for close tab menu button.
 id<GREYMatcher> CloseTabMenuButton();
 
-// Matcher for the navigate forward button.
+// Returns a matcher for the navigate forward button.
 id<GREYMatcher> ForwardButton();
 
-// Matcher for the navigate backward button.
+// Returns a matcher for the navigate backward button.
 id<GREYMatcher> BackButton();
 
-// Matcher for the reload button.
+// Returns a matcher for the reload button.
 id<GREYMatcher> ReloadButton();
 
-// Matcher for the stop loading button.
+// Returns a matcher for the stop loading button.
 id<GREYMatcher> StopButton();
 
 // Returns a matcher for the omnibox.
@@ -118,308 +119,316 @@ id<GREYMatcher> PageSecurityInfoButton();
 // Returns a matcher for the page security info indicator.
 id<GREYMatcher> PageSecurityInfoIndicator();
 
-// Returns matcher for omnibox containing |text|. Performs an exact match of the
-// omnibox contents.
+// Returns a matcher for omnibox containing |text|. Performs an exact match of
+// the omnibox contents.
 id<GREYMatcher> OmniboxText(const std::string& text);
 
-// Returns matcher for |text| being a substring of the text in the omnibox.
+// Returns a matcher for |text| being a substring of the text in the omnibox.
 id<GREYMatcher> OmniboxContainingText(const std::string& text);
 
-// Returns matcher for |text| being a substring of the text in the location
+// Returns a matcher for |text| being a substring of the text in the location
 // view.
 id<GREYMatcher> LocationViewContainingText(const std::string& text);
 
-// Matcher for Tools menu button.
+// Returns a matcher for Tools menu button.
 id<GREYMatcher> ToolsMenuButton();
 
-// Matcher for the New Tab button, which can be long-pressed for a menu.
+// Returns a matcher for the New Tab button, which can be long-pressed for a
+// menu.
 id<GREYMatcher> NewTabButton();
 
-// Matcher for the Share menu button.
+// Returns a matcher for the Share menu button.
 id<GREYMatcher> ShareButton();
 
-// Matcher for the tab Share button (either in the omnibox or toolbar).
+// Returns a matcher for the tab Share button (either in the omnibox or
+// toolbar).
 id<GREYMatcher> TabShareButton();
 
-// Matcher for show tabs button.
+// Returns a matcher for show tabs button.
 id<GREYMatcher> ShowTabsButton();
 
-// Matcher for Add to reading list button.
+// Returns a matcher for Add to reading list button.
 id<GREYMatcher> AddToReadingListButton();
 
-// Matcher for Add to bookmarks button.
+// Returns a matcher for Add to bookmarks button.
 id<GREYMatcher> AddToBookmarksButton();
 
-// Matcher for TableViewSwitchCell.
+// Returns a matcher for TableViewSwitchCell.
 id<GREYMatcher> TableViewSwitchCell(NSString* accessibility_identifier,
                                     BOOL is_toggled_on);
 
-// Matcher for TableViewSwitchCell.
+// Returns a matcher for TableViewSwitchCell.
 id<GREYMatcher> TableViewSwitchCell(NSString* accessibility_identifier,
                                     BOOL is_toggled_on,
                                     BOOL is_enabled);
 
-// Matcher for LegacySyncSwitchCell.
+// Returns a matcher for LegacySyncSwitchCell.
 id<GREYMatcher> SyncSwitchCell(NSString* accessibility_label,
                                BOOL is_toggled_on);
 
-// Matcher for the Open in New Tab option in the context menu when long pressing
-// a link.
+// Returns a matcher for the Open in New Tab option in the context menu when
+// long pressing a link.
 id<GREYMatcher> OpenLinkInNewTabButton();
 
-// Matcher for the Open in Incognito option in the context menu when long
-// pressing a link.
+// Returns a matcher for the Open in Incognito option in the context menu when
+// long pressing a link.
 id<GREYMatcher> OpenLinkInIncognitoButton();
 
-// Matcher for the Open in New Window option in the context menu when long
-// pressing a link.
+// Returns a matcher for the Open in New Window option in the context menu when
+// long pressing a link.
 id<GREYMatcher> OpenLinkInNewWindowButton();
 
-// Matcher for the done button on the navigation bar.
+// Returns a matcher for the done button on the navigation bar.
 id<GREYMatcher> NavigationBarDoneButton();
 
-// Matcher for the done button on the Bookmarks navigation bar.
+// Returns a matcher for the done button on the Bookmarks navigation bar.
 id<GREYMatcher> BookmarksNavigationBarDoneButton();
 
-// Matcher for the back button on the Bookmarks navigation bar.
+// Returns a matcher for the back button on the Bookmarks navigation bar.
 id<GREYMatcher> BookmarksNavigationBarBackButton();
 
-// Returns matcher for the add account accounts button.
+// Returns a matcher for the add account accounts button.
 id<GREYMatcher> AddAccountButton();
 
-// Returns matcher for the sign out accounts button.
+// Returns a matcher for the sign out accounts button.
 id<GREYMatcher> SignOutAccountsButton();
 
-// Returns matcher for the Clear Browsing Data cell on the Privacy screen.
+// Returns a matcher for the Clear Browsing Data cell on the Privacy screen.
 id<GREYMatcher> ClearBrowsingDataCell();
 
-// Returns matcher for the clear browsing data button on the clear browsing data
-// panel.
+// Returns a matcher for the clear browsing data button on the clear browsing
+// data panel.
 id<GREYMatcher> ClearBrowsingDataButton();
 
-// Returns matcher for the clear browsing data view.
+// Returns a matcher for the clear browsing data view.
 id<GREYMatcher> ClearBrowsingDataView();
 
-// Matcher for the clear browsing data action sheet item.
+// Returns a matcher for the clear browsing data action sheet item.
 id<GREYMatcher> ConfirmClearBrowsingDataButton();
 
-// Returns matcher for the settings button in the tools menu.
+// Returns a matcher for the settings button in the tools menu.
 id<GREYMatcher> SettingsMenuButton();
 
-// Returns matcher for the "Done" button in the settings' navigation bar.
+// Returns a matcher for the "Done" button in the settings' navigation bar.
 id<GREYMatcher> SettingsDoneButton();
 
-// Returns matcher for the Autofill Credit Card "Payment Methods" edit view.
+// Returns a matcher for the Autofill Credit Card "Payment Methods" edit view.
 id<GREYMatcher> AutofillCreditCardEditTableView();
 
-// Returns matcher for the Autofill Credit Card "Payment Methods" view in the
+// Returns a matcher for the Autofill Credit Card "Payment Methods" view in the
 // settings menu.
 id<GREYMatcher> AutofillCreditCardTableView();
 
-// Returns matcher for the "Addresses and More" button in the settings menu.
+// Returns a matcher for the "Addresses and More" button in the settings menu.
 id<GREYMatcher> AddressesAndMoreButton();
 
-// Returns matcher for the "Payment Methods" button in the settings menu.
+// Returns a matcher for the "Payment Methods" button in the settings menu.
 id<GREYMatcher> PaymentMethodsButton();
 
-// Returns matcher for the "Languages" button in the settings menu.
+// Returns a matcher for the "Languages" button in the settings menu.
 id<GREYMatcher> LanguagesButton();
 
-// Returns matcher for the "Add Credit Card" view in the Settings menu.
+// Returns a matcher for the "Add Credit Card" view in the Settings menu.
 id<GREYMatcher> AddCreditCardView();
 
-// Returns matcher for the "Add Payment Method" button in the Settings Payment
+// Returns a matcher for the "Add Payment Method" button in the Settings Payment
 // Methods view.
 id<GREYMatcher> AddPaymentMethodButton();
 
-// Returns matcher for the "Add" credit card button in the Payment
+// Returns a matcher for the "Add" credit card button in the Payment
 // Methods add credit card view.
 id<GREYMatcher> AddCreditCardButton();
 
-// Returns matcher for the "Cancel" button in the Payment Methods add credit
+// Returns a matcher for the "Cancel" button in the Payment Methods add credit
 // card view.
 id<GREYMatcher> AddCreditCardCancelButton();
 
-// Returns matcher for the tools menu table view.
+// Returns a matcher for the tools menu table view.
 id<GREYMatcher> ToolsMenuView();
 
-// Returns matcher for the OK button.
+// Returns a matcher for the OK button.
 id<GREYMatcher> OKButton();
 
-// Returns matcher for the primary button in the sign-in promo view. This is
+// Returns a matcher for the primary button in the sign-in promo view. This is
 // "Sign in into Chrome" button for a cold state, or "Continue as John Doe" for
 // a warm state.
 id<GREYMatcher> PrimarySignInButton();
 
-// Returns matcher for the secondary button in the sign-in promo view. This is
+// Returns a matcher for the secondary button in the sign-in promo view. This is
 // "Not johndoe@example.com" button.
 id<GREYMatcher> SecondarySignInButton();
 
-// Returns matcher for the button for the currently signed in account in the
+// Returns a matcher for the button for the currently signed in account in the
 // settings menu.
 id<GREYMatcher> SettingsAccountButton();
 
-// Returns matcher for the accounts collection view.
+// Returns a matcher for the accounts collection view.
 id<GREYMatcher> SettingsAccountsCollectionView();
 
-// Returns matcher for the Import Data cell in switch sync account view.
+// Returns a matcher for the Import Data cell in switch sync account view.
 id<GREYMatcher> SettingsImportDataImportButton();
 
-// Returns matcher for the Keep Data Separate cell in switch sync account view.
+// Returns a matcher for the Keep Data Separate cell in switch sync account
+// view.
 id<GREYMatcher> SettingsImportDataKeepSeparateButton();
 
-// Returns matcher for the Keep Data Separate cell in switch sync account view.
+// Returns a matcher for the Keep Data Separate cell in switch sync account
+// view.
 id<GREYMatcher> SettingsImportDataContinueButton();
 
-// Returns matcher for the privacy settings table view.
+// Returns a matcher for the privacy settings table view.
 id<GREYMatcher> SettingsPrivacyTableView();
 
-// Returns matcher for the Content Settings button on the main Settings screen.
+// Returns a matcher for the Content Settings button on the main Settings
+// screen.
 id<GREYMatcher> ContentSettingsButton();
 
-// Returns matcher for the Google Services Settings button on the main Settings
-// screen.
+// Returns a matcher for the Google Services Settings button on the main
+// Settings screen.
 id<GREYMatcher> GoogleServicesSettingsButton();
 
-// Returns matcher for the Manage Sync Settings button on the main Settings
+// Returns a matcher for the Manage Sync Settings button on the main Settings
 // screen.
 id<GREYMatcher> ManageSyncSettingsButton();
 
-// Returns matcher for the Google Services Settings view.
+// Returns a matcher for the Google Services Settings view.
 id<GREYMatcher> GoogleServicesSettingsView();
 
-// Returns matcher for the back button on a settings menu.
+// Returns a matcher for the back button on a settings menu.
 id<GREYMatcher> SettingsMenuBackButton();
 
-// Returns matcher for the back button on a settings menu in given window
+// Returns a matcher for the back button on a settings menu in given window
 // number.
 id<GREYMatcher> SettingsMenuBackButton(int window_number);
 
-// Returns matcher for the Privacy cell on the main Settings screen.
+// Returns a matcher for the Privacy cell on the main Settings screen.
 id<GREYMatcher> SettingsMenuPrivacyButton();
 
-// Returns matcher for the Save passwords cell on the main Settings screen.
+// Returns a matcher for the Save passwords cell on the main Settings screen.
 id<GREYMatcher> SettingsMenuPasswordsButton();
 
-// Returns matcher for the payment request collection view.
+// Returns a matcher for the payment request collection view.
 id<GREYMatcher> PaymentRequestView();
 
-// Returns matcher for the error confirmation view for payment request.
+// Returns a matcher for the error confirmation view for payment request.
 id<GREYMatcher> PaymentRequestErrorView();
 
-// Returns matcher for the voice search button on the main Settings screen.
+// Returns a matcher for the voice search button on the main Settings screen.
 id<GREYMatcher> VoiceSearchButton();
 
-// Returns matcher for the voice search button on the omnibox input accessory.
+// Returns a matcher for the voice search button on the omnibox input accessory.
 id<GREYMatcher> VoiceSearchInputAccessoryButton();
 
-// Returns matcher for the settings main menu view.
+// Returns a matcher for the settings main menu view.
 id<GREYMatcher> SettingsCollectionView();
 
-// Returns matcher for the clear browsing history cell on the clear browsing
+// Returns a matcher for the clear browsing history cell on the clear browsing
 // data panel.
 id<GREYMatcher> ClearBrowsingHistoryButton();
 
-// Returns matcher for the clear cookies cell on the clear browsing data panel.
+// Returns a matcher for the clear cookies cell on the clear browsing data
+// panel.
 id<GREYMatcher> ClearCookiesButton();
 
-// Returns matcher for the clear cache cell on the clear browsing data panel.
+// Returns a matcher for the clear cache cell on the clear browsing data panel.
 id<GREYMatcher> ClearCacheButton();
 
-// Returns matcher for the clear saved passwords cell on the clear browsing data
-// panel.
+// Returns a matcher for the clear saved passwords cell on the clear browsing
+// data panel.
 id<GREYMatcher> ClearSavedPasswordsButton();
 
-// Returns matcher for the clear saved passwords cell on the clear browsing data
-// panel.
+// Returns a matcher for the clear saved passwords cell on the clear browsing
+// data panel.
 id<GREYMatcher> ClearAutofillButton();
 
-// Returns matcher for the collection view of content suggestion.
+// Returns a matcher for the collection view of content suggestion.
 id<GREYMatcher> ContentSuggestionsCollectionView();
 
-// Returns matcher for the collection view of the NTP.
+// Returns a matcher for the collection view of the NTP.
 id<GREYMatcher> NTPCollectionView();
 
-// Returns matcher for the NTP view when the user is in incognito mode.
+// Returns a matcher for the NTP view when the user is in incognito mode.
 id<GREYMatcher> NTPIncognitoView();
 
-// Returns matcher for the NTP Feed menu button which enables the feed.
+// Returns a matcher for the NTP Feed menu button which enables the feed.
 id<GREYMatcher> NTPFeedMenuEnableButton();
 
-// Returns matcher for the NTP Feed menu button which disables the feed.
+// Returns a matcher for the NTP Feed menu button which disables the feed.
 id<GREYMatcher> NTPFeedMenuDisableButton();
 
-// Returns matcher for the warning message while filling in payment requests.
+// Returns a matcher for the warning message while filling in payment requests.
 id<GREYMatcher> WarningMessageView();
 
-// Returns matcher for the payment picker cell.
+// Returns a matcher for the payment picker cell.
 id<GREYMatcher> PaymentRequestPickerRow();
 
-// Returns matcher for the payment request search bar.
+// Returns a matcher for the payment request search bar.
 id<GREYMatcher> PaymentRequestPickerSearchBar();
 
-// Returns matcher for the New Window button on the Tools menu.
+// Returns a matcher for the New Window button on the Tools menu.
 id<GREYMatcher> OpenNewWindowMenuButton();
 
-// Returns matcher for the reading list on the Tools menu.
+// Returns a matcher for the reading list on the Tools menu.
 id<GREYMatcher> ReadingListMenuButton();
 
-// Returns matcher for the bookmarks button on the Tools menu.
+// Returns a matcher for the bookmarks button on the Tools menu.
 id<GREYMatcher> BookmarksMenuButton();
 
-// Returns matcher for the recent tabs button on the Tools menu.
+// Returns a matcher for the recent tabs button on the Tools menu.
 id<GREYMatcher> RecentTabsMenuButton();
 
-// Returns matcher for the system selection callout.
+// Returns a matcher for the system selection callout.
 id<GREYMatcher> SystemSelectionCallout();
 
 // Returns a matcher for the Link to text button in the edit menu.
 id<GREYMatcher> SystemSelectionCalloutLinkToTextButton();
 
-// Returns matcher for the copy button on the system selection callout.
+// Returns a matcher for the copy button on the system selection callout.
 id<GREYMatcher> SystemSelectionCalloutCopyButton();
 
-// Returns matcher for the system selection callout overflow button to show more
-// menu items.
+// Returns a matcher for the system selection callout overflow button to show
+// more menu items.
 id<GREYMatcher> SystemSelectionCalloutOverflowButton();
 
-// Matcher for a Copy button, such as the one in the Activity View. This matcher
-// is very broad and will look for any button with a matching string.
-// Only the iOS 13 Activity View is reachable by EarlGrey.
+// Returns a matcher for a Copy button, such as the one in the Activity View.
+// This matcher is very broad and will look for any button with a matching
+// string. Only the iOS 13 Activity View is reachable by EarlGrey.
 id<GREYMatcher> CopyActivityButton();
 
-// Matcher for the Copy Link option in the updated context menus when long
-// pressing on a link.
+// Returns a matcher for the Copy Link option in the updated context menus when
+// long pressing on a link.
 id<GREYMatcher> CopyLinkButton();
 
-// Matcher for the Edit option on the context menus.
+// Returns a matcher for the Edit option on the context menus.
 id<GREYMatcher> EditButton();
 
-// Matcher for the Move option on the updated context menus.
+// Returns a matcher for the Move option on the updated context menus.
 id<GREYMatcher> MoveButton();
 
-// Matcher for the Mark as Read option on the Reading List's context menus.
+// Returns a matcher for the Mark as Read option on the Reading List's context
+// menus.
 id<GREYMatcher> ReadingListMarkAsReadButton();
 
-// Matcher for the Mark as Unread option on the Reading List's context menus.
+// Returns a matcher for the Mark as Unread option on the Reading List's context
+// menus.
 id<GREYMatcher> ReadingListMarkAsUnreadButton();
 
-// Matcher for the Delete option on the updated context menus.
+// Returns a matcher for the Delete option on the updated context menus.
 id<GREYMatcher> DeleteButton();
 
-// Returns matcher for the Copy item on the old-style context menu.
+// Returns a matcher for the Copy item on the old-style context menu.
 id<GREYMatcher> ContextMenuCopyButton();
 
-// Returns matcher for defocused omnibox on a new tab.
+// Returns a matcher for defocused omnibox on a new tab.
 id<GREYMatcher> NewTabPageOmnibox();
 
-// Returns matcher for a fake omnibox on a new tab page.
+// Returns a matcher for a fake omnibox on a new tab page.
 id<GREYMatcher> FakeOmnibox();
 
-// Returns matcher for a header label of the Discover feed.
+// Returns a matcher for a header label of the Discover feed.
 id<GREYMatcher> DiscoverHeaderLabel();
 
-// Returns matcher for a logo on a new tab page.
+// Returns a matcher for a logo on a new tab page.
 id<GREYMatcher> NTPLogo();
 
 // Returns a matcher for the current WebView.
@@ -438,56 +447,56 @@ id<GREYMatcher> HistoryClearBrowsingDataButton();
 // Returns a matcher for "Open In..." button.
 id<GREYMatcher> OpenInButton();
 
-// Returns the GREYMatcher for the cell at |index| in the tab grid.
+// Returns a matcher for the cell at |index| in the tab grid.
 id<GREYMatcher> TabGridCellAtIndex(unsigned int index);
 
-// Returns the GREYMatcher for the button that closes the tab grid.
+// Returns a matcher for the button that closes the tab grid.
 id<GREYMatcher> TabGridDoneButton();
 
-// Returns the GREYMatcher for the button that closes all the tabs in the tab
+// Returns a matcher for the button that closes all the tabs in the tab
 // grid.
 id<GREYMatcher> TabGridCloseAllButton();
 
-// Returns the GREYMatcher for the button that reverts the close all tabs action
+// Returns a matcher for the button that reverts the close all tabs action
 // in the tab grid.
 id<GREYMatcher> TabGridUndoCloseAllButton();
 
-// Returns the GREYMatcher for the cell that opens History in Recent Tabs.
+// Returns a matcher for the cell that opens History in Recent Tabs.
 id<GREYMatcher> TabGridSelectShowHistoryCell();
 
-// Returns the GREYMatcher for the regular tabs empty state view.
+// Returns a matcher for the regular tabs empty state view.
 id<GREYMatcher> TabGridRegularTabsEmptyStateView();
 
-// Returns the GREYMatcher for the button that creates new non incognito tabs
+// Returns a matcher for the button that creates new non incognito tabs
 // from within the tab grid.
 id<GREYMatcher> TabGridNewTabButton();
 
-// Returns the GREYMatcher for the button that creates new incognito tabs from
+// Returns a matcher for the button that creates new incognito tabs from
 // within the tab grid.
 id<GREYMatcher> TabGridNewIncognitoTabButton();
 
-// Returns the GREYMatcher for the button to go to the non incognito panel in
+// Returns a matcher for the button to go to the non incognito panel in
 // the tab grid.
 id<GREYMatcher> TabGridOpenTabsPanelButton();
 
-// Returns the GREYMatcher for the button to go to the incognito panel in
+// Returns a matcher for the button to go to the incognito panel in
 // the tab grid.
 id<GREYMatcher> TabGridIncognitoTabsPanelButton();
 
-// Returns the GREYMatcher for the button to go to the other devices panel in
+// Returns a matcher for the button to go to the other devices panel in
 // the tab grid.
 id<GREYMatcher> TabGridOtherDevicesPanelButton();
 
-// Returns the GREYMatcher for the tab grid background.
+// Returns a matcher for the tab grid background.
 id<GREYMatcher> TabGridBackground();
 
-// Returns the GREYMatcher for the regular tab grid.
+// Returns a matcher for the regular tab grid.
 id<GREYMatcher> RegularTabGrid();
 
-// Returns the GREYMatcher for the incognito tab grid.
+// Returns a matcher for the incognito tab grid.
 id<GREYMatcher> IncognitoTabGrid();
 
-// Returns the GREYMatcher for the button to close the cell at |index| in the
+// Returns a matcher for the button to close the cell at |index| in the
 // tab grid.
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index);
 
