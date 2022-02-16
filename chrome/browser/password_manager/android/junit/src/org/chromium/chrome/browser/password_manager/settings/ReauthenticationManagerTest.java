@@ -47,10 +47,10 @@ public class ReauthenticationManagerTest {
 
         // Prepare a dummy Fragment and commit a FragmentTransaction with it.
         FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        // Replacement fragment for PasswordEntryViewer, which is the fragment that
+        // Replacement fragment for CredentialEntryFragment, which is the fragment that
         // replaces PasswordReauthentication after popBackStack is called.
-        Fragment mockPasswordEntryViewer = new Fragment();
-        fragmentTransaction.add(mockPasswordEntryViewer, "password_entry_viewer");
+        Fragment mockCredentialEntryFragment = new Fragment();
+        fragmentTransaction.add(mockCredentialEntryFragment, "credential_entry_fragment");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

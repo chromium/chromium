@@ -89,11 +89,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
     public static final String PREF_TRUSTED_VAULT_BANNER = "trusted_vault_banner";
     public static final String PREF_KEY_MANAGE_ACCOUNT_LINK = "manage_account_link";
 
-    // A PasswordEntryViewer receives a boolean value with this key. If set true, the the entry was
-
-    // part of a search result.
-    public static final String EXTRA_FOUND_VIA_SEARCH = "found_via_search_args";
-
     private static final String PREF_KEY_CATEGORY_SAVED_PASSWORDS = "saved_passwords";
     private static final String PREF_KEY_CATEGORY_EXCEPTIONS = "exceptions";
     private static final String PREF_KEY_SAVED_PASSWORDS_NO_TEXT = "saved_passwords_no_text";
