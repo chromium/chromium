@@ -140,7 +140,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         return sb.toString();
     }
 
-    // TODO(http://crbug/1294855): Move canonical url request after renderer calls.
     private void startRequestSelector() {
         if (!LinkToTextBridge.shouldOfferLinkToText(new GURL(mShareUrl))) {
             completeRequestWithFailure(LinkGenerationError.BLOCK_LIST);
@@ -156,7 +155,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
 
         PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), getTimeout());
-        LinkToTextHelper.requestCanonicalUrl(mTab, this::onRequestSelectorForCanonicalUrl);
+        requestSelector();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -240,7 +239,14 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
         if (success) {
             assert error == LinkGenerationError.NONE;
-            completeRemoteRequestWithSuccess(selector);
+
+            // Request canonical url when we have a successful generation.
+            LinkToTextHelper.requestCanonicalUrl(mTab, (canonicalUrl) -> {
+                if (!canonicalUrl.isEmpty()) {
+                    mShareUrl = canonicalUrl;
+                }
+                completeRemoteRequestWithSuccess(selector);
+            });
         } else {
             assert error != LinkGenerationError.NONE;
             completeRequestWithFailure(error.intValue());
@@ -267,13 +273,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
         mRemoteRequestStatus = RemoteRequestStatus.REQUESTED;
         LinkToTextHelper.requestSelector(mProducer, this::onRemoteRequestCompleted);
-    }
-
-    private void onRequestSelectorForCanonicalUrl(String canonicalUrl) {
-        if (!canonicalUrl.isEmpty()) {
-            mShareUrl = canonicalUrl;
-        }
-        requestSelector();
     }
 
     private void setTextFragmentReceiver() {
