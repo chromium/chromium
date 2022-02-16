@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -14,6 +16,7 @@
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/event_router_factory.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/trace_util.h"
 
@@ -73,6 +76,13 @@ bool IsValidMessagingSource(RenderProcessHost& process,
 
     case MessagingEndpoint::Type::kExtension:
       if (!source_endpoint.extension_id.has_value()) {
+        if (!base::FeatureList::IsEnabled(
+                extensions_features::kCheckingNoExtensionIdInExtensionIpcs)) {
+          base::UmaHistogramSparse(
+              "Stability.BadMessageTerminated.Extensions",
+              bad_message::EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE);
+          return true;
+        }
         bad_message::ReceivedBadMessage(
             &process, bad_message::EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE);
         return false;
@@ -101,6 +111,14 @@ bool IsValidMessagingSource(RenderProcessHost& process,
                               ChromeTrackEvent::kRenderProcessHost, process,
                               ChromeTrackEvent::kChromeExtensionId,
                               ExtensionIdForTracing(extension_id));
+          if (!base::FeatureList::IsEnabled(
+                  extensions_features::
+                      kCheckingUnexpectedExtensionIdInContentScriptIpcs)) {
+            base::UmaHistogramSparse(
+                "Stability.BadMessageTerminated.Extensions",
+                bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
+            return true;
+          }
           bad_message::ReceivedBadMessage(
               &process,
               bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);

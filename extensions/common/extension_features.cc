@@ -77,4 +77,22 @@ const base::Feature kStructuredCloningForMV3Messaging{
 const base::Feature kRestrictDeveloperModeAPIs{
     "RestrictDeveloperModeAPIs", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, then bad_message::ReceivedBadMessage will be called when
+// browser receives an IPC from a content script and the IPC that unexpectedly
+// claims to act on behalf of a given extension id, (i.e. even if the browser
+// process things that renderer process never run content scripts from the
+// extension).
+const base::Feature kCheckingUnexpectedExtensionIdInContentScriptIpcs{
+    "EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// When enabled, then bad_message::ReceivedBadMessage will be called when
+// browser receives an IPC from a content script and the IPC that unexpectedly
+// claims to act on behalf of a given extension id, (i.e. even if the browser
+// process things that renderer process never run content scripts from the
+// extension).
+extern const base::Feature kCheckingNoExtensionIdInExtensionIpcs{
+    "EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace extensions_features
