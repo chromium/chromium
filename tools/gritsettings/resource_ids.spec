@@ -181,6 +181,14 @@
     "META": {"sizes": {"includes": [40]}},
     "includes": [1620],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/image_editor/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [1625],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/image_editor/image_editor_untrusted_resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [1630],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/internals/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [1640],

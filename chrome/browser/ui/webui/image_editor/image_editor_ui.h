@@ -20,25 +20,15 @@ namespace image_editor {
 // mojo interface to handle the user-generated screenshot content will exist
 // on the chrome-untrusted page. Note the actual editor app and library is
 // reviewed and controlled by us.
-class ImageEditorUI : public content::WebUIController,
-                      public mojom::ScreenshotCoordinator {
+class ImageEditorUI : public content::WebUIController {
  public:
   explicit ImageEditorUI(content::WebUI* web_ui);
   ImageEditorUI(const ImageEditorUI&) = delete;
   ImageEditorUI& operator=(const ImageEditorUI&) = delete;
   ~ImageEditorUI() override;
 
-  void BindInterface(
-      mojo::PendingReceiver<image_editor::mojom::ScreenshotCoordinator>
-          receiver);
-
-  // ScreenshotCoordinator functions
-  void RecordUserAction(mojom::EditAction action) override;
-
  private:
   raw_ptr<Profile> profile_;
-
-  mojo::Receiver<image_editor::mojom::ScreenshotCoordinator> receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

@@ -140,7 +140,7 @@
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/image_editor/image_editor.mojom.h"
-#include "chrome/browser/ui/webui/image_editor/image_editor_ui.h"
+#include "chrome/browser/ui/webui/image_editor/image_editor_untrusted_ui.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
@@ -1100,8 +1100,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
 
 #if !BUILDFLAG(IS_ANDROID)
-  registry.ForWebUI<image_editor::ImageEditorUI>()
-      .Add<image_editor::mojom::ScreenshotCoordinator>();
+  registry.ForWebUI<image_editor::ImageEditorUntrustedUI>()
+      .Add<image_editor::mojom::ImageEditorHandler>();
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
