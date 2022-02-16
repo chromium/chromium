@@ -108,6 +108,7 @@ void SetDragImage(const GURL& url,
 
   gfx::Size size(button->GetPreferredSize());
   button->SetBoundsRect(gfx::Rect(size));
+  drag_widget->SetSize(size);
 
   gfx::Vector2d press_point;
   if (press_pt)
