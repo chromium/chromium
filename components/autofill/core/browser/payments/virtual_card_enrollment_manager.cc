@@ -51,6 +51,7 @@ VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
 void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
     raw_ptr<CreditCard> credit_card,
     VirtualCardEnrollmentSource virtual_card_enrollment_source) {
+  Reset();
   DCHECK(credit_card);
   DCHECK_NE(virtual_card_enrollment_source, VirtualCardEnrollmentSource::kNone);
   state_.virtual_card_enrollment_fields.credit_card = credit_card;
@@ -70,6 +71,16 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
   autofill_client_->LoadRiskData(base::BindOnce(
       &VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard,
       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void VirtualCardEnrollmentManager::OnCardSavedAnimationComplete() {
+  if (state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
+      VirtualCardEnrollmentSource::kUpstream) {
+    avatar_animation_complete_ = true;
+
+    if (enroll_response_details_received_)
+      ShowVirtualCardEnrollmentBubble();
+  }
 }
 
 void VirtualCardEnrollmentManager::Unenroll(int64_t instrument_id) {
@@ -126,6 +137,8 @@ void VirtualCardEnrollmentManager::Reset() {
   payments_client_->CancelRequest();
   weak_ptr_factory_.InvalidateWeakPtrs();
   state_ = VirtualCardEnrollmentProcessState();
+  avatar_animation_complete_ = false;
+  enroll_response_details_received_ = false;
 }
 
 VirtualCardEnrollmentStrikeDatabase*
@@ -162,6 +175,8 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
     AutofillClient::PaymentsRpcResult result,
     const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
         response) {
+  enroll_response_details_received_ = true;
+
   // Show the virtual card permanent error dialog if server explicitly returned
   // permanent error, show temporary error dialog for the rest of the failure
   // cases since currently only virtual card is supported.
@@ -197,6 +212,12 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
     state_.virtual_card_enrollment_fields.card_art_image =
         personal_data_manager_->GetCachedCardArtImageForUrl(
             state_.virtual_card_enrollment_fields.credit_card->card_art_url());
+  }
+
+  if (state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
+          VirtualCardEnrollmentSource::kUpstream &&
+      !avatar_animation_complete_) {
+    return;
   }
 
   ShowVirtualCardEnrollmentBubble();

@@ -86,6 +86,7 @@ class VirtualCardEnrollmentManager {
   VirtualCardEnrollmentManager& operator=(const VirtualCardEnrollmentManager&) =
       delete;
   virtual ~VirtualCardEnrollmentManager();
+
   // Starting point for the VCN enroll flow. The fields in |credit_card| will
   // be used throughout the flow, such as for request fields as well as credit
   // card specific fields for the bubble to display.
@@ -95,6 +96,11 @@ class VirtualCardEnrollmentManager {
   void OfferVirtualCardEnroll(
       raw_ptr<CreditCard> credit_card,
       VirtualCardEnrollmentSource virtual_card_enrollment_source);
+
+  // Updates |avatar_animation_complete| to true if the user is beginning the
+  // upstream enrollment flow. This is a prerequisite to showing the enrollment
+  // bubble.
+  void OnCardSavedAnimationComplete();
 
   // Unenrolls the card mapped to the given |instrument_id|.
   void Unenroll(int64_t instrument_id);
@@ -136,7 +142,19 @@ class VirtualCardEnrollmentManager {
   VirtualCardEnrollmentStrikeDatabase* GetVirtualCardEnrollmentStrikeDatabase()
       const;
 
+  // Whether the card saved avatar animation has been completed on upstream
+  // enrollment flow.
+  bool avatar_animation_complete_ = false;
+
+  // Whether we've received GetDetailsForEnrollResponseDetails.
+  bool enroll_response_details_received_ = false;
+
  private:
+  // Shows the VirtualCardEnrollmentBubble. |state_|'s
+  // |virtual_card_enrollment_fields| will contain all of the dynamic fields
+  // VirtualCardEnrollmentBubbleController needs to display the correct bubble.
+  virtual void ShowVirtualCardEnrollmentBubble();
+
   // Called once the risk data is loaded. The |risk_data| will be used with
   // |state_|'s |virtual_card_enrollment_fields|'s |credit_card|'s
   // |instrument_id_| field to make a GetDetailsForEnroll request, and
@@ -162,11 +180,6 @@ class VirtualCardEnrollmentManager {
       const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
           response);
 
-  // Shows the VirtualCardEnrollmentBubble. |state_|'s
-  // |virtual_card_enrollment_fields| will contain all of the dynamic fields
-  // VirtualCardEnrollmentBubbleController needs to display the correct bubble.
-  void ShowVirtualCardEnrollmentBubble();
-
   // Uses |autofill_client_|'s |payments_client_| to send the enroll request
   // when the user accepts the bubble. |state_|'s |vcn_context_token_|, which
   // should be set when we receive the GetDetailsForEnrollResponse, is used in
@@ -184,6 +197,10 @@ class VirtualCardEnrollmentManager {
                            OnRiskDataLoadedForVirtualCard);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            OnVirtualCardEnrollmentBubbleAccepted);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           UpstreamAnimationSync_AnimationFirst);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           UpstreamAnimationSync_ResponseFirst);
 
   // The associated autofill client, used to load risk data at the point that we
   // need it. Weak reference.

@@ -31,6 +31,10 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -276,6 +280,27 @@ void AutofillBubbleHandlerImpl::OnAvatarHighlightAnimationFinished() {
     chrome::ExecuteCommand(
         browser_, IDC_SHOW_SAVE_LOCAL_CARD_SIGN_IN_PROMO_IF_APPLICABLE);
   }
+
+  // Notify the virtual card enrollment manager that the avatar highlight
+  // animation has completed in case we are offering VCN enrollment.
+  content::WebContents* web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+
+  autofill::ContentAutofillDriverFactory* driver =
+      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents);
+  if (!driver)
+    return;
+
+  autofill::AutofillClient* autofill_client = driver->client();
+  if (!autofill_client)
+    return;
+
+  raw_ptr<autofill::VirtualCardEnrollmentManager>
+      virtual_card_enrollment_manager =
+          autofill_client->GetVirtualCardEnrollmentManager();
+
+  if (virtual_card_enrollment_manager)
+    virtual_card_enrollment_manager->OnCardSavedAnimationComplete();
 }
 
 void AutofillBubbleHandlerImpl::ShowAvatarHighlightAnimation() {

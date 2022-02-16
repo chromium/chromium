@@ -256,4 +256,73 @@ TEST_F(VirtualCardEnrollmentManagerTest, Unenroll) {
             AutofillClient::PaymentsRpcResult::kSuccess);
 }
 
+TEST_F(VirtualCardEnrollmentManagerTest, UpstreamAnimationSync_AnimationFirst) {
+  personal_data_manager_->ClearCreditCardArtImages();
+  CreditCard card = SetUpCard();
+  SetValidCardArtImageForCard(card);
+
+  raw_ptr<VirtualCardEnrollmentProcessState> state =
+      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
+  state->virtual_card_enrollment_fields.credit_card = &card;
+  state->vcn_context_token = kTestVcnContextToken;
+  state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
+      VirtualCardEnrollmentSource::kUpstream;
+
+  payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails response;
+  response.vcn_context_token = kTestVcnContextToken;
+  response.issuer_legal_message = {
+      TestLegalMessageLine("issuer_test_legal_message_line")};
+  response.google_legal_message = {
+      TestLegalMessageLine("google_test_legal_message_line")};
+
+  // Update avatar animation complete boolean.
+  virtual_card_enrollment_manager_->OnCardSavedAnimationComplete();
+  EXPECT_TRUE(virtual_card_enrollment_manager_->GetAvatarAnimationComplete());
+
+  // Ensure bubble was not shown yet.
+  EXPECT_FALSE(virtual_card_enrollment_manager_->GetBubbleShown());
+
+  // Update enrollment response complete boolean.
+  virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
+      AutofillClient::PaymentsRpcResult::kSuccess, response);
+  EXPECT_TRUE(
+      virtual_card_enrollment_manager_->GetEnrollResponseDetailsReceived());
+
+  // Ensure bubble was shown.
+  EXPECT_TRUE(virtual_card_enrollment_manager_->GetBubbleShown());
+}
+
+TEST_F(VirtualCardEnrollmentManagerTest, UpstreamAnimationSync_ResponseFirst) {
+  personal_data_manager_->ClearCreditCardArtImages();
+  CreditCard card = SetUpCard();
+  SetValidCardArtImageForCard(card);
+
+  raw_ptr<VirtualCardEnrollmentProcessState> state =
+      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
+  state->virtual_card_enrollment_fields.credit_card = &card;
+  state->vcn_context_token = kTestVcnContextToken;
+  state->virtual_card_enrollment_fields.virtual_card_enrollment_source =
+      VirtualCardEnrollmentSource::kUpstream;
+
+  payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails response;
+  response.vcn_context_token = kTestVcnContextToken;
+  response.issuer_legal_message = {
+      TestLegalMessageLine("issuer_test_legal_message_line")};
+  response.google_legal_message = {
+      TestLegalMessageLine("google_test_legal_message_line")};
+
+  // Update enrollment response complete boolean.
+  virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
+      AutofillClient::PaymentsRpcResult::kSuccess, response);
+  EXPECT_TRUE(
+      virtual_card_enrollment_manager_->GetEnrollResponseDetailsReceived());
+
+  // Ensure bubble was not shown yet.
+  EXPECT_FALSE(virtual_card_enrollment_manager_->GetBubbleShown());
+
+  // Update avatar animation complete boolean.
+  virtual_card_enrollment_manager_->OnCardSavedAnimationComplete();
+  EXPECT_TRUE(virtual_card_enrollment_manager_->GetAvatarAnimationComplete());
+}
+
 }  // namespace autofill

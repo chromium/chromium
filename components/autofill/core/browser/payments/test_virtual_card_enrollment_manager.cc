@@ -24,4 +24,8 @@ void TestVirtualCardEnrollmentManager::Reset() {
   reset_called_ = true;
 }
 
+void TestVirtualCardEnrollmentManager::ShowVirtualCardEnrollmentBubble() {
+  bubble_shown_ = true;
+}
+
 }  // namespace autofill

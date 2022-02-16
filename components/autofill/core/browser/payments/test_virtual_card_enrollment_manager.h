@@ -24,11 +24,19 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
       const TestVirtualCardEnrollmentManager&) = delete;
   ~TestVirtualCardEnrollmentManager() override;
 
+  bool GetAvatarAnimationComplete() const { return avatar_animation_complete_; }
+
+  bool GetEnrollResponseDetailsReceived() const {
+    return enroll_response_details_received_;
+  }
+
   AutofillClient::PaymentsRpcResult GetPaymentsRpcResult() { return result_; }
 
   bool GetResetCalled() { return reset_called_; }
 
   void SetResetCalled(bool reset_called) { reset_called_ = reset_called; }
+
+  bool GetBubbleShown() { return bubble_shown_; }
 
   raw_ptr<VirtualCardEnrollmentProcessState>
   GetVirtualCardEnrollmentProcessState() {
@@ -39,11 +47,14 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
   void OnDidGetUpdateVirtualCardEnrollmentResponse(
       AutofillClient::PaymentsRpcResult result) override;
   void Reset() override;
+  void ShowVirtualCardEnrollmentBubble() override;
 
  private:
   AutofillClient::PaymentsRpcResult result_;
 
   bool reset_called_ = false;
+
+  bool bubble_shown_ = false;
 };
 
 }  // namespace autofill
