@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -102,6 +103,11 @@ std::pair<PrintableSkColor, PrintableSkColor> GetOriginalAndRedirected(
     ContrastMode contrast_mode) {
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
+  ui::NativeTheme::PreferredContrast original_contrast_mode =
+      native_theme->GetPreferredContrast();
+  ui::NativeTheme::PreferredColorScheme original_color_scheme =
+      native_theme->GetPreferredColorScheme();
+
   const bool high_contrast = contrast_mode == ContrastMode::kHighContrast;
 #if BUILDFLAG(IS_WIN)
   if (high_contrast)
@@ -113,6 +119,16 @@ std::pair<PrintableSkColor, PrintableSkColor> GetOriginalAndRedirected(
                     : ui::NativeTheme::PreferredContrast::kNoPreference);
   native_theme->set_use_dark_colors(color_scheme ==
                                     ui::NativeTheme::ColorScheme::kDark);
+
+  // If the NativeTheme has changed, call
+  // NativeTheme::NotifyOnNativeThemeUpdated to notify observers that the
+  // NativeTheme has been updated so that the ThemeService will know to update
+  // it’s ThemeSupplier to match the NativeTheme. The ColorProvider
+  // cache will also be reset.
+  if (original_contrast_mode != native_theme->GetPreferredContrast() ||
+      original_color_scheme != native_theme->GetPreferredColorScheme()) {
+    native_theme->NotifyOnNativeThemeUpdated();
+  }
 
   PrintableSkColor original{theme_provider.GetColor(color_id)};
 
@@ -275,7 +291,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
 class ThemeProviderRedirectedEquivalenceTest
     : public ThemeServiceTest,
       public testing::WithParamInterface<
-          std::tuple<ui::NativeTheme::ColorScheme, ContrastMode, int>> {
+          std::tuple<ui::NativeTheme::ColorScheme, ContrastMode>> {
  public:
   ThemeProviderRedirectedEquivalenceTest() = default;
 
@@ -292,13 +308,11 @@ class ThemeProviderRedirectedEquivalenceTest
 
   static std::string ParamInfoToString(
       ::testing::TestParamInfo<
-          std::tuple<ui::NativeTheme::ColorScheme, ContrastMode, int>>
-          param_info) {
+          std::tuple<ui::NativeTheme::ColorScheme, ContrastMode>> param_info) {
     auto param_tuple = param_info.param;
     return ColorSchemeToString(
                std::get<ui::NativeTheme::ColorScheme>(param_tuple)) +
-           ContrastModeToString(std::get<ContrastMode>(param_tuple)) +
-           "_With_" + ColorIdToString(std::get<int>(param_tuple));
+           ContrastModeToString(std::get<ContrastMode>(param_tuple));
   }
 
  private:
@@ -342,8 +356,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::Values(ui::NativeTheme::ColorScheme::kLight,
                                          ui::NativeTheme::ColorScheme::kDark),
                        ::testing::Values(ContrastMode::kNonHighContrast,
-                                         ContrastMode::kHighContrast),
-                       ::testing::ValuesIn(kTestIdValues)),
+                                         ContrastMode::kHighContrast)),
     ThemeProviderRedirectedEquivalenceTest::ParamInfoToString);
 
 // Installs then uninstalls a theme and makes sure that the ThemeService
@@ -820,29 +833,36 @@ TEST_P(ThemeProviderRedirectedEquivalenceTest, MAYBE_GetColor) {
   auto param_tuple = GetParam();
   auto color_scheme = std::get<ui::NativeTheme::ColorScheme>(param_tuple);
   auto contrast_mode = std::get<ContrastMode>(param_tuple);
-  auto color_id = std::get<int>(param_tuple);
 
-  // Verifies that colors with and without the ColorProvider are the same.
-  auto pair = GetOriginalAndRedirected(theme_provider, color_id, color_scheme,
-                                       contrast_mode);
-  auto original = pair.first;
-  auto redirected = pair.second;
-  auto tolerance = get_tolerance(color_id);
-  if (!tolerance) {
-    EXPECT_EQ(original, redirected);
-  } else {
-    EXPECT_LE(std::abs(static_cast<int>(SkColorGetA(original.color) -
-                                        SkColorGetA(redirected.color))),
-              tolerance);
-    EXPECT_LE(std::abs(static_cast<int>(SkColorGetR(original.color) -
-                                        SkColorGetR(redirected.color))),
-              tolerance);
-    EXPECT_LE(std::abs(static_cast<int>(SkColorGetG(original.color) -
-                                        SkColorGetG(redirected.color))),
-              tolerance);
-    EXPECT_LE(std::abs(static_cast<int>(SkColorGetB(original.color) -
-                                        SkColorGetB(redirected.color))),
-              tolerance);
+  for (auto color_id : kTestIdValues) {
+    // Verifies that colors with and without the ColorProvider are the same.
+    auto pair = GetOriginalAndRedirected(theme_provider, color_id, color_scheme,
+                                         contrast_mode);
+    auto original = pair.first;
+    auto redirected = pair.second;
+    auto tolerance = get_tolerance(color_id);
+    std::string error_message =
+        base::StrCat({ColorIdToString(color_id), " has mismatched values"});
+    if (!tolerance) {
+      EXPECT_EQ(original, redirected) << error_message;
+    } else {
+      EXPECT_LE(std::abs(static_cast<int>(SkColorGetA(original.color) -
+                                          SkColorGetA(redirected.color))),
+                tolerance)
+          << error_message;
+      EXPECT_LE(std::abs(static_cast<int>(SkColorGetR(original.color) -
+                                          SkColorGetR(redirected.color))),
+                tolerance)
+          << error_message;
+      EXPECT_LE(std::abs(static_cast<int>(SkColorGetG(original.color) -
+                                          SkColorGetG(redirected.color))),
+                tolerance)
+          << error_message;
+      EXPECT_LE(std::abs(static_cast<int>(SkColorGetB(original.color) -
+                                          SkColorGetB(redirected.color))),
+                tolerance)
+          << error_message;
+    }
   }
 }
 
