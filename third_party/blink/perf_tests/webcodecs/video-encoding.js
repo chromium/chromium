@@ -1,26 +1,3 @@
-function fourColorsFrame(ctx, width, height, text) {
-  const kYellow = "#FFFF00";
-  const kRed = "#FF0000";
-  const kBlue = "#0000FF";
-  const kGreen = "#00FF00";
-
-  ctx.fillStyle = kYellow;
-  ctx.fillRect(0, 0, width / 2, height / 2);
-
-  ctx.fillStyle = kRed;
-  ctx.fillRect(width / 2, 0, width / 2, height / 2);
-
-  ctx.fillStyle = kBlue;
-  ctx.fillRect(0, height / 2, width / 2, height / 2);
-
-  ctx.fillStyle = kGreen;
-  ctx.fillRect(width / 2, height / 2, width / 2, height / 2);
-
-  ctx.fillStyle = 'white';
-  ctx.font = (height / 10) + 'px sans-serif';
-  ctx.fillText(text, width / 2, height / 2);
-}
-
 function prepareFrames(width, height, count) {
   const canvas = new OffscreenCanvas(width, height);
   const ctx = canvas.getContext('2d');
