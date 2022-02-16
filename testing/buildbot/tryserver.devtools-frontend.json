@@ -29,6 +29,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--git-revision=${got_revision}",
           "http/tests/devtools"
         ],
         "isolate_name": "blink_web_tests",
@@ -39,6 +40,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -115,6 +121,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--git-revision=${got_revision}",
           "http/tests/devtools"
         ],
         "isolate_name": "blink_web_tests",
@@ -125,6 +132,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -177,7 +189,8 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3"
+          "--num-retries=3",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -187,6 +200,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },

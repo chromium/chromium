@@ -1196,6 +1196,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'mixins': [
+          'skia_gold_test',
+        ],
         'resultdb': {
           'enable': True,
         },
@@ -1237,6 +1240,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'mixins': [
+          'skia_gold_test',
+        ],
         'resultdb': {
           'enable': True,
         },
@@ -1262,6 +1268,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'mixins': [
+          'skia_gold_test',
+        ],
         'resultdb': {
           'enable': True,
         },
@@ -1467,6 +1476,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'mixins': [
+          'skia_gold_test',
+        ],
         'resultdb': {
           'enable': True,
         },
@@ -1555,6 +1567,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'mixins': [
+          'skia_gold_test',
+        ],
         'resultdb': {
           'enable': True,
         },
@@ -2549,7 +2564,6 @@
         'use_isolated_scripts_api': True,
       },
     },
-
     # The command buffer perf tests are only run on Windows.
     # They are mostly driver and platform independent.
     'gpu_command_buffer_perf_passthrough_isolated_scripts': {
@@ -3735,7 +3749,10 @@
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
           '--timeout-ms=30000',
         ],
-        'mixins': ['webgpu_cts'],
+        'mixins': [
+          'webgpu_cts',
+          'skia_gold_test',
+        ],
         'swarming': {
           'shards': 4,
         },
@@ -3749,7 +3766,10 @@
         'args': [
           '--flag-specific=webgpu',
         ],
-        'mixins': ['webgpu_cts'],
+        'mixins': [
+          'webgpu_cts',
+          'skia_gold_test',
+        ],
         'swarming': {
           'shards': 4,
         },
@@ -3767,7 +3787,10 @@
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
           '--timeout-ms=30000',
         ],
-        'mixins': ['webgpu_cts'],
+        'mixins': [
+          'webgpu_cts',
+          'skia_gold_test',
+        ],
         'swarming': {
           'shards': 4,
         },
@@ -4145,6 +4168,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'mixins': [
+          'skia_gold_test',
+        ],
         'resultdb': {
           'enable': True,
         },
@@ -5016,6 +5042,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'mixins': [
+          'skia_gold_test',
+        ],
         'resultdb': {
           'enable': True,
         },
