@@ -29,13 +29,11 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.FeatureList;
-import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
@@ -51,7 +49,6 @@ class TasksView extends CoordinatorLayoutForPointer {
     private final Context mContext;
     private FrameLayout mCarouselTabSwitcherContainer;
     private AppBarLayout mHeaderView;
-    private AppBarLayout.OnOffsetChangedListener mFakeSearchBoxShrinkAnimation;
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private IncognitoDescriptionView mIncognitoDescriptionView;
     private View.OnClickListener mIncognitoDescriptionLearnMoreListener;
@@ -86,18 +83,8 @@ class TasksView extends CoordinatorLayoutForPointer {
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
 
         mHeaderView = (AppBarLayout) findViewById(R.id.task_surface_header);
-        // TODO(https://crbug.com/1251632): Find out why scrolling was broken after
-        // crrev.com/c/3025127. Force the header view to be draggable as a workaround.
-        CoordinatorLayout.LayoutParams params =
-                (CoordinatorLayout.LayoutParams) mHeaderView.getLayoutParams();
-        AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
-        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
-            @Override
-            public boolean canDrag(AppBarLayout appBarLayout) {
-                return true;
-            }
-        });
-        params.setBehavior(behavior);
+
+        forceHeaderScrollable();
 
         mUiConfig = new UiConfig(this);
         setHeaderPadding();
@@ -108,7 +95,6 @@ class TasksView extends CoordinatorLayoutForPointer {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mUiConfig.updateDisplayStyle();
-        alignHeaderForFeed();
     }
 
     private void setTabCarouselTitleStyle() {
@@ -359,13 +345,13 @@ class TasksView extends CoordinatorLayoutForPointer {
     }
 
     /**
-     * Set the top margin for the fake search box.
-     * @param topMargin The top margin to set.
+     * Set the height of the top toolbar placeholder layout.
      */
-    void setFakeSearchBoxTopMargin(int topMargin) {
-        MarginLayoutParams params =
-                (MarginLayoutParams) findViewById(R.id.fake_search_box).getLayoutParams();
-        params.topMargin = topMargin;
+    void setTopToolbarPlaceholderHeight(int height) {
+        View topToolbarPlaceholder = findViewById(R.id.top_toolbar_placeholder);
+        ViewGroup.LayoutParams lp = topToolbarPlaceholder.getLayoutParams();
+        lp.height = height;
+        topToolbarPlaceholder.setLayoutParams(lp);
     }
 
     /**
@@ -399,87 +385,41 @@ class TasksView extends CoordinatorLayoutForPointer {
     }
 
     /**
-     * Create the fake box shrink animation if it doesn't exist yet and add the omnibox shrink
-     * animation when the homepage is scrolled.
+     * Update the fake search box layout.
+     * @param height Current height of the fake search box layout.
+     * @param topMargin Current top margin of the fake search box layout.
+     * @param endPadding Current end padding of the fake search box layout.
+     * @param textSize Current text size of text view in fake search box layout.
+     * @param translationX Current translationX of text view in fake search box layout.
+     * @param buttonSize Current height and width of the buttons in fake search box layout.
+     * @param lensButtonLeftMargin Current left margin of the lens button in fake search box layout.
      */
-    void addFakeSearchBoxShrinkAnimation() {
-        if (mHeaderView == null) return;
-        if (mFakeSearchBoxShrinkAnimation == null) {
-            int fakeSearchBoxHeight =
-                    getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height);
-            int toolbarContainerTopMargin =
-                    getResources().getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
-            View fakeSearchBoxView = findViewById(R.id.search_box);
-            View searchTextView = findViewById(R.id.search_box_text);
-            if (fakeSearchBoxView == null) return;
-            // If fake search box view is not null when creating this animation, it will not change.
-            // So checking it once above is enough.
-            mFakeSearchBoxShrinkAnimation = (appbarLayout, headerVerticalOffset)
-                    -> updateFakeSearchBoxShrinkAnimation(headerVerticalOffset, fakeSearchBoxHeight,
-                            toolbarContainerTopMargin, fakeSearchBoxView, searchTextView);
-        }
-        mHeaderView.addOnOffsetChangedListener(mFakeSearchBoxShrinkAnimation);
+    void updateFakeSearchBox(int height, int topMargin, int endPadding, float textSize,
+            float translationX, int buttonSize, int lensButtonLeftMargin) {
+        if (mSearchBoxCoordinator.getView().getVisibility() != View.VISIBLE) return;
+        mSearchBoxCoordinator.setHeight(height);
+        mSearchBoxCoordinator.setTopMargin(topMargin);
+        mSearchBoxCoordinator.setEndPadding(endPadding);
+        mSearchBoxCoordinator.setTextSize(textSize);
+        mSearchBoxCoordinator.setTextViewTranslationX(translationX);
+        mSearchBoxCoordinator.setButtonsHeight(buttonSize);
+        mSearchBoxCoordinator.setButtonsWidth(buttonSize);
+        mSearchBoxCoordinator.setLensButtonLeftMargin(lensButtonLeftMargin);
     }
 
-    /** Remove the fake box shrink animation. */
-    void removeFakeSearchBoxShrinkAnimation() {
-        if (mHeaderView != null) {
-            mHeaderView.removeOnOffsetChangedListener(mFakeSearchBoxShrinkAnimation);
-        }
-    }
-
-    /**
-     * When the start surface toolbar is about to be scrolled out of the screen and the fake search
-     * box is almost at the screen top, start to reduce its height to make it finally the same as
-     * toolbar container view's height. This makes fake search box exactly overlap the toolbar
-     * container view and makes the transition smooth.
-     *
-     * <p>This function should be called together with
-     * StartSurfaceToolbarMediator#updateTranslationY, which scroll up the start surface toolbar
-     * together with the header.
-     *
-     * @param headerOffset The current offset of the header.
-     * @param originalFakeSearchBoxHeight The height of fake search box.
-     * @param toolbarContainerTopMargin The top margin of toolbar container view.
-     * @param fakeSearchBox The fake search box in start surface homepage.
-     * @param searchTextView  The search text view in fake search box.
-     */
-    private void updateFakeSearchBoxShrinkAnimation(int headerOffset,
-            int originalFakeSearchBoxHeight, int toolbarContainerTopMargin, View fakeSearchBox,
-            View searchTextView) {
-        // When the header is scrolled up by fake search box height or so, reduce the fake search
-        // box height.
-        int reduceHeight = MathUtils.clamp(
-                -headerOffset - originalFakeSearchBoxHeight, 0, toolbarContainerTopMargin);
-
-        ViewGroup.LayoutParams layoutParams = fakeSearchBox.getLayoutParams();
-        if (layoutParams.height == originalFakeSearchBoxHeight - reduceHeight) {
-            return;
-        }
-
-        layoutParams.height = originalFakeSearchBoxHeight - reduceHeight;
-
-        // Update the top margin of the fake search box.
-        ViewGroup.MarginLayoutParams marginLayoutParams =
-                (ViewGroup.MarginLayoutParams) fakeSearchBox.getLayoutParams();
-        marginLayoutParams.setMargins(marginLayoutParams.leftMargin, reduceHeight,
-                marginLayoutParams.rightMargin, marginLayoutParams.bottomMargin);
-
-        fakeSearchBox.setLayoutParams(layoutParams);
-
-        // Update the translation X of search text view to make space for the search logo.
-        SearchEngineLogoUtils searchEngineLogoUtils = SearchEngineLogoUtils.getInstance();
-        assert searchEngineLogoUtils != null;
-
-        if (!searchEngineLogoUtils.shouldShowSearchEngineLogo(mIsIncognito)) {
-            return;
-        }
-
-        int finalTranslationX =
-                getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding_focused)
-                - getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding);
-        searchTextView.setTranslationX(
-                finalTranslationX * ((float) reduceHeight / toolbarContainerTopMargin));
+    private void forceHeaderScrollable() {
+        // TODO(https://crbug.com/1251632): Find out why scrolling was broken after
+        // crrev.com/c/3025127. Force the header view to be draggable as a workaround.
+        CoordinatorLayout.LayoutParams params =
+                (CoordinatorLayout.LayoutParams) mHeaderView.getLayoutParams();
+        AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
+        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
+            @Override
+            public boolean canDrag(AppBarLayout appBarLayout) {
+                return true;
+            }
+        });
+        params.setBehavior(behavior);
     }
 
     /**
@@ -492,24 +432,5 @@ class TasksView extends CoordinatorLayoutForPointer {
                 getResources().getDimensionPixelSize(R.dimen.ntp_wide_card_lateral_margins);
 
         ViewResizer.createAndAttach(mHeaderView, mUiConfig, defaultPadding, widePadding);
-        alignHeaderForFeed();
-    }
-
-    /**
-     * Feed has extra content padding, we need to align the header with it. However, the padding
-     * of the header is already bound with ViewResizer in setHeaderPadding(), so we update the left
-     * & right margins of MV tiles container and carousel tab switcher container.
-     */
-    private void alignHeaderForFeed() {
-        MarginLayoutParams mostVisitedLayoutParams =
-                (MarginLayoutParams) mHeaderView.findViewById(R.id.mv_tiles_container)
-                        .getLayoutParams();
-
-        MarginLayoutParams carouselTabSwitcherParams =
-                (MarginLayoutParams) mCarouselTabSwitcherContainer.getLayoutParams();
-            mostVisitedLayoutParams.leftMargin = 0;
-            mostVisitedLayoutParams.rightMargin = 0;
-            carouselTabSwitcherParams.leftMargin = 0;
-            carouselTabSwitcherParams.rightMargin = 0;
     }
 }

@@ -233,7 +233,7 @@ class StartSurfaceToolbarMediator {
     /**
      * The real omnibox should be shown in three cases:
      * 1. It's on the homepage, the url is focused and start surface toolbar is not visible.
-     * 2. It's on the homepage and the start surface toolbar is scrolled off.
+     * 2. It's on the homepage and the fake search box is scrolled up to the screen top.
      * 3. It's on a tab.
      *
      * In the other cases:
@@ -241,12 +241,12 @@ class StartSurfaceToolbarMediator {
      *    sees the fake search box.
      * 2. It's on the tab switcher surface, there is no search box (fake or real).
      *
-     * @param toolbarHeight The height of start surface toolbar.
+     * @param fakeSearchBoxMarginToScreenTop The margin of fake search box to the screen top.
      * @return Whether toolbar layout should be shown.
      */
-    boolean shouldShowRealSearchBox(int toolbarHeight) {
-        return isRealSearchBoxFocused() || isStartSurfaceToolbarScrolledOff(toolbarHeight)
-                || isOnATab();
+    boolean shouldShowRealSearchBox(int fakeSearchBoxMarginToScreenTop) {
+        return isRealSearchBoxFocused()
+                || isFakeSearchBoxScrolledToScreenTop(fakeSearchBoxMarginToScreenTop) || isOnATab();
     }
 
     /** Returns whether it's on the start surface homepage. */
@@ -269,15 +269,12 @@ class StartSurfaceToolbarMediator {
     }
 
     /**
-     * Start surface toolbar is only scrolled on the homepage. When scrolling offset is larger than
-     * toolbar height, start surface toolbar is scrolled out of the screen.
-     *
-     * @param toolbarHeight The height of start surface toolbar.
-     * @return Whether the start surface toolbar is scrolled out of the screen.
+     * @param fakeSearchBoxMarginToScreenTop The margin of fake search box to the screen top.
+     * @return Whether the fake search box is scrolled to the top of the screen.
      */
-    private boolean isStartSurfaceToolbarScrolledOff(int toolbarHeight) {
+    private boolean isFakeSearchBoxScrolledToScreenTop(int fakeSearchBoxMarginToScreenTop) {
         return mPropertyModel.get(IS_VISIBLE)
-                && -mPropertyModel.get(TRANSLATION_Y) >= toolbarHeight;
+                && -mPropertyModel.get(TRANSLATION_Y) >= fakeSearchBoxMarginToScreenTop;
     }
 
     void setOnNewTabClickHandler(View.OnClickListener listener) {

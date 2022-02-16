@@ -24,7 +24,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.INSTANT_START;
-import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
@@ -1092,15 +1091,34 @@ public class StartSurfaceMediatorUnitTest {
 
         verify(mBrowserControlsStateProvider).addObserver(ArgumentMatchers.any());
 
-        mBrowserControlsStateProviderCaptor.getValue().onTopControlsHeightChanged(100, 20);
-        doReturn(100).when(mBrowserControlsStateProvider).getContentOffset();
+        doReturn(100).when(mBrowserControlsStateProvider).getTopControlsHeight();
+        doReturn(20).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
         mBrowserControlsStateProviderCaptor.getValue().onControlsOffsetChanged(
                 100, 20, 0, 0, false);
-        assertEquals("Wrong top content offset.", 100, mPropertyModel.get(TOP_MARGIN));
+        assertEquals("Wrong top content offset on homepage.", 20, mPropertyModel.get(TOP_MARGIN));
 
-        doReturn(50).when(mBrowserControlsStateProvider).getContentOffset();
-        mBrowserControlsStateProviderCaptor.getValue().onControlsOffsetChanged(50, 20, 0, 0, false);
-        assertEquals("Wrong top content offset.", 50, mPropertyModel.get(TOP_MARGIN));
+        doReturn(130).when(mBrowserControlsStateProvider).getTopControlsHeight();
+        doReturn(50).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
+        mBrowserControlsStateProviderCaptor.getValue().onControlsOffsetChanged(
+                130, 50, 0, 0, false);
+        assertEquals("Wrong top content offset on homepage.", 50, mPropertyModel.get(TOP_MARGIN));
+
+        mediator.setOverviewState(StartSurfaceState.SHOWING_TABSWITCHER);
+        mediator.showOverview(false);
+
+        doReturn(100).when(mBrowserControlsStateProvider).getTopControlsHeight();
+        doReturn(20).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
+        mBrowserControlsStateProviderCaptor.getValue().onControlsOffsetChanged(
+                100, 20, 0, 0, false);
+        assertEquals("Wrong top content offset on tab switcher surface.", 100,
+                mPropertyModel.get(TOP_MARGIN));
+
+        doReturn(130).when(mBrowserControlsStateProvider).getTopControlsHeight();
+        doReturn(50).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
+        mBrowserControlsStateProviderCaptor.getValue().onControlsOffsetChanged(
+                130, 50, 0, 0, false);
+        assertEquals("Wrong top content offset on tab switcher surface.", 130,
+                mPropertyModel.get(TOP_MARGIN));
     }
 
     @Test
@@ -1142,8 +1160,6 @@ public class StartSurfaceMediatorUnitTest {
                 resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin);
         int tabSwitcherTitleTopMargin =
                 resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
-        int fakeSearchBoxTopMargin =
-                resources.getDimensionPixelSize(R.dimen.fake_search_box_top_margin);
 
         createStartSurfaceMediatorWithoutInit(/* isStartSurfaceEnabled= */ true,
                 /* excludeMVTiles= */ false,
@@ -1154,7 +1170,6 @@ public class StartSurfaceMediatorUnitTest {
                 equalTo(mvTilesContainerTopMargin));
         assertThat(mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
                 equalTo(tabSwitcherTitleTopMargin));
-        assertThat(mPropertyModel.get(FAKE_SEARCH_BOX_TOP_MARGIN), equalTo(fakeSearchBoxTopMargin));
     }
 
     @Test

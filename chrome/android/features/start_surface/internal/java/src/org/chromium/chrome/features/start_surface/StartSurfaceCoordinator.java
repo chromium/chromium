@@ -19,6 +19,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
+import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordHistogram;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -312,9 +314,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Override
     public void destroy() {
         onHide();
-        if (mTasksSurface != null) {
-            mTasksSurface.removeFakeSearchBoxShrinkAnimation();
-        }
         if (mOffsetChangedListenerToGenerateScrollEvents != null) {
             removeHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
             mOffsetChangedListenerToGenerateScrollEvents = null;
@@ -547,21 +546,12 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mTabCreatorManager, mMenuOrKeyboardActionController, mShareDelegateSupplier,
                 mMultiWindowModeStateDispatcher, mContainerView);
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
-        mTasksSurface.addFakeSearchBoxShrinkAnimation();
-        mOffsetChangedListenerToGenerateScrollEvents = new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                for (ScrollListener scrollListener : mScrollListeners) {
-                    scrollListener.onHeaderOffsetChanged(verticalOffset);
-                }
-            }
-        };
+        initializeOffsetChangedListener();
         addHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
 
         mTasksSurfacePropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel,
-                new TasksSurfaceViewBinder.ViewHolder(mContainerView, mTasksSurface.getView(),
-                        mTasksSurface.getTopToolbarPlaceholderView()),
+                new TasksSurfaceViewBinder.ViewHolder(mContainerView, mTasksSurface.getView()),
                 TasksSurfaceViewBinder::bind);
     }
 
@@ -590,9 +580,8 @@ public class StartSurfaceCoordinator implements StartSurface {
         mSecondaryTasksSurface.getView().setId(R.id.secondary_tasks_surface_view);
         mSecondaryTasksSurfacePropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mPropertyModel,
-                        new TasksSurfaceViewBinder.ViewHolder(mContainerView,
-                                mSecondaryTasksSurface.getView(),
-                                mSecondaryTasksSurface.getTopToolbarPlaceholderView()),
+                        new TasksSurfaceViewBinder.ViewHolder(
+                                mContainerView, mSecondaryTasksSurface.getView()),
                         SecondaryTasksSurfaceViewBinder::bind);
         if (mOnTabSelectingListener != null) {
             mSecondaryTasksSurface.setOnTabSelectingListener(mOnTabSelectingListener);
@@ -634,6 +623,68 @@ public class StartSurfaceCoordinator implements StartSurface {
         FrameLayout directChildHolder = new FrameLayout(mActivity);
         mSwipeRefreshLayout.addView(directChildHolder);
         mContainerView = directChildHolder;
+    }
+
+    private void initializeOffsetChangedListener() {
+        int realVerticalMargin = getPixelSize(R.dimen.location_bar_vertical_margin);
+        int fakeSearchBoxToRealSearchBoxTop = getPixelSize(R.dimen.control_container_height)
+                + getPixelSize(R.dimen.start_surface_fake_search_box_top_margin)
+                - realVerticalMargin;
+
+        // The following |fake*| values mean the values of the fake search box; |real*| values
+        // mean the values of the real search box.
+        int fakeHeight = getPixelSize(R.dimen.ntp_search_box_height);
+        int realHeight = getPixelSize(R.dimen.toolbar_height_no_shadow) - realVerticalMargin * 2;
+        int fakeAndRealHeightDiff = fakeHeight - realHeight;
+
+        int fakeEndPadding = getPixelSize(R.dimen.search_box_end_padding);
+        // realEndPadding is 0;
+
+        // fakeTranslationX is 0;
+        int realTranslationX = getPixelSize(R.dimen.location_bar_status_icon_width)
+                + (getPixelSize(R.dimen.location_bar_icon_end_padding_focused)
+                        - getPixelSize(R.dimen.location_bar_icon_end_padding));
+
+        float fakeTextSize = mActivity.getResources().getDimension(
+                R.dimen.tasks_surface_location_bar_url_text_size);
+        float realTextSize =
+                mActivity.getResources().getDimension(R.dimen.location_bar_url_text_size);
+
+        int fakeButtonSize = getPixelSize(R.dimen.tasks_surface_location_bar_url_button_size);
+        int realButtonSize = getPixelSize(R.dimen.location_bar_action_icon_width);
+
+        int fakeLensButtonStartMargin =
+                getPixelSize(R.dimen.tasks_surface_location_bar_url_button_start_margin);
+        // realLensButtonStartMargin is 0;
+
+        mOffsetChangedListenerToGenerateScrollEvents = (appBarLayout, verticalOffset) -> {
+            for (ScrollListener scrollListener : mScrollListeners) {
+                scrollListener.onHeaderOffsetChanged(verticalOffset);
+            }
+
+            // This function should be called together with
+            // StartSurfaceToolbarMediator#updateTranslationY, which scroll up the start surface
+            // toolbar together with the header.
+            int scrolledHeight = -verticalOffset;
+            // When the fake search box top is scrolled to the search box top, start to reduce
+            // fake search box's height until it's the same as the real search box.
+            int reducedHeight = MathUtils.clamp(
+                    scrolledHeight - fakeSearchBoxToRealSearchBoxTop, 0, fakeAndRealHeightDiff);
+            float expansionFraction = (float) reducedHeight / fakeAndRealHeightDiff;
+
+            mTasksSurface.updateFakeSearchBox(fakeHeight - reducedHeight, reducedHeight,
+                    (int) (fakeEndPadding * (1 - expansionFraction)),
+                    fakeTextSize + (realTextSize - fakeTextSize) * expansionFraction,
+                    SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(false)
+                            ? realTranslationX * expansionFraction
+                            : 0,
+                    (int) (fakeButtonSize + (realButtonSize - fakeButtonSize) * expansionFraction),
+                    (int) (fakeLensButtonStartMargin * (1 - expansionFraction)));
+        };
+    }
+
+    private int getPixelSize(int id) {
+        return mActivity.getResources().getDimensionPixelSize(id);
     }
 
     @VisibleForTesting

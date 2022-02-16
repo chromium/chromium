@@ -69,11 +69,6 @@ public interface TasksSurface {
     View getView();
 
     /**
-     * Get the view {@link View} of the top transparent placeholder on start surface.
-     */
-    View getTopToolbarPlaceholderView();
-
-    /**
      * Called when the native initialization is completed. Anything to construct a TasksSurface but
      * require native initialization should be constructed here.
      */
@@ -93,14 +88,17 @@ public interface TasksSurface {
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
 
     /**
-     * Add the fake search box shrink animation.
+     * Update the fake search box layout.
+     * @param height Current height of the fake search box layout.
+     * @param topMargin Current top margin of the fake search box layout.
+     * @param endPadding Current end padding of the fake search box layout.
+     * @param textSize Current text size of text view in fake search box layout.
+     * @param translationX Current translationX of text view in fake search box layout.
+     * @param buttonSize Current height and width of the buttons in fake search box layout.
+     * @param lensButtonLeftMargin Current left margin of the lens button in fake search box layout.
      */
-    void addFakeSearchBoxShrinkAnimation();
-
-    /**
-     * Remove the omnibox shrink animation.
-     */
-    void removeFakeSearchBoxShrinkAnimation();
+    void updateFakeSearchBox(int height, int topMargin, int endPadding, float textSize,
+            float translationX, int buttonSize, int lensButtonLeftMargin);
 
     /**
      * Called when the Tasks surface is hidden.

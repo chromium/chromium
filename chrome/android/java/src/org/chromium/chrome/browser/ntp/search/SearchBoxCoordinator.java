@@ -112,4 +112,36 @@ public class SearchBoxCoordinator {
     public void setIncognitoMode(boolean isIncognito) {
         mIsIncognito = isIncognito;
     }
+
+    public void setHeight(int height) {
+        mMediator.setHeight(height);
+    }
+
+    public void setTopMargin(int topMargin) {
+        mMediator.setTopMargin(topMargin);
+    }
+
+    public void setEndPadding(int endPadding) {
+        mMediator.setEndPadding(endPadding);
+    }
+
+    public void setTextSize(float textSize) {
+        mMediator.setTextSize(textSize);
+    }
+
+    public void setTextViewTranslationX(float translationX) {
+        mMediator.setTextViewTranslationX(translationX);
+    }
+
+    public void setButtonsHeight(int height) {
+        mMediator.setButtonsHeight(height);
+    }
+
+    public void setButtonsWidth(int width) {
+        mMediator.setButtonsWidth(width);
+    }
+
+    public void setLensButtonLeftMargin(int leftMargin) {
+        mMediator.setLensButtonLeftMargin(leftMargin);
+    }
 }

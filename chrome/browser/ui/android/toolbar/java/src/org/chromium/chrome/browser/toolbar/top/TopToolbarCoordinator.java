@@ -661,34 +661,32 @@ public class TopToolbarCoordinator implements Toolbar {
      * Update the start surface toolbar state.
      * @param newState New Start Surface State.
      * @param requestToShow Whether or not request showing the start surface toolbar.
-     * @param toolbarHeight The height of start surface toolbar.
      */
     public void updateStartSurfaceToolbarState(
-            @StartSurfaceState int newState, boolean requestToShow, int toolbarHeight) {
+            @StartSurfaceState int newState, boolean requestToShow) {
         if (mStartSurfaceToolbarCoordinator == null
                 || mToolbarLayout.getToolbarDataProvider() == null) {
             return;
         }
         mStartSurfaceToolbarCoordinator.onStartSurfaceStateChanged(newState, requestToShow);
-        updateToolbarLayoutVisibility(toolbarHeight);
+        updateToolbarLayoutVisibility();
     }
 
     /**
      * Triggered when the offset of start surface header view is changed.
      * @param verticalOffset The start surface header view's offset.
-     * @param toolbarHeight The height of start surface toolbar.
      */
-    public void onStartSurfaceHeaderOffsetChanged(int verticalOffset, int toolbarHeight) {
+    public void onStartSurfaceHeaderOffsetChanged(int verticalOffset) {
         if (mStartSurfaceToolbarCoordinator != null) {
             mStartSurfaceToolbarCoordinator.onStartSurfaceHeaderOffsetChanged(verticalOffset);
-            updateToolbarLayoutVisibility(toolbarHeight);
+            updateToolbarLayoutVisibility();
         }
     }
 
-    private void updateToolbarLayoutVisibility(int toolbarHeight) {
+    private void updateToolbarLayoutVisibility() {
         assert mStartSurfaceToolbarCoordinator != null;
         mToolbarLayout.onStartSurfaceStateChanged(
-                mStartSurfaceToolbarCoordinator.shouldShowRealSearchBox(toolbarHeight),
+                mStartSurfaceToolbarCoordinator.shouldShowRealSearchBox(),
                 mStartSurfaceToolbarCoordinator.isOnHomepage());
     }
 

@@ -519,7 +519,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     @VisibleForTesting
     @ConnectionSecurityLevel
     int getSecurityLevel(Tab tab, boolean isOfflinePage, @Nullable String publisherUrl) {
-        if (tab == null || isOfflinePage) {
+        if (tab == null || isOfflinePage || isInOverviewAndShowingOmnibox()) {
             return ConnectionSecurityLevel.NONE;
         }
 
@@ -568,7 +568,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         boolean skipIconForNeutralState =
                 !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito())
-                || mNtpDelegate.isCurrentlyVisible();
+                || mNtpDelegate.isCurrentlyVisible() || isInOverviewAndShowingOmnibox();
 
         boolean useLockIconEnabled = false;
         if (mNativeLocationBarModelAndroid != 0) {

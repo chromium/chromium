@@ -165,6 +165,38 @@ class SearchBoxMediator
                 new LensQueryParams.Builder(lensEntryPoint, isIncognito, isTablet).build());
     }
 
+    void setHeight(int height) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_HEIGHT, height);
+    }
+
+    void setTopMargin(int topMargin) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_TOP_MARGIN, topMargin);
+    }
+
+    void setEndPadding(int endPadding) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_END_PADDING, endPadding);
+    }
+
+    void setTextSize(float textSize) {
+        mModel.set(SearchBoxProperties.SEARCH_TEXT_SIZE, textSize);
+    }
+
+    void setTextViewTranslationX(float translationX) {
+        mModel.set(SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X, translationX);
+    }
+
+    void setButtonsHeight(int height) {
+        mModel.set(SearchBoxProperties.BUTTONS_HEIGHT, height);
+    }
+
+    void setButtonsWidth(int width) {
+        mModel.set(SearchBoxProperties.BUTTONS_WIDTH, width);
+    }
+
+    void setLensButtonLeftMargin(int leftMargin) {
+        mModel.set(SearchBoxProperties.LENS_BUTTON_LEFT_MARGIN, leftMargin);
+    }
+
     private Drawable getRoundedDrawable(Bitmap bitmap) {
         if (bitmap == null) return null;
         RoundedBitmapDrawable roundedBitmapDrawable =

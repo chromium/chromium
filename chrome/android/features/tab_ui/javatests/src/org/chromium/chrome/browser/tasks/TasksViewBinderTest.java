@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TEXT_WATCHER;
-import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO_COOKIE_CONTROLS_MANAGER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO_LEARN_MORE_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
@@ -32,6 +31,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
 import android.graphics.drawable.ColorDrawable;
@@ -39,6 +39,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 
 import androidx.test.filters.SmallTest;
 
@@ -63,10 +64,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Tests for {@link TasksViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
+    private final AtomicBoolean mViewClicked = new AtomicBoolean();
+    private final View.OnClickListener mViewOnClickListener = (v) -> mViewClicked.set(true);
     private TasksView mTasksView;
     private PropertyModel mTasksViewPropertyModel;
-    private AtomicBoolean mViewClicked = new AtomicBoolean();
-    private View.OnClickListener mViewOnClickListener = (v) -> mViewClicked.set(true);
     @Mock
     private IncognitoCookieControlsManager mCookieControlsManager;
 
@@ -312,14 +313,13 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetFakeSearchBoxTopMargin() {
-        ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams) mTasksView.findViewById(R.id.fake_search_box)
-                        .getLayoutParams();
-        assertEquals(0, params.topMargin);
+    public void testSetTopToolbarLayoutHeight() {
+        ViewGroup.LayoutParams params =
+                mTasksView.findViewById(R.id.top_toolbar_placeholder).getLayoutParams();
+        assertEquals(LayoutParams.WRAP_CONTENT, params.height);
 
-        mTasksViewPropertyModel.set(FAKE_SEARCH_BOX_TOP_MARGIN, 16);
+        mTasksViewPropertyModel.set(TOP_TOOLBAR_PLACEHOLDER_HEIGHT, 16);
 
-        assertEquals(16, params.topMargin);
+        assertEquals(16, params.height);
     }
 }

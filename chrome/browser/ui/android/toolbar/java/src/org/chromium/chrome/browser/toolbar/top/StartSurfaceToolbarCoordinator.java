@@ -220,11 +220,16 @@ public class StartSurfaceToolbarCoordinator {
     }
 
     /**
-     * @param toolbarHeight The height of start surface toolbar.
      * @return Whether or not toolbar phone layout view should be shown.
      */
-    boolean shouldShowRealSearchBox(int toolbarHeight) {
-        return mToolbarMediator.shouldShowRealSearchBox(toolbarHeight);
+    boolean shouldShowRealSearchBox() {
+        int fakeSearchBoxMarginToScreenTop = 0;
+        if (mView != null) {
+            fakeSearchBoxMarginToScreenTop = mView.getHeight()
+                    + mStub.getResources().getDimensionPixelOffset(
+                            R.dimen.start_surface_fake_search_box_top_margin);
+        }
+        return mToolbarMediator.shouldShowRealSearchBox(fakeSearchBoxMarginToScreenTop);
     }
 
     /** Returns whether it's on the start surface homepage.*/

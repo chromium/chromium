@@ -14,7 +14,7 @@
     android:layout_marginStart="12dp"
     android:layout_marginEnd="12dp"
     android:paddingStart="@dimen/search_box_start_padding"
-    android:paddingEnd="10dp"
+    android:paddingEnd="@dimen/search_box_end_padding"
     android:background="@drawable/ntp_search_box"
     android:gravity="center_vertical"
     android:orientation="horizontal">
@@ -43,16 +43,16 @@
   <org.chromium.ui.widget.ChromeImageView
       android:id="@+id/voice_search_button"
       style="@style/LocationBarActionButton"
-      android:layout_width="20dp"
-      android:layout_height="20dp"
+      android:layout_width="@dimen/tasks_surface_location_bar_url_button_size"
+      android:layout_height="@dimen/tasks_surface_location_bar_url_button_size"
       android:contentDescription="@string/accessibility_toolbar_btn_mic"
       android:src="@drawable/btn_mic" />
   <org.chromium.ui.widget.ChromeImageView
       android:id="@+id/lens_camera_button"
       style="@style/LocationBarActionButton"
-      android:layout_width="20dp"
-      android:layout_height="20dp"
-      android:layout_marginStart="16dp"
+      android:layout_width="@dimen/tasks_surface_location_bar_url_button_size"
+      android:layout_height="@dimen/tasks_surface_location_bar_url_button_size"
+      android:layout_marginStart="@dimen/tasks_surface_location_bar_url_button_start_margin"
       android:contentDescription="@string/accessibility_btn_lens_camera"
       android:src="@drawable/lens_camera_icon"
       android:visibility="gone" />

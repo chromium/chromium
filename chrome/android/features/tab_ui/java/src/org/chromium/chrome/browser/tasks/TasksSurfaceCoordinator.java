@@ -206,11 +206,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     @Override
-    public View getTopToolbarPlaceholderView() {
-        return mView != null ? mView.findViewById(R.id.top_toolbar_placeholder) : null;
-    }
-
-    @Override
     public void onFinishNativeInitialization(Context context, OmniboxStub omniboxStub) {
         if (mTabSwitcher != null) {
             mTabSwitcher.initWithNative(context, mTabContentManager,
@@ -233,13 +228,10 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     @Override
-    public void addFakeSearchBoxShrinkAnimation() {
-        mView.addFakeSearchBoxShrinkAnimation();
-    }
-
-    @Override
-    public void removeFakeSearchBoxShrinkAnimation() {
-        mView.removeFakeSearchBoxShrinkAnimation();
+    public void updateFakeSearchBox(int height, int topMargin, int endPadding, float textSize,
+            float translationX, int buttonSize, int lensButtonLeftMargin) {
+        mView.updateFakeSearchBox(height, topMargin, endPadding, textSize, translationX, buttonSize,
+                lensButtonLeftMargin);
     }
 
     @Override
