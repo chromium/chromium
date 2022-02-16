@@ -70,7 +70,8 @@ import org.chromium.components.browser_ui.notifications.MockNotificationManagerP
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_price_notification/true"})
+        "force-fieldtrial-params=Study.Group:enable_price_notification/true"
+            + "/user_managed_notification_max_number/2"})
 @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceDropNotificationManagerTest {
     // clang-format on
@@ -319,5 +320,21 @@ public class PriceDropNotificationManagerTest {
         assertEquals(
                 0, mPriceDropNotificationManager.updateNotificationTimestamps(mockType, false));
         assertEquals(1, mPriceDropNotificationManager.updateNotificationTimestamps(mockType, true));
+    }
+
+    @Test
+    @MediumTest
+    public void testHasReachedMaxAllowedNotificationNumber() {
+        int mockType = SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED;
+        assertEquals(false,
+                mPriceDropNotificationManager.hasReachedMaxAllowedNotificationNumber(mockType));
+
+        mPriceDropNotificationManager.updateNotificationTimestamps(mockType, true);
+        assertEquals(false,
+                mPriceDropNotificationManager.hasReachedMaxAllowedNotificationNumber(mockType));
+
+        mPriceDropNotificationManager.updateNotificationTimestamps(mockType, true);
+        assertEquals(true,
+                mPriceDropNotificationManager.hasReachedMaxAllowedNotificationNumber(mockType));
     }
 }

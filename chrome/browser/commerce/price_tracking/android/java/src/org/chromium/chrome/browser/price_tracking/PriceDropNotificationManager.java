@@ -504,6 +504,22 @@ public class PriceDropNotificationManager {
     }
 
     /**
+     * Check if the shown notifications in given window have reached the max allowed number.
+     */
+    boolean hasReachedMaxAllowedNotificationNumber(@SystemNotificationType int type) {
+        boolean hasReached = updateNotificationTimestamps(type, false)
+                >= PriceTrackingNotificationConfig.getMaxAllowedNotificationNumber(type);
+        String managementType = notificationTypeToManagementType(type);
+        if (managementType != null) {
+            RecordHistogram.recordBooleanHistogram(
+                    String.format(Locale.US, "Commerce.PriceDrops.%s.NotificationReachedCap",
+                            managementType),
+                    hasReached);
+        }
+        return hasReached;
+    }
+
+    /**
      * Update the stored notification timestamps. Outdated timestamps are removed and current
      * timestamp could be attached.
      *
@@ -553,6 +569,17 @@ public class PriceDropNotificationManager {
             mPreferencesManager.writeString(CHROME_MANAGED_TIMESTAMPS, serializedTimestamps);
         } else if (type == SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED) {
             mPreferencesManager.writeString(USER_MANAGED_TIMESTAMPS, serializedTimestamps);
+        }
+    }
+
+    private String notificationTypeToManagementType(@SystemNotificationType int type) {
+        if (type == SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED) {
+            return "ChromeManaged";
+        } else if (type == SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED) {
+            return "UserManaged";
+        } else {
+            Log.e(TAG, "Invalid notification type.");
+            return null;
         }
     }
 
