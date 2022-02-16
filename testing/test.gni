@@ -126,7 +126,8 @@ template("test") {
           "$target_out_dir/${invoker.target_name}/${invoker.target_name}"
 
       mixed_executable(_exec_target) {
-        # Configs will always be defined since we set_defaults in BUILDCONFIG.gn.
+        # Configs will always be defined since we set_defaults in
+        # BUILDCONFIG.gn.
         configs = []
         forward_variables_from(
             invoker,
@@ -143,6 +144,8 @@ template("test") {
           "//build/config/android:hide_all_but_jni",
         ]
         configs += [ "//build/config:executable_config" ]
+
+        rs_configs = [ "//build/rust:test" ]
 
         if (defined(invoker.data_deps)) {
           data_deps = invoker.data_deps
@@ -496,6 +499,7 @@ template("test") {
     mixed_executable(_exec_target) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       output_name = _exec_target
+      rs_configs = [ "//build/rust:test" ]
     }
   } else if (is_ios) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
@@ -647,6 +651,7 @@ template("test") {
     mixed_executable(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
+      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }
@@ -741,6 +746,7 @@ template("test") {
     mixed_executable(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
+      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }
@@ -818,6 +824,7 @@ template("test") {
                              "*",
                              TESTONLY_AND_VISIBILITY + [ "use_xvfb" ])
       forward_variables_from(invoker, [ "visibility" ])
+      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }
@@ -846,6 +853,7 @@ template("test") {
     mixed_executable(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
+      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }

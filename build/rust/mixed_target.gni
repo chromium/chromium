@@ -116,7 +116,9 @@ template("mixed_target") {
         edition = invoker.rs_edition
       }
       if (defined(invoker.rs_configs)) {
-        configs = invoker.rs_configs
+        # The `configs` will always be non-empty due to `set_defaults()` which
+        # sets them for each type of rust target.
+        configs += invoker.rs_configs
       }
       if (defined(invoker.rs_test_deps)) {
         test_deps = invoker.rs_test_deps

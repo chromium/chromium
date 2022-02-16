@@ -47,3 +47,12 @@ source_set("cxx_cppdeps") {
 group("cxx_rustdeps") {
   deps = [ "//third_party/rust/cxx/v1:lib" ]
 }
+
+# Enables code behind #[cfg(test)]. This should only be used for targets where
+# testonly=true.
+config("test") {
+  rustflags = [
+    "--cfg",
+    "test",
+  ]
+}
