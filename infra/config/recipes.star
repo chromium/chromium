@@ -12,7 +12,6 @@ def _recipe_for_package(cipd_package):
             name,
             cipd_version = None,
             recipe = None,
-            use_python3 = False,
             bootstrappable = False):
         """Declare a recipe for the given package.
 
@@ -27,7 +26,6 @@ def _recipe_for_package(cipd_package):
               information.
             cipd_version: See luci.recipe.
             recipe: See luci.recipe.
-            use_python3: See luci.recipe.
             bootstrappable: Whether or not the recipe supports the chromium
               bootstrapper. A recipe supports the bootstrapper if the following
               conditions are met:
@@ -59,7 +57,7 @@ def _recipe_for_package(cipd_package):
             cipd_version = cipd_version,
             recipe = recipe,
             use_bbagent = True,
-            use_python3 = use_python3,
+            use_python3 = True,
         )
 
         register_recipe_bootstrappability(name, bootstrappable)
@@ -98,7 +96,6 @@ build_recipe(
 
 build_recipe(
     name = "recipe:binary_size_trybot",
-    use_python3 = True,
 )
 
 build_recipe(
@@ -116,7 +113,6 @@ build_recipe(
 build_recipe(
     name = "recipe:chromium",
     bootstrappable = True,
-    use_python3 = True,
 )
 
 build_recipe(
@@ -155,7 +151,6 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium_libfuzzer_trybot",
-    use_python3 = True,
 )
 
 build_recipe(
@@ -165,7 +160,6 @@ build_recipe(
 build_recipe(
     name = "recipe:chromium_trybot",
     bootstrappable = True,
-    use_python3 = True,
 )
 
 build_recipe(
@@ -195,7 +189,6 @@ build_recipe(
 
 build_recipe(
     name = "recipe:presubmit",
-    use_python3 = True,
 )
 
 build_recipe(
