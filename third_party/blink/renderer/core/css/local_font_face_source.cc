@@ -31,7 +31,7 @@ LocalFontFaceSource::~LocalFontFaceSource() {}
 
 bool LocalFontFaceSource::IsLocalNonBlocking() const {
   FontUniqueNameLookup* unique_name_lookup =
-      FontGlobalContext::Get()->GetFontUniqueNameLookup();
+      FontGlobalContext::Get().GetFontUniqueNameLookup();
   if (!unique_name_lookup)
     return true;
   return unique_name_lookup->IsFontUniqueNameLookupReadyForSyncLookup();
@@ -121,7 +121,7 @@ void LocalFontFaceSource::BeginLoadIfNeeded() {
     return;
 
   FontUniqueNameLookup* unique_name_lookup =
-      FontGlobalContext::Get()->GetFontUniqueNameLookup();
+      FontGlobalContext::Get().GetFontUniqueNameLookup();
   DCHECK(unique_name_lookup);
   unique_name_lookup->PrepareFontUniqueNameLookup(
       WTF::Bind(&LocalFontFaceSource::NotifyFontUniqueNameLookupReady,

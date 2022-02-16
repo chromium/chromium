@@ -372,7 +372,7 @@ void FontMatchingMetrics::PublishAllMetrics() {
 
 int64_t FontMatchingMetrics::GetHashForFontData(SimpleFontData* font_data) {
   return font_data ? FontGlobalContext::Get()
-                         ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+                         .GetOrComputeTypefaceDigest(font_data->PlatformData())
                          .ToUkmMetricValue()
                    : 0;
 }
@@ -380,7 +380,7 @@ int64_t FontMatchingMetrics::GetHashForFontData(SimpleFontData* font_data) {
 IdentifiableToken FontMatchingMetrics::GetPostScriptNameTokenForFontData(
     SimpleFontData* font_data) {
   DCHECK(font_data);
-  return FontGlobalContext::Get()->GetOrComputePostScriptNameDigest(
+  return FontGlobalContext::Get().GetOrComputePostScriptNameDigest(
       font_data->PlatformData());
 }
 

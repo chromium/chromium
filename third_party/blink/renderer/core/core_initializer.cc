@@ -163,7 +163,7 @@ void CoreInitializer::Initialize() {
 
   TimeZoneController::Init();
 
-  auto* name_lookup = FontGlobalContext::Get()->GetFontUniqueNameLookup();
+  auto* name_lookup = FontGlobalContext::Get().GetFontUniqueNameLookup();
   if (name_lookup)
     name_lookup->Init();
 

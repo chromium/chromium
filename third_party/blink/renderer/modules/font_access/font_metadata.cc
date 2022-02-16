@@ -27,7 +27,7 @@ namespace {
 // unique names, on platforms that apply.
 void SetUpFontUniqueLookupIfNecessary() {
   FontUniqueNameLookup* unique_name_lookup =
-      FontGlobalContext::Get()->GetFontUniqueNameLookup();
+      FontGlobalContext::Get().GetFontUniqueNameLookup();
   if (!unique_name_lookup)
     return;
   // Contrary to what the method name might imply, this is not an idempotent

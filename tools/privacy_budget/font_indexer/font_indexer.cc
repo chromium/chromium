@@ -121,7 +121,7 @@ bool FontIndexer::DoesFontHaveDigest(WTF::AtomicString name,
       font_cache_->GetFontData(font_description, name);
   DCHECK(font_data);
   return blink::FontGlobalContext::Get()
-             ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+             .GetOrComputeTypefaceDigest(font_data->PlatformData())
              .ToUkmMetricValue() == digest;
 }
 
@@ -175,7 +175,7 @@ void FontIndexer::PrintAllFontsWithName(WTF::AtomicString name) {
         font_cache_->GetFontData(blink::FontDescription(), name);
     default_font_digest =
         font_data ? blink::FontGlobalContext::Get()
-                        ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+                        .GetOrComputeTypefaceDigest(font_data->PlatformData())
                         .ToUkmMetricValue()
                   : 0;
   }
@@ -236,7 +236,7 @@ void FontIndexer::PrintAllFontsWithName(WTF::AtomicString name) {
                 font_cache_->GetFontData(font_description, name)) {
           uint64_t typeface_digest =
               blink::FontGlobalContext::Get()
-                  ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+                  .GetOrComputeTypefaceDigest(font_data->PlatformData())
                   .ToUkmMetricValue();
           if (set_of_digests.insert(typeface_digest).is_new_entry) {
             WTF::String postscript_name =

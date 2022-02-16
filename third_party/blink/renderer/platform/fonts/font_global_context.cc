@@ -23,11 +23,11 @@ ThreadSpecific<FontGlobalContext*>& GetThreadSpecificFontGlobalContextPool() {
   return thread_specific_pool;
 }
 
-FontGlobalContext* FontGlobalContext::Get() {
+FontGlobalContext& FontGlobalContext::Get() {
   auto& thread_specific_pool = GetThreadSpecificFontGlobalContextPool();
   if (!thread_specific_pool.IsSet())
     *thread_specific_pool = new FontGlobalContext();
-  return *thread_specific_pool;
+  return **thread_specific_pool;
 }
 
 FontGlobalContext* FontGlobalContext::TryGet() {
@@ -43,16 +43,16 @@ FontGlobalContext::FontGlobalContext()
 FontGlobalContext::~FontGlobalContext() = default;
 
 FontUniqueNameLookup* FontGlobalContext::GetFontUniqueNameLookup() {
-  if (!Get()->font_unique_name_lookup_) {
-    Get()->font_unique_name_lookup_ =
+  if (!Get().font_unique_name_lookup_) {
+    Get().font_unique_name_lookup_ =
         FontUniqueNameLookup::GetPlatformUniqueNameLookup();
   }
-  return Get()->font_unique_name_lookup_.get();
+  return Get().font_unique_name_lookup_.get();
 }
 
 HarfBuzzFontCache* FontGlobalContext::GetHarfBuzzFontCache() {
   std::unique_ptr<HarfBuzzFontCache>& global_context_harfbuzz_font_cache =
-      Get()->harfbuzz_font_cache_;
+      Get().harfbuzz_font_cache_;
   if (!global_context_harfbuzz_font_cache) {
     global_context_harfbuzz_font_cache = std::make_unique<HarfBuzzFontCache>();
   }
