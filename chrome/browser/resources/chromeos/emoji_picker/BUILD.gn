@@ -40,6 +40,7 @@ generate_grd("build_grd") {
     "events.js",
     "index.html",
     "metadata_extension.js",
+    "prefix_search.js",
     "store.js",
     "structs/trie.js",
     "types.js",
@@ -277,6 +278,11 @@ js_library("events") {
 
 js_library("trie") {
   sources = [ "./structs/trie.js" ]
+}
+
+js_library("prefix_search") {
+  sources = [ "./prefix_search.js" ]
+  deps = [":trie"]
 }
 
 js_library("store") {
