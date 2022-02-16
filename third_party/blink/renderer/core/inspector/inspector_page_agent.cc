@@ -35,6 +35,7 @@
 
 #include "base/containers/span.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -1010,7 +1012,11 @@ void InspectorPageAgent::DidOpenDocument(LocalFrame* frame,
                  base::TimeTicks::Now().since_origin().InSecondsF());
 }
 
-void InspectorPageAgent::FrameAttachedToParent(LocalFrame* frame) {
+void InspectorPageAgent::FrameAttachedToParent(
+    LocalFrame* frame,
+    const absl::optional<AdTracker::AdScriptIdentifier>& ad_script_on_stack) {
+  // TODO(crbug.com/1217041): If an ad script on the stack caused this frame to
+  // be tagged as an ad, send the script's ID to the frontend.
   Frame* parent_frame = frame->Tree().Parent();
   std::unique_ptr<SourceLocation> location =
       SourceLocation::CaptureWithFullStackTrace();

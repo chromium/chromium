@@ -1518,12 +1518,15 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
 
   DCHECK(ad_tracker_ ? RuntimeEnabledFeatures::AdTaggingEnabled()
                      : !RuntimeEnabledFeatures::AdTaggingEnabled());
+
+  absl::optional<AdTracker::AdScriptIdentifier> ad_script_on_stack;
   is_subframe_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
-      ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+      ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
+                                     /*out_ad_script=*/&ad_script_on_stack);
   Initialize();
 
-  probe::FrameAttachedToParent(this);
+  probe::FrameAttachedToParent(this, ad_script_on_stack);
 }
 
 FrameScheduler* LocalFrame::GetFrameScheduler() {

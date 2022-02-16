@@ -200,9 +200,11 @@ class AdTrackerTest : public testing::Test {
     ad_tracker_->SetExecutionContext(GetExecutionContext());
   }
 
-  void WillExecuteScript(const String& script_url) {
-    ad_tracker_->WillExecuteScript(GetExecutionContext(), String(script_url),
-                                   v8::Message::kNoScriptIdInfo);
+  void WillExecuteScript(const String& script_url,
+                         int script_id = v8::Message::kNoScriptIdInfo) {
+    ad_tracker_->WillExecuteScript(
+        GetExecutionContext(), v8::Isolate::GetCurrent()->GetCurrentContext(),
+        String(script_url), script_id);
   }
 
   ExecutionContext* GetExecutionContext() {
@@ -221,8 +223,20 @@ class AdTrackerTest : public testing::Test {
     return ad_tracker_->IsAdScriptInStack(stack_type);
   }
 
+  absl::optional<AdTracker::AdScriptIdentifier> BottommostAdScript() {
+    absl::optional<AdTracker::AdScriptIdentifier> bottom_most_ad_script;
+    ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
+                                   /*out_ad_script=*/&bottom_most_ad_script);
+    return bottom_most_ad_script;
+  }
+
   void AppendToKnownAdScripts(const String& url) {
     ad_tracker_->AppendToKnownAdScripts(*GetExecutionContext(), url);
+  }
+
+  void AppendToKnownAdScripts(int script_id) {
+    // Matches AdTracker's inline script encoding
+    AppendToKnownAdScripts(String::Format("{ id %d }", script_id));
   }
 
   Persistent<TestAdTracker> ad_tracker_;
@@ -382,6 +396,39 @@ TEST_F(AdTrackerTest, AsyncTagging) {
   EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
   ad_tracker_->DidFinishAsyncTask(&async_task_context);
   EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
+}
+
+TEST_F(AdTrackerTest, BottommostAdScript) {
+  AppendToKnownAdScripts("https://example.com/ad.js");
+  AppendToKnownAdScripts("https://example.com/ad2.js");
+  AppendToKnownAdScripts(/*script_id=*/5);
+  EXPECT_FALSE(BottommostAdScript().has_value());
+
+  WillExecuteScript("https://example.com/vanilla.js", /*script_id=*/1);
+  EXPECT_FALSE(BottommostAdScript().has_value());
+
+  WillExecuteScript("https://example.com/ad.js", /*script_id=*/2);
+  ASSERT_TRUE(BottommostAdScript().has_value());
+  EXPECT_EQ(BottommostAdScript()->id, 2);
+
+  // Additional scripts (ad or not) don't change the bottommost ad script.
+  WillExecuteScript("https://example.com/vanilla.js", /*script_id=*/3);
+  ASSERT_TRUE(BottommostAdScript().has_value());
+  EXPECT_EQ(BottommostAdScript()->id, 2);
+  DidExecuteScript();
+
+  WillExecuteScript("https://example.com/ad2.js", /*script_id=*/4);
+  ASSERT_TRUE(BottommostAdScript().has_value());
+  EXPECT_EQ(BottommostAdScript()->id, 2);
+  DidExecuteScript();
+
+  // The bottommost ad script can have an empty name.
+  DidExecuteScript();
+  EXPECT_FALSE(BottommostAdScript().has_value());
+
+  WillExecuteScript("", /*script_id=*/5);
+  ASSERT_TRUE(BottommostAdScript().has_value());
+  EXPECT_EQ(BottommostAdScript()->id, 5);
 }
 
 class AdTrackerSimTest : public SimTest {

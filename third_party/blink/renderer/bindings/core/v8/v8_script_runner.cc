@@ -422,7 +422,8 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
 
     // ToCoreString here should be zero copy due to externalized string
     // unpacked.
-    probe::ExecuteScript probe(context, ToCoreString(script_url),
+    probe::ExecuteScript probe(context, isolate->GetCurrentContext(),
+                               ToCoreString(script_url),
                                script->GetUnboundScript()->GetId());
     result = script->Run(isolate->GetCurrentContext(), host_defined_options);
   }
@@ -710,7 +711,8 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallAsConstructor(
   v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
   v8::MicrotasksScope microtasks_scope(isolate, ToMicrotaskQueue(context),
                                        v8::MicrotasksScope::kRunMicrotasks);
-  probe::CallFunction probe(context, function, depth);
+  probe::CallFunction probe(context, isolate->GetCurrentContext(), function,
+                            depth);
 
   if (!depth) {
     TRACE_EVENT_BEGIN1("devtools.timeline", "FunctionCall", "data",
@@ -771,7 +773,8 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
                        });
   }
 
-  probe::CallFunction probe(context, function, depth);
+  probe::CallFunction probe(context, isolate->GetCurrentContext(), function,
+                            depth);
   v8::MaybeLocal<v8::Value> result =
       function->Call(isolate->GetCurrentContext(), receiver, argc, argv);
   CHECK(!isolate->IsDead());
@@ -854,7 +857,8 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
 
     // Script IDs are not available on errored modules or on non-source text
     // modules, so we give them a default value.
-    probe::ExecuteScript probe(execution_context, module_script->SourceURL(),
+    probe::ExecuteScript probe(execution_context, script_state->GetContext(),
+                               module_script->SourceURL(),
                                record->GetStatus() != v8::Module::kErrored &&
                                        record->IsSourceTextModule()
                                    ? record->ScriptId()

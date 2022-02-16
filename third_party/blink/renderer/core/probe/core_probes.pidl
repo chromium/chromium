@@ -110,7 +110,7 @@ interface CoreProbes {
   void DidReceiveScriptResponse(ExecutionContext*, uint64_t identifier);
   void DomContentLoadedEventFired([Keep] LocalFrame*);
   void LoadEventFired([Keep] LocalFrame*);
-  void FrameAttachedToParent([Keep] LocalFrame*);
+  void FrameAttachedToParent([Keep] LocalFrame*, const absl::optional<AdTracker::AdScriptIdentifier>& ad_script_on_stack);
   void FrameDetachedFromParent([Keep] LocalFrame*, FrameDetachType);
   void DidStartProvisionalLoad([Keep] LocalFrame*);
   void DidFailProvisionalLoad([Keep] LocalFrame*);
@@ -154,8 +154,8 @@ interface CoreProbes {
   void BreakableLocation(ExecutionContext* context, const char* name);
   RecalculateStyle(Document* document);
   UpdateLayout(Document* document);
-  ExecuteScript([Keep] ExecutionContext* context, const String& script_url, int script_id);
-  CallFunction([Keep] ExecutionContext* context, v8::Local<v8::Function> function, int depth = 0);
+  ExecuteScript([Keep] ExecutionContext* context, const v8::Local<v8::Context>& v8_context, const String& script_url, int script_id);
+  CallFunction([Keep] ExecutionContext* context, const v8::Local<v8::Context>& v8_context, v8::Local<v8::Function> function, int depth = 0);
   UserCallback([Keep] ExecutionContext* context, const char* name, const AtomicString& atomic_name, bool recurring, EventTarget* event_target = nullptr);
   V8Compile([Keep] ExecutionContext* context, const String& file_name, int line, int column);
   ParseHTML(Document* document, HTMLDocumentParser* parser);

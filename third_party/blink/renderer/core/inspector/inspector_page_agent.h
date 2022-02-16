@@ -31,8 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_PAGE_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_PAGE_AGENT_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/page.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
@@ -198,7 +200,9 @@ class CORE_EXPORT InspectorPageAgent final
   void WillCommitLoad(LocalFrame*, DocumentLoader*);
   void DidRestoreFromBackForwardCache(LocalFrame*);
   void DidOpenDocument(LocalFrame*, DocumentLoader*);
-  void FrameAttachedToParent(LocalFrame*);
+  void FrameAttachedToParent(
+      LocalFrame*,
+      const absl::optional<AdTracker::AdScriptIdentifier>& ad_script_on_stack);
   void FrameDetachedFromParent(LocalFrame*, FrameDetachType);
   void FrameStartedLoading(LocalFrame*);
   void FrameStoppedLoading(LocalFrame*);
