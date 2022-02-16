@@ -26543,6 +26543,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SharingHubAndroid.SendTabToSelf.ChromeSettingsClicked">
+  <obsolete>Removed 02/2022.</obsolete>
   <owner>kmilka@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <description>
@@ -26559,6 +26560,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SharingHubAndroid.SendTabToSelf.NotSyncing">
+  <obsolete>Removed 02/2022.</obsolete>
   <owner>kmilka@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <description>

@@ -44,14 +44,4 @@
     android:ellipsize="end"
     android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
     android:text="@string/sharing_hub_sync_disabled_text"/>
-
-  <org.chromium.ui.widget.ButtonCompat
-    android:id="@+id/chrome_settings"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:layout_gravity="center"
-    android:layout_marginTop="16dp"
-    android:text="@string/sharing_chrome_settings"
-    android:visibility="gone"
-    style="@style/FilledButton"/>
 </LinearLayout>

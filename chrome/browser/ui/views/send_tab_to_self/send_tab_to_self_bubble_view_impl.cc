@@ -132,14 +132,7 @@ void SendTabToSelfBubbleViewImpl::Init() {
   auto* provider = ChromeLayoutProvider::Get();
   const int top_margin = provider->GetDistanceMetric(
       views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT);
-  const bool create_manage_devices_link = base::FeatureList::IsEnabled(
-      send_tab_to_self::kSendTabToSelfManageDevicesLink);
-  const int bottom_margin =
-      create_manage_devices_link
-          ? 0
-          : provider->GetDistanceMetric(
-                views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL);
-  set_margins(gfx::Insets(top_margin, 0, bottom_margin, 0));
+  set_margins(gfx::Insets(top_margin, 0, 0, 0));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -147,10 +140,8 @@ void SendTabToSelfBubbleViewImpl::Init() {
   CreateHintTextLabel();
   CreateDevicesScrollView();
 
-  if (create_manage_devices_link) {
-    AddChildView(std::make_unique<views::Separator>());
-    CreateManageDevicesLink();
-  }
+  AddChildView(std::make_unique<views::Separator>());
+  CreateManageDevicesLink();
 }
 
 void SendTabToSelfBubbleViewImpl::AddedToWidget() {

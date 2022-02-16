@@ -361,8 +361,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &query_tiles::features::kQueryTilesSegmentation,
     &reading_list::switches::kReadLater,
     &send_tab_to_self::kSendTabToSelfV2,
-    &send_tab_to_self::kSendTabToSelfManageDevicesLink,
-    &send_tab_to_self::kSendTabToSelfWhenSignedIn,
     &share::kPersistShareHubOnAppSwitch,
     &share::kSwapAndroidShareHubRows,
     &share::kUpcomingSharingFeatures,

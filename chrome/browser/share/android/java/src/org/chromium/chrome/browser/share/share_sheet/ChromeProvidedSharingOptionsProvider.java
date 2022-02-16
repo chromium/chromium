@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuil
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -69,7 +68,6 @@ public class ChromeProvidedSharingOptionsProvider {
     private final ShareSheetBottomSheetContent mBottomSheetContent;
     private final ShareParams mShareParams;
     private final Callback<Tab> mPrintTabCallback;
-    private final SettingsLauncher mSettingsLauncher;
     private final boolean mIsIncognito;
     private final boolean mIsSyncEnabled;
     private final long mShareStartTime;
@@ -106,8 +104,7 @@ public class ChromeProvidedSharingOptionsProvider {
     ChromeProvidedSharingOptionsProvider(Activity activity, Supplier<Tab> tabProvider,
             BottomSheetController bottomSheetController,
             ShareSheetBottomSheetContent bottomSheetContent, ShareParams shareParams,
-            Callback<Tab> printTab, SettingsLauncher settingsLauncher, boolean isIncognito,
-            boolean isSyncEnabled, long shareStartTime,
+            Callback<Tab> printTab, boolean isIncognito, boolean isSyncEnabled, long shareStartTime,
             ChromeOptionShareCallback chromeOptionShareCallback,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
             String url, @LinkGeneration int linkGenerationStatusForMetrics,
@@ -118,7 +115,6 @@ public class ChromeProvidedSharingOptionsProvider {
         mBottomSheetContent = bottomSheetContent;
         mShareParams = shareParams;
         mPrintTabCallback = printTab;
-        mSettingsLauncher = settingsLauncher;
         mIsIncognito = isIncognito;
         mIsSyncEnabled = isSyncEnabled;
         mShareStartTime = shareStartTime;
@@ -454,9 +450,9 @@ public class ChromeProvidedSharingOptionsProvider {
                     } else {
                         timestamp = mShareStartTime;
                     }
-                    SendTabToSelfCoordinator sttsCoordinator = new SendTabToSelfCoordinator(
-                            mActivity, mUrl, mShareParams.getTitle(), mBottomSheetController,
-                            mSettingsLauncher, mIsSyncEnabled, timestamp);
+                    SendTabToSelfCoordinator sttsCoordinator =
+                            new SendTabToSelfCoordinator(mActivity, mUrl, mShareParams.getTitle(),
+                                    mBottomSheetController, mIsSyncEnabled, timestamp);
                     sttsCoordinator.show();
                 })
                 .build();

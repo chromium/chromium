@@ -372,11 +372,8 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
             std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
                 delegate),
             /*delegate_for_transport_mode=*/
-            base::FeatureList::IsEnabled(
-                send_tab_to_self::kSendTabToSelfWhenSignedIn)
-                ? std::make_unique<
-                      syncer::ForwardingModelTypeControllerDelegate>(delegate)
-                : nullptr));
+            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+                delegate)));
   }
 
   if (!disabled_types.Has(syncer::USER_CONSENTS)) {

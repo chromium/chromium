@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
@@ -118,7 +117,7 @@ public class ShareRegistrationCoordinator {
         bottomSheetController.requestShowContent(
                 SendTabToSelfCoordinator.createBottomSheetContent(context, entry.getUrl().getSpec(),
                         entry.getTitle(), entry.getTimestamp(), bottomSheetController,
-                        new SettingsLauncherImpl(), isSyncEnabled),
+                        isSyncEnabled),
                 true);
     }
 }

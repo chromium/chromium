@@ -277,15 +277,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
           .Wait());
 }
 
-class TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn
+class TwoClientSendTabToSelfWithTransportModeSyncTest
     : public TwoClientSendTabToSelfSyncTest {
  public:
-  TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn() {
-    feature_list_.InitAndEnableFeature(
-        send_tab_to_self::kSendTabToSelfWhenSignedIn);
-  }
-  ~TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn() override =
-      default;
+  TwoClientSendTabToSelfWithTransportModeSyncTest() = default;
+  ~TwoClientSendTabToSelfWithTransportModeSyncTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     TwoClientSendTabToSelfSyncTest::SetUpInProcessBrowserTestFixture();
@@ -297,7 +293,6 @@ class TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription test_signin_client_subscription_;
 };
 
@@ -310,9 +305,8 @@ class TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn
 #define MAYBE_SignedInClientCanReceive SignedInClientCanReceive
 #endif
 
-IN_PROC_BROWSER_TEST_F(
-    TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn,
-    MAYBE_SignedInClientCanReceive) {
+IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfWithTransportModeSyncTest,
+                       MAYBE_SignedInClientCanReceive) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Set up one client syncing and the other signed-in but not syncing.

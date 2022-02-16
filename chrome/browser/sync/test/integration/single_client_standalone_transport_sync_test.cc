@@ -37,10 +37,7 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
       syncer::DEVICE_INFO, syncer::USER_CONSENTS, syncer::SECURITY_EVENTS,
       syncer::AUTOFILL_WALLET_DATA, syncer::SHARING_MESSAGE);
   allowed_types.PutAll(syncer::ControlTypes());
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfWhenSignedIn)) {
-    allowed_types.Put(syncer::SEND_TAB_TO_SELF);
-  }
+  allowed_types.Put(syncer::SEND_TAB_TO_SELF);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // OS sync types run in transport mode.
   if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {

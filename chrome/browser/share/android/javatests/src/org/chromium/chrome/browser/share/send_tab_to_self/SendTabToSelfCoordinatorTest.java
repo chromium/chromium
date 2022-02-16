@@ -43,7 +43,7 @@ public class SendTabToSelfCoordinatorTest {
     public void testShow() {
         SendTabToSelfCoordinator.setBottomSheetContentForTesting(mBottomSheetContent);
         SendTabToSelfCoordinator coordinator = new SendTabToSelfCoordinator(/*context*/ null,
-                "test", "test", mBottomSheetController, /*settingsLauncher=*/null,
+                "test", "test", mBottomSheetController,
                 /*isSyncEnabled=*/true, /*navigationTime=*/0);
         coordinator.show();
         verify(mBottomSheetController).requestShowContent(any(BottomSheetContent.class), eq(true));

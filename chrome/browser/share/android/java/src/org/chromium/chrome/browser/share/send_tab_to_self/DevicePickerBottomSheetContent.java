@@ -20,7 +20,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -31,7 +30,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.base.AccountInfo;
@@ -39,7 +37,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -61,14 +58,12 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
     private final String mUrl;
     private final String mTitle;
     private final long mNavigationTime;
-    private final SettingsLauncher mSettingsLauncher;
     private final boolean mIsSyncEnabled;
 
     private static final int ACCOUNT_AVATAR_SIZE_DP = 24;
 
     public DevicePickerBottomSheetContent(Context context, String url, String title,
-            long navigationTime, BottomSheetController controller,
-            SettingsLauncher settingsLauncher, boolean isSyncEnabled) {
+            long navigationTime, BottomSheetController controller, boolean isSyncEnabled) {
         mContext = context;
         mController = controller;
         mProfile = Profile.getLastUsedRegularProfile();
@@ -76,7 +71,6 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         mUrl = url;
         mTitle = title;
         mNavigationTime = navigationTime;
-        mSettingsLauncher = settingsLauncher;
         mIsSyncEnabled = isSyncEnabled;
 
         createToolbarView();
@@ -102,46 +96,23 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         TextView title = sharingUnavailableView.findViewById(R.id.title);
         TextView instructionsToEnable =
                 sharingUnavailableView.findViewById(R.id.instructions_to_enable);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_WHEN_SIGNED_IN)) {
-            if (targetDeviceList.isEmpty()) {
-                mContentView = sharingUnavailableView;
-                title.setText(R.string.send_tab_to_self_share_activity_title);
-                instructionsToEnable.setText(R.string.send_tab_to_self_when_signed_in_unavailable);
-                mToolbarView.setVisibility(View.GONE);
-                RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
-                return;
-            }
-            // Sharing is available.
-        } else {
-            // Note the string below is more general than its "no_devices" name suggests.
-            title.setText(R.string.sharing_no_devices_available_title);
-            if (!mIsSyncEnabled) {
-                mContentView = sharingUnavailableView;
-                instructionsToEnable.setText(R.string.sharing_hub_sync_disabled_text);
-                enableSettingsButton();
-                mToolbarView.setVisibility(View.GONE);
-                RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NotSyncing");
-                return;
-            }
-            if (targetDeviceList.isEmpty()) {
-                mContentView = sharingUnavailableView;
-                instructionsToEnable.setText(R.string.sharing_hub_sync_disabled_text);
-                mToolbarView.setVisibility(View.GONE);
-                RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
-                return;
-            }
-            // Sharing is available.
+        if (targetDeviceList.isEmpty()) {
+            mContentView = sharingUnavailableView;
+            title.setText(R.string.send_tab_to_self_share_activity_title);
+            instructionsToEnable.setText(R.string.send_tab_to_self_when_signed_in_unavailable);
+            mToolbarView.setVisibility(View.GONE);
+            RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
+            return;
         }
 
+        // Sharing is available.
         mContentView = (ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.send_tab_to_self_device_picker_list, null);
         ListView listView = mContentView.findViewById(R.id.device_picker_list);
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(this);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_MANAGE_DEVICES_LINK)) {
-            createManageDevicesLink(listView);
-        }
+        createManageDevicesLink(listView);
     }
 
     private void createManageDevicesLink(ListView deviceListView) {
@@ -185,18 +156,6 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
                         .putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
         IntentUtils.addTrustedIntentExtras(intent);
         mContext.startActivity(intent);
-    }
-
-    private void enableSettingsButton() {
-        if (mSettingsLauncher == null) {
-            return;
-        }
-        ButtonCompat chromeSettingsButton = mContentView.findViewById(R.id.chrome_settings);
-        chromeSettingsButton.setVisibility(View.VISIBLE);
-        chromeSettingsButton.setOnClickListener(view -> {
-            RecordUserAction.record("SharingHubAndroid.SendTabToSelf.ChromeSettingsClicked");
-            mSettingsLauncher.launchSettingsActivity(ContextUtils.getApplicationContext());
-        });
     }
 
     @Override
