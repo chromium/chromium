@@ -1213,6 +1213,11 @@ class BtreeNodePeer {
   constexpr static bool UsesLinearNodeSearch() {
     return btree_node<typename Btree::params_type>::use_linear_search::value;
   }
+
+  template <typename Btree>
+  constexpr static bool UsesGenerations() {
+    return Btree::params_type::kEnableGenerations;
+  }
 };
 
 namespace {
@@ -1478,8 +1483,10 @@ TEST(Btree, MovesComparisonsCopiesSwapsTracking) {
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>(), 61);
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set100)>(), 100);
   if (sizeof(void *) == 8) {
-    EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
-              BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>());
+    EXPECT_EQ(
+        BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
+        // When we have generations, there is one fewer slot.
+        BtreeNodePeer::UsesGenerations<absl::btree_set<int32_t>>() ? 60 : 61);
   }
 
   // Test key insertion/deletion in random order.
@@ -1533,8 +1540,10 @@ TEST(Btree, MovesComparisonsCopiesSwapsTrackingThreeWayCompare) {
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>(), 61);
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set100)>(), 100);
   if (sizeof(void *) == 8) {
-    EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
-              BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>());
+    EXPECT_EQ(
+        BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
+        // When we have generations, there is one fewer slot.
+        BtreeNodePeer::UsesGenerations<absl::btree_set<int32_t>>() ? 60 : 61);
   }
 
   // Test key insertion/deletion in random order.
@@ -3020,8 +3029,38 @@ TEST(Btree, InvalidComparatorsCaught) {
       }
     };
     absl::btree_set<int, ThreeWaySumGreaterZeroCmp> set;
-    EXPECT_DEATH(set.insert({0, 1, 2}),
-                 R"regex(lhs_comp_rhs < 0 -> rhs_comp_lhs > 0)regex");
+    EXPECT_DEATH(set.insert({0, 1, 2}), "lhs_comp_rhs < 0 -> rhs_comp_lhs > 0");
+  }
+}
+#endif
+
+#ifndef _MSC_VER
+// This test crashes on MSVC.
+TEST(Btree, InvalidIteratorUse) {
+  if (!BtreeNodePeer::UsesGenerations<absl::btree_set<int>>())
+    GTEST_SKIP() << "Generation validation for iterators is disabled.";
+
+  {
+    absl::btree_set<int> set;
+    for (int i = 0; i < 10; ++i) set.insert(i);
+    auto it = set.begin();
+    set.erase(it++);
+    EXPECT_DEATH(set.erase(it++), "invalidated iterator");
+  }
+  {
+    absl::btree_set<int> set;
+    for (int i = 0; i < 10; ++i) set.insert(i);
+    auto it = set.insert(20).first;
+    set.insert(30);
+    EXPECT_DEATH(*it, "invalidated iterator");
+  }
+  {
+    absl::btree_set<int> set;
+    for (int i = 0; i < 10000; ++i) set.insert(i);
+    auto it = set.find(5000);
+    ASSERT_NE(it, set.end());
+    set.erase(1);
+    EXPECT_DEATH(*it, "invalidated iterator");
   }
 }
 #endif

@@ -646,6 +646,9 @@
 // declarations. The macro argument is used as a custom diagnostic message (e.g.
 // suggestion of a better alternative).
 //
+// For code or headers that are assured to only build with C++14 and up, prefer
+// just using the standard `[[deprecated("message")]]` directly over this macro.
+//
 // Examples:
 //
 //   class ABSL_DEPRECATED("Use Bar instead") Foo {...};
@@ -661,13 +664,12 @@
 //   };
 //
 // Every usage of a deprecated entity will trigger a warning when compiled with
-// clang's `-Wdeprecated-declarations` option. This option is turned off by
-// default, but the warnings will be reported by clang-tidy.
-#if defined(__clang__) && defined(__cplusplus) && __cplusplus >= 201103L
+// GCC/Clang's `-Wdeprecated-declarations` option. Google's production toolchain
+// turns this warning off by default, instead relying on clang-tidy to report
+// new uses of deprecated code.
+#if ABSL_HAVE_ATTRIBUTE(deprecated)
 #define ABSL_DEPRECATED(message) __attribute__((deprecated(message)))
-#endif
-
-#ifndef ABSL_DEPRECATED
+#else
 #define ABSL_DEPRECATED(message)
 #endif
 

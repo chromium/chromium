@@ -568,7 +568,6 @@ absl_cc_library(
     "internal/cord_rep_btree.cc"
     "internal/cord_rep_btree_navigator.cc"
     "internal/cord_rep_btree_reader.cc"
-    "internal/cord_rep_concat.cc"
     "internal/cord_rep_crc.cc"
     "internal/cord_rep_consume.cc"
     "internal/cord_rep_ring.cc"

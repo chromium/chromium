@@ -171,7 +171,7 @@ class CordRepBtree;
 
 // Various representations that we allow
 enum CordRepKind {
-  CONCAT = 0,
+  UNUSED_0 = 0,
   SUBSTRING = 1,
   CRC = 2,
   BTREE = 3,
@@ -239,7 +239,6 @@ struct CordRep {
 
   // Returns true if this instance's tag matches the requested type.
   constexpr bool IsRing() const { return tag == RING; }
-  constexpr bool IsConcat() const { return tag == CONCAT; }
   constexpr bool IsSubstring() const { return tag == SUBSTRING; }
   constexpr bool IsCrc() const { return tag == CRC; }
   constexpr bool IsExternal() const { return tag == EXTERNAL; }
@@ -248,8 +247,6 @@ struct CordRep {
 
   inline CordRepRing* ring();
   inline const CordRepRing* ring() const;
-  inline CordRepConcat* concat();
-  inline const CordRepConcat* concat() const;
   inline CordRepSubstring* substring();
   inline const CordRepSubstring* substring() const;
   inline CordRepCrc* crc();
@@ -274,21 +271,6 @@ struct CordRep {
   // Decrements the reference count of `rep`. Destroys rep if count reaches
   // zero. Requires `rep` to be a non-null pointer value.
   static inline void Unref(CordRep* rep);
-};
-
-struct CordRepConcat : public CordRep {
-  CordRep* left;
-  CordRep* right;
-
-  uint8_t depth() const { return storage[0]; }
-  void set_depth(uint8_t depth) { storage[0] = depth; }
-
-  // Extracts the right-most flat in the provided concat tree if the entire path
-  // to that flat is not shared, and the flat has the requested extra capacity.
-  // Returns the (potentially new) top level tree node and the extracted flat,
-  // or {tree, nullptr} if no flat was extracted.
-  static ExtractResult ExtractAppendBuffer(CordRepConcat* tree,
-                                           size_t extra_capacity);
 };
 
 struct CordRepSubstring : public CordRep {
@@ -568,16 +550,6 @@ class InlineData {
 };
 
 static_assert(sizeof(InlineData) == kMaxInline + 1, "");
-
-inline CordRepConcat* CordRep::concat() {
-  assert(IsConcat());
-  return static_cast<CordRepConcat*>(this);
-}
-
-inline const CordRepConcat* CordRep::concat() const {
-  assert(IsConcat());
-  return static_cast<const CordRepConcat*>(this);
-}
 
 inline CordRepSubstring* CordRep::substring() {
   assert(IsSubstring());

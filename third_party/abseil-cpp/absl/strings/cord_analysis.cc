@@ -128,45 +128,6 @@ void AnalyzeDataEdge(CordRepRef<mode> rep, RawUsage<mode>& raw_usage) {
   raw_usage.Add(size, rep);
 }
 
-// Computes the memory size of the provided Concat tree.
-template <Mode mode>
-void AnalyzeConcat(CordRepRef<mode> rep, RawUsage<mode>& raw_usage) {
-  absl::InlinedVector<CordRepRef<mode>, 47> pending;
-
-  while (rep.rep != nullptr) {
-    const CordRepConcat* concat = rep.rep->concat();
-    CordRepRef<mode> left = rep.Child(concat->left);
-    CordRepRef<mode> right = rep.Child(concat->right);
-
-    raw_usage.Add(sizeof(CordRepConcat), rep);
-
-    switch ((IsDataEdge(left.rep) ? 1 : 0) | (IsDataEdge(right.rep) ? 2 : 0)) {
-      case 0:  // neither left or right are data edges
-        rep = left;
-        pending.push_back(right);
-        break;
-      case 1:  // only left is a data edge
-        AnalyzeDataEdge(left, raw_usage);
-        rep = right;
-        break;
-      case 2:  // only right is a data edge
-        AnalyzeDataEdge(right, raw_usage);
-        rep = left;
-        break;
-      case 3:  // left and right are data edges
-        AnalyzeDataEdge(right, raw_usage);
-        AnalyzeDataEdge(left, raw_usage);
-        if (!pending.empty()) {
-          rep = pending.back();
-          pending.pop_back();
-        } else {
-          rep.rep = nullptr;
-        }
-        break;
-    }
-  }
-}
-
 // Computes the memory size of the provided Ring tree.
 template <Mode mode>
 void AnalyzeRing(CordRepRef<mode> rep, RawUsage<mode>& raw_usage) {
@@ -211,8 +172,6 @@ size_t GetEstimatedUsage(const CordRep* rep) {
     AnalyzeDataEdge(repref, raw_usage);
   } else if (repref.rep->tag == BTREE) {
     AnalyzeBtree(repref, raw_usage);
-  } else if (repref.rep->IsConcat()) {
-    AnalyzeConcat(repref, raw_usage);
   } else if (repref.rep->tag == RING) {
     AnalyzeRing(repref, raw_usage);
   } else {

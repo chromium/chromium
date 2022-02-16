@@ -35,6 +35,7 @@ absl_cc_library(
     absl::core_headers
     absl::layout
     absl::memory
+    absl::raw_logging_internal
     absl::strings
     absl::throw_delegate
     absl::type_traits

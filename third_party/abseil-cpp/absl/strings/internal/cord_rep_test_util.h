@@ -114,9 +114,6 @@ inline void CordVisitReps(cord_internal::CordRep* rep, Fn&& fn) {
     for (cord_internal::CordRep* edge : rep->btree()->Edges()) {
       CordVisitReps(edge, fn);
     }
-  } else if (rep->IsConcat()) {
-    CordVisitReps(rep->concat()->left, fn);
-    CordVisitReps(rep->concat()->right, fn);
   }
 }
 

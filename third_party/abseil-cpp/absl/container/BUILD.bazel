@@ -914,6 +914,7 @@ cc_library(
         ":container_memory",
         ":layout",
         "//absl/base:core_headers",
+        "//absl/base:raw_logging_internal",
         "//absl/base:throw_delegate",
         "//absl/memory",
         "//absl/meta:type_traits",

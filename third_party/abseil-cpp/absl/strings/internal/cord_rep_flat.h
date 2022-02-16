@@ -73,9 +73,11 @@ static_assert(AllocatedSizeToTagUnchecked(kMinFlatSize) == FLAT, "");
 static_assert(AllocatedSizeToTagUnchecked(kMaxLargeFlatSize) == MAX_FLAT_TAG,
               "");
 
-// Helper functions for rounded div, and rounding to exact sizes.
-constexpr size_t DivUp(size_t n, size_t m) { return (n + m - 1) / m; }
-constexpr size_t RoundUp(size_t n, size_t m) { return DivUp(n, m) * m; }
+// RoundUp logically performs `((n + m - 1) / m) * m` to round up to the nearest
+// multiple of `m`, optimized for the invariant that `m` is a power of 2.
+constexpr size_t RoundUp(size_t n, size_t m) {
+  return (n + m - 1) & (0 - m);
+}
 
 // Returns the size to the nearest equal or larger value that can be
 // expressed exactly as a tag value.

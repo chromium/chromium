@@ -537,6 +537,7 @@ class btree_multiset_container : public btree_container<Tree> {
   using params_type = typename Tree::params_type;
   using init_type = typename params_type::init_type;
   using is_key_compare_to = typename params_type::is_key_compare_to;
+  friend class BtreeNodePeer;
 
   template <class K>
   using key_arg = typename super_type::template key_arg<K>;
@@ -668,6 +669,7 @@ template <typename Tree>
 class btree_multimap_container : public btree_multiset_container<Tree> {
   using super_type = btree_multiset_container<Tree>;
   using params_type = typename Tree::params_type;
+  friend class BtreeNodePeer;
 
  public:
   using mapped_type = typename params_type::mapped_type;

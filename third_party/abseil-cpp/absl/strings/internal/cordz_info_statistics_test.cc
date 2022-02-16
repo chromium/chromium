@@ -148,10 +148,6 @@ double FairShareImpl(CordRep* rep, size_t ref) {
     rep->ring()->ForEach([&](CordRepRing::index_type i) {
       self += FairShareImpl(rep->ring()->entry_child(i), 1);
     });
-  } else if (rep->IsConcat()) {
-    self = SizeOf(rep->concat());
-    children = FairShareImpl(rep->concat()->left, ref) +
-               FairShareImpl(rep->concat()->right, ref);
   } else {
     assert(false);
   }

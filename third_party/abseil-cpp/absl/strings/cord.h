@@ -1553,7 +1553,6 @@ class CordTestAccess {
  public:
   static size_t FlatOverhead();
   static size_t MaxFlatLength();
-  static size_t SizeofCordRepConcat();
   static size_t SizeofCordRepExternal();
   static size_t SizeofCordRepSubstring();
   static size_t FlatTagToLength(uint8_t tag);
