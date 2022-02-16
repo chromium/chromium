@@ -70,13 +70,26 @@ cr.define('settings', function() {
 
   /**
    * Possible states of Phone Hub's notification access. Access can be
-   * prohibited if the user is using a work profile on their phone.
+   * prohibited if the user is using a work profile on their phone on Android
+   * version <N, or if the policy managing the phone disables access.
    * @enum {number}
    */
   /* #export */ const PhoneHubNotificationAccessStatus = {
     PROHIBITED: 0,
     AVAILABLE_BUT_NOT_GRANTED: 1,
     ACCESS_GRANTED: 2,
+  };
+
+  /**
+   * Possible reasons for Phone Hub's notification access being prohibited.
+   * Users should ensure notification access is actually prohibited before
+   * comparing against these reasons.
+   * @enum {number}
+   */
+  /* #export */ const PhoneHubNotificationAccessProhibitedReason = {
+    UNKNOWN: 0,
+    WORK_PROFILE: 1,
+    DISABLED_BY_PHONE_POLICY: 2,
   };
 
   /**
@@ -123,6 +136,8 @@ cr.define('settings', function() {
    *   wifiSyncState: !settings.MultiDeviceFeatureState,
    *   isAndroidSmsPairingComplete: boolean,
    *   notificationAccessStatus: !settings.PhoneHubNotificationAccessStatus,
+   *   notificationAccessProhibitedReason:
+   *       !settings.PhoneHubNotificationAccessProhibitedReason,
    *   isNearbyShareDisallowedByPolicy: boolean,
    *   isPhoneHubAppsAccessGranted: boolean,
    *   isPhoneHubPermissionsDialogSupported: boolean,
@@ -138,6 +153,7 @@ cr.define('settings', function() {
     MultiDeviceFeatureState,
     MultiDevicePageContentData,
     PhoneHubNotificationAccessStatus,
+    PhoneHubNotificationAccessProhibitedReason,
     PhoneHubPermissionsSetupMode,
     SmartLockSignInEnabledState
   };

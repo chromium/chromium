@@ -323,6 +323,42 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_FALSE(mutable_phone_model_->phone_status_model().has_value());
 }
 
+TEST_F(PhoneStatusProcessorTest, PhoneNotificationAccessProhibitedReason) {
+  fake_multidevice_setup_client_->SetHostStatusWithDevice(
+      std::make_pair(HostStatus::kHostVerified, test_remote_device_));
+  CreatePhoneStatusProcessor();
+
+  auto expected_phone_properties = std::make_unique<proto::PhoneProperties>();
+  expected_phone_properties->set_profile_type(proto::ProfileType::WORK_PROFILE);
+
+  proto::PhoneStatusUpdate expected_update;
+  expected_update.set_allocated_properties(expected_phone_properties.release());
+
+  fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
+
+  fake_feature_status_provider_->SetStatus(FeatureStatus::kEnabledAndConnected);
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kDisabledByUser);
+
+  EXPECT_FALSE(fake_do_not_disturb_controller_->CanRequestNewDndState());
+  EXPECT_EQ(NotificationAccessManager::AccessStatus::kProhibited,
+            fake_notification_access_manager_->GetAccessStatus());
+  EXPECT_EQ(NotificationAccessManager::AccessProhibitedReason::kWorkProfile,
+            fake_notification_access_manager_->GetAccessProhibitedReason());
+
+  // Verify that adding a reason properly gets processed even when the current
+  // profile type does not change.
+  expected_update.mutable_properties()->set_profile_disable_reason(
+      proto::ProfileDisableReason::DISABLE_REASON_DISABLED_BY_POLICY);
+  fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
+
+  EXPECT_FALSE(fake_do_not_disturb_controller_->CanRequestNewDndState());
+  EXPECT_EQ(NotificationAccessManager::AccessStatus::kProhibited,
+            fake_notification_access_manager_->GetAccessStatus());
+  EXPECT_EQ(NotificationAccessManager::AccessProhibitedReason::kWorkProfile,
+            fake_notification_access_manager_->GetAccessProhibitedReason());
+}
+
 TEST_F(PhoneStatusProcessorTest, PhoneName) {
   fake_multidevice_setup_client_->SetHostStatusWithDevice(
       std::make_pair(HostStatus::kHostVerified, absl::nullopt));

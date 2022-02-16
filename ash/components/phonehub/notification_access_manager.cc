@@ -93,5 +93,36 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
+std::ostream& operator<<(
+    std::ostream& stream,
+    NotificationAccessManager::AccessProhibitedReason reason) {
+  switch (reason) {
+    case NotificationAccessManager::AccessProhibitedReason::kUnknown:
+      stream << "[Unknown]";
+      break;
+    case NotificationAccessManager::AccessProhibitedReason::kWorkProfile:
+      stream << "[Work Profile]";
+      break;
+    case NotificationAccessManager::AccessProhibitedReason::
+        kDisabledByPhonePolicy:
+      stream << "[Admin Policy]";
+      break;
+  }
+  return stream;
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    std::pair<NotificationAccessManager::AccessStatus,
+              NotificationAccessManager::AccessProhibitedReason>
+        status_reason) {
+  stream << status_reason.first;
+  if (status_reason.first ==
+      NotificationAccessManager::AccessStatus::kProhibited) {
+    stream << "," << status_reason.second;
+  }
+  return stream;
+}
+
 }  // namespace phonehub
 }  // namespace ash

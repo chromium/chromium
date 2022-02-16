@@ -14,6 +14,13 @@ namespace prefs {
 const char kNotificationAccessStatus[] =
     "cros.phonehub.notification_access_status";
 
+// The last provided reason for notification access being prohibited. This pref
+// stores the numerical value associated with the
+// NotificationAccessManager::AccessProhibitedReason enum. This pref may be left
+// in an undefined state if notification access is not prohibited.
+const char kNotificationAccessProhibitedReason[] =
+    "cros.phonehub.notification_access_prohibited_reason";
+
 // Whether user has completed onboarding and dismissed the UI before or if
 // the user has already gone through the onboarding process and has enabled the
 // feature. Note: The pref name is no longer accurate as there are multiple ways

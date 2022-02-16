@@ -37,7 +37,9 @@ class NotificationAccessManagerImpl : public NotificationAccessManager,
 
   // NotificationAccessManager:
   AccessStatus GetAccessStatus() const override;
-  void SetAccessStatusInternal(AccessStatus access_status) override;
+  AccessProhibitedReason GetAccessProhibitedReason() const override;
+  void SetAccessStatusInternal(AccessStatus access_status,
+                               AccessProhibitedReason reason) override;
   void OnSetupRequested() override;
 
   bool HasNotificationSetupUiBeenDismissed() const override;
@@ -47,6 +49,9 @@ class NotificationAccessManagerImpl : public NotificationAccessManager,
   void OnFeatureStatusChanged() override;
 
   void SendShowNotificationAccessSetupRequest();
+
+  bool HasAccessStatusChanged(AccessStatus access_status,
+                              AccessProhibitedReason reason);
 
   FeatureStatus current_feature_status_;
   PrefService* pref_service_;

@@ -51,6 +51,8 @@ const char kPageContentDataPhoneHubAppsStateKey[] = "phoneHubAppsState";
 const char kPageContentDataWifiSyncStateKey[] = "wifiSyncState";
 const char kPageContentDataSmartLockStateKey[] = "smartLockState";
 const char kNotificationAccessStatus[] = "notificationAccessStatus";
+const char kNotificationAccessProhibitedReason[] =
+    "notificationAccessProhibitedReason";
 const char kIsAndroidSmsPairingComplete[] = "isAndroidSmsPairingComplete";
 const char kIsNearbyShareDisallowedByPolicy[] =
     "isNearbyShareDisallowedByPolicy";
@@ -602,10 +604,16 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
 
   phonehub::NotificationAccessManager::AccessStatus access_status = phonehub::
       NotificationAccessManager::AccessStatus::kAvailableButNotGranted;
-  if (notification_access_manager_)
+  phonehub::NotificationAccessManager::AccessProhibitedReason reason =
+      phonehub::NotificationAccessManager::AccessProhibitedReason::kUnknown;
+  if (notification_access_manager_) {
     access_status = notification_access_manager_->GetAccessStatus();
+    reason = notification_access_manager_->GetAccessProhibitedReason();
+  }
   page_content_dictionary->SetInteger(kNotificationAccessStatus,
                                       static_cast<int32_t>(access_status));
+  page_content_dictionary->SetInteger(kNotificationAccessProhibitedReason,
+                                      static_cast<int32_t>(reason));
 
   ash::eche_app::AppsAccessManager::AccessStatus apps_access_status =
       ash::eche_app::AppsAccessManager::AccessStatus::kAvailableButNotGranted;

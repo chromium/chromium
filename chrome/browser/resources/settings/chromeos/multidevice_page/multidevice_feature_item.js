@@ -28,9 +28,18 @@ Polymer({
     subpageRoute: Object,
 
     /**
-     * A tooltip to show over an info icon. If unset, no info icon is shown.
+     * A tooltip to show over a help icon. If unset, no help icon is shown.
      */
-    infoTooltip: String,
+    iconTooltip: String,
+
+    /**
+     * A Chrome icon asset to use as a help icon. The icon is not shown if
+     * iconTooltip is unset. Defaults to cr:info-outline.
+     */
+    icon: {
+      type: String,
+      value: 'cr:info-outline',
+    },
 
     /**
      * URLSearchParams for subpage route. No param is provided if it is
@@ -92,7 +101,7 @@ Polymer({
    * @private
    */
   shouldShowSeparator_() {
-    return this.hasSubpageClickHandler_() || !!this.infoTooltip;
+    return this.hasSubpageClickHandler_() || !!this.iconTooltip;
   },
 
   /** @private */

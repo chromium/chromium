@@ -73,9 +73,14 @@ class NotificationAccessManagerImplTest : public testing::Test {
 
   void TearDown() override { manager_->RemoveObserver(&fake_observer_); }
 
-  void Initialize(NotificationAccessManager::AccessStatus expected_status) {
+  void Initialize(
+      NotificationAccessManager::AccessStatus status,
+      NotificationAccessManager::AccessProhibitedReason reason =
+          NotificationAccessManager::AccessProhibitedReason::kUnknown) {
     pref_service_.SetInteger(prefs::kNotificationAccessStatus,
-                             static_cast<int>(expected_status));
+                             static_cast<int>(status));
+    pref_service_.SetInteger(prefs::kNotificationAccessProhibitedReason,
+                             static_cast<int>(reason));
     SetNeedsOneTimeNotificationAccessUpdate(/*needs_update=*/false);
     manager_ = std::make_unique<NotificationAccessManagerImpl>(
         &pref_service_, fake_feature_status_provider_.get(),
@@ -84,15 +89,22 @@ class NotificationAccessManagerImplTest : public testing::Test {
   }
 
   NotificationAccessSetupOperation::Status
-  GetNotifcationAccessSetupOperationStatus() {
+  GetNotificationAccessSetupOperationStatus() {
     return fake_delegate_.status();
   }
 
   void VerifyNotificationAccessGrantedState(
-      NotificationAccessManager::AccessStatus expected_status) {
+      NotificationAccessManager::AccessStatus expected_status,
+      NotificationAccessManager::AccessProhibitedReason expected_reason =
+          NotificationAccessManager::AccessProhibitedReason::kUnknown) {
     EXPECT_EQ(static_cast<int>(expected_status),
               pref_service_.GetInteger(prefs::kNotificationAccessStatus));
     EXPECT_EQ(expected_status, manager_->GetAccessStatus());
+
+    EXPECT_EQ(
+        static_cast<int>(expected_reason),
+        pref_service_.GetInteger(prefs::kNotificationAccessProhibitedReason));
+    EXPECT_EQ(expected_reason, manager_->GetAccessProhibitedReason());
   }
 
   bool HasNotificationSetupUiBeenDismissed() {
@@ -109,8 +121,11 @@ class NotificationAccessManagerImplTest : public testing::Test {
     return manager_->IsSetupOperationInProgress();
   }
 
-  void SetAccessStatusInternal(NotificationAccessManager::AccessStatus status) {
-    manager_->SetAccessStatusInternal(status);
+  void SetAccessStatusInternal(
+      NotificationAccessManager::AccessStatus status,
+      NotificationAccessManager::AccessProhibitedReason reason =
+          NotificationAccessManager::AccessProhibitedReason::kUnknown) {
+    manager_->SetAccessStatusInternal(status, reason);
   }
 
   void SetFeatureStatus(FeatureStatus status) {
@@ -191,14 +206,14 @@ TEST_F(NotificationAccessManagerImplTest, OnFeatureStatusChanged) {
   SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
   EXPECT_EQ(0u, GetNumShowNotificationAccessSetupRequestCount());
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kConnecting,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 
   // Simulate feature status to be enabled and connected. SetupOperation is also
   // not in progress, so expect no new requests to be sent.
   SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
   EXPECT_EQ(0u, GetNumShowNotificationAccessSetupRequestCount());
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kConnecting,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 
   // Simulate setup operation is in progress. This will trigger a sent request.
   auto operation = StartSetupOperation();
@@ -206,13 +221,13 @@ TEST_F(NotificationAccessManagerImplTest, OnFeatureStatusChanged) {
   EXPECT_EQ(1u, GetNumShowNotificationAccessSetupRequestCount());
   EXPECT_EQ(NotificationAccessSetupOperation::Status::
                 kSentMessageToPhoneAndWaitingForResponse,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 
   // Set another feature status, expect status to be updated.
   SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
   EXPECT_EQ(1u, GetNumShowNotificationAccessSetupRequestCount());
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kConnectionDisconnected,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 }
 
 TEST_F(NotificationAccessManagerImplTest, StartDisconnectedAndNoAccess) {
@@ -238,7 +253,7 @@ TEST_F(NotificationAccessManagerImplTest, StartDisconnectedAndNoAccess) {
   EXPECT_EQ(1u, GetNumShowNotificationAccessSetupRequestCount());
   EXPECT_EQ(NotificationAccessSetupOperation::Status::
                 kSentMessageToPhoneAndWaitingForResponse,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 
   // Simulate getting a response back from the phone.
   SetAccessStatusInternal(
@@ -246,7 +261,7 @@ TEST_F(NotificationAccessManagerImplTest, StartDisconnectedAndNoAccess) {
   VerifyNotificationAccessGrantedState(
       NotificationAccessManager::AccessStatus::kAccessGranted);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kCompletedSuccessfully,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 }
 
 TEST_F(NotificationAccessManagerImplTest,
@@ -273,7 +288,7 @@ TEST_F(NotificationAccessManagerImplTest,
   EXPECT_EQ(1u, GetNumShowNotificationAccessSetupRequestCount());
   EXPECT_EQ(NotificationAccessSetupOperation::Status::
                 kSentMessageToPhoneAndWaitingForResponse,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 
   // Simulate getting a response back from the phone.
   SetAccessStatusInternal(NotificationAccessManager::AccessStatus::kProhibited);
@@ -281,7 +296,7 @@ TEST_F(NotificationAccessManagerImplTest,
       NotificationAccessManager::AccessStatus::kProhibited);
   EXPECT_EQ(
       NotificationAccessSetupOperation::Status::kProhibitedFromProvidingAccess,
-      GetNotifcationAccessSetupOperationStatus());
+      GetNotificationAccessSetupOperationStatus());
 }
 
 TEST_F(NotificationAccessManagerImplTest, StartConnectingAndNoAccess) {
@@ -305,7 +320,7 @@ TEST_F(NotificationAccessManagerImplTest, StartConnectingAndNoAccess) {
   EXPECT_EQ(1u, GetNumShowNotificationAccessSetupRequestCount());
   EXPECT_EQ(NotificationAccessSetupOperation::Status::
                 kSentMessageToPhoneAndWaitingForResponse,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 
   // Simulate getting a response back from the phone.
   SetAccessStatusInternal(
@@ -313,7 +328,7 @@ TEST_F(NotificationAccessManagerImplTest, StartConnectingAndNoAccess) {
   VerifyNotificationAccessGrantedState(
       NotificationAccessManager::AccessStatus::kAccessGranted);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kCompletedSuccessfully,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 }
 
 TEST_F(NotificationAccessManagerImplTest, StartConnectedAndNoAccess) {
@@ -334,7 +349,7 @@ TEST_F(NotificationAccessManagerImplTest, StartConnectedAndNoAccess) {
   EXPECT_EQ(1u, GetNumShowNotificationAccessSetupRequestCount());
   EXPECT_EQ(NotificationAccessSetupOperation::Status::
                 kSentMessageToPhoneAndWaitingForResponse,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 
   // Simulate getting a response back from the phone.
   SetAccessStatusInternal(
@@ -342,7 +357,7 @@ TEST_F(NotificationAccessManagerImplTest, StartConnectedAndNoAccess) {
   VerifyNotificationAccessGrantedState(
       NotificationAccessManager::AccessStatus::kAccessGranted);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kCompletedSuccessfully,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 }
 
 TEST_F(NotificationAccessManagerImplTest, SimulateConnectingToDisconnected) {
@@ -359,7 +374,7 @@ TEST_F(NotificationAccessManagerImplTest, SimulateConnectingToDisconnected) {
   // Simulate a disconnection and expect that status has been updated.
   SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kTimedOutConnecting,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 }
 
 TEST_F(NotificationAccessManagerImplTest, SimulateConnectedToDisconnected) {
@@ -378,7 +393,7 @@ TEST_F(NotificationAccessManagerImplTest, SimulateConnectedToDisconnected) {
   // Simulate a disconnection, expect status update.
   SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kConnectionDisconnected,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 }
 
 TEST_F(NotificationAccessManagerImplTest, SimulateConnectedToDisabled) {
@@ -397,7 +412,7 @@ TEST_F(NotificationAccessManagerImplTest, SimulateConnectedToDisabled) {
   // Simulate disabling the feature, expect status update.
   SetFeatureStatus(FeatureStatus::kDisabled);
   EXPECT_EQ(NotificationAccessSetupOperation::Status::kConnectionDisconnected,
-            GetNotifcationAccessSetupOperationStatus());
+            GetNotificationAccessSetupOperationStatus());
 }
 
 TEST_F(NotificationAccessManagerImplTest, FlipAccessGrantedToNotGranted) {
@@ -474,6 +489,57 @@ TEST_F(NotificationAccessManagerImplTest,
   VerifyNotificationAccessGrantedState(
       NotificationAccessManager::AccessStatus::kProhibited);
   EXPECT_EQ(0u, GetNumObserverCalls());
+}
+
+TEST_F(NotificationAccessManagerImplTest,
+       NotificationAccessProhibitedReason_FromProhibited) {
+  Initialize(NotificationAccessManager::AccessStatus::kProhibited);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kProhibited);
+
+  // Simulates an initial update after the pref is first added
+  SetAccessStatusInternal(
+      NotificationAccessManager::AccessStatus::kProhibited,
+      NotificationAccessManager::AccessProhibitedReason::kWorkProfile);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kProhibited,
+      NotificationAccessManager::AccessProhibitedReason::kWorkProfile);
+  EXPECT_EQ(1u, GetNumObserverCalls());
+
+  // No update or observer notification should occur with no change
+  SetAccessStatusInternal(
+      NotificationAccessManager::AccessStatus::kProhibited,
+      NotificationAccessManager::AccessProhibitedReason::kWorkProfile);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kProhibited,
+      NotificationAccessManager::AccessProhibitedReason::kWorkProfile);
+  EXPECT_EQ(1u, GetNumObserverCalls());
+
+  // This can happen if a user updates from Android <N to >=N
+  SetAccessStatusInternal(NotificationAccessManager::AccessStatus::kProhibited,
+                          NotificationAccessManager::AccessProhibitedReason::
+                              kDisabledByPhonePolicy);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kProhibited,
+      NotificationAccessManager::AccessProhibitedReason::
+          kDisabledByPhonePolicy);
+  EXPECT_EQ(2u, GetNumObserverCalls());
+}
+
+TEST_F(NotificationAccessManagerImplTest,
+       NotificationAccessProhibitedReason_FromGranted) {
+  Initialize(NotificationAccessManager::AccessStatus::kAccessGranted);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kAccessGranted);
+
+  SetAccessStatusInternal(NotificationAccessManager::AccessStatus::kProhibited,
+                          NotificationAccessManager::AccessProhibitedReason::
+                              kDisabledByPhonePolicy);
+  VerifyNotificationAccessGrantedState(
+      NotificationAccessManager::AccessStatus::kProhibited,
+      NotificationAccessManager::AccessProhibitedReason::
+          kDisabledByPhonePolicy);
+  EXPECT_EQ(1u, GetNumObserverCalls());
 }
 
 }  // namespace phonehub

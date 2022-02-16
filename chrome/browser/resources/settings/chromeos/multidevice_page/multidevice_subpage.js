@@ -166,7 +166,18 @@ Polymer({
       return '';
     }
 
-    return this.i18n('multideviceNotificationAccessProhibitedTooltip');
+    switch (this.pageContentData.notificationAccessProhibitedReason) {
+      case settings.PhoneHubNotificationAccessProhibitedReason.UNKNOWN:
+        return this.i18n('multideviceNotificationAccessProhibitedTooltip');
+      case settings.PhoneHubNotificationAccessProhibitedReason.WORK_PROFILE:
+        return this.i18n('multideviceNotificationAccessProhibitedTooltip');
+      case settings.PhoneHubNotificationAccessProhibitedReason
+          .DISABLED_BY_PHONE_POLICY:
+        return this.i18n(
+            'multideviceNotificationAccessProhibitedDisabledByAdminTooltip');
+      default:
+        return this.i18n('multideviceNotificationAccessProhibitedTooltip');
+    }
   },
 
   /**

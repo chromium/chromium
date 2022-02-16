@@ -20,6 +20,9 @@ void NotificationAccessManagerImpl::RegisterPrefs(
   registry->RegisterIntegerPref(
       prefs::kNotificationAccessStatus,
       static_cast<int>(AccessStatus::kAvailableButNotGranted));
+  registry->RegisterIntegerPref(
+      prefs::kNotificationAccessProhibitedReason,
+      static_cast<int>(AccessProhibitedReason::kUnknown));
   registry->RegisterBooleanPref(prefs::kHasDismissedSetupRequiredUi, false);
   registry->RegisterBooleanPref(prefs::kNeedsOneTimeNotificationAccessUpdate,
                                 true);
@@ -60,8 +63,16 @@ NotificationAccessManagerImpl::GetAccessStatus() const {
   return static_cast<AccessStatus>(status);
 }
 
+NotificationAccessManagerImpl::AccessProhibitedReason
+NotificationAccessManagerImpl::GetAccessProhibitedReason() const {
+  int reason =
+      pref_service_->GetInteger(prefs::kNotificationAccessProhibitedReason);
+  return static_cast<AccessProhibitedReason>(reason);
+}
+
 void NotificationAccessManagerImpl::SetAccessStatusInternal(
-    AccessStatus access_status) {
+    AccessStatus access_status,
+    AccessProhibitedReason reason) {
   // TODO(http://crbug.com/1215559): Deprecate when there are no more active
   // Phone Hub notification users on M89. Some users had notifications
   // automatically disabled when updating from M89 to M90+ because the
@@ -75,18 +86,22 @@ void NotificationAccessManagerImpl::SetAccessStatusInternal(
       pref_service_->GetBoolean(prefs::kNeedsOneTimeNotificationAccessUpdate) &&
       access_status == AccessStatus::kAccessGranted;
 
-  if (access_status == GetAccessStatus() &&
-      !needs_one_time_notifications_access_update) {
+  if (!needs_one_time_notifications_access_update &&
+      !HasAccessStatusChanged(access_status, reason)) {
     return;
   }
+
   pref_service_->SetBoolean(prefs::kNeedsOneTimeNotificationAccessUpdate,
                             false);
 
-  PA_LOG(INFO) << "Notification access: " << GetAccessStatus() << " => "
-               << access_status;
+  PA_LOG(INFO) << "Notification access: "
+               << std::make_pair(GetAccessStatus(), GetAccessProhibitedReason())
+               << " => " << std::make_pair(access_status, reason);
 
   pref_service_->SetInteger(prefs::kNotificationAccessStatus,
                             static_cast<int>(access_status));
+  pref_service_->SetInteger(prefs::kNotificationAccessProhibitedReason,
+                            static_cast<int>(reason));
   NotifyNotificationAccessChanged();
 
   if (!IsSetupOperationInProgress())
@@ -174,6 +189,18 @@ void NotificationAccessManagerImpl::SendShowNotificationAccessSetupRequest() {
   SetNotificationSetupOperationStatus(
       NotificationAccessSetupOperation::Status::
           kSentMessageToPhoneAndWaitingForResponse);
+}
+
+bool NotificationAccessManagerImpl::HasAccessStatusChanged(
+    AccessStatus access_status,
+    AccessProhibitedReason reason) {
+  if (access_status != GetAccessStatus())
+    return true;
+  if (access_status == AccessStatus::kProhibited &&
+      reason != GetAccessProhibitedReason()) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace phonehub

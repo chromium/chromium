@@ -41,6 +41,17 @@ class NotificationAccessManager {
     kAccessGranted = 2
   };
 
+  enum class AccessProhibitedReason {
+    // Access is either not prohibited or is unset. Use as a safe default value.
+    kUnknown = 0,
+    // Access is prohibited because the phone is using a Work Profile and on
+    // Android version <N.
+    kWorkProfile = 1,
+    // Access is prohibited because the phone is using a Work Profile, and the
+    // policy managing the phone disables access.
+    kDisabledByPhonePolicy = 2
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     ~Observer() override = default;
@@ -56,6 +67,12 @@ class NotificationAccessManager {
   virtual ~NotificationAccessManager();
 
   virtual AccessStatus GetAccessStatus() const = 0;
+
+  // Returns the reason notification access status is prohibited. The return
+  // result is valid if the current access status (from GetAccessStatus())
+  // is AccessStatus::kProhibited. Otherwise, the result is undefined and should
+  // not be used.
+  virtual AccessProhibitedReason GetAccessProhibitedReason() const = 0;
 
   virtual bool HasNotificationSetupUiBeenDismissed() const = 0;
 
@@ -95,7 +112,8 @@ class NotificationAccessManager {
 
   // Sets the internal AccessStatus but does not send a request for a new
   // status to the remote phone device.
-  virtual void SetAccessStatusInternal(AccessStatus access_status) = 0;
+  virtual void SetAccessStatusInternal(AccessStatus access_status,
+                                       AccessProhibitedReason reason) = 0;
 
   void OnSetupOperationDeleted(int operation_id);
 
@@ -107,6 +125,13 @@ class NotificationAccessManager {
 
 std::ostream& operator<<(std::ostream& stream,
                          NotificationAccessManager::AccessStatus status);
+std::ostream& operator<<(
+    std::ostream& stream,
+    NotificationAccessManager::AccessProhibitedReason reason);
+std::ostream& operator<<(
+    std::ostream& stream,
+    std::pair<NotificationAccessManager::AccessStatus,
+              NotificationAccessManager::AccessProhibitedReason> status_reason);
 
 }  // namespace phonehub
 }  // namespace ash

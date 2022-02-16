@@ -100,6 +100,20 @@ NotificationAccessManager::AccessStatus ComputeNotificationAccessState(
   return NotificationAccessManager::AccessStatus::kAvailableButNotGranted;
 }
 
+NotificationAccessManager::AccessProhibitedReason
+ComputeNotificationAccessProhibitedReason(
+    const proto::PhoneProperties& phone_properties) {
+  if (phone_properties.profile_disable_reason() ==
+      proto::ProfileDisableReason::DISABLE_REASON_DISABLED_BY_POLICY) {
+    return NotificationAccessManager::AccessProhibitedReason::
+        kDisabledByPhonePolicy;
+  }
+  if (phone_properties.profile_type() == proto::ProfileType::WORK_PROFILE) {
+    return NotificationAccessManager::AccessProhibitedReason::kWorkProfile;
+  }
+  return NotificationAccessManager::AccessProhibitedReason::kUnknown;
+}
+
 ScreenLockManager::LockStatus ComputeScreenLockState(
     const proto::PhoneProperties& phone_properties) {
   switch (phone_properties.screen_lock_state()) {
@@ -222,7 +236,8 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
       phone_properties.profile_type() != proto::ProfileType::WORK_PROFILE);
 
   notification_access_manager_->SetAccessStatusInternal(
-      ComputeNotificationAccessState(phone_properties));
+      ComputeNotificationAccessState(phone_properties),
+      ComputeNotificationAccessProhibitedReason(phone_properties));
 
   if (screen_lock_manager_) {
     screen_lock_manager_->SetLockStatusInternal(

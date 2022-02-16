@@ -13,17 +13,21 @@ namespace phonehub {
 class FakeNotificationAccessManager : public NotificationAccessManager {
  public:
   explicit FakeNotificationAccessManager(
-      AccessStatus access_status = AccessStatus::kAvailableButNotGranted);
+      AccessStatus access_status = AccessStatus::kAvailableButNotGranted,
+      AccessProhibitedReason reason = AccessProhibitedReason::kWorkProfile);
   ~FakeNotificationAccessManager() override;
 
   using NotificationAccessManager::IsSetupOperationInProgress;
 
-  void SetAccessStatusInternal(AccessStatus access_status) override;
+  void SetAccessStatusInternal(AccessStatus access_status,
+                               AccessProhibitedReason reason =
+                                   AccessProhibitedReason::kUnknown) override;
   void SetNotificationSetupOperationStatus(
       NotificationAccessSetupOperation::Status new_status);
 
   // NotificationAccessManager:
   AccessStatus GetAccessStatus() const override;
+  AccessProhibitedReason GetAccessProhibitedReason() const override;
   bool HasNotificationSetupUiBeenDismissed() const override;
   void DismissSetupRequiredUi() override;
 
@@ -31,6 +35,7 @@ class FakeNotificationAccessManager : public NotificationAccessManager {
 
  private:
   AccessStatus access_status_;
+  AccessProhibitedReason access_prohibited_reason_;
   bool has_notification_setup_ui_been_dismissed_ = false;
 };
 

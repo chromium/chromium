@@ -8,23 +8,31 @@ namespace ash {
 namespace phonehub {
 
 FakeNotificationAccessManager::FakeNotificationAccessManager(
-    AccessStatus access_status)
-    : access_status_(access_status) {}
+    AccessStatus access_status,
+    AccessProhibitedReason reason)
+    : access_status_(access_status), access_prohibited_reason_(reason) {}
 
 FakeNotificationAccessManager::~FakeNotificationAccessManager() = default;
 
 void FakeNotificationAccessManager::SetAccessStatusInternal(
-    AccessStatus access_status) {
+    AccessStatus access_status,
+    AccessProhibitedReason reason) {
   if (access_status_ == access_status)
     return;
 
   access_status_ = access_status;
+  access_prohibited_reason_ = reason;
   NotifyNotificationAccessChanged();
 }
 
 NotificationAccessManager::AccessStatus
 FakeNotificationAccessManager::GetAccessStatus() const {
   return access_status_;
+}
+
+NotificationAccessManager::AccessProhibitedReason
+FakeNotificationAccessManager::GetAccessProhibitedReason() const {
+  return access_prohibited_reason_;
 }
 
 bool FakeNotificationAccessManager::HasNotificationSetupUiBeenDismissed()
