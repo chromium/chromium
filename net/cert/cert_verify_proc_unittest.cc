@@ -4937,18 +4937,22 @@ TEST(CertVerifyProcTest, RecordEkuHistogram) {
     std::vector<der::Input> ekus;
   } eku_cases[] = {
       {EKUStatus::kNoEKU, {}},
-      {EKUStatus::kAnyEKU, {AnyEKU()}},
-      {EKUStatus::kAnyEKU, {ServerAuth(), AnyEKU()}},
-      {EKUStatus::kAnyEKU, {AnyEKU(), ServerAuth()}},
-      {EKUStatus::kAnyEKU, {CodeSigning(), AnyEKU()}},
-      {EKUStatus::kServerAuthOnly, {ServerAuth()}},
-      {EKUStatus::kServerAuthAndClientAuthOnly, {ServerAuth(), ClientAuth()}},
-      {EKUStatus::kServerAuthAndClientAuthOnly, {ClientAuth(), ServerAuth()}},
+      {EKUStatus::kAnyEKU, {der::Input(kAnyEKU)}},
+      {EKUStatus::kAnyEKU, {der::Input(kServerAuth), der::Input(kAnyEKU)}},
+      {EKUStatus::kAnyEKU, {der::Input(kAnyEKU), der::Input(kServerAuth)}},
+      {EKUStatus::kAnyEKU, {der::Input(kCodeSigning), der::Input(kAnyEKU)}},
+      {EKUStatus::kServerAuthOnly, {der::Input(kServerAuth)}},
+      {EKUStatus::kServerAuthAndClientAuthOnly,
+       {der::Input(kServerAuth), der::Input(kClientAuth)}},
+      {EKUStatus::kServerAuthAndClientAuthOnly,
+       {der::Input(kClientAuth), der::Input(kServerAuth)}},
       {EKUStatus::kServerAuthAndOthers,
-       {ClientAuth(), ServerAuth(), CodeSigning()}},
-      {EKUStatus::kServerAuthAndOthers, {ServerAuth(), CodeSigning()}},
-      {EKUStatus::kOther, {CodeSigning()}},
-      {EKUStatus::kOther, {ClientAuth(), CodeSigning()}},
+       {der::Input(kClientAuth), der::Input(kServerAuth),
+        der::Input(kCodeSigning)}},
+      {EKUStatus::kServerAuthAndOthers,
+       {der::Input(kServerAuth), der::Input(kCodeSigning)}},
+      {EKUStatus::kOther, {der::Input(kCodeSigning)}},
+      {EKUStatus::kOther, {der::Input(kClientAuth), der::Input(kCodeSigning)}},
   };
 
   const std::string kHistogramPrefix = "Net.Certificate.LeafExtendedKeyUsage.";

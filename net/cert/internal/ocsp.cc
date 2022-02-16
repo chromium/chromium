@@ -588,8 +588,10 @@ scoped_refptr<ParsedCertificate> OCSPParseCertificate(base::StringPiece der) {
     return false;
   const std::vector<der::Input>& ekus =
       responder_certificate->extended_key_usage();
-  if (std::find(ekus.begin(), ekus.end(), OCSPSigning()) == ekus.end())
+  if (std::find(ekus.begin(), ekus.end(), der::Input(kOCSPSigning)) ==
+      ekus.end()) {
     return false;
+  }
 
   return true;
 }

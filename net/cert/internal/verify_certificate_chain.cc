@@ -173,9 +173,9 @@ void VerifyExtendedKeyUsage(const ParsedCertificate& cert,
         return;
 
       for (const auto& key_purpose_oid : cert.extended_key_usage()) {
-        if (key_purpose_oid == AnyEKU())
+        if (key_purpose_oid == der::Input(kAnyEKU))
           return;
-        if (key_purpose_oid == ServerAuth())
+        if (key_purpose_oid == der::Input(kServerAuth))
           return;
       }
 
@@ -186,7 +186,7 @@ void VerifyExtendedKeyUsage(const ParsedCertificate& cert,
       bool has_nsgc = false;
 
       for (const auto& key_purpose_oid : cert.extended_key_usage()) {
-        if (key_purpose_oid == NetscapeServerGatedCrypto()) {
+        if (key_purpose_oid == der::Input(kNetscapeServerGatedCrypto)) {
           has_nsgc = true;
           break;
         }
@@ -223,9 +223,9 @@ void VerifyExtendedKeyUsage(const ParsedCertificate& cert,
         return;
 
       for (const auto& key_purpose_oid : cert.extended_key_usage()) {
-        if (key_purpose_oid == AnyEKU())
+        if (key_purpose_oid == der::Input(kAnyEKU))
           return;
-        if (key_purpose_oid == ClientAuth())
+        if (key_purpose_oid == der::Input(kClientAuth))
           return;
       }
 

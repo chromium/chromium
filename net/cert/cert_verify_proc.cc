@@ -328,14 +328,14 @@ CertVerifyProc::EKUStatus GetEkuStatus(CRYPTO_BUFFER* cert) {
 
   base::flat_set<der::Input> eku_set(extended_key_usage.begin(),
                                      extended_key_usage.end());
-  if (eku_set.contains(AnyEKU()))
+  if (eku_set.contains(der::Input(kAnyEKU)))
     return CertVerifyProc::EKUStatus::kAnyEKU;
 
-  if (eku_set.contains(ServerAuth())) {
+  if (eku_set.contains(der::Input(kServerAuth))) {
     if (eku_set.size() == 1)
       return CertVerifyProc::EKUStatus::kServerAuthOnly;
 
-    if (eku_set.size() == 2 && eku_set.contains(ClientAuth())) {
+    if (eku_set.size() == 2 && eku_set.contains(der::Input(kClientAuth))) {
       return CertVerifyProc::EKUStatus::kServerAuthAndClientAuthOnly;
     }
 
