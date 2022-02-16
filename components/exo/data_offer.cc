@@ -235,6 +235,20 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
 
   ui::EndpointType endpoint_type =
       data_exchange_delegate->GetDataTransferEndpointType(target);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Drag & Drop source metadata (if any) is synced between Ash and Lacros by
+  // encoding the metadata into a custom MIME type.
+  if (endpoint_type == ui::EndpointType::kLacros && data.GetSource()) {
+    std::u16string encoded_endpoint = base::UTF8ToUTF16(
+        ui::ConvertDataTransferEndpointToJson(*data.GetSource()));
+    data_callbacks_.emplace(
+        ui::kMimeTypeDataTransferEndpoint,
+        AsyncEncodeAsRefCountedString(encoded_endpoint, kUTF8));
+    delegate_->OnOffer(ui::kMimeTypeDataTransferEndpoint);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   const std::string uri_list_mime_type =
       data_exchange_delegate->GetMimeTypeForUriList(endpoint_type);
   // We accept the filenames pickle from FilesApp, or
