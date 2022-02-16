@@ -52,6 +52,23 @@ constexpr char kTermsOfServiceKey[] = "terms_of_service_url";
 constexpr char kAccountsKey[] = "accounts";
 constexpr char kIdpBrandingKey[] = "branding";
 
+// Keys in 'account' dictionary in accounts endpoint.
+constexpr char kAccountIdKey[] = "account_id";
+constexpr char kAccountEmailKey[] = "email";
+constexpr char kAccountNameKey[] = "name";
+constexpr char kAccountGivenNameKey[] = "given_name";
+constexpr char kAccountPictureKey[] = "picture";
+constexpr char kAccountApprovedClientsKey[] = "approved_clients";
+
+// Keys in 'branding' dictionary in accounts endpoint.
+constexpr char kIdpBrandingBackgroundColor[] = "background_color";
+constexpr char kIdpBrandingForegroundColor[] = "foreground_color";
+constexpr char kIdpBrandingIcons[] = "icons";
+
+// Keys in 'branding' 'icons' dictionary in accounts endpoint.
+constexpr char kIdpBrandingIconUrl[] = "url";
+constexpr char kIdpBrandingIconSize[] = "size";
+
 // Sign-in request response keys.
 // TODO(majidvp): For consistency rename to signin_endpoint and move into the
 // fedcm manifest.
@@ -59,11 +76,13 @@ constexpr char kSigninUrlKey[] = "signin_url";
 constexpr char kIdTokenKey[] = "id_token";
 
 // Token request body keys
-constexpr char kAccountKey[] = "account_id";
-constexpr char kRequestKey[] = "request";
+constexpr char kTokenAccountKey[] = "account_id";
+constexpr char kTokenRequestKey[] = "request";
 
 // Revoke request body keys.
 constexpr char kClientIdKey[] = "client_id";
+constexpr char kRevokeAccountKey[] = "account_id";
+constexpr char kRevokeRequestKey[] = "request";
 
 constexpr char kRequestBodyContentType[] = "application/x-www-form-urlencoded";
 
@@ -151,12 +170,12 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
 absl::optional<content::IdentityRequestAccount> ParseAccount(
     const base::Value& account,
     const std::string& client_id) {
-  auto* account_id = account.FindStringKey("account_id");
-  auto* email = account.FindStringKey("email");
-  auto* name = account.FindStringKey("name");
-  auto* given_name = account.FindStringKey("given_name");
-  auto* picture = account.FindStringKey("picture");
-  auto* approved_clients = account.FindListKey("approved_clients");
+  auto* account_id = account.FindStringKey(kAccountIdKey);
+  auto* email = account.FindStringKey(kAccountEmailKey);
+  auto* name = account.FindStringKey(kAccountNameKey);
+  auto* given_name = account.FindStringKey(kAccountGivenNameKey);
+  auto* picture = account.FindStringKey(kAccountPictureKey);
+  auto* approved_clients = account.FindListKey(kAccountApprovedClientsKey);
 
   // required fields
   if (!(account_id && email && name))
@@ -224,11 +243,11 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
   if (!idp_metadata_value.is_dict())
     return;
 
-  idp_metadata.brand_background_color =
-      ParseCssColor(idp_metadata_value.FindStringKey("background_color"));
+  idp_metadata.brand_background_color = ParseCssColor(
+      idp_metadata_value.FindStringKey(kIdpBrandingBackgroundColor));
   if (idp_metadata.brand_background_color) {
-    idp_metadata.brand_text_color =
-        ParseCssColor(idp_metadata_value.FindStringKey("foreground_color"));
+    idp_metadata.brand_text_color = ParseCssColor(
+        idp_metadata_value.FindStringKey(kIdpBrandingForegroundColor));
     if (idp_metadata.brand_text_color) {
       float text_contrast_ratio = color_utils::GetContrastRatio(
           *idp_metadata.brand_background_color, *idp_metadata.brand_text_color);
@@ -237,14 +256,16 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
     }
   }
 
-  const base::Value* icons_value = idp_metadata_value.FindKey("icons");
+  const base::Value* icons_value =
+      idp_metadata_value.FindKey(kIdpBrandingIcons);
   if (icons_value != nullptr && icons_value->is_list()) {
     std::vector<blink::Manifest::ImageResource> icons;
     for (const base::Value& icon_value : icons_value->GetListDeprecated()) {
       if (!icon_value.is_dict())
         continue;
 
-      const std::string* icon_src = icon_value.FindStringKey("url");
+      const std::string* icon_src =
+          icon_value.FindStringKey(kIdpBrandingIconUrl);
       if (icon_src == nullptr)
         continue;
 
@@ -255,7 +276,8 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
 
       icon.purpose = {blink::mojom::ManifestImageResource_Purpose::MASKABLE};
 
-      absl::optional<int> icon_size = icon_value.FindIntKey("size");
+      absl::optional<int> icon_size =
+          icon_value.FindIntKey(kIdpBrandingIconSize);
       int icon_size_int = icon_size ? icon_size.value() : 0;
       icon.sizes.emplace_back(icon_size_int, icon_size_int);
 
@@ -434,9 +456,9 @@ std::string CreateTokenRequestBody(const std::string& account,
   //   }
   // }```
   base::Value request_data(base::Value::Type::DICTIONARY);
-  request_data.SetStringKey(kAccountKey, account);
+  request_data.SetStringKey(kTokenAccountKey, account);
   if (!request.empty())
-    request_data.SetStringKey(kRequestKey, request);
+    request_data.SetStringKey(kTokenRequestKey, request);
 
   std::string request_body;
   if (!base::JSONWriter::Write(request_data, &request_body)) {
@@ -484,8 +506,8 @@ std::string CreateRevokeRequestBody(const std::string& client_id,
   request_dict.SetStringKey(kClientIdKey, client_id);
 
   base::Value request_data(base::Value::Type::DICTIONARY);
-  request_data.SetStringKey(kAccountKey, account);
-  request_data.SetKey(kRequestKey, std::move(request_dict));
+  request_data.SetStringKey(kRevokeAccountKey, account);
+  request_data.SetKey(kRevokeRequestKey, std::move(request_dict));
 
   std::string request_body;
   if (!base::JSONWriter::Write(request_data, &request_body)) {
