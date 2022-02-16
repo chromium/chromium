@@ -406,7 +406,9 @@ TEST_P(TabStripTest, RemoveTab) {
 // Verifies child view order matches model order.
 TEST_P(TabStripTest, TabViewOrder) {
   controller_->AddTab(0, false);
+  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
   controller_->AddTab(1, false);
+  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
   controller_->AddTab(2, false);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
 

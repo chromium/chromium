@@ -969,7 +969,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     for (int i = 0; i < GetTabCount(); ++i) {
       gfx::Rect bounds(ideal_bounds(i));
       bounds.set_x(positions[i]);
-      tab_strip_->tabs_.set_ideal_bounds(i, bounds);
+      tab_strip_->tab_container_->tabs_view_model()->set_ideal_bounds(i,
+                                                                      bounds);
     }
   }
 
@@ -989,12 +990,12 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 // TabStrip, public:
 
 TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
-    : tab_container_(AddChildView(std::make_unique<TabContainer>(this))),
+    : tab_container_(AddChildView(std::make_unique<TabContainer>())),
       controller_(std::move(controller)),
       layout_helper_(std::make_unique<TabStripLayoutHelper>(
           controller_.get(),
-          base::BindRepeating(&TabStrip::tabs_view_model,
-                              base::Unretained(this)))),
+          base::BindRepeating(&TabContainer::tabs_view_model,
+                              base::Unretained(tab_container_)))),
       bounds_animator_(tab_container_),
       hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
       drag_context_(std::make_unique<TabDragContextImpl>(this)) {
@@ -1093,7 +1094,7 @@ bool TabStrip::IsRectInWindowCaption(const gfx::Rect& rect) {
 
   // A hit on the tab is not in the caption unless it is in the thin strip
   // mentioned above.
-  const int tab_index = tabs_.GetIndexOfView(v);
+  const int tab_index = tab_container_->tabs_view_model()->GetIndexOfView(v);
   if (IsValidModelIndex(tab_index)) {
     Tab* tab = tab_at(tab_index);
     gfx::Rect tab_drag_handle = tab->GetMirroredBounds();
@@ -1142,7 +1143,6 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
   tab->set_context_menu_controller(&context_menu_controller_);
   tab->AddObserver(this);
   const bool pinned = data.pinned;
-  tabs_.Add(tab, model_index);
   selected_tabs_.IncrementFrom(model_index);
 
   // Setting data must come after all state from the model has been updated
@@ -1199,7 +1199,7 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
 void TabStrip::MoveTab(int from_model_index,
                        int to_model_index,
                        TabRendererData data) {
-  DCHECK_GT(tabs_.view_size(), 0);
+  DCHECK_GT(GetTabCount(), 0);
 
   Tab* moving_tab = tab_at(from_model_index);
   const bool pinned = data.pinned;
@@ -1207,7 +1207,6 @@ void TabStrip::MoveTab(int from_model_index,
 
   tab_container_->MoveTab(moving_tab, from_model_index, to_model_index);
 
-  tabs_.Move(from_model_index, to_model_index);
   selected_tabs_.Move(from_model_index, to_model_index, /*length=*/1);
 
   layout_helper_->MoveTab(moving_tab->group(), from_model_index,
@@ -1636,11 +1635,11 @@ void TabStrip::SetTabNeedsAttention(int model_index, bool attention) {
 }
 
 int TabStrip::GetModelIndexOf(const TabSlotView* view) const {
-  return tabs_.GetIndexOfView(view);
+  return tab_container_->GetModelIndexOf(view);
 }
 
 int TabStrip::GetTabCount() const {
-  return tabs_.view_size();
+  return tab_container_->GetTabCount();
 }
 
 int TabStrip::GetModelCount() const {
@@ -1674,8 +1673,8 @@ void TabStrip::StopAnimating(bool layout) {
 }
 
 absl::optional<int> TabStrip::GetFocusedTabIndex() const {
-  for (int i = 0; i < tabs_.view_size(); ++i) {
-    if (tabs_.view_at(i)->HasFocus())
+  for (int i = 0; i < GetTabCount(); ++i) {
+    if (tab_at(i)->HasFocus())
       return i;
   }
   return absl::nullopt;
@@ -2709,7 +2708,7 @@ void TabStrip::RemoveTabFromViewModel(int index) {
 
   // We still need to keep the tab alive until the remove tab animation
   // completes. Defer destroying it until then.
-  tabs_.Remove(index);
+  tab_container_->RemoveTabFromViewModel(index);
   selected_tabs_.DecrementFrom(index);
 
   if (closing_tab_was_active)
@@ -3336,7 +3335,7 @@ views::View* TabStrip::TargetForRect(views::View* root, const gfx::Rect& rect) {
 }
 
 void TabStrip::OnViewFocused(views::View* observed_view) {
-  int index = tabs_.GetIndexOfView(observed_view);
+  int index = tab_container_->tabs_view_model()->GetIndexOfView(observed_view);
   if (index != -1)
     controller_->OnKeyboardFocusedTabChanged(index);
 }

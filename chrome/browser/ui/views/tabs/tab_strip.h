@@ -213,7 +213,9 @@ class TabStrip : public views::View,
 
   // Returns the Tab at |index|.
   // TODO(pkasting): Make const correct
-  Tab* tab_at(int index) const { return tabs_.view_at(index); }
+  Tab* tab_at(int index) const {
+    return tab_container_->GetTabAtModelIndex(index);
+  }
 
   // Returns the TabGroupHeader with ID |id|.
   TabGroupHeader* group_header(const tab_groups::TabGroupId& id) const {
@@ -418,8 +420,6 @@ class TabStrip : public views::View,
 
   void Init();
 
-  views::ViewModelT<Tab>* tabs_view_model() { return &tabs_; }
-
   std::map<tab_groups::TabGroupId, TabGroupHeader*> GetGroupHeaders();
 
   // Invoked from |AddTabAt| after the newly created tab has been inserted.
@@ -578,7 +578,7 @@ class TabStrip : public views::View,
 
   // Retrieves the ideal bounds for the Tab at the specified index.
   const gfx::Rect& ideal_bounds(int tab_data_index) const {
-    return tabs_.ideal_bounds(tab_data_index);
+    return tab_container_->tabs_view_model()->ideal_bounds(tab_data_index);
   }
 
   // Retrieves the ideal bounds for the Tab Group Header at the specified group.
@@ -623,13 +623,6 @@ class TabStrip : public views::View,
   // -- Member Variables ------------------------------------------------------
 
   base::ObserverList<TabStripObserver>::Unchecked observers_;
-
-  // There is a one-to-one mapping between each of the tabs in the
-  // TabStripController (TabStripModel) and |tabs_|. Because we animate tab
-  // removal there exists a period of time where a tab is displayed but not in
-  // the model. When this occurs the tab is removed from |tabs_|, but remains
-  // in |layout_helper_| until the remove animation completes.
-  views::ViewModelT<Tab> tabs_;
 
   // The View parent for the tabs and the various group views.
   TabContainer* tab_container_;
