@@ -53,6 +53,7 @@ class MojoVideoEncodeAccelerator : public VideoEncodeAccelerator {
  private:
   // Only Destroy() should be deleting |this|.
   ~MojoVideoEncodeAccelerator() override;
+  void MojoDisconnectionHandler();
 
   mojo::Remote<mojom::VideoEncodeAccelerator> vea_;
 

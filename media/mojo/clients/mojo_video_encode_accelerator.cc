@@ -129,6 +129,10 @@ bool MojoVideoEncodeAccelerator::Initialize(const Config& config,
   vea_client_ = std::make_unique<VideoEncodeAcceleratorClient>(
       client, vea_client_remote.InitWithNewEndpointAndPassReceiver());
 
+  vea_.set_disconnect_handler(
+      base::BindOnce(&MojoVideoEncodeAccelerator::MojoDisconnectionHandler,
+                     base::Unretained(this)));
+
   bool result = false;
   vea_->Initialize(config, std::move(vea_client_remote), &result);
   return result;
@@ -237,6 +241,14 @@ void MojoVideoEncodeAccelerator::Destroy() {
 
 MojoVideoEncodeAccelerator::~MojoVideoEncodeAccelerator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void MojoVideoEncodeAccelerator::MojoDisconnectionHandler() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (vea_client_) {
+    vea_client_->NotifyError(
+        VideoEncodeAccelerator::Error::kPlatformFailureError);
+  }
 }
 
 }  // namespace media

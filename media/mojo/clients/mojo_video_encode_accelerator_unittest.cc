@@ -172,7 +172,8 @@ class MojoVideoEncodeAcceleratorTest : public ::testing::Test {
     // The destruction of a mojo::SelfOwnedReceiver closes the bound message
     // pipe but does not destroy the implementation object(s): this needs to
     // happen manually by Close()ing it.
-    mojo_vea_receiver_->Close();
+    if (mojo_vea_receiver_)
+      mojo_vea_receiver_->Close();
   }
 
   MockMojoVideoEncodeAccelerator* mock_mojo_vea() {
@@ -207,7 +208,7 @@ class MojoVideoEncodeAcceleratorTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
- private:
+ protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // This member holds on to the mock implementation of the "service" side.
@@ -332,6 +333,23 @@ TEST_F(MojoVideoEncodeAcceleratorTest, InitializeFailure) {
       PIXEL_FORMAT_I420, kInputVisibleSize, VIDEO_CODEC_PROFILE_UNKNOWN,
       kInitialBitrate);
   EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get()));
+  base::RunLoop().RunUntilIdle();
+}
+
+// Test that mojo disconnect is surfaced as a platform error
+TEST_F(MojoVideoEncodeAcceleratorTest, MojoDisconnect) {
+  std::unique_ptr<MockVideoEncodeAcceleratorClient> mock_vea_client =
+      std::make_unique<MockVideoEncodeAcceleratorClient>();
+
+  constexpr Bitrate kInitialBitrate = Bitrate::ConstantBitrate(100000u);
+  const VideoEncodeAccelerator::Config config(
+      PIXEL_FORMAT_I420, kInputVisibleSize, VIDEO_CODEC_PROFILE_UNKNOWN,
+      kInitialBitrate);
+  EXPECT_TRUE(mojo_vea()->Initialize(config, mock_vea_client.get()));
+  mojo_vea_receiver_->Close();
+  EXPECT_CALL(
+      *mock_vea_client,
+      NotifyError(VideoEncodeAccelerator::Error::kPlatformFailureError));
   base::RunLoop().RunUntilIdle();
 }
 
