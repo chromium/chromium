@@ -127,7 +127,7 @@ look as follows:
  * These need to exist in a separate class so that Android framework can successfully verify
  * classes without encountering the new APIs.
  */
-@TargetApi(Build.VERSION_CODES.O_MR1)
+@RequiresApi(Build.VERSION_CODES.O_MR1)
 public class ApiHelperForOMR1 {
     private ApiHelperForOMR1() {}
 
@@ -135,7 +135,7 @@ public class ApiHelperForOMR1 {
 }
 ```
 
-* `@TargetApi(Build.VERSION_CODES.O_MR1)`: this tells Android Lint it's OK to
+* `@RequiresApi(Build.VERSION_CODES.O_MR1)`: this tells Android Lint it's OK to
   use OMR1 APIs since this class is only used on OMR1 and above. Substitute
   `O_MR1` for the [appropriate constant][4], depending when the APIs were
   introduced.
@@ -172,7 +172,7 @@ public class FooBar {
 }
 
 @VerifiesOnP
-@TargetApi(Build.VERSION_CODES.P)
+@RequiresApi(Build.VERSION_CODES.P)
 public class ApiHelperForP {
     public static NewTypeInAndroidP getNewTypeInAndroidP() {
         return new NewTypeInAndroidP();
