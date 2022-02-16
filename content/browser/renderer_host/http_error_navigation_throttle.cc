@@ -13,8 +13,8 @@ namespace content {
 std::unique_ptr<NavigationThrottle>
 HttpErrorNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle& navigation_handle) {
-  // We only care about main frame navigations.
-  if (!navigation_handle.IsInMainFrame())
+  // We only care about primary main frame navigations.
+  if (!navigation_handle.IsInPrimaryMainFrame())
     return nullptr;
   return base::WrapUnique(new HttpErrorNavigationThrottle(navigation_handle));
 }

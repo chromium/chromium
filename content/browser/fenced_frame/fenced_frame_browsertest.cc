@@ -437,6 +437,30 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, NodesForIsLoading) {
             &inner_contents_primary_frame_tree);
 }
 
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
+                       NoErrorPageOnEmptyFrameHttpError) {
+  const GURL kInitialUrl(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL kEmpty404Url(
+      embedded_test_server()->GetURL("a.com", "/fenced_frames/empty404.html"));
+
+  // Load an initial page.
+  EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  RenderFrameHostImplWrapper initial_rfh(primary_main_frame_host());
+
+  // Add a fenced frame empty page with 404 status.
+  RenderFrameHostImplWrapper fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(initial_rfh.get(),
+                                                   kEmpty404Url));
+  ASSERT_TRUE(fenced_frame_rfh);
+
+  // Confirm no error page was generated in its place.
+  std::string contents =
+      EvalJs(fenced_frame_rfh.get(), "document.body.textContent;")
+          .ExtractString();
+  EXPECT_EQ(contents, std::string());
+}
+
 namespace {
 
 enum class FrameTypeWithOrigin {
