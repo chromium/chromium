@@ -305,6 +305,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings},
       {});
   EXPECT_CALL(mock_observer(), OnPasswordCheckStatusChanged).Times(AtLeast(1));
@@ -416,6 +417,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet());
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings},
       {});
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
@@ -446,6 +448,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings},
       {});
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
@@ -476,6 +479,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings},
       {});
 
@@ -509,8 +513,9 @@ TEST_F(PasswordCheckManagerTest,
   // Enable password sync
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
-      /*enabled_features=*/{password_manager::features::
-                                kPasswordScriptsFetching},
+      /*enabled_features=*/
+      {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching},
       /*disabled_features=*/{
           password_manager::features::kPasswordChangeInSettings});
 
@@ -544,6 +549,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings},
       {});
 
@@ -576,6 +582,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings,
        password_manager::features::kPasswordChangeOnlyRecentCredentials},
       {});
@@ -609,6 +616,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings,
        password_manager::features::kPasswordChangeOnlyRecentCredentials},
       {});

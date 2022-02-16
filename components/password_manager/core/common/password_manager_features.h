@@ -92,6 +92,10 @@ extern const char
     kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[];
 extern const char kPasswordChangeInSettingsWithForcedWarningForEverySite[];
 
+// Returns true if any of the password script fetching related flags are
+// enabled.
+bool IsPasswordScriptsFetchingEnabled();
+
 }  // namespace features
 
 }  // namespace password_manager

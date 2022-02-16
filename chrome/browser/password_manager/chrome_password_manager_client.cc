@@ -568,8 +568,7 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     const GURL& origin,
     const std::u16string& username) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordScriptsFetching) &&
+  if (password_manager::features::IsPasswordScriptsFetchingEnabled() &&
       GetPasswordFeatureManager()->IsGenerationEnabled()) {
     // The prewarm is triggered so that script availability is prefetched in
     // case the user lands on the Password Check UI (after tapping the "Check

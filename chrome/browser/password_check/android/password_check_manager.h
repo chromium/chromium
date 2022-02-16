@@ -196,10 +196,10 @@ class PasswordCheckManager
   bool IsEligibleForAutoChange(
       const password_manager::CredentialWithPassword& credenital) const;
 
-  // Returns true if the password scripts fetching (kPasswordScriptsFetching) is
-  // enabled. To have precise metrics about user actions on credentials with
-  // scripts, scripts are fetched only for the users who can start a script,
-  // i.e. sync users.
+  // Returns true if the password scripts fetching (kPasswordScriptsFetching or
+  // kPasswordDomainCapabilitiesFetching) is enabled. To have precise metrics
+  // about user actions on credentials with scripts, scripts are fetched only
+  // for the users who can start a script, i.e. sync users.
   bool ShouldFetchPasswordScripts() const;
 
   // Callback when PasswordScriptsFetcher's cache has been warmed up.

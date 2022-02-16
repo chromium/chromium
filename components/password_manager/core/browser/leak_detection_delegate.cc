@@ -98,8 +98,7 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
     // (not during sign-up), so don't query if this was a new-password form.
     if (client_->GetPasswordFeatureManager()->IsGenerationEnabled() &&
         !is_likely_signup_form_ &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordScriptsFetching) &&
+        password_manager::features::IsPasswordScriptsFetchingEnabled() &&
         base::FeatureList::IsEnabled(
             password_manager::features::kPasswordChange)) {
       scripts_fetcher = client_->GetPasswordScriptsFetcher();
