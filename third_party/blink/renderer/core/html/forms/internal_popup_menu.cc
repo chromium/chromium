@@ -196,11 +196,13 @@ class InternalPopupMenu::ItemIterationContext {
   void SerializeBaseStyle() {
     DCHECK(!is_in_group_);
     PagePopupClient::AddString("baseStyle: {", buffer_);
-    AddProperty("backgroundColor", background_color_.Serialized(), buffer_);
-    AddProperty(
-        "color",
-        BaseStyle().VisitedDependentColor(GetCSSPropertyColor()).Serialized(),
-        buffer_);
+    if (!BaseStyle().ColorSchemeForced()) {
+      AddProperty("backgroundColor", background_color_.Serialized(), buffer_);
+      AddProperty(
+          "color",
+          BaseStyle().VisitedDependentColor(GetCSSPropertyColor()).Serialized(),
+          buffer_);
+    }
     AddProperty("textTransform",
                 String(TextTransformToString(BaseStyle().TextTransform())),
                 buffer_);
@@ -299,8 +301,9 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
 
   // Add the color-scheme of the <select> element to the popup as a color-scheme
   // meta.
-  PagePopupClient::AddString("<meta name='color-scheme' content='", data);
-  PagePopupClient::AddString(SerializeColorScheme(owner_style), data);
+  PagePopupClient::AddString("<meta name='color-scheme' content='only ", data);
+  PagePopupClient::AddString(owner_style.DarkColorScheme() ? "dark" : "light",
+                             data);
   PagePopupClient::AddString("'><style>\n", data);
 
   LayoutObject* owner_layout = owner_element.GetLayoutObject();
@@ -418,23 +421,26 @@ void InternalPopupMenu::AddElementStyle(ItemIterationContext& context,
   }
   if (IsOverride(style->GetUnicodeBidi()))
     AddProperty("unicodeBidi", String("bidi-override"), data);
-  bool color_applied = false;
-  Color foreground_color = style->VisitedDependentColor(GetCSSPropertyColor());
-  if (base_style.VisitedDependentColor(GetCSSPropertyColor()) !=
-      foreground_color) {
-    AddProperty("color", foreground_color.Serialized(), data);
-    color_applied = true;
+
+  if (!base_style.ColorSchemeForced()) {
+    bool color_applied = false;
+    Color foreground_color =
+        style->VisitedDependentColor(GetCSSPropertyColor());
+    if (base_style.VisitedDependentColor(GetCSSPropertyColor()) !=
+        foreground_color) {
+      AddProperty("color", foreground_color.Serialized(), data);
+      color_applied = true;
+    }
+    Color background_color =
+        style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+    if (background_color != Color::kTransparent &&
+        (context.BackgroundColor() != background_color)) {
+      AddProperty("backgroundColor", background_color.Serialized(), data);
+      color_applied = true;
+    }
+    if (color_applied)
+      AddProperty("colorScheme", SerializeColorScheme(*style), data);
   }
-  Color background_color =
-      style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
-  if (background_color != Color::kTransparent &&
-      (context.BackgroundColor() != background_color ||
-       base_style.ColorSchemeForced() != style->ColorSchemeForced())) {
-    AddProperty("backgroundColor", background_color.Serialized(), data);
-    color_applied = true;
-  }
-  if (color_applied)
-    AddProperty("colorScheme", SerializeColorScheme(*style), data);
 
   const FontDescription& base_font = context.BaseFont();
   const FontDescription& font_description =
