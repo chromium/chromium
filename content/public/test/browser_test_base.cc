@@ -1033,9 +1033,7 @@ void BrowserTestBase::InitializeNetworkProcess() {
       if ((rule.resolver_type !=
                net::RuleBasedHostResolverProc::Rule::kResolverTypeSystem &&
            rule.resolver_type !=
-               net::RuleBasedHostResolverProc::Rule::kResolverTypeIPLiteral &&
-           rule.resolver_type != net::RuleBasedHostResolverProc::Rule::
-                                     kResolverTypeFailHTTPSServiceFormRecord) ||
+               net::RuleBasedHostResolverProc::Rule::kResolverTypeIPLiteral) ||
           rule.address_family !=
               net::AddressFamily::ADDRESS_FAMILY_UNSPECIFIED ||
           !!rule.latency_ms) {
@@ -1048,11 +1046,6 @@ void BrowserTestBase::InitializeNetworkProcess() {
             rule.replacement.empty()
                 ? network::mojom::ResolverType::kResolverTypeDirectLookup
                 : network::mojom::ResolverType::kResolverTypeSystem;
-      } else if (rule.resolver_type ==
-                 net::RuleBasedHostResolverProc::Rule::
-                     kResolverTypeFailHTTPSServiceFormRecord) {
-        mojo_rule->resolver_type = network::mojom::ResolverType::
-            kResolverTypeFailHTTPSServiceFormRecord;
       } else {
         mojo_rule->resolver_type =
             network::mojom::ResolverType::kResolverTypeIPLiteral;

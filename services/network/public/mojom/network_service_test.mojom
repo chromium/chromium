@@ -13,10 +13,11 @@ import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 
 // Maps to net::RuleBasedHostResolverProc::Rule::ResolverType.
+//
+// TODO(https://crbug.com/1298106) Deduplicate this enum's definition.
 enum ResolverType {
   kResolverTypeFail,
   kResolverTypeFailTimeout,
-  kResolverTypeFailHTTPSServiceFormRecord,
   kResolverTypeSystem,
   kResolverTypeIPLiteral,
   kResolverTypeDirectLookup,
