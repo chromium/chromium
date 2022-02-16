@@ -5,6 +5,8 @@
 #ifndef CC_PAINT_TARGET_COLOR_PARAMS_H_
 #define CC_PAINT_TARGET_COLOR_PARAMS_H_
 
+#include <string>
+
 #include "cc/paint/paint_export.h"
 #include "ui/gfx/color_space.h"
 
@@ -12,6 +14,15 @@ namespace cc {
 
 // Color parameters for a target for rasterization.
 struct CC_PAINT_EXPORT TargetColorParams {
+  TargetColorParams() = default;
+  TargetColorParams(const TargetColorParams&) = default;
+  TargetColorParams& operator=(const TargetColorParams&) = default;
+  ~TargetColorParams() = default;
+
+  // Constructor to use in tests to specify just a color space.
+  explicit TargetColorParams(const gfx::ColorSpace& color_space)
+      : color_space(color_space) {}
+
   // The target buffer's color space.
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
@@ -36,6 +47,8 @@ struct CC_PAINT_EXPORT TargetColorParams {
            std::tie(other.color_space, other.sdr_max_luminance_nits,
                     other.hdr_max_luminance_relative);
   }
+  size_t GetHash() const;
+  std::string ToString() const;
 };
 
 }  // namespace cc

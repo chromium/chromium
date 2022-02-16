@@ -243,7 +243,7 @@ DrawImage CreateDiscardableDrawImage(gfx::Size size) {
   return DrawImage(CreateDiscardablePaintImage(size), false,
                    SkIRect::MakeWH(size.width(), size.height()),
                    PaintFlags::FilterQuality::kNone, SkM44(),
-                   PaintImage::kDefaultFrameIndex, gfx::ColorSpace());
+                   PaintImage::kDefaultFrameIndex, TargetColorParams());
 }
 
 DrawImage CreateBitmapDrawImage(gfx::Size size) {

@@ -73,8 +73,8 @@ class DiscardableImageMapTest : public testing::Test {
     std::vector<const DrawImage*> draw_image_ptrs;
     // Choose a not-SRGB-and-not-invalid target color space to verify that it
     // is passed correctly to the resulting DrawImages.
-    TargetColorParams target_color_params;
-    target_color_params.color_space = gfx::ColorSpace::CreateXYZD50();
+    const TargetColorParams target_color_params(
+        gfx::ColorSpace::CreateXYZD50());
     image_map.GetDiscardableImagesInRect(rect, &draw_image_ptrs);
     std::vector<DrawImage> draw_images;
     for (const auto* image : draw_image_ptrs)

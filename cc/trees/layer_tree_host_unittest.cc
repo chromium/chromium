@@ -2710,8 +2710,7 @@ class LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate
 
 // TODO(crbug.com/1292184): Flaky failures.
 // SINGLE_AND_MULTI_THREAD_TEST_F(
-//    LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate);
-
+//     LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate);
 class LayerTreeHostTestDeviceScaleFactorChange : public LayerTreeHostTest {
  public:
   void SetupTree() override {
@@ -8367,7 +8366,7 @@ class LayerTreeHostTestQueueImageDecode : public LayerTreeHostTest {
     image_ =
         DrawImage(CreateDiscardablePaintImage(gfx::Size(400, 400)), false,
                   SkIRect::MakeWH(400, 400), PaintFlags::FilterQuality::kNone,
-                  SkM44(), PaintImage::kDefaultFrameIndex, gfx::ColorSpace());
+                  SkM44(), PaintImage::kDefaultFrameIndex, TargetColorParams());
     auto callback = base::BindRepeating(
         &LayerTreeHostTestQueueImageDecode::ImageDecodeFinished,
         base::Unretained(this));

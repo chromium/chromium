@@ -466,20 +466,20 @@ GpuImageDecodeCache::InUseCacheKey::InUseCacheKey(const DrawImage& draw_image,
     : frame_key(draw_image.frame_key()),
       upload_scale_mip_level(mip_level),
       filter_quality(CalculateDesiredFilterQuality(draw_image)),
-      target_color_space(draw_image.target_color_space()) {}
+      target_color_params(draw_image.target_color_params()) {}
 
 bool GpuImageDecodeCache::InUseCacheKey::operator==(
     const InUseCacheKey& other) const {
   return frame_key == other.frame_key &&
          upload_scale_mip_level == other.upload_scale_mip_level &&
          filter_quality == other.filter_quality &&
-         target_color_space == other.target_color_space;
+         target_color_params == other.target_color_params;
 }
 
 size_t GpuImageDecodeCache::InUseCacheKeyHash::operator()(
     const InUseCacheKey& cache_key) const {
   return base::HashInts(
-      cache_key.target_color_space.GetHash(),
+      cache_key.target_color_params.GetHash(),
       base::HashInts(
           cache_key.frame_key.hash(),
           base::HashInts(cache_key.upload_scale_mip_level,
@@ -841,7 +841,7 @@ GpuImageDecodeCache::ImageData::ImageData(
     PaintImage::Id paint_image_id,
     DecodedDataMode mode,
     size_t size,
-    const gfx::ColorSpace& target_color_space,
+    const TargetColorParams& target_color_params,
     PaintFlags::FilterQuality quality,
     int upload_scale_mip_level,
     bool needs_mips,
@@ -852,7 +852,7 @@ GpuImageDecodeCache::ImageData::ImageData(
     : paint_image_id(paint_image_id),
       mode(mode),
       size(size),
-      target_color_space(target_color_space),
+      target_color_params(target_color_params),
       quality(quality),
       upload_scale_mip_level(upload_scale_mip_level),
       needs_mips(needs_mips),
@@ -2531,7 +2531,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
   }
   return base::WrapRefCounted(new ImageData(
       draw_image.paint_image().stable_id(), mode, data_size,
-      draw_image.target_color_space(),
+      draw_image.target_color_params(),
       CalculateDesiredFilterQuality(draw_image), upload_scale_mip_level,
       needs_mips, is_bitmap_backed, can_do_hardware_accelerated_decode,
       do_hardware_accelerated_decode, optional_yuva_pixmap_info));
@@ -2859,7 +2859,7 @@ bool GpuImageDecodeCache::IsCompatible(const ImageData* image_data,
   bool quality_is_compatible =
       CalculateDesiredFilterQuality(draw_image) <= image_data->quality;
   bool color_is_compatible =
-      image_data->target_color_space == draw_image.target_color_space();
+      image_data->target_color_params == draw_image.target_color_params();
   if (!color_is_compatible)
     return false;
   if (is_scaled && (!scale_is_compatible || !quality_is_compatible))

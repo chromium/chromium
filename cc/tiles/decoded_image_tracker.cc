@@ -50,8 +50,7 @@ void DecodedImageTracker::QueueImageDecode(
   auto image_bounds = SkIRect::MakeWH(image.width(), image.height());
   DrawImage draw_image(image, false, image_bounds,
                        PaintFlags::FilterQuality::kNone, SkM44(), frame_index,
-                       target_color_params.color_space,
-                       target_color_params.sdr_max_luminance_nits);
+                       target_color_params);
   image_controller_->QueueImageDecode(
       draw_image, base::BindOnce(&DecodedImageTracker::ImageDecodeFinished,
                                  base::Unretained(this), std::move(callback),

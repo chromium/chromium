@@ -135,7 +135,7 @@ class CC_EXPORT SoftwareImageDecodeCache
   void UnrefImage(const CacheKey& key) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   SkColorType GetColorTypeForPaintImage(
-      const gfx::ColorSpace& target_color_space,
+      const TargetColorParams& target_color_params,
       const PaintImage& paint_image);
 
   base::Lock lock_;

@@ -98,7 +98,7 @@ TEST_F(DecodedImageTrackerTest, Colorspace) {
   bool locked = false;
   gfx::ColorSpace decoded_color_space(gfx::ColorSpace::PrimaryID::XYZ_D50,
                                       gfx::ColorSpace::TransferID::SRGB);
-  gfx::ColorSpace srgb_color_space = gfx::ColorSpace::CreateSRGB();
+  TargetColorParams srgb_target_color_params;
   auto paint_image = CreateDiscardablePaintImage(gfx::Size(1, 1));
   TargetColorParams target_color_params;
   target_color_params.color_space = decoded_color_space;
@@ -114,11 +114,12 @@ TEST_F(DecodedImageTrackerTest, Colorspace) {
   DrawImage locked_draw_image(paint_image, false, SkIRect::MakeWH(1, 1),
                               PaintFlags::FilterQuality::kHigh, SkM44(),
                               PaintImage::kDefaultFrameIndex,
-                              decoded_color_space);
+                              target_color_params);
   EXPECT_TRUE(image_controller()->IsDrawImageLocked(locked_draw_image));
   DrawImage srgb_draw_image(paint_image, false, SkIRect::MakeWH(1, 1),
                             PaintFlags::FilterQuality::kHigh, SkM44(),
-                            PaintImage::kDefaultFrameIndex, srgb_color_space);
+                            PaintImage::kDefaultFrameIndex,
+                            srgb_target_color_params);
   EXPECT_FALSE(image_controller()->IsDrawImageLocked(srgb_draw_image));
 }
 
@@ -178,10 +179,10 @@ TEST_F(DecodedImageTrackerTest, ImageUsedInDraw) {
   // Create dummy draw images for each:
   DrawImage draw_image_1(paint_image_1, false, SkIRect::MakeWH(1, 1),
                          PaintFlags::FilterQuality::kHigh, SkM44(), 0,
-                         target_color_params.color_space);
+                         target_color_params);
   DrawImage draw_image_2(paint_image_2, false, SkIRect::MakeWH(1, 1),
                          PaintFlags::FilterQuality::kHigh, SkM44(), 0,
-                         target_color_params.color_space);
+                         target_color_params);
 
   // Both should be in the cache:
   EXPECT_TRUE(image_controller()->IsDrawImageLocked(draw_image_1));

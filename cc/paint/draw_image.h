@@ -32,9 +32,14 @@ class CC_PAINT_EXPORT DrawImage {
             const SkIRect& src_rect,
             PaintFlags::FilterQuality filter_quality,
             const SkM44& matrix,
-            absl::optional<size_t> frame_index = absl::nullopt,
-            const absl::optional<gfx::ColorSpace>& color_space = absl::nullopt,
-            float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel);
+            absl::optional<size_t> frame_index = absl::nullopt);
+  DrawImage(PaintImage image,
+            bool use_dark_mode,
+            const SkIRect& src_rect,
+            PaintFlags::FilterQuality filter_quality,
+            const SkM44& matrix,
+            absl::optional<size_t> frame_index,
+            const TargetColorParams& target_color_params);
   // Constructs a DrawImage from |other| by adjusting its scale and setting new
   // color params.
   DrawImage(const DrawImage& other,
@@ -56,10 +61,6 @@ class CC_PAINT_EXPORT DrawImage {
   const SkIRect& src_rect() const { return src_rect_; }
   PaintFlags::FilterQuality filter_quality() const { return filter_quality_; }
   bool matrix_is_decomposable() const { return matrix_is_decomposable_; }
-  const gfx::ColorSpace& target_color_space() const {
-    DCHECK(target_color_space_.has_value());
-    return *target_color_space_;
-  }
   PaintImage::FrameKey frame_key() const {
     return paint_image_.GetKeyForFrame(frame_index());
   }
@@ -67,7 +68,19 @@ class CC_PAINT_EXPORT DrawImage {
     DCHECK(frame_index_.has_value());
     return frame_index_.value();
   }
-  float sdr_white_level() const { return sdr_white_level_; }
+
+  const TargetColorParams& target_color_params() const {
+    DCHECK(target_color_params_.has_value());
+    return *target_color_params_;
+  }
+  const gfx::ColorSpace& target_color_space() const {
+    DCHECK(target_color_params_.has_value());
+    return target_color_params_->color_space;
+  }
+  float sdr_white_level() const {
+    DCHECK(target_color_params_.has_value());
+    return target_color_params_->sdr_max_luminance_nits;
+  }
 
  private:
   PaintImage paint_image_;
@@ -77,13 +90,7 @@ class CC_PAINT_EXPORT DrawImage {
   SkSize scale_;
   bool matrix_is_decomposable_;
   absl::optional<size_t> frame_index_;
-  absl::optional<gfx::ColorSpace> target_color_space_;
-
-  // The SDR white level in nits for the display. Only if |target_color_space_|
-  // is HDR will this have a value other than kDefaultSDRWhiteLevel. Used by the
-  // ImageDecodeCache to prevent HDR images from being affected by variable SDR
-  // white levels since rasterization is always treated as SDR at present.
-  float sdr_white_level_ = gfx::ColorSpace::kDefaultSDRWhiteLevel;
+  absl::optional<TargetColorParams> target_color_params_;
 };
 
 }  // namespace cc

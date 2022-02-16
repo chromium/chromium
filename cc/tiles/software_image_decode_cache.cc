@@ -186,7 +186,7 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     const TracingInfo& tracing_info,
     DecodeTaskType task_type) {
   CacheKey key = CacheKey::FromDrawImage(
-      image, GetColorTypeForPaintImage(image.target_color_space(),
+      image, GetColorTypeForPaintImage(image.target_color_params(),
                                        image.paint_image()));
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "SoftwareImageDecodeCache::GetTaskForImageAndRefInternal", "key",
@@ -282,7 +282,7 @@ void SoftwareImageDecodeCache::RemoveBudgetForImage(const CacheKey& key,
 
 void SoftwareImageDecodeCache::UnrefImage(const DrawImage& image) {
   const CacheKey& key = CacheKey::FromDrawImage(
-      image, GetColorTypeForPaintImage(image.target_color_space(),
+      image, GetColorTypeForPaintImage(image.target_color_params(),
                                        image.paint_image()));
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "SoftwareImageDecodeCache::UnrefImage", "key", key.ToString());
@@ -357,7 +357,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
     base::AutoUnlock release(lock_);
     local_cache_entry = Utils::DoDecodeImage(
         key, paint_image,
-        GetColorTypeForPaintImage(key.target_color_space(), paint_image),
+        GetColorTypeForPaintImage(key.target_color_params(), paint_image),
         generator_client_id_,
         base::BindOnce(&SoftwareImageDecodeCache::ClearCache,
                        base::Unretained(this)));
@@ -389,7 +389,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
       base::AutoUnlock release(lock_);
       local_cache_entry = Utils::DoDecodeImage(
           key, paint_image,
-          GetColorTypeForPaintImage(key.target_color_space(), paint_image),
+          GetColorTypeForPaintImage(key.target_color_params(), paint_image),
           generator_client_id_,
           base::BindOnce(&SoftwareImageDecodeCache::ClearCache,
                          base::Unretained(this)));
@@ -419,10 +419,10 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
               : gfx::RectToSkIRect(key.src_rect());
       DrawImage candidate_draw_image(
           paint_image, false, src_rect, PaintFlags::FilterQuality::kNone,
-          SkM44(), key.frame_key().frame_index(), key.target_color_space());
+          SkM44(), key.frame_key().frame_index(), key.target_color_params());
       candidate_key.emplace(CacheKey::FromDrawImage(
           candidate_draw_image,
-          GetColorTypeForPaintImage(key.target_color_space(), paint_image)));
+          GetColorTypeForPaintImage(key.target_color_params(), paint_image)));
     }
 
     if (candidate_key) {
@@ -440,7 +440,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
         local_cache_entry = Utils::GenerateCacheEntryFromCandidate(
             key, decoded_draw_image,
             candidate_key->type() == CacheKey::kOriginal,
-            GetColorTypeForPaintImage(key.target_color_space(), paint_image));
+            GetColorTypeForPaintImage(key.target_color_params(), paint_image));
       }
 
       // Unref to balance the GetDecodedImageForDrawInternal() call.
@@ -539,9 +539,9 @@ DecodedDrawImage SoftwareImageDecodeCache::GetDecodedImageForDraw(
 
   base::AutoLock hold(lock_);
   return GetDecodedImageForDrawInternal(
-      CacheKey::FromDrawImage(
-          draw_image, GetColorTypeForPaintImage(draw_image.target_color_space(),
-                                                draw_image.paint_image())),
+      CacheKey::FromDrawImage(draw_image, GetColorTypeForPaintImage(
+                                              draw_image.target_color_params(),
+                                              draw_image.paint_image())),
       draw_image.paint_image());
 }
 
@@ -582,7 +582,7 @@ void SoftwareImageDecodeCache::DrawWithImageFinished(
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "SoftwareImageDecodeCache::DrawWithImageFinished", "key",
                CacheKey::FromDrawImage(
-                   image, GetColorTypeForPaintImage(image.target_color_space(),
+                   image, GetColorTypeForPaintImage(image.target_color_params(),
                                                     image.paint_image()))
                    .ToString());
   UnrefImage(image);
@@ -698,8 +698,9 @@ size_t SoftwareImageDecodeCache::GetNumCacheEntriesForTesting() {
 }
 
 SkColorType SoftwareImageDecodeCache::GetColorTypeForPaintImage(
-    const gfx::ColorSpace& target_color_space,
+    const TargetColorParams& target_color_params,
     const PaintImage& paint_image) {
+  const gfx::ColorSpace& target_color_space = target_color_params.color_space;
   // Decode HDR images to half float when targeting HDR.
   //
   // TODO(crbug.com/1076568): Once we have access to the display's buffer format
