@@ -798,6 +798,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.ORB.CorbVsOrb" enum="CorbVsOrb"
+    expires_after="M106">
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    Logs whether ORB and CORB would take the same allow-vs-block decision. This
+    should help assess the backcompatibility risk of shipping ORB.
+
+    Logged at the end of lifetime of the ResponseAnalyzer (i.e. after processing
+    each response that is subject to CORB - most NetworkService responses, but
+    also CORB-covered web bundles).
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.ORB.ResponseHeadersHeuristic.Decision"
     enum="OpaqueResponseBlocking_ResponseHeadersHeuristic" expires_after="M92">
   <obsolete>

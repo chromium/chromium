@@ -16902,6 +16902,17 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="BlockingWhenOtherLock"/>
 </enum>
 
+<enum name="CorbVsOrb">
+  <summary>Coarse MIME type classification for CORB decisions.</summary>
+  <int value="0" label="Invalid comparison"/>
+  <int value="1" label="Final decision: Both agree"/>
+  <int value="2" label="Final decision: CORB blocks (and ORB doesn't)"/>
+  <int value="3" label="Final decision: ORB blocks (and CORB doesn't)"/>
+  <int value="4" label="Both want to sniff more"/>
+  <int value="5" label="CORB wants to sniff more"/>
+  <int value="6" label="ORB wants to sniff more"/>
+</enum>
+
 <enum name="CoreAudioDispatchOverrideInitResult">
   <summary>
     The result of trying to initialize the CoreAudio dispatch override hotfix.
