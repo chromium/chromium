@@ -62,7 +62,7 @@ void NGFragmentItemsBuilder::ReleaseCurrentLogicalLineItems() {
     DCHECK(is_line_items_pool_acquired_);
     is_line_items_pool_acquired_ = false;
   } else {
-    delete current_line_items_;
+    current_line_items_->clear();
   }
   current_line_items_ = nullptr;
 }
@@ -85,7 +85,7 @@ NGLogicalLineItems* NGFragmentItemsBuilder::AcquireLogicalLineItems() {
   }
   MoveCurrentLogicalLineItemsToMap();
   DCHECK(!current_line_items_);
-  current_line_items_ = new NGLogicalLineItems();
+  current_line_items_ = MakeGarbageCollected<NGLogicalLineItems>();
   return current_line_items_;
 }
 
