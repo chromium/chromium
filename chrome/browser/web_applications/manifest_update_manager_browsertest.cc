@@ -306,10 +306,10 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN)
     return os == kWin || os == kNotMac || os == kAll;
 #elif BUILDFLAG(IS_MAC)
-    // Older MAC OS versions don't seem to write size 48 to the shortcut.
-    // Instead of complicating all the call sites with OS-specific information,
-    // just make size 48 optional on those MAC OS versions.
-    if (!base::mac::IsAtLeastOS12() && size == web_app::icon_size::k48)
+    // The Mac code in generating these icons doesn't write a size 48 icon. See
+    // chrome/browser/web_applications/web_app_icon_generator.h's
+    // `kInstallIconSize`. Skip it.
+    if (size == web_app::icon_size::k48)
       return false;
     return os == kMac || os == kNotWin || os == kAll;
 #else
