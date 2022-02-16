@@ -47,6 +47,9 @@
 // |spacing| will be added below |view|.
 - (void)addUIElement:(UIView*)view withCustomBottomSpacing:(CGFloat)spacing;
 
+// Removes all UI elements added by addUIElement:withCustomBottomSpacing:.
+- (void)removeContentViews;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_PARENT_ITEM_H_

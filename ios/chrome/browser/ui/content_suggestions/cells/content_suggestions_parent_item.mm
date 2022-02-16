@@ -49,6 +49,10 @@
 - (void)configureCell:(ContentSuggestionsParentCell*)cell {
   [super configureCell:cell];
 
+  // Remove subviews from StackView in case prepareForReuse was not called (e.g.
+  // itemHasChanged: was called).
+  [cell removeContentViews];
+
   CGFloat horizontalSpacing =
       ContentSuggestionsTilesHorizontalSpacing(cell.traitCollection);
   if (self.returnToRecentItem) {
@@ -215,12 +219,15 @@
     [_verticalStackView setCustomSpacing:spacing afterView:view];
   }
 }
-
-- (void)prepareForReuse {
-  [super prepareForReuse];
+- (void)removeContentViews {
   for (UIView* view in [self.verticalStackView arrangedSubviews]) {
     [view removeFromSuperview];
   }
+}
+
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  [self removeContentViews];
 }
 
 @end
