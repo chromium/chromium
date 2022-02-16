@@ -281,7 +281,7 @@ void AttributionInternalsHandlerImpl::OnReportSent(
   }
 }
 
-void AttributionInternalsHandlerImpl::OnReportDropped(
+void AttributionInternalsHandlerImpl::OnTriggerHandled(
     const AttributionStorage::CreateReportResult& result) {
   mojom::WebUIAttributionReport::Status status;
   switch (result.status()) {
@@ -308,14 +308,19 @@ void AttributionInternalsHandlerImpl::OnReportDropped(
           kNoReportCapacityForDestinationSite;
       break;
     case AttributionTrigger::Result::kInternalError:
+      // `kInternalError` doesn't always have a dropped report.
+      if (!result.dropped_report().has_value())
+        return;
+
       status = mojom::WebUIAttributionReport::Status::kInternalError;
       break;
     case AttributionTrigger::Result::kSuccess:
     case AttributionTrigger::Result::kNoMatchingImpressions:
-      NOTREACHED();
+      // TODO(apaseltiner): Surface `kNoMatchingImpressions` in internals UI.
       return;
   }
 
+  DCHECK(result.dropped_report().has_value());
   auto report = WebUIAttributionReport(*result.dropped_report(),
                                        /*http_response_code=*/0, status);
 

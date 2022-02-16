@@ -419,16 +419,13 @@ void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
     NotifyReportsChanged();
   }
 
-  if (!result.dropped_report().has_value())
-    return;
-
   if (absl::optional<AttributionStorage::DeactivatedSource> source =
           result.GetDeactivatedSource()) {
     NotifySourceDeactivated(*source);
   }
 
   for (Observer& observer : observers_)
-    observer.OnReportDropped(result);
+    observer.OnTriggerHandled(result);
 }
 
 void AttributionManagerImpl::GetActiveSourcesForWebUI(

@@ -5,6 +5,7 @@
 #include "content/public/test/attribution_simulator.h"
 
 #include <memory>
+#include <sstream>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -20,7 +21,10 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -121,8 +125,11 @@ class SentReportAccumulator : public AttributionNetworkSender {
 class AttributionEventHandler : public AttributionManager::Observer {
  public:
   AttributionEventHandler(AttributionManagerImpl* manager,
-                          base::Value::ListStorage& rejected_sources)
-      : manager_(manager), rejected_sources_(rejected_sources) {
+                          base::Value::ListStorage& rejected_sources,
+                          base::Value::ListStorage& rejected_triggers)
+      : manager_(manager),
+        rejected_sources_(rejected_sources),
+        rejected_triggers_(rejected_triggers) {
     observation_.Observe(manager);
   }
 
@@ -132,12 +139,8 @@ class AttributionEventHandler : public AttributionManager::Observer {
     // Sources and triggers are handled in order; this includes observer
     // invocations. Therefore, we can track the original `base::Value`
     // associated with the event using a queue.
-    //
-    // TODO(apaseltiner): Record rejected triggers using this approach as well.
 
-    if (absl::holds_alternative<StorableSource>(event.first))
-      input_values_.push_back(std::move(event.second));
-
+    input_values_.push_back(std::move(event.second));
     absl::visit(*this, std::move(event.first));
   }
 
@@ -153,6 +156,7 @@ class AttributionEventHandler : public AttributionManager::Observer {
 
  private:
   // AttributionManager::Observer:
+
   void OnSourceHandled(const StorableSource& source,
                        StorableSource::Result result) override {
     DCHECK(!input_values_.empty());
@@ -184,12 +188,45 @@ class AttributionEventHandler : public AttributionManager::Observer {
     rejected_sources_.push_back(std::move(dict));
   }
 
+  void OnTriggerHandled(
+      const AttributionStorage::CreateReportResult& result) override {
+    DCHECK(!input_values_.empty());
+    base::Value input_value = std::move(input_values_.front());
+    input_values_.pop_front();
+
+    std::stringstream reason;
+    switch (result.status()) {
+      case AttributionTrigger::Result::kSuccess:
+      case AttributionTrigger::Result::kSuccessDroppedLowerPriority:
+        // TODO(apaseltiner): Consider surfacing reports dropped due to
+        // prioritization.
+        return;
+      case AttributionTrigger::Result::kInternalError:
+      case AttributionTrigger::Result::kNoCapacityForConversionDestination:
+      case AttributionTrigger::Result::kNoMatchingImpressions:
+      case AttributionTrigger::Result::kDeduplicated:
+      case AttributionTrigger::Result::kExcessiveReports:
+      case AttributionTrigger::Result::kPriorityTooLow:
+      case AttributionTrigger::Result::kDroppedForNoise:
+      case AttributionTrigger::Result::kExcessiveReportingOrigins:
+        reason << result.status();
+        break;
+    }
+
+    base::DictionaryValue dict;
+    dict.SetStringKey("reason", reason.str());
+    dict.SetKey("trigger", std::move(input_value));
+
+    rejected_triggers_.push_back(std::move(dict));
+  }
+
   base::ScopedObservation<AttributionManager, AttributionManager::Observer>
       observation_{this};
 
   base::raw_ptr<AttributionManagerImpl> manager_;
 
   base::Value::ListStorage& rejected_sources_;
+  base::Value::ListStorage& rejected_triggers_;
 
   base::circular_deque<base::Value> input_values_;
 };
@@ -229,7 +266,9 @@ base::Value RunAttributionSimulationOrExit(
                                               options.remove_report_ids));
 
   base::Value::ListStorage rejected_sources;
-  AttributionEventHandler handler(manager.get(), rejected_sources);
+  base::Value::ListStorage rejected_triggers;
+  AttributionEventHandler handler(manager.get(), rejected_sources,
+                                  rejected_triggers);
 
   for (auto& event : events) {
     task_environment.FastForwardBy(GetEventTime(event) - base::Time::Now());
@@ -259,6 +298,11 @@ base::Value RunAttributionSimulationOrExit(
 
   if (!rejected_sources.empty())
     output.SetKey("rejected_sources", base::Value(std::move(rejected_sources)));
+
+  if (!rejected_triggers.empty()) {
+    output.SetKey("rejected_triggers",
+                  base::Value(std::move(rejected_triggers)));
+  }
 
   return output;
 }

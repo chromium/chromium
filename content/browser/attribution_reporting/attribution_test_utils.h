@@ -281,7 +281,7 @@ class MockAttributionManager : public AttributionManager {
                            StorableSource::Result result);
   void NotifyReportSent(const AttributionReport& report,
                         const SendResult& info);
-  void NotifyReportDropped(
+  void NotifyTriggerHandled(
       const AttributionStorage::CreateReportResult& result);
 
   void SetDataHostManager(std::unique_ptr<AttributionDataHostManager> manager);

@@ -195,11 +195,12 @@ void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
     observer.OnReportSent(report, info);
 }
 
-void MockAttributionManager::NotifyReportDropped(
+void MockAttributionManager::NotifyTriggerHandled(
     const AttributionStorage::CreateReportResult& result) {
   for (Observer& observer : observers_)
-    observer.OnReportDropped(result);
+    observer.OnTriggerHandled(result);
 }
+
 void MockAttributionManager::SetDataHostManager(
     std::unique_ptr<AttributionDataHostManager> manager) {
   data_host_manager_ = std::move(manager);
@@ -524,34 +525,34 @@ bool operator==(const DeactivatedSource& a, const DeactivatedSource& b) {
 std::ostream& operator<<(std::ostream& out, AttributionTrigger::Result status) {
   switch (status) {
     case AttributionTrigger::Result::kSuccess:
-      out << "kSuccess";
+      out << "success";
       break;
     case AttributionTrigger::Result::kSuccessDroppedLowerPriority:
-      out << "kSuccessDroppedLowerPriority";
+      out << "successDroppedLowerPriority";
       break;
     case AttributionTrigger::Result::kInternalError:
-      out << "kInternalError";
+      out << "internalError";
       break;
     case AttributionTrigger::Result::kNoCapacityForConversionDestination:
-      out << "kNoCapacityForConversionDestination";
+      out << "insufficientDestinationCapacity";
       break;
     case AttributionTrigger::Result::kNoMatchingImpressions:
-      out << "kNoMatchingImpressions";
+      out << "noMatchingSources";
       break;
     case AttributionTrigger::Result::kDeduplicated:
-      out << "kDeduplicated";
+      out << "deduplicated";
       break;
     case AttributionTrigger::Result::kExcessiveReports:
-      out << "kExcessiveReports";
+      out << "excessiveReports";
       break;
     case AttributionTrigger::Result::kPriorityTooLow:
-      out << "kPriorityTooLow";
+      out << "priorityTooLow";
       break;
     case AttributionTrigger::Result::kDroppedForNoise:
-      out << "kDroppedForNoise";
+      out << "noised";
       break;
     case AttributionTrigger::Result::kExcessiveReportingOrigins:
-      out << "kExcessiveReportingOrigins";
+      out << "excessiveReportingOrigins";
       break;
   }
   return out;

@@ -74,7 +74,7 @@ class AttributionInternalsHandlerImpl
                        StorableSource::Result result) override;
   void OnReportSent(const AttributionReport& report,
                     const SendResult& info) override;
-  void OnReportDropped(
+  void OnTriggerHandled(
       const AttributionStorage::CreateReportResult& result) override;
 
   raw_ptr<WebUI> web_ui_;
