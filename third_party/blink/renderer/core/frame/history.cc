@@ -231,8 +231,9 @@ void History::pushState(v8::Isolate* isolate,
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kJavaScript,
             mojom::blink::ConsoleMessageLevel::kWarning,
-            "Use of history.pushState in a prerender context "
-            "is treated as history.replaceState."),
+            "Use of history.pushState in a trivial session history context, "
+            "which maintains only one session history entry, is treated as "
+            "history.replaceState."),
         /* discard_duplicates */ true);
     load_type = WebFrameLoadType::kReplaceCurrentItem;
   }
