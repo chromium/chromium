@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -132,6 +133,8 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   aura::Window* const root_window_;
 
   ui::WmDragHandler* const drag_handler_;
+
+  aura::client::DragUpdateInfo current_drag_info_;
 
   // Last window under the mouse.
   aura::Window* current_window_ = nullptr;
