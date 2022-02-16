@@ -391,7 +391,6 @@ bool ExtensionsToolbarContainer::CloseOverflowMenuIfOpen() {
 
 void ExtensionsToolbarContainer::PopOutAction(
     ToolbarActionViewController* action,
-    bool is_sticky,
     base::OnceClosure closure) {
   // TODO(pbos): Highlight popout differently.
   DCHECK(!popped_out_action_);

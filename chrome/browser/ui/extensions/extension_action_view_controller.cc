@@ -424,12 +424,10 @@ void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
   popup_host_observation_.Observe(popup_host_.get());
   extensions_container_->SetPopupOwner(this);
 
-  const bool is_sticky = show_action == PopupShowAction::kShowAndInspect;
   extensions_container_->PopOutAction(
-      this, is_sticky,
-      base::BindOnce(&ExtensionActionViewController::ShowPopup,
-                     weak_factory_.GetWeakPtr(), std::move(host), by_user,
-                     show_action, std::move(callback)));
+      this, base::BindOnce(&ExtensionActionViewController::ShowPopup,
+                           weak_factory_.GetWeakPtr(), std::move(host), by_user,
+                           show_action, std::move(callback)));
 }
 
 void ExtensionActionViewController::ShowPopup(

@@ -57,11 +57,8 @@ class ExtensionsContainer {
   virtual bool CloseOverflowMenuIfOpen() = 0;
 
   // Pops out a given |action|, ensuring it is visible.
-  // |is_sticky| refers to whether or not the action will stay popped out if
-  // the overflow menu is opened.
   // |closure| will be called once any animation is complete.
   virtual void PopOutAction(ToolbarActionViewController* action,
-                            bool is_sticky,
                             base::OnceClosure closure) = 0;
 
   // Shows the popup for the action with |id| as the result of an API call,
