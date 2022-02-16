@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
@@ -53,15 +54,16 @@ ZipExtractor::ZipExtractor(ExtractionProperties properties)
 ZipExtractor::~ZipExtractor() = default;
 
 void ZipExtractor::ExtractImpl() {
-  if (!zip_reader_.Open(properties_.image_path) ||
-      !zip_reader_.AdvanceToNextEntry() ||
-      !zip_reader_.OpenCurrentEntryInZip()) {
+  if (!zip_reader_.Open(properties_.image_path)) {
     // |this| will be deleted inside.
     OnError(error::kUnzipGenericError);
     return;
   }
 
-  if (zip_reader_.HasMore()) {
+  // If the ZIP can be opened, it shouldn't be empty.
+  DCHECK_GT(zip_reader_.num_entries(), 0);
+
+  if (zip_reader_.num_entries() != 1) {
     // |this| will be deleted inside.
     OnError(error::kUnzipInvalidArchive);
     return;
@@ -69,16 +71,16 @@ void ZipExtractor::ExtractImpl() {
 
   // Create a new target to unzip to.  The original file is opened by
   // |zip_reader_|.
-  zip::ZipReader::EntryInfo* entry_info = zip_reader_.current_entry_info();
+  const zip::ZipReader::Entry* const entry = zip_reader_.Next();
 
-  if (!entry_info) {
+  if (!entry) {
     // |this| will be deleted inside.
     OnError(error::kTempDirError);
     return;
   }
 
   base::FilePath out_image_path =
-      properties_.temp_dir_path.Append(entry_info->file_path().BaseName());
+      properties_.temp_dir_path.Append(entry->path.BaseName());
   std::move(properties_.open_callback).Run(out_image_path);
 
   // |this| will be deleted when OnComplete or OnError is called.
@@ -87,8 +89,7 @@ void ZipExtractor::ExtractImpl() {
       base::BindOnce(&ZipExtractor::OnComplete, weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ZipExtractor::OnError, weak_ptr_factory_.GetWeakPtr(),
                      error::kUnzipGenericError),
-      base::BindRepeating(properties_.progress_callback,
-                          entry_info->original_size()));
+      base::BindRepeating(properties_.progress_callback, entry->original_size));
 }
 
 void ZipExtractor::OnError(const std::string& error) {
