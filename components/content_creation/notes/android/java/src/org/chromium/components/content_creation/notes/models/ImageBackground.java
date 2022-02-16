@@ -28,6 +28,10 @@ public final class ImageBackground implements Background {
         mBitmap = bitmap;
     }
 
+    public boolean isBitmapEmpty() {
+        return mBitmap == null;
+    }
+
     @Override
     public void apply(View view, float cornerRadius) {
         // The image has to have been loaded before trying to apply this background.
