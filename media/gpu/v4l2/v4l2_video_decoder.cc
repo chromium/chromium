@@ -399,8 +399,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
            V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)) {
     const auto candidate = Fourcc::FromV4L2PixFmt(pixfmt);
     if (!candidate) {
-      DVLOGF(1) << FourccToString(pixfmt) << " (" << candidate->ToString()
-                << ") is not recognised, skipping...";
+      DVLOGF(1) << FourccToString(pixfmt) << " is not recognised, skipping...";
       continue;
     }
     VLOGF(1) << "Output (CAPTURE queue) candidate: " << candidate->ToString();
