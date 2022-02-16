@@ -341,7 +341,10 @@ void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (!GetVisible())
     return;
 
-  node_data->role = ax::mojom::Role::kListBox;
+  // With productivity launcher enabled, individual child result list views will
+  // have the list box role.
+  if (!features::IsProductivityLauncherEnabled())
+    node_data->role = ax::mojom::Role::kListBox;
 
   std::u16string value;
   std::u16string query =

@@ -1481,27 +1481,37 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchProductivityLauncherTest,
 
   sm_.ExpectSpeech("G");
   sm_.ExpectSpeech("app 0");
-  sm_.ExpectSpeech("List item 1 of 8");
+  sm_.ExpectSpeech("List item 1 of 2");
+  sm_.ExpectSpeech("Best Match");
+  sm_.ExpectSpeech("List box");
 
   // Traverse best match results;
   for (int i = 1; i < 2; ++i) {
     sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
     sm_.ExpectSpeech(base::StringPrintf("app %d", i));
-    sm_.ExpectSpeech(base::StringPrintf("List item %d of 8", i + 1));
+    sm_.ExpectSpeech(base::StringPrintf("List item %d of 2", i + 1));
   }
 
   // Traverse non-best-match app results.
   for (int i = 2; i < 5; ++i) {
     sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
     sm_.ExpectSpeech(base::StringPrintf("app %d", i));
-    sm_.ExpectSpeech(base::StringPrintf("List item %d of 8", i + 1));
+    sm_.ExpectSpeech(base::StringPrintf("List item %d of 3", (i - 2) % 3 + 1));
+    if (i == 2) {
+      sm_.ExpectSpeech("Apps");
+      sm_.ExpectSpeech("List box");
+    }
   }
 
   // Traverse omnibox results.
   for (int i = 0; i < 3; ++i) {
     sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
     sm_.ExpectSpeech(base::StringPrintf("item %d", i));
-    sm_.ExpectSpeech(base::StringPrintf("List item %d of 8", i + 6));
+    sm_.ExpectSpeech(base::StringPrintf("List item %d of 3", i + 1));
+    if (i == 0) {
+      sm_.ExpectSpeech("Websites");
+      sm_.ExpectSpeech("List box");
+    }
   }
 
   // Cycle focus to the close button.
@@ -1522,18 +1532,24 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchProductivityLauncherTest,
 
   sm_.ExpectSpeech("A");
   sm_.ExpectSpeech("app 0");
+  sm_.ExpectSpeech("List item 1 of 3");
+  sm_.ExpectSpeech("Apps");
 
   // Verify traversal works after result change.
   for (int i = 1; i < 3; ++i) {
     sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
     sm_.ExpectSpeech(base::StringPrintf("app %d", i));
-    sm_.ExpectSpeech(base::StringPrintf("List item %d of 5", i + 1));
+    sm_.ExpectSpeech(base::StringPrintf("List item %d of 3", i + 1));
   }
 
   for (int i = 0; i < 2; ++i) {
     sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
     sm_.ExpectSpeech(base::StringPrintf("item %d", i));
-    sm_.ExpectSpeech(base::StringPrintf("List item %d of 5", i + 4));
+    sm_.ExpectSpeech(base::StringPrintf("List item %d of 2", i + 1));
+    if (i == 0) {
+      sm_.ExpectSpeech("Websites");
+      sm_.ExpectSpeech("List box");
+    }
   }
 
   sm_.Replay();
@@ -1601,26 +1617,37 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchProductivityLauncherTest,
 
   sm_.ExpectSpeech("G");
   sm_.ExpectSpeech("app 0");
+  sm_.ExpectSpeech("List item 1 of 2");
+  sm_.ExpectSpeech("Best Match");
+  sm_.ExpectSpeech("List box");
 
   // Traverse best match results;
   for (int i = 1; i < 2; ++i) {
     sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
     sm_.ExpectSpeech(base::StringPrintf("app %d", i));
-    sm_.ExpectSpeech(base::StringPrintf("List item %d of 8", i + 1));
+    sm_.ExpectSpeech(base::StringPrintf("List item %d of 2", i + 1));
   }
 
   // Traverse non-best-match app results.
   for (int i = 2; i < 5; ++i) {
     sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
     sm_.ExpectSpeech(base::StringPrintf("app %d", i));
-    sm_.ExpectSpeech(base::StringPrintf("List item %d of 8", i + 1));
+    sm_.ExpectSpeech(base::StringPrintf("List item %d of 3", (i - 2) % 3 + 1));
+    if (i == 2) {
+      sm_.ExpectSpeech("Apps");
+      sm_.ExpectSpeech("List box");
+    }
   }
 
   // Traverse omnibox results.
   for (int i = 0; i < 3; ++i) {
     sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
     sm_.ExpectSpeech(base::StringPrintf("item %d", i));
-    sm_.ExpectSpeech(base::StringPrintf("List item %d of 8", i + 6));
+    sm_.ExpectSpeech(base::StringPrintf("List item %d of 3", i + 1));
+    if (i == 0) {
+      sm_.ExpectSpeech("Websites");
+      sm_.ExpectSpeech("List box");
+    }
   }
 
   // Cycle focus to the close button.
@@ -1641,18 +1668,25 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchProductivityLauncherTest,
 
   sm_.ExpectSpeech("A");
   sm_.ExpectSpeech("app 0");
+  sm_.ExpectSpeech("List item 1 of 3");
+  sm_.ExpectSpeech("Apps");
+  sm_.ExpectSpeech("List box");
 
   // Verify traversal works after result change.
   for (int i = 1; i < 3; ++i) {
     sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
     sm_.ExpectSpeech(base::StringPrintf("app %d", i));
-    sm_.ExpectSpeech(base::StringPrintf("List item %d of 5", i + 1));
+    sm_.ExpectSpeech(base::StringPrintf("List item %d of 3", i + 1));
   }
 
   for (int i = 0; i < 2; ++i) {
     sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
     sm_.ExpectSpeech(base::StringPrintf("item %d", i));
-    sm_.ExpectSpeech(base::StringPrintf("List item %d of 5", i + 4));
+    sm_.ExpectSpeech(base::StringPrintf("List item %d of 2", i + 1));
+    if (i == 0) {
+      sm_.ExpectSpeech("Websites");
+      sm_.ExpectSpeech("List box");
+    }
   }
 
   sm_.Replay();
