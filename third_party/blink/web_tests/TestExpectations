@@ -1631,6 +1631,11 @@ virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-oof-005.ht
 virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-oof-007.html [ Pass ]
 
 ### Tests failing with LayoutNGTableFragmentation enabled:
+crbug.com/1295905 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-inside-cell-000.html [ Failure ]
+crbug.com/1295905 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-inside-cell-001.html [ Failure ]
+crbug.com/1295905 [ Mac10.12 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/sections-and-captions-mixed-order.html [ Failure ]
+crbug.com/1295905 [ Mac10.13 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/sections-and-captions-mixed-order.html [ Failure ]
+crbug.com/1295905 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/sections-and-captions-mixed-order.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/balance-table-with-border-spacing.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/multicol-table-cell-height-002.xht [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/multicol-table-cell-vertical-align-001.xht [ Failure ]
@@ -3264,11 +3269,6 @@ crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/depreca
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/deprecated-sameas-022.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/webmessaging/broadcastchannel/opaque-origin.html [ Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-inside-cell-000.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-inside-cell-001.html [ Failure ]
-crbug.com/626703 [ Mac10.12 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/sections-and-captions-mixed-order.html [ Failure ]
-crbug.com/626703 [ Mac10.13 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/sections-and-captions-mixed-order.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/sections-and-captions-mixed-order.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-005.https.html [ Failure ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-with-float-size.https.html [ Failure ]
