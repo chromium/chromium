@@ -56,7 +56,6 @@ void AXTreeSourceArc::NotifyAccessibilityEvent(AXEventData* event_data) {
   // Clear maps in order to prevent invalid access from dead pointers.
   tree_map_.clear();
   parent_map_.clear();
-  computed_bounds_.clear();
 }
 
 void AXTreeSourceArc::NotifyActionResult(const ui::AXActionData& data,
@@ -192,19 +191,6 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     }
   }
 
-  // Compute each node's bounds, based on its descendants.
-  // Assuming |nodeData| is in pre-order, compute cached bounds in post-order to
-  // avoid an O(n^2) amount of work as the computed bounds uses descendant
-  // bounds.
-  for (int i = event_data.node_data.size() - 1; i >= 0; --i) {
-    int32_t id = event_data.node_data[i]->id;
-    computed_bounds_[id] = ComputeEnclosingBounds(tree_map_[id].get());
-  }
-  for (int i = event_data.window_data->size() - 1; i >= 0; --i) {
-    int32_t id = event_data.window_data->at(i)->window_id;
-    computed_bounds_[id] = ComputeEnclosingBounds(tree_map_[id].get());
-  }
-
   if (!UpdateAndroidFocusedId(event_data)) {
     // Exit this function if the focused node doesn't exist nor isn't visible.
     return;
@@ -277,44 +263,6 @@ AXTreeSourceArc::GetAutomationEventRouter() const {
     return automation_event_router_for_test_;
 
   return extensions::AutomationEventRouter::GetInstance();
-}
-
-gfx::Rect AXTreeSourceArc::ComputeEnclosingBounds(
-    AccessibilityInfoDataWrapper* info_data) const {
-  DCHECK(info_data);
-  gfx::Rect computed_bounds;
-  // Exit early if the node or window is invisible.
-  if (!info_data->IsVisibleToUser())
-    return computed_bounds;
-
-  ComputeEnclosingBoundsInternal(info_data, &computed_bounds);
-  return computed_bounds;
-}
-
-void AXTreeSourceArc::ComputeEnclosingBoundsInternal(
-    AccessibilityInfoDataWrapper* info_data,
-    gfx::Rect* computed_bounds) const {
-  DCHECK(computed_bounds);
-  auto cached_bounds = computed_bounds_.find(info_data->GetId());
-  if (cached_bounds != computed_bounds_.end()) {
-    computed_bounds->Union(cached_bounds->second);
-    return;
-  }
-
-  if (!info_data->IsVisibleToUser())
-    return;
-  if (info_data->IsFocusableInFullFocusMode()) {
-    // Only consider nodes that can possibly be accessibility focused.
-    computed_bounds->Union(info_data->GetBounds());
-    return;
-  }
-  std::vector<AccessibilityInfoDataWrapper*> children;
-  info_data->GetChildren(&children);
-  if (children.empty())
-    return;
-  for (AccessibilityInfoDataWrapper* child : children)
-    ComputeEnclosingBoundsInternal(child, computed_bounds);
-  return;
 }
 
 AccessibilityInfoDataWrapper*
@@ -489,7 +437,6 @@ std::vector<int32_t> AXTreeSourceArc::ProcessHooksOnEvent(
 void AXTreeSourceArc::Reset() {
   tree_map_.clear();
   parent_map_.clear();
-  computed_bounds_.clear();
   current_tree_serializer_ = std::make_unique<AXTreeArcSerializer>(this);
   root_id_.reset();
   window_id_.reset();
@@ -527,46 +474,6 @@ void AXTreeSourceArc::GetChildren(
       return;
     id_to_index[out_children->at(i)->GetId()] = i;
   }
-
-  // Sort children based on their enclosing bounding rectangles, based on their
-  // descendants.
-  std::sort(
-      out_children->begin(), out_children->end(),
-      [this, &id_to_index](auto left, auto right) {
-        auto left_bounds = ComputeEnclosingBounds(left);
-        auto right_bounds = ComputeEnclosingBounds(right);
-
-        if (left_bounds.IsEmpty() || right_bounds.IsEmpty()) {
-          return id_to_index.at(left->GetId()) < id_to_index.at(right->GetId());
-        }
-
-        // Top to bottom sort (non-overlapping).
-        if (!left_bounds.Intersects(right_bounds))
-          return left_bounds.y() < right_bounds.y();
-
-        // Overlapping
-        // Left to right.
-        int left_difference = left_bounds.x() - right_bounds.x();
-        if (left_difference != 0)
-          return left_difference < 0;
-
-        // Top to bottom.
-        int top_difference = left_bounds.y() - right_bounds.y();
-        if (top_difference != 0)
-          return top_difference < 0;
-
-        // Larger to smaller.
-        int height_difference = left_bounds.height() - right_bounds.height();
-        if (height_difference != 0)
-          return height_difference > 0;
-
-        int width_difference = left_bounds.width() - right_bounds.width();
-        if (width_difference != 0)
-          return width_difference > 0;
-
-        // The rects are equal.
-        return id_to_index.at(left->GetId()) < id_to_index.at(right->GetId());
-      });
 }
 
 bool AXTreeSourceArc::IsIgnored(AccessibilityInfoDataWrapper* info_data) const {
