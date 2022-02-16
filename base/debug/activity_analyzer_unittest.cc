@@ -100,7 +100,7 @@ TEST_F(ActivityAnalyzerTest, ThreadAnalyzerConstruction) {
     EXPECT_EQ(PlatformThread::GetName(), analyzer.GetThreadName());
   }
 
-  // TODO(bcwhite): More tests once Analyzer does more.
+  // More tests once Analyzer does more.
 }
 
 

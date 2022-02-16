@@ -972,7 +972,7 @@ bool ThreadActivityTracker::CreateSnapshot(Snapshot* output_snapshot) const {
     memcpy(&output_snapshot->last_exception, &header_->last_exception,
            sizeof(Activity));
 
-    // TODO(bcwhite): Snapshot other things here.
+    // Snapshot other things here.
 
     // Retry if something changed during the copy. A "cst" operation ensures
     // it must happen after all the above operations.
@@ -1425,7 +1425,6 @@ void GlobalActivityTracker::RecordProcessLaunch(
 
   base::AutoLock lock(global_tracker_lock_);
   if (base::Contains(known_processes_, pid)) {
-    // TODO(bcwhite): Measure this in UMA.
     NOTREACHED() << "Process #" << process_id
                  << " was previously recorded as \"launched\""
                  << " with no corresponding exit.\n"

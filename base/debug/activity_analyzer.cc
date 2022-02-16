@@ -283,7 +283,7 @@ GlobalActivityAnalyzer::GetModules(int64_t pid) {
 
 GlobalActivityAnalyzer::ProgramLocation
 GlobalActivityAnalyzer::GetProgramLocationFromAddress(uint64_t address) {
-  // TODO(bcwhite): Implement this.
+  // This should be implemented but it's never been a priority.
   return { 0, 0 };
 }
 
