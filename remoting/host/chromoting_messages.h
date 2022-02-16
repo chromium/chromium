@@ -13,7 +13,6 @@
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_start.h"
 #include "ipc/ipc_platform_file.h"
-#include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/chromoting_param_traits.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/protocol/errors.h"
@@ -39,26 +38,6 @@ IPC_MESSAGE_CONTROL(ChromotingDaemonMsg_Crash,
                     std::string /* function_name */,
                     std::string /* file_name */,
                     int /* line_number */)
-
-//-----------------------------------------------------------------------------
-// Chromoting messages sent from the network to the daemon process.
-
-// Connects the terminal |terminal_id| (i.e. a remote client) to a desktop
-// session.
-IPC_MESSAGE_CONTROL(ChromotingNetworkHostMsg_ConnectTerminal,
-                    int /* terminal_id */,
-                    remoting::ScreenResolution /* resolution */,
-                    bool /* virtual_terminal */)
-
-// Disconnects the terminal |terminal_id| from the desktop session it was
-// connected to.
-IPC_MESSAGE_CONTROL(ChromotingNetworkHostMsg_DisconnectTerminal,
-                    int /* terminal_id */)
-
-// Changes the screen resolution in the given desktop session.
-IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_SetScreenResolution,
-                    int /* terminal_id */,
-                    remoting::ScreenResolution /* resolution */)
 
 //-----------------------------------------------------------------------------
 // Chromoting messages sent from the desktop to the network process.

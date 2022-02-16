@@ -17,10 +17,8 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/desktop_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,15 +26,11 @@
 using testing::_;
 using testing::AnyNumber;
 using testing::InSequence;
+using testing::Invoke;
 
 namespace remoting {
 
 namespace {
-
-enum Messages {
-  kMessageConnectTerminal = ChromotingNetworkHostMsg_ConnectTerminal::ID,
-  kMessageDisconnectTerminal = ChromotingNetworkHostMsg_DisconnectTerminal::ID,
-};
 
 // Provides a public constructor allowing the test to create instances of
 // DesktopSession directly.
@@ -67,11 +61,6 @@ class MockDaemonProcess : public DaemonProcess {
       int terminal_id,
       const ScreenResolution& resolution,
       bool virtual_terminal) override;
-
-  bool OnMessageReceived(const IPC::Message& message) override;
-
-  MOCK_METHOD(void, Received, (const IPC::Message&));
-  MOCK_METHOD(void, Sent, (const IPC::Message&));
 
   MOCK_METHOD(bool,
               OnDesktopSessionAgentAttached,
@@ -109,14 +98,6 @@ std::unique_ptr<DesktopSession> MockDaemonProcess::DoCreateDesktopSession(
     const ScreenResolution& resolution,
     bool virtual_terminal) {
   return base::WrapUnique(DoCreateDesktopSessionPtr(terminal_id));
-}
-
-bool MockDaemonProcess::OnMessageReceived(const IPC::Message& message) {
-  // Notify the mock method.
-  Received(message);
-
-  // Call the actual handler.
-  return DaemonProcess::OnMessageReceived(message);
 }
 
 }  // namespace
@@ -214,8 +195,6 @@ MATCHER_P(Message, type, "") {
 TEST_F(DaemonProcessTest, OpenClose) {
   InSequence s;
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
-  EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
-  EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
   EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_));
 
   StartDaemonProcess();
@@ -223,20 +202,17 @@ TEST_F(DaemonProcessTest, OpenClose) {
   int id = terminal_id_++;
   ScreenResolution resolution;
 
-  EXPECT_TRUE(daemon_process_->OnMessageReceived(
-      ChromotingNetworkHostMsg_ConnectTerminal(id, resolution, false)));
+  daemon_process_->CreateDesktopSession(id, resolution, false);
   EXPECT_EQ(1u, desktop_sessions().size());
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
-  EXPECT_TRUE(daemon_process_->OnMessageReceived(
-      ChromotingNetworkHostMsg_DisconnectTerminal(id)));
+  daemon_process_->CloseDesktopSession(id);
   EXPECT_TRUE(desktop_sessions().empty());
 }
 
 TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
   InSequence s;
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
-  EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_));
 
   StartDaemonProcess();
@@ -244,8 +220,7 @@ TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
   int id = terminal_id_++;
   ScreenResolution resolution;
 
-  EXPECT_TRUE(daemon_process_->OnMessageReceived(
-      ChromotingNetworkHostMsg_ConnectTerminal(id, resolution, false)));
+  daemon_process_->CreateDesktopSession(id, resolution, false);
   EXPECT_EQ(1u, desktop_sessions().size());
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
@@ -258,27 +233,21 @@ TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
 TEST_F(DaemonProcessTest, DoubleDisconnectTerminal) {
   InSequence s;
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
-  EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
-  EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
   EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_));
-  EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
 
   StartDaemonProcess();
 
   int id = terminal_id_++;
   ScreenResolution resolution;
 
-  EXPECT_TRUE(daemon_process_->OnMessageReceived(
-      ChromotingNetworkHostMsg_ConnectTerminal(id, resolution, false)));
+  daemon_process_->CreateDesktopSession(id, resolution, false);
   EXPECT_EQ(1u, desktop_sessions().size());
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
-  EXPECT_TRUE(daemon_process_->OnMessageReceived(
-      ChromotingNetworkHostMsg_DisconnectTerminal(id)));
+  daemon_process_->CloseDesktopSession(id);
   EXPECT_TRUE(desktop_sessions().empty());
 
-  EXPECT_TRUE(daemon_process_->OnMessageReceived(
-      ChromotingNetworkHostMsg_DisconnectTerminal(id)));
+  daemon_process_->CloseDesktopSession(id);
   EXPECT_TRUE(desktop_sessions().empty());
 }
 
@@ -287,7 +256,6 @@ TEST_F(DaemonProcessTest, DoubleDisconnectTerminal) {
 TEST_F(DaemonProcessTest, InvalidDisconnectTerminal) {
   InSequence s;
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
-  EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
   EXPECT_CALL(*daemon_process_, DoCrashNetworkProcess(_))
       .WillOnce(
           InvokeWithoutArgs(this, &DaemonProcessTest::LaunchNetworkProcess));
@@ -297,8 +265,7 @@ TEST_F(DaemonProcessTest, InvalidDisconnectTerminal) {
 
   int id = terminal_id_++;
 
-  EXPECT_TRUE(daemon_process_->OnMessageReceived(
-      ChromotingNetworkHostMsg_DisconnectTerminal(id)));
+  daemon_process_->CloseDesktopSession(id);
   EXPECT_TRUE(desktop_sessions().empty());
   EXPECT_EQ(0, terminal_id_);
 }
@@ -308,8 +275,6 @@ TEST_F(DaemonProcessTest, InvalidDisconnectTerminal) {
 TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
   InSequence s;
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
-  EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
-  EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, DoCrashNetworkProcess(_))
       .WillOnce(
           InvokeWithoutArgs(this, &DaemonProcessTest::LaunchNetworkProcess));
@@ -320,13 +285,11 @@ TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
   int id = terminal_id_++;
   ScreenResolution resolution;
 
-  EXPECT_TRUE(daemon_process_->OnMessageReceived(
-      ChromotingNetworkHostMsg_ConnectTerminal(id, resolution, false)));
+  daemon_process_->CreateDesktopSession(id, resolution, false);
   EXPECT_EQ(1u, desktop_sessions().size());
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
-  EXPECT_TRUE(daemon_process_->OnMessageReceived(
-      ChromotingNetworkHostMsg_ConnectTerminal(id, resolution, false)));
+  daemon_process_->CreateDesktopSession(id, resolution, false);
   EXPECT_TRUE(desktop_sessions().empty());
   EXPECT_EQ(0, terminal_id_);
 }

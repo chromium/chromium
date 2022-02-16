@@ -8,7 +8,6 @@
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_param_traits.h"
 #include "remoting/base/result.h"
-#include "remoting/host/base/screen_resolution.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/file_transfer.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -50,16 +49,6 @@ struct ParamTraits<webrtc::DesktopRect> {
 template <>
 struct ParamTraits<webrtc::MouseCursor> {
   typedef webrtc::MouseCursor param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct ParamTraits<remoting::ScreenResolution> {
-  typedef remoting::ScreenResolution param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

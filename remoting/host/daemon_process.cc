@@ -85,23 +85,10 @@ void DaemonProcess::OnChannelConnected(int32_t peer_pid) {
 bool DaemonProcess::OnMessageReceived(const IPC::Message& message) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(DaemonProcess, message)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkHostMsg_ConnectTerminal,
-                        CreateDesktopSession)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkHostMsg_DisconnectTerminal,
-                        CloseDesktopSession)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkDaemonMsg_SetScreenResolution,
-                        SetScreenResolution)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
+  LOG(ERROR) << "Received unexpected IPC type: " << message.type();
+  CrashNetworkProcess(FROM_HERE);
 
-  if (!handled) {
-    LOG(ERROR) << "Received unexpected IPC type: " << message.type();
-    CrashNetworkProcess(FROM_HERE);
-  }
-
-  return handled;
+  return false;
 }
 
 void DaemonProcess::OnPermanentError(int exit_code) {
@@ -113,6 +100,7 @@ void DaemonProcess::OnPermanentError(int exit_code) {
 }
 
 void DaemonProcess::OnWorkerProcessStopped() {
+  desktop_session_manager_.reset();
   host_status_observer_.reset();
 }
 
@@ -120,23 +108,40 @@ void DaemonProcess::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
-  if (interface_name == mojom::HostStatusObserver::Name_) {
-    if (host_status_observer_.is_bound()) {
-      LOG(ERROR) << "Receiver already bound for associated interface: "
-                 << mojom::HostStatusObserver::Name_;
-      CrashNetworkProcess(FROM_HERE);
-    }
 
+  // Typically we'd want to ensure that an associated receiver was not requested
+  // multiple times as that would indicate a logic error (or that the calling
+  // process had possibly been compromised). In the case of the network process,
+  // which handles network traffic and encoding, it's possible that there is a
+  // protocol error or OS driver fault which cases the process to crash. When
+  // that occurs, the daemon process will launch a new instance of the network
+  // process (which is handled outside of this class) and that new instance will
+  // attempt to retrieve the set of associated interfaces it needs to do its
+  // work. If that occurs, we log a warning and allow the new process to set up
+  // its associated remotes. In other areas of the code we might crash the
+  // requesting (or current) process but that could lead to a crash loop here.
+
+  if (interface_name == mojom::DesktopSessionManager::Name_) {
+    LOG_IF(WARNING, desktop_session_manager_)
+        << "Associated interface requested "
+        << "while |desktop_session_manager_| was still bound.";
+
+    desktop_session_manager_.reset();
+    mojo::PendingAssociatedReceiver<mojom::DesktopSessionManager>
+        pending_receiver(std::move(handle));
+    desktop_session_manager_.Bind(std::move(pending_receiver));
+  } else if (interface_name == mojom::HostStatusObserver::Name_) {
+    LOG_IF(WARNING, host_status_observer_)
+        << "Associated interface requested "
+        << "while |host_status_observer_| was still bound.";
+
+    host_status_observer_.reset();
     mojo::PendingAssociatedReceiver<mojom::HostStatusObserver> pending_receiver(
         std::move(handle));
     host_status_observer_.Bind(std::move(pending_receiver));
-    // Set a disconnect handler in case the network process crashes or restarts
-    // itself (this can occur when new enterprise policies are applied).
-    host_status_observer_.reset_on_disconnect();
   } else {
     LOG(ERROR) << "Received unexpected associated interface request: "
                << interface_name;
-    CrashNetworkProcess(FROM_HERE);
   }
 }
 

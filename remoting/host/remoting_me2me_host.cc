@@ -942,10 +942,19 @@ void HostProcess::StartOnUiThread() {
   // Create a desktop environment factory appropriate to the build type &
   // platform.
 #if defined(REMOTING_MULTI_PROCESS)
+  // Set up the AssociatedRemote used to send requests to the Daemon process.
+  // We need to do a little dance here using a pending associated receiver so
+  // that the remote is associated with the proper task_runner since it will be
+  // invoked on the network thread.
+  mojo::AssociatedRemote<mojom::DesktopSessionManager> remote;
+  mojo::GenericPendingAssociatedReceiver pending_receiver =
+      remote.BindNewEndpointAndPassReceiver(context_->network_task_runner());
+  daemon_channel_->GetRemoteAssociatedInterface(std::move(pending_receiver));
+
   IpcDesktopEnvironmentFactory* desktop_environment_factory =
       new IpcDesktopEnvironmentFactory(
           context_->audio_task_runner(), context_->network_task_runner(),
-          context_->network_task_runner(), daemon_channel_.get());
+          context_->network_task_runner(), std::move(remote));
   desktop_session_connector_ = desktop_environment_factory;
 #else  // !defined(REMOTING_MULTI_PROCESS)
   BasicDesktopEnvironmentFactory* desktop_environment_factory;

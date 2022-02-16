@@ -12,12 +12,10 @@
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_controls.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/desktop_session_proxy.h"
@@ -115,11 +113,11 @@ IpcDesktopEnvironmentFactory::IpcDesktopEnvironmentFactory(
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    IPC::Sender* daemon_channel)
+    mojo::AssociatedRemote<mojom::DesktopSessionManager> remote)
     : audio_task_runner_(audio_task_runner),
       caller_task_runner_(caller_task_runner),
       io_task_runner_(io_task_runner),
-      daemon_channel_(daemon_channel) {}
+      desktop_session_manager_(std::move(remote)) {}
 
 IpcDesktopEnvironmentFactory::~IpcDesktopEnvironmentFactory() = default;
 
@@ -154,8 +152,8 @@ void IpcDesktopEnvironmentFactory::ConnectTerminal(
 
   VLOG(1) << "Network: registered desktop environment " << id;
 
-  daemon_channel_->Send(new ChromotingNetworkHostMsg_ConnectTerminal(
-      id, resolution, virtual_terminal));
+  desktop_session_manager_->CreateDesktopSession(id, resolution,
+                                                 virtual_terminal);
 }
 
 void IpcDesktopEnvironmentFactory::DisconnectTerminal(
@@ -173,7 +171,7 @@ void IpcDesktopEnvironmentFactory::DisconnectTerminal(
     active_connections_.erase(i);
 
     VLOG(1) << "Network: unregistered desktop environment " << id;
-    daemon_channel_->Send(new ChromotingNetworkHostMsg_DisconnectTerminal(id));
+    desktop_session_manager_->CloseDesktopSession(id);
   }
 }
 
@@ -189,8 +187,7 @@ void IpcDesktopEnvironmentFactory::SetScreenResolution(
   }
 
   if (i != active_connections_.end()) {
-    daemon_channel_->Send(new ChromotingNetworkDaemonMsg_SetScreenResolution(
-        i->first, resolution));
+    desktop_session_manager_->SetScreenResolution(i->first, resolution);
   }
 }
 

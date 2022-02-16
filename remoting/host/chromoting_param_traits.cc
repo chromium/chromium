@@ -163,44 +163,6 @@ void ParamTraits<webrtc::MouseCursor>::Log(
       p.hotspot().x(), p.hotspot().y()));
 }
 
-// remoting::ScreenResolution
-
-// static
-void ParamTraits<remoting::ScreenResolution>::Write(
-    base::Pickle* m,
-    const remoting::ScreenResolution& p) {
-  ParamTraits<webrtc::DesktopSize>::Write(m, p.dimensions());
-  ParamTraits<webrtc::DesktopVector>::Write(m, p.dpi());
-}
-
-// static
-bool ParamTraits<remoting::ScreenResolution>::Read(
-    const base::Pickle* m,
-    base::PickleIterator* iter,
-    remoting::ScreenResolution* r) {
-  webrtc::DesktopSize size;
-  webrtc::DesktopVector dpi;
-  if (!ParamTraits<webrtc::DesktopSize>::Read(m, iter, &size) ||
-      !ParamTraits<webrtc::DesktopVector>::Read(m, iter, &dpi)) {
-    return false;
-  }
-  if (size.width() < 0 || size.height() < 0 ||
-      dpi.x() < 0 || dpi.y() < 0) {
-    return false;
-  }
-  *r = remoting::ScreenResolution(size, dpi);
-  return true;
-}
-
-// static
-void ParamTraits<remoting::ScreenResolution>::Log(
-    const remoting::ScreenResolution& p,
-    std::string* l) {
-  l->append(base::StringPrintf("webrtc::ScreenResolution(%d, %d, %d, %d)",
-                               p.dimensions().width(), p.dimensions().height(),
-                               p.dpi().x(), p.dpi().y()));
-}
-
 // remoting::protocol::VideoLayout
 
 // static

@@ -22,6 +22,7 @@
 #include "remoting/host/config_watcher.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/host_status_observer.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 
 namespace base {
@@ -40,7 +41,8 @@ class ScreenResolution;
 // sessions.
 class DaemonProcess : public ConfigWatcher::Delegate,
                       public WorkerProcessIpcDelegate,
-                      public HostStatusObserver {
+                      public HostStatusObserver,
+                      public mojom::DesktopSessionManager {
  public:
   typedef std::list<DesktopSession*> DesktopSessionList;
 
@@ -73,6 +75,14 @@ class DaemonProcess : public ConfigWatcher::Delegate,
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
+  // mojom::DesktopSessionManager implementation.
+  void CreateDesktopSession(int terminal_id,
+                            const ScreenResolution& resolution,
+                            bool virtual_terminal) override;
+  void CloseDesktopSession(int terminal_id) override;
+  void SetScreenResolution(int terminal_id,
+                           const ScreenResolution& resolution) override;
+
   // Called when a desktop integration process attaches to |terminal_id|.
   // |session_id| is the id of the desktop session being attached.
   // |desktop_pipe| specifies the client end of the desktop pipe. Returns true
@@ -82,9 +92,6 @@ class DaemonProcess : public ConfigWatcher::Delegate,
       int session_id,
       mojo::ScopedMessagePipeHandle desktop_pipe) = 0;
 
-  // Closes the desktop session identified by |terminal_id|.
-  void CloseDesktopSession(int terminal_id);
-
   // Requests the network process to crash.
   void CrashNetworkProcess(const base::Location& location);
 
@@ -92,15 +99,6 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   DaemonProcess(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                 scoped_refptr<AutoThreadTaskRunner> io_task_runner,
                 base::OnceClosure stopped_callback);
-
-  // Creates a desktop session and assigns a unique ID to it.
-  void CreateDesktopSession(int terminal_id,
-                            const ScreenResolution& resolution,
-                            bool virtual_terminal);
-
-  // Changes the screen resolution of the desktop session identified by
-  // |terminal_id|.
-  void SetScreenResolution(int terminal_id, const ScreenResolution& resolution);
 
   // Reads the host configuration and launches the network process.
   void Initialize();
@@ -190,6 +188,8 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // Writes host status updates to the system event log.
   std::unique_ptr<HostEventLogger> host_event_logger_;
 
+  mojo::AssociatedReceiver<mojom::DesktopSessionManager>
+      desktop_session_manager_{this};
   mojo::AssociatedReceiver<mojom::HostStatusObserver> host_status_observer_{
       this};
 

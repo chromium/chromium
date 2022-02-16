@@ -173,6 +173,30 @@ interface DesktopSessionRequestHandler {
   CrashNetworkProcess();
 };
 
+// Allows the network process to ask the daemon process to create, update, or
+// destroy the current desktop session.
+// The remote for this interface is owned in the low-privilege network process
+// and the receiver is bound in the high-privilege daemon process.
+interface DesktopSessionManager {
+  // Creates a chromoting desktop environment for the session identified by
+  // |terminal_id|. This is done by injecting a desktop agent process and
+  // establishing IPC channels between the daemon, desktop, and network
+  // processes.
+  CreateDesktopSession(int32 terminal_id, ScreenResolution screen_resolution,
+                       bool is_virtual_terminal);
+
+  // Closes the desktop session identified by |terminal_id|. This involves
+  // terminating the desktop agent process and removing any references to the
+  // session being closed in the daemon and network processes. Not changes are
+  // made at an OS level, meaning the user can reconnect to the same session
+  // without a loss of state.
+  CloseDesktopSession(int32 terminal_id);
+
+  // Sends the updated screen resolution to the desktop agent running in the
+  // |terminal_id| session.
+  SetScreenResolution(int32 terminal_id, ScreenResolution screen_resolution);
+};
+
 // A set of options used to customize the desktop session behavior.
 struct DesktopEnvironmentOptions {
   // True if the curtain mode should be enabled.
