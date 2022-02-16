@@ -7,6 +7,14 @@ import("//build/config/python.gni")
 # Used by linux-gcc-rel to ensure gcc doesn't choke on clang-only flags.
 executable("empty_main") {
   sources = [ "empty_main.cc" ]
+
+  # The bot should only check that an empty file builds fine with gcc.
+  # There's no need to check that libc++ builds with a (possibly very old)
+  # version of gcc.
+  # No need to remove "//build/config/compiler:runtime_library" from configs
+  # (to remove its subconfig "//build/config/c++:runtime_library") since
+  # empty_main.cc does not include any headers.
+  no_default_deps = true
 }
 
 # Targets needed for isolate script to execute.
