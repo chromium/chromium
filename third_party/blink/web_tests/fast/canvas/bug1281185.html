@@ -12,11 +12,11 @@ if (window.testRunner) {
 }
 const w = 100;
 
+const canvas1 = document.createElement('canvas');
+canvas1.width = canvas1.height = w;
 // Specifiy willReadyFrequently to ensure continued test coverage after
 // GPU fallback heuristic changes.
-const canvas1 = document.createElement('canvas', {willReadFrequently: true});
-canvas1.width = canvas1.height = w;
-const ctx1 = canvas1.getContext('2d');
+const ctx1 = canvas1.getContext('2d', {willReadFrequently: true});
 
 const canvas2 = document.createElement('canvas');
 canvas2.width = canvas2.height = w;
