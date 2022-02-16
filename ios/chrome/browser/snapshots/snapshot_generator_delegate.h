@@ -45,6 +45,11 @@ class WebState;
 - (UIView*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
          baseViewForWebState:(web::WebState*)webState;
 
+// Returns the default tintAdjustmentMode for the base view in |webState|.
+- (UIViewTintAdjustmentMode)snapshotGenerator:
+                                (SnapshotGenerator*)snapshotGenerator
+         defaultTintAdjustmentModeForWebState:(web::WebState*)webState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_GENERATOR_DELEGATE_H_

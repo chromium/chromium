@@ -1618,6 +1618,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                             }];
 }
 
+// The BVC does not define its own presentation context, so any presentation
+// here ultimately travels up the chain for presentation.
 - (void)presentViewController:(UIViewController*)viewControllerToPresent
                      animated:(BOOL)flag
                    completion:(void (^)())completion {
@@ -3146,13 +3148,24 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [overlays addObject:sadTabView];
   }
 
+  // The overlay container view controller is presenting something if it has
+  // a |presentedViewController| AND that view controller's
+  // |presentingViewController| is the overlay container. Otherwise, some other
+  // view controller higher up in the hierarchy is doing the presenting. E.g.
+  // for the overflow menu, the BVC (and eventually the tab grid view
+  // controller) are presenting the overflow menu, but because those view
+  // controllers are also above tthe |overlayContainerViewController| in the
+  // view hierarchy, the overflow menu view controller is also the
+  // |overlayContainerViewController|'s presentedViewController.
   UIViewController* overlayContainerViewController =
       self.browserContainerViewController
           .webContentsOverlayContainerViewController;
-  UIView* presentedOverlayView =
-      overlayContainerViewController.presentedViewController.view;
-  if (presentedOverlayView) {
-    [overlays addObject:presentedOverlayView];
+  UIViewController* presentedOverlayViewController =
+      overlayContainerViewController.presentedViewController;
+  if (presentedOverlayViewController &&
+      presentedOverlayViewController.presentingViewController ==
+          overlayContainerViewController) {
+    [overlays addObject:presentedOverlayViewController.view];
   }
 
   UIView* screenTimeView =
@@ -3186,6 +3199,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (NTPHelper && NTPHelper->IsActive())
     return [self ntpCoordinatorForWebState:webState].viewController.view;
   return webState->GetView();
+}
+
+- (UIViewTintAdjustmentMode)snapshotGenerator:
+                                (SnapshotGenerator*)snapshotGenerator
+         defaultTintAdjustmentModeForWebState:(web::WebState*)webState {
+  return UIViewTintAdjustmentModeAutomatic;
 }
 
 #pragma mark - SnapshotGeneratorDelegate helpers
