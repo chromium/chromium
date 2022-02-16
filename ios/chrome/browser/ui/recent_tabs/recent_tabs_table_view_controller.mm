@@ -13,6 +13,7 @@
 #import "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/crurl.h"
+#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #include "ios/chrome/browser/sessions/session_util.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -1108,10 +1110,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
         [self.presentationDelegate showHistoryFromRecentTabs];
       }
       break;
-    case ItemTypeOtherDevicesSyncOff:
-    case ItemTypeOtherDevicesNoSessions:
-    case ItemTypeOtherDevicesSigninPromo:
-    case ItemTypeSigninDisabled:
+    case ItemTypeSuggestedActionSearchWeb:
+      [self openNewTabWithCurrentSearchTerm];
       break;
   }
 }
@@ -1515,6 +1515,44 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       self.isIncognito ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                        : self.restoredTabDisposition;
   RestoreTab(entry_id, disposition, self.browser);
+  [self.presentationDelegate showActiveRegularTabFromRecentTabs];
+}
+
+- (void)openNewTabWithCurrentSearchTerm {
+  // It is reasonable to ignore this request if a modal UI is already showing
+  // above recent tabs. This can happen when a user simultaneously taps a
+  // recently closed tab and "enable sync". The sync settings UI appears first
+  // and we should not dismiss it to restore a recently closed tab.
+  if (self.presentedViewController)
+    return;
+
+  base::RecordAction(
+      base::UserMetricsAction("TabsSearch.SuggestedActions.SearchOnWeb"));
+
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
+
+  const TemplateURL* defaultURL =
+      templateURLService->GetDefaultSearchProvider();
+
+  TemplateURLRef::SearchTermsArgs search_args(
+      base::SysNSStringToUTF16(self.searchTerms));
+
+  GURL searchUrl(defaultURL->url_ref().ReplaceSearchTerms(
+      search_args, templateURLService->search_terms_data()));
+
+  web::WebState::CreateParams params(self.browserState);
+  auto webState = web::WebState::Create(params);
+  web::WebState* webStatePtr = webState.get();
+
+  self.webStateList->InsertWebState(
+      self.webStateList->count(), std::move(webState),
+      (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
+      WebStateOpener());
+  webStatePtr->OpenURL(web::WebState::OpenURLParams(
+      searchUrl, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));
+
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
 
