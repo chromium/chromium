@@ -44,6 +44,7 @@ non_preprocessed_files = [
   "shortcut_input_test.ts",
   "sidebar_test.ts",
   "site_permissions_add_site_dialog_test.ts",
+  "site_permissions_by_site_test.ts",
   "site_permissions_list_test.ts",
   "site_permissions_test.ts",
   "test_service.ts",

@@ -5,9 +5,10 @@
 /** @fileoverview Suite of tests for extension-site-permissions. */
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsSitePermissionsElement, Service} from 'chrome://extensions/extensions.js';
+import {ExtensionsSitePermissionsElement, navigation, Page, Service} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {testVisible} from './test_util.js';
@@ -15,6 +16,7 @@ import {testVisible} from './test_util.js';
 suite('SitePermissions', function() {
   let element: ExtensionsSitePermissionsElement;
   let delegate: TestService;
+  let listenerId: number = 0;
 
   const userSiteSettings: chrome.developerPrivate.UserSiteSettings = {
     permittedSites: ['http://google.com', 'http://example.com'],
@@ -30,6 +32,13 @@ suite('SitePermissions', function() {
     element = document.createElement('extensions-site-permissions');
     element.delegate = delegate;
     document.body.appendChild(element);
+  });
+
+  teardown(function() {
+    if (listenerId !== 0) {
+      assertTrue(navigation.removeListener(listenerId));
+      listenerId = 0;
+    }
   });
 
   test('user site settings are present', async function() {
@@ -81,5 +90,22 @@ suite('SitePermissions', function() {
     testVisible(restrictedSites!, '#no-sites', false);
     assertEquals(
         1, restrictedSites!.shadowRoot!.querySelectorAll('.site-row').length);
+  });
+
+  test('clicking a link navigates to the all sites page', function() {
+    let currentPage = null;
+    listenerId = navigation.addListener(newPage => {
+      currentPage = newPage;
+    });
+
+    flush();
+    const allSitesLink = element.$.allSitesLink;
+    assertTrue(!!allSitesLink);
+    assertTrue(isVisible(allSitesLink));
+
+    allSitesLink.click();
+    flush();
+
+    assertDeepEquals(currentPage, {page: Page.SITE_PERMISSIONS_ALL_SITES});
   });
 });

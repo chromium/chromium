@@ -21,6 +21,7 @@ import './load_error.js';
 import './options_dialog.js';
 import './sidebar.js';
 import './site_permissions.js';
+import './site_permissions_by_site.js';
 import './toolbar.js';
 // <if expr="chromeos">
 import './kiosk_dialog.js';
@@ -563,7 +564,9 @@ export class ExtensionsManagerElement extends PolymerElement {
 
       this.activityLogItem_ = data ? assert(data) : activityLogPlaceholder;
     } else if (
-        toPage === Page.SITE_PERMISSIONS && !this.enableEnhancedSiteControls) {
+        (toPage === Page.SITE_PERMISSIONS ||
+         toPage === Page.SITE_PERMISSIONS_ALL_SITES) &&
+        !this.enableEnhancedSiteControls) {
       // Redirect back to the main page if we try to view the new site
       // permissions page but the flag is not set.
       navigation.replaceWith({page: Page.LIST});
@@ -632,7 +635,8 @@ export class ExtensionsManagerElement extends PolymerElement {
     if (viewType === 'EXTENSIONS-ITEM-LIST' ||
         viewType === 'EXTENSIONS-KEYBOARD-SHORTCUTS' ||
         viewType === 'EXTENSIONS-ACTIVITY-LOG' ||
-        viewType === 'EXTENSIONS-SITE-PERMISSIONS') {
+        viewType === 'EXTENSIONS-SITE-PERMISSIONS' ||
+        viewType === 'EXTENSIONS-SITE-PERMISSIONS-BY-SITE') {
       return;
     }
 

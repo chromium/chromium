@@ -14,6 +14,7 @@ export enum Page {
   DETAILS = 'details-view',
   ACTIVITY_LOG = 'activity-log',
   SITE_PERMISSIONS = 'site-permissions',
+  SITE_PERMISSIONS_ALL_SITES = 'site-permissions-by-site',
   SHORTCUTS = 'keyboard-shortcuts',
   ERRORS = 'error-page',
 }
@@ -78,6 +79,9 @@ export class NavigationHelper {
     } else if (this.currentPath_ === '/sitePermissions') {
       window.history.replaceState(
           undefined /* stateObject */, '', '/sitePermissions');
+    } else if (this.currentPath_ === '/sitePermissions/allSites') {
+      window.history.replaceState(
+          undefined /* stateObject */, '', '/sitePermissions/allSites');
     } else if (this.currentPath_ !== '/') {
       window.history.replaceState(undefined /* stateObject */, '', '/');
     }
@@ -110,6 +114,9 @@ export class NavigationHelper {
     }
     if (this.currentPath_ === '/sitePermissions') {
       return {page: Page.SITE_PERMISSIONS};
+    }
+    if (this.currentPath_ === '/sitePermissions/allSites') {
+      return {page: Page.SITE_PERMISSIONS_ALL_SITES};
     }
 
     return {page: Page.LIST};
@@ -192,6 +199,9 @@ export class NavigationHelper {
         break;
       case Page.SITE_PERMISSIONS:
         path = '/sitePermissions';
+        break;
+      case Page.SITE_PERMISSIONS_ALL_SITES:
+        path = '/sitePermissions/allSites';
         break;
       case Page.SHORTCUTS:
         path = '/shortcuts';

@@ -182,6 +182,13 @@ suite(extension_manager_tests.suiteName, function() {
         // Should be re-routed to the main page with enableEnhancedSiteControls
         // set to false.
         assertViewActive('extensions-item-list');
+
+        // Try to open the site permissions all-sites page.
+        navigation.navigateTo({page: Page.SITE_PERMISSIONS_ALL_SITES});
+        flush();
+
+        // Should be re-routed to the main page.
+        assertViewActive('extensions-item-list');
       });
 
   test(
@@ -197,5 +204,11 @@ suite(extension_manager_tests.suiteName, function() {
         navigation.navigateTo({page: Page.SITE_PERMISSIONS});
         flush();
         assertViewActive('extensions-site-permissions');
+
+        // Try to open the site permissions all-sites page. The navigation
+        // should succeed.
+        navigation.navigateTo({page: Page.SITE_PERMISSIONS_ALL_SITES});
+        flush();
+        assertViewActive('extensions-site-permissions-by-site');
       });
 });

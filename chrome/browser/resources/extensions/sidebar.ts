@@ -47,7 +47,8 @@ export class ExtensionsSidebarElement extends PolymerElement {
 
     const page = navigation.getCurrentPage().page;
     let selectIndex = 0;
-    if (page === Page.SITE_PERMISSIONS) {
+    if (page === Page.SITE_PERMISSIONS ||
+        page === Page.SITE_PERMISSIONS_ALL_SITES) {
       selectIndex = 1;
     } else if (page === Page.SHORTCUTS) {
       selectIndex = 2;

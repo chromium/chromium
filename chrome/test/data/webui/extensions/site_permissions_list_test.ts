@@ -28,7 +28,7 @@ suite('SitePermissionsList', function() {
     document.body.appendChild(element);
   });
 
-  test('clicking add opens dialog', async function() {
+  test('clicking add opens dialog', function() {
     flush();
     const addSiteButton = element.$.addSite;
     assertTrue(!!addSiteButton);

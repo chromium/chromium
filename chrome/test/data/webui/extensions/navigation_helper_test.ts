@@ -110,6 +110,10 @@ suite(extension_navigation_helper_tests.suiteName, function() {
             url: 'chrome://extensions/sitePermissions',
             state: {page: Page.SITE_PERMISSIONS},
           },
+          sitePermissionsAllSites: {
+            url: 'chrome://extensions/sitePermissions/allSites',
+            state: {page: Page.SITE_PERMISSIONS_ALL_SITES},
+          },
         };
 
         // Test url -> state.

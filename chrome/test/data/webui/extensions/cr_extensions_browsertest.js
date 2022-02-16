@@ -880,6 +880,21 @@ TEST_F('CrExtensionsSitePermissionsTest', 'All', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
+// SitePermissionsBySite tests
+
+var CrExtensionsSitePermissionsBySiteTest =
+    class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_by_site_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrExtensionsSitePermissionsBySiteTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
 // SitePermissionsAddSiteDialog tests
 
 var CrExtensionsSitePermissionsAddSiteDialogTest =

@@ -7,7 +7,7 @@
 
   #no-sites {
     color: var(--cr-secondary-text-color);
-    margin: 24px;
+    margin: var(--cr-section-padding);
   }
 
   .site-row {
@@ -18,7 +18,7 @@
   }
 
   #sites-list {
-    margin-top: 12px;
+    margin: 12px 0;
   }
 
   .site {
@@ -26,10 +26,6 @@
     margin: 0 calc(var(--cr-section-padding) + var(--cr-icon-ripple-margin));
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  cr-icon-button {
-    margin: 0;
   }
 
   .separator {
@@ -42,15 +38,15 @@
   <cr-button id="addSite" on-click="onAddSiteClick_">$i18n{add}</cr-button>
 </div>
 <div id="no-sites" hidden$="[[hasSites_(sites)]]">$i18n{noSitesAdded}</div>
-<div id="sites-list">
+<div id="sites-list" hidden$="[[!hasSites_(sites)]]">
   <template is="dom-repeat" items="[[sites]]">
     <div class="site-row">
       <div class="site-favicon"
           style$="background-image:[[getFaviconUrl_(item)]]"></div>
       <span class="site">[[item]]</span>
-      <cr-icon-button class="subpage-arrow"></cr-icon-button>
+      <cr-icon-button class="subpage-arrow no-overlap"></cr-icon-button>
       <div class="separator"></div>
-      <cr-icon-button class="icon-more-vert"></cr-icon-button>
+      <cr-icon-button class="icon-more-vert no-overlap"></cr-icon-button>
     </div>
   </template>
 </div>
