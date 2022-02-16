@@ -15,7 +15,9 @@
 #include "ash/services/ime/input_engine.h"
 #include "ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "ash/services/ime/public/mojom/ime_service.mojom.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/field_trial_params.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,17 +26,45 @@
 namespace chromeos {
 namespace ime {
 
+class FieldTrialParamsRetriever {
+ public:
+  virtual ~FieldTrialParamsRetriever() = default;
+
+  virtual std::string GetFieldTrialParamValueByFeature(
+      const base::Feature& feature,
+      const std::string& param_name) = 0;
+};
+
+class FieldTrialParamsRetrieverImpl : public FieldTrialParamsRetriever {
+ public:
+  explicit FieldTrialParamsRetrieverImpl() = default;
+  ~FieldTrialParamsRetrieverImpl() override = default;
+  FieldTrialParamsRetrieverImpl(const FieldTrialParamsRetrieverImpl&) = delete;
+  FieldTrialParamsRetrieverImpl& operator=(
+      const FieldTrialParamsRetrieverImpl&) = delete;
+
+  std::string GetFieldTrialParamValueByFeature(
+      const base::Feature& feature,
+      const std::string& param_name) override;
+};
+
 class ImeService : public mojom::ImeService,
                    public mojom::InputEngineManager,
                    public ImeCrosPlatform {
  public:
-  explicit ImeService(mojo::PendingReceiver<mojom::ImeService> receiver,
-                      ImeDecoder* ime_decoder);
+  explicit ImeService(
+      mojo::PendingReceiver<mojom::ImeService> receiver,
+      ImeDecoder* ime_decoder,
+      std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever);
 
   ImeService(const ImeService&) = delete;
   ImeService& operator=(const ImeService&) = delete;
 
   ~ImeService() override;
+
+  // ImeCrosPlatform overrides:
+  const char* GetFieldTrialParamValueByFeature(const char* feature_name,
+                                               const char* param_name) override;
 
  private:
   // mojom::ImeService overrides:
@@ -99,6 +129,8 @@ class ImeService : public mojom::ImeService,
   mojo::ReceiverSet<mojom::InputEngineManager> manager_receivers_;
 
   ImeDecoder* ime_decoder_ = nullptr;
+
+  std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever_;
 };
 
 }  // namespace ime

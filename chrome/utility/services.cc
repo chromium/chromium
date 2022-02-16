@@ -290,7 +290,8 @@ auto RunPrintCompositor(
 auto RunImeService(
     mojo::PendingReceiver<chromeos::ime::mojom::ImeService> receiver) {
   return std::make_unique<chromeos::ime::ImeService>(
-      std::move(receiver), chromeos::ime::ImeDecoderImpl::GetInstance());
+      std::move(receiver), chromeos::ime::ImeDecoderImpl::GetInstance(),
+      std::make_unique<chromeos::ime::FieldTrialParamsRetrieverImpl>());
 }
 
 auto RunRecordingService(

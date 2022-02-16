@@ -115,7 +115,13 @@ class ImeCrosPlatform {
   // required to run in the thread creating its remote.
   virtual void RunInMainSequence(ImeSequencedTask task, int task_id) = 0;
 
-  // Returns whether a Chrome OS experimental feature is enabled or not.
+  // Returns whether a Chrome OS experimental feature is enabled or not. Only a
+  // subset of CrOS features are considered (features not considered appear as
+  // disabled), |feature_name| may or may not correspond to base::Feature::name
+  // of the CrOS feature, and there could be extra logic (see impl for details).
+  // TODO(b/218815885): Use consistent feature flag names as in CrOS
+  // base::Feature::name (instead of slightly-different bespoke names), and
+  // always wire 1:1 to CrOS feature flags (instead of having any extra logic).
   virtual bool IsFeatureEnabled(const char* feature_name) = 0;
 
   // Start a download using |SimpleURLLoader|. Each SimpleDownloadToFileV2 can
@@ -131,6 +137,16 @@ class ImeCrosPlatform {
   // MojoSystemThunks has a stable ABI, hence it is safe to use it from the
   // shared library
   virtual const MojoSystemThunks* GetMojoSystemThunks() = 0;
+
+  // Retrieves the string value of a CrOS feature's Finch param. Only a subset
+  // of CrOS features are considered (see impl for details). |feature_name| is
+  // defined in base::Feature::name for each CrOS feature. If the feature isn't
+  // enabled or isn't considered, or the param doesn't exist, returns an empty
+  // string. Ownership of the returned string is transferred to the caller who
+  // should be in charge of releasing its memory when it's no longer in use.
+  virtual const char* GetFieldTrialParamValueByFeature(
+      const char* feature_name,
+      const char* param_name) = 0;
 
   // TODO(https://crbug.com/837156): Provide Logger for main entry.
 };

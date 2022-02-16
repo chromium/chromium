@@ -11,6 +11,7 @@
 #include "ash/services/ime/public/mojom/input_method.mojom.h"
 #include "ash/services/ime/public/mojom/input_method_host.mojom.h"
 #include "base/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -159,6 +160,21 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
   std::u16string last_composition;
 };
 
+class TestFieldTrialParamsRetriever : public FieldTrialParamsRetriever {
+ public:
+  explicit TestFieldTrialParamsRetriever() = default;
+  ~TestFieldTrialParamsRetriever() override = default;
+  TestFieldTrialParamsRetriever(const TestFieldTrialParamsRetriever&) = delete;
+  TestFieldTrialParamsRetriever& operator=(
+      const TestFieldTrialParamsRetriever&) = delete;
+
+  std::string GetFieldTrialParamValueByFeature(
+      const base::Feature& feature,
+      const std::string& param_name) override {
+    return base::StrCat({feature.name, "::", param_name});
+  }
+};
+
 class ImeServiceAssociatedTest : public testing::Test,
                                  public mojom::InputMethodHost {
  public:
@@ -195,7 +211,8 @@ class ImeServiceAssociatedTest : public testing::Test,
   void SetUp() override {
     service_ = std::make_unique<ImeService>(
         remote_service_.BindNewPipeAndPassReceiver(),
-        TestImeDecoder::GetInstance());
+        TestImeDecoder::GetInstance(),
+        std::make_unique<TestFieldTrialParamsRetriever>());
     remote_service_->BindInputEngineManager(
         remote_manager_.BindNewPipeAndPassReceiver());
   }
@@ -208,9 +225,11 @@ class ImeServiceAssociatedTest : public testing::Test,
   mojo::Remote<mojom::ImeService> remote_service_;
   mojo::Remote<mojom::InputEngineManager> remote_manager_;
 
+ protected:
+  std::unique_ptr<ImeService> service_;
+
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ImeService> service_;
 };
 
 }  // namespace
@@ -801,6 +820,23 @@ TEST_F(ImeServiceAssociatedTest, KhmerKeyboardAltGr) {
         EXPECT_TRUE(mock_host.last_composition.empty());
       }));
   input_method.FlushForTesting();
+}
+
+TEST_F(ImeServiceAssociatedTest,
+       GetFieldTrialParamValueByFeatureNonConsidered) {
+  const char* value = service_->GetFieldTrialParamValueByFeature(
+      "non-considered-feature", "param-name");
+
+  EXPECT_STREQ(value, "");
+  delete[] value;
+}
+
+TEST_F(ImeServiceAssociatedTest, GetFieldTrialParamValueByFeatureConsidered) {
+  const char* value = service_->GetFieldTrialParamValueByFeature(
+      "AutocorrectParamsTuning", "param-name");
+
+  EXPECT_STREQ(value, "AutocorrectParamsTuning::param-name");
+  delete[] value;
 }
 
 }  // namespace ime

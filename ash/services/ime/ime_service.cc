@@ -15,7 +15,6 @@
 #include "ash/services/ime/decoder/system_engine.h"
 #include "ash/services/ime/rule_based_engine.h"
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -55,11 +54,20 @@ bool IsRuleBasedInputMethod(const std::string& engine_id) {
 
 }  // namespace
 
-ImeService::ImeService(mojo::PendingReceiver<mojom::ImeService> receiver,
-                       ImeDecoder* ime_decoder)
+std::string FieldTrialParamsRetrieverImpl::GetFieldTrialParamValueByFeature(
+    const base::Feature& feature,
+    const std::string& param_name) {
+  return base::GetFieldTrialParamValueByFeature(feature, param_name);
+}
+
+ImeService::ImeService(
+    mojo::PendingReceiver<mojom::ImeService> receiver,
+    ImeDecoder* ime_decoder,
+    std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever)
     : receiver_(this, std::move(receiver)),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      ime_decoder_(ime_decoder) {}
+      ime_decoder_(ime_decoder),
+      field_trial_params_retriever_(std::move(field_trial_params_retriever)) {}
 
 ImeService::~ImeService() = default;
 
@@ -205,6 +213,27 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
         chromeos::features::kSystemTransliterationPhysicalTyping);
   }
   return false;
+}
+
+const char* ImeService::GetFieldTrialParamValueByFeature(
+    const char* feature_name,
+    const char* param_name) {
+  char* c_string_value;
+
+  if (strcmp(feature_name, chromeos::features::kAutocorrectParamsTuning.name) ==
+      0) {
+    std::string string_value =
+        field_trial_params_retriever_->GetFieldTrialParamValueByFeature(
+            chromeos::features::kAutocorrectParamsTuning, param_name);
+    c_string_value =
+        new char[string_value.length() + 1];  // extra slot for NULL '\0' char
+    strcpy(c_string_value, string_value.c_str());
+  } else {
+    c_string_value = new char[1];
+    c_string_value[0] = '\0';
+  }
+
+  return c_string_value;
 }
 
 void ImeService::Unused2() {
