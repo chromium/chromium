@@ -7,6 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "base/timer/timer.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/views/notification_input_container.h"
 #include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/notification_view_base.h"
@@ -33,7 +35,8 @@ class IconButton;
 // to displays all current types of notification on ChromeOS (web, basic, image,
 // and list) except custom notification.
 class ASH_EXPORT AshNotificationView
-    : public message_center::NotificationViewBase {
+    : public message_center::NotificationViewBase,
+      public message_center::MessageCenterObserver {
  public:
   static const char kViewClassName[];
 
@@ -166,6 +169,14 @@ class ASH_EXPORT AshNotificationView
     absl::optional<base::Time> timestamp_;
   };
 
+  // message_center::MessageView:
+  views::View* FindGroupNotificationView(
+      const std::string& notification_id) override;
+
+  // message_center::MessageCenterObserver:
+  void OnNotificationRemoved(const std::string& notification_id,
+                             bool by_user) override;
+
   // Create or update the customized snooze button in action buttons row
   // according to the given notification.
   void CreateOrUpdateSnoozeButton(
@@ -256,6 +267,9 @@ class ASH_EXPORT AshNotificationView
   bool is_grouped_child_view_ = false;
   // Whether this view is shown in a notification popup.
   bool shown_in_popup_ = false;
+
+  base::ScopedObservation<message_center::MessageCenter, MessageCenterObserver>
+      message_center_observer_{this};
 
   base::WeakPtrFactory<AshNotificationView> weak_factory_{this};
 };

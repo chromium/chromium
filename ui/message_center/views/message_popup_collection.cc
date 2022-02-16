@@ -705,8 +705,7 @@ bool MessagePopupCollection::HasAddedPopup() const {
       // notification has an existing popup.
       if (notification->group_child()) {
         auto* parent_notification =
-            MessageCenter::Get()->FindParentNotificationForOriginUrl(
-                notification->origin_url());
+            MessageCenter::Get()->FindParentNotification(notification);
 
         return !existing_ids.count(parent_notification->id());
       }

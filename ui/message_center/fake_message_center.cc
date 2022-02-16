@@ -49,8 +49,8 @@ Notification* FakeMessageCenter::FindNotificationById(const std::string& id) {
   return nullptr;
 }
 
-Notification* FakeMessageCenter::FindParentNotificationForOriginUrl(
-    const GURL& notifier_id) {
+Notification* FakeMessageCenter::FindParentNotification(
+    Notification* notification) {
   // stub
   return nullptr;
 }

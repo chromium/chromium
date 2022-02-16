@@ -85,8 +85,10 @@ class NotificationGroupingController
   UnifiedSystemTray* const tray_;
 
   // A data structure that holds all grouped notifications along with their
-  // associations with their parent notifications.
-  std::unique_ptr<GroupedNotificationList> grouped_notification_list_;
+  // associations with their parent notifications. This pointer is assigned to a
+  // static global instance that is shared across all instances of
+  // `NotificationGroupingController`.
+  GroupedNotificationList* const grouped_notification_list_;
 
   base::ScopedObservation<message_center::MessageCenter, MessageCenterObserver>
       observer_{this};
