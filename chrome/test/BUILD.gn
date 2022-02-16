@@ -7705,6 +7705,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/key_management/browser/commands:unit_tests",
       "../browser/enterprise/connectors/device_trust/key_management/core",
       "../browser/enterprise/connectors/device_trust/key_management/core:unit_tests",
+      "../browser/enterprise/connectors/device_trust/key_management/core/network:unit_tests",
       "../browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "../browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
       "../browser/enterprise/connectors/device_trust/key_management/installer:unit_tests",
