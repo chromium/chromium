@@ -63,6 +63,8 @@ TEST_F(FastPairUnpairHandlerTest, DoesntDeleteIfDevicePaired) {
 TEST_F(FastPairUnpairHandlerTest, DeletesExpectedDevice) {
   EXPECT_CALL(*(mock_repository_.get()), DeleteAssociatedDevice(device_.get()))
       .Times(1);
+  ON_CALL(*(mock_repository_.get()), DeleteAssociatedDevice(device_.get()))
+      .WillByDefault(testing::Return(true));
   SetPaired(/*is_paired=*/false);
   NotifyRemoved();
 }
@@ -76,6 +78,9 @@ TEST_F(FastPairUnpairHandlerTest, DoesntEvictIfDevicePaired) {
 TEST_F(FastPairUnpairHandlerTest, EvictsExpectedDevice) {
   EXPECT_CALL(*(mock_repository_.get()), EvictDeviceImages(device_.get()))
       .Times(1);
+  ON_CALL(*(mock_repository_.get()), EvictDeviceImages(device_.get()))
+      .WillByDefault(testing::Return(true));
+
   SetPaired(/*is_paired=*/false);
   NotifyRemoved();
 }
