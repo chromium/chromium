@@ -1591,7 +1591,7 @@
     },
 
     'fieldtrial_browser_tests': {
-      'no_fieldtrial_browser_tests': {
+      'browser_tests_no_field_trial': {
         'args': [
           '--disable-field-trial-config',
         ],
@@ -1599,7 +1599,71 @@
           'shards': 10,
         },
         'test': 'browser_tests',
-      }
+      },
+      'components_browsertests_no_field_trial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'test': 'components_browsertests',
+      },
+      'content_browsertests_no_field_trial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'test': 'content_browsertests',
+      },
+      'interactive_ui_tests_no_field_trial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'test': 'interactive_ui_tests',
+      },
+      'sync_integration_tests_no_field_trial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'test': 'sync_integration_tests',
+      },
+      'xr_browser_tests_no_field_trial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'test': 'xr_browser_tests',
+      },
+    },
+
+    'fieldtrial_isolated_scripts': {
+      'telemetry_perf_unittests_no_field_trial': {
+        'args': [
+          '--xvfb',
+          '--jobs=1',
+          '--extra-browser-args=\'--enable-crashpad --disable-field-trial-config\'',
+        ],
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/549140
+          'shards': 12,
+        },
+        'resultdb': {
+          'enable': True,
+        },
+        'isolate_name': 'telemetry_perf_unittests',
+      },
+      'telemetry_unittests_no_field_trial': {
+        'args': [
+          '--jobs=1',
+          # Disable GPU compositing, telemetry_unittests runs on VMs.
+          # https://crbug.com/871955
+          '--extra-browser-args=\'--disable-gpu --disable-field-trial-config\'',
+        ],
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/549140
+          'shards': 8,
+        },
+        'resultdb': {
+          'enable': True,
+        },
+        'isolate_name': 'telemetry_unittests',
+      },
     },
 
     'finch_smoke_tests': {
