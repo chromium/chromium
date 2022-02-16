@@ -37,7 +37,7 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
       aura::Window* source_window,
       const ui::OSExchangeData& drop_data,
       NewWindowForDetachingTabCallback closure) override;
-  void OpenUrl(const GURL& url, bool from_user_interaction) override;
+  void OpenUrl(const GURL& url, OpenUrlFrom from) override;
   void OpenCalculator() override;
   void OpenFileManager() override;
   void OpenDownloadsFolder() override;

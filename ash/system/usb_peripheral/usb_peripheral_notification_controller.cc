@@ -46,9 +46,10 @@ bool ShouldDisplayNotification() {
 void OnCableNotificationClicked(const std::string& notification_id,
                                 const std::string& landing_page,
                                 absl::optional<int> button_index) {
-  if (button_index)
-    NewWindowDelegate::GetInstance()->OpenUrl(GURL(landing_page),
-                                              /*from_user_interaction=*/true);
+  if (button_index) {
+    NewWindowDelegate::GetInstance()->OpenUrl(
+        GURL(landing_page), NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+  }
 
   message_center::MessageCenter::Get()->RemoveNotification(notification_id,
                                                            /*from_user=*/true);

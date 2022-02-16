@@ -270,7 +270,7 @@ void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
 void QuickAnswersControllerImpl::OpenQuickAnswersSettings() {
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kQuickAnswersSettingsUrl),
-      /*from_user_interaction=*/true);
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 void QuickAnswersControllerImpl::MaybeDismissQuickAnswersConsent() {

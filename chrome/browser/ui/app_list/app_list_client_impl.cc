@@ -644,7 +644,8 @@ void AppListClientImpl::OpenURL(Profile* profile,
       crosapi::UrlHandlerAsh().OpenUrl(sanitized_url);
     } else {
       // Send the url to the current primary browser.
-      ash::NewWindowDelegate::GetPrimary()->OpenUrl(url, true);
+      ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+          url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
     }
   } else {
     NavigateParams params(profile, url, transition);

@@ -35,10 +35,7 @@ constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
-  MOCK_METHOD(void,
-              OpenUrl,
-              (const GURL& url, bool from_user_interaction),
-              (override));
+  MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
 };
 
 }  // namespace
@@ -272,13 +269,10 @@ TEST_F(PhoneHubTrayTest, StartNotificationSetUpFlow) {
 
   // Clicking on the set up button should open the corresponding settings page
   // for the notification set up flow.
-  EXPECT_CALL(new_window_delegate(), OpenUrl)
-      .WillOnce([](const GURL& url, bool from_user_interaction) {
-        EXPECT_EQ(GURL("chrome://os-settings/multidevice/"
-                       "features?showNotificationAccessSetupDialog"),
-                  url);
-        EXPECT_TRUE(from_user_interaction);
-      });
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL("chrome://os-settings/multidevice/"
+                           "features?showNotificationAccessSetupDialog"),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
 
   LeftClickOn(notification_opt_in_set_up_button());
 
@@ -428,12 +422,9 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
 
   // Clicking "Learn More" button should open the corresponding help center
   // article in a browser tab.
-  EXPECT_CALL(new_window_delegate(), OpenUrl)
-      .WillOnce([](const GURL& url, bool from_user_interaction) {
-        EXPECT_EQ(GURL("https://support.google.com/chromebook?p=phone_hub"),
-                  url);
-        EXPECT_TRUE(from_user_interaction);
-      });
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL("https://support.google.com/chromebook?p=phone_hub"),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
 
   // Simulates a click on the "Learn more" button.
   LeftClickOn(disconnected_learn_more_button());
@@ -449,12 +440,9 @@ TEST_F(PhoneHubTrayTest, ClickButtonOnBluetoothDisabledView) {
 
   // Clicking "Learn more" button should open the corresponding help center
   // article in a browser tab.
-  EXPECT_CALL(new_window_delegate(), OpenUrl)
-      .WillOnce([](const GURL& url, bool from_user_interaction) {
-        EXPECT_EQ(GURL("https://support.google.com/chromebook?p=phone_hub"),
-                  url);
-        EXPECT_TRUE(from_user_interaction);
-      });
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL("https://support.google.com/chromebook?p=phone_hub"),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
   // Simulate a click on "Learn more" button.
   LeftClickOn(bluetooth_disabled_learn_more_button());
 }

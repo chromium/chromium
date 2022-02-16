@@ -63,10 +63,19 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
       const ui::OSExchangeData& drop_data,
       NewWindowForDetachingTabCallback closure) = 0;
 
-  // Opens the specified URL in a new tab. If the |from_user_interaction|
-  // is true then the page will load with a user activation. This means the
-  // page will be able to autoplay media without restriction.
-  virtual void OpenUrl(const GURL& url, bool from_user_interaction) = 0;
+  // Opens the specified URL in a new tab.
+  // If the |from| is kUserInteraction then the page will load with a user
+  // activation. This means the page will be able to autoplay media without
+  // restriction.
+  // If the |from| is kArc, then the new window is annotated a special tag,
+  // so that on requesting to opening ARC app from the page, confirmation
+  // dialog will be skipped.
+  enum class OpenUrlFrom {
+    kUnspecified,
+    kUserInteraction,
+    // TODO(crbug.com/1291192): Add kArc support.
+  };
+  virtual void OpenUrl(const GURL& url, OpenUrlFrom from) = 0;
 
   // Invoked when an accelerator (calculator key) is used to open calculator.
   virtual void OpenCalculator() = 0;

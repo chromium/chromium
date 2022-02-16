@@ -204,7 +204,7 @@ void ShowShortcutsChangedNotification() {
           DCHECK_EQ(0, button_index.value());
           NewWindowDelegate::GetInstance()->OpenUrl(
               GURL(kKeyboardShortcutHelpPageUrl),
-              /*from_user_interaction=*/true);
+              NewWindowDelegate::OpenUrlFrom::kUserInteraction);
         } else {
           NewWindowDelegate::GetInstance()->ShowKeyboardShortcutViewer();
         }

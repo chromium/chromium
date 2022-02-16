@@ -67,8 +67,8 @@ void OpenNewTab(const GURL& url) {
   if (!ash::NewWindowDelegate::GetPrimary()) {
     return;
   }
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(url,
-                                                /*from_user_interaction=*/true);
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 // Reads the alternate URL from a GDoc file. When it fails, returns a file URL

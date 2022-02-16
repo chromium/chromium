@@ -256,10 +256,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
   // TestNewWindowDelegate:
   MOCK_METHOD(void, OpenCalculator, (), (override));
   MOCK_METHOD(void, ShowKeyboardShortcutViewer, (), (override));
-  MOCK_METHOD(void,
-              OpenUrl,
-              (const GURL& url, bool from_user_interaction),
-              (override));
+  MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
 };
 
 class MockAcceleratorObserver
@@ -2476,12 +2473,9 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Setup the expectation that the learn more button opens this shortcut
   // help link.
-  EXPECT_CALL(*new_window_delegate_, OpenUrl)
-      .WillOnce([](const GURL& url, bool from_user_interaction) {
-        EXPECT_EQ(GURL(kKeyboardShortcutHelpPageUrl), url);
-        EXPECT_TRUE(from_user_interaction);
-      });
-
+  EXPECT_CALL(*new_window_delegate_,
+              OpenUrl(GURL(kKeyboardShortcutHelpPageUrl),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
   // Clicking the learn more button should trigger the NewWindowDelegate and
   // complete the expectation above.
   notification->delegate()->Click(/*button_index=*/0,

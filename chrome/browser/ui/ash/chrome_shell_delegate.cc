@@ -112,7 +112,8 @@ ChromeShellDelegate::CreateCaptureModeDelegate() const {
 
 void ChromeShellDelegate::OpenKeyboardShortcutHelpPage() const {
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(kKeyboardShortcutHelpPageUrl), /*from_user_interaction=*/true);
+      GURL(kKeyboardShortcutHelpPageUrl),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 bool ChromeShellDelegate::CanGoBack(gfx::NativeWindow window) const {

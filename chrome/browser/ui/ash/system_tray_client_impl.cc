@@ -169,7 +169,8 @@ void OpenInBrowser(const GURL& event_url) {
     return;
   }
 
-  primary_delegate->OpenUrl(event_url, false);
+  primary_delegate->OpenUrl(event_url,
+                            ash::NewWindowDelegate::OpenUrlFrom::kUnspecified);
 }
 
 }  // namespace

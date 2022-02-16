@@ -76,8 +76,9 @@ void EcheAppNotificationController::LaunchSettings() {
 
 void EcheAppNotificationController::LaunchLearnMore() {
   // TODO(crbug.com/1241352): Wait for UX confirm.
-  NewWindowDelegate::GetPrimary()->OpenUrl(GURL(kEcheAppLearnMoreUrl),
-                                           /* from_user_interaction= */ true);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kEcheAppLearnMoreUrl),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 void EcheAppNotificationController::LaunchTryAgain() {

@@ -303,9 +303,8 @@ void ChromeNewWindowClient::NewWindowForDetachingTab(
   std::move(closure).Run(window);
 }
 
-void ChromeNewWindowClient::OpenUrl(const GURL& url,
-                                    bool from_user_interaction) {
-  OpenUrlImpl(url, from_user_interaction);
+void ChromeNewWindowClient::OpenUrl(const GURL& url, OpenUrlFrom from) {
+  OpenUrlImpl(url, from == OpenUrlFrom::kUserInteraction);
 }
 
 void ChromeNewWindowClient::OpenCalculator() {

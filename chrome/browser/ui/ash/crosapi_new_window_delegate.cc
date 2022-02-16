@@ -122,8 +122,8 @@ void CrosapiNewWindowDelegate::NewWindowForDetachingTab(
                                       std::move(closure));
 }
 
-void CrosapiNewWindowDelegate::OpenUrl(const GURL& url,
-                                       bool from_user_interaction) {
+void CrosapiNewWindowDelegate::OpenUrl(const GURL& url, OpenUrlFrom from) {
+  // TODO(crbug.com/1291192): Support ARC.
   crosapi::BrowserManager::Get()->OpenUrl(url);
 }
 

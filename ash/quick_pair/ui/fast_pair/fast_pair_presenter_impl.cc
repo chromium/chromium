@@ -162,8 +162,9 @@ void FastPairPresenterImpl::OnDiscoveryDismissed(DiscoveryCallback callback,
 
 void FastPairPresenterImpl::OnDiscoveryLearnMoreClicked(
     DiscoveryCallback callback) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(GURL(kDiscoveryLearnMoreLink),
-                                           /*from_user_interaction=*/true);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kDiscoveryLearnMoreLink),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
   callback.Run(DiscoveryAction::kLearnMore);
 }
 
@@ -292,8 +293,9 @@ void FastPairPresenterImpl::OnAssociateAccountActionClicked(
 
 void FastPairPresenterImpl::OnAssociateAccountLearnMoreClicked(
     AssociateAccountCallback callback) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(GURL(kAssociateAccountLearnMoreLink),
-                                           /*from_user_interaction=*/true);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kAssociateAccountLearnMoreLink),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
   callback.Run(AssociateAccountAction::kLearnMore);
 }
 

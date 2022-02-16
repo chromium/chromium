@@ -42,8 +42,9 @@ void DriveShareAction::LaunchAction(
   if (!ash::NewWindowDelegate::GetPrimary()) {
     return;
   }
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(intent->drive_share_url.value(),
-                                                /*from_user_interaction=*/true);
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      intent->drive_share_url.value(),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
   controller_->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
 }
 

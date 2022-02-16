@@ -67,7 +67,7 @@ void BluetoothDisabledView::LearnMoreButtonPressed() {
   LogInterstitialScreenEvent(InterstitialScreenEvent::kLearnMore);
   NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(phonehub::kPhoneHubLearnMoreLink),
-      /*from_user_interaction=*/true);
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 BEGIN_METADATA(BluetoothDisabledView, views::View)

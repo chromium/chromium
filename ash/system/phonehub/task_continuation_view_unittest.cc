@@ -24,10 +24,7 @@ using BrowserTabsModel = phonehub::BrowserTabsModel;
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
-  MOCK_METHOD(void,
-              OpenUrl,
-              (const GURL& url, bool from_user_interaction),
-              (override));
+  MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
 };
 
 class DummyEvent : public ui::Event {
@@ -121,11 +118,9 @@ TEST_F(TaskContinuationViewTest, TaskChipsView) {
   for (auto* child : task_view()->chips_view_->children()) {
     ContinueBrowsingChip* chip = static_cast<ContinueBrowsingChip*>(child);
     // OpenUrl is expected to call after button pressed simulation.
-    EXPECT_CALL(new_window_delegate(), OpenUrl)
-        .WillOnce([](const GURL& url, bool from_user_interaction) {
-          EXPECT_EQ(GURL("https://www.example.com/tab1"), url);
-          EXPECT_TRUE(from_user_interaction);
-        });
+    EXPECT_CALL(new_window_delegate(),
+                OpenUrl(GURL("https://www.example.com/tab1"),
+                        NewWindowDelegate::OpenUrlFrom::kUserInteraction));
     // Simulate clicking button using dummy event.
     views::test::ButtonTestApi(chip).NotifyClick(DummyEvent());
   }

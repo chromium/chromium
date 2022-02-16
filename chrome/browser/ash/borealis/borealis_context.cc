@@ -108,7 +108,7 @@ class BorealisLifetimeObserver
   void OnDelayComplete(GURL gurl, std::string app_id) {
     app_delayers_.erase(app_id);
     ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-        gurl, /*from_user_interaction=*/true);
+        gurl, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
   }
 
   Profile* const profile_;

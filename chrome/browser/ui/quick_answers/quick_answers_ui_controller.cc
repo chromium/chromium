@@ -64,7 +64,7 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kGoogleSearchUrlPrefix +
            net::EscapeUrlEncodedData(query_, /*use_plus=*/true)),
-      /*from_user_interaction=*/true);
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
   controller_->OnQuickAnswerClick();
 }
 

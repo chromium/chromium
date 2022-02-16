@@ -24,10 +24,7 @@ namespace {
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
-  MOCK_METHOD(void,
-              OpenUrl,
-              (const GURL& url, bool from_user_interaction),
-              (override));
+  MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
 };
 }  // namespace
 
@@ -115,11 +112,9 @@ TEST_F(WebsiteApprovalNotifierTest, UrlOpensInPrimaryBrowser) {
   std::string expected_url = std::string("https://") + host + "/";
   OnNewWebsiteApproval(host);
   EXPECT_TRUE(HasApprovalNotification(host));
-  EXPECT_CALL(new_window_delegate_primary(), OpenUrl)
-      .WillOnce([&](const GURL& url, bool from_user_interaction) {
-        EXPECT_EQ(expected_url, url);
-        EXPECT_TRUE(from_user_interaction);
-      });
+  EXPECT_CALL(new_window_delegate_primary(),
+              OpenUrl(GURL(expected_url),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
   notification_tester_.SimulateClick(NotificationHandler::Type::TRANSIENT,
                                      GetNotificationId(host),
                                      /*action_index=*/absl::nullopt,

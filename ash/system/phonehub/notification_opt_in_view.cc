@@ -50,8 +50,9 @@ void NotificationOptInView::SetUpButtonPressed() {
   // Opens the notification set up dialog in settings to start the opt in flow.
   LogNotificationOptInEvent(InterstitialScreenEvent::kConfirm);
   // This intentionally uses GetInstance() to open an OS Settings page in ash.
-  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kMultideviceSettingsUrl),
-                                            /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL(kMultideviceSettingsUrl),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 void NotificationOptInView::DismissButtonPressed() {
