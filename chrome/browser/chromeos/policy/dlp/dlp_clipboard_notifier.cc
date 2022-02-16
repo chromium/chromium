@@ -279,7 +279,7 @@ void DlpClipboardNotifier::ShowToast(const std::string& id,
                                      ash::ToastCatalogName catalog_name,
                                      const std::u16string& text) const {
   ash::ToastData toast(
-      id, catalog_name, text, ash::ToastData::kDefaultToastDurationMs,
+      id, catalog_name, text, ash::ToastData::kDefaultToastDuration,
       /*visible_on_lock_screen=*/false,
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_BLOCK_TOAST_BUTTON));
   toast.is_managed = true;

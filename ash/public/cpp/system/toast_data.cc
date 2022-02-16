@@ -6,18 +6,20 @@
 
 #include <utility>
 
+#include "base/time/time.h"
+
 namespace ash {
 
 ToastData::ToastData(std::string id,
                      ToastCatalogName catalog_name,
                      const std::u16string& text,
-                     int32_t duration_ms,
+                     base::TimeDelta duration,
                      bool visible_on_lock_screen,
                      const absl::optional<std::u16string>& dismiss_text)
     : id(std::move(id)),
       catalog_name(catalog_name),
       text(text),
-      duration_ms(duration_ms),
+      duration(std::max(duration, kMinimumDuration)),
       visible_on_lock_screen(visible_on_lock_screen),
       dismiss_text(dismiss_text) {}
 

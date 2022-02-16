@@ -184,7 +184,7 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
     case DEBUG_SHOW_TOAST:
       Shell::Get()->toast_manager()->Show(ToastData(
           /*id=*/"id", ToastCatalogName::kDebugCommand, /*text=*/u"Toast",
-          ToastData::kDefaultToastDurationMs,
+          ToastData::kDefaultToastDuration,
           /*visible_on_lock_screen=*/false, /*dismiss_text=*/u"Dismiss"));
       break;
     case DEBUG_TOGGLE_TOUCH_PAD:

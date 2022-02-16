@@ -54,9 +54,9 @@ class CrostiniUnsupportedActionNotifier
     virtual std::string GetLocalizedDisplayName(
         const ash::input_method::InputMethodDescriptor& descriptor);
 
-    // How long in milliseconds toasts should be displayed for. Timing varies
-    // depending on e.g. whether screen magnification is enabled.
-    virtual int ToastTimeoutMs();
+    // How long toasts should be displayed for. Timing varies depending on
+    // e.g. whether screen magnification is enabled.
+    virtual base::TimeDelta ToastTimeout();
 
     virtual void AddFocusObserver(aura::client::FocusChangeObserver* observer);
     virtual void RemoveFocusObserver(

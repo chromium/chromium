@@ -99,7 +99,7 @@ class ToastManagerImplTest : public AshTestBase {
   }
 
   std::string ShowToast(const std::string& text,
-                        int32_t duration,
+                        base::TimeDelta duration,
                         bool visible_on_lock_screen = false) {
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
     manager()->Show(ToastData(id, ToastCatalogName::kToastManagerUnittest,
@@ -110,7 +110,7 @@ class ToastManagerImplTest : public AshTestBase {
 
   std::string ShowToastWithDismiss(
       const std::string& text,
-      int32_t duration,
+      base::TimeDelta duration,
       const absl::optional<std::string>& dismiss_text) {
     absl::optional<std::u16string> localized_dismiss;
     if (dismiss_text.has_value())
@@ -128,7 +128,7 @@ class ToastManagerImplTest : public AshTestBase {
 
   void ReplaceToast(const std::string& id,
                     const std::string& text,
-                    int32_t duration,
+                    base::TimeDelta duration,
                     bool visible_on_lock_screen = false) {
     manager()->Show(ToastData(id, ToastCatalogName::kToastManagerUnittest,
                               base::ASCIIToUTF16(text), duration,
@@ -148,7 +148,7 @@ class ToastManagerImplTest : public AshTestBase {
 };
 
 TEST_F(ToastManagerImplTest, ShowAndCloseAutomatically) {
-  ShowToast("DUMMY", 10);
+  ShowToast("DUMMY", base::Milliseconds(10));
 
   EXPECT_EQ(1, GetToastSerial());
 
@@ -192,16 +192,17 @@ TEST_F(ToastManagerImplTest, DISABLED_ShowAndCloseManuallyDuringAnimation) {
 
 // TODO(crbug.com/959781): Test is flaky.
 TEST_F(ToastManagerImplTest, DISABLED_NullMessageHasNoDismissButton) {
-  ShowToastWithDismiss("DUMMY", 10, absl::optional<std::string>());
+  ShowToastWithDismiss("DUMMY", base::Milliseconds(10),
+                       absl::optional<std::string>());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetDismissButton());
 }
 
 // TODO(crbug.com/959781): Test is flaky.
 TEST_F(ToastManagerImplTest, DISABLED_QueueMessage) {
-  ShowToast("DUMMY1", 10);
-  ShowToast("DUMMY2", 10);
-  ShowToast("DUMMY3", 10);
+  ShowToast("DUMMY1", base::Milliseconds(10));
+  ShowToast("DUMMY2", base::Milliseconds(10));
+  ShowToast("DUMMY3", base::Milliseconds(10));
 
   EXPECT_EQ(1, GetToastSerial());
   EXPECT_EQ(u"DUMMY1", GetCurrentText());

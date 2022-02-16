@@ -400,7 +400,7 @@ void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
           kCameraPrivacySwitchOnToastId,
           ash::ToastCatalogName::kCameraPrivacySwitchOn,
           l10n_util::GetStringUTF16(IDS_CAMERA_PRIVACY_SWITCH_ON_TOAST),
-          ash::ToastData::kDefaultToastDurationMs,
+          ash::ToastData::kDefaultToastDuration,
           /*visible_on_lock_screen=*/true);
       ash::ToastManager::Get()->Show(toast);
       break;
@@ -436,7 +436,7 @@ void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
           kCameraPrivacySwitchOffToastId,
           ash::ToastCatalogName::kCameraPrivacySwitchOff,
           l10n_util::GetStringUTF16(IDS_CAMERA_PRIVACY_SWITCH_OFF_TOAST),
-          ash::ToastData::kDefaultToastDurationMs,
+          ash::ToastData::kDefaultToastDuration,
           /*visible_on_lock_screen=*/true);
       ash::ToastManager::Get()->Show(toast);
       break;

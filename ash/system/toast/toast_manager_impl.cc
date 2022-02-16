@@ -11,15 +11,9 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 
 namespace ash {
-
-namespace {
-
-// Minimum duration for a toast to be visible (in millisecond).
-const int32_t kMinimumDurationMs = 200;
-
-}  // anonymous namespace
 
 ToastManagerImpl::ToastManagerImpl()
     : locked_(Shell::Get()->session_controller()->IsScreenLocked()) {}
@@ -100,14 +94,12 @@ void ToastManagerImpl::ShowLatest() {
       current_toast_data_->is_managed, current_toast_data_->dismiss_callback);
   overlay_->Show(true);
 
-  if (current_toast_data_->duration_ms != ToastData::kInfiniteDuration) {
-    int32_t duration_ms =
-        std::max(current_toast_data_->duration_ms, kMinimumDurationMs);
+  if (current_toast_data_->duration != ToastData::kInfiniteDuration) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ToastManagerImpl::OnDurationPassed,
                        weak_ptr_factory_.GetWeakPtr(), serial_),
-        base::Milliseconds(duration_ms));
+        current_toast_data_->duration);
   }
 }
 

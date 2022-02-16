@@ -424,6 +424,7 @@ source_set("unit_tests") {
     "pagination/pagination_model_unittest.cc",
     "power_utils_unittest.cc",
     "shelf_model_unittest.cc",
+    "system/toast_data_unittest.cc",
     "tab_cluster/clusterer_unittest.cc",
     "tab_cluster/correlation_clusterer_unittest.cc",
     "tab_cluster/undirected_graph_unittest.cc",

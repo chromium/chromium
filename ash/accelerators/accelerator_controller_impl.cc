@@ -222,7 +222,7 @@ void NotifyShortcutChangesInRelease(PrefService* pref_service) {
 void ShowToast(std::string id,
                ToastCatalogName catalog_name,
                const std::u16string& text) {
-  ToastData toast(id, catalog_name, text, ToastData::kDefaultToastDurationMs,
+  ToastData toast(id, catalog_name, text, ToastData::kDefaultToastDuration,
                   /*visible_on_lock_screen=*/true);
   Shell::Get()->toast_manager()->Show(toast);
 }
