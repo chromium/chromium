@@ -7,6 +7,8 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -115,36 +117,46 @@ void KeyboardLock::LockRequestFinished(
     ScriptPromiseResolver* resolver,
     mojom::KeyboardLockRequestResult result) {
   DCHECK(request_keylock_resolver_);
+  DCHECK(resolver);
+
+  ScriptState* script_state = resolver->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     script_state))
+    return;
+
+  ScriptState::Scope script_state_scope(script_state);
 
   // If |resolver| is not the current promise, then reject the promise.
   if (resolver != request_keylock_resolver_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, kKeyboardLockPromisePreemptedErrorMsg));
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        script_state->GetIsolate(), DOMExceptionCode::kAbortError,
+        kKeyboardLockPromisePreemptedErrorMsg));
     return;
   }
 
   switch (result) {
-    case mojom::KeyboardLockRequestResult::kSuccess:
-      request_keylock_resolver_->Resolve();
+    case mojom::blink::KeyboardLockRequestResult::kSuccess:
+      resolver->Resolve();
       break;
-    case mojom::KeyboardLockRequestResult::kFrameDetachedError:
-      request_keylock_resolver_->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError,
+    case mojom::blink::KeyboardLockRequestResult::kFrameDetachedError:
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
           kKeyboardLockFrameDetachedErrorMsg));
       break;
-    case mojom::KeyboardLockRequestResult::kNoValidKeyCodesError:
-      request_keylock_resolver_->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidAccessError,
+    case mojom::blink::KeyboardLockRequestResult::kNoValidKeyCodesError:
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
           kKeyboardLockNoValidKeyCodesErrorMsg));
       break;
-    case mojom::KeyboardLockRequestResult::kChildFrameError:
-      request_keylock_resolver_->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError,
+    case mojom::blink::KeyboardLockRequestResult::kChildFrameError:
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
           kKeyboardLockChildFrameErrorMsg));
       break;
-    case mojom::KeyboardLockRequestResult::kRequestFailedError:
-      request_keylock_resolver_->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError,
+    case mojom::blink::KeyboardLockRequestResult::kRequestFailedError:
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
           kKeyboardLockRequestFailedErrorMsg));
       break;
   }
