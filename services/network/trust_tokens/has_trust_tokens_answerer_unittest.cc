@@ -9,6 +9,7 @@
 #include "services/network/public/cpp/trust_token_parameterization.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/pending_trust_token_store.h"
+#include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,11 +18,36 @@
 
 namespace network {
 
+class TestTrustTokenKeyCommitmentGetter
+    : virtual public SynchronousTrustTokenKeyCommitmentGetter {
+ public:
+  explicit TestTrustTokenKeyCommitmentGetter(
+      std::vector<std::string> const& keys)
+      : result_(mojom::TrustTokenKeyCommitmentResult::New()) {
+    for (auto const& ki : keys) {
+      auto key = mojom::TrustTokenVerificationKey::New();
+      key->body = ki;
+      result_->keys.push_back(std::move(key));
+    }
+  }
+
+  mojom::TrustTokenKeyCommitmentResultPtr GetSync(
+      const url::Origin& origin) const override {
+    return result_->Clone();
+  }
+
+ private:
+  mojom::TrustTokenKeyCommitmentResultPtr result_;
+};
+
 TEST(HasTrustTokensAnswerer, HandlesInsecureIssuerOrigin) {
   PendingTrustTokenStore pending_store;
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(
+          std::vector<std::string>{"issuing key"});
   auto answerer = std::make_unique<HasTrustTokensAnswerer>(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com")),
-      &pending_store);
+      &pending_store, key_commitment_getter.get());
 
   mojom::HasTrustTokensResultPtr result;
 
@@ -39,9 +65,12 @@ TEST(HasTrustTokensAnswerer, HandlesInsecureIssuerOrigin) {
 
 TEST(HasTrustTokensAnswerer, HandlesNonHttpNonHttpsIssuerOrigin) {
   PendingTrustTokenStore pending_store;
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(
+          std::vector<std::string>{"issuing key"});
   auto answerer = std::make_unique<HasTrustTokensAnswerer>(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com")),
-      &pending_store);
+      &pending_store, key_commitment_getter.get());
 
   mojom::HasTrustTokensResultPtr result;
 
@@ -75,8 +104,11 @@ TEST(HasTrustTokensAnswerer, HandlesFailureToAssociateIssuer) {
 
   PendingTrustTokenStore pending_store;
   pending_store.OnStoreReady(std::move(store));
-  auto answerer =
-      std::make_unique<HasTrustTokensAnswerer>(kToplevel, &pending_store);
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(
+          std::vector<std::string>{"issuing key"});
+  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+      kToplevel, &pending_store, key_commitment_getter.get());
 
   mojom::HasTrustTokensResultPtr result;
 
@@ -106,13 +138,14 @@ TEST(HasTrustTokensAnswerer, SuccessWithNoTokens) {
   PendingTrustTokenStore pending_store;
   pending_store.OnStoreReady(std::move(store));
 
-  auto answerer =
-      std::make_unique<HasTrustTokensAnswerer>(kToplevel, &pending_store);
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(
+          std::vector<std::string>{"issuing key"});
+  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+      kToplevel, &pending_store, key_commitment_getter.get());
 
   mojom::HasTrustTokensResultPtr result;
 
-  // Since there's no capacity to associate the issuer with the top-level
-  // origin, the operation should fail.
   answerer->HasTrustTokens(
       kIssuer, base::BindLambdaForTesting(
                    [&](mojom::HasTrustTokensResultPtr obtained_result) {
@@ -138,18 +171,20 @@ TEST(HasTrustTokensAnswerer, SuccessWithTokens) {
 
   PendingTrustTokenStore pending_store;
   pending_store.OnStoreReady(std::move(store));
-  auto answerer =
-      std::make_unique<HasTrustTokensAnswerer>(kToplevel, &pending_store);
+
+  const std::string issuing_key = "issuing key";
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(
+          std::vector<std::string>{issuing_key});
+  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+      kToplevel, &pending_store, key_commitment_getter.get());
 
   // Populate the store, giving the issuer a key commitment for the key "issuing
   // key" and a token issued with that key.
-  raw_store->AddTokens(kIssuer, std::vector<std::string>{"token"},
-                       "issuing key");
+  raw_store->AddTokens(kIssuer, std::vector<std::string>{"token"}, issuing_key);
 
   mojom::HasTrustTokensResultPtr result;
 
-  // Since there's no capacity to associate the issuer with the top-level
-  // origin, the operation should fail.
   answerer->HasTrustTokens(
       kIssuer, base::BindLambdaForTesting(
                    [&](mojom::HasTrustTokensResultPtr obtained_result) {
@@ -159,6 +194,137 @@ TEST(HasTrustTokensAnswerer, SuccessWithTokens) {
   ASSERT_TRUE(result);
   EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kOk);
   EXPECT_TRUE(result->has_trust_tokens);
+}
+
+TEST(HasTrustTokensAnswerer, SuccessWithNoTokensAllKeysAreInvalid) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+  TrustTokenStore* raw_store = store.get();
+
+  const SuitableTrustTokenOrigin kIssuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
+  const SuitableTrustTokenOrigin kToplevel =
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
+
+  PendingTrustTokenStore pending_store;
+  pending_store.OnStoreReady(std::move(store));
+
+  const std::vector<std::string> invalid_issuing_keys = {"key1", "key2"};
+  const std::vector<std::string> valid_issuing_keys = {"key3"};
+
+  // create test commitment getter with the valid key
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(valid_issuing_keys);
+  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+      kToplevel, &pending_store, key_commitment_getter.get());
+
+  // store tokens with invalid keys
+  raw_store->AddTokens(kIssuer, std::vector<std::string>{"token1"},
+                       invalid_issuing_keys[0]);
+  raw_store->AddTokens(kIssuer, std::vector<std::string>{"token2", "token3"},
+                       invalid_issuing_keys[1]);
+
+  mojom::HasTrustTokensResultPtr result;
+
+  // Answerer should return no tokens. It should also prune the three tokens
+  // stored in pending_store with invalid keys.
+  answerer->HasTrustTokens(
+      kIssuer, base::BindLambdaForTesting(
+                   [&](mojom::HasTrustTokensResultPtr obtained_result) {
+                     result = std::move(obtained_result);
+                   }));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kOk);
+  EXPECT_FALSE(result->has_trust_tokens);
+  EXPECT_EQ(raw_store->CountTokens(kIssuer), 0);
+}
+
+TEST(HasTrustTokensAnswerer, SuccessWithTokensSomeKeysAreInvalid) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+  TrustTokenStore* raw_store = store.get();
+
+  const SuitableTrustTokenOrigin kIssuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
+  const SuitableTrustTokenOrigin kToplevel =
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
+
+  PendingTrustTokenStore pending_store;
+  pending_store.OnStoreReady(std::move(store));
+
+  const std::vector<std::string> invalid_issuing_keys = {"key1", "key2"};
+  const std::vector<std::string> valid_issuing_keys = {"key3", "key4"};
+
+  // create test commitment getter with the valid keys
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(valid_issuing_keys);
+  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+      kToplevel, &pending_store, key_commitment_getter.get());
+
+  // store three tokens with invalid issuing keys
+  raw_store->AddTokens(kIssuer, std::vector<std::string>{"token1"},
+                       invalid_issuing_keys[0]);
+  raw_store->AddTokens(kIssuer, std::vector<std::string>{"token2", "token3"},
+                       invalid_issuing_keys[1]);
+  // store two tokens with valid issuing keys
+  raw_store->AddTokens(kIssuer, std::vector<std::string>{"token4"},
+                       valid_issuing_keys[0]);
+  raw_store->AddTokens(kIssuer, std::vector<std::string>{"token5"},
+                       valid_issuing_keys[1]);
+
+  mojom::HasTrustTokensResultPtr result;
+
+  answerer->HasTrustTokens(
+      kIssuer, base::BindLambdaForTesting(
+                   [&](mojom::HasTrustTokensResultPtr obtained_result) {
+                     result = std::move(obtained_result);
+                   }));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kOk);
+  EXPECT_TRUE(result->has_trust_tokens);
+  // token4 and token5 are in store. token1, token2 and token3 are pruned
+  EXPECT_EQ(raw_store->CountTokens(kIssuer), 2);
+}
+
+TEST(HasTrustTokensAnswerer, SuccessWithNoTokensNoCommitmentsForIssuer) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+  TrustTokenStore* raw_store = store.get();
+
+  const SuitableTrustTokenOrigin kIssuer1 =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer1.com"));
+  const SuitableTrustTokenOrigin kIssuer2 =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer2.com"));
+  const SuitableTrustTokenOrigin kToplevel =
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
+
+  PendingTrustTokenStore pending_store;
+  pending_store.OnStoreReady(std::move(store));
+
+  const std::vector<std::string> issuing_keys = {"key1"};
+
+  auto key_commitment_getter =
+      std::make_unique<TestTrustTokenKeyCommitmentGetter>(issuing_keys);
+  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+      kToplevel, &pending_store, key_commitment_getter.get());
+
+  // store tokens with issuer 1
+  raw_store->AddTokens(kIssuer1, std::vector<std::string>{"token1", "token2"},
+                       issuing_keys[0]);
+
+  mojom::HasTrustTokensResultPtr result;
+
+  // ask whether issuer 2 has any tokens
+  answerer->HasTrustTokens(
+      kIssuer2, base::BindLambdaForTesting(
+                    [&](mojom::HasTrustTokensResultPtr obtained_result) {
+                      result = std::move(obtained_result);
+                    }));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kOk);
+  EXPECT_FALSE(result->has_trust_tokens);
+  // token1 and token2 stored with issuer 1 are in store.
+  EXPECT_EQ(raw_store->CountTokens(kIssuer1), 2);
 }
 
 }  // namespace network

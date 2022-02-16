@@ -15,6 +15,8 @@
 
 namespace network {
 
+class SynchronousTrustTokenKeyCommitmentGetter;
+
 // HasTrustTokensAnswerer is a class bound to a top-level origin, able to answer
 // queries about whether the user possesses trust tokens issued by any issuer
 // origin associated with the top-level origin.
@@ -26,8 +28,10 @@ namespace network {
 class HasTrustTokensAnswerer : public mojom::HasTrustTokensAnswerer {
  public:
   // Constructs a new answerer bound to the given top frame origin.
-  HasTrustTokensAnswerer(SuitableTrustTokenOrigin top_frame_origin,
-                         PendingTrustTokenStore* pending_trust_token_store);
+  HasTrustTokensAnswerer(
+      SuitableTrustTokenOrigin top_frame_origin,
+      PendingTrustTokenStore* pending_trust_token_store,
+      const SynchronousTrustTokenKeyCommitmentGetter* key_commitment_getter);
 
   ~HasTrustTokensAnswerer() override;
 
@@ -49,6 +53,8 @@ class HasTrustTokensAnswerer : public mojom::HasTrustTokensAnswerer {
 
   const SuitableTrustTokenOrigin top_frame_origin_;
   raw_ptr<PendingTrustTokenStore> pending_trust_token_store_;
+  raw_ptr<const SynchronousTrustTokenKeyCommitmentGetter> const
+      key_commitment_getter_;
 
   base::WeakPtrFactory<HasTrustTokensAnswerer> weak_factory_{this};
 };
