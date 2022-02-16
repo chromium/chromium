@@ -60,7 +60,7 @@ function openColorPicker() {
   doc.documentElement.innerHTML = `
     <head>
       <meta charset='UTF-8'>
-      <link rel=stylesheet href="../../renderer/core/html/forms/resources/pickerCommon.css">
+      <link rel=stylesheet href="../../renderer/core/html/forms/resources/picker_common.css">
       <link rel=stylesheet href="../../renderer/core/html/forms/resources/color_picker.css">
     </head>
     <body>
@@ -69,7 +69,7 @@ function openColorPicker() {
   `;
 
   const pickerCommon = doc.createElement('script');
-  pickerCommon.src = "../../renderer/core/html/forms/resources/pickerCommon.js";
+  pickerCommon.src = "../../renderer/core/html/forms/resources/picker_common.js";
   doc.body.appendChild(pickerCommon);
 
   const colorPicker = doc.createElement('script');

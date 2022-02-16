@@ -3006,7 +3006,6 @@ YearListView.prototype.highlightMonth = function(month) {
 };
 
 YearListView.prototype.setSelectedMonth = function(month) {
-
   var oldMonthButton = this.buttonForMonth(this._selectedMonth);
   if (oldMonthButton) {
     oldMonthButton.classList.remove(YearListCell.ClassNameSelected);

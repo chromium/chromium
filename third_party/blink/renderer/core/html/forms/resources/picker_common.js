@@ -150,8 +150,7 @@ function _adjustWindowRectVertically(
   availableSpaceBelow =
       Math.max(0, Math.min(availRect.height, availableSpaceBelow));
 
-  if (
-      windowRect.height > availableSpaceBelow &&
+  if (windowRect.height > availableSpaceBelow &&
       availableSpaceBelow < availableSpaceAbove) {
     windowRect.height = Math.min(windowRect.height, availableSpaceAbove);
     windowRect.height = Math.max(windowRect.height, minHeight);
