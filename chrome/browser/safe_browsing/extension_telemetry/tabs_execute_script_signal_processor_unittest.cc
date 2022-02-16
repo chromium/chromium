@@ -127,6 +127,46 @@ TEST_F(TabsExecuteScriptSignalProcessorTest, ReportsSignalInfoCorrectly) {
   }
 }
 
+TEST_F(TabsExecuteScriptSignalProcessorTest, EnforcesMaxScriptHashesLimit) {
+  // Set script hashes limit to 1 for testing.
+  processor_.SetMaxScriptHashesForTest(1);
+
+  // Process 3 signals for same extension:
+  // - signals 1,2 each have the same script hash.
+  // - signals 3 has a different script hash.
+  auto signal1 = std::make_unique<TabsExecuteScriptSignal>(
+      kExtensionId[0], script_data_[0].code);
+  auto signal2 = std::make_unique<TabsExecuteScriptSignal>(
+      kExtensionId[0], script_data_[0].code);
+  auto signal3 = std::make_unique<TabsExecuteScriptSignal>(
+      kExtensionId[0], script_data_[1].code);
+  processor_.ProcessSignal(std::move(signal1));
+  processor_.ProcessSignal(std::move(signal2));
+  processor_.ProcessSignal(std::move(signal3));
+
+  // Verify that processor now has some data to report.
+  EXPECT_TRUE(processor_.HasDataToReportForTest());
+
+  // Retrieve signal info.
+  std::unique_ptr<SignalInfo> extension_signal_info =
+      processor_.GetSignalInfoForReport(kExtensionId[0]);
+  ASSERT_NE(extension_signal_info, nullptr);
+
+  // Verify signal info contents for the extension.
+  // - there should be only 1 script hash with execution count of 2.
+  // - signal3 is ignored because of the max script hash limit of 1, the max
+  //   exceeded count should be 1.
+  const TabsExecuteScriptInfo& tabs_execute_script_info =
+      extension_signal_info->tabs_execute_script_info();
+
+  ASSERT_EQ(tabs_execute_script_info.scripts_size(), 1);
+  const ScriptInfo& script_info = tabs_execute_script_info.scripts(0);
+  EXPECT_EQ(script_info.hash(), script_data_[0].hash);
+  EXPECT_EQ(script_info.execution_count(), static_cast<uint32_t>(2));
+  EXPECT_EQ(tabs_execute_script_info.max_exceeded_script_count(),
+            static_cast<uint32_t>(1));
+}
+
 }  // namespace
 
 }  // namespace safe_browsing

@@ -1621,11 +1621,15 @@ message ExtensionTelemetryReportRequest {
     message TabsExecuteScriptInfo {
       message ScriptInfo {
         optional bytes hash = 1;
-        // number of times script has been executed since
-        // last report/browser start
+        // Number of times this script has been executed since
+        // last report/browser start. This number is limited to
+        // a configurable maximum (default max is 100).
         optional uint32 execution_count = 2;
       }
       repeated ScriptInfo scripts = 1;
+      // The number of scripts that were not recorded because the max count was
+      // exceeded.
+      optional uint32 max_exceeded_script_count = 2;
     }
 
     optional TabsExecuteScriptInfo tabs_execute_script_info = 1;
