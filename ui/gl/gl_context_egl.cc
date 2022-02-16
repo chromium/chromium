@@ -123,16 +123,13 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
 
   display_ = compatible_surface->GetDisplay();
 
+  EGLint context_client_major_version = attribs.client_major_es_version;
+  EGLint context_client_minor_version = attribs.client_minor_es_version;
+
   // Always prefer to use EGL_KHR_no_config_context so that all surfaces and
   // contexts are compatible
   if (!GLSurfaceEGL::IsEGLNoConfigContextSupported()) {
     config_ = compatible_surface->GetConfig();
-  }
-
-  EGLint context_client_major_version = attribs.client_major_es_version;
-  EGLint context_client_minor_version = attribs.client_minor_es_version;
-
-  if (config_) {
     EGLint config_renderable_type = 0;
     if (!eglGetConfigAttrib(display_, config_, EGL_RENDERABLE_TYPE,
                             &config_renderable_type)) {

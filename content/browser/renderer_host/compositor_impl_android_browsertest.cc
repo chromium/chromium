@@ -190,7 +190,7 @@ class CompositorSwapRunLoop {
 };
 
 IN_PROC_BROWSER_TEST_P(CompositorImplLowEndBrowserTest,
-                       DISABLED_CompositorImplDropsResourcesOnBackground) {
+                       CompositorImplDropsResourcesOnBackground) {
   auto* rwhva = render_widget_host_view_android();
   auto* compositor = compositor_impl();
   auto context = GpuBrowsertestCreateContext(
