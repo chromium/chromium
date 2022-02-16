@@ -79,16 +79,20 @@ if (enable_rust) {
   }
 }
 
-# Has a Rust toolchain available in the build by default.
-toolchain_has_official_rust =
+# Platform support for "official" toolchains (Android or Chromium)
+android_toolchain_supports_platform =
     (!is_nacl &&
      (is_android && (current_cpu == "arm" || current_cpu == "arm64" ||
                      current_cpu == "x64" || current_cpu == "x86"))) ||
     (is_linux && current_cpu == "x64")
+chromium_toolchain_supports_platform =
+    !is_nacl && is_linux && current_cpu == "x64"
 
 toolchain_has_rust =
-    enable_rust && (toolchain_has_official_rust ||
-                    use_chromium_rust_toolchain || rust_sysroot_absolute != "")
+    enable_rust &&
+    ((use_chromium_rust_toolchain && chromium_toolchain_supports_platform) ||
+     (!use_chromium_rust_toolchain && android_toolchain_supports_platform) ||
+     rust_sysroot_absolute != "")
 
 # We use the Rust linker for building test executables, so we only build them
 # if we're able to use the Rust linker. We could use the C++ linker for this
@@ -106,20 +110,15 @@ if (enable_rust) {
     if (host_os != "linux") {
       assert(
           false,
-          "Attempt to use standard Rust toolchain on an unsupported platform")
-    }
-    if (!is_linux || current_cpu != "x64") {
-      assert(false,
-             "Attempt to use Chromium Rust toolchain for unsupported target")
+          "Attempt to use Chromium Rust toolchain on an unsupported platform")
     }
 
     rust_sysroot = "//third_party/rust-toolchain"
     use_unverified_rust_toolchain = false
   } else {
     if (host_os != "linux") {
-      assert(
-          false,
-          "Attempt to use standard Rust toolchain on an unsupported platform")
+      assert(false,
+             "Attempt to use Android Rust toolchain on an unsupported platform")
     }
 
     rust_sysroot = "//third_party/android_rust_toolchain/toolchain"
@@ -133,11 +132,10 @@ if (enable_rust) {
 # also by //build/rust/std to find the Rust standard library.
 #
 # The list of architectures supported by Rust is here:
-# https://doc.rust-lang.org/nightly/rustc/platform-support.html
-# Although most of these are not yet supported by our limited
-# official Rust toolchain (see 'toolchain_has_official_rust' above)
-# it's useful to be able to experiment with our other platforms,
-# so we try to be comprehensive here.
+# https://doc.rust-lang.org/nightly/rustc/platform-support.html.
+# We map Chromium targets to Rust targets comprehensively despite not having
+# official support (see '*_toolchain_supports_platform above') to enable
+# experimentation with other toolchains.
 #
 # It's OK if rust_abi_target is blank. That means we're building for the host
 # and the host stdlib will be used.

@@ -53,8 +53,8 @@ from update import (CHROMIUM_DIR, CLANG_REVISION, CLANG_SUB_REVISION,
                     LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
 import build
 
-# Trunk on 1/31/2021
-RUST_REVISION = '24b8bb1'
+# Trunk on 2/10/2021
+RUST_REVISION = '502d6aa'
 RUST_SUB_REVISION = 1
 
 PACKAGE_VERSION = '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION,
@@ -245,7 +245,8 @@ def main():
 
   if not args.skip_install:
     # Clean output directory.
-    shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
+    if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
+      shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
 
     RunXPy('install',
            ['--stage', '1', '--keep-stage', '1'] + DISTRIBUTION_ARTIFACTS,
