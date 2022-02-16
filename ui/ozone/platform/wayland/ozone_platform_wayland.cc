@@ -324,6 +324,12 @@ class OzonePlatformWayland : public OzonePlatform,
       // accelerated widget to occlude contents below.
       properties.needs_background_image =
           ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
+
+      if (surface_factory_) {
+        DCHECK(has_initialized_gpu());
+        properties.supports_native_pixmaps =
+            surface_factory_->SupportsNativePixmaps();
+      }
     } else if (buffer_manager_) {
       DCHECK(has_initialized_gpu());
       // These properties are set when the GetPlatformRuntimeProperties is

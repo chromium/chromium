@@ -249,7 +249,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 
   // Determines whether Wayland server supports Wayland protocols that allow to
   // export wl_buffers backed by dmabuf.
-  bool supports_dmabuf_ = false;
+  bool supports_dmabuf_ = true;
 
   mojo::ReceiverSet<ozone::mojom::WaylandBufferManagerGpu> receiver_set_;
 

@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/overlay_priority_hint.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/ozone/public/overlay_plane.h"
@@ -313,8 +314,13 @@ void WaylandBufferManagerGpu::DestroyBuffer(gfx::AcceleratedWidget widget,
 
 #if defined(WAYLAND_GBM)
 GbmDevice* WaylandBufferManagerGpu::GetGbmDevice() {
-  if (!supports_dmabuf_)
+  // Wayland won't support wl_drm or zwp_linux_dmabuf without this extension.
+  if (!supports_dmabuf_ ||
+      (!gl::GLSurfaceEGL::HasEGLExtension("EGL_EXT_image_dma_buf_import") &&
+       !use_fake_gbm_device_for_test_)) {
+    supports_dmabuf_ = false;
     return nullptr;
+  }
 
   if (gbm_device_ || use_fake_gbm_device_for_test_)
     return gbm_device_.get();
