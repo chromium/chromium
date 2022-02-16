@@ -39,7 +39,6 @@ ts_files = [
              "shared/nux_types.ts",
              "signin_view_proxy.ts",
              "welcome_browser_proxy.ts",
-             "welcome.ts",
            ] + web_component_files
 
 css_wrapper_files = [
