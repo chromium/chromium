@@ -702,7 +702,12 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecifics& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordWithLocalData& proto) {
   VISIT(password_specifics_data);
-  VISIT_BYTES(local_chrome_data);
+  VISIT(local_data);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PasswordWithLocalData_LocalData& proto) {
+  VISIT_BYTES(opaque_metadata);
+  VISIT(previously_associated_sync_account_email);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData& proto) {
