@@ -110,7 +110,7 @@ public class TabGridDialogMenuCoordinator {
         mMenuWindow.setFocusable(true);
         mMenuWindow.setHorizontalOverlapAnchor(true);
         mMenuWindow.setVerticalOverlapAnchor(true);
-        mMenuWindow.setAnimationStyle(R.style.OverflowMenuAnim);
+        mMenuWindow.setAnimationStyle(R.style.EndIconMenuAnim);
         int popupWidth = mContext.getResources().getDimensionPixelSize(R.dimen.menu_width);
         mMenuWindow.setMaxWidth(popupWidth);
 

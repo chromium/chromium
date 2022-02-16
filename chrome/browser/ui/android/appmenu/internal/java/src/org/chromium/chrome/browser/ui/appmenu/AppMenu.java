@@ -218,7 +218,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         // Make sure that the popup window will be closed when touch outside of it.
         mPopup.setOutsideTouchable(true);
 
-        if (!isByPermanentButton) mPopup.setAnimationStyle(R.style.OverflowMenuAnim);
+        if (!isByPermanentButton) mPopup.setAnimationStyle(R.style.EndIconMenuAnim);
 
         // Turn off window animations for low end devices.
         if (SysUtils.isLowEndDevice()) mPopup.setAnimationStyle(0);

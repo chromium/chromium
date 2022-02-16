@@ -46,6 +46,7 @@ public class ListMenuButton
     private ListMenuButtonDelegate mDelegate;
     private ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
+    private boolean mPositionedAtEnd;
 
     /**
      * Creates a new {@link ListMenuButton}.
@@ -63,6 +64,7 @@ public class ListMenuButton
                 a.getBoolean(R.styleable.ListMenuButton_menuHorizontalOverlapAnchor, true);
         mMenuVerticalOverlapAnchor =
                 a.getBoolean(R.styleable.ListMenuButton_menuVerticalOverlapAnchor, true);
+        mPositionedAtEnd = a.getBoolean(R.styleable.ListMenuButton_menuPositionedAtEnd, true);
 
         a.recycle();
     }
@@ -166,8 +168,14 @@ public class ListMenuButton
     @Override
     public void onPreLayoutChange(
             boolean positionBelow, int x, int y, int width, int height, Rect anchorRect) {
-        mPopupMenu.setAnimationStyle(
-                positionBelow ? R.style.OverflowMenuAnim : R.style.OverflowMenuAnimBottom);
+        if (mPositionedAtEnd) {
+            mPopupMenu.setAnimationStyle(
+                    positionBelow ? R.style.EndIconMenuAnim : R.style.EndIconMenuAnimBottom);
+
+        } else {
+            mPopupMenu.setAnimationStyle(
+                    positionBelow ? R.style.StartIconMenuAnim : R.style.StartIconMenuAnimBottom);
+        }
     }
 
     /**

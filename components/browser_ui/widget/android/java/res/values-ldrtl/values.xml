@@ -6,4 +6,5 @@
 <resources>
     <!-- Menu Animation Constants -->
     <item type="fraction" format="fraction" name="menu_animation_pivot_x">5%</item>
+    <item type="fraction" format="fraction" name="menu_start_animation_pivot_x">95%</item>
 </resources>

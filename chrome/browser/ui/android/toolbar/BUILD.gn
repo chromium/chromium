@@ -17,6 +17,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/KeyboardNavigationListener.java",
     "java/src/org/chromium/chrome/browser/toolbar/LocationBarFocusScrimHandler.java",
     "java/src/org/chromium/chrome/browser/toolbar/LocationBarModel.java",
+    "java/src/org/chromium/chrome/browser/toolbar/MenuBuilderHelper.java",
     "java/src/org/chromium/chrome/browser/toolbar/NewTabButton.java",
     "java/src/org/chromium/chrome/browser/toolbar/ProgressAnimationSmooth.java",
     "java/src/org/chromium/chrome/browser/toolbar/SettableThemeColorProvider.java",
