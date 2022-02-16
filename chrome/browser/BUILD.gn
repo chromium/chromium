@@ -8024,20 +8024,3 @@ if (is_chromeos_lacros) {
     sources = [ "chromeos/policy/dlp/dlp_policy_event.proto" ]
   }
 }
-
-if (is_mac) {
-  executable("developer_id_certificate_reauthorize") {
-    # There is no C++ in here, so save ~150kB per architecture by omitting a
-    # copy of libc++.
-    no_default_deps = true
-
-    sources = [ "mac/developer_id_certificate_reauthorize_stub_main.c" ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-    deps = [ "../common:version_header" ]
-    ldflags = []
-    if (enable_stripping) {
-      ldflags += [ "-Wl,-exported_symbols_list," +
-                   rebase_path("../app/app.exports", root_build_dir) ]
-    }
-  }
-}
