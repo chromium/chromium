@@ -650,13 +650,17 @@ void PermissionUmaUtil::PermissionPromptResolved(
   if (requests[0]->request_type() == RequestType::kGeolocation ||
       requests[0]->request_type() == RequestType::kNotifications) {
     if (ui_disposition ==
-        PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP) {
+            PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP ||
+        ui_disposition == PermissionPromptDisposition::MESSAGE_UI ||
+        ui_disposition == PermissionPromptDisposition::MINI_INFOBAR) {
       base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
                                     permission_disposition + "." +
                                     action_string + ".DidClickManage",
                                 did_click_managed);
     } else if (ui_disposition == PermissionPromptDisposition::
-                                     LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP) {
+                                     LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP ||
+               ui_disposition == PermissionPromptDisposition::MESSAGE_UI ||
+               ui_disposition == PermissionPromptDisposition::MINI_INFOBAR) {
       base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
                                     permission_disposition + "." +
                                     action_string + ".DidClickLearnMore",

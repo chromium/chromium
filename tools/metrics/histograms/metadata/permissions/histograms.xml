@@ -869,6 +869,8 @@ chromium-metrics-reviews@google.com.
   <token key="Disposition">
     <variant name="LocationBarLeftQuietAbusiveChip"/>
     <variant name="LocationBarLeftQuietChip"/>
+    <variant name="MessageUI"/>
+    <variant name="MiniInfobar"/>
   </token>
   <token key="PermissionType">
     <variant name="Geolocation"/>

@@ -1622,7 +1622,7 @@ void ContentSettingQuietRequestBubbleModel::OnManageButtonClicked() {
       permissions::PermissionRequestManager::FromWebContents(web_contents());
   CHECK_GT(manager->Requests().size(), 0u);
   DCHECK_EQ(manager->Requests().size(), 1u);
-  manager->set_managed_clicked();
+  manager->set_manage_clicked();
   if (is_UMA_for_test) {
     // `delegate()->ShowContentSettingsPage` opens a new tab. It is not needed
     // for UMA tests.

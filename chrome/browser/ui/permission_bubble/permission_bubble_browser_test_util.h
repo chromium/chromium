@@ -49,6 +49,8 @@ class TestPermissionBubbleViewDelegate
   void Deny() override {}
   void Dismiss() override {}
   void Ignore() override {}
+  void SetManageClicked() override {}
+  void SetLearnMoreClicked() override {}
 
   absl::optional<permissions::PermissionUiSelector::QuietUiReason>
   ReasonForUsingQuietUi() const override;

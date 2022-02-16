@@ -88,6 +88,14 @@ void PermissionPromptAndroid::Deny() {
   delegate_->Deny();
 }
 
+void PermissionPromptAndroid::SetManageClicked() {
+  delegate_->SetManageClicked();
+}
+
+void PermissionPromptAndroid::SetLearnMoreClicked() {
+  delegate_->SetLearnMoreClicked();
+}
+
 bool PermissionPromptAndroid::ShouldCurrentRequestUseQuietUI() {
   return delegate_->ShouldCurrentRequestUseQuietUI();
 }

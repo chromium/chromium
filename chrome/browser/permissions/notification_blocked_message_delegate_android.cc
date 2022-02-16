@@ -58,11 +58,13 @@ NotificationBlockedMessageDelegate::~NotificationBlockedMessageDelegate() {
 }
 
 void NotificationBlockedMessageDelegate::OnContinueBlocking() {
+  has_interacted_with_dialog_ = true;
   dialog_controller_.reset();
   delegate_->Deny();
 }
 
 void NotificationBlockedMessageDelegate::OnAllowForThisSite() {
+  has_interacted_with_dialog_ = true;
   dialog_controller_.reset();
   delegate_->Accept();
 }
@@ -70,6 +72,7 @@ void NotificationBlockedMessageDelegate::OnAllowForThisSite() {
 void NotificationBlockedMessageDelegate::OnLearnMoreClicked() {
   should_reshow_dialog_on_focus_ = true;
   dialog_controller_->DismissDialog();
+  delegate_->SetLearnMoreClicked();
   web_contents_->OpenURL(content::OpenURLParams(
       GetNotificationBlockedLearnMoreUrl(), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
@@ -78,6 +81,7 @@ void NotificationBlockedMessageDelegate::OnLearnMoreClicked() {
 
 void NotificationBlockedMessageDelegate::OnOpenedSettings() {
   should_reshow_dialog_on_focus_ = true;
+  delegate_->SetManageClicked();
 }
 
 void NotificationBlockedMessageDelegate::OnDialogDismissed() {
@@ -92,8 +96,12 @@ void NotificationBlockedMessageDelegate::OnDialogDismissed() {
     return;
   }
   dialog_controller_.reset();
-  // call Closing destroys the current object.
-  delegate_->Closing();
+  // If |has_interacted_with_dialog_| is true, |Allow| or |Deny| should be
+  // recorded instead.
+  if (!has_interacted_with_dialog_) {
+    // call Closing destroys the current object.
+    delegate_->Closing();
+  }
 }
 
 void NotificationBlockedMessageDelegate::OnWebContentsFocused(
@@ -129,14 +137,21 @@ void NotificationBlockedMessageDelegate::HandleManageClick() {
 
 void NotificationBlockedMessageDelegate::HandleDismissCallback(
     messages::DismissReason reason) {
+  message_.reset();
+
   // When message is dismissed by secondary action, |permission_prompt_| should
   // be reset when the dialog is dismissed.
-  if (reason != messages::DismissReason::SECONDARY_ACTION) {
-    dialog_controller_.reset();
-    // call Closing destroys the current object.
+  if (reason == messages::DismissReason::SECONDARY_ACTION) {
+    return;
+  }
+
+  dialog_controller_.reset();
+
+  if (reason == messages::DismissReason::GESTURE) {
     delegate_->Closing();
   }
-  message_.reset();
+  // Other un-tracked actions will be recorded as "Ignored" by
+  // |permission_prompt_|.
 }
 
 void NotificationBlockedMessageDelegate::DismissInternal() {
@@ -163,6 +178,18 @@ void NotificationBlockedMessageDelegate::Delegate::Closing() {
     return;
   permission_prompt_->Closing();
   permission_prompt_.reset();
+}
+
+void NotificationBlockedMessageDelegate::Delegate::SetManageClicked() {
+  if (!permission_prompt_)
+    return;
+  permission_prompt_->SetManageClicked();
+}
+
+void NotificationBlockedMessageDelegate::Delegate::SetLearnMoreClicked() {
+  if (!permission_prompt_)
+    return;
+  permission_prompt_->SetLearnMoreClicked();
 }
 
 bool NotificationBlockedMessageDelegate::Delegate::ShouldUseQuietUI() {

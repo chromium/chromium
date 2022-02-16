@@ -93,6 +93,12 @@ class PermissionPrompt {
 
     // Set when the user made any decision for the currentrequest.
     virtual void SetDecisionTime() = 0;
+
+    // Set when the user made any decision for manage settings.
+    virtual void SetManageClicked() = 0;
+
+    // Set when the user made any decision for clicking on learn more link.
+    virtual void SetLearnMoreClicked() = 0;
   };
 
   typedef base::RepeatingCallback<

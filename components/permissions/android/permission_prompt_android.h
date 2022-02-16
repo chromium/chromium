@@ -52,6 +52,8 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
   void Closing();
   void Accept();
   void Deny();
+  void SetManageClicked();
+  void SetLearnMoreClicked();
   bool ShouldCurrentRequestUseQuietUI();
   absl::optional<PermissionUiSelector::QuietUiReason> ReasonForUsingQuietUi()
       const;

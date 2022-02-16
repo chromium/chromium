@@ -109,6 +109,7 @@ bool GroupedPermissionInfoBarDelegate::LinkClicked(
     return false;
   }
 
+  permission_prompt_->SetLearnMoreClicked();
   // The link shown in the expanded state is a `Learn more` link. Let the base
   // class handle opening the URL returned by GetLinkURL().
   return ConfirmInfoBarDelegate::LinkClicked(disposition);
@@ -144,6 +145,7 @@ bool GroupedPermissionInfoBarDelegate::Cancel() {
   switch (prompt_model_.secondary_button_behavior) {
     case SecondaryButtonBehavior::kShowSettings:
       // The infobar needs to be kept open after the "Manage" button is clicked.
+      permission_prompt_->SetManageClicked();
       return false;
     case SecondaryButtonBehavior::kAllowForThisSite:
       permission_prompt_->Accept();

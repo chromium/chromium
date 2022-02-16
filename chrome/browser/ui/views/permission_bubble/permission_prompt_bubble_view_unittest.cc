@@ -50,6 +50,8 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void Deny() override {}
   void Dismiss() override {}
   void Ignore() override {}
+  void SetManageClicked() override {}
+  void SetLearnMoreClicked() override {}
 
   bool WasCurrentRequestAlreadyDisplayed() override { return false; }
   bool ShouldDropCurrentRequestIfCannotShowQuietly() const override {
