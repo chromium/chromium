@@ -5601,6 +5601,60 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationIgnoreVisitedPseudoInHas) {
   ASSERT_EQ(0U, element_count);
 }
 
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationCheckFiltering) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+    div { color: grey }
+    .a:has(.b) { color: red }
+    .c:has(.d) { color: green }
+    .e:has(.f) .g { color: blue }
+    .e:has(.h) .i { color: navy }
+    .e:has(.f.h) .j { color: lightgreen }
+    </style>
+    <div class='a e'>
+      <div class=g></div>
+      <div class=i></div>
+      <div class=j></div>
+      <div id=child></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  // TODO(blee@igalia.com) Should be 0U. Need additional filtering
+  // - skip invalidation of non-subject :has() rules
+  //    - .e:has(.f) .g
+  //    - .e:has(.h) .i
+  //    - .e:has(.f.h) .j
+  // - skip invalidation of the irrelevant ancestor
+  //    - .a:has(.b)
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("child")->setAttribute(html_names::kClassAttr,
+                                                      "d");
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  EXPECT_EQ(4U, element_count);
+
+  GetDocument().getElementById("child")->setAttribute(html_names::kClassAttr,
+                                                      "");
+  UpdateAllLifecyclePhases();
+
+  // TODO(blee@igalia.com) Should be 1U. Need additional filtering
+  // - skip invalidation of subject :has() rules
+  //    - .a:has(.b)
+  // - skip invalidation of irrelevant rules
+  //    - .e:has(.h) .i
+  // - skip invalidation of the mutation on irrelevant element
+  //    - .e:has(.f.h) .j
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("child")->setAttribute(html_names::kClassAttr,
+                                                      "b");
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  EXPECT_EQ(4U, element_count);
+}
+
 TEST_F(StyleEngineTest, CSSComparisonFunctionsUseCount) {
   ClearUseCounter(WebFeature::kCSSComparisonFunctions);
   GetDocument().body()->setInnerHTML(R"HTML(
