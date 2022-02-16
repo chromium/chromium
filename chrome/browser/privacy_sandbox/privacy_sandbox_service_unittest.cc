@@ -21,6 +21,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/policy/core/common/mock_policy_service.h"
+#include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -41,6 +42,8 @@
 #include "url/origin.h"
 
 namespace {
+using privacy_sandbox::CanonicalTopic;
+using testing::ElementsAre;
 
 class TestInterestGroupManager : public content::InterestGroupManager {
  public:
@@ -1671,6 +1674,25 @@ TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoMetricsRecorded) {
 
   // The histogram should remain empty.
   histograms.ExpectTotalCount(histogram_name, 0);
+}
+
+TEST_F(PrivacySandboxServiceTestNonRegularProfile, TestFakeTopics) {
+  CanonicalTopic topic1(1, CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic2(2, CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic3(3, CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic4(4, CanonicalTopic::AVAILABLE_TAXONOMY);
+
+  auto* service = privacy_sandbox_service();
+  EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic1, topic2));
+  EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
+
+  service->SetTopicAllowed(topic1, false);
+  EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic2));
+  EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic1, topic3, topic4));
+
+  service->SetTopicAllowed(topic4, true);
+  EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic2, topic4));
+  EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic1, topic3));
 }
 
 TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoDialogRequired) {

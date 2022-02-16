@@ -403,4 +403,10 @@ bool CanonicalTopic::operator<(const CanonicalTopic& other) const {
   return topic_id_ < other.topic_id_;
 }
 
+bool CanonicalTopic::operator==(const CanonicalTopic& other) const {
+  if (taxonomy_version_ != other.taxonomy_version_)
+    return false;
+  return topic_id_ == other.topic_id_;
+}
+
 }  // namespace privacy_sandbox

@@ -32,7 +32,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaTopicsArray(
     JNIEnv* env,
     const std::vector<privacy_sandbox::CanonicalTopic>& topics) {
   std::vector<ScopedJavaLocalRef<jobject>> j_topics;
-  for (const auto& topic : GetPrivacySandboxService()->GetCurrentTopTopics()) {
+  for (const auto& topic : topics) {
     j_topics.push_back(Java_PrivacySandboxBridge_createTopic(
         env, topic.topic_id(), topic.taxonomy_version(),
         ConvertUTF16ToJavaString(env, topic.GetLocalizedRepresentation())));

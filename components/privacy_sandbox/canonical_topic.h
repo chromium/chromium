@@ -35,6 +35,7 @@ class CanonicalTopic {
   std::u16string GetLocalizedRepresentation() const;
 
   bool operator<(const CanonicalTopic& other) const;
+  bool operator==(const CanonicalTopic& other) const;
 
  private:
   browsing_topics::Topic topic_id_;

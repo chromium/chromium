@@ -570,15 +570,15 @@ PrivacySandboxService::GetBlockedTopics() const {
 }
 
 void PrivacySandboxService::SetTopicAllowed(
-    privacy_sandbox::CanonicalTopic topic_id,
+    privacy_sandbox::CanonicalTopic topic,
     bool allowed) {
   // TODO(crbug.com/1286276): Update preferences.
   if (allowed) {
-    fake_current_topics_.insert(topic_id);
-    fake_blocked_topics_.erase(topic_id);
+    fake_current_topics_.insert(topic);
+    fake_blocked_topics_.erase(topic);
   } else {
-    fake_current_topics_.erase(topic_id);
-    fake_blocked_topics_.insert(topic_id);
+    fake_current_topics_.erase(topic);
+    fake_blocked_topics_.insert(topic);
   }
 }
 
