@@ -205,7 +205,32 @@ ScriptPromise SharedStorage::runURLSelectionOperation(
     converted_urls.push_back(converted_url);
   }
 
-  // TODO: handle the operation
+  Vector<uint8_t> serialized_data;
+  if (!Serialize(script_state, options, exception_state, serialized_data))
+    return promise;
+
+  GetSharedStorageDocumentService(execution_context)
+      ->RunURLSelectionOperationOnWorklet(
+          name, std::move(converted_urls), std::move(serialized_data),
+          WTF::Bind(
+              [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
+                 bool success, const String& error_message,
+                 const KURL& opaque_url) {
+                DCHECK(resolver);
+                ScriptState* script_state = resolver->GetScriptState();
+
+                if (!success) {
+                  ScriptState::Scope scope(script_state);
+                  resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                      script_state->GetIsolate(),
+                      DOMExceptionCode::kOperationError, error_message));
+                  return;
+                }
+
+                resolver->Resolve(opaque_url);
+              },
+              WrapPersistent(resolver), WrapPersistent(this)));
+
   return promise;
 }
 

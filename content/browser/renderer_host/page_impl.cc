@@ -74,6 +74,10 @@ base::WeakPtr<Page> PageImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+base::WeakPtr<PageImpl> PageImpl::GetWeakPtrImpl() {
+  return weak_factory_.GetWeakPtr();
+}
+
 bool PageImpl::IsPageScaleFactorOne() {
   return page_scale_factor_ == 1.f;
 }

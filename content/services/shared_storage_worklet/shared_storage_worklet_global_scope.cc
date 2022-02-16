@@ -161,7 +161,7 @@ void SharedStorageWorkletGlobalScope::RegisterOperation(gin::Arguments* args) {
 
 void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
     const std::string& name,
-    const std::vector<std::string>& urls,
+    const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
     mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback) {

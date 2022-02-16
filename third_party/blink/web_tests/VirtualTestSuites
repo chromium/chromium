@@ -1016,6 +1016,13 @@
     "args": ["--enable-blink-features=HighlightInheritance"]
   },
   {
+    "prefix": "shared-storage",
+    "bases": [
+      "wpt_internal/shared_storage"
+    ],
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames"]
+  },
+  {
     "prefix": "fenced-frame-mparch",
     "bases": [
       "http/tests/fenced_frame",

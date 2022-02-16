@@ -5,6 +5,7 @@
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 #include "content/browser/shared_storage/shared_storage_url_loader_factory_proxy.h"
@@ -23,9 +24,22 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
     std::unique_ptr<SharedStorageWorkletDriver> driver,
     SharedStorageDocumentServiceImpl& document_service)
     : driver_(std::move(driver)),
-      document_service_(document_service.GetWeakPtr()) {}
+      document_service_(document_service.GetWeakPtr()),
+      page_(
+          static_cast<PageImpl&>(document_service.render_frame_host().GetPage())
+              .GetWeakPtrImpl()) {}
 
-SharedStorageWorkletHost::~SharedStorageWorkletHost() = default;
+SharedStorageWorkletHost::~SharedStorageWorkletHost() {
+  if (!page_)
+    return;
+
+  // If the worklet is destructed and there are still unresolved URNs (i.e. the
+  // keep-alive timeout is reached), consider the mapping to be failed.
+  for (const GURL& urn_uuid : unresolved_urns_) {
+    page_->fenced_frame_urls_map().OnURNMappingResultDetermined(urn_uuid,
+                                                                absl::nullopt);
+  }
+}
 
 void SharedStorageWorkletHost::AddModuleOnWorklet(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -34,6 +48,10 @@ void SharedStorageWorkletHost::AddModuleOnWorklet(
     const GURL& script_source_url,
     blink::mojom::SharedStorageDocumentService::AddModuleOnWorkletCallback
         callback) {
+  // This function is invoked from `document_service_`. Thus both `page_` and
+  // `document_service_` should be valid.
+  DCHECK(page_);
+  DCHECK(document_service_);
   IncrementPendingOperationsCount();
 
   if (add_module_state_ == AddModuleState::kInitiated) {
@@ -64,6 +82,10 @@ void SharedStorageWorkletHost::AddModuleOnWorklet(
 void SharedStorageWorkletHost::RunOperationOnWorklet(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data) {
+  // This function is invoked from `document_service_`. Thus both `page_` and
+  // `document_service_` should be valid.
+  DCHECK(page_);
+  DCHECK(document_service_);
   IncrementPendingOperationsCount();
 
   if (add_module_state_ != AddModuleState::kInitiated) {
@@ -79,6 +101,45 @@ void SharedStorageWorkletHost::RunOperationOnWorklet(
       name, serialized_data,
       base::BindOnce(&SharedStorageWorkletHost::OnRunOperationOnWorkletFinished,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
+    const std::string& name,
+    const std::vector<GURL>& urls,
+    const std::vector<uint8_t>& serialized_data,
+    blink::mojom::SharedStorageDocumentService::
+        RunURLSelectionOperationOnWorkletCallback callback) {
+  if (add_module_state_ != AddModuleState::kInitiated) {
+    std::move(callback).Run(
+        /*success=*/false, /*error_message=*/
+        "sharedStorage.worklet.addModule() has to be called before "
+        "sharedStorage.runURLSelectionOperation().",
+        /*opaque_url=*/{});
+    return;
+  }
+
+  // This function is invoked from `document_service_`. Thus both `page_` and
+  // `document_service_` should be valid.
+  DCHECK(page_);
+  DCHECK(document_service_);
+  IncrementPendingOperationsCount();
+
+  GURL urn_uuid = page_->fenced_frame_urls_map().GeneratePendingMappedURN();
+
+  bool insert_succeeded = unresolved_urns_.insert(urn_uuid).second;
+
+  // Assert that `urn_uuid` was not in the set before.
+  DCHECK(insert_succeeded);
+
+  std::move(callback).Run(
+      /*success=*/true, /*error_message=*/{},
+      /*opaque_url=*/urn_uuid);
+
+  GetAndConnectToSharedStorageWorkletService()->RunURLSelectionOperation(
+      name, urls, serialized_data,
+      base::BindOnce(&SharedStorageWorkletHost::
+                         OnRunURLSelectionOperationOnWorkletFinished,
+                     weak_ptr_factory_.GetWeakPtr(), urn_uuid, urls));
 }
 
 bool SharedStorageWorkletHost::HasPendingOperations() {
@@ -227,6 +288,41 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
         static_cast<RenderFrameHostImpl&>(
             document_service_->render_frame_host()),
         blink::mojom::ConsoleMessageLevel::kError, error_message);
+  }
+
+  DecrementPendingOperationsCount();
+}
+
+void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
+    const GURL& urn_uuid,
+    const std::vector<GURL>& urls,
+    bool success,
+    const std::string& error_message,
+    uint32_t index) {
+  if (success && index >= urls.size()) {
+    // This could indicate a compromised worklet environment, so let's terminate
+    // it.
+    mojo::ReportBadMessage(
+        "Unexpected index number returned from runURLSelectionOperation().");
+    return;
+  }
+
+  if (!success && document_service_) {
+    DCHECK(!IsInKeepAlivePhase());
+    devtools_instrumentation::LogWorkletMessage(
+        static_cast<RenderFrameHostImpl&>(
+            document_service_->render_frame_host()),
+        blink::mojom::ConsoleMessageLevel::kError, error_message);
+  }
+
+  if (page_) {
+    DCHECK(base::Contains(unresolved_urns_, urn_uuid));
+    unresolved_urns_.erase(urn_uuid);
+
+    absl::optional<GURL> selected_url =
+        success ? absl::make_optional<GURL>(urls[index]) : absl::nullopt;
+    page_->fenced_frame_urls_map().OnURNMappingResultDetermined(urn_uuid,
+                                                                selected_url);
   }
 
   DecrementPendingOperationsCount();

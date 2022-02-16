@@ -1,0 +1,16 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+'use strict';
+
+promise_test(async t => {
+  return promise_rejects_dom(t, "OperationError",
+    sharedStorage.runURLSelectionOperation(
+      "test-url-selection-operation", ["resources/frame0.html"]));
+}, 'runURLSelectionOperation without addModule');
+
+</script>
+</body>

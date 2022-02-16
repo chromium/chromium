@@ -232,6 +232,11 @@ crbug.com/1123606 http/tests/fenced_frame/* [ Skip ]
 crbug.com/1123606 virtual/fenced-frame-shadow-dom/* [ Pass ]
 crbug.com/1123606 virtual/fenced-frame-mparch/* [ Pass ]
 
+# These tests require shared-storage and fenced-frames
+# Keep this in sync with VirtualTestSuites.
+crbug.com/1218540 wpt_internal/shared_storage/* [ Skip ]
+crbug.com/1218540 virtual/shared-storage/* [ Pass ]
+
 # These tests require the experimental prerender feature.
 # See https://crbug.com/1126305.
 crbug.com/1126305 external/wpt/speculation-rules/prerender/* [ Skip ]
@@ -6774,9 +6779,6 @@ crbug.com/996511 external/wpt/service-workers/cache-storage/frame/cache-abort.ht
 crbug.com/996511 external/wpt/service-workers/cache-storage/window/cache-abort.https.html [ Crash Failure Pass ]
 crbug.com/996511 external/wpt/service-workers/service-worker/getregistrations.https.html [ Crash Failure Pass Timeout ]
 crbug.com/996511 http/tests/inspector-protocol/fetch/fetch-cors-preflight-sw.js [ Crash Failure Pass Timeout ]
-
-# Expected to time out, but NOT crash.
-crbug.com/1218540 storage/shared_storage/unimplemented-worklet-operations.html [ Crash Timeout ]
 
 # Sheriff 2021-07-14
 crbug.com/1229039 [ Linux ] external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Pass Skip Timeout ]

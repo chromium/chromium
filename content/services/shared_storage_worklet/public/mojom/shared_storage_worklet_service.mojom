@@ -97,7 +97,7 @@ interface SharedStorageWorkletService {
   // `name`. The size limit on `urls` should be checked at the Mojo boundary.
   // When the operation succeeds, the return value `index` will be set to the
   // uint32 value that the promise resolves to; otherwise it will be set to 0.
-  RunURLSelectionOperation(string name, array<string> urls,
+  RunURLSelectionOperation(string name, array<url.mojom.Url> urls,
                            array<uint8> serialized_data)
     => (bool success, string error_message, uint32 index);
 

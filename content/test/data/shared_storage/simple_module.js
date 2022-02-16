@@ -12,6 +12,23 @@ class TestOperation {
   }
 }
 
+class TestURLSelectionOperation {
+  async run(urls, data) {
+    console.log('Start executing \'test-url-selection-operation\'');
+    console.log(JSON.stringify(urls));
+    console.log(JSON.stringify(data, Object.keys(data).sort()));
+    console.log('Finish executing \'test-url-selection-operation\'');
+
+    if (data && data.hasOwnProperty('mockResult')) {
+      return data['mockResult'];
+    }
+
+    return -1;
+  }
+}
+
 registerOperation("test-operation", TestOperation);
+registerURLSelectionOperation(
+  "test-url-selection-operation", TestURLSelectionOperation);
 
 console.log('Finish executing simple_module.js')

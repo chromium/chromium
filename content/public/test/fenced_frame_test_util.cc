@@ -9,6 +9,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/test/fenced_frame_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -23,30 +24,6 @@ constexpr char kAddFencedFrameScript[] = R"({
   })";
 
 constexpr char kNavigateFrameScript[] = R"({location.href = $1;})";
-
-// This method takes in a RenderFrameHostImpl that must be inside a fenced
-// frame FrameTree, and returns the FencedFrame* object that represents this
-// inner FrameTree from the outer FrameTree.
-FencedFrame* GetMatchingFencedFrameInOuterFrameTree(RenderFrameHostImpl* rfh) {
-  // `rfh` doesn't always have to be a root frame, since this needs to work
-  // for arbitrary frames within a fenced frame.
-  EXPECT_TRUE(rfh->frame_tree_node()->IsInFencedFrameTree());
-
-  RenderFrameHostImpl* outer_document =
-      rfh->GetMainFrame()->GetParentOrOuterDocument();
-
-  std::vector<FencedFrame*> fenced_frames = outer_document->GetFencedFrames();
-  EXPECT_FALSE(fenced_frames.empty());
-
-  for (FencedFrame* fenced_frame : fenced_frames) {
-    if (fenced_frame->GetInnerRoot() == rfh->GetMainFrame()) {
-      return fenced_frame;
-    }
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
 
 }  // namespace
 
@@ -97,21 +74,14 @@ RenderFrameHost* FencedFrameTestHelper::NavigateFrameInFencedFrameTree(
   // `FencedFrameURLMapping` and then actually passing in the urn:uuid to the
   // script below, so that we exercise the "real" navigation path.
 
-  FencedFrame* fenced_frame = GetMatchingFencedFrameInOuterFrameTree(
-      static_cast<RenderFrameHostImpl*>(rfh));
   FrameTreeNode* target_node =
       static_cast<RenderFrameHostImpl*>(rfh)->frame_tree_node();
-  EXPECT_EQ(url.spec(), EvalJs(rfh, JsReplace(kNavigateFrameScript, url)));
 
-  // TODO(crbug.com/1257133): Once this bug is fixed, we can use
-  // `TestFrameNavigationObserver` to tell us when the navigation has finished,
-  // which actually exposes net::Error codes encountered during navigation.
-  // Therefore once that bug is fixed, we can perform finer-grained error
-  // code comparisons than the crude `RenderFrameHost::IsErrorDocument()` one
-  // below.
-  fenced_frame->WaitForDidStopLoadingForTesting();
-  EXPECT_EQ(expected_error_code == net::Error::OK,
-            !target_node->current_frame_host()->IsErrorDocument());
+  FencedFrameNavigationObserver observer(
+      static_cast<RenderFrameHostImpl*>(rfh));
+  EXPECT_EQ(url.spec(), EvalJs(rfh, JsReplace(kNavigateFrameScript, url)));
+  observer.Wait(expected_error_code);
+
   EXPECT_EQ(target_node->current_frame_host()->GetLastCommittedURL(), url);
 
   return target_node->current_frame_host();

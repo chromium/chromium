@@ -15,20 +15,33 @@
 
 namespace shared_storage_worklet {
 
+namespace {
+
+const char kErrorMessageReturnValueNotUint32[] =
+    "Promise did not resolve to an uint32 number.";
+
+const char kErrorMessageReturnValueOutOfRange[] =
+    "Promise resolved to a number outside the length of the input urls.";
+
+}  // namespace
+
 struct UrlSelectionOperationHandler::PendingRequest {
   explicit PendingRequest(
+      size_t urls_size,
       mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
           callback);
 
   ~PendingRequest();
 
+  size_t urls_size;
   mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback callback;
 };
 
 UrlSelectionOperationHandler::PendingRequest::PendingRequest(
+    size_t urls_size,
     mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback)
-    : callback(std::move(callback)) {}
+    : urls_size(urls_size), callback(std::move(callback)) {}
 
 UrlSelectionOperationHandler::PendingRequest::~PendingRequest() = default;
 
@@ -89,7 +102,7 @@ void UrlSelectionOperationHandler::RegisterOperation(gin::Arguments* args) {
 void UrlSelectionOperationHandler::RunOperation(
     v8::Local<v8::Context> context,
     const std::string& name,
-    const std::vector<std::string>& urls,
+    const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
     mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback) {
@@ -106,8 +119,12 @@ void UrlSelectionOperationHandler::RunOperation(
 
   v8::Local<v8::Function> run_function = it->second.Get(isolate);
 
+  std::vector<std::string> string_urls;
+  std::transform(urls.cbegin(), urls.cend(), std::back_inserter(string_urls),
+                 [](const GURL& url) { return url.spec(); });
+
   v8::Local<v8::Array> js_urls =
-      gin::Converter<std::vector<std::string>>::ToV8(isolate, urls)
+      gin::Converter<std::vector<std::string>>::ToV8(isolate, string_urls)
           .As<v8::Array>();
 
   v8::Local<v8::Object> js_data;
@@ -150,11 +167,19 @@ void UrlSelectionOperationHandler::RunOperation(
     v8::Local<v8::Value> result_value = result_promise->Result();
     if (!result_value->IsUint32()) {
       std::move(callback).Run(/*success=*/false,
-                              "Promise did not resolve to an uint32 number.",
+                              kErrorMessageReturnValueNotUint32,
                               /*index=*/0);
       return;
     }
     uint32_t result_index = result_value->Uint32Value(context).FromJust();
+
+    if (result_index >= urls.size()) {
+      std::move(callback).Run(
+          /*success=*/false, kErrorMessageReturnValueOutOfRange,
+          /*index=*/0);
+      return;
+    }
+
     std::move(callback).Run(/*success=*/true,
                             /*error_message=*/{}, result_index);
     return;
@@ -172,7 +197,8 @@ void UrlSelectionOperationHandler::RunOperation(
 
   // If the promise is pending, install callback functions that will be
   // triggered when it completes.
-  auto pending_request = std::make_unique<PendingRequest>(std::move(callback));
+  auto pending_request =
+      std::make_unique<PendingRequest>(urls.size(), std::move(callback));
   PendingRequest* pending_request_raw = pending_request.get();
   pending_requests_.emplace(pending_request_raw, std::move(pending_request));
 
@@ -201,7 +227,15 @@ void UrlSelectionOperationHandler::OnPromiseFulfilled(PendingRequest* request,
   uint32_t result_index = 0;
   if (!args->GetNext(&result_index)) {
     std::move(request->callback)
-        .Run(/*success=*/false, "Promise did not resolve to an uint32 number.",
+        .Run(/*success=*/false, kErrorMessageReturnValueNotUint32,
+             /*index=*/0);
+    pending_requests_.erase(request);
+    return;
+  }
+
+  if (result_index >= request->urls_size) {
+    std::move(request->callback)
+        .Run(/*success=*/false, kErrorMessageReturnValueOutOfRange,
              /*index=*/0);
     pending_requests_.erase(request);
     return;

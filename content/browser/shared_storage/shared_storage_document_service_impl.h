@@ -34,6 +34,11 @@ class SharedStorageDocumentServiceImpl final
   void RunOperationOnWorklet(
       const std::string& name,
       const std::vector<uint8_t>& serialized_data) override;
+  void RunURLSelectionOperationOnWorklet(
+      const std::string& name,
+      const std::vector<GURL>& urls,
+      const std::vector<uint8_t>& serialized_data,
+      RunURLSelectionOperationOnWorkletCallback callback) override;
 
   base::WeakPtr<SharedStorageDocumentServiceImpl> GetWeakPtr();
 

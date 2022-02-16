@@ -6,7 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "content/test/test_fenced_frame_url_mapping_result_observer.h"
+#include "content/test/fenced_frame_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"

@@ -35,6 +35,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/fenced_frame_test_utils.h"
 #include "content/test/resource_load_observer.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
@@ -54,84 +55,6 @@ namespace {
 EvalJsResult GetOriginFromRenderer(FrameTreeNode* node) {
   return EvalJs(node, "self.origin");
 }
-
-// This method takes in a RenderFrameHostImpl that must be inside a fenced frame
-// FrameTree, and returns the FencedFrame* object that represents this inner
-// FrameTree from the outer FrameTree.
-FencedFrame* GetMatchingFencedFrameInOuterFrameTree(RenderFrameHostImpl* rfh) {
-  EXPECT_EQ(blink::features::kFencedFramesImplementationTypeParam.Get(),
-            blink::features::FencedFramesImplementationType::kMPArch);
-  // `rfh` doesn't always have to be a root frame, since this needs to work
-  // for arbitrary frames within a fenced frame.
-  EXPECT_TRUE(rfh->frame_tree_node()->IsInFencedFrameTree());
-
-  RenderFrameHostImpl* outer_delegate_frame =
-      rfh->GetMainFrame()->GetParentOrOuterDocument();
-
-  std::vector<FencedFrame*> fenced_frames =
-      outer_delegate_frame->GetFencedFrames();
-  EXPECT_FALSE(fenced_frames.empty());
-
-  for (FencedFrame* fenced_frame : fenced_frames) {
-    if (fenced_frame->GetInnerRoot() == rfh->GetMainFrame()) {
-      return fenced_frame;
-    }
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
-
-class FencedFrameNavigationObserver {
- public:
-  explicit FencedFrameNavigationObserver(RenderFrameHostImpl* fenced_frame_rfh)
-      : frame_tree_node_(fenced_frame_rfh->frame_tree_node()) {
-    EXPECT_TRUE(frame_tree_node_->IsInFencedFrameTree());
-
-    if (blink::features::kFencedFramesImplementationTypeParam.Get() ==
-        blink::features::FencedFramesImplementationType::kShadowDOM) {
-      observer_for_shadow_dom_ =
-          std::make_unique<TestFrameNavigationObserver>(fenced_frame_rfh);
-      return;
-    }
-
-    fenced_frame_for_mparch_ =
-        GetMatchingFencedFrameInOuterFrameTree(fenced_frame_rfh);
-  }
-
-  void Wait(net::Error expected_net_error_code) {
-    if (blink::features::kFencedFramesImplementationTypeParam.Get() ==
-        blink::features::FencedFramesImplementationType::kShadowDOM) {
-      DCHECK(observer_for_shadow_dom_);
-      observer_for_shadow_dom_->Wait();
-      EXPECT_EQ(observer_for_shadow_dom_->last_net_error_code(),
-                expected_net_error_code);
-      return;
-    }
-
-    DCHECK(fenced_frame_for_mparch_);
-    fenced_frame_for_mparch_->WaitForDidStopLoadingForTesting();
-
-    EXPECT_EQ(frame_tree_node_->current_frame_host()->IsErrorDocument(),
-              expected_net_error_code != net::OK);
-  }
-
- private:
-  FrameTreeNode* frame_tree_node_ = nullptr;
-
-  // For the ShadowDOM version of fenced frames, we can just use a
-  // `TestFrameNavigationObserver` as normal directly on the frame that is
-  // navigating.
-  std::unique_ptr<TestFrameNavigationObserver> observer_for_shadow_dom_;
-
-  // For the MPArch version of fenced frames, rely on
-  // FencedFrame::WaitForDidStopLoadingForTesting. `TestFrameNavigationObserver`
-  // does not fully work inside of a fenced frame FrameTree: `WaitForCommit()`
-  // works, but `Wait()` always times out because it expects to hear the
-  // DidFinishedLoad event from the outer WebContents, which is not communicated
-  // by nested FrameTrees.
-  FencedFrame* fenced_frame_for_mparch_ = nullptr;
-};
 
 }  // namespace
 
@@ -921,23 +844,6 @@ class FencedFrameTreeBrowserTest
          {blink::features::kThirdPartyStoragePartitioning, {}},
          {net::features::kPartitionedCookies, {}}},
         {/* disabled_features */});
-  }
-
-  // `node` is expected to be the child FrameTreeNode created in response to a
-  // <fencedframe> element being created. This test class is parameterized over
-  // the MPArch and the ShadowDOM implementation of fenced frames, which is why
-  // this method:
-  //    - Returns `node` if we're in the ShadowDOM version
-  //    - Returns the FrameTreeNode of the fenced frame's inner FrameTree, if
-  //    we're in the MPArch version of fenced frames
-  FrameTreeNode* GetFencedFrameRootNode(FrameTreeNode* node) {
-    if (GetParam() ==
-        blink::features::FencedFramesImplementationType::kShadowDOM)
-      return node;
-
-    int inner_node_id =
-        node->current_frame_host()->inner_tree_main_frame_tree_node_id();
-    return FrameTreeNode::GloballyFindByID(inner_node_id);
   }
 
   // This is needed because `TestFrameNavigationObserver` doesn't work properly

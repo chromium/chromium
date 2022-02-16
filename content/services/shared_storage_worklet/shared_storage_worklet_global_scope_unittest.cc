@@ -491,7 +491,7 @@ class SharedStorageRunOperationTest
 
   void SimulateRunURLSelectionOperation(
       const std::string& name,
-      const std::vector<std::string>& urls,
+      const std::vector<GURL>& urls,
       const std::vector<uint8_t>& serialized_data) {
     auto run_operation_callback = base::BindLambdaForTesting(
         [&](bool success, const std::string& error_message, uint32_t index) {
@@ -785,8 +785,9 @@ TEST_F(SharedStorageRunOperationTest,
       registerURLSelectionOperation("test-operation", TestClass);
     )");
 
-  SimulateRunURLSelectionOperation("test-operation", {"url0", "url1"},
-                                   /*serialized_data=*/{});
+  SimulateRunURLSelectionOperation(
+      "test-operation", {GURL("https://foo.com"), GURL("https://bar.com")},
+      /*serialized_data=*/{});
 
   EXPECT_TRUE(url_selection_operation_finished());
   EXPECT_TRUE(url_selection_operation_success());
@@ -806,8 +807,9 @@ TEST_F(SharedStorageRunOperationTest,
       registerURLSelectionOperation("test-operation", TestClass);
     )");
 
-  SimulateRunURLSelectionOperation("test-operation", {"url0", "url1"},
-                                   /*serialized_data=*/{});
+  SimulateRunURLSelectionOperation(
+      "test-operation", {GURL("https://foo.com"), GURL("https://bar.com")},
+      /*serialized_data=*/{});
 
   EXPECT_TRUE(url_selection_operation_finished());
   EXPECT_FALSE(url_selection_operation_success());
@@ -828,8 +830,9 @@ TEST_F(SharedStorageRunOperationTest,
       registerURLSelectionOperation("test-operation", TestClass);
     )");
 
-  SimulateRunURLSelectionOperation("test-operation", {"url0", "url1"},
-                                   /*serialized_data=*/{});
+  SimulateRunURLSelectionOperation(
+      "test-operation", {GURL("https://foo.com"), GURL("https://bar.com")},
+      /*serialized_data=*/{});
 
   EXPECT_FALSE(url_selection_operation_finished());
 
@@ -841,8 +844,9 @@ TEST_F(SharedStorageRunOperationTest,
   EXPECT_EQ(url_selection_operation_index(), 1u);
 }
 
-TEST_F(SharedStorageRunOperationTest,
-       URLSelectionOperation_ResultPromiseRejectedAsynchronously) {
+TEST_F(
+    SharedStorageRunOperationTest,
+    URLSelectionOperation_ResultPromiseRejectedAsynchronously_ReturnValueNotUint32) {
   SimulateAddModule(R"(
       class TestClass {
         async run(urls) {
@@ -853,8 +857,9 @@ TEST_F(SharedStorageRunOperationTest,
       registerURLSelectionOperation("test-operation", TestClass);
     )");
 
-  SimulateRunURLSelectionOperation("test-operation", {"url0", "url1"},
-                                   /*serialized_data=*/{});
+  SimulateRunURLSelectionOperation(
+      "test-operation", {GURL("https://foo.com"), GURL("https://bar.com")},
+      /*serialized_data=*/{});
 
   EXPECT_FALSE(url_selection_operation_finished());
 
@@ -864,6 +869,34 @@ TEST_F(SharedStorageRunOperationTest,
   EXPECT_FALSE(url_selection_operation_success());
   EXPECT_EQ(url_selection_operation_error_message(),
             "Promise did not resolve to an uint32 number.");
+  EXPECT_EQ(url_selection_operation_index(), 0u);
+}
+
+TEST_F(
+    SharedStorageRunOperationTest,
+    URLSelectionOperation_ResultPromiseRejectedAsynchronously_ReturnValueOutOfRange) {
+  SimulateAddModule(R"(
+      class TestClass {
+        async run(urls) {
+          return sharedStorage.length(); // this would return 1 for this test
+        }
+      }
+
+      registerURLSelectionOperation("test-operation", TestClass);
+    )");
+
+  SimulateRunURLSelectionOperation("test-operation", {GURL("https://foo.com")},
+                                   /*serialized_data=*/{});
+
+  EXPECT_FALSE(url_selection_operation_finished());
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(url_selection_operation_finished());
+  EXPECT_FALSE(url_selection_operation_success());
+  EXPECT_EQ(
+      url_selection_operation_error_message(),
+      "Promise resolved to a number outside the length of the input urls.");
   EXPECT_EQ(url_selection_operation_index(), 0u);
 }
 
