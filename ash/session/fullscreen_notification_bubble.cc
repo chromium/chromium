@@ -40,7 +40,7 @@ FullscreenNotificationBubble::FullscreenNotificationBubble()
 
   // Set the text displayed in the bubble, including the keyboard key.
   view_->UpdateContent(l10n_util::GetStringFUTF16(
-      IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_FULLSCREEN,
+      IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN,
       l10n_util::GetStringUTF16(IDS_APP_FULLSCREEN_KEY)));
 
   // The view used to parent the bubble widget

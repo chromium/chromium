@@ -283,19 +283,19 @@ class ExitNotifier : public ui::EventHandler, public ash::WindowStateObserver {
     if (window_->GetProperty(chromeos::kUseOverviewToExitFullscreen)) {
       if (ash::KeyboardController::Get()->AreTopRowKeysFunctionKeys()) {
         fullscreen_esc_notification_ = CreateEscNotification(
-            window_, IDS_FULLSCREEN_PRESS_TWO_KEYS_TO_EXIT_FULLSCREEN,
+            window_, IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN_TWO_KEYS,
             {IDS_APP_SEARCH_KEY, IDS_APP_OVERVIEW_KEY});
       } else {
         fullscreen_esc_notification_ = CreateEscNotification(
-            window_, IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_FULLSCREEN,
+            window_, IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN,
             {IDS_APP_OVERVIEW_KEY});
       }
     } else {
       fullscreen_esc_notification_ = CreateEscNotification(
           window_,
           window_->GetProperty(chromeos::kEscHoldToExitFullscreen)
-              ? IDS_FULLSCREEN_HOLD_ESC_TO_EXIT_FULLSCREEN
-              : IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_FULLSCREEN,
+              ? IDS_FULLSCREEN_HOLD_TO_EXIT_FULLSCREEN
+              : IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN,
           {IDS_APP_ESC_KEY});
     }
 
