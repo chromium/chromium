@@ -47,6 +47,7 @@ class SignalStorageConfigs;
 
 struct Config;
 class DatabaseMaintenanceImpl;
+class FeatureListQueryProcessor;
 class HistogramSignalHandler;
 class ModelExecutionManager;
 class ModelExecutionSchedulerImpl;
@@ -57,6 +58,7 @@ class SignalDatabaseImpl;
 class SignalFilterProcessor;
 class SignalStorageConfig;
 class SegmentScoreProvider;
+class TrainingDataCollector;
 class UkmDataManager;
 class UserActionSignalHandler;
 
@@ -166,6 +168,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   std::unique_ptr<HistogramSignalHandler> histogram_signal_handler_;
   std::unique_ptr<SignalFilterProcessor> signal_filter_processor_;
 
+  // Training/inference input data generation.
+  std::unique_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
+
   // Segment selection.
   // TODO(shaktisahu): Determine safe destruction ordering between
   // SegmentSelectorImpl and ModelExecutionSchedulerImpl.
@@ -174,6 +179,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
   // Segment results.
   std::unique_ptr<SegmentScoreProvider> segment_score_provider_;
+
+  // Traing data collection logic.
+  std::unique_ptr<TrainingDataCollector> training_data_collector_;
 
   // Model execution scheduling logic.
   std::unique_ptr<ModelExecutionSchedulerImpl> model_execution_scheduler_;

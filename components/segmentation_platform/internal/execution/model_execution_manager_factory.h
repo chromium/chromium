@@ -22,7 +22,7 @@ class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
 namespace segmentation_platform {
-class FeatureAggregator;
+class FeatureListQueryProcessor;
 class SegmentInfoDatabase;
 class SignalDatabase;
 
@@ -37,7 +37,7 @@ std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
     SignalDatabase* signal_database,
-    std::unique_ptr<FeatureAggregator> feature_aggregator,
+    FeatureListQueryProcessor* feature_list_query_processor,
     const ModelExecutionManager::SegmentationModelUpdatedCallback&
         model_updated_callback);
 

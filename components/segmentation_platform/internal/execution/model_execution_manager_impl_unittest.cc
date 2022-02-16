@@ -25,6 +25,7 @@
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/feature_aggregator.h"
+#include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/execution/mock_feature_aggregator.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
@@ -122,13 +123,14 @@ class ModelExecutionManagerTest : public testing::Test {
       const ModelExecutionManager::SegmentationModelUpdatedCallback& callback) {
     auto feature_aggregator = std::make_unique<MockFeatureAggregator>();
     feature_aggregator_ = feature_aggregator.get();
-
+    feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
+        signal_database_.get(), std::move(feature_aggregator));
     model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
         segment_ids,
         base::BindRepeating(&ModelExecutionManagerTest::CreateModelHandler,
                             base::Unretained(this)),
         &clock_, segment_database_.get(), signal_database_.get(),
-        std::move(feature_aggregator), callback);
+        feature_list_query_processor_.get(), callback);
   }
 
   std::unique_ptr<SegmentationModelHandler> CreateModelHandler(
@@ -186,6 +188,7 @@ class ModelExecutionManagerTest : public testing::Test {
   std::unique_ptr<MockSignalDatabase> signal_database_;
   raw_ptr<MockFeatureAggregator> feature_aggregator_;
 
+  std::unique_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
   std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;
 };
 

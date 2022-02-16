@@ -29,7 +29,6 @@ class Clock;
 }  // namespace base
 
 namespace segmentation_platform {
-class FeatureAggregator;
 class FeatureListQueryProcessor;
 class SignalDatabase;
 
@@ -63,7 +62,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
       base::Clock* clock,
       SegmentInfoDatabase* segment_database,
       SignalDatabase* signal_database,
-      std::unique_ptr<FeatureAggregator> feature_aggregator,
+      FeatureListQueryProcessor* feature_list_query_processor,
       const SegmentationModelUpdatedCallback& model_updated_callback);
   ~ModelExecutionManagerImpl() override;
 
@@ -147,7 +146,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
   raw_ptr<SignalDatabase> signal_database_;
 
   // Feature list processor for processing a model metadata's feature list.
-  std::unique_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
+  raw_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
 
   // Invoked whenever there is an update to any of the relevant ML models.
   SegmentationModelUpdatedCallback model_updated_callback_;

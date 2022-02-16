@@ -21,7 +21,6 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/execution/feature_aggregator.h"
 #include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
@@ -102,14 +101,13 @@ ModelExecutionManagerImpl::ModelExecutionManagerImpl(
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
     SignalDatabase* signal_database,
-    std::unique_ptr<FeatureAggregator> feature_aggregator,
+    FeatureListQueryProcessor* feature_list_query_processor,
     const SegmentationModelUpdatedCallback& model_updated_callback)
     : clock_(clock),
       segment_database_(segment_database),
       signal_database_(signal_database),
       model_updated_callback_(model_updated_callback) {
-  feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
-      signal_database, std::move(feature_aggregator));
+  feature_list_query_processor_ = feature_list_query_processor;
   for (OptimizationTarget segment_id : segment_ids) {
     model_handlers_.emplace(std::make_pair(
         segment_id,

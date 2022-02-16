@@ -18,12 +18,14 @@
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/database/database_maintenance_impl.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database_impl.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
+#include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_factory.h"
 #include "components/segmentation_platform/internal/platform_options.h"
@@ -224,10 +226,16 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
     return;
   }
 
+  feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
+      signal_database_.get(), std::make_unique<FeatureAggregatorImpl>());
+
+  training_data_collector_ = std::make_unique<TrainingDataCollector>(
+      feature_list_query_processor_.get());
+
   model_execution_manager_ = CreateModelExecutionManager(
       model_provider_, task_runner_, all_segment_ids_, clock_,
       segment_info_database_.get(), signal_database_.get(),
-      std::make_unique<FeatureAggregatorImpl>(),
+      feature_list_query_processor_.get(),
       base::BindRepeating(
           &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
           weak_ptr_factory_.GetWeakPtr()));

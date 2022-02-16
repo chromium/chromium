@@ -5,10 +5,13 @@
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 
 #include "base/notreached.h"
+#include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
 
 namespace segmentation_platform {
 
-TrainingDataCollector::TrainingDataCollector() = default;
+TrainingDataCollector::TrainingDataCollector(
+    FeatureListQueryProcessor* processor)
+    : feature_list_query_processor_(processor) {}
 
 TrainingDataCollector::~TrainingDataCollector() = default;
 

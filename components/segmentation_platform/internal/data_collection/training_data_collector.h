@@ -5,12 +5,18 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATA_COLLECTION_TRAINING_DATA_COLLECTOR_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATA_COLLECTION_TRAINING_DATA_COLLECTOR_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace segmentation_platform {
 
+class FeatureListQueryProcessor;
+
 // Collect training data and report as Ukm message. Live on main thread.
+// TODO(xingliu): Make a new class that owns the training data collector and
+// model execution collector.
 class TrainingDataCollector {
  public:
-  TrainingDataCollector();
+  explicit TrainingDataCollector(FeatureListQueryProcessor* processor);
   ~TrainingDataCollector();
 
   // Disallow copy/assign.
@@ -24,6 +30,9 @@ class TrainingDataCollector {
   // Called after segmentation platform is initialized. May report training data
   // to Ukm that has a non-zero |duration| field in |UMAOutput|.
   void OnServiceInitialized();
+
+ private:
+  raw_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
 };
 
 }  // namespace segmentation_platform
