@@ -15,13 +15,16 @@
 
 class RenderViewContextMenuProxy;
 
+using CompletionCallback = base::OnceClosure;
+
 // A class that implements the menu item for copying selected text and a link
 // to the selected text to the user's clipboard.
 class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
  public:
   static std::unique_ptr<LinkToTextMenuObserver> Create(
       RenderViewContextMenuProxy* proxy,
-      content::RenderFrameHost* render_frame_host);
+      content::RenderFrameHost* render_frame_host,
+      CompletionCallback callback);
 
   LinkToTextMenuObserver(const LinkToTextMenuObserver&) = delete;
   LinkToTextMenuObserver& operator=(const LinkToTextMenuObserver&) = delete;
@@ -32,6 +35,7 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   bool IsCommandIdSupported(int command_id) override;
   bool IsCommandIdEnabled(int command_id) override;
   void ExecuteCommand(int command_id) override;
+  void OnMenuClosed() override;
 
   // Used in tests for waiting and receiving generation result.
   static void RegisterGenerationCompleteCallbackForTesting(
@@ -41,7 +45,8 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   friend class MockLinkToTextMenuObserver;
 
   explicit LinkToTextMenuObserver(RenderViewContextMenuProxy* proxy,
-                                  content::RenderFrameHost* render_frame_host);
+                                  content::RenderFrameHost* render_frame_host,
+                                  CompletionCallback callback);
   // Returns true if the link should be generated from the constructor, vs
   // determined when executed.
   bool ShouldPreemptivelyGenerateLink();
@@ -61,8 +66,9 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
       shared_highlighting::LinkGenerationError error,
       shared_highlighting::LinkGenerationReadyStatus ready_status);
 
-  // Copies the generated link to the user's clipboard.
-  void CopyLinkToClipboard();
+  // Called when "Copy Link to Text" option is selected from a context menu for
+  // a selected text.
+  void ExecuteCopyLinkToText();
 
   // Make a request to the renderer to retrieve the selector for an
   // existing highlight.
@@ -83,6 +89,14 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   // Completes necessary tasks when link to text was not generated or generation
   // was unsuccessful.
   void CompleteWithError(shared_highlighting::LinkGenerationError error);
+
+  // Copies given text to clipboard.
+  void CopyTextToClipboard(const std::string& text);
+
+  // Uses |CompletionCallback| to notify that |LinkToTextMenuObserver| is not
+  // needed anymore. Calling this function can potentially result in this object
+  // cleanup.
+  void NotifyLinkToTextMenuCompleted();
 
   // Returns |remote_|, for the frame in which the context menu was opened.
   mojo::Remote<blink::mojom::TextFragmentReceiver>& GetRemote();
@@ -110,6 +124,16 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
 
   // True when generation is completed.
   bool is_generation_complete_ = false;
+
+  // True when ExecuteCommand was called for any of the supported commands, but
+  // is not finished.
+  bool execute_command_pending_ = false;
+
+  // True if menu is closed.
+  bool is_menu_closed_ = false;
+
+  // Used for self-destruction.
+  CompletionCallback completion_callback_;
 
   base::WeakPtrFactory<LinkToTextMenuObserver> weak_ptr_factory_{this};
 };

@@ -308,6 +308,11 @@ class RenderViewContextMenu
   // ProtocolHandlerRegistry::Observer:
   void OnProtocolHandlerRegistryChanged() override;
 
+  // Cleans |link_to_text_menu_observer_|. It is useful to clean unused
+  // resources as |RenderViewContextMenu| gets destroyed only with next context
+  // menu is opened.
+  void OnLinkToTextMenuCompleted();
+
   // The destination URL to use if the user tries to search for or navigate to
   // a text selection.
   GURL selection_navigation_url_;
@@ -401,6 +406,8 @@ class RenderViewContextMenu
   std::unique_ptr<lens::LensRegionSearchController>
       lens_region_search_controller_;
 #endif
+
+  base::WeakPtrFactory<RenderViewContextMenu> weak_pointer_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_H_
