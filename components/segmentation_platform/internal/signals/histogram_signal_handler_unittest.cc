@@ -12,8 +12,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::Eq;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Invoke;
+using ::testing::WithArgs;
 
 namespace segmentation_platform {
 
@@ -22,7 +24,12 @@ namespace {
 constexpr char kExpectedHistogram[] = "some_histogram";
 const uint64_t kExpectedHash = base::HashMetricName(kExpectedHistogram);
 
-}  // namespace
+class MockObserver : public HistogramSignalHandler::Observer {
+ public:
+  MockObserver() = default;
+  ~MockObserver() override = default;
+  MOCK_METHOD(void, OnHistogramSignalUpdated, (const std::string&), (override));
+};
 
 class HistogramSignalHandlerTest : public testing::Test {
  public:
@@ -45,6 +52,7 @@ class HistogramSignalHandlerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
   std::unique_ptr<HistogramSignalHandler> histogram_signal_handler_;
+  MockObserver observer_;
 };
 
 TEST_F(HistogramSignalHandlerTest, HistogramsAreRecorded) {
@@ -104,4 +112,26 @@ TEST_F(HistogramSignalHandlerTest, DisableMetrics) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HistogramSignalHandlerTest, ObserversNotified) {
+  histogram_signal_handler_->EnableMetrics(true);
+  SetupHistograms();
+  histogram_signal_handler_->AddObserver(&observer_);
+
+  EXPECT_CALL(*signal_database_, WriteSample(proto::SignalType::HISTOGRAM_ENUM,
+                                             kExpectedHash, Eq(1), _))
+      .WillOnce(
+          WithArgs<3>(Invoke([](MockSignalDatabase::SuccessCallback callback) {
+            std::move(callback).Run(true);
+          })));
+  EXPECT_CALL(observer_,
+              OnHistogramSignalUpdated(std::string(kExpectedHistogram)));
+
+  // Record a registered histogram sample. |observer_| should be notified.
+  UMA_HISTOGRAM_BOOLEAN(kExpectedHistogram, true);
+  task_environment_.RunUntilIdle();
+
+  histogram_signal_handler_->RemoveObserver(&observer_);
+}
+
+}  // namespace
 }  // namespace segmentation_platform

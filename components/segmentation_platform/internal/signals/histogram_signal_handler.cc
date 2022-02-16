@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
@@ -45,7 +46,27 @@ void HistogramSignalHandler::OnHistogramSample(
   if (!metrics_enabled_)
     return;
 
-  db_->WriteSample(signal_type, name_hash, sample, base::DoNothing());
+  db_->WriteSample(signal_type, name_hash, sample,
+                   base::BindOnce(&HistogramSignalHandler::OnSampleWritten,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::string(histogram_name)));
+}
+
+void HistogramSignalHandler::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void HistogramSignalHandler::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void HistogramSignalHandler::OnSampleWritten(const std::string& histogram_name,
+                                             bool success) {
+  if (!success)
+    return;
+
+  for (Observer& ob : observers_)
+    ob.OnHistogramSignalUpdated(histogram_name);
 }
 
 }  // namespace segmentation_platform

@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/observer_list.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 
 namespace segmentation_platform {
@@ -26,6 +27,18 @@ class SignalDatabase;
 // persisting them to the internal database for future processing.
 class HistogramSignalHandler {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a histogram signal tracked by segmentation platform is
+    // updated and written to database.
+    virtual void OnHistogramSignalUpdated(
+        const std::string& histogram_name) = 0;
+    ~Observer() override = default;
+
+   protected:
+    Observer() = default;
+  };
+
   explicit HistogramSignalHandler(SignalDatabase* signal_database);
   virtual ~HistogramSignalHandler();
 
@@ -41,11 +54,17 @@ class HistogramSignalHandler {
   // Called to enable or disable metrics collection for segmentation platform.
   virtual void EnableMetrics(bool enable_metrics);
 
+  // Add/Remove observer for histogram update events.
+  virtual void AddObserver(Observer* observer);
+  virtual void RemoveObserver(Observer* observer);
+
  private:
   void OnHistogramSample(proto::SignalType signal_type,
                          const char* histogram_name,
                          uint64_t name_hash,
                          base::HistogramBase::Sample sample);
+
+  void OnSampleWritten(const std::string& histogram_name, bool success);
 
   // The database storing relevant histogram samples.
   raw_ptr<SignalDatabase> db_;
@@ -59,6 +78,8 @@ class HistogramSignalHandler {
       std::string,
       std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
       histogram_observers_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<HistogramSignalHandler> weak_ptr_factory_{this};
 };
