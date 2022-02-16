@@ -304,8 +304,6 @@
     "type": "console_test_launcher",
   },
   "browser_tests": {
-    # TODO(crbug.com/1293351): remove this.
-    "python3": False,
     "label": "//chrome/test:browser_tests",
     "type": "windowed_test_launcher",
   },
