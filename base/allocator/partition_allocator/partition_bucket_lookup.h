@@ -104,6 +104,7 @@ inline constexpr size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
 // The class used to generate the bucket lookup table at compile-time.
 class BucketIndexLookup final {
  public:
+  ALWAYS_INLINE constexpr static size_t GetIndexForDenserBuckets(size_t size);
   ALWAYS_INLINE constexpr static size_t GetIndex(size_t size);
 
   constexpr BucketIndexLookup() {
@@ -201,8 +202,53 @@ class BucketIndexLookup final {
       bucket_index_lookup_[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1]{};
 };
 
+ALWAYS_INLINE constexpr size_t RoundUpToPowerOfTwo(size_t size) {
+  const size_t n = 1 << base::bits::Log2Ceiling(static_cast<uint32_t>(size));
+  PA_DCHECK(size <= n);
+  return n;
+}
+
+ALWAYS_INLINE constexpr size_t RoundUpSize(size_t size) {
+  const size_t next_power = RoundUpToPowerOfTwo(size);
+  const size_t prev_power = next_power >> 1;
+  PA_DCHECK(size <= next_power);
+  PA_DCHECK(prev_power < size);
+  if (size <= prev_power * 5 / 4) {
+    return prev_power * 5 / 4;
+  } else {
+    return next_power;
+  }
+}
+
 // static
 ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndex(size_t size) {
+  // For any order 2^N, under the denser bucket distribution ("Distribution A"),
+  // we have 4 evenly distributed buckets: 2^N, 1.25*2^N, 1.5*2^N, and 1.75*2^N.
+  // These numbers represent the maximum size of an allocation that can go into
+  // a given bucket.
+  //
+  // Under the less dense bucket distribution ("Distribution B"), we only have
+  // 2 buckets for the same order 2^N: 2^N and 1.25*2^N.
+  //
+  // Everything that would be mapped to the last two buckets of an order under
+  // Distribution A is instead mapped to the first bucket of the next order
+  // under Distribution B. The following diagram shows roughly what this looks
+  // like for the order starting from 2^10, as an example.
+  //
+  // A: ... | 2^10 | 1.25*2^10 | 1.5*2^10 | 1.75*2^10 | 2^11 | ...
+  // B: ... | 2^10 | 1.25*2^10 | -------- | --------- | 2^11 | ...
+  //
+  // So, an allocation of size 1.4*2^10 would go into the 1.5*2^10 bucket under
+  // Distribution A, but to the 2^11 bucket under Distribution B.
+  if (1 << 8 < size && size < 1 << 19)
+    return BucketIndexLookup::GetIndexForDenserBuckets(RoundUpSize(size));
+  else
+    return BucketIndexLookup::GetIndexForDenserBuckets(size);
+}
+
+// static
+ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndexForDenserBuckets(
+    size_t size) {
   // This forces the bucket table to be constant-initialized and immediately
   // materialized in the binary.
   constexpr BucketIndexLookup lookup{};

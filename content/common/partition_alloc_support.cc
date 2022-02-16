@@ -283,7 +283,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       base::allocator::EnableBrp(enable_brp),
       base::allocator::SplitMainPartition(split_main_partition),
       base::allocator::UseDedicatedAlignedPartition(
-          use_dedicated_aligned_partition));
+          use_dedicated_aligned_partition),
+      base::allocator::AlternateBucketDistribution(base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocUseAlternateDistribution)));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   // If BRP is not enabled, check if any of PCScan flags is enabled.

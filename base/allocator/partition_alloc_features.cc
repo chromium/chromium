@@ -78,6 +78,12 @@ const base::FeatureParam<BackupRefPtrMode> kBackupRefPtrModeParam{
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
+// If enabled, switches the bucket distribution to an alternate one. The
+// alternate distribution must have buckets that are a subset of the default
+// one.
+const Feature kPartitionAllocUseAlternateDistribution{
+    "PartitionAllocUseAlternateDistribution", FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, switches PCScan scheduling to a mutator-aware scheduler. Does not
 // affect whether PCScan is enabled itself.
 const Feature kPartitionAllocPCScanMUAwareScheduler{
