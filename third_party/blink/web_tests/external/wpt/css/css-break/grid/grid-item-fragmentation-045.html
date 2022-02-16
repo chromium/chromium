@@ -6,7 +6,9 @@
 <div style="position: relative; width: 100px; height: 100px; columns: 2; column-gap: 0; column-fill: auto; background: red;">
   <div style="display: grid; grid-template-rows: 50px 100px;">
     <div style="background: green; break-after: avoid;">
-      <div style="break-after: column;"></div> <!-- This break-after should be propagated to the grid row. -->
+      <div>
+        <div style="break-after: column;"></div> <!-- This break-after should be propagated to the grid row. -->
+      </div>
     </div>
     <div style="background: green;">
     </div>
