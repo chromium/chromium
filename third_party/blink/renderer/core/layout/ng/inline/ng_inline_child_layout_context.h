@@ -71,8 +71,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   // transit, allocating separately is easier.
   NGFragmentItemsBuilder* items_builder_ = nullptr;
 
-  NGLogicalLineItems& logical_line_items_ =
-      *MakeGarbageCollected<NGLogicalLineItems>();
+  NGLogicalLineItems logical_line_items_;
 
   absl::optional<NGInlineLayoutStateStack> box_states_;
 

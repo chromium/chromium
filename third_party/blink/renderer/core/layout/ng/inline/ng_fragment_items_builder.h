@@ -159,8 +159,7 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   NGLogicalLineItems* current_line_items_ = nullptr;
   const NGPhysicalFragment* current_line_fragment_ = nullptr;
 
-  HeapHashMap<const NGPhysicalFragment*, Member<NGLogicalLineItems>>
-      line_items_map_;
+  HashMap<const NGPhysicalFragment*, NGLogicalLineItems*> line_items_map_;
   NGLogicalLineItems* line_items_pool_ = nullptr;
 
   NGInlineNode node_;

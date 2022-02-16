@@ -200,9 +200,7 @@ struct NGLogicalLineItem {
                           : TextDirection::kLtr;
   }
 
-  void Trace(Visitor*) const;
-
-  Member<const NGLayoutResult> layout_result;
+  Persistent<const NGLayoutResult> layout_result;
 
   // Data to create a text fragment from.
   // |inline_item| is null only for ellipsis items.
@@ -215,12 +213,12 @@ struct NGLogicalLineItem {
 
   // Ellipsis does not have |NGInlineItem|, but built from |LayoutObject| and
   // |NGStyleVariant|.
-  Member<const LayoutObject> layout_object;
+  UntracedMember<const LayoutObject> layout_object;
   // Used only when |layout_object_| is not null.
   NGStyleVariant style_variant = NGStyleVariant::kStandard;
 
-  Member<LayoutObject> out_of_flow_positioned_box;
-  Member<LayoutObject> unpositioned_float;
+  UntracedMember<LayoutObject> out_of_flow_positioned_box;
+  UntracedMember<LayoutObject> unpositioned_float;
 
   // The offset of the border box, initially in this child coordinate system.
   // |ComputeInlinePositions()| converts it to the offset within the line box.
@@ -254,7 +252,7 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
 // A vector of Child.
 // Unlike the fragment builder, chlidren are mutable.
 // Callers can add to the fragment builder in a batch once finalized.
-class NGLogicalLineItems : public GarbageCollected<NGLogicalLineItems> {
+class NGLogicalLineItems {
  public:
   NGLogicalLineItems() = default;
   void operator=(NGLogicalLineItems&& other) {
@@ -267,7 +265,6 @@ class NGLogicalLineItems : public GarbageCollected<NGLogicalLineItems> {
   }
 
   wtf_size_t size() const { return children_.size(); }
-  void clear() { children_.clear(); }
   bool IsEmpty() const { return children_.IsEmpty(); }
   void ReserveInitialCapacity(unsigned capacity) {
     children_.ReserveInitialCapacity(capacity);
@@ -284,7 +281,7 @@ class NGLogicalLineItems : public GarbageCollected<NGLogicalLineItems> {
   reverse_iterator rbegin() { return children_.rbegin(); }
   reverse_iterator rend() { return children_.rend(); }
   using const_reverse_iterator =
-      HeapVector<NGLogicalLineItem, 16>::const_reverse_iterator;
+      Vector<NGLogicalLineItem, 16>::const_reverse_iterator;
   const_reverse_iterator rbegin() const { return children_.rbegin(); }
   const_reverse_iterator rend() const { return children_.rend(); }
 
@@ -317,12 +314,10 @@ class NGLogicalLineItems : public GarbageCollected<NGLogicalLineItems> {
   void MoveInBlockDirection(LayoutUnit);
   void MoveInBlockDirection(LayoutUnit, unsigned start, unsigned end);
 
-  void Trace(Visitor*) const;
-
  private:
   void WillInsertChild(unsigned index);
 
-  HeapVector<NGLogicalLineItem, 16> children_;
+  Vector<NGLogicalLineItem, 16> children_;
 };
 
 }  // namespace blink

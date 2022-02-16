@@ -115,15 +115,4 @@ void NGLogicalLineItems::MoveInBlockDirection(LayoutUnit delta,
     children_[index].rect.offset.block_offset += delta;
 }
 
-void NGLogicalLineItem::Trace(Visitor* visitor) const {
-  visitor->Trace(layout_result);
-  visitor->Trace(layout_object);
-  visitor->Trace(out_of_flow_positioned_box);
-  visitor->Trace(unpositioned_float);
-}
-
-void NGLogicalLineItems::Trace(Visitor* visitor) const {
-  visitor->Trace(children_);
-}
-
 }  // namespace blink
