@@ -367,7 +367,6 @@ const char kOsUIHistogramsURL[] = "os://histograms";
 const char kOsUIInvalidationsUrl[] = "os://invalidations";
 const char kOsUILockScreenNetworkURL[] = "os://lock-network";
 const char kOsUINetworkUrl[] = "os://network";
-const char kOsUIOSSettingsURL[] = "os://os-settings";
 const char kOsUIRestartURL[] = "os://restart";
 const char kOsUIScanningAppURL[] = "os://scanning";
 const char kOsUISettingsURL[] = "os://settings";

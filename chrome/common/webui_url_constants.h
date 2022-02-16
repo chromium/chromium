@@ -345,7 +345,6 @@ extern const char kOsUIHistogramsURL[];
 extern const char kOsUIInvalidationsUrl[];
 extern const char kOsUILockScreenNetworkURL[];
 extern const char kOsUINetworkUrl[];
-extern const char kOsUIOSSettingsURL[];
 extern const char kOsUIRestartURL[];
 extern const char kOsUIScanningAppURL[];
 extern const char kOsUISettingsURL[];
