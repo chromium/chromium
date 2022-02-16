@@ -4,6 +4,7 @@
 
 #include "third_party/zlib/google/zip_reader.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -11,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -64,61 +66,20 @@ std::ostream& operator<<(std::ostream& out, Redact r) {
   return LOG_IS_ON(INFO) ? out << "'" << r.path << "'" : out << "(redacted)";
 }
 
-// StringWriterDelegate --------------------------------------------------------
-
-// A writer delegate that writes no more than |max_read_bytes| to a given
-// std::string.
+// A writer delegate that writes to a given string.
 class StringWriterDelegate : public WriterDelegate {
  public:
-  StringWriterDelegate(size_t max_read_bytes, std::string* output);
-
-  StringWriterDelegate(const StringWriterDelegate&) = delete;
-  StringWriterDelegate& operator=(const StringWriterDelegate&) = delete;
-
-  ~StringWriterDelegate() override;
+  explicit StringWriterDelegate(std::string* output) : output_(output) {}
 
   // WriterDelegate methods:
-
-  // Returns true.
-  bool PrepareOutput() override;
-
-  // Appends |num_bytes| bytes from |data| to the output string. Returns false
-  // if |num_bytes| will cause the string to exceed |max_read_bytes|.
-  bool WriteBytes(const char* data, int num_bytes) override;
-
-  void SetTimeModified(const base::Time& time) override;
-
-  void SetPosixFilePermissions(int mode) override;
+  bool WriteBytes(const char* data, int num_bytes) override {
+    output_->append(data, num_bytes);
+    return true;
+  }
 
  private:
-  size_t max_read_bytes_;
-  std::string* output_;
+  std::string* const output_;
 };
-
-StringWriterDelegate::StringWriterDelegate(size_t max_read_bytes,
-                                           std::string* output)
-    : max_read_bytes_(max_read_bytes), output_(output) {}
-
-StringWriterDelegate::~StringWriterDelegate() {}
-
-bool StringWriterDelegate::PrepareOutput() {
-  return true;
-}
-
-bool StringWriterDelegate::WriteBytes(const char* data, int num_bytes) {
-  if (output_->size() + num_bytes > max_read_bytes_)
-    return false;
-  output_->append(data, num_bytes);
-  return true;
-}
-
-void StringWriterDelegate::SetTimeModified(const base::Time& time) {
-  // Do nothing.
-}
-
-void StringWriterDelegate::SetPosixFilePermissions(int mode) {
-  // Do nothing.
-}
 
 #if defined(OS_POSIX)
 void SetPosixFilePermissions(int fd, int mode) {
@@ -448,41 +409,36 @@ bool ZipReader::ExtractCurrentEntryToString(uint64_t max_read_bytes,
                                             std::string* output) const {
   DCHECK(output);
   DCHECK(zip_file_);
+  DCHECK(ok_);
+  DCHECK(!reached_end_);
 
-  if (max_read_bytes == 0) {
-    output->clear();
+  output->clear();
+
+  if (max_read_bytes == 0)
     return true;
-  }
 
-  if (current_entry_info()->is_directory()) {
-    output->clear();
+  if (entry_.is_directory())
     return true;
-  }
 
-  // The original_size() is the best hint for the real size, so it saves
-  // doing reallocations for the common case when the uncompressed size is
-  // correct. However, we need to assume that the uncompressed size could be
-  // incorrect therefore this function needs to read as much data as possible.
-  std::string contents;
-  contents.reserve(
-      static_cast<size_t>(std::min(base::checked_cast<int64_t>(max_read_bytes),
-                                   current_entry_info()->original_size())));
+  // The original_size is the best hint for the real size, so it saves doing
+  // reallocations for the common case when the uncompressed size is correct.
+  // However, we need to assume that the uncompressed size could be incorrect
+  // therefore this function needs to read as much data as possible.
+  output->reserve(static_cast<size_t>(std::min(
+      base::checked_cast<int64_t>(max_read_bytes), entry_.original_size())));
 
-  StringWriterDelegate writer(max_read_bytes, &contents);
+  StringWriterDelegate writer(output);
   if (!ExtractCurrentEntry(&writer, max_read_bytes)) {
-    if (contents.length() < max_read_bytes) {
+    if (output->size() < max_read_bytes) {
       // There was an error in extracting entry. If ExtractCurrentEntry()
       // returns false, the entire file was not read - in which case
-      // contents.length() should equal |max_read_bytes| unless an error
-      // occurred which caused extraction to be aborted.
+      // output->size() should equal |max_read_bytes| unless an error occurred
+      // which caused extraction to be aborted.
       output->clear();
-    } else {
-      // |num_bytes| is less than the length of current entry.
-      output->swap(contents);
     }
     return false;
   }
-  output->swap(contents);
+
   return true;
 }
 

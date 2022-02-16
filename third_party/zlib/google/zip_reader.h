@@ -33,19 +33,19 @@ class WriterDelegate {
 
   // Invoked once before any data is streamed out to pave the way (e.g., to open
   // the output file). Return false on failure to cancel extraction.
-  virtual bool PrepareOutput() = 0;
+  virtual bool PrepareOutput() { return true; }
 
   // Invoked to write the next chunk of data. Return false on failure to cancel
   // extraction.
-  virtual bool WriteBytes(const char* data, int num_bytes) = 0;
+  virtual bool WriteBytes(const char* data, int num_bytes) { return true; }
 
   // Sets the last-modified time of the data.
-  virtual void SetTimeModified(const base::Time& time) = 0;
+  virtual void SetTimeModified(const base::Time& time) {}
 
   // Called with the POSIX file permissions of the data; POSIX implementations
   // may apply some of the permissions (for example, the executable bit) to the
   // output file.
-  virtual void SetPosixFilePermissions(int mode) = 0;
+  virtual void SetPosixFilePermissions(int mode) {}
 };
 
 // This class is used for reading ZIP archives. A typical use case of this class
