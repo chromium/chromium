@@ -198,10 +198,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)reloadAllData {
-  if (IsSingleNtpEnabled()) {
-    // Refresh in case there are new MVT to show.
-    _mostVisitedSites->Refresh();
-  }
   NSArray<ContentSuggestionsSectionInformation*>* sections =
       [self sectionsInfo];
   NSMutableDictionary<NSNumber*, NSArray*>* items =

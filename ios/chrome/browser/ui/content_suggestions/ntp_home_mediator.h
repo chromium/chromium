@@ -31,7 +31,6 @@ class ChromeAccountManagerService;
 @protocol LogoVendor;
 @class NewTabPageViewController;
 @protocol NTPHomeConsumer;
-@protocol NTPHomeDelegate;
 @class NTPHomeMetrics;
 @class FeedMetricsRecorder;
 @protocol OmniboxCommands;
@@ -85,8 +84,6 @@ class VoiceSearchAvailability;
 @property(nonatomic, strong) ContentSuggestionsMediator* suggestionsMediator;
 // Consumer for this mediator.
 @property(nonatomic, weak) id<NTPHomeConsumer> consumer;
-// Delegate for this mediator.
-@property(nonatomic, weak) id<NTPHomeDelegate> delegate;
 // The browser.
 @property(nonatomic, assign) Browser* browser;
 // The web state associated with this NTP.

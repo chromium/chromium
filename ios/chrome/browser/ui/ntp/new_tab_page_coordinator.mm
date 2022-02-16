@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
@@ -102,7 +101,6 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
                                      FeedControlDelegate,
                                      FeedMenuCommands,
                                      NewTabPageCommands,
-                                     NTPHomeDelegate,
                                      NewTabPageContentDelegate,
                                      OverscrollActionsControllerDelegate,
                                      PrefObserverDelegate,
@@ -1009,7 +1007,6 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
                                                               self.webState)
       voiceSearchAvailability:&_voiceSearchAvailability];
   ntpMediator.browser = self.browser;
-  ntpMediator.delegate = self;
   ntpMediator.ntpViewController = self.ntpViewController;
   ntpMediator.headerCollectionInteractionHandler = self.headerSynchronizer;
   ntpMediator.NTPMetrics = [[NTPHomeMetrics alloc]
