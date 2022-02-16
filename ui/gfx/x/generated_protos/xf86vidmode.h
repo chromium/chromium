@@ -110,6 +110,15 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   };
 
   struct ModeInfo {
+    bool operator==(const ModeInfo& other) const {
+      return dotclock == other.dotclock && hdisplay == other.hdisplay &&
+             hsyncstart == other.hsyncstart && hsyncend == other.hsyncend &&
+             htotal == other.htotal && hskew == other.hskew &&
+             vdisplay == other.vdisplay && vsyncstart == other.vsyncstart &&
+             vsyncend == other.vsyncend && vtotal == other.vtotal &&
+             flags == other.flags && privsize == other.privsize;
+    }
+
     DotClock dotclock{};
     uint16_t hdisplay{};
     uint16_t hsyncstart{};

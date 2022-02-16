@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
@@ -15,6 +16,18 @@
 #include "ui/gfx/x/xproto.h"
 
 namespace x11 {
+
+ScopedShapeEventSelector::ScopedShapeEventSelector(Connection* connection,
+                                                   Window window)
+    : connection_(connection), window_(window) {
+  connection_->shape().SelectInput(
+      {.destination_window = window_, .enable = true});
+}
+
+ScopedShapeEventSelector::~ScopedShapeEventSelector() {
+  connection_->shape().SelectInput(
+      {.destination_window = window_, .enable = false});
+}
 
 WindowCache::WindowInfo::WindowInfo() = default;
 
@@ -124,6 +137,16 @@ void WindowCache::OnEvent(const Event& event) {
           siblings->insert(siblings->begin(), circulate->window);
       }
     }
+  } else if (auto* shape = event.As<Shape::NotifyEvent>()) {
+    Window window = shape->affected_window;
+    Shape::Sk kind = shape->shape_kind;
+    if (base::Contains(windows_, window)) {
+      connection_->shape()
+          .GetRectangles(window, kind)
+          .OnResponse(base::BindOnce(&WindowCache::OnGetRectanglesResponse,
+                                     weak_factory_.GetWeakPtr(), window, kind));
+      pending_requests_++;
+    }
   }
 }
 
@@ -145,6 +168,19 @@ void WindowCache::AddWindow(Window window, Window parent) {
   connection_->QueryTree(window).OnResponse(base::BindOnce(
       &WindowCache::OnQueryTreeResponse, weak_factory_.GetWeakPtr(), window));
   pending_requests_ += 3;
+
+  auto& shape = connection_->shape();
+  if (shape.present()) {
+    info.shape_events =
+        std::make_unique<ScopedShapeEventSelector>(connection_, window);
+
+    for (auto kind : {Shape::Sk::Bounding, Shape::Sk::Input}) {
+      shape.GetRectangles(window, kind)
+          .OnResponse(base::BindOnce(&WindowCache::OnGetRectanglesResponse,
+                                     weak_factory_.GetWeakPtr(), window, kind));
+      pending_requests_++;
+    }
+  }
 }
 
 WindowCache::WindowInfo* WindowCache::GetInfo(Window window) {
@@ -197,6 +233,25 @@ void WindowCache::OnQueryTreeResponse(Window window,
     info->children = std::move(response->children);
     for (auto child : info->children)
       AddWindow(child, window);
+  }
+}
+
+void WindowCache::OnGetRectanglesResponse(
+    Window window,
+    Shape::Sk kind,
+    Shape::GetRectanglesResponse response) {
+  if (auto* info = OnResponse(window, response.reply.get())) {
+    switch (kind) {
+      case Shape::Sk::Bounding:
+        info->bounding_rects_px = std::move(response->rectangles);
+        break;
+      case Shape::Sk::Clip:
+        NOTREACHED();
+        break;
+      case Shape::Sk::Input:
+        info->input_rects_px = std::move(response->rectangles);
+        break;
+    }
   }
 }
 

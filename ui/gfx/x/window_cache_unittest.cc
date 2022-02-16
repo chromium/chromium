@@ -235,4 +235,29 @@ TEST_F(WindowCacheTest, CirculateNotify) {
   EXPECT_EQ(windows, (std::vector<Window>{a, b, c, d}));
 }
 
+TEST_F(WindowCacheTest, ShapeExtension) {
+  auto& shape = connection()->shape();
+  if (!shape.present())
+    return;
+
+  const WindowCache::WindowInfo& info = cache()->windows().at(root());
+  EXPECT_EQ(info.bounding_rects_px,
+            (std::vector<Rectangle>{{0, 0, 512, 1024}}));
+  EXPECT_EQ(info.input_rects_px, (std::vector<Rectangle>{{0, 0, 512, 1024}}));
+
+  std::vector<Rectangle> bounding_rects{{10, 10, 100, 100}};
+  std::vector<Rectangle> input_rects{{20, 20, 10, 10}, {50, 50, 10, 10}};
+  shape.Rectangles({.operation = Shape::So::Set,
+                    .destination_kind = Shape::Sk::Bounding,
+                    .destination_window = root(),
+                    .rectangles = bounding_rects});
+  shape.Rectangles({.operation = Shape::So::Set,
+                    .destination_kind = Shape::Sk::Input,
+                    .destination_window = root(),
+                    .rectangles = input_rects});
+  cache()->SyncForTest();
+  EXPECT_EQ(info.bounding_rects_px, bounding_rects);
+  EXPECT_EQ(info.input_rects_px, input_rects);
+}
+
 }  // namespace x11

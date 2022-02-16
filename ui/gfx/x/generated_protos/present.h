@@ -126,6 +126,10 @@ class COMPONENT_EXPORT(X11) Present {
   };
 
   struct Notify {
+    bool operator==(const Notify& other) const {
+      return window == other.window && serial == other.serial;
+    }
+
     Window window{};
     uint32_t serial{};
   };

@@ -106,6 +106,11 @@ class COMPONENT_EXPORT(X11) Dri2 {
   };
 
   struct DRI2Buffer {
+    bool operator==(const DRI2Buffer& other) const {
+      return attachment == other.attachment && name == other.name &&
+             pitch == other.pitch && cpp == other.cpp && flags == other.flags;
+    }
+
     Attachment attachment{};
     uint32_t name{};
     uint32_t pitch{};
@@ -114,6 +119,10 @@ class COMPONENT_EXPORT(X11) Dri2 {
   };
 
   struct AttachFormat {
+    bool operator==(const AttachFormat& other) const {
+      return attachment == other.attachment && format == other.format;
+    }
+
     Attachment attachment{};
     uint32_t format{};
   };

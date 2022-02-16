@@ -262,10 +262,22 @@ class GenXproto(FileWriter):
         # Enums that represent bit masks.
         self.bitenums = []
 
-    # Geenerate an ID suitable for use in temporary variable names.
+    # Generate an ID suitable for use in temporary variable names.
     def new_uid(self, ):
         self.prev_id += 1
         return self.prev_id
+
+    def is_eq_comparable(self, type):
+        if type.is_list:
+            return self.is_eq_comparable(type.member)
+        if type.is_simple or type.is_pad:
+            return True
+        if (type.is_switch or type.is_union
+                or isinstance(type, self.xcbgen.xtypes.Request)
+                or isinstance(type, self.xcbgen.xtypes.Reply)):
+            return False
+        assert type.is_container
+        return all(self.is_eq_comparable(field.type) for field in type.fields)
 
     def type_suffix(self, t):
         if isinstance(t, self.xcbgen.xtypes.Error):
@@ -778,8 +790,19 @@ class GenXproto(FileWriter):
         self.write()
 
     def declare_container(self, struct, struct_name):
-        name = struct_name[-1] + self.type_suffix(struct)
-        with Indent(self, 'struct %s {' % adjust_type_name(name), '};'):
+        name = adjust_type_name(struct_name[-1] + self.type_suffix(struct))
+        with Indent(self, 'struct %s {' % name, '};'):
+            if self.is_eq_comparable(struct):
+                sig = 'bool operator==(const %s& other) const {' % name
+                with Indent(self, sig, '}'):
+                    terms = [
+                        '%s == other.%s' % (field_name, field_name)
+                        for field in struct.fields
+                        for _, field_name in self.declare_field(field)
+                    ]
+                    expr = ' && '.join(terms) if terms else 'true'
+                    self.write('return %s;' % expr)
+                self.write()
             self.declare_fields(struct.fields)
         self.write()
 

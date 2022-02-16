@@ -12,12 +12,23 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/shape.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace x11 {
 
 class Connection;
 class XScopedEventSelector;
+
+class ScopedShapeEventSelector {
+ public:
+  ScopedShapeEventSelector(Connection* connection, Window window);
+  ~ScopedShapeEventSelector();
+
+ private:
+  Connection* const connection_;
+  const Window window_;
+};
 
 // Maintains a cache of the state of all X11 windows.
 class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
@@ -40,7 +51,11 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
     // so we store children in a vector instead of a node-based structure.
     std::vector<Window> children;
 
+    absl::optional<std::vector<Rectangle>> bounding_rects_px;
+    absl::optional<std::vector<Rectangle>> input_rects_px;
+
     std::unique_ptr<XScopedEventSelector> events;
+    std::unique_ptr<ScopedShapeEventSelector> shape_events;
   };
 
   static WindowCache* instance() { return instance_; }
@@ -81,6 +96,10 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
   void OnGetGeometryResponse(Window window, GetGeometryResponse response);
 
   void OnQueryTreeResponse(Window window, QueryTreeResponse response);
+
+  void OnGetRectanglesResponse(Window window,
+                               Shape::Sk kind,
+                               Shape::GetRectanglesResponse response);
 
   static WindowCache* instance_;
 

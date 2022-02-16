@@ -695,16 +695,29 @@ struct Fontable {
 };
 
 struct Char16 {
+  bool operator==(const Char16& other) const {
+    return byte1 == other.byte1 && byte2 == other.byte2;
+  }
+
   uint8_t byte1{};
   uint8_t byte2{};
 };
 
 struct Point {
+  bool operator==(const Point& other) const {
+    return x == other.x && y == other.y;
+  }
+
   int16_t x{};
   int16_t y{};
 };
 
 struct Rectangle {
+  bool operator==(const Rectangle& other) const {
+    return x == other.x && y == other.y && width == other.width &&
+           height == other.height;
+  }
+
   int16_t x{};
   int16_t y{};
   uint16_t width{};
@@ -712,6 +725,12 @@ struct Rectangle {
 };
 
 struct Arc {
+  bool operator==(const Arc& other) const {
+    return x == other.x && y == other.y && width == other.width &&
+           height == other.height && angle1 == other.angle1 &&
+           angle2 == other.angle2;
+  }
+
   int16_t x{};
   int16_t y{};
   uint16_t width{};
@@ -721,12 +740,25 @@ struct Arc {
 };
 
 struct Format {
+  bool operator==(const Format& other) const {
+    return depth == other.depth && bits_per_pixel == other.bits_per_pixel &&
+           scanline_pad == other.scanline_pad;
+  }
+
   uint8_t depth{};
   uint8_t bits_per_pixel{};
   uint8_t scanline_pad{};
 };
 
 struct VisualType {
+  bool operator==(const VisualType& other) const {
+    return visual_id == other.visual_id && c_class == other.c_class &&
+           bits_per_rgb_value == other.bits_per_rgb_value &&
+           colormap_entries == other.colormap_entries &&
+           red_mask == other.red_mask && green_mask == other.green_mask &&
+           blue_mask == other.blue_mask;
+  }
+
   VisualId visual_id{};
   VisualClass c_class{};
   uint8_t bits_per_rgb_value{};
@@ -737,11 +769,32 @@ struct VisualType {
 };
 
 struct Depth {
+  bool operator==(const Depth& other) const {
+    return depth == other.depth && visuals == other.visuals;
+  }
+
   uint8_t depth{};
   std::vector<VisualType> visuals{};
 };
 
 struct Screen {
+  bool operator==(const Screen& other) const {
+    return root == other.root && default_colormap == other.default_colormap &&
+           white_pixel == other.white_pixel &&
+           black_pixel == other.black_pixel &&
+           current_input_masks == other.current_input_masks &&
+           width_in_pixels == other.width_in_pixels &&
+           height_in_pixels == other.height_in_pixels &&
+           width_in_millimeters == other.width_in_millimeters &&
+           height_in_millimeters == other.height_in_millimeters &&
+           min_installed_maps == other.min_installed_maps &&
+           max_installed_maps == other.max_installed_maps &&
+           root_visual == other.root_visual &&
+           backing_stores == other.backing_stores &&
+           save_unders == other.save_unders && root_depth == other.root_depth &&
+           allowed_depths == other.allowed_depths;
+  }
+
   Window root{};
   ColorMap default_colormap{};
   uint32_t white_pixel{};
@@ -761,6 +814,14 @@ struct Screen {
 };
 
 struct SetupRequest {
+  bool operator==(const SetupRequest& other) const {
+    return byte_order == other.byte_order &&
+           protocol_major_version == other.protocol_major_version &&
+           protocol_minor_version == other.protocol_minor_version &&
+           authorization_protocol_name == other.authorization_protocol_name &&
+           authorization_protocol_data == other.authorization_protocol_data;
+  }
+
   uint8_t byte_order{};
   uint16_t protocol_major_version{};
   uint16_t protocol_minor_version{};
@@ -769,6 +830,13 @@ struct SetupRequest {
 };
 
 struct SetupFailed {
+  bool operator==(const SetupFailed& other) const {
+    return status == other.status &&
+           protocol_major_version == other.protocol_major_version &&
+           protocol_minor_version == other.protocol_minor_version &&
+           length == other.length && reason == other.reason;
+  }
+
   uint8_t status{};
   uint16_t protocol_major_version{};
   uint16_t protocol_minor_version{};
@@ -777,12 +845,35 @@ struct SetupFailed {
 };
 
 struct SetupAuthenticate {
+  bool operator==(const SetupAuthenticate& other) const {
+    return status == other.status && length == other.length &&
+           reason == other.reason;
+  }
+
   uint8_t status{};
   uint16_t length{};
   std::string reason{};
 };
 
 struct Setup {
+  bool operator==(const Setup& other) const {
+    return status == other.status &&
+           protocol_major_version == other.protocol_major_version &&
+           protocol_minor_version == other.protocol_minor_version &&
+           length == other.length && release_number == other.release_number &&
+           resource_id_base == other.resource_id_base &&
+           resource_id_mask == other.resource_id_mask &&
+           motion_buffer_size == other.motion_buffer_size &&
+           maximum_request_length == other.maximum_request_length &&
+           image_byte_order == other.image_byte_order &&
+           bitmap_format_bit_order == other.bitmap_format_bit_order &&
+           bitmap_format_scanline_unit == other.bitmap_format_scanline_unit &&
+           bitmap_format_scanline_pad == other.bitmap_format_scanline_pad &&
+           min_keycode == other.min_keycode &&
+           max_keycode == other.max_keycode && vendor == other.vendor &&
+           pixmap_formats == other.pixmap_formats && roots == other.roots;
+  }
+
   uint8_t status{};
   uint16_t protocol_major_version{};
   uint16_t protocol_minor_version{};
@@ -1364,17 +1455,32 @@ struct ImplementationError : public x11::Error {
 };
 
 struct TimeCoord {
+  bool operator==(const TimeCoord& other) const {
+    return time == other.time && x == other.x && y == other.y;
+  }
+
   Time time{};
   int16_t x{};
   int16_t y{};
 };
 
 struct FontProperty {
+  bool operator==(const FontProperty& other) const {
+    return name == other.name && value == other.value;
+  }
+
   Atom name{};
   uint32_t value{};
 };
 
 struct CharInfo {
+  bool operator==(const CharInfo& other) const {
+    return left_side_bearing == other.left_side_bearing &&
+           right_side_bearing == other.right_side_bearing &&
+           character_width == other.character_width && ascent == other.ascent &&
+           descent == other.descent && attributes == other.attributes;
+  }
+
   int16_t left_side_bearing{};
   int16_t right_side_bearing{};
   int16_t character_width{};
@@ -1384,10 +1490,16 @@ struct CharInfo {
 };
 
 struct Str {
+  bool operator==(const Str& other) const { return name == other.name; }
+
   std::string name{};
 };
 
 struct Segment {
+  bool operator==(const Segment& other) const {
+    return x1 == other.x1 && y1 == other.y1 && x2 == other.x2 && y2 == other.y2;
+  }
+
   int16_t x1{};
   int16_t y1{};
   int16_t x2{};
@@ -1395,6 +1507,11 @@ struct Segment {
 };
 
 struct ColorItem {
+  bool operator==(const ColorItem& other) const {
+    return pixel == other.pixel && red == other.red && green == other.green &&
+           blue == other.blue && flags == other.flags;
+  }
+
   uint32_t pixel{};
   uint16_t red{};
   uint16_t green{};
@@ -1403,12 +1520,20 @@ struct ColorItem {
 };
 
 struct Rgb {
+  bool operator==(const Rgb& other) const {
+    return red == other.red && green == other.green && blue == other.blue;
+  }
+
   uint16_t red{};
   uint16_t green{};
   uint16_t blue{};
 };
 
 struct Host {
+  bool operator==(const Host& other) const {
+    return family == other.family && address == other.address;
+  }
+
   Family family{};
   std::vector<uint8_t> address{};
 };

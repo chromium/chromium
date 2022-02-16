@@ -115,6 +115,10 @@ class COMPONENT_EXPORT(X11) XPrint {
   };
 
   struct Printer {
+    bool operator==(const Printer& other) const {
+      return name == other.name && description == other.description;
+    }
+
     std::vector<String8> name{};
     std::vector<String8> description{};
   };
