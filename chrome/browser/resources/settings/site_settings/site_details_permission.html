@@ -5,10 +5,10 @@
                                                          category,
                                                          site.setting)]]">
         <div>
-          <iron-icon icon="[[icon]]">
+          <iron-icon icon="[[icon]]" aria-hidden="true" role="presentation">
           </iron-icon>
         </div>
-        <div class="middle" id="permissionHeader" aria-hidden="true">
+        <div class="middle" id="permissionHeader">
           [[label]]
           <div class="secondary" id="permissionSecondary"
               hidden$="[[!hasPermissionInfoString_(site.source,
