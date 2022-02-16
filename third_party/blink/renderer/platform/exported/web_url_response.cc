@@ -350,6 +350,15 @@ void WebURLResponse::SetAddressSpace(
   resource_response_->SetAddressSpace(remote_ip_address_space);
 }
 
+network::mojom::IPAddressSpace WebURLResponse::ClientAddressSpace() const {
+  return resource_response_->ClientAddressSpace();
+}
+
+void WebURLResponse::SetClientAddressSpace(
+    network::mojom::IPAddressSpace client_address_space) {
+  resource_response_->SetClientAddressSpace(client_address_space);
+}
+
 void WebURLResponse::SetIsValidated(bool is_validated) {
   resource_response_->SetIsValidated(is_validated);
 }

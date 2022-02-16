@@ -740,13 +740,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
     fetch("/defaultresponse").then(response => response.ok)
   )"));
 
-  // TODO(https://crbug.com/1293764): Expect that no metric is incremented,
-  // since proxies are exempted from checks.
-  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
-      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
-      {
-          {WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal, 1},
-      }));
+  EXPECT_THAT(
+      feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
+      IsEmpty());
 }
 
 // This test verifies that resources fetched from cache are not subject to
@@ -777,13 +773,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
     fetch("/cachetime").then(response => response.ok)
   )"));
 
-  // TODO(https://crbug.com/1293764): Expect that no metric is incremented,
-  // since there is no check performed.
-  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
-      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
-      {
-          {WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal, 1},
-      }));
+  EXPECT_THAT(
+      feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
+      IsEmpty());
 }
 
 // This test verifies that a UseCounter is recorded when a document makes a

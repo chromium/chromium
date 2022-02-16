@@ -54,7 +54,7 @@ void RecordPrivateNetworkAccessFeature(ExecutionContext* execution_context,
                                        const ResourceResponse& response) {
   DCHECK(execution_context);
   if (!network::IsLessPublicAddressSpace(response.AddressSpace(),
-                                         execution_context->AddressSpace()))
+                                         response.ClientAddressSpace()))
     return;
   // Only record the feature for worker contexts, not worklets. The address
   // space of worklets is not yet specified.

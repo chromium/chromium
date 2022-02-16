@@ -711,13 +711,8 @@ void WebURLLoader::PopulateURLResponse(
                  [](const std::string& h) { return WebString::FromASCII(h); });
   response->SetDnsAliases(dns_aliases);
   response->SetRemoteIPEndpoint(head.remote_endpoint);
-  // This computation can only be done once SetUrlListViaServiceWorker() has
-  // been called on |response|, so that ResponseUrl() returns the correct
-  // answer.
-  //
-  // Implements: https://wicg.github.io/cors-rfc1918/#integration-html
-  response->SetAddressSpace(network::CalculateResourceAddressSpace(
-      KURL(response->ResponseUrl()), head.remote_endpoint));
+  response->SetAddressSpace(head.response_address_space);
+  response->SetClientAddressSpace(head.client_address_space);
 
   WebVector<WebString> cors_exposed_header_names(
       head.cors_exposed_header_names.size());

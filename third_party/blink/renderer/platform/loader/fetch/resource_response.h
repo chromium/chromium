@@ -293,6 +293,13 @@ class PLATFORM_EXPORT ResourceResponse final {
     address_space_ = value;
   }
 
+  network::mojom::IPAddressSpace ClientAddressSpace() const {
+    return client_address_space_;
+  }
+  void SetClientAddressSpace(network::mojom::IPAddressSpace value) {
+    client_address_space_ = value;
+  }
+
   bool WasAlpnNegotiated() const { return was_alpn_negotiated_; }
   void SetWasAlpnNegotiated(bool was_alpn_negotiated) {
     was_alpn_negotiated_ = was_alpn_negotiated;
@@ -434,7 +441,13 @@ class PLATFORM_EXPORT ResourceResponse final {
   net::IPEndPoint remote_ip_endpoint_;
 
   // The address space from which this resource was fetched.
+  // https://wicg.github.io/private-network-access/#response-ip-address-space
   network::mojom::IPAddressSpace address_space_ =
+      network::mojom::IPAddressSpace::kUnknown;
+
+  // The address space of the request client.
+  // https://wicg.github.io/private-network-access/#policy-container-ip-address-space
+  network::mojom::IPAddressSpace client_address_space_ =
       network::mojom::IPAddressSpace::kUnknown;
 
   bool was_cached_ : 1;

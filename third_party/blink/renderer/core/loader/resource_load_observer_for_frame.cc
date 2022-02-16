@@ -73,9 +73,9 @@ void RecordAddressSpaceFeature(LocalFrame* client_frame,
   }
 
   LocalDOMWindow* window = client_frame->DomWindow();
-  absl::optional<WebFeature> feature =
-      AddressSpaceFeature(FetchType::kSubresource, window->AddressSpace(),
-                          window->IsSecureContext(), response.AddressSpace());
+  absl::optional<WebFeature> feature = AddressSpaceFeature(
+      FetchType::kSubresource, response.ClientAddressSpace(),
+      window->IsSecureContext(), response.AddressSpace());
   if (!feature.has_value()) {
     return;
   }
