@@ -154,10 +154,66 @@ public class MerchantTrustMessageViewTest extends BlankUiTestActivityTestCase {
         mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_integer_rating_value");
     }
 
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderMessage_Alternative1() throws IOException {
+        setMessageUIParams("true", "false", "1", "1");
+
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(3.51234f)
+                                                      .setMerchantCountRating(1640)
+                                                      .setMerchantDetailsPageUrl("http://dummy/url")
+                                                      .build();
+        createModelAndSetView(trustSignals);
+        mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_alternative1");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderMessage_Alternative2() throws IOException {
+        setMessageUIParams("true", "true", "0", "0");
+
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(3.51234f)
+                                                      .setMerchantCountRating(1640)
+                                                      .setMerchantDetailsPageUrl("http://dummy/url")
+                                                      .build();
+        createModelAndSetView(trustSignals);
+        mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_alternative2");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderMessage_Alternative3() throws IOException {
+        setMessageUIParams("true", "false", "1", "2");
+
+        MerchantTrustSignalsV2 trustSignals = MerchantTrustSignalsV2.newBuilder()
+                                                      .setMerchantStarRating(3.51234f)
+                                                      .setMerchantCountRating(1640)
+                                                      .setMerchantDetailsPageUrl("http://dummy/url")
+                                                      .build();
+        createModelAndSetView(trustSignals);
+        mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_alternative3");
+    }
+
     private void setUseRatingBarParam(String useRatingBar) {
+        setMessageUIParams(useRatingBar, "false", "0", "1");
+    }
+
+    private void setMessageUIParams(
+            String useRatingBar, String useGoogleIcon, String titleUI, String descriptionUI) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                 MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_RATING_BAR_PARAM, useRatingBar);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_GOOGLE_ICON_PARAM, useGoogleIcon);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_TITLE_UI_PARAM, titleUI);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DESCRIPTION_UI_PARAM, descriptionUI);
         FeatureList.setTestValues(testValues);
     }
 }

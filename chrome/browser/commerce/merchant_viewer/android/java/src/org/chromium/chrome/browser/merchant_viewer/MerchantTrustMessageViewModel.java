@@ -11,6 +11,10 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.chrome.browser.merchant_viewer.RatingStarSpan.RatingStarType;
@@ -21,6 +25,8 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.text.NumberFormat;
 
 /**
@@ -28,6 +34,22 @@ import java.text.NumberFormat;
  */
 class MerchantTrustMessageViewModel {
     private static final int BASELINE_RATING = 5;
+
+    @IntDef({MessageTitleUI.VIEW_STORE_INFO, MessageTitleUI.SEE_STORE_REVIEWS})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface MessageTitleUI {
+        int VIEW_STORE_INFO = 0;
+        int SEE_STORE_REVIEWS = 1;
+    }
+
+    @IntDef({MessageDescriptionUI.NONE, MessageDescriptionUI.RATING_AND_REVIEWS,
+            MessageDescriptionUI.REVIEWS_FROM_GOOGLE})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface MessageDescriptionUI {
+        int NONE = 0;
+        int RATING_AND_REVIEWS = 1;
+        int REVIEWS_FROM_GOOGLE = 2;
+    }
 
     /** Handles message actions. */
     interface MessageActionsHandler {
@@ -52,13 +74,14 @@ class MerchantTrustMessageViewModel {
         return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                 .with(MessageBannerProperties.MESSAGE_IDENTIFIER, MessageIdentifier.MERCHANT_TRUST)
                 .with(MessageBannerProperties.ICON,
-                        ResourcesCompat.getDrawable(context.getResources(),
-                                R.drawable.ic_storefront_blue, context.getTheme()))
+                        ResourcesCompat.getDrawable(
+                                context.getResources(), getIconRes(), context.getTheme()))
                 .with(MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE)
                 .with(MessageBannerProperties.TITLE,
-                        context.getResources().getString(R.string.merchant_viewer_message_title))
+                        context.getResources().getString(getTitleStringRes()))
                 .with(MessageBannerProperties.DESCRIPTION,
-                        getMessageDescription(context, trustSignals))
+                        getMessageDescription(context, trustSignals,
+                                MerchantViewerConfig.getTrustSignalsMessageDescriptionUI()))
                 .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                         context.getResources().getString(R.string.merchant_viewer_message_action))
                 .with(MessageBannerProperties.ON_DISMISSED,
@@ -70,16 +93,28 @@ class MerchantTrustMessageViewModel {
                 .build();
     }
 
+    @Nullable
     public static Spannable getMessageDescription(
-            Context context, MerchantTrustSignalsV2 trustSignals) {
+            Context context, MerchantTrustSignalsV2 trustSignals, int descriptionUI) {
+        if (descriptionUI == MessageDescriptionUI.NONE) return null;
+
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
+        numberFormatter.setMaximumFractionDigits(1);
+        if (descriptionUI == MessageDescriptionUI.REVIEWS_FROM_GOOGLE
+                && trustSignals.getMerchantCountRating() > 0) {
+            builder.append(context.getResources().getQuantityString(
+                    R.plurals.merchant_viewer_message_description_reviews_from_google,
+                    trustSignals.getMerchantCountRating(),
+                    numberFormatter.format(trustSignals.getMerchantCountRating())));
+            return builder;
+        }
+
         // The zero rating value means we have no rating data for the merchant, under which
         // condition we shouldn't call this method to generate the description.
         assert trustSignals.getMerchantStarRating() > 0;
         // Only keep one decimal to avoid inaccurate double value.
         double ratingValue = Math.round(trustSignals.getMerchantStarRating() * 10) / 10.0;
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
-        numberFormatter.setMaximumFractionDigits(1);
         NumberFormat ratingValueFormatter = NumberFormat.getIntegerInstance();
         ratingValueFormatter.setMaximumFractionDigits(1);
         ratingValueFormatter.setMinimumFractionDigits(1);
@@ -128,5 +163,22 @@ class MerchantTrustMessageViewModel {
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         return ratingBarSpan;
+    }
+
+    @DrawableRes
+    private static int getIconRes() {
+        return MerchantViewerConfig.doesTrustSignalsMessageUseGoogleIcon()
+                ? R.drawable.ic_logo_googleg_24dp
+                : R.drawable.ic_storefront_blue;
+    }
+
+    @StringRes
+    private static int getTitleStringRes() {
+        int titleUI = MerchantViewerConfig.getTrustSignalsMessageTitleUI();
+        if (titleUI == MessageTitleUI.SEE_STORE_REVIEWS) {
+            return R.string.merchant_viewer_message_title_see_reviews;
+        }
+        assert titleUI == MessageTitleUI.VIEW_STORE_INFO : "Invalid title UI";
+        return R.string.merchant_viewer_message_title;
     }
 }
