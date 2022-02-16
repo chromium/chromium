@@ -7,30 +7,34 @@ import("//build/compiled_action.gni")
 compiled_action("gen_root_store_inc") {
   tool = "//net/tools/root_store_tool:root_store_tool"
 
-  inputs = [ "store/root_store.textproto" ]
+  inputs = [
+    "root_store.certs",
+    "root_store.textproto",
+  ]
   outputs = [ "${target_gen_dir}/chrome-root-store-inc.cc" ]
-  depfile = "${target_gen_dir}/chrome-root-store-inc.cc.d"
   args = [
-    "--root-store-dir=" + rebase_path("store", root_build_dir),
+    "--root-store=" + rebase_path("root_store.textproto", root_build_dir),
+    "--certs=" + rebase_path("root_store.certs", root_build_dir),
     "--write-cpp=" + rebase_path("${target_gen_dir}/chrome-root-store-inc.cc",
                                  root_build_dir),
     "--cpp-output-format=root",
-    "--write-deps=" + rebase_path(depfile, root_build_dir),
   ]
 }
 
 compiled_action("gen_root_store_test_inc") {
   tool = "//net/tools/root_store_tool:root_store_tool"
 
-  inputs = [ "testdata/root_store.textproto" ]
+  inputs = [
+    "test_store.certs",
+    "test_store.textproto",
+  ]
   outputs = [ "${target_gen_dir}/chrome-root-store-test-data-inc.cc" ]
-  depfile = "${target_gen_dir}/chrome-root-store-test-data-inc.cc.d"
   args = [
-    "--root-store-dir=" + rebase_path("testdata", root_build_dir),
+    "--root-store=" + rebase_path("test_store.textproto", root_build_dir),
+    "--certs=" + rebase_path("test_store.certs", root_build_dir),
     "--write-cpp=" +
         rebase_path("${target_gen_dir}/chrome-root-store-test-data-inc.cc",
                     root_build_dir),
     "--cpp-output-format=root",
-    "--write-deps=" + rebase_path(depfile, root_build_dir),
   ]
 }

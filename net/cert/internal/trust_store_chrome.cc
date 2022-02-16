@@ -14,10 +14,6 @@
 
 namespace net {
 
-struct ChromeRootCertInfo {
-  base::span<const uint8_t> root_cert_der;
-};
-
 namespace {
 
 #include "net/data/ssl/chrome_root_store/chrome-root-store-inc.cc"

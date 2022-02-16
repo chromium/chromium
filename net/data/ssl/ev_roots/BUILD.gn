@@ -7,15 +7,17 @@ import("//build/compiled_action.gni")
 compiled_action("gen_ev_root_store_inc") {
   tool = "//net/tools/root_store_tool:root_store_tool"
 
-  inputs = [ "root_store.textproto" ]
+  inputs = [
+    "ev_roots.certs",
+    "ev_roots.textproto",
+  ]
   outputs = [ "${target_gen_dir}/chrome-ev-root-store-inc.cc" ]
-  depfile = "${target_gen_dir}/chrome-ev-root-store-inc.cc.d"
   args = [
-    "--root-store-dir=" + rebase_path("../ev_roots", root_build_dir),
+    "--root-store=" + rebase_path("ev_roots.textproto", root_build_dir),
+    "--certs=" + rebase_path("ev_roots.certs", root_build_dir),
     "--write-cpp=" +
         rebase_path("${target_gen_dir}/chrome-ev-root-store-inc.cc",
                     root_build_dir),
     "--cpp-output-format=ev",
-    "--write-deps=" + rebase_path(depfile, root_build_dir),
   ]
 }
