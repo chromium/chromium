@@ -1167,16 +1167,17 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
 //////////////////////////////////////////////////////////////////////////////
 // Remove web app history.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_ANDROID)
   if (remove_mask & constants::DATA_TYPE_HISTORY &&
       web_app::AreWebAppsEnabled(profile_)) {
     auto callback =
         CreateTaskCompletionClosure(TracingDataType::kWebAppHistory);
-    auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile_);
+    auto* web_app_provider =
+        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
     web_app::ClearWebAppBrowsingData(delete_begin, delete_end, web_app_provider,
                                      std::move(callback));
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   //////////////////////////////////////////////////////////////////////////////
   // Remove external protocol data.
