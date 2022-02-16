@@ -432,7 +432,8 @@ void CalendarView::CreateExtraTitleRowButtons() {
   tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);
 
   reset_to_today_button_ = CreateInfoButton(
-      base::BindRepeating(&CalendarView::ResetToToday, base::Unretained(this)),
+      base::BindRepeating(&CalendarView::ResetToTodayWithAnimation,
+                          base::Unretained(this)),
       IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION);
   reset_to_today_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_TODAY_BUTTON_TOOLTIP));
@@ -502,6 +503,65 @@ int CalendarView::PositionOfSelectedDate() const {
          next_label_->GetPreferredSize().height() + row_height;
 }
 
+void CalendarView::SetHeaderAndMonthsOpacity(float opacity) {
+  header_->layer()->SetOpacity(opacity);
+  previous_label_->layer()->SetOpacity(opacity);
+  current_label_->layer()->SetOpacity(opacity);
+  next_label_->layer()->SetOpacity(opacity);
+  previous_month_->layer()->SetOpacity(opacity);
+  current_month_->layer()->SetOpacity(opacity);
+  next_month_->layer()->SetOpacity(opacity);
+}
+
+void CalendarView::SetShouldMonthsAnimateAndScrollEnabled(bool enabled) {
+  set_should_months_animate(enabled);
+  is_resetting_scroll_ = !enabled;
+  scroll_view_->SetVerticalScrollBarMode(
+      enabled ? views::ScrollView::ScrollBarMode::kHiddenButEnabled
+              : views::ScrollView::ScrollBarMode::kDisabled);
+}
+
+void CalendarView::ResetToTodayWithAnimation() {
+  if (!should_months_animate_)
+    return;
+  SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/false);
+
+  // Fades out on-screen month. When animation ends sets date to today by
+  // calling `ResetToToday` and fades in updated views after.
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(
+          [](base::WeakPtr<CalendarView> calendar_view) {
+            if (!calendar_view)
+              return;
+            calendar_view->SetShouldMonthsAnimateAndScrollEnabled(
+                /*enabled=*/true);
+            calendar_view->ResetToToday();
+            calendar_view->FadeInCurrentMonth();
+          },
+          weak_factory_.GetWeakPtr()))
+      .OnAborted(base::BindOnce(
+          [](base::WeakPtr<CalendarView> calendar_view) {
+            if (!calendar_view)
+              return;
+            calendar_view->SetShouldMonthsAnimateAndScrollEnabled(
+                /*enabled=*/true);
+            calendar_view->ResetToToday();
+            calendar_view->FadeInCurrentMonth();
+          },
+          weak_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(calendar_utils::kResetToTodayFadeAnimationDuration)
+      .SetOpacity(header_, 0.0f)
+      .SetOpacity(previous_label_, 0.0f)
+      .SetOpacity(current_label_, 0.0f)
+      .SetOpacity(next_label_, 0.0f)
+      .SetOpacity(previous_month_, 0.0f)
+      .SetOpacity(current_month_, 0.0f)
+      .SetOpacity(next_month_, 0.0f);
+}
+
 void CalendarView::ResetToToday() {
   if (event_list_view_) {
     scroll_view_->SetVerticalScrollBarMode(
@@ -509,7 +569,12 @@ void CalendarView::ResetToToday() {
     set_should_months_animate(false);
   }
 
-  calendar_view_controller_->UpdateMonth(base::Time::Now());
+  // Updates month to today's date without animating header.
+  {
+    base::AutoReset<bool> is_updating_month(&should_header_animate_, false);
+    calendar_view_controller_->UpdateMonth(base::Time::Now());
+  }
+
   content_view_->RemoveChildViewT(previous_label_);
   content_view_->RemoveChildViewT(previous_month_);
   content_view_->RemoveChildViewT(current_label_);
@@ -537,6 +602,43 @@ void CalendarView::ResetToToday() {
         views::ScrollView::ScrollBarMode::kDisabled);
     months_animation_restart_timer_.Reset();
   }
+}
+
+void CalendarView::FadeInCurrentMonth() {
+  if (!should_months_animate_)
+    return;
+  SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/false);
+
+  SetHeaderAndMonthsOpacity(/*opacity=*/0.0f);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(
+          [](base::WeakPtr<CalendarView> calendar_view) {
+            if (!calendar_view)
+              return;
+            calendar_view->SetShouldMonthsAnimateAndScrollEnabled(
+                /*enabled=*/true);
+          },
+          weak_factory_.GetWeakPtr()))
+      .OnAborted(base::BindOnce(
+          [](base::WeakPtr<CalendarView> calendar_view) {
+            if (!calendar_view)
+              return;
+            calendar_view->SetShouldMonthsAnimateAndScrollEnabled(
+                /*enabled=*/true);
+            calendar_view->SetHeaderAndMonthsOpacity(/*opacity=*/1.0f);
+          },
+          weak_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(calendar_utils::kResetToTodayFadeAnimationDuration)
+      .SetOpacity(header_, 1.0f)
+      .SetOpacity(previous_label_, 1.0f)
+      .SetOpacity(current_label_, 1.0f)
+      .SetOpacity(next_label_, 1.0f)
+      .SetOpacity(previous_month_, 1.0f)
+      .SetOpacity(current_month_, 1.0f)
+      .SetOpacity(next_month_, 1.0f);
 }
 
 void CalendarView::UpdateHeaders() {
@@ -759,7 +861,7 @@ void CalendarView::OnMonthChanged(const base::Time::Exploded current_month) {
       .SetDuration(kDelayVisibilityAnimationDuration)
       .Then()
       .SetDuration(calendar_utils::kAnimationDurationForVisibility)
-      .SetOpacity(header_, 1.0);
+      .SetOpacity(header_, 1.0f);
 }
 
 void CalendarView::OnEventsFetched(
@@ -1060,7 +1162,7 @@ void CalendarView::ScrollOneMonthWithAnimation(bool scroll_up) {
       .SetDuration(kDelayVisibilityAnimationDuration)
       .Then()
       .SetDuration(calendar_utils::kAnimationDurationForVisibility)
-      .SetOpacity(header_, 0.0);
+      .SetOpacity(header_, 0.0f);
 }
 
 void CalendarView::ScrollOneRowWithAnimation(bool scroll_up) {
