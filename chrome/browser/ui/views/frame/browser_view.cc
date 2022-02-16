@@ -1687,6 +1687,10 @@ void BrowserView::FullscreenStateChanged() {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, std::move(restore_pre_fullscreen_bounds_callback_));
   }
+
+  if (AppUsesWindowControlsOverlay())
+    UpdateWindowControlsOverlayEnabled();
+
 #endif  // BUILDFLAG(IS_MAC)
 }
 
@@ -1902,6 +1906,16 @@ void BrowserView::UpdateWindowControlsOverlayToggleVisible() {
 
   if (IsImmersiveModeEnabled())
     should_show = false;
+
+#if BUILDFLAG(IS_MAC)
+  // On macOS, when in fullscreen mode, window controls (the menu bar, tile bar,
+  // and toolbar) are attached to a separate NSView that slides down from the
+  // top of the screen, independent of, and overlapping the WebContents. Disable
+  // WCO when in fullscreen, because this space is inaccessible to WebContents.
+  // https://crbug.com/915110.
+  if (frame_ && IsFullscreen())
+    should_show = false;
+#endif
 
   if (should_show == should_show_window_controls_overlay_toggle_)
     return;

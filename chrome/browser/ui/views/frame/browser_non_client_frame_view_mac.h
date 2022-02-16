@@ -87,7 +87,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
       int y,
       int caption_button_container_width);
   static gfx::Rect GetCaptionButtonPlaceholderBounds(bool is_rtl,
-                                                     bool is_fullscreen,
                                                      const gfx::Size& frame,
                                                      int y,
                                                      int width);

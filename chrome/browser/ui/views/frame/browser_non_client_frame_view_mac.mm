@@ -113,13 +113,12 @@ void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
     return;
   }
   if (browser_view()->IsFullscreen()) {
-    ToggleWebAppFrameToolbarViewVisibility();
-
     [fullscreen_toolbar_controller_ enterFullscreenMode];
   } else {
     // Exiting tab fullscreen requires updating Top UI.
     // Called from here so we can capture exiting tab fullscreen both by
     // pressing 'ESC' key and by clicking green traffic light button.
+
     UpdateFullscreenTopUI();
     [fullscreen_toolbar_controller_ exitFullscreenMode];
   }
@@ -220,8 +219,6 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
     browser_view()->UnhideDownloadShelf();
   }
   [fullscreen_toolbar_controller_ setToolbarStyle:new_style];
-
-  ToggleWebAppFrameToolbarViewVisibility();
 
   if (![fullscreen_toolbar_controller_ isInFullscreen] ||
       old_style == new_style)
@@ -520,15 +517,10 @@ gfx::Rect BrowserNonClientFrameViewMac::GetWebAppFrameToolbarAvailableBounds(
 
 gfx::Rect BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
     bool is_rtl,
-    bool is_fullscreen,
     const gfx::Size& frame,
     int y,
     int width) {
-  // Browser fullscreened windows hide their window controls, so the placeholder
-  // for them should also take up no space.
-  const int placeholder_width = is_fullscreen ? 0 : width;
-
-  gfx::Rect bounds(0, y, placeholder_width, frame.height());
+  gfx::Rect bounds(0, y, width, frame.height());
   if (is_rtl)
     bounds.set_x(frame.width() - bounds.width());
 
@@ -543,7 +535,7 @@ void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
   // inner edge doesn't look like it's touching the overlay, but rather has a
   // little bit of space between them.
   gfx::Rect caption_button_container_bounds = GetCaptionButtonPlaceholderBounds(
-      is_rtl, browser_view()->IsFullscreen(), frame, 0,
+      is_rtl, frame, 0,
       kFramePaddingLeft + kFrameExtraPaddingForWindowControlsOverlay);
 
   gfx::Rect web_app_frame_toolbar_available_bounds =
@@ -609,11 +601,4 @@ void BrowserNonClientFrameViewMac::AddRoutingForWindowControlsOverlayViews() {
           this, web_app_frame_toolbar(),
           remote_cocoa::mojom::WindowControlsOverlayNSViewType::
               kWebAppFrameToolbar);
-}
-
-void BrowserNonClientFrameViewMac::ToggleWebAppFrameToolbarViewVisibility() {
-  if (browser_view()->IsWindowControlsOverlayEnabled()) {
-    web_app_frame_toolbar()->SetVisible(!ShouldHideTopUIForFullscreen());
-    InvalidateLayout();
-  }
 }
