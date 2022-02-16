@@ -136,7 +136,10 @@ void TestAggregationServiceImpl::AssembleReport(
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/base::Time::Now() + base::Seconds(30),
       std::move(request.privacy_budget_key),
-      /*report_id=*/base::GUID::GenerateRandomV4());
+      /*report_id=*/base::GUID::GenerateRandomV4(),
+      request.is_debug_mode_enabled
+          ? AggregatableReportSharedInfo::DebugMode::kEnabled
+          : AggregatableReportSharedInfo::DebugMode::kDisabled);
 
   absl::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::CreateForTesting(

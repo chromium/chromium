@@ -34,8 +34,9 @@ constexpr char kSwitchPrivacyBudgetKey[] = "privacy-budget-key";
 constexpr char kSwitchHelperKeys[] = "helper-keys";
 constexpr char kSwitchOutputFile[] = "output-file";
 constexpr char kSwitchOutputUrl[] = "output-url";
-constexpr char kDisablePayloadEncryption[] = "disable-payload-encryption";
+constexpr char kSwitchDisablePayloadEncryption[] = "disable-payload-encryption";
 constexpr char kSwitchAdditionalFields[] = "additional-fields";
+constexpr char kSwitchEnableDebugMode[] = "enable-debug-mode";
 
 constexpr char kHelpMsg[] = R"(
   aggregation_service_tool [--operation=<operation>] --bucket=<bucket>
@@ -44,14 +45,14 @@ constexpr char kHelpMsg[] = R"(
   --privacy-budget-key=<privacy_budget_key>
   --helper-keys=<helper_server_keys> [--output=<output_file>]
   [--output-url=<output_url>] [--disable-payload-encryption]
-  [--additional-fields=<additional_fields>]
+  [--additional-fields=<additional_fields>] [--debug-mode]
 
   Examples:
   aggregation_service_tool --operation="histogram" --bucket=1234 --value=5
   --processing-type="two-party" --reporting-origin="https://example.com"
   --privacy-budget-key="test_privacy_budget_key"
   --helper-keys="https://a.com=keys1.json,https://b.com=keys2.json"
-  --output-file="output.json"
+  --output-file="output.json" --enable-debug-mode
   --additional-fields=
   "source_site=https://publisher.example,attribution_destination=https://advertiser.example"
   or
@@ -64,9 +65,8 @@ constexpr char kHelpMsg[] = R"(
   aggregation_service_tool is a command-line tool that accepts report contents
   and mapping of origins to public key json files as input and either output an
   aggregatable report to a file on disk or send the aggregatable report to an
-  endpoint origin over network. If `--disable-payload-encryption` is specified,
-  the aggregatable report's payload(s) will not be encrypted after
-  serialization. `scheduled_report_time` will be default to 30 seconds later.
+  endpoint origin over network. `scheduled_report_time` will be default to 30
+  seconds later.
 
   Switches:
   --operation = Optional switch. Currently only supports "histogram". Default is
@@ -85,6 +85,11 @@ constexpr char kHelpMsg[] = R"(
   --additional-fields = List of key-value pairs of additional fields to be
                         included in the aggregatable report. Only supports
                         string valued fields.
+  --disable-payload-encryption = Optional switch. If provided, the aggregatable
+                                 report's payload(s) will not be encrypted after
+                                 serialization.
+  --enable-debug-mode = Optional switch. If provided, debug mode is enabled.
+                        Otherwise, it is disabled.
 )";
 
 void PrintHelp() {
@@ -110,19 +115,21 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  const std::vector<std::string> kAllowedSwitches = {kSwitchHelp,
-                                                     kSwitchHelpShort,
-                                                     kSwitchOperation,
-                                                     kSwitchBucket,
-                                                     kSwitchValue,
-                                                     kSwitchProcessingType,
-                                                     kSwitchReportingOrigin,
-                                                     kSwitchPrivacyBudgetKey,
-                                                     kSwitchHelperKeys,
-                                                     kSwitchOutputFile,
-                                                     kSwitchOutputUrl,
-                                                     kDisablePayloadEncryption,
-                                                     kSwitchAdditionalFields};
+  const std::vector<std::string> kAllowedSwitches = {
+      kSwitchHelp,
+      kSwitchHelpShort,
+      kSwitchOperation,
+      kSwitchBucket,
+      kSwitchValue,
+      kSwitchProcessingType,
+      kSwitchReportingOrigin,
+      kSwitchPrivacyBudgetKey,
+      kSwitchHelperKeys,
+      kSwitchOutputFile,
+      kSwitchOutputUrl,
+      kSwitchDisablePayloadEncryption,
+      kSwitchAdditionalFields,
+      kSwitchEnableDebugMode};
   for (const auto& provided_switch : command_line.GetSwitches()) {
     if (!base::Contains(kAllowedSwitches, provided_switch.first)) {
       LOG(ERROR) << "aggregation_service_tool did not expect "
@@ -165,7 +172,8 @@ int main(int argc, char* argv[]) {
   aggregation_service::AggregationServiceTool tool;
 
   tool.SetDisablePayloadEncryption(
-      /*should_disable=*/command_line.HasSwitch(kDisablePayloadEncryption));
+      /*should_disable=*/command_line.HasSwitch(
+          kSwitchDisablePayloadEncryption));
 
   std::string helper_keys = command_line.GetSwitchValueASCII(kSwitchHelperKeys);
 
@@ -205,11 +213,14 @@ int main(int argc, char* argv[]) {
   std::string privacy_budget_key =
       command_line.GetSwitchValueASCII(kSwitchPrivacyBudgetKey);
 
+  bool is_debug_mode_enabled = command_line.HasSwitch(kSwitchEnableDebugMode);
+
   base::Value::DictStorage report_dict = tool.AssembleReport(
       std::move(operation), command_line.GetSwitchValueASCII(kSwitchBucket),
       command_line.GetSwitchValueASCII(kSwitchValue),
       std::move(processing_type), std::move(reporting_origin),
-      std::move(privacy_budget_key), std::move(processing_origins));
+      std::move(privacy_budget_key), std::move(processing_origins),
+      is_debug_mode_enabled);
   if (report_dict.empty()) {
     LOG(ERROR)
         << "aggregation_service_tool failed to create the aggregatable report.";

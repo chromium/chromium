@@ -118,6 +118,14 @@ void VerifyReport(
         expected_serialized_shared_info);
     ASSERT_FALSE(decrypted_payload.empty());
 
+    if (expected_shared_info.debug_mode ==
+        AggregatableReportSharedInfo::DebugMode::kEnabled) {
+      ASSERT_TRUE(payloads[i].debug_cleartext_payload.has_value());
+      EXPECT_EQ(payloads[i].debug_cleartext_payload.value(), decrypted_payload);
+    } else {
+      EXPECT_FALSE(payloads[i].debug_cleartext_payload.has_value());
+    }
+
     absl::optional<cbor::Value> deserialized_payload =
         cbor::Reader::Read(decrypted_payload);
     ASSERT_TRUE(deserialized_payload.has_value());
@@ -222,6 +230,37 @@ TEST(AggregatableReportTest, ValidSingleServerRequest_ValidReportReturned) {
                    expected_processing_origins, {hpke_key}));
 }
 
+TEST(AggregatableReportTest, ValidDebugModeEnabledRequest_ValidReportReturned) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregatableReportSharedInfo expected_shared_info =
+      example_request.shared_info();
+  expected_shared_info.debug_mode =
+      AggregatableReportSharedInfo::DebugMode::kEnabled;
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        expected_shared_info);
+  ASSERT_TRUE(request.has_value());
+
+  AggregationServicePayloadContents expected_payload_contents =
+      request->payload_contents();
+  std::vector<url::Origin> expected_processing_origins =
+      request->processing_origins();
+
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys = {
+      aggregation_service::GenerateKey("id123"),
+      aggregation_service::GenerateKey("456abc")};
+
+  absl::optional<AggregatableReport> report =
+      AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
+          std::move(request.value()),
+          {hpke_keys[0].public_key, hpke_keys[1].public_key});
+
+  ASSERT_NO_FATAL_FAILURE(VerifyReport(report, expected_payload_contents,
+                                       expected_shared_info,
+                                       expected_processing_origins, hpke_keys));
+}
+
 TEST(AggregatableReportTest,
      RequestCreatedWithNonPositiveBucketOrValue_FailsIfNegative) {
   AggregatableReportRequest example_request =
@@ -280,7 +319,8 @@ TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
   payloads.emplace_back(url::Origin::Create(GURL("https://a.example")),
                         /*payload=*/kABCD1234AsBytes,
-                        /*key_id=*/"key_1");
+                        /*key_id=*/"key_1",
+                        /*debug_cleartext_payload=*/absl::nullopt);
 
   AggregatableReport report(std::move(payloads), "example_shared_info");
   base::Value::DictStorage report_json_value = report.GetAsJson();
@@ -302,10 +342,12 @@ TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
   payloads.emplace_back(url::Origin::Create(GURL("https://a.example")),
                         /*payload=*/kABCD1234AsBytes,
-                        /*key_id=*/"key_1");
+                        /*key_id=*/"key_1",
+                        /*debug_cleartext_payload=*/absl::nullopt);
   payloads.emplace_back(url::Origin::Create(GURL("https://b.example")),
                         /*payload=*/kEFGH5678AsBytes,
-                        /*key_id=*/"key_2");
+                        /*key_id=*/"key_2",
+                        /*debug_cleartext_payload=*/absl::nullopt);
 
   AggregatableReport report(std::move(payloads), "example_shared_info");
   base::Value::DictStorage report_json_value = report.GetAsJson();
@@ -324,15 +366,63 @@ TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
-TEST(AggregatableReportTest, SharedInfoSerializeAsJson_ReturnsExpectedString) {
+TEST(AggregatableReportTest, GetAsJsonDebugCleartextPayload_ValidJsonReturned) {
+  std::vector<AggregatableReport::AggregationServicePayload> payloads;
+  payloads.emplace_back(url::Origin::Create(GURL("https://a.example")),
+                        /*payload=*/kABCD1234AsBytes,
+                        /*key_id=*/"key_1",
+                        /*debug_cleartext_payload=*/kEFGH5678AsBytes);
+
+  AggregatableReport report(std::move(payloads), "example_shared_info");
+  base::Value::DictStorage report_json_value = report.GetAsJson();
+
+  std::string report_json_string;
+  base::JSONWriter::Write(base::Value(report_json_value), &report_json_string);
+
+  const char kExpectedJsonString[] = R"({)"
+                                     R"("aggregation_service_payloads":[{)"
+                                     R"("debug_cleartext_payload":"EFGH5678",)"
+                                     R"("key_id":"key_1",)"
+                                     R"("origin":"https://a.example",)"
+                                     R"("payload":"ABCD1234")"
+                                     R"(}],)"
+                                     R"("shared_info":"example_shared_info")"
+                                     R"(})";
+  EXPECT_EQ(report_json_string, kExpectedJsonString);
+}
+
+TEST(AggregatableReportTest,
+     SharedInfoDebugModeDisabled_SerializeAsJsonReturnsExpectedString) {
   AggregatableReportSharedInfo shared_info(
       base::Time::FromJavaTime(1234567890123),
       /*privacy_budget_key=*/"example_pbk",
       /*report_id=*/
-      base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"));
+      base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+      AggregatableReportSharedInfo::DebugMode::kDisabled);
 
   const char kExpectedString[] =
       R"({)"
+      R"("privacy_budget_key":"example_pbk",)"
+      R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+      R"("scheduled_report_time":"1234567890",)"
+      R"("version":"")"
+      R"(})";
+
+  EXPECT_EQ(shared_info.SerializeAsJson(), kExpectedString);
+}
+
+TEST(AggregatableReportTest,
+     SharedInfoDebugModeEnabled_SerializeAsJsonReturnsExpectedString) {
+  AggregatableReportSharedInfo shared_info(
+      base::Time::FromJavaTime(1234567890123),
+      /*privacy_budget_key=*/"example_pbk",
+      /*report_id=*/
+      base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+      AggregatableReportSharedInfo::DebugMode::kEnabled);
+
+  const char kExpectedString[] =
+      R"({)"
+      R"("debug_mode":"enabled",)"
       R"("privacy_budget_key":"example_pbk",)"
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
       R"("scheduled_report_time":"1234567890",)"

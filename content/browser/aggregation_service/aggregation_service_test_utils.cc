@@ -167,6 +167,11 @@ testing::AssertionResult SharedInfoEqual(
            << "Expected report_id " << expected.report_id
            << ", actual: " << actual.report_id;
   }
+  if (expected.debug_mode != actual.debug_mode) {
+    return testing::AssertionFailure()
+           << "Expected debug_mode " << expected.debug_mode
+           << ", actual: " << actual.debug_mode;
+  }
 
   return testing::AssertionSuccess();
 }
@@ -182,7 +187,8 @@ AggregatableReportRequest CreateExampleRequest(
                  /*scheduled_report_time=*/base::Time::Now(),
                  /*privacy_budget_key=*/"example_budget_key",
                  /*report_id=*/
-                 base::GUID::GenerateRandomV4()))
+                 base::GUID::GenerateRandomV4(),
+                 AggregatableReportSharedInfo::DebugMode::kDisabled))
       .value();
 }
 
@@ -197,7 +203,8 @@ AggregatableReportRequest CloneReportRequest(
 AggregatableReport CloneAggregatableReport(const AggregatableReport& report) {
   std::vector<AggregationServicePayload> payloads;
   for (const AggregationServicePayload& payload : report.payloads()) {
-    payloads.emplace_back(payload.origin, payload.payload, payload.key_id);
+    payloads.emplace_back(payload.origin, payload.payload, payload.key_id,
+                          payload.debug_cleartext_payload);
   }
 
   return AggregatableReport(std::move(payloads), report.shared_info());
@@ -256,6 +263,17 @@ std::ostream& operator<<(
       return out << "kTwoParty";
     case AggregationServicePayloadContents::ProcessingType::kSingleServer:
       return out << "kSingleServer";
+  }
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AggregatableReportSharedInfo::DebugMode& debug_mode) {
+  switch (debug_mode) {
+    case AggregatableReportSharedInfo::DebugMode::kDisabled:
+      return out << "kDisabled";
+    case AggregatableReportSharedInfo::DebugMode::kEnabled:
+      return out << "kEnabled";
   }
 }
 

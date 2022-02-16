@@ -245,10 +245,12 @@ AggregationServicePayloadContents::AggregationServicePayloadContents(
 AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     base::Time scheduled_report_time,
     std::string privacy_budget_key,
-    base::GUID report_id)
+    base::GUID report_id,
+    DebugMode debug_mode)
     : scheduled_report_time(std::move(scheduled_report_time)),
       privacy_budget_key(std::move(privacy_budget_key)),
-      report_id(std::move(report_id)) {}
+      report_id(std::move(report_id)),
+      debug_mode(debug_mode) {}
 
 std::string AggregatableReportSharedInfo::SerializeAsJson() const {
   base::Value value(base::Value::Type::DICTIONARY);
@@ -268,6 +270,11 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
 
   // TODO(alexmt): Replace with a real version once a version string is decided.
   value.SetStringKey("version", "");
+
+  // Only include the field if enabled.
+  if (debug_mode == DebugMode::kEnabled) {
+    value.SetStringKey("debug_mode", "enabled");
+  }
 
   std::string serialized_value;
   JSONStringValueSerializer serializer(&serialized_value);
@@ -349,10 +356,12 @@ AggregatableReportRequest::~AggregatableReportRequest() = default;
 AggregatableReport::AggregationServicePayload::AggregationServicePayload(
     url::Origin origin,
     std::vector<uint8_t> payload,
-    std::string key_id)
+    std::string key_id,
+    absl::optional<std::vector<uint8_t>> debug_cleartext_payload)
     : origin(std::move(origin)),
       payload(std::move(payload)),
-      key_id(std::move(key_id)) {}
+      key_id(std::move(key_id)),
+      debug_cleartext_payload(std::move(debug_cleartext_payload)) {}
 
 AggregatableReport::AggregationServicePayload::AggregationServicePayload(
     const AggregatableReport::AggregationServicePayload& other) = default;
@@ -449,7 +458,7 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   for (size_t i = 0; i < num_processing_origins; ++i) {
     std::vector<uint8_t> encrypted_payload =
         g_disable_encryption_for_testing_tool_
-            ? std::move(unencrypted_payloads[i])
+            ? unencrypted_payloads[i]
             : EncryptWithHpke(
                   /*plaintext=*/unencrypted_payloads[i],
                   /*public_key=*/public_keys[i].key,
@@ -458,9 +467,17 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
     if (encrypted_payload.empty()) {
       return absl::nullopt;
     }
+
+    absl::optional<std::vector<uint8_t>> debug_cleartext_payload;
+    if (report_request.shared_info().debug_mode ==
+        AggregatableReportSharedInfo::DebugMode::kEnabled) {
+      debug_cleartext_payload = std::move(unencrypted_payloads[i]);
+    }
+
     encrypted_payloads.emplace_back(
         std::move(report_request.processing_origins_[i]),
-        std::move(encrypted_payload), std::move(public_keys[i]).id);
+        std::move(encrypted_payload), std::move(public_keys[i]).id,
+        std::move(debug_cleartext_payload));
   }
 
   return AggregatableReport(std::move(encrypted_payloads),
@@ -479,6 +496,11 @@ base::Value::DictStorage AggregatableReport::GetAsJson() const {
     payload_dict_value.SetStringKey("payload",
                                     base::Base64Encode(payload.payload));
     payload_dict_value.SetStringKey("key_id", payload.key_id);
+    if (payload.debug_cleartext_payload.has_value()) {
+      payload_dict_value.SetStringKey(
+          "debug_cleartext_payload",
+          base::Base64Encode(payload.debug_cleartext_payload.value()));
+    }
 
     payloads_list_value.Append(std::move(payload_dict_value));
   }

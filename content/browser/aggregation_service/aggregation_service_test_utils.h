@@ -100,6 +100,9 @@ std::ostream& operator<<(
 std::ostream& operator<<(
     std::ostream& out,
     const AggregationServicePayloadContents::ProcessingType& processing_type);
+std::ostream& operator<<(
+    std::ostream& out,
+    const AggregatableReportSharedInfo::DebugMode& debug_mode);
 
 bool operator==(const PublicKey& a, const PublicKey& b);
 

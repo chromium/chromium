@@ -60,7 +60,8 @@ class AggregationServiceTool {
       std::string processing_type_str,
       url::Origin reporting_origin,
       std::string privacy_budget_key,
-      std::vector<url::Origin> processing_origins);
+      std::vector<url::Origin> processing_origins,
+      bool is_debug_mode_enabled);
 
   // Sends the contents of the aggregatable report to the specified reporting
   // url `url` and returns whether it's successful.

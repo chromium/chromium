@@ -56,7 +56,8 @@ class TestAggregationService {
                     ProcessingType processing_type,
                     url::Origin reporting_origin,
                     std::string privacy_budget_key,
-                    std::vector<url::Origin> processing_origins);
+                    std::vector<url::Origin> processing_origins,
+                    bool is_debug_mode_enabled);
     AssembleRequest(AssembleRequest&& other);
     AssembleRequest& operator=(AssembleRequest&& other);
     ~AssembleRequest();
@@ -75,6 +76,8 @@ class TestAggregationService {
     std::string privacy_budget_key;
     // Specifies the aggregation server origins.
     std::vector<url::Origin> processing_origins;
+    // Whether debug_mode should be enabled for the report.
+    bool is_debug_mode_enabled;
   };
 
   virtual ~TestAggregationService() = default;

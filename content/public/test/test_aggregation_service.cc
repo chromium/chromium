@@ -19,14 +19,16 @@ TestAggregationService::AssembleRequest::AssembleRequest(
     ProcessingType processing_type,
     url::Origin reporting_origin,
     std::string privacy_budget_key,
-    std::vector<url::Origin> processing_origins)
+    std::vector<url::Origin> processing_origins,
+    bool is_debug_mode_enabled)
     : operation(operation),
       bucket(bucket),
       value(value),
       processing_type(processing_type),
       reporting_origin(std::move(reporting_origin)),
       privacy_budget_key(std::move(privacy_budget_key)),
-      processing_origins(std::move(processing_origins)) {}
+      processing_origins(std::move(processing_origins)),
+      is_debug_mode_enabled(is_debug_mode_enabled) {}
 
 TestAggregationService::AssembleRequest::AssembleRequest(
     AssembleRequest&& other) = default;

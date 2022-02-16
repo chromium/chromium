@@ -58,9 +58,15 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
 // endpoint and the processing origin(s), i.e. stored in the encrypted payload
 // and in the plaintext report.
 struct CONTENT_EXPORT AggregatableReportSharedInfo {
+  enum class DebugMode {
+    kDisabled,
+    kEnabled,
+  };
+
   AggregatableReportSharedInfo(base::Time scheduled_report_time,
                                std::string privacy_budget_key,
-                               base::GUID report_id);
+                               base::GUID report_id,
+                               DebugMode debug_mode);
 
   // Serializes to a JSON dictionary, represented as a string.
   std::string SerializeAsJson() const;
@@ -70,6 +76,8 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
 
   // Used to prevent double counting.
   base::GUID report_id;
+
+  DebugMode debug_mode;
 };
 
 // An AggregatableReport contains all the information needed for sending the
@@ -80,9 +88,11 @@ class CONTENT_EXPORT AggregatableReport {
   // This is used to encapsulate the data that is specific to a single
   // processing origin.
   struct CONTENT_EXPORT AggregationServicePayload {
-    AggregationServicePayload(url::Origin origin,
-                              std::vector<uint8_t> payload,
-                              std::string key_id);
+    AggregationServicePayload(
+        url::Origin origin,
+        std::vector<uint8_t> payload,
+        std::string key_id,
+        absl::optional<std::vector<uint8_t>> debug_cleartext_payload);
     AggregationServicePayload(const AggregationServicePayload& other);
     AggregationServicePayload& operator=(
         const AggregationServicePayload& other);
@@ -108,6 +118,10 @@ class CONTENT_EXPORT AggregatableReport {
 
     // Indicates the chosen encryption key.
     std::string key_id;
+
+    // If the request's shared info had a `kEnabled` debug_mode, contains the
+    // cleartext payload for debugging. Otherwise, it is `absl::nullopt`.
+    absl::optional<std::vector<uint8_t>> debug_cleartext_payload;
   };
 
   // Used to allow mocking `CreateFromRequestAndPublicKeys()` in tests.
@@ -175,6 +189,8 @@ class CONTENT_EXPORT AggregatableReport {
   //     }
   //   ]
   // }
+  // If requested, each "aggregation_service_payloads" element has an extra
+  // field: `"debug_cleartext_payload": "<base64 encoded payload cleartext>"`.
   // Note that APIs may wish to add additional key-value pairs to this returned
   // value.
   base::Value::DictStorage GetAsJson() const;

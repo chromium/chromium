@@ -130,7 +130,8 @@ base::Value::DictStorage AggregationServiceTool::AssembleReport(
     std::string processing_type_str,
     url::Origin reporting_origin,
     std::string privacy_budget_key,
-    std::vector<url::Origin> processing_origins) {
+    std::vector<url::Origin> processing_origins,
+    bool is_debug_mode_enabled) {
   base::Value::DictStorage result;
 
   absl::optional<content::TestAggregationService::Operation> operation =
@@ -167,7 +168,7 @@ base::Value::DictStorage AggregationServiceTool::AssembleReport(
   content::TestAggregationService::AssembleRequest request(
       operation.value(), bucket, value, processing_type.value(),
       std::move(reporting_origin), std::move(privacy_budget_key),
-      std::move(processing_origins));
+      std::move(processing_origins), is_debug_mode_enabled);
 
   base::RunLoop run_loop;
   agg_service_->AssembleReport(
