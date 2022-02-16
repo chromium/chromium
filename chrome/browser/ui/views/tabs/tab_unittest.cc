@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/fake_tab_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
@@ -40,125 +41,6 @@
 #include "ui/views/widget/widget.h"
 
 using views::Widget;
-
-class FakeTabController : public TabController {
- public:
-  FakeTabController() = default;
-  FakeTabController(const FakeTabController&) = delete;
-  FakeTabController& operator=(const FakeTabController&) = delete;
-
-  void set_active_tab(bool value) { active_tab_ = value; }
-  void set_paint_throbber_to_layer(bool value) {
-    paint_throbber_to_layer_ = value;
-  }
-
-  const ui::ListSelectionModel& GetSelectionModel() const override {
-    return selection_model_;
-  }
-  void SelectTab(Tab* tab, const ui::Event& event) override {}
-  void ExtendSelectionTo(Tab* tab) override {}
-  void ToggleSelected(Tab* tab) override {}
-  void AddSelectionFromAnchorTo(Tab* tab) override {}
-  void CloseTab(Tab* tab, CloseTabSource source) override {}
-  void ToggleTabAudioMute(Tab* tab) override {}
-  void ShiftTabNext(Tab* tab) override {}
-  void ShiftTabPrevious(Tab* tab) override {}
-  void MoveTabFirst(Tab* tab) override {}
-  void MoveTabLast(Tab* tab) override {}
-  void ShowContextMenuForTab(Tab* tab,
-                             const gfx::Point& p,
-                             ui::MenuSourceType source_type) override {}
-  bool IsActiveTab(const Tab* tab) const override { return active_tab_; }
-  bool IsTabSelected(const Tab* tab) const override { return false; }
-  bool IsTabPinned(const Tab* tab) const override { return false; }
-  bool IsTabFirst(const Tab* tab) const override { return false; }
-  bool IsFocusInTabs() const override { return false; }
-  void MaybeStartDrag(
-      TabSlotView* source,
-      const ui::LocatedEvent& event,
-      const ui::ListSelectionModel& original_selection) override {}
-  void ContinueDrag(views::View* view, const ui::LocatedEvent& event) override {
-  }
-  bool EndDrag(EndDragReason reason) override { return false; }
-  Tab* GetTabAt(const gfx::Point& point) override { return nullptr; }
-  const Tab* GetAdjacentTab(const Tab* tab, int offset) override {
-    return nullptr;
-  }
-  void OnMouseEventInTab(views::View* source,
-                         const ui::MouseEvent& event) override {}
-  void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) override {}
-  bool ShowDomainInHoverCards() const override { return true; }
-  bool HoverCardIsShowingForTab(Tab* tab) override { return false; }
-  int GetBackgroundOffset() const override { return 0; }
-  bool ShouldPaintAsActiveFrame() const override { return true; }
-  int GetStrokeThickness() const override { return 0; }
-  bool CanPaintThrobberToLayer() const override {
-    return paint_throbber_to_layer_;
-  }
-  bool HasVisibleBackgroundTabShapes() const override { return false; }
-  SkColor GetToolbarTopSeparatorColor() const override { return SK_ColorBLACK; }
-  SkColor GetTabSeparatorColor() const override { return SK_ColorBLACK; }
-  SkColor GetTabBackgroundColor(
-      TabActive active,
-      BrowserFrameActiveState active_state) const override {
-    return active == TabActive::kActive ? tab_bg_color_active_
-                                        : tab_bg_color_inactive_;
-  }
-  SkColor GetTabForegroundColor(TabActive active,
-                                SkColor background_color) const override {
-    return active == TabActive::kActive ? tab_fg_color_active_
-                                        : tab_fg_color_inactive_;
-  }
-  absl::optional<int> GetCustomBackgroundId(
-      BrowserFrameActiveState active_state) const override {
-    return absl::nullopt;
-  }
-  gfx::Rect GetTabAnimationTargetBounds(const Tab* tab) override {
-    return tab->bounds();
-  }
-  std::u16string GetAccessibleTabName(const Tab* tab) const override {
-    return std::u16string();
-  }
-  float GetHoverOpacityForTab(float range_parameter) const override {
-    return 1.0f;
-  }
-  float GetHoverOpacityForRadialHighlight() const override { return 1.0f; }
-
-  std::u16string GetGroupTitle(
-      const tab_groups::TabGroupId& group_id) const override {
-    return std::u16string();
-  }
-
-  tab_groups::TabGroupColorId GetGroupColorId(
-      const tab_groups::TabGroupId& group_id) const override {
-    return tab_groups::TabGroupColorId();
-  }
-
-  SkColor GetPaintedGroupColor(
-      const tab_groups::TabGroupColorId& color_id) const override {
-    return SkColor();
-  }
-
-  void SetTabColors(SkColor bg_color_active,
-                    SkColor fg_color_active,
-                    SkColor bg_color_inactive,
-                    SkColor fg_color_inactive) {
-    tab_bg_color_active_ = bg_color_active;
-    tab_fg_color_active_ = fg_color_active;
-    tab_bg_color_inactive_ = bg_color_inactive;
-    tab_fg_color_inactive_ = fg_color_inactive;
-  }
-
- private:
-  ui::ListSelectionModel selection_model_;
-  bool active_tab_ = false;
-  bool paint_throbber_to_layer_ = true;
-
-  SkColor tab_bg_color_active_ = gfx::kPlaceholderColor;
-  SkColor tab_fg_color_active_ = gfx::kPlaceholderColor;
-  SkColor tab_bg_color_inactive_ = gfx::kPlaceholderColor;
-  SkColor tab_fg_color_inactive_ = gfx::kPlaceholderColor;
-};
 
 class TabTest : public ChromeViewsTestBase {
  public:

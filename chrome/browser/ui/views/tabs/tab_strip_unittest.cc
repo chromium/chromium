@@ -403,25 +403,6 @@ TEST_P(TabStripTest, RemoveTab) {
   EXPECT_EQ(0, observer.last_tab_removed());
 }
 
-// Verifies child view order matches model order.
-TEST_P(TabStripTest, TabViewOrder) {
-  controller_->AddTab(0, false);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  controller_->AddTab(1, false);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  controller_->AddTab(2, false);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-
-  controller_->MoveTab(0, 1);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  controller_->MoveTab(1, 2);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  controller_->MoveTab(1, 0);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  controller_->MoveTab(0, 2);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-}
-
 // Verifies child view order matches slot order with group headers.
 TEST_P(TabStripTest, TabViewOrderWithGroups) {
   controller_->AddTab(0, false);
