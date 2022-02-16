@@ -2275,10 +2275,6 @@ bool Animation::Update(TimingUpdateReason reason) {
 
   if (reason == kTimingUpdateForAnimationFrame) {
     if (idle || CalculateAnimationPlayState() == kFinished) {
-      // TODO(crbug.com/1029348): Per spec, we should have a microtask
-      // checkpoint right after the update cycle. Once this is fixed we should
-      // no longer need to force a synchronous resolution here.
-      AsyncFinishMicrotask();
       finished_ = true;
     }
   }
