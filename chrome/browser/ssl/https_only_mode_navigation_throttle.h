@@ -40,9 +40,9 @@ class HttpsOnlyModeNavigationThrottle : public content::NavigationThrottle {
     // Navigation failed after being upgraded to HTTPS.
     kUpgradeFailed = 2,
 
-    // kUpgradeCertError, kUpgradeNetError, kUpgradeTimedOut, and
-    // kUpgradeExemptError are subsets of kUpgradeFailed. kUpgradeFailed should
-    // also be recorded whenever these events are recorded.
+    // kUpgradeCertError, kUpgradeNetError, and kUpgradeTimedOut are subsets of
+    // kUpgradeFailed. kUpgradeFailed should also be recorded whenever these
+    // events are recorded.
 
     // Navigation failed due to a cert error.
     kUpgradeCertError = 3,
@@ -51,10 +51,7 @@ class HttpsOnlyModeNavigationThrottle : public content::NavigationThrottle {
     // Navigation failed due to timing out.
     kUpgradeTimedOut = 5,
 
-    // Navigation failed due to an exempted net error.
-    kUpgradeExemptError = 6,
-
-    kMaxValue = kUpgradeExemptError,
+    kMaxValue = kUpgradeTimedOut,
   };
 
   static std::unique_ptr<HttpsOnlyModeNavigationThrottle>
