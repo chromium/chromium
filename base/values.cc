@@ -1349,22 +1349,6 @@ void Value::MergeDictionary(const Value* dictionary) {
   return GetDict().Merge(dictionary->GetDict());
 }
 
-bool Value::GetAsString(std::string* out_value) const {
-  if (out_value && is_string()) {
-    *out_value = GetString();
-    return true;
-  }
-  return is_string();
-}
-
-bool Value::GetAsString(std::u16string* out_value) const {
-  if (out_value && is_string()) {
-    *out_value = UTF8ToUTF16(GetString());
-    return true;
-  }
-  return is_string();
-}
-
 bool Value::GetAsList(ListValue** out_value) {
   if (out_value && is_list()) {
     *out_value = static_cast<ListValue*>(this);

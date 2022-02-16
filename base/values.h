@@ -940,9 +940,6 @@ class BASE_EXPORT Value {
   // If the current object can be converted into the given type, the value is
   // returned through the `out_value` parameter and true is returned;
   // otherwise, false is returned and `out_value` is unchanged.
-  // DEPRECATED, use `GetIfString()` instead.
-  bool GetAsString(std::string* out_value) const;
-  bool GetAsString(std::u16string* out_value) const;
   // ListValue::From is the equivalent for std::unique_ptr conversions.
   // DEPRECATED, use `is_list()` instead.
   bool GetAsList(ListValue** out_value);
