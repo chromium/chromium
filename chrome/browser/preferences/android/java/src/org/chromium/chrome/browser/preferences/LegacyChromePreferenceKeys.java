@@ -96,6 +96,7 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.LOCALE_MANAGER_MISSING_TIMEZONES,
                 ChromePreferenceKeys.LOCALE_MANAGER_PARTNER_PROMO_KEYWORD_SELECTED,
                 ChromePreferenceKeys.LOCALE_MANAGER_PROMO_SHOWN,
+                ChromePreferenceKeys.LOCALE_MANAGER_PROMO_V2_CHECKED,
                 ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
                 ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_WIDGET_PRESENT_FIRST_START,
                 ChromePreferenceKeys.LOCALE_MANAGER_SHOULD_REPING_RLZ_FOR_SEARCH_PROMO,
