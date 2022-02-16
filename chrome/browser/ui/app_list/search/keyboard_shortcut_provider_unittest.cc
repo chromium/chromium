@@ -48,7 +48,7 @@ TEST_F(KeyboardShortcutProviderTest, Search) {
             u"Take screenshot/recording, Shortcuts, Capture mode key");
 
   // Result format: Modifier + Key
-  provider_->Start(u"loc");
+  provider_->Start(u"lock");
   Wait();
 
   ASSERT_FALSE(provider_->results().empty());
