@@ -843,7 +843,7 @@
   {
     "name": "content-languages-in-language-picker",
     "owners": [ "sclittle", "basiaz@google.com", "chrome-language@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 105
   },
   {
     "name": "content-suggestions-header-migration",
