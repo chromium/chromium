@@ -298,29 +298,38 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       shared_worker_context_provider_ = nullptr;
   }
 
-  gpu::ContextCreationAttribs attribs;
-  attribs.alpha_size = 8;
-  attribs.blue_size = 8;
-  attribs.green_size = 8;
-  attribs.red_size = 8;
-  attribs.depth_size = 0;
-  attribs.stencil_size = 0;
-  attribs.samples = 0;
-  attribs.sample_buffers = 0;
-  attribs.fail_if_major_perf_caveat = false;
-  attribs.bind_generates_resource = false;
   PerCompositorData* data = per_compositor_data_[compositor.get()].get();
   if (!data)
     data = CreatePerCompositorData(compositor.get());
 
-  constexpr bool support_locking = false;
-  scoped_refptr<InProcessContextProvider> context_provider =
-      InProcessContextProvider::Create(attribs, &gpu_memory_buffer_manager_,
-                                       &image_factory_, data->surface_handle(),
-                                       "UICompositor", support_locking);
+  scoped_refptr<InProcessContextProvider> context_provider;
+  if (renderer_settings_.use_skia_renderer) {
+    // SkiaRenderer doesn't need a ContextProvider per ui::Compositor so just
+    // use the shared main thread context.
+    SharedMainThreadContextProvider();
+    DCHECK(shared_main_thread_contexts_);
+    context_provider = shared_main_thread_contexts_;
+  } else {
+    gpu::ContextCreationAttribs attribs;
+    attribs.alpha_size = 8;
+    attribs.blue_size = 8;
+    attribs.green_size = 8;
+    attribs.red_size = 8;
+    attribs.depth_size = 0;
+    attribs.stencil_size = 0;
+    attribs.samples = 0;
+    attribs.sample_buffers = 0;
+    attribs.fail_if_major_perf_caveat = false;
+    attribs.bind_generates_resource = false;
 
-  auto context_result = context_provider->BindToCurrentThread();
-  DCHECK_EQ(context_result, gpu::ContextResult::kSuccess);
+    constexpr bool support_locking = false;
+    context_provider = InProcessContextProvider::Create(
+        attribs, &gpu_memory_buffer_manager_, &image_factory_,
+        data->surface_handle(), "UICompositor", support_locking);
+
+    auto context_result = context_provider->BindToCurrentThread();
+    DCHECK_EQ(context_result, gpu::ContextResult::kSuccess);
+  }
 
   std::unique_ptr<viz::OutputSurface> display_output_surface;
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
@@ -396,9 +405,8 @@ InProcessContextFactory::SharedMainThreadContextProvider() {
           GL_NO_ERROR)
     return shared_main_thread_contexts_;
 
-  constexpr bool support_locking = false;
   shared_main_thread_contexts_ = InProcessContextProvider::CreateOffscreen(
-      &gpu_memory_buffer_manager_, &image_factory_, support_locking);
+      &gpu_memory_buffer_manager_, &image_factory_, /*is_worker=*/false);
   auto result = shared_main_thread_contexts_->BindToCurrentThread();
   if (result != gpu::ContextResult::kSuccess)
     shared_main_thread_contexts_.reset();
