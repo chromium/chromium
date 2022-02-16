@@ -107,7 +107,9 @@ XmlParser::XmlParser() = default;
 
 XmlParser::~XmlParser() = default;
 
-void XmlParser::Parse(const std::string& xml, ParseCallback callback) {
+void XmlParser::Parse(const std::string& xml,
+                      WhitespaceBehavior whitespace_behavior,
+                      ParseCallback callback) {
   XmlReader xml_reader;
   if (!xml_reader.Load(xml)) {
     ReportError(std::move(callback), "Invalid XML: failed to load");
@@ -145,8 +147,12 @@ void XmlParser::Parse(const std::string& xml, ParseCallback callback) {
       // Self-closing (empty) element have no close tag (or children); don't
       // push them on the element stack.
       push_new_node_to_stack = !xml_reader.IsEmptyElement();
+    } else if (whitespace_behavior ==
+                   WhitespaceBehavior::kPreserveSignificant &&
+               xml_reader.GetTextIfSignificantWhitespaceElement(&text)) {
+      new_element = CreateTextNode(text, TextNodeType::kText);
     } else {
-      // Ignore all other node types (spaces, comments, processing instructions,
+      // Ignore all other node types (comments, processing instructions,
       // DTDs...).
       continue;
     }

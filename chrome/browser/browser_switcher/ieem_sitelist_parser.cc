@@ -227,7 +227,8 @@ void ParseIeemXml(const std::string& xml,
                   ParsingMode parsing_mode,
                   base::OnceCallback<void(ParsedXml)> callback) {
   data_decoder::DataDecoder::ParseXmlIsolated(
-      xml, base::BindOnce(&RawXmlParsed, parsing_mode, std::move(callback)));
+      xml, data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
+      base::BindOnce(&RawXmlParsed, parsing_mode, std::move(callback)));
 }
 
 }  // namespace browser_switcher

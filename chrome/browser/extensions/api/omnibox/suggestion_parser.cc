@@ -116,6 +116,7 @@ void ParseDescriptionAndStyles(base::StringPiece str,
       base::StringPrintf("<fragment>%s</fragment>", str.data());
   data_decoder::DataDecoder::ParseXmlIsolated(
       wrapped_xml,
+      data_decoder::mojom::XmlParser::WhitespaceBehavior::kPreserveSignificant,
       base::BindOnce(&ConstructResultFromValue, std::move(callback)));
 }
 

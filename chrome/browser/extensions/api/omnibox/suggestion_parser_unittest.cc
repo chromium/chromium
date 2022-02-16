@@ -87,13 +87,11 @@ TEST_F(SuggestionParserUnitTest, BasicCases) {
     std::unique_ptr<DescriptionAndStyles> result =
         ParseInput("<dim>hello</dim> <match>match</match> <url>world</url>");
     ASSERT_TRUE(result);
-    // TODO(devlin): Currently, our browser-side XML parser doesn't support
-    // preserving whitespace between nodes. This, obviously, breaks things.
-    EXPECT_EQ(u"hellomatchworld", result->description);
+    EXPECT_EQ(u"hello match world", result->description);
     EXPECT_THAT(result->styles,
                 testing::ElementsAre(GetStyleMatcher(kDim, 0, 5),
-                                     GetStyleMatcher(kMatch, 5, 5),
-                                     GetStyleMatcher(kUrl, 10, 5)));
+                                     GetStyleMatcher(kMatch, 6, 5),
+                                     GetStyleMatcher(kUrl, 12, 5)));
   }
   {
     std::unique_ptr<DescriptionAndStyles> result =

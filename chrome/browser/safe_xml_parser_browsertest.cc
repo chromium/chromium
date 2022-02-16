@@ -50,6 +50,7 @@ class SafeXmlParserTest : public InProcessBrowserTest {
 
     data_decoder::DataDecoder::ParseXmlIsolated(
         std::string(xml),
+        data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
         base::BindOnce(&SafeXmlParserTest::XmlParsingDone,
                        base::Unretained(this), run_loop.QuitClosure(),
                        std::move(expected_value)));

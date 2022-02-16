@@ -22,7 +22,7 @@ std::unique_ptr<base::Value> ParseXml(const std::string& xml) {
   mojom::XmlParser& parser = parser_impl;
   std::unique_ptr<base::Value> root_node;
 
-  parser.Parse(xml,
+  parser.Parse(xml, mojom::XmlParser::WhitespaceBehavior::kIgnore,
                base::BindLambdaForTesting(
                    [&root_node](absl::optional<base::Value> parsed_root_node,
                                 const absl::optional<std::string>& error) {

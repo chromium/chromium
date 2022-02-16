@@ -27,7 +27,10 @@ void TestParseXmlCallback(std::unique_ptr<base::Value>* value_out,
 
 // Parses the passed in |xml| and compares the result to |json|.
 // If |json| is empty, the parsing is expected to fail.
-void TestParseXml(const std::string& xml, const std::string& json) {
+void TestParseXml(const std::string& xml,
+                  const std::string& json,
+                  mojom::XmlParser::WhitespaceBehavior whitespace_behavior =
+                      mojom::XmlParser::WhitespaceBehavior::kIgnore) {
   XmlParser parser_impl;
   // Use a reference to mojom::XmlParser as XmlParser implements the interface
   // privately.
@@ -35,7 +38,7 @@ void TestParseXml(const std::string& xml, const std::string& json) {
 
   std::unique_ptr<base::Value> actual_value;
   absl::optional<std::string> error;
-  parser.Parse(xml,
+  parser.Parse(xml, whitespace_behavior,
                base::BindOnce(&TestParseXmlCallback, &actual_value, &error));
   if (json.empty()) {
     EXPECT_TRUE(error);
@@ -386,6 +389,43 @@ TEST_F(XmlParserTest, NamespacesUsed) {
           }
         ]
        } )");
+}
+
+TEST_F(XmlParserTest, WhitespaceBehavior) {
+  constexpr char kInput[] = "<outer><foo>hello</foo> <bar>world</bar></outer>";
+  TestParseXml(kInput,
+               R"({
+           "type": "element",
+           "tag": "outer",
+           "children": [{
+             "type": "element",
+             "tag": "foo",
+             "children": [{"type": "text", "text": "hello"}]
+           }, {
+             "type": "element",
+             "tag": "bar",
+             "children": [{"type": "text", "text": "world"}]
+           }]
+         })",
+               mojom::XmlParser::WhitespaceBehavior::kIgnore);
+  TestParseXml(kInput,
+               R"({
+           "type": "element",
+           "tag": "outer",
+           "children": [{
+             "type": "element",
+             "tag": "foo",
+             "children": [{"type": "text", "text": "hello"}]
+           }, {
+             "type": "text",
+             "text": " "
+           }, {
+             "type": "element",
+             "tag": "bar",
+             "children": [{"type": "text", "text": "world"}]
+           }]
+         })",
+               mojom::XmlParser::WhitespaceBehavior::kPreserveSignificant);
 }
 
 TEST_F(XmlParserTest, ParseTypicalXml) {
