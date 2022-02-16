@@ -31,20 +31,19 @@ std::string NormalizeSignalingId(const std::string& id) {
   return base::ToLowerASCII(email);
 }
 
-std::string GetCanonicalEmail(std::string email) {
+std::string GetCanonicalEmail(const std::string& email) {
   DCHECK(email.find('/') == std::string::npos)
-      << "You seemed to pass in a full ID. You should only pass in an email "
-      << "address.";
-  email = base::ToLowerASCII(email);
-  base::TrimString(email, base::kWhitespaceASCII, &email);
+      << "This function expects an email address, not a signaling ID.";
+  std::string canonical_email = base::ToLowerASCII(email);
+  base::TrimString(canonical_email, base::kWhitespaceASCII, &canonical_email);
 
-  size_t at_index = email.find('@');
+  size_t at_index = canonical_email.find('@');
   if (at_index == std::string::npos) {
     LOG(ERROR) << "Unexpected email address. Character '@' is missing.";
-    return email;
+    return canonical_email;
   }
-  std::string username = email.substr(0, at_index);
-  std::string domain = email.substr(at_index + 1);
+  std::string username = canonical_email.substr(0, at_index);
+  std::string domain = canonical_email.substr(at_index + 1);
 
   if (domain == kGmailDomain || domain == kGooglemailDomain) {
     // GMail/GoogleMail domains ignore dots, whereas other domains may not.
@@ -52,7 +51,7 @@ std::string GetCanonicalEmail(std::string email) {
     return username + '@' + kGmailDomain;
   }
 
-  return email;
+  return canonical_email;
 }
 
 bool SplitSignalingIdResource(const std::string& full_id,
