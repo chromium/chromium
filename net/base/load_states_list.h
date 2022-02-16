@@ -46,11 +46,9 @@ LOAD_STATE(WAITING_FOR_DELEGATE, 3)
 // the first completes.  This may be done to optimize for cache reuse.
 LOAD_STATE(WAITING_FOR_CACHE, 4)
 
-// This state corresponds to a resource load that is blocked waiting for
-// access to a resource in the AppCache.
-// Note: This is a layering violation, but being the only one it's not that
-// bad. TODO(rvargas): Reconsider what to do if we need to add more.
-LOAD_STATE(WAITING_FOR_APPCACHE, 5)
+// This state was used to wait for access to a resource in the AppCache but
+// AppCache is no longer supported.
+LOAD_STATE(OBSOLETE_WAITING_FOR_APPCACHE, 5)
 
 // This state corresponds to a resource being blocked waiting for the
 // PAC script to be downloaded.

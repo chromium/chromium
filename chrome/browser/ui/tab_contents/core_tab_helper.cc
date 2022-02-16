@@ -244,10 +244,6 @@ bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
       *status_text =
           l10n_util::GetStringUTF16(IDS_LOAD_STATE_WAITING_FOR_CACHE);
       return true;
-    case net::LOAD_STATE_WAITING_FOR_APPCACHE:
-      *status_text =
-          l10n_util::GetStringUTF16(IDS_LOAD_STATE_WAITING_FOR_APPCACHE);
-      return true;
     case net::LOAD_STATE_ESTABLISHING_PROXY_TUNNEL:
       *status_text =
           l10n_util::GetStringUTF16(IDS_LOAD_STATE_ESTABLISHING_PROXY_TUNNEL);
@@ -290,9 +286,11 @@ bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
           l10n_util::GetStringFUTF16(IDS_LOAD_STATE_WAITING_FOR_RESPONSE,
                                      source->GetLoadStateHost());
       return true;
-    // Ignore net::LOAD_STATE_READING_RESPONSE and net::LOAD_STATE_IDLE
+    // Ignore net::LOAD_STATE_READING_RESPONSE, net::LOAD_STATE_IDLE and
+    // net::LOAD_STATE_OBSOLETE_WAITING_FOR_APPCACHE
     case net::LOAD_STATE_IDLE:
     case net::LOAD_STATE_READING_RESPONSE:
+    case net::LOAD_STATE_OBSOLETE_WAITING_FOR_APPCACHE:
       break;
   }
 #if BUILDFLAG(ENABLE_EXTENSIONS)

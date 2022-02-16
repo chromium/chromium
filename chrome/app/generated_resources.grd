@@ -7452,9 +7452,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_LOAD_STATE_WAITING_FOR_CACHE">
         Waiting for cache...
       </message>
-      <message name="IDS_LOAD_STATE_WAITING_FOR_APPCACHE">
-        Waiting for AppCache...
-      </message>
       <message name="IDS_LOAD_STATE_ESTABLISHING_PROXY_TUNNEL">
         Waiting for proxy tunnel...
       </message>
