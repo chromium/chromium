@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "components/metrics/metrics_service.h"
 #include "components/user_manager/user_manager.h"
 
 namespace chromeos {
@@ -24,6 +25,7 @@ class MetricsConsentHandler : public ::settings::SettingsPageUIHandler {
   static const char kUpdateMetricsConsent[];
 
   MetricsConsentHandler(Profile* profile,
+                        metrics::MetricsService* metrics_service,
                         user_manager::UserManager* user_manager);
 
   MetricsConsentHandler(const MetricsConsentHandler&) = delete;
@@ -51,7 +53,12 @@ class MetricsConsentHandler : public ::settings::SettingsPageUIHandler {
   // consent pref.
   bool IsMetricsConsentConfigurable() const;
 
+  // Returns true if the user metrics consent should be used rather than the
+  // device metrics consent.
+  bool ShouldUseUserConsent() const;
+
   Profile* const profile_;
+  metrics::MetricsService* const metrics_service_;
   user_manager::UserManager* const user_manager_;
 
   // Used for callbacks.

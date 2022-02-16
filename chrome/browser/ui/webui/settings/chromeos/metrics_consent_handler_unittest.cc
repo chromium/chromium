@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/webui/settings/chromeos/metrics_consent_handler.h"
 
 #include "ash/components/settings/cros_settings_names.h"
+#include "ash/constants/ash_features.h"
 #include "base/containers/adapters.h"
+#include "base/metrics/user_metrics.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -15,9 +17,15 @@
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/chrome_metrics_service_client.h"
+#include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/metrics/test/test_metrics_service_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
@@ -40,17 +48,41 @@ using ::testing::Eq;
 TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   StatsReportingController::RegisterLocalStatePrefs(local_state->registry());
   ash::device_settings_cache::RegisterPrefs(local_state->registry());
+  metrics::MetricsService::RegisterPrefs(local_state->registry());
   return local_state;
 }
+
+class TestUserMetricsServiceClient
+    : public ::metrics::TestMetricsServiceClient {
+ public:
+  absl::optional<bool> GetCurrentUserMetricsConsent() const override {
+    if (should_use_user_consent_)
+      return current_user_metrics_consent_;
+    return absl::nullopt;
+  }
+
+  void UpdateCurrentUserMetricsConsent(bool metrics_consent) override {
+    current_user_metrics_consent_ = metrics_consent;
+  }
+
+  void SetShouldUseUserConsent(bool should_use_user_consent) {
+    should_use_user_consent_ = should_use_user_consent;
+  }
+
+ private:
+  bool should_use_user_consent_ = true;
+  bool current_user_metrics_consent_ = false;
+};
 
 }  // namespace
 
 class TestMetricsConsentHandler : public MetricsConsentHandler {
  public:
   TestMetricsConsentHandler(Profile* profile,
+                            metrics::MetricsService* metrics_service,
                             user_manager::UserManager* user_manager,
                             content::WebUI* web_ui)
-      : MetricsConsentHandler(profile, user_manager) {
+      : MetricsConsentHandler(profile, metrics_service, user_manager) {
     set_web_ui(web_ui);
   }
   ~TestMetricsConsentHandler() override = default;
@@ -75,7 +107,10 @@ class TestMetricsConsentHandler : public MetricsConsentHandler {
 
 class MetricsConsentHandlerTest : public testing::Test {
  public:
-  MetricsConsentHandlerTest() = default;
+  MetricsConsentHandlerTest() {
+    feature_list_.InitAndEnableFeature(::ash::features::kPerUserMetrics);
+  }
+
   MetricsConsentHandlerTest(const MetricsConsentHandlerTest&) = delete;
   MetricsConsentHandlerTest& operator=(const MetricsConsentHandlerTest&) =
       delete;
@@ -98,7 +133,8 @@ class MetricsConsentHandlerTest : public testing::Test {
   void InitializeTestHandler(Profile* profile) {
     // Create the handler with given profile.
     handler_ = std::make_unique<TestMetricsConsentHandler>(
-        profile, test_user_manager_.get(), web_ui_.get());
+        profile, test_metrics_service_.get(), test_user_manager_.get(),
+        web_ui_.get());
 
     // Enable javascript.
     handler_->AllowJavascriptForTesting();
@@ -138,6 +174,21 @@ class MetricsConsentHandlerTest : public testing::Test {
 
     test_user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
     web_ui_ = std::make_unique<content::TestWebUI>();
+
+    test_enabled_state_provider_ =
+        std::make_unique<metrics::TestEnabledStateProvider>(true, true);
+    test_metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        &pref_service_, test_enabled_state_provider_.get(), std::wstring(),
+        base::FilePath());
+    test_metrics_service_client_ =
+        std::make_unique<TestUserMetricsServiceClient>();
+    test_metrics_service_ = std::make_unique<metrics::MetricsService>(
+        test_metrics_state_manager_.get(), test_metrics_service_client_.get(),
+        &pref_service_);
+
+    // Needs to be set for metrics service.
+    base::SetRecordActionTaskRunner(
+        task_environment_.GetMainThreadTaskRunner());
   }
 
   void TearDown() override { handler_->DisallowJavascript(); }
@@ -188,6 +239,8 @@ class MetricsConsentHandlerTest : public testing::Test {
     return false;
   }
 
+  base::test::ScopedFeatureList feature_list_;
+
   // Profiles must be created in browser threads.
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
@@ -195,6 +248,13 @@ class MetricsConsentHandlerTest : public testing::Test {
   std::unique_ptr<TestMetricsConsentHandler> handler_;
   std::unique_ptr<ash::FakeChromeUserManager> test_user_manager_;
   std::unique_ptr<content::TestWebUI> web_ui_;
+
+  // MetricsService.
+  std::unique_ptr<metrics::MetricsStateManager> test_metrics_state_manager_;
+  std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
+  std::unique_ptr<metrics::TestEnabledStateProvider>
+      test_enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsService> test_metrics_service_;
 
   // Set up stubs for StatsReportingController.
   chromeos::ScopedStubInstallAttributes scoped_install_attributes_;
@@ -214,6 +274,9 @@ TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
   auto owner_id = AccountId::FromUserEmailGaiaId("owner@example.com", "2");
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
+  // Owner should not use user consent, but local pref.
+  test_metrics_service_client_->SetShouldUseUserConsent(false);
+
   LoginUser(owner_id);
   EXPECT_TRUE(test_user_manager_->IsCurrentUserOwner());
 
@@ -224,8 +287,7 @@ TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
   std::string pref_name;
   bool is_configurable = false;
 
-  // Non-owner user should not be able to toggle the device stats reporting
-  // pref.
+  // Owner should be able to toggle the device stats reporting pref.
   EXPECT_TRUE(GetMetricsConsentStateMessage(&pref_name, &is_configurable));
   EXPECT_THAT(::ash::kStatsReportingPref, Eq(pref_name));
   EXPECT_TRUE(is_configurable);
@@ -244,7 +306,7 @@ TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
   ash::StatsReportingController::Shutdown();
 }
 
-TEST_F(MetricsConsentHandlerTest, NonOwnerCannotToggle) {
+TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
   auto owner_id = AccountId::FromUserEmailGaiaId("owner@example.com", "2");
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
@@ -252,6 +314,9 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerCannotToggle) {
   std::unique_ptr<TestingProfile> non_owner = CreateUser(non_owner_keys);
   test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
       account_id, false, user_manager::USER_TYPE_REGULAR, non_owner.get());
+
+  // User should use user consent pref.
+  test_metrics_service_client_->SetShouldUseUserConsent(true);
 
   LoginUser(account_id);
   EXPECT_FALSE(test_user_manager_->IsCurrentUserOwner());
@@ -262,13 +327,52 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerCannotToggle) {
   std::string pref_name;
   bool is_configurable = false;
 
-  // Non-owner user should not be able to toggle the device stats reporting
-  // pref.
+  // Non-owner user should use user consent.
+  EXPECT_TRUE(GetMetricsConsentStateMessage(&pref_name, &is_configurable));
+  EXPECT_THAT(pref_name, Eq(::metrics::prefs::kMetricsUserConsent));
+  EXPECT_TRUE(is_configurable);
+
+  // Toggle true.
+  handler_->UpdateMetricsConsent(true);
+
+  bool current_consent = false;
+  EXPECT_TRUE(UpdateMetricsConsentMessage(&current_consent));
+
+  // Consent should change.
+  EXPECT_TRUE(current_consent);
+
+  // Explicitly shutdown controller here because OwnerSettingsService is
+  // destructed before TearDown() is called.
+  ash::StatsReportingController::Shutdown();
+}
+
+TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
+  auto owner_id = AccountId::FromUserEmailGaiaId("owner@example.com", "2");
+  std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
+
+  auto account_id = AccountId::FromUserEmailGaiaId("test@example.com", "1");
+  std::unique_ptr<TestingProfile> non_owner = CreateUser(non_owner_keys);
+  test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+      account_id, false, user_manager::USER_TYPE_REGULAR, non_owner.get());
+
+  // User cannot use user consent. This happens if the device is managed.
+  test_metrics_service_client_->SetShouldUseUserConsent(false);
+
+  LoginUser(account_id);
+  EXPECT_FALSE(test_user_manager_->IsCurrentUserOwner());
+
+  InitializeTestHandler(non_owner.get());
+  handler_->GetMetricsConsentState();
+
+  std::string pref_name;
+  bool is_configurable = false;
+
+  // Display device consent.
   EXPECT_TRUE(GetMetricsConsentStateMessage(&pref_name, &is_configurable));
   EXPECT_THAT(::ash::kStatsReportingPref, Eq(pref_name));
   EXPECT_FALSE(is_configurable);
 
-  // Toggle true.
+  // Try to toggle true.
   handler_->UpdateMetricsConsent(true);
 
   bool current_consent = false;

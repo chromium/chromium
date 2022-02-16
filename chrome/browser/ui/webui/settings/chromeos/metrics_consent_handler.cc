@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/webui/settings/chromeos/metrics_consent_handler.h"
 
 #include "ash/components/settings/cros_settings_names.h"
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/profile_pref_names.h"
+#include "components/metrics/metrics_service.h"
 #include "components/user_manager/user_manager.h"
 
 namespace chromeos {
@@ -20,9 +23,13 @@ const char MetricsConsentHandler::kUpdateMetricsConsent[] =
 
 MetricsConsentHandler::MetricsConsentHandler(
     Profile* profile,
+    metrics::MetricsService* metrics_service,
     user_manager::UserManager* user_manager)
-    : profile_(profile), user_manager_(user_manager) {
+    : profile_(profile),
+      metrics_service_(metrics_service),
+      user_manager_(user_manager) {
   DCHECK(profile_);
+  DCHECK(metrics_service_);
   DCHECK(user_manager_);
 }
 
@@ -52,7 +59,13 @@ void MetricsConsentHandler::HandleGetMetricsConsentState(
   const base::Value& callback_id = args[0];
 
   base::Value response(base::Value::Type::DICTIONARY);
-  response.SetKey("prefName", base::Value(::ash::kStatsReportingPref));
+
+  base::Value consent_pref =
+      ShouldUseUserConsent()
+          ? base::Value(::metrics::prefs::kMetricsUserConsent)
+          : base::Value(::ash::kStatsReportingPref);
+
+  response.SetKey("prefName", std::move(consent_pref));
   response.SetKey("isConfigurable",
                   base::Value(IsMetricsConsentConfigurable()));
 
@@ -69,17 +82,31 @@ void MetricsConsentHandler::HandleUpdateMetricsConsent(
   absl::optional<bool> metrics_consent = args[1].FindBoolKey("consent");
   CHECK(metrics_consent);
 
-  auto* stats_reporting_controller = ash::StatsReportingController::Get();
-  stats_reporting_controller->SetEnabled(profile_, metrics_consent.value());
+  if (!ShouldUseUserConsent()) {
+    auto* stats_reporting_controller = ash::StatsReportingController::Get();
+    stats_reporting_controller->SetEnabled(profile_, *metrics_consent);
 
-  // Re-read from |stats_reporting_controller|. If |profile_| is not owner, then
-  // the consent should not have changed to |metrics_consent|.
-  ResolveJavascriptCallback(
-      callback_id, base::Value(stats_reporting_controller->IsEnabled()));
+    // Re-read from |stats_reporting_controller|. If |profile_| is not owner,
+    // then the consent should not have changed to |metrics_consent|.
+    ResolveJavascriptCallback(
+        callback_id, base::Value(stats_reporting_controller->IsEnabled()));
+    return;
+  }
+
+  metrics_service_->UpdateCurrentUserMetricsConsent(*metrics_consent);
+  absl::optional<bool> user_metrics_consent =
+      metrics_service_->GetCurrentUserMetricsConsent();
+  CHECK(user_metrics_consent.has_value());
+  ResolveJavascriptCallback(callback_id, base::Value(*user_metrics_consent));
 }
 
 bool MetricsConsentHandler::IsMetricsConsentConfigurable() const {
-  return user_manager_->IsCurrentUserOwner();
+  return ShouldUseUserConsent() || user_manager_->IsCurrentUserOwner();
+}
+
+bool MetricsConsentHandler::ShouldUseUserConsent() const {
+  return base::FeatureList::IsEnabled(ash::features::kPerUserMetrics) &&
+         metrics_service_->GetCurrentUserMetricsConsent().has_value();
 }
 
 }  // namespace settings
