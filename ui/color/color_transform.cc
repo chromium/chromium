@@ -29,7 +29,6 @@ ColorTransform::ColorTransform(SkColor color) {
 }
 
 ColorTransform::ColorTransform(ColorId id) {
-  DCHECK_COLOR_ID_VALID(id);
   const auto generator = [](ColorId id, SkColor input_color,
                             const ColorMixer& mixer) {
     SkColor result_color = mixer.GetResultColor(id);
@@ -180,21 +179,6 @@ ColorTransform DeriveDefaultIconColor(ColorTransform transform) {
     return result_color;
   };
   return base::BindRepeating(generator, std::move(transform));
-}
-
-ColorTransform FromOriginalColorFromSet(ColorId id, ColorSetId set_id) {
-  DCHECK_COLOR_ID_VALID(id);
-  DCHECK_COLOR_SET_ID_VALID(set_id);
-  const auto generator = [](ColorId id, ColorSetId set_id, SkColor input_color,
-                            const ColorMixer& mixer) {
-    SkColor result_color = mixer.GetOriginalColorFromSet(id, set_id);
-    DVLOG(2) << "ColorTransform FromOriginalColorFromSet:"
-             << " Color Id: " << ColorIdName(id)
-             << " ColorSet Id: " << ColorSetIdName(set_id)
-             << " Result Color: " << SkColorName(result_color);
-    return result_color;
-  };
-  return base::BindRepeating(generator, id, set_id);
 }
 
 ColorTransform FromTransformInput() {

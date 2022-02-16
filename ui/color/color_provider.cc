@@ -57,7 +57,6 @@ ColorMixer& ColorProvider::AddPostprocessingMixer() {
 }
 
 SkColor ColorProvider::GetColor(ColorId id) const {
-  DCHECK_COLOR_ID_VALID(id);
   DCHECK(color_map_);
   auto i = color_map_->find(id);
   return i == color_map_->end() ? gfx::kPlaceholderColor : i->second;

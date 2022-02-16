@@ -13,7 +13,6 @@
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
-#include "ui/color/color_set.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ui {
@@ -22,38 +21,6 @@ namespace {
 
 // TODO(pkasting): Construct colors from contrast ratios
 // TODO(pkasting): Construct palette from accent, key, tint/bg, shade/fg colors
-
-ColorMixer& AddMixerForDarkMode(ColorProvider* provider, bool high_contrast) {
-  ColorMixer& mixer = provider->AddMixer();
-  mixer.AddSet({kColorSetCoreDefaults,
-                {
-                    {kColorAccent, gfx::kGoogleBlue300},
-                    {kColorAlertHighSeverity, gfx::kGoogleRed300},
-                    {kColorAlertLowSeverity, gfx::kGoogleGreen300},
-                    {kColorAlertMediumSeverity, gfx::kGoogleYellow300},
-                    {kColorMidground, gfx::kGoogleGrey800},
-                    {kColorPrimaryBackground, SkColorSetRGB(0x29, 0x2A, 0x2D)},
-                    {kColorPrimaryForeground, gfx::kGoogleGrey200},
-                    {kColorSecondaryForeground, gfx::kGoogleGrey500},
-                }});
-  return mixer;
-}
-
-ColorMixer& AddMixerForLightMode(ColorProvider* provider, bool high_contrast) {
-  ColorMixer& mixer = provider->AddMixer();
-  mixer.AddSet({kColorSetCoreDefaults,
-                {
-                    {kColorAccent, gfx::kGoogleBlue600},
-                    {kColorAlertHighSeverity, gfx::kGoogleRed600},
-                    {kColorAlertLowSeverity, gfx::kGoogleGreen700},
-                    {kColorAlertMediumSeverity, gfx::kGoogleYellow700},
-                    {kColorMidground, gfx::kGoogleGrey300},
-                    {kColorPrimaryBackground, SK_ColorWHITE},
-                    {kColorPrimaryForeground, gfx::kGoogleGrey900},
-                    {kColorSecondaryForeground, gfx::kGoogleGrey700},
-                }});
-  return mixer;
-}
 
 ColorTransform GoogleColorWithContrastRatio(ColorTransform foreground_transform,
                                             ColorTransform background_transform,
@@ -87,13 +54,16 @@ void AddCoreDefaultColorMixer(ColorProvider* provider,
                               const ColorProviderManager::Key& key) {
   const bool dark_mode =
       key.color_mode == ColorProviderManager::ColorMode::kDark;
-  const bool high_contrast =
-      key.contrast_mode == ColorProviderManager::ContrastMode::kHigh;
   DVLOG(2) << "Adding CoreDefaultColorMixer to ColorProvider for "
-           << (dark_mode ? "Dark" : "Light")
-           << (high_contrast ? " High Contrast" : "") << " window.";
-  ColorMixer& mixer = dark_mode ? AddMixerForDarkMode(provider, high_contrast)
-                                : AddMixerForLightMode(provider, high_contrast);
+           << (dark_mode ? "Dark" : "Light") << " window.";
+  ColorMixer& mixer = provider->AddMixer();
+  mixer[kColorAccent] = {dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600};
+  mixer[kColorAlertHighSeverity] = {dark_mode ? gfx::kGoogleRed300
+                                              : gfx::kGoogleRed600};
+  mixer[kColorAlertLowSeverity] = {dark_mode ? gfx::kGoogleGreen300
+                                             : gfx::kGoogleGreen700};
+  mixer[kColorAlertMediumSeverity] = {dark_mode ? gfx::kGoogleYellow300
+                                                : gfx::kGoogleYellow700};
   mixer[kColorDisabledForeground] = BlendForMinContrast(
       gfx::kGoogleGrey600, kColorPrimaryBackground, kColorPrimaryForeground);
   mixer[kColorEndpointBackground] =
@@ -109,6 +79,14 @@ void AddCoreDefaultColorMixer(ColorProvider* provider,
   mixer[kColorMenuSelectionBackground] =
       AlphaBlend(kColorEndpointForeground, kColorPrimaryBackground,
                  gfx::kGoogleGreyAlpha200);
+  mixer[kColorMidground] = {dark_mode ? gfx::kGoogleGrey800
+                                      : gfx::kGoogleGrey300};
+  mixer[kColorPrimaryBackground] = {dark_mode ? SkColorSetRGB(0x29, 0x2A, 0x2D)
+                                              : SK_ColorWHITE};
+  mixer[kColorPrimaryForeground] = {dark_mode ? gfx::kGoogleGrey200
+                                              : gfx::kGoogleGrey900};
+  mixer[kColorSecondaryForeground] = {dark_mode ? gfx::kGoogleGrey500
+                                                : gfx::kGoogleGrey700};
   mixer[kColorSubtleAccent] = AlphaBlend(kColorAccent, kColorPrimaryBackground,
                                          gfx::kGoogleGreyAlpha400);
   mixer[kColorSubtleEmphasisBackground] =

@@ -113,25 +113,6 @@ std::string ColorIdName(ColorId color_id) {
 
 #include "ui/color/color_id_map_macros.inc"
 
-base::StringPiece ColorSetIdName(ColorSetId color_set_id) {
-  // Since we're returning a StringPiece we need a stable location to store the
-  // string we may construct below. This is only for immediate logging. The
-  // behavior is undefined if the result is retained beyond the scope in which
-  // this function is called.
-  static char color_set_id_string[20] = "";
-  switch (color_set_id) {
-    case kColorSetNative:
-      return "kColorSetNative";
-    case kColorSetCoreDefaults:
-      return "kColorSetCoreDefaults";
-    default: {
-      std::snprintf(color_set_id_string, sizeof(color_set_id_string),
-                    "ColorSetId(%d)", color_set_id);
-      return color_set_id_string;
-    }
-  }
-}
-
 std::string SkColorName(SkColor color) {
   static const auto color_name_map =
       base::MakeFixedFlatMap<SkColor, const char*>({

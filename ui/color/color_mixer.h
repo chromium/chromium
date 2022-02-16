@@ -5,7 +5,6 @@
 #ifndef UI_COLOR_COLOR_MIXER_H_
 #define UI_COLOR_COLOR_MIXER_H_
 
-#include <forward_list>
 #include <map>
 #include <set>
 
@@ -15,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_set.h"
 
 namespace ui {
 
@@ -52,20 +50,10 @@ class COMPONENT_EXPORT(COLOR) ColorMixer {
   // Adds a recipe for |id| if it does not exist.
   ColorRecipe& operator[](ColorId id);
 
-  // Adds |set| to |sets_|.  |set| must not have the same ID as any previously
-  // added sets, though it may contain colors with the same IDs as colors in
-  // those sets; in such cases, the last-added set takes priority.
-  void AddSet(ColorSet&& set);
-
   // Returns the input color for |id|.  First searches all |sets_| in reverse
   // order; if not found, asks the previous mixer for the result color.  If
   // there is no previous mixer, returns gfx::kPlaceholderColor.
   SkColor GetInputColor(ColorId id) const;
-
-  // Returns the color for |id| from |set_id|.  If this mixer does not have that
-  // set, the request will be forwarded to the previous mixer.  If there is no
-  // previous mixer, returns gfx::kPlaceholderColor.
-  SkColor GetOriginalColorFromSet(ColorId id, ColorSetId set_id) const;
 
   // Returns the result color for |id|, that is, the result of applying any
   // applicable recipe from |recipes_| to the relevant input color.
@@ -75,21 +63,11 @@ class COMPONENT_EXPORT(COLOR) ColorMixer {
   std::set<ColorId> GetDefinedColorIds() const;
 
  private:
-  using ColorSets = std::forward_list<ColorSet>;
-
-  // Returns an iterator to the set in |sets_| with ID |id|, or sets_.cend().
-  ColorSets::const_iterator FindSetWithId(ColorSetId id) const;
-
   MixerGetter previous_mixer_getter_;
   MixerGetter input_mixer_getter_;
-  ColorSets sets_;
 
   // This uses std::map instead of base::flat_map since the recipes are inserted
   // one at a time instead of all at once, and there may be a lot of them.
-  // TODO(pkasting): Consider unifying how sets and recipes are specified:
-  // either both at construction (at which point this can use a flat_map) or
-  // both built piecemeal (which would mean ColorSets should probably become a
-  // std::map as well).
   std::map<ColorId, ColorRecipe> recipes_;
 };
 

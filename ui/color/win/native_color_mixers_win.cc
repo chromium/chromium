@@ -12,7 +12,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
-#include "ui/color/color_set.h"
 #include "ui/color/color_switches.h"
 #include "ui/color/color_transform.h"
 #include "ui/color/win/accent_color_observer.h"
@@ -23,12 +22,59 @@ namespace ui {
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
                              const ColorProviderManager::Key& key) {
+  ColorMixer& mixer = provider->AddMixer();
+
   // TODO(pkasting): Not clear whether this is really the set of interest.
   // Maybe there's some way to query colors used by UxTheme.dll, or maybe we
   // should be hardcoding a list of colors for system light/dark modes based on
   // reverse-engineering current Windows behavior.  Or maybe the union of all
   // these.
-  ColorMixer& mixer = provider->AddMixer();
+  mixer[kColorNative3dDkShadow] = {
+      color_utils::GetSysSkColor(COLOR_3DDKSHADOW)};
+  mixer[kColorNative3dLight] = {color_utils::GetSysSkColor(COLOR_3DLIGHT)};
+  mixer[kColorNativeActiveBorder] = {
+      color_utils::GetSysSkColor(COLOR_ACTIVEBORDER)};
+  mixer[kColorNativeActiveCaption] = {
+      color_utils::GetSysSkColor(COLOR_ACTIVECAPTION)};
+  mixer[kColorNativeAppWorkspace] = {
+      color_utils::GetSysSkColor(COLOR_APPWORKSPACE)};
+  mixer[kColorNativeBackground] = {
+      color_utils::GetSysSkColor(COLOR_BACKGROUND)};
+  mixer[kColorNativeBtnFace] = {color_utils::GetSysSkColor(COLOR_BTNFACE)};
+  mixer[kColorNativeBtnHighlight] = {
+      color_utils::GetSysSkColor(COLOR_BTNHIGHLIGHT)};
+  mixer[kColorNativeBtnShadow] = {color_utils::GetSysSkColor(COLOR_BTNSHADOW)};
+  mixer[kColorNativeBtnText] = {color_utils::GetSysSkColor(COLOR_BTNTEXT)};
+  mixer[kColorNativeCaptionText] = {
+      color_utils::GetSysSkColor(COLOR_CAPTIONTEXT)};
+  mixer[kColorNativeGradientActiveCaption] = {
+      color_utils::GetSysSkColor(COLOR_GRADIENTACTIVECAPTION)};
+  mixer[kColorNativeGradientInactiveCaption] = {
+      color_utils::GetSysSkColor(COLOR_GRADIENTINACTIVECAPTION)};
+  mixer[kColorNativeGrayText] = {color_utils::GetSysSkColor(COLOR_GRAYTEXT)};
+  mixer[kColorNativeHighlight] = {color_utils::GetSysSkColor(COLOR_HIGHLIGHT)};
+  mixer[kColorNativeHighlightText] = {
+      color_utils::GetSysSkColor(COLOR_HIGHLIGHTTEXT)};
+  mixer[kColorNativeHotlight] = {color_utils::GetSysSkColor(COLOR_HOTLIGHT)};
+  mixer[kColorNativeInactiveBorder] = {
+      color_utils::GetSysSkColor(COLOR_INACTIVEBORDER)};
+  mixer[kColorNativeInactiveCaption] = {
+      color_utils::GetSysSkColor(COLOR_INACTIVECAPTION)};
+  mixer[kColorNativeInactiveCaptionText] = {
+      color_utils::GetSysSkColor(COLOR_INACTIVECAPTIONTEXT)};
+  mixer[kColorNativeInfoBk] = {color_utils::GetSysSkColor(COLOR_INFOBK)};
+  mixer[kColorNativeInfoText] = {color_utils::GetSysSkColor(COLOR_INFOTEXT)};
+  mixer[kColorNativeMenu] = {color_utils::GetSysSkColor(COLOR_MENU)};
+  mixer[kColorNativeMenuBar] = {color_utils::GetSysSkColor(COLOR_MENUBAR)};
+  mixer[kColorNativeMenuHilight] = {
+      color_utils::GetSysSkColor(COLOR_MENUHILIGHT)};
+  mixer[kColorNativeMenuText] = {color_utils::GetSysSkColor(COLOR_MENUTEXT)};
+  mixer[kColorNativeScrollbar] = {color_utils::GetSysSkColor(COLOR_SCROLLBAR)};
+  mixer[kColorNativeWindow] = {color_utils::GetSysSkColor(COLOR_WINDOW)};
+  mixer[kColorNativeWindowFrame] = {
+      color_utils::GetSysSkColor(COLOR_WINDOWFRAME)};
+  mixer[kColorNativeWindowText] = {
+      color_utils::GetSysSkColor(COLOR_WINDOWTEXT)};
 
   // Use the system accent color as the Chrome accent color, if desired.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -42,10 +88,6 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
 
   if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal)
     return;
-
-#define E(chrome, native) {chrome, color_utils::GetSysSkColor(native)},
-  mixer.AddSet({kColorSetNative, {PLATFORM_SPECIFIC_COLOR_IDS}});
-#undef E
 
   // Window Background
   mixer[kColorPrimaryBackground] = {kColorNativeWindow};

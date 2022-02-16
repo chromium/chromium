@@ -13,7 +13,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
-#include "ui/color/color_set.h"
 #include "ui/color/mac/scoped_current_nsappearance.h"
 #include "ui/gfx/color_palette.h"
 
@@ -41,28 +40,19 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
       key.color_mode == ColorProviderManager::ColorMode::kDark,
       key.contrast_mode == ColorProviderManager::ContrastMode::kHigh);
   ColorMixer& mixer = provider->AddMixer();
-  mixer.AddSet({kColorSetNative,
-                {
-                    {kColorItemHighlight,
-                     SkColorSetA(skia::NSSystemColorToSkColor(
-                                     [NSColor keyboardFocusIndicatorColor]),
-                                 0x66)},
-                    {kColorTextSelectionBackground,
-                     skia::NSSystemColorToSkColor(
-                         [NSColor selectedTextBackgroundColor])},
-                }});
+  mixer[kColorItemHighlight] = {SkColorSetA(
+      skia::NSSystemColorToSkColor([NSColor keyboardFocusIndicatorColor]),
+      0x66)};
+  mixer[kColorTextSelectionBackground] = {
+      skia::NSSystemColorToSkColor([NSColor selectedTextBackgroundColor])};
 }
 
 void AddNativeColorSetInColorMixer(ColorMixer& mixer) {
-  mixer.AddSet(
-      {kColorSetNative,
-       {
-           {kColorMenuBorder, SkColorSetA(SK_ColorBLACK, 0x60)},
-           {kColorMenuItemForegroundDisabled,
-            skia::NSSystemColorToSkColor([NSColor disabledControlTextColor])},
-           {kColorMenuItemForeground,
-            skia::NSSystemColorToSkColor([NSColor controlTextColor])},
-       }});
+  mixer[kColorMenuBorder] = {SkColorSetA(SK_ColorBLACK, 0x60)};
+  mixer[kColorMenuItemForegroundDisabled] = {
+      skia::NSSystemColorToSkColor([NSColor disabledControlTextColor])};
+  mixer[kColorMenuItemForeground] = {
+      skia::NSSystemColorToSkColor([NSColor controlTextColor])};
 }
 
 void AddNativeUiColorMixer(ColorProvider* provider,
@@ -98,13 +88,10 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   if (!high_contrast)
     return;
 
-  if (dark_mode) {
-    mixer[kColorMenuItemForegroundSelected] = {SK_ColorBLACK};
-    mixer[kColorMenuItemBackgroundSelected] = {SK_ColorLTGRAY};
-  } else {
-    mixer[kColorMenuItemForegroundSelected] = {SK_ColorWHITE};
-    mixer[kColorMenuItemBackgroundSelected] = {SK_ColorDKGRAY};
-  }
+  mixer[kColorMenuItemBackgroundSelected] = {dark_mode ? SK_ColorLTGRAY
+                                                       : SK_ColorDKGRAY};
+  mixer[kColorMenuItemForegroundSelected] = {dark_mode ? SK_ColorBLACK
+                                                       : SK_ColorWHITE};
 }
 
 void AddNativePostprocessingMixer(ColorProvider* provider,

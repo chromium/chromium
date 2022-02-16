@@ -261,36 +261,36 @@
   E_CPONLY(kColorNativeWindowBackground)
 #elif BUILDFLAG(IS_WIN)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
-  E(kColorNative3dDkShadow, COLOR_3DDKSHADOW) \
-  E(kColorNative3dLight, COLOR_3DLIGHT) \
-  E(kColorNativeActiveBorder, COLOR_ACTIVEBORDER) \
-  E(kColorNativeActiveCaption, COLOR_ACTIVECAPTION) \
-  E(kColorNativeAppWorkspace, COLOR_APPWORKSPACE) \
-  E(kColorNativeBackground, COLOR_BACKGROUND) \
-  E(kColorNativeBtnFace, COLOR_BTNFACE) \
-  E(kColorNativeBtnHighlight, COLOR_BTNHIGHLIGHT) \
-  E(kColorNativeBtnShadow, COLOR_BTNSHADOW) \
-  E(kColorNativeBtnText, COLOR_BTNTEXT) \
-  E(kColorNativeCaptionText, COLOR_CAPTIONTEXT) \
-  E(kColorNativeGradientActiveCaption, COLOR_GRADIENTACTIVECAPTION) \
-  E(kColorNativeGradientInactiveCaption, COLOR_GRADIENTINACTIVECAPTION) \
-  E(kColorNativeGrayText, COLOR_GRAYTEXT) \
-  E(kColorNativeHighlight, COLOR_HIGHLIGHT) \
-  E(kColorNativeHighlightText, COLOR_HIGHLIGHTTEXT) \
-  E(kColorNativeHotlight, COLOR_HOTLIGHT) \
-  E(kColorNativeInactiveBorder, COLOR_INACTIVEBORDER) \
-  E(kColorNativeInactiveCaption, COLOR_INACTIVECAPTION) \
-  E(kColorNativeInactiveCaptionText, COLOR_INACTIVECAPTIONTEXT) \
-  E(kColorNativeInfoBk, COLOR_INFOBK) \
-  E(kColorNativeInfoText, COLOR_INFOTEXT) \
-  E(kColorNativeMenu, COLOR_MENU) \
-  E(kColorNativeMenuBar, COLOR_MENUBAR) \
-  E(kColorNativeMenuHilight, COLOR_MENUHILIGHT) \
-  E(kColorNativeMenuText, COLOR_MENUTEXT) \
-  E(kColorNativeScrollbar, COLOR_SCROLLBAR) \
-  E(kColorNativeWindow, COLOR_WINDOW) \
-  E(kColorNativeWindowFrame, COLOR_WINDOWFRAME) \
-  E(kColorNativeWindowText, COLOR_WINDOWTEXT)
+  E_CPONLY(kColorNative3dDkShadow) \
+  E_CPONLY(kColorNative3dLight) \
+  E_CPONLY(kColorNativeActiveBorder) \
+  E_CPONLY(kColorNativeActiveCaption) \
+  E_CPONLY(kColorNativeAppWorkspace) \
+  E_CPONLY(kColorNativeBackground) \
+  E_CPONLY(kColorNativeBtnFace) \
+  E_CPONLY(kColorNativeBtnHighlight) \
+  E_CPONLY(kColorNativeBtnShadow) \
+  E_CPONLY(kColorNativeBtnText) \
+  E_CPONLY(kColorNativeCaptionText) \
+  E_CPONLY(kColorNativeGradientActiveCaption) \
+  E_CPONLY(kColorNativeGradientInactiveCaption) \
+  E_CPONLY(kColorNativeGrayText) \
+  E_CPONLY(kColorNativeHighlight) \
+  E_CPONLY(kColorNativeHighlightText) \
+  E_CPONLY(kColorNativeHotlight) \
+  E_CPONLY(kColorNativeInactiveBorder) \
+  E_CPONLY(kColorNativeInactiveCaption) \
+  E_CPONLY(kColorNativeInactiveCaptionText) \
+  E_CPONLY(kColorNativeInfoBk) \
+  E_CPONLY(kColorNativeInfoText) \
+  E_CPONLY(kColorNativeMenu) \
+  E_CPONLY(kColorNativeMenuBar) \
+  E_CPONLY(kColorNativeMenuHilight) \
+  E_CPONLY(kColorNativeMenuText) \
+  E_CPONLY(kColorNativeScrollbar) \
+  E_CPONLY(kColorNativeWindow) \
+  E_CPONLY(kColorNativeWindowFrame) \
+  E_CPONLY(kColorNativeWindowText)
 #else
 #define PLATFORM_SPECIFIC_COLOR_IDS
 #endif
@@ -328,35 +328,6 @@ enum ColorIds : ColorId {
 // clang-format on
 
 #include "ui/color/color_id_macros.inc"
-
-// ColorSetId contains identifiers for all distinct color sets known to the core
-// UI layer.  As with ColorId, embedders can extend this enum with additional
-// values that are understood by the ColorProvider implementation.  Embedders
-// define enum values from kUiColorSetsEnd.  Values named beginning with
-// "kColorSet" represent the actual colors; the rest are markers.
-using ColorSetId = int;
-enum ColorSetIds : ColorSetId {
-  kUiColorSetsStart = kUiColorsLast + 1,
-
-  // A set of color IDs whose values match the native platform as closely as
-  // possible.
-  kColorSetNative = kUiColorSetsStart,
-
-  // A set of color IDs representing the default values for core color concepts,
-  // in the absence of native colors.
-  kColorSetCoreDefaults,
-
-  // Embedders must start color set IDs from this value.
-  kUiColorSetsEnd,
-};
-
-// Verifies that |id| is a color ID, not a color set ID.
-#define DCHECK_COLOR_ID_VALID(id) \
-  DCHECK_GE(id, kUiColorsStart);  \
-  DCHECK_LE(id, kUiColorsLast)
-
-// Verifies that |id| is a color set ID, not a color ID.
-#define DCHECK_COLOR_SET_ID_VALID(id) DCHECK_GE(id, kUiColorSetsStart)
 
 }  // namespace ui
 

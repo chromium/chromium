@@ -85,10 +85,6 @@ COMPONENT_EXPORT(COLOR) ColorTransform ContrastInvert(ColorTransform transform);
 COMPONENT_EXPORT(COLOR)
 ColorTransform DeriveDefaultIconColor(ColorTransform transform);
 
-// A transform which returns the color |id| from set |set_id|.
-COMPONENT_EXPORT(COLOR)
-ColorTransform FromOriginalColorFromSet(ColorId id, ColorSetId set_id);
-
 // A transform which returns the transform's input color (i.e. does nothing).
 // This is useful to supply as an argument to other transforms to control how
 // the input color is routed.

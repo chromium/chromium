@@ -44,10 +44,6 @@ base::StringPiece COMPONENT_EXPORT(COLOR)
 // Converts ColorId.
 std::string COMPONENT_EXPORT(COLOR) ColorIdName(ColorId color_id);
 
-// Converts ColorSetId.
-base::StringPiece COMPONENT_EXPORT(COLOR)
-    ColorSetIdName(ColorSetId color_set_id);
-
 // Converts SkColor to string. Check if color matches a standard color palette
 // value and return it as a string. Otherwise return as an rgba(xx, xxx, xxx,
 // xxx) string.
@@ -80,7 +76,7 @@ bool COMPONENT_EXPORT(COLOR) IsRendererColorMappingEquivalent(
     const ColorProvider& color_provider,
     const RendererColorMap& renderer_color_map);
 
-// Sets the callback for converting a ChromColorId to a string name. This is
+// Sets the callback for converting a ChromeColorId to a string name. This is
 // used by ColorIdName. Only one callback is allowed.
 void COMPONENT_EXPORT(COLOR)
     SetColorProviderUtilsCallbacks(ColorProviderUtilsCallbacks* callbacks);

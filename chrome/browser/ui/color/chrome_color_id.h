@@ -130,13 +130,4 @@ enum ChromeColorIds : ui::ColorId {
 
 // clang-format on
 
-static_assert(ui::ColorId{kChromeColorsEnd} <= ui::ColorId{ui::kUiColorsLast},
-              "Embedder colors must not exceed allowed space");
-
-enum ChromeColorSetIds : ui::ColorSetId {
-  kColorSetCustomTheme = ui::kUiColorSetsEnd,
-
-  kChromeColorSetsEnd,
-};
-
 #endif  // CHROME_BROWSER_UI_COLOR_CHROME_COLOR_ID_H_

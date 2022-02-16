@@ -17,7 +17,6 @@ source_set("color_headers") {
     "color_provider.h",
     "color_provider_manager.h",
     "color_provider_utils.h",
-    "color_set.h",
   ]
 
   public_deps = [
@@ -51,7 +50,6 @@ component("color") {
     "color_provider_utils.h",
     "color_recipe.cc",
     "color_recipe.h",
-    "color_set.cc",
     "color_transform.cc",
     "color_transform.h",
   ]

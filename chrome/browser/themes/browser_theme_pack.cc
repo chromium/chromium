@@ -41,6 +41,7 @@
 #include "ui/base/resource/data_pack.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_recipe.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_analysis.h"
@@ -1109,15 +1110,12 @@ void BrowserThemePack::AddColorMixers(
        kColorTabGroupContextMenuOrange},
   };
 
-  ui::ColorSet::ColorMap theme_colors;
-  SkColor color;
+  ui::ColorMixer& mixer = provider->AddMixer();
   for (const auto& entry : kThemePropertiesMap) {
+    SkColor color;
     if (GetColor(entry.property_id, &color))
-      theme_colors.insert({entry.color_id, color});
+      mixer[entry.color_id] = {color};
   }
-  if (theme_colors.empty())
-    return;
-  provider->AddMixer().AddSet({kColorSetCustomTheme, std::move(theme_colors)});
 }
 
 // private:

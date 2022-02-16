@@ -2364,6 +2364,7 @@ static_library("browser") {
     "//ui/base/clipboard",
     "//ui/base/idle",
     "//ui/base/ime",
+    "//ui/color",
     "//ui/compositor",
     "//ui/events:events_base",
     "//ui/events/devices",
