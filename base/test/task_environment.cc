@@ -770,7 +770,18 @@ TaskEnvironment::ParallelExecutionFence::ParallelExecutionFence(
   CHECK(!g_task_tracker || g_task_tracker->OnControllerThread())
       << error_message;
   if (g_task_tracker) {
-    previously_allowed_to_run_ = g_task_tracker->TasksAllowedToRun();
+    // Do not attempt to install a fence post shutdown, the only remaining tasks
+    // at that point are CONTINUE_ON_SHUTDOWN and attempting to wait for them
+    // causes more issues (test timeouts) than the fence solves (data races on
+    // global state). CONTINUE_ON_SHUTDOWN tasks should generally not be
+    // touching global state and while not all users of ParallelExecutionFence
+    // (FeatureList) guard against access from CONTINUE_ON_SHUTDOWN tasks, any
+    // such tasks abusing this would be flagged by TSAN and have to be fixed
+    // manually. Note: this is only relevant in browser tests as unit tests
+    // already go through a full join in TaskEnvironment::DestroyThreadPool().
+    previously_allowed_to_run_ = g_task_tracker->TasksAllowedToRun() &&
+                                 !g_task_tracker->IsShutdownComplete();
+
     // DisallowRunTasks typically yields back if it fails to reach quiescence
     // within 1ms. This is typically done to let the main thread run tasks that
     // could potentially be blocking main thread tasks. In this case however,
@@ -822,6 +833,10 @@ bool TaskEnvironment::TestTaskTracker::TasksAllowedToRun() const {
 }
 
 bool TaskEnvironment::TestTaskTracker::DisallowRunTasks(TimeDelta timeout) {
+  // Disallowing task running should only be done from the main thread to avoid
+  // racing with shutdown.
+  DCHECK(OnControllerThread());
+
   AutoLock auto_lock(lock_);
 
   // Can't disallow run task if there are tasks running.
@@ -832,8 +847,13 @@ bool TaskEnvironment::TestTaskTracker::DisallowRunTasks(TimeDelta timeout) {
     task_completed_cv_.TimedWait(end - now);
   }
   // Timed out waiting for running tasks, yield to caller.
-  if (!running_tasks_.empty())
+  if (!running_tasks_.empty()) {
+    // This condition should never be sought after shutdown and this call
+    // shouldn't be racing shutdown either per the above `OnControllerThread()`
+    // contract.
+    DCHECK(!IsShutdownComplete());
     return false;
+  }
 
   can_run_tasks_ = false;
   return true;
