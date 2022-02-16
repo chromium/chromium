@@ -427,6 +427,8 @@ Value::Dict::const_iterator Value::Dict::cend() const {
 }
 
 bool Value::Dict::contains(base::StringPiece key) const {
+  DCHECK(IsStringUTF8AllowingNoncharacters(key));
+
   return storage_.contains(key);
 }
 
@@ -464,6 +466,8 @@ void Value::Dict::Merge(const Dict& dict) {
 }
 
 const Value* Value::Dict::Find(StringPiece key) const {
+  DCHECK(IsStringUTF8AllowingNoncharacters(key));
+
   auto it = storage_.find(key);
   return it != storage_.end() ? it->second.get() : nullptr;
 }
@@ -524,6 +528,8 @@ Value::List* Value::Dict::FindList(StringPiece key) {
 }
 
 Value* Value::Dict::Set(StringPiece key, Value&& value) {
+  DCHECK(IsStringUTF8AllowingNoncharacters(key));
+
   auto wrapped_value = std::make_unique<Value>(std::move(value));
   auto* raw_value = wrapped_value.get();
   storage_.insert_or_assign(key, std::move(wrapped_value));
@@ -575,10 +581,14 @@ Value* Value::Dict::Set(StringPiece key, List&& value) {
 }
 
 bool Value::Dict::Remove(StringPiece key) {
+  DCHECK(IsStringUTF8AllowingNoncharacters(key));
+
   return storage_.erase(key) > 0;
 }
 
 absl::optional<Value> Value::Dict::Extract(StringPiece key) {
+  DCHECK(IsStringUTF8AllowingNoncharacters(key));
+
   auto it = storage_.find(key);
   if (it == storage_.end())
     return absl::nullopt;
@@ -589,6 +599,7 @@ absl::optional<Value> Value::Dict::Extract(StringPiece key) {
 
 const Value* Value::Dict::FindByDottedPath(StringPiece path) const {
   DCHECK(!path.empty());
+  DCHECK(IsStringUTF8AllowingNoncharacters(path));
 
   const Dict* current_dict = this;
   const Value* current_value = nullptr;
@@ -663,6 +674,7 @@ Value::List* Value::Dict::FindListByDottedPath(StringPiece path) {
 
 Value* Value::Dict::SetByDottedPath(StringPiece path, Value&& value) {
   DCHECK(!path.empty());
+  DCHECK(IsStringUTF8AllowingNoncharacters(path));
 
   Dict* current_dict = this;
   Value* current_value = nullptr;
@@ -738,6 +750,7 @@ bool Value::Dict::RemoveByDottedPath(StringPiece path) {
 
 absl::optional<Value> Value::Dict::ExtractByDottedPath(StringPiece path) {
   DCHECK(!path.empty());
+  DCHECK(IsStringUTF8AllowingNoncharacters(path));
 
   // Use recursion instead of PathSplitter here, as it simplifies code for
   // removing dictionaries that become empty if a value matching `path` is
