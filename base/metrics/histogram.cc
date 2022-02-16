@@ -255,6 +255,10 @@ HistogramBase* Histogram::FactoryGet(const std::string& name,
   bool valid_arguments =
       InspectConstructionArguments(name, &minimum, &maximum, &bucket_count);
   DCHECK(valid_arguments) << name;
+  if (!valid_arguments) {
+    DLOG(ERROR) << "Histogram " << name << " dropped for invalid parameters.";
+    return DummyHistogram::GetInstance();
+  }
 
   return Factory(name, minimum, maximum, bucket_count, flags).Build();
 }
@@ -431,19 +435,20 @@ bool Histogram::InspectConstructionArguments(StringPiece name,
 
   // Checks below must be done after any min/max swap.
   if (*minimum > *maximum) {
+    DLOG(ERROR) << "Histogram: " << name << " has swapped minimum/maximum";
     check_okay = false;
     std::swap(*minimum, *maximum);
   }
 
   // Defensive code for backward compatibility.
   if (*minimum < 1) {
-    DVLOG(1) << "Histogram: " << name << " has bad minimum: " << *minimum;
+    DLOG(ERROR) << "Histogram: " << name << " has bad minimum: " << *minimum;
     *minimum = 1;
     if (*maximum < 1)
       *maximum = 1;
   }
   if (*maximum >= kSampleType_MAX) {
-    DVLOG(1) << "Histogram: " << name << " has bad maximum: " << *maximum;
+    DLOG(ERROR) << "Histogram: " << name << " has bad maximum: " << *maximum;
     *maximum = kSampleType_MAX - 1;
   }
   if (*bucket_count > kBucketCount_MAX) {
@@ -452,9 +457,9 @@ bool Histogram::InspectConstructionArguments(StringPiece name,
 
     // Blink.UseCounter legitimately has more than 1000 entries in its enum.
     if (!StartsWith(name, "Blink.UseCounter")) {
-      DVLOG(1) << "Histogram: " << name
-               << " has bad bucket_count: " << *bucket_count << " (limit "
-               << kBucketCount_MAX << ")";
+      DLOG(ERROR) << "Histogram: " << name
+                  << " has bad bucket_count: " << *bucket_count << " (limit "
+                  << kBucketCount_MAX << ")";
 
       // Assume it's a mistake and limit to 100 buckets, plus under and over.
       // If the DCHECK doesn't alert the user then hopefully the small number
@@ -802,6 +807,10 @@ HistogramBase* LinearHistogram::FactoryGetWithRangeDescription(
   bool valid_arguments = Histogram::InspectConstructionArguments(
       name, &minimum, &maximum, &bucket_count);
   DCHECK(valid_arguments) << name;
+  if (!valid_arguments) {
+    DLOG(ERROR) << "Histogram " << name << " dropped for invalid parameters.";
+    return DummyHistogram::GetInstance();
+  }
 
   return Factory(name, minimum, maximum, bucket_count, flags, descriptions)
       .Build();

@@ -44,7 +44,9 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Histogram.BadConstructionArguments" enum="HistogramNameHash"
-    expires_after="2022-08-01">
+    expires_after="never">
+<!-- expires-never: Needed for tracking missing histogram data. -->
+
   <owner>asvitkine@chromium.org</owner>
   <owner>bcwhite@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
