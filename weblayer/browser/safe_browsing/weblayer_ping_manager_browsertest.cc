@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -109,6 +110,7 @@ void WeblayerPingManagerTest::RunReportThreatDetailsTest(
     bool is_signed_in,
     bool expect_access_token,
     bool expect_cookies_removed) {
+  base::HistogramTester histogram_tester;
   if (is_enhanced_protection) {
     SetSafeBrowsingState(GetProfile()->GetBrowserContext()->pref_service(),
                          safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
@@ -137,6 +139,10 @@ void WeblayerPingManagerTest::RunReportThreatDetailsTest(
                   expect_cookies_removed
                       ? network::mojom::CredentialsMode::kOmit
                       : network::mojom::CredentialsMode::kInclude);
+        histogram_tester.ExpectUniqueSample(
+            "SafeBrowsing.ClientSafeBrowsingReport.RequestHasToken",
+            /*sample=*/expect_access_token,
+            /*expected_bucket_count=*/1);
       }));
   ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

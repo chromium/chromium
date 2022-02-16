@@ -205,6 +205,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.ClientSafeBrowsingReport.RequestHasToken"
+    enum="BooleanSent" expires_after="2022-08-08">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether a sent client safe browsing report request contains a
+    GAIA-tied OAuth2 token. This token is sent only for signed-in Enhanced Safe
+    Browsing users.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.CookieAgeHours" units="hours"
     expires_after="2022-07-07">
   <owner>drubery@chromium.org</owner>

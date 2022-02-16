@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -147,6 +148,9 @@ void PingManager::ReportThreatDetailsOnGotAccessToken(
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
                                                   access_token);
   }
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.ClientSafeBrowsingReport.RequestHasToken",
+      !access_token.empty());
 
   auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kTrafficAnnotation);

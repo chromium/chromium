@@ -155,6 +155,7 @@ void ChromePingManagerTest::RunReportThreatDetailsTest(
     bool is_remove_cookies_feature_enabled,
     bool expect_access_token,
     bool expect_cookies_removed) {
+  base::HistogramTester histogram_tester;
   SetUpFeatureList(is_csbrr_token_feature_enabled,
                    is_remove_cookies_feature_enabled);
   raw_ptr<TestingProfile> profile =
@@ -179,6 +180,10 @@ void ChromePingManagerTest::RunReportThreatDetailsTest(
                   expect_cookies_removed
                       ? network::mojom::CredentialsMode::kOmit
                       : network::mojom::CredentialsMode::kInclude);
+        histogram_tester.ExpectUniqueSample(
+            "SafeBrowsing.ClientSafeBrowsingReport.RequestHasToken",
+            /*sample=*/expect_access_token,
+            /*expected_bucket_count=*/1);
       }));
   ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

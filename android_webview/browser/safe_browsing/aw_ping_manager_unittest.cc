@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -47,6 +48,7 @@ class AwPingManagerTest : public testing::Test {
 
 void AwPingManagerTest::RunReportThreatDetailsTest(
     bool is_remove_cookies_feature_enabled) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   if (is_remove_cookies_feature_enabled) {
     scoped_feature_list.InitAndEnableFeature(
@@ -66,6 +68,10 @@ void AwPingManagerTest::RunReportThreatDetailsTest(
         // Cookies should be attached when token is empty.
         EXPECT_EQ(request.credentials_mode,
                   network::mojom::CredentialsMode::kInclude);
+        histogram_tester.ExpectUniqueSample(
+            "SafeBrowsing.ClientSafeBrowsingReport.RequestHasToken",
+            /*sample=*/false,
+            /*expected_bucket_count=*/1);
       }));
   auto ref_counted_url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
