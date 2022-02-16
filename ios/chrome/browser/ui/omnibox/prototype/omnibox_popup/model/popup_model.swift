@@ -7,9 +7,14 @@ import Foundation
 @objcMembers class PopupModel: NSObject, ObservableObject {
   @Published var matches: [PopupMatch]
   var buttonHandler: () -> Void
+  var trailingButtonHandler: (PopupMatch) -> Void
 
-  init(matches: [PopupMatch], buttonHandler: @escaping () -> Void) {
+  init(
+    matches: [PopupMatch], buttonHandler: @escaping () -> Void,
+    trailingButtonHandler: @escaping (PopupMatch) -> Void
+  ) {
     self.matches = matches
     self.buttonHandler = buttonHandler
+    self.trailingButtonHandler = trailingButtonHandler
   }
 }

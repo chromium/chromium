@@ -24,9 +24,12 @@
 - (PopupModel*)createModel {
   __weak __typeof(self) weakSelf = self;
   PopupModel* model = [[PopupModel alloc] initWithMatches:PopupMatch.previews
-                                            buttonHandler:^{
-                                              [weakSelf addMatches];
-                                            }];
+      buttonHandler:^{
+        [weakSelf addMatches];
+      }
+      trailingButtonHandler:^(PopupMatch* match) {
+        NSLog(@"Pressed trailing button: %@", match.title);
+      }];
   return model;
 }
 
