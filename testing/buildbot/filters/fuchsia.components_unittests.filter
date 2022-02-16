@@ -11,9 +11,7 @@
 -FilesystemProxyTest.DeleteFile*
 -FilesystemProxyTest.OpenFileAppend*
 -FilesystemProxyTest.OpenFileWrite*
--HistoryBackendDBTest.*
 -LevelDBSiteDataStoreTest.DatabaseOpeningFailure
--OfflinePageMetadataStoreTest.*
 -ProfilingJsonExporterTest.MemoryMaps
 -SslCastSocketTest.TestConnectEndToEndWithRealSSL
 -UIDevToolsServerTest.ConnectionToViewsServer

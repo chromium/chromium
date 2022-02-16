@@ -30,7 +30,6 @@ struct VfsFile {
   sqlite3_file* wrapped_file;
 #if BUILDFLAG(IS_FUCHSIA)
   std::string file_name;
-  int lock_level;
 #endif
 };
 

@@ -50,14 +50,15 @@ sqlite3_file* GetWrappedFile(sqlite3_file* wrapper_file) {
   return AsVfsFile(wrapper_file)->wrapped_file;
 }
 
-int Close(sqlite3_file* sqlite_file)
-{
-  VfsFile* file = AsVfsFile(sqlite_file);
-
+int Close(sqlite3_file* sqlite_file) {
 #if BUILDFLAG(IS_FUCHSIA)
-  FuchsiaVfsUnlock(sqlite_file, SQLITE_LOCK_NONE);
+  // Other platforms automatically unlock when the file descriptor is closed,
+  // but the fuchsia virtual implementation doesn't have that so it needs an
+  // explicit unlock on close.
+  Unlock(sqlite_file, SQLITE_LOCK_NONE);
 #endif
 
+  VfsFile* file = AsVfsFile(sqlite_file);
   int r = file->wrapped_file->pMethods->xClose(file->wrapped_file);
   sqlite3_free(file->wrapped_file);
 
@@ -120,6 +121,7 @@ int CheckReservedLock(sqlite3_file* sqlite_file, int* result)
 }
 
 #endif  // !BUILDFLAG(IS_FUCHSIA)
+// Else these functions are imported via vfs_wrapper_fuchsia.h.
 
 int FileControl(sqlite3_file* sqlite_file, int op, void* arg)
 {
@@ -234,89 +236,70 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
 
 #if BUILDFLAG(IS_FUCHSIA)
   file->file_name = file_name;
-  file->lock_level = SQLITE_LOCK_NONE;
 #endif
 
   if (wrapped_file->pMethods->iVersion == 1) {
     static const sqlite3_io_methods io_methods = {
-      1,
-      Close,
-      Read,
-      Write,
-      Truncate,
-      Sync,
-      FileSize,
-#if !BUILDFLAG(IS_FUCHSIA)
-      Lock,
-      Unlock,
-      CheckReservedLock,
-#else
-      FuchsiaVfsLock,
-      FuchsiaVfsUnlock,
-      FuchsiaVfsCheckReservedLock,
-#endif
-      FileControl,
-      SectorSize,
-      DeviceCharacteristics,
+        1,
+        Close,
+        Read,
+        Write,
+        Truncate,
+        Sync,
+        FileSize,
+        Lock,
+        Unlock,
+        CheckReservedLock,
+        FileControl,
+        SectorSize,
+        DeviceCharacteristics,
     };
     file->methods = &io_methods;
   } else if (wrapped_file->pMethods->iVersion == 2) {
     static const sqlite3_io_methods io_methods = {
-      2,
-      Close,
-      Read,
-      Write,
-      Truncate,
-      Sync,
-      FileSize,
-#if !BUILDFLAG(IS_FUCHSIA)
-      Lock,
-      Unlock,
-      CheckReservedLock,
-#else
-      FuchsiaVfsLock,
-      FuchsiaVfsUnlock,
-      FuchsiaVfsCheckReservedLock,
-#endif
-      FileControl,
-      SectorSize,
-      DeviceCharacteristics,
-      // Methods above are valid for version 1.
-      ShmMap,
-      ShmLock,
-      ShmBarrier,
-      ShmUnmap,
+        2,
+        Close,
+        Read,
+        Write,
+        Truncate,
+        Sync,
+        FileSize,
+        Lock,
+        Unlock,
+        CheckReservedLock,
+        FileControl,
+        SectorSize,
+        DeviceCharacteristics,
+        // Methods above are valid for version 1.
+        ShmMap,
+        ShmLock,
+        ShmBarrier,
+        ShmUnmap,
     };
     file->methods = &io_methods;
   } else {
     static const sqlite3_io_methods io_methods = {
-      3,
-      Close,
-      Read,
-      Write,
-      Truncate,
-      Sync,
-      FileSize,
-#if !BUILDFLAG(IS_FUCHSIA)
-      Lock,
-      Unlock,
-      CheckReservedLock,
-#else
-      FuchsiaVfsLock,
-      FuchsiaVfsUnlock,
-      FuchsiaVfsCheckReservedLock,
-#endif
-      FileControl,
-      SectorSize,
-      DeviceCharacteristics,
-      // Methods above are valid for version 1.
-      ShmMap,
-      ShmLock,
-      ShmBarrier,
-      ShmUnmap,
-      // Methods above are valid for version 2.
-      Fetch,
-      Unfetch,
+        3,
+        Close,
+        Read,
+        Write,
+        Truncate,
+        Sync,
+        FileSize,
+        Lock,
+        Unlock,
+        CheckReservedLock,
+        FileControl,
+        SectorSize,
+        DeviceCharacteristics,
+        // Methods above are valid for version 1.
+        ShmMap,
+        ShmLock,
+        ShmBarrier,
+        ShmUnmap,
+        // Methods above are valid for version 2.
+        Fetch,
+        Unfetch,
     };
     file->methods = &io_methods;
   }
