@@ -2488,7 +2488,6 @@ crbug.com/1050754 external/wpt/html/canvas/element/manual/imagebitmap/createImag
 crbug.com/1050754 external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-colorManaged-convertToBlob-roundtrip.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-colorspace-arguments.html [ Failure ]
-crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-createImageBitmap-e_srgb.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-createPutGetImageData-colorManaged.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-draw-high-bit-depth-images.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-drawImage-e_srgb.html [ Failure ]

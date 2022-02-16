@@ -4728,7 +4728,6 @@ crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/canvas-blending-color-over-grad
 crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/canvas-blending-color-over-image.html [ Skip ]
 crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/canvas-blending-fill-style.html [ Skip ]
 crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/canvas-blending-global-alpha.html [ Skip ]
-crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-color.html [ Skip ]
 crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-gradient.html [ Skip ]
 crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-image.html [ Skip ]
 # This is timing out on non-windows platforms, marked as skip on all platforms.
@@ -6377,8 +6376,6 @@ crbug.com/1204498 [ Linux ] virtual/scroll-unification/fast/events/hit-test-cach
 crbug.com/1205184 [ Mac11 ] external/wpt/IndexedDB/interleaved-cursors-large.html [ Pass Skip Timeout ]
 
 # Sheriff 2021-05-03
-crbug.com/1205133 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-color.html [ Pass Timeout ]
-crbug.com/1205133 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-color.html [ Pass Timeout ]
 crbug.com/1205012 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Skip Timeout ]
 crbug.com/1093041 fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Failure Pass ]
 crbug.com/1093041 virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Failure Pass Skip Timeout ]
