@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -90,7 +91,7 @@ class TestElementManagerImpl : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   base::TestComponentContextForProcess test_context_;
-  std::optional<base::CommandLine> received_command_line_;
+  absl::optional<base::CommandLine> received_command_line_;
   ElementManagerImpl element_manager_;
   int browser_count_ = 0;
 };
@@ -101,7 +102,7 @@ TEST_F(TestElementManagerImpl, TestCorrectSpec) {
 
   auto element_manager = GetElementManagerPtr();
   base::RunLoop run_loop;
-  std::optional<fuchsia::element::Manager_ProposeElement_Result>
+  absl::optional<fuchsia::element::Manager_ProposeElement_Result>
       received_result;
   element_manager->ProposeElement(
       std::move(spec), {},
@@ -121,7 +122,7 @@ TEST_F(TestElementManagerImpl, TestIncorrectSpec) {
 
   auto element_manager = GetElementManagerPtr();
   base::RunLoop run_loop;
-  std::optional<fuchsia::element::Manager_ProposeElement_Result>
+  absl::optional<fuchsia::element::Manager_ProposeElement_Result>
       received_result;
   element_manager->ProposeElement(
       std::move(spec), {},

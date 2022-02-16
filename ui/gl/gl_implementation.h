@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/native_library.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_export.h"
@@ -159,8 +160,8 @@ GL_EXPORT void SetSoftwareWebGLCommandLineSwitches(
     base::CommandLine* command_line);
 
 // Return requested GL implementation by checking commandline. If there isn't
-// gl related argument, std::nullopt is returned.
-GL_EXPORT std::optional<GLImplementationParts>
+// gl related argument, nullopt is returned.
+GL_EXPORT absl::optional<GLImplementationParts>
 GetRequestedGLImplementationFromCommandLine(
     const base::CommandLine* command_line,
     bool* fallback_to_software_gl);

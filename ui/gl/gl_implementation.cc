@@ -320,7 +320,7 @@ void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line) {
                                   kANGLEImplementationSwiftShaderForWebGLName);
 }
 
-std::optional<GLImplementationParts>
+absl::optional<GLImplementationParts>
 GetRequestedGLImplementationFromCommandLine(
     const base::CommandLine* command_line,
     bool* fallback_to_software_gl) {
@@ -331,7 +331,7 @@ GetRequestedGLImplementationFromCommandLine(
 
   if (!command_line->HasSwitch(switches::kUseGL) &&
       !command_line->HasSwitch(switches::kUseANGLE)) {
-    return std::nullopt;
+    return absl::nullopt;
   }
 
   std::string gl_name = command_line->GetSwitchValueASCII(switches::kUseGL);
@@ -346,7 +346,7 @@ GetRequestedGLImplementationFromCommandLine(
 
   if (gl_name == "any") {
     *fallback_to_software_gl = true;
-    return std::nullopt;
+    return absl::nullopt;
   }
 
   if ((gl_name == kGLImplementationSwiftShaderName) ||

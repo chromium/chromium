@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ash {
@@ -68,13 +69,13 @@ void RecordTimeToDismiss(base::TimeDelta delta) {
                           delta);
 }
 
-std::optional<int> GetTimeFirstAcceptedSuggestion(Profile* profile) {
+absl::optional<int> GetTimeFirstAcceptedSuggestion(Profile* profile) {
   DictionaryPrefUpdate update(profile->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
   auto value = update->FindIntKey(kMultiWordFirstAcceptTimeDays);
   if (value.has_value())
     return value.value();
-  return std::nullopt;
+  return absl::nullopt;
 }
 
 void SetTimeFirstAcceptedSuggestion(Profile* profile) {

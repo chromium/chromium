@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_switches.h"
 #include "skia/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/gl/buildflags.h"
@@ -294,7 +295,7 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
       gl::PassthroughCommandDecoderSupported();
 
   bool fallback_to_software = false;
-  std::optional<gl::GLImplementationParts> implementation =
+  absl::optional<gl::GLImplementationParts> implementation =
       gl::GetRequestedGLImplementationFromCommandLine(command_line,
                                                       &fallback_to_software);
 

@@ -33,6 +33,7 @@
 #include "gpu/config/gpu_switching.h"
 #include "gpu/config/gpu_util.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/buildflags.h"
@@ -258,7 +259,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     // path.
     gl::GLImplementationParts impl = gl::GetGLImplementationParts();
     bool fallback_to_software_gl = false;
-    std::optional<gl::GLImplementationParts> requested_impl =
+    absl::optional<gl::GLImplementationParts> requested_impl =
         gl::GetRequestedGLImplementationFromCommandLine(
             command_line, &fallback_to_software_gl);
     if (gl::IsSoftwareGLImplementation(impl) &&

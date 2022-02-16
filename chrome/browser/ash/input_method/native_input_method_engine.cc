@@ -811,7 +811,7 @@ void NativeInputMethodEngine::ImeObserver::OnTouch(
 
 void NativeInputMethodEngine::ImeObserver::OnBlur(const std::string& engine_id,
                                                   int context_id) {
-  text_client_ = std::nullopt;
+  text_client_ = absl::nullopt;
 
   if (assistive_suggester_->IsAssistiveFeatureEnabled())
     assistive_suggester_->OnBlur();

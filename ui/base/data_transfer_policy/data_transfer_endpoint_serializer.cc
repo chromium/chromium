@@ -64,7 +64,7 @@ std::string EndpointTypeToString(EndpointType type) {
   }
 }
 
-std::optional<EndpointType> EndpointStringToType(
+absl::optional<EndpointType> EndpointStringToType(
     const std::string& endpoint_string) {
   static constexpr auto kEndpointStringToTypeMap =
       base::MakeFixedFlatMap<base::StringPiece, ui::EndpointType>({

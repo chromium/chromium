@@ -44,6 +44,7 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/vulkan/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_implementation.h"
@@ -508,7 +509,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   bool use_swift_shader = false;
 
   bool fallback_to_software_gl = false;
-  std::optional<gl::GLImplementationParts> requested_impl =
+  absl::optional<gl::GLImplementationParts> requested_impl =
       gl::GetRequestedGLImplementationFromCommandLine(command_line,
                                                       &fallback_to_software_gl);
   if (requested_impl) {

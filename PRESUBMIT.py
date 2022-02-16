@@ -689,6 +689,14 @@ _BANNED_CPP_FUNCTIONS = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     (
+      r'/\bstd::optional\b',
+      (
+        'std::optional is banned. Use absl::optional instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    (
       r'/\b#include <chrono>\b',
       (
         '<chrono> overlaps with Time APIs in base. Keep using',

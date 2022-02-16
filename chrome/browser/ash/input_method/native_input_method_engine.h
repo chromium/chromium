@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/character_composer.h"
 
 namespace ash {
@@ -249,7 +250,7 @@ class NativeInputMethodEngine
 
     SurroundingText last_surrounding_text_;
 
-    std::optional<TextClient> text_client_;
+    absl::optional<TextClient> text_client_;
 
     // |use_ime_service| should always be |true| in prod code, and may only be
     // |false| in browser tests that need to avoid connecting to the Mojo IME
