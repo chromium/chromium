@@ -50,9 +50,12 @@ TEST_P(MetronomeLikeTaskQueueTest, PostTaskRunsPriorToTick) {
   auto* task_queue = provider_->TaskQueue();
 
   MockCallback callback;
+  EXPECT_FALSE(callback.was_called());
   task_queue->PostTask(callback.ToQueuedTask());
 
-  EXPECT_FALSE(callback.was_called());
+  // The task environment uses multiple threads so it's possible for the
+  // callback to be invoked as soon as we call PostTask(), but by advancing time
+  // we ensure the task has had time to run.
   task_environment_.FastForwardBy(base::Nanoseconds(1));
   EXPECT_TRUE(callback.was_called());
 }
