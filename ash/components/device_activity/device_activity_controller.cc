@@ -113,8 +113,10 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
   // Default |full_hardware_class| to kHardwareClassKeyNotFound if retrieval
   // from machine statistics fails.
   std::string full_hardware_class = kHardwareClassKeyNotFound;
-  statistics_provider_->GetMachineStatistic(chromeos::system::kHardwareClassKey,
-                                            &full_hardware_class);
+
+  // TODO(hirthanan): Uncomment these lines after crbug/1289722 has launched.
+  // statistics_provider_->GetMachineStatistic(
+  //     chromeos::system::kHardwareClassKey, &full_hardware_class);
 
   if (trigger == Trigger::kNetwork) {
     da_client_network_ = std::make_unique<DeviceActivityClient>(
