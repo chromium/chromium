@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_result.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -13,6 +14,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace app_list {
@@ -45,6 +47,21 @@ TEST_F(KeyboardShortcutResultTest, CalculateRelevance) {
       KeyboardShortcutResult::CalculateRelevance(query_tokenized, target);
 
   EXPECT_GT(relevance, 0.5);
+}
+
+// Smoke test to ensure that our assumptions about the format of each keyboard
+// shortcut result hold true.
+TEST_F(KeyboardShortcutResultTest, MakeEveryResult) {
+  // A DCHECK inside a KSV metadata utility function relies on device lists
+  // being complete.
+  ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
+
+  for (const auto& item :
+       keyboard_shortcut_viewer::GetKeyboardShortcutItemList()) {
+    KeyboardShortcutResult result(
+        /*profile=*/nullptr, KeyboardShortcutData(item), /*relevance=*/0.1);
+  }
+  SUCCEED();
 }
 
 TEST_F(KeyboardShortcutResultTest,

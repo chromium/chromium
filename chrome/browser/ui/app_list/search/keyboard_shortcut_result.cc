@@ -104,7 +104,7 @@ TextVector KeyboardShortcutResult::CreateTextVectorFromTemplateString(
     const std::vector<std::u16string>& replacement_strings,
     const std::vector<KeyboardCode>& shortcut_key_codes) {
   // Placeholders ($i) in the template string should have values in [1, 9].
-  DCHECK_LT(replacement_strings.size(), 9U);
+  DCHECK_LE(replacement_strings.size(), 9U);
   DCHECK_EQ(replacement_strings.size(), shortcut_key_codes.size());
 
   auto pieces = base::SplitString(template_string, u"$", base::KEEP_WHITESPACE,
