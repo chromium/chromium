@@ -29,6 +29,8 @@ class PhotosHandler : public photos::mojom::PhotosHandler {
   void ShouldShowSoftOptOutButton(
       ShouldShowSoftOptOutButtonCallback callback) override;
   void SoftOptOut() override;
+  void GetOptInTitleText(std::vector<photos::mojom::MemoryPtr> memories,
+                         GetOptInTitleTextCallback callback) override;
 
  private:
   mojo::Receiver<photos::mojom::PhotosHandler> handler_;

@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
@@ -22,6 +23,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
+#include "ui/base/l10n/l10n_util.h"
 
 class PhotosServiceTest : public testing::Test {
  public:
@@ -535,6 +537,26 @@ TEST_F(PhotosServiceTest, OptInShown) {
   EXPECT_TRUE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
 }
 
+TEST_F(PhotosServiceTest, DefaultOptInCardTitleReturned) {
+  std::vector<photos::mojom::MemoryPtr> memory_list;
+
+  auto recent_highlight = photos::mojom::Memory::New();
+  recent_highlight->title = "Recent Highlights";
+  memory_list.push_back(std::move(recent_highlight));
+
+  auto n_years_ago = photos::mojom::Memory::New();
+  n_years_ago->title = "6 Years Ago";
+  memory_list.push_back(std::move(n_years_ago));
+
+  auto mojo_memory = photos::mojom::Memory::New();
+  mojo_memory->title = "Trip to India";
+  memory_list.push_back(std::move(mojo_memory));
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF8(IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_TITLE),
+      service_->GetOptInTitleText(std::move(memory_list)));
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that the pref is cleared on signout.
 // ChromeOS does not support signout.
@@ -686,4 +708,100 @@ TEST_F(PhotosServiceModulesRedesignedTest, IgnoresDismiss) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(passed_data);
+}
+
+class PhotosServicePersonalizedOptInEnabledTest : public PhotosServiceTest {
+ public:
+  PhotosServicePersonalizedOptInEnabledTest() {
+    features_.InitAndEnableFeature(
+        ntp_features::kNtpPhotosModulePersonalizedOptInCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(PhotosServicePersonalizedOptInEnabledTest, showsPersonalizedText) {
+  std::vector<photos::mojom::MemoryPtr> memory_list;
+
+  // RecentHighlights memory should be ignored.
+  auto recent_highlight = photos::mojom::Memory::New();
+  recent_highlight->title = "Recent Highlights";
+  memory_list.push_back(std::move(recent_highlight));
+
+  // N years ago memory should be ignored.
+  auto n_years_ago = photos::mojom::Memory::New();
+  n_years_ago->title = "6 Years Ago";
+  memory_list.push_back(std::move(n_years_ago));
+
+  auto mojo_memory = photos::mojom::Memory::New();
+  mojo_memory->title = "Trip to India";
+  memory_list.push_back(std::move(mojo_memory));
+
+  std::string expected_string = "See \"Trip to India\" and other memories here";
+  EXPECT_EQ(expected_string,
+            service_->GetOptInTitleText(std::move(memory_list)));
+}
+
+TEST_F(PhotosServicePersonalizedOptInEnabledTest, IgnorelengthyTitles) {
+  std::vector<photos::mojom::MemoryPtr> memory_list;
+
+  // Memory with length > 20 - should be ignored.
+  auto memory_with_long_title = photos::mojom::Memory::New();
+  memory_with_long_title->title =
+      "Look how fast they grow up blah blah blah blah";
+  memory_list.push_back(std::move(memory_with_long_title));
+
+  auto mojo_memory = photos::mojom::Memory::New();
+  mojo_memory->title = "Trip to India";
+  memory_list.push_back(std::move(mojo_memory));
+
+  std::string expected_string = "See \"Trip to India\" and other memories here";
+  EXPECT_EQ(expected_string,
+            service_->GetOptInTitleText(std::move(memory_list)));
+}
+
+TEST_F(PhotosServicePersonalizedOptInEnabledTest,
+       showsRHTitleWhenNoEligibleTitleFound) {
+  std::vector<photos::mojom::MemoryPtr> memory_list;
+
+  auto recent_highlight = photos::mojom::Memory::New();
+  recent_highlight->title = "Recent Highlights";
+  memory_list.push_back(std::move(recent_highlight));
+
+  // N years ago memory should be ignored.
+  auto n_years_ago = photos::mojom::Memory::New();
+  n_years_ago->title = "6 Years Ago";
+  memory_list.push_back(std::move(n_years_ago));
+
+  // Memory with length > 20 - should be ignored.
+  auto memory_with_long_title = photos::mojom::Memory::New();
+  memory_with_long_title->title = "Look how fast they grow up blah blah blah";
+  memory_list.push_back(std::move(memory_with_long_title));
+
+  std::string expected_string = l10n_util::GetStringUTF8(
+      IDS_NTP_MODULES_PHOTOS_MEMORIES_RH_WELCOME_TITLE);
+  EXPECT_EQ(expected_string,
+            service_->GetOptInTitleText(std::move(memory_list)));
+}
+
+TEST_F(PhotosServicePersonalizedOptInEnabledTest,
+       showsDefaultTitleWhenNoEligibleTitleFoundAndRHAbsent) {
+  std::vector<photos::mojom::MemoryPtr> memory_list;
+
+  // N years ago memory should be ignored.
+  auto n_years_ago = photos::mojom::Memory::New();
+  n_years_ago->title = "6 Years Ago";
+  memory_list.push_back(std::move(n_years_ago));
+
+  // Memory with length > 20 - should be ignored.
+  auto memory_with_long_title = photos::mojom::Memory::New();
+  memory_with_long_title->title =
+      "Look how fast they grow up and blah blah blah blah";
+  memory_list.push_back(std::move(memory_with_long_title));
+
+  std::string expected_string =
+      l10n_util::GetStringUTF8(IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_TITLE);
+  EXPECT_EQ(expected_string,
+            service_->GetOptInTitleText(std::move(memory_list)));
 }

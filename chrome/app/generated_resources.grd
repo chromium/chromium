@@ -6218,6 +6218,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_TITLE" desc="Title of the opt-in UI for Google Photos in the new tab page.">
         See your memories here
       </message>
+      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_PERSONALIZED_WELCOME_TITLE_TEMPLATE"
+        desc="Personalized title of the opt-in UI for Google Photos in the new tab page.">
+        See "<ph name="PERSONALIZED_MEMORY_TITLE">$1<ex>Recent Highlights</ex></ph>" and other memories here
+      </message>
+      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_RH_WELCOME_TITLE"
+        desc="Title of the opt-in UI for Google Photos in the new tab page emphasizing on recent highlights.">
+        See "Recent Highlights" and other memories here
+      </message>
       <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_TEXT" desc="Text for the opt-in UI for Google Photos in the new tab page.">
         Start exploring your memories from Google Photos, whenever you’re signed in.
       </message>

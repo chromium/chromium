@@ -45,6 +45,7 @@ extern const base::Feature kNtpDummyModules;
 #endif
 extern const base::Feature kNtpPhotosModule;
 extern const base::Feature kNtpPhotosModuleSoftOptOut;
+extern const base::Feature kNtpPhotosModulePersonalizedOptInCard;
 extern const base::Feature kNtpSafeBrowsingModule;
 extern const base::Feature kNtpModulesDragAndDrop;
 

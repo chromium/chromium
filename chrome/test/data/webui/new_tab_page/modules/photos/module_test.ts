@@ -46,12 +46,16 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     assertEquals(0, metrics.count('NewTabPage.Photos.ModuleShown', false));
     module.dispatchEvent(new Event('detect-impression'));
@@ -76,10 +80,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     // Assert.
     assertFalse(!!module);
@@ -107,12 +115,16 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     // Act.
     ($$(module, 'ntp-module-header')!
@@ -144,12 +156,16 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     // Act.
     const whenFired = eventToPromise('dismiss-module', module);
@@ -192,12 +208,16 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     // Act.
     const whenFired = eventToPromise('disable-module', module);
@@ -228,12 +248,16 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     // Assert.
     assertTrue(!!$$(module, '#exploreCard'));
@@ -271,12 +295,16 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     // Assert.
     const items = module.shadowRoot!.querySelectorAll('#memories > .memory');
@@ -298,12 +326,16 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     assertEquals(0, metrics.count('NewTabPage.Photos.ModuleShown', true));
     module.dispatchEvent(new Event('detect-impression'));
@@ -343,12 +375,16 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     assertEquals(0, metrics.count('NewTabPage.Photos.ModuleShown', true));
     module.dispatchEvent(new Event('detect-impression'));
@@ -388,12 +424,16 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     // Act.
     const whenFired = eventToPromise('usage', module);
@@ -422,6 +462,9 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
         handler.setResultFor(
             'shouldShowSoftOptOutButton',
             Promise.resolve({showSoftOptOutButton: true}));
+        handler.setResultFor(
+            'getOptInTitleText',
+            Promise.resolve({optInTitleText: 'See your memories here'}));
 
         const module =
             await photosDescriptor.initialize(0) as PhotosModuleElement;
@@ -430,6 +473,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
         await handler.whenCalled('getMemories');
         await handler.whenCalled('shouldShowOptInScreen');
         await handler.whenCalled('shouldShowSoftOptOutButton');
+        await handler.whenCalled('getOptInTitleText');
 
         // Assert.
         assertTrue(isVisible($$(module, '#softOptOutButton')));
@@ -450,12 +494,16 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: true}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     assertEquals(0, metrics.count('NewTabPage.Photos.ModuleShown', true));
     module.dispatchEvent(new Event('detect-impression'));
@@ -485,10 +533,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     handler.setResultFor(
         'shouldShowSoftOptOutButton',
         Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
     const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
     await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
 
     // Assert.
     assertFalse(!!module);

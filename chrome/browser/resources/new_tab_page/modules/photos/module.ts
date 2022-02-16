@@ -64,6 +64,7 @@ export class PhotosModuleElement extends I18nMixin
       },
 
       showSoftOptOutButton: Boolean,
+      optInTitleText: String,
 
       showExploreMore_:
           {type: Boolean, computed: 'computeShowExploreMore_(memories)'},
@@ -76,6 +77,7 @@ export class PhotosModuleElement extends I18nMixin
   memories: Memory[];
   showOptInScreen: boolean;
   showSoftOptOutButton: boolean;
+  optInTitleText: string;
   private showExploreMore_: boolean;
   private headerChipText_: string;
 
@@ -176,19 +178,29 @@ export class PhotosModuleElement extends I18nMixin
 customElements.define(PhotosModuleElement.is, PhotosModuleElement);
 
 async function createPhotosElement(): Promise<PhotosModuleElement|null> {
+  const numMemories: number = 3;
   const {memories} = await PhotosProxy.getHandler().getMemories();
   const {showOptInScreen} =
       await PhotosProxy.getHandler().shouldShowOptInScreen();
   const {showSoftOptOutButton} =
       await PhotosProxy.getHandler().shouldShowSoftOptOutButton();
+  // TODO(crbug/129770): Construct a new mojo API which returns both memories
+  // and title.
+  const {optInTitleText} =
+      await PhotosProxy
+          .getHandler()
+          // Get custom title based on the user's memories which will be
+          // displayed.
+          .getOptInTitleText(memories.slice(0, numMemories));
   if (memories.length === 0) {
     return null;
   }
   const element = new PhotosModuleElement();
   element.showOptInScreen = showOptInScreen;
   element.showSoftOptOutButton = showSoftOptOutButton;
+  element.optInTitleText = optInTitleText;
   // We show only the first 3 at most.
-  element.memories = memories.slice(0, 3);
+  element.memories = memories.slice(0, numMemories);
   return element;
 }
 

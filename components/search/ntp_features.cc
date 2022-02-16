@@ -118,6 +118,11 @@ const base::Feature kNtpPhotosModuleSoftOptOut(
     "NtpPhotosModuleSoftOptOut",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, A personalized message will be shown in the Photos opt-in card.
+const base::Feature kNtpPhotosModulePersonalizedOptInCard(
+    "NtpPhotosPersonalizedOptInCard",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, SafeBrowsing module will be shown to a target user.
 const base::Feature kNtpSafeBrowsingModule{"NtpSafeBrowsingModule",
                                            base::FEATURE_DISABLED_BY_DEFAULT};

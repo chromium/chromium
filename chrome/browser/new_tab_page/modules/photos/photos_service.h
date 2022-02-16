@@ -81,6 +81,8 @@ class PhotosService : public KeyedService,
   void SoftOptOut();
   // Returns if the user soft opted out.
   bool IsModuleSoftOptedOut();
+  // Returns the string which should be shown as the opt-in card title.
+  std::string GetOptInTitleText(std::vector<photos::mojom::MemoryPtr> memories);
 
  private:
   void OnTokenReceived(GoogleServiceAuthError error,
