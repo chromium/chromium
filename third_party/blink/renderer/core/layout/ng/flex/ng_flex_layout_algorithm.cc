@@ -38,6 +38,21 @@
 
 namespace blink {
 
+namespace {
+
+bool ContainsNonWhitespace(const LayoutBox* box) {
+  const LayoutObject* next = box;
+  while ((next = next->NextInPreOrder(box))) {
+    if (const auto* text = DynamicTo<LayoutText>(next)) {
+      if (!text->GetText().ContainsOnlyWhitespaceOrEmpty())
+        return true;
+    }
+  }
+  return false;
+}
+
+}  // anonymous namespace
+
 NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params,
     DevtoolsFlexInfo* layout_info_for_devtools)
@@ -1472,6 +1487,12 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
   if (container_builder_.Baseline() != child_baseline) {
     UseCounter::Count(Node().GetDocument(),
                       WebFeature::kWrongBaselineOfMultiLineButton);
+    String text = Node().GetDOMNode()->textContent();
+    if (ContainsNonWhitespace(Node().GetLayoutBox())) {
+      UseCounter::Count(
+          Node().GetDocument(),
+          WebFeature::kWrongBaselineOfMultiLineButtonWithNonSpace);
+    }
   }
 }
 
