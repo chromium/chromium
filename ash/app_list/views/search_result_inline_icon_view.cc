@@ -25,12 +25,11 @@ namespace ash {
 
 namespace {
 
-// These values are placeholders until final spec is available.
 constexpr int kBorderThickness = 1;
 constexpr float kButtonCornerRadius = 6.0f;
 constexpr int kLeftRightMargin = 6;
 constexpr gfx::Insets kBubbleBorder(0, kLeftRightMargin, 0, kLeftRightMargin);
-constexpr int kIconSize = 12;
+constexpr int kIconSize = 14;
 constexpr int kLabelMinEdgeLength = 20;
 
 }  // namespace
