@@ -199,8 +199,8 @@ class TestableCalendarModel : public CalendarModel {
 
     // Receive the results of the fetch.  Check whether we've set an error code
     // for start_of_month.
-    OnCalendarEventsFetched(GetFetchErrorCode(start_of_month),
-                            std::move(fetched_events));
+    OnEventsFetched(start_of_month, GetFetchErrorCode(start_of_month),
+                    fetched_events.get());
   }
 
  private:

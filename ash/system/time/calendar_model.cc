@@ -6,15 +6,18 @@
 
 #include <stdlib.h>
 #include <cstddef>
+#include <memory>
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/shell.h"
 #include "ash/system/time/calendar_utils.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace {
 
@@ -50,6 +53,54 @@ constexpr int kMaxNumberOfMonthsCached =
 
 namespace ash {
 
+// Represents a single fetch of a given month's calendar events.
+class CalendarEventFetch {
+ public:
+  // A callback invoked when a fetch of calendar events is complete.
+  using FetchCompleteCallback =
+      base::OnceCallback<void(base::Time start_of_month,
+                              google_apis::ApiErrorCode error,
+                              const google_apis::calendar::EventList* events)>;
+
+  // Fetch begins immediately on construction.
+  CalendarEventFetch(base::Time start_of_month,
+                     FetchCompleteCallback complete_callback)
+      : start_of_month_(start_of_month),
+        complete_callback_(std::move(complete_callback)) {
+    CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
+    DCHECK(client);
+
+    const base::Time start_of_next_month =
+        calendar_utils::GetStartOfNextMonthUTC(start_of_month);
+    client->GetEventList(base::BindOnce(&CalendarEventFetch::OnResultReceived,
+                                        weak_factory_.GetWeakPtr()),
+                         start_of_month, start_of_next_month);
+  }
+  CalendarEventFetch(const CalendarEventFetch& other) = delete;
+  CalendarEventFetch& operator=(const CalendarEventFetch& other) = delete;
+  virtual ~CalendarEventFetch() = default;
+
+ private:
+  // Callback invoked when results of a fetch are available.
+  void OnResultReceived(
+      google_apis::ApiErrorCode error,
+      std::unique_ptr<google_apis::calendar::EventList> events) {
+    // IMPORTANT: 'this' is NOT safe to use after complete_callback_ has been
+    // executed, as the last thing it does is destroy its
+    // std::unique_ptr<CalendarEventFetch> to this object.
+    std::move(complete_callback_).Run(start_of_month_, error, events.get());
+  }
+
+  // Start of the month whose events we're fetching.
+  base::Time start_of_month_;
+
+  // Callback invoked when the fetch is complete.
+  FetchCompleteCallback complete_callback_;
+
+  base::WeakPtrFactory<CalendarEventFetch> weak_factory_{this};
+};
+
+// The calendar model itself.
 CalendarModel::CalendarModel(const std::set<base::Time>& non_prunable_months)
     : non_prunable_months_(non_prunable_months) {
   FetchEventsForBaseMonths();
@@ -94,22 +145,21 @@ void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
 
   // TODO https://crbug.com/1258002 Don't do any of this if the user is guest,
   // the screen is locked, or we're in OOBE or any other non-logged-in mode.
-  if (!IsMonthAlreadyFetched(start_of_month)) {
-    // We can't know whether the request will succeed (callback receives actual
-    // events), fail (callback receives an error code), or not receive any
-    // response (no events for that month), so the month is declared "fetched"
-    // when we make the request for its events.
-    MarkMonthAsFetched(start_of_month);
 
-    // TODO https://crbug.com/1258179 the params passed to GetEventList() need
-    // to be stored until the fetch request is complete in case of a failure, so
-    // we know exactly which request failed.
-    base::Time start_of_next_month =
-        calendar_utils::GetStartOfNextMonthUTC(start_of_month);
-    client->GetEventList(base::BindOnce(&CalendarModel::OnCalendarEventsFetched,
-                                        weak_factory_.GetWeakPtr()),
-                         start_of_month, start_of_next_month);
-  }
+  // No need to fetch.
+  if (IsMonthAlreadyFetched(start_of_month))
+    return;
+
+  // Erase any outstanding fetch for this month.
+  pending_fetches_.erase(start_of_month);
+
+  // Construct a unique_ptr for the fetch request, and transfer ownership to
+  // pending_fetches_.
+  pending_fetches_.emplace(
+      start_of_month,
+      std::make_unique<CalendarEventFetch>(
+          start_of_month, base::BindRepeating(&CalendarModel::OnEventsFetched,
+                                              base::Unretained(this))));
 }
 
 void CalendarModel::MarkMonthAsFetched(base::Time start_of_month) {
@@ -176,11 +226,10 @@ int CalendarModel::EventsNumberOfDay(base::Time day,
   return event_number;
 }
 
-void CalendarModel::OnCalendarEventsFetched(
+void CalendarModel::OnEventsFetched(
+    base::Time start_of_month,
     google_apis::ApiErrorCode error,
-    std::unique_ptr<google_apis::calendar::EventList> events) {
-  // TODO https://crbug.com/1258179 we need to handle the other error codes we
-  // can possibly receive, and know for certain which fetch request failed.
+    const google_apis::calendar::EventList* events) {
   base::UmaHistogramSparse("Ash.Calendar.FetchEvents.Result", error);
   if (error != google_apis::HTTP_SUCCESS) {
     LOG(ERROR) << __FUNCTION__ << " Event fetch received error: " << error;
@@ -191,11 +240,17 @@ void CalendarModel::OnCalendarEventsFetched(
   PruneEventCache();
 
   // Store the incoming events.
-  InsertEvents(events.get());
+  InsertEvents(events);
 
   // Notify observers.
   for (auto& observer : observers_)
-    observer.OnEventsFetched(events.get());
+    observer.OnEventsFetched(events);
+
+  // Month has officially been fetched.
+  MarkMonthAsFetched(start_of_month);
+
+  // Request is no longer outstanding, so it can be destroyed.
+  pending_fetches_.erase(start_of_month);
 }
 
 void CalendarModel::InsertEvent(

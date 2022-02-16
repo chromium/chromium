@@ -19,6 +19,8 @@
 
 namespace ash {
 
+class CalendarEventFetch;
+
 // A simple std::list of calendar events, used to store a single day's events
 // in EventMap. Not to be confused with google_apis::calendar::EventList,
 // which represents the return value of a query from the GoogleCalendar API.
@@ -94,12 +96,6 @@ class ASH_EXPORT CalendarModel {
   // Free up months of events as needed to keep us within storage limits.
   void PruneEventCache();
 
-  // Invoked when events requested via FetchEvents() are ready, or if the
-  // request failed.
-  void OnCalendarEventsFetched(
-      google_apis::ApiErrorCode error,
-      std::unique_ptr<google_apis::calendar::EventList> events);
-
   // Returns true if we've already fetched events for |start_of_month| since the
   // calendar was opened, false otherwise.
   bool IsMonthAlreadyFetched(base::Time start_of_month) const;
@@ -122,6 +118,11 @@ class ASH_EXPORT CalendarModel {
   int EventsNumberOfDayInternal(base::Time day,
                                 SingleDayEventList* events) const;
 
+  // Actual callback invoked when an event fetch is complete.
+  void OnEventsFetched(base::Time start_of_month,
+                       google_apis::ApiErrorCode error,
+                       const google_apis::calendar::EventList* events);
+
   // Internal storage for fetched events, with each fetched month having a map
   // of days to events.
   MonthToEventsMap event_months_;
@@ -135,6 +136,9 @@ class ASH_EXPORT CalendarModel {
 
   // The set of months exempt from pruning that have been fetched.
   std::set<base::Time> non_prunable_months_fetched_;
+
+  // All fetch requests that are still in-progress.
+  std::map<base::Time, std::unique_ptr<CalendarEventFetch>> pending_fetches_;
 
   base::ObserverList<Observer> observers_;
 
