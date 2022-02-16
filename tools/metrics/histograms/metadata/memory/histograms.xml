@@ -125,14 +125,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HeapProfiling.SamplingInterval" units="bytes"
+<histogram name="HeapProfiling.SamplingIntervalKB" units="KB"
     expires_after="2022-12-02">
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
-    The mean number of bytes between samples used by the SamplingHeapProfiler.
-    Emitted each time the profiler is started, which happens at Chrome launch
-    when HeapProfiling.InProcess.Enabled is true.
+    The mean number of kilobytes between samples used by the
+    SamplingHeapProfiler. Emitted each time the profiler is started, which
+    happens at Chrome launch when HeapProfiling.InProcess.Enabled is true.
   </summary>
 </histogram>
 

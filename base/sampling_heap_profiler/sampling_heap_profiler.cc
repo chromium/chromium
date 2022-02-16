@@ -162,8 +162,14 @@ uint32_t SamplingHeapProfiler::Start() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   auto* poisson_allocation_sampler = PoissonAllocationSampler::Get();
-  base::UmaHistogramCounts10M("HeapProfiling.SamplingInterval",
-                              poisson_allocation_sampler->SamplingInterval());
+
+  // Sampling interval is in bytes. Record it in KB since the extra precision
+  // isn't needed for metrics and HeapProfilerController can set the interval to
+  // center around 10M bytes, which would overflow the buckets.
+  base::UmaHistogramCounts10M(
+      "HeapProfiling.SamplingIntervalKB",
+      poisson_allocation_sampler->SamplingInterval() / 1024);
+
   AutoLock lock(start_stop_mutex_);
   if (!running_sessions_++)
     poisson_allocation_sampler->AddSamplesObserver(this);
