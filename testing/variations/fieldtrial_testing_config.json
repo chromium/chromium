@@ -1614,8 +1614,9 @@
             ],
             "experiments": [
                 {
-                    "name": "CandidateB",
+                    "name": "CandidateB_HideStartWithSRP",
                     "params": {
+                        "hide_start_when_last_visited_tab_is_srp": "true",
                         "hide_switch_when_no_incognito_tabs": "true",
                         "open_ntp_instead_of_start": "true",
                         "show_last_active_tab_only": "true",
@@ -1633,108 +1634,16 @@
                     ]
                 },
                 {
-                    "name": "CandidateBwithEnhancedProtectionPromoCard",
+                    "name": "CandidateB",
                     "params": {
-                        "MaxSigninPromoImpressions": "5",
                         "hide_switch_when_no_incognito_tabs": "true",
                         "open_ntp_instead_of_start": "true",
                         "show_last_active_tab_only": "true",
+                        "signin_promo_NTP_count_limit": "5",
                         "signin_promo_NTP_reset_after_hours": "336",
                         "signin_promo_NTP_since_first_time_shown_limit_hours": "672",
                         "start_surface_variation": "single",
                         "support_accessibility": "true",
-                        "tab_count_button_on_start_surface": "true",
-                        "tab_switcher_on_return_time_ms": "3600000"
-                    },
-                    "enable_features": [
-                        "EnhancedProtectionPromoCard",
-                        "StartSurfaceAndroid",
-                        "TabSwitcherOnReturn"
-                    ]
-                },
-                {
-                    "name": "CandidateB_CacheDisabled",
-                    "params": {
-                        "hide_switch_when_no_incognito_tabs": "true",
-                        "image_memory_cache_size_percentage": "0",
-                        "open_ntp_instead_of_start": "true",
-                        "show_last_active_tab_only": "true",
-                        "signin_promo_NTP_reset_after_hours": "336",
-                        "signin_promo_NTP_since_first_time_shown_limit_hours": "672",
-                        "start_surface_variation": "single",
-                        "support_accessibility": "true",
-                        "tab_count_button_on_start_surface": "true",
-                        "tab_switcher_on_return_time_ms": "3600000"
-                    },
-                    "enable_features": [
-                        "FeedImageMemoryCacheSizePercentage",
-                        "StartSurfaceAndroid",
-                        "TabSwitcherOnReturn"
-                    ]
-                },
-                {
-                    "name": "CandidateB_ClearCacheReduced",
-                    "params": {
-                        "hide_switch_when_no_incognito_tabs": "true",
-                        "image_memory_cache_size_percentage": "50",
-                        "open_ntp_instead_of_start": "true",
-                        "show_last_active_tab_only": "true",
-                        "signin_promo_NTP_reset_after_hours": "336",
-                        "signin_promo_NTP_since_first_time_shown_limit_hours": "672",
-                        "start_surface_variation": "single",
-                        "support_accessibility": "true",
-                        "tab_count_button_on_start_surface": "true",
-                        "tab_switcher_on_return_time_ms": "3600000"
-                    },
-                    "enable_features": [
-                        "FeedClearImageMemoryCache",
-                        "FeedImageMemoryCacheSizePercentage",
-                        "StartSurfaceAndroid",
-                        "TabSwitcherOnReturn"
-                    ]
-                },
-                {
-                    "name": "CandidateA",
-                    "params": {
-                        "hide_switch_when_no_incognito_tabs": "true",
-                        "show_last_active_tab_only": "true",
-                        "start_surface_variation": "single",
-                        "support_accessibility": "false",
-                        "tab_count_button_on_start_surface": "true",
-                        "tab_switcher_on_return_time_ms": "3600000"
-                    },
-                    "enable_features": [
-                        "StartSurfaceAndroid",
-                        "TabSwitcherOnReturn"
-                    ]
-                },
-                {
-                    "name": "FinaleV2",
-                    "params": {
-                        "hide_switch_when_no_incognito_tabs": "true",
-                        "home_button_on_grid_tab_switcher": "true",
-                        "new_home_surface_from_home_button": "hide_tab_switcher_only",
-                        "omnibox_focused_on_new_tab": "true",
-                        "show_last_active_tab_only": "true",
-                        "start_surface_variation": "single",
-                        "support_accessibility": "false",
-                        "tab_count_button_on_start_surface": "true",
-                        "tab_switcher_on_return_time_ms": "3600000"
-                    },
-                    "enable_features": [
-                        "StartSurfaceAndroid",
-                        "TabSwitcherOnReturn"
-                    ]
-                },
-                {
-                    "name": "Finale",
-                    "params": {
-                        "hide_switch_when_no_incognito_tabs": "true",
-                        "home_button_on_grid_tab_switcher": "true",
-                        "new_home_surface_from_home_button": "hide_tab_switcher_only",
-                        "omnibox_focused_on_new_tab": "true",
-                        "start_surface_variation": "single",
-                        "support_accessibility": "false",
                         "tab_count_button_on_start_surface": "true",
                         "tab_switcher_on_return_time_ms": "3600000"
                     },
