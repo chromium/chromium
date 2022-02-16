@@ -1,8 +1,5 @@
 This is a testharness.js-based test.
 NOTRUN Eligibility (in-flight fetch): Header received before BFCache and body received when in BFCache Should be BFCached but actually wasn't
 NOTRUN Eligibility (in-flight fetch): Header received before BFCache and body received after BFCache Should be BFCached but actually wasn't
-PASS Eligibility (in-flight fetch): Header and body received when in BFCache
-PASS Eligibility (in-flight fetch): Header received when in BFCache and body received after BFCache
-PASS Eligibility (in-flight fetch): Header and body received after BFCache
 Harness: the test ran to completion.
 

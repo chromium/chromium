@@ -10,16 +10,9 @@
 // Check whether the page is BFCached when there are in-flight network requests
 // at the time of navigation.
 
-// Successful fetch completion with different header/body timing.
+// Successful fetch completion with header received before BFCached.
 runTest(sameOriginUrl + '?delayBeforeBody=2000', false, true,
   'Header received before BFCache and body received when in BFCache');
 runTest(sameOriginUrl + '?delayBeforeBody=3500', false, true,
   'Header received before BFCache and body received after BFCache');
-runTest(sameOriginUrl + '?delayBeforeHeader=2000', false, true,
-  'Header and body received when in BFCache');
-runTest(sameOriginUrl + '?delayBeforeHeader=2000&delayBeforeBody=1500',
-  false, true,
-  'Header received when in BFCache and body received after BFCache');
-runTest(sameOriginUrl + '?delayBeforeHeader=3500', false, true,
-  'Header and body received after BFCache');
 </script>
