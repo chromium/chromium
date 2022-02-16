@@ -89,7 +89,6 @@ class CONTENT_EXPORT AggregatableReport {
   // processing origin.
   struct CONTENT_EXPORT AggregationServicePayload {
     AggregationServicePayload(
-        url::Origin origin,
         std::vector<uint8_t> payload,
         std::string key_id,
         absl::optional<std::vector<uint8_t>> debug_cleartext_payload);
@@ -99,8 +98,6 @@ class CONTENT_EXPORT AggregatableReport {
     AggregationServicePayload(AggregationServicePayload&& other);
     AggregationServicePayload& operator=(AggregationServicePayload&& other);
     ~AggregationServicePayload();
-
-    url::Origin origin;
 
     // This payload is constructed using the data in the
     // AggregationServicePayloadContents and then encrypted with one of
@@ -178,12 +175,10 @@ class CONTENT_EXPORT AggregatableReport {
   //   version]\",\"report_id\":\"[UUID]\"}",
   //   "aggregation_service_payloads": [
   //     {
-  //       "origin": "https://helper1.example",
   //       "payload": "<base64 encoded encrypted data>",
   //       "key_id": "<string identifying public key used>"
   //     },
   //     {
-  //       "origin": "https://helper2.example",
   //       "payload": "<base64 encoded encrypted data>",
   //       "key_id": "<string identifying public key used>"
   //     }

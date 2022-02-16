@@ -67,13 +67,6 @@ testing::AssertionResult AggregatableReportsEqual(
     const AggregationServicePayload& expected_payload = expected.payloads()[i];
     const AggregationServicePayload& actual_payload = actual.payloads()[i];
 
-    if (expected_payload.origin != actual_payload.origin) {
-      return testing::AssertionFailure()
-             << "Expected origin " << expected_payload.origin
-             << " at payload index " << i
-             << ", actual: " << actual_payload.origin;
-    }
-
     if (expected_payload.payload != actual_payload.payload) {
       return testing::AssertionFailure()
              << "Expected payloads at payload index " << i << " to match";
@@ -203,7 +196,7 @@ AggregatableReportRequest CloneReportRequest(
 AggregatableReport CloneAggregatableReport(const AggregatableReport& report) {
   std::vector<AggregationServicePayload> payloads;
   for (const AggregationServicePayload& payload : report.payloads()) {
-    payloads.emplace_back(payload.origin, payload.payload, payload.key_id,
+    payloads.emplace_back(payload.payload, payload.key_id,
                           payload.debug_cleartext_payload);
   }
 

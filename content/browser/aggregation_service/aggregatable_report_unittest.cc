@@ -96,7 +96,7 @@ void VerifyReport(
     const absl::optional<AggregatableReport>& report,
     const AggregationServicePayloadContents& expected_payload_contents,
     const AggregatableReportSharedInfo& expected_shared_info,
-    const std::vector<url::Origin>& expected_processing_origins,
+    size_t expected_num_processing_origins,
     const std::vector<aggregation_service::TestHpkeKey>& encryption_keys) {
   ASSERT_TRUE(report.has_value());
 
@@ -106,11 +106,10 @@ void VerifyReport(
 
   const std::vector<AggregatableReport::AggregationServicePayload>& payloads =
       report->payloads();
-  ASSERT_EQ(payloads.size(), expected_processing_origins.size());
-  ASSERT_EQ(encryption_keys.size(), expected_processing_origins.size());
+  ASSERT_EQ(payloads.size(), expected_num_processing_origins);
+  ASSERT_EQ(encryption_keys.size(), expected_num_processing_origins);
 
-  for (size_t i = 0; i < expected_processing_origins.size(); ++i) {
-    EXPECT_EQ(payloads[i].origin, expected_processing_origins[i]);
+  for (size_t i = 0; i < expected_num_processing_origins; ++i) {
     EXPECT_EQ(payloads[i].key_id, encryption_keys[i].public_key.id);
 
     std::vector<uint8_t> decrypted_payload = DecryptPayloadWithHpke(
@@ -192,8 +191,7 @@ TEST(AggregatableReportTest, ValidTwoPartyRequest_ValidReportReturned) {
   AggregationServicePayloadContents expected_payload_contents =
       request.payload_contents();
   AggregatableReportSharedInfo expected_shared_info = request.shared_info();
-  std::vector<url::Origin> expected_processing_origins =
-      request.processing_origins();
+  size_t expected_num_processing_origins = request.processing_origins().size();
   std::vector<aggregation_service::TestHpkeKey> hpke_keys = {
       aggregation_service::GenerateKey("id123"),
       aggregation_service::GenerateKey("456abc")};
@@ -203,9 +201,9 @@ TEST(AggregatableReportTest, ValidTwoPartyRequest_ValidReportReturned) {
           std::move(request),
           {hpke_keys[0].public_key, hpke_keys[1].public_key});
 
-  ASSERT_NO_FATAL_FAILURE(VerifyReport(report, expected_payload_contents,
-                                       expected_shared_info,
-                                       expected_processing_origins, hpke_keys));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyReport(report, expected_payload_contents, expected_shared_info,
+                   expected_num_processing_origins, hpke_keys));
 }
 
 TEST(AggregatableReportTest, ValidSingleServerRequest_ValidReportReturned) {
@@ -215,8 +213,7 @@ TEST(AggregatableReportTest, ValidSingleServerRequest_ValidReportReturned) {
   AggregationServicePayloadContents expected_payload_contents =
       request.payload_contents();
   AggregatableReportSharedInfo expected_shared_info = request.shared_info();
-  std::vector<url::Origin> expected_processing_origins =
-      request.processing_origins();
+  size_t expected_num_processing_origins = request.processing_origins().size();
 
   aggregation_service::TestHpkeKey hpke_key =
       aggregation_service::GenerateKey("id123");
@@ -227,7 +224,7 @@ TEST(AggregatableReportTest, ValidSingleServerRequest_ValidReportReturned) {
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
-                   expected_processing_origins, {hpke_key}));
+                   expected_num_processing_origins, {hpke_key}));
 }
 
 TEST(AggregatableReportTest, ValidDebugModeEnabledRequest_ValidReportReturned) {
@@ -244,8 +241,7 @@ TEST(AggregatableReportTest, ValidDebugModeEnabledRequest_ValidReportReturned) {
 
   AggregationServicePayloadContents expected_payload_contents =
       request->payload_contents();
-  std::vector<url::Origin> expected_processing_origins =
-      request->processing_origins();
+  size_t expected_num_processing_origins = request->processing_origins().size();
 
   std::vector<aggregation_service::TestHpkeKey> hpke_keys = {
       aggregation_service::GenerateKey("id123"),
@@ -256,9 +252,9 @@ TEST(AggregatableReportTest, ValidDebugModeEnabledRequest_ValidReportReturned) {
           std::move(request.value()),
           {hpke_keys[0].public_key, hpke_keys[1].public_key});
 
-  ASSERT_NO_FATAL_FAILURE(VerifyReport(report, expected_payload_contents,
-                                       expected_shared_info,
-                                       expected_processing_origins, hpke_keys));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyReport(report, expected_payload_contents, expected_shared_info,
+                   expected_num_processing_origins, hpke_keys));
 }
 
 TEST(AggregatableReportTest,
@@ -317,8 +313,7 @@ TEST(AggregatableReportTest, RequestCreatedWithInvalidReportId_Failed) {
 
 TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
-  payloads.emplace_back(url::Origin::Create(GURL("https://a.example")),
-                        /*payload=*/kABCD1234AsBytes,
+  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
                         /*debug_cleartext_payload=*/absl::nullopt);
 
@@ -331,7 +326,7 @@ TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
   const char kExpectedJsonString[] =
       R"({)"
       R"("aggregation_service_payloads":[)"
-      R"({"key_id":"key_1","origin":"https://a.example","payload":"ABCD1234"})"
+      R"({"key_id":"key_1","payload":"ABCD1234"})"
       R"(],)"
       R"("shared_info":"example_shared_info")"
       R"(})";
@@ -340,12 +335,10 @@ TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
 
 TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
-  payloads.emplace_back(url::Origin::Create(GURL("https://a.example")),
-                        /*payload=*/kABCD1234AsBytes,
+  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
                         /*debug_cleartext_payload=*/absl::nullopt);
-  payloads.emplace_back(url::Origin::Create(GURL("https://b.example")),
-                        /*payload=*/kEFGH5678AsBytes,
+  payloads.emplace_back(/*payload=*/kEFGH5678AsBytes,
                         /*key_id=*/"key_2",
                         /*debug_cleartext_payload=*/absl::nullopt);
 
@@ -358,8 +351,8 @@ TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
   const char kExpectedJsonString[] =
       R"({)"
       R"("aggregation_service_payloads":[)"
-      R"({"key_id":"key_1","origin":"https://a.example","payload":"ABCD1234"},)"
-      R"({"key_id":"key_2","origin":"https://b.example","payload":"EFGH5678"})"
+      R"({"key_id":"key_1","payload":"ABCD1234"},)"
+      R"({"key_id":"key_2","payload":"EFGH5678"})"
       R"(],)"
       R"("shared_info":"example_shared_info")"
       R"(})";
@@ -368,8 +361,7 @@ TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
 
 TEST(AggregatableReportTest, GetAsJsonDebugCleartextPayload_ValidJsonReturned) {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
-  payloads.emplace_back(url::Origin::Create(GURL("https://a.example")),
-                        /*payload=*/kABCD1234AsBytes,
+  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
                         /*debug_cleartext_payload=*/kEFGH5678AsBytes);
 
@@ -383,7 +375,6 @@ TEST(AggregatableReportTest, GetAsJsonDebugCleartextPayload_ValidJsonReturned) {
                                      R"("aggregation_service_payloads":[{)"
                                      R"("debug_cleartext_payload":"EFGH5678",)"
                                      R"("key_id":"key_1",)"
-                                     R"("origin":"https://a.example",)"
                                      R"("payload":"ABCD1234")"
                                      R"(}],)"
                                      R"("shared_info":"example_shared_info")"

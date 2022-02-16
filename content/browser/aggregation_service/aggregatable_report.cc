@@ -354,12 +354,10 @@ AggregatableReportRequest& AggregatableReportRequest::operator=(
 AggregatableReportRequest::~AggregatableReportRequest() = default;
 
 AggregatableReport::AggregationServicePayload::AggregationServicePayload(
-    url::Origin origin,
     std::vector<uint8_t> payload,
     std::string key_id,
     absl::optional<std::vector<uint8_t>> debug_cleartext_payload)
-    : origin(std::move(origin)),
-      payload(std::move(payload)),
+    : payload(std::move(payload)),
       key_id(std::move(key_id)),
       debug_cleartext_payload(std::move(debug_cleartext_payload)) {}
 
@@ -474,10 +472,9 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
       debug_cleartext_payload = std::move(unencrypted_payloads[i]);
     }
 
-    encrypted_payloads.emplace_back(
-        std::move(report_request.processing_origins_[i]),
-        std::move(encrypted_payload), std::move(public_keys[i]).id,
-        std::move(debug_cleartext_payload));
+    encrypted_payloads.emplace_back(std::move(encrypted_payload),
+                                    std::move(public_keys[i]).id,
+                                    std::move(debug_cleartext_payload));
   }
 
   return AggregatableReport(std::move(encrypted_payloads),
@@ -492,7 +489,6 @@ base::Value::DictStorage AggregatableReport::GetAsJson() const {
   base::Value payloads_list_value(base::Value::Type::LIST);
   for (const AggregationServicePayload& payload : payloads_) {
     base::Value payload_dict_value(base::Value::Type::DICTIONARY);
-    payload_dict_value.SetStringKey("origin", payload.origin.Serialize());
     payload_dict_value.SetStringKey("payload",
                                     base::Base64Encode(payload.payload));
     payload_dict_value.SetStringKey("key_id", payload.key_id);
