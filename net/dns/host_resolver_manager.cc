@@ -9,6 +9,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <set>
 #include <string>
 #include <tuple>
@@ -225,25 +226,6 @@ const base::FeatureParam<base::TaskPriority> priority_mode{
 
 //-----------------------------------------------------------------------------
 
-// Returns true if |addresses| contains only IPv4 loopback addresses.
-bool IsAllIPv4Loopback(const AddressList& addresses) {
-  for (unsigned i = 0; i < addresses.size(); ++i) {
-    const IPAddress& address = addresses[i].address();
-    switch (addresses[i].GetFamily()) {
-      case ADDRESS_FAMILY_IPV4:
-        if (address.bytes()[0] != 127)
-          return false;
-        break;
-      case ADDRESS_FAMILY_IPV6:
-        return false;
-      default:
-        NOTREACHED();
-        return false;
-    }
-  }
-  return true;
-}
-
 // Returns true if it can determine that only loopback addresses are configured.
 // i.e. if only 127.0.0.1 and ::1 are routable.
 // Also returns false if it cannot determine this.
@@ -257,7 +239,7 @@ bool HaveOnlyLoopbackAddresses() {
 #elif BUILDFLAG(IS_ANDROID)
   return android::HaveOnlyLoopbackAddresses();
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  struct ifaddrs* interface_addr = NULL;
+  struct ifaddrs* interface_addr = nullptr;
   int rv = getifaddrs(&interface_addr);
   if (rv != 0) {
     DVPLOG(1) << "getifaddrs() failed";
@@ -265,7 +247,7 @@ bool HaveOnlyLoopbackAddresses() {
   }
 
   bool result = true;
-  for (struct ifaddrs* interface = interface_addr; interface != NULL;
+  for (struct ifaddrs* interface = interface_addr; interface != nullptr;
        interface = interface->ifa_next) {
     if (!(IFF_UP & interface->ifa_flags))
       continue;
@@ -462,8 +444,6 @@ PrioritizedDispatcher::Limits GetDispatcherLimits(
   }
 
   std::vector<size_t> parsed(group_parts.size());
-  size_t total_reserved_slots = 0;
-
   for (size_t i = 0; i < group_parts.size(); ++i) {
     if (!base::StringToSizeT(group_parts[i], &parsed[i])) {
       NOTREACHED();
@@ -471,11 +451,11 @@ PrioritizedDispatcher::Limits GetDispatcherLimits(
     }
   }
 
-  size_t total_jobs = parsed.back();
+  const size_t total_jobs = parsed.back();
   parsed.pop_back();
-  for (size_t i = 0; i < parsed.size(); ++i) {
-    total_reserved_slots += parsed[i];
-  }
+
+  const size_t total_reserved_slots =
+      std::accumulate(parsed.begin(), parsed.end(), 0u);
 
   // There must be some unreserved slots available for the all priorities.
   if (total_reserved_slots > total_jobs ||
@@ -493,9 +473,7 @@ PrioritizedDispatcher::Limits GetDispatcherLimits(
 class PriorityTracker {
  public:
   explicit PriorityTracker(RequestPriority initial_priority)
-      : highest_priority_(initial_priority), total_count_(0) {
-    memset(counts_, 0, sizeof(counts_));
-  }
+      : highest_priority_(initial_priority) {}
 
   RequestPriority highest_priority() const { return highest_priority_; }
 
@@ -525,8 +503,8 @@ class PriorityTracker {
 
  private:
   RequestPriority highest_priority_;
-  size_t total_count_;
-  size_t counts_[NUM_PRIORITIES];
+  size_t total_count_ = 0;
+  size_t counts_[NUM_PRIORITIES] = {};
 };
 
 base::Value NetLogResults(const HostCache::Entry& results) {
@@ -696,7 +674,6 @@ class HostResolverManager::RequestImpl
         priority_(parameters_.initial_priority),
         job_(nullptr),
         resolver_(std::move(resolver)),
-        complete_(false),
         tick_clock_(tick_clock) {}
 
   RequestImpl(const RequestImpl&) = delete;
@@ -1000,7 +977,7 @@ class HostResolverManager::RequestImpl
   // The user's callback to invoke when the request completes.
   CompletionOnceCallback callback_;
 
-  bool complete_;
+  bool complete_ = false;
   absl::optional<HostCache::Entry> results_;
   absl::optional<HostCache::EntryStaleness> stale_info_;
   absl::optional<AddressList> legacy_address_results_;
@@ -1121,7 +1098,6 @@ class HostResolverManager::ProcTask {
         callback_(std::move(callback)),
         network_task_runner_(base::ThreadTaskRunnerHandle::Get()),
         proc_task_runner_(std::move(proc_task_runner)),
-        attempt_number_(0),
         net_log_(job_net_log),
         tick_clock_(tick_clock),
         network_(network) {
@@ -1302,7 +1278,7 @@ class HostResolverManager::ProcTask {
   // Keeps track of the number of attempts we have made so far to resolve the
   // host. Whenever we start an attempt to resolve the host, we increase this
   // number.
-  uint32_t attempt_number_;
+  uint32_t attempt_number_ = 0;
 
   NetLogWithSource net_log_;
 
@@ -1363,7 +1339,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         secure_dns_mode_(secure_dns_mode),
         delegate_(delegate),
         net_log_(job_net_log),
-        num_completed_transactions_(0),
         tick_clock_(tick_clock),
         task_start_time_(tick_clock_->NowTicks()),
         fallback_available_(fallback_available) {
@@ -1982,7 +1957,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                  base::UniquePtrComparator>
       transactions_started_;
   int num_needed_transactions_;
-  int num_completed_transactions_;
+  int num_completed_transactions_ = 0;
 
   // Result from previously completed transactions. Only set if a transaction
   // has completed while others are still in progress.
@@ -2076,13 +2051,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         cache_usage_(cache_usage),
         host_cache_(host_cache),
         tasks_(tasks),
-        job_running_(false),
         priority_tracker_(priority),
         proc_task_runner_(std::move(proc_task_runner)),
-        had_non_speculative_request_(false),
-        num_occupied_job_slots_(0),
-        dispatched_(false),
-        dns_task_error_(OK),
         tick_clock_(tick_clock),
         net_log_(
             NetLogWithSource::Make(source_net_log.net_log(),
@@ -2924,7 +2894,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   std::deque<TaskType> tasks_;
 
   // Whether the job is running.
-  bool job_running_;
+  bool job_running_ = false;
 
   // Tracks the highest priority across |requests_|.
   PriorityTracker priority_tracker_;
@@ -2932,17 +2902,17 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // Task runner used for HostResolverProc.
   scoped_refptr<base::TaskRunner> proc_task_runner_;
 
-  bool had_non_speculative_request_;
+  bool had_non_speculative_request_ = false;
 
   // Number of slots occupied by this Job in |dispatcher_|. Should be 0 when
   // the job is not registered with any dispatcher.
-  int num_occupied_job_slots_;
+  int num_occupied_job_slots_ = 0;
 
   // True once this Job has been sent to `resolver_->dispatcher_`.
-  bool dispatched_;
+  bool dispatched_ = false;
 
   // Result of DnsTask.
-  int dns_task_error_;
+  int dns_task_error_ = OK;
 
   raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks start_time_;
@@ -3589,7 +3559,11 @@ absl::optional<HostCache::Entry> HostResolverManager::ServeFromHosts(
 
   // If got only loopback addresses and the family was restricted, resolve
   // again, without restrictions. See SystemHostResolverCall for rationale.
-  if (default_family_due_to_no_ipv6 && IsAllIPv4Loopback(addresses)) {
+  if (default_family_due_to_no_ipv6 &&
+      base::ranges::all_of(addresses, &IPAddress::IsIPv4,
+                           &IPEndPoint::address) &&
+      base::ranges::all_of(addresses, &IPAddress::IsLoopback,
+                           &IPEndPoint::address)) {
     query_types.Put(DnsQueryType::AAAA);
     return ServeFromHosts(hostname, query_types, false, tasks);
   }
@@ -3749,16 +3723,13 @@ void HostResolverManager::PushDnsTasks(bool proc_task_allowed,
       break;
   }
 
-  bool added_dns_task = false;
-  for (auto it = out_tasks->begin(); it != out_tasks->end(); ++it) {
-    if (*it == TaskType::DNS || *it == TaskType::SECURE_DNS) {
-      added_dns_task = true;
-      break;
-    }
-  }
+  constexpr TaskType kWantTasks[] = {TaskType::DNS, TaskType::SECURE_DNS};
+  const bool no_dns_or_secure_tasks =
+      base::ranges::find_first_of(*out_tasks, kWantTasks) == out_tasks->end();
   // The system resolver can be used as a fallback for a non-existent or
   // failing DnsTask if allowed by the request parameters.
-  if (proc_task_allowed && (!added_dns_task || allow_fallback_to_proctask_))
+  if (proc_task_allowed &&
+      (no_dns_or_secure_tasks || allow_fallback_to_proctask_))
     out_tasks->push_back(TaskType::PROC);
 }
 
