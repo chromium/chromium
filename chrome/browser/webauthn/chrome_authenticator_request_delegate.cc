@@ -443,7 +443,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
   std::vector<AuthenticatorRequestDialogModel::PairedPhone>
       paired_phone_entries;
   base::RepeatingCallback<void(size_t)> contact_phone_callback;
-  if (!cable_extension_provided &&
+  if ((!cable_extension_provided ||
+       base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere)) &&
       base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor)) {
     DCHECK(phone_names_.empty());
     DCHECK(phone_public_keys_.empty());
@@ -481,7 +482,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
   const bool have_paired_phones = !paired_phones.empty();
 
   const bool non_extension_cablev2_enabled =
-      !cable_extension_permitted &&
+      (!cable_extension_permitted ||
+       base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere)) &&
       (have_paired_phones ||
        base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport));
 
