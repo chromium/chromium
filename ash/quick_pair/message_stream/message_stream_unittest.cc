@@ -92,6 +92,14 @@ const std::vector<uint8_t> kBatteryUpdateBytes = {
     /*additional_data=*/0x57,
     0x41,
     0x7F};
+const std::vector<uint8_t> kEnableSilenceModeBytes = {
+    /*mesage_group=*/0x01,
+    /*mesage_code=*/0x01,
+    /*additional_data_length=*/0x00, 0x00};
+const std::vector<uint8_t> kCompanionAppLogBufferFullBytes = {
+    /*mesage_group=*/0x02,
+    /*mesage_code=*/0x01,
+    /*additional_data_length=*/0x00, 0x00};
 const std::string kModelIdString = "AABBCC";
 const std::string kBleAddressString = "AA:BB:CC:DD:EE:FF";
 
@@ -104,6 +112,51 @@ const char kMessageStreamReceiveResultMetric[] =
 const char kMessageStreamReceiveErrorMetric[] =
     "Bluetooth.ChromeOS.FastPair.MessageStream.Receive.ErrorReason";
 
+class FakeQuickPairProcessManager
+    : public ash::quick_pair::QuickPairProcessManager {
+ public:
+  FakeQuickPairProcessManager(
+      base::test::SingleThreadTaskEnvironment* task_environment)
+      : task_enviornment_(task_environment) {
+    data_parser_ = std::make_unique<ash::quick_pair::FastPairDataParser>(
+        fast_pair_data_parser_.InitWithNewPipeAndPassReceiver());
+
+    data_parser_remote_.Bind(std::move(fast_pair_data_parser_),
+                             task_enviornment_->GetMainThreadTaskRunner());
+  }
+
+  ~FakeQuickPairProcessManager() override = default;
+
+  std::unique_ptr<ProcessReference> GetProcessReference(
+      ProcessStoppedCallback on_process_stopped_callback) override {
+    on_process_stopped_callback_ = std::move(on_process_stopped_callback);
+
+    if (process_stopped_) {
+      std::move(on_process_stopped_callback_)
+          .Run(
+              ash::quick_pair::QuickPairProcessManager::ShutdownReason::kCrash);
+    }
+
+    return std::make_unique<
+        ash::quick_pair::QuickPairProcessManagerImpl::ProcessReferenceImpl>(
+        data_parser_remote_, base::DoNothing());
+  }
+
+  void SetProcessStopped(bool process_stopped) {
+    process_stopped_ = process_stopped;
+  }
+
+ private:
+  bool process_stopped_ = false;
+  mojo::SharedRemote<ash::quick_pair::mojom::FastPairDataParser>
+      data_parser_remote_;
+  mojo::PendingRemote<ash::quick_pair::mojom::FastPairDataParser>
+      fast_pair_data_parser_;
+  std::unique_ptr<ash::quick_pair::FastPairDataParser> data_parser_;
+  base::test::SingleThreadTaskEnvironment* task_enviornment_;
+  ProcessStoppedCallback on_process_stopped_callback_;
+};
+
 }  // namespace
 
 namespace ash {
@@ -112,21 +165,11 @@ namespace quick_pair {
 class MessageStreamTest : public testing::Test, public MessageStream::Observer {
  public:
   void SetUp() override {
-    process_manager_ = std::make_unique<MockQuickPairProcessManager>();
+    process_manager_ =
+        std::make_unique<FakeQuickPairProcessManager>(&task_enviornment_);
     quick_pair_process::SetProcessManager(process_manager_.get());
-
-    data_parser_ = std::make_unique<FastPairDataParser>(
-        fast_pair_data_parser_.InitWithNewPipeAndPassReceiver());
-
-    data_parser_remote_.Bind(std::move(fast_pair_data_parser_),
-                             task_enviornment_.GetMainThreadTaskRunner());
-
-    EXPECT_CALL(*mock_process_manager(), GetProcessReference)
-        .WillRepeatedly([&](QuickPairProcessManager::ProcessStoppedCallback) {
-          return std::make_unique<
-              QuickPairProcessManagerImpl::ProcessReferenceImpl>(
-              data_parser_remote_, base::DoNothing());
-        });
+    fake_process_manager_ =
+        static_cast<FakeQuickPairProcessManager*>(process_manager_.get());
 
     message_stream_ =
         std::make_unique<MessageStream>(kTestDeviceAddress, fake_socket_.get());
@@ -229,6 +272,7 @@ class MessageStreamTest : public testing::Test, public MessageStream::Observer {
   mojo::SharedRemote<mojom::FastPairDataParser> data_parser_remote_;
   mojo::PendingRemote<mojom::FastPairDataParser> fast_pair_data_parser_;
   std::unique_ptr<FastPairDataParser> data_parser_;
+  FakeQuickPairProcessManager* fake_process_manager_;
   bool battery_update_ = false;
   uint16_t remaining_battery_time_ = 0;
   bool enable_silence_mode_ = false;
@@ -454,6 +498,32 @@ TEST_F(MessageStreamTest, ReceiveMessages_RingDevice) {
   EXPECT_TRUE(ring_device_);
 }
 
+TEST_F(MessageStreamTest, ReceiveMessages_EnableSilenceMode) {
+  EXPECT_FALSE(enable_silence_mode_);
+  EXPECT_TRUE(message_stream_->messages().empty());
+
+  AddObserver();
+  SetSuccessMessageStreamMessage(kEnableSilenceModeBytes);
+  TriggerReceiveSuccessCallback();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(message_stream_->messages().empty());
+  EXPECT_TRUE(enable_silence_mode_);
+}
+
+TEST_F(MessageStreamTest, ReceiveMessages_CompanionAppLogBuffer) {
+  EXPECT_FALSE(log_buffer_full_);
+  EXPECT_TRUE(message_stream_->messages().empty());
+
+  AddObserver();
+  SetSuccessMessageStreamMessage(kCompanionAppLogBufferFullBytes);
+  TriggerReceiveSuccessCallback();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(message_stream_->messages().empty());
+  EXPECT_TRUE(log_buffer_full_);
+}
+
 TEST_F(MessageStreamTest, ReceiveMessages_Nak) {
   EXPECT_FALSE(acknowledgement_);
   EXPECT_TRUE(message_stream_->messages().empty());
@@ -510,6 +580,16 @@ TEST_F(MessageStreamTest, ReceiveMessages_BufferFull) {
 
   EXPECT_EQ(static_cast<int>(message_stream_->messages().size()),
             kMessageStorageCapacity);
+}
+
+TEST_F(MessageStreamTest, UtilityProcessStopped_RetrySuccess) {
+  EXPECT_TRUE(message_stream_->messages().empty());
+  fake_process_manager_->SetProcessStopped(true);
+  SetSuccessMessageStreamMessage(kModelIdBytes);
+  TriggerReceiveSuccessCallback();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(message_stream_->messages().empty());
 }
 
 }  // namespace quick_pair
