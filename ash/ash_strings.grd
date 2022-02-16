@@ -4439,7 +4439,7 @@ Here are some things you can try to get started.
 
       <!-- Smart Lock strings shown on the lock screen -->
       <message name="IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE" desc="Label for the Smart Lock spinner icon on user's lock screen while Chromebook is looking for paired phone.">
-        To unlock your Chromebook, turn on your phone's Bluetooth
+        To unlock your Chromebook, make sure your phone's Bluetooth is on
       </message>
       <message name="IDS_SMART_LOCK_LABEL_PHONE_LOCKED" desc="Label for the Smart Lock icon on user's lock screen when a phone eligible to unlock the Chromebook is detected, but it's locked and thus not allowed to unlock the Chromebook.">
         To unlock your Chromebook, first unlock your phone
@@ -4475,13 +4475,13 @@ Here are some things you can try to get started.
         Enter password or PIN for more security
       </message>
       <message name="IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER" desc="Label on user's lock screen when a user is successfully authenticated and may click on arrow icon to unlock/use the Chromebook.">
-        Tap or click to enter
+        Unlocked by your phone. Tap or click to enter.
       </message>
       <message name="IDS_AUTH_FACTOR_LABEL_UNLOCKED" desc="Label on user's lock screen when a Chromebook is successfully unlocked.">
         Unlocked
       </message>
       <message name="IDS_AUTH_FACTOR_LABEL_SIGNED_IN" desc="Label on user's login screen when a Chromebook is successfully logged in.">
-        Signed in
+        Signing in...
       </message>
 
       <!-- Launcher: Continue Section -->
