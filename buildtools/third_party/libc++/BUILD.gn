@@ -25,6 +25,8 @@ config("config") {
       "-std=c++17",
     ]
   }
+
+  defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
 }
 
 # Explicitly set version macros to Windows 7 to prevent libc++ from adding a
@@ -145,7 +147,7 @@ target(_libcxx_target_type, "libc++") {
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
 
-  defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
+  defines = []
 
   if (!libcxx_is_shared) {
     if (is_apple && is_clang) {
