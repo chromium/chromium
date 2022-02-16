@@ -1,0 +1,19 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+module history_clusters_internals.mojom;
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page);
+};
+
+// Renderer-side handler for internal page to process the updates from
+// the History Clusters service.
+interface Page {
+  // Notifies the page of a log event from the History Clusters service.
+  OnLogMessageAdded(string message);
+};

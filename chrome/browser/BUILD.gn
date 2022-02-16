@@ -2072,6 +2072,8 @@ static_library("browser") {
     "//components/history/core/common",
     "//components/history/metrics",
     "//components/history_clusters/core",
+    "//components/history_clusters/core:history_clusters_buildflags",
+    "//components/history_clusters/history_clusters_internals/webui",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/invalidation/impl",
