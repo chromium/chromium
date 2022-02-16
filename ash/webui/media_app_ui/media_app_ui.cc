@@ -37,6 +37,8 @@ content::WebUIDataSource* CreateHostDataSource() {
       content::WebUIDataSource::Create(kChromeUIMediaAppHost);
 
   // Add resources from ash_media_app_resources.pak.
+  // TODO(b/218419680): Remove index_dark_light_html when the dark/light flag is
+  // no longer needed.
   if (chromeos::features::IsDarkLightModeEnabled()) {
     source->SetDefaultResource(IDR_MEDIA_APP_INDEX_DARK_LIGHT_HTML);
   } else {

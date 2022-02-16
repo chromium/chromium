@@ -50,6 +50,7 @@ static_library("help_app_ui") {
     "//chromeos/components/local_search_service/public/cpp",
     "//chromeos/components/local_search_service/public/mojom",
     "//chromeos/components/local_search_service/public/mojom:mojom_js",
+    "//chromeos/constants",
     "//chromeos/strings",
     "//chromeos/system",
     "//components/keyed_service/content:content",
@@ -105,6 +106,7 @@ js2gtest("browser_tests_js") {
   deps = [
     ":browser_test_support",
     "//ash/constants",
+    "//chromeos/constants",
   ]
 }
 
