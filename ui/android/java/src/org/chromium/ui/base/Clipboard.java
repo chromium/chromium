@@ -186,7 +186,8 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     }
 
     @CalledByNative
-    private boolean hasCoercedText() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    boolean hasCoercedText() {
         ClipDescription description = mClipboardManager.getPrimaryClipDescription();
         if (description == null) return false;
 
@@ -198,7 +199,8 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         }
 
         return description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
-                || description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML);
+                || description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)
+                || description.hasMimeType(URL_MIME_TYPE);
     }
 
     private boolean hasStyleSpan(Spanned spanned) {
