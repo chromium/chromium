@@ -199,6 +199,63 @@ crbug.com/1176933 [ Linux ] virtual/gpu/fast/canvas/canvas-formattedtext-2.html 
 crbug.com/v8/12227 external/wpt/wasm/jsapi/exception/toString.tentative.any.html [ Failure Pass ]
 crbug.com/v8/12227 external/wpt/wasm/jsapi/exception/toString.tentative.any.worker.html [ Failure Pass ]
 
+# --- Skia roll test suppressions
+
+# TODO(michaelludwig) - crbug.com/1298179 remove after
+# https://skia-review.googlesource.com/c/skia/+/508919 lands and rolls into chromium
+crbug.com/1298179 compositing/culling/filter-occlusion-blur-large.html [ Failure Pass ]
+crbug.com/1298179 compositing/culling/filter-occlusion-blur.html [ Failure Pass ]
+crbug.com/1298179 compositing/masks/mask-with-added-filters.html [ Failure Pass ]
+crbug.com/1298179 compositing/overflow/mask-with-filter.html [ Failure Pass ]
+crbug.com/1298179 compositing/reflections/nested-reflection-animated.html [ Failure Pass ]
+crbug.com/1298179 compositing/reflections/nested-reflection-on-overflow.html [ Failure Pass ]
+crbug.com/1298179 compositing/reflections/nested-reflection-transformed2.html [ Failure Pass ]
+crbug.com/1298179 compositing/reflections/nested-reflection.html [ Failure Pass ]
+crbug.com/1298179 compositing/reflections/reflection-ordering.html [ Failure Pass ]
+crbug.com/1298179 css3/blending/background-blend-mode-multiple-background-layers.html [ Failure Pass ]
+crbug.com/1298179 css3/blending/background-blend-mode-single-layer-no-blending.html [ Failure Pass ]
+crbug.com/1298179 css3/blending/background-blend-mode-svg-color.html [ Failure Pass ]
+crbug.com/1298179 css3/blending/effect-background-blend-mode-stacking.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/backdrop-filter-boundary.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/blur-filter-page-scroll-parents.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/blur-filter-page-scroll-self.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/blur-filter-page-scroll.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/composited-reflected.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/crash-filter-change.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/effect-blur.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/effect-drop-shadow-hw.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/effect-drop-shadow.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/effect-reference-colorspace-hw.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/effect-reference-hw.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/effect-reference-ordering-hw.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/effect-reference-subregion-hw.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/effect-reference-zoom-hw.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/filter-change-repaint-composited.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/filter-change-repaint.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/filter-repaint-blur.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/filter-repaint-child-layers.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/filter-repaint-composited-fallback-crash.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/filter-repaint-composited-fallback.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/filter-repaint-shadow.html [ Failure Pass ]
+crbug.com/1298179 css3/filters/filter-repaint.html [ Failure Pass ]
+crbug.com/1298179 css3/masking/mask-repeat-round-auto1.html [ Failure Pass ]
+crbug.com/1298179 css3/masking/mask-repeat-round-border.html [ Failure Pass ]
+crbug.com/1298179 css3/masking/mask-repeat-round-content.html [ Failure Pass ]
+crbug.com/1298179 css3/masking/mask-repeat-round-padding.html [ Failure Pass ]
+crbug.com/1298179 css3/masking/mask-repeat-space-border.html [ Failure Pass ]
+crbug.com/1298179 images/color-profile-background-image-cross-fade-png.html [ Failure Pass ]
+crbug.com/1298179 images/yuv-decode-eligible/color-profile-layer-filter.html [ Failure Pass ]
+crbug.com/1298179 media/color-profile-video-seek-filter.html [ Failure Pass ]
+crbug.com/1298179 virtual/gpu-rasterization/images/yuv-decode-eligible/color-profile-filter.html [ Failure Pass ]
+crbug.com/1298179 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-filter.html [ Failure Pass ]
+crbug.com/1298179 virtual/scalefactor200/css3/filters/effect-all-on-background-hw.html [ Failure Pass ]
+crbug.com/1298179 virtual/scalefactor200/css3/filters/effect-blur-hw.html [ Failure Pass ]
+crbug.com/1298179 virtual/scalefactor200/css3/filters/effect-brightness-clamping-hw.html [ Failure Pass ]
+crbug.com/1298179 virtual/scalefactor200/css3/filters/effect-combined-hw.html [ Failure Pass ]
+
+# --- END Skia roll test suppresions
+
+
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
 crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]
@@ -413,7 +470,7 @@ crbug.com/936084 external/wpt/css/css-sizing/max-content-input-001.html [ Failur
 crbug.com/849459 fragmentation/repeating-thead-under-repeating-thead.html [ Failure ]
 
 # These fail when device_scale_factor is changed, but only for anti-aliasing:
-crbug.com/968791 [ Mac ] virtual/scalefactor200/css3/filters/effect-blur-hw.html [ Failure Pass ]
+#crbug.com/968791 [ Mac ] virtual/scalefactor200/css3/filters/effect-blur-hw.html [ Failure Pass ]
 crbug.com/968791 virtual/scalefactor200/css3/filters/filterRegions.html [ Failure ]
 
 # These appear to be actually incorrect at device_scale_factor 2.0:
@@ -4686,7 +4743,7 @@ crbug.com/832447 media/controls/controls-page-zoom-out.html [ Failure Pass ]
 crbug.com/849694 [ Mac ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass ]
 
 # Tests currently failing on Windows when run on Swarming
-crbug.com/757165 [ Win ] compositing/culling/filter-occlusion-blur.html [ Skip ]
+#crbug.com/757165 [ Win ] compositing/culling/filter-occlusion-blur.html [ Skip ]
 crbug.com/757165 [ Win ] css3/blending/mix-blend-mode-with-filters.html [ Skip ]
 crbug.com/757165 [ Win ] external/wpt/preload/download-resources.html [ Skip ]
 crbug.com/757165 [ Win ] external/wpt/preload/preload-default-csp.sub.html [ Skip ]
@@ -4950,7 +5007,7 @@ crbug.com/824775 media/controls/video-controls-with-cast-rendering.html [ Failur
 crbug.com/824848 external/wpt/html/semantics/links/following-hyperlinks/activation-behavior.window.html [ Failure Pass ]
 
 # Sheriff 2018-03-26
-crbug.com/825733 [ Win ] media/color-profile-video-seek-filter.html [ Failure Pass Skip Timeout ]
+#crbug.com/825733 [ Win ] media/color-profile-video-seek-filter.html [ Failure Pass Skip Timeout ]
 crbug.com/754986 media/video-transformed.html [ Failure Pass ]
 
 # Sheriff 2018-03-29
@@ -5463,7 +5520,7 @@ crbug.com/1031345 media/controls/overlay-play-button-tap-to-hide.html [ Pass Tim
 # Temporary SkiaRenderer regressions
 crbug.com/1029941 [ Linux ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 crbug.com/1029941 [ Linux ] transforms/3d/point-mapping/3d-point-mapping-deep.html [ Failure ]
-crbug.com/1029941 [ Linux ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-layer-filter.html [ Failure ]
+#crbug.com/1029941 [ Linux ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-layer-filter.html [ Failure ]
 crbug.com/1029941 [ Win ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 
 # Failing document policy tests
@@ -6426,7 +6483,7 @@ crbug.com/1095540 [ Debug Linux ] virtual/compositor-threaded-percent-based-scro
 crbug.com/1208173 [ Mac ] animations/animation-paused-hardware.html [ Failure ]
 crbug.com/1208173 [ Mac ] animations/missing-values-first-keyframe.html [ Failure ]
 crbug.com/1208173 [ Mac ] animations/missing-values-last-keyframe.html [ Failure ]
-crbug.com/1208173 [ Mac ] css3/filters/backdrop-filter-boundary.html [ Failure ]
+#crbug.com/1208173 [ Mac ] css3/filters/backdrop-filter-boundary.html [ Failure ]
 crbug.com/1208173 [ Mac ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
@@ -7589,15 +7646,15 @@ crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/yuv-decode-e
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-filter.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-image-profile-match.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-image.html [ Failure ]
-crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-layer-filter.html [ Failure ]
+#crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-layer-filter.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-layer.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/jpeg-missing-eoi.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/webp-color-profile-lossy.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/webp-no-color-profile-lossy.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-border-image.html [ Failure ]
-crbug.com/1295317 [ Mac11-arm64 ] virtual/gpu-rasterization/images/yuv-decode-eligible/color-profile-filter.html [ Failure ]
-crbug.com/1295317 [ Mac11-arm64 ] virtual/scalefactor200/css3/filters/effect-reference-colorspace-hw.html [ Failure ]
-crbug.com/1295317 [ Mac11-arm64 ] virtual/scalefactor200/css3/filters/effect-reference-hw.html [ Failure ]
+#crbug.com/1295317 [ Mac11-arm64 ] virtual/gpu-rasterization/images/yuv-decode-eligible/color-profile-filter.html [ Failure ]
+#crbug.com/1295317 [ Mac11-arm64 ] virtual/scalefactor200/css3/filters/effect-reference-colorspace-hw.html [ Failure ]
+#crbug.com/1295317 [ Mac11-arm64 ] virtual/scalefactor200/css3/filters/effect-reference-hw.html [ Failure ]
 
 # Sheriff 2022-02-09
 crbug.com/1295711 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-window-resize.html [ Failure Pass ]
