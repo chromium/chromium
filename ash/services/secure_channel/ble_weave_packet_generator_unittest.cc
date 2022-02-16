@@ -11,11 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
-
-namespace weave {
+namespace ash::secure_channel::weave {
 
 class SecureChannelBluetoothLowEnergyWeavePacketGeneratorTest
     : public testing::Test {
@@ -263,8 +259,4 @@ TEST_F(SecureChannelBluetoothLowEnergyWeavePacketGeneratorTest,
   }
 }
 
-}  // namespace weave
-
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel::weave

@@ -23,13 +23,12 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 
-namespace chromeos {
-
-namespace secure_channel {
-
-namespace weave {
+namespace ash::secure_channel::weave {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 typedef BluetoothLowEnergyWeavePacketReceiver::State ReceiverState;
 
@@ -1060,8 +1059,4 @@ BluetoothLowEnergyWeaveClientConnection::WriteRequest::WriteRequest(
 
 BluetoothLowEnergyWeaveClientConnection::WriteRequest::~WriteRequest() {}
 
-}  // namespace weave
-
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel::weave

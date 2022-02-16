@@ -16,11 +16,7 @@
 #include "base/notreached.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
-
-namespace secure_channel {
-
-namespace weave {
+namespace ash::secure_channel::weave {
 
 namespace {
 
@@ -427,8 +423,4 @@ uint16_t BluetoothLowEnergyWeavePacketReceiver::GetConceptualMaxPacketSize() {
   return max_packet_size_;
 }
 
-}  // namespace weave
-
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel::weave

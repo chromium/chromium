@@ -11,11 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
-
-namespace weave {
+namespace ash::secure_channel::weave {
 
 namespace {
 
@@ -38,6 +34,7 @@ const uint8_t kControlRequestHeader = 0x80;
 // ---- 0001 : command = 1 (response)
 // 1000 0001 = 0x81
 const uint8_t kControlResponseHeader = 0x81;
+
 }  // namespace
 
 class SecureChannelBluetoothLowEnergyWeavePacketReceiverTest
@@ -1027,8 +1024,4 @@ TEST_F(SecureChannelBluetoothLowEnergyWeavePacketReceiverTest,
             receiver->GetReceiverError());
 }
 
-}  // namespace weave
-
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel::weave

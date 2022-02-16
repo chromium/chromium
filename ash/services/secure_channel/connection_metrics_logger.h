@@ -41,4 +41,9 @@ void LogLatencyMetric(const std::string& metric_name,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::LogLatencyMetric;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CONNECTION_METRICS_LOGGER_H_

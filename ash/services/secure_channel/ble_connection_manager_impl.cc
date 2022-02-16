@@ -22,11 +22,12 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 std::vector<mojom::ConnectionCreationDetail> CreateConnectionDetails(
     ConnectionRole connection_role) {
@@ -647,6 +648,4 @@ void BleConnectionManagerImpl::RemoveConnectionAttemptTimerMetricsIfNecessary(
   remote_device_id_to_timestamps_map_.erase(remote_device_id);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

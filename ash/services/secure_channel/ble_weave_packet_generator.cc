@@ -17,11 +17,7 @@
 #include <netinet/in.h>
 #endif
 
-namespace chromeos {
-
-namespace secure_channel {
-
-namespace weave {
+namespace ash::secure_channel::weave {
 
 BluetoothLowEnergyWeavePacketGenerator::BluetoothLowEnergyWeavePacketGenerator()
     : max_packet_size_(kDefaultMaxPacketSize), next_packet_counter_(0) {}
@@ -177,8 +173,4 @@ void BluetoothLowEnergyWeavePacketGenerator::SetDataLastBit(Packet* packet) {
   packet->at(0) = packet->at(0) | (1 << 2);
 }
 
-}  // namespace weave
-
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel::weave

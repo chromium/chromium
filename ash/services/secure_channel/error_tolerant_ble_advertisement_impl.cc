@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/services/secure_channel/ble_constants.h"
-#include "ash/services/secure_channel/ble_synchronizer.h"
+#include "ash/services/secure_channel/ble_synchronizer_base.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"

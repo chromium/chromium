@@ -18,6 +18,8 @@
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "ash/services/secure_channel/remote_attribute.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/wire_message.h"
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
@@ -36,11 +38,7 @@ namespace base {
 class TaskRunner;
 }
 
-namespace chromeos {
-
-namespace secure_channel {
-
-namespace weave {
+namespace ash::secure_channel::weave {
 
 // Creates GATT connection on top of the BLE connection and act as a Client.
 // uWeave communication follows the flow:
@@ -160,7 +158,7 @@ class BluetoothLowEnergyWeaveClientConnection
   void OnDidSendMessage(const WireMessage& message, bool success) override;
   void RegisterPayloadFileImpl(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 
@@ -452,10 +450,6 @@ class BluetoothLowEnergyWeaveClientConnection
       weak_ptr_factory_{this};
 };
 
-}  // namespace weave
-
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel::weave
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_WEAVE_CLIENT_CONNECTION_H_

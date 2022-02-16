@@ -16,9 +16,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 BleAdvertiserImpl::ActiveAdvertisementRequest::ActiveAdvertisementRequest(
     DeviceIdPair device_id_pair,
@@ -386,6 +384,4 @@ void BleAdvertiserImpl::AttemptToNotifyFailureToGenerateAdvertisement(
   NotifyFailureToGenerateAdvertisement(device_id_pair);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

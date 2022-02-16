@@ -16,9 +16,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 const char kTestRemoteDeviceId[] = "testRemoteDeviceId";
 const char kTestLocalDeviceId[] = "testLocalDeviceId";
@@ -144,6 +142,4 @@ TEST_F(SecureChannelBleListenerOperationTest, UpdateThenSucceed) {
   CompleteAttemptSuccessfully();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

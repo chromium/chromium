@@ -12,9 +12,7 @@
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Ensures that BLE advertisement registration/unregistration commands and
 // discovery start/stop are not sent too close to each other. Because Bluetooth
@@ -129,8 +127,11 @@ class BleSynchronizerBase {
   std::deque<std::unique_ptr<Command>> command_queue_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::BleSynchronizerBase;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_SYNCHRONIZER_BASE_H_

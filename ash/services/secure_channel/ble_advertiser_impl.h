@@ -11,8 +11,18 @@
 
 #include "ash/services/secure_channel/ble_advertiser.h"
 #include "ash/services/secure_channel/ble_constants.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/ble_synchronizer_base.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/bluetooth_helper.h"
 #include "ash/services/secure_channel/device_id_pair.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/error_tolerant_ble_advertisement.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/shared_resource_scheduler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/timer_factory.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -21,17 +31,9 @@
 
 namespace base {
 class OneShotTimer;
-}  // namespace base
+}
 
-namespace chromeos {
-
-namespace secure_channel {
-
-class BluetoothHelper;
-class BleSynchronizerBase;
-class ErrorTolerantBleAdvertisement;
-class SharedResourceScheduler;
-class TimerFactory;
+namespace ash::secure_channel {
 
 // Concrete BleAdvertiser implementation. Because systems have a limited number
 // of BLE advertisement slots, this class limits the number of concurrent
@@ -172,8 +174,11 @@ class BleAdvertiserImpl : public BleAdvertiser {
   base::WeakPtrFactory<BleAdvertiserImpl> weak_factory_{this};
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::BleAdvertiserImpl;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_ADVERTISER_IMPL_H_

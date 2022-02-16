@@ -10,9 +10,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // static
 BleAdvertisementGenerator* BleAdvertisementGenerator::instance_ = nullptr;
@@ -76,6 +74,4 @@ void BleAdvertisementGenerator::SetEidGeneratorForTesting(
   eid_generator_ = std::move(test_eid_generator);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

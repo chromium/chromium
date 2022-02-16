@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/ble_synchronizer_base.h"
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/error_tolerant_ble_advertisement.h"
 #include "ash/services/secure_channel/foreground_eid_generator.h"
@@ -17,8 +19,6 @@
 namespace chromeos {
 
 namespace secure_channel {
-
-class BleSynchronizerBase;
 
 // Concrete ErrorTolerantBleAdvertisement implementation.
 class ErrorTolerantBleAdvertisementImpl

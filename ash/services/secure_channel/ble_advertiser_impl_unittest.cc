@@ -21,9 +21,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -748,6 +746,4 @@ TEST_F(SecureChannelBleAdvertiserImplTest,
   EXPECT_EQ(0u, GetNumFailedAdvertisementDelegateCallbacks());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

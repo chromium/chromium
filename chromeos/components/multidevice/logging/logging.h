@@ -65,8 +65,9 @@ class ScopedLogMessage {
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
 namespace ash {
 namespace multidevice {
+using ::chromeos::multidevice::ScopedDisableLoggingForTesting;
 using ::chromeos::multidevice::ScopedLogMessage;
-}
+}  // namespace multidevice
 }  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_LOGGING_LOGGING_H_

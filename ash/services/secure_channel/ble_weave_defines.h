@@ -10,11 +10,7 @@
 
 #include <vector>
 
-namespace chromeos {
-
-namespace secure_channel {
-
-namespace weave {
+namespace ash::secure_channel::weave {
 
 enum PacketType { DATA = 0x00, CONTROL = 0x01 };
 
@@ -52,10 +48,6 @@ const uint8_t kByteWeaveVersion = 1;
 const uint8_t kByteSelectMaxPacketSize = 0;
 const uint8_t kEmptyUpperByte = 0;
 
-}  // namespace weave
-
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel::weave
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_WEAVE_DEFINES_H_

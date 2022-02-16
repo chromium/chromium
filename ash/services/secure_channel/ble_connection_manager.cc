@@ -10,9 +10,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 BleConnectionManager::InitiatorConnectionAttemptMetadata::
     InitiatorConnectionAttemptMetadata(
@@ -324,6 +322,4 @@ void BleConnectionManager::RemoveRequestMetadata(
   }
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

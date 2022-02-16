@@ -8,9 +8,7 @@
 #include "ash/services/secure_channel/connection_metrics_logger.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // static
 BleListenerConnectionAttempt::Factory*
@@ -70,6 +68,4 @@ void BleListenerConnectionAttempt::ProcessSuccessfulConnectionDuration(
       duration);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -9,9 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // static
 BleInitiatorOperation::Factory* BleInitiatorOperation::Factory::test_factory_ =
@@ -102,6 +100,4 @@ void BleInitiatorOperation::OnConnectionFailure(
   OnFailedConnectionAttempt(failure_type);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

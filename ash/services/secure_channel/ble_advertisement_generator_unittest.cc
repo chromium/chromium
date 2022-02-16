@@ -15,11 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::StrictMock;
-
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -109,6 +105,4 @@ TEST_F(SecureChannelBleAdvertisementGeneratorTest, AdvertisementGenerated) {
                                           kLocalDevicePublicKey));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

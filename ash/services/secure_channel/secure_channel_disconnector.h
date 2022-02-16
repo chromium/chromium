@@ -37,4 +37,9 @@ class SecureChannelDisconnector {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::SecureChannelDisconnector;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_DISCONNECTOR_H_

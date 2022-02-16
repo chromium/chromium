@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/ble_advertiser.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 BleAdvertiser::BleAdvertiser(Delegate* delegate) : delegate_(delegate) {}
 
@@ -24,6 +22,4 @@ void BleAdvertiser::NotifyFailureToGenerateAdvertisement(
   delegate_->OnFailureToGenerateAdvertisement(device_id_pair);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

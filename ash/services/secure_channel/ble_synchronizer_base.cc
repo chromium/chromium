@@ -6,9 +6,7 @@
 
 #include <memory>
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 BleSynchronizerBase::RegisterArgs::RegisterArgs(
     std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
@@ -115,6 +113,4 @@ void BleSynchronizerBase::StopDiscoverySession(
   ProcessQueue();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

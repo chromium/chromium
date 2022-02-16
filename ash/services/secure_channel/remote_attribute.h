@@ -23,4 +23,9 @@ struct RemoteAttribute {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::RemoteAttribute;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_REMOTE_ATTRIBUTE_H_

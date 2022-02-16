@@ -7,11 +7,10 @@
 
 #include <memory>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/ble_initiator_failure_type.h"
 #include "ash/services/secure_channel/ble_listener_failure_type.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/connection_role.h"
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
@@ -19,9 +18,9 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+class AuthenticatedChannel;
 
 // Creates connections to remote devices over Bluetooth, using either the
 // listener role (BLE scans only) or the initiator role (a combination of BLE
@@ -151,8 +150,11 @@ class BleConnectionManager {
       id_pair_to_listener_metadata_map_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::BleConnectionManager;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_CONNECTION_MANAGER_H_

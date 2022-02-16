@@ -9,9 +9,7 @@
 #include "base/notreached.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 BleScanner::BleScanner() = default;
 
@@ -71,6 +69,4 @@ void BleScanner::NotifyReceivedAdvertisementFromDevice(
   }
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

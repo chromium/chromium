@@ -23,9 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -515,6 +513,4 @@ TEST_F(SecureChannelBleScannerImplTest, StartAndStopFailures_EdgeCases) {
   EXPECT_EQ(1u, GetNumBleCommands());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

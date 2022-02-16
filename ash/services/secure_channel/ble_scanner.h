@@ -18,11 +18,9 @@
 
 namespace device {
 class BluetoothDevice;
-}  // namespace device
+}
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Performs BLE scans and notifies its delegate when an advertisement has been
 // received from a remote device. This class allows clients to specify what type
@@ -84,8 +82,11 @@ class BleScanner {
   base::flat_set<ConnectionAttemptDetails> scan_requests_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::BleScanner;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_SCANNER_H_

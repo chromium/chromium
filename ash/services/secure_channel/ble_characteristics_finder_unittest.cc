@@ -25,30 +25,28 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using device::BluetoothAdapter;
-using device::BluetoothAdapterFactory;
-using device::BluetoothDevice;
-using device::BluetoothGattService;
-using device::BluetoothRemoteGattCharacteristic;
-using device::BluetoothRemoteGattService;
-using device::BluetoothUUID;
-using device::MockBluetoothAdapter;
-using device::MockBluetoothDevice;
-using device::MockBluetoothGattCharacteristic;
-using device::MockBluetoothGattService;
-using testing::_;
-using testing::AtLeast;
-using testing::DoAll;
-using testing::Invoke;
-using testing::NiceMock;
-using testing::Return;
-using testing::SaveArg;
-using testing::StrictMock;
+namespace ash::secure_channel {
 
-namespace chromeos {
-
-namespace secure_channel {
 namespace {
+
+using ::device::BluetoothAdapter;
+using ::device::BluetoothAdapterFactory;
+using ::device::BluetoothDevice;
+using ::device::BluetoothGattService;
+using ::device::BluetoothRemoteGattCharacteristic;
+using ::device::BluetoothRemoteGattService;
+using ::device::BluetoothUUID;
+using ::device::MockBluetoothAdapter;
+using ::device::MockBluetoothDevice;
+using ::device::MockBluetoothGattCharacteristic;
+using ::device::MockBluetoothGattService;
+using ::testing::_;
+using ::testing::AtLeast;
+using ::testing::DoAll;
+using ::testing::Invoke;
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::SaveArg;
 
 const char kDeviceName[] = "Device name";
 const char kBluetoothAddress[] = "11:22:33:44:55:66";
@@ -597,6 +595,4 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
   EXPECT_EQ(kFromPeripheralCharID, found_from_char.id);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

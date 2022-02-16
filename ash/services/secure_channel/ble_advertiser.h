@@ -9,9 +9,7 @@
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Registers BLE advertisements targeted to remote devices.
 class BleAdvertiser {
@@ -71,8 +69,11 @@ class BleAdvertiser {
   Delegate* delegate_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::BleAdvertiser;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_ADVERTISER_H_

@@ -5,8 +5,6 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_BLE_CHARACTERISTICS_FINDER_H_
 #define ASH_SERVICES_SECURE_CHANNEL_BLE_CHARACTERISTICS_FINDER_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/background_eid_generator.h"
 #include "ash/services/secure_channel/remote_attribute.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
@@ -20,9 +18,9 @@
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+class BackgroundEidGenerator;
 
 // Looks for given characteristics in a remote device, for which a GATT
 // connection was already established. In the current BLE connection protocol
@@ -146,8 +144,11 @@ class BluetoothLowEnergyCharacteristicsFinder
       weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::BluetoothLowEnergyCharacteristicsFinder;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_CHARACTERISTICS_FINDER_H_

@@ -14,11 +14,7 @@
 #include "ash/services/secure_channel/ble_weave_defines.h"
 #include "build/build_config.h"
 
-namespace chromeos {
-
-namespace secure_channel {
-
-namespace weave {
+namespace ash::secure_channel::weave {
 
 // Receive the messages sent with uWeave protocol.
 // Example Usage:
@@ -199,10 +195,6 @@ class BluetoothLowEnergyWeavePacketReceiver {
   ReceiverError receiver_error_;
 };
 
-}  // namespace weave
-
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel::weave
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_WEAVE_PACKET_RECEIVER_H_

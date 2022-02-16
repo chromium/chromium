@@ -5,9 +5,7 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_BLE_CONSTANTS_H_
 #define ASH_SERVICES_SECURE_CHANNEL_BLE_CONSTANTS_H_
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // The maximum number of devices to which to advertise concurrently. If more
 // than this number of devices are registered, other advertisements must be
@@ -25,8 +23,11 @@ constexpr const char kAdvertisingServiceUuid[] =
 // The GATT server UUID used for uWeave.
 constexpr const char kGattServerUuid[] = "b3b7e28e-a000-3e17-bd86-6e97b9e28c11";
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+//// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::kAdvertisingServiceUuid;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_CONSTANTS_H_

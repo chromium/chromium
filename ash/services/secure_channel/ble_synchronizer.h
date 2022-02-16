@@ -19,11 +19,9 @@
 
 namespace base {
 class TaskRunner;
-}  // namespace base
+}
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Concrete BleSynchronizerBase implementation.
 class BleSynchronizer : public BleSynchronizerBase {
@@ -110,8 +108,11 @@ class BleSynchronizer : public BleSynchronizerBase {
   base::WeakPtrFactory<BleSynchronizer> weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::BleSynchronizer;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_SYNCHRONIZER_H_

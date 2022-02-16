@@ -10,9 +10,7 @@
 #include "ash/services/secure_channel/ble_listener_failure_type.h"
 #include "ash/services/secure_channel/connection_attempt_base.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class BleConnectionManager;
 
@@ -69,8 +67,11 @@ class BleListenerConnectionAttempt
   BleConnectionManager* ble_connection_manager_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::BleListenerConnectionAttempt;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_LISTENER_CONNECTION_ATTEMPT_H_

@@ -23,15 +23,13 @@
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::Invoke;
-using testing::NiceMock;
-
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::NiceMock;
 
 const char kId1[] = "id1";
 const char kId2[] = "id2";
@@ -623,6 +621,4 @@ TEST_F(SecureChannelBleSynchronizerTest, TestThrottling) {
   EXPECT_EQ(1, num_unregister_error_);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

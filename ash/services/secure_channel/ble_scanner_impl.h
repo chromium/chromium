@@ -19,11 +19,8 @@ class BluetoothDevice;
 class BluetoothDiscoverySession;
 }  // namespace device
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
-
-class BluetoothHelper;
 class BleSynchronizerBase;
 
 // Concrete BleScanner implementation.
@@ -118,8 +115,11 @@ class BleScannerImpl : public BleScanner,
   base::WeakPtrFactory<BleScannerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::BleScannerImpl;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_SCANNER_IMPL_H_

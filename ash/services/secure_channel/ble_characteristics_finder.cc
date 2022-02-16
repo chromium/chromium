@@ -13,20 +13,20 @@
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
-using device::BluetoothAdapter;
-using device::BluetoothDevice;
-using device::BluetoothRemoteGattCharacteristic;
-using device::BluetoothRemoteGattService;
-using device::BluetoothUUID;
+namespace ash::secure_channel {
+
+using ::device::BluetoothAdapter;
+using ::device::BluetoothDevice;
+using ::device::BluetoothRemoteGattCharacteristic;
+using ::device::BluetoothRemoteGattService;
+using ::device::BluetoothUUID;
 
 namespace {
+
 // The UUID of the characteristic for eid verification.
 const char kEidCharacteristicUuid[] = "f21843b0-9411-434b-b85f-a9b92bd69f77";
+
 }  // namespace
-
-namespace chromeos {
-
-namespace secure_channel {
 
 BluetoothLowEnergyCharacteristicsFinder::
     BluetoothLowEnergyCharacteristicsFinder(
@@ -235,6 +235,4 @@ bool BluetoothLowEnergyCharacteristicsFinder::DoesEidMatchExpectedDevice(
   return !identified_device_id.empty();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
