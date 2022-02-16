@@ -12,6 +12,7 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
@@ -166,7 +167,8 @@ void StandaloneBrowserExtensionAppShelfItemController::ExecuteCommand(
   // the aura::Windows for destruction. This should almost always work. In rare
   // edge cases, this will cause the wrong window to be selected, but will not
   // cause undefined behavior.
-  if (command_id >= 0 && command_id < context_menu_windows_.size()) {
+  if (command_id >= 0 &&
+      command_id < base::checked_cast<int32_t>(context_menu_windows_.size())) {
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
         context_menu_windows_[command_id]);
     AppWindowBase app_window(shelf_id(), widget);

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -183,10 +184,11 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
 
       absl::optional<int32_t> active_tab_index =
           app_restore_data->active_tab_index;
-      for (int i = 0; i < urls->size(); i++) {
-        chrome::AddTabAt(
-            browser, urls->at(i), /*index=*/-1,
-            /*foreground=*/(active_tab_index && i == *active_tab_index));
+      for (size_t i = 0; i < urls->size(); i++) {
+        chrome::AddTabAt(browser, urls->at(i), /*index=*/-1,
+                         /*foreground=*/
+                         (active_tab_index &&
+                          base::checked_cast<int32_t>(i) == *active_tab_index));
       }
 
       // We need to handle minimized windows separately since unlike other

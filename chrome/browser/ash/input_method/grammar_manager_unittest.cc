@@ -45,7 +45,7 @@ class TestGrammarServiceClient : public GrammarServiceClient {
                         const std::u16string& text,
                         TextCheckCompleteCallback callback) override {
     std::vector<ui::GrammarFragment> grammar_results;
-    for (int i = 0; i < text.size(); i++) {
+    for (size_t i = 0; i < text.size(); i++) {
       if (text.substr(i, 5) == u"error") {
         grammar_results.emplace_back(gfx::Range(i, i + 5), "correct");
       }

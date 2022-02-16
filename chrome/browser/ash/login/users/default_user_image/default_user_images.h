@@ -92,7 +92,7 @@ std::unique_ptr<base::ListValue> GetCurrentImageSetAsListValue();
 
 // Returns the source info of the default user image with specified index.
 // Returns nullopt if there is no source info.
-absl::optional<DefaultImageSourceInfo> GetDefaultImageSourceInfo(int index);
+absl::optional<DefaultImageSourceInfo> GetDefaultImageSourceInfo(size_t index);
 
 }  // namespace default_user_image
 }  // namespace ash

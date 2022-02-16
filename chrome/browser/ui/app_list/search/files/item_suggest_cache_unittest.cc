@@ -97,7 +97,7 @@ class ItemSuggestCacheTest : public testing::Test {
 
     EXPECT_EQ(actual->suggestion_id, suggestion_id);
     ASSERT_EQ(actual->results.size(), results.size());
-    for (int i = 0; i < results.size(); ++i) {
+    for (size_t i = 0; i < results.size(); ++i) {
       ResultMatches(actual->results[i], std::get<0>(results[i]),
                     std::get<1>(results[i]), std::get<2>(results[i]));
     }

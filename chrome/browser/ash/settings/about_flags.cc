@@ -218,7 +218,7 @@ void FeatureFlagsUpdate::UpdateSessionManager() {
     auto* entry = ::about_flags::GetCurrentFlagsState()->FindFeatureEntryByName(
         crosapi::browser_util::kLacrosAvailabilityPolicyInternalName);
     DCHECK(entry);
-    int index;
+    size_t index;
     for (index = 0; index < entry->NumOptions(); ++index) {
       if (value == entry->ChoiceForOption(index).command_line_value)
         break;

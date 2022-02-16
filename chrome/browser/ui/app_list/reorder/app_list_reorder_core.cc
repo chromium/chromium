@@ -22,7 +22,7 @@ struct SubsequenceStatus {
   int length = 0;
 
   // Used to reconstruct the subsequence.
-  absl::optional<int> prev_item;
+  absl::optional<size_t> prev_item;
 };
 
 // Returns true if `order` is increasing.
@@ -90,7 +90,7 @@ std::vector<int> SortAndGetLis(
   // element of `wrappers`.
   std::vector<SubsequenceStatus> status_array(wrappers->size());
 
-  for (int i = 0; i < status_array.size(); ++i) {
+  for (size_t i = 0; i < status_array.size(); ++i) {
     const syncer::StringOrdinal& item_ordinal = (*wrappers)[i].item_ordinal;
 
     // The element with the invalid ordinal should not be included in the LIS.
@@ -102,8 +102,8 @@ std::vector<int> SortAndGetLis(
     // form a new increasing subsequence, it is called "appendable".
     // `optimal_prev_index` is the index to the last element of the longest
     // appendable subsequence.
-    absl::optional<int> optimal_prev_index;
-    for (int prev_id_index = 0; prev_id_index < i; ++prev_id_index) {
+    absl::optional<size_t> optimal_prev_index;
+    for (size_t prev_id_index = 0; prev_id_index < i; ++prev_id_index) {
       const syncer::StringOrdinal& prev_item_ordinal =
           (*wrappers)[prev_id_index].item_ordinal;
 
@@ -171,7 +171,7 @@ void GenerateReorderParamsWithLis(
   // Handle the edge case that `lis` is empty, which means that all existing
   // ordinals are invalid and should be updated.
   if (lis.empty()) {
-    for (int index = 0; index < wrappers.size(); ++index) {
+    for (size_t index = 0; index < wrappers.size(); ++index) {
       const syncer::StringOrdinal updated_ordinal =
           (index == 0 ? syncer::StringOrdinal::CreateInitialOrdinal()
                       : reorder_params->back().ordinal.CreateAfter());

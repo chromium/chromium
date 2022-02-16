@@ -367,13 +367,14 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
     LaunchTemplate(desk_template_ptr->uuid());
   }
 
-  Browser* CreateBrowser(const std::vector<GURL>& urls,
-                         absl::optional<int> active_url_index = absl::nullopt) {
+  Browser* CreateBrowser(
+      const std::vector<GURL>& urls,
+      absl::optional<size_t> active_url_index = absl::nullopt) {
     Browser::CreateParams params(Browser::TYPE_NORMAL, profile(),
                                  /*user_gesture=*/false);
     Browser* browser = Browser::Create(params);
     // Create a new tab and make sure the urls have loaded.
-    for (int i = 0; i < urls.size(); i++) {
+    for (size_t i = 0; i < urls.size(); i++) {
       content::TestNavigationObserver navigation_observer(urls[i]);
       navigation_observer.StartWatchingNewWebContents();
       chrome::AddTabAt(
@@ -759,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
   // Create a new browser and add a few tabs to it, and specify the active tab
   // index.
-  const int browser_active_index = 1;
+  const size_t browser_active_index = 1;
   Browser* browser = CreateBrowser(
       {GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)},
       /*active_url_index=*/browser_active_index);
@@ -1160,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUIBasic) {
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUILaunchBrowser) {
   // Create a new browser and add a few tabs to it, and specify the active tab
   // index.
-  const int browser_active_index = 1;
+  const size_t browser_active_index = 1;
   Browser* browser = CreateBrowser(
       {GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)},
       /*active_url_index=*/browser_active_index);

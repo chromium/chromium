@@ -1032,7 +1032,7 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_MatchBigger) {
   // scale).
   const std::vector<SkColor> expected_colors{SK_ColorRED, SK_ColorGREEN};
 
-  for (int i = 0; i < scale_factors.size(); ++i) {
+  for (size_t i = 0; i < scale_factors.size(); ++i) {
     const float scale = ui::GetScaleForResourceScaleFactor(scale_factors[i]);
     ASSERT_TRUE(converted_image.HasRepresentation(scale));
     EXPECT_EQ(
@@ -1063,7 +1063,7 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_StandardEffect) {
       ui::GetSupportedResourceScaleFactors();
   ASSERT_EQ(2U, scale_factors.size());
 
-  for (int i = 0; i < scale_factors.size(); ++i) {
+  for (size_t i = 0; i < scale_factors.size(); ++i) {
     const float scale = ui::GetScaleForResourceScaleFactor(scale_factors[i]);
     ASSERT_TRUE(converted_image.HasRepresentation(scale));
 

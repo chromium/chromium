@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -198,9 +199,9 @@ void SearchMetricsObserver::OnLaunch(Location location,
 
   // Record the launch index.
   int launched_index = -1;
-  for (int i = 0; i < shown.size(); ++i) {
+  for (size_t i = 0; i < shown.size(); ++i) {
     if (shown[i].id == launched.id) {
-      launched_index = i;
+      launched_index = base::checked_cast<int>(i);
       break;
     }
   }

@@ -194,7 +194,8 @@ class Recorder : public apps::BrowserAppInstanceObserver {
 
   void Verify(const std::vector<TestInstance>& expected_calls) {
     EXPECT_EQ(calls_.size(), expected_calls.size());
-    for (int i = 0; i < std::max(calls_.size(), expected_calls.size()); ++i) {
+    for (size_t i = 0; i < std::max(calls_.size(), expected_calls.size());
+         ++i) {
       EXPECT_EQ(Get(calls_, i), Get(expected_calls, i)) << "call #" << i;
     }
   }
@@ -205,15 +206,16 @@ class Recorder : public apps::BrowserAppInstanceObserver {
     std::vector<TestInstance> calls_copy(calls_);
     std::sort(expected_calls_copy.begin(), expected_calls_copy.end());
     std::sort(calls_copy.begin(), calls_copy.end());
-    for (int i = 0; i < std::max(calls_copy.size(), expected_calls_copy.size());
-         ++i) {
+    for (size_t i = 0;
+         i < std::max(calls_copy.size(), expected_calls_copy.size()); ++i) {
       EXPECT_EQ(Get(calls_copy, i), Get(expected_calls_copy, i))
           << "call #" << i;
     }
   }
 
  private:
-  static const TestInstance Get(const std::vector<TestInstance>& calls, int i) {
+  static const TestInstance Get(const std::vector<TestInstance>& calls,
+                                size_t i) {
     if (i < calls.size()) {
       return calls[i];
     }

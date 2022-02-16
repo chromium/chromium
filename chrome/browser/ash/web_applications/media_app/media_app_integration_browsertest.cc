@@ -174,7 +174,7 @@ class BrowserWindowWaiter : public BrowserListObserver {
 };
 
 // Waits for the number of active Browsers in the test process to reach `count`.
-void WaitForBrowserCount(int count) {
+void WaitForBrowserCount(size_t count) {
   EXPECT_LE(BrowserList::GetInstance()->size(), count) << "Too many browsers";
   while (BrowserList::GetInstance()->size() < count) {
     BrowserWindowWaiter().WaitForBrowserAdded();

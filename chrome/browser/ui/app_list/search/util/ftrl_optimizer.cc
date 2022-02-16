@@ -108,14 +108,14 @@ double FtrlOptimizer::Loss(size_t expert, const std::string& item) {
   auto& scores = last_expert_scores_[expert];
   double score = 0.0;
   DCHECK_EQ(scores.size(), last_items_.size());
-  for (int i = 0; i < scores.size(); ++i) {
+  for (size_t i = 0; i < scores.size(); ++i) {
     if (last_items_[i] == item)
       score = scores[i];
   }
 
   // Find the rank of the item, ie. the number of items with higher score.
   size_t rank = 0;
-  for (int i = 0; i < scores.size(); ++i) {
+  for (size_t i = 0; i < scores.size(); ++i) {
     if (scores[i] > score)
       ++rank;
   }

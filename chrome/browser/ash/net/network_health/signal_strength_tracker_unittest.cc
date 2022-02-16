@@ -58,7 +58,7 @@ TEST_F(SignalStrengthTrackerTest, Samples) {
   auto stored_samples = tracker()->Samples();
   auto size = stored_samples.size();
   ASSERT_EQ(samples.size(), size);
-  for (int i = 0; i < samples.size(); i++) {
+  for (size_t i = 0; i < samples.size(); i++) {
     ASSERT_EQ(samples[i], stored_samples[size - i - 1]);
   }
 }

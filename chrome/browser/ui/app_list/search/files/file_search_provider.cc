@@ -138,7 +138,7 @@ void FileSearchProvider::OnSearchComplete(
 
   constexpr double kScoreEps = 1.0e-5;
   SearchProvider::Results results;
-  for (int i = 0; i < paths.size(); ++i) {
+  for (size_t i = 0; i < paths.size(); ++i) {
     double relevance =
         FileResult::CalculateRelevance(last_tokenized_query_, paths[i].path);
     // Slightly penalize scores for less recently accessed files, but don't let

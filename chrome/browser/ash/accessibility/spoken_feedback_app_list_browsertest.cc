@@ -223,7 +223,7 @@ class SpokenFeedbackAppListBaseTest
   AppListItem* FindItemByName(const std::string& name, int* index) {
     AppListModel* const model = AppListModelProvider::Get()->model();
     AppListItemList* item_list = model->top_level_item_list();
-    for (int i = 0; i < item_list->item_count(); ++i) {
+    for (size_t i = 0; i < item_list->item_count(); ++i) {
       if (item_list->item_at(i)->name() == name) {
         if (index)
           *index = i;

@@ -150,7 +150,7 @@ void ScoreNormalizer::Update(const std::string& name, double score) {
   // don't allow the merge to overlap with the split.
   size_t merge_index = -1;
   double merge_l_count = INFINITY, merge_r_count = INFINITY;
-  for (int i = 0; i < bins.size() - 1; ++i) {
+  for (size_t i = 0; i < bins.size() - 1; ++i) {
     if (i == split_index - 1 || i == split_index)
       continue;
     double l_count = bins[i].count();

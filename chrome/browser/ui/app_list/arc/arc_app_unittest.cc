@@ -1488,7 +1488,7 @@ TEST_P(ArcAppModelBuilderTest, MultipleRefreshAll) {
 
   // Send info about all fake apps except last.
   std::vector<arc::mojom::AppInfoPtr> apps1;
-  for (int i = 0; i < fake_apps().size() - 1; i++)
+  for (size_t i = 0; i < fake_apps().size() - 1; i++)
     apps1.emplace_back(fake_apps()[i]->Clone());
   SendRefreshAppList(apps1);
   // At this point all apps (except last) should exist and be ready.
@@ -1497,7 +1497,7 @@ TEST_P(ArcAppModelBuilderTest, MultipleRefreshAll) {
 
   // Send info about all fake apps except first.
   std::vector<arc::mojom::AppInfoPtr> apps2;
-  for (int i = 1; i < fake_apps().size(); i++)
+  for (size_t i = 1; i < fake_apps().size(); i++)
     apps2.emplace_back(fake_apps()[i]->Clone());
   SendRefreshAppList(apps2);
   // At this point all apps should exist but first one should be non-ready.
@@ -2173,7 +2173,7 @@ TEST_P(ArcAppModelBuilderRecreate, DISABLED_AppModelRestart) {
 
   // Send info about all fake apps except last.
   std::vector<arc::mojom::AppInfoPtr> apps1;
-  for (int i = 0; i < fake_apps().size() - 1; i++)
+  for (size_t i = 0; i < fake_apps().size() - 1; i++)
     apps1.emplace_back(fake_apps()[i]->Clone());
   SendRefreshAppList(apps1);
   // Model has refreshed apps.
@@ -2834,7 +2834,7 @@ TEST_P(ArcAppModelIconTest, LoadManyIconsWithSomeBadIcons) {
   app_instance()->set_icon_response_type(
       arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SEND_GOOD);
 
-  for (int i = app_count; i < app_ids.size(); i++)
+  for (size_t i = app_count; i < app_ids.size(); i++)
     MaybeRemoveIconRequestRecord(app_ids[i]);
 
   FakeAppIconLoaderDelegate delegate;
@@ -3185,7 +3185,7 @@ TEST_P(ArcAppModelBuilderTest, NonLaunchableApp) {
   ValidateHaveApps(std::vector<arc::mojom::AppInfoPtr>());
   // Send all except first.
   std::vector<arc::mojom::AppInfoPtr> apps;
-  for (int i = 1; i < fake_apps().size(); i++)
+  for (size_t i = 1; i < fake_apps().size(); i++)
     apps.emplace_back(fake_apps()[i]->Clone());
   SendRefreshAppList(apps);
   ValidateHaveApps(apps);
@@ -3348,7 +3348,7 @@ TEST_P(ArcDefaultAppTest, DefaultApps) {
   SendRefreshAppList(fake_apps());
 
   auto all_apps = ArcAppTest::CloneApps(fake_default_apps());
-  for (int i = 0; i < fake_apps().size(); i++)
+  for (size_t i = 0; i < fake_apps().size(); i++)
     all_apps.emplace_back(fake_apps()[i]->Clone());
   ValidateHaveApps(all_apps);
 

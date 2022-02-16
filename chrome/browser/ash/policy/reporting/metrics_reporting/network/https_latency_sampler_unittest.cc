@@ -319,7 +319,7 @@ class HttpsLatencyEventDetectorTest
     base::RunLoop().RunUntilIdle();
     network_handler_test_helper_.service_test()->ClearServices();
     network_handler_test_helper_.device_test()->ClearDevices();
-    for (int i = 0; i < connection_states.size(); ++i) {
+    for (size_t i = 0; i < connection_states.size(); ++i) {
       std::string index_str = base::StrCat({"_", base::NumberToString(i)});
       const std::string device_path = base::StrCat({kDevicePath, index_str});
       const std::string device_name = base::StrCat({kDeviceName, index_str});

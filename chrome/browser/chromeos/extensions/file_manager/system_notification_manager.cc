@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
@@ -703,7 +704,8 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           profile_, chromeos::settings::mojom::kExternalStorageSubpagePath);
     }
-    if (button_index.value() < uma_types_for_buttons.size()) {
+    if (base::checked_cast<size_t>(button_index.value()) <
+        uma_types_for_buttons.size()) {
       RecordDeviceNotificationUserActionMetric(
           uma_types_for_buttons.at(button_index.value()));
     }

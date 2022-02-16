@@ -384,7 +384,7 @@ std::unique_ptr<base::ListValue> GetCurrentImageSetAsListValue() {
   return image_urls;
 }
 
-absl::optional<DefaultImageSourceInfo> GetDefaultImageSourceInfo(int index) {
+absl::optional<DefaultImageSourceInfo> GetDefaultImageSourceInfo(size_t index) {
   if (index >= base::size(kDefaultImageSourceInfo))
     return absl::nullopt;
 

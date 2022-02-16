@@ -35,7 +35,7 @@ std::unique_ptr<TestResult> MakeResult(const std::string& id,
 Results MakeAnswers(
     std::vector<std::pair<std::string, double>> ids_relevances) {
   Results results;
-  for (int i = 0; i < ids_relevances.size(); ++i) {
+  for (size_t i = 0; i < ids_relevances.size(); ++i) {
     results.push_back(
         MakeResult(ids_relevances[i].first, ids_relevances[i].second));
   }

@@ -234,7 +234,7 @@ device::mojom::UsbDeviceFilterPtr UsbFilterByClassCode(
 
 std::u16string CombineVmNames(const std::vector<std::u16string>& vm_names) {
   std::u16string res;
-  int pos = 0;
+  size_t pos = 0;
   while (pos < vm_names.size()) {
     res.append(vm_names[pos]);
     pos++;
