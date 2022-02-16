@@ -284,9 +284,10 @@ void ContinueTaskView::RemoveResult() {
   // TODO(crbug.com/1264530): The ML service may change the way Search Results
   // are removed.
   DCHECK(result());
+
+  LogMetricsOnResultRemoved();
   view_delegate_->InvokeSearchResultAction(result()->id(),
                                            SearchResultActionType::kRemove);
-  LogMetricsOnResultRemoved();
 }
 
 bool ContinueTaskView::IsMenuShowing() const {
