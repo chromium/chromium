@@ -618,8 +618,9 @@ TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {
       u"labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
       u"exercitation ullamco laboris nisi ut aliquip ex ea commodo "
       u"consequat.");
+  auto notification_id = notification->id();
   message_center::MessageCenter::Get()->UpdateNotification(
-      notification->id(), std::move(notification));
+      notification_id, std::move(notification));
 
   EXPECT_TRUE(notification_view->IsExpanded());
 
@@ -689,8 +690,9 @@ TEST_F(AshNotificationViewTest, ImageExpandCollapseAnimationsRecordSmoothness) {
 
   // Clear icon so that icon view and image container view use the same image.
   notification->set_icon(gfx::Image());
+  auto notification_id = notification->id();
   message_center::MessageCenter::Get()->UpdateNotification(
-      notification->id(), std::move(notification));
+      notification_id, std::move(notification));
 
   EXPECT_TRUE(notification_view->IsExpanded());
 
@@ -787,8 +789,9 @@ TEST_F(AshNotificationViewTest, InlineReplyAnimationsRecordSmoothness) {
       std::vector<message_center::ButtonInfo>(2, info);
   buttons[1].placeholder = std::u16string();
   notification->set_buttons(buttons);
+  auto notification_id = notification->id();
   message_center::MessageCenter::Get()->UpdateNotification(
-      notification->id(), std::move(notification));
+      notification_id, std::move(notification));
 
   // Clicking inline reply button and check fade in animation.
   EXPECT_TRUE(notification_view->IsExpanded());
