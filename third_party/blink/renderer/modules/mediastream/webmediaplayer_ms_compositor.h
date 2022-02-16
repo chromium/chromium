@@ -205,6 +205,10 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   void ReplaceCurrentFrameWithACopyInternal();
 
   void SetAlgorithmEnabledForTesting(bool algorithm_enabled);
+  void RecordFrameDisplayedStats(base::TimeTicks frame_displayed_time);
+  void RecordFrameDecodedStats(
+      absl::optional<base::TimeTicks> frame_received_time,
+      absl::optional<base::TimeDelta> frame_processing_time);
 
   // Used for DCHECKs to ensure method calls executed in the correct thread,
   // which is renderer main thread in this class.
@@ -274,6 +278,14 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
 
   bool stopped_;
   bool render_started_;
+
+  absl::optional<base::TimeTicks> last_enqueued_frame_receive_time_;
+  absl::optional<base::TimeTicks> last_enqueued_frame_decoded_time_;
+  absl::optional<base::TimeTicks> last_presented_frame_display_time_;
+  absl::optional<base::TimeTicks> current_frame_receive_time_;
+  absl::optional<uint32_t> last_presented_frame_rtp_timestamp_;
+  absl::optional<uint32_t> current_frame_rtp_timestamp_;
+  int frame_enqueued_since_last_vsync_ GUARDED_BY(current_frame_lock_) = 0;
 
   // Called when a new frame is enqueued, either in RenderWithoutAlgorithm() or
   // in RenderUsingAlgorithm(). Used to fulfill video.requestAnimationFrame()
