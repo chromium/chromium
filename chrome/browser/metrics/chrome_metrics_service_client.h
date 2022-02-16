@@ -237,6 +237,9 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // PerUserStateManagerChromeOS that |this| is a client of.
   std::unique_ptr<metrics::PerUserStateManagerChromeOS> per_user_state_manager_;
+
+  // Subscription for receiving callbacks that user metrics consent has changed.
+  base::CallbackListSubscription per_user_consent_change_subscription_;
 #endif
 
   base::WeakPtrFactory<ChromeMetricsServiceClient> weak_ptr_factory_{this};

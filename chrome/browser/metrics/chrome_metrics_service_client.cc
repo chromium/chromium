@@ -457,6 +457,27 @@ class ChromeComponentMetricsProviderDelegate
   raw_ptr<component_updater::ComponentUpdateService> component_updater_service_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug/1295789): Remove this and use ChangeMetricsReportingState() once
+// crash no longer depends on GoogleUpdateSettings and per-user is available
+// outside of Ash.
+void UpdateMetricsServicesForPerUser(bool enabled) {
+  // Set the local state pref because a lot of services read directly from this
+  // pref to obtain metrics consent.
+  //
+  // This is OK on Chrome OS because this pref is set on every startup with the
+  // device policy value. The previous user consent will get overwritten by
+  // the correct device policy value on startup.
+  //
+  // TODO(crbug/1297765): Once a proper API is established and services no
+  // longer read the pref value directly, this can be removed.
+  g_browser_process->local_state()->SetBoolean(
+      metrics::prefs::kMetricsReportingEnabled, enabled);
+
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
+}
+#endif
+
 }  // namespace
 
 ChromeMetricsServiceClient::ChromeMetricsServiceClient(
@@ -1253,8 +1274,10 @@ void ChromeMetricsServiceClient::InitPerUserMetrics() {
   if (base::FeatureList::IsEnabled(ash::features::kPerUserMetrics)) {
     per_user_state_manager_ =
         std::make_unique<metrics::PerUserStateManagerChromeOS>(
-            this, g_browser_process->GetMetricsServicesManager(),
-            g_browser_process->local_state());
+            this, g_browser_process->local_state());
+    per_user_consent_change_subscription_ =
+        per_user_state_manager_->AddObserver(
+            base::BindRepeating(&UpdateMetricsServicesForPerUser));
   }
 }
 

@@ -34,7 +34,6 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_switches.h"
-#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -62,8 +61,7 @@ class ChromeOSPerUserMetricsBrowserTestBase : public ash::LoginManagerTest {
   ~ChromeOSPerUserMetricsBrowserTestBase() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kMetricsRecordingOnly);
-
+    EnableMetricsRecordingOnlyForTesting(command_line);
     ash::LoginManagerTest::SetUpCommandLine(command_line);
   }
 
@@ -88,6 +86,11 @@ class ChromeOSPerUserMetricsBrowserTestBase : public ash::LoginManagerTest {
     // Force to check the pref in order to test proper reporting consent.
     ChromeMetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(
         true);
+  }
+
+  bool GetLocalStateMetricsConsent() const {
+    return g_browser_process->local_state()->GetBoolean(
+        prefs::kMetricsReportingEnabled);
   }
 
  protected:
@@ -140,8 +143,6 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserRegularUserTest,
   base::RunLoop().RunUntilIdle();
 
   bool owner_consent = GetParam();
-  auto* metrics_services_manager =
-      g_browser_process->GetMetricsServicesManager();
   MetricsLogStore* log_store =
       g_browser_process->metrics_service()->LogStoreForTest();
 
@@ -151,20 +152,24 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserRegularUserTest,
 
   // Since user consent is always off initially, this should always return
   // false regardless of owner_consent.
-  EXPECT_FALSE(metrics_services_manager->IsMetricsReportingEnabled());
+  EXPECT_FALSE(GetLocalStateMetricsConsent());
 
-  // Ensure that reporting changes.
+  // Try and toggle user metrics consent from off->on.
   ChangeUserMetricsConsent(true);
+
+  // Propagating metrics consent through the services happens async.
+  base::RunLoop().RunUntilIdle();
 
   // If owner consent is on, then user metrics consent should be respected.
   // Otherwise, user consent being on should be overridden by owner_consent
   // being off.
-  EXPECT_THAT(metrics_services_manager->IsMetricsReportingEnabled(),
-              Eq(owner_consent));
+  EXPECT_THAT(GetLocalStateMetricsConsent(), Eq(owner_consent));
 
-  // User should have a user id.
-  EXPECT_THAT(g_browser_process->metrics_service()->GetCurrentUserId(),
-              Ne(absl::nullopt));
+  // Users should only have a user ID if they were successfully able to toggle
+  // consent.
+  EXPECT_THAT(
+      g_browser_process->metrics_service()->GetCurrentUserId().has_value(),
+      Eq(owner_consent));
 }
 
 INSTANTIATE_TEST_SUITE_P(MetricsConsentForRegularUser,
@@ -186,14 +191,12 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestUserWithNoOwnerTest,
                        MetricsConsentForGuestWithNoOwner) {
   Initialize();
 
-  auto* metrics_services_manager =
-      g_browser_process->GetMetricsServicesManager();
   auto* metrics_service = g_browser_process->metrics_service();
   MetricsLogStore* log_store = metrics_service->LogStoreForTest();
 
   // Device consent should be false if device is not owned.
   EXPECT_FALSE(ash::StatsReportingController::Get()->IsEnabled());
-  EXPECT_FALSE(metrics_services_manager->IsMetricsReportingEnabled());
+  EXPECT_FALSE(GetLocalStateMetricsConsent());
 
   // Alternate ongoing log store should not be set until consent is set for the
   // first time for the guest session with no device owner.
@@ -202,11 +205,13 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestUserWithNoOwnerTest,
   bool guest_consent = GetParam();
   ChangeUserMetricsConsent(guest_consent);
 
+  // Propagating metrics consent through the services happens async.
+  base::RunLoop().RunUntilIdle();
+
   // Once consent is set for the first time, log store should be set
   // appropriately. Log store should be the inverse of the first consent since
   // consent means that log store used should be local state.
-  EXPECT_THAT(metrics_services_manager->IsMetricsReportingEnabled(),
-              Eq(guest_consent));
+  EXPECT_THAT(GetLocalStateMetricsConsent(), Eq(guest_consent));
   EXPECT_THAT(log_store->has_alternate_ongoing_log_store(), Ne(guest_consent));
 
   // Guests do not have a user id.
@@ -264,14 +269,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestTestWithDeviceOwner,
   EXPECT_THAT(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
               Eq(ash::DeviceSettingsService::OWNERSHIP_TAKEN));
 
-  auto* metrics_services_manager =
-      g_browser_process->GetMetricsServicesManager();
-
   // Ensure that guest session is using owner consent.
   EXPECT_THAT(ash::StatsReportingController::Get()->IsEnabled(),
               Eq(owner_consent));
-  EXPECT_THAT(metrics_services_manager->IsMetricsReportingEnabled(),
-              Eq(owner_consent));
+  EXPECT_THAT(GetLocalStateMetricsConsent(), Eq(owner_consent));
 
   auto* metrics_service = g_browser_process->metrics_service();
   MetricsLogStore* log_store = metrics_service->LogStoreForTest();
@@ -348,14 +349,11 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserManagedDeviceTest,
   PerUserStateManagerChromeOS::SetIsManagedForTesting(policy_consent);
 
   auto* metrics_service = g_browser_process->metrics_service();
-  auto* metrics_services_manager =
-      g_browser_process->GetMetricsServicesManager();
   MetricsLogStore* log_store = metrics_service->LogStoreForTest();
 
   // Pre-login state.
   EXPECT_EQ(ash::StatsReportingController::Get()->IsEnabled(), policy_consent);
-  EXPECT_EQ(metrics_services_manager->IsMetricsReportingEnabled(),
-            policy_consent);
+  EXPECT_EQ(GetLocalStateMetricsConsent(), policy_consent);
   EXPECT_FALSE(log_store->has_alternate_ongoing_log_store());
 
   LoginManagedUser();
@@ -364,9 +362,9 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserManagedDeviceTest,
   EXPECT_THAT(user_manager::UserManager::Get()->GetActiveUser()->GetType(),
               Eq(user_manager::USER_TYPE_REGULAR));
   EXPECT_TRUE(log_store->has_alternate_ongoing_log_store());
+
   // Should still follow policy_consent.
-  EXPECT_EQ(metrics_services_manager->IsMetricsReportingEnabled(),
-            policy_consent);
+  EXPECT_EQ(GetLocalStateMetricsConsent(), policy_consent);
 
   // Managed users should not have a user id since they cannot control the
   // policy.

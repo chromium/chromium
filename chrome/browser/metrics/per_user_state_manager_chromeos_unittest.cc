@@ -35,7 +35,6 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
                           const MetricsLogStore::StorageLimits& storage_limits,
                           const std::string& signing_key)
       : PerUserStateManagerChromeOS(/*metrics_service_client=*/nullptr,
-                                    /*metrics_services_manager=*/nullptr,
                                     user_manager,
                                     local_state,
                                     storage_limits,
@@ -57,7 +56,6 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
 
   bool is_log_store_set() const { return is_log_store_set_; }
   bool is_client_id_reset() const { return is_client_id_reset_; }
-  bool is_metrics_reporting_enabled() const { return metrics_reporting_state_; }
 
  protected:
   void UnsetUserLogStore() override { is_log_store_set_ = false; }
@@ -65,10 +63,6 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
   void ForceClientIdReset() override { is_client_id_reset_ = true; }
 
   bool IsReportingPolicyManaged() const override { return is_managed_; }
-
-  void SetReportingState(bool metrics_consent) override {
-    metrics_reporting_state_ = metrics_consent;
-  }
 
   bool GetDeviceMetricsConsent() const override {
     return device_metrics_consent_;
@@ -81,7 +75,6 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
  private:
   bool is_log_store_set_ = false;
   bool is_client_id_reset_ = false;
-  bool metrics_reporting_state_ = true;
   bool is_managed_ = false;
   bool device_metrics_consent_ = true;
   bool is_device_owned_ = true;
@@ -218,9 +211,6 @@ TEST_F(PerUserStateManagerChromeOSTest, UserIdErasedWhenConsentTurnedOff) {
   EXPECT_TRUE(GetTestProfile()->GetPrefs()->GetBoolean(
       prefs::kMetricsRequiresClientIdResetOnConsent));
 
-  // Ensure that reporting is disabled in the metrics service.
-  EXPECT_FALSE(GetPerUserStateManager()->is_metrics_reporting_enabled());
-
   // Client ID should only be reset when going from off->on.
   EXPECT_FALSE(GetPerUserStateManager()->is_client_id_reset());
 
@@ -252,9 +242,6 @@ TEST_F(PerUserStateManagerChromeOSTest,
   EXPECT_TRUE(GetTestProfile()->GetPrefs()->GetBoolean(
       prefs::kMetricsRequiresClientIdResetOnConsent));
 
-  // Ensure that reporting is enabled in the metrics service.
-  EXPECT_TRUE(GetPerUserStateManager()->is_metrics_reporting_enabled());
-
   // Client ID should be reset when going from off->on and user has sent
   // metrics.
   EXPECT_TRUE(GetPerUserStateManager()->is_client_id_reset());
@@ -281,9 +268,6 @@ TEST_F(PerUserStateManagerChromeOSTest,
       GetTestProfile()->GetPrefs()->GetBoolean(prefs::kMetricsUserConsent));
   EXPECT_TRUE(GetTestProfile()->GetPrefs()->GetBoolean(
       prefs::kMetricsRequiresClientIdResetOnConsent));
-
-  // Ensure that reporting is enabled in the metrics service.
-  EXPECT_TRUE(GetPerUserStateManager()->is_metrics_reporting_enabled());
 
   // Client ID should not be reset when going from off->on and user had not sent
   // metrics.
