@@ -84,7 +84,8 @@ class BatchElementChecker {
   // Turns on observer mode. When BatchElementChecker runs in observer mode, it
   // waits until any element condition checks or element checks become true.
   void EnableObserver(base::TimeDelta max_wait_time,
-                      base::TimeDelta periodic_check_interval);
+                      base::TimeDelta periodic_check_interval,
+                      base::TimeDelta extra_timeout);
 
   // Runs the checks. Once all checks are done, calls the callbacks registered
   // to AddAllDoneCallback().
@@ -209,6 +210,7 @@ class BatchElementChecker {
   bool use_observers_ = false;
   base::TimeDelta observer_max_wait_time_;
   base::TimeDelta observer_periodic_check_interval_;
+  base::TimeDelta observer_extra_timeout_;
 
   std::vector<base::OnceCallback<void()>> all_done_;
 

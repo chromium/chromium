@@ -77,7 +77,8 @@ void BatchElementChecker::AddAllDoneCallback(
 
 void BatchElementChecker::EnableObserver(
     base::TimeDelta max_wait_time,
-    base::TimeDelta periodic_check_interval) {
+    base::TimeDelta periodic_check_interval,
+    base::TimeDelta extra_timeout) {
   DCHECK(!use_observers_);
   DCHECK(!started_);
   DCHECK(get_field_value_callbacks_.empty())
@@ -87,6 +88,7 @@ void BatchElementChecker::EnableObserver(
   use_observers_ = true;
   observer_max_wait_time_ = max_wait_time;
   observer_periodic_check_interval_ = periodic_check_interval;
+  observer_extra_timeout_ = extra_timeout;
 }
 
 void BatchElementChecker::Run(WebController* web_controller) {
@@ -163,6 +165,7 @@ void BatchElementChecker::RunWithObserver(WebController* web_controller) {
   started_ = true;
   auto result = web_controller->ObserveSelectors(
       selectors, observer_max_wait_time_, observer_periodic_check_interval_,
+      observer_extra_timeout_,
       base::BindRepeating(&BatchElementChecker::OnResultsUpdated,
                           weak_ptr_factory_.GetWeakPtr())
 

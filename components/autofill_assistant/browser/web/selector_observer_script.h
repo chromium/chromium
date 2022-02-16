@@ -24,12 +24,16 @@ namespace selector_observer_script {
 // (9) Returns a promise that fulfills whenever the status of a selector has
 //     changed
 // (10) Listened twice for callbacks, send an empty update to the old one.
-//
+// (11) Since the polling-based WaitForDom checks less often, this tries to
+//      approximate the number of checks the polling-based WaitForDom would have
+//      done so that the time they take when element is not found is
+//      approximately equivalent.
 
 constexpr char kWaitForChangeScript[] = R"eof(
   const UPDATE = "update";
   const LISTENER_SUPERSEDED = "listenerSuperseded"
   const PAGE_UNLOAD = "pageUnload";
+  const TIMEOUT = "timeout";
 
   let pollingTid = null;
   let hasChanges = false;
@@ -40,6 +44,8 @@ constexpr char kWaitForChangeScript[] = R"eof(
   const ownerWindow = (rootElement.ownerDocument || rootElement).defaultView;
   const pendingElements = {}; // (3)
   let nextElementId = 0;
+
+  const now = () => (new Date()).getTime();
 
   ownerWindow.addEventListener("unload", () => {
     if (pendingCallback) {
@@ -57,11 +63,24 @@ constexpr char kWaitForChangeScript[] = R"eof(
     return Array.isArray(result) ? result[0] : result;
   };
 
-  let count = 0;
-  let time = 0;
+  let checkCount = 0;
+  let selectorCheckTime = 0;
+  let startTime = null;
+
+  // (11)
+  const waitTimeApprox = () => {
+    const runTime = (now() - startTime);
+    const count = 1 + Math.floor(Math.min(runTime, maxWaitTime) / pollInterval);
+    const avgCheckTime = selectorCheckTime / checkCount;
+    return runTime - count * avgCheckTime;
+  };
+
   const onChange = () => {
-    count += 1;
-    const start = (new Date()).getTime();
+    if (startTime == null) {
+      startTime = now();
+    }
+    checkCount += 1;
+    const start = now();
     if (pollingTid) clearTimeout(pollingTid);
     pollingTid = setTimeout(onChange, pollInterval);
 
@@ -74,11 +93,18 @@ constexpr char kWaitForChangeScript[] = R"eof(
       }
     }
 
-    const end = (new Date()).getTime();
-    time += (end - start);
     if (hasChanges && pendingCallback) {
       pendingCallback(UPDATE);
       pendingCallback = null;
+    }
+    const end = now();
+    selectorCheckTime += (end - start);
+    if (waitTimeApprox() >= maxWaitTime) {
+      if (pendingCallback) {
+        pendingCallback(TIMEOUT);
+        pendingCallback = null;
+      }
+      terminate();
     }
   };
 
@@ -103,7 +129,12 @@ constexpr char kWaitForChangeScript[] = R"eof(
   const buildResult = () => {
     // (6)
     const updates = [];
-    const result = { updates, status: UPDATE, timing: { count, time } };
+    const result = {
+      updates,
+      status: UPDATE,
+      waitTimeRemaining: (maxWaitTime - waitTimeApprox()) | 0,
+      timing: { checkCount, selectorCheckTime },
+    };
     const indexes = new WeakMap();
 
     selectors.forEach(([_, { selectorId, isLeafFrame }]) => {
@@ -165,6 +196,10 @@ constexpr char kWaitForChangeScript[] = R"eof(
         // (10)
         pendingCallback(LISTENER_SUPERSEDED);
         pendingCallback = null;
+      }
+
+      if (startTime && waitTimeApprox() >= maxWaitTime) {
+        return Promise.resolve({ status: TIMEOUT });
       }
 
       return (new Promise((fulfill) => {

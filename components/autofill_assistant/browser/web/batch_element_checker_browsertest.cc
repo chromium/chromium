@@ -21,6 +21,8 @@
 #include "base/numerics/clamped_math.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill_assistant/browser/base_browsertest.h"
@@ -120,7 +122,8 @@ class BatchElementCheckerBrowserTest
             ObserverBatchElementCheckerAllDoneCallback,
         run_loop.QuitClosure(), &expected_results, &actual_results));
 
-    checker.EnableObserver(base::Milliseconds(30000), base::Milliseconds(1000));
+    checker.EnableObserver(base::Seconds(30), base::Seconds(1),
+                           base::Seconds(15));
     checker.Run(web_controller_.get());
     run_loop.Run();
     EXPECT_EQ(web_controller_->pending_workers_.size(), 0u);
@@ -331,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest, SelectorObserver) {
         /* proto = */
         Selector({"#iframeExternal", ".dynamic.about-2-seconds"}).proto,
         /* strict = */ true}},
-      base::Milliseconds(30000), base::Milliseconds(1000), update_callback);
+      base::Seconds(30), base::Seconds(1), base::Seconds(15), update_callback);
 
   run_loop.Run();
   ASSERT_TRUE(expected_updates.empty());
@@ -371,7 +374,87 @@ IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest,
       {{/* selector_id = */ button_id,
         /* proto = */ Selector({"#iframeRedirecting", "#button"}).proto,
         /* strict = */ true}},
-      base::Milliseconds(30000), base::Milliseconds(1000), update_callback);
+      base::Seconds(30), base::Seconds(1), base::Seconds(15), update_callback);
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest,
+                       SelectorObserverTimeout) {
+  base::RunLoop run_loop;
+
+  base::MockCallback<base::RepeatingCallback<void(
+      const ClientStatus& status,
+      const std::vector<SelectorObserver::Update>& updates,
+      SelectorObserver* observer)>>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run)
+      .WillOnce([](const ClientStatus& status,
+                   const std::vector<SelectorObserver::Update>& updates,
+                   SelectorObserver* observer) {
+        // First call informs of the initial state of the selectors.
+        EXPECT_TRUE(status.ok());
+        EXPECT_EQ(updates.size(), 1u);
+        observer->Continue();
+      })
+      .WillOnce([&](const ClientStatus& status,
+                    const std::vector<SelectorObserver::Update>& updates,
+                    SelectorObserver* observer) {
+        // Second call when it timeouts.
+        EXPECT_EQ(status.proto_status(), ELEMENT_RESOLUTION_FAILED);
+        EXPECT_EQ(updates.size(), 0u);
+        run_loop.Quit();
+      });
+
+  web_controller_->ObserveSelectors(
+      {{/* selector_id = */ SelectorObserver::SelectorId(1),
+        /* proto = */ Selector({"#does_not_exist"}).proto,
+        /* strict = */ true}},
+      base::Milliseconds(300), base::Seconds(1), base::Seconds(15),
+      mock_callback.Get());
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest,
+                       SelectorObserverShortMaxWaitTime) {
+  base::RunLoop run_loop;
+  const SelectorObserver::SelectorId button_id(15);
+  base::MockCallback<base::OnceCallback<void(
+      const ClientStatus& status,
+      const base::flat_map<SelectorObserver::SelectorId, DomObjectFrameStack>&
+          elements)>>
+      element_callback;
+  EXPECT_CALL(element_callback, Run)
+      .WillOnce([&](const ClientStatus& status,
+                    const base::flat_map<SelectorObserver::SelectorId,
+                                         DomObjectFrameStack>& elements) {
+        EXPECT_TRUE(status.ok());
+        run_loop.Quit();
+      });
+
+  base::MockCallback<base::RepeatingCallback<void(
+      const ClientStatus& status,
+      const std::vector<SelectorObserver::Update>& updates,
+      SelectorObserver* observer)>>
+      update_callback;
+  EXPECT_CALL(update_callback, Run)
+      .WillOnce([&](const ClientStatus& status,
+                    const std::vector<SelectorObserver::Update>& updates,
+                    SelectorObserver* observer) {
+        EXPECT_TRUE(status.ok());
+        EXPECT_EQ(updates.size(), 1u);
+        EXPECT_EQ(updates[0].selector_id, button_id);
+        EXPECT_TRUE(updates[0].match);
+        observer->GetElementsAndStop({}, element_callback.Get());
+      });
+
+  web_controller_->ObserveSelectors(
+      {{/* selector_id = */ button_id,
+        /* proto = */ Selector({"#iframe", "#button"}).proto,
+        /* strict = */ true}},
+      base::Milliseconds(1), base::Seconds(1), base::Seconds(15),
+      update_callback.Get());
 
   run_loop.Run();
 }

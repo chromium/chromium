@@ -15,7 +15,9 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_dom.h"
@@ -61,20 +63,21 @@ SelectorObserver::RequestedElement::RequestedElement(const RequestedElement&) =
 
 SelectorObserver::SelectorObserver(
     const std::vector<ObservableSelector>& selectors,
-    base::TimeDelta timeout_ms,
+    base::TimeDelta max_wait_time,
     base::TimeDelta periodic_check_interval,
+    base::TimeDelta extra_timeout,
     content::WebContents* web_contents,
     DevtoolsClient* devtools_client,
     const UserData* user_data,
     Callback update_callback)
     : periodic_check_interval_(periodic_check_interval),
-      max_wait_time_(timeout_ms),
-      started_(base::TimeTicks::Now()),
+      extra_timeout_(extra_timeout),
       devtools_client_(devtools_client),
       web_contents_(web_contents),
       user_data_(user_data),
       update_callback_(update_callback) {
   const DomRoot root(/* frame_id = */ "", DomRoot::kUseMainDoc);
+  wait_time_remaining_ms_[root] = max_wait_time.InMilliseconds();
   for (auto& selector : selectors) {
     selectors_.emplace(std::make_pair(selector.selector_id, selector));
     // Every selector starts in the root frame
@@ -103,8 +106,8 @@ ClientStatus SelectorObserver::Start(base::OnceClosure finished_callback) {
   ResolveObjectIdAndInjectFrame(root, 0);
 
   timeout_timer_ = std::make_unique<base::OneShotTimer>();
-  timeout_timer_->Start(FROM_HERE, max_wait_time_,
-                        base::BindOnce(&SelectorObserver::OnTimeout,
+  timeout_timer_->Start(FROM_HERE, MaxTimeRemaining() + extra_timeout_,
+                        base::BindOnce(&SelectorObserver::OnHardTimeout,
                                        weak_ptr_factory_.GetWeakPtr()));
 
   return OkClientStatus();
@@ -377,6 +380,7 @@ void SelectorObserver::InjectOrAddSelectorsToDomRoot(
     size_t frame_depth,
     const std::vector<SelectorId>& selector_ids) {
   std::vector<SelectorId> new_selector_ids;
+  --pending_frame_injects_;
 
   for (const auto& selector_id : selector_ids) {
     auto key = std::make_pair(selector_id, frame_depth);
@@ -400,6 +404,8 @@ void SelectorObserver::InjectOrAddSelectorsToDomRoot(
     AddSelectorsToDomRoot(dom_root, new_selector_ids);
   } else if (!frame_depth_.contains(dom_root)) {
     // We haven't injected yet
+    wait_time_remaining_ms_[dom_root] =
+        std::max(1, static_cast<int>(MaxTimeRemaining().InMilliseconds()));
     VLOG(2) << "Injecting into new frame";
     ResolveObjectIdAndInjectFrame(dom_root, frame_depth);
   }
@@ -555,9 +561,15 @@ void SelectorObserver::OnHasChanges(
   } else if (response_status == "pageUnload") {
     OnFrameUnloaded(dom_root);
     return;
+  } else if (response_status == "timeout") {
+    wait_time_remaining_ms_[dom_root] = 0;
+    CheckTimeout();
+    return;
   }
   DCHECK_EQ(response_status, "update");
 
+  int wait_time_remaining = value->FindKey("waitTimeRemaining")->GetInt();
+  wait_time_remaining_ms_[dom_root] = wait_time_remaining;
   const base::Value* updates_val = value->FindKey("updates");
   DCHECK(updates_val->is_list());
   auto update_list = updates_val->GetListDeprecated();
@@ -595,6 +607,7 @@ void SelectorObserver::OnHasChanges(
     for (const auto& entry : frames_to_inject) {
       element_ids.push_back(entry.first);
     }
+    pending_frame_injects_ += element_ids.size();
     GetElementsByElementId(
         dom_root, element_ids,
         base::BindOnce(&SelectorObserver::OnGetFramesObjectIds,
@@ -774,8 +787,26 @@ void SelectorObserver::TerminateUnneededDomRoots() {
   }
 }
 
-void SelectorObserver::OnTimeout() {
+void SelectorObserver::OnHardTimeout() {
+  // This timeout is unexpected, means something went wrong along the way. End
+  // with an error.
   FailWithError(ClientStatus(TIMED_OUT));
+}
+
+base::TimeDelta SelectorObserver::MaxTimeRemaining() const {
+  int max = 0;
+  for (const auto& entry : wait_time_remaining_ms_) {
+    max = std::max(max, entry.second);
+  }
+  return base::Milliseconds(max);
+}
+
+void SelectorObserver::CheckTimeout() {
+  if (pending_frame_injects_ == 0 && MaxTimeRemaining().is_zero()) {
+    // We didn't didn't match the required condition in the allotted time. It
+    // could be expected from the script perspective.
+    FailWithError(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+  }
 }
 
 std::string SelectorObserver::BuildExpression(const DomRoot& dom_root) const {
@@ -784,9 +815,14 @@ std::string SelectorObserver::BuildExpression(const DomRoot& dom_root) const {
   snippet.AddLine(
       {"const pollInterval = ",
        base::NumberToString(periodic_check_interval_.InMilliseconds()), ";"});
-  auto max_runtime = max_wait_time_ - (base::TimeTicks::Now() - started_);
+  int max_wait_time = wait_time_remaining_ms_.at(dom_root);
   snippet.AddLine({"const maxRuntime = ",
-                   base::NumberToString(max_runtime.InMilliseconds()), ";"});
+                   base::NumberToString(base::saturated_cast<int>(
+                       (base::Milliseconds(max_wait_time) + extra_timeout_)
+                           .InMilliseconds())),
+                   ";"});
+  snippet.AddLine(
+      {"const maxWaitTime = ", base::NumberToString(max_wait_time), ";"});
   snippet.AddLine("const selectors = [");
 
   size_t depth = frame_depth_.at(dom_root);

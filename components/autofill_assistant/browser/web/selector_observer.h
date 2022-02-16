@@ -91,8 +91,9 @@ class SelectorObserver : public WebControllerWorker {
   // |content::WebContents| and |DevtoolsClient| need to outlive this instance.
   // |UserData| needs to exist until Start() is called.
   explicit SelectorObserver(const std::vector<ObservableSelector>& selectors,
-                            base::TimeDelta timeout_ms,
+                            base::TimeDelta max_wait_time,
                             base::TimeDelta periodic_check_interval,
+                            base::TimeDelta extra_timeout,
                             content::WebContents*,
                             DevtoolsClient*,
                             const UserData*,
@@ -142,7 +143,8 @@ class SelectorObserver : public WebControllerWorker {
     ERROR = 4,
   };
   State state_ = State::INITIALIZED;
-  base::TimeDelta periodic_check_interval_;
+  const base::TimeDelta periodic_check_interval_;
+  const base::TimeDelta extra_timeout_;
   base::TimeDelta max_wait_time_;
   base::TimeTicks started_;
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
@@ -158,6 +160,7 @@ class SelectorObserver : public WebControllerWorker {
       const ClientStatus&,
       const base::flat_map<SelectorId, DomObjectFrameStack>&)>
       get_elements_callback_;
+  int pending_frame_injects_ = 0;
   int pending_get_elements_responses_;
   base::flat_map<SelectorId, DomObjectFrameStack> get_elements_response_;
 
@@ -172,6 +175,8 @@ class SelectorObserver : public WebControllerWorker {
 
   // How deep is a frame (root = 0). frame_id -> depth
   base::flat_map<DomRoot, size_t> frame_depth_;
+
+  base::flat_map<DomRoot, int> wait_time_remaining_ms_;
 
   // Stop watching and free held resources.
   void Stop();
@@ -296,8 +301,9 @@ class SelectorObserver : public WebControllerWorker {
   void InvalidateDeeperFrames(const SelectorId& selector_id, const DomRoot&);
 
   void TerminateUnneededDomRoots();
-
-  void OnTimeout();
+  void OnHardTimeout();
+  void CheckTimeout();
+  base::TimeDelta MaxTimeRemaining() const;
 
   std::string BuildExpression(const DomRoot&) const;
   std::string BuildUpdateExpression(

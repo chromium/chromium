@@ -173,6 +173,10 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
   } else {
     integration_test_settings.reset();
   }
+  if (proto.has_selector_observer_extra_timeout_ms()) {
+    selector_observer_extra_timeout =
+        base::Milliseconds(proto.selector_observer_extra_timeout_ms());
+  }
 }
 
 }  // namespace autofill_assistant

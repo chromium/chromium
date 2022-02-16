@@ -1190,7 +1190,7 @@ void ScriptExecutor::WaitForDomOperation::RunChecks(
   } else if (wait_time_stopwatch_.TotalElapsed() < retry_timer_.period()) {
     // It's the first run of the checks, set the total time waited to 0.
     wait_time_total_ = base::Seconds(0);
-  } else if (use_observers_) {
+  } else {
     // If this is not the first run of the checks, in order to estimate
     // the real cost of periodic checks, half the duration of the retry
     // timer period is removed from the total wait time. This is to
@@ -1230,8 +1230,10 @@ void ScriptExecutor::WaitForDomOperation::RunChecks(
     batch_element_checker_->EnableObserver(
         /* max_wait_time= */ max_wait_time_ -
             wait_time_stopwatch_.TotalElapsed(),
-        /* periodic_check_interval= */ main_script_->delegate_->GetSettings()
-            .periodic_element_check_interval);
+        /* periodic_check_interval= */
+        main_script_->delegate_->GetSettings().periodic_element_check_interval,
+        /* extra_timeout= */
+        main_script_->delegate_->GetSettings().selector_observer_extra_timeout);
   }
   batch_element_checker_->Run(delegate_->GetWebController());
 }

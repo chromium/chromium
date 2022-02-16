@@ -245,7 +245,7 @@ message OverlayImageProto {
   optional ClientDimensionProto text_size = 7;
 }
 
-// Next ID: 24
+// Next ID: 25
 message ClientSettingsProto {
   message IntegrationTestSettings {
     // Disables animations for the poodle and the progress bar.
@@ -423,6 +423,11 @@ message ClientSettingsProto {
   // |display_strings|, even if empty. The provided locale should be in BCP 47
   // format, e.g. "en-US".
   optional string display_strings_locale = 23;
+
+  // Extra time SelectorObserver has to finish. If it takes longer than
+  // max_wait_time + extra_timeout (this value) it assumes something went
+  // wrong and fails with a |TIMED_OUT| error.
+  optional int32 selector_observer_extra_timeout_ms = 24;
 
   reserved 8 to 11;
 }
