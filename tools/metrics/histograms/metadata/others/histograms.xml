@@ -11941,6 +11941,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Setup.Install.RemoveProfileStatistics"
     enum="BooleanDeletedOrNot" expires_after="M87">
+  <obsolete>
+    Removed in M100 (expired a long time ago).
+  </obsolete>
   <owner>waffles@chromium.org</owner>
   <summary>
     Hit following a successful install or update when the legacy profile count
