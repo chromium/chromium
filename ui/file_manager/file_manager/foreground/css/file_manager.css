@@ -1543,7 +1543,7 @@ body.files-ng grid .thumbnail-bottom .detail-icon:active {
 }
 
 .thumbnail-grid .img-container {
-  background-color: rgb(230, 230, 230);
+  background-color: var(--cros-highlight-color-hover);
   height: 100%;
   width: 100%;
 }
@@ -1555,7 +1555,7 @@ body.files-ng .thumbnail-grid .img-container {
 
 .thumbnail-grid .img-container > .thumbnail {
   -webkit-user-drag: none;
-  background-color: rgb(230, 230, 230);
+  background-color: var(--cros-highlight-color-hover);
   background-position: center;
   background-repeat: no-repeat;
   height: 100%;
@@ -1998,7 +1998,7 @@ body.check-select #list-container li[selected] .detail-checkmark {
 
 #list-container list li .detail-thumbnail > .thumbnail {
   -webkit-user-drag: none;
-  background-color: rgb(245, 245, 245);
+  background-color: var(--cros-highlight-color-hover);
   background-position: center;
   background-size: cover;
   border-radius: 14px;
