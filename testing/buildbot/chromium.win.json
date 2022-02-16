@@ -1855,7 +1855,7 @@
               "os": "Windows-10-19042"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -3314,7 +3314,7 @@
               "os": "Windows-10-19042"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "views_examples_unittests",
         "test_id_prefix": "ninja://ui/views/examples:views_examples_unittests/"

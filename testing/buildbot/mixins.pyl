@@ -236,16 +236,6 @@
       },
     },
   },
-  'chrome-gold-service-account': {
-    'swarming': {
-      'service_account': 'chrome-gold@chops-service-accounts.iam.gserviceaccount.com',
-    },
-  },
-  'chrome-gpu-gold-service-account': {
-    'swarming': {
-      'service_account': 'chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com',
-    },
-  },
   'chrome-swarming-pool': {
     'swarming': {
       'dimensions': {

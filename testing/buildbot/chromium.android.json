@@ -2720,7 +2720,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 14
         },
         "test": "chrome_public_test_apk",
@@ -2830,7 +2830,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
@@ -6360,7 +6360,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
         "test": "chrome_public_test_apk",
@@ -6418,7 +6418,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
@@ -9172,7 +9172,7 @@
               "os": "Android"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test": "chrome_public_test_vr_apk",
@@ -9497,7 +9497,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
         "test": "chrome_public_test_apk",
@@ -9614,7 +9614,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test": "chrome_public_test_vr_apk",
@@ -9728,7 +9728,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
@@ -10104,7 +10104,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test": "chrome_public_test_vr_apk",
@@ -11588,7 +11588,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
         "test": "chrome_public_test_apk",
@@ -11668,7 +11668,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -11744,7 +11744,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
@@ -16081,7 +16081,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 25
         },
         "test": "chrome_public_test_apk",
@@ -16191,7 +16191,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
@@ -19129,7 +19129,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
         "test": "chrome_public_test_apk",
@@ -19188,7 +19188,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
@@ -23914,7 +23914,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -24840,7 +24840,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
         "test": "chrome_public_test_apk",
@@ -24953,7 +24953,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
@@ -28264,7 +28264,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_java_test_wpr_tests",
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_wpr_tests/"
@@ -28485,7 +28485,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 25
         },
         "test": "chrome_public_test_apk",
@@ -28563,7 +28563,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
@@ -33523,7 +33523,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
@@ -35990,7 +35990,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test": "chrome_public_test_vr_apk",
@@ -36631,7 +36631,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
         "test": "chrome_public_test_apk",
@@ -36689,7 +36689,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
@@ -38657,7 +38657,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 30
         },
         "test": "chrome_public_test_apk",
@@ -38737,7 +38737,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -38813,7 +38813,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
