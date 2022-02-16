@@ -25,10 +25,17 @@
 #include "ui/views/controls/label.h"
 #include "url/gurl.h"
 
+namespace ash {
+
 namespace {
 
 // The size of the insets for the `count_label_`.
 constexpr int kCountLabelInsetSize = 4;
+
+// When fetching images from the app service, request one of size 64, which is a
+// common cached image size. With a higher resolution it will look better after
+// resizing.
+constexpr int kAppIdImageSize = 64;
 
 // Return the formatted string for `count`. If `count` is <=9, the string will
 // be "+<count>". If `count` is >9, the string will be "9+".
@@ -36,9 +43,14 @@ std::u16string GetCountString(int count) {
   return base::UTF8ToUTF16(count > 9 ? "9+" : base::StringPrintf("+%i", count));
 }
 
-}  // namespace
+gfx::ImageSkia CreateResizedImageToIconSize(const gfx::ImageSkia& icon) {
+  return gfx::ImageSkiaOperations::CreateResizedImage(
+      icon, skia::ImageOperations::RESIZE_BEST,
+      gfx::Size(DesksTemplatesIconView::kIconSize,
+                DesksTemplatesIconView::kIconSize));
+}
 
-namespace ash {
+}  // namespace
 
 DesksTemplatesIconView::DesksTemplatesIconView() = default;
 
@@ -85,9 +97,7 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
           icon_identifier_, static_cast<DesksTemplatesIconContainer*>(parent())
                                 ->incognito_window_color_provider());
   if (chrome_icon.has_value()) {
-    icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-        chrome_icon.value(), skia::ImageOperations::RESIZE_BEST,
-        gfx::Size(kIconSize, kIconSize)));
+    icon_view_->SetImage(CreateResizedImageToIconSize(chrome_icon.value()));
     return;
   }
 
@@ -96,7 +106,7 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
   GURL potential_url{icon_identifier_};
   if (!potential_url.is_valid()) {
     delegate->GetIconForAppId(
-        icon_identifier_, kIconSize,
+        icon_identifier_, kAppIdImageSize,
         base::BindOnce(&DesksTemplatesIconView::OnIconLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -132,9 +142,7 @@ void DesksTemplatesIconView::Layout() {
 
 void DesksTemplatesIconView::OnIconLoaded(const gfx::ImageSkia& icon) {
   if (!icon.isNull()) {
-    icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-        icon, skia::ImageOperations::RESIZE_BEST,
-        gfx::Size(kIconSize, kIconSize)));
+    icon_view_->SetImage(CreateResizedImageToIconSize(icon));
     return;
   }
   LoadDefaultIcon();
@@ -143,12 +151,14 @@ void DesksTemplatesIconView::OnIconLoaded(const gfx::ImageSkia& icon) {
 void DesksTemplatesIconView::LoadDefaultIcon() {
   const ui::NativeTheme* native_theme =
       ui::NativeTheme::GetInstanceForNativeUi();
-  int resource_id = native_theme && native_theme->ShouldUseDarkColors()
-                        ? IDR_DEFAULT_FAVICON_DARK
-                        : IDR_DEFAULT_FAVICON;
-  icon_view_->SetImage(ui::ResourceBundle::GetSharedInstance()
-                           .GetImageNamed(resource_id)
-                           .AsImageSkia());
+  // Use a higher resolution image as it will look better after resizing.
+  const int resource_id = native_theme && native_theme->ShouldUseDarkColors()
+                              ? IDR_DEFAULT_FAVICON_DARK_64
+                              : IDR_DEFAULT_FAVICON_64;
+  icon_view_->SetImage(
+      CreateResizedImageToIconSize(ui::ResourceBundle::GetSharedInstance()
+                                       .GetImageNamed(resource_id)
+                                       .AsImageSkia()));
 
   // Move `this` to the back of the visible icons, i.e. before any invisible
   // siblings and before the overflow counter,
