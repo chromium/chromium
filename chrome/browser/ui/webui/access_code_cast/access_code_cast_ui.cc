@@ -121,8 +121,15 @@ void AccessCodeCastDialog::GetWebUIMessageHandlers(
 
 void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
   const int kDefaultWidth = 448;
+
+#if BUILDFLAG(IS_WIN)
+  const int kWindowsHeight = 300;
+  size->SetSize(kDefaultWidth, kWindowsHeight);
+#else
   const int kDefaultHeight = 271;
   size->SetSize(kDefaultWidth, kDefaultHeight);
+#endif // IS_WIN
+
 }
 
 std::string AccessCodeCastDialog::GetDialogArgs() const {
