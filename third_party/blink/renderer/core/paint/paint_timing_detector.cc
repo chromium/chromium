@@ -258,6 +258,12 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     uint64_t image_paint_size,
     ImageRecord* image_record,
     double image_bpp) {
+  // (Experimental) Images with insufficient entropy are not considered
+  // candidates for LCP
+  if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {
+    if (image_bpp < features::kMinimumEntropyForLCP.Get())
+      return false;
+  }
   if (!HasLargestImagePaintChanged(image_paint_time, image_paint_size))
     return false;
 

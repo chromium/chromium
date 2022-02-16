@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/paint/largest_contentful_paint_calculator.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
@@ -172,7 +174,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, ImageLargerText) {
     <img id='target'/>
     <p>This text should be larger than the image!!!!</p>
   )HTML");
-  SetImage("target", 3, 3);
+  SetImage("target", 3, 3, 100);
   UpdateAllLifecyclePhasesForTest();
   SimulateImagePresentationPromise();
   EXPECT_EQ(LargestReportedSize(), 9u);
@@ -282,6 +284,76 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestTextRemoved) {
   // The LCP should not move after removal.
   EXPECT_GT(LargestReportedSize(), 50u);
   EXPECT_EQ(CountCandidates(), 2u);
+}
+
+TEST_F(LargestContentfulPaintCalculatorTest, NoPaint) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  UpdateLargestContentfulPaintCandidate();
+  EXPECT_EQ(LargestReportedSize(), 0u);
+  EXPECT_EQ(CountCandidates(), 0u);
+}
+
+TEST_F(LargestContentfulPaintCalculatorTest, SingleImageExcludedForEntropy) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      blink::features::kExcludeLowEntropyImagesFromLCP, {{"min_bpp", "2.0"}});
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <img id='target'/>
+  )HTML");
+  // 600 bytes will cause a calculated entropy of 0.32bpp, which is below the
+  // 2bpp threshold.
+  SetImage("target", 100, 150, 600);
+  UpdateAllLifecyclePhasesForTest();
+  UpdateLargestContentfulPaintCandidate();
+
+  EXPECT_EQ(LargestReportedSize(), 0u);
+  EXPECT_EQ(CountCandidates(), 0u);
+}
+
+TEST_F(LargestContentfulPaintCalculatorTest, LargerImageExcludedForEntropy) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      blink::features::kExcludeLowEntropyImagesFromLCP, {{"min_bpp", "2.0"}});
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <img id='small'/>
+    <img id='large'/>
+  )HTML");
+  // Smaller image has 16 bpp of entropy, enough to be considered for LCP.
+  // Larger image has only 0.32 bpp, which is below the 2bpp threshold.
+  SetImage("small", 3, 3, 18);
+  SetImage("large", 100, 200, 800);
+  UpdateAllLifecyclePhasesForTest();
+  SimulateImagePresentationPromise();
+
+  EXPECT_EQ(LargestReportedSize(), 9u);
+  EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 16.0f);
+  EXPECT_EQ(CountCandidates(), 1u);
+}
+
+TEST_F(LargestContentfulPaintCalculatorTest,
+       LowEntropyImageNotExcludedAtLowerThreshold) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      blink::features::kExcludeLowEntropyImagesFromLCP, {{"min_bpp", "0.02"}});
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <img id='small'/>
+    <img id='large'/>
+  )HTML");
+  // Smaller image has 16 bpp of entropy, enough to be considered for LCP.
+  // Larger image has 0.32 bpp, which is now above the 0.2bpp threshold.
+  SetImage("small", 3, 3, 18);
+  SetImage("large", 100, 200, 800);
+  UpdateAllLifecyclePhasesForTest();
+  SimulateImagePresentationPromise();
+
+  EXPECT_EQ(LargestReportedSize(), 20000u);
+  EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 0.32f);
 }
 
 }  // namespace blink

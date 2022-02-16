@@ -45,6 +45,17 @@ const base::Feature kCSSContainerQueries{"CSSContainerQueries",
 const base::Feature kConversionMeasurement{"ConversionMeasurement",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether LCP calculations should exclude low-entropy images. If
+// enabled, then the associated parameter sets the cutoff, expressed as the
+// minimum number of bits of encoded image data used to encode each rendered
+// pixel. Note that this is not just pixels of decoded image data; the rendered
+// size includes any scaling applied by the rendering engine to display the
+// content.
+const base::Feature kExcludeLowEntropyImagesFromLCP{
+    "ExcludeLowEntropyImagesFromLCP", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<double> kMinimumEntropyForLCP{
+    &kExcludeLowEntropyImagesFromLCP, "min_bpp", 2};
+
 const base::Feature kGMSCoreEmoji{"GMSCoreEmoji",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 

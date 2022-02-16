@@ -46,6 +46,11 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
 
   ImageRecord() = default;
 
+  // Returns the image's entropy, in encoded-bits-per-layout-pixel, as used to
+  // determine whether the image is a potential LCP candidate. Will return 0.0
+  // if there is no `cached_image`.
+  double EntropyForLCP() const;
+
   DOMNodeId node_id = kInvalidDOMNodeId;
   WeakPersistent<const ImageResourceContent> cached_image;
   // Mind that |first_size| has to be assigned before pusing to
@@ -103,7 +108,8 @@ class CORE_EXPORT ImageRecordsManager {
   bool RecordFirstPaintAndReturnIsPending(const RecordId& record_id,
                                           const uint64_t& visual_size,
                                           const gfx::Rect& frame_visual_rect,
-                                          const gfx::RectF& root_visual_rect);
+                                          const gfx::RectF& root_visual_rect,
+                                          double bpp);
   bool IsRecordedImage(const RecordId& record_id) const {
     return recorded_images_.Contains(record_id);
   }
