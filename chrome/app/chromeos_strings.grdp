@@ -748,6 +748,9 @@
   <message name="IDS_OOBE_EULA_ACCEPT_AND_CONTINUE_BUTTON_TEXT" desc="Label on a button on the Title of Terms of Service OOBE screen to accept EULA and continue.">
     Accept and continue
   </message>
+  <message name="IDS_OOBE_ACCESSIBLE_SCREEN_NAME" desc="Text that is spoken when requesting OOBE screen name">
+    Login Dialog
+  </message>
 
   <!-- Strings for the Bluetooth pairing dialog -->
   <message name="IDS_BLUETOOTH_PAIRING_CONNECT_WRITE_NOT_PERMITTED" desc="Bluetooth pairing dialog: Error message displayed when write operation is not permitted on Bluetooth device.">
