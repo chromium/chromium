@@ -488,6 +488,42 @@
             ]
         }
     ],
+    "AssistMultiWord": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithGboard_20220216",
+                    "params": {
+                        "group": "gboard"
+                    },
+                    "enable_features": [
+                        "AssistMultiWord"
+                    ]
+                },
+                {
+                    "name": "EnabledWithGboardRelaxedA_20220216",
+                    "params": {
+                        "group": "gboard_relaxed_a"
+                    },
+                    "enable_features": [
+                        "AssistMultiWord"
+                    ]
+                },
+                {
+                    "name": "EnabledWithGboardRelaxedB_20220216",
+                    "params": {
+                        "group": "gboard_relaxed_b"
+                    },
+                    "enable_features": [
+                        "AssistMultiWord"
+                    ]
+                }
+            ]
+        }
+    ],
     "AsyncFontAccess": [
         {
             "platforms": [
