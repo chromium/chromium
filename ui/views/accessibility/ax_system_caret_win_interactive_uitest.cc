@@ -300,7 +300,8 @@ TEST_F(AXSystemCaretWinTest, TestMovingWindow) {
   EXPECT_EQ(height, height3);
 }
 
-TEST_F(AXSystemCaretWinTest, TestCaretMSAAEvents) {
+// TODO(https://crbug.com/1294822): This test is flaky.
+TEST_F(AXSystemCaretWinTest, DISABLED_TestCaretMSAAEvents) {
   TextfieldTestApi textfield_test_api(textfield_);
   Microsoft::WRL::ComPtr<IAccessible> caret_accessible;
   gfx::NativeWindow native_window = widget_->GetNativeWindow();
