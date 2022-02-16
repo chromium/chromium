@@ -147,6 +147,11 @@ void ShareSubmenuModel::MenuClosed(SimpleMenuModel* source) {
 }
 
 void ShareSubmenuModel::AddGenerateQRCodeItem() {
+  if (!qrcode_generator::QRCodeGeneratorBubbleController::IsGeneratorAvailable(
+          url_)) {
+    return;
+  }
+
   switch (context_) {
     case Context::IMAGE:
       AddItemWithStringId(IDC_CONTENT_CONTEXT_GENERATE_QR_CODE,

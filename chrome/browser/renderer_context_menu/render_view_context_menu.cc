@@ -1673,12 +1673,16 @@ void RenderViewContextMenu::AppendPageItems() {
   }
 #endif
 
+  // For sharing, use `embedder_web_contents_` rather than
+  // `source_web_contents_`. `source_web_contents_` returns the embedded content
+  // (e.g. the PDF extension origin).
   if (ShouldUseShareMenu()) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-        source_web_contents_, CreateDataEndpoint(true),
-        share::ShareSubmenuModel::Context::PAGE, params_.page_url,
-        source_web_contents_->GetTitle());
+        embedder_web_contents_, CreateDataEndpoint(true),
+        share::ShareSubmenuModel::Context::PAGE,
+        embedder_web_contents_->GetLastCommittedURL(),
+        embedder_web_contents_->GetTitle());
     if (share_submenu_model_->GetItemCount() > 0) {
       menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
                                          IDS_SHARE_MENU_TITLE,
@@ -1689,7 +1693,7 @@ void RenderViewContextMenu::AppendPageItems() {
   // Send-Tab-To-Self (user's other devices), page level.
   bool send_tab_to_self_menu_present = false;
   if (GetBrowser() && !ShouldUseShareMenu() &&
-      send_tab_to_self::ShouldOfferFeature(source_web_contents_)) {
+      send_tab_to_self::ShouldOfferFeature(embedder_web_contents_)) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     send_tab_to_self_menu_present = true;
 #if BUILDFLAG(IS_MAC)
@@ -2593,14 +2597,14 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_SEND_TAB_TO_SELF:
       send_tab_to_self::SendTabToSelfBubbleController::
-          CreateOrGetFromWebContents(source_web_contents_)
+          CreateOrGetFromWebContents(embedder_web_contents_)
               ->ShowBubble();
       break;
 
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE: {
       auto* bubble_controller =
           qrcode_generator::QRCodeGeneratorBubbleController::Get(
-              source_web_contents_);
+              embedder_web_contents_);
       if (params_.media_type == ContextMenuDataMediaType::kImage) {
         base::RecordAction(
             UserMetricsAction("SharingQRCode.DialogLaunched.ContextMenuImage"));
