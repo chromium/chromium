@@ -8,11 +8,17 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
 #include "net/base/network_change_notifier.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/features.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/radio_utils.h"
+#endif  // BUILDFLAGS(IS_ANDROID)
 
 namespace network {
 
@@ -34,6 +40,18 @@ class BatchingDelegate
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (net::NetworkChangeNotifier::IsDefaultNetworkActive())
       return false;
+
+    if (base::PowerMonitor::IsInitialized() &&
+        base::PowerMonitor::IsOnBatteryPower()) {
+      return false;
+    }
+
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::RadioUtils::GetConnectionType() !=
+        base::android::RadioConnectionType::kCell) {
+      return false;
+    }
+#endif  // BUILDFLAGS(IS_ANDROID)
 
     if (!is_observing_default_network_) {
       net::NetworkChangeNotifier::AddDefaultNetworkActiveObserver(this);
