@@ -196,8 +196,8 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kStrings[] = {
       {"accessCodeMessage", IDS_ACCESS_CODE_CAST_ACCESS_CODE_MESSAGE},
       {"back", IDS_ACCESS_CODE_CAST_BACK},
+      {"cancel", IDS_CANCEL},
       {"cast", IDS_ACCESS_CODE_CAST_CAST},
-      {"close", IDS_CLOSE},
       {"dialogTitle", IDS_ACCESS_CODE_CAST_DIALOG_TITLE},
       {"enterCharacter", IDS_ACCESS_CODE_CAST_ENTER_CHARACTER},
       {"errorAccessCode", IDS_ACCESS_CODE_CAST_ERROR_ACCESS_CODE},
