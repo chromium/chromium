@@ -4,7 +4,9 @@ from .base import get_timeout_multiplier  # noqa: F401
 from .chrome import executor_kwargs as chrome_executor_kwargs
 from .chrome_android import ChromeAndroidBrowserBase
 from ..executors.base import WdspecExecutor  # noqa: F401
-from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
+from ..executors.executorchrome import ChromeDriverPrintRefTestExecutor  # noqa: F401
+from ..executors.executorwebdriver import (WebDriverCrashtestExecutor,  # noqa: F401
+                                           WebDriverTestharnessExecutor,  # noqa: F401
                                            WebDriverRefTestExecutor)  # noqa: F401
 
 
@@ -14,7 +16,9 @@ __wptrunner__ = {"product": "android_weblayer",
                              "wdspec": "NullBrowser"},
                  "executor": {"testharness": "WebDriverTestharnessExecutor",
                               "reftest": "WebDriverRefTestExecutor",
-                              "wdspec": "WdspecExecutor"},
+                              "print-reftest": "ChromeDriverPrintRefTestExecutor",
+                              "wdspec": "WdspecExecutor",
+                              "crashtest": "WebDriverCrashtestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
