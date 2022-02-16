@@ -343,7 +343,10 @@ bool RLZTracker::Init(bool first_run,
 }
 
 void RLZTracker::Cleanup() {
-  rlz_cache_.clear();
+  {
+    base::AutoLock lock(cache_lock_);
+    rlz_cache_.clear();
+  }
   if (delegate_)
     delegate_->Cleanup();
 }
