@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 
+import android.graphics.Color;
 import android.view.View;
 
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
+import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionViewProperties.PedalIcon;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -41,9 +46,15 @@ public final class PedalSuggestionViewBinder<T extends View>
                     view.getContext().getString(R.string.accessibility_omnibox_pedal, hint);
             view.getPedalTextView().setText(hint);
             view.getPedalTextView().setContentDescription(contentDescription);
+            final @BrandedColorScheme int brandedColorScheme =
+                    model.get(SuggestionCommonProperties.COLOR_SCHEME);
+            view.getPedalTextView().setTextColor(
+                    OmniboxResourceProvider.getSuggestionPrimaryTextColor(
+                            view.getContext(), brandedColorScheme));
         } else if (PedalSuggestionViewProperties.PEDAL_ICON == propertyKey) {
-            view.getPedalChipView().setIcon(model.get(PedalSuggestionViewProperties.PEDAL_ICON),
-                    /*tintWithTextColor=*/false);
+            PedalIcon icon = model.get(PedalSuggestionViewProperties.PEDAL_ICON);
+            view.getPedalChipView().setIcon(icon.iconRes, icon.tintWithTextColor);
+            view.getPedalChipView().setBackgroundColor(Color.TRANSPARENT);
         } else if (PedalSuggestionViewProperties.ON_PEDAL_CLICK == propertyKey) {
             view.getPedalChipView().setOnClickListener(
                     model.get(PedalSuggestionViewProperties.ON_PEDAL_CLICK));

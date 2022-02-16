@@ -184,6 +184,7 @@ public class OmniboxTestUtils {
      */
     public void setSuggestions(
             AutocompleteResult autocompleteResult, String inlineAutocompleteText) {
+        checkFocus(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             OnSuggestionsReceivedListener listener =
                     mAutocomplete.getSuggestionsReceivedListenerForTest();

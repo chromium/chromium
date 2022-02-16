@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.IntentUtils;
@@ -25,6 +24,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionViewProperties.PedalIcon;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
@@ -147,7 +147,7 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
     }
 
     @Override
-    public @DrawableRes int getPedalIcon(@OmniboxPedalType int omniboxActionType) {
+    public @NonNull PedalIcon getPedalIcon(@OmniboxPedalType int omniboxActionType) {
         switch (omniboxActionType) {
             case OmniboxPedalType.CLEAR_BROWSING_DATA:
             case OmniboxPedalType.MANAGE_PASSWORDS:
@@ -158,9 +158,9 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
             case OmniboxPedalType.MANAGE_CHROME_SETTINGS:
             case OmniboxPedalType.VIEW_CHROME_HISTORY:
             case OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY:
-                return R.drawable.fre_product_logo;
+                return new PedalIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
             case OmniboxPedalType.PLAY_CHROME_DINO_GAME:
-                return R.drawable.ic_dino;
+                return new PedalIcon(R.drawable.ic_dino, /*tintWithTextColor=*/true);
             default:
                 // Please confirm the icon for the new pedals in
                 // chrome/browser/ui/omnibox/omnibox_pedal_implementations.cc, if the new pedals use
@@ -168,7 +168,7 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                 assert false : "New pedals need to confirm the icon and add the list above.";
                 break;
         }
-        return R.drawable.fre_product_logo;
+        return new PedalIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
     }
 
     /**

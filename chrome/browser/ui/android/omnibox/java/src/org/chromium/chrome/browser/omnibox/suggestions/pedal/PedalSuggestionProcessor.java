@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 
 import android.content.Context;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionViewProperties.PedalIcon;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxPedal;
@@ -110,11 +110,10 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
     /**
      * Get default icon for pedal suggestion.
      * @param omniboxPedal OmniboxPedal for the suggestion.
-     * @return The icon's resource id.
+     * @return The icon's information.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    @DrawableRes
-    int getPedalIcon(@NonNull OmniboxPedal omniboxPedal) {
+    PedalIcon getPedalIcon(@NonNull OmniboxPedal omniboxPedal) {
         return mOmniboxPedalDelegate.getPedalIcon(omniboxPedal.getID());
     }
 
