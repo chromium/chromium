@@ -12,3 +12,4 @@ export {
   VideoResult,
 } from './mode/index.js';
 export {CameraInfo, CameraUI, CameraViewUI} from './type.js';
+export {CameraConfig} from './type.js';

@@ -3,7 +3,12 @@
 // found in the LICENSE file.
 
 import * as animate from '../../animation.js';
-import {CameraInfo, CameraManager, CameraUI} from '../../device/index.js';
+import {
+  CameraConfig,
+  CameraInfo,
+  CameraManager,
+  CameraUI,
+} from '../../device/index.js';
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as localStorage from '../../models/local_storage.js';
@@ -110,14 +115,14 @@ export class Options implements CameraUI {
     state.set(state.State.MULTI_CAMERA, cameraInfo.devicesInfo.length >= 2);
   }
 
-  onConfigureComplete(): void {
-    this.videoDeviceId = this.cameraManager.getDeviceId();
-    this.updateMirroring(this.cameraManager.getFacing());
+  onUpdateConfig(config: CameraConfig): void {
+    this.videoDeviceId = config.deviceId;
+    this.updateMirroring(config.facing);
     this.audioTrack = this.cameraManager.getAudioTrack();
     this.updateAudioByMic();
 
     this.toggleFps.hidden = (() => {
-      if (this.cameraManager.getFacing() !== Facing.EXTERNAL) {
+      if (config.facing !== Facing.EXTERNAL) {
         return true;
       }
       const info = this.cameraManager.getCameraInfo().getCamera3DeviceInfo(

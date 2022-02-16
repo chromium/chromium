@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertInstanceof} from '../assert.js';
-import {Mode} from '../type.js';
+import {Facing, Mode} from '../type.js';
 
 import {Camera3DeviceInfo} from './camera3_device_info.js';
 import {DeviceInfoUpdater} from './device_info_updater.js';
@@ -46,9 +46,27 @@ export class CameraInfo {
   }
 }
 
+/**
+ * The configuration of currently opened camera or the configuration which
+ * camera will be opened with.
+ */
+export interface CameraConfig {
+  /**
+   * May be null for device using legacy linux VCD.
+   */
+  deviceId: string|null;
+
+  /**
+   * May be Facing.NOT_SET for device using legacy linux VCD.
+   */
+  facing: Facing;
+  mode: Mode;
+}
+
 export interface CameraUI {
   onUpdateCapability?(cameraInfo: CameraInfo): void;
-  onUpdateConfig?(): void|Promise<void>;
+  onTryingNewConfig?(config: CameraConfig): void;
+  onUpdateConfig?(config: CameraConfig): void|Promise<void>;
   onCameraUnavailable?(): void;
   onCameraAvailble?(): void;
 }

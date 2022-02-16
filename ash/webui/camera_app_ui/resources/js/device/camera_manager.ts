@@ -32,6 +32,7 @@ import {ConstraintsPreferrer} from './constraints_preferrer.js';
 import {DeviceInfoUpdater} from './device_info_updater.js';
 import {Preview} from './preview.js';
 import {
+  CameraConfig,
   CameraInfo,
   CameraUI,
   CameraViewUI,
@@ -142,16 +143,8 @@ export class CameraManager implements EventListener {
     return this.scheduler.cameraInfo;
   }
 
-  getDeviceId(): string {
-    return this.scheduler.reconfigurer.deviceId;
-  }
-
-  getFacing(): Facing {
-    return this.scheduler.reconfigurer.facing;
-  }
-
-  getMode(): Mode {
-    return this.scheduler.modes.getMode();
+  private getDeviceId(): string {
+    return this.scheduler.reconfigurer.config.deviceId;
   }
 
   getPreviewVideo(): PreviewVideo {
@@ -192,9 +185,25 @@ export class CameraManager implements EventListener {
         deviceId, resolution);
   }
 
-  async onUpdateConfig(): Promise<void> {
+  async getSupportedModes(deviceId: string): Promise<Mode[]> {
+    const modes: Mode[] = [];
+    for (const mode of Object.values(Mode)) {
+      if (await this.scheduler.modes.isSupported(mode, deviceId)) {
+        modes.push(mode);
+      }
+    }
+    return modes;
+  }
+
+  async onUpdateConfig(config: CameraConfig): Promise<void> {
     for (const ui of this.cameraUIs) {
-      await ui.onUpdateConfig?.();
+      await ui.onUpdateConfig?.(config);
+    }
+  }
+
+  onTryingNewConfig(config: CameraConfig): void {
+    for (const ui of this.cameraUIs) {
+      ui.onTryingNewConfig?.(config);
     }
   }
 
@@ -286,14 +295,14 @@ export class CameraManager implements EventListener {
     const promise = this.tryReconfigure(() => {
       state.set(PerfEvent.CAMERA_SWITCHING, true);
       const devices = this.infoUpdater.getDevicesInfo();
-      let index = devices.findIndex(
-          (entry) => entry.deviceId === this.scheduler.reconfigurer.deviceId);
+      let index =
+          devices.findIndex((entry) => entry.deviceId === this.getDeviceId());
       if (index === -1) {
         index = 0;
       }
       if (devices.length > 0) {
         index = (index + 1) % devices.length;
-        this.scheduler.reconfigurer.deviceId = devices[index].deviceId;
+        this.scheduler.reconfigurer.config.deviceId = devices[index].deviceId;
       }
     });
     if (promise === null) {
@@ -304,17 +313,24 @@ export class CameraManager implements EventListener {
     });
   }
 
+  switchMode(mode: Mode): Promise<boolean>|null {
+    return this.tryReconfigure(() => {
+      this.scheduler.reconfigurer.config.mode = mode;
+    });
+  }
+
   private setPrefResolution(
       preferer: ConstraintsPreferrer, deviceId: string,
       resolution: Resolution): Promise<boolean>|null {
     if (!this.cameraAvailable) {
       return null;
     }
-    if (deviceId !== this.scheduler.reconfigurer.deviceId) {
+    if (deviceId !== this.getDeviceId()) {
       // Changing the configure of the camera not currently opened, thus no
       // reconfiguration are required.
       preferer.changePreferredResolution(deviceId, resolution);
-      return this.onUpdateConfig().then(() => true);
+      return this.onUpdateConfig(this.scheduler.reconfigurer.config)
+          .then(() => true);
     }
     return this.tryReconfigure(() => {
       preferer.changePreferredResolution(deviceId, resolution);

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertExists, assertInstanceof} from '../assert.js';
-import {CameraManager} from '../device/index.js';
+import {CameraConfig, CameraManager} from '../device/index.js';
 import * as dom from '../dom.js';
 import {reportError} from '../error.js';
 import {setExpertMode} from '../expert.js';
@@ -342,12 +342,12 @@ export class ResolutionSettings extends BaseSettings {
         });
         this.updateResolutions();
       },
-      onUpdateConfig: () => {
+      onUpdateConfig: (config: CameraConfig) => {
         if (state.get(state.State.NO_RESOLUTION_SETTINGS)) {
           return;
         }
-        const deviceId = cameraManager.getDeviceId();
-        if (cameraManager.getMode() === Mode.VIDEO) {
+        const deviceId = config.deviceId;
+        if (config.mode === Mode.VIDEO) {
           const prefResol = cameraManager.getPrefVideoResolution(deviceId);
           if (prefResol !== null) {
             this.updateSelectedVideoResolution(deviceId, prefResol);

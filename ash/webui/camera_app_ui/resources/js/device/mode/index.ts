@@ -4,10 +4,8 @@
 
 import {
   assert,
-  assertExists,
   assertInstanceof,
 } from '../../assert.js';
-import * as dom from '../../dom.js';
 import {DeviceOperator} from '../../mojo/device_operator.js';
 import {CaptureIntent} from '../../mojo/type.js';
 import * as state from '../../state.js';
@@ -81,7 +79,7 @@ interface ModeConfig {
    * @return Resolves to boolean indicating whether the mode is supported by
    *     video device with specified device id.
    */
-  isSupported(deviceId: string): Promise<boolean>;
+  isSupported(deviceId: string|null): Promise<boolean>;
 
   isSupportPTZ(captureResolution: Resolution, previewResolution: Resolution):
       boolean;
@@ -122,7 +120,6 @@ export class Modes {
    * Capture controller of current camera mode.
    */
   current: ModeBase|null = null;
-  private readonly modesGroup = dom.get('#modes-group', HTMLElement);
   /**
    * Parameters to create mode capture controller.
    */
@@ -133,14 +130,10 @@ export class Modes {
   private readonly allModes: {[mode in Mode]: ModeConfig};
 
   private handler: CaptureHandler|null = null;
-  /**
-   * @param defaultMode Default mode to be switched to.
-   */
+
   constructor(
-      defaultMode: Mode,
       photoPreferrer: PhotoConstraintsPreferrer,
       videoPreferrer: VideoConstraintsPreferrer,
-      private readonly doSwitchMode: DoSwitchMode,
   ) {
     /**
      * Returns a set of general constraints for fake cameras.
@@ -314,63 +307,20 @@ export class Modes {
       },
     };
 
-    dom.getAll('.mode-item>input', HTMLInputElement).forEach((element) => {
-      element.addEventListener('click', (event) => {
-        if (!state.get(state.State.STREAMING) ||
-            state.get(state.State.TAKING)) {
-          event.preventDefault();
-        }
-      });
-      element.addEventListener('change', async () => {
-        if (element.checked) {
-          const mode = assertEnumVariant(Mode, element.dataset['mode']);
-          this.updateModeUI(mode);
-          state.set(state.State.MODE_SWITCHING, true);
-          const isSuccess = await this.doSwitchMode();
-          state.set(state.State.MODE_SWITCHING, false, {hasError: !isSuccess});
-        }
-      });
-    });
-
     [state.State.EXPERT, state.State.SAVE_METADATA].forEach((s) => {
       state.addObserver(s, () => {
         this.updateSaveMetadata();
       });
     });
-
-    // Set default mode when app started.
-    this.updateModeUI(defaultMode);
   }
 
   initialize(handler: CaptureHandler): void {
     this.handler = handler;
   }
 
-  private get allModeNames(): Mode[] {
-    return Object.values(Mode);
-  }
-
   private getCaptureParams(): CaptureParams {
     assert(this.captureParams !== null);
     return this.captureParams;
-  }
-
-  /**
-   * Updates state of mode related UI to the target mode.
-   */
-  private updateModeUI(mode: Mode) {
-    this.allModeNames.forEach((m) => state.set(m, m === mode));
-    const element =
-        dom.get(`.mode-item>input[data-mode=${mode}]`, HTMLInputElement);
-    element.checked = true;
-    const wrapper = assertInstanceof(element.parentElement, HTMLDivElement);
-    const scrollLeft = wrapper.offsetLeft -
-        (this.modesGroup.offsetWidth - wrapper.offsetWidth) / 2;
-    this.modesGroup.scrollTo({
-      left: scrollLeft,
-      top: 0,
-      behavior: 'smooth',
-    });
   }
 
   /**
@@ -385,17 +335,21 @@ export class Modes {
   }
 
   /**
-   * Gets all mode candidates. Desired trying sequence of candidate modes is
-   * reflected in the order of the returned array.
+   * @param deviceId
+   * @param startingMode
+   * @return Supported mode candidates for specific |deviceId| starting from
+   *     |startingMode| followed by its fallback modes.
    */
-  getModeCandidates(): Mode[] {
+  async getModeCandidates(deviceId: string|null, startingMode: Mode):
+      Promise<Mode[]> {
     const tried = new Set<Mode>();
     const results: Mode[] = [];
-    let mode = this.allModeNames.find((mode) => state.get(mode));
-    assert(mode !== undefined);
+    let mode = startingMode;
     while (!tried.has(mode)) {
       tried.add(mode);
-      results.push(mode);
+      if (await this.isSupported(mode, deviceId)) {
+        results.push(mode);
+      }
       mode = this.allModes[mode].fallbackMode;
     }
     return results;
@@ -450,20 +404,8 @@ export class Modes {
         constraints, assertInstanceof(captureResolution, Resolution));
   }
 
-  /**
-   * Gets supported modes for video device of given device id.
-   * @param deviceId Device id of the video device.
-   * @return All supported mode for the video device.
-   */
-  async getSupportedModes(deviceId: string): Promise<Mode[]> {
-    const supportedModes: Mode[] = [];
-    for (const mode of this.allModeNames) {
-      const obj = this.allModes[mode];
-      if (await obj.isSupported(deviceId)) {
-        supportedModes.push(mode);
-      }
-    }
-    return supportedModes;
+  async isSupported(mode: Mode, deviceId: string|null): Promise<boolean> {
+    return this.allModes[mode].isSupported(deviceId);
   }
 
   isSupportPTZ(
@@ -471,32 +413,6 @@ export class Modes {
       previewResolution: Resolution): boolean {
     return this.allModes[mode].isSupportPTZ(
         captureResolution, previewResolution);
-  }
-
-  /**
-   * Updates mode selection UI according to given device id.
-   */
-  async updateModeSelectionUI(deviceId: string): Promise<void> {
-    const supportedModes = await this.getSupportedModes(deviceId);
-    const items = dom.getAll('div.mode-item', HTMLDivElement);
-    let first: HTMLElement|null = null;
-    let last: HTMLElement|null = null;
-    items.forEach((el) => {
-      const radio = dom.getFrom(el, 'input[type=radio]', HTMLInputElement);
-      const supported = (supportedModes as string[])
-                            .includes(assertExists(radio.dataset['mode']));
-      el.classList.toggle('hide', !supported);
-      if (supported) {
-        if (first === null) {
-          first = el;
-        }
-        last = el;
-      }
-    });
-    items.forEach((el) => {
-      el.classList.toggle('first', el === first);
-      el.classList.toggle('last', el === last);
-    });
   }
 
   /**
@@ -514,7 +430,6 @@ export class Modes {
       await this.disableSaveMetadata();
     }
     const {mode, captureResolution} = this.getCaptureParams();
-    this.updateModeUI(mode);
     this.current = factory.produce();
     if (deviceId && captureResolution) {
       this.allModes[mode].constraintsPreferrer.updateValues(

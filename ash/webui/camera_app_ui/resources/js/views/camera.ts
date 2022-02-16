@@ -8,6 +8,7 @@ import {
   assertInstanceof,
 } from '../assert.js';
 import {
+  CameraConfig,
   CameraManager,
   CameraViewUI,
   getDefaultScanCorners,
@@ -112,6 +113,8 @@ export class Camera extends View implements CameraViewUI {
 
   private readonly openPTZPanel = dom.get('#open-ptz-panel', HTMLButtonElement);
 
+  private readonly modesGroup = dom.get('#modes-group', HTMLElement);
+
   constructor(
       protected readonly resultSaver: ResultSaver,
       private readonly cameraManager: CameraManager,
@@ -193,10 +196,36 @@ export class Camera extends View implements CameraViewUI {
     });
 
     this.cameraManager.registerCameraUI({
-      onUpdateConfig: () => {
+      onTryingNewConfig: (config: CameraConfig) => {
+        this.updateModeUI(config.mode);
+      },
+      onUpdateConfig: async (config: CameraConfig) => {
         nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
-        this.facing = this.cameraManager.getFacing();
-        this.updateActiveCamera(this.cameraManager.getDeviceId());
+        this.facing = config.facing;
+        this.updateActiveCamera(config.deviceId);
+
+        // Update current mode.
+        const supportedModes =
+            await this.cameraManager.getSupportedModes(config.deviceId);
+        const items = dom.getAll('div.mode-item', HTMLDivElement);
+        let first: HTMLElement|null = null;
+        let last: HTMLElement|null = null;
+        for (const el of items) {
+          const radio = dom.getFrom(el, 'input[type=radio]', HTMLInputElement);
+          const supported = supportedModes.includes(
+              util.assertEnumVariant(Mode, radio.dataset['mode']));
+          el.classList.toggle('hide', !supported);
+          if (supported) {
+            if (first === null) {
+              first = el;
+            }
+            last = el;
+          }
+        }
+        for (const el of items) {
+          el.classList.toggle('first', el === first);
+          el.classList.toggle('last', el === last);
+        }
       },
       onCameraUnavailable: () => {
         this.cameraReady = new WaitableEvent();
@@ -205,6 +234,24 @@ export class Camera extends View implements CameraViewUI {
         this.cameraReady.signal();
       },
     });
+
+    for (const el of dom.getAll('.mode-item>input', HTMLInputElement)) {
+      el.addEventListener('click', (event) => {
+        if (!this.cameraReady) {
+          event.preventDefault();
+        }
+      });
+      el.addEventListener('change', async () => {
+        if (el.checked) {
+          const mode = util.assertEnumVariant(Mode, el.dataset['mode']);
+          this.updateModeUI(mode);
+          state.set(state.State.MODE_SWITCHING, true);
+          const isSuccess = await this.cameraManager.switchMode(mode);
+          state.set(state.State.MODE_SWITCHING, false, {hasError: !isSuccess});
+        }
+      });
+    }
+
     this.initOpenPTZPanel();
   }
 
@@ -221,6 +268,23 @@ export class Camera extends View implements CameraViewUI {
 
     this.initVideoEncoderOptions();
     await this.initScanMode();
+  }
+
+  private updateModeUI(mode: Mode) {
+    for (const m of Object.values(Mode)) {
+      state.set(m, m === mode);
+    }
+    const element =
+        dom.get(`.mode-item>input[data-mode=${mode}]`, HTMLInputElement);
+    element.checked = true;
+    const wrapper = assertInstanceof(element.parentElement, HTMLDivElement);
+    const scrollLeft = wrapper.offsetLeft -
+        (this.modesGroup.offsetWidth - wrapper.offsetWidth) / 2;
+    this.modesGroup.scrollTo({
+      left: scrollLeft,
+      top: 0,
+      behavior: 'smooth',
+    });
   }
 
   private initOpenPTZPanel() {
