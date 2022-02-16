@@ -40,17 +40,15 @@ TEST_F(TabContentsSyncedTabDelegateTest, InvalidEntryIndexReturnsDefault) {
   std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
   TestSyncedTabDelegate delegate(web_contents.get());
 
+  sessions::SerializedNavigationEntry serialized_entry;
+
   // -1 and 2 are invalid indices because there's only one navigation
   // recorded(the initial one to "about:blank")
-  EXPECT_EQ(delegate.GetFaviconURLAtIndex(-1), GURL());
-  EXPECT_EQ(delegate.GetFaviconURLAtIndex(2), GURL());
+  delegate.GetSerializedNavigationAtIndex(-1, &serialized_entry);
+  EXPECT_EQ(serialized_entry.virtual_url(), GURL());
 
-  EXPECT_TRUE(
-      PageTransitionCoreTypeIs(delegate.GetTransitionAtIndex(-1),
-                               ui::PageTransition::PAGE_TRANSITION_LINK));
-  EXPECT_TRUE(
-      PageTransitionCoreTypeIs(delegate.GetTransitionAtIndex(2),
-                               ui::PageTransition::PAGE_TRANSITION_LINK));
+  delegate.GetSerializedNavigationAtIndex(2, &serialized_entry);
+  EXPECT_EQ(serialized_entry.virtual_url(), GURL());
 }
 
 }  // namespace

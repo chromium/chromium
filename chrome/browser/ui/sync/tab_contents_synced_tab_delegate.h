@@ -40,8 +40,6 @@ class TabContentsSyncedTabDelegate : public sync_sessions::SyncedTabDelegate {
   int GetCurrentEntryIndex() const override;
   int GetEntryCount() const override;
   GURL GetVirtualURLAtIndex(int i) const override;
-  GURL GetFaviconURLAtIndex(int i) const override;
-  ui::PageTransition GetTransitionAtIndex(int i) const override;
   std::string GetPageLanguageAtIndex(int i) const override;
   void GetSerializedNavigationAtIndex(
       int i,

@@ -11,7 +11,6 @@
 
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_id.h"
-#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace sync_sessions {
@@ -43,8 +42,6 @@ class SyncedTabDelegate {
   virtual int GetCurrentEntryIndex() const = 0;
   virtual int GetEntryCount() const = 0;
   virtual GURL GetVirtualURLAtIndex(int i) const = 0;
-  virtual GURL GetFaviconURLAtIndex(int i) const = 0;
-  virtual ui::PageTransition GetTransitionAtIndex(int i) const = 0;
   virtual std::string GetPageLanguageAtIndex(int i) const = 0;
   virtual void GetSerializedNavigationAtIndex(
       int i,

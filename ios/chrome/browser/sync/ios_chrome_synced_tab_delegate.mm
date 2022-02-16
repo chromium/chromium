@@ -111,33 +111,6 @@ GURL IOSChromeSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {
   return item ? item->GetVirtualURL() : GURL();
 }
 
-GURL IOSChromeSyncedTabDelegate::GetFaviconURLAtIndex(int i) const {
-  if (GetSessionStorageIfNeeded()) {
-    DCHECK_GE(i, 0);
-    return GURL();
-  }
-  NavigationItem* item = GetPossiblyPendingItemAtIndex(web_state_, i);
-  if (!item) {
-    return GURL();
-  }
-
-  const web::FaviconStatus& favicon_status = item->GetFaviconStatus();
-  return favicon_status.valid ? favicon_status.url : GURL();
-}
-
-ui::PageTransition IOSChromeSyncedTabDelegate::GetTransitionAtIndex(
-    int i) const {
-  if (GetSessionStorageIfNeeded()) {
-    DCHECK_GE(i, 0);
-    return ui::PAGE_TRANSITION_LINK;
-  }
-  NavigationItem* item = GetPossiblyPendingItemAtIndex(web_state_, i);
-  // If no item exists, there's no coherent PageTransition to be supplied.
-  // There's also no ui::PAGE_TRANSITION_UNKNOWN, so let's use the default,
-  // which is PAGE_TRANSITION_LINK.
-  return item ? item->GetTransitionType() : ui::PAGE_TRANSITION_LINK;
-}
-
 std::string IOSChromeSyncedTabDelegate::GetPageLanguageAtIndex(int i) const {
   // TODO(crbug.com/957657): Add page language to NavigationItem.
   return std::string();

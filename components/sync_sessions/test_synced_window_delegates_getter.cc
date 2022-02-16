@@ -85,16 +85,6 @@ GURL TestSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {
   return entries_[i]->virtual_url();
 }
 
-GURL TestSyncedTabDelegate::GetFaviconURLAtIndex(int i) const {
-  return GURL();
-}
-
-ui::PageTransition TestSyncedTabDelegate::GetTransitionAtIndex(int i) const {
-  if (static_cast<size_t>(i) >= entries_.size())
-    return ui::PAGE_TRANSITION_LINK;
-  return entries_[i]->transition_type();
-}
-
 std::string TestSyncedTabDelegate::GetPageLanguageAtIndex(int i) const {
   DCHECK(static_cast<size_t>(i) < page_language_per_index_.size());
   return page_language_per_index_[i];
@@ -225,16 +215,6 @@ int PlaceholderTabDelegate::GetEntryCount() const {
 GURL PlaceholderTabDelegate::GetVirtualURLAtIndex(int i) const {
   NOTREACHED();
   return GURL();
-}
-
-GURL PlaceholderTabDelegate::GetFaviconURLAtIndex(int i) const {
-  NOTREACHED();
-  return GURL();
-}
-
-ui::PageTransition PlaceholderTabDelegate::GetTransitionAtIndex(int i) const {
-  NOTREACHED();
-  return ui::PageTransition();
 }
 
 std::string PlaceholderTabDelegate::GetPageLanguageAtIndex(int i) const {

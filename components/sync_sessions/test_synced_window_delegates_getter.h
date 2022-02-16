@@ -50,8 +50,6 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   bool IsInitialBlankNavigation() const override;
   int GetCurrentEntryIndex() const override;
   GURL GetVirtualURLAtIndex(int i) const override;
-  GURL GetFaviconURLAtIndex(int i) const override;
-  ui::PageTransition GetTransitionAtIndex(int i) const override;
   std::string GetPageLanguageAtIndex(int i) const override;
   void GetSerializedNavigationAtIndex(
       int i,
@@ -109,8 +107,6 @@ class PlaceholderTabDelegate : public SyncedTabDelegate {
   int GetCurrentEntryIndex() const override;
   int GetEntryCount() const override;
   GURL GetVirtualURLAtIndex(int i) const override;
-  GURL GetFaviconURLAtIndex(int i) const override;
-  ui::PageTransition GetTransitionAtIndex(int i) const override;
   std::string GetPageLanguageAtIndex(int i) const override;
   void GetSerializedNavigationAtIndex(
       int i,
