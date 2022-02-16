@@ -17,14 +17,19 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.accessibility.FontSizePrefs.FontSizePrefsObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
+import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests for {@link FontSizePrefs}.
+ *
+ * TODO(crbug.com/1296642): This tests the class in //components/browser_ui, but we don't have a
+ * good way of testing with native code there.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class FontSizePrefsTest {
@@ -182,7 +187,8 @@ public class FontSizePrefsTest {
     }
 
     private FontSizePrefs getFontSizePrefs(final Context context) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> FontSizePrefs.getInstance());
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile()));
     }
 
     private TestingObserver createAndAddFontSizePrefsObserver() {

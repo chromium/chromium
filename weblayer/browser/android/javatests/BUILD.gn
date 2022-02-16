@@ -79,6 +79,7 @@ android_library("weblayer_java_tests") {
 android_library("weblayer_private_java_tests") {
   testonly = true
   sources = [
+    "src/org/chromium/weblayer/test/AccessibilityTest.java",
     "src/org/chromium/weblayer/test/AutofillTest.java",
     "src/org/chromium/weblayer/test/BackgroundFetchTest.java",
     "src/org/chromium/weblayer/test/BrowserControlsOffsetCallbackTest.java",
@@ -116,6 +117,7 @@ android_library("weblayer_private_java_tests") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//ui/android:ui_java_test_support",

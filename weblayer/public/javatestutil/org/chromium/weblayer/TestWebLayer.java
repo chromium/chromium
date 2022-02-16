@@ -209,4 +209,12 @@ public final class TestWebLayer {
     public void grantLocationPermission(String url) throws RemoteException {
         mITestWebLayer.grantLocationPermission(url);
     }
+
+    public void setTextScaling(Profile profile, float value) throws RemoteException {
+        mITestWebLayer.setTextScaling(profile.getIProfile(), value);
+    }
+
+    public boolean getForceEnableZoom(Profile profile) throws RemoteException {
+        return mITestWebLayer.getForceEnableZoom(profile.getIProfile());
+    }
 }

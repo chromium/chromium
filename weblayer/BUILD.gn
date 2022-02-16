@@ -706,6 +706,7 @@ source_set("weblayer_lib_base") {
       "//components/android_autofill/browser",
       "//components/android_autofill/browser:android",
       "//components/android_system_error_page",
+      "//components/browser_ui/accessibility/android",
       "//components/browser_ui/client_certificate/android",
       "//components/browser_ui/contacts_picker/android",
       "//components/browser_ui/photo_picker/android",

@@ -349,8 +349,6 @@ const char kWebkitTabsToLinks[] = "webkit.webprefs.tabs_to_links";
 const char kWebKitAllowRunningInsecureContent[] =
     "webkit.webprefs.allow_running_insecure_content";
 #if BUILDFLAG(IS_ANDROID)
-const char kWebKitFontScaleFactor[] = "webkit.webprefs.font_scale_factor";
-const char kWebKitForceEnableZoom[] = "webkit.webprefs.force_enable_zoom";
 const char kWebKitPasswordEchoEnabled[] =
     "webkit.webprefs.password_echo_enabled";
 #endif

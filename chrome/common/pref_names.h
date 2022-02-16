@@ -162,8 +162,6 @@ extern const char kWebkitTabsToLinks[];
 extern const char kWebKitAllowRunningInsecureContent[];
 extern const char kWebKitForceDarkModeEnabled[];
 #if BUILDFLAG(IS_ANDROID)
-extern const char kWebKitFontScaleFactor[];
-extern const char kWebKitForceEnableZoom[];
 extern const char kWebKitPasswordEchoEnabled[];
 #endif
 extern const char kSSLErrorOverrideAllowed[];

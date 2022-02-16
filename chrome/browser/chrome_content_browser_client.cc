@@ -392,6 +392,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/chrome_descriptors.h"
+#include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/crash_memory_metrics_collector_android.h"
@@ -3362,10 +3363,10 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->allow_running_insecure_content =
       prefs->GetBoolean(prefs::kWebKitAllowRunningInsecureContent);
 #if BUILDFLAG(IS_ANDROID)
-  web_prefs->font_scale_factor =
-      static_cast<float>(prefs->GetDouble(prefs::kWebKitFontScaleFactor));
+  web_prefs->font_scale_factor = static_cast<float>(
+      prefs->GetDouble(browser_ui::prefs::kWebKitFontScaleFactor));
   web_prefs->force_enable_zoom =
-      prefs->GetBoolean(prefs::kWebKitForceEnableZoom);
+      prefs->GetBoolean(browser_ui::prefs::kWebKitForceEnableZoom);
 #endif
   web_prefs->force_dark_mode_enabled =
       prefs->GetBoolean(prefs::kWebKitForceDarkModeEnabled);

@@ -102,4 +102,7 @@ interface ITestWebLayer {
 
   // Grants `url` location permission.
   void grantLocationPermission(String url) = 30;
+
+  void setTextScaling(in IProfile profile, float value) = 31;
+  boolean getForceEnableZoom(in IProfile profile) = 32;
 }

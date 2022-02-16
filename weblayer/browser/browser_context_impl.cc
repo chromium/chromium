@@ -38,6 +38,7 @@
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "weblayer/browser/background_fetch/background_fetch_delegate_factory.h"
 #include "weblayer/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "weblayer/browser/background_sync/background_sync_controller_factory.h"
@@ -51,6 +52,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/path_utils.h"
+#include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/unified_consent/pref_names.h"
@@ -293,6 +295,12 @@ void BrowserContextImpl::RegisterPrefs(
       pref_registry);
   pref_registry->RegisterBooleanPref(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+
+  pref_registry->RegisterDoublePref(browser_ui::prefs::kWebKitFontScaleFactor,
+                                    1.0);
+  blink::web_pref::WebPreferences pref_defaults;
+  pref_registry->RegisterBooleanPref(browser_ui::prefs::kWebKitForceEnableZoom,
+                                     pref_defaults.force_enable_zoom);
 #endif
 
   BrowserContextDependencyManager::GetInstance()

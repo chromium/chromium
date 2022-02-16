@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_ACCESSIBILITY_FONT_SIZE_PREFS_ANDROID_H_
-#define CHROME_BROWSER_ANDROID_ACCESSIBILITY_FONT_SIZE_PREFS_ANDROID_H_
+#ifndef COMPONENTS_BROWSER_UI_ACCESSIBILITY_ANDROID_FONT_SIZE_PREFS_ANDROID_H_
+#define COMPONENTS_BROWSER_UI_ACCESSIBILITY_ANDROID_FONT_SIZE_PREFS_ANDROID_H_
 
 #include <memory>
 
@@ -13,13 +13,25 @@
 class PrefChangeRegistrar;
 class PrefService;
 
+namespace browser_ui {
+namespace prefs {
+
+// Prefs related to this class.
+extern const char kWebKitFontScaleFactor[];
+extern const char kWebKitForceEnableZoom[];
+
+}  // namespace prefs
+
 /*
  * Native implementation of FontSizePrefs. This class is used to get and set
  * FontScaleFactor and ForceEnableZoom.
  */
 class FontSizePrefsAndroid {
  public:
-  FontSizePrefsAndroid(JNIEnv* env, jobject obj);
+  FontSizePrefsAndroid(
+      JNIEnv* env,
+      jobject obj,
+      const base::android::JavaParamRef<jobject>& jbrowser_context_handle);
 
   FontSizePrefsAndroid(const FontSizePrefsAndroid&) = delete;
   FontSizePrefsAndroid& operator=(const FontSizePrefsAndroid&) = delete;
@@ -36,6 +48,7 @@ class FontSizePrefsAndroid {
                           jboolean enabled);
   bool GetForceEnableZoom(JNIEnv* env,
                           const base::android::JavaRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
  private:
   // Callback for FontScaleFactor changes from pref change registrar.
@@ -48,4 +61,6 @@ class FontSizePrefsAndroid {
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 };
 
-#endif  // CHROME_BROWSER_ANDROID_ACCESSIBILITY_FONT_SIZE_PREFS_ANDROID_H_
+}  // namespace browser_ui
+
+#endif  // COMPONENTS_BROWSER_UI_ACCESSIBILITY_ANDROID_FONT_SIZE_PREFS_ANDROID_H_

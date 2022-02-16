@@ -18,6 +18,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.content_capture.PlatformContentCaptureController;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -112,6 +113,7 @@ public final class ProfileImpl
             mPrerenderController.destroy();
             mPrerenderController = null;
         }
+        FontSizePrefs.destroyInstance();
     }
 
     @Override

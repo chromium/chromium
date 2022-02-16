@@ -29,10 +29,11 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.accessibility.FontSizePrefs;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -216,7 +217,8 @@ public class AccessibilitySettingsTest {
     private void assertFontSizePrefs(
             final boolean expectedForceEnableZoom, final float expectedFontScale) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            FontSizePrefs fontSizePrefs = FontSizePrefs.getInstance();
+            FontSizePrefs fontSizePrefs =
+                    FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile());
             Assert.assertEquals(expectedForceEnableZoom, fontSizePrefs.getForceEnableZoom());
             Assert.assertEquals(expectedFontScale, fontSizePrefs.getFontScaleFactor(), 0.001f);
         });

@@ -2,24 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/accessibility/font_size_prefs_android.h"
+#include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/observer_list.h"
-#include "chrome/android/chrome_jni_headers/FontSizePrefs_jni.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/pref_names.h"
+#include "components/browser_ui/accessibility/android/accessibility_jni_headers/FontSizePrefs_jni.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/android/browser_context_handle.h"
+#include "content/public/browser/browser_context.h"
+
+namespace browser_ui {
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 
-FontSizePrefsAndroid::FontSizePrefsAndroid(JNIEnv* env, jobject obj)
-    : pref_service_(ProfileManager::GetActiveUserProfile()->GetPrefs()) {
+namespace prefs {
+const char kWebKitFontScaleFactor[] = "webkit.webprefs.font_scale_factor";
+const char kWebKitForceEnableZoom[] = "webkit.webprefs.force_enable_zoom";
+}  // namespace prefs
+
+FontSizePrefsAndroid::FontSizePrefsAndroid(
+    JNIEnv* env,
+    jobject obj,
+    const JavaParamRef<jobject>& jbrowser_context_handle)
+    : pref_service_(user_prefs::UserPrefs::Get(
+          content::BrowserContextFromJavaHandle(jbrowser_context_handle))) {
   java_ref_.Reset(env, obj);
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service_);
@@ -33,8 +44,7 @@ FontSizePrefsAndroid::FontSizePrefsAndroid(JNIEnv* env, jobject obj)
                           base::Unretained(this)));
 }
 
-FontSizePrefsAndroid::~FontSizePrefsAndroid() {
-}
+FontSizePrefsAndroid::~FontSizePrefsAndroid() {}
 
 void FontSizePrefsAndroid::SetFontScaleFactor(JNIEnv* env,
                                               const JavaRef<jobject>& obj,
@@ -43,9 +53,8 @@ void FontSizePrefsAndroid::SetFontScaleFactor(JNIEnv* env,
                            static_cast<double>(font_size));
 }
 
-float FontSizePrefsAndroid::GetFontScaleFactor(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj) {
+float FontSizePrefsAndroid::GetFontScaleFactor(JNIEnv* env,
+                                               const JavaRef<jobject>& obj) {
   return pref_service_->GetDouble(prefs::kWebKitFontScaleFactor);
 }
 
@@ -55,15 +64,21 @@ void FontSizePrefsAndroid::SetForceEnableZoom(JNIEnv* env,
   pref_service_->SetBoolean(prefs::kWebKitForceEnableZoom, enabled);
 }
 
-bool FontSizePrefsAndroid::GetForceEnableZoom(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj) {
+bool FontSizePrefsAndroid::GetForceEnableZoom(JNIEnv* env,
+                                              const JavaRef<jobject>& obj) {
   return pref_service_->GetBoolean(prefs::kWebKitForceEnableZoom);
 }
 
-jlong JNI_FontSizePrefs_Init(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void FontSizePrefsAndroid::Destroy(JNIEnv* env) {
+  delete this;
+}
+
+jlong JNI_FontSizePrefs_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& jbrowser_context_handle) {
   FontSizePrefsAndroid* font_size_prefs_android =
-      new FontSizePrefsAndroid(env, obj);
+      new FontSizePrefsAndroid(env, obj, jbrowser_context_handle);
   return reinterpret_cast<intptr_t>(font_size_prefs_android);
 }
 
@@ -78,3 +93,5 @@ void FontSizePrefsAndroid::OnForceEnableZoomChanged() {
   bool enabled = GetForceEnableZoom(env, java_ref_);
   Java_FontSizePrefs_onForceEnableZoomChanged(env, java_ref_, enabled);
 }
+
+}  // namespace browser_ui

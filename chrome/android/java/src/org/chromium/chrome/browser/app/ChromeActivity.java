@@ -76,7 +76,6 @@ import org.chromium.chrome.browser.IntentHandler.IntentHandlerDelegate;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.PlayServicesVersionInfo;
 import org.chromium.chrome.browser.WarmupManager;
-import org.chromium.chrome.browser.accessibility.FontSizePrefs;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.download.DownloadMessageUiDelegate;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
@@ -202,6 +201,7 @@ import org.chromium.chrome.browser.vr.ArDelegateProvider;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -1373,7 +1373,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             RecordHistogram.recordSparseHistogram(
                     "Android.PlayServices.Version", playServicesVersion);
 
-            FontSizePrefs.getInstance().recordUserFontPrefOnStartup();
+            FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile())
+                    .recordUserFontPrefOnStartup();
         });
 
         DeferredStartupHandler.getInstance().addDeferredTask(() -> {

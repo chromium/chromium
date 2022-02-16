@@ -21,7 +21,6 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.accessibility.FontSizePrefs;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -39,6 +38,7 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.read_later.ReadingListBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -159,7 +159,7 @@ public class ChromeActivitySessionTracker {
     private void onForegroundSessionStart() {
         UmaUtils.recordForegroundStartTime();
         updatePasswordEchoState();
-        FontSizePrefs.getInstance().onSystemFontScaleChanged();
+        FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile()).onSystemFontScaleChanged();
         ChromeLocalizationUtils.recordUiLanguageStatus();
         updateAcceptLanguages();
         mVariationsSession.start();

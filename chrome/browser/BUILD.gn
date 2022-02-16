@@ -2549,8 +2549,6 @@ static_library("browser") {
   if (is_android) {
     sources += [
       "after_startup_task_utils_android.cc",
-      "android/accessibility/font_size_prefs_android.cc",
-      "android/accessibility/font_size_prefs_android.h",
       "android/android_theme_resources.h",
       "android/autocomplete/tab_matcher_android.cc",
       "android/autocomplete/tab_matcher_android.h",
@@ -3411,6 +3409,7 @@ static_library("browser") {
       "//components/autofill_assistant/content/browser",
       "//components/background_sync",
       "//components/bookmarks/common/android",
+      "//components/browser_ui/accessibility/android",
       "//components/browser_ui/contacts_picker/android",
       "//components/browser_ui/photo_picker/android",
       "//components/browser_ui/share/android",

@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "components/base32/base32.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "weblayer/browser/browser_context_impl.h"
@@ -30,6 +31,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/json/json_writer.h"
+#include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/java/jni/BrowserImpl_jni.h"
 
@@ -200,10 +202,7 @@ void BrowserImpl::RestoreMinimalState(
 }
 
 void BrowserImpl::WebPreferencesChanged(JNIEnv* env) {
-  for (const auto& tab : tabs_) {
-    TabImpl* tab_impl = static_cast<TabImpl*>(tab.get());
-    tab_impl->WebPreferencesChanged();
-  }
+  OnWebPreferenceChanged(std::string());
 }
 
 void BrowserImpl::OnFragmentStart(JNIEnv* env) {
@@ -230,10 +229,13 @@ std::vector<uint8_t> BrowserImpl::GetMinimalPersistenceState(
 
 void BrowserImpl::SetWebPreferences(blink::web_pref::WebPreferences* prefs) {
 #if BUILDFLAG(IS_ANDROID)
+  PrefService* pref_service = profile()->GetBrowserContext()->pref_service();
   prefs->password_echo_enabled = Java_BrowserImpl_getPasswordEchoEnabled(
       AttachCurrentThread(), java_impl_);
-  prefs->font_scale_factor =
-      Java_BrowserImpl_getFontScale(AttachCurrentThread(), java_impl_);
+  prefs->font_scale_factor = static_cast<float>(
+      pref_service->GetDouble(browser_ui::prefs::kWebKitFontScaleFactor));
+  prefs->force_enable_zoom =
+      pref_service->GetBoolean(browser_ui::prefs::kWebKitForceEnableZoom);
   bool is_dark =
       Java_BrowserImpl_getDarkThemeEnabled(AttachCurrentThread(), java_impl_);
   if (is_dark) {
@@ -389,6 +391,17 @@ void BrowserImpl::VisibleSecurityStateOfActiveTabChanged() {
 
 BrowserImpl::BrowserImpl(ProfileImpl* profile) : profile_(profile) {
   BrowserList::GetInstance()->AddBrowser(this);
+
+#if BUILDFLAG(IS_ANDROID)
+  profile_pref_change_registrar_.Init(
+      profile_->GetBrowserContext()->pref_service());
+  auto pref_change_callback = base::BindRepeating(
+      &BrowserImpl::OnWebPreferenceChanged, base::Unretained(this));
+  profile_pref_change_registrar_.Add(browser_ui::prefs::kWebKitFontScaleFactor,
+                                     pref_change_callback);
+  profile_pref_change_registrar_.Add(browser_ui::prefs::kWebKitForceEnableZoom,
+                                     pref_change_callback);
+#endif
 }
 
 void BrowserImpl::RestoreStateIfNecessary(
@@ -439,6 +452,13 @@ std::unique_ptr<Tab> BrowserImpl::RemoveTab(Tab* tab) {
 base::FilePath BrowserImpl::GetBrowserPersisterDataPath() {
   return BuildBasePathForBrowserPersister(
       profile_->GetBrowserPersisterDataBaseDir(), GetPersistenceId());
+}
+
+void BrowserImpl::OnWebPreferenceChanged(const std::string& pref_name) {
+  for (const auto& tab : tabs_) {
+    TabImpl* tab_impl = static_cast<TabImpl*>(tab.get());
+    tab_impl->WebPreferencesChanged();
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

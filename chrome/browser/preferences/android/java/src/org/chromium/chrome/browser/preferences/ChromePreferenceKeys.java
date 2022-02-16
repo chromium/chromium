@@ -8,6 +8,7 @@ import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBO
 import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI_TIMESTAMP;
 
 import org.chromium.base.annotations.CheckDiscard;
+import org.chromium.components.browser_ui.accessibility.FontSizePrefsConstants;
 
 import java.util.Arrays;
 import java.util.List;
@@ -433,8 +434,10 @@ public final class ChromePreferenceKeys {
     public static final String FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS =
             "Chrome.Flags.LastCachedMinimalBrowserFlagsTimeMillis";
 
-    public static final String FONT_USER_FONT_SCALE_FACTOR = "user_font_scale_factor";
-    public static final String FONT_USER_SET_FORCE_ENABLE_ZOOM = "user_set_force_enable_zoom";
+    public static final String FONT_USER_FONT_SCALE_FACTOR =
+            FontSizePrefsConstants.FONT_USER_FONT_SCALE_FACTOR;
+    public static final String FONT_USER_SET_FORCE_ENABLE_ZOOM =
+            FontSizePrefsConstants.FONT_USER_SET_FORCE_ENABLE_ZOOM;
 
     public static final String HISTORY_SHOW_HISTORY_INFO = "history_home_show_info";
 

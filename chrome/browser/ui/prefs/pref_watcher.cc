@@ -22,6 +22,10 @@
 #include "ash/constants/ash_pref_names.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
+#endif
+
 namespace {
 
 // The list of prefs we want to observe.
@@ -44,8 +48,8 @@ const char* const kWebPrefsToObserve[] = {
     prefs::kAccessibilityCaptionsTextShadow,
     prefs::kAccessibilityCaptionsBackgroundOpacity,
 #if BUILDFLAG(IS_ANDROID)
-    prefs::kWebKitFontScaleFactor,
-    prefs::kWebKitForceEnableZoom,
+    browser_ui::prefs::kWebKitFontScaleFactor,
+    browser_ui::prefs::kWebKitForceEnableZoom,
     prefs::kWebKitPasswordEchoEnabled,
 #endif
     prefs::kWebKitForceDarkModeEnabled,

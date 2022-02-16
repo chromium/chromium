@@ -882,6 +882,7 @@ static_library("ui") {
       "//chrome/browser/ui/android/autofill/internal:jni_headers",
       "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings",
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
+      "//components/browser_ui/accessibility/android",
       "//components/browser_ui/client_certificate/android",
       "//components/browser_ui/share/android",
       "//components/browser_ui/util/android",
