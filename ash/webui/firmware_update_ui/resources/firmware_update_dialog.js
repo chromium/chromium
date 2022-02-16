@@ -64,7 +64,7 @@ export class FirmwareUpdateDialogElement extends
       installationProgress: {
         type: Object,
         value: {percentage: 0, state: UpdateState.kIdle},
-        observer: 'stateChanged_',
+        observer: 'progressChanged_',
       },
 
       /** @private {boolean} */
@@ -142,7 +142,10 @@ export class FirmwareUpdateDialogElement extends
       return;
     }
     // Focus the dialog title if the update state has changed.
-    this.shadowRoot.querySelector('#updateDialogTitle').focus();
+    const dialogTitle = this.shadowRoot.querySelector('#updateDialogTitle');
+    if (dialogTitle) {
+      dialogTitle.focus();
+    }
   }
 
   /** @protected */
@@ -258,8 +261,9 @@ export class FirmwareUpdateDialogElement extends
     // Move focus to the dialog title if the progress label is currently
     // active and set to be hidden. This case is reached when the dialog state
     // moves from restarting to completed.
-    if (progressIsActiveEl && !res) {
-      this.shadowRoot.querySelector('#updateDialogTitle').focus();
+    const dialogTitle = this.shadowRoot.querySelector('#updateDialogTitle');
+    if (progressIsActiveEl && !res && dialogTitle) {
+      dialogTitle.focus();
     }
     return res;
   }
