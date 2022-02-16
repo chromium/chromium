@@ -418,7 +418,7 @@
   {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua", "siashah@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 106
   },
   {
     "name": "autofill-enable-sending-bcn-in-get-upload-details",
