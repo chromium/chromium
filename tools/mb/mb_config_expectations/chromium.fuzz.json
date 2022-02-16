@@ -138,8 +138,9 @@
       "optimize_for_fuzzing": true,
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
-      "use_goma": true,
-      "use_libfuzzer": true
+      "use_libfuzzer": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Libfuzzer Upload Linux ASan Debug": {
@@ -154,8 +155,9 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true,
-      "use_libfuzzer": true
+      "use_libfuzzer": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Libfuzzer Upload Linux MSan": {
@@ -171,8 +173,9 @@
       "optimize_for_fuzzing": true,
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
-      "use_goma": true,
-      "use_libfuzzer": true
+      "use_libfuzzer": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Libfuzzer Upload Linux UBSan": {
@@ -187,8 +190,9 @@
       "optimize_for_fuzzing": true,
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
-      "use_goma": true,
-      "use_libfuzzer": true
+      "use_libfuzzer": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Libfuzzer Upload Linux V8-ARM64 ASan": {
@@ -241,8 +245,9 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "target_cpu": "x86",
-      "use_goma": true,
-      "use_libfuzzer": true
+      "use_libfuzzer": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Libfuzzer Upload Linux32 ASan Debug": {
@@ -259,8 +264,9 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_goma": true,
-      "use_libfuzzer": true
+      "use_libfuzzer": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Libfuzzer Upload Linux32 V8-ARM ASan": {

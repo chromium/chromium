@@ -248,16 +248,16 @@
       'ChromiumOS ASAN Release': 'chromeos_asan_lsan_fuzzer_v8_heap_release_bot',
       'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot',
       'Libfuzzer Upload iOS Catalyst Debug': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_no_dsyms_no_lld_no_remoting',
-      'Libfuzzer Upload Linux32 ASan': 'libfuzzer_asan_release_bot_x86',
-      'Libfuzzer Upload Linux32 ASan Debug': 'libfuzzer_asan_debug_bot_x86',
+      'Libfuzzer Upload Linux32 ASan': 'libfuzzer_asan_release_bot_x86_reclient',
+      'Libfuzzer Upload Linux32 ASan Debug': 'libfuzzer_asan_debug_bot_x86_reclient',
       'Libfuzzer Upload Linux32 V8-ARM ASan': 'libfuzzer_asan_release_bot_x86_v8_arm',
       'Libfuzzer Upload Linux32 V8-ARM ASan Debug': 'libfuzzer_asan_debug_bot_x86_v8_arm',
-      'Libfuzzer Upload Linux ASan': 'libfuzzer_asan_release_bot',
-      'Libfuzzer Upload Linux ASan Debug': 'libfuzzer_asan_debug_bot',
+      'Libfuzzer Upload Linux ASan': 'libfuzzer_asan_release_bot_reclient',
+      'Libfuzzer Upload Linux ASan Debug': 'libfuzzer_asan_debug_bot_reclient',
       'Libfuzzer Upload Linux V8-ARM64 ASan': 'libfuzzer_asan_release_bot_v8_arm64',
       'Libfuzzer Upload Linux V8-ARM64 ASan Debug': 'libfuzzer_asan_debug_bot_v8_arm64',
-      'Libfuzzer Upload Linux MSan': 'libfuzzer_msan_release_bot',
-      'Libfuzzer Upload Linux UBSan': 'libfuzzer_ubsan_release_bot',
+      'Libfuzzer Upload Linux MSan': 'libfuzzer_msan_release_bot_reclient',
+      'Libfuzzer Upload Linux UBSan': 'libfuzzer_ubsan_release_bot_reclient',
       'Libfuzzer Upload Mac ASan': 'libfuzzer_mac_asan_shared_release_bot',
       'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot',
       'MSAN Release (chained origins)': 'msan_release_bot_reclient',
@@ -2643,12 +2643,16 @@
       'libfuzzer', 'asan', 'debug_bot', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
     ],
 
+    'libfuzzer_asan_debug_bot_reclient': [
+      'libfuzzer', 'asan', 'debug_bot_reclient', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
+    ],
+
     'libfuzzer_asan_debug_bot_v8_arm64': [
       'libfuzzer', 'asan', 'debug_bot', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'v8_simulate_arm64', 'disable_seed_corpus',
     ],
 
-    'libfuzzer_asan_debug_bot_x86': [
-      'libfuzzer', 'asan', 'debug_bot', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'x86', 'x86_host',  'disable_seed_corpus',
+    'libfuzzer_asan_debug_bot_x86_reclient': [
+      'libfuzzer', 'asan', 'debug_bot_reclient', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'x86', 'x86_host',  'disable_seed_corpus',
     ],
 
     'libfuzzer_asan_debug_bot_x86_v8_arm': [
@@ -2671,8 +2675,8 @@
       'libfuzzer', 'asan', 'shared_release_bot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'v8_simulate_arm64', 'disable_seed_corpus',
     ],
 
-    'libfuzzer_asan_release_bot_x86': [
-      'libfuzzer', 'asan', 'shared_release_bot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'x86', 'x86_host', 'disable_seed_corpus',
+    'libfuzzer_asan_release_bot_x86_reclient': [
+      'libfuzzer', 'asan', 'shared_release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'x86', 'x86_host', 'disable_seed_corpus',
     ],
 
     'libfuzzer_asan_release_bot_x86_v8_arm': [
@@ -2691,8 +2695,16 @@
       'libfuzzer', 'msan', 'shared_release_bot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
     ],
 
+    'libfuzzer_msan_release_bot_reclient': [
+      'libfuzzer', 'msan', 'shared_release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
+    ],
+
     'libfuzzer_ubsan_release_bot': [
       'libfuzzer', 'ubsan_security', 'release_bot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
+    ],
+
+    'libfuzzer_ubsan_release_bot_reclient': [
+      'libfuzzer', 'ubsan_security', 'release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
     ],
 
     'libfuzzer_mac_asan_shared_release_bot': [
