@@ -9,7 +9,7 @@ import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverInterface, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRowKey} from './diagnostics_types.js';
+import {ConnectionType, InputDataProviderInterface, KeyboardInfo, KeyboardObserverInterface, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRowKey} from './diagnostics_types.js';
 
 /**
  * @fileoverview
@@ -70,6 +70,12 @@ Polymer({
      */
     keyboard: KeyboardInfo,
 
+    /** @protected */
+    dialogTitle_: {
+      type: String,
+      computed: 'computeDialogTitle_(keyboard)',
+    },
+
     /** @private */
     layoutIsKnown_: {
       type: Boolean,
@@ -105,6 +111,20 @@ Polymer({
       type: Array,
       computed: 'computeTopRowKeys_(keyboard)',
     },
+  },
+
+  /**
+   * @param {?KeyboardInfo} keyboard
+   * @return {string}
+   * @private
+   */
+  computeDialogTitle_(keyboard) {
+    if (!keyboard) {
+      return '';
+    }
+    return keyboard.connectionType === ConnectionType.kInternal ?
+        'Test your internal keyboard' :
+        'Test your external keyboard';
   },
 
   /**
@@ -199,6 +219,10 @@ Polymer({
    */
   isOpen() {
     return this.$.dialog.open;
+  },
+
+  close() {
+    this.$.dialog.close();
   },
 
   handleClose() {
