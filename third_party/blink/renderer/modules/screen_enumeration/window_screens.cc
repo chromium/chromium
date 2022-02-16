@@ -10,8 +10,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/modules/screen_enumeration/screen_details.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -75,21 +73,6 @@ ScriptPromise WindowScreens::GetScreenDetails(ScriptState* script_state,
   auto permission_descriptor = CreatePermissionDescriptor(
       mojom::blink::PermissionName::WINDOW_PLACEMENT);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-
-  // Automatically grant permission if that enterprise policy is set.
-  bool always_allowed = false;
-  if (auto* frame = window->GetFrame()) {
-    if (auto* page = frame->GetPage()) {
-      if (page->GetSettings().GetWindowPlacementAlwaysAllowed())
-        always_allowed = true;
-    }
-  }
-  if (always_allowed) {
-    OnPermissionRequestComplete(resolver,
-                                mojom::blink::PermissionStatus::GRANTED);
-    return resolver->Promise();
-  }
-
   auto callback = WTF::Bind(&WindowScreens::OnPermissionRequestComplete,
                             WrapPersistent(this), WrapPersistent(resolver));
 

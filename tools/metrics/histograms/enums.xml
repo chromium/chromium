@@ -28682,7 +28682,7 @@ Called by update_document_policy_enum.py.-->
   <int value="948" label="FirstPartySetsEnabled"/>
   <int value="949" label="ForceMajorVersionToMinorPositionInUserAgent"/>
   <int value="950" label="AllHttpAuthSchemesAllowedForOrigins"/>
-  <int value="951" label="WindowPlacementAlwaysAllowed"/>
+  <int value="951" label="DefaultWindowPlacementSetting"/>
   <int value="952" label="ReportDevicePeripherals"/>
   <int value="953" label="WebHidAllowAllDevicesForUrls"/>
   <int value="954" label="WebHidAllowDevicesForUrls"/>
@@ -28691,6 +28691,8 @@ Called by update_document_policy_enum.py.-->
   <int value="957" label="EnableEncryptedReportingPipeline"/>
   <int value="958" label="EnableDirectSockets"/>
   <int value="959" label="FloatingWorkspaceEnabled"/>
+  <int value="960" label="WindowPlacementAllowedForSites"/>
+  <int value="961" label="WindowPlacementBlockedForSites"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -71737,6 +71739,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="39" label="SensorsSettings"/>
   <int value="40" label="PrivateNetworkRequestSettings"/>
   <int value="41" label="ScreenCaptureSettings"/>
+  <int value="42" label="WindowPlacementSettings"/>
 </enum>
 
 <enum name="PolicyLoadStatus">

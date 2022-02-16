@@ -561,6 +561,7 @@
         'DefaultWebUsbGuardSetting',
         'DefaultSerialGuardSetting',
         'DefaultWebHidGuardSetting',
+        'DefaultWindowPlacementSetting',
         'AutoSelectCertificateForUrls',
         'CookiesAllowedForUrls',
         'CookiesBlockedForUrls',
@@ -604,6 +605,8 @@
         'WebHidAllowAllDevicesForUrls',
         'WebHidAllowDevicesForUrls',
         'WebHidAllowDevicesWithHidUsagesForUrls',
+        'WindowPlacementAllowedForUrls',
+        'WindowPlacementBlockedForUrls',
       ],
     },
     {
@@ -29848,34 +29851,81 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
        If the policy is disabled or not set, user storage encryption for <ph name="DM_CRYPT">dm-crypt</ph> user homes will default to using <ph name="AES_NI_NAME">AESNI</ph>.''',
     },
     {
-      'name': 'WindowPlacementAlwaysAllowed',
-      'owners': ['msw@google.com', 'enne@google.com'],
-      'type': 'main',
-      'schema': { 'type': 'boolean' },
-      'tags': [],
+      'name': 'DefaultWindowPlacementSetting',
+      'owners': ['msw@chromium.org'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [ 2, 3 ],
+      },
+      'items': [
+        {
+          'name': 'BlockWindowPlacement',
+          'value': 2,
+          'caption': '''Denies the Window Placement permission on all sites by default''',
+        },
+        {
+          'name': 'AskWindowPlacement',
+          'value': 3,
+          'caption': '''Ask every time a site wants obtain the Window Placement permission''',
+        },
+
+      ],
+      'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
       },
-      'items': [
-        {
-          'value': True,
-          'caption': 'Allow all sites to use info about screens to open and place windows',
-        },
-        {
-          'value': False,
-          'caption': 'Allow users to choose which sites can use info about screens to open and place windows',
-        },
-      ],
-      'device_only': False,
-      'default': False,
-      'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
       'id': 951,
-      'caption': '''Enable window placement permission on all sites''',
-      'example_value': False,
-      'desc': '''When this policy is set to Enabled, the window placement permission is automatically granted for all sites.
-      This will allow sites to see and use information about connected screens to open and place windows.
-      If not set or Disabled, this policy will follow the browser's defaults and allow users to choose this permission per site.''',
+      'caption': '''Default Window Placement permission setting''',
+      'tags': [],
+      'default': None,
+      'example_value': 2,
+      'desc': '''Setting the policy to <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME">BlockWindowPlacement</ph> (value 2) automatically denies the window placement permission to sites by default. This will limit the ability of sites to see information about the device's screens and use that information to open and place windows or request fullscreen on specific screens.
+
+      Setting the policy to <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME">AskWindowPlacement</ph> (value 3) will prompt the user when the window placement permission is requested by default. If users allow the permission, it will extend the ability of sites to see information about the device's screens and use that information to open and place windows or request fullscreen on specific screens.
+
+      Leaving the policy unset means the <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME">AskWindowPlacement</ph> policy applies, but users can change this setting.''',
+    },
+    {
+      'name': 'WindowPlacementAllowedForUrls',
+      'owners': ['msw@chromium.org'],
+      'type': 'list',
+      'schema': { 'type': 'array', 'items': { 'type': 'string' } },
+      'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'id': 960,
+      'caption': '''Allow Window Placement permission on these sites''',
+      'tags': [],
+      'example_value': ['https://www.example.com', '[*.]example.edu'],
+      'desc': '''Allows you to set a list of site url patterns that specify sites which will automatically grant the window placement permission. This will extend the ability of sites to see information about the device's screens and use that information to open and place windows or request fullscreen on specific screens.
+
+      For detailed information on valid site url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed. This policy only matches based on origin, so any path in the URL pattern is ignored.
+
+      If this policy is not set for a site then the policy from <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME">DefaultWindowPlacementSetting</ph> applies to the site, if set, otherwise the permission will follow the browser's defaults and allow users to choose this permission per site.''',
+    },
+    {
+      'name': 'WindowPlacementBlockedForUrls',
+      'owners': ['msw@chromium.org'],
+      'type': 'list',
+      'schema': { 'type': 'array', 'items': { 'type': 'string' } },
+      'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'id': 961,
+      'caption': '''Block Window Placement permission on these sites''',
+      'tags': [],
+      'example_value': ['https://www.example.com', '[*.]example.edu'],
+      'desc': '''Allows you to set a list of site url patterns that specify sites which will automatically deny the window placement permission. This will limit the ability of sites to see information about the device's screens and use that information to open and place windows or request fullscreen on specific screens.
+
+      For detailed information on valid site url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed. This policy only matches based on origin, so any path in the URL pattern is ignored.
+
+      If this policy is not set for a site then the policy from <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME">DefaultWindowPlacementSetting</ph> applies to the site, if set, otherwise the permission will follow the browser's defaults and allow users to choose this permission per site.''',
     },
     {
       'name': 'DeviceRunAutomaticCleanupOnLogin',
@@ -31066,10 +31116,20 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'SameOriginTabCaptureAllowedByOrigins',
       ],
     },
+    {
+      'id': 42,
+      'name': 'WindowPlacementSettings',
+      'caption': '''Window Placement settings''',
+      'policies': [
+        'DefaultWindowPlacementSetting',
+        'WindowPlacementAllowedForUrls',
+        'WindowPlacementBlockedForUrls',
+      ],
+    },
   ],
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 959,
-  'highest_atomic_group_id_currently_used': 41
+  'highest_id_currently_used': 961,
+  'highest_atomic_group_id_currently_used': 42
 }

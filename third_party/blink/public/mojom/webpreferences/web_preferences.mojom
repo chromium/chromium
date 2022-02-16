@@ -434,8 +434,4 @@ struct WebPreferences {
 
   // Controls whether WebXR's immersive-ar is allowed.
   bool webxr_immersive_ar_allowed;
-
-  // Controls whether the window-placement permission is automatically granted
-  // to all sites, according to enterprise policy.
-  bool window_placement_always_allowed;
 };

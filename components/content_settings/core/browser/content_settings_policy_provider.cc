@@ -92,6 +92,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
          CONTENT_SETTING_ASK},
         {prefs::kManagedWebHidBlockedForUrls, ContentSettingsType::HID_GUARD,
          CONTENT_SETTING_BLOCK},
+        {prefs::kManagedWindowPlacementAllowedForUrls,
+         ContentSettingsType::WINDOW_PLACEMENT, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedWindowPlacementBlockedForUrls,
+         ContentSettingsType::WINDOW_PLACEMENT, CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -128,6 +132,8 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedJavaScriptJitBlockedForSites,
     prefs::kManagedWebHidAskForUrls,
     prefs::kManagedWebHidBlockedForUrls,
+    prefs::kManagedWindowPlacementAllowedForUrls,
+    prefs::kManagedWindowPlacementBlockedForUrls,
 };
 
 // The following preferences are only used to indicate if a default content
@@ -156,6 +162,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultWebUsbGuardSetting,
     prefs::kManagedDefaultJavaScriptJitSetting,
     prefs::kManagedDefaultWebHidGuardSetting,
+    prefs::kManagedDefaultWindowPlacementSetting,
 };
 
 }  // namespace
@@ -205,6 +212,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultJavaScriptJitSetting},
         {ContentSettingsType::HID_GUARD,
          prefs::kManagedDefaultWebHidGuardSetting},
+        {ContentSettingsType::WINDOW_PLACEMENT,
+         prefs::kManagedDefaultWindowPlacementSetting},
 };
 
 // static

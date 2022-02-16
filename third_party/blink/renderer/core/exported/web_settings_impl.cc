@@ -784,8 +784,4 @@ void WebSettingsImpl::SetLitePageSubresourceRedirectOrigin(
   settings_->SetLitePageSubresourceRedirectOrigin(origin);
 }
 
-void WebSettingsImpl::SetWindowPlacementAlwaysAllowed(bool allow) {
-  settings_->SetWindowPlacementAlwaysAllowed(allow);
-}
-
 }  // namespace blink

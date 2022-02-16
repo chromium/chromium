@@ -1599,12 +1599,18 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kForceMajorVersionToMinorPositionInUserAgent,
     prefs::kForceMajorVersionToMinorPositionInUserAgent,
     base::Value::Type::INTEGER},
-  { key::kWindowPlacementAlwaysAllowed,
-    policy_prefs::kWindowPlacementAlwaysAllowed,
-    base::Value::Type::BOOLEAN },
   { key::kEnableDirectSockets,
     policy_prefs::kEnableDirectSockets,
     base::Value::Type::BOOLEAN },
+  { key::kDefaultWindowPlacementSetting,
+    prefs::kManagedDefaultWindowPlacementSetting,
+    base::Value::Type::INTEGER },
+  { key::kWindowPlacementAllowedForUrls,
+    prefs::kManagedWindowPlacementAllowedForUrls,
+    base::Value::Type::LIST },
+  { key::kWindowPlacementBlockedForUrls,
+    prefs::kManagedWindowPlacementBlockedForUrls,
+    base::Value::Type::LIST },
 };
 // clang-format on
 

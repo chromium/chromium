@@ -352,10 +352,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // change depending on the enterprise policy if the platform supports it.
   bool webxr_immersive_ar_allowed = true;
 
-  // By default, window placement requires a user to set a content setting,
-  // but enterprise policy can automatically allow this feature for all sites.
-  bool window_placement_always_allowed = false;
-
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.
