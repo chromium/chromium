@@ -51678,6 +51678,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-dictation-offline"/>
   <int value="-1859421131" label="BackForwardCache:disabled"/>
   <int value="-1859095876" label="Previews:disabled"/>
+  <int value="-1858614075" label="IsolateSandboxedIframes:enabled"/>
   <int value="-1858284725" label="TabGroupsFeedback:enabled"/>
   <int value="-1856902397" label="LoadingWithMojo:enabled"/>
   <int value="-1855347512" label="FormControlsRefresh:disabled"/>
@@ -54282,6 +54283,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentUnboldSuggestionText:disabled"/>
   <int value="-13918890" label="disable-download-notification"/>
   <int value="-13180015" label="WebUsbDeviceDetection:disabled"/>
+  <int value="-13062128" label="IsolateSandboxedIframes:disabled"/>
   <int value="-12225998" label="ShareButtonInTopToolbar:disabled"/>
   <int value="-11983392"
       label="MagnifierContinuousMouseFollowingModeSetting:enabled"/>
@@ -56058,6 +56060,7 @@ from previous Chrome versions.
   <int value="1253698118" label="ash-disable-stable-overview-order"/>
   <int value="1253720084" label="CrOSEnforceSystemAecAgc:disabled"/>
   <int value="1254472299" label="PrivacySettingsRedesign:disabled"/>
+  <int value="1255967063" label="IsolatedSandboxedIframesName:enabled"/>
   <int value="1257482622" label="PageAlmostIdle:enabled"/>
   <int value="1257533754" label="UseDownloadOfflineContentProvider:disabled"/>
   <int value="1257663962" label="CommercePriceTracking:disabled"/>
@@ -56944,6 +56947,7 @@ from previous Chrome versions.
   <int value="1881036528" label="disable-multilingual-spellchecker"/>
   <int value="1881174782" label="disable-brotli"/>
   <int value="1882197308" label="UseChromeOSDirectVideoDecoder:disabled"/>
+  <int value="1883000826" label="IsolatedSandboxedIframesName:disabled"/>
   <int value="1883998150" label="WebAppsCrosapi:disabled"/>
   <int value="1887031213" label="AutofillManualFallbackAndroid:disabled"/>
   <int value="1887882558" label="RTCUnifiedPlanByDefault:enabled"/>

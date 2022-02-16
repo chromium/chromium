@@ -381,6 +381,9 @@ extern const char kEnableAutomaticSnoozeDescription[];
 extern const char kEnableFirstPartySetsName[];
 extern const char kEnableFirstPartySetsDescription[];
 
+extern const char kIsolatedSandboxedIframesName[];
+extern const char kIsolatedSandboxedIframesDescription[];
+
 extern const char kExperimentalAccessibilityLanguageDetectionName[];
 extern const char kExperimentalAccessibilityLanguageDetectionDescription[];
 

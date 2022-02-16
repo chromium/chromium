@@ -2253,6 +2253,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "enable-isolated-sandboxed-iframes",
+    "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "enable-javascript-harmony",
     "owners": [ "adamk", "hablich" ],
     // This flag is used by web developers to test upcoming javascript features.

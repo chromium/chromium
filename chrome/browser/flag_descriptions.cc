@@ -249,6 +249,15 @@ const char kEnableFirstPartySetsDescription[] =
     "When enabled, Chrome will apply First-Party Sets to features such as the "
     "SameParty cookie attribute.";
 
+extern const char kIsolatedSandboxedIframesName[] =
+    "Isolated sandboxed iframes";
+extern const char kIsolatedSandboxedIframesDescription[] =
+    "When enabled, applies process isolation to iframes with the 'sandbox' "
+    "attribute and without the 'allow-same-origin' permission set on that "
+    "attribute. The current isolation model is that all sandboxed iframes from "
+    "a given site will be placed into the same process, but alternative models "
+    "may be introduced in future experiments.";
+
 const char kDnsOverHttpsName[] = "Secure DNS lookups";
 const char kDnsOverHttpsDescription[] =
     "Enables DNS over HTTPS. When this feature is enabled, your browser may "

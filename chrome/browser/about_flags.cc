@@ -8094,6 +8094,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInitialNavigationEntryDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kInitialNavigationEntry)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-isolated-sandboxed-iframes",
+     flag_descriptions::kIsolatedSandboxedIframesName,
+     flag_descriptions::kIsolatedSandboxedIframesDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kIsolateSandboxedIframes)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
