@@ -7507,9 +7507,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kPerformantSplitViewResizing)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"privacy-review", flag_descriptions::kPrivacyReviewName,
-     flag_descriptions::kPrivacyReviewDescription, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kPrivacyReview)},
+    {"privacy-guide", flag_descriptions::kPrivacyGuideName,
+     flag_descriptions::kPrivacyGuideDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kPrivacyGuide)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"google-mobile-services-passwords",

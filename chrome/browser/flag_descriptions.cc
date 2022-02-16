@@ -2121,8 +2121,8 @@ const char kPrivacyAdvisorName[] = "Privacy Advisor";
 const char kPrivacyAdvisorDescription[] =
     "Provides contextual entry points for adjusting privacy settings";
 
-const char kPrivacyReviewName[] = "Privacy Review";
-const char kPrivacyReviewDescription[] =
+const char kPrivacyGuideName[] = "Privacy Guide";
+const char kPrivacyGuideDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "
     "privacy settings.";
 

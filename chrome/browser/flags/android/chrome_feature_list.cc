@@ -120,7 +120,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kElidePrioritizationOfPreNativeBootstrapTasks,
     &features::kElideTabPreloadAtStartup,
     &features::kGiveJavaUiThreadDefaultTaskTraitsUserBlockingPriority,
-    &features::kPrivacyReview,
+    &features::kPrivacyGuide,
     &features::kPushMessagingDisallowSenderIDs,
     &features::kPwaUpdateDialogForNameAndIcon,
     &features::kQuietNotificationPrompts,

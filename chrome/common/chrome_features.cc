@@ -846,8 +846,8 @@ const base::Feature kPrerenderFallbackToPreconnect{
 const base::Feature kPrivacyAdvisor{"PrivacyAdvisor",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kPrivacyReview{"PrivacyReview",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kPrivacyGuide{"PrivacyGuide",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables push subscriptions keeping Chrome running in the
 // background when closed.

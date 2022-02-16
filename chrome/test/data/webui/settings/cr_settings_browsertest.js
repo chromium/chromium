@@ -79,7 +79,7 @@ var CrSettingsBasicPageTest = class extends CrSettingsBrowserTest {
 
   /** @override */
   get featureListInternal() {
-    return {enabled: ['features::kPrivacyReview']};
+    return {enabled: ['features::kPrivacyGuide']};
   }
 };
 
@@ -442,7 +442,7 @@ var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {
 
   /** @override */
   get featureListInternal() {
-    return {enabled: ['features::kPrivacyReview']};
+    return {enabled: ['features::kPrivacyGuide']};
   }
 };
 
@@ -490,7 +490,7 @@ var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
 
   /** @override */
   get featureListInternal() {
-    return {enabled: ['features::kPrivacyReview']};
+    return {enabled: ['features::kPrivacyGuide']};
   }
 };
 
