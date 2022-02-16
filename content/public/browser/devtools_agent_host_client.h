@@ -14,6 +14,7 @@ class GURL;
 namespace content {
 
 class DevToolsAgentHost;
+class RenderFrameHost;
 
 // DevToolsAgentHostClient can attach to a DevToolsAgentHost and start
 // debugging it.
@@ -31,6 +32,10 @@ class CONTENT_EXPORT DevToolsAgentHostClient {
   // Returns true if the client is allowed to attach to the given URL.
   // Note: this method may be called before navigation commits.
   virtual bool MayAttachToURL(const GURL& url, bool is_webui);
+
+  // Returns true if the client is allowed to attach to the given
+  // RenderFrameHost.
+  virtual bool MayAttachToRenderFrameHost(RenderFrameHost* render_frame_host);
 
   // Returns true if the client is allowed to attach to the browser agent host.
   // Browser client is allowed to discover other DevTools targets and generally

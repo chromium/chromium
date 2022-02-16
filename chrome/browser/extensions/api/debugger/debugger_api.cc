@@ -52,6 +52,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -119,12 +120,68 @@ bool ExtensionMayAttachToURL(const Extension& extension,
   return true;
 }
 
+bool ExtensionMayAttachToURLOrInnerURL(const Extension& extension,
+                                       Profile* profile,
+                                       const GURL& url,
+                                       std::string* error) {
+  if (!ExtensionMayAttachToURL(extension, url, profile, error))
+    return false;
+  // For nested URLs, make sure ExtensionMayAttachToURL() allows both
+  // the outer and the inner URLs.
+  if (url.inner_url() &&
+      !ExtensionMayAttachToURL(extension, *url.inner_url(), profile, error)) {
+    return false;
+  }
+  return true;
+}
+
 constexpr char kBrowserTargetId[] = "browser";
 
 constexpr char kPerfettoUIExtensionId[] = "lfmkphfpdbjijhpomgecfikhfohaoine";
 
 bool ExtensionMayAttachToBrowser(const Extension& extension) {
   return extension.id() == kPerfettoUIExtensionId;
+}
+
+bool ExtensionMayAttachToRenderFrameHost(
+    const Extension& extension,
+    Profile* profile,
+    content::RenderFrameHost* render_frame_host,
+    std::string* error) {
+  bool result = true;
+  render_frame_host->ForEachRenderFrameHost(base::BindRepeating(
+      [](const Extension& extension, Profile* profile, std::string* error,
+         bool& result, content::RenderFrameHost* rfh) {
+        // If |rfh| is attached to an inner MimeHandlerViewGuest skip it.
+        // This is done to fix crbug.com/1293856 because an extension cannot
+        // inspect another extension.
+        WebContents* rfh_web_contents = WebContents::FromRenderFrameHost(rfh);
+        if (MimeHandlerViewGuest::FromWebContents(rfh_web_contents)) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+
+        if (rfh->GetWebUI()) {
+          *error = debugger_api_constants::kRestrictedError;
+          result = false;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+
+        // We check both the last committed URL and the SiteURL because this
+        // method may be called in the middle of a navigation where the SiteURL
+        // has been updated but navigation hasn't committed yet.
+        if (!ExtensionMayAttachToURLOrInnerURL(
+                extension, profile, rfh->GetLastCommittedURL(), error) ||
+            !ExtensionMayAttachToURLOrInnerURL(
+                extension, profile, rfh->GetSiteInstance()->GetSiteURL(),
+                error)) {
+          result = false;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      },
+      std::ref(extension), profile, error, std::ref(result)));
+  return result;
 }
 
 bool ExtensionMayAttachToWebContents(const Extension& extension,
@@ -140,19 +197,8 @@ bool ExtensionMayAttachToWebContents(const Extension& extension,
     return false;
   }
 
-  bool result = true;
-  web_contents.GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](const Extension& extension, Profile* profile, std::string* error,
-         bool& result, content::RenderFrameHost* rfh) {
-        if (!ExtensionMayAttachToURL(extension, rfh->GetLastCommittedURL(),
-                                     profile, error)) {
-          result = false;
-          return content::RenderFrameHost::FrameIterationAction::kStop;
-        }
-        return content::RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      std::ref(extension), profile, error, std::ref(result)));
-  return result;
+  return ExtensionMayAttachToRenderFrameHost(
+      extension, profile, web_contents.GetMainFrame(), error);
 }
 
 bool ExtensionMayAttachToAgentHost(const Extension& extension,
@@ -207,6 +253,8 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
+  bool MayAttachToRenderFrameHost(
+      content::RenderFrameHost* render_frame_host) override;
   bool MayAttachToURL(const GURL& url, bool is_webui) override;
   bool MayAttachToBrowser() override;
   bool MayReadLocalFiles() override;
@@ -416,20 +464,19 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
   }
 }
 
+bool ExtensionDevToolsClientHost::MayAttachToRenderFrameHost(
+    content::RenderFrameHost* render_frame_host) {
+  std::string error;
+  return ExtensionMayAttachToRenderFrameHost(*extension_, profile_,
+                                             render_frame_host, &error);
+}
+
 bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
                                                  bool is_webui) {
   if (is_webui)
     return false;
   std::string error;
-  if (!ExtensionMayAttachToURL(*extension_, url, profile_, &error))
-    return false;
-  // For nested URLs, make sure ExtensionMayAttachToURL() allows both
-  // the outer and the inner URLs.
-  if (url.inner_url() && !ExtensionMayAttachToURL(*extension_, *url.inner_url(),
-                                                  profile_, &error)) {
-    return false;
-  }
-  return true;
+  return ExtensionMayAttachToURLOrInnerURL(*extension_, profile_, url, &error);
 }
 
 bool ExtensionDevToolsClientHost::MayAttachToBrowser() {

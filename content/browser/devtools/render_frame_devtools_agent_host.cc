@@ -898,23 +898,7 @@ bool RenderFrameDevToolsAgentHost::ShouldAllowSession(
       !manager->delegate()->AllowInspectingRenderFrameHost(frame_host_)) {
     return false;
   }
-  // In case this is called during the navigation, besides checking the
-  // access to the entire current local tree (below), ensure we can access
-  // the target URL.
-  const GURL& target_url = frame_host_->GetSiteInstance()->GetSiteURL();
-  if (!session->GetClient()->MayAttachToURL(target_url,
-                                            frame_host_->web_ui())) {
-    return false;
-  }
-
-  for (FrameTreeNode* node : FrameTree::SubtreeAndInnerTreeNodes(frame_host_)) {
-    // Note this may be called before navigation is committed.
-    RenderFrameHostImpl* rfh = node->current_frame_host();
-    const GURL& url = rfh->GetSiteInstance()->GetSiteURL();
-    if (!session->GetClient()->MayAttachToURL(url, rfh->web_ui()))
-      return false;
-  }
-  return true;
+  return session->GetClient()->MayAttachToRenderFrameHost(frame_host_);
 }
 
 void RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories() {
