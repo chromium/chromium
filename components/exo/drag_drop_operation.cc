@@ -37,6 +37,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "components/exo/extended_drag_source.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace exo {
@@ -190,9 +191,11 @@ DragDropOperation::DragDropOperation(
 
   drag_drop_controller_->AddObserver(this);
 
-  os_exchange_data_->SetSource(std::make_unique<ui::DataTransferEndpoint>(
+  ui::EndpointType endpoint_type =
       data_exchange_delegate->GetDataTransferEndpointType(
-          origin_->get()->window())));
+          origin_->get()->window());
+  os_exchange_data_->SetSource(
+      std::make_unique<ui::DataTransferEndpoint>(endpoint_type));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extended_drag_source_ = ExtendedDragSource::Get();
@@ -203,17 +206,42 @@ DragDropOperation::DragDropOperation(
   }
 #endif
 
-  if (icon)
+  int num_additional_callbacks = 0;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1298033): Move DTE retrieval into
+  // DataSource::GetDataForPreferredMimeTypes()
+  // Lacros sends additional metadata, in a custom MIME type, to sync drag
+  // source metadata. Hence, the number of callbacks is incremented by one.
+  if (endpoint_type == ui::EndpointType::kLacros)
+    ++num_additional_callbacks;
+#endif
+
+  // When the icon is present, we increment the number of callbacks so we can
+  // wait for the icon to be captured as well.
+  if (icon) {
     icon_ = std::make_unique<IconSurface>(icon, this);
+    ++num_additional_callbacks;
+  }
 
   auto start_op_callback =
       base::BindOnce(&DragDropOperation::ScheduleStartDragDropOperation,
                      weak_ptr_factory_.GetWeakPtr());
 
-  // When the icon is present, make the count kMaxDataTypes + 1 so we can wait
-  // for the icon to be captured as well.
-  counter_ = base::BarrierClosure(DataSource::kMaxDataTypes + (icon ? 1 : 0),
-                                  std::move(start_op_callback));
+  counter_ =
+      base::BarrierClosure(DataSource::kMaxDataTypes + num_additional_callbacks,
+                           std::move(start_op_callback));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1298033): Move DTE retrieval into
+  // DataSource::GetDataForPreferredMimeTypes()
+  if (endpoint_type == ui::EndpointType::kLacros) {
+    source->ReadDataTransferEndpoint(
+        base::BindOnce(&DragDropOperation::OnDataTransferEndpointRead,
+                       weak_ptr_factory_.GetWeakPtr()),
+        counter_);
+  }
+#endif
 
   source->GetDataForPreferredMimeTypes(
       base::BindOnce(&DragDropOperation::OnTextRead,
@@ -251,6 +279,20 @@ void DragDropOperation::AbortIfPending() {
   if (!started_by_this_object_)
     delete this;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void DragDropOperation::OnDataTransferEndpointRead(const std::string& mime_type,
+                                                   std::u16string data) {
+  DCHECK(os_exchange_data_);
+
+  std::string utf8_json = base::UTF16ToUTF8(data);
+  auto drag_source_dte = ui::ConvertJsonToDataTransferEndpoint(utf8_json);
+
+  os_exchange_data_->SetSource(std::move(drag_source_dte));
+
+  counter_.Run();
+}
+#endif
 
 void DragDropOperation::OnTextRead(const std::string& mime_type,
                                    std::u16string data) {
@@ -409,6 +451,10 @@ void DragDropOperation::OnDragActionsChanged(int actions) {
 void DragDropOperation::OnExtendedDragSourceDestroying(
     ExtendedDragSource* source) {
   ResetExtendedDragSource();
+}
+
+ui::OSExchangeData* DragDropOperation::GetOSExchangeDataForTesting() const {
+  return os_exchange_data_.get();
 }
 
 void DragDropOperation::ResetExtendedDragSource() {

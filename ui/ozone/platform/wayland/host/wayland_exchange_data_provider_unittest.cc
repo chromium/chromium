@@ -8,11 +8,30 @@
 #include <string>
 
 #include "base/pickle.h"
+#include "build/chromeos_buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "url/origin.h"
 
 namespace ui {
+
+namespace {
+
+template <typename StringType>
+PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
+  auto* begin = reinterpret_cast<typename std::vector<uint8_t>::const_pointer>(
+      data_string.data());
+  std::vector<uint8_t> result(
+      begin,
+      begin + (data_string.size() * sizeof(typename StringType::value_type)));
+  return static_cast<scoped_refptr<base::RefCountedBytes>>(
+      base::RefCountedBytes::TakeVector(&result));
+}
+
+}  // namespace
 
 // Regression test for https://crbug.com/1284996.
 TEST(WaylandExchangeDataProviderTest, ExtractPickledData) {
@@ -43,5 +62,33 @@ TEST(WaylandExchangeDataProviderTest, ExtractPickledData) {
   EXPECT_TRUE(iter.ReadString(&read_pickled_str));
   EXPECT_EQ("pickled-str", read_pickled_str);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST(WaylandExchangeDataProviderTest, AddAndExtractDataTransferEndpoint) {
+  std::string kExpectedEncodedDte =
+      R"({"endpoint_type":"url","url_origin":"https://www.google.com"})";
+  const DataTransferEndpoint expected_dte = ui::DataTransferEndpoint(
+      url::Origin::Create(GURL("https://www.google.com")));
+
+  WaylandExchangeDataProvider provider;
+  std::string extracted;
+
+  EXPECT_FALSE(provider.ExtractData(kMimeTypeDataTransferEndpoint, &extracted));
+
+  extracted.clear();
+
+  provider.AddData(ToClipboardData(kExpectedEncodedDte),
+                   kMimeTypeDataTransferEndpoint);
+  DataTransferEndpoint* actual_dte = provider.GetSource();
+  EXPECT_TRUE(
+      expected_dte.GetOrigin()->IsSameOriginWith(*actual_dte->GetOrigin()));
+
+  std::vector<std::string> mime_types = provider.BuildMimeTypesList();
+  EXPECT_THAT(mime_types, ::testing::Contains(kMimeTypeDataTransferEndpoint));
+
+  EXPECT_TRUE(provider.ExtractData(kMimeTypeDataTransferEndpoint, &extracted));
+  EXPECT_EQ(kExpectedEncodedDte, extracted);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace ui
