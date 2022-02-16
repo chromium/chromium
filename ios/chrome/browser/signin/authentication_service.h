@@ -169,12 +169,10 @@ class AuthenticationService : public KeyedService,
   // Virtual for testing.
   virtual void SignInInternal(ChromeIdentity* identity);
 
-  // Clears local data for users under parental controls and grants
-  // signin::ConsentLevel::kSignin to |identity|.
+  // Clears local data for users under parental controls and runs |completion|.
   void OnIsSubjectToParentalControlsResult(
       ios::ChromeIdentityCapabilityResult result,
-      ChromeIdentity* identity,
-      signin_ui::CompletionCallback completion);
+      ProceduralBlock completion);
 
   // Migrates the token service accounts stored in prefs from emails to account
   // ids.

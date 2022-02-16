@@ -350,33 +350,6 @@ ChromeIdentity* AuthenticationService::GetPrimaryIdentity(
 
 void AuthenticationService::SignIn(ChromeIdentity* identity,
                                    signin_ui::CompletionCallback completion) {
-  if (base::FeatureList::IsEnabled(signin::kEnableUnicornAccountSupport)) {
-    ios::ChromeIdentityService* identity_service =
-        ios::GetChromeBrowserProvider().GetChromeIdentityService();
-    base::WeakPtr<AuthenticationService> weak_ptr = GetWeakPtr();
-    identity_service->IsSubjectToParentalControls(
-        identity, ^(ios::ChromeIdentityCapabilityResult result) {
-          AuthenticationService* strong_ptr = weak_ptr.get();
-          if (strong_ptr) {
-            strong_ptr->OnIsSubjectToParentalControlsResult(result, identity,
-                                                            completion);
-          }
-        });
-    return;
-  }
-
-  // When supervised user account are not enabled, sign in the account by
-  // default.
-  SignInInternal(identity);
-  if (completion) {
-    completion(HasPrimaryIdentity(signin::ConsentLevel::kSignin));
-  }
-}
-
-void AuthenticationService::OnIsSubjectToParentalControlsResult(
-    ios::ChromeIdentityCapabilityResult result,
-    ChromeIdentity* identity,
-    signin_ui::CompletionCallback completion) {
   base::WeakPtr<AuthenticationService> weak_ptr = GetWeakPtr();
   ProceduralBlock signin_callback = ^() {
     bool has_primary_identity = false;
@@ -391,11 +364,33 @@ void AuthenticationService::OnIsSubjectToParentalControlsResult(
     }
   };
 
-  // Clears browsing data before sign-in for supervised users.
+  if (base::FeatureList::IsEnabled(signin::kEnableUnicornAccountSupport)) {
+    ios::ChromeIdentityService* identity_service =
+        ios::GetChromeBrowserProvider().GetChromeIdentityService();
+    identity_service->IsSubjectToParentalControls(
+        identity, ^(ios::ChromeIdentityCapabilityResult result) {
+          AuthenticationService* strong_ptr = weak_ptr.get();
+          if (strong_ptr) {
+            strong_ptr->OnIsSubjectToParentalControlsResult(result,
+                                                            signin_callback);
+          }
+        });
+    return;
+  }
+
+  // When supervised user account are not enabled, sign in the account by
+  // default.
+  signin_callback();
+}
+
+void AuthenticationService::OnIsSubjectToParentalControlsResult(
+    ios::ChromeIdentityCapabilityResult result,
+    ProceduralBlock completion) {
+  // Clears browsing data for supervised users before sign-in operation.
   if (result == ios::ChromeIdentityCapabilityResult::kTrue) {
-    delegate_->ClearBrowsingData(signin_callback);
-  } else {
-    signin_callback();
+    delegate_->ClearBrowsingData(completion);
+  } else if (completion) {
+    completion();
   }
 }
 
@@ -505,17 +500,34 @@ void AuthenticationService::SignOut(
   sync_service_->StopAndClear();
 
   auto* account_mutator = identity_manager_->GetPrimaryAccountMutator();
-
   // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
   DCHECK(account_mutator);
+
+  // Retrieve primary identity before clearing in the account mutator.
+  ChromeIdentity* primary_identity =
+      GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+
   account_mutator->ClearPrimaryAccount(
       signout_source, signin_metrics::SignoutDelete::kIgnoreMetric);
   crash_keys::SetCurrentlySignedIn(false);
   cached_mdm_infos_.clear();
+
   // Browsing data for managed account needs to be cleared only if sync has
   // started at least once.
   if (force_clear_browsing_data || (is_managed && is_first_setup_complete)) {
     delegate_->ClearBrowsingData(completion);
+  } else if (base::FeatureList::IsEnabled(
+                 signin::kEnableUnicornAccountSupport)) {
+    ios::ChromeIdentityService* identity_service =
+        ios::GetChromeBrowserProvider().GetChromeIdentityService();
+    base::WeakPtr<AuthenticationService> weak_ptr = GetWeakPtr();
+    identity_service->IsSubjectToParentalControls(
+        primary_identity, ^(ios::ChromeIdentityCapabilityResult result) {
+          AuthenticationService* strong_ptr = weak_ptr.get();
+          if (strong_ptr) {
+            strong_ptr->OnIsSubjectToParentalControlsResult(result, completion);
+          }
+        });
   } else if (completion) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   base::BindOnce(completion));
