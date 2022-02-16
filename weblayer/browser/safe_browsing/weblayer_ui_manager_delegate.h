@@ -41,8 +41,6 @@ class WebLayerSafeBrowsingUIManagerDelegate
       content::BrowserContext* browser_context) override;
   safe_browsing::PingManager* GetPingManager(
       content::BrowserContext* browser_context) override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
-      content::BrowserContext* browser_context) override;
   bool IsMetricsAndCrashReportingEnabled() override;
   bool IsSendingOfHitReportsEnabled() override;
 };

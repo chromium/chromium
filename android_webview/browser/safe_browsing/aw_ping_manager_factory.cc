@@ -33,8 +33,10 @@ AwPingManagerFactory::~AwPingManagerFactory() = default;
 
 KeyedService* AwPingManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return PingManager::Create(safe_browsing::GetV4ProtocolConfig(
-      GetProtocolConfigClientName(), /*disable_auto_update=*/false));
+  return PingManager::Create(
+      safe_browsing::GetV4ProtocolConfig(GetProtocolConfigClientName(),
+                                         /*disable_auto_update=*/false),
+      GetURLLoaderFactory());
 }
 
 content::BrowserContext* AwPingManagerFactory::GetBrowserContextToUse(
@@ -45,6 +47,25 @@ content::BrowserContext* AwPingManagerFactory::GetBrowserContextToUse(
 std::string AwPingManagerFactory::GetProtocolConfigClientName() const {
   // Return a webview specific client name, see crbug.com/732373 for details.
   return "android_webview";
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+AwPingManagerFactory::GetURLLoaderFactory() const {
+  if (testing_url_loader_factory_) {
+    return testing_url_loader_factory_;
+  }
+  // TODO(crbug.com/1293957): Support separate SafeBrowsingNetworkContexts per
+  // browser context instead of having the same one all contexts. If done
+  // similar to the chrome/ implementation, GetURLLoaderFactory will take in a
+  // browser context as a parameter.
+  return android_webview::AwBrowserProcess::GetInstance()
+      ->GetSafeBrowsingUIManager()
+      ->GetURLLoaderFactory();
+}
+
+void AwPingManagerFactory::SetURLLoaderFactoryForTesting(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  testing_url_loader_factory_ = url_loader_factory;
 }
 
 }  // namespace safe_browsing

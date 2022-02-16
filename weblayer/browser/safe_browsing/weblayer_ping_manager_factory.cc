@@ -10,6 +10,7 @@
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/profile_impl.h"
+#include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 
 namespace weblayer {
 
@@ -35,8 +36,14 @@ WebLayerPingManagerFactory::~WebLayerPingManagerFactory() = default;
 
 KeyedService* WebLayerPingManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return safe_browsing::PingManager::Create(safe_browsing::GetV4ProtocolConfig(
-      GetProtocolConfigClientName(), /*disable_auto_update=*/false));
+  return safe_browsing::PingManager::Create(
+      safe_browsing::GetV4ProtocolConfig(GetProtocolConfigClientName(),
+                                         /*disable_auto_update=*/false),
+      // TODO(crbug.com/1233532): Should WebLayer support the
+      // kSafeBrowsingSeparateNetworkContexts feature?
+      BrowserProcess::GetInstance()
+          ->GetSafeBrowsingService()
+          ->GetURLLoaderFactory());
 }
 
 content::BrowserContext* WebLayerPingManagerFactory::GetBrowserContextToUse(

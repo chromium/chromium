@@ -59,6 +59,8 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   void SendSerializedThreatDetails(content::BrowserContext* browser_context,
                                    const std::string& serialized) override;
 
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
+
   // Called on the IO thread to get a SharedURLLoaderFactory that can be used on
   // the IO thread.
   scoped_refptr<network::SharedURLLoaderFactory>

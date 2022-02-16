@@ -201,9 +201,7 @@ void SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(
            << hit_report.page_url << " " << hit_report.referrer_url << " "
            << hit_report.is_subresource << " " << hit_report.threat_type;
   delegate_->GetPingManager(web_contents->GetBrowserContext())
-      ->ReportSafeBrowsingHit(
-          delegate_->GetURLLoaderFactory(web_contents->GetBrowserContext()),
-          hit_report);
+      ->ReportSafeBrowsingHit(hit_report);
 }
 
 // Static.
@@ -290,9 +288,7 @@ void SafeBrowsingUIManager::SendSerializedThreatDetails(
 
   if (!serialized.empty()) {
     DVLOG(1) << "Sending serialized threat details.";
-    delegate_->GetPingManager(browser_context)
-        ->ReportThreatDetails(delegate_->GetURLLoaderFactory(browser_context),
-                              serialized);
+    delegate_->GetPingManager(browser_context)->ReportThreatDetails(serialized);
   }
 }
 

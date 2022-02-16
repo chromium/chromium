@@ -451,7 +451,7 @@ void SafeBrowsingService::SendSerializedDownloadReport(
     const std::string& report) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ChromePingManagerFactory::GetForBrowserContext(profile)->ReportThreatDetails(
-      GetURLLoaderFactory(profile), report);
+      report);
 }
 
 void SafeBrowsingService::CreateTriggerManager() {

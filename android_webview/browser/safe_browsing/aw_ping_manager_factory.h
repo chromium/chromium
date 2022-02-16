@@ -17,6 +17,9 @@ class AwPingManagerFactory : public BrowserContextKeyedServiceFactory {
   static AwPingManagerFactory* GetInstance();
   static PingManager* GetForBrowserContext(content::BrowserContext* context);
 
+  void SetURLLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
  private:
   friend class base::NoDestructor<AwPingManagerFactory>;
 
@@ -30,6 +33,9 @@ class AwPingManagerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
 
   std::string GetProtocolConfigClientName() const;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() const;
+
+  scoped_refptr<network::SharedURLLoaderFactory> testing_url_loader_factory_;
 };
 
 }  // namespace safe_browsing

@@ -111,10 +111,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
     virtual PingManager* GetPingManager(
         content::BrowserContext* browser_context) = 0;
 
-    // Gets the URLLoaderFactory attached to |browser_context|.
-    virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
-        content::BrowserContext* browser_context) = 0;
-
     // Returns true if metrics reporting is enabled.
     virtual bool IsMetricsAndCrashReportingEnabled() = 0;
 

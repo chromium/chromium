@@ -7,8 +7,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -32,13 +34,27 @@ class ChromePingManagerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     ASSERT_TRUE(g_browser_process->profile_manager());
+
+    sb_service_ =
+        base::MakeRefCounted<safe_browsing::TestSafeBrowsingService>();
+    TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
+        sb_service_.get());
+    g_browser_process->safe_browsing_service()->Initialize();
   }
 
-  void TearDown() override { base::RunLoop().RunUntilIdle(); }
+  void TearDown() override {
+    base::RunLoop().RunUntilIdle();
+
+    if (TestingBrowserProcess::GetGlobal()->safe_browsing_service()) {
+      TestingBrowserProcess::GetGlobal()->safe_browsing_service()->ShutDown();
+      TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
+    }
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
 };
 
 TEST_F(ChromePingManagerTest, ReportThreatDetails) {
@@ -53,11 +69,11 @@ TEST_F(ChromePingManagerTest, ReportThreatDetails) {
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         EXPECT_EQ(GetUploadData(request), report_content);
       }));
-
-  ping_manager->ReportThreatDetails(
+  ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory),
-      report_content);
+          &test_url_loader_factory));
+
+  ping_manager->ReportThreatDetails(report_content);
 }
 
 TEST_F(ChromePingManagerTest, ReportSafeBrowsingHit) {
@@ -77,11 +93,11 @@ TEST_F(ChromePingManagerTest, ReportSafeBrowsingHit) {
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         EXPECT_EQ(GetUploadData(request), hit_report.post_data);
       }));
-
-  ping_manager->ReportSafeBrowsingHit(
+  ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory),
-      hit_report);
+          &test_url_loader_factory));
+
+  ping_manager->ReportSafeBrowsingHit(hit_report);
 }
 
 }  // namespace safe_browsing

@@ -189,10 +189,6 @@ class TestSafeBrowsingUIManagerDelegate
       content::BrowserContext* browser_context) override {
     return nullptr;
   }
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
-      content::BrowserContext* browser_context) override {
-    return nullptr;
-  }
   bool IsMetricsAndCrashReportingEnabled() override { return false; }
 
   bool IsSendingOfHitReportsEnabled() override { return false; }

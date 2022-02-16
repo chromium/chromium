@@ -21,7 +21,6 @@
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
@@ -74,13 +73,10 @@ void RecordApkDownloadTelemetryIncompleteReason(
 
 }  // namespace
 
-AndroidTelemetryService::AndroidTelemetryService(
-    SafeBrowsingService* sb_service,
-    Profile* profile)
-    : TelemetryService(), profile_(profile), sb_service_(sb_service) {
+AndroidTelemetryService::AndroidTelemetryService(Profile* profile)
+    : TelemetryService(), profile_(profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
-  DCHECK(sb_service_);
 
   download::SimpleDownloadManagerCoordinator* coordinator =
       SimpleDownloadManagerCoordinatorFactory::GetForKey(
@@ -258,9 +254,7 @@ void AndroidTelemetryService::MaybeSendApkDownloadReport(
     return;
   }
   ChromePingManagerFactory::GetForBrowserContext(browser_context)
-      ->ReportThreatDetails(sb_service_->GetURLLoaderFactory(
-                                Profile::FromBrowserContext(browser_context)),
-                            serialized);
+      ->ReportThreatDetails(serialized);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

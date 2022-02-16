@@ -52,10 +52,12 @@ TEST_F(AwPingManagerTest, ReportThreatDetails) {
   auto ref_counted_url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory);
+  safe_browsing::AwPingManagerFactory::GetInstance()
+      ->SetURLLoaderFactoryForTesting(ref_counted_url_loader_factory);
 
   AwBrowserContext context;
   safe_browsing::AwPingManagerFactory::GetForBrowserContext(&context)
-      ->ReportThreatDetails(ref_counted_url_loader_factory, report_content);
+      ->ReportThreatDetails(report_content);
 }
 
 TEST_F(AwPingManagerTest, ReportSafeBrowsingHit) {
@@ -74,10 +76,12 @@ TEST_F(AwPingManagerTest, ReportSafeBrowsingHit) {
   auto ref_counted_url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory);
+  safe_browsing::AwPingManagerFactory::GetInstance()
+      ->SetURLLoaderFactoryForTesting(ref_counted_url_loader_factory);
 
   AwBrowserContext context;
   safe_browsing::AwPingManagerFactory::GetForBrowserContext(&context)
-      ->ReportSafeBrowsingHit(ref_counted_url_loader_factory, hit_report);
+      ->ReportSafeBrowsingHit(hit_report);
 }
 
 }  // namespace android_webview

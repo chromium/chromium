@@ -113,8 +113,7 @@ void AwSafeBrowsingUIManager::SendSerializedThreatDetails(
   if (!serialized.empty()) {
     DVLOG(1) << "Sending serialized threat details";
     safe_browsing::AwPingManagerFactory::GetForBrowserContext(browser_context)
-        ->ReportThreatDetails(network_context_->GetURLLoaderFactory(),
-                              serialized);
+        ->ReportThreatDetails(serialized);
   }
 }
 
@@ -141,6 +140,11 @@ void AwSafeBrowsingUIManager::CreateURLLoaderFactoryForIO(
   url_loader_factory_params->is_corb_enabled = false;
   network_context_->GetNetworkContext()->CreateURLLoaderFactory(
       std::move(receiver), std::move(url_loader_factory_params));
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+AwSafeBrowsingUIManager::GetURLLoaderFactory() {
+  return network_context_->GetURLLoaderFactory();
 }
 
 }  // namespace android_webview

@@ -70,8 +70,7 @@ class AndroidTelemetryServiceTest : public testing::Test {
         std::make_unique<::testing::NiceMock<download::MockDownloadItem>>();
     profile_ = std::make_unique<TestingProfile>();
 
-    telemetry_service_ =
-        std::make_unique<AndroidTelemetryService>(sb_service_.get(), profile());
+    telemetry_service_ = std::make_unique<AndroidTelemetryService>(profile());
   }
 
   void TearDown() override {

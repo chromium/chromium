@@ -25,8 +25,6 @@ class WebContents;
 
 namespace safe_browsing {
 
-class SafeBrowsingService;
-
 // Enumerates the possibilities for whether the CSBRR report was sent (or not).
 enum class ApkDownloadTelemetryOutcome {
   NOT_SENT_SAFE_BROWSING_NOT_ENABLED = 0,
@@ -67,7 +65,7 @@ class AndroidTelemetryService
       public download::SimpleDownloadManagerCoordinator::Observer,
       public TelemetryService {
  public:
-  AndroidTelemetryService(SafeBrowsingService* sb_service, Profile* profile);
+  explicit AndroidTelemetryService(Profile* profile);
 
   AndroidTelemetryService(const AndroidTelemetryService&) = delete;
   AndroidTelemetryService& operator=(const AndroidTelemetryService&) = delete;
@@ -110,9 +108,6 @@ class AndroidTelemetryService
 
   // Profile associated with this instance. Unowned.
   raw_ptr<Profile> profile_;
-
-  // Unowned.
-  raw_ptr<SafeBrowsingService> sb_service_;
 
   base::WeakPtrFactory<AndroidTelemetryService> weak_ptr_factory_{this};
 };

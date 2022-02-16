@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 
@@ -36,7 +37,10 @@ ChromePingManagerFactory::~ChromePingManagerFactory() = default;
 
 KeyedService* ChromePingManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return PingManager::Create(GetV4ProtocolConfig());
+  Profile* profile = Profile::FromBrowserContext(context);
+  return PingManager::Create(
+      GetV4ProtocolConfig(),
+      g_browser_process->safe_browsing_service()->GetURLLoaderFactory(profile));
 }
 
 content::BrowserContext* ChromePingManagerFactory::GetBrowserContextToUse(

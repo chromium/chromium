@@ -11,9 +11,9 @@
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -92,13 +92,6 @@ PingManager* ChromeSafeBrowsingUIManagerDelegate::GetPingManager(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   return ChromePingManagerFactory::GetForBrowserContext(browser_context);
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-ChromeSafeBrowsingUIManagerDelegate::GetURLLoaderFactory(
-    content::BrowserContext* browser_context) {
-  return g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
-      browser_context);
 }
 
 bool ChromeSafeBrowsingUIManagerDelegate::IsMetricsAndCrashReportingEnabled() {

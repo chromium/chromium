@@ -29,11 +29,11 @@ IN_PROC_BROWSER_TEST_F(WeblayerPingManagerTest, ReportThreatDetails) {
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         EXPECT_EQ(GetUploadData(request), report_content);
       }));
-
-  ping_manager->ReportThreatDetails(
+  ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory),
-      report_content);
+          &test_url_loader_factory));
+
+  ping_manager->ReportThreatDetails(report_content);
 }
 
 IN_PROC_BROWSER_TEST_F(WeblayerPingManagerTest, ReportSafeBrowsingHit) {
@@ -51,11 +51,11 @@ IN_PROC_BROWSER_TEST_F(WeblayerPingManagerTest, ReportSafeBrowsingHit) {
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         EXPECT_EQ(GetUploadData(request), hit_report.post_data);
       }));
-
-  ping_manager->ReportSafeBrowsingHit(
+  ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory),
-      hit_report);
+          &test_url_loader_factory));
+
+  ping_manager->ReportSafeBrowsingHit(hit_report);
 }
 
 }  // namespace weblayer

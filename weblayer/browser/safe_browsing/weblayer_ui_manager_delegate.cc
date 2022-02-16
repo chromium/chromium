@@ -11,7 +11,6 @@
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/i18n_util.h"
 #include "weblayer/browser/no_state_prefetch/no_state_prefetch_utils.h"
-#include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 #include "weblayer/browser/safe_browsing/weblayer_ping_manager_factory.h"
 #include "weblayer/browser/weblayer_metrics_service_accessor.h"
 
@@ -66,16 +65,6 @@ safe_browsing::PingManager*
 WebLayerSafeBrowsingUIManagerDelegate::GetPingManager(
     content::BrowserContext* browser_context) {
   return WebLayerPingManagerFactory::GetForBrowserContext(browser_context);
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-WebLayerSafeBrowsingUIManagerDelegate::GetURLLoaderFactory(
-    content::BrowserContext* browser_context) {
-  // TODO(crbug.com/1233532): Should WebLayer support the
-  // kSafeBrowsingSeparateNetworkContexts feature?
-  return BrowserProcess::GetInstance()
-      ->GetSafeBrowsingService()
-      ->GetURLLoaderFactory();
 }
 
 bool WebLayerSafeBrowsingUIManagerDelegate::

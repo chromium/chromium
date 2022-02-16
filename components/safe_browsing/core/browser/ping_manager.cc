@@ -67,11 +67,16 @@ namespace safe_browsing {
 // SafeBrowsingPingManager implementation ----------------------------------
 
 // static
-PingManager* PingManager::Create(const V4ProtocolConfig& config) {
-  return new PingManager(config);
+PingManager* PingManager::Create(
+    const V4ProtocolConfig& config,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return new PingManager(config, url_loader_factory);
 }
 
-PingManager::PingManager(const V4ProtocolConfig& config) : config_(config) {}
+PingManager::PingManager(
+    const V4ProtocolConfig& config,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : config_(config), url_loader_factory_(url_loader_factory) {}
 
 PingManager::~PingManager() {}
 
@@ -86,7 +91,6 @@ void PingManager::OnURLLoaderComplete(
 
 // Sends a SafeBrowsing "hit" report.
 void PingManager::ReportSafeBrowsingHit(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const safe_browsing::HitReport& hit_report) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   GURL report_url = SafeBrowsingHitUrl(hit_report);
@@ -102,16 +106,14 @@ void PingManager::ReportSafeBrowsingHit(
     report_ptr->AttachStringForUpload(hit_report.post_data, "text/plain");
 
   report_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory.get(),
+      url_loader_factory_.get(),
       base::BindOnce(&PingManager::OnURLLoaderComplete, base::Unretained(this),
                      report_ptr.get()));
   safebrowsing_reports_.insert(std::move(report_ptr));
 }
 
 // Sends threat details for users who opt-in.
-void PingManager::ReportThreatDetails(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::string& report) {
+void PingManager::ReportThreatDetails(const std::string& report) {
   GURL report_url = ThreatDetailsUrl();
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -125,7 +127,7 @@ void PingManager::ReportThreatDetails(
   loader->AttachStringForUpload(report, "application/octet-stream");
 
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory.get(),
+      url_loader_factory_.get(),
       base::BindOnce(&PingManager::OnURLLoaderComplete, base::Unretained(this),
                      loader.get()));
   safebrowsing_reports_.insert(std::move(loader));
@@ -212,6 +214,11 @@ GURL PingManager::SafeBrowsingHitUrl(
 GURL PingManager::ThreatDetailsUrl() const {
   std::string url = GetReportUrl(config_, "clientreport/malware");
   return GURL(url);
+}
+
+void PingManager::SetURLLoaderFactoryForTesting(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  url_loader_factory_ = url_loader_factory;
 }
 
 }  // namespace safe_browsing
