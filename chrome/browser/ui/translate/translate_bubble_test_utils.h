@@ -20,6 +20,8 @@ namespace test_utils {
 // Obtain the TranslateModel associated with the current bubble.
 const TranslateBubbleModel* GetCurrentModel(Browser* browser);
 
+void CloseCurrentBubble(Browser* browser);
+
 // Presses 'Translate' on the currently open translate bubble.
 void PressTranslate(Browser* browser);
 

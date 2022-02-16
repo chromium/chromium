@@ -129,23 +129,26 @@ void AutofillUiTest::SendKeyToPage(content::WebContents* web_contents,
                             false, false);
 }
 
-void AutofillUiTest::SendKeyToPageAndWait(
+bool AutofillUiTest::SendKeyToPageAndWait(
     ui::DomKey key,
-    std::list<ObservedUiEvents> expected_events) {
+    std::list<ObservedUiEvents> expected_events,
+    base::TimeDelta timeout) {
   ui::KeyboardCode key_code = ui::NonPrintableDomKeyToKeyboardCode(key);
   ui::DomCode code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
-  SendKeyToPageAndWait(key, code, key_code, std::move(expected_events));
+  return SendKeyToPageAndWait(key, code, key_code, std::move(expected_events),
+                              timeout);
 }
 
-void AutofillUiTest::SendKeyToPageAndWait(
+bool AutofillUiTest::SendKeyToPageAndWait(
     ui::DomKey key,
     ui::DomCode code,
     ui::KeyboardCode key_code,
-    std::list<ObservedUiEvents> expected_events) {
-  test_delegate()->SetExpectations(std::move(expected_events));
+    std::list<ObservedUiEvents> expected_events,
+    base::TimeDelta timeout) {
+  test_delegate()->SetExpectations(std::move(expected_events), timeout);
   content::SimulateKeyPress(GetWebContents(), key, code, key_code, false, false,
                             false, false);
-  test_delegate()->Wait();
+  return test_delegate()->Wait();
 }
 
 void AutofillUiTest::SendKeyToPopup(content::RenderFrameHost* render_frame_host,
@@ -169,22 +172,25 @@ void AutofillUiTest::SendKeyToPopup(content::RenderFrameHost* render_frame_host,
   widget->RemoveKeyPressEventCallback(key_press_event_sink_);
 }
 
-void AutofillUiTest::SendKeyToPopupAndWait(
+bool AutofillUiTest::SendKeyToPopupAndWait(
     ui::DomKey key,
     std::list<ObservedUiEvents> expected_events,
-    content::RenderWidgetHost* widget) {
+    content::RenderWidgetHost* widget,
+    base::TimeDelta timeout) {
   ui::KeyboardCode key_code = ui::NonPrintableDomKeyToKeyboardCode(key);
   ui::DomCode code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
-  SendKeyToPopupAndWait(key, code, key_code, std::move(expected_events),
-                        widget ? widget : GetRenderViewHost()->GetWidget());
+  return SendKeyToPopupAndWait(
+      key, code, key_code, std::move(expected_events),
+      widget ? widget : GetRenderViewHost()->GetWidget(), timeout);
 }
 
-void AutofillUiTest::SendKeyToPopupAndWait(
+bool AutofillUiTest::SendKeyToPopupAndWait(
     ui::DomKey key,
     ui::DomCode code,
     ui::KeyboardCode key_code,
     std::list<ObservedUiEvents> expected_events,
-    content::RenderWidgetHost* widget) {
+    content::RenderWidgetHost* widget,
+    base::TimeDelta timeout) {
   // Route popup-targeted key presses via the render view host.
   content::NativeWebKeyboardEvent event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,
@@ -192,19 +198,23 @@ void AutofillUiTest::SendKeyToPopupAndWait(
   event.windows_key_code = key_code;
   event.dom_code = static_cast<int>(code);
   event.dom_key = key;
-  test_delegate()->SetExpectations(std::move(expected_events));
+  test_delegate()->SetExpectations(std::move(expected_events), timeout);
   // Install the key press event sink to ensure that any events that are not
   // handled by the installed callbacks do not end up crashing the test.
   widget->AddKeyPressEventCallback(key_press_event_sink_);
   widget->ForwardKeyboardEvent(event);
-  test_delegate()->Wait();
+  bool result = test_delegate()->Wait();
   widget->RemoveKeyPressEventCallback(key_press_event_sink_);
+  return result;
+}
+
+void AutofillUiTest::DoNothingAndWait(base::TimeDelta timeout) {
+  test_delegate()->SetExpectations({ObservedUiEvents::kNoEvent}, timeout);
+  ASSERT_FALSE(test_delegate()->Wait());
 }
 
 void AutofillUiTest::DoNothingAndWait(unsigned seconds) {
-  test_delegate()->SetExpectations({ObservedUiEvents::kNoEvent},
-                                   base::Seconds(seconds));
-  ASSERT_FALSE(test_delegate()->Wait());
+  DoNothingAndWait(base::Seconds(seconds));
 }
 
 void AutofillUiTest::SendKeyToDataListPopup(ui::DomKey key) {

@@ -2564,15 +2564,17 @@ void BrowserAutofillManager::TriggerRefill(const FormData& form) {
              .second,
         form_structure, autofill_field,
         /*is_refill=*/true);
-  }
-  if (absl::holds_alternative<AutofillProfile>(
-          filling_context->profile_or_credit_card_with_cvc)) {
+  } else if (absl::holds_alternative<AutofillProfile>(
+                 filling_context->profile_or_credit_card_with_cvc)) {
     FillOrPreviewDataModelForm(
         mojom::RendererFormDataAction::kFill,
         /*query_id=*/-1, form, field,
         &absl::get<AutofillProfile>(
             filling_context->profile_or_credit_card_with_cvc),
-        /*cvc=*/nullptr, form_structure, autofill_field, /*is_refill=*/true);
+        /*optional_cvc=*/nullptr, form_structure, autofill_field,
+        /*is_refill=*/true);
+  } else {
+    NOTREACHED();
   }
 }
 

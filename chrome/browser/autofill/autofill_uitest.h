@@ -62,14 +62,9 @@ class BrowserAutofillManagerTestDelegateImpl
                        base::TimeDelta timeout = base::Seconds(0));
   bool Wait();
 
-  void SetIsExpectingDynamicRefill(bool expect_refill) {
-    is_expecting_dynamic_refill_ = expect_refill;
-  }
-
  private:
   void FireEvent(ObservedUiEvents event);
 
-  bool is_expecting_dynamic_refill_ = false;
   std::unique_ptr<EventWaiter<ObservedUiEvents>> event_waiter_;
   DenseSet<ObservedUiEvents> ignore_back_to_back_event_types_;
   ObservedUiEvents last_event_ = ObservedUiEvents::kNoEvent;
@@ -78,41 +73,50 @@ class BrowserAutofillManagerTestDelegateImpl
 class AutofillUiTest : public InProcessBrowserTest,
                        public content::WebContentsObserver {
  public:
-  AutofillUiTest(const AutofillUiTest&) = delete;
-  AutofillUiTest& operator=(const AutofillUiTest&) = delete;
-
- protected:
   AutofillUiTest();
   ~AutofillUiTest() override;
+
+  AutofillUiTest(const AutofillUiTest&) = delete;
+  AutofillUiTest& operator=(const AutofillUiTest&) = delete;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   void SendKeyToPage(content::WebContents* web_contents, const ui::DomKey key);
-  void SendKeyToPageAndWait(ui::DomKey key,
-                            std::list<ObservedUiEvents> expected_events);
-  void SendKeyToPageAndWait(ui::DomKey key,
+  bool SendKeyToPageAndWait(ui::DomKey key,
+                            std::list<ObservedUiEvents> expected_events,
+                            base::TimeDelta timeout = {});
+  bool SendKeyToPageAndWait(ui::DomKey key,
                             ui::DomCode code,
                             ui::KeyboardCode key_code,
-                            std::list<ObservedUiEvents> expected_events);
-  void DoNothingAndWait(unsigned seconds);
+                            std::list<ObservedUiEvents> expected_events,
+                            base::TimeDelta timeout = {});
+
   void SendKeyToPopup(content::RenderFrameHost* render_frame_host,
                       const ui::DomKey key);
   // Send key to the render host view's widget if |widget| is null.
-  void SendKeyToPopupAndWait(ui::DomKey key,
+  bool SendKeyToPopupAndWait(ui::DomKey key,
                              std::list<ObservedUiEvents> expected_events,
-                             content::RenderWidgetHost* widget = nullptr);
-  void SendKeyToPopupAndWait(ui::DomKey key,
+                             content::RenderWidgetHost* widget = nullptr,
+                             base::TimeDelta timeout = {});
+  bool SendKeyToPopupAndWait(ui::DomKey key,
                              ui::DomCode code,
                              ui::KeyboardCode key_code,
                              std::list<ObservedUiEvents> expected_events,
-                             content::RenderWidgetHost* widget);
+                             content::RenderWidgetHost* widget,
+                             base::TimeDelta timeout = {});
+
   void SendKeyToDataListPopup(ui::DomKey key);
   void SendKeyToDataListPopup(ui::DomKey key,
                               ui::DomCode code,
                               ui::KeyboardCode key_code);
+
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
+
+  void DoNothingAndWait(base::TimeDelta timeout);
+  // Deprecated: use the TimeDelta version.
+  void DoNothingAndWait(unsigned seconds);
 
   content::WebContents* GetWebContents();
   content::RenderViewHost* GetRenderViewHost();
