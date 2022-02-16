@@ -112,6 +112,9 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogin) {
   ASSERT_TRUE(record.has_affiliated_user());
   ASSERT_TRUE(record.affiliated_user().has_user_email());
   EXPECT_THAT(record.affiliated_user().user_email(), testing::Eq(user_email));
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
   ASSERT_TRUE(record.has_login_event());
   EXPECT_FALSE(record.login_event().has_failure());
 }
@@ -152,6 +155,9 @@ TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_login_event());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
   EXPECT_FALSE(record.login_event().has_failure());
 }
 
@@ -190,6 +196,9 @@ TEST_F(LoginLogoutReporterTest, ReportManagedGuestLogin) {
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_login_event());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
   EXPECT_FALSE(record.login_event().has_failure());
 }
 
@@ -252,6 +261,9 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogout) {
   ASSERT_TRUE(record.has_affiliated_user());
   ASSERT_TRUE(record.affiliated_user().has_user_email());
   EXPECT_THAT(record.affiliated_user().user_email(), testing::Eq(user_email));
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
 }
 
 TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
@@ -291,6 +303,9 @@ TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
   EXPECT_FALSE(record.has_login_event());
   EXPECT_TRUE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
 }
 
 TEST_F(LoginLogoutReporterTest, ReportManagedGuestLogout) {
@@ -329,6 +344,9 @@ TEST_F(LoginLogoutReporterTest, ReportManagedGuestLogout) {
   EXPECT_FALSE(record.has_login_event());
   EXPECT_TRUE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
 }
 
 TEST_F(LoginLogoutReporterTest, KioskLogout) {
@@ -389,6 +407,9 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLoginFailure) {
   ASSERT_TRUE(record.has_affiliated_user());
   ASSERT_TRUE(record.affiliated_user().has_user_email());
   EXPECT_THAT(record.affiliated_user().user_email(), testing::Eq(user_email));
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
@@ -434,6 +455,9 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLoginAuthenticationFailure) {
   ASSERT_TRUE(record.affiliated_user().has_user_email());
   EXPECT_THAT(record.affiliated_user().user_email(), testing::Eq(user_email));
   ASSERT_TRUE(record.has_login_event());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
               testing::Eq(LoginFailureReason::AUTHENTICATION_ERROR));
@@ -474,6 +498,9 @@ TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLoginFailure) {
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
@@ -508,17 +535,21 @@ TEST_F(LoginLogoutReporterTest, ReportManagedGuestLoginFailure) {
       std::make_unique<LoginLogoutReporterTestDelegate>(
           AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
               "guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION))));
-  reporter->OnLoginFailure(AuthFailure(AuthFailure::COULD_NOT_MOUNT_TMPFS));
+  reporter->OnLoginFailure(
+      AuthFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_TRUE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
-              testing::Eq(LoginFailureReason::COULD_NOT_MOUNT_TMPFS));
+              testing::Eq(LoginFailureReason::INTERNAL_LOGIN_FAILURE_REASON));
 }
 
 TEST_F(LoginLogoutReporterTest, ShouldNotReportEvent) {

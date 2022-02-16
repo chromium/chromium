@@ -5,16 +5,10 @@
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -23,17 +17,33 @@ namespace ash {
 namespace reporting {
 namespace {
 
-bool IsManagedGuestSession(const AccountId& account_id) {
-  policy::DeviceLocalAccount::Type type;
-  if (!IsDeviceLocalAccountUser(account_id.GetUserEmail(), &type)) {
-    return false;
+LoginLogoutSessionType GetSessionType(const AccountId& account_id) {
+  if (account_id == user_manager::GuestAccountId()) {
+    return LoginLogoutSessionType::GUEST_SESSION;
   }
 
-  return type == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
-         type == policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION;
+  policy::DeviceLocalAccount::Type type;
+  if (!IsDeviceLocalAccountUser(account_id.GetUserEmail(), &type)) {
+    return LoginLogoutSessionType::REGULAR_USER_SESSION;
+  }
+
+  switch (type) {
+    case policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION:
+    case policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION:
+      return LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION;
+    case policy::DeviceLocalAccount::TYPE_KIOSK_APP:
+    case policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP:
+    case policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP:
+      return LoginLogoutSessionType::KIOSK_SESSION;
+    default:
+      NOTREACHED();
+      return LoginLogoutSessionType::UNSPECIFIED_LOGIN_LOGOUT_SESSION_TYPE;
+  }
 }
 
-LoginFailureReason GetLoginFailureReasonForReport(const AuthFailure& error) {
+LoginFailureReason GetLoginFailureReasonForReport(
+    const AuthFailure& error,
+    LoginLogoutSessionType session_type) {
   switch (error.reason()) {
     case AuthFailure::OWNER_REQUIRED:
       return LoginFailureReason::OWNER_REQUIRED;
@@ -51,7 +61,9 @@ LoginFailureReason GetLoginFailureReasonForReport(const AuthFailure& error) {
     case AuthFailure::DATA_REMOVAL_FAILED:
     case AuthFailure::USERNAME_HASH_FAILED:
     case AuthFailure::FAILED_TO_INITIALIZE_TOKEN:
-      return LoginFailureReason::AUTHENTICATION_ERROR;
+      return session_type == LoginLogoutSessionType::REGULAR_USER_SESSION
+                 ? LoginFailureReason::AUTHENTICATION_ERROR
+                 : LoginFailureReason::INTERNAL_LOGIN_FAILURE_REASON;
     // The following cases are not expected with failed logins, but we add them
     // to fail compliation in case a new relevant auth failure reason was added
     // and we need to add the corresponding enum value to the reporting proto.
@@ -116,11 +128,13 @@ void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
   }
 
   record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
+  const LoginLogoutSessionType session_type = GetSessionType(account_id);
+  record.set_session_type(session_type);
   const std::string& user_email = account_id.GetUserEmail();
-
-  if (IsManagedGuestSession(account_id)) {
+  if (session_type == LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION) {
     record.set_is_guest_session(true);
-  } else if (reporter_helper_->ShouldReportUser(user_email)) {
+  } else if (session_type == LoginLogoutSessionType::REGULAR_USER_SESSION &&
+             reporter_helper_->ShouldReportUser(user_email)) {
     record.mutable_affiliated_user()->set_user_email(user_email);
   }
 
@@ -155,7 +169,8 @@ void LoginLogoutReporter::OnLoginFailure(const AuthFailure& error) {
     return;
   }
 
-  LoginFailureReason failure_reason = GetLoginFailureReasonForReport(error);
+  LoginFailureReason failure_reason =
+      GetLoginFailureReasonForReport(error, GetSessionType(account_id));
   LoginLogoutRecord record;
   record.mutable_login_event()->mutable_failure()->set_reason(failure_reason);
   MaybeReportEvent(std::move(record), account_id);
