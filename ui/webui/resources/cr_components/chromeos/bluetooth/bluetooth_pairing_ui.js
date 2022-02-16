@@ -441,10 +441,11 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
 
     this.devicePendingPairing_ = null;
 
-    if (this.queuedDevicePendingPairing_) {
+    if (this.queuedDevicePendingPairing_ && this.devicePairingHandler_) {
       this.pairDevice_(this.queuedDevicePendingPairing_);
-      this.queuedDevicePendingPairing_ = null;
     }
+
+    this.queuedDevicePendingPairing_ = null;
 
     // Inform tests that handlePairDeviceResult_() has been called. This is
     // to ensure tests don't progress until the correct state has been
