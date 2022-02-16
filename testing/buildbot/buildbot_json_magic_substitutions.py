@@ -94,15 +94,6 @@ def GPUExpectedDeviceId(test_config, _):
   return retval
 
 
-def GPUIsASANFlag(_, tester_name):
-  """Adds the --is-asan flag to on ASAN builders.
-
-  Args:
-    tester_name: The name of the tester the test came from.
-  """
-  return ['--is-asan'] if 'ASAN' in tester_name else []
-
-
 def TestOnlySubstitution(_, __):
   """Magic substitution used for unittests."""
   return ['--magic-substitution-success']

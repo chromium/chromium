@@ -109,16 +109,5 @@ class GPUExpectedDeviceId(unittest.TestCase):
       magic_substitutions.GPUExpectedDeviceId({}, None)
 
 
-class GPUIsASANFlag(unittest.TestCase):
-  def testIsAsan(self):
-    self.assertEqual(
-        magic_substitutions.GPUIsASANFlag(None, 'Some ASAN Tester'),
-        ['--is-asan'])
-
-  def testIsNotAsan(self):
-    self.assertEqual(
-        magic_substitutions.GPUIsASANFlag(None, 'Just A Normal Tester'), [])
-
-
 if __name__ == '__main__':
   unittest.main()

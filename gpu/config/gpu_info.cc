@@ -293,6 +293,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     bool sandboxed;
     bool in_process_gpu;
     bool passthrough_cmd_decoder;
+    bool is_asan;
     bool can_support_threaded_texture_mailbox;
 #if BUILDFLAG(IS_MAC)
     uint32_t macos_specific_texture_target;
@@ -362,6 +363,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   enumerator->AddBool("sandboxed", sandboxed);
   enumerator->AddBool("inProcessGpu", in_process_gpu);
   enumerator->AddBool("passthroughCmdDecoder", passthrough_cmd_decoder);
+  enumerator->AddBool("isAsan", is_asan);
   enumerator->AddBool("canSupportThreadedTextureMailbox",
                       can_support_threaded_texture_mailbox);
 #if BUILDFLAG(IS_MAC)

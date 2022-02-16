@@ -179,6 +179,12 @@ def GetOOPCanvasStatus(gpu_feature_status):
   return 'no-oop-c'
 
 
+def GetAsanStatus(gpu_info):
+  if gpu_info.aux_attributes.get('is_asan', False):
+    return 'asan'
+  return 'no-asan'
+
+
 # TODO(rivr): Use GPU feature status for Dawn instead of command line.
 def HasDawnSkiaRenderer(extra_browser_args):
   if extra_browser_args:
@@ -197,9 +203,8 @@ def HasVulkanSkiaRenderer(gpu_feature_status):
 
 
 # used by unittests to create a mock arguments object
-def GetMockArgs(is_asan=False, webgl_version='1.0.0'):
+def GetMockArgs(webgl_version='1.0.0'):
   args = mock.MagicMock()
-  args.is_asan = is_asan
   args.webgl_conformance_version = webgl_version
   args.webgl2_only = False
   # for power_measurement_integration_test.py, .url has to be None to

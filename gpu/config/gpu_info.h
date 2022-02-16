@@ -389,6 +389,13 @@ struct GPU_EXPORT GPUInfo {
   // is only implemented on Android.
   bool can_support_threaded_texture_mailbox = false;
 
+// Whether the browser was built with ASAN or not.
+#if defined(ADDRESS_SANITIZER)
+  bool is_asan = true;
+#else
+  bool is_asan = false;
+#endif
+
 #if BUILDFLAG(IS_MAC)
   // Enum describing which texture target is used for native GpuMemoryBuffers on
   // MacOS. Valid values are GL_TEXTURE_2D and GL_TEXTURE_RECTANGLE_ARB.

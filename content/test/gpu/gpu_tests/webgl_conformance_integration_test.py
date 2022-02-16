@@ -84,7 +84,7 @@ class WebGLTestArgs():
 class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   _webgl_version = None
-  _is_asan = False
+  is_asan = False
   _crash_count = 0
   _gl_backend = ''
   _angle_backend = ''
@@ -106,11 +106,6 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--webgl2-only',
         help='Whether we include webgl 1 tests if version is 2.0.0 or above.',
         default='false')
-    parser.add_option(
-        '--is-asan',
-        help='Indicates whether currently running an ASAN build',
-        action='store_true',
-        default=False)
 
   @classmethod
   def GenerateGpuTests(cls, options):
@@ -123,7 +118,6 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls._webgl_version = [
         int(x) for x in options.webgl_conformance_version.split('.')
     ][0]
-    cls._is_asan = options.is_asan
     for test_path in test_paths:
       test_path_with_args = test_path
       if cls._webgl_version > 1:
@@ -343,7 +337,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _GetTestTimeout(self):
     timeout = 300
-    if self._is_asan:
+    if self.is_asan:
       # Asan runs much slower and needs a longer timeout
       timeout *= 2
     return timeout
@@ -502,39 +496,41 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def GetPlatformTags(cls, browser):
     tags = super(WebGLConformanceIntegrationTest, cls).GetPlatformTags(browser)
-    tags.extend([['no-asan', 'asan'][cls._is_asan],
-                 'webgl-version-%d' % cls._webgl_version])
+    tags.append('webgl-version-%d' % cls._webgl_version)
 
-    if gpu_helper.EXPECTATIONS_DRIVER_TAGS:
-      system_info = browser.GetSystemInfo()
-      if system_info:
-        gpu_info = system_info.gpu
-        driver_vendor = gpu_helper.GetGpuDriverVendor(gpu_info)
-        driver_version = gpu_helper.GetGpuDriverVersion(gpu_info)
-        if driver_vendor and driver_version:
-          driver_vendor = driver_vendor.lower()
-          driver_version = driver_version.lower()
+    system_info = browser.GetSystemInfo()
+    gpu_info = None
+    if system_info:
+      gpu_info = system_info.gpu
+      cls.is_asan = gpu_info.aux_attributes.get('is_asan', False)
 
-          # Extract the string of vendor from 'angle (vendor)'
-          matcher = re.compile(r'^angle \(([a-z]+)\)$')
-          match = matcher.match(driver_vendor)
-          if match:
-            driver_vendor = match.group(1)
+    if gpu_helper.EXPECTATIONS_DRIVER_TAGS and gpu_info:
+      driver_vendor = gpu_helper.GetGpuDriverVendor(gpu_info)
+      driver_version = gpu_helper.GetGpuDriverVersion(gpu_info)
+      if driver_vendor and driver_version:
+        driver_vendor = driver_vendor.lower()
+        driver_version = driver_version.lower()
 
-          # Extract the substring before first space/dash/underscore
-          matcher = re.compile(r'^([a-z\d]+)([\s\-_]+[a-z\d]+)+$')
-          match = matcher.match(driver_vendor)
-          if match:
-            driver_vendor = match.group(1)
+        # Extract the string of vendor from 'angle (vendor)'
+        matcher = re.compile(r'^angle \(([a-z]+)\)$')
+        match = matcher.match(driver_vendor)
+        if match:
+          driver_vendor = match.group(1)
 
-          for tag in gpu_helper.EXPECTATIONS_DRIVER_TAGS:
-            match = gpu_helper.MatchDriverTag(tag)
-            assert match
-            if (driver_vendor == match.group(1)
-                and gpu_helper.EvaluateVersionComparison(
-                    driver_version, match.group(2), match.group(3),
-                    browser.platform.GetOSName(), driver_vendor)):
-              tags.append(tag)
+        # Extract the substring before first space/dash/underscore
+        matcher = re.compile(r'^([a-z\d]+)([\s\-_]+[a-z\d]+)+$')
+        match = matcher.match(driver_vendor)
+        if match:
+          driver_vendor = match.group(1)
+
+        for tag in gpu_helper.EXPECTATIONS_DRIVER_TAGS:
+          match = gpu_helper.MatchDriverTag(tag)
+          assert match
+          if (driver_vendor == match.group(1)
+              and gpu_helper.EvaluateVersionComparison(
+                  driver_version, match.group(2), match.group(3),
+                  browser.platform.GetOSName(), driver_vendor)):
+            tags.append(tag)
     return tags
 
   @classmethod

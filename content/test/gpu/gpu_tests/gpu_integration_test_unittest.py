@@ -20,7 +20,7 @@ from chrome_telemetry_build import chromium_config
 from gpu_tests import context_lost_integration_test
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
-from gpu_tests import webgl_conformance_integration_test
+from gpu_tests import webgl_conformance_integration_test as webgl_cit
 
 import gpu_path_util
 
@@ -50,7 +50,8 @@ def _GetSystemInfo(  # pylint: disable=too-many-arguments
     vendor_string='',
     device_string='',
     passthrough=False,
-    gl_renderer=''):
+    gl_renderer='',
+    is_asan=False):
   sys_info = {
       'model_name': '',
       'gpu': {
@@ -63,7 +64,8 @@ def _GetSystemInfo(  # pylint: disable=too-many-arguments
               },
           ],
           'aux_attributes': {
-              'passthrough_cmd_decoder': passthrough
+              'passthrough_cmd_decoder': passthrough,
+              'is_asan': is_asan,
           }
       }
   }
@@ -81,7 +83,9 @@ def _GetTagsToTest(browser, test_class=None):
   return tags
 
 
-def _GenerateNvidiaExampleTagsForTestClassAndArgs(test_class, args):
+def _GenerateNvidiaExampleTagsForTestClassAndArgs(test_class,
+                                                  args,
+                                                  is_asan=False):
   tags = None
   with mock.patch.object(
       test_class, 'ExpectationsFiles', return_value=['exp.txt']):
@@ -89,7 +93,10 @@ def _GenerateNvidiaExampleTagsForTestClassAndArgs(test_class, args):
     platform = fakes.FakePlatform('win', 'win10')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
-        gpu=VENDOR_NVIDIA, device=0x1cb3, gl_renderer='ANGLE Direct3D9')
+        gpu=VENDOR_NVIDIA,
+        device=0x1cb3,
+        gl_renderer='ANGLE Direct3D9',
+        is_asan=is_asan)
     tags = _GetTagsToTest(browser, test_class)
   return tags
 
@@ -158,8 +165,9 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     self._RunGpuIntegrationTests('simple_integration_unittest')
     self.assertIn('expected_failure', self._test_result['tests'])
 
-  def _TestTagGenerationForMockPlatform(self, test_class, args):
-    tag_set = _GenerateNvidiaExampleTagsForTestClassAndArgs(test_class, args)
+  def _TestTagGenerationForMockPlatform(self, test_class, args, is_asan=False):
+    tag_set = _GenerateNvidiaExampleTagsForTestClassAndArgs(
+        test_class, args, is_asan)
     self.assertTrue(
         set([
             'win', 'win10', 'angle-d3d9', 'release', 'nvidia', 'nvidia-0x1cb3',
@@ -168,34 +176,46 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     return tag_set
 
   def testGenerateContextLostExampleTagsForAsan(self):
-    args = gpu_helper.GetMockArgs(is_asan=True)
+    args = gpu_helper.GetMockArgs()
     tag_set = self._TestTagGenerationForMockPlatform(
-        context_lost_integration_test.ContextLostIntegrationTest, args)
+        context_lost_integration_test.ContextLostIntegrationTest,
+        args,
+        is_asan=True)
     self.assertIn('asan', tag_set)
     self.assertNotIn('no-asan', tag_set)
 
   def testGenerateContextLostExampleTagsForNoAsan(self):
     args = gpu_helper.GetMockArgs()
     tag_set = self._TestTagGenerationForMockPlatform(
-        context_lost_integration_test.ContextLostIntegrationTest, args)
+        context_lost_integration_test.ContextLostIntegrationTest,
+        args,
+        is_asan=False)
     self.assertIn('no-asan', tag_set)
     self.assertNotIn('asan', tag_set)
 
   def testGenerateWebglConformanceExampleTagsForWebglVersion1andAsan(self):
-    args = gpu_helper.GetMockArgs(is_asan=True, webgl_version='1.0.0')
+    args = gpu_helper.GetMockArgs(webgl_version='1.0.0')
     tag_set = self._TestTagGenerationForMockPlatform(
-        webgl_conformance_integration_test.WebGLConformanceIntegrationTest,
-        args)
+        webgl_cit.WebGLConformanceIntegrationTest, args, is_asan=True)
     self.assertTrue(set(['asan', 'webgl-version-1']).issubset(tag_set))
     self.assertFalse(set(['no-asan', 'webgl-version-2']) & tag_set)
 
   def testGenerateWebglConformanceExampleTagsForWebglVersion2andNoAsan(self):
-    args = gpu_helper.GetMockArgs(is_asan=False, webgl_version='2.0.0')
+    args = gpu_helper.GetMockArgs(webgl_version='2.0.0')
     tag_set = self._TestTagGenerationForMockPlatform(
-        webgl_conformance_integration_test.WebGLConformanceIntegrationTest,
-        args)
+        webgl_cit.WebGLConformanceIntegrationTest, args)
     self.assertTrue(set(['no-asan', 'webgl-version-2']).issubset(tag_set))
     self.assertFalse(set(['asan', 'webgl-version-1']) & tag_set)
+
+  def testWebGlConformanceTimeoutNoAsan(self):
+    instance = webgl_cit.WebGLConformanceIntegrationTest('_RunConformanceTest')
+    instance.is_asan = False
+    self.assertEqual(instance._GetTestTimeout(), 300)
+
+  def testWebGlConformanceTimeoutAsan(self):
+    instance = webgl_cit.WebGLConformanceIntegrationTest('_RunConformanceTest')
+    instance.is_asan = True
+    self.assertEqual(instance._GetTestTimeout(), 600)
 
   @mock.patch('sys.platform', 'win32')
   def testGenerateNvidiaExampleTags(self):
@@ -208,7 +228,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         set([
             'win', 'win10', 'release', 'nvidia', 'nvidia-0x1cb3', 'angle-d3d9',
             'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled',
-            'no-oop-c'
+            'no-oop-c', 'no-asan'
         ]))
 
   @mock.patch('sys.platform', 'darwin')
@@ -223,7 +243,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     self.assertEqual(
         _GetTagsToTest(browser),
         set([
-            'mac', 'mojave', 'release', 'imagination',
+            'mac', 'mojave', 'release', 'imagination', 'no-asan',
             'imagination-PowerVR-SGX-554', 'angle-opengles', 'passthrough',
             'no-swiftshader-gl', 'skia-renderer-disabled', 'no-oop-c'
         ]))
@@ -238,7 +258,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     self.assertEqual(
         _GetTagsToTest(browser),
         set([
-            'mac', 'mojave', 'release', 'imagination',
+            'mac', 'mojave', 'release', 'imagination', 'no-asan',
             'imagination-Triangle-Monster-3000', 'angle-disabled',
             'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled',
             'no-oop-c'

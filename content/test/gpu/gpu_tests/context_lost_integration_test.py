@@ -107,20 +107,9 @@ vendor_id_query_script = """
 
 class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
-  _is_asan = False
-
   @classmethod
   def Name(cls):
     return 'context_lost'
-
-  @classmethod
-  def AddCommandlineArgs(cls, parser):
-    super(ContextLostIntegrationTest, cls).AddCommandlineArgs(parser)
-    parser.add_option(
-        '--is-asan',
-        help='Indicates whether currently running an ASAN build',
-        action='store_true',
-        default=False)
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args):
@@ -145,7 +134,6 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   # yapf: disable
   @classmethod
   def GenerateGpuTests(cls, options):
-    cls._is_asan = options.is_asan
     tests = (('GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash',
               'gpu_process_crash.html'),
              ('ContextLost_WebGPUContextLostFromGPUProcessExit',
@@ -686,12 +674,6 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Wait for GPU process to terminate and verify that WebGPU is NOT blocked.
     self._WaitForTabAndCheckCompletion()
     self._RestartBrowser('must restart after tests that kill the GPU process')
-
-  @classmethod
-  def GetPlatformTags(cls, browser):
-    tags = super(ContextLostIntegrationTest, cls).GetPlatformTags(browser)
-    tags.extend([['no-asan', 'asan'][cls._is_asan]])
-    return tags
 
   @classmethod
   def ExpectationsFiles(cls):
