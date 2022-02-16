@@ -138,7 +138,7 @@ class CalendarViewTest : public AshTestBase {
   IconButton* up_button() { return calendar_view_->up_button_; }
   IconButton* down_button() { return calendar_view_->down_button_; }
   views::ImageButton* close_button() {
-    return calendar_view_->event_list_container_->event_list()->close_button_;
+    return calendar_view_->event_list_view_->close_button_;
   }
 
   void ScrollUpOneMonth() {
@@ -471,7 +471,6 @@ TEST_F(CalendarViewTest, FocusingToDateCell) {
   PressTab();  // Moves to settings button.
   PressTab();  // Moves to down button.
   PressTab();  // Moves to up button.
-  PressTab();  // Moves to the scroll view.
 
   // Moves to the the 7th date cell, which is the date of "today".
   PressTab();
@@ -632,7 +631,6 @@ TEST_F(CalendarViewTest, ExpandableViewFocusing) {
   EXPECT_EQ(close_button(), focus_manager->GetFocusedView());
 
   // Focus moves back to the date cell.
-  PressShiftTab();
   PressShiftTab();
   EXPECT_EQ(u"7",
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
