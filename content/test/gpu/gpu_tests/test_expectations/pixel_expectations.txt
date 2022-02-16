@@ -293,6 +293,12 @@ crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPU* [ Failure ]
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
+# WebGPU pixel tests crash on mac asan bots.
+crbug.com/1213170 [ mac asan ] Pixel_WebGPUImport* [ Skip ]
+crbug.com/1213170 [ mac asan ] Pixel_WebGPUCanvas* [ Skip ]
+crbug.com/1213170 [ mac asan ] Pixel_WebGPUWebGL* [ Skip ]
+crbug.com/1213170 [ mac asan ] Pixel_WebGPUCopyExternalImage* [ Skip ]
+
 # WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
 crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPU* [ Skip ]
 
