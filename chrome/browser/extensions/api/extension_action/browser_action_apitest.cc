@@ -186,7 +186,8 @@ class BrowserActionApiTestWithContextType
 
     if (expect_failure) {
       EXPECT_FALSE(catcher.GetNextResult());
-      EXPECT_EQ("The source image could not be decoded.", catcher.message());
+      EXPECT_THAT(catcher.message(),
+                  testing::EndsWith("The source image could not be decoded."));
       return;
     }
 

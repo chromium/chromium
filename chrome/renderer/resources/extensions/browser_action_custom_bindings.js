@@ -10,15 +10,15 @@ var getExtensionViews = requireNative('runtime').GetExtensionViews;
 apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
-  apiFunctions.setHandleRequest('setIcon', function(details, callback) {
-    setIcon(details, function(args) {
-      bindingUtil.sendRequest(
-          'browserAction.setIcon', [args, callback], undefined);
-    }.bind(this), function (errorMessage) {
-      // Propagate the error message.
-      bindingUtil.runCallbackWithLastError(errorMessage, callback);
-    }.bind(this));
-  });
+  apiFunctions.setHandleRequest(
+      'setIcon', function(details, successCallback, failureCallback) {
+        var onIconRetrieved = function(iconSpec) {
+          bindingUtil.sendRequest(
+              'browserAction.setIcon', [iconSpec, successCallback],
+              /*options=*/ undefined);
+        };
+        setIcon(details, onIconRetrieved, failureCallback);
+      });
 
   apiFunctions.setCustomCallback('openPopup',
       function(callback, response) {

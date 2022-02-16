@@ -11,10 +11,13 @@ var setIcon = require('setIcon').setIcon;
 apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
-  apiFunctions.setHandleRequest('setIcon', function(details, callback) {
-    setIcon(details, $Function.bind(function(args) {
-      bindingUtil.sendRequest('systemIndicator.setIcon', [args, callback],
-                              undefined);
-    }, this));
-  });
+  apiFunctions.setHandleRequest(
+      'setIcon', function(details, successCallback, failureCallback) {
+        var onIconRetrieved = function(iconSpec) {
+          bindingUtil.sendRequest(
+              'systemIndicator.setIcon', [iconSpec, successCallback],
+              /*options=*/ undefined);
+        };
+        setIcon(details, onIconRetrieved, failureCallback);
+      });
 });

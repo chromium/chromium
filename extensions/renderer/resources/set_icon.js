@@ -12,7 +12,8 @@ function loadImagePathForServiceWorker(path, callback, failureCallback) {
 
   let blobPromise = $Promise.then(fetchPromise, (response) => {
     if (!response.ok) {
-      throw $Error.self('Could not fetch action icon \'' + path + '\'.');
+      // This error is caught below.
+      throw $Error.self('Response from fetching icon not ok.');
     }
     return response.blob();
   });
@@ -32,7 +33,9 @@ function loadImagePathForServiceWorker(path, callback, failureCallback) {
   });
 
   $Promise.catch(imageDataPromise, function(error) {
-    failureCallback(exceptionHandler.safeErrorToString(error, true));
+    var message = `Failed to set icon '${path}': ` +
+        exceptionHandler.safeErrorToString(error, true);
+    failureCallback(message);
   });
 }
 
@@ -41,6 +44,7 @@ function loadImagePathForNonServiceWorker(path, callback, failureCallback) {
   img.onerror = function() {
     var message = 'Could not load action icon \'' + path + '\'.';
     console.error(message);
+    failureCallback(message);
   };
   img.onload = function() {
     var canvas = document.createElement('canvas');
