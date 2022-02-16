@@ -13,7 +13,6 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './doodle_share_dialog.html.js';
 
-import {I18nMixin} from './i18n_setup.js';
 import {DoodleShareChannel} from './new_tab_page.mojom-webui.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -34,8 +33,7 @@ export interface DoodleShareDialogElement {
 }
 
 /** Dialog that lets the user share the doodle. */
-export class DoodleShareDialogElement extends I18nMixin
-(PolymerElement) {
+export class DoodleShareDialogElement extends PolymerElement {
   static get is() {
     return 'ntp-doodle-share-dialog';
   }

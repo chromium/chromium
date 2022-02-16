@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nMixin, loadTimeData} from './i18n_setup.js';
+import {loadTimeData} from './i18n_setup.js';
 import {PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {getTemplate} from './voice_search_overlay.html.js';
@@ -180,8 +180,7 @@ interface VoiceSearchOverlayElement {
 }
 
 // Overlay that lats the user perform voice searches.
-class VoiceSearchOverlayElement extends I18nMixin
-(PolymerElement) {
+class VoiceSearchOverlayElement extends PolymerElement {
   static get is() {
     return 'ntp-voice-search-overlay';
   }

@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nMixin, loadTimeData} from '../i18n_setup.js';
+import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './module_header.html.js';
 
@@ -18,8 +18,7 @@ export interface ModuleHeaderElement {
 }
 
 /** Element that displays a header inside a module.  */
-export class ModuleHeaderElement extends I18nMixin
-(PolymerElement) {
+export class ModuleHeaderElement extends PolymerElement {
   static get is() {
     return 'ntp-module-header';
   }

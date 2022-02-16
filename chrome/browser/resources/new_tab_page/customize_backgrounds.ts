@@ -10,13 +10,12 @@ import './iframe.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './customize_backgrounds.html.js';
 
-import {I18nMixin, loadTimeData} from './i18n_setup.js';
+import {loadTimeData} from './i18n_setup.js';
 import {BackgroundCollection, CollectionImage, CustomizeDialogAction, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
 /** Element that lets the user configure the background. */
-export class CustomizeBackgroundsElement extends I18nMixin
-(PolymerElement) {
+export class CustomizeBackgroundsElement extends PolymerElement {
   static get is() {
     return 'ntp-customize-backgrounds';
   }

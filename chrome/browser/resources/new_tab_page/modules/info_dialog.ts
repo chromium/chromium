@@ -8,8 +8,6 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nMixin} from '../i18n_setup.js';
-
 import {getTemplate} from './info_dialog.html.js';
 
 export interface InfoDialogElement {
@@ -20,8 +18,7 @@ export interface InfoDialogElement {
 }
 
 /** Info dialog that can be populated with custom text via slotting. */
-export class InfoDialogElement extends I18nMixin
-(PolymerElement) {
+export class InfoDialogElement extends PolymerElement {
   static get is() {
     return 'ntp-info-dialog';
   }

@@ -14,7 +14,6 @@ import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-w
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nMixin} from './i18n_setup.js';
 import {IframeElement} from './iframe.js';
 import {getTemplate} from './logo.html.js';
 import {Doodle, DoodleImageType, DoodleShareChannel, ImageDoodle, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
@@ -25,8 +24,7 @@ import {WindowProxy} from './window_proxy.js';
 const SHARE_BUTTON_SIZE_PX: number = 26;
 
 // Shows the Google logo or a doodle if available.
-class LogoElement extends I18nMixin
-(PolymerElement) {
+class LogoElement extends PolymerElement {
   static get is() {
     return 'ntp-logo';
   }

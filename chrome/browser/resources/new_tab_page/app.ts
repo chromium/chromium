@@ -20,7 +20,7 @@ import {getTemplate} from './app.html.js';
 
 import {BackgroundManager} from './background_manager.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
-import {I18nMixin, loadTimeData} from './i18n_setup.js';
+import {loadTimeData} from './i18n_setup.js';
 import {IframeElement} from './iframe.js';
 import {recordLoadDuration} from './metrics_utils.js';
 import {ModuleRegistry} from './modules/module_registry.js';
@@ -80,8 +80,7 @@ interface AppElement {
   };
 }
 
-class AppElement extends I18nMixin
-(PolymerElement) {
+class AppElement extends PolymerElement {
   static get is() {
     return 'ntp-app';
   }

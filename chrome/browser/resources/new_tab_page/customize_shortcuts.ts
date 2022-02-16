@@ -11,13 +11,11 @@ import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_man
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './customize_shortcuts.html.js';
 
-import {I18nMixin} from './i18n_setup.js';
 import {CustomizeDialogAction, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
 /** Element that lets the user configure shortcut settings. */
-class CustomizeShortcutsElement extends I18nMixin
-(PolymerElement) {
+class CustomizeShortcutsElement extends PolymerElement {
   static get is() {
     return 'ntp-customize-shortcuts';
   }

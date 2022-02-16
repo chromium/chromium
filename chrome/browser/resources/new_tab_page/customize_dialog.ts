@@ -21,7 +21,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {CustomizeBackgroundsElement} from './customize_backgrounds.js';
 import {getTemplate} from './customize_dialog.html.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
-import {I18nMixin, loadTimeData} from './i18n_setup.js';
+import {loadTimeData} from './i18n_setup.js';
 import {BackgroundCollection, CustomizeDialogAction, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {createScrollBorders} from './utils.js';
@@ -44,8 +44,7 @@ export interface CustomizeDialogElement {
  * Dialog that lets the user customize the NTP such as the background color or
  * image.
  */
-export class CustomizeDialogElement extends I18nMixin
-(PolymerElement) {
+export class CustomizeDialogElement extends PolymerElement {
   static get is() {
     return 'ntp-customize-dialog';
   }

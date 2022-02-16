@@ -11,7 +11,7 @@ import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nMixin, loadTimeData} from '../i18n_setup.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, SearchBoxTheme} from '../realbox.mojom-webui.js';
 import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 
@@ -42,8 +42,7 @@ export interface RealboxElement {
 }
 
 /** A real search box that behaves just like the Omnibox. */
-export class RealboxElement extends I18nMixin
-(PolymerElement) {
+export class RealboxElement extends PolymerElement {
   static get is() {
     return 'ntp-realbox';
   }

@@ -11,7 +11,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nMixin, loadTimeData} from '../i18n_setup.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
 import {ModuleHeight} from './module_descriptor.js';
@@ -44,8 +44,7 @@ const SHORT_CLASS_NAME: string = 'short';
 const TALL_CLASS_NAME: string = 'tall';
 
 /** Container for the NTP modules. */
-export class ModulesElement extends I18nMixin
-(PolymerElement) {
+export class ModulesElement extends PolymerElement {
   static get is() {
     return 'ntp-modules';
   }
