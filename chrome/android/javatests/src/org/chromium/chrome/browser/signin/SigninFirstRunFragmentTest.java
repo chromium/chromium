@@ -105,7 +105,6 @@ public class SigninFirstRunFragmentTest {
      */
     public static class CustomSigninFirstRunFragment extends SigninFirstRunFragment {
         private FirstRunPageDelegate mFirstRunPageDelegate;
-        private boolean mIsAcceptTermsOfServiceCalled;
 
         @Override
         public FirstRunPageDelegate getPageDelegate() {
@@ -114,12 +113,6 @@ public class SigninFirstRunFragmentTest {
 
         void setPageDelegate(FirstRunPageDelegate delegate) {
             mFirstRunPageDelegate = delegate;
-        }
-
-        @Override
-        public void acceptTermsOfService() {
-            super.acceptTermsOfService();
-            mIsAcceptTermsOfServiceCalled = true;
         }
     }
 
@@ -344,8 +337,8 @@ public class SigninFirstRunFragmentTest {
 
         onView(withText(R.string.continue_button)).perform(click());
 
-        CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
         verify(mFirstRunPageDelegateMock, never()).recordFreProgressHistogram(anyInt());
     }
 
@@ -400,6 +393,8 @@ public class SigninFirstRunFragmentTest {
                 R.string.signin_promo_continue_as, GIVEN_NAME1);
 
         onView(withText(continueAsText)).perform(click());
+        // ToS should be accepted right away, without waiting for the sign-in to complete.
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
 
         CriteriaHelper.pollUiThread(() -> {
             return IdentityServicesProvider.get()
@@ -409,6 +404,8 @@ public class SigninFirstRunFragmentTest {
         final CoreAccountInfo primaryAccount =
                 mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN);
         Assert.assertEquals(TEST_EMAIL1, primaryAccount.getEmail());
+        // Sign-in has completed, so the FRE should advance to the next page.
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
         verify(mFirstRunPageDelegateMock)
                 .recordFreProgressHistogram(MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT);
     }
@@ -444,27 +441,26 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     public void testContinueButtonWhenUserIsSignedIn() {
-        final CoreAccountInfo existingPrimaryAccount =
+        final CoreAccountInfo targetPrimaryAccount =
                 mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         final CoreAccountInfo primaryAccount = mAccountManagerTestRule.addTestAccountThenSignin();
         Assert.assertNotEquals("The primary account should be a different account!",
-                existingPrimaryAccount.getEmail(), primaryAccount.getEmail());
+                targetPrimaryAccount.getEmail(), primaryAccount.getEmail());
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         launchActivityWithFragment();
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
                 R.string.signin_promo_continue_as, GIVEN_NAME1);
 
         onView(withText(continueAsText)).perform(click());
-
-        CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
-        final CoreAccountInfo currentPrimaryAccount =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-                    return IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-                });
-        Assert.assertEquals(existingPrimaryAccount, currentPrimaryAccount);
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+
+        CriteriaHelper.pollUiThread(() -> {
+            return targetPrimaryAccount.equals(
+                    IdentityServicesProvider.get()
+                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        });
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
     @Test
@@ -485,6 +481,7 @@ public class SigninFirstRunFragmentTest {
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
         });
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
         verify(mFirstRunPageDelegateMock)
                 .recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
     }
@@ -497,10 +494,9 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
-
-        CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
         verify(mFirstRunPageDelegateMock)
                 .recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
     }
@@ -508,6 +504,13 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     public void testContinueButtonWithChildAccount() {
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(IdentityServicesProvider.get().getSigninManager(
+                         Profile.getLastUsedRegularProfile()))
+                    .thenReturn(mSigninManagerMock);
+        });
+
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(
                 CHILD_ACCOUNT_NAME, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
@@ -517,9 +520,12 @@ public class SigninFirstRunFragmentTest {
 
         onView(withText(continueAsText)).perform(click());
 
-        CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
-        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
+
+        // Sign-in isn't processed by SigninFirstRunFragment for child accounts.
+        verify(mSigninManagerMock, never()).signin(any(), any());
+        verify(mSigninManagerMock, never()).signinAndEnableSync(anyInt(), any(), any());
     }
 
     @Test
@@ -566,8 +572,8 @@ public class SigninFirstRunFragmentTest {
 
         onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
 
-        CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
     @Test
@@ -586,8 +592,9 @@ public class SigninFirstRunFragmentTest {
                 .perform(click());
         onView(withText(R.string.done)).perform(click());
         onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
-        CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
+
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
     @Test
@@ -604,8 +611,8 @@ public class SigninFirstRunFragmentTest {
                 R.string.signin_promo_continue_as, GIVEN_NAME1);
         onView(withText(continueAsText)).perform(click());
 
-        CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
     @Test

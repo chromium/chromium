@@ -330,6 +330,7 @@ public class ToSAndUMAFirstRunFragment
                     SystemClock.elapsedRealtime() - mTosAcceptedTime);
         }
         getPageDelegate().acceptTermsOfService(mAllowCrashUpload);
+        getPageDelegate().advanceToNextPage();
     }
 
     private void setSpinnerVisible(boolean spinnerVisible) {

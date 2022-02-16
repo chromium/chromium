@@ -162,6 +162,12 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
+    public void advanceToNextPage() {
+        getPageDelegate().advanceToNextPage();
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
     public void recordFreProgressHistogram(@MobileFreProgress int state) {
         getPageDelegate().recordFreProgressHistogram(state);
     }

@@ -147,14 +147,20 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     private void onContinueAsClicked() {
         if (!mModel.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
             mDelegate.acceptTermsOfService();
+            mDelegate.advanceToNextPage();
             return;
         }
         if (mSelectedAccountName == null) {
             mDelegate.addAccount();
             return;
         }
+
+        // In all other cases, the button text is "Continue as ...", so mark ToS as accepted.
+        // This is needed to get metrics/crash reports from the sign-in flow itself.
+        mDelegate.acceptTermsOfService();
         if (mModel.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
-            mDelegate.acceptTermsOfService();
+            // Don't perform the sign-in here, as it will be handled by SigninChecker.
+            mDelegate.advanceToNextPage();
             return;
         }
         assert mModel.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED)
@@ -171,7 +177,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (signedInAccount != null && signedInAccount.getEmail().equals(mSelectedAccountName)) {
-            mDelegate.acceptTermsOfService();
+            mDelegate.advanceToNextPage();
             return;
         }
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
@@ -181,7 +187,8 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
                 AccountUtils.createAccountFromName(mSelectedAccountName), new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
-                        mDelegate.acceptTermsOfService();
+                        // Wait for sign-in to be complete before advancing to the next page.
+                        mDelegate.advanceToNextPage();
                     }
 
                     @Override
@@ -198,15 +205,16 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         assert mModel.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED)
             : "The dismiss button shouldn't be visible before the native is not initialized!";
         mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
+        mDelegate.acceptTermsOfService();
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
-                    .signOut(SignoutReason.ABORT_SIGNIN, mDelegate::acceptTermsOfService,
+                    .signOut(SignoutReason.ABORT_SIGNIN, mDelegate::advanceToNextPage,
                             /* forceWipeUserData= */ false);
         } else {
-            mDelegate.acceptTermsOfService();
+            mDelegate.advanceToNextPage();
         }
     }
 

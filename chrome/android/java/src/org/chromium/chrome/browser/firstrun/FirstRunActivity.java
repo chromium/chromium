@@ -548,8 +548,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         flushPersistentData();
 
         if (sObserver != null) sObserver.onAcceptTermsOfService(this);
-
-        advanceToNextPage();
     }
 
     /** Initialize local state from launch intent and from saved instance state. */

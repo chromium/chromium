@@ -28,6 +28,9 @@ public class SigninFirstRunCoordinator {
         /** Notifies when the user accepts the terms of service. */
         void acceptTermsOfService();
 
+        /** Called when the interaction with the page is over and the next page should be shown. */
+        void advanceToNextPage();
+
         /**
          * Records the FRE progress histogram MobileFre.Progress.*.
          * @param state FRE state to record.
