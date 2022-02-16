@@ -59,7 +59,7 @@ ACCENTED_STRINGS = {
 }
 
 NUMBERS = [
-    'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+    '- one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
     'ten'
 ]
 PLACEHOLDER_STRING = '{PLACEHOLDER_VARIABLE}'
@@ -203,7 +203,8 @@ class Plural(Node):
   """Represents a set of options for plurals.
   eg. {VARIABLE, plural, =1 {singular} other {plural}}
   """
-  pattern = lazy_re.compile(r'^{[A-Za-z0-9_]+,\s*plural,\s*(offset:\d+\s*)?', re.S)
+  pattern = lazy_re.compile(r'^{[A-Za-z0-9_]+,\s*plural,\s*(offset:\d+\s*)?',
+                            re.S)
   after = '}'
 
   @classmethod

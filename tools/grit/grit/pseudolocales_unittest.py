@@ -213,7 +213,7 @@ class TclibUnittest(unittest.TestCase):
 
     self.assertEqual(
         pl.PseudoLongStringMessage(msg).GetContent(),
-        [u'\u0125_', p1, p2, u'\u0175', ' one two three four'])
+        [u'\u0125_', p1, p2, u'\u0175', ' - one two three four'])
 
     msg.AppendText('hello world')
     self.assertEqual(
