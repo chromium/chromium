@@ -93,7 +93,7 @@ class DecodeTimestamp {
   }
 
   constexpr double InSecondsF() const { return ts_.InSecondsF(); }
-  constexpr int64_t InMilliseconds() const { return ts_.InMilliseconds(); }
+  int64_t InMilliseconds() const { return ts_.InMilliseconds(); }
   constexpr int64_t InMicroseconds() const { return ts_.InMicroseconds(); }
 
   constexpr bool is_inf() const { return ts_.is_inf(); }
