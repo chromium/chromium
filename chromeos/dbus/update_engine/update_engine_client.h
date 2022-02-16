@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/callback.h"
@@ -169,6 +170,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
 
   // Enables or disables the feature value in Update Engine.
   virtual void ToggleFeature(const std::string& feature, bool enable) = 0;
+
+  // Gets the value of a feature in Update Engine. Returns null result on error.
+  using IsFeatureEnabledCallback =
+      base::OnceCallback<void(std::optional<bool> result)>;
+  virtual void IsFeatureEnabled(const std::string& feature,
+                                IsFeatureEnabledCallback callback) = 0;
 
  protected:
   // Create() should be used instead.

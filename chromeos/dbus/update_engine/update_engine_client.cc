@@ -249,6 +249,22 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void IsFeatureEnabled(const std::string& feature,
+                        IsFeatureEnabledCallback callback) override {
+    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
+                                 update_engine::kIsFeatureEnabled);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(feature);
+
+    VLOG(1) << "Requesting UpdateEngine to get feature " << feature;
+
+    update_engine_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&UpdateEngineClientImpl::OnIsFeatureEnabled,
+                       weak_ptr_factory_.GetWeakPtr(), feature,
+                       std::move(callback)));
+  }
+
  protected:
   void Init(dbus::Bus* bus) override {
     update_engine_proxy_ = bus->GetObjectProxy(
@@ -475,6 +491,28 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     VLOG(1) << "Successfully updated feature value.";
   }
 
+  void OnIsFeatureEnabled(const std::string& feature,
+                          IsFeatureEnabledCallback callback,
+                          dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << update_engine::kIsFeatureEnabled
+                 << " call failed for feature " << feature;
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    dbus::MessageReader reader(response);
+    bool enabled;
+    if (!reader.PopBool(&enabled)) {
+      LOG(ERROR) << "Bad response: " << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    VLOG(1) << "Feature " << feature << " is " << enabled;
+    std::move(callback).Run(enabled);
+  }
+
   // Called when a response for SetUpdateOverCellularOneTimePermission() is
   // received.
   void OnSetUpdateOverCellularOneTimePermission(
@@ -635,6 +673,12 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
   void ToggleFeature(const std::string& feature, bool enable) override {
     VLOG(1) << "Requesting to set " << feature
             << " to: " << (enable ? "enabled" : "disabled");
+  }
+
+  void IsFeatureEnabled(const std::string& feature,
+                        IsFeatureEnabledCallback callback) override {
+    VLOG(1) << "Requesting to get " << feature;
+    std::move(callback).Run(std::nullopt);
   }
 
  private:

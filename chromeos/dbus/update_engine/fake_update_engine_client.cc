@@ -106,6 +106,13 @@ void FakeUpdateEngineClient::SetUpdateOverCellularOneTimePermission(
 void FakeUpdateEngineClient::ToggleFeature(const std::string& feature,
                                            bool enable) {}
 
+void FakeUpdateEngineClient::IsFeatureEnabled(
+    const std::string& feature,
+    IsFeatureEnabledCallback callback) {
+  std::move(callback).Run(features_.count(feature) ? features_[feature]
+                                                   : std::nullopt);
+}
+
 void FakeUpdateEngineClient::set_default_status(
     const update_engine::StatusResult& status) {
   default_status_ = status;
@@ -114,6 +121,11 @@ void FakeUpdateEngineClient::set_default_status(
 void FakeUpdateEngineClient::set_update_check_result(
     const UpdateEngineClient::UpdateCheckResult& result) {
   update_check_result_ = result;
+}
+
+void FakeUpdateEngineClient::SetToggleFeature(const std::string& feature,
+                                              std::optional<bool> opt_enabled) {
+  features_[feature] = opt_enabled;
 }
 
 }  // namespace chromeos

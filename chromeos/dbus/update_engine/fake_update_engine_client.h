@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_UPDATE_ENGINE_FAKE_UPDATE_ENGINE_CLIENT_H_
 #define CHROMEOS_DBUS_UPDATE_ENGINE_FAKE_UPDATE_ENGINE_CLIENT_H_
 
+#include <map>
 #include <string>
 
 #include "base/component_export.h"
@@ -51,6 +52,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
       int64_t target_size,
       UpdateOverCellularOneTimePermissionCallback callback) override;
   void ToggleFeature(const std::string& feature, bool enable) override;
+  void IsFeatureEnabled(const std::string& feature,
+                        IsFeatureEnabledCallback callback) override;
   // Pushes update_engine::StatusResult in the queue to test changing status.
   // GetLastStatus() returns the status set by this method in FIFO order.
   // See set_default_status().
@@ -111,6 +114,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
     return update_over_cellular_one_time_permission_count_;
   }
 
+  void SetToggleFeature(const std::string& feature,
+                        std::optional<bool> opt_enabled);
+
  private:
   base::ObserverList<Observer>::Unchecked observers_;
   base::queue<update_engine::StatusResult> status_queue_;
@@ -124,6 +130,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   int can_rollback_call_count_ = 0;
   int update_over_cellular_permission_count_ = 0;
   int update_over_cellular_one_time_permission_count_ = 0;
+  std::map<std::string, std::optional<bool>> features_;
   base::Time eol_date_;
 };
 
