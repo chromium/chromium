@@ -253,6 +253,13 @@ crbug.com/1298179 virtual/scalefactor200/css3/filters/effect-blur-hw.html [ Fail
 crbug.com/1298179 virtual/scalefactor200/css3/filters/effect-brightness-clamping-hw.html [ Failure Pass ]
 crbug.com/1298179 virtual/scalefactor200/css3/filters/effect-combined-hw.html [ Failure Pass ]
 
+# TODO(michaelludwig) - crbug.com/1298194 remove after
+# https://skia-review.googlesource.com/c/skia/+/502059 lands and rolls into chromium
+crbug.com/1298194 virtual/oopr-canvas2d/fast/canvas/canvas-arc-circumference.html [ Failure Pass ]
+crbug.com/1298194 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-circumference.html [ Failure Pass ]
+crbug.com/1298194 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-connecting-line.html [ Failure Pass ]
+crbug.com/1298194 virtual/oopr-canvas2d/fast/canvas/canvas-zero-length-lineCap.html [ Failure Pass ]
+
 # --- END Skia roll test suppresions
 
 
