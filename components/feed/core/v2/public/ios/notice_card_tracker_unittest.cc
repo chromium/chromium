@@ -111,6 +111,10 @@ TEST_F(IOSNoticeCardTrackerTest,
 
 TEST_F(IOSNoticeCardTrackerTest,
        DontAcknowledgedNoticeCardWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      feed::kInterestFeedNoticeCardAutoDismiss);
+
   // Generate enough views and clicks on the notice card to reach the threshold,
   // but the feature is disabled.
   feed::prefs::IncrementNoticeCardClicksCount(profile_prefs_);

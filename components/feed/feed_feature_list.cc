@@ -49,7 +49,7 @@ const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload{
 
 #if BUILDFLAG(IS_IOS)
 const base::Feature kInterestFeedNoticeCardAutoDismiss{
-    "InterestFeedNoticeCardAutoDismiss", base::FEATURE_DISABLED_BY_DEFAULT};
+    "InterestFeedNoticeCardAutoDismiss", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 const base::Feature kInterestFeedSpinnerAlwaysAnimate{
