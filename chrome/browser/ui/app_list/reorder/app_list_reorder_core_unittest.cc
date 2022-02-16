@@ -67,4 +67,38 @@ TEST_F(AppListReorderCoreTest, CalculatePositionForItemAlreadyInOrder) {
   EXPECT_TRUE(target_position.Equals(item4.position()));
 }
 
+TEST_F(AppListReorderCoreTest, CalculatePositionForItemNotInOrder) {
+  // Prepare four items. Note that `item3` is out of order.
+  ChromeAppListItem item1(/*profile=*/nullptr, GenerateId("Id1"),
+                          /*model_updater=*/nullptr);
+  item1.SetChromeName("A");
+  item1.SetChromePosition(syncer::StringOrdinal::CreateInitialOrdinal());
+
+  ChromeAppListItem item2(/*profile=*/nullptr, GenerateId("Id2"),
+                          /*model_updater=*/nullptr);
+  item2.SetChromeName("B");
+  item2.SetChromePosition(item1.position().CreateAfter());
+
+  ChromeAppListItem item4(/*profile=*/nullptr, GenerateId("Id4"),
+                          /*model_updater=*/nullptr);
+  item4.SetChromeName("D");
+  item4.SetChromePosition(item2.position().CreateAfter());
+
+  ChromeAppListItem item3(/*profile=*/nullptr, GenerateId("Id3"),
+                          /*model_updater=*/nullptr);
+  item3.SetChromeName("C");
+
+  // Calculate `item3`'s position in order.
+  std::vector<const ChromeAppListItem*> items{&item1, &item2, &item3, &item4};
+  syncer::StringOrdinal target_position;
+  bool success = reorder::CalculateItemPositionInOrder(
+      ash::AppListSortOrder::kNameAlphabetical, item3.metadata(), items,
+      /*global_items=*/nullptr, &target_position);
+  EXPECT_TRUE(success);
+
+  // Verify that `target_position` is between `item2` and `item4`.
+  EXPECT_TRUE(target_position.GreaterThan(item2.position()) &&
+              target_position.LessThan(item4.position()));
+}
+
 }  // namespace app_list

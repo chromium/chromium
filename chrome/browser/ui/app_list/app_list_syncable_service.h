@@ -242,7 +242,6 @@ class AppListSyncableService : public syncer::SyncableService,
   syncer::StringOrdinal CalculateGlobalFrontPosition() const override;
   bool CalculateItemPositionInPermanentSortOrder(
       const ash::AppListItemMetadata& metadata,
-      const std::vector<const ChromeAppListItem*>& local_items,
       syncer::StringOrdinal* target_position) const override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
 

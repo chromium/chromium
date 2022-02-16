@@ -35,7 +35,7 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
 // Returns whether `target_position` is set. The return value is false if such
 // a target position does not exist. In this case, `target_position` is not set.
 // `local_items` indicates the elements in the active app list model before
-// adding the new item. Note that different devices may have different sets of
+// calling this function. Note that different devices may have different sets of
 // app list items. It is why the parameter is named `local_items`.
 // `global_items` is the sync data of the items across synced devices. If
 // `global_items` is null, position is calculated only based on `local_items`.

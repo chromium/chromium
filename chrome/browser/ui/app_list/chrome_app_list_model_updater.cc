@@ -948,7 +948,7 @@ std::string ChromeAppListModelUpdater::RequestFolderCreation(
     syncer::StringOrdinal sorted_position;
     bool has_sorted_position =
         order_delegate_->CalculateItemPositionInPermanentSortOrder(
-            new_folder_item->metadata(), GetItems(), &sorted_position);
+            new_folder_item->metadata(), &sorted_position);
     if (has_sorted_position)
       target_position = sorted_position;
   }
@@ -1031,7 +1031,7 @@ void ChromeAppListModelUpdater::RequestFolderRename(
     syncer::StringOrdinal sorted_position;
     position_changed =
         order_delegate_->CalculateItemPositionInPermanentSortOrder(
-            folder_item->metadata(), GetItems(), &sorted_position);
+            folder_item->metadata(), &sorted_position);
     if (position_changed)
       folder_item->SetChromePosition(sorted_position);
   }

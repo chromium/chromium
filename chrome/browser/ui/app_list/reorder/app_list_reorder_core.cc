@@ -405,7 +405,8 @@ bool CalculatePositionForSyncItemWrapper(
     Compare compare,
     syncer::StringOrdinal* target_position) {
   std::vector<reorder::SyncItemWrapper<T>> local_item_wrappers =
-      reorder::GenerateWrappersFromAppListItems<T>(local_items);
+      reorder::GenerateWrappersFromAppListItems<T>(local_items,
+                                                   item_wrapper.id);
 
   if (local_item_wrappers.empty()) {
     *target_position = syncer::StringOrdinal::CreateInitialOrdinal();
@@ -436,8 +437,21 @@ bool CalculatePositionForSyncItemWrapper(
   // Use the item's old position if the old value does not break the item order.
   if (item_wrapper.item_ordinal.IsValid()) {
     const syncer::StringOrdinal& old_ordinal = item_wrapper.item_ordinal;
-    if ((prev_neighbor.IsValid() && !prev_neighbor.GreaterThan(old_ordinal)) ||
-        (next_neighbor.IsValid() && !next_neighbor.LessThan(old_ordinal))) {
+
+    // `old_ordinal` maintains the order with `prev_neighbor` if:
+    // (1) `prev_neighbor` is empty, or
+    // (2) `prev_neighbor` is not greater than `old_ordinal`.
+    const bool is_prev_neighbor_in_order =
+        (!prev_neighbor.IsValid() || !prev_neighbor.GreaterThan(old_ordinal));
+
+    // `old_ordinal` maintains the order with `next_neighbor` if:
+    // (1) `next_neighbor` is empty, or
+    // (2) `next_neighbor` is not less than `old_ordinal`.
+    const bool is_next_neighbor_in_order =
+        (!next_neighbor.IsValid() || !next_neighbor.LessThan(old_ordinal));
+
+    // Still use the old position if it maintains the order with both neighbors.
+    if (is_prev_neighbor_in_order && is_next_neighbor_in_order) {
       *target_position = old_ordinal;
       return true;
     }
@@ -481,13 +495,13 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
     case ash::AppListSortOrder::kNameReverseAlphabetical: {
       std::vector<reorder::SyncItemWrapper<std::u16string>> wrappers =
           reorder::GenerateWrappersFromAppListItems<std::u16string>(
-              app_list_items);
+              app_list_items, /*ignored_id=*/absl::nullopt);
       return GenerateReorderParamsImpl(order, &wrappers);
     }
     case ash::AppListSortOrder::kColor: {
       std::vector<reorder::SyncItemWrapper<ash::IconColor>> wrappers =
           reorder::GenerateWrappersFromAppListItems<ash::IconColor>(
-              app_list_items);
+              app_list_items, /*ignored_id=*/absl::nullopt);
       return GenerateReorderParamsImpl(order, &wrappers);
     }
     case ash::AppListSortOrder::kCustom:
@@ -565,7 +579,7 @@ float CalculateEntropyForTest(ash::AppListSortOrder order,
       std::vector<reorder::SyncItemWrapper<std::u16string>>
           local_item_wrappers =
               reorder::GenerateWrappersFromAppListItems<std::u16string>(
-                  model_updater->GetItems());
+                  model_updater->GetItems(), /*ignored_id=*/absl::nullopt);
       float entropy = 0.f;
       CalculateEntropyAndGetSortedSubsequence(
           order, &local_item_wrappers, &entropy,

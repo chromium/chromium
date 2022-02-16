@@ -91,13 +91,18 @@ std::vector<SyncItemWrapper<T>> GenerateWrappersFromSyncItems(
   return wrappers;
 }
 
-// Gets a list of sync item wrappers based on the given app list items.
+// Gets a list of sync item wrappers based on the given app list items. The item
+// with the ignored id should not be included in the return list.
 template <typename T>
 std::vector<SyncItemWrapper<T>> GenerateWrappersFromAppListItems(
-    const std::vector<const ChromeAppListItem*>& app_list_items) {
+    const std::vector<const ChromeAppListItem*>& app_list_items,
+    const absl::optional<std::string>& ignored_id) {
   std::vector<SyncItemWrapper<T>> wrappers;
   for (const auto* app_list_item : app_list_items) {
     if (app_list_item->is_page_break())
+      continue;
+
+    if (ignored_id && *ignored_id == app_list_item->id())
       continue;
 
     wrappers.emplace_back(app_list_item->metadata());

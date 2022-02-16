@@ -7,8 +7,6 @@
 
 #include "components/sync/model/string_ordinal.h"
 
-class ChromeAppListItem;
-
 namespace ash {
 enum class AppListSortOrder;
 struct AppListItemMetadata;
@@ -39,7 +37,6 @@ class AppListReorderDelegate {
   // a target position could exist, in which case `target_position` is set.
   virtual bool CalculateItemPositionInPermanentSortOrder(
       const ash::AppListItemMetadata& metadata,
-      const std::vector<const ChromeAppListItem*>& local_items,
       syncer::StringOrdinal* target_position) const = 0;
 
   // Returns the sorting order that is saved in perf service and gets shared
