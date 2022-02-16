@@ -97,7 +97,7 @@ constexpr int kTallestFrameHeight = kTallestTabHeight + 19;
 // changed default theme assets, if you need themes to recreate their generated
 // images (which are cached), if you changed how missing values are
 // generated, or if you changed any constants.
-const int kThemePackVersion = 82;
+const int kThemePackVersion = 83;
 
 // IDs that are in the DataPack won't clash with the positive integer
 // uint16_t. kHeaderID should always have the maximum value because we want the
@@ -1070,7 +1070,7 @@ void BrowserThemePack::AddColorMixers(
     int property_id;
     int color_id;
   } kThemePropertiesMap[] = {
-      {TP::COLOR_BOOKMARK_TEXT, kColorBookmarkText},
+      {TP::COLOR_BOOKMARK_TEXT, kColorBookmarkBarForeground},
       {TP::COLOR_DOWNLOAD_SHELF, kColorDownloadShelf},
       {TP::COLOR_OMNIBOX_TEXT, kColorOmniboxText},
       {TP::COLOR_OMNIBOX_BACKGROUND, kColorOmniboxBackground},

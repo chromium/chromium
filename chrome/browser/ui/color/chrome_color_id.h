@@ -12,8 +12,11 @@
 // clang-format off
 #define COMMON_CHROME_COLOR_IDS \
   /* Bookmark Bar output colors. */ \
-  E(kColorBookmarkText, ThemeProperties::COLOR_BOOKMARK_TEXT, \
-    kChromeColorsStart) \
+  E(kColorBookmarkBarBackground, \
+    ThemeProperties::COLOR_BOOKMARK_BAR_BACKGROUND, kChromeColorsStart) \
+  E(kColorBookmarkBarForeground, ThemeProperties::COLOR_BOOKMARK_TEXT) \
+  E(kColorBookmarkBarSeparator, ThemeProperties::COLOR_BOOKMARK_SEPARATOR) \
+  E(kColorBookmarkButtonIcon, ThemeProperties::COLOR_BOOKMARK_BUTTON_ICON) \
   E(kColorBookmarkFavicon, ThemeProperties::COLOR_BOOKMARK_FAVICON) \
   E_CPONLY(kColorBookmarkFolderIcon) \
   /* Download Shelf output colors. */ \
@@ -103,6 +106,8 @@
   E(kColorToolbarButtonIcon, ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON) \
   E(kColorToolbarContentAreaSeparator, \
     ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR) \
+  E(kColorToolbarSeparator, \
+    ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR) \
   E(kColorToolbarText, ThemeProperties::COLOR_TOOLBAR_TEXT)
 
 #if BUILDFLAG(IS_WIN)

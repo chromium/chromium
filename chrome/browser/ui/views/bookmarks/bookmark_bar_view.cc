@@ -552,7 +552,7 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
   void OnThemeChanged() override {
     views::Separator::OnThemeChanged();
     SetColor(GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR));
+        ThemeProperties::COLOR_BOOKMARK_SEPARATOR));
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
@@ -590,8 +590,9 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
   if (browser_view)
     SetBackground(std::make_unique<TopContainerBackground>(browser_view));
 
-  views::SetCascadingThemeProviderColor(this, views::kCascadingBackgroundColor,
-                                        ThemeProperties::COLOR_TOOLBAR);
+  views::SetCascadingThemeProviderColor(
+      this, views::kCascadingBackgroundColor,
+      ThemeProperties::COLOR_BOOKMARK_BAR_BACKGROUND);
 }
 
 BookmarkBarView::~BookmarkBarView() {
@@ -2152,7 +2153,7 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
     apps_page_shortcut_->SetEnabledTextColors(color);
 
   const SkColor overflow_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+      theme_provider->GetColor(ThemeProperties::COLOR_BOOKMARK_BUTTON_ICON);
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   overflow_button_->SetImageModel(
       views::Button::STATE_NORMAL,

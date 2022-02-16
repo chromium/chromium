@@ -288,10 +288,13 @@ class ThemeProperties {
     COLOR_THUMBNAIL_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE,
 
     // Colors used for the Bookmark bar
-    // This color will be the same as COLOR_TOOLBAR_BUTTON_ICON if it is defined
-    // in the custom theme. Otherwise it will be transparent so the default
+    COLOR_BOOKMARK_BAR_BACKGROUND,
+    COLOR_BOOKMARK_BUTTON_ICON,
+    // If COLOR_TOOLBAR_BUTTON_ICON is defined in the custom theme, that color
+    // will be returned, otherwise it will be transparent so the default
     // favicon color is retained.
     COLOR_BOOKMARK_FAVICON,
+    COLOR_BOOKMARK_SEPARATOR,
 
     // /!\ If you make any changes to this enum, you must also increment
     // kThemePackVersion in browser_theme_pack.cc, or else themes will display

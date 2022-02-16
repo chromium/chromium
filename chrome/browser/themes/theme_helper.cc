@@ -327,6 +327,8 @@ SkColor ThemeHelper::GetDefaultColor(
                     incognito, theme_supplier);
   };
   switch (id) {
+    case TP::COLOR_BOOKMARK_BAR_BACKGROUND:
+      return GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier, nullptr);
     case TP::COLOR_BOOKMARK_FAVICON: {
       SkColor color;
       if (theme_supplier &&
@@ -385,6 +387,7 @@ SkColor ThemeHelper::GetDefaultColor(
       return color_utils::HSLShift(get_frame_color(/*active=*/false),
                                    GetTint(ThemeProperties::TINT_BACKGROUND_TAB,
                                            incognito, theme_supplier));
+    case TP::COLOR_BOOKMARK_BUTTON_ICON:
     case TP::COLOR_TOOLBAR_BUTTON_ICON:
     case TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED:
     case TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED:
@@ -412,6 +415,7 @@ SkColor ThemeHelper::GetDefaultColor(
       GetSeparatorColorCache()[key] = separator_color;
       return separator_color;
     }
+    case TP::COLOR_BOOKMARK_SEPARATOR:
     case TP::COLOR_TOOLBAR_VERTICAL_SEPARATOR: {
       return SkColorSetA(
           GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
