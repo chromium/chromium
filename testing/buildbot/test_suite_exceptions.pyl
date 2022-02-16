@@ -3627,6 +3627,12 @@
           '--gtest_filter=-org.chromium.weblayer.test.MediaCaptureTest.*',
         ],
       },
+      'android-12-x64-fyi-rel': {
+        'args': [
+          # crbug.com/1275200
+          '--gtest_filter=-org.chromium.weblayer.test.BrowserControlsTest.testTopExpandedOnLoadWhenOnlyExpandAtTop',
+        ],
+      },
     },
   },
   'weblayer_shell_wpt': {
