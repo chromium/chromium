@@ -5,8 +5,10 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,6 +33,11 @@ MATCHER_P(HasAppId, app_id, "Has the correct app id") {
 class AppRegistryCacheMojomTest : public testing::Test,
                                   public apps::AppRegistryCache::Observer {
  protected:
+  AppRegistryCacheMojomTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        apps::kAppServiceOnAppTypeInitializedWithoutMojom);
+  }
+
   static apps::mojom::AppPtr MakeApp(
       const char* app_id,
       const char* name,
@@ -90,6 +97,7 @@ class AppRegistryCacheMojomTest : public testing::Test,
   std::set<std::string> updated_names_;
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
   apps::AppType app_type_ = apps::AppType::kUnknown;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Responds to a cache's OnAppUpdate to call back into the cache, checking that

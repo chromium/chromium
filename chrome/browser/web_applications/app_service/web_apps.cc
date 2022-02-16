@@ -325,9 +325,6 @@ void WebApps::InitWebApps() {
   RegisterPublisher(app_type_);
 
   std::vector<apps::AppPtr> apps = CreateWebApps();
-  if (apps.empty()) {
-    return;
-  }
   apps::AppPublisher::Publish(std::move(apps), app_type_,
                               /*should_notify_initialized=*/true);
 }
