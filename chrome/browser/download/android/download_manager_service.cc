@@ -42,7 +42,6 @@
 #include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
-#include "components/download/public/common/storage_partition_config.h"
 #include "components/download/public/common/url_download_handler_factory.h"
 #include "components/download/public/task/task_manager_impl.h"
 #include "components/offline_items_collection/core/android/offline_item_bridge.h"

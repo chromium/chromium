@@ -64,8 +64,6 @@ component("public") {
     "resume_mode.h",
     "simple_download_manager.h",
     "simple_download_manager_coordinator.h",
-    "storage_partition_config.cc",
-    "storage_partition_config.h",
     "stream_handle_input_stream.h",
     "url_download_handler_factory.h",
     "url_download_request_handle.h",
@@ -180,7 +178,6 @@ source_set("unit_tests") {
   sources = [
     "auto_resumption_handler_unittest.cc",
     "download_schedule_unittest.cc",
-    "storage_partition_config_unittest.cc",
   ]
 
   deps = [
