@@ -44,14 +44,12 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   AggregationServicePayloadContents(Operation operation,
                                     int bucket,
                                     int value,
-                                    ProcessingType processing_type,
-                                    url::Origin reporting_origin);
+                                    ProcessingType processing_type);
 
   Operation operation;
   int bucket;
   int value;
   ProcessingType processing_type;
-  url::Origin reporting_origin;
 };
 
 // Represents the information that will be provided to both the reporting
@@ -66,17 +64,22 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
   AggregatableReportSharedInfo(base::Time scheduled_report_time,
                                std::string privacy_budget_key,
                                base::GUID report_id,
+                               url::Origin reporting_origin,
                                DebugMode debug_mode);
+  AggregatableReportSharedInfo(const AggregatableReportSharedInfo& other);
+  AggregatableReportSharedInfo& operator=(
+      const AggregatableReportSharedInfo& other);
+  AggregatableReportSharedInfo(AggregatableReportSharedInfo&& other);
+  AggregatableReportSharedInfo& operator=(AggregatableReportSharedInfo&& other);
+  ~AggregatableReportSharedInfo();
 
   // Serializes to a JSON dictionary, represented as a string.
   std::string SerializeAsJson() const;
 
   base::Time scheduled_report_time;
   std::string privacy_budget_key;
-
-  // Used to prevent double counting.
-  base::GUID report_id;
-
+  base::GUID report_id;  // Used to prevent double counting.
+  url::Origin reporting_origin;
   DebugMode debug_mode;
 };
 
@@ -105,7 +108,6 @@ class CONTENT_EXPORT AggregatableReport {
     // of the encrypted payload is a serialized CBOR map structured as follows:
     // {
     //   "operation": "<chosen operation as string>",
-    //   "reporting_origin": "https://reporter.example",
     //   "dpf_key": <binary serialization of the DPF key>,
     // }
     // For the kSingleServer processing type, the "dpf_key" field is replaced
@@ -172,7 +174,7 @@ class CONTENT_EXPORT AggregatableReport {
   // {
   //   "shared_info": "{\"scheduled_report_time\":\"[timestamp in
   //   seconds]\",\"privacy_budget_key\":\"[string]\",\"version\":\"[api
-  //   version]\",\"report_id\":\"[UUID]\"}",
+  //   version]\",\"report_id\":\"[UUID]\",\"reporting_origin\":\"[string]\"}",
   //   "aggregation_service_payloads": [
   //     {
   //       "payload": "<base64 encoded encrypted data>",

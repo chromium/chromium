@@ -45,7 +45,6 @@ using DpfParameters = distributed_point_functions::DpfParameters;
 // Payload contents:
 constexpr char kHistogramValue[] = "histogram";
 constexpr char kOperationKey[] = "operation";
-constexpr char kReportingOriginKey[] = "reporting_origin";
 
 std::vector<url::Origin> GetDefaultProcessingOrigins(
     AggregationServicePayloadContents::ProcessingType processing_type) {
@@ -131,8 +130,6 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTwoPartyPayloads(
     DCHECK(succeeded);
 
     cbor::Value::MapValue value;
-    value.emplace(kReportingOriginKey,
-                  payload_contents.reporting_origin.Serialize());
     value.emplace(kOperationKey, kHistogramValue);
     value.emplace("dpf_key", std::move(serialized_key));
 
@@ -156,8 +153,6 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTwoPartyPayloads(
 std::vector<std::vector<uint8_t>> ConstructUnencryptedSingleServerPayload(
     const AggregationServicePayloadContents& payload_contents) {
   cbor::Value::MapValue value;
-  value.emplace(kReportingOriginKey,
-                payload_contents.reporting_origin.Serialize());
   value.emplace(kOperationKey, kHistogramValue);
 
   // TODO(crbug.com/1272030): Support multiple contributions in one payload.
@@ -234,23 +229,33 @@ AggregationServicePayloadContents::AggregationServicePayloadContents(
     Operation operation,
     int bucket,
     int value,
-    ProcessingType processing_type,
-    url::Origin reporting_origin)
+    ProcessingType processing_type)
     : operation(operation),
       bucket(bucket),
       value(value),
-      processing_type(processing_type),
-      reporting_origin(reporting_origin) {}
+      processing_type(processing_type) {}
 
 AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     base::Time scheduled_report_time,
     std::string privacy_budget_key,
     base::GUID report_id,
+    url::Origin reporting_origin,
     DebugMode debug_mode)
     : scheduled_report_time(std::move(scheduled_report_time)),
       privacy_budget_key(std::move(privacy_budget_key)),
       report_id(std::move(report_id)),
+      reporting_origin(std::move(reporting_origin)),
       debug_mode(debug_mode) {}
+
+AggregatableReportSharedInfo::AggregatableReportSharedInfo(
+    const AggregatableReportSharedInfo& other) = default;
+AggregatableReportSharedInfo& AggregatableReportSharedInfo::operator=(
+    const AggregatableReportSharedInfo& other) = default;
+AggregatableReportSharedInfo::AggregatableReportSharedInfo(
+    AggregatableReportSharedInfo&& other) = default;
+AggregatableReportSharedInfo& AggregatableReportSharedInfo::operator=(
+    AggregatableReportSharedInfo&& other) = default;
+AggregatableReportSharedInfo::~AggregatableReportSharedInfo() = default;
 
 std::string AggregatableReportSharedInfo::SerializeAsJson() const {
   base::Value value(base::Value::Type::DICTIONARY);
@@ -259,6 +264,8 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
 
   DCHECK(report_id.is_valid());
   value.SetStringKey("report_id", report_id.AsLowercaseString());
+
+  value.SetStringKey("reporting_origin", reporting_origin.Serialize());
 
   // Encoded as the number of seconds since the Unix epoch, ignoring leap
   // seconds and rounded down.

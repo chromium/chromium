@@ -174,13 +174,13 @@ AggregatableReportRequest CreateExampleRequest(
   return AggregatableReportRequest::Create(
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::kHistogram,
-                 /*bucket=*/123, /*value=*/456, processing_type,
-                 url::Origin::Create(GURL("https://reporting.example"))),
+                 /*bucket=*/123, /*value=*/456, processing_type),
              AggregatableReportSharedInfo(
                  /*scheduled_report_time=*/base::Time::Now(),
                  /*privacy_budget_key=*/"example_budget_key",
                  /*report_id=*/
                  base::GUID::GenerateRandomV4(),
+                 url::Origin::Create(GURL("https://reporting.example")),
                  AggregatableReportSharedInfo::DebugMode::kDisabled))
       .value();
 }

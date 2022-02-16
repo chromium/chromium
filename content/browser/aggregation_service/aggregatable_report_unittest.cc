@@ -131,13 +131,7 @@ void VerifyReport(
     ASSERT_TRUE(deserialized_payload->is_map());
     const cbor::Value::MapValue& payload_map = deserialized_payload->GetMap();
 
-    EXPECT_EQ(payload_map.size(), 3UL);
-
-    ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "reporting_origin",
-                                          cbor::Value::Type::STRING));
-    EXPECT_EQ(url::Origin::Create(GURL(
-                  payload_map.at(cbor::Value("reporting_origin")).GetString())),
-              expected_payload_contents.reporting_origin);
+    EXPECT_EQ(payload_map.size(), 2UL);
 
     ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "operation",
                                           cbor::Value::Type::STRING));
@@ -389,12 +383,14 @@ TEST(AggregatableReportTest,
       /*privacy_budget_key=*/"example_pbk",
       /*report_id=*/
       base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+      url::Origin::Create(GURL("https://reporting.example")),
       AggregatableReportSharedInfo::DebugMode::kDisabled);
 
   const char kExpectedString[] =
       R"({)"
       R"("privacy_budget_key":"example_pbk",)"
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+      R"("reporting_origin":"https://reporting.example",)"
       R"("scheduled_report_time":"1234567890",)"
       R"("version":"")"
       R"(})";
@@ -409,6 +405,7 @@ TEST(AggregatableReportTest,
       /*privacy_budget_key=*/"example_pbk",
       /*report_id=*/
       base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+      url::Origin::Create(GURL("https://reporting.example")),
       AggregatableReportSharedInfo::DebugMode::kEnabled);
 
   const char kExpectedString[] =
@@ -416,6 +413,7 @@ TEST(AggregatableReportTest,
       R"("debug_mode":"enabled",)"
       R"("privacy_budget_key":"example_pbk",)"
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+      R"("reporting_origin":"https://reporting.example",)"
       R"("scheduled_report_time":"1234567890",)"
       R"("version":"")"
       R"(})";
