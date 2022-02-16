@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -19,6 +21,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -27,6 +30,7 @@ import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
@@ -50,6 +54,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -165,6 +170,10 @@ public class MainSettings extends PreferenceFragmentCompat
         mSyncPromoPreference.setOnStateChangedCallback(this::onSyncPromoPreferenceStateChanged);
 
         updatePasswordsPreference();
+
+        if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)) {
+            setManagedPreferenceDelegateForPreference(PREF_PASSWORDS);
+        }
 
         setManagedPreferenceDelegateForPreference(PREF_SEARCH_ENGINE);
 
@@ -371,6 +380,11 @@ public class MainSettings extends PreferenceFragmentCompat
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
                     return TemplateUrlServiceFactory.get().isDefaultSearchManaged();
                 }
+                if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)
+                        && PREF_PASSWORDS.equals(preference.getKey())) {
+                    return UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
+                }
                 return false;
             }
 
@@ -378,6 +392,11 @@ public class MainSettings extends PreferenceFragmentCompat
             public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
                     return TemplateUrlServiceFactory.get().isDefaultSearchManaged();
+                }
+                if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)
+                        && PREF_PASSWORDS.equals(preference.getKey())) {
+                    return UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
                 }
                 return isPreferenceControlledByPolicy(preference)
                         || isPreferenceControlledByCustodian(preference);
