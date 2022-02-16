@@ -151,18 +151,16 @@ base::Value::Dict ConvertExtensionEventToValue(
 
   if (extension_install_report_log_event.has_stateful_total()) {
     // 64-bit ints aren't supported by JSON - must be stored as strings
-    // TODO(https://crbug.com/1297309): This should use NumberToString.
-    std::ostringstream str;
-    str << extension_install_report_log_event.stateful_total();
-    event.Set(kStatefulTotal, str.str());
+    event.Set(kStatefulTotal,
+              base::NumberToString(
+                  extension_install_report_log_event.stateful_total()));
   }
 
   if (extension_install_report_log_event.has_stateful_free()) {
     // 64-bit ints aren't supported by JSON - must be stored as strings
-    // TODO(https://crbug.com/1297309): This should use NumberToString.
-    std::ostringstream str;
-    str << extension_install_report_log_event.stateful_free();
-    event.Set(kStatefulFree, str.str());
+    event.Set(kStatefulFree,
+              base::NumberToString(
+                  extension_install_report_log_event.stateful_free()));
   }
 
   if (extension_install_report_log_event.has_online())
@@ -305,18 +303,15 @@ base::Value::Dict ConvertArcAppEventToValue(
 
   if (app_install_report_log_event.has_stateful_total()) {
     // 64-bit ints aren't supported by JSON - must be stored as strings
-    // TODO(https://crbug.com/1297309): This should use NumberToString.
-    std::ostringstream str;
-    str << app_install_report_log_event.stateful_total();
-    event.Set(kStatefulTotal, str.str());
+    event.Set(
+        kStatefulTotal,
+        base::NumberToString(app_install_report_log_event.stateful_total()));
   }
 
   if (app_install_report_log_event.has_stateful_free()) {
     // 64-bit ints aren't supported by JSON - must be stored as strings
-    // TODO(dcheng): This should use NumberToString.
-    std::ostringstream str;
-    str << app_install_report_log_event.stateful_free();
-    event.Set(kStatefulFree, str.str());
+    event.Set(kStatefulFree, base::NumberToString(
+                                 app_install_report_log_event.stateful_free()));
   }
 
   if (app_install_report_log_event.has_clouddps_response()) {
@@ -334,10 +329,8 @@ base::Value::Dict ConvertArcAppEventToValue(
 
   if (app_install_report_log_event.has_android_id()) {
     // 64-bit ints aren't supporetd by JSON - must be stored as strings
-    // TODO(dcheng): This should use NumberToString.
-    std::ostringstream str;
-    str << app_install_report_log_event.android_id();
-    event.Set(kAndroidId, str.str());
+    event.Set(kAndroidId,
+              base::NumberToString(app_install_report_log_event.android_id()));
   }
 
   event.Set(kSerialNumber, GetSerialNumber());
