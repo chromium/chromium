@@ -85,6 +85,8 @@ media::test::VideoPlayerTestEnvironment* g_env;
 constexpr const base::FilePath::CharType* kDefaultOutputFolder =
     FILE_PATH_LITERAL("perf_metrics");
 
+constexpr base::TimeDelta kMultipleDecodersTimeout = base::Seconds(120);
+
 // Struct storing various time-related statistics.
 struct PerformanceTimeStats {
   PerformanceTimeStats() {}
@@ -421,8 +423,12 @@ TEST_F(VideoDecoderTest,
 
   std::vector<std::unique_ptr<VideoPlayer>> players(
       kMinSupportedConcurrentDecoders);
-  for (auto&& player : players)
+  for (auto&& player : players) {
     player = CreateVideoPlayer(g_env->Video());
+    // Increase the timeout for older machines that cannot decode as
+    // efficiently.
+    player->SetEventWaitTimeout(kMultipleDecodersTimeout);
+  }
 
   performance_evaluator_->StartMeasuring();
 
