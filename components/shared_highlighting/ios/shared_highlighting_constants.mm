@@ -10,7 +10,7 @@
 
 namespace shared_highlighting {
 
-// TODO(crbug.com/1290436): Replace this with the correct URL once it is known.
-const char kLearnMoreUrl[] = "https://www.google.com";
+const char kLearnMoreUrl[] =
+    "https://support.google.com/chrome/?p=shared_highlighting";
 
 }  // namespace shared_highlighting
