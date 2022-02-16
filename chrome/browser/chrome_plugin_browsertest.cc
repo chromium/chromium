@@ -42,7 +42,7 @@ std::vector<content::WebPluginInfo> GetPlugins() {
   auto callback =
       base::BindOnce(&GetPluginsInfoCallback, &plugins, run_loop.QuitClosure());
   content::PluginService::GetInstance()->GetPlugins(std::move(callback));
-  run_loop.RunUntilIdle();
+  run_loop.Run();
   return plugins;
 }
 
