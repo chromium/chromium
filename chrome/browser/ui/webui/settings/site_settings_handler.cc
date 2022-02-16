@@ -1467,7 +1467,7 @@ void SiteSettingsHandler::SendZoomLevels() {
           host =
               l10n_util::GetStringUTF8(IDS_ZOOMLEVELS_CHROME_ERROR_PAGES_LABEL);
         }
-        exception->SetString(site_settings::kOrigin, host);
+        exception->SetStringKey(site_settings::kOrigin, host);
 
         std::string display_name = host;
         std::string origin_for_favicon = host;
@@ -1482,9 +1482,9 @@ void SiteSettingsHandler::SendZoomLevels() {
             display_name = extension->name();
           }
         }
-        exception->SetString(site_settings::kDisplayName, display_name);
-        exception->SetString(site_settings::kOriginForFavicon,
-                             origin_for_favicon);
+        exception->SetStringKey(site_settings::kDisplayName, display_name);
+        exception->SetStringKey(site_settings::kOriginForFavicon,
+                                origin_for_favicon);
         break;
       }
       case content::HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST:
@@ -1499,16 +1499,16 @@ void SiteSettingsHandler::SendZoomLevels() {
         content_settings::ContentSettingToString(CONTENT_SETTING_DEFAULT);
     DCHECK(!setting_string.empty());
 
-    exception->SetString(site_settings::kSetting, setting_string);
+    exception->SetStringKey(site_settings::kSetting, setting_string);
 
     // Calculate the zoom percent from the factor. Round up to the nearest whole
     // number.
     int zoom_percent = static_cast<int>(
         blink::PageZoomLevelToZoomFactor(zoom_level.zoom_level) * 100 + 0.5);
-    exception->SetString(kZoom, base::FormatPercent(zoom_percent));
-    exception->SetString(site_settings::kSource,
-                         site_settings::SiteSettingSourceToString(
-                             site_settings::SiteSettingSource::kPreference));
+    exception->SetStringKey(kZoom, base::FormatPercent(zoom_percent));
+    exception->SetStringKey(site_settings::kSource,
+                            site_settings::SiteSettingSourceToString(
+                                site_settings::SiteSettingSource::kPreference));
     // Append the new entry to the list and map.
     zoom_levels_exceptions.Append(std::move(exception));
   }

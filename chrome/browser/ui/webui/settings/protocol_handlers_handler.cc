@@ -127,10 +127,10 @@ void ProtocolHandlersHandler::GetHandlersForProtocol(
     base::DictionaryValue* handlers_value) {
   custom_handlers::ProtocolHandlerRegistry* registry =
       GetProtocolHandlerRegistry();
-  handlers_value->SetString(
+  handlers_value->SetStringKey(
       "protocol_display_name",
       content::ProtocolHandler::GetProtocolDisplayName(protocol));
-  handlers_value->SetString("protocol", protocol);
+  handlers_value->SetStringKey("protocol", protocol);
 
   base::ListValue handlers_list;
   GetHandlersAsListValue(registry, registry->GetHandlersFor(protocol),

@@ -343,8 +343,8 @@ void StorageHandler::UpdateOverallStatistics() {
   }
 
   base::DictionaryValue size_stat;
-  size_stat.SetString("availableSize", ui::FormatBytes(available_bytes));
-  size_stat.SetString("usedSize", ui::FormatBytes(in_use_bytes));
+  size_stat.SetStringKey("availableSize", ui::FormatBytes(available_bytes));
+  size_stat.SetStringKey("usedSize", ui::FormatBytes(in_use_bytes));
   size_stat.SetDoubleKey("usedRatio",
                          static_cast<double>(in_use_bytes) / total_bytes);
   int storage_space_state =
@@ -354,7 +354,7 @@ void StorageHandler::UpdateOverallStatistics() {
         static_cast<int>(StorageSpaceState::kStorageSpaceCriticallyLow);
   else if (available_bytes < kSpaceLowBytes)
     storage_space_state = static_cast<int>(StorageSpaceState::kStorageSpaceLow);
-  size_stat.SetInteger("spaceState", storage_space_state);
+  size_stat.SetIntKey("spaceState", storage_space_state);
 
   FireWebUIListener(CalculationTypeToEventName(
                         calculator::SizeCalculator::CalculationType::kTotal),

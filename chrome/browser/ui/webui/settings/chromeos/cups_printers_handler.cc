@@ -575,7 +575,7 @@ void CupsPrintersHandler::OnAutoconfQueried(
   if (!success) {
     PRINTER_LOG(DEBUG) << "Could not query printer";
     base::DictionaryValue reject;
-    reject.SetString("message", "Querying printer failed");
+    reject.SetStringKey("message", "Querying printer failed");
     RejectJavascriptCallback(base::Value(callback_id),
                              base::Value(PrinterSetupResult::kFatalError));
     return;
@@ -866,7 +866,7 @@ void CupsPrintersHandler::HandleGetCupsPrinterModels(
   // initialization, and should just return empty results.
   if (manufacturer.empty()) {
     base::DictionaryValue response;
-    response.SetBoolean("success", true);
+    response.SetBoolKey("success", true);
     response.SetKey("models", base::ListValue());
     ResolveJavascriptCallback(base::Value(callback_id), response);
     return;
@@ -915,7 +915,7 @@ void CupsPrintersHandler::ResolveManufacturersDone(
     }
   }
   base::DictionaryValue response;
-  response.SetBoolean("success", result_code == PpdProvider::SUCCESS);
+  response.SetBoolKey("success", result_code == PpdProvider::SUCCESS);
   response.SetKey("manufacturers", std::move(manufacturers_value));
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
@@ -933,7 +933,7 @@ void CupsPrintersHandler::ResolvePrintersDone(
     }
   }
   base::DictionaryValue response;
-  response.SetBoolean("success", result_code == PpdProvider::SUCCESS);
+  response.SetBoolKey("success", result_code == PpdProvider::SUCCESS);
   response.SetKey("models", std::move(printers_value));
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
@@ -1148,8 +1148,8 @@ void CupsPrintersHandler::OnGetPrinterPpdManufacturerAndModel(
     return;
   }
   base::DictionaryValue info;
-  info.SetString("ppdManufacturer", manufacturer);
-  info.SetString("ppdModel", model);
+  info.SetStringKey("ppdManufacturer", manufacturer);
+  info.SetStringKey("ppdModel", model);
   ResolveJavascriptCallback(base::Value(callback_id), info);
 }
 

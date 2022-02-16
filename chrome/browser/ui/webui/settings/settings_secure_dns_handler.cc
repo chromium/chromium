@@ -49,10 +49,9 @@ std::unique_ptr<base::DictionaryValue> CreateSecureDnsSettingDict() {
   }
 
   auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("mode", SecureDnsConfig::ModeToString(config.mode()));
+  dict->SetStringKey("mode", SecureDnsConfig::ModeToString(config.mode()));
   dict->SetList("templates", std::move(secure_dns_templates));
-  dict->SetInteger("managementMode",
-                   static_cast<int>(config.management_mode()));
+  dict->SetIntKey("managementMode", static_cast<int>(config.management_mode()));
   return dict;
 }
 

@@ -99,11 +99,11 @@ void StylusHandler::UpdateNoteTakingApps() {
         helper->GetAvailableApps(Profile::FromWebUI(web_ui()));
     for (const NoteTakingAppInfo& info : available_apps) {
       auto dict = std::make_unique<base::DictionaryValue>();
-      dict->SetString(kAppNameKey, info.name);
-      dict->SetString(kAppIdKey, info.app_id);
-      dict->SetBoolean(kAppPreferredKey, info.preferred);
-      dict->SetInteger(kAppLockScreenSupportKey,
-                       static_cast<int>(info.lock_screen_support));
+      dict->SetStringKey(kAppNameKey, info.name);
+      dict->SetStringKey(kAppIdKey, info.app_id);
+      dict->SetBoolKey(kAppPreferredKey, info.preferred);
+      dict->SetIntKey(kAppLockScreenSupportKey,
+                      static_cast<int>(info.lock_screen_support));
       apps_list.Append(std::move(dict));
 
       note_taking_app_ids_.insert(info.app_id);

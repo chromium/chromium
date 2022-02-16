@@ -520,12 +520,13 @@ void SecurityKeysCredentialHandler::OnHaveCredentials(
       }
       std::string userHandle = base::HexEncode(credential.user.id);
 
-      credential_value.SetString("credentialId", std::move(credential_id));
-      credential_value.SetString("relyingPartyId", response.rp.id);
-      credential_value.SetString("userHandle", std::move(userHandle));
-      credential_value.SetString("userName", credential.user.name.value_or(""));
-      credential_value.SetString("userDisplayName",
-                                 credential.user.display_name.value_or(""));
+      credential_value.SetStringKey("credentialId", std::move(credential_id));
+      credential_value.SetStringKey("relyingPartyId", response.rp.id);
+      credential_value.SetStringKey("userHandle", std::move(userHandle));
+      credential_value.SetStringKey("userName",
+                                    credential.user.name.value_or(""));
+      credential_value.SetStringKey("userDisplayName",
+                                    credential.user.display_name.value_or(""));
       credentials.emplace_back(std::move(credential_value));
     }
   }
@@ -577,9 +578,9 @@ void SecurityKeysCredentialHandler::OnCredentialsDeleted(
   state_ = State::kReady;
 
   base::DictionaryValue response;
-  response.SetBoolean("success",
+  response.SetBoolKey("success",
                       status == device::CtapDeviceResponseCode::kSuccess);
-  response.SetString(
+  response.SetStringKey(
       "message",
       l10n_util::GetStringUTF8(
           status == device::CtapDeviceResponseCode::kSuccess
@@ -600,9 +601,9 @@ void SecurityKeysCredentialHandler::OnUserInformationUpdated(
   state_ = State::kReady;
 
   base::DictionaryValue response;
-  response.SetBoolean("success",
+  response.SetBoolKey("success",
                       status == device::CtapDeviceResponseCode::kSuccess);
-  response.SetString(
+  response.SetStringKey(
       "message",
       l10n_util::GetStringUTF8(
           status == device::CtapDeviceResponseCode::kSuccess

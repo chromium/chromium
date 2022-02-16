@@ -101,12 +101,11 @@ void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
   }
 
   base::DictionaryValue dict;
-  dict.SetBoolean("isDefault", state == shell_integration::IS_DEFAULT);
-  dict.SetBoolean("canBeDefault",
-      shell_integration::CanSetAsDefaultBrowser());
-  dict.SetBoolean("isUnknownError",
-      state == shell_integration::UNKNOWN_DEFAULT);
-  dict.SetBoolean("isDisabledByPolicy", DefaultBrowserIsDisabledByPolicy());
+  dict.SetBoolKey("isDefault", state == shell_integration::IS_DEFAULT);
+  dict.SetBoolKey("canBeDefault", shell_integration::CanSetAsDefaultBrowser());
+  dict.SetBoolKey("isUnknownError",
+                  state == shell_integration::UNKNOWN_DEFAULT);
+  dict.SetBoolKey("isDisabledByPolicy", DefaultBrowserIsDisabledByPolicy());
 
   if (!check_default_callback_id_.empty()) {
     ResolveJavascriptCallback(base::Value(check_default_callback_id_), dict);

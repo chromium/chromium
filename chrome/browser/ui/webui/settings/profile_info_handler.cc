@@ -167,8 +167,8 @@ ProfileInfoHandler::GetAccountNameAndIcon() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   auto response = std::make_unique<base::DictionaryValue>();
-  response->SetString("name", name);
-  response->SetString("iconUrl", icon_url);
+  response->SetStringKey("name", name);
+  response->SetStringKey("iconUrl", icon_url);
   return response;
 }
 

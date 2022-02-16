@@ -499,15 +499,15 @@ void AddExceptionForHostedApp(const std::string& url_pattern,
       content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW);
   DCHECK(!setting_string.empty());
 
-  exception->SetString(kSetting, setting_string);
-  exception->SetString(kOrigin, url_pattern);
-  exception->SetString(kDisplayName, url_pattern);
-  exception->SetString(kEmbeddingOrigin, url_pattern);
-  exception->SetString(
+  exception->SetStringKey(kSetting, setting_string);
+  exception->SetStringKey(kOrigin, url_pattern);
+  exception->SetStringKey(kDisplayName, url_pattern);
+  exception->SetStringKey(kEmbeddingOrigin, url_pattern);
+  exception->SetStringKey(
       kSource, SiteSettingSourceToString(SiteSettingSource::kHostedApp));
-  exception->SetBoolean(kIncognito, false);
-  exception->SetString(kAppName, app.name());
-  exception->SetString(kAppId, app.id());
+  exception->SetBoolKey(kIncognito, false);
+  exception->SetStringKey(kAppName, app.name());
+  exception->SetStringKey(kAppId, app.id());
   exceptions->Append(std::move(exception));
 }
 
@@ -524,21 +524,21 @@ std::unique_ptr<base::DictionaryValue> GetExceptionForPage(
     bool incognito,
     bool is_embargoed) {
   auto exception = std::make_unique<base::DictionaryValue>();
-  exception->SetString(kOrigin, pattern.ToString());
-  exception->SetString(kDisplayName, display_name);
-  exception->SetString(kEmbeddingOrigin,
-                       secondary_pattern == ContentSettingsPattern::Wildcard()
-                           ? std::string()
-                           : secondary_pattern.ToString());
+  exception->SetStringKey(kOrigin, pattern.ToString());
+  exception->SetStringKey(kDisplayName, display_name);
+  exception->SetStringKey(
+      kEmbeddingOrigin, secondary_pattern == ContentSettingsPattern::Wildcard()
+                            ? std::string()
+                            : secondary_pattern.ToString());
 
   std::string setting_string =
       content_settings::ContentSettingToString(setting);
   DCHECK(!setting_string.empty());
-  exception->SetString(kSetting, setting_string);
+  exception->SetStringKey(kSetting, setting_string);
 
-  exception->SetString(kSource, provider_name);
-  exception->SetBoolean(kIncognito, incognito);
-  exception->SetBoolean(kIsEmbargoed, is_embargoed);
+  exception->SetStringKey(kSource, provider_name);
+  exception->SetBoolKey(kIncognito, incognito);
+  exception->SetBoolKey(kIsEmbargoed, is_embargoed);
   return exception;
 }
 
@@ -739,9 +739,9 @@ void GetContentCategorySetting(const HostContentSettingsMap* map,
       map->GetDefaultContentSetting(content_type, &provider));
   DCHECK(!setting.empty());
 
-  object->SetString(kSetting, setting);
+  object->SetStringKey(kSetting, setting);
   if (provider != SiteSettingSourceToString(SiteSettingSource::kDefault))
-    object->SetString(kSource, provider);
+    object->SetStringKey(kSource, provider);
 }
 
 ContentSetting GetContentSettingForOrigin(

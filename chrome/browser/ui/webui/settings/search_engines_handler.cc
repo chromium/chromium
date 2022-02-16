@@ -201,36 +201,36 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
   // in @typedef for SearchEngine. Please update it whenever you add or remove
   // any keys here.
   auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetInteger("id", template_url->id());
-  dict->SetString("name", template_url->short_name());
-  dict->SetString("displayName",
-                  table_model->GetText(
-                      index, IDS_SEARCH_ENGINES_EDITOR_DESCRIPTION_COLUMN));
-  dict->SetString(
+  dict->SetIntKey("id", template_url->id());
+  dict->SetStringKey("name", template_url->short_name());
+  dict->SetStringKey("displayName",
+                     table_model->GetText(
+                         index, IDS_SEARCH_ENGINES_EDITOR_DESCRIPTION_COLUMN));
+  dict->SetStringKey(
       "keyword",
       table_model->GetText(index, IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN));
   Profile* profile = Profile::FromWebUI(web_ui());
-  dict->SetString(
+  dict->SetStringKey(
       "url", template_url->url_ref().DisplayURL(UIThreadSearchTermsData()));
-  dict->SetBoolean("urlLocked", template_url->prepopulate_id() > 0);
+  dict->SetBoolKey("urlLocked", template_url->prepopulate_id() > 0);
   GURL icon_url = template_url->favicon_url();
   if (icon_url.is_valid())
-    dict->SetString("iconURL", icon_url.spec());
-  dict->SetInteger("modelIndex", index);
+    dict->SetStringKey("iconURL", icon_url.spec());
+  dict->SetIntKey("modelIndex", index);
 
-  dict->SetBoolean("canBeRemoved", list_controller_.CanRemove(template_url));
-  dict->SetBoolean("canBeDefault",
+  dict->SetBoolKey("canBeRemoved", list_controller_.CanRemove(template_url));
+  dict->SetBoolKey("canBeDefault",
                    list_controller_.CanMakeDefault(template_url));
-  dict->SetBoolean("default", is_default);
-  dict->SetBoolean("canBeEdited", list_controller_.CanEdit(template_url));
-  dict->SetBoolean("canBeActivated",
+  dict->SetBoolKey("default", is_default);
+  dict->SetBoolKey("canBeEdited", list_controller_.CanEdit(template_url));
+  dict->SetBoolKey("canBeActivated",
                    list_controller_.CanActivate(template_url));
-  dict->SetBoolean("canBeDeactivated",
+  dict->SetBoolKey("canBeDeactivated",
                    list_controller_.CanDeactivate(template_url));
-  dict->SetBoolean("shouldConfirmDeletion",
+  dict->SetBoolKey("shouldConfirmDeletion",
                    list_controller_.ShouldConfirmDeletion(template_url));
   TemplateURL::Type type = template_url->type();
-  dict->SetBoolean("isOmniboxExtension",
+  dict->SetBoolKey("isOmniboxExtension",
                    type == TemplateURL::OMNIBOX_API_EXTENSION);
   if (type == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
       type == TemplateURL::OMNIBOX_API_EXTENSION) {
@@ -241,7 +241,7 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
     if (extension) {
       std::unique_ptr<base::DictionaryValue> ext_info =
           extensions::util::GetExtensionInfo(extension);
-      ext_info->SetBoolean("canBeDisabled",
+      ext_info->SetBoolKey("canBeDisabled",
                            !extensions::ExtensionSystem::Get(profile)
                                 ->management_policy()
                                 ->MustRemainEnabled(extension, nullptr));

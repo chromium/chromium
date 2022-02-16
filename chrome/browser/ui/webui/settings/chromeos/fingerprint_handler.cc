@@ -46,7 +46,7 @@ std::unique_ptr<base::DictionaryValue> GetFingerprintsInfo(
   }
 
   response->SetKey("fingerprintsList", std::move(fingerprints));
-  response->SetBoolean("isMaxed", static_cast<int>(fingerprints_list.size()) >=
+  response->SetBoolKey("isMaxed", static_cast<int>(fingerprints_list.size()) >=
                                       kMaxAllowedFingerprints);
   return response;
 }
@@ -124,9 +124,9 @@ void FingerprintHandler::OnEnrollScanDone(device::mojom::ScanResult scan_result,
           << ", enroll_session_complete=" << enroll_session_complete
           << ", percent_complete=" << percent_complete;
   auto scan_attempt = std::make_unique<base::DictionaryValue>();
-  scan_attempt->SetInteger("result", static_cast<int>(scan_result));
-  scan_attempt->SetBoolean("isComplete", enroll_session_complete);
-  scan_attempt->SetInteger("percentComplete", percent_complete);
+  scan_attempt->SetIntKey("result", static_cast<int>(scan_result));
+  scan_attempt->SetBoolKey("isComplete", enroll_session_complete);
+  scan_attempt->SetIntKey("percentComplete", percent_complete);
 
   FireWebUIListener("on-fingerprint-scan-received", *scan_attempt);
 }

@@ -81,11 +81,12 @@ void StartupPagesHandler::OnModelChanged() {
   std::vector<GURL> urls = startup_custom_pages_table_model_.GetURLs();
   for (int i = 0; i < page_count; ++i) {
     std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue());
-    entry->SetString("title", startup_custom_pages_table_model_.GetText(i, 0));
-    entry->SetString("url", urls[i].spec());
-    entry->SetString("tooltip",
-                     startup_custom_pages_table_model_.GetTooltip(i));
-    entry->SetInteger("modelIndex", i);
+    entry->SetStringKey("title",
+                        startup_custom_pages_table_model_.GetText(i, 0));
+    entry->SetStringKey("url", urls[i].spec());
+    entry->SetStringKey("tooltip",
+                        startup_custom_pages_table_model_.GetTooltip(i));
+    entry->SetIntKey("modelIndex", i);
     startup_pages.Append(std::move(entry));
   }
 

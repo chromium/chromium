@@ -145,18 +145,18 @@ class PowerHandlerTest : public InProcessBrowserTest {
     for (auto idle_behavior : settings.possible_battery_behaviors)
       list->Append(static_cast<int>(idle_behavior));
 
-    dict.SetInteger(PowerHandler::kCurrentAcIdleBehaviorKey,
-                    static_cast<int>(settings.current_ac_behavior));
-    dict.SetInteger(PowerHandler::kCurrentBatteryIdleBehaviorKey,
-                    static_cast<int>(settings.current_battery_behavior));
-    dict.SetBoolean(PowerHandler::kAcIdleManagedKey, settings.ac_idle_managed);
-    dict.SetBoolean(PowerHandler::kBatteryIdleManagedKey,
+    dict.SetIntKey(PowerHandler::kCurrentAcIdleBehaviorKey,
+                   static_cast<int>(settings.current_ac_behavior));
+    dict.SetIntKey(PowerHandler::kCurrentBatteryIdleBehaviorKey,
+                   static_cast<int>(settings.current_battery_behavior));
+    dict.SetBoolKey(PowerHandler::kAcIdleManagedKey, settings.ac_idle_managed);
+    dict.SetBoolKey(PowerHandler::kBatteryIdleManagedKey,
                     settings.battery_idle_managed);
-    dict.SetInteger(PowerHandler::kLidClosedBehaviorKey,
-                    settings.lid_closed_behavior);
-    dict.SetBoolean(PowerHandler::kLidClosedControlledKey,
+    dict.SetIntKey(PowerHandler::kLidClosedBehaviorKey,
+                   settings.lid_closed_behavior);
+    dict.SetBoolKey(PowerHandler::kLidClosedControlledKey,
                     settings.lid_closed_controlled);
-    dict.SetBoolean(PowerHandler::kHasLidKey, settings.has_lid);
+    dict.SetBoolKey(PowerHandler::kHasLidKey, settings.has_lid);
     std::string out;
     EXPECT_TRUE(base::JSONWriter::Write(dict, &out));
     return out;

@@ -66,7 +66,7 @@ std::unique_ptr<base::DictionaryValue>
     MetricsReportingHandler::CreateMetricsReportingDict() {
   std::unique_ptr<base::DictionaryValue> dict(
       std::make_unique<base::DictionaryValue>());
-  dict->SetBoolean(
+  dict->SetBoolKey(
       "enabled",
       ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -77,9 +77,9 @@ std::unique_ptr<base::DictionaryValue>
   bool managed = lacros_chrome_service &&
                  lacros_chrome_service->init_params()->ash_metrics_managed ==
                      crosapi::mojom::MetricsReportingManaged::kManaged;
-  dict->SetBoolean("managed", managed);
+  dict->SetBoolKey("managed", managed);
 #else
-  dict->SetBoolean("managed", IsMetricsReportingPolicyManaged());
+  dict->SetBoolKey("managed", IsMetricsReportingPolicyManaged());
 #endif
   return dict;
 }

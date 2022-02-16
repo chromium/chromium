@@ -267,16 +267,16 @@ void KerberosAccountsHandler::OnListAccounts(
         tgt_validity < base::Days(1) ? -1 : 0, tgt_validity);
 
     base::DictionaryValue account_dict;
-    account_dict.SetString("principalName", account.principal_name());
-    account_dict.SetString("config", account.krb5conf());
-    account_dict.SetBoolean("isSignedIn", account.tgt_validity_seconds() > 0);
-    account_dict.SetString("validForDuration", valid_for_duration);
-    account_dict.SetBoolean("isActive",
+    account_dict.SetStringKey("principalName", account.principal_name());
+    account_dict.SetStringKey("config", account.krb5conf());
+    account_dict.SetBoolKey("isSignedIn", account.tgt_validity_seconds() > 0);
+    account_dict.SetStringKey("validForDuration", valid_for_duration);
+    account_dict.SetBoolKey("isActive",
                             account.principal_name() == active_principal);
-    account_dict.SetBoolean("isManaged", account.is_managed());
-    account_dict.SetBoolean("passwordWasRemembered",
+    account_dict.SetBoolKey("isManaged", account.is_managed());
+    account_dict.SetBoolKey("passwordWasRemembered",
                             account.password_was_remembered());
-    account_dict.SetString("pic", ticket_icon);
+    account_dict.SetStringKey("pic", ticket_icon);
     accounts.Append(std::move(account_dict));
   }
 

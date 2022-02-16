@@ -196,18 +196,18 @@ void ImportDataHandler::SendBrowserProfileData(const std::string& callback_id) {
 
     std::unique_ptr<base::DictionaryValue> browser_profile(
         new base::DictionaryValue());
-    browser_profile->SetString("name", source_profile.importer_name);
-    browser_profile->SetInteger("index", i);
-    browser_profile->SetString("profileName", source_profile.profile);
-    browser_profile->SetBoolean("history",
+    browser_profile->SetStringKey("name", source_profile.importer_name);
+    browser_profile->SetIntKey("index", i);
+    browser_profile->SetStringKey("profileName", source_profile.profile);
+    browser_profile->SetBoolKey("history",
                                 (browser_services & importer::HISTORY) != 0);
-    browser_profile->SetBoolean("favorites",
+    browser_profile->SetBoolKey("favorites",
                                 (browser_services & importer::FAVORITES) != 0);
-    browser_profile->SetBoolean("passwords",
+    browser_profile->SetBoolKey("passwords",
                                 (browser_services & importer::PASSWORDS) != 0);
-    browser_profile->SetBoolean(
+    browser_profile->SetBoolKey(
         "search", (browser_services & importer::SEARCH_ENGINES) != 0);
-    browser_profile->SetBoolean(
+    browser_profile->SetBoolKey(
         "autofillFormData",
         (browser_services & importer::AUTOFILL_FORM_DATA) != 0);
 

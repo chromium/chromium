@@ -59,12 +59,11 @@ void TtsHandler::HandleGetTtsExtensions(base::Value::ConstListView args) {
       continue;
     }
     base::DictionaryValue response;
-    response.SetString("name", extension->name());
-    response.SetString("extensionId", extension_id);
+    response.SetStringKey("name", extension->name());
+    response.SetStringKey("extensionId", extension_id);
     if (extensions::OptionsPageInfo::HasOptionsPage(extension)) {
-      response.SetString(
+      response.SetStringKey(
           "optionsPage",
-
           extensions::OptionsPageInfo::GetOptionsPage(extension).spec());
     }
     responses.Append(std::move(response));
@@ -86,21 +85,21 @@ void TtsHandler::OnVoicesChanged() {
     std::string language_code;
     if (voice.lang.empty()) {
       language_code = "noLanguageCode";
-      response.SetString(
+      response.SetStringKey(
           "displayLanguage",
           l10n_util::GetStringUTF8(IDS_TEXT_TO_SPEECH_SETTINGS_NO_LANGUAGE));
     } else {
       language_code = l10n_util::GetLanguage(voice.lang);
-      response.SetString(
+      response.SetStringKey(
           "displayLanguage",
           l10n_util::GetDisplayNameForLocale(
               language_code, g_browser_process->GetApplicationLocale(), true));
     }
-    response.SetString("name", voice.name);
-    response.SetString("languageCode", language_code);
-    response.SetString("fullLanguageCode", voice.lang);
-    response.SetInteger("languageScore", language_score);
-    response.SetString("extensionId", voice.engine_id);
+    response.SetStringKey("name", voice.name);
+    response.SetStringKey("languageCode", language_code);
+    response.SetStringKey("fullLanguageCode", voice.lang);
+    response.SetIntKey("languageScore", language_score);
+    response.SetStringKey("extensionId", voice.engine_id);
     responses.Append(std::move(response));
   }
   AllowJavascript();

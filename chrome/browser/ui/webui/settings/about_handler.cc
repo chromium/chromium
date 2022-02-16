@@ -200,13 +200,13 @@ std::string ReadRegulatoryLabelText(const base::FilePath& label_dir_path) {
 std::unique_ptr<base::DictionaryValue> GetVersionInfo() {
   std::unique_ptr<base::DictionaryValue> version_info(
       new base::DictionaryValue);
-  version_info->SetString("osVersion",
-                          chromeos::version_loader::GetVersion(
-                              chromeos::version_loader::VERSION_FULL));
-  version_info->SetString("arcVersion",
-                          chromeos::version_loader::GetARCVersion());
-  version_info->SetString("osFirmware",
-                          chromeos::version_loader::GetFirmware());
+  version_info->SetStringKey("osVersion",
+                             chromeos::version_loader::GetVersion(
+                                 chromeos::version_loader::VERSION_FULL));
+  version_info->SetStringKey("arcVersion",
+                             chromeos::version_loader::GetARCVersion());
+  version_info->SetStringKey("osFirmware",
+                             chromeos::version_loader::GetFirmware());
   return version_info;
 }
 
@@ -560,15 +560,15 @@ void AboutHandler::OnGetTargetChannel(std::string callback_id,
                                       const std::string& target_channel) {
   std::unique_ptr<base::DictionaryValue> channel_info(
       new base::DictionaryValue);
-  channel_info->SetString("currentChannel", current_channel);
-  channel_info->SetString("targetChannel", target_channel);
+  channel_info->SetStringKey("currentChannel", current_channel);
+  channel_info->SetStringKey("targetChannel", target_channel);
 
   // For the LTS pilot simply check whether the device policy is set and ignore
   // its value.
   std::string value;
   bool is_lts =
       ash::CrosSettings::Get()->GetString(ash::kReleaseLtsTag, &value);
-  channel_info->SetBoolean("isLts", is_lts);
+  channel_info->SetBoolKey("isLts", is_lts);
 
   ResolveJavascriptCallback(base::Value(callback_id), *channel_info);
 }
@@ -608,7 +608,7 @@ void AboutHandler::HandleRefreshTPMFirmwareUpdateStatus(
 void AboutHandler::RefreshTPMFirmwareUpdateStatus(
     const std::set<ash::tpm_firmware_update::Mode>& modes) {
   std::unique_ptr<base::DictionaryValue> event(new base::DictionaryValue);
-  event->SetBoolean("updateAvailable", !modes.empty());
+  event->SetBoolKey("updateAvailable", !modes.empty());
   FireWebUIListener("tpm-firmware-update-status-changed", *event);
 }
 
@@ -670,20 +670,20 @@ void AboutHandler::SetUpdateStatus(VersionUpdater::Status status,
   DCHECK(status == VersionUpdater::UPDATING || progress == 0);
 
   std::unique_ptr<base::DictionaryValue> event(new base::DictionaryValue);
-  event->SetString("status", UpdateStatusToString(status));
-  event->SetString("message", message);
-  event->SetInteger("progress", progress);
-  event->SetBoolean("rollback", rollback);
-  event->SetBoolean("powerwash", powerwash);
-  event->SetString("version", version);
+  event->SetStringKey("status", UpdateStatusToString(status));
+  event->SetStringKey("message", message);
+  event->SetIntKey("progress", progress);
+  event->SetBoolKey("rollback", rollback);
+  event->SetBoolKey("powerwash", powerwash);
+  event->SetStringKey("version", version);
   // DictionaryValue does not support int64_t, so convert to string.
-  event->SetString("size", base::NumberToString(size));
+  event->SetStringKey("size", base::NumberToString(size));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (status == VersionUpdater::FAILED_OFFLINE ||
       status == VersionUpdater::FAILED_CONNECTION_TYPE_DISALLOWED) {
     std::u16string types_msg = GetAllowedConnectionTypesMessage();
     if (!types_msg.empty())
-      event->SetString("connectionTypes", types_msg);
+      event->SetStringKey("connectionTypes", types_msg);
     else
       event->Set("connectionTypes", std::make_unique<base::Value>());
   } else {
@@ -712,11 +712,11 @@ void AboutHandler::SetPromotionState(VersionUpdater::PromotionState state) {
     text = l10n_util::GetStringUTF16(IDS_ABOUT_CHROME_AUTOUPDATE_ALL_IS_ON);
 
   base::DictionaryValue promo_state;
-  promo_state.SetBoolean("hidden", hidden);
-  promo_state.SetBoolean("disabled", disabled);
-  promo_state.SetBoolean("actionable", actionable);
+  promo_state.SetBoolKey("hidden", hidden);
+  promo_state.SetBoolKey("disabled", disabled);
+  promo_state.SetBoolKey("actionable", actionable);
   if (!text.empty())
-    promo_state.SetString("text", text);
+    promo_state.SetStringKey("text", text);
 
   FireWebUIListener("promotion-state-changed", promo_state);
 }
@@ -745,13 +745,14 @@ void AboutHandler::OnRegulatoryLabelTextRead(
   std::unique_ptr<base::DictionaryValue> regulatory_info(
       new base::DictionaryValue);
   // Remove unnecessary whitespace.
-  regulatory_info->SetString("text", base::CollapseWhitespaceASCII(text, true));
+  regulatory_info->SetStringKey("text",
+                                base::CollapseWhitespaceASCII(text, true));
 
   std::string image_path =
       label_dir_path.AppendASCII(kRegulatoryLabelImageFilename).MaybeAsASCII();
   std::string url =
       std::string("chrome://") + chrome::kChromeOSAssetHost + "/" + image_path;
-  regulatory_info->SetString("url", url);
+  regulatory_info->SetStringKey("url", url);
 
   ResolveJavascriptCallback(base::Value(callback_id), *regulatory_info);
 }
