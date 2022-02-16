@@ -12,8 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace language_packs {
+namespace chromeos::language_packs {
 
 class LanguagePacksImpl : public chromeos::language::mojom::LanguagePacks {
  public:
@@ -41,7 +40,6 @@ class LanguagePacksImpl : public chromeos::language::mojom::LanguagePacks {
   mojo::Receiver<chromeos::language::mojom::LanguagePacks> receiver_{this};
 };
 
-}  // namespace language_packs
-}  // namespace chromeos
+}  // namespace chromeos::language_packs
 
 #endif  // CHROMEOS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_IMPL_H_

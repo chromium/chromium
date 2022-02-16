@@ -9,8 +9,7 @@
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace language_packs {
+namespace chromeos::language_packs {
 
 using ::chromeos::language::mojom::FeatureId;
 using ::chromeos::language::mojom::LanguagePackInfo;
@@ -107,5 +106,4 @@ void LanguagePacksImpl::InstallPack(FeatureId feature_id,
   }
 }
 
-}  // namespace language_packs
-}  // namespace chromeos
+}  // namespace chromeos::language_packs

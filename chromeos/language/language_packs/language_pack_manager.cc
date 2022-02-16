@@ -15,8 +15,7 @@
 #include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
-namespace chromeos {
-namespace language_packs {
+namespace chromeos::language_packs {
 namespace {
 
 PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
@@ -297,5 +296,4 @@ LanguagePackManager* LanguagePackManager::GetInstance() {
   return instance.get();
 }
 
-}  // namespace language_packs
-}  // namespace chromeos
+}  // namespace chromeos::language_packs
