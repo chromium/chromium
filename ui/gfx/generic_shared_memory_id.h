@@ -24,8 +24,9 @@ class GFX_EXPORT GenericSharedMemoryId {
   int id;
 
   // Invalid ID is -1 to match semantics of base::AtomicSequenceNumber.
-  GenericSharedMemoryId() : id(-1) {}
-  explicit GenericSharedMemoryId(int id) : id(id) {}
+  constexpr GenericSharedMemoryId() : id(-1) {}
+  constexpr explicit GenericSharedMemoryId(int id) : id(id) {}
+
   GenericSharedMemoryId(const GenericSharedMemoryId& other) = default;
   GenericSharedMemoryId& operator=(const GenericSharedMemoryId& other) =
       default;

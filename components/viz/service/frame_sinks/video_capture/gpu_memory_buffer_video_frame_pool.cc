@@ -52,7 +52,7 @@ GpuMemoryBufferVideoFramePool::CloneHandleForDelivery(
   DCHECK(frame.HasGpuMemoryBuffer());
 
   gfx::GpuMemoryBufferHandle handle = frame.GetGpuMemoryBuffer()->CloneHandle();
-  handle.id = gfx::GpuMemoryBufferId(-1);
+  handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
 
   return media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
       std::move(handle));

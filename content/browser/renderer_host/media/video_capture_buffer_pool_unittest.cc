@@ -286,7 +286,7 @@ namespace {
 gfx::GpuMemoryBufferHandle CreateIOSurfaceHandle() {
   gfx::GpuMemoryBufferHandle result;
   result.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  result.id.id = -1;
+  result.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   result.io_surface.reset(
       gfx::CreateIOSurface(gfx::Size(100, 100), gfx::BufferFormat::BGRA_8888));
   return result;

@@ -61,6 +61,8 @@ using DXGIHandleToken = base::TokenType<class DXGIHandleTokenTypeMarker>;
 // always consistent, particularly that the only one handle is set at the same
 // time and it corresponds to |type|.
 struct GFX_EXPORT GpuMemoryBufferHandle {
+  static constexpr GpuMemoryBufferId kInvalidId = GpuMemoryBufferId(-1);
+
   GpuMemoryBufferHandle();
 #if BUILDFLAG(IS_ANDROID)
   explicit GpuMemoryBufferHandle(
