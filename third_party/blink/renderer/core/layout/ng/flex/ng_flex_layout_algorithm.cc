@@ -928,7 +928,14 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
 #endif
   }
 
-  // TODO(almaher): Propagate row break values to the container (if applicable).
+  // For rows, the break-before of the first row and the break-after of the
+  // last row are propagated to the container.
+  if (is_horizontal_flow_ &&
+      ConstraintSpace().ShouldPropagateChildBreakValues()) {
+    DCHECK(!row_break_between_outputs.IsEmpty());
+    container_builder_.SetInitialBreakBefore(row_break_between_outputs.front());
+    container_builder_.SetPreviousBreakAfter(row_break_between_outputs.back());
+  }
 
 #if DCHECK_IS_ON()
   if (!IsResumingLayout(BreakToken()))
