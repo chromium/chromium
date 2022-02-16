@@ -219,10 +219,4 @@ const char kCryptotokenExtensionId[] = "kmendfapggjehodndflmmgagdbamhnfd";
 
 const char kCryptotokenDeprecationTrialName[] = "U2FSecurityKeyAPI";
 
-// The following two IDs are duplicated in
-// //components/app_constants/constants.h. Don't change these without changing
-// the others.
-const char kChromeAppId[] = "mgndgikekgjfcpckkfioiadnlibdjbkf";
-const char kLacrosAppId[] = "jaimifaeiicidiikhmjedcgdimealfbh";
-
 }  // namespace extension_misc

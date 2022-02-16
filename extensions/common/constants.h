@@ -380,12 +380,6 @@ EXTENSIONS_EXPORT extern const char kCryptotokenExtensionId[];
 // TODO(1224886): Delete together with CryptoToken code.
 EXTENSIONS_EXPORT extern const char kCryptotokenDeprecationTrialName[];
 
-// DEPRECATED.
-// The following two identifiers are being moved to
-// //components/app_constants/constants.[h|cc]. Please use those instead.
-EXTENSIONS_EXPORT extern const char kChromeAppId[];
-EXTENSIONS_EXPORT extern const char kLacrosAppId[];
-
 }  // namespace extension_misc
 
 #endif  // EXTENSIONS_COMMON_CONSTANTS_H_
