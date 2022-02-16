@@ -30,6 +30,10 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
+#if defined(USE_OZONE)
+#include "ui/ozone/buildflags.h"
+#endif  // defined(USE_OZONE)
+
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
@@ -266,18 +270,19 @@ class DesktopCaptureDeviceTest : public testing::Test {
   std::unique_ptr<webrtc::DesktopFrame> output_frame_;
 };
 
-// There is currently no screen capturer implementation for ozone. So disable
-// the test that uses a real screen-capturer instead of FakeScreenCapturer.
-// http://crbug.com/260318
-#if defined(USE_OZONE)
-#define MAYBE_Capture DISABLED_Capture
-#else
-#define MAYBE_Capture Capture
-#endif
-TEST_F(DesktopCaptureDeviceTest, MAYBE_Capture) {
+TEST_F(DesktopCaptureDeviceTest, Capture) {
   std::unique_ptr<webrtc::DesktopCapturer> capturer(
       webrtc::DesktopCapturer::CreateScreenCapturer(
           webrtc::DesktopCaptureOptions::CreateDefault()));
+
+#if defined(USE_OZONE)
+#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+  // webrtc::DesktopCapturer is not supported by default on Wayland.
+  if (!capturer)
+    return;
+#endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#endif  // defined(USE_OZONE)
+
   CreateScreenCaptureDevice(std::move(capturer));
 
   media::VideoCaptureFormat format;

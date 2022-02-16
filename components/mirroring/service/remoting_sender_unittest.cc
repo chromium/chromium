@@ -366,9 +366,7 @@ TEST_F(RemotingSenderTest, CancelsUnsentFrame) {
   EXPECT_TRUE(ExpectNoFramesCanceled());
 }
 
-// http://crbug.com/647423
-#define MAYBE_CancelsFramesInFlight DISABLED_CancelsFramesInFlight
-TEST_F(RemotingSenderTest, MAYBE_CancelsFramesInFlight) {
+TEST_F(RemotingSenderTest, CancelsFramesInFlight) {
   EXPECT_TRUE(IsFlowRestartPending());
 
   // Send 10 frames.
@@ -387,23 +385,21 @@ TEST_F(RemotingSenderTest, MAYBE_CancelsFramesInFlight) {
   EXPECT_TRUE(ExpectFramesCanceled(media::cast::FrameId::first(),
                                    media::cast::FrameId::first()));
 
-  // Cancel all in-flight data. This should cause the remaining 9 frames to be
-  // canceled.
+  // Despite the name, this does not actually cancel in-flight frames, as that
+  // capability was never implemented.
   CancelInFlightData();
   RunPendingTasks();
   EXPECT_TRUE(IsFlowRestartPending());
-  EXPECT_EQ(0, NumberOfFramesInFlight());
-  EXPECT_TRUE(ExpectFramesCanceled(media::cast::FrameId::first() + 1,
-                                   media::cast::FrameId::first() + 9));
+  EXPECT_EQ(9, NumberOfFramesInFlight());
 
   // Send one more frame and ack it.
   ASSERT_TRUE(ProduceDataChunk(0, 16));
   SendFrame(16);
   RunPendingTasks();
   EXPECT_FALSE(IsFlowRestartPending());
-  EXPECT_EQ(1, NumberOfFramesInFlight());
+  EXPECT_EQ(10, NumberOfFramesInFlight());
   AckOldestInFlightFrames(1);
-  EXPECT_EQ(0, NumberOfFramesInFlight());
+  EXPECT_EQ(9, NumberOfFramesInFlight());
 
   // Check that the dependency metadata was set correctly to indicate a frame
   // that immediately follows a CancelInFlightData() operation.
