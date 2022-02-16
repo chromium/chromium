@@ -296,10 +296,6 @@ AppContextMenu.prototype = {
     }
 
     chrome.send('runOnOsLogin', [app.appData.id, mode]);
-
-    // Manually update the launch type. We will only get
-    // appsPrefChangeCallback calls after changes to other NTP instances.
-    app.appData.runOnOsLoginMode = mode;
   }
 };
 

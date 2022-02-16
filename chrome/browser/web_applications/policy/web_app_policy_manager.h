@@ -14,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -85,9 +84,6 @@ class WebAppPolicyManager {
   bool IsDisabledAppsModeHidden() const;
 
   RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicy(const AppId& app_id) const;
-
-  void AddObserver(WebAppPolicyManagerObserver* observer);
-  void RemoveObserver(WebAppPolicyManagerObserver* observer);
 
   void SetOnAppsSynchronizedCompletedCallbackForTesting(
       base::OnceClosure callback);
@@ -185,8 +181,6 @@ class WebAppPolicyManager {
   base::flat_map<std::string, WebAppSetting> settings_by_url_;
   base::flat_map<GURL, CustomManifestValues> custom_manifest_values_by_url_;
   std::unique_ptr<WebAppSetting> default_settings_;
-  base::ObserverList<WebAppPolicyManagerObserver, /*check_empty=*/true>
-      observers_;
 
   ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 

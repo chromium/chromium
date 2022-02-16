@@ -594,13 +594,20 @@ void AppLauncherHandler::OnWebAppUninstalled(const web_app::AppId& app_id) {
       base::Value(!extension_id_prompting_.empty()));
 }
 
-void AppLauncherHandler::OnPolicyChanged() {
+void AppLauncherHandler::OnWebAppRunOnOsLoginModeChanged(
+    const web_app::AppId& app_id,
+    web_app::RunOnOsLoginMode run_on_os_login_mode) {
+  std::unique_ptr<base::DictionaryValue> app_info = GetWebAppInfo(app_id);
+  if (app_info)
+    CallJavascriptFunction("ntp.appAdded", *app_info);
+}
+
+void AppLauncherHandler::OnWebAppSettingsPolicyChanged() {
   HandleGetApps(nullptr);
 }
 
 void AppLauncherHandler::OnAppRegistrarDestroyed() {
   web_apps_observation_.Reset();
-  web_apps_policy_manager_observation_.Reset();
 }
 
 void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
@@ -665,6 +672,7 @@ std::unique_ptr<base::DictionaryValue> AppLauncherHandler::GetWebAppInfo(
 }
 
 void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
+  AllowJavascript();
   base::DictionaryValue dictionary;
 
   // Tell the client whether to show the promo for this view. We don't do this
@@ -719,8 +727,6 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
     install_tracker_observation_.Observe(
         extensions::InstallTracker::Get(profile));
     web_apps_observation_.Observe(&web_app_provider_->registrar());
-    web_apps_policy_manager_observation_.Observe(
-        &web_app_provider_->policy_manager());
   }
 
   has_loaded_apps_ = true;

@@ -316,8 +316,7 @@ void WebAppPolicyManager::ApplyPolicySettings() {
                                        app_id);
   }
 
-  for (WebAppPolicyManagerObserver& observer : observers_)
-    observer.OnPolicyChanged();
+  app_registrar_->NotifyWebAppSettingsPolicyChanged();
 }
 
 ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
@@ -395,15 +394,6 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   return install_options;
-}
-
-void WebAppPolicyManager::AddObserver(WebAppPolicyManagerObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void WebAppPolicyManager::RemoveObserver(
-    WebAppPolicyManagerObserver* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicy(

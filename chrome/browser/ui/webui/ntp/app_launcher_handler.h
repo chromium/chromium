@@ -19,7 +19,6 @@
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -61,7 +60,6 @@ class AppLauncherHandler
       public ExtensionEnableFlowDelegate,
       public extensions::InstallObserver,
       public web_app::AppRegistrarObserver,
-      public web_app::WebAppPolicyManagerObserver,
       public extensions::ExtensionRegistryObserver {
  public:
   AppLauncherHandler(extensions::ExtensionService* extension_service,
@@ -109,9 +107,10 @@ class AppLauncherHandler
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppUninstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
-
-  // web_app::WebAppPolicyManagerObserver
-  void OnPolicyChanged() override;
+  void OnWebAppRunOnOsLoginModeChanged(
+      const web_app::AppId& app_id,
+      web_app::RunOnOsLoginMode run_on_os_login_mode) override;
+  void OnWebAppSettingsPolicyChanged() override;
 
   // Populate the given dictionary with all installed app info.
   void FillAppDictionary(base::DictionaryValue* value);
@@ -238,10 +237,6 @@ class AppLauncherHandler
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       web_apps_observation_{this};
-
-  base::ScopedObservation<web_app::WebAppPolicyManager,
-                          web_app::WebAppPolicyManagerObserver>
-      web_apps_policy_manager_observation_{this};
 
   base::ScopedObservation<extensions::InstallTracker,
                           extensions::InstallObserver>

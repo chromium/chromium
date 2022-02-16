@@ -77,6 +77,11 @@ class AppRegistrarObserver : public base::CheckedObserver {
   virtual void OnWebAppRunOnOsLoginModeChanged(
       const AppId& app_id,
       RunOnOsLoginMode run_on_os_login_mode) {}
+
+  // Called after the WebAppSettings policy has been updated. If a policy is set
+  // this event is also fired during browser startup after the policy has been
+  // applied.
+  virtual void OnWebAppSettingsPolicyChanged() {}
 };
 
 }  // namespace web_app
