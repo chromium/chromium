@@ -42,6 +42,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
 
@@ -52,6 +53,11 @@ namespace {
 constexpr int kHorizontalPaddingDp = 24;
 constexpr int kVerticalPaddingDp = 16;
 
+// Shift the name view by 2dp so that the text is aligned with the date view.
+// The name view itself has a background, which shows on hover or focus, is not
+// aligned with the date view.
+constexpr gfx::Insets kNameExtraInsets(0, -2, 0, 0);
+
 // The preferred size of the whole DesksTemplatesItemView.
 constexpr gfx::Size kPreferredSize(220, 120);
 
@@ -61,12 +67,16 @@ constexpr int kCornerRadius = 16;
 // The margin for the delete button.
 constexpr int kDeleteButtonMargin = 8;
 
+// The distance from the bottom of the launch button to the bottom of `this`.
+constexpr int kLaunchButtonDistanceFromBottomDp = 14;
+
 // The preferred width of the container that houses the template name textfield
 // and managed status indicator and the time label.
 constexpr int kTemplateNameAndTimePreferredWidth =
     kPreferredSize.width() - kHorizontalPaddingDp * 2;
 
-constexpr int kTimeViewHeight = 20;
+// The height of the view which contains the time of the template.
+constexpr int kTimeViewHeight = 24;
 
 // The spacing between the textfield and the managed status icon.
 constexpr int kManagedStatusIndicatorSpacing = 8;
@@ -112,25 +122,19 @@ DesksTemplatesItemView::DesksTemplatesItemView(
   const bool is_admin_managed =
       desk_template_->source() == DeskTemplateSource::kPolicy;
 
-  views::BoxLayoutView* card_container;
-  views::View* spacer;
   views::Builder<DesksTemplatesItemView>(this)
       .SetPreferredSize(kPreferredSize)
       .SetUseDefaultFillLayout(true)
       .SetAccessibleName(template_name)
       .SetCallback(std::move(launch_template_callback))
       .SetBackground(views::CreateRoundedRectBackground(
-          color_provider->GetControlsLayerColor(
-              AshColorProvider::ControlsLayerType::
-                  kControlBackgroundColorInactive),
+          color_provider->GetBaseLayerColor(
+              AshColorProvider::BaseLayerType::kTransparent80),
           kCornerRadius))
       .AddChildren(
-          views::Builder<views::BoxLayoutView>()
-              .CopyAddressTo(&card_container)
-              .SetOrientation(views::BoxLayout::Orientation::kVertical)
-              .SetCrossAxisAlignment(
-                  views::BoxLayout::CrossAxisAlignment::kStart)
-              .SetInsideBorderInsets(
+          views::Builder<views::FlexLayoutView>()
+              .SetOrientation(views::LayoutOrientation::kVertical)
+              .SetInteriorMargin(
                   gfx::Insets(kVerticalPaddingDp, kHorizontalPaddingDp))
               // TODO(richui): Consider splitting some of the children into
               // different files and/or classes.
@@ -142,9 +146,11 @@ DesksTemplatesItemView::DesksTemplatesItemView(
                       .SetPreferredSize(gfx::Size(
                           kTemplateNameAndTimePreferredWidth,
                           DesksTemplatesNameView::kTemplateNameViewHeight))
+                      .SetProperty(views::kMarginsKey, kNameExtraInsets)
                       .AddChildren(
                           views::Builder<DesksTemplatesNameView>()
                               .CopyAddressTo(&name_view_)
+                              .SetController(this)
                               .SetText(template_name)
                               .SetAccessibleName(template_name)
                               .SetReadOnly(!desk_template_->IsModifiable()),
@@ -169,7 +175,13 @@ DesksTemplatesItemView::DesksTemplatesItemView(
                               : GetTimeStr(desk_template_->created_time()))
                       .SetPreferredSize(gfx::Size(
                           kTemplateNameAndTimePreferredWidth, kTimeViewHeight)),
-                  views::Builder<views::View>().CopyAddressTo(&spacer),
+                  // View which acts as a spacer, taking up all the available
+                  // space between the date and the icons container.
+                  views::Builder<views::View>().SetProperty(
+                      views::kFlexBehaviorKey,
+                      views::FlexSpecification(
+                          views::MinimumFlexSizeRule::kScaleToZero,
+                          views::MaximumFlexSizeRule::kUnbounded)),
                   views::Builder<DesksTemplatesIconContainer>()
                       .CopyAddressTo(&icon_container_view_)
                       .PopulateIconContainerFromTemplate(desk_template_.get())
@@ -193,11 +205,10 @@ DesksTemplatesItemView::DesksTemplatesItemView(
   delete_button_->SetVectorIcon(kDeleteIcon);
   delete_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON));
+  delete_button_->SetBackgroundColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
 
-  name_view_->set_controller(this);
   name_view_observation_.Observe(name_view_);
-
-  card_container->SetFlexForView(spacer, 1);
 
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/false,
@@ -291,22 +302,20 @@ void DesksTemplatesItemView::Layout() {
 
   const gfx::Size launch_button_preferred_size =
       launch_button_->CalculatePreferredSize();
-  launch_button_->SetBoundsRect(gfx::Rect(
-      {(width() - launch_button_preferred_size.width()) / 2,
-       height() - launch_button_preferred_size.height() - kVerticalPaddingDp},
-      launch_button_preferred_size));
+  launch_button_->SetBoundsRect(
+      gfx::Rect({(width() - launch_button_preferred_size.width()) / 2,
+                 height() - launch_button_preferred_size.height() -
+                     kLaunchButtonDistanceFromBottomDp},
+                launch_button_preferred_size));
 }
 
 void DesksTemplatesItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
-  const SkColor control_background_color_inactive =
-      color_provider->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  GetBackground()->SetNativeControlColor(color_provider->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80));
 
-  GetBackground()->SetNativeControlColor(control_background_color_inactive);
-
-  time_view_->SetBackgroundColor(control_background_color_inactive);
+  time_view_->SetBackgroundColor(SK_ColorTRANSPARENT);
   time_view_->SetEnabledColor(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary));
 

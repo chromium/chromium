@@ -21,7 +21,7 @@ class DesksTemplatesNameView : public DesksTextfield {
   DesksTemplatesNameView& operator=(const DesksTemplatesNameView&) = delete;
   ~DesksTemplatesNameView() override;
 
-  static constexpr int kTemplateNameViewHeight = 24;
+  static constexpr int kTemplateNameViewHeight = 20;
 
   // Commits an on-going template name change (if any) by bluring the focus away
   // from any view on `widget`, where `widget` should be the desks templates

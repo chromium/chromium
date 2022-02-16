@@ -13,6 +13,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/wm/desks/templates/desks_templates_animations.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
@@ -145,6 +146,9 @@ void DesksTemplatesGridView::PopulateGridUI(
       l10n_util::GetStringUTF16(
           IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
       PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
+  feedback_button_->SetBackgroundColor(
+      AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80));
 
   const gfx::Size previous_size = size();
 

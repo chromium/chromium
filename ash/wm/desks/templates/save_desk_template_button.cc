@@ -6,6 +6,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -22,6 +23,8 @@ SaveDeskTemplateButton::SaveDeskTemplateButton(base::RepeatingClosure callback)
                  &kSaveDeskAsTemplateIcon),
       callback_(callback) {
   SetBorder(std::make_unique<WmHighlightItemBorder>(kCornerRadius));
+  SetBackgroundColor(AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80));
 }
 
 SaveDeskTemplateButton::~SaveDeskTemplateButton() = default;
