@@ -106,7 +106,7 @@ const base::Feature kAmbientModeNewUrl{"ChromeOSAmbientModeNewUrl",
 
 // Controls whether to enable ARC account restrictions.
 const base::Feature kArcAccountRestrictions{"ArcAccountRestrictions",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable ARC ADB sideloading support.
 const base::Feature kArcAdbSideloadingFeature{
