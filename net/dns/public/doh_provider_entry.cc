@@ -26,6 +26,13 @@ std::set<IPAddress> ParseIPs(const std::set<base::StringPiece>& ip_strs) {
   return ip_addresses;
 }
 
+DnsOverHttpsServerConfig ParseValidDohTemplate(std::string server_template) {
+  auto parsed_template =
+      DnsOverHttpsServerConfig::FromString(std::move(server_template));
+  DCHECK(parsed_template.has_value());  // Template must be valid.
+  return std::move(*parsed_template);
+}
+
 }  // namespace
 
 // static
@@ -267,6 +274,8 @@ DohProviderEntry::DohProviderEntry(
       provider_id_for_histogram(std::move(provider_id_for_histogram)),
       ip_addresses(ParseIPs(ip_strs)),
       dns_over_tls_hostnames(std::move(dns_over_tls_hostnames)),
+      doh_server_config(
+          ParseValidDohTemplate(std::move(dns_over_https_template))),
       ui_name(std::move(ui_name)),
       privacy_policy(std::move(privacy_policy)),
       display_globally(display_globally),
@@ -281,11 +290,6 @@ DohProviderEntry::DohProviderEntry(
   for (const auto& display_country : this->display_countries) {
     DCHECK_EQ(2u, display_country.size());
   }
-
-  auto parsed_template =
-      DnsOverHttpsServerConfig::FromString(std::move(dns_over_https_template));
-  DCHECK(parsed_template.has_value());  // Template must be valid.
-  doh_server_config = std::move(*parsed_template);
 }
 
 }  // namespace net

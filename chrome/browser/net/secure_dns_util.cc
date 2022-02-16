@@ -142,10 +142,9 @@ void UpdateProbeHistogram(bool success) {
 
 void ApplyConfig(net::DnsConfigOverrides* overrides,
                  base::StringPiece doh_config) {
-  absl::optional<net::DnsOverHttpsConfig> parsed =
+  overrides->dns_over_https_config =
       net::DnsOverHttpsConfig::FromString(doh_config);
-  CHECK(parsed);  // `doh_config` must be valid.
-  overrides->dns_over_https_servers = parsed->servers();
+  CHECK(overrides->dns_over_https_config);  // `doh_config` must be valid.
 }
 
 }  // namespace secure_dns

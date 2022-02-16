@@ -17,10 +17,6 @@ namespace net {
 // Simple representation of a DoH server for use in configurations.
 class NET_EXPORT DnsOverHttpsServerConfig {
  public:
-  // Constructs an empty server config. This is the only constructible
-  // DnsOverHttpsServerConfig value that does not represent a valid config.
-  DnsOverHttpsServerConfig() = default;
-
   // Returns nullopt if |doh_template| is invalid.
   static absl::optional<DnsOverHttpsServerConfig> FromString(
       std::string doh_template);

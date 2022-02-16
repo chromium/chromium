@@ -127,7 +127,7 @@ class DohHttpsProtocolUpgradeBrowserTest : public content::ContentBrowserTest {
           network::NetworkService* network_service =
               network::NetworkService::GetNetworkServiceForTesting();
           ASSERT_TRUE(network_service);
-          network_service->SetTestDohServersForTesting(doh_config->servers());
+          network_service->SetTestDohConfigForTesting(doh_config.value());
           network_service->ReplaceSystemDnsConfigForTesting();
         }),
         run_loop.QuitClosure());

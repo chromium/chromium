@@ -48,7 +48,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/public/dns_config_overrides.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "net/dns/test_dns_config_service.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -406,15 +406,15 @@ void NetworkService::ReplaceSystemDnsConfigForTesting() {
   host_resolver_manager_->DisableSystemResolverForTesting();  // IN-TEST
 }
 
-void NetworkService::SetTestDohServersForTesting(
-    const std::vector<net::DnsOverHttpsServerConfig>& doh_servers) {
+void NetworkService::SetTestDohConfigForTesting(
+    const net::DnsOverHttpsConfig& doh_config) {
   DCHECK_EQ(dns_config_overrides_set_by_, FunctionTag::None);
-  dns_config_overrides_set_by_ = FunctionTag::SetTestDohServersForTesting;
+  dns_config_overrides_set_by_ = FunctionTag::SetTestDohConfigForTesting;
 
   // Overlay DoH settings on top of the system config, whenever it is received.
   net::DnsConfigOverrides overrides;
   overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
-  overrides.dns_over_https_servers = doh_servers;
+  overrides.dns_over_https_config = doh_config;
   host_resolver_manager_->SetDnsConfigOverrides(std::move(overrides));
 
   // Force-disable the system resolver so that HostResolverManager will actually
@@ -526,7 +526,7 @@ void NetworkService::CreateNetworkContext(
 void NetworkService::ConfigureStubHostResolver(
     bool insecure_dns_client_enabled,
     net::SecureDnsMode secure_dns_mode,
-    const std::vector<net::DnsOverHttpsServerConfig>& dns_over_https_servers,
+    const net::DnsOverHttpsConfig& dns_over_https_config,
     bool additional_dns_types_enabled) {
   // Enable or disable the insecure part of DnsClient. "DnsClient" is the class
   // that implements the stub resolver.
@@ -539,7 +539,7 @@ void NetworkService::ConfigureStubHostResolver(
              FunctionTag::ConfigureStubHostResolver);
   dns_config_overrides_set_by_ = FunctionTag::ConfigureStubHostResolver;
   net::DnsConfigOverrides overrides;
-  overrides.dns_over_https_servers = dns_over_https_servers;
+  overrides.dns_over_https_config = dns_over_https_config;
   overrides.secure_dns_mode = secure_dns_mode;
   overrides.allow_dns_over_https_upgrade =
       base::FeatureList::IsEnabled(features::kDnsOverHttpsUpgrade);

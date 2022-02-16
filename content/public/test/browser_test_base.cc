@@ -999,7 +999,7 @@ void BrowserTestBase::InitializeNetworkProcess() {
 
   if (test_doh_config_.has_value()) {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    network_service_test->SetTestDohServers(test_doh_config_->servers());
+    network_service_test->SetTestDohConfig(*test_doh_config_);
   }
 
   std::vector<network::mojom::RulePtr> mojo_rules;

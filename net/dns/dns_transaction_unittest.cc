@@ -41,6 +41,7 @@
 #include "net/dns/dns_socket_allocator.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -628,13 +629,14 @@ class DnsTransactionTestBase : public testing::Test {
     filter->AddHostnameInterceptor(url.scheme(), url.host(),
                                    std::make_unique<DohJobInterceptor>(this));
     CHECK_LE(num_doh_servers, 255u);
+    std::vector<string> templates;
+    templates.reserve(num_doh_servers);
     for (size_t i = 0; i < num_doh_servers; ++i) {
-      std::string server_template(URLRequestMockDohJob::GetMockHttpsUrl(
-                                      base::StringPrintf("doh_test_%zu", i)) +
-                                  (use_post ? "" : "{?dns}"));
-      config_.dns_over_https_servers.push_back(
-          *net::DnsOverHttpsServerConfig::FromString(server_template));
+      templates.push_back(URLRequestMockDohJob::GetMockHttpsUrl(
+                              base::StringPrintf("doh_test_%zu", i)) +
+                          (use_post ? "" : "{?dns}"));
     }
+    config_.doh_config = *DnsOverHttpsConfig::FromStrings(std::move(templates));
     ConfigureFactory();
 
     if (make_available) {
@@ -790,7 +792,7 @@ class DnsTransactionTestBase : public testing::Test {
         EXPECT_EQ(
             socket_factory_->remote_endpoints_[i].secure_nameserver.value(),
             session_->config()
-                .dns_over_https_servers[servers[i] - num_insecure_nameservers]);
+                .doh_config.servers()[servers[i] - num_insecure_nameservers]);
       }
     }
   }
@@ -800,7 +802,7 @@ class DnsTransactionTestBase : public testing::Test {
     // configured servers, because it won't be there and we still want
     // to handle it.
     bool server_found = request->url().path() == "/redirect-destination";
-    for (auto server : config_.dns_over_https_servers) {
+    for (auto server : config_.doh_config.servers()) {
       if (server_found)
         break;
       std::string url_base =
@@ -2410,7 +2412,7 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
   CookieCallback callback;
   request_context_->cookie_store()->GetCookieListWithOptionsAsync(
       GURL(GetURLFromTemplateWithoutParameters(
-          config_.dns_over_https_servers[0].server_template())),
+          config_.doh_config.servers()[0].server_template())),
       CookieOptions::MakeAllInclusive(), CookiePartitionKeyCollection(),
       base::BindOnce(&CookieCallback::GetCookieListCallback,
                      base::Unretained(&callback)));
@@ -2418,7 +2420,7 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
   EXPECT_EQ(0u, callback.cookie_list_size());
   callback.Reset();
   GURL cookie_url(GetURLFromTemplateWithoutParameters(
-      config_.dns_over_https_servers[0].server_template()));
+      config_.doh_config.servers()[0].server_template()));
   auto cookie = CanonicalCookie::Create(
       cookie_url, "test-cookie=you-still-fail", base::Time::Now(),
       absl::nullopt /* server_time */,

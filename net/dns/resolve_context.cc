@@ -26,7 +26,7 @@
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/url_request/url_request_context.h"
 
@@ -362,14 +362,14 @@ void ResolveContext::InvalidateCachesAndPerSessionData(
     classic_server_stats_.emplace_back(
         GetRttHistogram(initial_fallback_period_));
   }
-  for (size_t i = 0; i < new_session->config().dns_over_https_servers.size();
+  for (size_t i = 0; i < new_session->config().doh_config.servers().size();
        ++i) {
     doh_server_stats_.emplace_back(GetRttHistogram(initial_fallback_period_));
   }
 
   CHECK_EQ(new_session->config().nameservers.size(),
            classic_server_stats_.size());
-  CHECK_EQ(new_session->config().dns_over_https_servers.size(),
+  CHECK_EQ(new_session->config().doh_config.servers().size(),
            doh_server_stats_.size());
 
   NotifyDohStatusObserversOfSessionChanged();
@@ -413,7 +413,7 @@ bool ResolveContext::IsCurrentSession(const DnsSession* session) const {
   if (session == current_session_.get()) {
     CHECK_EQ(current_session_->config().nameservers.size(),
              classic_server_stats_.size());
-    CHECK_EQ(current_session_->config().dns_over_https_servers.size(),
+    CHECK_EQ(current_session_->config().doh_config.servers().size(),
              doh_server_stats_.size());
     return true;
   }
@@ -545,7 +545,7 @@ std::string ResolveContext::GetDohProviderIdForUma(size_t server_index,
 
   if (is_doh_server) {
     return GetDohProviderIdForHistogramFromServerConfig(
-        session->config().dns_over_https_servers[server_index]);
+        session->config().doh_config.servers()[server_index]);
   }
 
   return GetDohProviderIdForHistogramFromNameserver(
@@ -560,7 +560,7 @@ bool ResolveContext::GetProviderUseExtraLogging(size_t server_index,
   DohProviderEntry::List matching_entries;
   if (is_doh_server) {
     const DnsOverHttpsServerConfig& server_config =
-        session->config().dns_over_https_servers[server_index];
+        session->config().doh_config.servers()[server_index];
     matching_entries = FindDohProvidersMatchingServerConfig(server_config);
   } else {
     IPAddress server_address =

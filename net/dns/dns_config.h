@@ -13,7 +13,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_hosts.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 
 namespace base {
@@ -48,7 +48,7 @@ struct NET_EXPORT DnsConfig {
   base::Value ToValue() const;
 
   bool IsValid() const {
-    return !nameservers.empty() || !dns_over_https_servers.empty();
+    return !nameservers.empty() || !doh_config.servers().empty();
   }
 
   // List of name server addresses.
@@ -94,9 +94,8 @@ struct NET_EXPORT DnsConfig {
   // as it may cause them to return incorrect results.
   bool use_local_ipv6;
 
-  // List of servers to query over HTTPS, queried in order
-  // (https://tools.ietf.org/id/draft-ietf-doh-dns-over-https-12.txt).
-  std::vector<DnsOverHttpsServerConfig> dns_over_https_servers;
+  // DNS over HTTPS server configuration.
+  DnsOverHttpsConfig doh_config;
 
   // The default SecureDnsMode to use when resolving queries. It can be
   // overridden for individual requests (such as requests to resolve a DoH

@@ -224,14 +224,13 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run();
   }
 
-  void SetTestDohServers(
-      const std::vector<net::DnsOverHttpsServerConfig>& doh_servers,
-      SetTestDohServersCallback callback) override {
+  void SetTestDohConfig(const net::DnsOverHttpsConfig& doh_config,
+                        SetTestDohConfigCallback callback) override {
     DCHECK(test_host_resolver_)
         << "Network access for host resolutions must be disabled.";
     have_test_doh_servers_ = true;
     network::NetworkService::GetNetworkServiceForTesting()
-        ->SetTestDohServersForTesting(doh_servers);
+        ->SetTestDohConfigForTesting(doh_config);
     std::move(callback).Run();
   }
 

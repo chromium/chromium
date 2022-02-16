@@ -23,7 +23,7 @@
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_proc.h"
 #include "net/dns/public/dns_config_overrides.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/dns/public/util.h"
@@ -105,9 +105,8 @@ class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
         DnsConfigOverrides::CreateOverridingEverythingWithDefaults();
     manager_options.dns_config_overrides.secure_dns_mode =
         SecureDnsMode::kSecure;
-    manager_options.dns_config_overrides.dns_over_https_servers = {
-        *DnsOverHttpsServerConfig::FromString(
-            doh_server_.GetPostOnlyTemplate())};
+    manager_options.dns_config_overrides.dns_over_https_config =
+        *DnsOverHttpsConfig::FromString(doh_server_.GetPostOnlyTemplate());
     manager_options.dns_config_overrides.use_local_ipv6 = true;
     resolver_ = HostResolver::CreateStandaloneContextResolver(
         /*net_log=*/nullptr, manager_options);

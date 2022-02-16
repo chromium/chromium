@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NET_SECURE_DNS_UTIL_H_
 #define CHROME_BROWSER_NET_SECURE_DNS_UTIL_H_
 
-#include <string>
 #include <vector>
 
 #include "base/strings/string_piece.h"

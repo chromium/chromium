@@ -94,9 +94,9 @@ interface NetworkServiceTest {
   [Sync]
   ReplaceSystemDnsConfig() => ();
 
-  // Configure a DoH server to be used during tests.
+  // Set the DoH configuration to be used during tests.
   [Sync]
-  SetTestDohServers(array<DnsOverHttpsServer> doh_servers) => ();
+  SetTestDohConfig(DnsOverHttpsConfig doh_config) => ();
 
   // Causes the next host resolve to the given hostname to crash the process.
   CrashOnResolveHost(string host);

@@ -236,9 +236,9 @@ void DnsProbeServiceImpl::SetUpCurrentConfigRunner() {
   current_config_overrides.attempts = 1;
 
   if (current_config_secure_dns_mode_ == net::SecureDnsMode::kSecure) {
-    if (!secure_dns_config.servers().empty()) {
-      current_config_overrides.dns_over_https_servers.emplace(
-          secure_dns_config.servers());
+    if (!secure_dns_config.doh_servers().servers().empty()) {
+      current_config_overrides.dns_over_https_config =
+          secure_dns_config.doh_servers();
     }
     current_config_overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
   } else {

@@ -44,8 +44,8 @@ std::unique_ptr<base::DictionaryValue> CreateSecureDnsSettingDict() {
               true /* force_check_parental_controls_for_automatic_mode */);
 
   auto secure_dns_templates = std::make_unique<base::ListValue>();
-  for (const auto& doh_server : config.servers()) {
-    secure_dns_templates->Append(doh_server.server_template());
+  for (base::StringPiece doh_server : config.doh_servers().ToStrings()) {
+    secure_dns_templates->Append(doh_server);
   }
 
   auto dict = std::make_unique<base::DictionaryValue>();

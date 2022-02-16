@@ -618,14 +618,14 @@ void ConstructDnsHTTPAttempt(DnsSession* session,
     query = std::make_unique<DnsQuery>(*attempts->at(0)->GetQuery());
   }
 
-  DCHECK_LT(doh_server_index, session->config().dns_over_https_servers.size());
-  const DnsOverHttpsServerConfig& doh_config =
-      session->config().dns_over_https_servers[doh_server_index];
+  DCHECK_LT(doh_server_index, session->config().doh_config.servers().size());
+  const DnsOverHttpsServerConfig& doh_server =
+      session->config().doh_config.servers()[doh_server_index];
   GURL gurl_without_parameters(
-      GetURLFromTemplateWithoutParameters(doh_config.server_template()));
+      GetURLFromTemplateWithoutParameters(doh_server.server_template()));
   attempts->push_back(std::make_unique<DnsHTTPAttempt>(
-      doh_server_index, std::move(query), doh_config.server_template(),
-      gurl_without_parameters, doh_config.use_post(), url_request_context,
+      doh_server_index, std::move(query), doh_server.server_template(),
+      gurl_without_parameters, doh_server.use_post(), url_request_context,
       isolation_info, request_priority));
 }
 
@@ -913,12 +913,12 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
                           base::WeakPtr<ResolveContext> context)
       : session_(session), context_(context) {
     DCHECK(session_);
-    DCHECK(!session_->config().dns_over_https_servers.empty());
+    DCHECK(!session_->config().doh_config.servers().empty());
     DCHECK(context_);
 
     DNSDomainFromDot(kDoHProbeHostname, &formatted_probe_hostname_);
 
-    for (size_t i = 0; i < session_->config().dns_over_https_servers.size();
+    for (size_t i = 0; i < session_->config().doh_config.servers().size();
          i++) {
       probe_stats_list_.push_back(nullptr);
     }
@@ -930,9 +930,9 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
     DCHECK(session_);
     DCHECK(context_);
 
+    const auto& config = session_->config().doh_config;
     // Start probe sequences for any servers where it is not currently running.
-    for (size_t i = 0; i < session_->config().dns_over_https_servers.size();
-         i++) {
+    for (size_t i = 0; i < config.servers().size(); i++) {
       if (!probe_stats_list_[i]) {
         probe_stats_list_[i] = std::make_unique<ProbeStats>();
         ContinueProbe(i, probe_stats_list_[i]->weak_factory.GetWeakPtr(),
@@ -1254,7 +1254,7 @@ class DnsTransactionImpl : public DnsTransaction,
     if (secure_ && result.attempt) {
       size_t server_index = result.attempt->server_index();
       doh_provider_id = GetDohProviderIdForHistogramFromServerConfig(
-          session_->config().dns_over_https_servers[server_index]);
+          session_->config().doh_config.servers()[server_index]);
     }
 
     std::move(callback_).Run(this, result.rv, response, doh_provider_id);
@@ -1270,7 +1270,7 @@ class DnsTransactionImpl : public DnsTransaction,
 
     DnsConfig config = session_->config();
     if (secure_) {
-      DCHECK_GT(config.dns_over_https_servers.size(), 0u);
+      DCHECK(!config.doh_config.servers().empty());
       RecordAttemptUma(DnsAttemptType::kHttp);
       return MakeHTTPAttempt();
     }

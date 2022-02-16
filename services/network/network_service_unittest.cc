@@ -35,7 +35,7 @@
 #include "net/dns/dns_test_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_auth_scheme.h"
@@ -537,7 +537,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kOff,
-      /*dns_over_https_servers=*/{},
+      /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/true);
   EXPECT_TRUE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kOff,
@@ -545,7 +545,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kOff,
-      /*dns_over_https_servers=*/{},
+      /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/true);
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kOff,
@@ -553,7 +553,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kAutomatic,
-      /*dns_over_https_servers=*/{},
+      /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/true);
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic,
@@ -561,7 +561,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kAutomatic,
-      {{*net::DnsOverHttpsServerConfig::FromString("https://foo/")}},
+      *net::DnsOverHttpsConfig::FromString("https://foo/"),
       /*additional_dns_types_enabled=*/true);
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic,
@@ -581,24 +581,21 @@ TEST_F(NetworkServiceTest, HandlesAdditionalDnsQueryTypesEnableDisable) {
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kOff,
-      /*dns_over_https_servers=*/{},
+      /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/true);
   EXPECT_TRUE(dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns());
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kOff,
-      /*dns_over_https_servers=*/{},
+      /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/false);
   EXPECT_FALSE(dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns());
 }
 
 TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
-  const auto kServer1 =
-      *net::DnsOverHttpsServerConfig::FromString("https://foo/");
-  const auto kServer2 =
-      *net::DnsOverHttpsServerConfig::FromString("https://bar/dns-query{?dns}");
-  const auto kServer3 = *net::DnsOverHttpsServerConfig::FromString(
-      "https://grapefruit/resolver/query{?dns}");
+  const auto kConfig1 = *net::DnsOverHttpsConfig::FromString("https://foo/");
+  const auto kConfig2 = *net::DnsOverHttpsConfig::FromString(
+      "https://bar/dns-query{?dns} https://grapefruit/resolver/query{?dns}");
 
   // Create valid DnsConfig.
   net::DnsConfig config;
@@ -614,25 +611,21 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kAutomatic,
-      {{kServer1}},
+      kConfig1,
       /*additional_dns_types_enabled=*/true);
   EXPECT_TRUE(
       service()->host_resolver_manager()->GetDnsConfigAsValue().is_dict());
-  std::vector<net::DnsOverHttpsServerConfig> dns_over_https_servers =
-      dns_client_ptr->GetEffectiveConfig()->dns_over_https_servers;
-  EXPECT_THAT(dns_over_https_servers, testing::ElementsAre(kServer1));
+  EXPECT_EQ(kConfig1, dns_client_ptr->GetEffectiveConfig()->doh_config);
 
   // Enable DNS over HTTPS for two servers.
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kSecure,
-      {{kServer2, kServer3}},
+      kConfig2,
       /*additional_dns_types_enabled=*/true);
   EXPECT_TRUE(
       service()->host_resolver_manager()->GetDnsConfigAsValue().is_dict());
-  dns_over_https_servers =
-      dns_client_ptr->GetEffectiveConfig()->dns_over_https_servers;
-  EXPECT_THAT(dns_over_https_servers, testing::ElementsAre(kServer2, kServer3));
+  EXPECT_EQ(kConfig2, dns_client_ptr->GetEffectiveConfig()->doh_config);
 }
 
 TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
@@ -642,7 +635,7 @@ TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
       {{"DisabledProviders", "CleanBrowsingSecure, , Cloudflare,Unexpected"}});
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kAutomatic,
-      /*dns_over_https_servers=*/{},
+      /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/true);
 
   // Set valid DnsConfig.
@@ -675,12 +668,11 @@ TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
   service()->host_resolver_manager()->SetDnsClientForTesting(
       std::move(dns_client));
 
-  std::vector<net::DnsOverHttpsServerConfig> expected_doh_servers = {
-      *net::DnsOverHttpsServerConfig::FromString(
-          "https://doh.cleanbrowsing.org/doh/family-filter{?dns}")};
+  auto expected_doh_config = *net::DnsOverHttpsConfig::FromString(
+      "https://doh.cleanbrowsing.org/doh/family-filter{?dns}");
   EXPECT_TRUE(dns_client_ptr->GetEffectiveConfig());
-  EXPECT_EQ(expected_doh_servers,
-            dns_client_ptr->GetEffectiveConfig()->dns_over_https_servers);
+  EXPECT_EQ(expected_doh_config,
+            dns_client_ptr->GetEffectiveConfig()->doh_config);
 }
 
 TEST_F(NetworkServiceTest, DohProbe) {
@@ -691,8 +683,8 @@ TEST_F(NetworkServiceTest, DohProbe) {
 
   net::DnsConfig config;
   config.nameservers.push_back(net::IPEndPoint());
-  config.dns_over_https_servers.push_back(
-      *net::DnsOverHttpsServerConfig::FromString("https://example.com/"));
+  config.doh_config =
+      *net::DnsOverHttpsConfig::FromString("https://example.com/");
   auto dns_client = std::make_unique<net::MockDnsClient>(
       std::move(config), net::MockDnsClientRuleList());
   dns_client->set_ignore_system_config_changes(true);
@@ -714,8 +706,8 @@ TEST_F(NetworkServiceTest, DohProbe_MultipleContexts) {
 
   net::DnsConfig config;
   config.nameservers.push_back(net::IPEndPoint());
-  config.dns_over_https_servers.emplace_back(
-      *net::DnsOverHttpsServerConfig::FromString("https://example.com/"));
+  config.doh_config =
+      *net::DnsOverHttpsConfig::FromString("https://example.com/");
   auto dns_client = std::make_unique<net::MockDnsClient>(
       std::move(config), net::MockDnsClientRuleList());
   dns_client->set_ignore_system_config_changes(true);
@@ -744,8 +736,8 @@ TEST_F(NetworkServiceTest, DohProbe_MultipleContexts) {
 TEST_F(NetworkServiceTest, DohProbe_ContextAddedBeforeTimeout) {
   net::DnsConfig config;
   config.nameservers.push_back(net::IPEndPoint());
-  config.dns_over_https_servers.emplace_back(
-      *net::DnsOverHttpsServerConfig::FromString("https://example.com/"));
+  config.doh_config =
+      *net::DnsOverHttpsConfig::FromString("https://example.com/");
   auto dns_client = std::make_unique<net::MockDnsClient>(
       std::move(config), net::MockDnsClientRuleList());
   dns_client->set_ignore_system_config_changes(true);
@@ -769,8 +761,8 @@ TEST_F(NetworkServiceTest, DohProbe_ContextAddedBeforeTimeout) {
 TEST_F(NetworkServiceTest, DohProbe_ContextAddedAfterTimeout) {
   net::DnsConfig config;
   config.nameservers.push_back(net::IPEndPoint());
-  config.dns_over_https_servers.emplace_back(
-      *net::DnsOverHttpsServerConfig::FromString("https://example.com/"));
+  config.doh_config =
+      *net::DnsOverHttpsConfig::FromString("https://example.com/");
   auto dns_client = std::make_unique<net::MockDnsClient>(
       std::move(config), net::MockDnsClientRuleList());
   dns_client->set_ignore_system_config_changes(true);
@@ -799,8 +791,8 @@ TEST_F(NetworkServiceTest, DohProbe_ContextRemovedBeforeTimeout) {
 
   net::DnsConfig config;
   config.nameservers.push_back(net::IPEndPoint());
-  config.dns_over_https_servers.emplace_back(
-      *net::DnsOverHttpsServerConfig::FromString("https://example.com/"));
+  config.doh_config =
+      *net::DnsOverHttpsConfig::FromString("https://example.com/");
   auto dns_client = std::make_unique<net::MockDnsClient>(
       std::move(config), net::MockDnsClientRuleList());
   dns_client->set_ignore_system_config_changes(true);
@@ -826,8 +818,8 @@ TEST_F(NetworkServiceTest, DohProbe_ContextRemovedAfterTimeout) {
 
   net::DnsConfig config;
   config.nameservers.push_back(net::IPEndPoint());
-  config.dns_over_https_servers.emplace_back(
-      *net::DnsOverHttpsServerConfig::FromString("https://example.com/"));
+  config.doh_config =
+      *net::DnsOverHttpsConfig::FromString("https://example.com/");
   auto dns_client = std::make_unique<net::MockDnsClient>(
       std::move(config), net::MockDnsClientRuleList());
   dns_client->set_ignore_system_config_changes(true);

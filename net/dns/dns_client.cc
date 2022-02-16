@@ -20,6 +20,7 @@
 #include "net/dns/dns_socket_allocator.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/resolve_context.h"
 #include "net/log/net_log.h"
@@ -52,7 +53,7 @@ bool IsEqual(const absl::optional<DnsConfig>& c1, const DnsConfig* c2) {
 }
 
 void UpdateConfigForDohUpgrade(DnsConfig* config) {
-  bool has_doh_servers = !config->dns_over_https_servers.empty();
+  bool has_doh_servers = !config->doh_config.servers().empty();
   // Do not attempt upgrade when there are already DoH servers specified or
   // when there are aspects of the system DNS config that are unhandled.
   if (!config->unhandled_options && config->allow_dns_over_https_upgrade &&
@@ -61,9 +62,11 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
     // If we're in strict mode on Android, only attempt to upgrade the
     // specified DoT hostname.
     if (!config->dns_over_tls_hostname.empty()) {
-      config->dns_over_https_servers = GetDohUpgradeServersFromDotHostname(
-          config->dns_over_tls_hostname, config->disabled_upgrade_providers);
-      has_doh_servers = !config->dns_over_https_servers.empty();
+      config->doh_config =
+          DnsOverHttpsConfig(GetDohUpgradeServersFromDotHostname(
+              config->dns_over_tls_hostname,
+              config->disabled_upgrade_providers));
+      has_doh_servers = !config->doh_config.servers().empty();
       UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.DotUpgradeSucceeded",
                             has_doh_servers);
     } else {
@@ -77,9 +80,10 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
       UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.HasPublicInsecureNameserver",
                             !all_local);
 
-      config->dns_over_https_servers = GetDohUpgradeServersFromNameservers(
-          config->nameservers, config->disabled_upgrade_providers);
-      has_doh_servers = !config->dns_over_https_servers.empty();
+      config->doh_config =
+          DnsOverHttpsConfig(GetDohUpgradeServersFromNameservers(
+              config->nameservers, config->disabled_upgrade_providers));
+      has_doh_servers = !config->doh_config.servers().empty();
       UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded",
                             has_doh_servers);
     }
@@ -107,7 +111,7 @@ class DnsClientImpl : public DnsClient {
 
   bool CanUseSecureDnsTransactions() const override {
     const DnsConfig* config = GetEffectiveConfig();
-    return config && config->dns_over_https_servers.size() > 0;
+    return config && !config->doh_config.servers().empty();
   }
 
   bool CanUseInsecureDnsTransactions() const override {
@@ -192,7 +196,7 @@ class DnsClientImpl : public DnsClient {
     DCHECK(endpoint.IsValid());
     if (!session_)
       return absl::nullopt;
-    const auto& servers = session_->config().dns_over_https_servers;
+    const auto& servers = session_->config().doh_config.servers();
     auto it = base::ranges::find_if(servers, [&](const auto& server) {
       std::string uri;
       bool valid = uri_template::Expand(server.server_template(), {}, &uri);

@@ -372,11 +372,11 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
   }
   if (update_network_service) {
     content::GetNetworkService()->ConfigureStubHostResolver(
-        GetInsecureStubResolverEnabled(), secure_dns_mode, doh_config.servers(),
+        GetInsecureStubResolverEnabled(), secure_dns_mode, doh_config,
         additional_dns_query_types_enabled);
   }
 
-  return SecureDnsConfig(secure_dns_mode, doh_config.servers(),
+  return SecureDnsConfig(secure_dns_mode, std::move(doh_config),
                          forced_management_mode);
 }
 

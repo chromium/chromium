@@ -5,7 +5,7 @@
 #include "services/network/public/cpp/host_resolver_mojom_traits.h"
 
 #include "mojo/public/cpp/base/time_mojom_traits.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -20,9 +20,6 @@ namespace mojo {
 
 using network::mojom::DnsConfigOverrides;
 using network::mojom::DnsConfigOverridesDataView;
-using network::mojom::DnsOverHttpsServer;
-using network::mojom::DnsOverHttpsServerDataView;
-using network::mojom::DnsOverHttpsServerPtr;
 using network::mojom::DnsQueryType;
 using network::mojom::MdnsListenClient;
 using network::mojom::OptionalSecureDnsMode;
@@ -80,18 +77,18 @@ absl::optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
 }
 
 // static
-bool StructTraits<network::mojom::DnsOverHttpsServerDataView,
-                  net::DnsOverHttpsServerConfig>::
-    Read(network::mojom::DnsOverHttpsServerDataView data,
-         net::DnsOverHttpsServerConfig* out_config) {
-  std::string server_template;
-  if (!data.ReadServerTemplate(&server_template))
+bool StructTraits<network::mojom::DnsOverHttpsConfigDataView,
+                  net::DnsOverHttpsConfig>::
+    Read(network::mojom::DnsOverHttpsConfigDataView data,
+         net::DnsOverHttpsConfig* out_config) {
+  std::vector<std::string> representation;
+  if (!data.ReadServers(&representation))
     return false;
-  auto parsed =
-      net::DnsOverHttpsServerConfig::FromString(std::move(server_template));
-  if (!parsed)
+  absl::optional<net::DnsOverHttpsConfig> config =
+      net::DnsOverHttpsConfig::FromStrings(std::move(representation));
+  if (!config.has_value())
     return false;
-  *out_config = std::move(*parsed);
+  *out_config = std::move(config.value());
   return true;
 }
 
@@ -160,7 +157,7 @@ bool StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::Read(
   out->rotate = FromTristate(data.rotate());
   out->use_local_ipv6 = FromTristate(data.use_local_ipv6());
 
-  if (!data.ReadDnsOverHttpsServers(&out->dns_over_https_servers))
+  if (!data.ReadDnsOverHttpsConfig(&out->dns_over_https_config))
     return false;
 
   out->secure_dns_mode = FromOptionalSecureDnsMode(data.secure_dns_mode());

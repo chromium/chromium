@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log.h"
 #include "net/log/trace_net_log_observer.h"
@@ -106,8 +107,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // changes that occur while tests run.
   void ReplaceSystemDnsConfigForTesting();
 
-  void SetTestDohServersForTesting(
-      const std::vector<net::DnsOverHttpsServerConfig>& doh_servers);
+  void SetTestDohConfigForTesting(const net::DnsOverHttpsConfig& doh_config);
 
   // Creates a NetworkService instance on the current thread.
   static std::unique_ptr<NetworkService> Create(
@@ -148,7 +148,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void ConfigureStubHostResolver(
       bool insecure_dns_client_enabled,
       net::SecureDnsMode secure_dns_mode,
-      const std::vector<net::DnsOverHttpsServerConfig>& dns_over_https_servers,
+      const net::DnsOverHttpsConfig& dns_over_https_config,
       bool additional_dns_types_enabled) override;
   void DisableQuic() override;
   void SetUpHttpAuth(
@@ -305,7 +305,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   enum class FunctionTag : uint8_t {
     None,
     ConfigureStubHostResolver,
-    SetTestDohServersForTesting,
+    SetTestDohConfigForTesting,
   };
 
   FunctionTag dns_config_overrides_set_by_ = FunctionTag::None;

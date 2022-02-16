@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -56,7 +56,7 @@ struct NET_EXPORT DnsConfigOverrides {
   absl::optional<int> doh_attempts;
   absl::optional<bool> rotate;
   absl::optional<bool> use_local_ipv6;
-  absl::optional<std::vector<DnsOverHttpsServerConfig>> dns_over_https_servers;
+  absl::optional<DnsOverHttpsConfig> dns_over_https_config;
   absl::optional<SecureDnsMode> secure_dns_mode;
   absl::optional<bool> allow_dns_over_https_upgrade;
   absl::optional<std::vector<std::string>> disabled_upgrade_providers;

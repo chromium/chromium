@@ -638,7 +638,7 @@ MockDnsClient::~MockDnsClient() = default;
 
 bool MockDnsClient::CanUseSecureDnsTransactions() const {
   const DnsConfig* config = GetEffectiveConfig();
-  return config && config->IsValid() && !config->dns_over_https_servers.empty();
+  return config && config->IsValid() && !config->doh_config.servers().empty();
 }
 
 bool MockDnsClient::CanUseInsecureDnsTransactions() const {

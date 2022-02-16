@@ -30,6 +30,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -73,8 +74,7 @@ class ContextHostResolverTest : public ::testing::Test,
     DnsConfig config;
     config.nameservers.push_back(
         IPEndPoint(dns_ip, dns_protocol::kDefaultPort));
-    config.dns_over_https_servers.push_back(
-        *net::DnsOverHttpsServerConfig::FromString("https://example.com"));
+    config.doh_config = *DnsOverHttpsConfig::FromString("https://example.com");
     EXPECT_TRUE(config.IsValid());
 
     auto dns_client =

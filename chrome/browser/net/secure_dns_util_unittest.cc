@@ -77,8 +77,8 @@ TEST(SecureDnsUtil, ApplyDohTemplatePost) {
   net::DnsConfigOverrides overrides;
   ApplyConfig(&overrides, post_template);
 
-  EXPECT_EQ(net::DnsOverHttpsConfig::FromString(post_template)->servers(),
-            overrides.dns_over_https_servers);
+  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(post_template),
+            overrides.dns_over_https_config);
 }
 
 TEST(SecureDnsUtil, ApplyTwoDohTemplates) {
@@ -86,8 +86,8 @@ TEST(SecureDnsUtil, ApplyTwoDohTemplates) {
   net::DnsConfigOverrides overrides;
   ApplyConfig(&overrides, two_templates);
 
-  EXPECT_EQ(net::DnsOverHttpsConfig::FromString(two_templates)->servers(),
-            overrides.dns_over_https_servers);
+  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(two_templates),
+            overrides.dns_over_https_config);
 }
 
 TEST(SecureDnsUtil, ApplyDohTemplateGet) {
@@ -95,8 +95,8 @@ TEST(SecureDnsUtil, ApplyDohTemplateGet) {
   net::DnsConfigOverrides overrides;
   ApplyConfig(&overrides, get_template);
 
-  EXPECT_EQ(net::DnsOverHttpsConfig::FromString(get_template)->servers(),
-            overrides.dns_over_https_servers);
+  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(get_template),
+            overrides.dns_over_https_config);
 }
 
 net::DohProviderEntry::List GetProvidersForTesting() {
