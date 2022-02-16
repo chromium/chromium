@@ -234,8 +234,8 @@ TEST(AXNodeTest, TreeWalking) {
   EXPECT_EQ(button_3_1.id, root_node->GetDeepestLastUnignoredChild()->id());
 
   {
-    std::vector<const AXNode*> siblings;
-    for (const AXNode* sibling = tree.GetFromId(paragraph_0.id); sibling;
+    std::vector<AXNode*> siblings;
+    for (AXNode* sibling = tree.GetFromId(paragraph_0.id); sibling;
          sibling = sibling->GetNextSibling()) {
       siblings.push_back(sibling);
     }
@@ -246,8 +246,8 @@ TEST(AXNodeTest, TreeWalking) {
   }
 
   {
-    std::vector<const AXNode*> siblings;
-    for (const AXNode* sibling = tree.GetFromId(paragraph_0.id); sibling;
+    std::vector<AXNode*> siblings;
+    for (AXNode* sibling = tree.GetFromId(paragraph_0.id); sibling;
          sibling = sibling->GetNextUnignoredSibling()) {
       siblings.push_back(sibling);
     }
@@ -259,8 +259,8 @@ TEST(AXNodeTest, TreeWalking) {
   }
 
   {
-    std::vector<const AXNode*> siblings;
-    for (const AXNode* sibling = tree.GetFromId(paragraph_3_ignored.id);
+    std::vector<AXNode*> siblings;
+    for (AXNode* sibling = tree.GetFromId(paragraph_3_ignored.id);
          sibling; sibling = sibling->GetPreviousSibling()) {
       siblings.push_back(sibling);
     }
@@ -271,8 +271,8 @@ TEST(AXNodeTest, TreeWalking) {
   }
 
   {
-    std::vector<const AXNode*> siblings;
-    for (const AXNode* sibling = tree.GetFromId(button_3_1.id); sibling;
+    std::vector<AXNode*> siblings;
+    for (AXNode* sibling = tree.GetFromId(button_3_1.id); sibling;
          sibling = sibling->GetPreviousUnignoredSibling()) {
       siblings.push_back(sibling);
     }
@@ -284,7 +284,7 @@ TEST(AXNodeTest, TreeWalking) {
   }
 
   {
-    std::vector<const AXNode::AllChildIterator> siblings;
+    std::vector<AXNode::AllChildIterator> siblings;
     for (auto iter = root_node->AllChildrenBegin();
          iter != root_node->AllChildrenEnd(); ++iter) {
       siblings.push_back(iter);
@@ -296,7 +296,7 @@ TEST(AXNodeTest, TreeWalking) {
   }
 
   {
-    std::vector<const AXNode::AllChildCrossingTreeBoundaryIterator> siblings;
+    std::vector< AXNode::AllChildCrossingTreeBoundaryIterator> siblings;
     for (auto iter = root_node->AllChildrenCrossingTreeBoundaryBegin();
          iter != root_node->AllChildrenCrossingTreeBoundaryEnd(); ++iter) {
       siblings.push_back(iter);
@@ -308,7 +308,7 @@ TEST(AXNodeTest, TreeWalking) {
   }
 
   {
-    std::vector<const AXNode::UnignoredChildIterator> siblings;
+    std::vector<AXNode::UnignoredChildIterator> siblings;
     for (auto iter = root_node->UnignoredChildrenBegin();
          iter != root_node->UnignoredChildrenEnd(); ++iter) {
       siblings.push_back(iter);
@@ -321,7 +321,7 @@ TEST(AXNodeTest, TreeWalking) {
   }
 
   {
-    std::vector<const AXNode::UnignoredChildCrossingTreeBoundaryIterator>
+    std::vector<AXNode::UnignoredChildCrossingTreeBoundaryIterator>
         siblings;
     for (auto iter = root_node->UnignoredChildrenCrossingTreeBoundaryBegin();
          iter != root_node->UnignoredChildrenCrossingTreeBoundaryEnd();
