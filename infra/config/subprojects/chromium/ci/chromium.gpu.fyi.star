@@ -46,8 +46,7 @@ consoles.console_view(
         "Linux|Builder": "*type*",
         "Linux|Intel": "*type*",
         "Linux|Nvidia": "*type*",
-        "Android": ["*builder*", "L32", "M64", "N64", "P32", "R32", "S64", "skgl", "skv"],
-        "Android|M64": ["QCOM"],
+        "Android": ["Builder", "L32", "M64", "P32", "R32", "S64"],
         "Lacros": "*builder*",
     },
 )
@@ -128,7 +127,7 @@ ci.gpu.linux_builder(
     # timeout.
     execution_timeout = 8 * time.hour,
     console_view_entry = consoles.console_view_entry(
-        category = "ChromeOS|x64",
+        category = "ChromeOS|LLVM",
         short_name = "gen",
     ),
 )
@@ -136,7 +135,7 @@ ci.gpu.linux_builder(
 ci.gpu.linux_builder(
     name = "gpu-fyi-chromeos-jacuzzi-exp",
     console_view_entry = consoles.console_view_entry(
-        category = "ChromeOS|arm",
+        category = "ChromeOS|ARM",
         short_name = "jcz",
     ),
     list_view = "chromium.gpu.experimental",
@@ -145,9 +144,18 @@ ci.gpu.linux_builder(
 ci.gpu.linux_builder(
     name = "ChromeOS FYI Release (kevin)",
     console_view_entry = consoles.console_view_entry(
-        category = "ChromeOS|arm",
+        category = "ChromeOS|ARM",
         short_name = "kvn",
     ),
+)
+
+ci.gpu.linux_builder(
+    name = "gpu-fyi-chromeos-octopus-exp",
+    console_view_entry = consoles.console_view_entry(
+        category = "ChromeOS|Intel",
+        short_name = "oct",
+    ),
+    list_view = "chromium.gpu.experimental",
 )
 
 ci.gpu.linux_builder(

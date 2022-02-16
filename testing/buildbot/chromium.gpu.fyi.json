@@ -30466,5 +30466,48 @@
         }
       }
     ]
+  },
+  "gpu-fyi-chromeos-octopus-exp": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "noop_sleep",
+          "--show-stdout",
+          "--browser=cros-chrome",
+          "--passthrough",
+          "-v",
+          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc",
+          "--remote=variable_chromeos_device_hostname"
+        ],
+        "isolate_name": "telemetry_gpu_integration_test",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "noop_sleep_tests",
+        "should_retry_with_patch": false,
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "containment_type": "AUTO",
+          "dimension_sets": [
+            {
+              "device_type": "octopus",
+              "os": "ChromeOS",
+              "pool": "chromium.tests.gpu.experimental"
+            }
+          ],
+          "expiration": 21600,
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "trigger_script": {
+          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
+        }
+      }
+    ]
   }
 }

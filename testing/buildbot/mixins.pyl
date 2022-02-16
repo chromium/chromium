@@ -316,6 +316,14 @@
       },
     },
   },
+  'chromeos-octopus': {
+    'swarming': {
+      'dimensions': {
+        'os': 'ChromeOS',
+        'device_type': 'octopus',
+      },
+    },
+  },
   'chromium-tester-dev-service-account': {
     'swarming': {
       'service_account': 'chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com',

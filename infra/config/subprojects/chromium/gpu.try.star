@@ -118,6 +118,11 @@ gpu_chromeos_builder(
     pool = "luci.chromium.gpu.chromeos.kevin.try",
 )
 
+gpu_chromeos_builder(
+    name = "gpu-fyi-try-chromeos-octopus-exp",
+    pool = "luci.chromium.gpu.chromeos.octopus.try",
+)
+
 def gpu_linux_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
