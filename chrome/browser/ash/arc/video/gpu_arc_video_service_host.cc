@@ -61,6 +61,47 @@ class GpuArcVideoKeyedServiceFactory
   ~GpuArcVideoKeyedServiceFactory() override = default;
 };
 
+class FailingVideoDecodeAccelerator : public mojom::VideoDecodeAccelerator {
+ public:
+  FailingVideoDecodeAccelerator() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  }
+
+  FailingVideoDecodeAccelerator(const FailingVideoDecodeAccelerator&) = delete;
+  FailingVideoDecodeAccelerator& operator=(
+      const FailingVideoDecodeAccelerator&) = delete;
+
+  ~FailingVideoDecodeAccelerator() override = default;
+
+  // mojom::VideoDecodeAccelerator implementation.
+  void Initialize(mojom::VideoDecodeAcceleratorConfigPtr config,
+                  mojo::PendingRemote<mojom::VideoDecodeClient> client,
+                  InitializeCallback callback) override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    // The CTS tests would fail if we just drop |client|.
+    clients_.Add(std::move(client));
+    std::move(callback).Run(
+        mojom::VideoDecodeAccelerator::Result::INSUFFICIENT_RESOURCES);
+  }
+  void Decode(mojom::BitstreamBufferPtr bitstream_buffer) override {
+    NOTREACHED();
+  }
+  void AssignPictureBuffers(uint32_t count) override { NOTREACHED(); }
+  void ImportBufferForPicture(int32_t picture_buffer_id,
+                              mojom::HalPixelFormat format,
+                              mojo::ScopedHandle handle,
+                              std::vector<VideoFramePlane> planes,
+                              mojom::BufferModifierPtr modifier) override {
+    NOTREACHED();
+  }
+  void ReusePictureBuffer(int32_t picture_buffer_id) override { NOTREACHED(); }
+  void Flush(FlushCallback callback) override { NOTREACHED(); }
+  void Reset(ResetCallback callback) override { NOTREACHED(); }
+
+ private:
+  mojo::RemoteSet<mojom::VideoDecodeClient> clients_;
+};
+
 class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
  public:
   VideoAcceleratorFactoryService() {
@@ -158,6 +199,20 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
         LOG(WARNING)
             << "Reached the maximum number of video decoder processes for ARC ("
             << kMaxArcVideoDecoderProcesses << ")";
+
+        // Workaround: a FailingVideoDecodeAccelerator is used in place of an
+        // actual VideoDecodeAccelerator whenever the client has reached the
+        // maximum number of video decoders. We need this instead of just
+        // dropping the incoming |receiver| because some ARC++ CTS tests would
+        // fail otherwise. It's unclear if this is expected behavior (see
+        // b/217133005 and b/219602580). Note that we still limit the number of
+        // FailingVideoDecodeAccelerators to prevent abuse.
+        constexpr size_t kMaxFailingVideoDecodeAccelerators = 2u;
+        if (failing_video_decode_accelerator_receivers_.size() <
+            kMaxFailingVideoDecodeAccelerators) {
+          failing_video_decode_accelerator_receivers_.Add(
+              &failing_video_decode_accelerator_, std::move(receiver));
+        }
         return;
       }
       mojo::Remote<mojom::VideoAcceleratorFactory> oop_video_factory;
@@ -182,6 +237,9 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
     content::BindInterfaceInGpuProcess(std::move(receiver));
   }
 
+  FailingVideoDecodeAccelerator failing_video_decode_accelerator_;
+  mojo::ReceiverSet<mojom::VideoDecodeAccelerator>
+      failing_video_decode_accelerator_receivers_;
   mojo::RemoteSet<mojom::VideoAcceleratorFactory> oop_video_factories_;
 };
 
