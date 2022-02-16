@@ -662,8 +662,7 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Background installations are not a user-triggered installs, and thus
   // cannot be sent to the store.
-  if (base::FeatureList::IsEnabled(features::kApkWebAppInstalls) &&
-      for_installable_site == ForInstallableSite::kYes &&
+  if (for_installable_site == ForInstallableSite::kYes &&
       !background_installation_ && opt_manifest) {
     for (const auto& application : opt_manifest->related_applications) {
       std::string id =

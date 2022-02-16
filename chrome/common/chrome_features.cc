@@ -58,12 +58,6 @@ const base::Feature kAnonymousUpdateChecks{"AnonymousUpdateChecks",
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Controls whether web apps can be installed via APKs on Chrome OS.
-const base::Feature kApkWebAppInstalls{"ApkWebAppInstalls",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kAppDiscoveryForOobe{"AppDiscoveryForOobe",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 #endif

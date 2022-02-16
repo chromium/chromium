@@ -11,7 +11,6 @@
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -24,7 +23,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -297,9 +295,6 @@ void ApkWebAppService::Shutdown() {
 
 void ApkWebAppService::OnPackageInstalled(
     const arc::mojom::ArcPackageInfo& package_info) {
-  if (!base::FeatureList::IsEnabled(features::kApkWebAppInstalls))
-    return;
-
   // Automatically generated WebAPKs have their lifecycle managed by
   // WebApkManager and do not need to be considered here.
   if (base::StartsWith(package_info.package_name,
@@ -385,9 +380,6 @@ void ApkWebAppService::OnPackageRemoved(const std::string& package_name,
   // will trigger the uninstallation of the web app. Similarly, this method
   // removes the associated web_app_id before triggering uninstallation, so
   // OnWebAppWillBeUninstalled() will do nothing.
-  if (!base::FeatureList::IsEnabled(features::kApkWebAppInstalls))
-    return;
-
   DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
                                         kWebAppToApkDictPref);
 
@@ -413,9 +405,6 @@ void ApkWebAppService::OnPackageRemoved(const std::string& package_name,
 }
 
 void ApkWebAppService::OnPackageListInitialRefreshed() {
-  if (!base::FeatureList::IsEnabled(features::kApkWebAppInstalls))
-    return;
-
   // Scan through the list of apps to see if any were uninstalled while ARC
   // wasn't running.
   DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
@@ -482,9 +471,6 @@ void ApkWebAppService::OnAppRegistryCacheWillBeDestroyed(
 
 void ApkWebAppService::MaybeRemoveArcPackageForWebApp(
     const web_app::AppId& web_app_id) {
-  if (!base::FeatureList::IsEnabled(features::kApkWebAppInstalls))
-    return;
-
   DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
                                         kWebAppToApkDictPref);
 
