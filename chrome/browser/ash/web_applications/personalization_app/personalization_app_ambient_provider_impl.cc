@@ -30,6 +30,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -146,7 +147,43 @@ void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
 }
 
 void PersonalizationAppAmbientProviderImpl::OnAlbumsChanged() {
-  NOTIMPLEMENTED();
+  if (!ambient_observer_remote_.is_bound())
+    return;
+
+  std::vector<ash::personalization_app::mojom::AmbientModeAlbumPtr> albums;
+  // Google photos:
+  for (const auto& personal_album : personal_albums_.albums) {
+    // `url` will be updated when preview image is downloaded.
+    ash::personalization_app::mojom::AmbientModeAlbumPtr album =
+        ash::personalization_app::mojom::AmbientModeAlbum::New();
+    album->id = personal_album.album_id;
+    album->checked = personal_album.selected;
+    album->title = personal_album.album_name;
+    album->description = personal_album.description;
+    album->number_of_photos = personal_album.number_of_photos;
+    album->url = GURL(personal_album.banner_image_url);
+    album->topic_source = ash::AmbientModeTopicSource::kGooglePhotos;
+    albums.emplace_back(std::move(album));
+  }
+
+  // Art gallery:
+  for (const auto& setting : settings_->art_settings) {
+    if (!setting.visible)
+      continue;
+
+    // `url` will be updated when preview image is downloaded.
+    ash::personalization_app::mojom::AmbientModeAlbumPtr album =
+        ash::personalization_app::mojom::AmbientModeAlbum::New();
+    album->id = setting.album_id;
+    album->checked = setting.enabled;
+    album->title = setting.title;
+    album->description = setting.description;
+    album->url = GURL(setting.preview_image_url);
+    album->topic_source = ash::AmbientModeTopicSource::kArtGallery;
+    albums.emplace_back(std::move(album));
+  }
+
+  ambient_observer_remote_->OnAlbumsChanged(std::move(albums));
 }
 
 void PersonalizationAppAmbientProviderImpl::OnAlbumPreviewChanged(
@@ -301,8 +338,12 @@ void PersonalizationAppAmbientProviderImpl::OnSettingsAndAlbumsFetched(
   DownloadAlbumPreviewImage();
 
   OnTemperatureUnitChanged();
-  OnTopicSourceChanged();
+
+  // Notify `OnAlbumsChanged()` first because the albums info is needed to
+  // render the description text of the topic source buttons. E.g. if the Google
+  // Photos album is empty, it will show different text.
   OnAlbumsChanged();
+  OnTopicSourceChanged();
 
   // If weather info is disabled, call `UpdateSettings()` immediately to force
   // it to true.

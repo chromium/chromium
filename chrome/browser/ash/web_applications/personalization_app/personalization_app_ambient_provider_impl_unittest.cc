@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_ambient_provider_impl.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/constants/ash_features.h"
@@ -29,6 +30,57 @@
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@example.com";
+
+class TestAmbientObserver
+    : public ash::personalization_app::mojom::AmbientObserver {
+ public:
+  void OnAmbientModeEnabledChanged(bool ambient_mode_enabled) override {
+    ambient_mode_enabled_ = ambient_mode_enabled;
+  }
+
+  void OnTopicSourceChanged(ash::AmbientModeTopicSource topic_source) override {
+    topic_source_ = topic_source;
+  }
+
+  void OnAlbumsChanged(
+      std::vector<ash::personalization_app::mojom::AmbientModeAlbumPtr> albums)
+      override {
+    albums_ = std::move(albums);
+  }
+
+  mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
+  pending_remote() {
+    if (ambient_observer_receiver_.is_bound()) {
+      ambient_observer_receiver_.reset();
+    }
+
+    return ambient_observer_receiver_.BindNewPipeAndPassRemote();
+  }
+
+  bool is_ambient_mode_enabled() {
+    ambient_observer_receiver_.FlushForTesting();
+    return ambient_mode_enabled_;
+  }
+
+  ash::AmbientModeTopicSource topic_source() {
+    ambient_observer_receiver_.FlushForTesting();
+    return topic_source_;
+  }
+
+  std::vector<ash::personalization_app::mojom::AmbientModeAlbumPtr> albums() {
+    ambient_observer_receiver_.FlushForTesting();
+    return std::move(albums_);
+  }
+
+ private:
+  mojo::Receiver<ash::personalization_app::mojom::AmbientObserver>
+      ambient_observer_receiver_{this};
+
+  bool ambient_mode_enabled_ = false;
+  ash::AmbientModeTopicSource topic_source_ =
+      ash::AmbientModeTopicSource::kArtGallery;
+  std::vector<ash::personalization_app::mojom::AmbientModeAlbumPtr> albums_;
+};
 
 }  // namespace
 
@@ -76,6 +128,27 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
   }
 
   content::TestWebUI* web_ui() { return &web_ui_; }
+
+  void SetAmbientObserver() {
+    ambient_provider_remote_->SetAmbientObserver(
+        test_ambient_observer_.pending_remote());
+  }
+
+  bool ObservedAmbientModeEnabled() {
+    ambient_provider_remote_.FlushForTesting();
+    return test_ambient_observer_.is_ambient_mode_enabled();
+  }
+
+  ash::AmbientModeTopicSource ObservedTopicSource() {
+    ambient_provider_remote_.FlushForTesting();
+    return test_ambient_observer_.topic_source();
+  }
+
+  std::vector<ash::personalization_app::mojom::AmbientModeAlbumPtr>
+  ObservedAlbums() {
+    ambient_provider_remote_.FlushForTesting();
+    return test_ambient_observer_.albums();
+  }
 
   absl::optional<ash::AmbientSettings>& settings() {
     return ambient_provider_->settings_;
@@ -163,6 +236,7 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
   mojo::Remote<ash::personalization_app::mojom::AmbientProvider>
       ambient_provider_remote_;
   std::unique_ptr<PersonalizationAppAmbientProviderImpl> ambient_provider_;
+  TestAmbientObserver test_ambient_observer_;
 
   std::unique_ptr<ash::AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<ash::FakeAmbientBackendControllerImpl>
@@ -208,6 +282,44 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, SetAmbientModeEnabled) {
   ambient_provider_remote().FlushForTesting();
   EXPECT_FALSE(
       pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled));
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       ShouldCallOnAmbientModeEnabledChanged) {
+  PrefService* pref_service = profile()->GetPrefs();
+  EXPECT_TRUE(pref_service);
+  pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, false);
+  SetAmbientObserver();
+  ambient_provider_remote().FlushForTesting();
+  EXPECT_FALSE(ObservedAmbientModeEnabled());
+
+  pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, true);
+  SetAmbientObserver();
+  ambient_provider_remote().FlushForTesting();
+  EXPECT_TRUE(ObservedAmbientModeEnabled());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       ShouldCallOnTopicSourceChanged) {
+  // Will fetch settings when observer is set.
+  SetAmbientObserver();
+  ambient_provider_remote().FlushForTesting();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, ObservedTopicSource());
+
+  SetTopicSource(ash::AmbientModeTopicSource::kArtGallery);
+  EXPECT_EQ(ash::AmbientModeTopicSource::kArtGallery, ObservedTopicSource());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest, ShouldCallOnAlbumsChanged) {
+  // Will fetch settings when observer is set.
+  SetAmbientObserver();
+  ambient_provider_remote().FlushForTesting();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  auto albums = ObservedAlbums();
+  // The fake albums are set in FakeAmbientBackendControllerImpl. Hidden setting
+  // will be sent to JS side.
+  EXPECT_EQ(4, albums.size());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, SetTopicSource) {
