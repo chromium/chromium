@@ -66,7 +66,8 @@ class CalendarEventFetch {
   CalendarEventFetch(base::Time start_of_month,
                      FetchCompleteCallback complete_callback)
       : start_of_month_(start_of_month),
-        complete_callback_(std::move(complete_callback)) {
+        complete_callback_(std::move(complete_callback)),
+        fetch_start_time_(base::Time::Now()) {
     CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
     DCHECK(client);
 
@@ -85,9 +86,11 @@ class CalendarEventFetch {
   void OnResultReceived(
       google_apis::ApiErrorCode error,
       std::unique_ptr<google_apis::calendar::EventList> events) {
-    // IMPORTANT: 'this' is NOT safe to use after complete_callback_ has been
-    // executed, as the last thing it does is destroy its
-    // std::unique_ptr<CalendarEventFetch> to this object.
+    base::UmaHistogramTimes("Ash.Calendar.FetchEvents.FetchDuration",
+                            base::Time::Now() - fetch_start_time_);
+
+    // IMPORTANT: 'this' is NOT safe to use after `complete_callback_` has been
+    // executed, as the last thing it does is destroy `this`.
     std::move(complete_callback_).Run(start_of_month_, error, events.get());
   }
 
@@ -96,6 +99,8 @@ class CalendarEventFetch {
 
   // Callback invoked when the fetch is complete.
   FetchCompleteCallback complete_callback_;
+
+  const base::Time fetch_start_time_;
 
   base::WeakPtrFactory<CalendarEventFetch> weak_factory_{this};
 };
@@ -144,8 +149,10 @@ void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
     return;
 
   // No need to fetch.
-  if (IsMonthAlreadyFetched(start_of_month))
+  if (IsMonthAlreadyFetched(start_of_month)) {
+    base::UmaHistogramCounts100("Ash.Calendar.FetchEvents.PreFetched", 1);
     return;
+  }
 
   // Erase any outstanding fetch for this month.
   pending_fetches_.erase(start_of_month);
@@ -230,6 +237,8 @@ void CalendarModel::OnEventsFetched(
   base::UmaHistogramSparse("Ash.Calendar.FetchEvents.Result", error);
   if (error != google_apis::HTTP_SUCCESS) {
     LOG(ERROR) << __FUNCTION__ << " Event fetch received error: " << error;
+    // Request is no longer outstanding, so it can be destroyed.
+    pending_fetches_.erase(start_of_month);
     return;
   }
 
