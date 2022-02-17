@@ -555,23 +555,36 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
     }
   }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+      GetGpuRasterizationFeatureStatus(blocklisted_features, *command_line,
+                                       use_swift_shader);
+#else
   // TODO(penghuang): call GetGpuRasterizationFeatureStatus() with
   // |use_swift_shader|.
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
       GetGpuRasterizationFeatureStatus(blocklisted_features, *command_line,
                                        /*use_swift_shader=*/false);
+#endif
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] =
       GetWebGLFeatureStatus(blocklisted_features, use_swift_shader);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       GetWebGL2FeatureStatus(blocklisted_features, use_swift_shader);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] =
       Get2DCanvasFeatureStatus(blocklisted_features, use_swift_shader);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
+      GetCanvasOopRasterizationFeatureStatus(blocklisted_features,
+                                             *command_line, gpu_preferences,
+                                             use_swift_shader);
+#else
   // TODO(penghuang): call GetCanvasOopRasterizationFeatureStatus with
   // |use_swift_shader|.
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
       GetCanvasOopRasterizationFeatureStatus(blocklisted_features,
                                              *command_line, gpu_preferences,
                                              /*use_swift_shader=*/false);
+#endif
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =
       GetAcceleratedVideoDecodeFeatureStatus(blocklisted_features,
                                              use_swift_shader);
