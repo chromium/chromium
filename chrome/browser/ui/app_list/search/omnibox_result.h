@@ -27,6 +27,7 @@ class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
                 AppListControllerDelegate* list_controller,
                 AutocompleteController* autocomplete_controller,
                 FaviconCache* favicon_cache,
+                const AutocompleteInput& input,
                 const AutocompleteMatch& match,
                 bool is_zero_suggestion);
   ~OmniboxResult() override;

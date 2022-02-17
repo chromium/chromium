@@ -118,6 +118,7 @@ OmniboxResult::OmniboxResult(Profile* profile,
                              AppListControllerDelegate* list_controller,
                              AutocompleteController* autocomplete_controller,
                              FaviconCache* favicon_cache,
+                             const AutocompleteInput& input,
                              const AutocompleteMatch& match,
                              bool is_zero_suggestion)
     : profile_(profile),
@@ -133,6 +134,12 @@ OmniboxResult::OmniboxResult(Profile* profile,
   SetDisplayType(DisplayType::kList);
   SetResultType(ResultType::kOmnibox);
   SetMetricsType(GetSearchResultType());
+
+  if (match_.stripped_destination_url.spec().empty()) {
+    match_.ComputeStrippedDestinationURL(
+        input, autocomplete_controller_->autocomplete_provider_client()
+                   ->GetTemplateURLService());
+  }
   set_id(match_.stripped_destination_url.spec());
 
   // Omnibox results are categorized as Search and Assistant if they are search

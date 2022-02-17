@@ -114,21 +114,21 @@ void OmniboxProvider::Start(const std::u16string& query) {
   // The new page classification value(CHROMEOS_APP_LIST) is introduced
   // to differentiate the suggest requests initiated by ChromeOS app_list from
   // the ones by Chrome omnibox.
-  AutocompleteInput input =
+  input_ =
       AutocompleteInput(query, metrics::OmniboxEventProto::CHROMEOS_APP_LIST,
                         ChromeAutocompleteSchemeClassifier(profile_));
 
   // Sets the |from_omnibox_focus| flag to enable ZeroSuggestProvider to process
   // the requests from app_list.
-  if (input.text().empty()) {
-    input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  if (input_.text().empty()) {
+    input_.set_focus_type(OmniboxFocusType::ON_FOCUS);
     is_zero_state_input_ = true;
   } else {
     is_zero_state_input_ = false;
   }
 
   query_start_time_ = base::TimeTicks::Now();
-  controller_->Start(input);
+  controller_->Start(input_);
 }
 
 void OmniboxProvider::StartZeroState() {
@@ -174,8 +174,8 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
           match));
     } else {
       list_results.emplace_back(std::make_unique<OmniboxResult>(
-          profile_, list_controller_, controller_.get(), &favicon_cache_, match,
-          is_zero_state_input_));
+          profile_, list_controller_, controller_.get(), &favicon_cache_,
+          input_, match, is_zero_state_input_));
     }
   }
 

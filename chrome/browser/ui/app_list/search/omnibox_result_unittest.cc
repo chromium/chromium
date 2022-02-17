@@ -63,14 +63,15 @@ class OmniboxResultTest : public AppListTestBase {
     match.search_terms_args->original_query = base::UTF8ToUTF16(original_query);
     match.relevance = relevance;
     match.destination_url = GURL(destination_url);
+    match.stripped_destination_url = match.destination_url;
     match.contents = base::UTF8ToUTF16(contents);
     match.description = base::UTF8ToUTF16(description);
     match.type = type;
     match.keyword = base::UTF8ToUTF16(keyword);
 
-    return std::make_unique<OmniboxResult>(profile_.get(),
-                                           app_list_controller_delegate_.get(),
-                                           nullptr, nullptr, match, false);
+    return std::make_unique<OmniboxResult>(
+        profile_.get(), app_list_controller_delegate_.get(), nullptr, nullptr,
+        input_, match, false);
   }
 
   const GURL& GetLastOpenedUrl() const {
@@ -80,6 +81,7 @@ class OmniboxResultTest : public AppListTestBase {
  private:
   std::unique_ptr<::test::TestAppListControllerDelegate>
       app_list_controller_delegate_;
+  AutocompleteInput input_;
 };
 
 TEST_F(OmniboxResultTest, Basic) {

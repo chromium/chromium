@@ -53,6 +53,7 @@ class OmniboxProvider : public SearchProvider,
   AppListControllerDelegate* list_controller_;
   absl::optional<chromeos::string_matching::TokenizedString> last_query_;
   base::TimeTicks query_start_time_;
+  AutocompleteInput input_;
 
   // The omnibox AutocompleteController that collects/sorts/dup-
   // eliminates the results as they come in.
