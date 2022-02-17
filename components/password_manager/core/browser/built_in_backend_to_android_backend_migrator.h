@@ -85,6 +85,13 @@ class BuiltInBackendToAndroidBackendMigrator {
                               const PasswordForm& form,
                               base::OnceClosure callback);
 
+  // If |changelist| is an empty changelist, migration is aborted by calling
+  // MigrationFinished() indicating the migration is *not* successful.
+  // Otherwise, |callback| is invoked.
+  void RunCallbackOrAbortMigration(
+      base::OnceClosure callback,
+      absl::optional<PasswordStoreChangeList> changelist);
+
   // Reports metrics and deletes |metrics_reporter_|
   void MigrationFinished(bool is_success);
 

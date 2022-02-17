@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -357,8 +356,11 @@ void BuiltInBackendToAndroidBackendMigrator::AddLoginToBackend(
     PasswordStoreBackend* backend,
     const PasswordForm& form,
     base::OnceClosure callback) {
-  backend->AddLoginAsync(form,
-                         IgnoreChangeListAndRunCallback(std::move(callback)));
+  backend->AddLoginAsync(
+      form,
+      base::BindOnce(
+          &BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend(
@@ -366,7 +368,10 @@ void BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend(
     const PasswordForm& form,
     base::OnceClosure callback) {
   backend->UpdateLoginAsync(
-      form, IgnoreChangeListAndRunCallback(std::move(callback)));
+      form,
+      base::BindOnce(
+          &BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BuiltInBackendToAndroidBackendMigrator::RemoveLoginFromBackend(
@@ -374,7 +379,22 @@ void BuiltInBackendToAndroidBackendMigrator::RemoveLoginFromBackend(
     const PasswordForm& form,
     base::OnceClosure callback) {
   backend->RemoveLoginAsync(
-      form, IgnoreChangeListAndRunCallback(std::move(callback)));
+      form,
+      base::BindOnce(
+          &BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration(
+    base::OnceClosure callback,
+    absl::optional<PasswordStoreChangeList> changelist) {
+  if (!changelist.has_value() || !changelist.value().empty()) {
+    // The step was successful, continue the migration.
+    std::move(callback).Run();
+    return;
+  }
+  // Migration failed.
+  MigrationFinished(/*is_success=*/false);
 }
 
 void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
