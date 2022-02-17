@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
                        CheckRunOnOsLoginModeOnPolicyAppWorks) {
   helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
-  helper_.CheckPlatformShortcutNotExists("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
   helper_.EnableRunOnOSLoginMode("SiteA");
   helper_.CheckRunOnOSLoginModeEnabled("SiteA");
   helper_.DisableRunOnOSLoginMode("SiteA");
