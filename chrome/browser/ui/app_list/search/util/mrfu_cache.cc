@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 
 namespace app_list {
@@ -206,7 +207,7 @@ void MrfuCache::Decay(Score* score) {
 }
 
 void MrfuCache::MaybeCleanup() {
-  if (proto_->items_size() < 2u * max_items_)
+  if (base::checked_cast<size_t>(proto_->items_size()) < 2u * max_items_)
     return;
 
   // Ensure all scores are up to date, and then keep all those over the

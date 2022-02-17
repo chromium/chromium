@@ -126,7 +126,7 @@ TextVector KeyboardShortcutResult::CreateTextVectorFromTemplateString(
       continue;
     }
 
-    const int index = piece[0] - '1';
+    const size_t index = static_cast<size_t>(piece[0] - '1');
     if (index >= replacement_strings.size()) {
       DLOG(ERROR) << "Placeholder $" << index
                   << " number exceeds number of replacement components.";

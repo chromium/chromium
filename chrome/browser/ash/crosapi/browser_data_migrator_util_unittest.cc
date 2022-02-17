@@ -407,7 +407,7 @@ TEST_F(BrowserDataMigratorUtilWithTargetsTest, GetTargetItems) {
             TargetItemComparator());
   EXPECT_EQ(deletable_items.total_size, kTextFileSize * 2);
   ASSERT_EQ(deletable_items.items.size(), expected_deletable_items.size());
-  for (int i = 0; i < deletable_items.items.size(); i++) {
+  for (size_t i = 0; i < deletable_items.items.size(); i++) {
     SCOPED_TRACE(deletable_items.items[i].path.value());
     EXPECT_EQ(deletable_items.items[i], expected_deletable_items[i]);
   }

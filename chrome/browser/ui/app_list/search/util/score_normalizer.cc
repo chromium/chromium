@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 #include "base/logging.h"
 
@@ -148,9 +149,9 @@ void ScoreNormalizer::Update(const std::string& name, double score) {
 
   // Select a contiguous pair of bins as candidates to merge. For simplicity, we
   // don't allow the merge to overlap with the split.
-  size_t merge_index = -1;
+  size_t merge_index = std::numeric_limits<size_t>::max();
   double merge_l_count = INFINITY, merge_r_count = INFINITY;
-  for (size_t i = 0; i < bins.size() - 1; ++i) {
+  for (size_t i = 0; i + 1 < static_cast<size_t>(bins.size()); ++i) {
     if (i == split_index - 1 || i == split_index)
       continue;
     double l_count = bins[i].count();
@@ -163,7 +164,7 @@ void ScoreNormalizer::Update(const std::string& name, double score) {
   }
 
   // If we don't have enough bins to perform a merge, early exit.
-  if (merge_index == -1) {
+  if (merge_index == std::numeric_limits<size_t>::max()) {
     proto_.QueueWrite();
     return;
   }

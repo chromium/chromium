@@ -512,7 +512,7 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
     return RespondNow(Error("Invalid audio buffer format."));
 
   // Interpret the audio buffer as a sequence of float samples.
-  int sample_count = audio_buffer_blob->size() / 4;
+  size_t sample_count = audio_buffer_blob->size() / 4;
   std::vector<float> audio_buffer(sample_count);
   const float* view = reinterpret_cast<const float*>(&(*audio_buffer_blob)[0]);
   for (size_t i = 0; i < sample_count; i++, view++)

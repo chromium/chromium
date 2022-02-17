@@ -42,7 +42,7 @@ class ActionMoveKey::ActionMoveKeyView : public ActionView {
     center_.set_y(radius);
     circle_ = AddChildView(std::move(circle));
     auto* action_move_key = static_cast<ActionMoveKey*>(action);
-    for (int i = 0; i < action_move_key->keys().size(); i++) {
+    for (size_t i = 0; i < action_move_key->keys().size(); i++) {
       auto text = GetDisplayText(action_move_key->keys()[i]);
       auto label = std::make_unique<ActionLabel>(base::UTF8ToUTF16(text));
       label->set_editable(true);

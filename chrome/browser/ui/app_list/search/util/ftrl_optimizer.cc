@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/files/file_path.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace app_list {
 namespace {
@@ -27,7 +28,7 @@ void Normalize(google::protobuf::RepeatedField<double>& values) {
   double total = Total(values);
   if (total == 0.0)
     return;
-  for (size_t i = 0; i < values.size(); ++i)
+  for (int i = 0; i < values.size(); ++i)
     values[i] = values[i] / total;
 }
 
@@ -82,7 +83,7 @@ void FtrlOptimizer::Train(const std::string& item) {
 
   // Compute the loss of each expert and update weights.
   auto& weights = *proto_->mutable_weights();
-  for (size_t i = 0; i < weights.size(); ++i) {
+  for (int i = 0; i < weights.size(); ++i) {
     double loss = Loss(i, item);
     double fixed_share = params_.gamma / weights.size();
     double weight_factor = (1.0 - params_.gamma) * exp(-params_.alpha * loss);
@@ -128,7 +129,8 @@ double FtrlOptimizer::Loss(size_t expert, const std::string& item) {
 
 void FtrlOptimizer::OnProtoRead(ReadStatus status) {
   if (!proto_->has_version() || proto_->version() != kVersion ||
-      params_.num_experts != proto_->weights_size()) {
+      params_.num_experts !=
+          base::checked_cast<size_t>(proto_->weights_size())) {
     proto_.Purge();
     proto_->set_version(kVersion);
     for (size_t i = 0; i < params_.num_experts; ++i)

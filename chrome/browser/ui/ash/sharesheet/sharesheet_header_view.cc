@@ -449,7 +449,7 @@ const gfx::VectorIcon& SharesheetHeaderView::GetTextVectorIcon() {
 }
 
 void SharesheetHeaderView::ResolveImages() {
-  for (int i = 0; i < image_preview_->GetImageViewCount(); ++i) {
+  for (size_t i = 0; i < image_preview_->GetImageViewCount(); ++i) {
     ResolveImage(i);
   }
 }

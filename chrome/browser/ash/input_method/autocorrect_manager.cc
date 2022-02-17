@@ -174,7 +174,7 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   // 2) Check cursor is in range
   // 3) Ensure there is no selection (selection UI clashes with autocorrect UI).
   if (!range.is_empty() && cursor_pos_unsigned >= range.start() &&
-      cursor_pos_unsigned <= range.end() && cursor_pos_unsigned == anchor_pos) {
+      cursor_pos_unsigned <= range.end() && cursor_pos == anchor_pos) {
     if (!window_visible_) {
       const std::u16string autocorrected_text =
           text.substr(range.start(), range.length());

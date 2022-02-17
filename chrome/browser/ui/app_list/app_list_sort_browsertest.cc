@@ -111,7 +111,7 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
         auto* model = apps_grid_view->view_model();
         const bool is_folder_item =
             (menu_type == MenuType::kAppListFolderItemMenu);
-        for (size_t index = 0; index < model->view_size(); ++index) {
+        for (int index = 0; index < model->view_size(); ++index) {
           ash::AppListItemView* current_view = model->view_at(index);
           if (current_view->is_folder() == is_folder_item) {
             item_view = current_view;

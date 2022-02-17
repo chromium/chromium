@@ -218,14 +218,14 @@ void FeatureFlagsUpdate::UpdateSessionManager() {
     auto* entry = ::about_flags::GetCurrentFlagsState()->FindFeatureEntryByName(
         crosapi::browser_util::kLacrosAvailabilityPolicyInternalName);
     DCHECK(entry);
-    size_t index;
+    int index;
     for (index = 0; index < entry->NumOptions(); ++index) {
       if (value == entry->ChoiceForOption(index).command_line_value)
         break;
     }
-    if (index != entry->choices.size()) {
+    if (static_cast<size_t>(index) != entry->choices.size()) {
       LOG(ERROR) << "Updating the lacros_availability: " << index;
-      flags.insert(entry->NameForOption(static_cast<int>(index)));
+      flags.insert(entry->NameForOption(index));
     }
   }
 

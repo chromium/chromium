@@ -31,10 +31,10 @@ namespace {
 const char* const kResultFieldName = "result";
 
 // Template string constant for populating the name field.
-const char* const kNameFieldTemplate = "Screen %d";
+const char* const kNameFieldTemplate = "Screen %zu";
 
 // Template string constant for populating the name field.
-const char* const kFilenameFieldTemplate = "screen%d.png";
+const char* const kFilenameFieldTemplate = "screen%zu.png";
 
 // String constant identifying the header field which stores the command id.
 const char* const kCommandIdHeaderName = "Command-ID";
@@ -55,7 +55,7 @@ const char* const kUploadUrlFieldName = "fileUploadUrl";
 // |DeviceCommandScreenshotJob::Delegate|.
 void CallCollectAndUpload(
     base::OnceCallback<void(ScreenshotData)> collect_and_upload,
-    int screen_index,
+    size_t screen_index,
     scoped_refptr<base::RefCountedMemory> png_data) {
   std::move(collect_and_upload).Run(std::make_pair(screen_index, png_data));
 }
@@ -232,7 +232,7 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult succeeded_callback,
       base::BindOnce(&DeviceCommandScreenshotJob::OnScreenshotsReady,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::ThreadTaskRunnerHandle::Get()));
-  for (int screen_index = 0; screen_index < root_windows.size();
+  for (size_t screen_index = 0; screen_index < root_windows.size();
        ++screen_index) {
     aura::Window* root_window = root_windows[screen_index];
     gfx::Rect rect = root_window->bounds();

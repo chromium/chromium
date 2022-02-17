@@ -25,7 +25,7 @@
 namespace policy {
 
 // The first element represents screen index, the second presents the PNG data.
-using ScreenshotData = std::pair<int, scoped_refptr<base::RefCountedMemory>>;
+using ScreenshotData = std::pair<size_t, scoped_refptr<base::RefCountedMemory>>;
 
 using OnScreenshotTakenCallback =
     base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>;

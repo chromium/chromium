@@ -7,6 +7,7 @@
 #include <stack>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 
@@ -189,8 +190,11 @@ void GenerateReorderParamsWithLis(
   // The index of the next element waiting for handling in `lis`.
   int index_of_lis_front_element = 0;
 
-  while (index_of_item_to_update < wrappers.size()) {
-    if (index_of_lis_front_element >= lis.size()) {
+  const int wrappers_size = base::checked_cast<int>(wrappers.size());
+  const int lis_size = base::checked_cast<int>(lis.size());
+
+  while (index_of_item_to_update < wrappers_size) {
+    if (index_of_lis_front_element >= lis_size) {
       // All elements in `lis` have been visited.
 
       // The case that `lis` is empty has been handled before the loop.
