@@ -1799,6 +1799,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(features::kDataLeakPreventionFilesRestriction);
   }
 
+  if (options.enable_web_drive_office) {
+    enabled_features.push_back(chromeos::features::kFilesWebDriveOffice);
+  } else {
+    disabled_features.push_back(chromeos::features::kFilesWebDriveOffice);
+  }
+
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage) &&
       options.guest_mode != IN_INCOGNITO) {
     devtools_code_coverage_dir_ =
@@ -2184,6 +2190,18 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       }
       return;
     }
+  }
+
+  if (name == "getActiveTabURL") {
+    BrowserList* browser_list = BrowserList::GetInstance();
+    Browser* browser = browser_list->GetLastActive();
+    if (!browser) {
+      return;
+    }
+    content::WebContents* active_web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    *output = active_web_contents->GetVisibleURL().spec();
+    return;
   }
 
   if (name == "callSwaTestMessageListener") {

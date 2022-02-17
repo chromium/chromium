@@ -135,6 +135,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableWebDriveOffice() {
+    options.enable_web_drive_office = true;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -1574,5 +1579,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("androidPhotosBanner").EnablePhotosDocumentsProvider()));
+
+WRAPPED_INSTANTIATE_TEST_SUITE_P(
+    Office, /* office.js */
+    FilesAppBrowserTest,
+    ::testing::Values(
+        TestCase("openOfficeFile").EnableWebDriveOffice(),
+        TestCase("openOfficeFile").EnableWebDriveOffice().FilesSwa(),
+        TestCase("openOfficeFromMyFiles").EnableWebDriveOffice(),
+        TestCase("openOfficeFromMyFiles").EnableWebDriveOffice().FilesSwa(),
+        TestCase("openOfficeFromDrive").EnableWebDriveOffice(),
+        TestCase("openOfficeFromDrive").EnableWebDriveOffice().FilesSwa()));
 
 }  // namespace file_manager

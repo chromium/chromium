@@ -664,6 +664,12 @@ test.util.PrepareFake = class {
      * @private {number}
      */
     this.callCounter_ = 0;
+
+    /**
+     * List to record the arguments provided to the static fake calls.
+     * @private {!Array}
+     */
+    this.calledArgs_ = [];
   }
 
   /**
@@ -701,6 +707,7 @@ test.util.PrepareFake = class {
     this.parentObject_[this.leafAttrName_] = (...args) => {
       this.fake_(...args);
       this.callCounter_++;
+      this.calledArgs_.push([...args]);
     };
   }
 
@@ -880,6 +887,19 @@ test.util.sync.staticFakeCounter = (contentWindow, fakedApi) => {
   const fake =
       test.util.foregroundReplacedObjects_[contentWindow.appID][fakedApi];
   return fake.callCounter_;
+};
+
+/**
+ * Obtains the list of arguments with which the static fake api was called.
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} fakedApi Path of the method that is faked.
+ * @param {!Array<!Array<*>>} An array with all calls to this fake, each item is
+ *     an array with all args passed in when the fake was called.
+ */
+test.util.sync.staticFakeCalledArgs = (contentWindow, fakedApi) => {
+  const fake =
+      test.util.foregroundReplacedObjects_[contentWindow.appID][fakedApi];
+  return fake.calledArgs_;
 };
 
 /**

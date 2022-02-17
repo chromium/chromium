@@ -809,6 +809,18 @@ export const ENTRIES = {
     typeText: 'PDF document'
   }),
 
+  smallDocx: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'text.docx',
+    targetPath: 'text.docx',
+    mimeType: `application/vnd.openxmlformats-officedocument.wordprocessingml\
+.document`,
+    lastModifiedTime: 'Jan 4, 2019, 10:57 AM',
+    nameText: 'text.docx',
+    sizeText: '8.7 KB',
+    typeText: 'Office document'
+  }),
+
   pinned: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'text.txt',
