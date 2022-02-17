@@ -168,25 +168,9 @@ class TracingSampleProfilerTest : public TracingUnitTest {
 #endif
 };
 
-bool ShouldSkipTestForMacOS11() {
-#if BUILDFLAG(IS_MAC)
-  // The sampling profiler does not work on macOS 11 and is disabled.
-  // See https://crbug.com/1101399 and https://crbug.com/1098119.
-  // DCHECK here so that when the sampling profiler is re-enabled on macOS 11,
-  // these tests are also re-enabled.
-  if (base::mac::IsAtLeastOS11()) {
-    DCHECK(!base::StackSamplingProfiler::IsSupportedForCurrentPlatform());
-    return true;
-  }
-#endif
-  return false;
-}
-
 }  // namespace
 
 TEST_F(TracingSampleProfilerTest, OnSampleCompleted) {
-  if (ShouldSkipTestForMacOS11())
-    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
   BeginTrace();
   base::RunLoop().RunUntilIdle();
@@ -197,8 +181,6 @@ TEST_F(TracingSampleProfilerTest, OnSampleCompleted) {
 }
 
 TEST_F(TracingSampleProfilerTest, JoinRunningTracing) {
-  if (ShouldSkipTestForMacOS11())
-    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   BeginTrace();
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
   base::RunLoop().RunUntilIdle();
@@ -209,8 +191,6 @@ TEST_F(TracingSampleProfilerTest, JoinRunningTracing) {
 }
 
 TEST_F(TracingSampleProfilerTest, TestStartupTracing) {
-  if (ShouldSkipTestForMacOS11())
-    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
   TracingSamplerProfiler::SetupStartupTracingForTesting();
   base::RunLoop().RunUntilIdle();
@@ -245,8 +225,6 @@ TEST_F(TracingSampleProfilerTest, TestStartupTracing) {
 }
 
 TEST_F(TracingSampleProfilerTest, JoinStartupTracing) {
-  if (ShouldSkipTestForMacOS11())
-    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   TracingSamplerProfiler::SetupStartupTracingForTesting();
   base::RunLoop().RunUntilIdle();
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
@@ -281,8 +259,6 @@ TEST_F(TracingSampleProfilerTest, JoinStartupTracing) {
 }
 
 TEST_F(TracingSampleProfilerTest, SamplingChildThread) {
-  if (ShouldSkipTestForMacOS11())
-    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   base::Thread sampled_thread("sampling_profiler_test");
   sampled_thread.Start();
   sampled_thread.task_runner()->PostTask(
@@ -301,8 +277,6 @@ TEST_F(TracingSampleProfilerTest, SamplingChildThread) {
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 
 TEST_F(TracingSampleProfilerTest, SampleLoaderLockOnMainThread) {
-  if (ShouldSkipTestForMacOS11())
-    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   LoaderLockEventAnalyzer event_analyzer;
 
   bool lock_held = false;
@@ -328,8 +302,6 @@ TEST_F(TracingSampleProfilerTest, SampleLoaderLockOnMainThread) {
 }
 
 TEST_F(TracingSampleProfilerTest, SampleLoaderLockAlwaysHeld) {
-  if (ShouldSkipTestForMacOS11())
-    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   LoaderLockEventAnalyzer event_analyzer;
 
   EXPECT_CALL(mock_loader_lock_sampler_, IsLoaderLockHeld())
@@ -348,8 +320,6 @@ TEST_F(TracingSampleProfilerTest, SampleLoaderLockAlwaysHeld) {
 }
 
 TEST_F(TracingSampleProfilerTest, SampleLoaderLockNeverHeld) {
-  if (ShouldSkipTestForMacOS11())
-    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   LoaderLockEventAnalyzer event_analyzer;
 
   EXPECT_CALL(mock_loader_lock_sampler_, IsLoaderLockHeld())
@@ -367,8 +337,6 @@ TEST_F(TracingSampleProfilerTest, SampleLoaderLockNeverHeld) {
 }
 
 TEST_F(TracingSampleProfilerTest, SampleLoaderLockOnChildThread) {
-  if (ShouldSkipTestForMacOS11())
-    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   LoaderLockEventAnalyzer event_analyzer;
 
   // Loader lock should only be sampled on main thread.
@@ -391,9 +359,6 @@ TEST_F(TracingSampleProfilerTest, SampleLoaderLockOnChildThread) {
 }
 
 TEST_F(TracingSampleProfilerTest, SampleLoaderLockWithoutMock) {
-  if (ShouldSkipTestForMacOS11())
-    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
-
   // Use the real loader lock sampler. This tests that it is initialized
   // correctly in TracingSamplerProfiler.
   LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(nullptr);

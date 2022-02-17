@@ -533,8 +533,7 @@ TEST(V8UnwinderTest, CanUnwindFrom_NullModule) {
 
 // Checks that unwinding from C++ through JavaScript and back into C++ succeeds.
 // NB: unwinding is only supported for 64 bit Windows and Intel macOS.
-#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)) || \
-    (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64))
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)) || BUILDFLAG(IS_MAC)
 #define MAYBE_UnwindThroughV8Frames UnwindThroughV8Frames
 #else
 #define MAYBE_UnwindThroughV8Frames DISABLED_UnwindThroughV8Frames
