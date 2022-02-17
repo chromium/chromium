@@ -4,19 +4,26 @@
 
 package org.chromium.ui.base;
 
+import static org.robolectric.Shadows.shadowOf;
+
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+import android.webkit.MimeTypeMap;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
  * Test basic functionality of {@link DropDataContentProvider}.
  */
+@RunWith(BaseRobolectricTestRunner.class)
 public class DropDataContentProviderTest {
     private DropDataContentProvider mDropDataContentProvider;
     private static final byte[] IMAGE_DATA_A = new byte[100];
@@ -30,6 +37,9 @@ public class DropDataContentProviderTest {
     public void setUp() {
         mDropDataContentProvider = new DropDataContentProvider();
         mDropDataContentProvider.onCreate();
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("jpg", "image/jpeg");
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("gif", "image/gif");
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("png", "image/png");
     }
 
     @Test
