@@ -2,11 +2,14 @@
 <html>
 <head>
   <style>
-    container, leaf {display: block;}
+    container, leaf {display: inline;}
   </style>
   <script src="../resources/runner.js"></script>
 </head>
-<body>
+<body tabindex="-1">
+  <div tabindex=-1>
+    <div id="container" tabindex="-1"></div>
+  </div>
 </body>
 
 <script>
@@ -26,7 +29,7 @@ function runTest() {
     document.body.innerHTML = '';
     appendManyElements(document.body, 7);
 
-    setTimeout(changeLeafText, 10);
+    setTimeout(changeLeafText, 250);
 
     // Re-run the same test.
     // Wait to allow the asynchronous accessibility code that's
@@ -57,7 +60,7 @@ function changeLeafText(text) {
 
 
 PerfTestRunner.startMeasureValuesAsync({
-    description: 'Test accessibility performance when changing text inside ignored blocks.',
+    description: 'Test accessibility performance when changing text inside ignored nodes, where those are inside focusable containers.',
     unit: 'ms',
     done: function () {
       isDone = true;

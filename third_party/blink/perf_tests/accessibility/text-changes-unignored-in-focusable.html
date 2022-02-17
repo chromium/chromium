@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <style>
-    container, leaf {display: block;}
-  </style>
   <script src="../resources/runner.js"></script>
 </head>
-<body>
+<body tabindex="-1">
+  <div tabindex=-1>
+    <div id="container" tabindex="-1"></div>
+  </div>
 </body>
 
 <script>
@@ -26,7 +26,7 @@ function runTest() {
     document.body.innerHTML = '';
     appendManyElements(document.body, 7);
 
-    setTimeout(changeLeafText, 10);
+    setTimeout(changeLeafText, 250);
 
     // Re-run the same test.
     // Wait to allow the asynchronous accessibility code that's
@@ -38,26 +38,26 @@ function runTest() {
 // Recursively add layers of descendants.
 function appendManyElements(start, depth) {
   if (depth == 0) {
-    start.innerHTML = '<leaf>A</leaf>';
+    start.innerHTML = '<fieldset>A</fieldset>';  // Unignored in AX tree.
   }
   else {
     // Each element receives 3 new children.
     for (let count = 0; count < 3; count++) {
-      let newContainer = document.createElement('container');
+      let newContainer = document.createElement('fieldset');
       appendManyElements(start.appendChild(newContainer), depth - 1);
     }
   }
 }
 
 function changeLeafText(text) {
-  let elements = document.querySelectorAll('leaf');
+  let elements = document.querySelectorAll('unignored');
   for (let count = 0; count < elements.length; count ++)
     elements[count].textContent = 'B';
 }
 
 
 PerfTestRunner.startMeasureValuesAsync({
-    description: 'Test accessibility performance when changing text inside ignored blocks.',
+    description: 'Test accessibility performance when changing text inside unignored nodes, where those are inside focusable containers.',
     unit: 'ms',
     done: function () {
       isDone = true;
