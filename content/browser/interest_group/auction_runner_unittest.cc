@@ -55,6 +55,7 @@ using auction_worklet::TestDevToolsAgentClient;
 namespace content {
 namespace {
 
+const std::string kBidder1Name{"Ad Platform"};
 const char kBidder1DebugLossReportUrl[] =
     "https://bidder1-debug-loss-reporting.com/";
 const char kBidder1DebugWinReportUrl[] =
@@ -281,6 +282,15 @@ std::string MakeDecisionScript(
       let signals1 = auctionConfig.perBuyerSignals['https://adplatform.com'];
       if (signals1[auctionConfig.seller + 'Signals'] !== 'Ad PlatformSignals')
         throw new Error("Wrong perBuyerSignals in auctionConfig");
+      if (typeof auctionConfig.perBuyerTimeouts['https://adplatform.com'] !==
+          "number") {
+        throw new Error("timeout in auctionConfig.perBuyerTimeouts is not a " +
+                        "number. huh");
+      }
+      if (typeof auctionConfig.perBuyerTimeouts['*'] !== "number") {
+        throw new Error("timeout in auctionConfig.perBuyerTimeouts is not a " +
+                        "number. huh");
+      }
       if (auctionConfig.sellerSignals["url"] != decisionLogicUrl)
         throw new Error("Wrong sellerSignals");
       if (browserSignals.topWindowHostname !== 'publisher1.com')
@@ -441,6 +451,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
           bidder_worklet_non_shared_params,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
+      const absl::optional<base::TimeDelta> per_buyer_timeout,
       const url::Origin& seller_origin,
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
@@ -449,6 +460,23 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
     // While the real BidderWorklet implementation supports multiple pending
     // callbacks, this class does not.
     DCHECK(!generate_bid_callback_);
+
+    // per_buyer_timeout passed to GenerateBid() should not be empty, because
+    // auction_config's all_buyers_timeout (which is the key of '*' in
+    // perBuyerTimeouts) is set in the AuctionRunnerTest.
+    EXPECT_TRUE(per_buyer_timeout.has_value());
+    if (bidder_worklet_non_shared_params->name == kBidder1Name) {
+      // Any per buyer timeout in auction_config higher than 500 ms should be
+      // clamped to 500 ms by the AuctionRunner before passed to GenerateBid(),
+      // and kBidder1's per buyer timeout is 1000 ms in auction_config so it
+      // should be 500 ms here.
+      EXPECT_EQ(per_buyer_timeout.value(), base::Milliseconds(500));
+    } else {
+      // Any other bidder's per buyer timeout should be 150 ms, since
+      // auction_config's all_buyers_timeout is set to 150 ms in the
+      // AuctionRunnerTest.
+      EXPECT_EQ(per_buyer_timeout.value(), base::Milliseconds(150));
+    }
 
     // Single auctions should invoke all GenerateBid() calls on a worklet
     // before invoking SendPendingSignalsRequests().
@@ -1046,6 +1074,15 @@ class AuctionRunnerTest : public testing::Test,
     auction_config->auction_ad_config_non_shared_params->per_buyer_signals =
         std::move(per_buyer_signals);
 
+    base::flat_map<url::Origin, base::TimeDelta> per_buyer_timeouts;
+    // Any per buyer timeout higher than 500 ms will be clamped to 500 ms by the
+    // AuctionRunner.
+    per_buyer_timeouts[kBidder1] = base::Milliseconds(1000);
+    auction_config->auction_ad_config_non_shared_params->per_buyer_timeouts =
+        std::move(per_buyer_timeouts);
+    auction_config->auction_ad_config_non_shared_params->all_buyers_timeout =
+        base::Milliseconds(150);
+
     auction_config->auction_ad_config_non_shared_params->auction_signals =
         base::StringPrintf(R"("auctionSignalsFor %s")",
                            auction_config->seller.Serialize().c_str());
@@ -1463,7 +1500,6 @@ class AuctionRunnerTest : public testing::Test,
 
   const GURL kBidder1Url{"https://adplatform.com/offers.js"};
   const url::Origin kBidder1 = url::Origin::Create(kBidder1Url);
-  const std::string kBidder1Name{"Ad Platform"};
   const GURL kBidder1TrustedSignalsUrl{"https://adplatform.com/signals1"};
 
   const GURL kBidder2Url{"https://anotheradthing.com/bids.js"};

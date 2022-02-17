@@ -114,7 +114,7 @@ class BidderWorkletTest : public testing::Test {
   void SetUp() override {
     // v8_helper_ needs to be created here instead of the constructor, because
     // this test fixture has a subclass that initializes a ScopedFeatureList in
-    // in their constructor, which needs to be done BEFORE other threads are
+    // their constructor, which needs to be done BEFORE other threads are
     // started in multithreaded test environments so that no other threads use
     // it when it's being initiated.
     // https://source.chromium.org/chromium/chromium/src/+/main:base/test/scoped_feature_list.h;drc=60124005e97ae2716b0fb34187d82da6019b571f;l=37
@@ -156,6 +156,7 @@ class BidderWorkletTest : public testing::Test {
 
     auction_signals_ = "[\"auction_signals\"]";
     per_buyer_signals_ = "[\"per_buyer_signals\"]";
+    per_buyer_timeout_ = absl::nullopt;
     top_window_origin_ = url::Origin::Create(GURL("https://top.window.test/"));
     browser_signal_seller_origin_ =
         url::Origin::Create(GURL("https://browser.signal.seller.test/"));
@@ -349,7 +350,7 @@ class BidderWorkletTest : public testing::Test {
   void GenerateBid(mojom::BidderWorklet* bidder_worklet) {
     bidder_worklet->GenerateBid(
         CreateBidderWorkletNonSharedParams(), auction_signals_,
-        per_buyer_signals_, browser_signal_seller_origin_,
+        per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         CreateBiddingBrowserSignals(), auction_start_time_,
         base::BindOnce(&BidderWorkletTest::GenerateBidCallback,
                        base::Unretained(this)));
@@ -361,7 +362,7 @@ class BidderWorkletTest : public testing::Test {
       mojom::BidderWorklet* bidder_worklet) {
     bidder_worklet->GenerateBid(
         CreateBidderWorkletNonSharedParams(), auction_signals_,
-        per_buyer_signals_, browser_signal_seller_origin_,
+        per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         CreateBiddingBrowserSignals(), auction_start_time_,
         base::BindOnce([](mojom::BidderWorkletBidPtr bid, uint32_t data_version,
                           bool has_data_version,
@@ -465,6 +466,7 @@ class BidderWorkletTest : public testing::Test {
 
   absl::optional<std::string> auction_signals_;
   absl::optional<std::string> per_buyer_signals_;
+  absl::optional<base::TimeDelta> per_buyer_timeout_;
   url::Origin top_window_origin_;
   url::Origin browser_signal_seller_origin_;
   std::string seller_signals_;
@@ -1038,7 +1040,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
       bidder_worklet->GenerateBid(
           CreateBidderWorkletNonSharedParams(),
           /*auction_signals_json=*/base::NumberToString(bid_value),
-          per_buyer_signals_, browser_signal_seller_origin_,
+          per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
           CreateBiddingBrowserSignals(), auction_start_time_,
           base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls, bid_value](
@@ -1128,8 +1130,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
         base::NumberToString(i));
     bidder_worklet->GenerateBid(
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
-        browser_signal_seller_origin_, CreateBiddingBrowserSignals(),
-        auction_start_time_,
+        per_buyer_timeout_, browser_signal_seller_origin_,
+        CreateBiddingBrowserSignals(), auction_start_time_,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1224,8 +1226,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
         base::NumberToString(i));
     bidder_worklet->GenerateBid(
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
-        browser_signal_seller_origin_, CreateBiddingBrowserSignals(),
-        auction_start_time_,
+        per_buyer_timeout_, browser_signal_seller_origin_,
+        CreateBiddingBrowserSignals(), auction_start_time_,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1326,8 +1328,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
         base::NumberToString(i));
     bidder_worklet->GenerateBid(
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
-        browser_signal_seller_origin_, CreateBiddingBrowserSignals(),
-        auction_start_time_,
+        per_buyer_timeout_, browser_signal_seller_origin_,
+        CreateBiddingBrowserSignals(), auction_start_time_,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1407,8 +1409,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
         base::NumberToString(i));
     bidder_worklet->GenerateBid(
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
-        browser_signal_seller_origin_, CreateBiddingBrowserSignals(),
-        auction_start_time_,
+        per_buyer_timeout_, browser_signal_seller_origin_,
+        CreateBiddingBrowserSignals(), auction_start_time_,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1522,7 +1524,7 @@ TEST_F(BidderWorkletTest, GenerateBidPerBuyerSignals) {
   const std::string kGenerateBidBody =
       R"({ad: perBuyerSignals, bid:1, render:"https://response.test/"})";
 
-  // Since AuctionSignals are in JSON, non-JSON strings should result in
+  // Since PerBuyerSignals are in JSON, non-JSON strings should result in
   // failures.
   per_buyer_signals_ = "foo";
   RunGenerateBidWithReturnValueExpectingResult(kGenerateBidBody,
@@ -2045,6 +2047,28 @@ TEST_F(BidderWorkletTest, GenerateBidDataVersion) {
                                    /*ad_components=*/absl::nullopt,
                                    base::TimeDelta()),
       7u);
+}
+
+TEST_F(BidderWorkletTest, GenerateBidTimedOut) {
+  // Use a very long default script timeout, and a short per buyer timeout, so
+  // that if the bidder script with endless loop times out, we know that the per
+  // buyer timeout overwrote the default script timeout and worked.
+  const base::TimeDelta kScriptTimeout = base::Days(360);
+  v8_helper_->v8_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AuctionV8Helper> v8_helper,
+             const base::TimeDelta script_timeout) {
+            v8_helper->set_script_timeout_for_testing(script_timeout);
+          },
+          v8_helper_, kScriptTimeout));
+  per_buyer_timeout_ = base::Milliseconds(20);
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(/*raw_return_value=*/"", R"(while (1))"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
 }
 
 TEST_F(BidderWorkletTest, ReportWin) {

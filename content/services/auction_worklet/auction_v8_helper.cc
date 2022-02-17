@@ -472,6 +472,7 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
     const DebugId* debug_id,
     base::StringPiece function_name,
     base::span<v8::Local<v8::Value>> args,
+    absl::optional<base::TimeDelta> script_timeout,
     std::vector<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(isolate(), context->GetIsolate());
@@ -487,7 +488,8 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
 
   // Run script.
   v8::TryCatch try_catch(isolate());
-  ScriptTimeoutHelper timeout_helper(this, timer_task_runner_, script_timeout_);
+  ScriptTimeoutHelper timeout_helper(this, timer_task_runner_,
+                                     script_timeout.value_or(script_timeout_));
   auto result = local_script->Run(context);
 
   if (try_catch.HasTerminated()) {

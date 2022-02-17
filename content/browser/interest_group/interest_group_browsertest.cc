@@ -1772,6 +1772,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidPerBuyerTimeoutsOrigin) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+      "perBuyerTimeouts buyer 'https://invalid^&' for AuctionAdConfig with "
+      "seller 'https://test.com' must be \"*\" (wildcard) or a valid https "
+      "origin.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      perBuyerTimeouts: {'https://invalid^&': 100}
+  })"));
+  ExpectAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidComponentAuctionsArray) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
@@ -2036,7 +2053,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
     interestGroupBuyers: [$1],
     auctionSignals: {x: 1},
     sellerSignals: {yet: 'more', info: 1},
-    perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+    perBuyerSignals: {$1: {even: 'more', x: 4.5}},
+    perBuyerTimeouts: {$1: 100, '*': 150}
                 })",
       test_origin,
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
@@ -2135,8 +2153,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
                 ->trusted_params->isolation_info.network_isolation_key());
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionPerBuyerSignalsOriginNotInBuyers) {
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionPerBuyerSignalsAndPerBuyerTimeoutsOriginNotInBuyers) {
   GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
@@ -2165,7 +2184,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             seller: $1,
             decisionLogicUrl: $2,
             interestGroupBuyers: [$1],
-            perBuyerSignals: {$1: {a:1}, 'https://not_in_buyers.com': {a:1}}
+            perBuyerSignals: {$1: {a:1}, 'https://not_in_buyers.com': {a:1}},
+            perBuyerTimeouts: {'https://not_in_buyers.com': 100}
           })",
           test_origin,
           https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
@@ -3504,7 +3524,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
     interestGroupBuyers: [$4, $5],
     auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
     sellerSignals: {signals: 'from', the: ['seller']},
-    perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}}
+    perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
+    perBuyerTimeouts: {$4: 110, $5: 120, '*': 150}
   });
 })())",
                       url::Origin::Create(seller_script_url), seller_script_url,
@@ -3582,6 +3603,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     auctionSignals: ["top-level auction signals"],
     sellerSignals: ["top-level seller signals"],
     perBuyerSignals: {$7: ["top-level buyer signals"]},
+    perBuyerTimeouts: {$7: 110, '*': 150},
     componentAuctions: [{
       seller: $4,
       decisionLogicUrl: $5,
@@ -3590,6 +3612,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       auctionSignals: ["component auction signals"],
       sellerSignals: ["component seller signals"],
       perBuyerSignals: {$7: ["component buyer signals"]},
+      perBuyerTimeouts: {$7: 200},
     }],
   });
 })())",
@@ -3981,6 +4004,73 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           }));
 }
 
+// Bidders' generateBid() scripts that run forever should timeout. They will not
+// affect other bidders or fail the auction.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWithPerBuyerTimeouts) {
+  const char kHostA[] = "a.test";
+  const char kHostB[] = "b.test";
+  // Navigate to other bidder site, and add an interest group.
+  GURL bidder_b_url = https_server_->GetURL(kHostB, "/echo");
+  url::Origin bidder_b_origin = url::Origin::Create(bidder_b_url);
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_b_url));
+
+  GURL ad_url_b = https_server_->GetURL(kHostB, "/echo?render_shoes");
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      /*owner=*/bidder_b_origin,
+      /*name=*/"shoes",
+      /*bidding_url=*/
+      https_server_->GetURL(kHostB, "/interest_group/bidding_logic.js"),
+      /*ads=*/{{{ad_url_b, /*metadata=*/absl::nullopt}}}));
+
+  GURL bidder_a_url = https_server_->GetURL(kHostA, "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_a_url));
+  url::Origin bidder_a_origin = url::Origin::Create(bidder_a_url);
+  GURL ad1_url_a = https_server_->GetURL(kHostA, "/echo?render_cars");
+  GURL ad2_url_a = https_server_->GetURL(kHostA, "/echo?render_bikes");
+
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      /*owner=*/bidder_a_origin,
+      /*name=*/"cars",
+      /*bidding_url=*/
+      https_server_->GetURL(kHostA,
+                            "/interest_group/bidding_logic_loop_forever.js"),
+      /*ads=*/{{{ad1_url_a, /*metadata=*/absl::nullopt}}}));
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      /*owner=*/bidder_a_origin,
+      /*name=*/"bikes",
+      /*bidding_url=*/
+      https_server_->GetURL(kHostA,
+                            "/interest_group/bidding_logic_loop_forever.js"),
+      /*ads=*/{{{ad2_url_a, /*metadata=*/absl::nullopt}}}));
+
+  // Set per buyer timeout of bidder a to 1 ms, so that its generateBid()
+  // scripts which has an endless loop times out fast.
+  const std::string kTestPerBuyerTimeouts[] = {
+      JsReplace("{$1: 1}", bidder_a_origin),
+      JsReplace("{$1: 1, '*': 100}", bidder_a_origin),
+      JsReplace("{$1: 100, '*': 1}", bidder_b_origin),
+  };
+
+  for (const auto& test_per_buyer_timeouts : kTestPerBuyerTimeouts) {
+    std::string auction_config = JsReplace(
+        R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      interestGroupBuyers: [$1, $3],
+                  )",
+        bidder_a_origin,
+        https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+        bidder_b_origin);
+    // Since test_per_buyer_timeout is JSON, it shouldn't be wrapped in quotes,
+    // so can't use JsReplace.
+    auction_config += base::StringPrintf("perBuyerTimeouts: %s}",
+                                         test_per_buyer_timeouts.c_str());
+    // Bidder b won the auction.
+    RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url_b);
+  }
+}
+
 // This test exercises the interest group and ad auction services directly,
 // rather than via Blink, to ensure that those services running in the browser
 // implement important security checks (Blink may also perform its own
@@ -4224,30 +4314,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       blink::mojom::AuctionAdConfigNonSharedParams::New();
   config->auction_ad_config_non_shared_params->interest_group_buyers = {
       test_origin_a_, test_origin_c};
-
-  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Optional(Eq(ad_url_)));
-}
-
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
-                       PerBuyerSignalsValid) {
-  GURL test_url_b = https_server_->GetURL("b.test", "/page_with_iframe.html");
-  ASSERT_TRUE(test_url_b.SchemeIs(url::kHttpsScheme));
-  url::Origin test_origin_b = url::Origin::Create(test_url_b);
-  ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
-
-  // Per-buyer signals are valid because `test_origin_a_` is in the set of
-  // buyers, so the auction succeeds.
-  auto config = blink::mojom::AuctionAdConfig::New();
-  config->seller = test_origin_b;
-  config->decision_logic_url =
-      https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
-  config->auction_ad_config_non_shared_params =
-      blink::mojom::AuctionAdConfigNonSharedParams::New();
-  config->auction_ad_config_non_shared_params->interest_group_buyers = {
-      test_origin_a_};
-  config->auction_ad_config_non_shared_params->per_buyer_signals.emplace();
-  config->auction_ad_config_non_shared_params->per_buyer_signals
-      .value()[test_origin_a_] = "{\"even\": \"more\", \"x\": 4.5}";
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Optional(Eq(ad_url_)));
 }

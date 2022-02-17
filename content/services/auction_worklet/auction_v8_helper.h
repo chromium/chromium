@@ -233,13 +233,18 @@ class AuctionV8Helper
   // Running this multiple times in the same context will re-load the entire
   // script file in the context, and then run the script again.
   //
+  // If `script_timeout` has no value, kScriptTimeout will be used as the
+  // default timeout.
+  //
   // In case of an error sets `error_out`.
-  v8::MaybeLocal<v8::Value> RunScript(v8::Local<v8::Context> context,
-                                      v8::Local<v8::UnboundScript> script,
-                                      const DebugId* debug_id,
-                                      base::StringPiece function_name,
-                                      base::span<v8::Local<v8::Value>> args,
-                                      std::vector<std::string>& error_out);
+  v8::MaybeLocal<v8::Value> RunScript(
+      v8::Local<v8::Context> context,
+      v8::Local<v8::UnboundScript> script,
+      const DebugId* debug_id,
+      base::StringPiece function_name,
+      base::span<v8::Local<v8::Value>> args,
+      absl::optional<base::TimeDelta> script_timeout,
+      std::vector<std::string>& error_out);
 
   // If any debugging session targeting `debug_id` has set an active
   // DOM instrumentation breakpoint `name`, asks for v8 to do a debugger pause

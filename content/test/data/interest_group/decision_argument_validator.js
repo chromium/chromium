@@ -52,6 +52,14 @@ function validateAuctionConfig(auctionConfig) {
       !perBuyerSignalsJson.includes('{"signalsForBuyer":1}')) {
     throw 'Wrong perBuyerSignals ' + perBuyerSignalsJson;
   }
+  const perBuyerTimeoutsJson = JSON.stringify(auctionConfig.perBuyerTimeouts);
+  if (!perBuyerTimeoutsJson.includes('a.test') ||
+      !perBuyerTimeoutsJson.includes('110') ||
+      !perBuyerTimeoutsJson.includes('d.test') ||
+      !perBuyerTimeoutsJson.includes('120') ||
+      auctionConfig.perBuyerTimeouts['*'] != 150) {
+    throw 'Wrong perBuyerTimeouts ' + perBuyerTimeoutsJson;
+  }
 }
 
 function validateTrustedScoringSignals(signals) {

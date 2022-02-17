@@ -200,6 +200,7 @@ void BidderWorklet::GenerateBid(
     mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
+    const absl::optional<base::TimeDelta> per_buyer_timeout,
     const url::Origin& seller_origin,
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
@@ -212,6 +213,7 @@ void BidderWorklet::GenerateBid(
       std::move(bidder_worklet_non_shared_params);
   generate_bid_task->auction_signals_json = auction_signals_json;
   generate_bid_task->per_buyer_signals_json = per_buyer_signals_json;
+  generate_bid_task->per_buyer_timeout = per_buyer_timeout;
   generate_bid_task->seller_origin = seller_origin;
   generate_bid_task->bidding_browser_signals =
       std::move(bidding_browser_signals);
@@ -384,7 +386,8 @@ void BidderWorklet::V8State::ReportWin(
       *debug_id_, "beforeBidderWorkletReportingStart");
   if (v8_helper_
           ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
-                      "reportWin", args, errors_out)
+                      "reportWin", args, /*script_timeout=*/absl::nullopt,
+                      errors_out)
           .IsEmpty()) {
     PostReportWinCallbackToUserThread(std::move(callback),
                                       absl::nullopt /* report_url */,
@@ -402,6 +405,7 @@ void BidderWorklet::V8State::GenerateBid(
     mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
+    const absl::optional<base::TimeDelta> per_buyer_timeout,
     const url::Origin& browser_signal_seller_origin,
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
@@ -540,7 +544,8 @@ void BidderWorklet::V8State::GenerateBid(
       *debug_id_, "beforeBidderWorkletBiddingStart");
   if (!v8_helper_
            ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
-                       "generateBid", args, errors_out)
+                       "generateBid", args, std::move(per_buyer_timeout),
+                       errors_out)
            .ToLocal(&generate_bid_result)) {
     PostErrorBidCallbackToUserThread(std::move(callback),
                                      std::move(errors_out));
@@ -838,7 +843,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           std::move(task->bidder_worklet_non_shared_params),
           std::move(task->auction_signals_json),
           std::move(task->per_buyer_signals_json),
-          std::move(task->seller_origin),
+          std::move(task->per_buyer_timeout), std::move(task->seller_origin),
           std::move(task->bidding_browser_signals), task->auction_start_time,
           std::move(task->trusted_bidding_signals_result),
           base::BindOnce(&BidderWorklet::DeliverBidCallbackOnUserThread,

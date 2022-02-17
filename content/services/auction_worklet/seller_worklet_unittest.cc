@@ -1356,6 +1356,14 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   auction_ad_config_non_shared_params_->per_buyer_signals =
       std::move(per_buyer_signals);
 
+  base::flat_map<url::Origin, base::TimeDelta> per_buyer_timeouts;
+  per_buyer_timeouts[url::Origin::Create(GURL("https://a.com"))] =
+      base::Milliseconds(100);
+  auction_ad_config_non_shared_params_->per_buyer_timeouts =
+      std::move(per_buyer_timeouts);
+  auction_ad_config_non_shared_params_->all_buyers_timeout =
+      base::Milliseconds(150);
+
   const char kExpectedJson[] =
       R"({"seller":"https://example.com",)"
       R"("decisionLogicUrl":"https://example.com/auction.js",)"
@@ -1363,9 +1371,41 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       R"("auctionSignals":{"is_auction_signals":true},)"
       R"("sellerSignals":{"is_seller_signals":true},)"
       R"("perBuyerSignals":{"https://a.com":{"signals_a":"A"},)"
-      R"("https://b.com":{"signals_b":"B"}}})";
+      R"("https://b.com":{"signals_b":"B"}},)"
+      R"("perBuyerTimeouts":{"https://a.com":100,"*":150}})";
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", std::string() /* extra_code */, kExpectedJson,
+      absl::nullopt /* expected_report_url */);
+}
+
+TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
+  // Empty AuctionAdConfig, with nothing filled in, except the seller and
+  // decision logic URL.
+  decision_logic_url_ = GURL("https://example.com/auction.js");
+  RunReportResultCreatedScriptExpectingResult(
+      "auctionConfig", std::string() /* extra_code */,
+      R"({"seller":"https://example.com",)"
+      R"("decisionLogicUrl":"https://example.com/auction.js"})",
+      absl::nullopt /* expected_report_url */);
+
+  base::flat_map<url::Origin, base::TimeDelta> per_buyer_timeouts;
+  auction_ad_config_non_shared_params_->per_buyer_timeouts =
+      std::move(per_buyer_timeouts);
+
+  RunReportResultCreatedScriptExpectingResult(
+      "auctionConfig", std::string() /* extra_code */,
+      R"({"seller":"https://example.com",)"
+      R"("decisionLogicUrl":"https://example.com/auction.js",)"
+      R"("perBuyerTimeouts":{}})",
+      absl::nullopt /* expected_report_url */);
+
+  auction_ad_config_non_shared_params_->all_buyers_timeout =
+      base::Milliseconds(150);
+  RunReportResultCreatedScriptExpectingResult(
+      "auctionConfig", std::string() /* extra_code */,
+      R"({"seller":"https://example.com",)"
+      R"("decisionLogicUrl":"https://example.com/auction.js",)"
+      R"("perBuyerTimeouts":{"*":150}})",
       absl::nullopt /* expected_report_url */);
 }
 

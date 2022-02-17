@@ -111,6 +111,10 @@ interface BidderWorklet {
   //  publisher page and provided to all interest groups with the same owner
   //  as the one specified `interest_group`.
   //
+  // `per_buyer_timeout` Restrict the runtime (in milliseconds) of particular
+  //  buyer's bidding scripts. Null if not provided by the publisher page. Null
+  //  will be passed to the worklet in that case.
+  //
   // `browser_signal_seller_origin` The origin of the seller script running
   //  the auction. Typically a valid, non-opaque HTTPS origin.
   //
@@ -149,6 +153,7 @@ interface BidderWorklet {
       BidderWorkletNonSharedParams bidder_worklet_non_shared_params,
       string? auction_signals_json,
       string? per_buyer_signals_json,
+      mojo_base.mojom.TimeDelta? per_buyer_timeout,
       url.mojom.Origin browser_signal_seller_origin,
       BiddingBrowserSignals bidding_browser_signals,
       mojo_base.mojom.Time auction_start_time) => (
@@ -177,7 +182,7 @@ interface BidderWorklet {
   //
   // `auction_signals_json` The JSON representation of the auction signals for
   //  the auction, if specified by the publisher page and provided to bidder
-  //  worklets competing in an auction. Null if not provided by the  publisher
+  //  worklets competing in an auction. Null if not provided by the publisher
   //  page. Null will be passed to the worklet in that case.
   //
   // `per_buyer_signals_json` The JSON representation of the auction signals

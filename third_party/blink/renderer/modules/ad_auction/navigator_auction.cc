@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
@@ -628,6 +629,34 @@ bool CopyPerBuyerSignalsFromIdlToMojo(const ScriptState& script_state,
   return true;
 }
 
+bool CopyPerBuyerTimeoutsFromIdlToMojo(const ScriptState& script_state,
+                                       ExceptionState& exception_state,
+                                       const AuctionAdConfig& input,
+                                       mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasPerBuyerTimeouts())
+    return true;
+  output.auction_ad_config_non_shared_params->per_buyer_timeouts.emplace();
+  for (const auto& per_buyer_timeout : input.perBuyerTimeouts()) {
+    if (per_buyer_timeout.first == "*") {
+      output.auction_ad_config_non_shared_params->all_buyers_timeout =
+          base::Milliseconds(per_buyer_timeout.second);
+      continue;
+    }
+    scoped_refptr<const SecurityOrigin> buyer =
+        ParseOrigin(per_buyer_timeout.first);
+    if (!buyer) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "perBuyerTimeouts buyer", per_buyer_timeout.first,
+          "must be \"*\" (wildcard) or a valid https origin."));
+      return false;
+    }
+    output.auction_ad_config_non_shared_params->per_buyer_timeouts->insert(
+        buyer, base::Milliseconds(per_buyer_timeout.second));
+  }
+
+  return true;
+}
+
 // Attempts to convert the AuctionAdConfig `config`, passed in via Javascript,
 // to a `mojom::blink::AuctionAdConfig`. Throws a Javascript exception and
 // return null on failure.
@@ -652,7 +681,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopySellerSignalsFromIdlToMojo(script_state, exception_state, config,
                                       *mojo_config) ||
       !CopyPerBuyerSignalsFromIdlToMojo(script_state, exception_state, config,
-                                        *mojo_config)) {
+                                        *mojo_config) ||
+      !CopyPerBuyerTimeoutsFromIdlToMojo(script_state, exception_state, config,
+                                         *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
 

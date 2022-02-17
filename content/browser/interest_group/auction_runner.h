@@ -501,6 +501,7 @@ class CONTENT_EXPORT AuctionRunner {
                      const std::vector<std::string>& errors);
 
     absl::optional<std::string> PerBuyerSignals(const BidState* state);
+    absl::optional<base::TimeDelta> PerBuyerTimeout(const BidState* state);
 
     // If there are no `outstanding_bids_`, completes the bidding and scoring
     // phase.

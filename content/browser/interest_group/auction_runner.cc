@@ -40,6 +40,8 @@ namespace content {
 
 namespace {
 
+constexpr base::TimeDelta kMaxPerBuyerTimeout = base::Milliseconds(500);
+
 // All URLs received from worklets must be valid HTTPS URLs. It's up to callers
 // to call ReportBadMessage() on invalid URLs.
 bool IsUrlValid(const GURL& url) {
@@ -588,7 +590,7 @@ void AuctionRunner::Auction::OnBidderWorkletReceived(BidState* bid_state) {
           interest_group.user_bidding_signals, interest_group.ads,
           interest_group.ad_components),
       config_->auction_ad_config_non_shared_params->auction_signals,
-      PerBuyerSignals(bid_state), config_->seller,
+      PerBuyerSignals(bid_state), PerBuyerTimeout(bid_state), config_->seller,
       bid_state->bidder.bidding_browser_signals.Clone(), auction_start_time_,
       base::BindOnce(&Auction::OnGenerateBidComplete,
                      weak_ptr_factory_.GetWeakPtr(), bid_state));
@@ -827,6 +829,26 @@ absl::optional<std::string> AuctionRunner::Auction::PerBuyerSignals(
     if (it != per_buyer_signals.value().end())
       return it->second;
   }
+  return absl::nullopt;
+}
+
+absl::optional<base::TimeDelta> AuctionRunner::Auction::PerBuyerTimeout(
+    const BidState* state) {
+  const auto& per_buyer_timeouts =
+      config_->auction_ad_config_non_shared_params->per_buyer_timeouts;
+  if (per_buyer_timeouts.has_value()) {
+    auto it =
+        per_buyer_timeouts.value().find(state->bidder.interest_group.owner);
+    if (it != per_buyer_timeouts.value().end()) {
+      // Any per buyer timeout higher than kMaxPerBuyerTimeout ms will be
+      // clamped to kMaxPerBuyerTimeout ms.
+      return std::min(it->second, kMaxPerBuyerTimeout);
+    }
+  }
+  const auto& all_buyers_timeout =
+      config_->auction_ad_config_non_shared_params->all_buyers_timeout;
+  if (all_buyers_timeout.has_value())
+    return std::min(all_buyers_timeout.value(), kMaxPerBuyerTimeout);
   return absl::nullopt;
 }
 

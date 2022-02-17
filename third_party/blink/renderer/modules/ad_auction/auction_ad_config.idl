@@ -13,5 +13,6 @@ dictionary AuctionAdConfig {
   any auctionSignals;
   any sellerSignals;
   record<USVString, any> perBuyerSignals;
+  record<USVString, unsigned long long> perBuyerTimeouts;
   sequence<AuctionAdConfig> componentAuctions;
 };

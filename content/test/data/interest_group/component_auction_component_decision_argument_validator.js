@@ -58,6 +58,11 @@ function validateAuctionConfig(auctionConfig) {
       !perBuyerSignalsJson.includes('["component buyer signals"]')) {
     throw 'Wrong perBuyerSignals ' + perBuyerSignalsJson;
   }
+  const perBuyerTimeoutsJson = JSON.stringify(auctionConfig.perBuyerTimeouts);
+  if (!perBuyerTimeoutsJson.includes('a.test') ||
+      !perBuyerTimeoutsJson.includes('200')) {
+    throw 'Wrong perBuyerTimeouts ' + perBuyerTimeoutsJson;
+  }
 }
 
 function validateTrustedScoringSignals(signals) {

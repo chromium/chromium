@@ -95,6 +95,7 @@ class BidderWorklet : public mojom::BidderWorklet {
       mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
+      const absl::optional<base::TimeDelta> per_buyer_timeout,
       const url::Origin& seller_origin,
       mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
@@ -122,6 +123,7 @@ class BidderWorklet : public mojom::BidderWorklet {
     mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params;
     absl::optional<std::string> auction_signals_json;
     absl::optional<std::string> per_buyer_signals_json;
+    absl::optional<base::TimeDelta> per_buyer_timeout;
     url::Origin seller_origin;
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
     base::Time auction_start_time;
@@ -199,6 +201,7 @@ class BidderWorklet : public mojom::BidderWorklet {
         mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
         const absl::optional<std::string>& auction_signals_json,
         const absl::optional<std::string>& per_buyer_signals_json,
+        const absl::optional<base::TimeDelta> per_buyer_timeout,
         const url::Origin& browser_signal_seller_origin,
         mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
         base::Time auction_start_time,

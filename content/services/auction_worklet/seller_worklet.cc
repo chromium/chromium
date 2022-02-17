@@ -51,10 +51,14 @@ namespace {
 //  'decisionLogicUrl': 'https://www.example-ssp.com/seller.js',
 //  'trustedScoringSignalsUrl': ...,
 //  'interestGroupBuyers': ['https://www.example-dsp.com', 'https://buyer2.com',
-//  ...], 'auctionSignals': {...}, 'sellerSignals': {...}, 'perBuyerSignals':
-//  {'https://www.example-dsp.com': {...},
+//  ...], 'auctionSignals': {...}, 'sellerSignals': {...},
+//  'perBuyerSignals': {'https://www.example-dsp.com': {...},
 //                      'https://www.another-buyer.com': {...},
-//                       ...}
+//                       ...},
+//  'perBuyerTimeouts': {'https://www.example-dsp.com': 50,
+//                       'https://www.another-buyer.com': 200,
+//                       '*': 150,
+//                       ...},
 // }
 bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
                          v8::Local<v8::Context> context,
@@ -110,6 +114,34 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
     }
     auction_config_dict.Set("perBuyerSignals", per_buyer_value);
   }
+
+  v8::Local<v8::Object> per_buyer_timeouts;
+  if (auction_ad_config_non_shared_params.per_buyer_timeouts.has_value()) {
+    per_buyer_timeouts = v8::Object::New(isolate);
+    for (const auto& kv :
+         auction_ad_config_non_shared_params.per_buyer_timeouts.value()) {
+      if (!v8_helper->InsertJsonValue(
+              context, kv.first.Serialize(),
+              base::NumberToString(kv.second.InMilliseconds()),
+              per_buyer_timeouts)) {
+        return false;
+      }
+    }
+  }
+  if (auction_ad_config_non_shared_params.all_buyers_timeout.has_value()) {
+    if (per_buyer_timeouts.IsEmpty())
+      per_buyer_timeouts = v8::Object::New(isolate);
+    if (!v8_helper->InsertJsonValue(
+            context, "*",
+            base::NumberToString(
+                auction_ad_config_non_shared_params.all_buyers_timeout.value()
+                    .InMilliseconds()),
+            per_buyer_timeouts)) {
+      return false;
+    }
+  }
+  if (!per_buyer_timeouts.IsEmpty())
+    auction_config_dict.Set("perBuyerTimeouts", per_buyer_timeouts);
 
   args->push_back(std::move(auction_config_value));
   return true;
@@ -388,7 +420,8 @@ void SellerWorklet::V8State::ScoreAd(
       *debug_id_, "beforeSellerWorkletScoringStart");
   if (!v8_helper_
            ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
-                       "scoreAd", args, errors_out)
+                       "scoreAd", args, /*script_timeout=*/absl::nullopt,
+                       errors_out)
            .ToLocal(&score_ad_result)) {
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
@@ -488,7 +521,8 @@ void SellerWorklet::V8State::ReportResult(
       *debug_id_, "beforeSellerWorkletReportingStart");
   if (!v8_helper_
            ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
-                       "reportResult", args, errors_out)
+                       "reportResult", args, /*script_timeout=*/absl::nullopt,
+                       errors_out)
            .ToLocal(&signals_for_winner_value)) {
     PostReportResultCallbackToUserThread(
         std::move(callback), /*signals_for_winner=*/absl::nullopt,
