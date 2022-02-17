@@ -5,6 +5,7 @@
 
 import collections
 import contextlib
+import glob
 import json
 import logging
 import os
@@ -48,6 +49,8 @@ _LONG_PRESS_TIMEOUT = '1000'
 
 # The snapshot name to load/save when writable_system=True
 _SYSTEM_SNAPSHOT_NAME = 'boot_with_system'
+
+_SDCARD_NAME = 'cr-sdcard.img'
 
 
 class AvdException(Exception):
@@ -313,6 +316,18 @@ class AvdConfig:
         if self.avd_settings.ram_size:
           config_ini_contents['hw.ramSize'] = self.avd_settings.ram_size
 
+        config_ini_contents['hw.sdCard'] = 'yes'
+        if self.avd_settings.sdcard.size:
+          sdcard_path = os.path.join(avd_dir, _SDCARD_NAME)
+          mksdcard_path = os.path.join(os.path.dirname(self._emulator_path),
+                                       'mksdcard')
+          cmd_helper.RunCmd([
+              mksdcard_path,
+              self.avd_settings.sdcard.size,
+              sdcard_path,
+          ])
+          config_ini_contents['hw.sdCard.path'] = sdcard_path
+
       # Start & stop the AVD.
       self._Initialize()
       instance = _AvdInstance(self._emulator_path, self._emulator_home,
@@ -459,7 +474,7 @@ class AvdConfig:
     """
     self._InstallCipdPackages(packages=packages)
     self._MakeWriteable()
-    self._EditConfigs()
+    self._UpdateConfigs()
 
   def _IterVersionedCipdPackages(self, packages):
     pkgs_by_dir = collections.defaultdict(list)
@@ -519,33 +534,30 @@ class AvdConfig:
           mode = mode | stat.S_IWUSR
         os.chmod(path, mode)
 
-  def _EditConfigs(self):
-    avd_dir = self._avd_dir
+  def _UpdateConfigs(self):
+    """Update various properties in config files after installation.
 
-    config_path = self._config_ini_path
-    if os.path.exists(config_path):
-      with open(config_path) as config_file:
-        config_contents = ini.load(config_file)
-    else:
-      config_contents = {}
+    AVD config files contain some properties which can be different between AVD
+    creation and installation, e.g. hw.sdCard.path, which is an absolute path.
+    Update their values so that:
+     * Emulator instance can be booted correctly.
+     * The snapshot can be loaded successfully.
+    """
+    config_files = [self._config_ini_path]
+    # The file hardware.ini within each snapshot need to be updated as well.
+    hw_ini_glob_pattern = os.path.join(self._avd_dir, 'snapshots', '*',
+                                       'hardware.ini')
+    config_files.extend(glob.glob(hw_ini_glob_pattern))
 
-    config_contents['hw.sdCard'] = 'true'
-    if self.avd_settings.sdcard.size:
-      sdcard_path = os.path.join(avd_dir, 'cr-sdcard.img')
-      if not os.path.exists(sdcard_path):
-        mksdcard_path = os.path.join(
-            os.path.dirname(self._emulator_path), 'mksdcard')
-        mksdcard_cmd = [
-            mksdcard_path,
-            self.avd_settings.sdcard.size,
-            sdcard_path,
-        ]
-        cmd_helper.RunCmd(mksdcard_cmd)
+    properties = {}
+    # Update hw.sdCard.path if applicable
+    sdcard_path = os.path.join(self._avd_dir, _SDCARD_NAME)
+    if os.path.exists(sdcard_path):
+      properties['hw.sdCard.path'] = sdcard_path
 
-      config_contents['hw.sdCard.path'] = sdcard_path
-
-    with open(config_path, 'w') as config_file:
-      ini.dump(config_contents, config_file)
+    for config_file in config_files:
+      with ini.update_ini_file(config_file) as config_contents:
+        config_contents.update(properties)
 
   def _Initialize(self):
     if self._initialized:
