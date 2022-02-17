@@ -675,7 +675,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   inline bool IsContainerForContainerQueries() const {
     NOT_DESTROYED();
-    return StyleRef().IsContainerForContainerQueries();
+    if (Element* element = DynamicTo<Element>(GetNode()))
+      return StyleRef().IsContainerForContainerQueries(*element);
+    return false;
   }
 
   inline bool IsStackingContext() const {
