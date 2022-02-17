@@ -167,6 +167,9 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // Handles a finished impression timer for |location|.
   void OnTimerFinished(Location location);
 
+  // Returns the stored results for |location|.
+  std::vector<Result> ResultsForLocation(Location location);
+
   ash::AppListController* const app_list_controller_;
 
   base::ObserverList<Observer> observers_;
@@ -184,6 +187,15 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   std::u16string query_;
   // The most recently launched result.
   absl::optional<Result> launched_result_;
+
+  // Special-case for the results at Location::kList. These need to be
+  // accumulated until the query changes, rather than set like other result
+  // types. The keys are result IDs, and the values are wrapped in an optional
+  // because Result is not default-constructable.
+  //
+  // TODO(crbug.com/1216097): This can be removed once SearchResultListView has
+  // its notifier calls updated.
+  base::flat_map<std::string, absl::optional<Result>> list_results_;
 
   base::WeakPtrFactory<AppListNotifierImpl> weak_ptr_factory_{this};
 };

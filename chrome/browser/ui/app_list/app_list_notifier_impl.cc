@@ -57,7 +57,12 @@ void AppListNotifierImpl::NotifyLaunched(Location location,
 void AppListNotifierImpl::NotifyResultsUpdated(
     Location location,
     const std::vector<Result>& results) {
-  results_[location] = results;
+  if (location == Location::kList) {
+    for (const auto& result : results)
+      list_results_[result.id] = result;
+  } else {
+    results_[location] = results;
+  }
 }
 
 void AppListNotifierImpl::NotifySearchQueryChanged(
@@ -81,6 +86,9 @@ void AppListNotifierImpl::NotifySearchQueryChanged(
   // an abandon triggered by the query change correctly uses the pre-abandon
   // query.
   query_ = query;
+
+  results_.clear();
+  list_results_.clear();
 
   for (auto& observer : observers_) {
     observer.OnQueryChanged(query);
@@ -131,6 +139,20 @@ void AppListNotifierImpl::OnTimerFinished(Location location) {
   DoStateTransition(location, State::kSeen);
 }
 
+std::vector<AppListNotifierImpl::Result>
+AppListNotifierImpl::ResultsForLocation(Location location) {
+  // Special case kList, see header comment on |list_results_|.
+  if (location == Location::kList) {
+    std::vector<Result> results;
+    for (const auto& id_result : list_results_) {
+      results.push_back(id_result.second.value());
+    }
+    return results;
+  }
+
+  return results_[location];
+}
+
 void AppListNotifierImpl::DoStateTransition(Location location,
                                             State new_state) {
   const State old_state = states_[location];
@@ -164,22 +186,22 @@ void AppListNotifierImpl::DoStateTransition(Location location,
       (new_state == State::kSeen || new_state == State::kLaunched ||
        new_state == State::kIgnored)) {
     for (auto& observer : observers_) {
-      observer.OnImpression(location, results_[location], query_);
+      observer.OnImpression(location, ResultsForLocation(location), query_);
     }
   }
 
   // Notify of launch on * -> kLaunched.
   if (new_state == State::kLaunched && launched_result_.has_value()) {
     for (auto& observer : observers_) {
-      observer.OnLaunch(location, launched_result_.value(), results_[location],
-                        query_);
+      observer.OnLaunch(location, launched_result_.value(),
+                        ResultsForLocation(location), query_);
     }
   }
 
   // Notify of ignore on * -> kIgnored.
   if (new_state == State::kIgnored) {
     for (auto& observer : observers_) {
-      observer.OnIgnore(location, results_[location], query_);
+      observer.OnIgnore(location, ResultsForLocation(location), query_);
     }
   }
 
@@ -187,7 +209,7 @@ void AppListNotifierImpl::DoStateTransition(Location location,
   if (old_state == State::kSeen &&
       (new_state == State::kNone || new_state == State::kShown)) {
     for (auto& observer : observers_) {
-      observer.OnAbandon(location, results_[location], query_);
+      observer.OnAbandon(location, ResultsForLocation(location), query_);
     }
   }
 }
