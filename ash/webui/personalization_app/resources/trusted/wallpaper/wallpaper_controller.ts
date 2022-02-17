@@ -232,8 +232,7 @@ export async function selectWallpaper(
       return provider.selectLocalImage(
           image, layout, /*preview_mode=*/ shouldPreview);
     } else if (isGooglePhotosPhoto(image)) {
-      // TODO(b/218331763): Replace with mojo interface call.
-      return {success: false};
+      return provider.selectGooglePhotosPhoto(image.id);
     } else {
       console.warn('Image must be a local image or a WallpaperImage');
       return {success: false};

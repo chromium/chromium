@@ -302,7 +302,9 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     assertEquals(personalizationStore.data.wallpaper.pendingSelected, photo);
 
     // Wait for and verify hard-coded selection failure.
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    const methodName = 'selectGooglePhotosPhoto';
+    assertEquals(await wallpaperProvider.whenCalled(methodName), photo.id);
+    await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
     assertEquals(personalizationStore.data.wallpaper.loading.setImage, 0);
     assertEquals(personalizationStore.data.wallpaper.loading.selected, false);
     assertEquals(personalizationStore.data.wallpaper.pendingSelected, null);
