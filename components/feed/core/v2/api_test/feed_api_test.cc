@@ -417,6 +417,7 @@ void TestFeedNetwork::SendQueryRequest(
     const feedwire::Request& request,
     const AccountInfo& account_info,
     base::OnceCallback<void(QueryRequestResult)> callback) {
+  sent_request_types_.push_back(NetworkRequestType::kFeedQuery);
   last_account_info = account_info;
   ++send_query_call_count;
   // Emulate a successful response.
@@ -480,6 +481,7 @@ void TestFeedNetwork::SendDiscoverApiRequest(
     const AccountInfo& account_info,
     absl::optional<RequestMetadata> request_metadata,
     base::OnceCallback<void(RawResponse)> callback) {
+  sent_request_types_.push_back(request_type);
   last_account_info = account_info;
   api_requests_sent_[request_type] = request_bytes;
   ++api_request_count_[request_type];

@@ -127,7 +127,6 @@ class TextProtoPrinter {
     ss_ << base::GetQuotedJSONString(v);
     return *this;
   }
-
   TextProtoPrinter& operator<<(const feedwire::ContentId& v) {
     BeginMessage();
     PRINT_FIELD(content_domain);
@@ -175,6 +174,10 @@ class TextProtoPrinter {
     PRINT_FIELD(screen_height_in_pixels);
     EndMessage();
     return *this;
+  }
+  TextProtoPrinter& operator<<(
+      const feedstore::PendingWebFeedOperation::Kind kind) {
+    return *this << feedstore::PendingWebFeedOperation_Kind_Name(kind);
   }
   TextProtoPrinter& operator<<(const feedstore::Record& v) {
     BeginMessage();
@@ -245,6 +248,15 @@ class TextProtoPrinter {
     PRINT_FIELD(follower_count);
     PRINT_FIELD(state);
     PRINT_FIELD(matchers);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedstore::PendingWebFeedOperation& v) {
+    BeginMessage();
+    PRINT_FIELD(id);
+    PRINT_FIELD(kind);
+    PRINT_FIELD(web_feed_id);
+    PRINT_FIELD(attempts);
     EndMessage();
     return *this;
   }
@@ -487,39 +499,40 @@ class TextProtoPrinter {
   std::stringstream ss_;
 };  // namespace feed
 
-#define DECLARE_PRINTER(PROTO_TYPE)              \
-  std::string ToTextProto(const PROTO_TYPE& v) { \
-    return TextProtoPrinter::ToString(v);        \
+#define DECLARE_PRINTER(NS, PROTO_TYPE)              \
+  std::string ToTextProto(const NS::PROTO_TYPE& v) { \
+    return TextProtoPrinter::ToString(v);            \
   }
 
-DECLARE_PRINTER(feedstore::Content)
-DECLARE_PRINTER(feedstore::DataOperation)
-DECLARE_PRINTER(feedstore::Image)
-DECLARE_PRINTER(feedstore::Metadata)
-DECLARE_PRINTER(feedstore::RecommendedWebFeedIndex)
-DECLARE_PRINTER(feedstore::Record)
-DECLARE_PRINTER(feedstore::StoredAction)
-DECLARE_PRINTER(feedstore::StreamData)
-DECLARE_PRINTER(feedstore::StreamSharedState)
-DECLARE_PRINTER(feedstore::StreamStructure)
-DECLARE_PRINTER(feedstore::StreamStructureSet)
-DECLARE_PRINTER(feedstore::SubscribedWebFeeds)
-DECLARE_PRINTER(feedstore::WebFeedInfo)
-DECLARE_PRINTER(feedui::StreamUpdate)
-DECLARE_PRINTER(feedwire::ActionPayload)
-DECLARE_PRINTER(feedwire::ClientInfo)
-DECLARE_PRINTER(feedwire::ContentId)
-DECLARE_PRINTER(feedwire::DisplayInfo)
-DECLARE_PRINTER(feedwire::UploadActionsRequest)
-DECLARE_PRINTER(feedwire::UploadActionsResponse)
-DECLARE_PRINTER(feedwire::Version)
-DECLARE_PRINTER(feedwire::webfeed::Image)
-DECLARE_PRINTER(feedwire::webfeed::ListRecommendedWebFeedsRequest)
-DECLARE_PRINTER(feedwire::webfeed::ListRecommendedWebFeedsResponse)
-DECLARE_PRINTER(feedwire::webfeed::ListWebFeedsRequest)
-DECLARE_PRINTER(feedwire::webfeed::ListWebFeedsResponse)
-DECLARE_PRINTER(feedwire::webfeed::WebFeed)
-DECLARE_PRINTER(feedwire::webfeed::WebFeedMatcher)
+DECLARE_PRINTER(feedstore, Content)
+DECLARE_PRINTER(feedstore, DataOperation)
+DECLARE_PRINTER(feedstore, Image)
+DECLARE_PRINTER(feedstore, Metadata)
+DECLARE_PRINTER(feedstore, RecommendedWebFeedIndex)
+DECLARE_PRINTER(feedstore, Record)
+DECLARE_PRINTER(feedstore, StoredAction)
+DECLARE_PRINTER(feedstore, StreamData)
+DECLARE_PRINTER(feedstore, StreamSharedState)
+DECLARE_PRINTER(feedstore, StreamStructure)
+DECLARE_PRINTER(feedstore, StreamStructureSet)
+DECLARE_PRINTER(feedstore, SubscribedWebFeeds)
+DECLARE_PRINTER(feedstore, WebFeedInfo)
+DECLARE_PRINTER(feedstore, PendingWebFeedOperation)
+DECLARE_PRINTER(feedui, StreamUpdate)
+DECLARE_PRINTER(feedwire, ActionPayload)
+DECLARE_PRINTER(feedwire, ClientInfo)
+DECLARE_PRINTER(feedwire, ContentId)
+DECLARE_PRINTER(feedwire, DisplayInfo)
+DECLARE_PRINTER(feedwire, UploadActionsRequest)
+DECLARE_PRINTER(feedwire, UploadActionsResponse)
+DECLARE_PRINTER(feedwire, Version)
+DECLARE_PRINTER(feedwire::webfeed, Image)
+DECLARE_PRINTER(feedwire::webfeed, ListRecommendedWebFeedsRequest)
+DECLARE_PRINTER(feedwire::webfeed, ListRecommendedWebFeedsResponse)
+DECLARE_PRINTER(feedwire::webfeed, ListWebFeedsRequest)
+DECLARE_PRINTER(feedwire::webfeed, ListWebFeedsResponse)
+DECLARE_PRINTER(feedwire::webfeed, WebFeed)
+DECLARE_PRINTER(feedwire::webfeed, WebFeedMatcher)
 
 #undef DECLARE_PRINTER
 

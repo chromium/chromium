@@ -488,6 +488,11 @@ std::vector<WebFeedIndex::Entry> WebFeedIndex::GetRecommendedEntriesForTesting()
   return recommended_->entries();
 }
 
+std::vector<WebFeedIndex::Entry> WebFeedIndex::GetSubscribedEntriesForTesting()
+    const {
+  return subscribed_->entries();
+}
+
 void WebFeedIndex::DumpStateForDebugging(std::ostream& os) {
   os << "recommended: ";
   recommended_->DumpStateForDebugging(os);

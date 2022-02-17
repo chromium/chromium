@@ -28,6 +28,7 @@ option optimize_for = LITE_RUNTIME;
 // subs                             -> subscribed_web_feeds
 // recommendedIndex                 -> recommended_web_feed_index
 // R/<web_feed_id>                  -> recommended_web_feed
+// W/<operation-id>                 -> pending_web_feed_operation
 message Record {
   oneof data {
     StreamData stream_data = 1;
@@ -39,6 +40,7 @@ message Record {
     SubscribedWebFeeds subscribed_web_feeds = 7;
     WebFeedInfo recommended_web_feed = 8;
     RecommendedWebFeedIndex recommended_web_feed_index = 9;
+    PendingWebFeedOperation pending_web_feed_operation = 10;
   }
 }
 
@@ -263,4 +265,20 @@ message WebFeedInfo {
   int64 follower_count = 8;
   State state = 9;
   repeated feedwire.webfeed.WebFeedMatcher matchers = 10;
+}
+
+message PendingWebFeedOperation {
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    SUBSCRIBE = 1;
+    UNSUBSCRIBE = 2;
+  }
+  // Unique ID, for sorting operations.
+  int64 id = 1;
+  // The operation kind.
+  Kind kind = 2;
+  // The web feed ID to either subscribe or unsubscribe.
+  string web_feed_id = 3;
+  // Number of times the operation has been attempted.
+  int32 attempts = 4;
 }

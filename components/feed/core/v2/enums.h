@@ -24,6 +24,7 @@ enum class NetworkRequestType : int {
   kQueryBackgroundFeed = 9,
   kQueryNextPage = 10,
 };
+std::ostream& operator<<(std::ostream& out, NetworkRequestType value);
 
 // Denotes how the stream content loading is used for.
 enum class LoadType {

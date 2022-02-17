@@ -16,6 +16,7 @@
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
+#include "components/feed/core/v2/web_feed_subscriptions/web_feed_types.h"
 
 namespace feed {
 
@@ -38,7 +39,7 @@ void UnsubscribeFromWebFeedTask::Run() {
     return;
   }
 
-  WebFeedSubscriptionCoordinator::SubscriptionInfo info =
+  WebFeedSubscriptionInfo info =
       stream_.subscriptions().FindSubscriptionInfoById(web_feed_name_);
   if (info.status != WebFeedSubscriptionStatus::kSubscribed) {
     Done(WebFeedSubscriptionRequestStatus::kSuccess);

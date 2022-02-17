@@ -11,6 +11,36 @@ namespace feed {
 
 // Included for debug builds only for reduced binary size.
 
+std::ostream& operator<<(std::ostream& out, NetworkRequestType value) {
+#ifndef NDEBUG
+  switch (value) {
+    case NetworkRequestType::kFeedQuery:
+      return out << "kFeedQuery";
+    case NetworkRequestType::kUploadActions:
+      return out << "kUploadActions";
+    case NetworkRequestType::kNextPage:
+      return out << "kNextPage";
+    case NetworkRequestType::kListWebFeeds:
+      return out << "kListWebFeeds";
+    case NetworkRequestType::kUnfollowWebFeed:
+      return out << "kUnfollowWebFeed";
+    case NetworkRequestType::kFollowWebFeed:
+      return out << "kFollowWebFeed";
+    case NetworkRequestType::kListRecommendedWebFeeds:
+      return out << "kListRecommendedWebFeeds";
+    case NetworkRequestType::kWebFeedListContents:
+      return out << "kWebFeedListContents";
+    case NetworkRequestType::kQueryInteractiveFeed:
+      return out << "kQueryInteractiveFeed";
+    case NetworkRequestType::kQueryBackgroundFeed:
+      return out << "kQueryBackgroundFeed";
+    case NetworkRequestType::kQueryNextPage:
+      return out << "kQueryNextPage";
+  }
+#endif
+  return out << (static_cast<int>(value));
+}
+
 std::ostream& operator<<(std::ostream& out, LoadStreamStatus value) {
 #ifndef NDEBUG
   switch (value) {

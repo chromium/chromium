@@ -38,10 +38,12 @@ namespace {
 // subs                             -> subscribed_web_feeds
 // recommendedIndex                 -> recommended_web_feed_index
 // R/<web_feed_id>                  -> recommended_web_feed
+// W/<operation-id>                 -> pending_web_feed_operation
 constexpr char kLocalActionPrefix[] = "a/";
 constexpr char kMetadataKey[] = "m";
 constexpr char kSubscribedFeedsKey[] = "subs";
 constexpr char kRecommendedIndexKey[] = "recommendedIndex";
+constexpr char kPendingWebFeedOperationPrefix[] = "W/";
 
 leveldb::ReadOptions CreateReadOptions() {
   leveldb::ReadOptions opts;
@@ -153,6 +155,10 @@ std::string KeyForRecord(const feedstore::Record& record) {
       return base::StrCat({"R/", record.recommended_web_feed().web_feed_id()});
     case feedstore::Record::kRecommendedWebFeedIndex:
       return kRecommendedIndexKey;
+    case feedstore::Record::kPendingWebFeedOperation:
+      return base::StrCat(
+          {"W/",
+           base::NumberToString(record.pending_web_feed_operation().id())});
     case feedstore::Record::DATA_NOT_SET:
       break;
   }
@@ -221,6 +227,12 @@ feedstore::Record MakeRecord(feedstore::WebFeedInfo web_feed_info) {
   return record;
 }
 
+feedstore::Record MakeRecord(feedstore::PendingWebFeedOperation operation) {
+  feedstore::Record record;
+  *record.mutable_pending_web_feed_operation() = std::move(operation);
+  return record;
+}
+
 template <typename T>
 std::pair<std::string, feedstore::Record> MakeKeyAndRecord(T record_data) {
   std::pair<std::string, feedstore::Record> result;
@@ -285,6 +297,13 @@ FeedStore::StartupData::StartupData(StartupData&&) = default;
 FeedStore::StartupData::~StartupData() = default;
 FeedStore::StartupData& FeedStore::StartupData::operator=(StartupData&&) =
     default;
+
+FeedStore::WebFeedStartupData::WebFeedStartupData() = default;
+FeedStore::WebFeedStartupData::WebFeedStartupData(WebFeedStartupData&&) =
+    default;
+FeedStore::WebFeedStartupData::~WebFeedStartupData() = default;
+FeedStore::WebFeedStartupData& FeedStore::WebFeedStartupData::operator=(
+    WebFeedStartupData&&) = default;
 
 FeedStore::FeedStore(
     std::unique_ptr<leveldb_proto::ProtoDatabase<feedstore::Record>> database)
@@ -653,9 +672,15 @@ void FeedStore::ReadMetadata(
 
 void FeedStore::ReadWebFeedStartupData(
     base::OnceCallback<void(WebFeedStartupData)> callback) {
-  ReadMany({kSubscribedFeedsKey, kRecommendedIndexKey},
-           base::BindOnce(&FeedStore::OnReadWebFeedStartupDataFinished,
-                          GetWeakPtr(), std::move(callback)));
+  auto is_startup_data_filter = [](const std::string& key) {
+    return key == kSubscribedFeedsKey || key == kRecommendedIndexKey ||
+           base::StartsWith(key, kPendingWebFeedOperationPrefix);
+  };
+
+  database_->LoadEntriesWithFilter(
+      base::BindRepeating(is_startup_data_filter),
+      base::BindOnce(&FeedStore::OnReadWebFeedStartupDataFinished, GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void FeedStore::OnReadWebFeedStartupDataFinished(
@@ -671,6 +696,9 @@ void FeedStore::OnReadWebFeedStartupDataFinished(
       } else if (r.has_subscribed_web_feeds()) {
         result.subscribed_web_feeds =
             std::move(*r.mutable_subscribed_web_feeds());
+      } else if (r.has_pending_web_feed_operation()) {
+        result.pending_operations.push_back(
+            std::move(*r.mutable_pending_web_feed_operation()));
       } else {
         DLOG(ERROR) << "OnReadWebFeedStartupDataFinished: Got record with no "
                        "useful data. data_case="
@@ -788,6 +816,22 @@ void FeedStore::ReadRecommendedWebFeedInfoFinished(
 
   std::move(callback).Run(
       base::WrapUnique(record->release_recommended_web_feed()));
+}
+
+void FeedStore::WritePendingWebFeedOperation(
+    feedstore::PendingWebFeedOperation operation) {
+  Write({MakeRecord(std::move(operation))}, base::DoNothing());
+}
+
+void FeedStore::RemovePendingWebFeedOperation(int64_t operation_id) {
+  auto keys_to_remove = std::make_unique<std::vector<std::string>>();
+  keys_to_remove->push_back(base::StrCat(
+      {kPendingWebFeedOperationPrefix, base::NumberToString(operation_id)}));
+
+  database_->UpdateEntries(
+      /*entries_to_save=*/std::make_unique<
+          std::vector<std::pair<std::string, feedstore::Record>>>(),
+      std::move(keys_to_remove), base::DoNothing());
 }
 
 }  // namespace feed

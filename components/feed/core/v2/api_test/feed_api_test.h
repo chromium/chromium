@@ -264,6 +264,9 @@ class TestFeedNetwork : public FeedNetwork {
     }
     InjectResponse(response);
   }
+  void InjectListWebFeedsResponse(const FeedNetwork::RawResponse& response) {
+    InjectApiRawResponse<ListWebFeedsDiscoverApi>(response);
+  }
 
   void InjectEmptyActionRequestResult();
 
@@ -307,6 +310,10 @@ class TestFeedNetwork : public FeedNetwork {
     return GetApiRequestCount<ListWebFeedsDiscoverApi>();
   }
 
+  std::vector<NetworkRequestType> sent_request_types() const {
+    return sent_request_types_;
+  }
+
   void ClearTestData();
 
   // Enable (or disable) manual triggering of sending responses. When enabled,
@@ -335,6 +342,7 @@ class TestFeedNetwork : public FeedNetwork {
       injected_api_responses_;
   std::map<NetworkRequestType, std::string> api_requests_sent_;
   std::map<NetworkRequestType, int> api_request_count_;
+  std::vector<NetworkRequestType> sent_request_types_;
   absl::optional<feedwire::Response> injected_response_;
 };
 

@@ -288,6 +288,7 @@ static void JNI_WebFeedBridge_FollowWebFeedById(
     return;
   }
   subscriptions->FollowWebFeed(ToNativeWebFeedId(env, webFeedId),
+                               /*is_durable_request=*/false,
                                std::move(callback));
 }
 
@@ -304,6 +305,7 @@ static void JNI_WebFeedBridge_UnfollowWebFeed(
     return;
   }
   subscriptions->UnfollowWebFeed(ToNativeWebFeedId(env, webFeedId),
+                                 /*is_durable_request=*/false,
                                  std::move(callback));
 }
 

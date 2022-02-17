@@ -25,6 +25,8 @@ class SubscribeToWebFeedTask : public offline_pages::Task {
   struct Request {
     WebFeedPageInformation page_info;
     std::string web_feed_id;
+    // Whether the subscription request will be stored and retried if failed.
+    bool durable = false;
   };
   struct Result {
     WebFeedSubscriptionRequestStatus request_status =
