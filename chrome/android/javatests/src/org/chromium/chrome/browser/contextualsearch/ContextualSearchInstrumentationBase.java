@@ -107,6 +107,8 @@ public class ContextualSearchInstrumentationBase {
     // TODO(donnd): get these from TemplateURL once the low-priority or Contextual Search API
     // is fully supported.
     private static final String LOW_PRIORITY_SEARCH_ENDPOINT = "/s?";
+    private static final String NORMAL_PRIORITY_SEARCH_ENDPOINT = "/search?";
+    private static final String LOW_PRIORITY_INVALID_SEARCH_ENDPOINT = "/s/invalid";
     private static final String CONTEXTUAL_SEARCH_PREFETCH_PARAM = "&pf=c";
 
     //--------------------------------------------------------------------------------------------
@@ -116,7 +118,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * This represents the current fully-launched configuration.
      */
-    private static final ImmutableMap<String, Boolean> ENABLE_NONE =
+    protected static final ImmutableMap<String, Boolean> ENABLE_NONE =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, false,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, false);
@@ -173,9 +175,9 @@ public class ContextualSearchInstrumentationBase {
     protected ContextualSearchPolicy mPolicy;
     protected ContextualSearchPanel mPanel;
     protected ContextualSearchFakeServer mFakeServer;
-
-    protected String mTestPage;
     protected EmbeddedTestServer mTestServer;
+
+    protected String mTestPage = "/chrome/test/data/android/contextualsearch/simple_test.html";
 
     private ActivityMonitor mActivityMonitor;
     private ContextualSearchSelectionController mSelectionController;
@@ -491,7 +493,7 @@ public class ContextualSearchInstrumentationBase {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
                     getSelectionPopupController().isSelectActionBarShowing(), Matchers.is(visible));
-        });
+        }, TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
     }
 
     protected SelectionPopupController getSelectionPopupController() {
@@ -589,6 +591,11 @@ public class ContextualSearchInstrumentationBase {
     protected FakeResolveSearch simulateResolveSearch(String nodeId)
             throws InterruptedException, TimeoutException {
         return simulateResolvableSearchAndAssertResolveAndPreload(nodeId, true);
+    }
+
+    /** Simulates a resolve search on the default node on the page. */
+    protected void simulateResolveSearch() throws Exception {
+        simulateResolveSearch(SEARCH_NODE);
     }
 
     /**
@@ -696,7 +703,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * @return The Panel's WebContents.
      */
-    private WebContents getPanelWebContents() {
+    protected WebContents getPanelWebContents() {
         return mPanel.getWebContents();
     }
 
@@ -710,22 +717,38 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Asserts that the Panel's WebContents is created.
      */
-    private void assertWebContentsCreated() {
+    protected void assertWebContentsCreated() {
         Assert.assertNotNull(getPanelWebContents());
     }
 
     /**
      * Asserts that the Panel's WebContents is not created.
      */
-    private void assertNoWebContents() {
+    protected void assertNoWebContents() {
         Assert.assertNull(getPanelWebContents());
+    }
+
+    /**
+     * Asserts that the Panel's WebContents is visible.
+     */
+    protected void assertWebContentsVisible() {
+        Assert.assertTrue(isWebContentsVisible());
     }
 
     /**
      * Asserts that the Panel's WebContents.onShow() method was never called.
      */
-    private void assertNeverCalledWebContentsOnShow() {
+    protected void assertNeverCalledWebContentsOnShow() {
         Assert.assertFalse(mFakeServer.didEverCallWebContentsOnShow());
+    }
+
+    /**
+     * Asserts that the Panel's WebContents is created
+     */
+    protected void assertWebContentsCreatedButNeverMadeVisible() {
+        assertWebContentsCreated();
+        Assert.assertFalse(isWebContentsVisible());
+        assertNeverCalledWebContentsOnShow();
     }
 
     //============================================================================================
@@ -829,7 +852,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Asserts that a Search Term has been requested.
      */
-    private void assertSearchTermRequested() {
+    protected void assertSearchTermRequested() {
         Assert.assertNotNull(mFakeServer.getSearchTermRequested());
     }
 
@@ -860,7 +883,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Asserts that no URL has been loaded in the Overlay Panel.
      */
-    private void assertLoadedNoUrl() {
+    protected void assertLoadedNoUrl() {
         Assert.assertTrue("Requested a search or preload when none was expected!",
                 mFakeServer.getLoadedUrl() == null);
     }
@@ -868,7 +891,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Asserts that a low-priority URL has been loaded in the Overlay Panel.
      */
-    private void assertLoadedLowPriorityUrl() {
+    protected void assertLoadedLowPriorityUrl() {
         String message = "Expected a low priority search request URL, but got "
                 + (mFakeServer.getLoadedUrl() != null ? mFakeServer.getLoadedUrl() : "null");
         Assert.assertTrue(message,
@@ -880,10 +903,54 @@ public class ContextualSearchInstrumentationBase {
     }
 
     /**
+     * Asserts that a low-priority URL that is intentionally invalid has been loaded in the Overlay
+     * Panel (in order to produce an error).
+     */
+    protected void assertLoadedLowPriorityInvalidUrl() {
+        String message = "Expected a low priority invalid search request URL, but got "
+                + (String.valueOf(mFakeServer.getLoadedUrl()));
+        Assert.assertTrue(message,
+                mFakeServer.getLoadedUrl() != null
+                        && mFakeServer.getLoadedUrl().contains(
+                                LOW_PRIORITY_INVALID_SEARCH_ENDPOINT));
+        Assert.assertTrue("Low priority request does not have the required prefetch parameter!",
+                mFakeServer.getLoadedUrl() != null
+                        && mFakeServer.getLoadedUrl().contains(CONTEXTUAL_SEARCH_PREFETCH_PARAM));
+    }
+
+    /**
+     * Asserts that a normal priority URL has been loaded in the Overlay Panel.
+     */
+    protected void assertLoadedNormalPriorityUrl() {
+        String message = "Expected a normal priority search request URL, but got "
+                + (mFakeServer.getLoadedUrl() != null ? mFakeServer.getLoadedUrl() : "null");
+        Assert.assertTrue(message,
+                mFakeServer.getLoadedUrl() != null
+                        && mFakeServer.getLoadedUrl().contains(NORMAL_PRIORITY_SEARCH_ENDPOINT));
+        Assert.assertTrue(
+                "Normal priority request should not have the prefetch parameter, but did!",
+                mFakeServer.getLoadedUrl() != null
+                        && !mFakeServer.getLoadedUrl().contains(CONTEXTUAL_SEARCH_PREFETCH_PARAM));
+    }
+
+    /**
+     * Waits for a Normal priority URL to be loaded, or asserts that the load never happened.
+     * This is needed when we test with a live internet connection and an invalid url fails to
+     * load (as expected.  See crbug.com/682953 for background.
+     */
+    protected void waitForNormalPriorityUrlLoaded() {
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(mFakeServer.getLoadedUrl(), Matchers.notNullValue());
+            Criteria.checkThat(mFakeServer.getLoadedUrl(),
+                    Matchers.containsString(NORMAL_PRIORITY_SEARCH_ENDPOINT));
+        }, TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
+    }
+
+    /**
      * Asserts that no URLs have been loaded in the Overlay Panel since the last {@link
      * ContextualSearchFakeServer#reset}.
      */
-    private void assertNoSearchesLoaded() {
+    protected void assertNoSearchesLoaded() {
         Assert.assertEquals(0, mFakeServer.getLoadedUrlCount());
         assertLoadedNoUrl();
     }
@@ -927,7 +994,7 @@ public class ContextualSearchInstrumentationBase {
             Criteria.checkThat(mPanel, Matchers.notNullValue());
             Criteria.checkThat(mPanel.getPanelState(), Matchers.is(state));
             Criteria.checkThat(mPanel.isHeightAnimationRunning(), Matchers.is(false));
-        });
+        }, TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
     }
 
     /**
@@ -938,8 +1005,9 @@ public class ContextualSearchInstrumentationBase {
      * until it has been dissolved.
      */
     private void waitForSelectionEmpty() {
-        CriteriaHelper.pollUiThread(
-                () -> mSelectionController.isSelectionEmpty(), "Selection never empty.");
+        CriteriaHelper.pollUiThread(()
+                                            -> mSelectionController.isSelectionEmpty(),
+                "Selection never empty.", TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
     }
 
     /**
@@ -950,7 +1018,7 @@ public class ContextualSearchInstrumentationBase {
         waitForSelectionEmpty();
     }
 
-    private void waitToPreventDoubleTapRecognition() throws InterruptedException {
+    protected void waitToPreventDoubleTapRecognition() throws InterruptedException {
         // Avoid issues with double-tap detection by ensuring sequential taps
         // aren't treated as such. Double-tapping can also select words much as
         // longpress, in turn showing the pins and preventing contextual tap
@@ -999,6 +1067,13 @@ public class ContextualSearchInstrumentationBase {
         TouchCommon.dragTo(sActivityTestRule.getActivity(), dragEndX, dragEndX, dragEndY, dragEndY,
                 halfCount, downTime);
         TouchCommon.dragEnd(sActivityTestRule.getActivity(), dragEndX, dragEndY, downTime);
+    }
+
+    /**
+     * Swipes the panel down to its peeked state.
+     */
+    protected void swipePanelDown() {
+        swipe(0.5f, 0.55f, 0.5f, 0.95f, 100);
     }
 
     /**
