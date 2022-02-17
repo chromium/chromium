@@ -200,39 +200,34 @@ class ReportQueryView : public views::Button {
     auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
     layout->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetMainAxisAlignment(views::LayoutAlignment::kStart);
-    SetBackground(views::CreateSolidBackground(gfx::kGoogleBlue050));
 
-    auto* dogfood_icon = AddChildView(std::make_unique<views::ImageView>());
-    dogfood_icon->SetBorder(
+    dogfood_icon_ = AddChildView(std::make_unique<views::ImageView>());
+    dogfood_icon_->SetBorder(
         views::CreateEmptyBorder(gfx::Insets(kDogfoodIconBorderDip)));
-    dogfood_icon->SetImage(gfx::CreateVectorIcon(
-        vector_icons::kDogfoodIcon, kDogfoodIconSizeDip, gfx::kGoogleBlue600));
 
-    auto* description_label = AddChildView(std::make_unique<Label>(
+    description_label_ = AddChildView(std::make_unique<Label>(
         l10n_util::GetStringUTF16(
             IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_INTERNAL_LABEL),
         Label::CustomFont{gfx::FontList({kGoogleSansFont}, gfx::Font::ITALIC,
                                         kReportQueryViewFontSize,
                                         gfx::Font::Weight::NORMAL)}));
-    description_label->SetHorizontalAlignment(
+    description_label_->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_LEFT);
-    description_label->SetEnabledColor(gfx::kGoogleBlue600);
 
-    auto* report_label = AddChildView(std::make_unique<Label>(
+    report_label_ = AddChildView(std::make_unique<Label>(
         l10n_util::GetStringUTF16(
             IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL),
         Label::CustomFont{gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
                                         kReportQueryViewFontSize,
                                         gfx::Font::Weight::MEDIUM)}));
-    report_label->SetProperty(
+    report_label_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                  views::MaximumFlexSizeRule::kUnbounded)
             .WithAlignment(views::LayoutAlignment::kEnd));
-    report_label->SetProperty(
+    report_label_->SetProperty(
         views::kMarginsKey, gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0,
                                         /*right=*/kReportQueryButtonMarginDip));
-    report_label->SetEnabledColor(gfx::kGoogleBlue600);
   }
 
   // Disallow copy and assign.
@@ -240,6 +235,32 @@ class ReportQueryView : public views::Button {
   ReportQueryView& operator=(const ReportQueryView&) = delete;
 
   ~ReportQueryView() override = default;
+
+  // views::View:
+  void OnThemeChanged() override {
+    views::Button::OnThemeChanged();
+
+    const bool should_use_dark_colors = GetNativeTheme()->ShouldUseDarkColors();
+
+    // Hard code color for dark mode since we use special specs for this
+    // temporary view. Will remove the usage after we remove this view.
+    const auto background_color =
+        should_use_dark_colors ? SkColorSetA(gfx::kGoogleBlue300, 0x4C /*30%*/)
+                               : gfx::kGoogleBlue050;
+    const auto foreground_color =
+        should_use_dark_colors ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
+
+    SetBackground(views::CreateSolidBackground(background_color));
+    dogfood_icon_->SetImage(gfx::CreateVectorIcon(
+        vector_icons::kDogfoodIcon, kDogfoodIconSizeDip, foreground_color));
+    description_label_->SetEnabledColor(foreground_color);
+    report_label_->SetEnabledColor(foreground_color);
+  }
+
+ private:
+  views::ImageView* dogfood_icon_ = nullptr;
+  views::Label* description_label_ = nullptr;
+  views::Label* report_label_ = nullptr;
 };
 
 BEGIN_METADATA(ReportQueryView, views::Button)
