@@ -9,6 +9,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -37,6 +38,18 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               SetFledgeJoiningAllowed,
               ((const std::string&), bool),
               (const override));
+  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
+              GetCurrentTopTopics,
+              (),
+              (const override));
+  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
+              GetBlockedTopics,
+              (),
+              (const override));
+  MOCK_METHOD(void,
+              SetTopicAllowed,
+              (privacy_sandbox::CanonicalTopic, bool),
+              (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(
@@ -90,6 +103,22 @@ void ValidateFledgeInfo(content::TestWebUI* web_ui,
   for (size_t i = 0; i < expected_joining_sites.size(); i++) {
     EXPECT_EQ(expected_joining_sites[i],
               joining_sites->GetListDeprecated()[i].GetString());
+  }
+}
+
+void ValidateTopicsInfo(
+    std::vector<privacy_sandbox::CanonicalTopic> expected_topics,
+    base::Value::ConstListView actual_topics) {
+  ASSERT_EQ(expected_topics.size(), actual_topics.size());
+  for (size_t i = 0; i < expected_topics.size(); i++) {
+    const auto& actual_topic = actual_topics[i];
+    const auto& expected_topic = expected_topics[i];
+    ASSERT_TRUE(actual_topic.is_dict());
+    ASSERT_EQ(expected_topic.topic_id(), actual_topic.FindIntKey("topicId"));
+    ASSERT_EQ(expected_topic.taxonomy_version(),
+              actual_topic.FindIntKey("taxonomyVersion"));
+    ASSERT_EQ(expected_topic.GetLocalizedRepresentation(),
+              base::UTF8ToUTF16(*actual_topic.FindStringKey("displayString")));
   }
 }
 
@@ -233,6 +262,57 @@ TEST_F(PrivacySandboxHandlerTestMockService, GetFledgeState) {
 
   std::move(callback_two).Run(kJoiningSites2);
   ValidateFledgeInfo(web_ui(), kCallbackId2, kJoiningSites2, kBlockedSites2);
+}
+
+TEST_F(PrivacySandboxHandlerTestMockService, SetTopicAllowed) {
+  // Confirm that the handler correctly constructs the CanonicalTopic and
+  // passes it to the PrivacySandboxService.
+  const privacy_sandbox::CanonicalTopic kTestTopic(
+      1, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              SetTopicAllowed(kTestTopic, false))
+      .Times(1);
+  base::Value args(base::Value::Type::LIST);
+  args.Append(kTestTopic.topic_id());
+  args.Append(kTestTopic.taxonomy_version());
+  args.Append(false);
+  handler()->HandleSetTopicAllowed(args.GetListDeprecated());
+}
+
+TEST_F(PrivacySandboxHandlerTestMockService, GetTopicsState) {
+  const std::vector<privacy_sandbox::CanonicalTopic> kBlockedTopics = {
+      privacy_sandbox::CanonicalTopic(
+          1, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY),
+      privacy_sandbox::CanonicalTopic(
+          2, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY)};
+  const std::vector<privacy_sandbox::CanonicalTopic> kTopTopics = {
+      privacy_sandbox::CanonicalTopic(
+          3, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY),
+      privacy_sandbox::CanonicalTopic(
+          4, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY)};
+
+  EXPECT_CALL(*mock_privacy_sandbox_service(), GetCurrentTopTopics())
+      .Times(1)
+      .WillOnce(testing::Return(kTopTopics));
+  EXPECT_CALL(*mock_privacy_sandbox_service(), GetBlockedTopics())
+      .Times(1)
+      .WillOnce(testing::Return(kBlockedTopics));
+
+  base::Value args(base::Value::Type::LIST);
+  args.Append(kCallbackId1);
+  handler()->HandleGetTopicsState(args.GetListDeprecated());
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ(kCallbackId1, data.arg1()->GetString());
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+  ASSERT_TRUE(data.arg2()->GetBool());
+  ASSERT_TRUE(data.arg3()->is_dict());
+
+  ValidateTopicsInfo(
+      kTopTopics, data.arg3()->FindListKey("topTopics")->GetListDeprecated());
+  ValidateTopicsInfo(
+      kBlockedTopics,
+      data.arg3()->FindListKey("blockedTopics")->GetListDeprecated());
 }
 
 }  // namespace settings

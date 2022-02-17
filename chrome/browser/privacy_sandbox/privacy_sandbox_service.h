@@ -181,17 +181,22 @@ class PrivacySandboxService : public KeyedService,
                                        bool allowed) const;
 
   // Returns the top topics for the previous N epochs.
-  std::vector<privacy_sandbox::CanonicalTopic> GetCurrentTopTopics() const;
+  // Virtual for mocking in tests.
+  virtual std::vector<privacy_sandbox::CanonicalTopic> GetCurrentTopTopics()
+      const;
 
   // Returns the set of topics which have been blocked by the user.
-  std::vector<privacy_sandbox::CanonicalTopic> GetBlockedTopics() const;
+  // Virtual for mocking in tests.
+  virtual std::vector<privacy_sandbox::CanonicalTopic> GetBlockedTopics() const;
 
-  // Sets the allowability of |topic_id| both as a top topic, and as a topic
-  // provided to the web, to |allowed|. This is stored to preferences
-  // and made available to the Topics API via the PrivacySandboxSettings class.
-  // This function expects that |topic| will have previously been provided by
-  // one of the above functions.
-  void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic, bool allowed);
+  // Sets a |topic_id|, as both a top topic and topic provided to the web, to be
+  // allowed/blocked based on the value of |allowed|. This is stored to
+  // preferences and made available to the Topics API via the
+  // PrivacySandboxSettings class. This function expects that |topic| will have
+  // previously been provided by one of the above functions. Virtual for mocking
+  // in tests.
+  virtual void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
+                               bool allowed);
 
   // KeyedService:
   void Shutdown() override;

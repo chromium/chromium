@@ -29,11 +29,17 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
                            SetFledgeJoiningAllowed);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
                            GetFledgeState);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
+                           SetTopicAllowed);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
+                           GetTopicsState);
 
   void HandleGetFlocId(base::Value::ConstListView args);
   void HandleResetFlocId(base::Value::ConstListView args);
   void HandleSetFledgeJoiningAllowed(base::Value::ConstListView args);
   void HandleGetFledgeState(base::Value::ConstListView args);
+  void HandleSetTopicAllowed(base::Value::ConstListView args);
+  void HandleGetTopicsState(base::Value::ConstListView args);
 
   PrivacySandboxService* GetPrivacySandboxService();
 

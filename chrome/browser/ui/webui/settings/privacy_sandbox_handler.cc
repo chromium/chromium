@@ -22,6 +22,15 @@ constexpr char kCanReset[] = "canReset";
 constexpr char kJoiningSites[] = "joiningSites";
 constexpr char kBlockedSites[] = "blockedSites";
 
+// Keys of the dictionary of the CanonicalTopic JS type.
+constexpr char kTopicId[] = "topicId";
+constexpr char kTaxonomyVersion[] = "taxonomyVersion";
+constexpr char kDisplayString[] = "displayString";
+
+// Keys of the dictionary returned by getTopicsState.
+constexpr char kTopTopics[] = "topTopics";
+constexpr char kBlockedTopics[] = "blockedTopics";
+
 base::Value GetFlocIdInformation(Profile* profile) {
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(profile);
@@ -41,6 +50,15 @@ base::Value GetFlocIdInformation(Profile* profile) {
       kCanReset, base::Value(privacy_sandbox_service->IsFlocIdResettable()));
 
   return std::move(floc_id_information);
+}
+
+base::Value ConvertTopicToValue(const privacy_sandbox::CanonicalTopic& topic) {
+  base::Value topic_value(base::Value::Type::DICTIONARY);
+  topic_value.SetKey(kTopicId, base::Value(topic.topic_id()));
+  topic_value.SetKey(kTaxonomyVersion, base::Value(topic.taxonomy_version()));
+  topic_value.SetKey(kDisplayString,
+                     base::Value(topic.GetLocalizedRepresentation()));
+  return topic_value;
 }
 
 }  // namespace
@@ -63,6 +81,14 @@ void PrivacySandboxHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getFledgeState",
       base::BindRepeating(&PrivacySandboxHandler::HandleGetFledgeState,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setTopicAllowed",
+      base::BindRepeating(&PrivacySandboxHandler::HandleSetTopicAllowed,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getTopicsState",
+      base::BindRepeating(&PrivacySandboxHandler::HandleGetTopicsState,
                           base::Unretained(this)));
 }
 
@@ -108,6 +134,31 @@ void PrivacySandboxHandler::HandleGetFledgeState(
   GetPrivacySandboxService()->GetFledgeJoiningEtldPlusOneForDisplay(
       base::BindOnce(&PrivacySandboxHandler::OnFledgeJoiningSitesRecieved,
                      weak_ptr_factory_.GetWeakPtr(), callback_id));
+}
+
+void PrivacySandboxHandler::HandleSetTopicAllowed(
+    base::Value::ConstListView args) {
+  const int topic_id = args[0].GetInt();
+  const int taxonomy_version = args[1].GetInt();
+  const bool allowed = args[2].GetBool();
+  GetPrivacySandboxService()->SetTopicAllowed(
+      privacy_sandbox::CanonicalTopic(topic_id, taxonomy_version), allowed);
+}
+
+void PrivacySandboxHandler::HandleGetTopicsState(
+    base::Value::ConstListView args) {
+  base::Value top_topics_list(base::Value::Type::LIST);
+  for (const auto& topic : GetPrivacySandboxService()->GetCurrentTopTopics())
+    top_topics_list.Append(ConvertTopicToValue(topic));
+
+  base::Value blocked_topics_list(base::Value::Type::LIST);
+  for (const auto& topic : GetPrivacySandboxService()->GetBlockedTopics())
+    blocked_topics_list.Append(ConvertTopicToValue(topic));
+
+  base::DictionaryValue topics_state;
+  topics_state.SetKey(kTopTopics, std::move(top_topics_list));
+  topics_state.SetKey(kBlockedTopics, std::move(blocked_topics_list));
+  ResolveJavascriptCallback(args[0], std::move(topics_state));
 }
 
 void PrivacySandboxHandler::OnFledgeJoiningSitesRecieved(

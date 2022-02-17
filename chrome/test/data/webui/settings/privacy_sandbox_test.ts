@@ -8,7 +8,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrDialogElement} from 'chrome://settings/lazy_load.js';
 import {PrivacySandboxAppElement, PrivacySandboxSettingsView} from 'chrome://settings/privacy_sandbox/app.js';
-import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
+import {CanonicalTopic, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
 import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -50,6 +50,20 @@ class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
 
   setFledgeJoiningAllowed(site: string, allowed: boolean) {
     this.methodCalled('setFledgeJoiningAllowed', [site, allowed]);
+  }
+
+  getTopicsState() {
+    this.methodCalled('getTopicsState');
+    return Promise.resolve({
+      topTopics:
+          [{topicId: 1, taxonomyVersion: 1, displayString: 'test-topic-1'}],
+      blockedTopics:
+          [{topicId: 2, taxonomyVersion: 1, displayString: 'test-topic-2'}],
+    });
+  }
+
+  setTopicAllowed(topic: CanonicalTopic, allowed: boolean) {
+    this.methodCalled('setTopicAllowed', [topic, allowed]);
   }
 }
 
