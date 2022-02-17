@@ -12,6 +12,8 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/grit/generated_resources.h"
@@ -20,6 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
+#include "url/gurl.h"
 
 TabGroup::TabGroup(TabGroupController* controller,
                    const tab_groups::TabGroupId& id,
@@ -131,8 +134,24 @@ gfx::Range TabGroup::ListTabs() const {
 
 void TabGroup::SaveGroup() {
   is_saved_ = true;
+
+  std::vector<GURL> urls;
+  const gfx::Range tab_range = ListTabs();
+  for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
+    GURL url = controller_->GetWebContentsAt(i)->GetVisibleURL();
+    urls.push_back(url);
+  }
+
+  SavedTabGroupModel* backend =
+      SavedTabGroupModelFactory::GetForProfile(controller_->GetProfile());
+  SavedTabGroup saved_tab_group(id_, visual_data_->title(),
+                                visual_data_->color(), urls);
+  backend->Add(saved_tab_group);
 }
 
 void TabGroup::UnsaveGroup() {
   is_saved_ = false;
+  SavedTabGroupModel* backend =
+      SavedTabGroupModelFactory::GetForProfile(controller_->GetProfile());
+  backend->Remove(id_);
 }
