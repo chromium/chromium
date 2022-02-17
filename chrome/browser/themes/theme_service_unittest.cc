@@ -236,11 +236,9 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
   SkColor GetOmniboxColor(ThemeService* theme_service,
                           int id,
                           bool incognito) const {
-    bool has_custom_color;
     absl::optional<SkColor> color =
         theme_service->theme_helper_.GetOmniboxColor(
-            id, incognito, theme_service->GetThemeSupplier(),
-            &has_custom_color);
+            id, incognito, theme_service->GetThemeSupplier());
     EXPECT_TRUE(color);
     return color.value_or(gfx::kPlaceholderColor);
   }

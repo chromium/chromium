@@ -72,8 +72,7 @@ class ThemeHelper {
 
   SkColor GetColor(int id,
                    bool incognito,
-                   const CustomThemeSupplier* theme_supplier,
-                   bool* has_custom_color = nullptr) const;
+                   const CustomThemeSupplier* theme_supplier) const;
 
   // Get the specified tint - |id| is one of the TINT_* enum values.
   color_utils::HSL GetTint(int id,
@@ -111,14 +110,6 @@ class ThemeHelper {
  private:
   friend class theme_service_internal::ThemeServiceTest;
 
-  struct OmniboxColor {
-    SkColor value;
-
-    // True if any part of the computation of the color relied on a custom base
-    // color from the theme supplier.
-    bool custom;
-  };
-
   // Computes the "toolbar top separator" color.  This color is drawn atop the
   // frame to separate it from tabs, the toolbar, and the new tab button, as
   // well as atop background tabs to separate them from other tabs or the
@@ -141,13 +132,6 @@ class ThemeHelper {
   // overridden by the system theme.  Returns absl::nullopt if the color is not
   // overridden, or if |id| does not correspond to an omnibox color.
   absl::optional<SkColor> GetOmniboxColor(
-      int id,
-      bool incognito,
-      const CustomThemeSupplier* theme_supplier,
-      bool* has_custom_color) const;
-
-  // Helper function that contains the main implementation of GetOmniboxColor().
-  absl::optional<OmniboxColor> GetOmniboxColorImpl(
       int id,
       bool incognito,
       const CustomThemeSupplier* theme_supplier) const;
