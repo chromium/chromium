@@ -35,6 +35,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-v24/page_info_bg.xml",
     "java/res/drawable/page_info_bg.xml",
+    "java/res/layout/button_preference_text_button.xml",
     "java/res/layout/connection_info.xml",
     "java/res/layout/page_info.xml",
     "java/res/layout/page_info_container.xml",

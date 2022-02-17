@@ -84,6 +84,14 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
         launchIntent(intent);
     }
 
+    @Override
+    public void showAdPersonalizationSettings() {
+        // The Privacy Sandbox currently does not exist on Weblayer, so it will never show the
+        // ad personalization section in PageInfo. When we add support for the Privacy Sandbox,
+        // this method should open a settings page for it.
+        assert false;
+    }
+
     private void launchIntent(Intent intent) {
         // Disabling StrictMode to avoid violations (https://crbug.com/819410).
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {

@@ -6,13 +6,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO(crbug.com/1286276): Update summary text. -->
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="personalization_summary"
         android:layout="@layout/page_info_summary"
-        android:summary="Some description of ad personalization"/>
+        android:summary="@string/page_ad_personalization_description"/>
+
+    <Preference
+        app:iconSpaceReserved="false"
+        android:key="topic_info"/>
 
     <org.chromium.components.browser_ui.settings.ButtonPreference
         android:key="manage_interest_button"
-        android:title="@string/page_info_ad_manage_interests" />
+        android:title="@string/page_info_ad_manage_interests"
+        app:buttonLayout="@layout/button_preference_text_button"/>
 </PreferenceScreen>

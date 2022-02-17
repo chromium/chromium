@@ -4,6 +4,11 @@
      found in the LICENSE file. -->
 
 <resources>
+    <declare-styleable name="ButtonPreference">
+        <!-- The layout that will be used for the button. -->
+        <attr name="buttonLayout" format="reference" />
+    </declare-styleable>
+
     <declare-styleable name="ChromeBasePreference">
         <!-- The tint color for the icon set by android:icon. -->
         <attr name="iconTint" format="color" />

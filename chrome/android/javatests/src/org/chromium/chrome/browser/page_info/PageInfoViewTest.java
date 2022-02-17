@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.page_info;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -763,7 +765,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
-    public void testAdPersonalizationInfo() throws IOException {
+    public void testShowAdPersonalizationInfo() throws IOException {
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_AdPersonalization");
@@ -776,12 +778,32 @@ public class PageInfoViewTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
-    public void testAdPersonalizationInfoSubPage() throws IOException {
+    public void testShowAdPersonalizationInfoSubPage() throws IOException {
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
         onView(withId(PageInfoAdPersonalizationController.ROW_ID)).perform(click());
-        onViewWaiting(allOf(withText("Manage interests"), isDisplayed()));
+        onViewWaiting(allOf(withText(R.string.page_info_ad_manage_interests), isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_AdPersonalizationSubPage");
+    }
+
+    /**
+     * Tests opening ad personalization settings.
+     */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+    public void testOpenAdPersonalizationSettings() throws IOException {
+        loadUrlAndOpenPageInfo(
+                mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
+        onView(withId(PageInfoAdPersonalizationController.ROW_ID)).perform(click());
+        onViewWaiting(allOf(withText(R.string.page_info_ad_manage_interests), isDisplayed()))
+                .perform(click());
+        // Check that settings are displayed.
+        onView(withText(R.string.privacy_sandbox_topic_interests_category))
+                .check(matches(isDisplayed()));
+        // Leave settings view.
+        onView(withContentDescription("Navigate up")).perform(click());
+        onView(withText(R.string.privacy_sandbox_topic_interests_category)).check(doesNotExist());
     }
 
     // TODO(1071762): Add tests for preview pages, offline pages, offline state and other states.

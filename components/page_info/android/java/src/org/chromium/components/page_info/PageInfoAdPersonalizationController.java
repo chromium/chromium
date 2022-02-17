@@ -43,7 +43,7 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
     private void fetchAdPersonalizationInfo() {
         // TODO(crbug.com/1286276): Populate with real data from site.
         if (mMainController.getURL().domainIs("example.com")) {
-            mInfo = Arrays.asList("Foo", "Bar");
+            mInfo = Arrays.asList("Arts & entertainment");
         } else {
             mInfo = Collections.emptyList();
         }
@@ -64,6 +64,11 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
     public View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
         mSubPage = new PageInfoAdPersonalizationPreference();
+        PageInfoAdPersonalizationPreference.Params params =
+                new PageInfoAdPersonalizationPreference.Params();
+        params.topicInfo = mInfo;
+        params.onManageInterestsButtonClicked = getDelegate()::showAdPersonalizationSettings;
+        mSubPage.setParams(params);
         return addSubpageFragment(mSubPage);
     }
 
