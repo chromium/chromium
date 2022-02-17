@@ -23,7 +23,6 @@ namespace ash {
 
 class ArcNotificationManagerBase;
 class FullscreenNotificationBlocker;
-class HpsNotifyNotificationBlocker;
 class PhoneHubNotificationController;
 class InactiveUserNotificationBlocker;
 class SessionStateNotificationBlocker;
@@ -69,8 +68,6 @@ class ASH_EXPORT MessageCenterController
       inactive_user_notification_blocker_;
   std::unique_ptr<SessionStateNotificationBlocker>
       session_state_notification_blocker_;
-  std::unique_ptr<HpsNotifyNotificationBlocker>
-      hps_notify_notification_blocker_;
   std::unique_ptr<message_center::NotificationBlocker> all_popup_blocker_;
 
   std::unique_ptr<ArcNotificationManagerBase> arc_notification_manager_;

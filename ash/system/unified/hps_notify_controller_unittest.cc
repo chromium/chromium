@@ -335,6 +335,34 @@ TEST_F(HpsNotifyControllerTestPresent, ClearHpsState) {
   EXPECT_EQ(controller_->SnooperPresent(), false);
 }
 
+// Test that detection is started and stopped based on whether the device's
+// physical orientation is suitable for sensing.
+TEST_F(HpsNotifyControllerTestPresent, Orientation) {
+  SimulateLogin();
+  SetEnabledPref(true);
+  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
+  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
+  EXPECT_TRUE(controller_->SnooperPresent());
+
+  // When the orientation becomes unsuitable, we should disable the daemon.
+  controller_->OnOrientationChanged(/*suitable_for_hps=*/false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
+  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 2);
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
+  EXPECT_FALSE(controller_->SnooperPresent());
+
+  // When the orientation becomes suitable again, we should re-enable the
+  // daemon.
+  controller_->OnOrientationChanged(/*suitable_for_hps=*/true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 2);
+  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 2);
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 2);
+  EXPECT_TRUE(controller_->SnooperPresent());
+}
+
 // Fixture with the DBus service initially unavailable (using a minimal set of
 // valid params).
 class HpsNotifyControllerTestUnavailable : public HpsNotifyControllerTestBase {
