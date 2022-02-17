@@ -182,7 +182,6 @@ class SigninScreenHandler
   void HandleToggleResetScreen();
   void HandleToggleKioskAutolaunchScreen();
 
-  void HandleOpenInternetDetailDialog();
   void HandleLoginVisible(const std::string& source);
   void HandleLoginUIStateChanged(const std::string& source, bool active);
   void HandleShowLoadingTimeoutError();

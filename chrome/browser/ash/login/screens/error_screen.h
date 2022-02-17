@@ -28,19 +28,6 @@ class ErrorScreen : public BaseScreen,
                     public LoginPerformer::Delegate,
                     public NetworkConnectionObserver {
  public:
-  // TODO(jdufault): Some of these are no longer used and can be removed. See
-  // crbug.com/672142.
-  static const char kUserActionConfigureCertsButtonClicked[];
-  static const char kUserActionDiagnoseButtonClicked[];
-  static const char kUserActionLaunchOobeGuestSessionClicked[];
-  static const char kUserActionLocalStateErrorPowerwashButtonClicked[];
-  static const char kUserActionRebootButtonClicked[];
-  static const char kUserActionShowCaptivePortalClicked[];
-  static const char kUserActionNetworkConnected[];
-  static const char kUserActionReloadGaia[];
-  static const char kUserActionCancelReset[];
-  static const char kUserActionCancel[];
-
   explicit ErrorScreen(ErrorScreenView* view);
 
   ErrorScreen(const ErrorScreen&) = delete;

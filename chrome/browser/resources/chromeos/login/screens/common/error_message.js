@@ -11,6 +11,7 @@
 const USER_ACTION_LAUNCH_OOBE_GUEST = 'launch-oobe-guest';
 const USER_ACTION_LOCAL_STATE_POWERWASH = 'local-state-error-powerwash';
 const USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
+const USER_ACTION_OPEN_INTERNET_DIALOG = 'open-internet-dialog';
 
 /**
  * Possible UI states of the error screen.
@@ -343,7 +344,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
         'captive-portal-proxy-message-text', 'captivePortalProxyMessage', {},
         'proxy-settings-fix-link');
     this.shadowRoot.querySelector('#proxy-settings-fix-link').onclick = () => {
-      chrome.send('openInternetDetailDialog');
+      this.userActed(USER_ACTION_OPEN_INTERNET_DIALOG);
     };
 
     this.updateElementWithStringAndAnchorTag_(
@@ -351,7 +352,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
         'update-proxy-error-fix-proxy');
     this.shadowRoot.querySelector('#update-proxy-error-fix-proxy').onclick =
         () => {
-          chrome.send('openInternetDetailDialog');
+          this.userActed(USER_ACTION_OPEN_INTERNET_DIALOG);
         };
 
     this.updateElementWithStringAndAnchorTag_(
@@ -363,7 +364,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
         };
     this.shadowRoot.querySelector('#signin-proxy-error-fix-proxy').onclick =
         () => {
-          chrome.send('openInternetDetailDialog');
+          this.userActed(USER_ACTION_OPEN_INTERNET_DIALOG);
         };
 
     this.updateElementWithStringAndAnchorTag_(

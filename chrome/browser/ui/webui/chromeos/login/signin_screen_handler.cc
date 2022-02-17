@@ -58,7 +58,6 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
@@ -274,8 +273,6 @@ void SigninScreenHandler::RegisterMessages() {
   // TODO(crbug.com/1100910): migrate logic to dedicated test api.
   AddCallback("toggleEnrollmentScreen",
               &SigninScreenHandler::HandleToggleEnrollmentScreen);
-  AddCallback("openInternetDetailDialog",
-              &SigninScreenHandler::HandleOpenInternetDetailDialog);
   AddCallback("loginVisible", &SigninScreenHandler::HandleLoginVisible);
 
   // TODO(crbug.com/1168114): This is also called by GAIA screen,
@@ -622,11 +619,6 @@ void SigninScreenHandler::HandleToggleEnrollmentScreen() {
 void SigninScreenHandler::HandleToggleKioskAutolaunchScreen() {
   if (delegate_ && !webui::IsEnterpriseManaged())
     delegate_->ShowKioskAutolaunchScreen();
-}
-
-void SigninScreenHandler::HandleOpenInternetDetailDialog() {
-  // Empty string opens the internet detail dialog for the default network.
-  InternetDetailDialog::ShowDialog("");
 }
 
 void SigninScreenHandler::HandleLoginVisible(const std::string& source) {
