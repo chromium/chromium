@@ -52,6 +52,10 @@ class SaveUpdateBubbleController : public PasswordBubbleControllerBase {
   // creation. This method returns true iff the current state is "update".
   bool IsCurrentStateUpdate() const;
 
+  // Returns true iff the bubble is supposed to show the footer about syncing
+  // to Google account.
+  bool ShouldShowFooter() const;
+
   // The password bubble header image can switch its state between "save" and
   // "update" depending on the user input. |state_| only captures the correct
   // state on creation. This method returns true iff the current state is

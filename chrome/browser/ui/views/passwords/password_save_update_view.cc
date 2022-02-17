@@ -440,6 +440,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
   }
   SetShowIcon(false);
 
+  SetFootnoteView(CreateFooterView());
   UpdateBubbleUIElements();
 
   Profile* profile =
@@ -613,6 +614,18 @@ void PasswordSaveUpdateView::UpdateBubbleUIElements() {
     CloseIPHBubbleIfOpen();
 
   destination_dropdown_->SetVisible(!controller_.IsCurrentStateUpdate());
+}
+
+std::unique_ptr<views::View> PasswordSaveUpdateView::CreateFooterView() {
+  if (!controller_.ShouldShowFooter())
+    return nullptr;
+  auto label = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
+      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+      views::style::STYLE_SECONDARY);
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  return label;
 }
 
 bool PasswordSaveUpdateView::ShouldShowFailedReauthIPH() {

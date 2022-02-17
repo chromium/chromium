@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -84,6 +85,16 @@ std::vector<password_manager::PasswordForm> DeepCopyForms(
         return *form;
       });
   return result;
+}
+
+bool IsSyncUser(Profile* profile) {
+  const syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  password_manager::SyncState sync_state =
+      password_manager_util::GetPasswordSyncState(sync_service);
+  return sync_state == password_manager::SyncState::kSyncingNormalEncryption ||
+         sync_state ==
+             password_manager::SyncState::kSyncingWithCustomPassphrase;
 }
 
 }  // namespace
@@ -199,6 +210,12 @@ bool SaveUpdateBubbleController::IsCurrentStateUpdate() const {
                        return form.username_value ==
                               pending_password_.username_value;
                      });
+}
+
+bool SaveUpdateBubbleController::ShouldShowFooter() const {
+  return (state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
+          state_ == password_manager::ui::PENDING_PASSWORD_STATE) &&
+         IsSyncUser(GetProfile());
 }
 
 bool SaveUpdateBubbleController::IsCurrentStateAffectingTheAccountStore() {
