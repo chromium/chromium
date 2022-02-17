@@ -169,15 +169,21 @@
       index++;
     }
 
-    [cell addUIElement:stackView
-        withCustomBottomSpacing:kMostVisitedBottomMargin];
+    [cell addUIElement:stackView withCustomBottomSpacing:0];
     CGFloat width =
         MostVisitedTilesContentHorizontalSpace(cell.traitCollection);
     CGSize size =
         MostVisitedCellSize(cell.traitCollection.preferredContentSizeCategory);
     [NSLayoutConstraint activateConstraints:@[
       [stackView.widthAnchor constraintEqualToConstant:width],
-      [stackView.heightAnchor constraintEqualToConstant:size.height]
+      // The parent StackView is UIStackViewDistributionFill so there will be no
+      // spacing below the last element. Add what would be bottom spacing below
+      // the last row to the height of this StackView.
+      // TODO(crbug.com/1285378): Move this spacing to between the Feed header
+      // and the ContentSuggestions parent view when migrating to
+      // UIViewController.
+      [stackView.heightAnchor
+          constraintEqualToConstant:size.height + kMostVisitedBottomMargin],
     ]];
   }
 }
