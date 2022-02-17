@@ -458,13 +458,16 @@ public class BookmarkBridge {
     }
 
     /**
+     * Gets the {@link BookmarkItem} which is referenced by the given {@link BookmarkId}.
+     * @param id The {@link BookmarkId} used to lookup the corresponding {@link BookmarkItem}.
      * @return A BookmarkItem instance for the given BookmarkId.
      *         <code>null</code> if it doesn't exist.
      */
     @Nullable
-    public BookmarkItem getBookmarkById(BookmarkId id) {
+    public BookmarkItem getBookmarkById(@Nullable BookmarkId id) {
         ThreadUtils.assertOnUiThread();
         assert mIsNativeBookmarkModelLoaded;
+        if (id == null) return null;
 
         if (BookmarkId.SHOPPING_FOLDER.equals(id)) {
             return new BookmarkItem(id, /*title=*/null, /*url=*/null,
