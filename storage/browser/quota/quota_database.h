@@ -165,13 +165,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   [[nodiscard]] QuotaError SetBucketLastAccessTime(BucketId bucket_id,
                                                    base::Time last_accessed);
 
-  // TODO(crbug.com/1202167): Remove once all usages have updated to use
-  // SetBucketLastModifiedTime.
-  [[nodiscard]] QuotaError SetStorageKeyLastModifiedTime(
-      const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
-      base::Time last_modified);
-
   // Called by QuotaClient implementers to update when the bucket was last
   // modified. Returns QuotaError::kNone on a successful update.
   [[nodiscard]] QuotaError SetBucketLastModifiedTime(BucketId bucket_id,

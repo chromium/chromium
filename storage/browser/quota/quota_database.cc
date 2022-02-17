@@ -415,36 +415,6 @@ QuotaError QuotaDatabase::SetBucketLastAccessTime(BucketId bucket_id,
   return QuotaError::kNone;
 }
 
-QuotaError QuotaDatabase::SetStorageKeyLastModifiedTime(
-    const StorageKey& storage_key,
-    StorageType type,
-    base::Time last_modified) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kFailIfNotFound);
-  if (open_error != QuotaError::kNone)
-    return open_error;
-
-  // Check if bucket exists first. Running an update statement on a bucket that
-  // doesn't exist fails DCHECK and crashes.
-  // TODO(crbug/1210252): Update to not execute 2 sql statements.
-  QuotaErrorOr<BucketInfo> result =
-      GetBucket(storage_key, kDefaultBucketName, type);
-  if (!result.ok())
-    return result.error();
-
-  static constexpr char kSql[] =
-      "UPDATE buckets SET last_modified = ? WHERE id = ?";
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindTime(0, last_modified);
-  statement.BindInt64(1, result->id.value());
-
-  if (!statement.Run())
-    return QuotaError::kDatabaseError;
-
-  ScheduleCommit();
-  return QuotaError::kNone;
-}
-
 QuotaError QuotaDatabase::SetBucketLastModifiedTime(BucketId bucket_id,
                                                     base::Time last_modified) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

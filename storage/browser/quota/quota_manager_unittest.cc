@@ -117,11 +117,6 @@ MATCHER_P3(MatchesBucketTableEntry, storage_key, type, use_count, "") {
          testing::ExplainMatchResult(use_count, arg.use_count, result_listener);
 }
 
-bool ContainsBucket(const std::set<BucketLocator>& buckets,
-                    const BucketInfo& target_bucket) {
-  return base::Contains(buckets, target_bucket.ToBucketLocator());
-}
-
 }  // namespace
 
 class QuotaManagerImplTest : public testing::Test {
@@ -779,13 +774,13 @@ TEST_F(QuotaManagerImplTest, GetBucketsForType) {
 
   std::set<BucketLocator> buckets = result.value();
   EXPECT_EQ(2U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, bucket_a));
-  EXPECT_TRUE(ContainsBucket(buckets, bucket_b));
+  EXPECT_THAT(buckets, testing::Contains(bucket_a.ToBucketLocator()));
+  EXPECT_THAT(buckets, testing::Contains(bucket_b.ToBucketLocator()));
 
   result = GetBucketsForType(kPerm);
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, bucket_c));
+  EXPECT_THAT(buckets, testing::Contains(bucket_c.ToBucketLocator()));
 }
 
 TEST_F(QuotaManagerImplTest, GetBucketsForHost) {
@@ -813,13 +808,13 @@ TEST_F(QuotaManagerImplTest, GetBucketsForHost) {
 
   std::set<BucketLocator> buckets = result.value();
   EXPECT_EQ(2U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, host_a_bucket_1));
-  EXPECT_TRUE(ContainsBucket(buckets, host_a_bucket_2));
+  EXPECT_THAT(buckets, testing::Contains(host_a_bucket_1.ToBucketLocator()));
+  EXPECT_THAT(buckets, testing::Contains(host_a_bucket_2.ToBucketLocator()));
 
   result = GetBucketsForHost("b.com", kPerm);
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, host_b_bucket));
+  EXPECT_THAT(buckets, testing::Contains(host_b_bucket.ToBucketLocator()));
 }
 
 TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
@@ -849,8 +844,8 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
 
   std::set<BucketLocator> buckets = result.value();
   EXPECT_EQ(2U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, bucket_a1));
-  EXPECT_TRUE(ContainsBucket(buckets, bucket_a2));
+  EXPECT_THAT(buckets, testing::Contains(bucket_a1.ToBucketLocator()));
+  EXPECT_THAT(buckets, testing::Contains(bucket_a2.ToBucketLocator()));
 
   result = GetBucketsForStorageKey(storage_key_a, kPerm);
   EXPECT_TRUE(result.ok());
@@ -861,7 +856,7 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
 
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, bucket_c));
+  EXPECT_THAT(buckets, testing::Contains(bucket_c.ToBucketLocator()));
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {
@@ -1747,13 +1742,13 @@ TEST_F(QuotaManagerImplTest, GetStorageCapacity) {
 TEST_F(QuotaManagerImplTest, EvictBucketData) {
   static const ClientBucketData kData1[] = {
       {"http://foo.com/", kDefaultBucketName, kTemp, 1},
-      {"http://foo.com:1/", kDefaultBucketName, kTemp, 20},
+      {"http://foo.com:1/", "logs", kTemp, 20},
       {"http://foo.com/", kDefaultBucketName, kPerm, 300},
       {"http://bar.com/", kDefaultBucketName, kTemp, 4000},
   };
   static const ClientBucketData kData2[] = {
       {"http://foo.com/", kDefaultBucketName, kTemp, 50000},
-      {"http://foo.com:1/", kDefaultBucketName, kTemp, 6000},
+      {"http://foo.com:1/", "logs", kTemp, 6000},
       {"http://foo.com/", kDefaultBucketName, kPerm, 700},
       {"https://foo.com/", kDefaultBucketName, kTemp, 80},
       {"http://bar.com/", kDefaultBucketName, kTemp, 9},
@@ -1784,19 +1779,17 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
   }
   task_environment_.RunUntilIdle();
 
+  // Default bucket eviction.
   auto bucket =
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket.ok());
 
   ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaStatusCode::kOk);
 
-  const BucketTableEntries& entries = DumpBucketTable();
-  for (const auto& entry : entries) {
-    if (entry.type == kTemp) {
-      EXPECT_NE(std::string("http://foo.com/"),
-                entry.storage_key.origin().GetURL().spec());
-    }
-  }
+  bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_FALSE(bucket.ok());
+  ASSERT_EQ(bucket.error(), QuotaError::kNotFound);
 
   global_usage_result = GetGlobalUsage(kTemp);
   EXPECT_EQ(predelete_global_tmp - (1 + 50000), global_usage_result.usage);
@@ -1806,56 +1799,25 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
   EXPECT_EQ(predelete_host_pers, usage());
-}
 
-TEST_F(QuotaManagerImplTest, EvictNonDefaultBucketData) {
-  static const ClientBucketData kData[] = {
-      {"http://foo.com/", kDefaultBucketName, kTemp, 100}};
-  MockQuotaClient* client =
-      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
-  RegisterClientBucketData(client, kData);
-
-  auto global_usage_result = GetGlobalUsage(kTemp);
-  int64_t predelete_global_tmp = global_usage_result.usage;
-
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  int64_t predelete_host_tmp = usage();
-
-  StorageKey storage_key = ToStorageKey("http://foo.com/");
-  quota_manager_impl()->NotifyStorageAccessed(storage_key, kTemp,
-                                              base::Time::Now());
-  task_environment_.RunUntilIdle();
-
-  auto bucket = CreateBucketForTesting(storage_key, "foo_bucket", kTemp);
-  ASSERT_TRUE(bucket.ok());
-  BucketInfo created_bucket = bucket.value();
-
-  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaStatusCode::kOk);
-
-  const BucketTableEntries& entries = DumpBucketTable();
-  for (const auto& entry : entries) {
-    if (entry.type == kTemp)
-      EXPECT_NE(created_bucket.id, entry.bucket_id);
-  }
-
-  // Evicting non-default bucket should not change usage.
-  global_usage_result = GetGlobalUsage(kTemp);
-  EXPECT_EQ(predelete_global_tmp, global_usage_result.usage);
-
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  EXPECT_EQ(predelete_host_tmp, usage());
-
-  bucket = GetBucket(storage_key, kDefaultBucketName, kTemp);
+  // Non default bucket eviction.
+  bucket = GetBucket(ToStorageKey("http://foo.com:1"), "logs", kTemp);
   ASSERT_TRUE(bucket.ok());
 
   ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaStatusCode::kOk);
 
-  // Evicting default bucket should remove usage.
+  bucket = GetBucket(ToStorageKey("http://foo.com:1"), "logs", kTemp);
+  EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
+
   global_usage_result = GetGlobalUsage(kTemp);
-  EXPECT_EQ(global_usage_result.usage, 0);
+  EXPECT_EQ(predelete_global_tmp - (1 + 20 + 50000 + 6000),
+            global_usage_result.usage);
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  EXPECT_EQ(usage(), 0);
+  EXPECT_EQ(predelete_host_tmp - (1 + 20 + 50000 + 6000), usage());
+
+  GetHostUsageWithBreakdown("foo.com", kPerm);
+  EXPECT_EQ(predelete_host_pers, usage());
 }
 
 TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
@@ -1941,17 +1903,10 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
               QuotaStatusCode::kErrorInvalidModification);
   }
 
-  const BucketTableEntries& entries = DumpBucketTable();
-  bool found_storage_key_in_database = false;
-  for (const auto& entry : entries) {
-    if (entry.type == kTemp && entry.name == kDefaultBucketName &&
-        entry.storage_key == ToStorageKey("http://foo.com/")) {
-      found_storage_key_in_database = true;
-      break;
-    }
-  }
-  // The default bucket for "http://foo.com/" should be in the database.
-  EXPECT_TRUE(found_storage_key_in_database);
+  // The default bucket for "http://foo.com/" should still be in the database.
+  bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  EXPECT_TRUE(bucket.ok());
 
   for (size_t i = 0; i < kNumberOfTemporaryBuckets - 1; ++i) {
     GetEvictionBucket(kTemp);
@@ -2263,20 +2218,15 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultiple) {
   EXPECT_EQ(DeleteBucketData(bar_temp_bucket->ToBucketLocator(),
                              AllQuotaClientTypes()),
             QuotaStatusCode::kOk);
-  EXPECT_EQ(DeleteBucketData(foo_temp_bucket->ToBucketLocator(),
-                             AllQuotaClientTypes()),
-            QuotaStatusCode::kOk);
 
-  const BucketTableEntries& entries = DumpBucketTable();
-  for (const auto& entry : entries) {
-    if (entry.type != kTemp)
-      continue;
+  QuotaErrorOr<BucketInfo> bucket;
+  bucket = GetBucket(foo_temp_bucket->storage_key, foo_temp_bucket->name,
+                     foo_temp_bucket->type);
+  EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
 
-    EXPECT_NE(std::string("http://foo.com/"),
-              entry.storage_key.origin().GetURL().spec());
-    EXPECT_NE(std::string("http://bar.com/"),
-              entry.storage_key.origin().GetURL().spec());
-  }
+  bucket = GetBucket(bar_temp_bucket->storage_key, bar_temp_bucket->name,
+                     bar_temp_bucket->type);
+  EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
 
   global_usage_result = GetGlobalUsage(kTemp);
   EXPECT_EQ(global_usage_result.usage,
@@ -2358,16 +2308,14 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultipleClientsDifferentTypes) {
                              AllQuotaClientTypes()),
             QuotaStatusCode::kOk);
 
-  const BucketTableEntries& entries = DumpBucketTable();
-  for (const auto& entry : entries) {
-    if (entry.type != kPerm)
-      continue;
+  QuotaErrorOr<BucketInfo> bucket;
+  bucket = GetBucket(foo_perm_bucket->storage_key, foo_perm_bucket->name,
+                     foo_perm_bucket->type);
+  EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
 
-    EXPECT_NE(std::string("http://foo.com/"),
-              entry.storage_key.origin().GetURL().spec());
-    EXPECT_NE(std::string("http://bar.com/"),
-              entry.storage_key.origin().GetURL().spec());
-  }
+  bucket = GetBucket(bar_perm_bucket->storage_key, bar_perm_bucket->name,
+                     bar_perm_bucket->type);
+  EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
 
   global_usage_result = GetGlobalUsage(kTemp);
   EXPECT_EQ(global_usage_result.usage, predelete_global_tmp);
