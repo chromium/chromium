@@ -185,14 +185,6 @@ class DesktopSessionAgent
   // Posted to |audio_capture_task_runner_| to stop the audio capturer.
   void StopAudioCapturer();
 
-  // Starts to report process statistic data to network process. If
-  // |interval| is less than or equal to 0, a default non-zero value will be
-  // used.
-  void StartProcessStatsReport(base::TimeDelta interval);
-
-  // Stops sending process statistic data to network process.
-  void StopProcessStatsReport();
-
  private:
   void OnCheckUrlForwarderSetUpResult(bool is_set_up);
   void OnUrlForwarderSetUpStateChanged(
