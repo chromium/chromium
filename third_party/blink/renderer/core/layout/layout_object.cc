@@ -474,25 +474,40 @@ void LayoutObject::AssertClearedPaintInvalidationFlags() const {
   if (ChildPrePaintBlockedByDisplayLock())
     return;
 
-  // Assert that the number of FragmentData and NGPhysicalBoxFragment objects
-  // are identical. Make an exception for table columns (unless they establish a
-  // layer, which would be dangerous (but hopefully also impossible)), since
-  // they don't produce fragments.
-  //
-  // This was added as part of investigating crbug.com/1244130
-  if (CanTraversePhysicalFragments() && IsBox() &&
-      (!IsLayoutTableCol() || HasLayer())) {
-    wtf_size_t fragment_count = 0;
-    for (const FragmentData* walker = &FirstFragment(); walker;
-         walker = walker->NextFragment())
-      fragment_count++;
-    DCHECK_EQ(fragment_count, To<LayoutBox>(this)->PhysicalFragmentCount());
+  if (PaintInvalidationStateIsDirty()) {
+    ShowLayoutTreeForThis();
+    NOTREACHED();
   }
 
-  if (!PaintInvalidationStateIsDirty())
+  // Assert that the number of FragmentData and NGPhysicalBoxFragment objects
+  // are identical. This was added as part of investigating crbug.com/1244130
+
+  // Only LayoutBox has fragments. Bail if it's not a box, or if fragment
+  // traversal isn't supported here.
+  if (!IsBox() || !CanTraversePhysicalFragments())
     return;
-  ShowLayoutTreeForThis();
-  NOTREACHED();
+
+  // Make an exception for table columns (unless they establish a layer, which
+  // would be dangerous (but hopefully also impossible)), since they don't
+  // produce fragments.
+  if (IsLayoutTableCol() && !HasLayer())
+    return;
+
+  // Sometimes we just have a Layout(NG)View with no children, and the view is
+  // not marked for layout, even if it has never been laid out. It seems that we
+  // don't actually paint under such circumstances, which means that it doesn't
+  // matter whether we have fragments or not. See crbug.com/1288742
+  if (IsLayoutView() && !EverHadLayout() && !SlowFirstChild())
+    return;
+
+  wtf_size_t fragment_count = 0;
+  for (const FragmentData* walker = &FirstFragment(); walker;
+       walker = walker->NextFragment())
+    fragment_count++;
+  if (fragment_count != To<LayoutBox>(this)->PhysicalFragmentCount()) {
+    ShowLayoutTreeForThis();
+    DCHECK_EQ(fragment_count, To<LayoutBox>(this)->PhysicalFragmentCount());
+  }
 }
 
 #endif  // DCHECK_IS_ON()
