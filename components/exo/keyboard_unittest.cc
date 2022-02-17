@@ -594,6 +594,7 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
                widget1->GetFocusManager()->GetFocusedView()->GetClassName());
   EXPECT_EQ(keyboard.focused_surface_for_testing(), surface.get());
 
+  hold.RunAndReset();
   widget1->CloseNow();
 }
 
