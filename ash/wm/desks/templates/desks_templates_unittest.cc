@@ -220,7 +220,7 @@ class DesksTemplatesTest : public OverviewTestBase {
     auto& grid_list = GetOverviewGridList();
     views::Widget* grid_widget = grid_list[0]->desks_templates_grid_widget();
     ASSERT_TRUE(grid_widget);
-    const DesksTemplatesGridView* templates_grid_view =
+    DesksTemplatesGridView* templates_grid_view =
         static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
     ASSERT_TRUE(templates_grid_view);
 
@@ -256,6 +256,8 @@ class DesksTemplatesTest : public OverviewTestBase {
                                 ->AsDialogDelegate();
     dialog_delegate->AcceptDialog();
     WaitForDesksTemplatesUI();
+    DesksTemplatesGridViewTestApi(templates_grid_view)
+        .WaitForItemMoveAnimationDone();
   }
 
   // Open overview mode if we're not in overview mode yet, and then show the

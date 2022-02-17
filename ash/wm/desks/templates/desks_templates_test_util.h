@@ -45,6 +45,22 @@ class DesksTemplatesPresenterTestApi {
   DesksTemplatesPresenter* const presenter_;
 };
 
+// Wrapper for `DesksTemplatesGridView` that exposes internal state to test
+// functions.
+class DesksTemplatesGridViewTestApi {
+ public:
+  explicit DesksTemplatesGridViewTestApi(DesksTemplatesGridView* grid_view);
+  DesksTemplatesGridViewTestApi(DesksTemplatesGridViewTestApi&) = delete;
+  DesksTemplatesGridViewTestApi& operator=(DesksTemplatesGridViewTestApi&) =
+      delete;
+  ~DesksTemplatesGridViewTestApi();
+
+  void WaitForItemMoveAnimationDone();
+
+ private:
+  DesksTemplatesGridView* grid_view_;
+};
+
 // Wrapper for `DesksTemplatesItemView` that exposes internal state to test
 // functions.
 class DesksTemplatesItemViewTestApi {

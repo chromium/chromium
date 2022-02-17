@@ -30,6 +30,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
+#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -57,6 +58,9 @@ constexpr int kFeedbackButtonSpacingDp = 40;
 // being shown as well, if the user originally exceeded the max template count
 // when the grid was first shown.
 constexpr std::size_t kMaxTemplateCount = 6u;
+
+constexpr base::TimeDelta kBoundsChangeAnimationDuration =
+    base::Milliseconds(300);
 
 }  // namespace
 
@@ -89,7 +93,11 @@ class DesksTemplatesEventHandler : public ui::EventHandler {
 // -----------------------------------------------------------------------------
 // DesksTemplatesGridView:
 
-DesksTemplatesGridView::DesksTemplatesGridView() = default;
+DesksTemplatesGridView::DesksTemplatesGridView()
+    : bounds_animator_(this, /*use_transforms=*/true) {
+  bounds_animator_.SetAnimationDuration(kBoundsChangeAnimationDuration);
+  bounds_animator_.set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN);
+}
 
 DesksTemplatesGridView::~DesksTemplatesGridView() {
   if (widget_window_) {
@@ -138,7 +146,8 @@ void DesksTemplatesGridView::PopulateGridUI(
   }
 
   AddOrUpdateTemplates(std::vector<const DeskTemplate*>(desk_templates.begin(),
-                                                        desk_templates.end()));
+                                                        desk_templates.end()),
+                       /*initializing_grid_view=*/true);
 
   feedback_button_ = AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&DesksTemplatesGridView::OnFeedbackButtonPressed,
@@ -150,20 +159,12 @@ void DesksTemplatesGridView::PopulateGridUI(
       AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kTransparent80));
 
-  const gfx::Size previous_size = size();
-
   GetWidget()->SetBounds(grid_bounds);
-
-  // The children won't be layoutted if the size remains the same, which may
-  // happen when we reshow the widget after it was hidden. Force a layout in
-  // this case. If the size changes, the children will be layoutted so we can
-  // avoid double work in that case. See https://crbug.com/1275179.
-  if (size() == previous_size)
-    Layout();
 }
 
 void DesksTemplatesGridView::AddOrUpdateTemplates(
-    const std::vector<const DeskTemplate*>& entries) {
+    const std::vector<const DeskTemplate*>& entries,
+    bool initializing_grid_view) {
   for (const DeskTemplate* entry : entries) {
     auto iter = std::find_if(grid_items_.begin(), grid_items_.end(),
                              [entry](DesksTemplatesItemView* grid_item) {
@@ -195,7 +196,10 @@ void DesksTemplatesGridView::AddOrUpdateTemplates(
                          b->name_view()->GetAccessibleName()) < 0;
             });
 
-  Layout();
+  if (initializing_grid_view)
+    Layout();
+  else
+    AnimateGridItems();
 }
 
 void DesksTemplatesGridView::DeleteTemplates(
@@ -224,7 +228,7 @@ void DesksTemplatesGridView::DeleteTemplates(
     grid_items_.erase(iter);
   }
 
-  Layout();
+  AnimateGridItems();
 }
 
 DesksTemplatesItemView* DesksTemplatesGridView::GridItemBeingModified() {
@@ -242,47 +246,15 @@ void DesksTemplatesGridView::Layout() {
   if (grid_items_.empty())
     return;
 
-  const size_t count = grid_items_.size();
-  const gfx::Size grid_item_size = grid_items_[0]->GetPreferredSize();
-  const float aspect_ratio =
-      static_cast<float>(width()) / std::max(height(), 1);
-  const size_t max_column_count = aspect_ratio > kAspectRatioLimit
-                                      ? kLandscapeMaxColumns
-                                      : kPortraitMaxColumns;
-  const size_t column_count = std::min(count, max_column_count);
-  const size_t row_count =
-      (count / max_column_count) + ((count % max_column_count) == 0 ? 0 : 1);
-  const int total_width =
-      column_count * (grid_item_size.width() + kGridPaddingDp) - kGridPaddingDp;
-  const int total_height =
-      row_count * (grid_item_size.height() + kGridPaddingDp) - kGridPaddingDp;
+  if (bounds_animator_.IsAnimating())
+    return;
 
-  const int initial_x = (width() - total_width) / 2;
-  int x = initial_x;
-  int y = (height() - total_height) / 2;
+  const std::vector<gfx::Rect> positions = CalculateGridItemPositions();
+  for (size_t i = 0; i < grid_items_.size(); i++)
+    grid_items_[i]->SetBoundsRect(positions[i]);
 
-  for (size_t i = 0; i < count; i++) {
-    if (i != 0 && i % column_count == 0) {
-      // Move the position to the start of the next row.
-      x = initial_x;
-      y += grid_item_size.height() + kGridPaddingDp;
-    }
-
-    grid_items_[i]->SetBoundsRect(gfx::Rect(gfx::Point(x, y), grid_item_size));
-
-    x += grid_item_size.width() + kGridPaddingDp;
-  }
-
-  if (feedback_button_) {
-    // The feedback button is centered and `kFeedbackButtonSpacingDp` from the
-    // bottom most grid item.
-    const gfx::Size feedback_size = feedback_button_->GetPreferredSize();
-    feedback_button_->SetBoundsRect(gfx::Rect(
-        gfx::Point(
-            width() / 2 - feedback_size.width() / 2,
-            grid_items_.back()->bounds().bottom() + kFeedbackButtonSpacingDp),
-        feedback_size));
-  }
+  if (feedback_button_)
+    feedback_button_->SetBoundsRect(CalculateFeedbackButtonPosition());
 }
 
 void DesksTemplatesGridView::AddedToWidget() {
@@ -295,6 +267,15 @@ void DesksTemplatesGridView::AddedToWidget() {
   widget_window_ = GetWidget()->GetNativeWindow();
   widget_window_->AddObserver(this);
   widget_window_->AddPreTargetHandler(event_handler_.get());
+}
+
+void DesksTemplatesGridView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  // In the event where the bounds change while an animation is in progress
+  // (i.e. screen rotation), we need to ensure that we stop the current
+  // animation. This is because we block layouts while an animation is in
+  // progress.
+  if (bounds_animator_.IsAnimating())
+    bounds_animator_.Cancel();
 }
 
 void DesksTemplatesGridView::OnWindowDestroying(aura::Window* window) {
@@ -327,6 +308,14 @@ void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
                             aura::EventTargetingPolicy::kNone) {
     // If this is true, then we're in the process of fading out `this` and don't
     // want to handle any events anymore so do nothing.
+    return;
+  }
+
+  // We also don't want to handle any events while we are animating the template
+  // view positions.
+  if (bounds_animator_.IsAnimating()) {
+    event->StopPropagation();
+    event->SetHandled();
     return;
   }
 
@@ -374,6 +363,87 @@ void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
       event->StopPropagation();
       event->SetHandled();
       return;
+    }
+  }
+}
+
+std::vector<gfx::Rect> DesksTemplatesGridView::CalculateGridItemPositions()
+    const {
+  std::vector<gfx::Rect> positions;
+
+  if (grid_items_.empty())
+    return positions;
+
+  const size_t count = grid_items_.size();
+  const gfx::Size grid_item_size = grid_items_[0]->GetPreferredSize();
+  const float aspect_ratio =
+      static_cast<float>(width()) / std::max(height(), 1);
+  const size_t max_column_count = aspect_ratio > kAspectRatioLimit
+                                      ? kLandscapeMaxColumns
+                                      : kPortraitMaxColumns;
+  const size_t column_count = std::min(count, max_column_count);
+  const size_t row_count =
+      (count / max_column_count) + ((count % max_column_count) == 0 ? 0 : 1);
+  const int total_width =
+      column_count * (grid_item_size.width() + kGridPaddingDp) - kGridPaddingDp;
+  const int total_height =
+      row_count * (grid_item_size.height() + kGridPaddingDp) - kGridPaddingDp;
+
+  const int initial_x = (width() - total_width) / 2;
+  int x = initial_x;
+  int y = (height() - total_height) / 2;
+
+  for (size_t i = 0; i < count; i++) {
+    if (i != 0 && i % column_count == 0) {
+      // Move the position to the start of the next row.
+      x = initial_x;
+      y += grid_item_size.height() + kGridPaddingDp;
+    }
+
+    positions.emplace_back(gfx::Point(x, y), grid_item_size);
+
+    x += grid_item_size.width() + kGridPaddingDp;
+  }
+
+  DCHECK_EQ(positions.size(), grid_items_.size());
+
+  return positions;
+}
+
+gfx::Rect DesksTemplatesGridView::CalculateFeedbackButtonPosition() const {
+  if (grid_items_.empty())
+    return gfx::Rect();
+
+  // The feedback button is centered and `kFeedbackButtonSpacingDp` from the
+  // bottom most grid item.
+  const gfx::Size feedback_size = feedback_button_->GetPreferredSize();
+  return gfx::Rect(
+      gfx::Point(width() / 2 - feedback_size.width() / 2,
+                 bounds_animator_.GetTargetBounds(grid_items_.back()).bottom() +
+                     kFeedbackButtonSpacingDp),
+      feedback_size);
+}
+
+void DesksTemplatesGridView::AnimateGridItems() {
+  const std::vector<gfx::Rect> positions = CalculateGridItemPositions();
+  for (size_t i = 0; i < grid_items_.size(); i++) {
+    DesksTemplatesItemView* grid_item = grid_items_[i];
+    const gfx::Rect target_bounds = positions[i];
+    if (bounds_animator_.GetTargetBounds(grid_item) == target_bounds)
+      continue;
+
+    // We need to ensure that the layer is non-opaque when animating.
+    if (!grid_item->layer())
+      grid_item->SetPaintToLayer();
+    grid_item->layer()->SetFillsBoundsOpaquely(false);
+    bounds_animator_.AnimateViewTo(grid_item, target_bounds);
+  }
+
+  if (feedback_button_) {
+    const gfx::Rect feedback_target_bounds(CalculateFeedbackButtonPosition());
+    if (bounds_animator_.GetTargetBounds(feedback_button_) !=
+        feedback_target_bounds) {
+      bounds_animator_.AnimateViewTo(feedback_button_, feedback_target_bounds);
     }
   }
 }

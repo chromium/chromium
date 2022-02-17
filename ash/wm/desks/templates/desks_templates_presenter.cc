@@ -375,7 +375,7 @@ void DesksTemplatesPresenter::AddOrUpdateUIEntries(
     if (views::Widget* grid_widget =
             overview_grid->desks_templates_grid_widget()) {
       static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
-          ->AddOrUpdateTemplates(new_entries);
+          ->AddOrUpdateTemplates(new_entries, /*initializing_grid_view=*/false);
     }
   }
 
