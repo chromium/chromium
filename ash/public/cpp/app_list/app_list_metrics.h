@@ -120,6 +120,9 @@ enum SearchResultType {
   KEYBOARD_SHORTCUT,
   // A keyboard shortcut result from the Keyboard Shortcut provider.
   OPEN_TAB,
+  // Null result type that indicates that user did not interact with any results
+  // in some metrics.
+  NO_RESULT,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };
@@ -146,6 +149,9 @@ ASH_PUBLIC_EXPORT void RecordSuccessfulAppLaunchUsingSearch(
 ASH_PUBLIC_EXPORT void ReportPrefOrderClearAction(
     AppListOrderUpdateEvent action,
     bool in_tablet);
+
+ASH_PUBLIC_EXPORT void RecordFirstSearchResult(SearchResultType type,
+                                               bool in_tablet);
 
 }  // namespace ash
 

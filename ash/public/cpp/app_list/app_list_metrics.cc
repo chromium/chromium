@@ -159,4 +159,16 @@ void ReportPrefOrderClearAction(AppListOrderUpdateEvent action,
   }
 }
 
+void RecordFirstSearchResult(SearchResultType type, bool in_tablet) {
+  if (in_tablet) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Apps.AppList.LaunchedResultInNewUsersFirstSearch.TabletMode", type,
+        SEARCH_RESULT_TYPE_BOUNDARY);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Apps.AppList.LaunchedResultInNewUsersFirstSearch.ClamshellMode", type,
+        SEARCH_RESULT_TYPE_BOUNDARY);
+  }
+}
+
 }  // namespace ash

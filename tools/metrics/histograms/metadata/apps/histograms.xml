@@ -582,6 +582,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Apps.AppList.LaunchedResultInNewUsersFirstSearch{TabletOrClamshell}"
+    enum="AppListSearchResult" expires_after="2022-12-05">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Type of the result that a user opened during their first launcher search in
+    their first user session on the device. It includes a bucket for the case
+    the user does not launch any results.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
 <histogram name="Apps.AppList.LauncherSearchProvider.QueryTime" units="ms"
     expires_after="2021-12-31">
   <owner>jennyz@chromium.org</owner>

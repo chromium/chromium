@@ -156,6 +156,8 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
       return "KEYBOARD_SHORTCUT";
     case ash::SearchResultType::OPEN_TAB:
       return "OPEN_TAB";
+    case ash::SearchResultType::NO_RESULT:
+      return "NO_RESULT";
     case ash::SearchResultType::SEARCH_RESULT_TYPE_BOUNDARY:
       return "SEARCH_RESULT_TYPE_BOUNDARY";
   }

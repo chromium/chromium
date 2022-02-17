@@ -185,6 +185,16 @@ void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
       search_controller_->StartSearch(trimmed_query);
     }
     OnSearchStarted();
+
+    if (state_for_new_user_) {
+      if (!state_for_new_user_->first_search_result_recorded &&
+          state_for_new_user_->started_search && trimmed_query.empty()) {
+        state_for_new_user_->first_search_result_recorded = true;
+        RecordFirstSearchResult(ash::NO_RESULT, IsTabletMode());
+      } else if (!trimmed_query.empty()) {
+        state_for_new_user_->started_search = true;
+      }
+    }
   }
 
   app_list_notifier_->NotifySearchQueryChanged(trimmed_query);
@@ -257,6 +267,12 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
     RecordOpenedResultFromSearchBox(result->metrics_type());
 
   MaybeRecordLauncherAction(launched_from);
+
+  if (state_for_new_user_ && state_for_new_user_->started_search &&
+      !state_for_new_user_->first_search_result_recorded) {
+    state_for_new_user_->first_search_result_recorded = true;
+    RecordFirstSearchResult(result->metrics_type(), IsTabletMode());
+  }
 
   // OpenResult may cause |result| to be deleted.
   search_controller_->OpenResult(result, event_flags);
@@ -407,6 +423,13 @@ void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
             "Apps.AppList.SuccessfulFirstUsageByNewUsers.ClamshellMode",
             state_for_new_user_->action_recorded);
       }
+    }
+    // If the user started search, record no action if a result open event has
+    // not been yet recorded.
+    if (state_for_new_user_ && state_for_new_user_->started_search &&
+        !state_for_new_user_->first_search_result_recorded) {
+      state_for_new_user_->first_search_result_recorded = true;
+      RecordFirstSearchResult(ash::NO_RESULT, IsTabletMode());
     }
   }
 }
