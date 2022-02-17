@@ -103,8 +103,7 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
   virtual void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) = 0;
 
   // Request the RMA process logs.
-  // Returns the logs on success or an empty string.
-  virtual void GetLog(DBusMethodCallback<std::string> callback) = 0;
+  virtual void GetLog(DBusMethodCallback<rmad::GetLogReply> callback) = 0;
 
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;

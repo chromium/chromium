@@ -482,16 +482,14 @@ TEST_F(FakeRmadClientTest, Abortable_SetTrue_Rma_Not_Required) {
 }
 
 TEST_F(FakeRmadClientTest, GetLog) {
+  const std::string expected_log = "This is my test log for the RMA process";
+  fake_client_()->SetGetLogReply(expected_log, rmad::RMAD_ERROR_OK);
   base::RunLoop run_loop;
-  client_->GetLog(
-      base::BindLambdaForTesting([&](absl::optional<std::string> response) {
+  client_->GetLog(base::BindLambdaForTesting(
+      [&](absl::optional<rmad::GetLogReply> response) {
         EXPECT_TRUE(response.has_value());
-        EXPECT_EQ(
-            *response,
-            "This is a log.\nIt has multiple lines.\nSome of which are very, "
-            "very long so that the log window can be tested. I mean really "
-            "long, much longer than you expect. It just keeps going on and "
-            "on, until it just stops.");
+        EXPECT_EQ(response->log(), expected_log);
+        EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
         run_loop.Quit();
       }));
   run_loop.RunUntilIdle();

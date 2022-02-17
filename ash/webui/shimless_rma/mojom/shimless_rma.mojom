@@ -685,8 +685,9 @@ interface ShimlessRmaService {
   ///////////////////////////////////////
   // Methods for kRepairComplete state.
   //
-  // Get the RMA Log
-  GetLog() => (string log);
+  // Get the RMA Log.
+  // Returns an error indicating success or a failure.
+  GetLog() => (string log, RmadErrorCode error);
   // Launch the system diagnostics app.
   LaunchDiagnostics();
   // Complete RMA and reboot.

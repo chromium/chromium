@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
 
   void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) override;
 
-  void GetLog(DBusMethodCallback<std::string> callback) override;
+  void GetLog(DBusMethodCallback<rmad::GetLogReply> callback) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -48,6 +48,7 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   void SetFakeStateReplies(std::vector<rmad::GetStateReply> fake_states);
 
   void SetAbortable(bool abortable);
+  void SetGetLogReply(const std::string& log, rmad::RmadErrorCode error);
 
   void TriggerErrorObservation(rmad::RmadErrorCode error);
   void TriggerCalibrationProgressObservation(
@@ -79,6 +80,7 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   std::vector<rmad::GetStateReply> state_replies_;
   size_t state_index_;
   rmad::AbortRmaReply abort_rma_reply_;
+  rmad::GetLogReply get_log_reply_;
   base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
       observers_;
 };

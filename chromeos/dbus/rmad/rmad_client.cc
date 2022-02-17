@@ -47,7 +47,7 @@ class RmadClientImpl : public RmadClient {
 
   void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) override;
 
-  void GetLog(DBusMethodCallback<std::string> callback) override;
+  void GetLog(DBusMethodCallback<rmad::GetLogReply> callback) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -64,9 +64,6 @@ class RmadClientImpl : public RmadClient {
 
   template <class T>
   void OnProtoReply(DBusMethodCallback<T> callback, dbus::Response* response);
-
-  void OnGetLogReply(DBusMethodCallback<std::string> callback,
-                     dbus::Response* response);
 
   void CalibrationProgressReceived(dbus::Signal* signal);
   void CalibrationOverallProgressReceived(dbus::Signal* signal);
@@ -421,12 +418,12 @@ void RmadClientImpl::AbortRma(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void RmadClientImpl::GetLog(DBusMethodCallback<std::string> callback) {
+void RmadClientImpl::GetLog(DBusMethodCallback<rmad::GetLogReply> callback) {
   dbus::MethodCall method_call(rmad::kRmadInterfaceName, rmad::kGetLogMethod);
   dbus::MessageWriter writer(&method_call);
   rmad_proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&RmadClientImpl::OnGetLogReply,
+      base::BindOnce(&RmadClientImpl::OnProtoReply<rmad::GetLogReply>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -465,26 +462,6 @@ void RmadClientImpl::OnProtoReply(DBusMethodCallback<T> callback,
   DCHECK(!reader.HasMoreData());
 
   std::move(callback).Run(std::move(response_proto));
-}
-
-void RmadClientImpl::OnGetLogReply(DBusMethodCallback<std::string> callback,
-                                   dbus::Response* response) {
-  if (!response) {
-    LOG(ERROR) << "Error calling rmad function";
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  dbus::MessageReader reader(response);
-  std::string log_path;
-  if (!reader.PopString(&log_path)) {
-    LOG(ERROR) << "Unable to read string for " << response->GetMember();
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  DCHECK(!reader.HasMoreData());
-
-  std::move(callback).Run(std::move(log_path));
 }
 
 void RmadClientImpl::StartCheckForRmadFiles() {

@@ -796,7 +796,8 @@ void ShimlessRmaService::GetLog(GetLogCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
     LOG(ERROR) << "GetLog called from incorrect state "
                << state_proto_.state_case();
-    std::move(callback).Run("");
+    std::move(callback).Run("",
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
   chromeos::RmadClient::Get()->GetLog(
@@ -805,12 +806,15 @@ void ShimlessRmaService::GetLog(GetLogCallback callback) {
 }
 
 void ShimlessRmaService::OnGetLog(GetLogCallback callback,
-                                  absl::optional<std::string> log) {
-  if (!log) {
-    std::move(callback).Run("");
+                                  absl::optional<rmad::GetLogReply> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to call rmad::GetLog";
+    std::move(callback).Run("",
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  std::move(callback).Run(*log);
+
+  std::move(callback).Run(response->log(), response->error());
 }
 
 void ShimlessRmaService::LaunchDiagnostics() {

@@ -202,16 +202,11 @@ void FakeRmadClient::AbortRma(
                      absl::optional<rmad::AbortRmaReply>(abort_rma_reply_)));
 }
 
-void FakeRmadClient::GetLog(DBusMethodCallback<std::string> callback) {
+void FakeRmadClient::GetLog(DBusMethodCallback<rmad::GetLogReply> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          std::move(callback),
-          absl::optional<std::string>(
-              "This is a log.\nIt has multiple lines.\nSome of which are very, "
-              "very long so that the log window can be tested. I mean really "
-              "long, much longer than you expect. It just keeps going on and "
-              "on, until it just stops.")));
+      base::BindOnce(std::move(callback),
+                     absl::optional<rmad::GetLogReply>(get_log_reply_)));
 }
 
 void FakeRmadClient::AddObserver(Observer* observer) {
@@ -338,6 +333,12 @@ void FakeRmadClient::SetAbortable(bool abortable) {
   // Abort RMA returns 'not in RMA' on success.
   abort_rma_reply_.set_error(abortable ? rmad::RMAD_ERROR_RMA_NOT_REQUIRED
                                        : rmad::RMAD_ERROR_CANNOT_CANCEL_RMA);
+}
+
+void FakeRmadClient::SetGetLogReply(const std::string& log,
+                                    rmad::RmadErrorCode error) {
+  get_log_reply_.set_log(log);
+  get_log_reply_.set_error(error);
 }
 
 void FakeRmadClient::TriggerErrorObservation(rmad::RmadErrorCode error) {

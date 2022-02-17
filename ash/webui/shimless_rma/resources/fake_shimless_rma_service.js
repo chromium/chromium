@@ -698,14 +698,14 @@ export class FakeShimlessRmaService {
         'writeProtectManuallyEnabled', State.kWaitForManualWPEnable);
   }
 
-  /** @return {!Promise<{log: string}>} */
+  /** @return {!Promise<{log: string, error: !RmadErrorCode}>} */
   getLog() {
     return this.methods_.resolveMethod('getLog');
   }
 
   /** @param {string} log */
   setGetLogResult(log) {
-    this.methods_.setResult('getLog', {log: log});
+    this.methods_.setResult('getLog', {log: log, error: RmadErrorCode.kOk});
   }
 
   launchDiagnostics() {

@@ -2540,6 +2540,8 @@ TEST_F(ShimlessRmaServiceTest, GetLog) {
   const std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  const std::string expected_log = "This is my test log for the RMA process";
+  fake_rmad_client_()->SetGetLogReply(expected_log, rmad::RMAD_ERROR_OK);
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
       [&](mojom::State state, bool can_cancel, bool can_go_back,
@@ -2550,7 +2552,10 @@ TEST_F(ShimlessRmaServiceTest, GetLog) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetLog(base::BindLambdaForTesting(
-      [&](const std::string& log) { EXPECT_FALSE(log.empty()); }));
+      [&](const std::string& log, rmad::RmadErrorCode error) {
+        EXPECT_EQ(log, expected_log);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
   run_loop.RunUntilIdle();
 }
 
@@ -2568,7 +2573,10 @@ TEST_F(ShimlessRmaServiceTest, GetLogWrongStateEmpty) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetLog(base::BindLambdaForTesting(
-      [&](const std::string& log) { EXPECT_TRUE(log.empty()); }));
+      [&](const std::string& log, rmad::RmadErrorCode error) {
+        EXPECT_TRUE(log.empty());
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+      }));
   run_loop.RunUntilIdle();
 }
 

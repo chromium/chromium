@@ -189,7 +189,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void OnAbortRmaResponse(AbortRmaCallback callback,
                           bool reboot,
                           absl::optional<rmad::AbortRmaReply> response);
-  void OnGetLog(GetLogCallback callback, absl::optional<std::string> log);
+  void OnGetLog(GetLogCallback callback,
+                absl::optional<rmad::GetLogReply> response);
 
   void OnOsUpdateStatusCallback(update_engine::Operation operation,
                                 double progress,
