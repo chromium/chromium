@@ -33,7 +33,7 @@ def IterScenarios(
 
 def main():
   parser = argparse.ArgumentParser(description='Runs browser power benchmarks')
-  parser.add_argument("--output_dir", help="Output dir", action='store_true')
+  parser.add_argument("--output_dir", help="Output dir")
   parser.add_argument('--no-checks',
                       dest='no_checks',
                       action='store_true',
@@ -46,7 +46,9 @@ def main():
       action='store',
       choices=["wakeups", "cpu_time"],
       help="Profile the application in one of two modes: wakeups, cpu_time.")
-  parser.add_argument("--power_sampler", help="Path to power sampler binary")
+  parser.add_argument("--power_sampler",
+                      help="Path to power sampler binary",
+                      required=True)
   parser.add_argument(
       '--scenarios',
       dest='scenarios',

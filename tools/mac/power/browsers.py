@@ -26,6 +26,12 @@ class BrowserDriver(abc.ABC):
     self.browser_process = None
     self.executable = executable
 
+    executable_path = (self.executable
+                       if self.executable is not None else os.path.join(
+                           "/Applications", f"{self.process_name}.app"))
+    if not os.path.exists(executable_path):
+      raise ValueError(f"Application doesn't exist for {browser_name}.")
+
   @abc.abstractmethod
   def Launch(self):
     """Starts the browser and ensures it is started before returning.
@@ -99,6 +105,7 @@ class ChromiumDriver(BrowserDriver):
                extra_args=[]):
     super().__init__(browser_name, process_name, executable_path)
     self.extra_args = extra_args
+
 
   def Launch(self):
     if self.executable is not None:
