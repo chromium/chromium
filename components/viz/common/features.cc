@@ -69,8 +69,16 @@ const base::Feature kSimpleFrameRateThrottling{
     "SimpleFrameRateThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Use the SkiaRenderer.
-const base::Feature kUseSkiaRenderer{"UseSkiaRenderer",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kUseSkiaRenderer {
+  "UseSkiaRenderer",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||           \
+    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Kill-switch to disable de-jelly, even if flags/properties indicate it should
 // be enabled.
