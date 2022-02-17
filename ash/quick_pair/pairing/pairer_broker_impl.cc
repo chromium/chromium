@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/quick_pair/pairing/pairer_broker_impl.h"
+
 #include <memory>
 
 #include "ash/quick_pair/common/account_key_failure.h"
@@ -13,6 +14,7 @@
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer_impl.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_unpair_handler.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -73,7 +75,7 @@ void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
 
   DCHECK(adapter_);
-  fast_pair_pairers_[device->ble_address] = std::make_unique<FastPairPairer>(
+  fast_pair_pairers_[device->ble_address] = FastPairPairerImpl::Factory::Create(
       adapter_, device,
       base::BindOnce(&PairerBrokerImpl::OnFastPairDevicePaired,
                      weak_pointer_factory_.GetWeakPtr()),

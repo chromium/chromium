@@ -10,8 +10,9 @@ assert(is_chromeos_ash,
 
 source_set("pairing") {
   sources = [
-    "fast_pair/fast_pair_pairer.cc",
     "fast_pair/fast_pair_pairer.h",
+    "fast_pair/fast_pair_pairer_impl.cc",
+    "fast_pair/fast_pair_pairer_impl.h",
     "fast_pair/fast_pair_unpair_handler.cc",
     "fast_pair/fast_pair_unpair_handler.h",
     "pairer_broker.h",
@@ -64,7 +65,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "fast_pair/fast_pair_pairer_unittest.cc",
+    "fast_pair/fast_pair_pairer_impl_unittest.cc",
     "fast_pair/fast_pair_unpair_handler_unittest.cc",
     "retroactive_pairing_detector_unittest.cc",
   ]

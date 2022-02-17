@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer_impl.h"
 
 #include <memory>
 
@@ -92,7 +92,43 @@ bool ShouldBeEnabledForLoginStatus(ash::LoginStatus status) {
 namespace ash {
 namespace quick_pair {
 
-FastPairPairer::FastPairPairer(
+// static
+FastPairPairerImpl::Factory* FastPairPairerImpl::Factory::g_test_factory_ =
+    nullptr;
+
+// static
+std::unique_ptr<FastPairPairer> FastPairPairerImpl::Factory::Create(
+    scoped_refptr<device::BluetoothAdapter> adapter,
+    scoped_refptr<Device> device,
+    base::OnceCallback<void(scoped_refptr<Device>)> paired_callback,
+    base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
+        pair_failed_callback,
+    base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
+        account_key_failure_callback,
+    base::OnceCallback<void(scoped_refptr<Device>)>
+        pairing_procedure_complete) {
+  if (g_test_factory_)
+    return g_test_factory_->CreateInstance(
+        std::move(adapter), std::move(device), std::move(paired_callback),
+        std::move(pair_failed_callback),
+        std::move(account_key_failure_callback),
+        std::move(pairing_procedure_complete));
+
+  return base::WrapUnique(new FastPairPairerImpl(
+      std::move(adapter), std::move(device), std::move(paired_callback),
+      std::move(pair_failed_callback), std::move(account_key_failure_callback),
+      std::move(pairing_procedure_complete)));
+}
+
+// static
+void FastPairPairerImpl::Factory::SetFactoryForTesting(
+    Factory* g_test_factory) {
+  g_test_factory_ = g_test_factory;
+}
+
+FastPairPairerImpl::Factory::~Factory() = default;
+
+FastPairPairerImpl::FastPairPairerImpl(
     scoped_refptr<device::BluetoothAdapter> adapter,
     scoped_refptr<Device> device,
     base::OnceCallback<void(scoped_refptr<Device>)> paired_callback,
@@ -149,15 +185,16 @@ FastPairPairer::FastPairPairer(
   fast_pair_gatt_service_client_ =
       FastPairGattServiceClientImpl::Factory::Create(
           bt_device, adapter_,
-          base::BindRepeating(&FastPairPairer::OnGattClientInitializedCallback,
-                              weak_ptr_factory_.GetWeakPtr()));
+          base::BindRepeating(
+              &FastPairPairerImpl::OnGattClientInitializedCallback,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
-FastPairPairer::~FastPairPairer() {
+FastPairPairerImpl::~FastPairPairerImpl() {
   adapter_->RemovePairingDelegate(this);
 }
 
-void FastPairPairer::OnGattClientInitializedCallback(
+void FastPairPairerImpl::OnGattClientInitializedCallback(
     absl::optional<PairFailure> failure) {
   if (failure) {
     QP_LOG(WARNING) << __func__ << ": Failed to create GATT client due to: "
@@ -183,18 +220,20 @@ void FastPairPairer::OnGattClientInitializedCallback(
                       << ((bt_device != nullptr) ? "Yes" : "No") << ".";
 
       if (bt_device) {
-        bt_device->Pair(this, base::BindOnce(&FastPairPairer::OnPairConnected,
-                                             weak_ptr_factory_.GetWeakPtr()));
+        bt_device->Pair(this,
+                        base::BindOnce(&FastPairPairerImpl::OnPairConnected,
+                                       weak_ptr_factory_.GetWeakPtr()));
       } else {
         adapter_->AddPairingDelegate(
             this, device::BluetoothAdapter::PairingDelegatePriority::
                       PAIRING_DELEGATE_PRIORITY_HIGH);
 
-        adapter_->ConnectDevice(device_address, /*address_type=*/absl::nullopt,
-                                base::BindOnce(&FastPairPairer::OnConnectDevice,
-                                               weak_ptr_factory_.GetWeakPtr()),
-                                base::BindOnce(&FastPairPairer::OnConnectError,
-                                               weak_ptr_factory_.GetWeakPtr()));
+        adapter_->ConnectDevice(
+            device_address, /*address_type=*/absl::nullopt,
+            base::BindOnce(&FastPairPairerImpl::OnConnectDevice,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindOnce(&FastPairPairerImpl::OnConnectError,
+                           weak_ptr_factory_.GetWeakPtr()));
       }
       break;
     case Protocol::kFastPairRetroactive:
@@ -207,7 +246,7 @@ void FastPairPairer::OnGattClientInitializedCallback(
   }
 }
 
-void FastPairPairer::OnPairConnected(
+void FastPairPairerImpl::OnPairConnected(
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
   RecordPairDeviceResult(/*success=*/!error.has_value());
 
@@ -224,21 +263,21 @@ void FastPairPairer::OnPairConnected(
   QP_LOG(VERBOSE) << "Pair to device successful.";
 }
 
-void FastPairPairer::OnConnectDevice(device::BluetoothDevice* device) {
+void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
   ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
   QP_LOG(VERBOSE) << "Connect device successful.";
   RecordConnectDeviceResult(/*success=*/true);
 }
 
-void FastPairPairer::OnConnectError() {
+void FastPairPairerImpl::OnConnectError() {
   QP_LOG(WARNING) << "Failed to starting pairing procedure by connecting to "
                      "device address.";
   RecordConnectDeviceResult(/*success=*/false);
   std::move(pair_failed_callback_).Run(device_, PairFailure::kAddressConnect);
 }
 
-void FastPairPairer::ConfirmPasskey(device::BluetoothDevice* device,
-                                    uint32_t passkey) {
+void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
+                                        uint32_t passkey) {
   RecordConfirmPasskeyAskTime(base::TimeTicks::Now() -
                               ask_confirm_passkey_initial_time_);
   confirm_passkey_initial_time_ = base::TimeTicks::Now();
@@ -248,12 +287,13 @@ void FastPairPairer::ConfirmPasskey(device::BluetoothDevice* device,
   fast_pair_gatt_service_client_->WritePasskeyAsync(
       /*message_type=*/0x02, /*passkey=*/expected_passkey_,
       fast_pair_handshake_->fast_pair_data_encryptor(),
-      base::BindOnce(&FastPairPairer::OnPasskeyResponse,
+      base::BindOnce(&FastPairPairerImpl::OnPasskeyResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FastPairPairer::OnPasskeyResponse(std::vector<uint8_t> response_bytes,
-                                       absl::optional<PairFailure> failure) {
+void FastPairPairerImpl::OnPasskeyResponse(
+    std::vector<uint8_t> response_bytes,
+    absl::optional<PairFailure> failure) {
   RecordWritePasskeyCharacteristicResult(/*success=*/!failure.has_value());
 
   if (failure) {
@@ -264,11 +304,11 @@ void FastPairPairer::OnPasskeyResponse(std::vector<uint8_t> response_bytes,
 
   fast_pair_handshake_->fast_pair_data_encryptor()->ParseDecryptedPasskey(
       response_bytes,
-      base::BindOnce(&FastPairPairer::OnParseDecryptedPasskey,
+      base::BindOnce(&FastPairPairerImpl::OnParseDecryptedPasskey,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
-void FastPairPairer::OnParseDecryptedPasskey(
+void FastPairPairerImpl::OnParseDecryptedPasskey(
     base::TimeTicks decrypt_start_time,
     const absl::optional<DecryptedPasskey>& passkey) {
   if (!passkey) {
@@ -321,7 +361,7 @@ void FastPairPairer::OnParseDecryptedPasskey(
   AttemptSendAccountKey();
 }
 
-void FastPairPairer::AttemptSendAccountKey() {
+void FastPairPairerImpl::AttemptSendAccountKey() {
   // We only send the account key if we're doing an initial or retroactive
   // pairing. For other FastPair protocols, we can consider the paring
   // procedure complete at this point.
@@ -335,9 +375,9 @@ void FastPairPairer::AttemptSendAccountKey() {
   // happen in an initial pairing scenario since the retroactive pairing
   // scenario is disabled in the RetroactivePairingDetector for users who are
   // not signed in. Because this check happens a long time after the
-  // FastPairPairer is instantiated unlike other classes that disable certain
-  // paths for users who are not signed in, we do not need to check for a
-  // delayed login. At this point, if the user is not logged in, they will not
+  // FastPairPairerImpl is instantiated unlike other classes that disable
+  // certain paths for users who are not signed in, we do not need to check for
+  // a delayed login. At this point, if the user is not logged in, they will not
   // be.
   if (!ShouldBeEnabledForLoginStatus(
           Shell::Get()->session_controller()->login_status())) {
@@ -352,11 +392,11 @@ void FastPairPairer::AttemptSendAccountKey() {
 
   fast_pair_gatt_service_client_->WriteAccountKey(
       account_key, fast_pair_handshake_->fast_pair_data_encryptor(),
-      base::BindOnce(&FastPairPairer::OnWriteAccountKey,
+      base::BindOnce(&FastPairPairerImpl::OnWriteAccountKey,
                      weak_ptr_factory_.GetWeakPtr(), account_key));
 }
 
-void FastPairPairer::OnWriteAccountKey(
+void FastPairPairerImpl::OnWriteAccountKey(
     std::array<uint8_t, 16> account_key,
     absl::optional<device::BluetoothGattService::GattErrorCode> error) {
   RecordWriteAccountKeyCharacteristicResult(/*success=*/!error.has_value());
@@ -377,36 +417,36 @@ void FastPairPairer::OnWriteAccountKey(
   std::move(pairing_procedure_complete_).Run(device_);
 }
 
-void FastPairPairer::RequestPinCode(device::BluetoothDevice* device) {
+void FastPairPairerImpl::RequestPinCode(device::BluetoothDevice* device) {
   NOTREACHED();
 }
 
-void FastPairPairer::RequestPasskey(device::BluetoothDevice* device) {
+void FastPairPairerImpl::RequestPasskey(device::BluetoothDevice* device) {
   NOTREACHED();
 }
 
-void FastPairPairer::DisplayPinCode(device::BluetoothDevice* device,
-                                    const std::string& pincode) {
+void FastPairPairerImpl::DisplayPinCode(device::BluetoothDevice* device,
+                                        const std::string& pincode) {
   NOTREACHED();
 }
 
-void FastPairPairer::DisplayPasskey(device::BluetoothDevice* device,
-                                    uint32_t passkey) {
+void FastPairPairerImpl::DisplayPasskey(device::BluetoothDevice* device,
+                                        uint32_t passkey) {
   NOTREACHED();
 }
 
-void FastPairPairer::KeysEntered(device::BluetoothDevice* device,
-                                 uint32_t entered) {
+void FastPairPairerImpl::KeysEntered(device::BluetoothDevice* device,
+                                     uint32_t entered) {
   NOTREACHED();
 }
 
-void FastPairPairer::AuthorizePairing(device::BluetoothDevice* device) {
+void FastPairPairerImpl::AuthorizePairing(device::BluetoothDevice* device) {
   NOTREACHED();
 }
 
-void FastPairPairer::DevicePairedChanged(device::BluetoothAdapter* adapter,
-                                         device::BluetoothDevice* device,
-                                         bool new_paired_status) {
+void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
+                                             device::BluetoothDevice* device,
+                                             bool new_paired_status) {
   if (!new_paired_status || !paired_callback_)
     return;
 
@@ -416,8 +456,9 @@ void FastPairPairer::DevicePairedChanged(device::BluetoothAdapter* adapter,
       device->GetAddress() == device_->classic_address()) {
     std::move(paired_callback_).Run(device_);
 
-    if (pairing_procedure_complete_)
+    if (pairing_procedure_complete_) {
       std::move(pairing_procedure_complete_).Run(device_);
+    }
   }
 }
 
