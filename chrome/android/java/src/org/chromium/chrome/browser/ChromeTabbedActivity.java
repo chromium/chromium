@@ -614,7 +614,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
                     boolean gridTabSwitcherEnabled = TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                             ChromeTabbedActivity.this);
-                    boolean overviewVisible = mOverviewModeController.overviewVisible();
+                    boolean overviewVisible = mOverviewModeController.overviewVisible()
+                            || mLayoutManager.getNextLayoutType() == LayoutType.TAB_SWITCHER;
                     boolean hasNextTab = !(getTabModelSelector().getTotalTabCount() == 0
                             || (!getTabModelSelector().isIncognitoSelected()
                                     && getTabModelSelector().getModel(false).getCount() == 0));
