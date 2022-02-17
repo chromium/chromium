@@ -1902,7 +1902,9 @@
                         "FontManagerEarlyInit",
                         "NavigationRequestPreconnect",
                         "NavigationThreadingOptimizations",
+                        "OptimizeEarlyNavigation",
                         "OptimizeLookalikeUrlNavigationThrottle",
+                        "PrefetchAndroidFonts",
                         "URLLoaderSyncClient"
                     ]
                 }
@@ -4373,23 +4375,6 @@
             ]
         }
     ],
-    "OptimizeEarlyNavigation": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OptimizeEarlyNavigation"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizeUpdateLoadInfo": [
         {
             "platforms": [
@@ -5064,23 +5049,6 @@
                     },
                     "enable_features": [
                         "PreconnectToSearch"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrefetchAndroidFonts": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrefetchAndroidFonts"
                     ]
                 }
             ]
