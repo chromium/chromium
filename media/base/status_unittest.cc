@@ -57,6 +57,17 @@ struct MapValueCodeTraits {
   }
 };
 
+struct TraitsWithCustomUKMSerializer {
+  enum class Codes { kFoo, kBar };
+  static constexpr StatusGroupType Group() { return "UKMSerializerCode"; }
+  static uint32_t PackExtraData(const internal::StatusData& info) {
+    auto maybe_key = info.data.FindIntKey("might_exist_key");
+    if (maybe_key.has_value())
+      return *maybe_key * 77;
+    return 0;
+  }
+};
+
 class StatusTest : public testing::Test {
  public:
   using NormalStatus = TypedStatus<ZeroValueOkTypeTraits>;
@@ -511,6 +522,71 @@ TEST_F(StatusTest, OrTypeMappingToOtherOrType) {
   A::Or<int> a3 = std::move(b3).MapValue(unwrap, A::Codes::kBar);
   ASSERT_TRUE(a3.has_error());
   ASSERT_TRUE(a3 == A::Codes::kBar);
+}
+
+TEST_F(StatusTest, UKMSerializerTest) {
+  using SerializeStatus = TypedStatus<TraitsWithCustomUKMSerializer>;
+  struct MockUkmBuilder {
+    internal::UKMPackHelper status, root;
+    void SetStatus(uint64_t data) { status.packed = data; }
+    void SetRootCause(uint64_t data) { root.packed = data; }
+  };
+
+  MockUkmBuilder builder;
+
+  // Normal status without PackExtraData won't have anything in |.extra_data|,
+  // but if it has a cause, that will be serialized properly.
+  NormalStatus causal = FailWithCause();
+  causal.ToUKM(builder);
+
+  ASSERT_NE(builder.root.packed, 0lu);
+  ASSERT_EQ(builder.status.bits.code,
+            static_cast<StatusCodeType>(NormalStatus::Codes::kFoo));
+  ASSERT_EQ(builder.root.bits.code,
+            static_cast<StatusCodeType>(NormalStatus::Codes::kFoo));
+  ASSERT_EQ(builder.status.bits.extra_data, 0u);
+  ASSERT_EQ(builder.root.bits.extra_data, 0u);
+
+  // Make a status that supports PackExtraData, but doesn't have the key
+  // it's lookinf for, and returns 0 instead.
+  SerializeStatus result = SerializeStatus::Codes::kFoo;
+  result.ToUKM(builder);
+  ASSERT_EQ(builder.status.bits.code,
+            static_cast<StatusCodeType>(SerializeStatus::Codes::kFoo));
+  ASSERT_EQ(builder.status.bits.extra_data, 0u);
+
+  // Add the special key, and demonstrate that |PackExtraData| is called.
+  result.WithData("might_exist_key", 2);
+  result.ToUKM(builder);
+  ASSERT_EQ(builder.status.bits.code,
+            static_cast<StatusCodeType>(SerializeStatus::Codes::kFoo));
+  ASSERT_EQ(builder.status.bits.extra_data, 154u);
+
+  // Wrap the code with extra data to ensure that |.root.extra_data| is
+  // serialized.
+  SerializeStatus wraps = SerializeStatus::Codes::kBar;
+  wraps.AddCause(std::move(result));
+  wraps.ToUKM(builder);
+  ASSERT_NE(builder.root.packed, 0u);
+  ASSERT_EQ(builder.root.bits.code,
+            static_cast<StatusCodeType>(SerializeStatus::Codes::kFoo));
+  ASSERT_EQ(builder.root.bits.extra_data, 154u);
+  ASSERT_NE(builder.status.packed, 0u);
+  ASSERT_EQ(builder.status.bits.code,
+            static_cast<StatusCodeType>(SerializeStatus::Codes::kBar));
+  ASSERT_EQ(builder.status.bits.extra_data, 0u);
+
+  // Make a copy, and ensure that the root cause is carried over.
+  SerializeStatus moved = wraps;
+  moved.ToUKM(builder);
+  ASSERT_NE(builder.root.packed, 0u);
+  ASSERT_EQ(builder.root.bits.code,
+            static_cast<StatusCodeType>(SerializeStatus::Codes::kFoo));
+  ASSERT_EQ(builder.root.bits.extra_data, 154u);
+  ASSERT_NE(builder.status.packed, 0u);
+  ASSERT_EQ(builder.status.bits.code,
+            static_cast<StatusCodeType>(SerializeStatus::Codes::kBar));
+  ASSERT_EQ(builder.status.bits.extra_data, 0u);
 }
 
 }  // namespace media

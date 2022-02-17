@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "media/base/crc_16.h"
 #include "media/base/media_export.h"
 #include "media/base/media_serializers_base.h"
 
@@ -44,12 +45,29 @@ using StatusCodeType = uint16_t;
 // This is the type that TypedStatusTraits::Group should be.
 using StatusGroupType = base::StringPiece;
 
+// This is the type that a status will get serialized into for UKM purposes.
+using UKMPackedType = uint64_t;
+
 namespace internal {
+
+union UKMPackHelper {
+  struct bits {
+    uint16_t group;
+    StatusCodeType code;
+    uint32_t extra_data;
+  } __attribute__((packed)) bits;
+  UKMPackedType packed;
+
+  static_assert(sizeof(bits) == sizeof(packed));
+};
 
 struct MEDIA_EXPORT StatusData {
   StatusData();
   StatusData(const StatusData&);
-  StatusData(StatusGroupType group, StatusCodeType code, std::string message);
+  StatusData(StatusGroupType group,
+             StatusCodeType code,
+             std::string message,
+             UKMPackedType root_cause);
   ~StatusData();
   StatusData& operator=(const StatusData&);
 
@@ -75,34 +93,59 @@ struct MEDIA_EXPORT StatusData {
 
   // Data attached to the error
   base::Value data;
+
+  // The root-cause status, as packed for UKM.
+  UKMPackedType packed_root_cause = 0;
 };
 
 // Helper class to allow traits with no default enum.
 template <typename T>
 struct StatusTraitsHelper {
-  // If T defines DefaultEnumValue(), then return it.  Otherwise, return an
+  // If T defines DefaultEnumValue(), then return it. Otherwise, return an
   // empty optional.
   static constexpr absl::optional<typename T::Codes> DefaultEnumValue() {
     return DefaultEnumValueImpl(0);
+  }
+
+  // If T defined PackExtraData(), then evaluate it. Otherwise, return a default
+  // value. |PackExtraData| is an optional method that can operate on the
+  // internal status data in order to pack it into a 32-bit entry for UKM.
+  static constexpr uint32_t PackExtraData(const StatusData& info) {
+    return DefaultPackExtraData(info, 0);
   }
 
  private:
   // Call with an (ignored) int, which will choose the first one if it isn't
   // removed by SFINAE, else will use the varargs one below.
   template <typename X = T>
-  static constexpr typename std::enable_if<
-      std::is_pointer<decltype(&X::DefaultEnumValue)>::value,
-      absl::optional<typename T::Codes>>::type
+  static constexpr typename std::enable_if_t<
+      std::is_pointer_v<decltype(&X::DefaultEnumValue)>,
+      absl::optional<typename T::Codes>>
   DefaultEnumValueImpl(int) {
     // Make sure the signature is correct, just for sanity.
     static_assert(
         std::is_same<decltype(T::DefaultEnumValue), typename T::Codes()>::value,
-        "TypedStatus Traits::DefaultEnumValue() must return Traits::Codes.");
+        "TypedStatus::Traits::DefaultEnumValue() must return Traits::Codes.");
     return T::DefaultEnumValue();
   }
 
   static constexpr absl::optional<typename T::Codes> DefaultEnumValueImpl(...) {
     return {};
+  }
+
+  template <typename X = T>
+  static constexpr
+      typename std::enable_if_t<std::is_pointer_v<decltype(&X::PackExtraData)>,
+                                uint32_t>
+      DefaultPackExtraData(const StatusData& info, int) {
+    static_assert(
+        std::is_same_v<decltype(T::PackExtraData(info)), uint32_t>,
+        "Traits::PackExtraData(const StatusData&) must return uint32_t");
+    return T::PackExtraData(info);
+  }
+
+  static constexpr int DefaultPackExtraData(const StatusData&, ...) {
+    return 0;
   }
 };
 
@@ -204,7 +247,7 @@ class MEDIA_EXPORT TypedStatus {
     }
     data_ = std::make_unique<internal::StatusData>(
         Traits::Group(), static_cast<StatusCodeType>(code),
-        std::string(message));
+        std::string(message), 0);
     data_->AddLocation(location);
   }
 
@@ -279,10 +322,7 @@ class MEDIA_EXPORT TypedStatus {
   // Add |cause| as the error that triggered this one.
   template <typename AnyTraitsType>
   TypedStatus<T>&& AddCause(TypedStatus<AnyTraitsType>&& cause) && {
-    DCHECK(data_ && cause.data_);
-    // The |cause| status is about to lose its type forever. We need to pack
-    // the group and code now to avoid losing it in the future.
-    data_->cause = std::move(cause.data_);
+    AddCause(std::move(cause));
     return std::move(*this);
   }
 
@@ -290,9 +330,29 @@ class MEDIA_EXPORT TypedStatus {
   template <typename AnyTraitsType>
   void AddCause(TypedStatus<AnyTraitsType>&& cause) & {
     DCHECK(data_ && cause.data_);
-    // The |cause| status is about to lose its type forever. We need to pack
-    // the group and code now to avoid losing it in the future.
+    // The |cause| status is about to lose it's type forever. If it has no
+    // causes, it might be sourced as the "root cause" status when sending to
+    // UKM later, so it must be pre-emptively packed.
+    if (!cause.data_->cause) {
+      // If |cause| has no cause, then it shouldn't have |packed_root_cause|
+      // either.
+      DCHECK_EQ(cause.data_->packed_root_cause, 0lu);
+      data_->packed_root_cause = cause.PackForUkm();
+    } else {
+      // If |cause| has a cause, it should have taken that causes's root-cause
+      // when it was added as a cause. Since we're adding |cause| as our cause
+      // now, we should steal |cause|'s root cause to be out root cause.
+      DCHECK_NE(cause.data_->packed_root_cause, 0lu);
+      data_->packed_root_cause = cause.data_->packed_root_cause;
+    }
     data_->cause = std::move(cause.data_);
+  }
+
+  template <typename UKMBuilder>
+  void ToUKM(UKMBuilder& builder) const {
+    builder.SetStatus(PackForUkm());
+    if (data_)
+      builder.SetRootCause(data_->packed_root_cause);
   }
 
   inline bool operator==(Codes code) const { return code == this->code(); }
@@ -457,6 +517,18 @@ class MEDIA_EXPORT TypedStatus {
   // Allow AddCause.
   template <typename StatusEnum>
   friend class TypedStatus;
+
+  UKMPackedType PackForUkm() const {
+    internal::UKMPackHelper result;
+    result.bits.group = crc16(Traits::Group().data());
+    result.bits.code = static_cast<StatusCodeType>(code());
+    if (data_) {
+      result.bits.extra_data =
+          internal::StatusTraitsHelper<Traits>::PackExtraData(*data_);
+    }
+
+    return result.packed;
+  }
 };
 
 template <typename T>

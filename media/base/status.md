@@ -192,6 +192,27 @@ binding.
 ```
 
 
+## UKM & data-recording
+TypedStatus is designed to be easily reported to UKM. A status is represented
+by 16-bit hash of the group name, the 16-bit code, and 32 bits of extra data.
+Any implementation of TypedStatus can define a |PackExtraData| method in the
+traits struct which can operate on internal data and pack it into 32 bits.
+For example, a TypedStatus which might often have wrapped HRESULTs might look
+like this:
+```c++
+struct MyExampleStatusTraits {
+  // If you do not have an existing enum, you can `enum class Codes { ... };`
+  // here, instead of `using`.
+  using Codes = MyExampleEnum;
+  static constexpr StatusGroupType Group() { return "MyExampleStatus"; }
+  static constexpr Codes DefaultEnumValue() { return Codes::kDefaultValue; }
+  static uint32_t PackExtraData(const StatusData& info) {
+    absl::optional<int> hresult = info.data.GetIntValue("HRESULT");
+    return static_cast<uint32_t>(hresult.has_value() ? *hresult : 0);
+  }
+}
+```
+
 
 ## Design decisions
 See go/typedstatus for design decisions.
