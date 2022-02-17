@@ -641,7 +641,7 @@ void AppInstallControllerImpl::RunUI() {
   progress_wnd_ = nullptr;
 
   main_task_runner_->PostTask(FROM_HERE,
-                              base::BindOnce(std::move(callback_), 0));
+                              base::BindOnce(std::move(callback_), kErrorOk));
 }
 
 void AppInstallControllerImpl::DoExit() {

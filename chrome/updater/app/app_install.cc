@@ -221,7 +221,7 @@ void AppInstall::MaybeInstallApp() {
   }();
 
   if (app_id.empty()) {
-    Shutdown(0);
+    Shutdown(kErrorOk);
     return;
   }
   app_install_controller_ = app_install_controller_maker_.Run(update_service_);

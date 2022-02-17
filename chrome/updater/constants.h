@@ -219,7 +219,7 @@ constexpr int kErrorMissingRunableFile = kCustomInstallErrorBase + 2;
 // Running the application installer failed.
 constexpr int kErrorApplicationInstallerFailed = kCustomInstallErrorBase + 3;
 
-// Server Errors.
+// Error codes.
 //
 // The server process may exit with any of these exit codes.
 constexpr int kErrorOk = 0;
@@ -230,14 +230,73 @@ constexpr int kErrorFailedToLockPrefsMutex = 1;
 // The server candidate failed to promote itself to active.
 constexpr int kErrorFailedToSwap = 2;
 
-// Client Errors.
-constexpr int kErrorRegistrationFailed = 1;
+constexpr int kErrorRegistrationFailed = 3;
+constexpr int kErrorPermissionDenied = 4;
+constexpr int kErrorWaitFailedUninstall = 5;
+constexpr int kErrorWaitFailedInstall = 6;
+constexpr int kErrorPathServiceFailed = 7;
+constexpr int kErrorComInitializationFailed = 8;
+constexpr int kErrorUnknownCommandLine = 9;
+constexpr int kErrorFailedToDeleteRegistryKeys = 10;
+constexpr int kErrorNoVersionedDirectory = 11;
+constexpr int kErrorNoBaseDirectory = 12;
+constexpr int kErrorPathTooLong = 13;
+constexpr int kErrorProcessLaunchFailed = 14;
 
-// Recovery component exit codes.
-constexpr int kRecoveryExitCodeSuccess = 0;
-constexpr int kRecoveryExitCodeWaitFailedUninstall = -1;
-constexpr int kRecoveryExitCodeWaitFailedInstall = -2;
-constexpr int kRecoveryExitCodePathServiceFailed = -3;
+// Failed to copy the updater's bundle.
+constexpr int kErrorFailedToCopyBundle = 15;
+
+// Failed to delete the updater's install folder.
+constexpr int kErrorFailedToDeleteFolder = 16;
+
+// Failed to delete the updater's data folder.
+constexpr int kErrorFailedToDeleteDataFolder = 17;
+
+// Failed to get versioned updater folder path.
+constexpr int kErrorFailedToGetVersionedUpdaterFolderPath = 18;
+
+// Failed to get the installed app bundle path.
+constexpr int kErrorFailedToGetAppBundlePath = 19;
+
+// Failed to remove the active(unversioned) update service job from Launchd.
+constexpr int kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd = 20;
+
+// Failed to remove versioned update service job from Launchd.
+constexpr int kErrorFailedToRemoveCandidateUpdateServiceJobFromLaunchd = 21;
+
+// Failed to remove versioned update service internal job from Launchd.
+constexpr int kErrorFailedToRemoveUpdateServiceInternalJobFromLaunchd = 22;
+
+// Failed to remove versioned wake job from Launchd.
+constexpr int kErrorFailedToRemoveWakeJobFromLaunchd = 23;
+
+// Failed to create the active(unversioned) update service Launchd plist.
+constexpr int kErrorFailedToCreateUpdateServiceLaunchdJobPlist = 24;
+
+// Failed to create the versioned update service Launchd plist.
+constexpr int kErrorFailedToCreateVersionedUpdateServiceLaunchdJobPlist = 25;
+
+// Failed to create the versioned update service internal Launchd plist.
+constexpr int kErrorFailedToCreateUpdateServiceInternalLaunchdJobPlist = 26;
+
+// Failed to create the versioned wake Launchd plist.
+constexpr int kErrorFailedToCreateWakeLaunchdJobPlist = 27;
+
+// Failed to start the active(unversioned) update service job.
+constexpr int kErrorFailedToStartLaunchdActiveServiceJob = 28;
+
+// Failed to start the versioned update service job.
+constexpr int kErrorFailedToStartLaunchdVersionedServiceJob = 29;
+
+// Failed to start the update service internal job.
+constexpr int kErrorFailedToStartLaunchdUpdateServiceInternalJob = 30;
+
+// Failed to start the wake job.
+constexpr int kErrorFailedToStartLaunchdWakeJob = 31;
+
+// Timed out while awaiting launchctl to become aware of the update service
+// internal job.
+constexpr int kErrorFailedAwaitingLaunchdUpdateServiceInternalJob = 32;
 
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
@@ -269,9 +328,6 @@ constexpr int kUninstallPingReasonUserNotAnOwner = 1;
 
 // The file downloaded to a temporary location could not be moved.
 constexpr int kErrorFailedToMoveDownloadedFile = 5;
-
-// A connection was rejected due to insufficient permissions.
-constexpr int kPermissionDeniedError = 403;
 
 constexpr double kInitialDelay = 60;
 constexpr int kServerKeepAliveSeconds = 10;

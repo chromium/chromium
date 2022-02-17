@@ -96,19 +96,19 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
       GetVersionedDirectory(scope);
   if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedDirectory failed.";
-    return -1;
+    return kErrorNoVersionedDirectory;
   }
   const absl::optional<base::FilePath> base_dir = GetBaseDirectory(scope);
   if (scope == UpdaterScope::kSystem && !base_dir) {
     LOG(ERROR) << "GetBaseDirectory failed.";
-    return -1;
+    return kErrorNoBaseDirectory;
   }
 
   wchar_t cmd_path[MAX_PATH] = {0};
   DWORD size = ExpandEnvironmentStrings(L"%SystemRoot%\\System32\\cmd.exe",
                                         cmd_path, base::size(cmd_path));
   if (!size || size >= MAX_PATH)
-    return -1;
+    return kErrorPathTooLong;
 
   const base::FilePath script_path =
       versioned_dir->AppendASCII(kUninstallScript);
@@ -126,9 +126,9 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
   base::Process process = base::LaunchProcess(cmdline, options);
   if (!process.IsValid()) {
     LOG(ERROR) << "Failed to create process " << cmdline;
-    return -1;
+    return kErrorProcessLaunchFailed;
   }
-  return 0;
+  return kErrorOk;
 }
 
 // Reverses the changes made by setup. This is a best effort uninstall:
@@ -159,7 +159,7 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
     if (!uninstall_list->Do()) {
       LOG(ERROR) << "Failed to delete the registry keys.";
       uninstall_list->Rollback();
-      return -1;
+      return kErrorFailedToDeleteRegistryKeys;
     }
   }
 

@@ -589,7 +589,7 @@ void RunRecoveryComponent(UpdaterScope scope,
   command.AppendSwitchASCII(kAppGuidSwitch, app_id);
   int exit_code = -1;
   EXPECT_TRUE(Run(scope, command, &exit_code));
-  EXPECT_EQ(exit_code, kRecoveryExitCodeSuccess);
+  EXPECT_EQ(exit_code, kErrorOk);
 }
 
 void ExpectLastChecked(UpdaterScope updater_scope) {

@@ -107,7 +107,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
                           const base::CommandLine* command_line) {
   // Used for unit test purposes. There is no need to run with a crash handler.
   if (command_line->HasSwitch(kTestSwitch))
-    return 0;
+    return kErrorOk;
 
   if (command_line->HasSwitch(kCrashHandlerSwitch)) {
     const int retval = CrashReporterMain();
@@ -133,7 +133,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     PLOG(ERROR) << "Failed to initialize COM";
 
     // TODO(crbug.com/1294543) - is there a more specific error needed?
-    return -1;
+    return kErrorComInitializationFailed;
   }
   if (FAILED(DisableCOMExceptionHandling())) {
     // Failing to disable COM exception handling is a critical error.
@@ -168,7 +168,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     return ServiceMain::RunWindowsService(command_line);
 
   if (command_line->HasSwitch(kHealthCheckSwitch)) {
-    return 0;
+    return kErrorOk;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -194,7 +194,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   }
 
   VLOG(1) << "Unknown command line switch.";
-  return -1;
+  return kErrorUnknownCommandLine;
 }
 
 // Returns the string literal corresponding to an updater command, which

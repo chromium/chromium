@@ -117,7 +117,7 @@ int AppRecover::ReinstallUpdater() const {
   base::FilePath setup_path;
   if (!base::PathService::Get(base::FILE_EXE, &setup_path)) {
     LOG(ERROR) << "PathService failed.";
-    return kRecoveryExitCodePathServiceFailed;
+    return kErrorPathServiceFailed;
   }
   int exit_code = -1;
   base::CommandLine uninstall_command(setup_path);
@@ -130,7 +130,7 @@ int AppRecover::ReinstallUpdater() const {
   }
   if (!base::LaunchProcess(uninstall_command, {}).WaitForExit(&exit_code)) {
     VLOG(0) << "Failed to wait for the uninstaller to exit.";
-    return kRecoveryExitCodeWaitFailedUninstall;
+    return kErrorWaitFailedUninstall;
   }
   VLOG(0) << "Uninstaller returned " << exit_code << ".";
   if (exit_code) {
@@ -147,7 +147,7 @@ int AppRecover::ReinstallUpdater() const {
   // TODO(crbug.com/1281971): suppress the installer's UI.
   if (!base::LaunchProcess(install_command, {}).WaitForExit(&exit_code)) {
     VLOG(0) << "Failed to wait for the installer to exit.";
-    return kRecoveryExitCodeWaitFailedInstall;
+    return kErrorWaitFailedInstall;
   }
   VLOG(0) << "Installer returned " << exit_code << ".";
   return exit_code;
@@ -168,7 +168,7 @@ void AppRecover::RegisterApps(
       base::BindOnce(
           [](scoped_refptr<UpdateService> /*service*/,
              base::OnceClosure shutdown) { std::move(shutdown).Run(); },
-          service, base::BindOnce(&AppRecover::Shutdown, this, 0)));
+          service, base::BindOnce(&AppRecover::Shutdown, this, kErrorOk)));
   for (const RegistrationRequest& registration : registrations) {
     service->RegisterApp(
         registration,

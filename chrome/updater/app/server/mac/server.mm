@@ -91,7 +91,7 @@ void AppServerMac::UninstallSelf() {
 }
 
 bool AppServerMac::SwapInNewVersion() {
-  return PromoteCandidate(updater_scope()) == setup_exit_codes::kSuccess;
+  return PromoteCandidate(updater_scope()) == kErrorOk;
 }
 
 bool AppServerMac::MigrateLegacyUpdaters(
