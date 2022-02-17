@@ -2420,6 +2420,15 @@ void WebViewImpl::SetPageLifecycleStateInternal(
       LocalFrame* local_frame = To<LocalFrame>(page->MainFrame());
       probe::DidRestoreFromBackForwardCache(local_frame);
     }
+    // Increment the navigation counter on the main frame and all nested frames
+    // in its frame tree.
+    for (Frame* frame = page->MainFrame(); frame;
+         frame = frame->Tree().TraverseNext()) {
+      auto* local_frame = DynamicTo<LocalFrame>(frame);
+      if (local_frame && local_frame->View()) {
+        local_frame->IncrementNavigationCounter();
+      }
+    }
   }
 
   // Make sure no TrackedFeaturesUpdate message is sent after the ACK

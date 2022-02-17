@@ -6340,6 +6340,7 @@ interface PerformanceEntry
     getter duration
     getter entryType
     getter name
+    getter navigationCount
     getter startTime
     method constructor
     method toJSON

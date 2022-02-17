@@ -725,6 +725,8 @@ class CORE_EXPORT LocalFrame final
   // Invokes on first paint, this method could be invoked multiple times, refer
   // to FrameFirstPaint.
   void OnFirstPaint(bool text_painted, bool image_painted);
+  void IncrementNavigationCounter() { navigation_counter_++; }
+  uint32_t GetNavigationCounter() { return navigation_counter_; }
 
 #if BUILDFLAG(IS_MAC)
   void ResetTextInputHostForTesting();
@@ -956,6 +958,9 @@ class CORE_EXPORT LocalFrame final
 
   // Indicate if the current document's color scheme was notified.
   bool notified_color_scheme_ = false;
+  // Tracks the number of times this document has been retrieved from the
+  // bfcache.
+  uint32_t navigation_counter_ = 0;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

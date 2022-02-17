@@ -54,11 +54,15 @@ class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
                                  ExceptionState&);
 
   // This constructor is only public so that MakeGarbageCollected can call it.
-  PerformanceMark(const AtomicString& name,
-                  double start_time,
-                  base::TimeTicks unsafe_time_for_traces,
-                  scoped_refptr<SerializedScriptValue>,
-                  ExceptionState& exception_state);
+  PerformanceMark(
+      const AtomicString& name,
+      double start_time,
+      base::TimeTicks unsafe_time_for_traces,
+      scoped_refptr<SerializedScriptValue>,
+      ExceptionState& exception_state,
+      uint32_t navigation_count = 0); /* TODO(1273925): Remove the default value
+                                      when all callers have been updated. */
+
   ~PerformanceMark() override = default;
 
   AtomicString entryType() const override;

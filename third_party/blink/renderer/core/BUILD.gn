@@ -1499,6 +1499,7 @@ source_set("unit_tests") {
     "svg/unsafe_svg_attribute_sanitization_test.cc",
     "timing/background_tracing_helper_test.cc",
     "timing/memory_info_test.cc",
+    "timing/performance_entry_test.cc",
     "timing/performance_mark_test.cc",
     "timing/performance_navigation_timing_test.cc",
     "timing/performance_observer_test.cc",

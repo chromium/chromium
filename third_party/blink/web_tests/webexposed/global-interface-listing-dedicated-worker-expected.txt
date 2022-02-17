@@ -1205,6 +1205,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter duration
 [Worker]     getter entryType
 [Worker]     getter name
+[Worker]     getter navigationCount
 [Worker]     getter startTime
 [Worker]     method constructor
 [Worker]     method toJSON
