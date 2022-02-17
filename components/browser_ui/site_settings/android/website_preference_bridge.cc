@@ -26,7 +26,6 @@
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/browser/uma_util.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/object_permission_context_base.h"
@@ -231,7 +230,6 @@ void SetPermissionSettingForOrigin(
   GetHostContentSettingsMap(browser_context)
       ->SetContentSettingDefaultScope(origin_url, embedder_url, content_type,
                                       setting);
-  content_settings::LogWebSiteSettingsPermissionChange(content_type, setting);
 }
 
 permissions::ObjectPermissionContextBase* GetChooserContext(
@@ -347,8 +345,6 @@ static void SetNotificationSettingForOrigin(
   GetHostContentSettingsMap(browser_context)
       ->SetContentSettingDefaultScope(
           url, GURL(), ContentSettingsType::NOTIFICATIONS, setting);
-  content_settings::LogWebSiteSettingsPermissionChange(
-      ContentSettingsType::NOTIFICATIONS, setting);
 }
 
 // In Android O+, Android is responsible for revoking notification settings--
@@ -362,9 +358,6 @@ static void JNI_WebsitePreferenceBridge_ReportNotificationRevokedForOrigin(
 
   ContentSetting setting = static_cast<ContentSetting>(new_setting_value);
   DCHECK_NE(setting, CONTENT_SETTING_ALLOW);
-
-  content_settings::LogWebSiteSettingsPermissionChange(
-      ContentSettingsType::NOTIFICATIONS, setting);
 
   permissions::PermissionUmaUtil::PermissionRevoked(
       ContentSettingsType::NOTIFICATIONS,

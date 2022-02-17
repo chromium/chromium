@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1278,7 +1277,6 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForInvalidOrigins) {
 
 TEST_F(SiteSettingsHandlerTest, Origins) {
   const std::string google("https://www.google.com:443");
-  const std::string uma_base("WebsiteSettings.Menu.PermissionChanged");
   {
     // Test the JS -> C++ -> JS callback path for configuring origins, by
     // setting Google.com to blocked.
@@ -1289,15 +1287,9 @@ TEST_F(SiteSettingsHandlerTest, Origins) {
     set_args.Append(
         content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
     set_args.Append(false);  // Incognito.
-    base::HistogramTester histograms;
     handler()->HandleSetCategoryPermissionForPattern(
         set_args.GetListDeprecated());
     EXPECT_EQ(1U, web_ui()->call_data().size());
-    histograms.ExpectTotalCount(uma_base, 1);
-    histograms.ExpectTotalCount(uma_base + ".Allowed", 0);
-    histograms.ExpectTotalCount(uma_base + ".Blocked", 1);
-    histograms.ExpectTotalCount(uma_base + ".Reset", 0);
-    histograms.ExpectTotalCount(uma_base + ".SessionOnly", 0);
   }
 
   base::Value get_exception_list_args(base::Value::Type::LIST);
@@ -1315,14 +1307,9 @@ TEST_F(SiteSettingsHandlerTest, Origins) {
     reset_args.Append(std::string());
     reset_args.Append(kNotifications);
     reset_args.Append(false);  // Incognito.
-    base::HistogramTester histograms;
     handler()->HandleResetCategoryPermissionForPattern(
         reset_args.GetListDeprecated());
     EXPECT_EQ(3U, web_ui()->call_data().size());
-    histograms.ExpectTotalCount(uma_base, 1);
-    histograms.ExpectTotalCount(uma_base + ".Allowed", 0);
-    histograms.ExpectTotalCount(uma_base + ".Blocked", 0);
-    histograms.ExpectTotalCount(uma_base + ".Reset", 1);
   }
 
   // Verify the reset was successful.
@@ -1882,7 +1869,6 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
 
 TEST_F(SiteSettingsHandlerTest, SessionOnlyException) {
   const std::string google_with_port("https://www.google.com:443");
-  const std::string uma_base("WebsiteSettings.Menu.PermissionChanged");
   base::Value set_args(base::Value::Type::LIST);
   set_args.Append(google_with_port);  // Primary pattern.
   set_args.Append(std::string());     // Secondary pattern.
@@ -1890,13 +1876,10 @@ TEST_F(SiteSettingsHandlerTest, SessionOnlyException) {
   set_args.Append(
       content_settings::ContentSettingToString(CONTENT_SETTING_SESSION_ONLY));
   set_args.Append(false);  // Incognito.
-  base::HistogramTester histograms;
   handler()->HandleSetCategoryPermissionForPattern(
       set_args.GetListDeprecated());
 
   EXPECT_EQ(kNumberContentSettingListeners, web_ui()->call_data().size());
-  histograms.ExpectTotalCount(uma_base, 1);
-  histograms.ExpectTotalCount(uma_base + ".SessionOnly", 1);
 }
 
 TEST_F(SiteSettingsHandlerTest, BlockAutoplay_SendOnRequest) {

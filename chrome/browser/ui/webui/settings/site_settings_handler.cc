@@ -42,7 +42,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/browser/uma_util.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -1228,7 +1227,6 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
             "SoundContentSetting.UnmuteBy.SiteSettings"));
       }
     }
-    content_settings::LogWebSiteSettingsPermissionChange(content_type, setting);
   }
 
   // Show an infobar reminding the user to reload tabs where their site
@@ -1302,9 +1300,6 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
     PermissionDecisionAutoBlockerFactory::GetForProfile(profile)
         ->RemoveEmbargoAndResetCounts(url, content_type);
   }
-
-  content_settings::LogWebSiteSettingsPermissionChange(
-      content_type, ContentSetting::CONTENT_SETTING_DEFAULT);
 }
 
 void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
@@ -1371,7 +1366,6 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
           "SoundContentSetting.UnmuteBy.PatternException"));
     }
   }
-  content_settings::LogWebSiteSettingsPermissionChange(content_type, setting);
 }
 
 void SiteSettingsHandler::HandleResetChooserExceptionForSite(

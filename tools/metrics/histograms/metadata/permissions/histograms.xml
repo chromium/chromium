@@ -1176,6 +1176,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebsiteSettings.Menu.PermissionChanged" enum="ContentType"
     expires_after="M81">
+  <obsolete>
+    Expired in M81, stopped emitting in M100.
+  </obsolete>
   <owner>miguelg@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <summary>
@@ -1189,6 +1192,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebsiteSettings.Menu.PermissionChanged.Allowed"
     enum="ContentType" expires_after="M81">
+  <obsolete>
+    Expired in M81, stopped emitting in M100.
+  </obsolete>
   <owner>miguelg@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <summary>
@@ -1202,6 +1208,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebsiteSettings.Menu.PermissionChanged.Ask" enum="ContentType"
     expires_after="M77">
+  <obsolete>
+    Expired in M77, stopped emitting in M100.
+  </obsolete>
   <owner>miguelg@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <summary>
@@ -1212,6 +1221,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebsiteSettings.Menu.PermissionChanged.Blocked"
     enum="ContentType" expires_after="M81">
+  <obsolete>
+    Expired in M81, stopped emitting in M100.
+  </obsolete>
   <owner>miguelg@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <summary>
@@ -1225,6 +1237,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebsiteSettings.Menu.PermissionChanged.Reset"
     enum="ContentType" expires_after="M77">
+  <obsolete>
+    Expired in M77, stopped emitting in M100.
+  </obsolete>
   <owner>miguelg@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <summary>
@@ -1238,6 +1253,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebsiteSettings.Menu.PermissionChanged.SessionOnly"
     enum="ContentType" expires_after="M96">
+  <obsolete>
+    Expired in M96, stopped emitting in M100.
+  </obsolete>
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
