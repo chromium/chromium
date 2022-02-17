@@ -302,6 +302,7 @@ class AppSearchProviderTest : public AppListTestBase {
       return app_search_->results();
     }
   }
+
   ArcAppTest& arc_test() { return arc_test_; }
 
   void CallViewClosing() { app_search_->ViewClosing(); }
