@@ -1035,7 +1035,7 @@ const base::Feature kWebAssemblyCodeProtection{
 // JITed for WebAssembly. Fall back to traditional memory protection if
 // WebAssemblyCodeProtection is also enabled.
 const base::Feature kWebAssemblyCodeProtectionPku{
-    "WebAssemblyCodeProtectionPku", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebAssemblyCodeProtectionPku", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(ARCH_CPU_X86_64)
 
