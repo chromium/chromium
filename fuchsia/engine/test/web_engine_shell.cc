@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "fuchsia/base/init_logging.h"
+#include "fuchsia/engine/web_instance_host/web_instance_host.h"
 #include "url/gurl.h"
 
 fuchsia::sys::ComponentControllerPtr component_controller_;
@@ -39,6 +40,7 @@ constexpr char kHeadlessSwitch[] = "headless";
 constexpr char kEnableProtectedMediaIdentifier[] =
     "enable-protected-media-identifier";
 constexpr char kWebEnginePackageName[] = "web-engine-package-name";
+constexpr char kUseWebInstance[] = "use-web-instance";
 
 void PrintUsage() {
   std::cerr << "Usage: "
@@ -144,6 +146,7 @@ int main(int argc, char** argv) {
   const bool is_headless = command_line->HasSwitch(kHeadlessSwitch);
   const bool enable_protected_media_identifier_access =
       command_line->HasSwitch(kEnableProtectedMediaIdentifier);
+  const bool use_context_provider = !command_line->HasSwitch(kUseWebInstance);
 
   base::CommandLine::StringVector additional_args = command_line->GetArgs();
   GURL url(GetUrlFromArgs(additional_args));
@@ -154,11 +157,6 @@ int main(int argc, char** argv) {
 
   // Remove the url since we don't pass it into WebEngine
   additional_args.erase(additional_args.begin());
-
-  fuchsia::web::ContextProviderPtr web_context_provider =
-      ConnectToContextProvider(
-          command_line->GetSwitchValueASCII(kWebEnginePackageName),
-          additional_args);
 
   // Set up the content directory fuchsia-pkg://shell-data/, which will host
   // the files stored under //fuchsia/engine/test/shell_data.
@@ -213,8 +211,30 @@ int main(int argc, char** argv) {
 
   // Create the browser |context|.
   fuchsia::web::ContextPtr context;
-  web_context_provider->Create(std::move(create_context_params),
-                               context.NewRequest());
+
+  // Keep alive in run_loop scope.
+  fuchsia::web::ContextProviderPtr web_context_provider;
+  std::unique_ptr<cr_fuchsia::WebInstanceHost> web_instance_host;
+
+  if (use_context_provider) {
+    web_context_provider = ConnectToContextProvider(
+        command_line->GetSwitchValueASCII(kWebEnginePackageName),
+        additional_args);
+    web_context_provider->Create(std::move(create_context_params),
+                                 context.NewRequest());
+  } else {
+    fidl::InterfaceRequest<fuchsia::io::Directory> services_request;
+    auto services = sys::ServiceDirectory::CreateWithRequest(&services_request);
+    web_instance_host = std::make_unique<cr_fuchsia::WebInstanceHost>();
+    zx_status_t result = web_instance_host->CreateInstanceForContext(
+        std::move(create_context_params), std::move(services_request));
+    if (result == ZX_OK) {
+      services->Connect(context.NewRequest());
+    } else {
+      ZX_LOG(ERROR, result) << "CreateInstanceForContext failed";
+      return 2;
+    }
+  }
   context.set_error_handler(
       [quit_run_loop = run_loop.QuitClosure()](zx_status_t status) {
         ZX_LOG(ERROR, status) << "Context connection lost:";
