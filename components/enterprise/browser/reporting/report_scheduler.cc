@@ -29,8 +29,6 @@ namespace enterprise_reporting {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultUploadInterval =
-    base::Hours(24);           // Default upload interval is 24 hours.
 const int kMaximumRetry = 10;  // Retry 10 times takes about 15 to 19 hours.
 
 bool IsBrowserVersionUploaded(ReportScheduler::ReportTrigger trigger) {
@@ -156,6 +154,10 @@ void ReportScheduler::RegisterPrefObserver() {
       reporting_pref_name_,
       base::BindRepeating(&ReportScheduler::OnReportEnabledPrefChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      kCloudReportingUploadFrequency,
+      base::BindRepeating(&ReportScheduler::RestartReportTimer,
+                          base::Unretained(this)));
   // Trigger first pref check during launch process.
   OnReportEnabledPrefChanged();
 }
@@ -177,16 +179,16 @@ void ReportScheduler::OnReportEnabledPrefChanged() {
 #endif
 
   // Start the periodic report timer.
-  const base::Time last_upload_timestamp =
-      delegate_->GetPrefService()->GetTime(kLastUploadTimestamp);
-  Start(last_upload_timestamp);
+  RestartReportTimer();
 
   // Only device report generator support real time partial version report with
   // DM Server. With longer term, this should use `real_time_report_generator_`
   // instead.
   if (report_generator_) {
-    delegate_->StartWatchingUpdatesIfNeeded(last_upload_timestamp,
-                                            kDefaultUploadInterval);
+    delegate_->StartWatchingUpdatesIfNeeded(
+        delegate_->GetPrefService()->GetTime(kLastUploadTimestamp),
+        delegate_->GetPrefService()->GetTimeDelta(
+            kCloudReportingUploadFrequency));
   }
 
   // Enable real time report if the generator is provided.
@@ -200,6 +202,11 @@ void ReportScheduler::Stop() {
     delegate_->StopWatchingUpdates();
   delegate_->StopWatchingExtensionRequest();
   extension_request_uploader_.reset();
+}
+
+void ReportScheduler::RestartReportTimer() {
+  request_timer_.Stop();
+  Start(delegate_->GetPrefService()->GetTime(kLastUploadTimestamp));
 }
 
 bool ReportScheduler::SetupBrowserPolicyClientRegistration() {
@@ -229,7 +236,9 @@ bool ReportScheduler::SetupBrowserPolicyClientRegistration() {
 
 void ReportScheduler::Start(base::Time last_upload_time) {
   // The next report is triggered 24h after the previous was uploaded.
-  const base::Time next_upload_time = last_upload_time + kDefaultUploadInterval;
+  const base::Time next_upload_time =
+      last_upload_time +
+      delegate_->GetPrefService()->GetTimeDelta(kCloudReportingUploadFrequency);
   if (VLOG_IS_ON(1)) {
     base::TimeDelta first_request_delay = next_upload_time - base::Time::Now();
     VLOG(1) << "Schedule the first report in about "

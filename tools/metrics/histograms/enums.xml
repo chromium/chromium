@@ -28693,6 +28693,7 @@ Called by update_document_policy_enum.py.-->
   <int value="959" label="FloatingWorkspaceEnabled"/>
   <int value="960" label="WindowPlacementAllowedForSites"/>
   <int value="961" label="WindowPlacementBlockedForSites"/>
+  <int value="962" label="CloudReportingUploadFrequency"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

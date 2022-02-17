@@ -12,6 +12,8 @@ static_library("enterprise") {
     "browser/reporting/chrome_profile_request_generator.h",
     "browser/reporting/cloud_profile_reporting_policy_handler.cc",
     "browser/reporting/cloud_profile_reporting_policy_handler.h",
+    "browser/reporting/cloud_reporting_frequency_policy_handler.cc",
+    "browser/reporting/cloud_reporting_frequency_policy_handler.h",
     "browser/reporting/cloud_reporting_policy_handler.cc",
     "browser/reporting/cloud_reporting_policy_handler.h",
     "browser/reporting/common_pref_names.cc",

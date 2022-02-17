@@ -38,7 +38,8 @@ namespace {
 
 constexpr char kDMToken[] = "dm_token";
 constexpr char kClientId[] = "client_id";
-constexpr base::TimeDelta kDefaultUploadInterval = base::Hours(24);
+constexpr base::TimeDelta kUploadFrequency = base::Hours(12);
+constexpr base::TimeDelta kNewUploadFrequency = base::Hours(10);
 
 }  // namespace
 
@@ -119,6 +120,10 @@ class ReportSchedulerIOSTest : public PlatformTest {
     previous_set_last_upload_timestamp_ = base::Time::Now() - gap;
     local_state_.Get()->SetTime(kLastUploadTimestamp,
                                 previous_set_last_upload_timestamp_);
+  }
+
+  void SetReportFrequency(base::TimeDelta frequency) {
+    local_state_.Get()->SetTimeDelta(kCloudReportingUploadFrequency, frequency);
   }
 
   void ToggleCloudReport(bool enabled) {
@@ -289,6 +294,7 @@ TEST_F(ReportSchedulerIOSTest, NoReportGenerate) {
 TEST_F(ReportSchedulerIOSTest, TimerDelayWithLastUploadTimestamp) {
   const base::TimeDelta gap = base::Hours(10);
   SetLastUploadInHour(gap);
+  SetReportFrequency(kUploadFrequency);
 
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
@@ -299,7 +305,7 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayWithLastUploadTimestamp) {
   CreateScheduler();
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
 
-  base::TimeDelta next_report_delay = kDefaultUploadInterval - gap;
+  base::TimeDelta next_report_delay = kUploadFrequency - gap;
   task_environment_.FastForwardBy(next_report_delay - base::Seconds(1));
   ExpectLastUploadTimestampUpdated(false);
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -324,6 +330,36 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayWithoutLastUploadTimestamp) {
   ExpectLastUploadTimestampUpdated(true);
 
   ::testing::Mock::VerifyAndClearExpectations(client_);
+}
+
+TEST_F(ReportSchedulerIOSTest, TimerDelayUpdate) {
+  const base::TimeDelta gap = base::Hours(5);
+  SetLastUploadInHour(gap);
+  SetReportFrequency(kUploadFrequency);
+
+  EXPECT_CALL_SetupRegistration();
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
+      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(ReportType::kFull, _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  CreateScheduler();
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  SetReportFrequency(kNewUploadFrequency);
+
+  // The report should be re-scheduled, moving the time forward with the new
+  // interval.
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  base::TimeDelta next_report_delay = kNewUploadFrequency - gap;
+  task_environment_.FastForwardBy(next_report_delay - base::Seconds(1));
+  ExpectLastUploadTimestampUpdated(false);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ExpectLastUploadTimestampUpdated(true);
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+  ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
 TEST_F(ReportSchedulerIOSTest,

@@ -132,6 +132,10 @@ class ReportScheduler {
   // Stops the periodic timer and the update observer.
   void Stop();
 
+  // Stop the timer if there is any and reschedule the next report based on
+  // latest report frequency.
+  void RestartReportTimer();
+
   // Register |cloud_policy_client_| with dm token and client id for desktop
   // browser only. (Chrome OS doesn't need this step here.)
   bool SetupBrowserPolicyClientRegistration();

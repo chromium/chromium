@@ -872,6 +872,7 @@
         'ReportSafeBrowsingData',
         'CloudExtensionRequestEnabled',
         'CloudReportingEnabled',
+        'CloudReportingUploadFrequency',
       ],
     },
     {
@@ -22395,6 +22396,32 @@
       '''
     },
     {
+      'id': 962,
+      'name': 'CloudReportingUploadFrequency',
+      'owners':  ['zmin@chromium.org', 'file://components/enterprise/browser/reporting/OWNERS'],
+      'type': 'int',
+      'schema': { 'type': 'integer', 'minimum': 3 , 'maximum': 168},
+      'future_on': ['chrome.*', 'chrome_os', 'android', 'ios'],
+      'tags': ['admin-sharing', 'google-sharing'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+        'cloud_only': True,
+      },
+      'caption': '''Frequency of cloud reporting in hours''',
+      'example_value': 12,
+      'default': 24,
+      # TODO(crbug.com/1298258): Add CloudProfileReportingEnabled policy name to the desc once it's launched.
+      'desc': '''
+      Controls the frequency of Chrome status report uploads.
+
+      This includes reports that are enabled by <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME">CloudReportingEnabled</ph>.
+
+      When the policy is not set, reports are uploaded every 24 hours.
+      When the policy is set, the number of hours between two successive report uploads is defined by this policy.
+      '''
+    },
+    {
       'name': 'EnterpriseHardwarePlatformAPIEnabled',
       'owners': ['guidou@chromium.org'],
       'type': 'main',
@@ -30927,6 +30954,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'CloudExtensionRequestEnabled',
         'CloudReportingEnabled',
         'CloudProfileReportingEnabled',
+        'CloudReportingUploadFrequency',
       ],
     },
     {
@@ -31130,6 +31158,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 961,
+  'highest_id_currently_used': 962,
   'highest_atomic_group_id_currently_used': 42
 }

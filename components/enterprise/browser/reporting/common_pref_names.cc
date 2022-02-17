@@ -24,4 +24,8 @@ const char kLastUploadTimestamp[] =
 const char kLastUploadSucceededTimestamp[] =
     "enterprise_reporting.last_upload_succeeded_timestamp";
 
+// The report frequency
+const char kCloudReportingUploadFrequency[] =
+    "enterprise_reporting.upload_frequency";
+
 }  // namespace enterprise_reporting
