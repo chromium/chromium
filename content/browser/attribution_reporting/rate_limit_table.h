@@ -25,12 +25,12 @@ class Origin;
 
 namespace content {
 
-class AttributionReport;
+struct AttributionInfo;
 class AttributionStorageDelegate;
 class CommonSourceInfo;
 class StorableSource;
 
-// Manages storage for rate-limiting reports.
+// Manages storage for rate-limiting sources and attributions.
 // This class may be constructed on any sequence but must be accessed and
 // destroyed on the same sequence. The sequence must outlive |this|.
 class CONTENT_EXPORT RateLimitTable {
@@ -41,7 +41,7 @@ class CONTENT_EXPORT RateLimitTable {
     kError,
   };
 
-  // We have separate reporting origin rate limits for sources and reports.
+  // We have separate reporting origin rate limits for sources and attributions.
   // This enum helps us differentiate between these two cases in the database.
   //
   // These values are persisted to the DB. Entries should not be renumbered and
@@ -50,7 +50,7 @@ class CONTENT_EXPORT RateLimitTable {
   // The enum is only exposed here for use in unit tests.
   enum class Scope {
     kSource = 0,
-    kReport = 1,
+    kAttribution = 1,
   };
 
   explicit RateLimitTable(const AttributionStorageDelegate* delegate);
@@ -69,20 +69,21 @@ class CONTENT_EXPORT RateLimitTable {
                                            const StoredSource& source);
 
   // Returns false on failure.
-  [[nodiscard]] bool AddRateLimitForReport(sql::Database* db,
-                                           const AttributionReport& report);
+  [[nodiscard]] bool AddRateLimitForAttribution(
+      sql::Database* db,
+      const AttributionInfo& attribution_info);
 
   [[nodiscard]] Result SourceAllowedForReportingOriginLimit(
       sql::Database* db,
       const StorableSource& source);
 
-  [[nodiscard]] Result ReportAllowedForReportingOriginLimit(
+  [[nodiscard]] Result AttributionAllowedForReportingOriginLimit(
       sql::Database* db,
-      const AttributionReport& report);
+      const AttributionInfo& attribution_info);
 
-  [[nodiscard]] Result ReportAllowedForAttributionLimit(
+  [[nodiscard]] Result AttributionAllowedForAttributionLimit(
       sql::Database* db,
-      const AttributionReport& report);
+      const AttributionInfo& attribution_info);
 
   // These should be 1:1 with |AttributionStorageSql|'s |ClearData| functions.
   // Returns false on failure.

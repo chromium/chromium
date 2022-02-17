@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -79,15 +80,16 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
   const auto* data =
       absl::get_if<AttributionReport::EventLevelData>(&report.data());
   DCHECK(data);
+  const AttributionInfo& attribution_info = report.attribution_info();
   return mojom::WebUIAttributionReport::New(
       data->id,
-      report.source().common_info().ConversionDestination().Serialize(),
+      attribution_info.source.common_info().ConversionDestination().Serialize(),
       report.ReportURL(),
-      /*trigger_time=*/report.trigger_time().ToJsTime(),
+      /*trigger_time=*/attribution_info.time.ToJsTime(),
       /*report_time=*/report.report_time().ToJsTime(), data->priority,
       SerializeAttributionJson(report.ReportBody(), /*pretty_print=*/true),
       /*attributed_truthfully=*/
-      report.source().attribution_logic() ==
+      attribution_info.source.attribution_logic() ==
           StoredSource::AttributionLogic::kTruthfully,
       status, http_response_code);
 }
@@ -292,9 +294,9 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
     case AttributionTrigger::Result::kDroppedForNoise:
       status = mojom::WebUIAttributionReport::Status::kDroppedForNoise;
       break;
-    case AttributionTrigger::Result::kExcessiveReports:
-      status =
-          mojom::WebUIAttributionReport::Status::kDroppedDueToExcessiveReports;
+    case AttributionTrigger::Result::kExcessiveAttributions:
+      status = mojom::WebUIAttributionReport::Status::
+          kDroppedDueToExcessiveAttributions;
       break;
     case AttributionTrigger::Result::kExcessiveReportingOrigins:
       status = mojom::WebUIAttributionReport::Status::

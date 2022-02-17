@@ -60,17 +60,13 @@ AttributionReport::AggregatableContributionData::
     ~AggregatableContributionData() = default;
 
 AttributionReport::AttributionReport(
-    StoredSource source,
-    base::Time trigger_time,
+    AttributionInfo attribution_info,
     base::Time report_time,
     base::GUID external_report_id,
-    absl::optional<uint64_t> trigger_debug_key,
     absl::variant<EventLevelData, AggregatableContributionData> data)
-    : source_(std::move(source)),
-      trigger_time_(trigger_time),
+    : attribution_info_(std::move(attribution_info)),
       report_time_(report_time),
       external_report_id_(std::move(external_report_id)),
-      trigger_debug_key_(trigger_debug_key),
       data_(std::move(data)) {
   DCHECK(external_report_id_.is_valid());
 }
@@ -105,8 +101,10 @@ GURL AttributionReport::ReportURL() const {
   const char* path = absl::visit(Visitor{}, data_);
   url::Replacements<char> replacements;
   replacements.SetPath(path, url::Component(0, strlen(path)));
-  return source_.common_info().reporting_origin().GetURL().ReplaceComponents(
-      replacements);
+  return attribution_info_.source.common_info()
+      .reporting_origin()
+      .GetURL()
+      .ReplaceComponents(replacements);
 }
 
 base::Value AttributionReport::ReportBody() const {
@@ -115,20 +113,22 @@ base::Value AttributionReport::ReportBody() const {
 
   base::Value dict(base::Value::Type::DICTIONARY);
 
+  const CommonSourceInfo& common_source_info =
+      attribution_info_.source.common_info();
+
   dict.SetStringKey("attribution_destination",
-                    source_.common_info().ConversionDestination().Serialize());
+                    common_source_info.ConversionDestination().Serialize());
 
   // The API denotes these values as strings; a `uint64_t` cannot be put in
   // a dict as an integer in order to be opaque to various API configurations.
-  dict.SetStringKey(
-      "source_event_id",
-      base::NumberToString(source_.common_info().source_event_id()));
+  dict.SetStringKey("source_event_id",
+                    base::NumberToString(common_source_info.source_event_id()));
 
   dict.SetStringKey("trigger_data",
                     base::NumberToString(event_data->trigger_data));
 
   const char* source_type = nullptr;
-  switch (source_.common_info().source_type()) {
+  switch (common_source_info.source_type()) {
     case CommonSourceInfo::SourceType::kNavigation:
       source_type = "navigation";
       break;
@@ -151,15 +151,13 @@ base::Value AttributionReport::ReportBody() const {
   // complicating the DB schema, we hardcode the values for now and will wait
   // for the first time the values are changed before complicating the codebase.
   dict.SetDoubleKey("randomized_trigger_rate",
-                    RandomizedTriggerRate(source_.common_info().source_type()));
+                    RandomizedTriggerRate(common_source_info.source_type()));
 
-  if (absl::optional<uint64_t> debug_key = source_.common_info().debug_key())
+  if (absl::optional<uint64_t> debug_key = common_source_info.debug_key())
     dict.SetStringKey("source_debug_key", base::NumberToString(*debug_key));
 
-  if (trigger_debug_key_.has_value()) {
-    dict.SetStringKey("trigger_debug_key",
-                      base::NumberToString(*trigger_debug_key_));
-  }
+  if (absl::optional<uint64_t> debug_key = attribution_info_.debug_key)
+    dict.SetStringKey("trigger_debug_key", base::NumberToString(*debug_key));
 
   return dict;
 }

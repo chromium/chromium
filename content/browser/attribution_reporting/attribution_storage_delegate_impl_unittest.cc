@@ -30,11 +30,12 @@ AttributionReport GetReport(base::Time impression_time,
                             base::TimeDelta expiry = kDefaultExpiry,
                             CommonSourceInfo::SourceType source_type =
                                 CommonSourceInfo::SourceType::kNavigation) {
-  return ReportBuilder(SourceBuilder(impression_time)
-                           .SetExpiry(expiry)
-                           .SetSourceType(source_type)
-                           .BuildStored())
-      .SetTriggerTime(trigger_time)
+  return ReportBuilder(AttributionInfoBuilder(SourceBuilder(impression_time)
+                                                  .SetExpiry(expiry)
+                                                  .SetSourceType(source_type)
+                                                  .BuildStored())
+                           .SetTime(trigger_time)
+                           .Build())
       .Build();
 }
 
@@ -104,7 +105,8 @@ TEST(AttributionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
       GetReport(impression_time, /*trigger_time=*/impression_time);
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source().common_info(), report.trigger_time()));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -114,7 +116,8 @@ TEST(AttributionStorageDelegateImplTest,
   const AttributionReport report = GetReport(impression_time, trigger_time);
   EXPECT_EQ(impression_time + base::Days(7),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source().common_info(), report.trigger_time()));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -127,7 +130,8 @@ TEST(AttributionStorageDelegateImplTest,
   const AttributionReport report = GetReport(impression_time, trigger_time);
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source().common_info(), report.trigger_time()));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -140,7 +144,8 @@ TEST(AttributionStorageDelegateImplTest,
                                              /*expiry=*/base::Hours(2));
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source().common_info(), report.trigger_time()));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -155,7 +160,8 @@ TEST(AttributionStorageDelegateImplTest,
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::Days(4) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source().common_info(), report.trigger_time()));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -170,7 +176,8 @@ TEST(AttributionStorageDelegateImplTest,
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::Days(9) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source().common_info(), report.trigger_time()));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -182,7 +189,8 @@ TEST(AttributionStorageDelegateImplTest,
                 /*expiry=*/base::Days(1), CommonSourceInfo::SourceType::kEvent);
   EXPECT_EQ(impression_time + base::Days(2) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source().common_info(), report.trigger_time()));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -194,7 +202,8 @@ TEST(AttributionStorageDelegateImplTest,
                 /*expiry=*/base::Days(4), CommonSourceInfo::SourceType::kEvent);
   EXPECT_EQ(impression_time + base::Days(4) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source().common_info(), report.trigger_time()));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
 TEST(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {

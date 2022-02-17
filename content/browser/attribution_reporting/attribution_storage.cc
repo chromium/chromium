@@ -66,7 +66,7 @@ absl::optional<base::Time> CreateReportResult::report_time() const {
 absl::optional<DeactivatedSource> CreateReportResult::GetDeactivatedSource()
     const {
   if (dropped_report_source_deactivation_reason_) {
-    return DeactivatedSource(dropped_report_->source(),
+    return DeactivatedSource(dropped_report_->attribution_info().source,
                              *dropped_report_source_deactivation_reason_);
   }
   return absl::nullopt;

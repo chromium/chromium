@@ -56,7 +56,7 @@ AttributionStorageDelegateImpl::GetRateLimits() const {
   return RateLimitConfig{
       .time_window = base::Days(30),
       .max_source_registration_reporting_origins = 100,
-      .max_report_reporting_origins = 10,
+      .max_attribution_reporting_origins = 10,
       .max_attributions = 100,
   };
 }

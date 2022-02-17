@@ -36,4 +36,6 @@ CREATE INDEX rate_limit_time_idx ON rate_limits(time);
 
 CREATE INDEX rate_limit_impression_id_idx ON rate_limits(impression_id);
 
+INSERT INTO conversions VALUES (1,2,3,4,5,6,7,8,9);
+
 COMMIT;

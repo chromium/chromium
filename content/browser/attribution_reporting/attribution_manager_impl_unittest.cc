@@ -310,9 +310,10 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   attribution_manager_->HandleTrigger(conversion);
 
   AttributionReport expected_report =
-      ReportBuilder(builder.BuildStored())
+      ReportBuilder(AttributionInfoBuilder(builder.BuildStored())
+                        .SetTime(base::Time::Now())
+                        .Build())
           .SetTriggerData(conversion.trigger_data())
-          .SetTriggerTime(base::Time::Now())
           .SetReportTime(base::Time::Now() + kFirstReportingWindow)
           .Build();
 

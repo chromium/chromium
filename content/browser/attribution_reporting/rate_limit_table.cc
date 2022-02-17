@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
@@ -66,15 +66,15 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   if (!db->Execute(kRateLimitTableSql))
     return false;
 
-  static_assert(static_cast<int>(Scope::kReport) == 1,
+  static_assert(static_cast<int>(Scope::kAttribution) == 1,
                 "update `scope=1` clause below");
 
-  // Optimizes calls to |ReportAllowedForAttributionLimit()|.
-  static constexpr char kRateLimitReportIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS rate_limit_report_idx ON rate_limits"
+  // Optimizes calls to |AttributionAllowedForAttributionLimit()|.
+  static constexpr char kRateLimitAttributionIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS rate_limit_attribution_idx ON rate_limits"
       "(conversion_destination,impression_site,reporting_origin,time)"
       "WHERE scope=1";
-  if (!db->Execute(kRateLimitReportIndexSql))
+  if (!db->Execute(kRateLimitAttributionIndexSql))
     return false;
 
   // Optimizes calls to |AllowedForReportingOriginLimit()|.
@@ -105,11 +105,12 @@ bool RateLimitTable::AddRateLimitForSource(sql::Database* db,
                       source.common_info().impression_time());
 }
 
-bool RateLimitTable::AddRateLimitForReport(sql::Database* db,
-                                           const AttributionReport& report) {
+bool RateLimitTable::AddRateLimitForAttribution(
+    sql::Database* db,
+    const AttributionInfo& attribution_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AddRateLimit(db, Scope::kReport, report.source(),
-                      report.trigger_time());
+  return AddRateLimit(db, Scope::kAttribution, attribution_info.source,
+                      attribution_info.time);
 }
 
 bool RateLimitTable::AddRateLimit(sql::Database* db,
@@ -148,26 +149,26 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   return statement.Run();
 }
 
-Result RateLimitTable::ReportAllowedForAttributionLimit(
+Result RateLimitTable::AttributionAllowedForAttributionLimit(
     sql::Database* db,
-    const AttributionReport& report) {
+    const AttributionInfo& attribution_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const CommonSourceInfo& common_info = report.source().common_info();
+  const CommonSourceInfo& common_info = attribution_info.source.common_info();
 
   const AttributionStorageDelegate::RateLimitConfig rate_limits =
       delegate_->GetRateLimits();
   DCHECK_GT(rate_limits.time_window, base::TimeDelta());
   DCHECK_GT(rate_limits.max_attributions, 0);
 
-  base::Time min_timestamp = report.trigger_time() - rate_limits.time_window;
+  base::Time min_timestamp = attribution_info.time - rate_limits.time_window;
 
-  static_assert(static_cast<int>(Scope::kReport) == 1,
+  static_assert(static_cast<int>(Scope::kAttribution) == 1,
                 "update `scope=1` clause below");
 
   static constexpr char kAttributionAllowedSql[] =
       "SELECT COUNT(*)FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_report_idx")
+      DCHECK_SQL_INDEXED_BY("rate_limit_attribution_idx")
       "WHERE scope=1 "
       "AND impression_site=? "
       "AND conversion_destination=? "
@@ -198,12 +199,13 @@ Result RateLimitTable::SourceAllowedForReportingOriginLimit(
                                         source.common_info().impression_time());
 }
 
-Result RateLimitTable::ReportAllowedForReportingOriginLimit(
+Result RateLimitTable::AttributionAllowedForReportingOriginLimit(
     sql::Database* db,
-    const AttributionReport& report) {
+    const AttributionInfo& attribution_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AllowedForReportingOriginLimit(
-      db, Scope::kReport, report.source().common_info(), report.trigger_time());
+  return AllowedForReportingOriginLimit(db, Scope::kAttribution,
+                                        attribution_info.source.common_info(),
+                                        attribution_info.time);
 }
 
 Result RateLimitTable::AllowedForReportingOriginLimit(
@@ -220,8 +222,8 @@ Result RateLimitTable::AllowedForReportingOriginLimit(
     case Scope::kSource:
       max = rate_limits.max_source_registration_reporting_origins;
       break;
-    case Scope::kReport:
-      max = rate_limits.max_report_reporting_origins;
+    case Scope::kAttribution:
+      max = rate_limits.max_attribution_reporting_origins;
       break;
   }
   DCHECK_GT(max, 0);

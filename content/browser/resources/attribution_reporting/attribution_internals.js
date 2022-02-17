@@ -523,8 +523,8 @@ class Report extends Selectable {
       case WebUIAttributionReport_Status.kPending:
         this.status = 'Pending';
         break;
-      case WebUIAttributionReport_Status.kDroppedDueToExcessiveReports:
-        this.status = 'Dropped due to excessive reports';
+      case WebUIAttributionReport_Status.kDroppedDueToExcessiveAttributions:
+        this.status = 'Dropped due to excessive attributions';
         break;
       case WebUIAttributionReport_Status.kDroppedDueToExcessiveReportingOrigins:
         this.status = 'Dropped due to excessive reporting origins';

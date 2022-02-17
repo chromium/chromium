@@ -31,9 +31,9 @@ class AttributionStorageDelegate {
     // for a given <source site, destination site> in `time_window`.
     int64_t max_source_registration_reporting_origins;
 
-    // Maximum number of distinct reporting origins that can create reports for
-    // a given <source site, destination site> in `time_window`.
-    int64_t max_report_reporting_origins;
+    // Maximum number of distinct reporting origins that can create attributions
+    // for a given <source site, destination site> in `time_window`.
+    int64_t max_attribution_reporting_origins;
 
     // Maximum number of attributions for a given <source site, destination
     // site, reporting origin> in `time_window`.

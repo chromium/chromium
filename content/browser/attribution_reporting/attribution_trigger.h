@@ -31,7 +31,7 @@ class CONTENT_EXPORT AttributionTrigger {
     kNoCapacityForConversionDestination = 3,
     kNoMatchingImpressions = 4,
     kDeduplicated = 5,
-    kExcessiveReports = 6,
+    kExcessiveAttributions = 6,
     kPriorityTooLow = 7,
     kDroppedForNoise = 8,
     kExcessiveReportingOrigins = 9,

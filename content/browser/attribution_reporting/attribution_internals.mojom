@@ -33,7 +33,7 @@ struct WebUIAttributionReport {
 
   enum Status {
     kPending,
-    kDroppedDueToExcessiveReports,
+    kDroppedDueToExcessiveAttributions,
     kDroppedDueToExcessiveReportingOrigins,
     kDroppedDueToLowPriority,
     kDroppedForNoise,

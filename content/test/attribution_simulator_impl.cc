@@ -104,7 +104,7 @@ class SentReportAccumulator : public AttributionNetworkSender {
 
     base::DictionaryValue test_info;
     test_info.SetBoolKey("randomized_trigger",
-                         report.source().attribution_logic() ==
+                         report.attribution_info().source.attribution_logic() ==
                              StoredSource::AttributionLogic::kFalsely);
     value.SetKey("test_info", std::move(test_info));
 
@@ -205,7 +205,7 @@ class AttributionEventHandler : public AttributionManager::Observer {
       case AttributionTrigger::Result::kNoCapacityForConversionDestination:
       case AttributionTrigger::Result::kNoMatchingImpressions:
       case AttributionTrigger::Result::kDeduplicated:
-      case AttributionTrigger::Result::kExcessiveReports:
+      case AttributionTrigger::Result::kExcessiveAttributions:
       case AttributionTrigger::Result::kPriorityTooLow:
       case AttributionTrigger::Result::kDroppedForNoise:
       case AttributionTrigger::Result::kExcessiveReportingOrigins:

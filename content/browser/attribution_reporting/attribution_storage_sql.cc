@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
@@ -131,11 +132,15 @@ namespace content {
 // Version 21 - 2022/02/16 - https://crrev.com/c/3465916
 //
 // Version 21 changes the dedup_keys.dedup_key column from int64_t to uint64_t.
-const int AttributionStorageSql::kCurrentVersionNumber = 21;
+//
+// Version 22 - 2022/02/16 - https://crrev.com/c/3463875
+//
+// Version 22 renames rate_limit_report_idx to rate_limit_attribution_idx.
+const int AttributionStorageSql::kCurrentVersionNumber = 22;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 21;
+const int AttributionStorageSql::kCompatibleVersionNumber = 22;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -153,7 +158,9 @@ const int AttributionStorageSql::kCompatibleVersionNumber = 21;
 // Version 19 was deprecated by https://crrev.com/c/3444062.
 //
 // Version 20 was deprecated by https://crrev.com/c/3465916.
-const int AttributionStorageSql::kDeprecatedVersionNumber = 20;
+//
+// Version 21 was deprecated by https://crrev.com/c/3463875.
+const int AttributionStorageSql::kDeprecatedVersionNumber = 21;
 
 namespace {
 
@@ -587,9 +594,11 @@ AttributionStorageSql::MaybeReplaceLowerPriorityReport(
     absl::optional<AttributionReport>& replaced_report) {
   DCHECK_GE(num_conversions, 0);
 
+  const StoredSource& source = report.attribution_info().source;
+
   // If there's already capacity for the new report, there's nothing to do.
   if (num_conversions < delegate_->GetMaxAttributionsPerSource(
-                            report.source().common_info().source_type())) {
+                            source.common_info().source_type())) {
     return MaybeReplaceLowerPriorityReportResult::kAddNewReport;
   }
 
@@ -606,7 +615,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityReport(
       "LIMIT 1";
   sql::Statement min_priority_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kMinPrioritySql));
-  min_priority_statement.BindInt64(0, *report.source().source_id());
+  min_priority_statement.BindInt64(0, *source.source_id());
   min_priority_statement.BindTime(1, report.report_time());
 
   const bool has_matching_report = min_priority_statement.Step();
@@ -620,7 +629,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityReport(
         "UPDATE impressions SET active = 0 WHERE impression_id = ?";
     sql::Statement deactivate_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kDeactivateSql));
-    deactivate_statement.BindInt64(0, *report.source().source_id());
+    deactivate_statement.BindInt64(0, *source.source_id());
     return deactivate_statement.Run()
                ? MaybeReplaceLowerPriorityReportResult::
                      kDropNewReportSourceDeactivated
@@ -733,10 +742,10 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       delegate_->GetReportTime(source_to_attribute->source.common_info(),
                                /*trigger_time=*/current_time);
   AttributionReport report(
-      std::move(source_to_attribute->source),
-      /*trigger_time=*/current_time,
+      AttributionInfo(std::move(source_to_attribute->source),
+                      /*time=*/current_time, trigger.debug_key()),
       /*report_time=*/report_time,
-      /*external_report_id=*/delegate_->NewReportID(), trigger.debug_key(),
+      /*external_report_id=*/delegate_->NewReportID(),
       AttributionReport::EventLevelData(trigger_data, trigger.priority(),
                                         /*id=*/absl::nullopt));
 
@@ -763,20 +772,23 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                 std::move(report));
   }
 
-  switch (
-      rate_limit_table_.ReportAllowedForAttributionLimit(db_.get(), report)) {
+  const AttributionInfo& attribution_info = report.attribution_info();
+
+  switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
+      db_.get(), attribution_info)) {
     case RateLimitTable::Result::kAllowed:
       break;
     case RateLimitTable::Result::kNotAllowed:
-      return CreateReportResult(AttributionTrigger::Result::kExcessiveReports,
-                                std::move(report));
+      return CreateReportResult(
+          AttributionTrigger::Result::kExcessiveAttributions,
+          std::move(report));
     case RateLimitTable::Result::kError:
       return CreateReportResult(AttributionTrigger::Result::kInternalError,
                                 std::move(report));
   }
 
-  switch (rate_limit_table_.ReportAllowedForReportingOriginLimit(db_.get(),
-                                                                 report)) {
+  switch (rate_limit_table_.AttributionAllowedForReportingOriginLimit(
+      db_.get(), attribution_info)) {
     case RateLimitTable::Result::kAllowed:
       break;
     case RateLimitTable::Result::kNotAllowed:
@@ -827,12 +839,12 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   // Reports with `AttributionLogic::kNever` should be included in all
   // attribution operations and matching, but only `kTruthfully` should generate
   // reports that get sent.
-  const bool create_report = report.source().attribution_logic() ==
+  const bool create_report = attribution_info.source.attribution_logic() ==
                              StoredSource::AttributionLogic::kTruthfully;
 
   if (create_report) {
-    if (!StoreReport(report.source().source_id(), trigger_data,
-                     report.trigger_time(), report.report_time(),
+    if (!StoreReport(attribution_info.source.source_id(), trigger_data,
+                     attribution_info.time, report.report_time(),
                      trigger.priority(), report.external_report_id(),
                      trigger.debug_key())) {
       return CreateReportResult(AttributionTrigger::Result::kInternalError,
@@ -848,7 +860,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         "INSERT INTO dedup_keys(impression_id,dedup_key)VALUES(?,?)";
     sql::Statement insert_dedup_key_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kInsertDedupKeySql));
-    insert_dedup_key_statement.BindInt64(0, *report.source().source_id());
+    insert_dedup_key_statement.BindInt64(0,
+                                         *attribution_info.source.source_id());
     insert_dedup_key_statement.BindInt64(1,
                                          SerializeUint64(*trigger.dedup_key()));
     if (!insert_dedup_key_statement.Run()) {
@@ -868,7 +881,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         SQL_FROM_HERE, kUpdateImpressionForConversionSql));
 
     // Update the attributed source.
-    impression_update_statement.BindInt64(0, *report.source().source_id());
+    impression_update_statement.BindInt64(0,
+                                          *attribution_info.source.source_id());
     if (!impression_update_statement.Run()) {
       return CreateReportResult(AttributionTrigger::Result::kInternalError,
                                 std::move(report));
@@ -888,8 +902,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   // limit. Therefore, we don't need to call
   // |RateLimitTable::ClearDataForSourceIds()| here.
 
-  if (create_report &&
-      !rate_limit_table_.AddRateLimitForReport(db_.get(), report)) {
+  if (create_report && !rate_limit_table_.AddRateLimitForAttribution(
+                           db_.get(), attribution_info)) {
     return CreateReportResult(AttributionTrigger::Result::kInternalError,
                               std::move(report));
   }
@@ -995,10 +1009,11 @@ absl::optional<AttributionReport> ReadReportFromStatement(
                        source_debug_key),
       *attribution_logic, source_id);
 
-  AttributionReport report(std::move(source), trigger_time, report_time,
-                           std::move(external_report_id), trigger_debug_key,
-                           AttributionReport::EventLevelData(
-                               trigger_data, conversion_priority, report_id));
+  AttributionReport report(
+      AttributionInfo(std::move(source), trigger_time, trigger_debug_key),
+      report_time, std::move(external_report_id),
+      AttributionReport::EventLevelData(trigger_data, conversion_priority,
+                                        report_id));
   report.set_failed_send_attempts(failed_send_attempts);
   return report;
 }

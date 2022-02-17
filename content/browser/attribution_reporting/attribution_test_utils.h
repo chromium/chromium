@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
+#include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -203,7 +204,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
       .time_window = base::TimeDelta::Max(),
       .max_source_registration_reporting_origins =
           std::numeric_limits<int64_t>::max(),
-      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
       .max_attributions = std::numeric_limits<int64_t>::max(),
   };
 
@@ -392,16 +393,32 @@ class TriggerBuilder {
   absl::optional<uint64_t> debug_key_;
 };
 
+// Helper class to construct an `AttributionInfo` for tests using default data.
+class AttributionInfoBuilder {
+ public:
+  explicit AttributionInfoBuilder(StoredSource source);
+  ~AttributionInfoBuilder();
+
+  AttributionInfoBuilder& SetTime(base::Time time);
+
+  AttributionInfoBuilder& SetDebugKey(absl::optional<uint64_t> debug_key);
+
+  AttributionInfo Build() const;
+
+ private:
+  StoredSource source_;
+  base::Time time_;
+  absl::optional<uint64_t> debug_key_;
+};
+
 // Helper class to construct an `AttributionReport` for tests using default
 // data.
 class ReportBuilder {
  public:
-  explicit ReportBuilder(StoredSource source);
+  explicit ReportBuilder(AttributionInfo attribution_info);
   ~ReportBuilder();
 
   ReportBuilder& SetTriggerData(uint64_t trigger_data);
-
-  ReportBuilder& SetTriggerTime(base::Time time);
 
   ReportBuilder& SetReportTime(base::Time time);
 
@@ -409,27 +426,25 @@ class ReportBuilder {
 
   ReportBuilder& SetExternalReportId(base::GUID external_report_id);
 
-  ReportBuilder& SetTriggerDebugKey(absl::optional<uint64_t> trigger_debug_key);
-
   ReportBuilder& SetReportId(
       absl::optional<AttributionReport::EventLevelData::Id> id);
 
   AttributionReport Build() const;
 
  private:
-  StoredSource source_;
+  AttributionInfo attribution_info_;
   uint64_t trigger_data_ = 0;
-  base::Time trigger_time_;
   base::Time report_time_;
   int64_t priority_ = 0;
   base::GUID external_report_id_;
-  absl::optional<uint64_t> trigger_debug_key_;
   absl::optional<AttributionReport::EventLevelData::Id> report_id_;
 };
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
 
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
+
+bool operator==(const AttributionInfo& a, const AttributionInfo& b);
 
 bool operator==(const AttributionStorageDelegate::FakeReport& a,
                 const AttributionStorageDelegate::FakeReport& b);
@@ -472,6 +487,9 @@ std::ostream& operator<<(std::ostream& out,
                          const AttributionTrigger& conversion);
 
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source);
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionInfo& attribution_info);
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionStorageDelegate::FakeReport&);
@@ -568,7 +586,8 @@ MATCHER_P(TriggerConversionDestinationIs, matcher, "") {
 // Report matchers
 
 MATCHER_P(ReportSourceIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.source(), result_listener);
+  return ExplainMatchResult(matcher, arg.attribution_info().source,
+                            result_listener);
 }
 
 MATCHER_P(ReportTimeIs, matcher, "") {
@@ -581,7 +600,8 @@ MATCHER_P(FailedSendAttemptsIs, matcher, "") {
 }
 
 MATCHER_P(TriggerDebugKeyIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.trigger_debug_key(), result_listener);
+  return ExplainMatchResult(matcher, arg.attribution_info().debug_key,
+                            result_listener);
 }
 
 MATCHER_P(EventLevelDataIs, matcher, "") {

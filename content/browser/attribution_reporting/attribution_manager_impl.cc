@@ -18,6 +18,7 @@
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_network_sender_impl.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
@@ -106,15 +107,16 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
   // Use a large time range to capture users that might not open the browser for
   // a long time while a conversion report is pending. Revisit this range if it
   // is non-ideal for real world data.
-  base::Time original_report_time =
-      ComputeReportTime(report.source().common_info(), report.trigger_time());
+  const AttributionInfo& attribution_info = report.attribution_info();
+  base::Time original_report_time = ComputeReportTime(
+      attribution_info.source.common_info(), attribution_info.time);
   base::TimeDelta time_since_original_report_time = now - original_report_time;
   base::UmaHistogramCustomTimes(
       "Conversions.ExtraReportDelay2", time_since_original_report_time,
       base::Seconds(1), base::Days(24), /*buckets=*/100);
 
   base::TimeDelta time_from_conversion_to_report_send =
-      report.report_time() - report.trigger_time();
+      report.report_time() - attribution_info.time;
   UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
                             time_from_conversion_to_report_send.InHours());
 }
@@ -156,7 +158,8 @@ AttributionManagerImpl::DefaultIsReportAllowedCallback(
     BrowserContext* browser_context) {
   return base::BindRepeating(
       [](BrowserContext* browser_context, const AttributionReport& report) {
-        const CommonSourceInfo& common_info = report.source().common_info();
+        const CommonSourceInfo& common_info =
+            report.attribution_info().source.common_info();
         return GetContentClient()
             ->browser()
             ->IsConversionMeasurementOperationAllowed(

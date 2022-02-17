@@ -147,7 +147,7 @@ TEST_F(AttributionStorageSqlTest,
     // [conversion_domain_idx], [impression_expiry_idx],
     // [impression_origin_idx], [impression_site_idx],
     // [conversion_report_time_idx], [conversion_impression_id_idx],
-    // [rate_limit_report_idx], [rate_limit_reporting_origin_idx],
+    // [rate_limit_attribution_idx], [rate_limit_reporting_origin_idx],
     // [rate_limit_time_idx], [rate_limit_impression_id_idx] and the meta table
     // index.
     EXPECT_EQ(11u, sql::test::CountSQLIndices(&raw_db));

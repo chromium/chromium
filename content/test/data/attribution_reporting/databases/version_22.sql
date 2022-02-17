@@ -13,8 +13,8 @@ CREATE TABLE dedup_keys(impression_id INTEGER NOT NULL,dedup_key INTEGER NOT NUL
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','20');
-INSERT INTO meta VALUES('last_compatible_version','20');
+INSERT INTO meta VALUES('version','22');
+INSERT INTO meta VALUES('last_compatible_version','22');
 
 CREATE INDEX conversion_destination_idx ON impressions(active,conversion_destination,reporting_origin);
 
@@ -28,14 +28,12 @@ CREATE INDEX conversion_report_idx ON conversions(report_time);
 
 CREATE INDEX conversion_impression_id_idx ON conversions(impression_id);
 
-CREATE INDEX rate_limit_report_idx ON rate_limits(conversion_destination,impression_site,reporting_origin,time)WHERE scope=1;
+CREATE INDEX rate_limit_attribution_idx ON rate_limits(conversion_destination,impression_site,reporting_origin,time)WHERE scope=1;
 
 CREATE INDEX rate_limit_reporting_origin_idx ON rate_limits(scope,conversion_destination,impression_site,time);
 
 CREATE INDEX rate_limit_time_idx ON rate_limits(time);
 
 CREATE INDEX rate_limit_impression_id_idx ON rate_limits(impression_id);
-
-INSERT INTO conversions VALUES (1,2,3,4,5,6,7,8,9);
 
 COMMIT;

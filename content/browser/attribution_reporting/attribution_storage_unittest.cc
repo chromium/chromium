@@ -83,9 +83,10 @@ class AttributionStorageTest : public testing::Test {
   // the current timestamp.
   AttributionReport GetExpectedReport(const StoredSource& source,
                                       const AttributionTrigger& conversion) {
-    return ReportBuilder(source)
+    return ReportBuilder(AttributionInfoBuilder(source)
+                             .SetTime(base::Time::Now())
+                             .Build())
         .SetTriggerData(conversion.trigger_data())
-        .SetTriggerTime(base::Time::Now())
         .SetReportTime(source.common_info().impression_time() + kReportDelay)
         .SetPriority(conversion.priority())
         .Build();
@@ -776,7 +777,7 @@ TEST_F(AttributionStorageTest, MaxAttributionReportsBetweenSites) {
       .time_window = base::TimeDelta::Max(),
       .max_source_registration_reporting_origins =
           std::numeric_limits<int64_t>::max(),
-      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
       .max_attributions = 2,
   });
 
@@ -787,10 +788,10 @@ TEST_F(AttributionStorageTest, MaxAttributionReportsBetweenSites) {
             MaybeCreateAndStoreReport(conversion));
   EXPECT_EQ(AttributionTrigger::Result::kSuccess,
             MaybeCreateAndStoreReport(conversion));
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(conversion),
-      AllOf(CreateReportStatusIs(AttributionTrigger::Result::kExcessiveReports),
-            DroppedReportIs(IsTrue())));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(conversion),
+              AllOf(CreateReportStatusIs(
+                        AttributionTrigger::Result::kExcessiveAttributions),
+                    DroppedReportIs(IsTrue())));
 
   const AttributionReport expected_report =
       GetExpectedReport(SourceBuilder().BuildStored(), conversion);
@@ -805,7 +806,7 @@ TEST_F(AttributionStorageTest,
       .time_window = base::TimeDelta::Max(),
       .max_source_registration_reporting_origins =
           std::numeric_limits<int64_t>::max(),
-      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
       .max_attributions = 1,
   });
 
@@ -821,7 +822,7 @@ TEST_F(AttributionStorageTest,
           .SetSourceType(CommonSourceInfo::SourceType::kEvent)
           .Build());
   // This would fail if the source types had separate limits.
-  EXPECT_EQ(AttributionTrigger::Result::kExcessiveReports,
+  EXPECT_EQ(AttributionTrigger::Result::kExcessiveAttributions,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 }
 
@@ -870,7 +871,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
       .time_window = base::TimeDelta::Max(),
       .max_source_registration_reporting_origins =
           std::numeric_limits<int64_t>::max(),
-      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
       .max_attributions = 1,
   });
 
@@ -890,7 +891,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
             MaybeCreateAndStoreReport(conversion));
 
   storage()->StoreSource(SourceBuilder().SetSourceEventId(9).Build());
-  EXPECT_EQ(AttributionTrigger::Result::kExcessiveReports,
+  EXPECT_EQ(AttributionTrigger::Result::kExcessiveAttributions,
             MaybeCreateAndStoreReport(conversion));
 
   const AttributionReport expected_report =
@@ -1114,10 +1115,13 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
 
   const AttributionReport expected_report =
       ReportBuilder(
-          builder.SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
-              .BuildStored())
+          AttributionInfoBuilder(
+              builder
+                  .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
+                  .BuildStored())
+              .SetTime(base::Time::Now())
+              .Build())
           .SetTriggerData(7)
-          .SetTriggerTime(base::Time::Now())
           .SetReportTime(fake_report_time)
           .Build();
 
@@ -1745,7 +1749,7 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerSource) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
       .max_source_registration_reporting_origins = 2,
-      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
       .max_attributions = std::numeric_limits<int64_t>::max(),
   });
 
@@ -1776,12 +1780,12 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerSource) {
 
 // This is tested more thoroughly by the `RateLimitTable` unit tests. Here just
 // ensure that the rate limits are consulted at all.
-TEST_F(AttributionStorageTest, MaxReportingOriginsPerReport) {
+TEST_F(AttributionStorageTest, MaxReportingOriginsPerAttribution) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
       .max_source_registration_reporting_origins =
           std::numeric_limits<int64_t>::max(),
-      .max_report_reporting_origins = 2,
+      .max_attribution_reporting_origins = 2,
       .max_attributions = std::numeric_limits<int64_t>::max(),
   });
 

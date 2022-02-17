@@ -49,7 +49,10 @@ const char kReportUrl[] =
     "https://report.test/.well-known/attribution-reporting/report-attribution";
 
 AttributionReport DefaultReport() {
-  return ReportBuilder(SourceBuilder(base::Time()).BuildStored()).Build();
+  return ReportBuilder(
+             AttributionInfoBuilder(SourceBuilder(base::Time()).BuildStored())
+                 .Build())
+      .Build();
 }
 
 }  // namespace
@@ -150,7 +153,9 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
                           .SetSourceType(test_case.source_type)
                           .BuildStored();
     AttributionReport report =
-        ReportBuilder(impression).SetTriggerData(5).Build();
+        ReportBuilder(AttributionInfoBuilder(impression).Build())
+            .SetTriggerData(5)
+            .Build();
     network_sender_->SendReport(report, base::DoNothing());
 
     const network::ResourceRequest* pending_request;
@@ -210,9 +215,10 @@ TEST_F(AttributionNetworkSenderTest,
                           .SetDebugKey(test_case.source_debug_key)
                           .BuildStored();
     AttributionReport report =
-        ReportBuilder(impression)
+        ReportBuilder(AttributionInfoBuilder(impression)
+                          .SetDebugKey(test_case.trigger_debug_key)
+                          .Build())
             .SetTriggerData(5)
-            .SetTriggerDebugKey(test_case.trigger_debug_key)
             .Build();
     network_sender_->SendReport(report, base::DoNothing());
 
@@ -232,7 +238,8 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_RequestAttributesSet) {
           .SetReportingOrigin(url::Origin::Create(GURL("https://a.com")))
           .SetConversionOrigin(url::Origin::Create(GURL("https://sub.b.com")))
           .BuildStored();
-  AttributionReport report = ReportBuilder(impression).Build();
+  AttributionReport report =
+      ReportBuilder(AttributionInfoBuilder(impression).Build()).Build();
   network_sender_->SendReport(report, base::DoNothing());
 
   const network::ResourceRequest* pending_request;
