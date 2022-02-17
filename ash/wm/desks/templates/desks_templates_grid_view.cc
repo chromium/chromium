@@ -227,15 +227,15 @@ void DesksTemplatesGridView::DeleteTemplates(
   Layout();
 }
 
-DesksTemplatesItemView* DesksTemplatesGridView::GridItemBeingModified() {
+bool DesksTemplatesGridView::IsTemplateNameBeingModified() const {
   if (!GetWidget()->IsActive())
-    return nullptr;
+    return false;
 
   for (auto* grid_item : grid_items_) {
     if (grid_item->IsTemplateNameBeingModified())
-      return grid_item;
+      return true;
   }
-  return nullptr;
+  return false;
 }
 
 void DesksTemplatesGridView::Layout() {
@@ -306,21 +306,6 @@ void DesksTemplatesGridView::OnWindowDestroying(aura::Window* window) {
   widget_window_ = nullptr;
 }
 
-bool DesksTemplatesGridView::IntersectsWithFeedbackButton(
-    const gfx::Point point_in_screen) {
-  return feedback_button_ &&
-         feedback_button_->bounds().Contains(point_in_screen);
-}
-
-bool DesksTemplatesGridView::IntersectsWithGridItem(
-    const gfx::Point point_in_screen) {
-  for (DesksTemplatesItemView* grid_item : grid_items_) {
-    if (grid_item->bounds().Contains(point_in_screen))
-      return true;
-  }
-  return false;
-}
-
 void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
                                             bool is_touch) {
   if (widget_window_ && widget_window_->event_targeting_policy() ==
@@ -328,35 +313,6 @@ void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
     // If this is true, then we're in the process of fading out `this` and don't
     // want to handle any events anymore so do nothing.
     return;
-  }
-
-  // If the event is `ui::ET_MOUSE_RELEASED` or `ui::ET_GESTURE_TAP`, it might
-  // be a click/tap outside grid item and feedback button to exit overview or
-  // to commit name changes.
-  if (event->type() == ui::ET_MOUSE_RELEASED ||
-      event->type() == ui::ET_GESTURE_TAP) {
-    DesksTemplatesItemView* grid_item_being_modified = GridItemBeingModified();
-    if (grid_item_being_modified &&
-        !grid_item_being_modified->bounds().Contains(event->location())) {
-      // When there is a desk grid template name being modified, and the
-      // location is outside of the current grid item, commit the name change.
-      DesksTemplatesNameView::CommitChanges(GetWidget());
-      event->StopPropagation();
-      event->SetHandled();
-      return;
-    }
-    if (!grid_item_being_modified &&
-        !IntersectsWithGridItem(event->location()) &&
-        !IntersectsWithFeedbackButton(event->location())) {
-      // When there is no desk grid template name being modified, and the
-      // location does not intersect with any grid item or the feedback button,
-      // exit overview.
-      Shell::Get()->overview_controller()->EndOverview(
-          OverviewEndAction::kClickingOutsideWindowsInOverview);
-      event->StopPropagation();
-      event->SetHandled();
-      return;
-    }
   }
 
   switch (event->type()) {
