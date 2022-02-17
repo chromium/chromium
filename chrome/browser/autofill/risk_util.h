@@ -33,18 +33,18 @@ void LoadRiskData(uint64_t obfuscated_gaia_id,
                   content::WebContents* web_contents,
                   base::OnceCallback<void(const std::string&)> callback);
 
-// This version of LoadRiskData() retrieves all of the fields that do not use
+// LoadRiskDataHelper() retrieves all of the fields that do not use
 // web contents, and then gets the device's fingerprint before calling
 // |callback|. In situations where we do not have access to web contents, for
 // example from the Clank settings page, we should call this implementation
 // directly and let |web_contents| and |window_bounds| default to nullptr and
 // empty, respectively. Callers with access to web contents should call the
 // other version of this function above.
-void LoadRiskData(uint64_t obfuscated_gaia_id,
-                  const raw_ptr<PrefService> user_prefs,
-                  base::OnceCallback<void(const std::string&)> callback,
-                  const raw_ptr<content::WebContents> web_contents = nullptr,
-                  gfx::Rect window_bounds = gfx::Rect());
+void LoadRiskDataHelper(uint64_t obfuscated_gaia_id,
+                        const raw_ptr<PrefService> user_prefs,
+                        base::OnceCallback<void(const std::string&)> callback,
+                        const raw_ptr<content::WebContents> web_contents,
+                        gfx::Rect window_bounds);
 
 }  // namespace risk_util
 

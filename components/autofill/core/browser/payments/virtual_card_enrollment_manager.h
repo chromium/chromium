@@ -12,6 +12,11 @@
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_strike_database.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace gfx {
 class Image;
@@ -88,9 +93,11 @@ class VirtualCardEnrollmentManager {
   virtual ~VirtualCardEnrollmentManager();
 
   using RiskAssessmentFunction = base::OnceCallback<void(
-      base::OnceCallback<void(const std::string&)> callback,
       uint64_t obfuscated_gaia_id,
-      raw_ptr<PrefService> user_prefs)>;
+      raw_ptr<PrefService> user_prefs,
+      base::OnceCallback<void(const std::string&)> callback,
+      const raw_ptr<content::WebContents> web_contents,
+      gfx::Rect window_bounds)>;
 
   // Starting point for the VCN enroll flow. The fields in |credit_card| will
   // be used throughout the flow, such as for request fields as well as credit

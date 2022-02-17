@@ -16,6 +16,12 @@
 class Profile;
 
 namespace autofill {
+class PersonalDataManager;
+class VirtualCardEnrollmentManager;
+
+namespace payments {
+class PaymentsClient;
+}
 
 // Delegate that listens to changes made in the settings related to payment
 // methods.
@@ -23,7 +29,7 @@ namespace autofill {
 // The Java delegate is responsible for cleaning this object up.
 class AutofillPaymentMethodsDelegate {
  public:
-  AutofillPaymentMethodsDelegate(Profile* profile);
+  explicit AutofillPaymentMethodsDelegate(Profile* profile);
   ~AutofillPaymentMethodsDelegate();
   AutofillPaymentMethodsDelegate(const AutofillPaymentMethodsDelegate&) =
       delete;
@@ -38,7 +44,11 @@ class AutofillPaymentMethodsDelegate {
   void UnenrollVirtualCard(JNIEnv* env, int64_t instrumentId);
 
  private:
-  raw_ptr<Profile> profile_;  // weak reference
+  raw_ptr<Profile> profile_;                            // weak reference
+  raw_ptr<PersonalDataManager> personal_data_manager_;  // weak reference
+  std::unique_ptr<payments::PaymentsClient> payments_client_;
+  std::unique_ptr<VirtualCardEnrollmentManager>
+      virtual_card_enrollment_manager_;
 };
 }  // namespace autofill
 

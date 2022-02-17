@@ -158,7 +158,8 @@ void VirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
     // use case, so we load risk data using a method that does not require web
     // contents to be present.
     std::move(risk_assessment_function_)
-        .Run(std::move(callback), /*obfuscated_gaia_id=*/0, user_prefs);
+        .Run(/*obfuscated_gaia_id=*/0, user_prefs, std::move(callback), nullptr,
+             gfx::Rect());
   }
 }
 

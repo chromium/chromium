@@ -143,7 +143,8 @@ TEST_F(VirtualCardEnrollmentManagerTest, OfferVirtualCardEnroll) {
           *card_, virtual_card_enrollment_source,
           virtual_card_enrollment_manager_->AutofillClientIsPresent()
               ? user_prefs_
-              : nullptr);
+              : nullptr,
+          base::DoNothing());
 
       // CreditCard class overloads equality operator to check that GUIDs,
       // origins, and the contents of the two cards are equal.
