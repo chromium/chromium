@@ -170,7 +170,13 @@ void Mediator::OnPairFailure(scoped_refptr<Device> device,
 
 void Mediator::OnAccountKeyWrite(scoped_refptr<Device> device,
                                  absl::optional<AccountKeyFailure> error) {
-  QP_LOG(INFO) << __func__ << ": Device=" << device;
+  if (!error.has_value()) {
+    QP_LOG(INFO) << __func__ << ": Device=" << device;
+    return;
+  }
+
+  QP_LOG(INFO) << __func__ << ": Device=" << device
+               << ",Error=" << error.value();
 }
 
 void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
