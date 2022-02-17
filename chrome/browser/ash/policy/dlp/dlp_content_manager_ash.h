@@ -143,6 +143,7 @@ class DlpContentManagerAsh : public DlpContentManager,
   ConfidentialContentsInfo GetScreenShareConfidentialContentsInfo(
       const content::DesktopMediaID& media_id,
       content::WebContents* web_contents) const override;
+  void TabLocationMaybeChanged(content::WebContents* web_contents) override;
 
   // Updates |on_screen_restrictions_| and calls
   // OnScreenRestrictionsChanged() if needed.

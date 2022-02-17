@@ -47,6 +47,7 @@ class DlpContentManagerLacros : public DlpContentManager,
       content::MediaStreamUI::SourceCallback source_callback) override;
   void OnScreenShareStopped(const std::string& label,
                             const content::DesktopMediaID& media_id) override;
+  void TabLocationMaybeChanged(content::WebContents* web_contents) override;
 
  private:
   friend class DlpContentManagerTestHelper;

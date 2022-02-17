@@ -23,6 +23,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -311,8 +314,20 @@ void DlpContentManager::RemoveObserver(
   observer_lists_[restriction].RemoveObserver(observer);
 }
 
-DlpContentManager::DlpContentManager() = default;
-DlpContentManager::~DlpContentManager() = default;
+DlpContentManager::DlpContentManager() {
+  // Start observing tab strip models for all browsers.
+  BrowserList* browser_list = BrowserList::GetInstance();
+  for (Browser* browser : *browser_list)
+    browser->tab_strip_model()->AddObserver(this);
+  browser_list->AddObserver(this);
+}
+
+DlpContentManager::~DlpContentManager() {
+  BrowserList* browser_list = BrowserList::GetInstance();
+  browser_list->RemoveObserver(this);
+  for (Browser* browser : *browser_list)
+    browser->tab_strip_model()->RemoveObserver(this);
+}
 
 // static
 void DlpContentManager::ReportWarningProceededEvent(
@@ -382,6 +397,25 @@ void DlpContentManager::OnConfidentialityChanged(
 void DlpContentManager::OnWebContentsDestroyed(
     content::WebContents* web_contents) {
   RemoveFromConfidential(web_contents);
+}
+
+void DlpContentManager::OnBrowserAdded(Browser* browser) {
+  browser->tab_strip_model()->AddObserver(this);
+}
+
+void DlpContentManager::OnBrowserRemoved(Browser* browser) {
+  browser->tab_strip_model()->RemoveObserver(this);
+}
+
+void DlpContentManager::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  // Checking only after selecting the possible moved tab as in this case it
+  // already was added to the new window.
+  if (change.type() == TabStripModelChange::kSelectionOnly) {
+    TabLocationMaybeChanged(selection.new_contents);
+  }
 }
 
 void DlpContentManager::RemoveFromConfidential(

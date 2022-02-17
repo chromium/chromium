@@ -51,6 +51,10 @@ class MockDlpContentManager : public DlpContentManager {
               GetScreenShareConfidentialContentsInfo,
               (const content::DesktopMediaID&, content::WebContents*),
               (const override));
+  MOCK_METHOD(void,
+              TabLocationMaybeChanged,
+              (content::WebContents * web_contents),
+              (override));
 };
 
 }  // namespace policy

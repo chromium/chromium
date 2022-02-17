@@ -590,6 +590,12 @@ DlpContentManagerAsh::GetScreenShareConfidentialContentsInfo(
   return info;
 }
 
+void DlpContentManagerAsh::TabLocationMaybeChanged(
+    content::WebContents* web_contents) {
+  CheckRunningVideoCapture();
+  CheckRunningScreenShares();
+}
+
 void DlpContentManagerAsh::CheckRunningVideoCapture() {
   if (!running_video_capture_info_.has_value())
     return;

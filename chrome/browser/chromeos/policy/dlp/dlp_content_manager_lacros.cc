@@ -184,6 +184,11 @@ void DlpContentManagerLacros::OnScreenShareStopped(
   }
 }
 
+void DlpContentManagerLacros::TabLocationMaybeChanged(
+    content::WebContents* web_contents) {
+  UpdateRestrictions(web_contents->GetNativeView());
+}
+
 DlpContentManagerLacros::ScreenShareStateChangeDelegate::
     ScreenShareStateChangeDelegate(
         const std::string& label,

@@ -873,6 +873,65 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
+                       ScreenSharePausedWhenConfidentialTabMoved) {
+  SetupReporting();
+  DlpContentManagerAsh* manager =
+      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
+
+  // Open first browser window.
+  Browser* browser1 = browser();
+  chrome::NewTab(browser1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
+  aura::Window* browser1_window = browser()->window()->GetNativeWindow();
+
+  // Open second browser window.
+  Browser* browser2 =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  chrome::NewTab(browser2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
+  content::WebContents* web_contents2 =
+      browser2->tab_strip_model()->GetActiveWebContents();
+
+  // Make second window content as confidential.
+  helper_->ChangeConfidentiality(web_contents2, kScreenShareRestricted);
+
+  // Resize both contents to be visible so that visibility state won't change.
+  browser1->window()->SetBounds(gfx::Rect(0, 00, 500, 500));
+  browser2->window()->SetBounds(gfx::Rect(150, 150, 500, 500));
+
+  base::MockCallback<content::MediaStreamUI::StateChangeCallback>
+      state_change_cb;
+  base::MockCallback<base::RepeatingClosure> stop_cb;
+  // Explicitly specify that the stop callback should never be invoked.
+  EXPECT_CALL(stop_cb, Run()).Times(0);
+  testing::InSequence s;
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+
+  // Start screen share of the first window.
+  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_WINDOW, browser1_window);
+  manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
+                                stop_cb.Get(), state_change_cb.Get(),
+                                /*source_callback=*/base::DoNothing());
+
+  // Move restricted tab from second window to shared first window.
+  std::unique_ptr<content::WebContents> moved_web_contents =
+      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
+  browser1->tab_strip_model()->InsertWebContentsAt(
+      0, std::move(moved_web_contents), TabStripModel::ADD_NONE);
+  browser1->tab_strip_model()->ActivateTabAt(0);
+
+  // Cleanup and check reporting.
+  browser2->window()->Close();
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kBlock, 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        ScreenShareWarnedDuringAllowed) {
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());

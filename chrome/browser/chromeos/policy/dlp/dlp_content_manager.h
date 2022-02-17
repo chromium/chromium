@@ -18,6 +18,8 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/media_stream_request.h"
 #include "url/gurl.h"
 
@@ -36,7 +38,9 @@ class DlpWarnNotifier;
 // WebContents and whether any of them are currently visible.
 // If any confidential WebContents is visible, the corresponding restrictions
 // will be enforced according to the current enterprise policy.
-class DlpContentManager : public DlpContentObserver {
+class DlpContentManager : public DlpContentObserver,
+                          public BrowserListObserver,
+                          public TabStripModelObserver {
  public:
   DlpContentManager(const DlpContentManager&) = delete;
   DlpContentManager& operator=(const DlpContentManager&) = delete;
@@ -218,6 +222,19 @@ class DlpContentManager : public DlpContentObserver {
       content::WebContents* web_contents,
       const DlpContentRestrictionSet& restriction_set) override;
   void OnWebContentsDestroyed(content::WebContents* web_contents) override;
+
+  // BrowserListObserver overrides:
+  void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
+
+  // TabStripModelObserver overrides:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
+  // Called when tab was probably moved, but without change of the visibility.
+  virtual void TabLocationMaybeChanged(content::WebContents* web_contents) = 0;
 
   // Helper to remove |web_contents| from the confidential set.
   virtual void RemoveFromConfidential(content::WebContents* web_contents);
