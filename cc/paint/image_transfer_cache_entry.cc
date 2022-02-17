@@ -94,28 +94,30 @@ sk_sp<SkImage> MakeYUVImageFromUploadedPlanes(
 
 // TODO(ericrk): Replace calls to this with calls to SkImage::makeTextureImage,
 // once that function handles colorspaces. https://crbug.com/834837
-sk_sp<SkImage> MakeTextureImage(GrDirectContext* context,
-                                sk_sp<SkImage> source_image,
-                                sk_sp<SkColorSpace> target_color_space,
-                                GrMipMapped mip_mapped) {
+sk_sp<SkImage> MakeTextureImage(
+    GrDirectContext* context,
+    sk_sp<SkImage> source_image,
+    absl::optional<TargetColorParams> target_color_params,
+    GrMipMapped mip_mapped) {
   // Step 1: Upload image and generate mips if necessary. If we will be applying
   // a color-space conversion, don't generate mips yet, instead do it after
   // conversion, in step 3.
   // NOTE: |target_color_space| is only passed over the transfer cache if needed
   // (non-null, different from the source color space).
   bool add_mips_after_color_conversion =
-      target_color_space && mip_mapped == GrMipMapped::kYes;
+      target_color_params && mip_mapped == GrMipMapped::kYes;
   sk_sp<SkImage> uploaded_image = source_image->makeTextureImage(
       context, add_mips_after_color_conversion ? GrMipMapped::kNo : mip_mapped,
       SkBudgeted::kNo);
 
   // Step 2: Apply a color-space conversion if necessary.
-  if (uploaded_image && target_color_space) {
+  if (uploaded_image && target_color_params) {
     // TODO(https://crbug.com/1286088): Pass a shared cache as a parameter.
     gfx::ColorConversionSkFilterCache cache;
-    uploaded_image = cache.ConvertImage(uploaded_image, target_color_space,
-                                        kTempMaxLuminanceNits,
-                                        kTempHDRMaxLuminanceRelative, context);
+    uploaded_image = cache.ConvertImage(
+        uploaded_image, target_color_params->color_space.ToSkColorSpace(),
+        target_color_params->sdr_max_luminance_nits,
+        target_color_params->hdr_max_luminance_relative, context);
   }
 
   // Step 3: If we had a colorspace conversion, we couldn't mipmap in step 1, so
@@ -468,7 +470,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
       // information is stored in image_, so we pass nullptr.
       sk_sp<SkImage> plane =
           MakeSkImage(plane_pixmap, plane_width, plane_height,
-                      nullptr /* target_color_space */);
+                      /*target_color_params=*/absl::nullopt);
       if (!plane)
         return false;
       DCHECK(plane->isTextureBacked());
@@ -511,6 +513,15 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   sk_sp<SkColorSpace> target_color_space;
   reader.Read(&target_color_space);
 
+  absl::optional<TargetColorParams> target_color_params;
+  if (target_color_space) {
+    target_color_params = TargetColorParams();
+    target_color_params->color_space = gfx::ColorSpace(*target_color_space);
+    target_color_params->sdr_max_luminance_nits = kTempMaxLuminanceNits;
+    target_color_params->hdr_max_luminance_relative =
+        kTempHDRMaxLuminanceRelative;
+  }
+
   if (!reader.valid())
     return false;
 
@@ -536,7 +547,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   // that a malicious caller may change our pixels under us, and are OK with
   // this as the worst case scenario is visual corruption.
   SkPixmap pixmap(image_info, const_cast<const void*>(pixel_data), row_bytes);
-  image_ = MakeSkImage(pixmap, width, height, target_color_space);
+  image_ = MakeSkImage(pixmap, width, height, target_color_params);
 
   if (image_)
     size_ = image_->textureSize();
@@ -548,7 +559,7 @@ sk_sp<SkImage> ServiceImageTransferCacheEntry::MakeSkImage(
     const SkPixmap& pixmap,
     uint32_t width,
     uint32_t height,
-    sk_sp<SkColorSpace> target_color_space) {
+    absl::optional<TargetColorParams> target_color_params) {
   DCHECK(context_);
 
   // Depending on whether the pixmap will fit in a GPU texture, either create
@@ -560,7 +571,7 @@ sk_sp<SkImage> ServiceImageTransferCacheEntry::MakeSkImage(
     image = SkImage::MakeFromRaster(pixmap, nullptr, nullptr);
     if (!image)
       return nullptr;
-    image = MakeTextureImage(context_, std::move(image), target_color_space,
+    image = MakeTextureImage(context_, std::move(image), target_color_params,
                              has_mips_ ? GrMipMapped::kYes : GrMipMapped::kNo);
   } else {
     // If the image is on the CPU, no work is needed to generate mips.
@@ -569,12 +580,13 @@ sk_sp<SkImage> ServiceImageTransferCacheEntry::MakeSkImage(
         SkImage::MakeFromRaster(pixmap, [](const void*, void*) {}, nullptr);
     if (!original)
       return nullptr;
-    if (target_color_space) {
+    if (target_color_params) {
       // TODO(https://crbug.com/1286088): Pass a shared cache as a parameter.
       gfx::ColorConversionSkFilterCache cache;
       image = cache.ConvertImage(
-          original, target_color_space, kTempMaxLuminanceNits,
-          kTempHDRMaxLuminanceRelative, /*context=*/nullptr);
+          original, target_color_params->color_space.ToSkColorSpace(),
+          target_color_params->sdr_max_luminance_nits,
+          target_color_params->hdr_max_luminance_relative, /*context=*/nullptr);
       // If color space conversion is a noop, use original data.
       if (image == original)
         image = SkImage::MakeRasterCopy(pixmap);

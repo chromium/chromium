@@ -13,6 +13,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "cc/paint/target_color_params.h"
 #include "cc/paint/transfer_cache_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -150,10 +151,11 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   }
 
  private:
-  sk_sp<SkImage> MakeSkImage(const SkPixmap& pixmap,
-                             uint32_t width,
-                             uint32_t height,
-                             sk_sp<SkColorSpace> target_color_space);
+  sk_sp<SkImage> MakeSkImage(
+      const SkPixmap& pixmap,
+      uint32_t width,
+      uint32_t height,
+      absl::optional<TargetColorParams> target_color_params);
 
   raw_ptr<GrDirectContext> context_ = nullptr;
   std::vector<sk_sp<SkImage>> plane_images_;
