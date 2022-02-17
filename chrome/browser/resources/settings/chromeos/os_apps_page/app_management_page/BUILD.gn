@@ -13,6 +13,7 @@ js_type_check("closure_compile_module") {
     ":actions",
     ":api_listener",
     ":app_detail_view",
+    ":app_details_item",
     ":app_item",
     ":app_management_page",
     ":arc_detail_view",
@@ -69,6 +70,16 @@ js_library("app_detail_view") {
   ]
 }
 
+js_library("app_details_item") {
+  deps = [
+    ":actions",
+    ":store_client",
+    ":util",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "./types.js" ]
+}
+
 js_library("app_item") {
   deps = [
     ":actions",
@@ -93,6 +104,7 @@ js_library("app_management_page") {
 
 js_library("arc_detail_view") {
   deps = [
+    ":app_details_item",
     ":fake_page_handler",
     ":pin_to_shelf_item",
     ":store_client",
@@ -110,6 +122,7 @@ js_library("browser_proxy") {
 
 js_library("chrome_app_detail_view") {
   deps = [
+    ":app_details_item",
     ":browser_proxy",
     ":fake_page_handler",
     ":pin_to_shelf_item",
@@ -160,6 +173,7 @@ js_library("pin_to_shelf_item") {
 
 js_library("pwa_detail_view") {
   deps = [
+    ":app_details_item",
     ":fake_page_handler",
     ":pin_to_shelf_item",
     ":store_client",
@@ -252,6 +266,7 @@ js_library("util") {
 html_to_js("web_components") {
   js_files = [
     "app_detail_view.js",
+    "app_details_item.js",
     "app_item.js",
     "app_management_page.js",
     "arc_detail_view.js",

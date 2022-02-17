@@ -106,4 +106,7 @@
   <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_5_OR_MORE_APPS" desc="Text to explain to the user that 5 or more overlapping apps will still open some supported links, and the text states the first 3 apps that will open links.">
     Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>, <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph> and <ph name="NUMBER_OF_OTHER_APPS">$4<ex>2</ex></ph> other apps.
   </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TITLE" desc="Title for App Details Section">
+    App details
+  </message>
 </grit-part>

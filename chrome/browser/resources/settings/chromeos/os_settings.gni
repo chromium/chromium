@@ -415,6 +415,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/actions.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/api_listener.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/app_detail_view.html",
+                                 "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/app_details_item.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/app_item.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/app_management_page.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/arc_detail_view.html",

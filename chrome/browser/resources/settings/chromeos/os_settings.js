@@ -49,6 +49,7 @@ import './os_about_page/update_warning_dialog.js';
 import './os_apps_page/android_apps_subpage.js';
 import './os_apps_page/app_notifications_page/app_notifications_subpage.js';
 import './os_apps_page/app_management_page/app_detail_view.js';
+import './os_apps_page/app_management_page/app_details_item.js';
 import './os_apps_page/app_management_page/app_item.js';
 import './os_apps_page/app_management_page/app_management_page.js';
 import './os_apps_page/app_management_page/arc_detail_view.js';
