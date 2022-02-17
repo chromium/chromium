@@ -173,6 +173,10 @@ enum class TabGridPageConfiguration {
 // Dismisses any modal UI which may be presented.
 - (void)dismissModals;
 
+// Sets both the current page and page control's selected page to |page|.
+// Animation is used if |animated| is YES.
+- (void)setCurrentPageAndPageControl:(TabGridPage)page animated:(BOOL)animated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_VIEW_CONTROLLER_H_

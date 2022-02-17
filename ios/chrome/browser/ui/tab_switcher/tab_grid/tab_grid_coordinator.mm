@@ -963,6 +963,11 @@
                focusOmnibox:NO];
 }
 
+- (void)showRegularTabGridFromRecentTabs {
+  [self.baseViewController setCurrentPageAndPageControl:TabGridPageRegularTabs
+                                               animated:YES];
+}
+
 #pragma mark - HistoryPresentationDelegate
 
 - (void)showActiveRegularTabFromHistory {

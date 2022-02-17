@@ -285,7 +285,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  if (self.preventUpdates ||
+  if (self.preventUpdates || self.searchTerms.length ||
       ![self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierOtherDevices]) {
     return;
@@ -769,14 +769,17 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   [model addItem:searchWebItem
       toSectionWithIdentifier:SectionIdentifierSuggestedActions];
 
-  TableViewImageItem* searchOpenTabsItem = [[TableViewImageItem alloc]
-      initWithType:ItemTypeSuggestedActionSearchOpenTabs];
-  searchOpenTabsItem.title = l10n_util::GetNSString(
-      IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_OPEN_TABS);
-  searchOpenTabsItem.image = [[UIImage imageNamed:@"popup_menu_search"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  [model addItem:searchOpenTabsItem
-      toSectionWithIdentifier:SectionIdentifierSuggestedActions];
+  if ([self.presentationDelegate
+          respondsToSelector:@selector(showRegularTabGridFromRecentTabs)]) {
+    TableViewImageItem* searchOpenTabsItem = [[TableViewImageItem alloc]
+        initWithType:ItemTypeSuggestedActionSearchOpenTabs];
+    searchOpenTabsItem.title = l10n_util::GetNSString(
+        IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_OPEN_TABS);
+    searchOpenTabsItem.image = [[UIImage imageNamed:@"popup_menu_search"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [model addItem:searchOpenTabsItem
+        toSectionWithIdentifier:SectionIdentifierSuggestedActions];
+  }
 
   TableViewTabsSearchSuggestedHistoryItem* searchHistoryItem =
       [[TableViewTabsSearchSuggestedHistoryItem alloc]
@@ -1021,7 +1024,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
          distantSessionTabs:displayedTabs];
   }
 
-  if (!self.preventUpdates) {
+  if (!self.preventUpdates && !self.searchTerms.length) {
     // Update the TableView and TableViewModel sections to match the new
     // sessionState.
     // Turn Off animations since UITableViewRowAnimationNone still animates.
@@ -1124,6 +1127,22 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       if (!self.presentedViewController) {
         [self.presentationDelegate
             showHistoryFromRecentTabsFilteredBySearchTerms:self.searchTerms];
+      }
+      break;
+    case ItemTypeSuggestedActionSearchOpenTabs:
+      base::RecordAction(
+          base::UserMetricsAction("TabsSearch.SuggestedActions.OpenTabs"));
+      [tableView deselectRowAtIndexPath:indexPath animated:NO];
+
+      // Tapping "show full history" attempts to dismiss recent tabs to show the
+      // history UI. It is reasonable to ignore this if a modal UI is already
+      // showing above recent tabs. This can happen when a user simultaneously
+      // taps "show full history" and "enable sync". The sync settings UI
+      // appears first and we should not dismiss it to display history.
+      if (!self.presentedViewController &&
+          [self.presentationDelegate
+              respondsToSelector:@selector(showRegularTabGridFromRecentTabs)]) {
+        [self.presentationDelegate showRegularTabGridFromRecentTabs];
       }
       break;
     case ItemTypeSuggestedActionSearchWeb:

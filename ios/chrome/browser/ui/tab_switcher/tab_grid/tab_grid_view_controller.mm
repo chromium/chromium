@@ -508,6 +508,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.remoteTabsViewController dismissModals];
 }
 
+- (void)setCurrentPageAndPageControl:(TabGridPage)page animated:(BOOL)animated {
+  if (self.topToolbar.pageControl.selectedPage != page)
+    [self.topToolbar.pageControl setSelectedPage:page animated:animated];
+  if (self.currentPage != page) {
+    [self scrollToPage:page animated:animated];
+  }
+}
+
 #pragma mark - Public Properties
 
 - (id<GridConsumer>)regularTabsConsumer {
@@ -1777,16 +1785,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return 12;
 }
 
-// Sets both the current page and page control's selected page to |page|.
-// Animation is used if |animated| is YES.
-- (void)setCurrentPageAndPageControl:(TabGridPage)page animated:(BOOL)animated {
-  if (self.topToolbar.pageControl.selectedPage != page)
-    [self.topToolbar.pageControl setSelectedPage:page animated:animated];
-  if (self.currentPage != page) {
-    [self scrollToPage:page animated:animated];
-  }
-}
-
 - (void)setupSearchUI {
   self.scrimView = [[UIControl alloc] init];
   self.scrimView.backgroundColor = [UIColor colorNamed:kScrimBackgroundColor];
@@ -1855,17 +1853,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)searchBar:(UISearchBar*)searchBar textDidChange:(NSString*)searchText {
   [self updateScrimVisibilityForText:searchText];
 
-  switch (self.currentPage) {
-    case TabGridPageIncognitoTabs:
-      [self.incognitoTabsDelegate searchItemsWithText:searchText];
-      break;
-    case TabGridPageRegularTabs:
-      [self.regularTabsDelegate searchItemsWithText:searchText];
-      break;
-    case TabGridPageRemoteTabs:
-      self.remoteTabsViewController.searchTerms = searchText;
-      break;
-  }
+  [self.incognitoTabsDelegate searchItemsWithText:searchText];
+  [self.regularTabsDelegate searchItemsWithText:searchText];
+  self.remoteTabsViewController.searchTerms = searchText;
 }
 
 - (void)updateScrimVisibilityForText:(NSString*)searchText {

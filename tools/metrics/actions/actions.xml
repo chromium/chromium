@@ -31032,6 +31032,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="TabsSearch.SuggestedActions.OpenTabs">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>mrefaat@chromium.org</owner>
+  <description>
+    The user tapped the suggested search action to search open tabs for the
+    entered search term.
+  </description>
+</action>
+
 <action name="TabsSearch.SuggestedActions.SearchHistory">
   <owner>michaeldo@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
