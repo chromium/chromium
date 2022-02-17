@@ -183,7 +183,10 @@ class ProgressIndicatorView : public views::View {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
     if (progress_indicator_) {
       gfx::Rect bounds(GetLocalBounds());
-      ToCenteredSize(&bounds, {kProgressIndicatorSize, kProgressIndicatorSize});
+      if (features::IsHoldingSpaceInProgressAnimationV2Enabled()) {
+        ToCenteredSize(
+            &bounds, gfx::Size(kProgressIndicatorSize, kProgressIndicatorSize));
+      }
       progress_indicator_->layer()->SetBounds(bounds);
     }
   }
