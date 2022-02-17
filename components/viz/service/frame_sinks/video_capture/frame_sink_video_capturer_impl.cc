@@ -824,7 +824,10 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
 
   DCHECK(capture_region.size() == source_size);
   if (absl::holds_alternative<RegionCaptureCropId>(target_->sub_target)) {
-    metadata.region_capture_rect = capture_region;
+    const float scale_factor = frame_metadata.device_scale_factor;
+    metadata.region_capture_rect =
+        scale_factor ? ScaleToEnclosingRect(capture_region, 1.0f / scale_factor)
+                     : capture_region;
   }
 
   CaptureRequestProperties request_properties(
