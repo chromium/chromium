@@ -226,7 +226,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
-#include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
@@ -1205,6 +1205,14 @@ void MaybeAddThrottle(
     std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles) {
   if (maybe_throttle)
     throttles->push_back(std::move(maybe_throttle));
+}
+
+void MaybeAddCondition(
+    std::unique_ptr<content::CommitDeferringCondition> maybe_condition,
+    std::vector<std::unique_ptr<content::CommitDeferringCondition>>*
+        conditions) {
+  if (maybe_condition)
+    conditions->push_back(std::move(maybe_condition));
 }
 
 void MaybeAddThrottles(
@@ -4224,11 +4232,6 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
     throttle_manager->MaybeAppendNavigationThrottles(handle, &throttles);
   }
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  MaybeAddThrottle(safe_browsing::MaybeCreateNavigationThrottle(handle),
-                   &throttles);
-#endif
-
   MaybeAddThrottle(
       LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(handle),
       &throttles);
@@ -4392,6 +4395,22 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   return throttles;
+}
+
+std::vector<std::unique_ptr<content::CommitDeferringCondition>>
+ChromeContentBrowserClient::CreateCommitDeferringConditionsForNavigation(
+    content::NavigationHandle* navigation_handle,
+    content::CommitDeferringCondition::NavigationType navigation_type) {
+  auto conditions =
+      std::vector<std::unique_ptr<content::CommitDeferringCondition>>();
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  MaybeAddCondition(
+      safe_browsing::MaybeCreateCommitDeferringCondition(*navigation_handle),
+      &conditions);
+#endif
+
+  return conditions;
 }
 
 std::unique_ptr<content::NavigationUIData>

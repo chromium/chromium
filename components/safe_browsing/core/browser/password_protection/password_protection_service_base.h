@@ -249,6 +249,11 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   virtual ChromeUserPopulation::UserPopulation GetUserPopulationPref()
       const = 0;
 
+  std::set<scoped_refptr<PasswordProtectionRequest>>&
+  get_pending_requests_for_testing() {
+    return pending_requests_;
+  }
+
  protected:
   friend class PasswordProtectionRequest;
   friend class PasswordProtectionRequestContent;
@@ -361,9 +366,9 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       const GURL& url,
       ReusedPasswordAccountType password_type) = 0;
 
-  // Subclasses may override this method to either cancel or resume deferred
-  // navigations. By default, deferred navigations are not handled.
-  virtual void MaybeHandleDeferredNavigations(
+  // Subclasses may override this method to resume deferred navigations when a
+  // request finishes. By default, deferred navigations are not handled.
+  virtual void ResumeDeferredNavigationsIfNeeded(
       PasswordProtectionRequest* request) {}
 
   bool CanGetAccessToken();

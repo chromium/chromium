@@ -107,6 +107,12 @@ class PasswordProtectionRequest
     request_outcome_ = request_outcome;
   }
 
+  void finish_for_testing(
+      RequestOutcome outcome,
+      std::unique_ptr<LoginReputationClientResponse> response) {
+    Finish(outcome, std::move(response));
+  }
+
  protected:
   friend class base::RefCountedThreadSafe<PasswordProtectionRequest>;
 

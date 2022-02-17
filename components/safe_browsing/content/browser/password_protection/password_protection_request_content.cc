@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/password_protection/request_canceler.h"
@@ -122,19 +122,18 @@ void PasswordProtectionRequestContent::Cancel(bool timed_out) {
   // If request is canceled because |password_protection_service_| is shutting
   // down, ignore all these deferred navigations.
   if (!timed_out) {
-    throttles_.clear();
+    deferred_navigations_.clear();
   }
   PasswordProtectionRequest::Cancel(timed_out);
 }
 
-void PasswordProtectionRequestContent::HandleDeferredNavigations() {
-  for (auto* throttle : throttles_) {
-    if (is_modal_warning_showing())
-      throttle->CancelNavigation(content::NavigationThrottle::CANCEL);
-    else
-      throttle->ResumeNavigation();
+void PasswordProtectionRequestContent::ResumeDeferredNavigations() {
+  for (PasswordProtectionCommitDeferringCondition* condition :
+       deferred_navigations_) {
+    condition->ResumeNavigation();
   }
-  throttles_.clear();
+
+  deferred_navigations_.clear();
 }
 
 void PasswordProtectionRequestContent::MaybeLogPasswordReuseLookupEvent(

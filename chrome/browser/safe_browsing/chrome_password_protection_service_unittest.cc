@@ -39,7 +39,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
@@ -402,8 +402,8 @@ class ChromePasswordProtectionServiceTest
     return unhandled_sync_password_reuses->DictSize();
   }
 
-  size_t GetNumberOfNavigationThrottles() {
-    return request_ ? request_->throttles_.size() : 0u;
+  size_t GetNumberOfDeferredNavigations() {
+    return request_ ? request_->deferred_navigations_.size() : 0u;
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -1050,9 +1050,9 @@ TEST_F(ChromePasswordProtectionServiceTest,
                  /*is_warning_showing=*/false);
   GURL redirect_url(kRedirectURL);
   content::MockNavigationHandle test_handle(redirect_url, main_rfh());
-  std::unique_ptr<PasswordProtectionNavigationThrottle> throttle =
-      service_->MaybeCreateNavigationThrottle(&test_handle);
-  EXPECT_EQ(nullptr, throttle);
+  std::unique_ptr<PasswordProtectionCommitDeferringCondition> condition =
+      service_->MaybeCreateCommitDeferringCondition(test_handle);
+  EXPECT_EQ(nullptr, condition);
 }
 
 TEST_F(ChromePasswordProtectionServiceTest,
@@ -1071,28 +1071,24 @@ TEST_F(ChromePasswordProtectionServiceTest,
   GURL redirect_url(kRedirectURL);
   bool was_navigation_resumed = false;
   content::MockNavigationHandle test_handle(redirect_url, main_rfh());
-  std::unique_ptr<PasswordProtectionNavigationThrottle> throttle =
-      service_->MaybeCreateNavigationThrottle(&test_handle);
-  ASSERT_NE(nullptr, throttle);
-  throttle->set_resume_callback_for_testing(
-      base::BindLambdaForTesting([&]() { was_navigation_resumed = true; }));
+  std::unique_ptr<PasswordProtectionCommitDeferringCondition> condition =
+      service_->MaybeCreateCommitDeferringCondition(test_handle);
+  ASSERT_NE(nullptr, condition);
 
   // Verify navigation get deferred.
-  EXPECT_EQ(content::NavigationThrottle::DEFER, throttle->WillStartRequest());
+  EXPECT_EQ(content::CommitDeferringCondition::Result::kDefer,
+            condition->WillCommitNavigation(base::BindLambdaForTesting(
+                [&]() { was_navigation_resumed = true; })));
   base::RunLoop().RunUntilIdle();
 
   // Simulate receiving a SAFE verdict.
   SimulateRequestFinished(LoginReputationClientResponse::SAFE);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(true, was_navigation_resumed);
-
-  // Verify that navigation can be resumed.
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            throttle->WillProcessResponse());
 }
 
 TEST_F(ChromePasswordProtectionServiceTest,
-       VerifyNavigationDuringModalWarningCanceled) {
+       VerifyNavigationDuringModalWarningDeferred) {
   GURL trigger_url(kPhishingURL);
   NavigateAndCommit(trigger_url);
   // Simulate a password reuse request, whose verdict is triggering a modal
@@ -1108,15 +1104,16 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   GURL redirect_url(kRedirectURL);
   content::MockNavigationHandle test_handle(redirect_url, main_rfh());
-  std::unique_ptr<PasswordProtectionNavigationThrottle> throttle =
-      service_->MaybeCreateNavigationThrottle(&test_handle);
+  std::unique_ptr<PasswordProtectionCommitDeferringCondition> condition =
+      service_->MaybeCreateCommitDeferringCondition(test_handle);
 
-  // Verify that navigation gets canceled.
-  EXPECT_EQ(content::NavigationThrottle::CANCEL, throttle->WillStartRequest());
+  // Verify that navigation gets deferred.
+  EXPECT_EQ(content::CommitDeferringCondition::Result::kDefer,
+            condition->WillCommitNavigation(base::DoNothing()));
 }
 
 TEST_F(ChromePasswordProtectionServiceTest,
-       VerifyNavigationThrottleRemovedWhenNavigationHandleIsGone) {
+       VerifyCommitDeferringConditionRemovedWhenNavigationHandleIsGone) {
   GURL trigger_url(kPhishingURL);
   NavigateAndCommit(trigger_url);
   service_->SetIsSyncing(true);
@@ -1129,20 +1126,21 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   GURL redirect_url(kRedirectURL);
   content::MockNavigationHandle test_handle(redirect_url, main_rfh());
-  std::unique_ptr<PasswordProtectionNavigationThrottle> throttle =
-      service_->MaybeCreateNavigationThrottle(&test_handle);
+  std::unique_ptr<PasswordProtectionCommitDeferringCondition> condition =
+      service_->MaybeCreateCommitDeferringCondition(test_handle);
 
-  // Verify navigation get deferred.
-  EXPECT_EQ(content::NavigationThrottle::DEFER, throttle->WillStartRequest());
+  // Verify navigation gets deferred.
+  EXPECT_EQ(content::CommitDeferringCondition::Result::kDefer,
+            condition->WillCommitNavigation(base::DoNothing()));
 
-  EXPECT_EQ(1u, GetNumberOfNavigationThrottles());
+  EXPECT_EQ(1u, GetNumberOfDeferredNavigations());
 
-  // Simulate the deletion of the PasswordProtectionNavigationThrottle.
-  throttle.reset();
+  // Simulate the deletion of the PasswordProtectionCommitDeferringCondition.
+  condition.reset();
   base::RunLoop().RunUntilIdle();
 
-  // Expect no navigation throttle kept by |request_|.
-  EXPECT_EQ(0u, GetNumberOfNavigationThrottles());
+  // Expect no navigation condition kept by |request_|.
+  EXPECT_EQ(0u, GetNumberOfDeferredNavigations());
 
   // Simulate receiving a SAFE verdict.
   SimulateRequestFinished(LoginReputationClientResponse::SAFE);

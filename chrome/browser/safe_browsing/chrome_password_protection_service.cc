@@ -51,7 +51,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
@@ -1656,15 +1656,17 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
   Init();
 }
 
-std::unique_ptr<PasswordProtectionNavigationThrottle>
-MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle) {
+std::unique_ptr<PasswordProtectionCommitDeferringCondition>
+MaybeCreateCommitDeferringCondition(
+    content::NavigationHandle& navigation_handle) {
   Profile* profile = Profile::FromBrowserContext(
-      navigation_handle->GetWebContents()->GetBrowserContext());
+      navigation_handle.GetWebContents()->GetBrowserContext());
   ChromePasswordProtectionService* service =
       ChromePasswordProtectionService::GetPasswordProtectionService(profile);
   // |service| can be null in tests.
-  return service ? service->MaybeCreateNavigationThrottle(navigation_handle)
-                 : nullptr;
+  return service
+             ? service->MaybeCreateCommitDeferringCondition(navigation_handle)
+             : nullptr;
 }
 
 PasswordProtectionTrigger

@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_service_base.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/browser/commit_deferring_condition.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
@@ -24,7 +25,7 @@ class GURL;
 
 namespace safe_browsing {
 
-class PasswordProtectionNavigationThrottle;
+class PasswordProtectionCommitDeferringCondition;
 class PasswordProtectionRequest;
 
 using ReusedPasswordAccountType =
@@ -102,18 +103,19 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
       mojo::Remote<mojom::PhishingDetector>* phishing_detector);
 #endif
 
-  // Called when a new navigation is starting. Create throttle if there is a
-  // pending sync password reuse ping or if there is a modal warning dialog
-  // showing in the corresponding web contents.
-  std::unique_ptr<PasswordProtectionNavigationThrottle>
-  MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
+  // Called when a new navigation is starting to create a deferring condition
+  // if there is a pending sync password reuse ping or if there is a modal
+  // warning dialog showing in the corresponding web contents.
+  std::unique_ptr<PasswordProtectionCommitDeferringCondition>
+  MaybeCreateCommitDeferringCondition(
+      content::NavigationHandle& navigation_handle);
 
  protected:
   void RemoveWarningRequestsByWebContents(content::WebContents* web_contents);
 
   bool IsModalWarningShowingInWebContents(content::WebContents* web_contents);
 
-  void MaybeHandleDeferredNavigations(
+  void ResumeDeferredNavigationsIfNeeded(
       PasswordProtectionRequest* request) override;
 };
 

@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
-#include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -122,6 +122,10 @@ void PasswordProtectionService::StartRequest(
           password_field_exists, this, GetRequestTimeoutInMS()));
   request->Start();
 
+  // TODO(bokan): Now that the throttle has been changed to a
+  // CommitDeferringCondition, a followup CL will remove this and make
+  // activations defer like other navigations. https://crbug.com/1234857
+  //
   // PasswordProtectionService defers all navigations in the WebContents while
   // there is a pending request triggered by a password reuse. However it does
   // this via NavigationThrottles, which are not able to throttle navigations
@@ -143,10 +147,6 @@ void PasswordProtectionService::StartRequest(
   //
   // If we were to disallow for other trigger types, we may disable prerendering
   // more than required.
-  //
-  // TODO(https://crbug.com/1234857): Change the throttle to a
-  // CommitDeferringCondition, so the activation navigation can be deferred like
-  // other navigations.
   if (request->trigger_type() ==
       safe_browsing::LoginReputationClientRequest::PASSWORD_REUSE_EVENT) {
     web_contents->DisallowActivationNavigationsForBug1234857();
@@ -155,13 +155,13 @@ void PasswordProtectionService::StartRequest(
   pending_requests_.insert(std::move(request));
 }
 
-std::unique_ptr<PasswordProtectionNavigationThrottle>
-PasswordProtectionService::MaybeCreateNavigationThrottle(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsRendererInitiated())
+std::unique_ptr<PasswordProtectionCommitDeferringCondition>
+PasswordProtectionService::MaybeCreateCommitDeferringCondition(
+    content::NavigationHandle& navigation_handle) {
+  if (!navigation_handle.IsRendererInitiated())
     return nullptr;
 
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
+  content::WebContents* web_contents = navigation_handle.GetWebContents();
   for (scoped_refptr<PasswordProtectionRequest> request : pending_requests_) {
     PasswordProtectionRequestContent* request_content =
         static_cast<PasswordProtectionRequestContent*>(request.get());
@@ -171,8 +171,8 @@ PasswordProtectionService::MaybeCreateNavigationThrottle(
         IsSupportedPasswordTypeForModalWarning(
             GetPasswordProtectionReusedPasswordAccountType(
                 request->password_type(), username_for_last_shown_warning()))) {
-      return std::make_unique<PasswordProtectionNavigationThrottle>(
-          navigation_handle, request_content, /*is_warning_showing=*/false);
+      return std::make_unique<PasswordProtectionCommitDeferringCondition>(
+          navigation_handle, request_content);
     }
   }
 
@@ -180,8 +180,8 @@ PasswordProtectionService::MaybeCreateNavigationThrottle(
     PasswordProtectionRequestContent* request_content =
         static_cast<PasswordProtectionRequestContent*>(request.get());
     if (request_content->web_contents() == web_contents) {
-      return std::make_unique<PasswordProtectionNavigationThrottle>(
-          navigation_handle, request_content, /*is_warning_showing=*/true);
+      return std::make_unique<PasswordProtectionCommitDeferringCondition>(
+          navigation_handle, request_content);
     }
   }
   return nullptr;
@@ -200,10 +200,12 @@ void PasswordProtectionService::RemoveWarningRequestsByWebContents(
   for (auto it = warning_requests_.begin(); it != warning_requests_.end();) {
     PasswordProtectionRequestContent* request_content =
         static_cast<PasswordProtectionRequestContent*>(it->get());
-    if (request_content->web_contents() == web_contents)
+    if (request_content->web_contents() == web_contents) {
+      request_content->ResumeDeferredNavigations();
       it = warning_requests_.erase(it);
-    else
+    } else {
       ++it;
+    }
   }
 }
 
@@ -218,11 +220,14 @@ bool PasswordProtectionService::IsModalWarningShowingInWebContents(
   return false;
 }
 
-void PasswordProtectionService::MaybeHandleDeferredNavigations(
+void PasswordProtectionService::ResumeDeferredNavigationsIfNeeded(
     PasswordProtectionRequest* request) {
+  if (request->is_modal_warning_showing())
+    return;
+
   PasswordProtectionRequestContent* request_content =
       static_cast<PasswordProtectionRequestContent*>(request);
-  request_content->HandleDeferredNavigations();
+  request_content->ResumeDeferredNavigations();
 }
 
 }  // namespace safe_browsing

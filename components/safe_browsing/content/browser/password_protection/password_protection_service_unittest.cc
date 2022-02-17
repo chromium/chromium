@@ -31,7 +31,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/content/browser/password_protection/mock_password_protection_service.h"
-#include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-forward.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -50,6 +50,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -316,8 +317,8 @@ class PasswordProtectionServiceTest : public ::testing::Test {
     content_setting_map_->ShutdownOnUIThread();
   }
 
-  size_t GetNumberOfNavigationThrottles() {
-    return request_ ? request_->throttles_.size() : 0u;
+  size_t GetNumberOfDeferredNavigations() {
+    return request_ ? request_->deferred_navigations_.size() : 0u;
   }
 
   // |task_environment_| is needed here because this test involves both UI and
@@ -335,23 +336,25 @@ class PasswordProtectionServiceTest : public ::testing::Test {
 };
 
 TEST_F(PasswordProtectionServiceTest,
-       VerifyNavigationThrottleNotRemovedWhenCanceledOnTimeout) {
+       VerifyCommitDeferringConditionNotRemovedWhenCanceledOnTimeout) {
   request_->Start();
-  auto throttle = std::make_unique<PasswordProtectionNavigationThrottle>(
-      nullptr, request_, false);
-  EXPECT_EQ(1U, GetNumberOfNavigationThrottles());
+  content::MockNavigationHandle mock_handle;
+  auto condition = std::make_unique<PasswordProtectionCommitDeferringCondition>(
+      mock_handle, request_);
+  EXPECT_EQ(1U, GetNumberOfDeferredNavigations());
   request_->Cancel(/*timed_out=*/true);
-  EXPECT_EQ(1U, GetNumberOfNavigationThrottles());
+  EXPECT_EQ(1U, GetNumberOfDeferredNavigations());
 }
 
 TEST_F(PasswordProtectionServiceTest,
-       VerifyNavigationThrottleRemovedWhenCanceledNotOnTimeout) {
+       VerifyCommitDeferringConditionRemovedWhenCanceledNotOnTimeout) {
   request_->Start();
-  auto throttle = std::make_unique<PasswordProtectionNavigationThrottle>(
-      nullptr, request_, false);
-  EXPECT_EQ(1U, GetNumberOfNavigationThrottles());
+  content::MockNavigationHandle mock_handle;
+  auto condition = std::make_unique<PasswordProtectionCommitDeferringCondition>(
+      mock_handle, request_);
+  EXPECT_EQ(1U, GetNumberOfDeferredNavigations());
   request_->Cancel(/*timed_out=*/false);
-  EXPECT_EQ(0U, GetNumberOfNavigationThrottles());
+  EXPECT_EQ(0U, GetNumberOfDeferredNavigations());
 }
 
 TEST_F(PasswordProtectionServiceTest, NoSendPingPrivateIpHostname) {

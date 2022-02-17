@@ -201,7 +201,7 @@ void PasswordProtectionServiceBase::RequestFinished(
     }
   }
 
-  MaybeHandleDeferredNavigations(request);
+  ResumeDeferredNavigationsIfNeeded(request);
 
   // If the request is canceled, the PasswordProtectionServiceBase is already
   // partially destroyed, and we won't be able to log accurate metrics.
