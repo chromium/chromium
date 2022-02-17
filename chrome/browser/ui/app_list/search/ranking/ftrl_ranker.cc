@@ -272,12 +272,8 @@ std::vector<double> MrfuCategoryRanker::GetCategoryRanks(
 
   std::vector<double> scores;
   for (const auto& category : categories) {
-    if (category.category == Category::kSearchAndAssistant) {
-      scores.push_back(0.0);
-    } else {
-      const auto it = scores_map.find(category.category);
-      scores.push_back(it != scores_map.end() ? it->second : 0.0);
-    }
+    const auto it = scores_map.find(category.category);
+    scores.push_back(it != scores_map.end() ? it->second : 0.0);
   }
   DCHECK_EQ(scores.size(), categories.size());
   return scores;

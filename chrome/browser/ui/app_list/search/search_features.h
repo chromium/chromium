@@ -5,24 +5,14 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_FEATURES_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_FEATURES_H_
 
-#include "base/time/time.h"
-
 namespace base {
 struct Feature;
 }
 
 namespace search_features {
 
-// Enables a burn-in period for query search. Display of results in query
-// search are delayed until the burn-in period has elapsed.
-// Only valid when categorical search is enabled.
-extern const base::Feature kQuerySearchBurnInPeriod;
-
-bool IsQuerySearchBurnInPeriodEnabled();
-
-// Returns the duration of the burn-in period, in milliseconds. If parameter
-// cannot be retrieved, the default value is 100ms.
-base::TimeDelta QuerySearchBurnInPeriodDuration();
+// This file is currently unused, but is kept as a staging ground for search
+// backend feature flags.
 
 }  // namespace search_features
 

@@ -2509,29 +2509,6 @@ const FeatureEntry::FeatureVariation kCategoricalSearchVariations[] = {
     {"By usage", kCategoricalSearch_ByUsage,
      base::size(kCategoricalSearch_ByUsage), nullptr}};
 
-const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_50ms[] = {
-    {"burnin_period", "50"}};
-const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_100ms[] = {
-    {"burnin_period", "100"}};
-const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_150ms[] = {
-    {"burnin_period", "150"}};
-const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_500ms[] = {
-    {"burnin_period", "500"}};
-const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_2000ms[] = {
-    {"burnin_period", "2000"}};
-
-const FeatureEntry::FeatureVariation kQuerySearchBurnInPeriodVariations[] = {
-    {"50ms", kQuerySearchBurnInPeriod_50ms,
-     base::size(kQuerySearchBurnInPeriod_50ms), nullptr},
-    {"100ms", kQuerySearchBurnInPeriod_100ms,
-     base::size(kQuerySearchBurnInPeriod_100ms), nullptr},
-    {"150ms", kQuerySearchBurnInPeriod_150ms,
-     base::size(kQuerySearchBurnInPeriod_150ms), nullptr},
-    {"500ms", kQuerySearchBurnInPeriod_500ms,
-     base::size(kQuerySearchBurnInPeriod_500ms), nullptr},
-    {"2000ms", kQuerySearchBurnInPeriod_2000ms,
-     base::size(kQuerySearchBurnInPeriod_2000ms), nullptr}};
-
 const FeatureEntry::FeatureParam kProductivityLauncher_WithoutContinue[] = {
     {"enable_continue", "false"}};
 
@@ -6845,13 +6822,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSearchResultInlineIconName,
      flag_descriptions::kSearchResultInlineIconDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kSearchResultInlineIcon)},
-
-    {"query-search-burn-in-period",
-     flag_descriptions::kQuerySearchBurnInPeriodName,
-     flag_descriptions::kQuerySearchBurnInPeriodDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(search_features::kQuerySearchBurnInPeriod,
-                                    kQuerySearchBurnInPeriodVariations,
-                                    "LauncherQuerySearchBurnInPeriod")},
 
     {"app-discovery-remote-url-search",
      flag_descriptions::kAppDiscoveryRemoteUrlSearchName,

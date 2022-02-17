@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -14,6 +15,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/sequence_token.h"
 #include "base/strings/strcat.h"
@@ -63,7 +65,10 @@ SearchControllerImplNew::SearchControllerImplNew(
     Profile* profile)
     : profile_(profile),
       ranker_(std::make_unique<RankerDelegate>(profile, this)),
-      burnin_period_(::search_features::QuerySearchBurnInPeriodDuration()),
+      burnin_period_(base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+          ash::features::kProductivityLauncher,
+          "burnin_length_ms",
+          200))),
       metrics_observer_(
           std::make_unique<SearchMetricsObserver>(profile, notifier)),
       model_updater_(model_updater),
@@ -347,7 +352,12 @@ void SearchControllerImplNew::Publish() {
             [](const auto& a, const auto& b) {
               const int a_burnin = a.burnin_iteration;
               const int b_burnin = b.burnin_iteration;
-              if (a_burnin != b_burnin) {
+              if (a.category == Category::kSearchAndAssistant ||
+                  b.category == Category::kSearchAndAssistant) {
+                // Special-case the search and assistant category, which should
+                // always be sorted last.
+                return b.category == Category::kSearchAndAssistant;
+              } else if (a_burnin != b_burnin) {
                 // Sort order: 0, 1, 2, 3, ... then -1.
                 // The effect of this is to sort by arrival order, with unseen
                 // categories ranked last.

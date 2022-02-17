@@ -239,7 +239,7 @@ class SearchControllerImplNewTest : public testing::Test {
   void Wait() { task_environment_.RunUntilIdle(); }
 
   void ElapseBurnInPeriod() {
-    task_environment_.FastForwardBy(base::Milliseconds(200));
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
  protected:

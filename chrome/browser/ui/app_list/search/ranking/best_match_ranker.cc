@@ -21,6 +21,9 @@ namespace {
 // Returns true if the |type| provider's results should never be a best match.
 bool ShouldIgnoreProvider(ProviderType type) {
   switch (type) {
+      // Continue providers:
+    case ProviderType::kZeroStateFile:
+    case ProviderType::kZeroStateDrive:
       // Low-intent providers:
     case ProviderType::kPlayStoreReinstallApp:
     case ProviderType::kPlayStoreApp:
@@ -42,7 +45,7 @@ bool ShouldIgnoreProvider(ProviderType type) {
 }
 
 bool ShouldIgnoreResult(const ChromeSearchResult* result) {
-  // TODO(crbug.com/1199206): We should have a more robust way of determining
+  // TODO(crbug.com/1258415): We should have a more robust way of determining
   // omnibox subtypes than using the metrics type.
   return result->metrics_type() == ash::OMNIBOX_WEB_QUERY ||
          result->metrics_type() == ash::OMNIBOX_ANSWER ||

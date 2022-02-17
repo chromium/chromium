@@ -24,9 +24,10 @@ double Scoring::FinalScore() const {
   if (scoring.filter)
     return os << "{" << scoring.FinalScore() << " | filtered}";
   return os << base::StringPrintf(
-             "{%.2f | nr:%.2f rs:%.2f bm:%d cr:%d}", scoring.FinalScore(),
+             "{%.2f | nr:%.2f rs:%.2f bm:%d cr:%d bi:%d}", scoring.FinalScore(),
              scoring.normalized_relevance, scoring.ftrl_result_score,
-             scoring.best_match_rank, scoring.continue_rank);
+             scoring.best_match_rank, scoring.continue_rank,
+             scoring.burnin_iteration);
 }
 
 CategoriesList CreateAllCategories() {

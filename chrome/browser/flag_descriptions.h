@@ -2457,9 +2457,6 @@ extern const char kCameraAppDocumentManualCropDescription[];
 extern const char kCategoricalSearchName[];
 extern const char kCategoricalSearchDescription[];
 
-extern const char kQuerySearchBurnInPeriodName[];
-extern const char kQuerySearchBurnInPeriodDescription[];
-
 extern const char kCellularBypassESimInstallationConnectivityCheckName[];
 extern const char kCellularBypassESimInstallationConnectivityCheckDescription[];
 
