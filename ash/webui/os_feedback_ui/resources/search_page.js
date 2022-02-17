@@ -26,6 +26,12 @@ const MIN_CHARS_COUNT = 3;
 const MAX_RESULTS = 5;
 
 /**
+ * The host of untrusted child page.
+ * @type {string}
+ */
+export const OS_FEEDBACK_UNTRUSTED_ORIGIN = 'chrome-untrusted://os-feedback';
+
+/**
  * @fileoverview
  * 'search-page' is the first step of the feedback tool. It displays live help
  *  contents relevant to the text entered by the user.
@@ -52,11 +58,33 @@ export class SearchPageElement extends PolymerElement {
     /** @private {!HelpContentProviderInterface} */
     this.helpContentProvider_ = getHelpContentProvider();
 
-    /** @private {!HelpContentList} */
-    this.helpContentList_ = [];
+    /**
+     * The event handler called when the iframe is loaded. It is set in the
+     * html.
+     * @private {function()}
+     */
+    this.resolveIframeLoaded_;
+
+    /**
+     * A promise that resolves when the iframe loading is completed.
+     * @private {Promise}
+     */
+    this.iframeLoaded_ = new Promise(resolve => {
+      this.resolveIframeLoaded_ = resolve;
+    });
+
+    /** @private {?HTMLIFrameElement} */
+    this.iframe_ = null;
   }
 
+  ready() {
+    super.ready();
+
+    this.iframe_ = /** @type {HTMLIFrameElement} */ (
+        this.shadowRoot.querySelector('iframe'));
+  }
   /**
+   *
    * @private
    */
   handleInputChanged_(e) {
@@ -77,7 +105,21 @@ export class SearchPageElement extends PolymerElement {
   fetchHelpContent_(query) {
     this.helpContentProvider_.getHelpContents(query, MAX_RESULTS)
         .then((/** !HelpContentList */ newContentList) => {
-          this.helpContentList_ = newContentList;
+          if (!this.iframe_) {
+            console.warn('untrusted iframe is not found');
+            return;
+          }
+
+          const data = {
+            helpContentList: newContentList,
+          };
+
+          // Wait for the iframe to complete loading before postMessage.
+          this.iframeLoaded_.then(() => {
+            // TODO(xiangdongkong): Use Mojo to communicate with untrusted page.
+            this.iframe_.contentWindow.postMessage(
+                data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
+          });
         });
   }
 }

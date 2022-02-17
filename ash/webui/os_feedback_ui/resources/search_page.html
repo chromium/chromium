@@ -1,6 +1,7 @@
 <style include="os-feedback-shared">
   iframe {
     border-style: none;
+    height: 100%;
   }
 
   textarea {
@@ -27,7 +28,9 @@
         Description is required
       </p>
     </div>
-    <iframe src="chrome-untrusted://os-feedback/untrusted_index.html"></iframe>
+    <iframe on-load="resolveIframeLoaded_"
+        src="chrome-untrusted://os-feedback/untrusted_index.html">
+    </iframe>
   </div>
   <div id="navButtons">
     <cr-button id="btnContinue" class="action-button">Continue</cr-button>

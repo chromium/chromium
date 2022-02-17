@@ -15,7 +15,10 @@ generate_grd("build_grd") {
   grd_prefix = "ash_os_feedback_untrusted"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
-  input_files = [ "untrusted_index.html" ]
+  input_files = [
+    "untrusted_index.html",
+    "untrusted_index.js",
+  ]
   input_files_base_dir = rebase_path(".", "//")
 
   manifest_files = []
