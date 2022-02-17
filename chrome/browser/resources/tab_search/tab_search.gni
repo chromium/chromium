@@ -1,0 +1,31 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of files that should be passed to html_to_js().
+web_component_files = [
+  "app.ts",
+  "infinite_list.ts",
+  "tab_group_shared_vars.ts",
+  "tab_search_group_item.ts",
+  "tab_search_item.ts",
+  "tab_search_search_field.ts",
+]
+
+# List of files that don't need to be passed to html_to_js().
+non_web_component_files = [
+  "bimap.ts",
+  "fuzzy_search.ts",
+  "tab_data.ts",
+  "tab_group_color_helper.ts",
+  "tab_search_api_proxy.ts",
+  "tab_search.ts",
+  "tab_search_utils.ts",
+  "title_item.ts",
+]
+
+mojo_js_files = [
+  "tab_group_types.mojom-webui.js",
+  "tab_search.mojom-webui.js",
+  "tabs.mojom-webui.js",
+]

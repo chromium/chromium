@@ -10,6 +10,7 @@ import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
+import("./tab_search.gni")
 
 assert(is_linux || is_chromeos || is_win || is_mac || is_fuchsia)
 
@@ -75,18 +76,9 @@ generate_grd("build_fuse_grdp") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "bimap.ts",
-    "fuzzy_search.ts",
-    "tab_data.ts",
-    "tab_group_color_helper.ts",
-    "tab_search.ts",
-    "tab_search_api_proxy.ts",
-    "tab_search_utils.ts",
-    "title_item.ts",
-  ]
+  in_files = non_web_component_files
 }
 
 preprocess_if_expr("preprocess_tabs") {
@@ -100,14 +92,7 @@ preprocess_if_expr("preprocess_web_components") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "app.ts",
-    "infinite_list.ts",
-    "tab_group_shared_vars.ts",
-    "tab_search_item.ts",
-    "tab_search_group_item.ts",
-    "tab_search_search_field.ts",
-  ]
+  in_files = web_component_files
 }
 
 copy("copy_fuse") {
@@ -159,14 +144,7 @@ grit("resources") {
 }
 
 html_to_js("web_components") {
-  js_files = [
-    "app.ts",
-    "infinite_list.ts",
-    "tab_group_shared_vars.ts",
-    "tab_search_item.ts",
-    "tab_search_group_item.ts",
-    "tab_search_search_field.ts",
-  ]
+  js_files = web_component_files
 }
 
 ts_library("build_ts") {
@@ -174,25 +152,7 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "app.ts",
-    "bimap.ts",
-    "fuzzy_search.ts",
-    "infinite_list.ts",
-    "tab_data.ts",
-    "tab_group_color_helper.ts",
-    "tab_group_shared_vars.ts",
-    "tab_group_types.mojom-webui.js",
-    "tab_search_api_proxy.ts",
-    "tab_search_group_item.ts",
-    "tab_search_item.ts",
-    "tab_search.ts",
-    "tab_search.mojom-webui.js",
-    "tab_search_search_field.ts",
-    "tab_search_utils.ts",
-    "tabs.mojom-webui.js",
-    "title_item.ts",
-  ]
+  in_files = web_component_files + non_web_component_files + mojo_js_files
   definitions = [
     "//tools/typescript/definitions/metrics_private.d.ts",
     "$target_gen_dir/$preprocess_folder/fuse.d.ts",
