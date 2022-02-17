@@ -23,6 +23,24 @@ constexpr int kFingerprintFailedAnimationNumFrames = 45;
 
 }  // namespace
 
+// static
+FingerprintAuthFactorModel::Factory*
+    FingerprintAuthFactorModel::Factory::factory_instance_ = nullptr;
+
+// static
+std::unique_ptr<FingerprintAuthFactorModel>
+FingerprintAuthFactorModel::Factory::Create(FingerprintState state) {
+  if (factory_instance_)
+    return factory_instance_->CreateInstance(state);
+  return std::make_unique<FingerprintAuthFactorModel>(state);
+}
+
+// static
+void FingerprintAuthFactorModel::Factory::SetFactoryForTesting(
+    FingerprintAuthFactorModel::Factory* factory) {
+  factory_instance_ = factory;
+}
+
 FingerprintAuthFactorModel::FingerprintAuthFactorModel(FingerprintState state)
     : state_(state) {}
 

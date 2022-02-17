@@ -1155,7 +1155,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   std::unique_ptr<LoginAuthFactorsView> auth_factors_view;
   if (smart_lock_ui_revamp_enabled_) {
     auto fingerprint_auth_factor_model =
-        std::make_unique<FingerprintAuthFactorModel>(user.fingerprint_state);
+        FingerprintAuthFactorModel::Factory::Create(user.fingerprint_state);
     fingerprint_auth_factor_model_ = fingerprint_auth_factor_model.get();
     auto smart_lock_auth_factor_model =
         SmartLockAuthFactorModel::Factory::Create(
