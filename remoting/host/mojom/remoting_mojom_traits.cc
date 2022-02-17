@@ -138,9 +138,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
 
   if (data_view.button() != remoting::mojom::MouseButton::kUndefined) {
     ::remoting::protocol::MouseEvent::MouseButton mouse_button;
-    if (!EnumTraits<remoting::mojom::MouseButton,
-                    ::remoting::protocol::MouseEvent::MouseButton>::
-            FromMojom(data_view.button(), &mouse_button)) {
+    if (data_view.ReadButton(&mouse_button)) {
       return false;
     }
     out_event->set_button(mouse_button);
@@ -268,9 +266,7 @@ bool mojo::StructTraits<remoting::mojom::TouchEventDataView,
     Read(remoting::mojom::TouchEventDataView data_view,
          ::remoting::protocol::TouchEvent* out_event) {
   ::remoting::protocol::TouchEvent::TouchEventType touch_event_type;
-  if (!EnumTraits<remoting::mojom::TouchEventType,
-                  ::remoting::protocol::TouchEvent::TouchEventType>::
-          FromMojom(data_view.event_type(), &touch_event_type)) {
+  if (!data_view.ReadEventType(&touch_event_type)) {
     return false;
   }
   out_event->set_event_type(touch_event_type);
