@@ -362,7 +362,7 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
 }
 
 void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
-                                       bool write_synchronously) {
+                                       bool is_extended_safe_mode) {
   DCHECK(initialized_);
   if (g_skip_clean_shutdown_steps)
     return;
@@ -372,7 +372,7 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
   const std::string group_name =
       base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
 
-  if (write_synchronously) {
+  if (is_extended_safe_mode) {
     DCHECK_EQ(group_name, kSignalAndWriteViaFileUtilGroup);
     DCHECK(!exited_cleanly);
     SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
@@ -386,7 +386,7 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     // emitted and (b) the kExtended monitoring stage is written.
     //
     // Later on in startup, such clients call CleanExitBeacon::WriteBeaconFile()
-    // again with |exited_cleanly| and |write_synchronously| set to false via
+    // again with |exited_cleanly| and |is_extended_safe_mode| set to false via
     // MetricsService::LogNeedForCleanShutdown() for desktop and
     // MetricsService::OnAppEnterForeground() for mobile, which is the status
     // quo point at which Chrome monitors for crashes. At this point, a

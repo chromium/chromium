@@ -115,14 +115,15 @@ class CleanExitBeacon {
   }
 
   // Sets the beacon value to |exited_cleanly| and updates the last live
-  // timestamp. If |write_synchronously| is true, then the beacon value is
+  // timestamp. If |is_extended_safe_mode| is true, then the beacon value is
   // written to disk synchronously. If false, a write is scheduled, and for
   // clients in the Extended Variations Safe Mode experiment, a synchronous
   // write is done, too.
   //
-  // Note: |write_synchronously| should be true only for some clients in the
+  // Note: |is_extended_safe_mode| should be true only for some clients in the
   // Extended Variations Safe Mode experiment.
-  void WriteBeaconValue(bool exited_cleanly, bool write_synchronously = false);
+  void WriteBeaconValue(bool exited_cleanly,
+                        bool is_extended_safe_mode = false);
 
   // Updates the last live timestamp.
   void UpdateLastLiveTimestamp();

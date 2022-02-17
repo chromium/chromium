@@ -485,7 +485,7 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
   DCHECK_EQ(group_name, kSignalAndWriteViaFileUtilGroup);
   metrics_state_manager->LogHasSessionShutdownCleanly(
       /*has_session_shutdown_cleanly=*/false,
-      /*write_synchronously=*/true);
+      /*is_extended_safe_mode=*/true);
 }
 
 Study::Platform VariationsFieldTrialCreator::GetPlatform() {

@@ -140,7 +140,7 @@ struct MonitoringStageTestParams {
   const std::string test_name;
   const std::string experiment_group;
   bool exited_cleanly;
-  bool write_synchronously;
+  bool is_extended_safe_mode;
   absl::optional<BeaconMonitoringStage> stage;
 };
 
@@ -543,11 +543,11 @@ INSTANTIATE_TEST_SUITE_P(
         MonitoringStageTestParams{.test_name = "ControlGroup_CleanExit",
                                   .experiment_group = variations::kControlGroup,
                                   .exited_cleanly = true,
-                                  .write_synchronously = false},
+                                  .is_extended_safe_mode = false},
         MonitoringStageTestParams{.test_name = "ControlGroup_DirtyExit",
                                   .experiment_group = variations::kControlGroup,
                                   .exited_cleanly = false,
-                                  .write_synchronously = false},
+                                  .is_extended_safe_mode = false},
         // Verify that signaling that Chrome should stop watching for crashes
         // for experiment group clients results in a beacon file with the
         // kNotMonitoring stage.
@@ -555,25 +555,25 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "ExperimentGroup_CleanExit_AsynchronousWrite",
             .experiment_group = variations::kSignalAndWriteViaFileUtilGroup,
             .exited_cleanly = true,
-            .write_synchronously = false,
+            .is_extended_safe_mode = false,
             .stage = BeaconMonitoringStage::kNotMonitoring},
         // Verify that signaling that Chrome should watch for crashes with
-        // |write_synchronously| set to true for experiment group clients
+        // |is_extended_safe_mode| set to true for experiment group clients
         // results in a beacon file with the kExtended stage.
         MonitoringStageTestParams{
             .test_name = "ExperimentGroup_DirtyExit_SynchronousWrite",
             .experiment_group = variations::kSignalAndWriteViaFileUtilGroup,
             .exited_cleanly = false,
-            .write_synchronously = true,
+            .is_extended_safe_mode = true,
             .stage = BeaconMonitoringStage::kExtended},
         // Verify that signaling that Chrome should watch for crashes with
-        // |write_synchronously| set to false for experiment group clients
+        // |is_extended_safe_mode| set to false for experiment group clients
         // results in a beacon file with the kStatusQuo stage.
         MonitoringStageTestParams{
             .test_name = "ExperimentGroup_DirtyExit_AsynchronousWrite",
             .experiment_group = variations::kSignalAndWriteViaFileUtilGroup,
             .exited_cleanly = false,
-            .write_synchronously = false,
+            .is_extended_safe_mode = false,
             .stage = BeaconMonitoringStage::kStatusQuo}),
     [](const ::testing::TestParamInfo<MonitoringStageTestParams>& params) {
       return params.param.test_name;
@@ -593,7 +593,7 @@ TEST_P(MonitoringStageWritingTest, CheckMonitoringStage) {
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
 
   clean_exit_beacon.WriteBeaconValue(params.exited_cleanly,
-                                     params.write_synchronously);
+                                     params.is_extended_safe_mode);
 
   // Check that experiment group clients have a beacon file and that control
   // group clients do not.
@@ -668,7 +668,7 @@ TEST_F(CleanExitBeaconTest,
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_.GetPath());
   EXPECT_DCHECK_DEATH(
       clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
-                                         /*write_synchronously=*/true));
+                                         /*is_extended_safe_mode=*/true));
 
   // Verify metrics.
   histogram_tester_.ExpectTotalCount(
@@ -678,8 +678,8 @@ TEST_F(CleanExitBeaconTest,
 }
 
 // Verify that there's a DCHECK when an Extended Variations Safe Mode client
-// attempts to write a clean beacon with |write_synchronously| set to true.
-// |write_synchronously| should only be set to true in one call site:
+// attempts to write a clean beacon with |is_extended_safe_mode| set to true.
+// |is_extended_safe_mode| should only be set to true in one call site:
 // VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode().
 TEST_F(CleanExitBeaconTest,
        WriteBeaconValue_SynchronousWriteDcheck_ExperimentGroup) {
@@ -691,7 +691,7 @@ TEST_F(CleanExitBeaconTest,
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_.GetPath());
   EXPECT_DCHECK_DEATH(
       clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/true,
-                                         /*write_synchronously=*/true));
+                                         /*is_extended_safe_mode=*/true));
 }
 
 // The below CleanExitBeaconTest.BeaconState_* tests verify that the logic for
