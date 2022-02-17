@@ -10611,6 +10611,14 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "quick_unlock_mode_whitelist": {
+            "value": [ ]
+          }
+        }
+      },
+      {
         "policies": {
           "QuickUnlockModeAllowlist": [
             "PIN"
@@ -10623,6 +10631,24 @@
             ]
           }
         }
+      },
+      {
+        "note": "allowlist should override whitelist policies",
+        "policies": {
+          "QuickUnlockModeAllowlist": [
+            "All"
+          ],
+          "QuickUnlockModeWhitelist": [
+            "PIN"
+          ]
+        },
+        "prefs": {
+          "quick_unlock_mode_whitelist": {
+            "value": [
+              "All"
+            ]
+          }
+        }
       }
     ]
   },
@@ -10631,6 +10657,14 @@
       "chromeos_ash"
     ],
     "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "quick_unlock_mode_whitelist": {
+            "value": [ ]
+          }
+        }
+      },
       {
         "policies": {
           "QuickUnlockModeWhitelist": [
