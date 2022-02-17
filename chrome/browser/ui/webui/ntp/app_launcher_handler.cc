@@ -1332,7 +1332,9 @@ void AppLauncherHandler::InstallOsHooks(const web_app::AppId& app_id) {
   options.os_hooks[web_app::OsHookType::kShortcutsMenu] = true;
   options.os_hooks[web_app::OsHookType::kFileHandlers] = true;
   options.os_hooks[web_app::OsHookType::kProtocolHandlers] = true;
-  options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = false;
+  options.os_hooks[web_app::OsHookType::kRunOnOsLogin] =
+      web_app_provider_->registrar().GetAppRunOnOsLoginMode(app_id).value ==
+      web_app::RunOnOsLoginMode::kWindowed;
 
   // Installed WebApp here is user uninstallable app, but it needs to
   // check user uninstall-ability if there are apps with different source types.

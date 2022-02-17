@@ -168,6 +168,39 @@ TEST_F(RunOnOsLoginCommandUnitTest, PersistRunOnOsLoginUserChoice) {
 }
 
 TEST_F(RunOnOsLoginCommandUnitTest,
+       PersistRunOnOsLoginUserChoiceAppNotLocallyInstalled) {
+  const AppId app_id = RegisterApp();
+
+  // Simulate the app not locally installed.
+  {
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->UpdateApp(app_id)->SetIsLocallyInstalled(false);
+  }
+
+  PersistRunOnOsLoginUserChoice(
+      &provider()->registrar(), &provider()->os_integration_manager(),
+      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
+  EXPECT_EQ(0u,
+            fake_os_integration_manager().num_register_run_on_os_login_calls());
+  EXPECT_EQ(
+      0u, fake_os_integration_manager().num_unregister_run_on_os_login_calls());
+
+  // Simulate the app locally installed.
+  {
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->UpdateApp(app_id)->SetIsLocallyInstalled(true);
+  }
+
+  PersistRunOnOsLoginUserChoice(
+      &provider()->registrar(), &provider()->os_integration_manager(),
+      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
+  EXPECT_EQ(1u,
+            fake_os_integration_manager().num_register_run_on_os_login_calls());
+  EXPECT_EQ(
+      0u, fake_os_integration_manager().num_unregister_run_on_os_login_calls());
+}
+
+TEST_F(RunOnOsLoginCommandUnitTest,
        PersistRunOnOsLoginUserChoiceForAlreadyInstalledApp) {
   // |web_app->run_on_os_login_os_integration_state()| returns an optional
   // value. A null value can be returned if a web app was installed prior to the
@@ -470,6 +503,53 @@ TEST_F(RunOnOsLoginCommandUnitTest,
         3u,
         fake_os_integration_manager().num_unregister_run_on_os_login_calls());
   }
+}
+
+TEST_F(RunOnOsLoginCommandUnitTest,
+       SyncRunOnOsLoginOsIntegrationStateAppNotLocallyInstalled) {
+  const char kWebAppSettingWithDefaultConfiguration[] = R"({
+    "https://windowed.example/": {
+      "run_on_os_login": "run_windowed"
+    },
+    "https://allowed.example/": {
+      "run_on_os_login": "allowed"
+    },
+    "*": {
+      "run_on_os_login": "blocked"
+    }
+  })";
+
+  test::SetWebAppSettingsDictPref(profile(),
+                                  kWebAppSettingWithDefaultConfiguration);
+  provider()->policy_manager().RefreshPolicySettingsForTesting();
+
+  const AppId app_id = RegisterApp(GURL("https://windowed.example/"));
+
+  // Simulate the app not locally installed.
+  {
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->UpdateApp(app_id)->SetIsLocallyInstalled(false);
+  }
+
+  SyncRunOnOsLoginOsIntegrationState(
+      &provider()->registrar(), &provider()->os_integration_manager(), app_id);
+  EXPECT_EQ(0u,
+            fake_os_integration_manager().num_register_run_on_os_login_calls());
+  EXPECT_EQ(
+      0u, fake_os_integration_manager().num_unregister_run_on_os_login_calls());
+
+  // Simulate the app locally installed.
+  {
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->UpdateApp(app_id)->SetIsLocallyInstalled(true);
+  }
+
+  SyncRunOnOsLoginOsIntegrationState(
+      &provider()->registrar(), &provider()->os_integration_manager(), app_id);
+  EXPECT_EQ(1u,
+            fake_os_integration_manager().num_register_run_on_os_login_calls());
+  EXPECT_EQ(
+      0u, fake_os_integration_manager().num_unregister_run_on_os_login_calls());
 }
 
 }  // namespace web_app

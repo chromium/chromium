@@ -76,7 +76,7 @@ void PersistRunOnOsLoginUserChoice(WebAppRegistrar* registrar,
   DCHECK(os_integration_manager);
   DCHECK(sync_bridge);
 
-  if (!registrar->IsInstalled(app_id)) {
+  if (!registrar->IsLocallyInstalled(app_id)) {
     MaybeCallTestingCallback(OsHooksErrors());
     return;
   }
@@ -106,6 +106,11 @@ void SyncRunOnOsLoginOsIntegrationState(
     const AppId& app_id) {
   DCHECK(registrar);
   DCHECK(os_integration_manager);
+
+  if (!registrar->IsLocallyInstalled(app_id)) {
+    return;
+  }
+
   RunOnOsLoginMode effective_mode =
       registrar->GetAppRunOnOsLoginMode(app_id).value;
   UpdateRunOnOsLoginOsIntegration(registrar, os_integration_manager, app_id,
