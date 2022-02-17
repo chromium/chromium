@@ -419,6 +419,7 @@ crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-appl
 crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/fborender/shared_colorbuffer_02.html [ Failure ]
 crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/fborender/shared_colorbuffer_clear.html [ Failure ]
 crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/fragdepth.html [ Failure ]
+crbug.com/1298619 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 
 ######################################################################
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
