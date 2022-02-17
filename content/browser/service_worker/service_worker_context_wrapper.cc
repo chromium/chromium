@@ -19,7 +19,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -1629,7 +1629,7 @@ void ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys(
   if (on_registrations_initialized_)
     std::move(on_registrations_initialized_).Run();
 
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  base::UmaHistogramMediumTimes(
       "ServiceWorker.Storage.RegisteredStorageKeyCacheInitialization.Time",
       base::TimeTicks::Now() - start_time);
 }

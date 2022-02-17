@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1609,8 +1608,9 @@ void ServiceWorkerStorage::ReadInitialDataFromDB(
   original_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(data), status));
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.Storage.ReadInitialDataFromDB.Time",
-                             base::TimeTicks::Now() - now);
+  base::UmaHistogramMediumTimes(
+      "ServiceWorker.Storage.ReadInitialDataFromDB.Time",
+      base::TimeTicks::Now() - now);
 }
 
 void ServiceWorkerStorage::DeleteRegistrationFromDB(
