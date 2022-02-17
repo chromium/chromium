@@ -160,6 +160,10 @@ extern const base::Feature kCryptohomeRecoveryFlow;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDemoModeSWA;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDeskTemplateSync;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDeviceActiveClient;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kDeviceActiveClientDailyCheckMembership;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kDeviceActiveClientMonthlyCheckMembership;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDiagnosticsApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDiagnosticsAppNavigation;

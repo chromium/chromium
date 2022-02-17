@@ -1394,6 +1394,18 @@ const base::Feature kWindowsFollowCursor{"WindowsFollowCursor",
 const base::Feature kDeviceActiveClient{"DeviceActiveClient",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables PSM CheckMembership for daily device active pings
+// on Chrome OS.
+const base::Feature kDeviceActiveClientDailyCheckMembership{
+    "DeviceActiveClientDailyCheckMembership",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables PSM CheckMembership for monthly device active pings
+// on Chrome OS.
+const base::Feature kDeviceActiveClientMonthlyCheckMembership{
+    "DeviceActiveClientMonthlyCheckMembership",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables whether to store UMA logs per-user and whether metrics
 // consent is per-user.
 const base::Feature kPerUserMetrics{"PerUserMetricsConsent",
