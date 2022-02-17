@@ -98,7 +98,7 @@ const char PhotosService::kLastSoftOptedOutTimePrefName[] =
 // static
 const base::TimeDelta PhotosService::kDismissDuration = base::Days(1);
 const base::TimeDelta PhotosService::kSoftOptOutDuration = base::Days(2);
-const int PhotosService::kMaxSoftOptOuts = 2;
+const int PhotosService::kMaxSoftOptOuts = 1;
 const char kRecentHighlightsTitle[] = "recent highlights";
 const char kNYearsAgoSubstring[] = "years ago";
 
