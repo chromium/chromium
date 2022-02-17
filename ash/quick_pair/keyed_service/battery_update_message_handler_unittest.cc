@@ -121,6 +121,11 @@ class BatteryUpdateMessageHandlerTest : public testing::Test {
             message_stream_lookup_.get());
   }
 
+  void TearDown() override {
+    fake_message_stream_lookup_->RemoveMessageStream(kTestDeviceAddress);
+    battery_update_message_handler_.reset();
+  }
+
   MockQuickPairProcessManager* mock_process_manager() {
     return static_cast<MockQuickPairProcessManager*>(process_manager_.get());
   }
