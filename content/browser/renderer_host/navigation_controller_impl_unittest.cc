@@ -3110,9 +3110,9 @@ TEST_F(NavigationControllerTest, CopyStateFrom) {
 
   other_controller.CopyStateFrom(&controller, /*needs_reload=*/true);
 
-  // After copying state, the new FrameTree's root is no longer marked as "on
-  // the initial empty document".
-  EXPECT_FALSE(
+  // After copying state, the new FrameTree's root is still marked as "on the
+  // initial empty document".
+  EXPECT_TRUE(
       other_controller.frame_tree().root()->is_on_initial_empty_document());
 
   // other_controller should now contain 2 urls.

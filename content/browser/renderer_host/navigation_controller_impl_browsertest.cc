@@ -20760,6 +20760,168 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 }
 #endif
 
+// Tests with InitialNavigationEntry enabled/disabled.
+class NavigationControllerInitialNavigationEntryBrowserTest
+    : public NavigationControllerBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          blink::features::kInitialNavigationEntry);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          blink::features::kInitialNavigationEntry);
+    }
+    NavigationControllerBrowserTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify that calling Restore() with a non-empty entry list on a new
+// NavigationController will not result in an initial NavigationEntry.
+// See https://crbug.com/1295723.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerInitialNavigationEntryBrowserTest,
+    RestoreRemovesInitialEmptyDocumentOnFreshNavigationController) {
+  GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+
+  // 1. Start in a tab with 1 NavigationEntry.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_EQ(url_1, root->current_url());
+
+  EXPECT_EQ(1, controller.GetEntryCount());
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+  NavigationEntryImpl* entry1 = controller.GetLastCommittedEntry();
+
+  // 2. Create a NavigationEntry with the same PageState as |entry1|.
+  std::unique_ptr<NavigationEntryImpl> restored_entry =
+      NavigationEntryImpl::FromNavigationEntry(
+          NavigationController::CreateNavigationEntry(
+              url_1, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD,
+              false, std::string(), controller.GetBrowserContext(),
+              nullptr /* blob_url_loader_factory */));
+  EXPECT_EQ(0U, restored_entry->root_node()->children.size());
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  restored_entry->SetPageState(entry1->GetPageState(), context.get());
+
+  // 3. Create a new tab and don't navigate it anywhere.
+  std::vector<std::unique_ptr<NavigationEntry>> entries;
+  entries.push_back(std::move(restored_entry));
+  Shell* new_shell = Shell::CreateNewWindow(
+      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  FrameTreeNode* new_root =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  NavigationControllerImpl& new_controller =
+      static_cast<NavigationControllerImpl&>(
+          new_shell->web_contents()->GetController());
+  // The new tab's root is on the initial NavigationEntry (if the flag is
+  // enabled) and is marked as "on initial empty document" as it hasn't
+  // navigated anywhere.
+  EXPECT_TRUE(new_root->is_on_initial_empty_document());
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    EXPECT_TRUE(new_controller.GetLastCommittedEntry()->IsInitialEntry());
+  } else {
+    EXPECT_EQ(0, new_controller.GetEntryCount());
+  }
+
+  // 4. Call Restore() with the entry from the old tab.
+  new_controller.Restore(entries.size() - 1, RestoreType::kRestored, &entries);
+  EXPECT_EQ(0u, entries.size());
+  EXPECT_EQ(1, new_controller.GetEntryCount());
+  // The new tab's root is no longer on the initial NavigationEntry but is still
+  // marked as "on initial empty document" after calling Restore().
+  EXPECT_TRUE(new_root->is_on_initial_empty_document());
+  EXPECT_FALSE(new_controller.GetLastCommittedEntry()->IsInitialEntry());
+
+  // 5. Navigate the new tab to another URL.
+  FrameNavigateParamsCapturer capturer(new_root);
+  EXPECT_TRUE(NavigateToURL(new_shell, url_2));
+  capturer.Wait();
+  // The navigation should append a new entry instead of replacing the restored
+  // entry (which is what it would've done if it was still on the
+  // initial NavigationEntry).
+  EXPECT_FALSE(capturer.did_replace_entry());
+  EXPECT_EQ(2, new_controller.GetEntryCount());
+  EXPECT_EQ(url_1, new_controller.GetEntryAtIndex(0)->GetURL());
+  EXPECT_EQ(url_2, new_controller.GetLastCommittedEntry()->GetURL());
+}
+
+// Verify that calling Restore with an empty set of entries on a fresh/unused
+// NavigationController does not crash, since this may be possible via Android
+// WebView's restoreState() API. See https://crbug.com/1287624.
+IN_PROC_BROWSER_TEST_P(NavigationControllerInitialNavigationEntryBrowserTest,
+                       RestoreEmptyAndLoadOnFreshNavigationController) {
+  // 1. Create a new tab with a new NavigationController, and don't navigate it
+  // anywhere.
+  Shell* new_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL::EmptyGURL(), nullptr, gfx::Size());
+  FrameTreeNode* new_root =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  NavigationControllerImpl& new_controller =
+      static_cast<NavigationControllerImpl&>(
+          new_shell->web_contents()->GetController());
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    // When InitialNavigationEntry is enabled, the new tab is on the initial
+    // NavigationEntry.
+    EXPECT_EQ(1, new_controller.GetEntryCount());
+    EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
+    EXPECT_TRUE(new_controller.GetLastCommittedEntry()->IsInitialEntry());
+  } else {
+    EXPECT_EQ(0, new_controller.GetEntryCount());
+    EXPECT_EQ(-1, new_controller.GetLastCommittedEntryIndex());
+  }
+
+  // 2. Restore an empty set of entries in the new tab, which is possible via
+  // Android WebView's restoreState API.
+  std::vector<std::unique_ptr<NavigationEntry>> entries;
+  new_controller.Restore(-1, RestoreType::kRestored, &entries);
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    // When InitialNavigationEntry is enabled, there is always a valid index,
+    // and the initial NavigationEntry is kept to ensure that there is always
+    // at least 1 entry.
+    EXPECT_EQ(1, new_controller.GetEntryCount());
+    EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
+    EXPECT_TRUE(new_controller.GetLastCommittedEntry()->IsInitialEntry());
+  } else {
+    EXPECT_EQ(0, new_controller.GetEntryCount());
+    EXPECT_EQ(-1, new_controller.GetLastCommittedEntryIndex());
+  }
+
+  // 3. Call LoadIfNecessary() in the new tab.
+  ASSERT_EQ(0u, entries.size());
+  new_controller.LoadIfNecessary();
+  // No navigation had started, as there's no non-initial NavigationEntry to
+  // load.
+  EXPECT_FALSE(new_root->navigation_request());
+  EXPECT_EQ(nullptr, new_controller.GetPendingEntry());
+
+  // 4. Navigate the new tab to another URL.
+  FrameNavigateParamsCapturer capturer(new_root);
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(new_shell, url));
+  capturer.Wait();
+  // The navigation should replace the initial NavigationEntry (if it existed).
+  EXPECT_EQ(blink::features::IsInitialNavigationEntryEnabled(),
+            capturer.did_replace_entry());
+  EXPECT_EQ(1, new_controller.GetEntryCount());
+  EXPECT_EQ(url, new_controller.GetLastCommittedEntry()->GetURL());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerAlertDialogBrowserTest,
@@ -20840,4 +21002,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
                      testing::Bool()),
     LoadDataWithBaseURLBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         NavigationControllerInitialNavigationEntryBrowserTest,
+                         testing::Bool());
 }  // namespace content
