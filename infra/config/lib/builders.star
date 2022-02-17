@@ -373,6 +373,7 @@ def builder(
         builder_group = args.DEFAULT,
         builder_spec = None,
         mirrors = None,
+        try_settings = None,
         pool = args.DEFAULT,
         ssd = args.DEFAULT,
         sheriff_rotations = None,
@@ -459,6 +460,8 @@ def builder(
             Cannot be set if `mirrors` is set.
         mirrors: References to the builders that the builder should mirror.
             Cannot be set if `builder_spec` is set.
+        try_settings: Try-builder-specific settings, can only be set if
+            `mirrors` is set.
         cores: an int indicating the number of cores the builder requires for
             the machines that run it. Emits a dimension of the form
             'cores:<cores>' will be emitted. By default, considered None.
@@ -568,6 +571,8 @@ def builder(
 
     if builder_spec and mirrors:
         fail("Only one of builder_spec or mirrors can be set")
+    if try_settings and not mirrors:
+        fail("try_settings can only be set if mirrors is set")
 
     dimensions = {}
 
@@ -749,7 +754,7 @@ def builder(
 
     register_recipe_experiments_ref(bucket, name, executable)
 
-    register_builder_config(bucket, name, builder_group, builder_spec, mirrors)
+    register_builder_config(bucket, name, builder_group, builder_spec, mirrors, try_settings)
 
     register_bootstrap(bucket, name, bootstrap, executable)
 
