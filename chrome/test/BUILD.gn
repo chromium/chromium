@@ -6825,6 +6825,7 @@ test("unit_tests") {
       "../browser/ui/app_list/search/open_tab_result_unittest.cc",
       "../browser/ui/app_list/search/ranking/answer_ranker_unittest.cc",
       "../browser/ui/app_list/search/ranking/best_match_ranker_unittest.cc",
+      "../browser/ui/app_list/search/ranking/filtering_ranker_unittest.cc",
       "../browser/ui/app_list/search/ranking/ftrl_ranker_unittest.cc",
       "../browser/ui/app_list/search/ranking/removed_results_ranker_unittest.cc",
       "../browser/ui/app_list/search/ranking/score_normalizing_ranker_unittest.cc",

@@ -22,6 +22,8 @@ class ThumbnailLoader;
 
 namespace app_list {
 
+// TODO(crbug.com/1258415): We should split this into four subclasses:
+// {drive,local} {zero-state,search}.
 class FileResult : public ChromeSearchResult {
  public:
   enum class Type { kFile, kDirectory, kSharedDirectory };
@@ -42,6 +44,7 @@ class FileResult : public ChromeSearchResult {
 
   // ChromeSearchResult overrides:
   void Open(int event_flags) override;
+  absl::optional<std::string> DriveId() const override;
 
   // Calculates file's match relevance score. Will return a default score if the
   // query is missing or the filename is empty.
@@ -58,6 +61,10 @@ class FileResult : public ChromeSearchResult {
   // justification string, eg. "You opened yesterday".
   void SetDetailsToJustificationString();
 
+  void set_drive_id(const absl::optional<std::string>& drive_id) {
+    drive_id_ = drive_id;
+  }
+
  private:
   // Callback for the result of MaybeRequestThumbnail's call to the
   // ThumbnailLoader.
@@ -71,6 +78,8 @@ class FileResult : public ChromeSearchResult {
   const base::FilePath filepath_;
   const Type type_;
   Profile* const profile_;
+
+  absl::optional<std::string> drive_id_;
 
   base::WeakPtrFactory<FileResult> weak_factory_{this};
 };

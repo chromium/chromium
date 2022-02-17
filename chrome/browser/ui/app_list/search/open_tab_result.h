@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class FaviconCache;
@@ -31,6 +32,7 @@ class OpenTabResult : public ChromeSearchResult {
 
   // ChromeSearchResult:
   void Open(int event_flags) override;
+  absl::optional<std::string> DriveId() const override;
 
  private:
   void UpdateRelevance(const chromeos::string_matching::TokenizedString& query);
@@ -42,6 +44,7 @@ class OpenTabResult : public ChromeSearchResult {
   AppListControllerDelegate* list_controller_;
   FaviconCache* favicon_cache_;
   AutocompleteMatch match_;
+  absl::optional<std::string> drive_id_;
 
   base::WeakPtrFactory<OpenTabResult> weak_factory_{this};
 };

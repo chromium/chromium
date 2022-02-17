@@ -50,4 +50,18 @@ TEST_F(OpenTabResultTest, Basic) {
   EXPECT_GT(result->relevance(), 0.8);
 }
 
+TEST_F(OpenTabResultTest, DriveId) {
+  EXPECT_EQ(
+      MakeResult("a", "b",
+                 "http://docs.google.com/document/d/abcdef/edit?query#fragment")
+          ->DriveId(),
+      "abcdef");
+  EXPECT_FALSE(
+      MakeResult("a", "b",
+                 "http://other.website/document/d/abcdef/edit?query#fragment")
+          ->DriveId());
+  EXPECT_FALSE(
+      MakeResult("a", "b", "http://docs.google.com/d/abcdef/edit")->DriveId());
+}
+
 }  // namespace app_list

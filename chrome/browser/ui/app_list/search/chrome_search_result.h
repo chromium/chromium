@@ -167,6 +167,9 @@ class ChromeSearchResult {
     dismiss_view_on_open_ = dismiss_view_on_open;
   }
 
+  // Maybe returns a Drive file ID for this result, if applicable.
+  virtual absl::optional<std::string> DriveId() const;
+
   // Invokes a custom action on the result. It does nothing by default.
   virtual void InvokeAction(ash::SearchResultActionType action);
 

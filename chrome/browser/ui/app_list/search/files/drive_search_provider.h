@@ -41,9 +41,11 @@ class DriveSearchProvider : public SearchProvider {
  private:
   void SetSearchResults(drive::FileError error,
                         std::vector<drivefs::mojom::QueryItemPtr> paths);
-  std::unique_ptr<FileResult> MakeResult(const base::FilePath& path,
-                                         double relevance,
-                                         FileResult::Type type);
+  std::unique_ptr<FileResult> MakeResult(
+      const base::FilePath& path,
+      double relevance,
+      FileResult::Type type,
+      const absl::optional<std::string>& drive_id);
 
   base::TimeTicks query_start_time_;
   std::u16string last_query_;

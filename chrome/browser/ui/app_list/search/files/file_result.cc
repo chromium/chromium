@@ -185,6 +185,10 @@ void FileResult::Open(int event_flags) {
   }
 }
 
+absl::optional<std::string> FileResult::DriveId() const {
+  return drive_id_;
+}
+
 // static
 double FileResult::CalculateRelevance(
     const absl::optional<TokenizedString>& query,

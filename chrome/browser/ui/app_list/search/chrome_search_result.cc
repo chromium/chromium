@@ -200,6 +200,10 @@ void ChromeSearchResult::SetSearchResultMetadata() {
     updater->SetSearchResultMetadata(id(), CloneMetadata());
 }
 
+absl::optional<std::string> ChromeSearchResult::DriveId() const {
+  return absl::nullopt;
+}
+
 void ChromeSearchResult::InvokeAction(ash::SearchResultActionType action) {}
 
 void ChromeSearchResult::OnVisibilityChanged(bool visibility) {

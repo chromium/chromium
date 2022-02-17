@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/open_tab_result.h"
 
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
@@ -31,6 +32,21 @@ constexpr char kOpenTabScheme[] = "opentab://";
 
 constexpr char16_t kUrlDelimiter[] = u" - ";
 
+absl::optional<std::string> GetDriveId(const GURL& url) {
+  if (url.host() != "docs.google.com")
+    return absl::nullopt;
+
+  std::string path = url.path();
+
+  const std::string kPathPrefix = "/document/d/";
+  if (!base::StartsWith(path, kPathPrefix))
+    return absl::nullopt;
+
+  std::string id = path.substr(kPathPrefix.size());
+  int suffix = id.find_first_of('/');
+  return id.substr(0, suffix);
+}
+
 }  // namespace
 
 OpenTabResult::OpenTabResult(Profile* profile,
@@ -41,10 +57,11 @@ OpenTabResult::OpenTabResult(Profile* profile,
     : profile_(profile),
       list_controller_(list_controller),
       favicon_cache_(favicon_cache),
-      match_(match) {
+      match_(match),
+      drive_id_(GetDriveId(match.destination_url)) {
   // TODO(crbug.com/1293702): This may not be unique. Once we have a mechanism
   // for opening a specific tab, add that info too to ensure uniqueness.
-  set_id(kOpenTabScheme + match_.stripped_destination_url.spec());
+  set_id(kOpenTabScheme + match.destination_url.spec());
 
   SetDisplayType(DisplayType::kList);
   SetResultType(ResultType::kOpenTab);
@@ -63,6 +80,10 @@ void OpenTabResult::Open(int event_flags) {
       profile_, match_.destination_url, match_.transition,
       ui::DispositionFromEventFlags(event_flags,
                                     WindowOpenDisposition::SWITCH_TO_TAB));
+}
+
+absl::optional<std::string> OpenTabResult::DriveId() const {
+  return drive_id_;
 }
 
 void OpenTabResult::UpdateRelevance(const TokenizedString& query) {

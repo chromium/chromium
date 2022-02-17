@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ui/app_list/search/app_list_search_test_helper.h"
+#include "chrome/browser/ui/app_list/search/files/file_result.h"
 
 namespace app_list {
 
@@ -60,7 +61,7 @@ INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
                          ::testing::Bool());
 
 // Test that Drive files can be searched.
-IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, DriveSearchTest) {
+IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FileSearch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =
@@ -81,7 +82,7 @@ IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, DriveSearchTest) {
 }
 
 // Test that Drive folders can be searched.
-IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, DriveFolderTest) {
+IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FolderSearch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =
@@ -101,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, DriveFolderTest) {
 }
 
 // Test that files are ordered based on modification time.
-IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, DriveFileResultOrdering) {
+IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, ResultOrdering) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   drive::DriveIntegrationService* drive_service =

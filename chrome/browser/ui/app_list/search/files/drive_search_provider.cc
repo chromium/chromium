@@ -17,6 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "url/gurl.h"
 
 namespace app_list {
 namespace {
@@ -39,6 +40,16 @@ enum class Status {
 
 void LogStatus(Status status) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppList.DriveSearchProvider.Status", status);
+}
+
+absl::optional<std::string> GetDriveId(
+    const drivefs::mojom::QueryItemPtr& item) {
+  const std::string kPrefix = "/document/d/";
+
+  std::string path = GURL(item->metadata->alternate_url).path();
+  if (base::StartsWith(path, kPrefix))
+    return path.substr(kPrefix.size());
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -114,10 +125,11 @@ void DriveSearchProvider::SetSearchResults(
       const auto type = item->metadata->shared
                             ? FileResult::Type::kSharedDirectory
                             : FileResult::Type::kDirectory;
-      results.emplace_back(MakeResult(item->path, relevance, type));
-    } else {
       results.emplace_back(
-          MakeResult(item->path, relevance, FileResult::Type::kFile));
+          MakeResult(item->path, relevance, type, GetDriveId(item)));
+    } else {
+      results.emplace_back(MakeResult(
+          item->path, relevance, FileResult::Type::kFile, GetDriveId(item)));
     }
   }
 
@@ -130,7 +142,8 @@ void DriveSearchProvider::SetSearchResults(
 std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
     const base::FilePath& path,
     double relevance,
-    FileResult::Type type) {
+    FileResult::Type type,
+    const absl::optional<std::string>& drive_id) {
   // Strip leading separators so that the path can be reparented.
   // TODO(crbug.com/1154513): Remove this step once the drive backend returns
   // results in relative path format.
@@ -149,11 +162,13 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
   std::u16string details =
       l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
 
-  return std::make_unique<FileResult>(
-      kDriveSearchSchema, reparented_path, details,
-      ash::AppListSearchResultType::kDriveSearch,
-      ash::SearchResultDisplayType::kList, relevance, last_query_, type,
-      profile_);
+  auto result =
+      std::make_unique<FileResult>(kDriveSearchSchema, reparented_path, details,
+                                   ash::AppListSearchResultType::kDriveSearch,
+                                   ash::SearchResultDisplayType::kList,
+                                   relevance, last_query_, type, profile_);
+  result->set_drive_id(drive_id);
+  return result;
 }
 
 }  // namespace app_list
