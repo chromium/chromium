@@ -20,7 +20,6 @@ void ApplyAshFontStyles(int context,
       break;
     case CONTEXT_SEARCH_RESULT_CATEGORY_LABEL:
       details.size_delta = 1;
-      details.typeface = "Google Sans";
       break;
     case CONTEXT_LAUNCHER_BUTTON:
     case CONTEXT_SHARESHEET_BUBBLE_BODY:
@@ -36,7 +35,6 @@ void ApplyAshFontStyles(int context,
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case CONTEXT_CALENDAR_LABEL:
-      details.typeface = "Google Sans";
       details.size_delta = 6;
       break;
     case CONTEXT_HEADLINE_OVERSIZED:
