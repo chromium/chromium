@@ -318,7 +318,7 @@ TEST_F(MediaRouterMojoImplTest, CreateRouteIncognitoMismatchFails) {
   std::string error(
       "Mismatch in OffTheRecord status: request = 1, response = 0");
   EXPECT_CALL(handler, DoInvoke(nullptr, "", error,
-                                RouteRequestResult::OFF_THE_RECORD_MISMATCH, _))
+                                RouteRequestResult::ROUTE_NOT_FOUND, _))
       .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
   router()->CreateRoute(kSource, kSinkId, url::Origin::Create(GURL(kOrigin)),
                         nullptr,
@@ -327,48 +327,7 @@ TEST_F(MediaRouterMojoImplTest, CreateRouteIncognitoMismatchFails) {
                         base::Milliseconds(kTimeoutMillis), true);
   run_loop.Run();
   ExpectCastResultBucketCount("CreateRoute",
-                              RouteRequestResult::OFF_THE_RECORD_MISMATCH, 1);
-}
-
-TEST_F(MediaRouterMojoImplTest, IncognitoRoutesTerminatedOnProfileShutdown) {
-  MediaRoute route = CreateMediaRoute();
-  route.set_off_the_record(true);
-  ProvideTestSink(mojom::MediaRouteProviderId::CAST, kSinkId);
-
-  EXPECT_CALL(mock_cast_provider_,
-              CreateRouteInternal(
-                  kSource, kSinkId, _, url::Origin::Create(GURL(kOrigin)),
-                  kInvalidTabId, base::Milliseconds(kTimeoutMillis), true, _))
-      .WillOnce(
-          Invoke([&route](const std::string& source, const std::string& sink,
-                          const std::string& presentation_id,
-                          const url::Origin& origin, int tab_id,
-                          base::TimeDelta timeout, bool off_the_record,
-                          mojom::MediaRouteProvider::CreateRouteCallback& cb) {
-            std::move(cb).Run(route, nullptr, std::string(),
-                              RouteRequestResult::OK);
-          }));
-  base::RunLoop run_loop;
-  router()->CreateRoute(kSource, kSinkId, url::Origin::Create(GURL(kOrigin)),
-                        nullptr, base::DoNothing(),
-                        base::Milliseconds(kTimeoutMillis), true);
-  const std::vector<MediaRoute> routes{route};
-  UpdateRoutes(mojom::MediaRouteProviderId::CAST, routes);
-
-  // TODO(mfoltz): Where possible, convert other tests to use RunUntilIdle
-  // instead of manually calling Run/Quit on the run loop.
-  run_loop.RunUntilIdle();
-
-  EXPECT_CALL(mock_cast_provider_, TerminateRouteInternal(kRouteId, _))
-      .WillOnce(
-          Invoke([](const std::string& route_id,
-                    mojom::MediaRouteProvider::TerminateRouteCallback& cb) {
-            std::move(cb).Run(absl::nullopt, RouteRequestResult::OK);
-          }));
-
-  base::RunLoop run_loop2;
-  router()->OnIncognitoProfileShutdown();
-  run_loop2.RunUntilIdle();
+                              RouteRequestResult::ROUTE_NOT_FOUND, 1);
 }
 
 TEST_F(MediaRouterMojoImplTest, JoinRoute) {
@@ -456,7 +415,7 @@ TEST_F(MediaRouterMojoImplTest, JoinRouteIncognitoMismatchFails) {
   std::string error(
       "Mismatch in OffTheRecord status: request = 1, response = 0");
   EXPECT_CALL(handler, DoInvoke(nullptr, "", error,
-                                RouteRequestResult::OFF_THE_RECORD_MISMATCH, _))
+                                RouteRequestResult::ROUTE_NOT_FOUND, _))
       .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
   router()->JoinRoute(kSource, kPresentationId,
                       url::Origin::Create(GURL(kOrigin)), nullptr,
@@ -464,8 +423,8 @@ TEST_F(MediaRouterMojoImplTest, JoinRouteIncognitoMismatchFails) {
                                      base::Unretained(&handler)),
                       base::Milliseconds(kTimeoutMillis), true);
   run_loop.Run();
-  ExpectCastResultBucketCount("JoinRoute",
-                              RouteRequestResult::OFF_THE_RECORD_MISMATCH, 1);
+  ExpectCastResultBucketCount("JoinRoute", RouteRequestResult::ROUTE_NOT_FOUND,
+                              1);
 }
 
 TEST_F(MediaRouterMojoImplTest, DetachRoute) {

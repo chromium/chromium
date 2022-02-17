@@ -147,10 +147,6 @@ class MediaRouter : public KeyedService {
       const MediaRoute::Id& route_id,
       const content::PresentationConnectionStateChangedCallback& callback) = 0;
 
-  // Called when the incognito profile for this instance is being shut down.
-  // This will terminate all incognito media routes.
-  virtual void OnIncognitoProfileShutdown() = 0;
-
   // Returns the media routes that currently exist. To get notified whenever
   // there is a change to the media routes, subclass MediaRoutesObserver.
   virtual std::vector<MediaRoute> GetCurrentRoutes() const = 0;

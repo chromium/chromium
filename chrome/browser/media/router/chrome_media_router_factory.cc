@@ -80,17 +80,4 @@ KeyedService* ChromeMediaRouterFactory::BuildServiceInstanceFor(
   return media_router;
 }
 
-void ChromeMediaRouterFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  // Notify the MediaRouter (which uses the normal/base proflie) of incognito
-  // profile shutdown.
-  if (context->IsOffTheRecord()) {
-    MediaRouter* router =
-        static_cast<MediaRouter*>(GetServiceForBrowserContext(context, false));
-    if (router)
-      router->OnIncognitoProfileShutdown();
-  }
-  BrowserContextKeyedServiceFactory::BrowserContextShutdown(context);
-}
-
 }  // namespace media_router

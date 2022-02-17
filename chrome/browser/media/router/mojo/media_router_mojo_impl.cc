@@ -195,8 +195,8 @@ void MediaRouterMojoImpl::RouteResponseReceived(
     std::string error = base::StringPrintf(
         "Mismatch in OffTheRecord status: request = %d, response = %d",
         is_off_the_record, media_route->is_off_the_record());
-    result = RouteRequestResult::FromError(
-        error, RouteRequestResult::OFF_THE_RECORD_MISMATCH);
+    result = RouteRequestResult::FromError(error,
+                                           RouteRequestResult::ROUTE_NOT_FOUND);
   } else {
     result = RouteRequestResult::FromSuccess(*media_route, presentation_id);
     OnRouteAdded(provider_id, *media_route);

@@ -307,12 +307,6 @@ void CastActivityManager::JoinSession(
     return;
   }
 
-  // TODO(crbug.com/1291723): Check whether |activity| is from an OffTheRecord
-  // route, maybe report INCOGNITO_MISMATCH, or remove INCOGNITO_MISMATCH from
-  // RouteRequestResult::ResultCode.  The check is currently performed inside
-  // CanJoinSession(), and the behavior is consistent with the old
-  // implementation, which never reports an INCOGNITO_MISMATCH error.
-
   const MediaSinkInternal* sink =
       media_sink_service_->GetSinkById(activity->route().media_sink_id());
   if (!sink) {

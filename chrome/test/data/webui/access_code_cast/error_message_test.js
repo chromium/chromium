@@ -57,7 +57,7 @@ suite('ErrorMessageElementTest', () => {
       {castResult: RouteRequestResultCode.SINK_NOT_FOUND, expectedMessage: 3},
       {castResult: RouteRequestResultCode.INVALID_ORIGIN, expectedMessage: 1},
       {
-        castResult: RouteRequestResultCode.OFF_THE_RECORD_MISMATCH,
+        castResult: RouteRequestResultCode.DEPRECATED_OFF_THE_RECORD_MISMATCH,
         expectedMessage: 1
       },
       {

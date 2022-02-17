@@ -33,10 +33,6 @@ class MockMediaRouterBase : public MockMediaRouter {
         route_id, callback);
   }
 
-  void OnIncognitoProfileShutdown() override {
-    MediaRouterBase::OnIncognitoProfileShutdown();
-  }
-
   std::vector<MediaRoute> GetCurrentRoutes() const override {
     return MediaRouterBase::GetCurrentRoutes();
   }

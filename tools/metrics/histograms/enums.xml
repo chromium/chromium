@@ -59651,7 +59651,7 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="RouteNotFound"/>
   <int value="4" label="SinkNotFound"/>
   <int value="5" label="InvalidOrigin"/>
-  <int value="6" label="OffTheRecordMismatch"/>
+  <int value="6" label="OffTheRecordMismatch (Deprecated 14-Feb-2022)"/>
   <int value="7" label="NoSupportedProvider"/>
   <int value="8" label="Cancelled"/>
   <int value="9" label="RouteAlreadyExists"/>

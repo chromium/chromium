@@ -54,26 +54,32 @@ export class ErrorMessageElement extends PolymerElement {
 
   private static readonly CAST_RESULT_MESSAGE_CODES:
       [ErrorMessage, RouteRequestResultCode[]][] = [
-    [ErrorMessage.NO_ERROR, [RouteRequestResultCode.OK]],
-    [ErrorMessage.GENERIC, [
-      RouteRequestResultCode.UNKNOWN_ERROR,
-      RouteRequestResultCode.INVALID_ORIGIN,
-      RouteRequestResultCode.OFF_THE_RECORD_MISMATCH,
-      RouteRequestResultCode.NO_SUPPORTED_PROVIDER,
-      RouteRequestResultCode.CANCELLED,
-      RouteRequestResultCode.ROUTE_ALREADY_EXISTS,
-      RouteRequestResultCode.DESKTOP_PICKER_FAILED,
-      RouteRequestResultCode.ROUTE_ALREADY_TERMINATED
-    ]],
-    [ErrorMessage.NETWORK, [
-      RouteRequestResultCode.TIMED_OUT,
-      RouteRequestResultCode.ROUTE_NOT_FOUND,
-      RouteRequestResultCode.SINK_NOT_FOUND
-    ]],
-  ];
+        [ErrorMessage.NO_ERROR, [RouteRequestResultCode.OK]],
+        [
+          ErrorMessage.GENERIC,
+          [
+            RouteRequestResultCode.UNKNOWN_ERROR,
+            RouteRequestResultCode.INVALID_ORIGIN,
+            RouteRequestResultCode.DEPRECATED_OFF_THE_RECORD_MISMATCH,
+            RouteRequestResultCode.NO_SUPPORTED_PROVIDER,
+            RouteRequestResultCode.CANCELLED,
+            RouteRequestResultCode.ROUTE_ALREADY_EXISTS,
+            RouteRequestResultCode.DESKTOP_PICKER_FAILED,
+            RouteRequestResultCode.ROUTE_ALREADY_TERMINATED
+          ]
+        ],
+        [
+          ErrorMessage.NETWORK,
+          [
+            RouteRequestResultCode.TIMED_OUT,
+            RouteRequestResultCode.ROUTE_NOT_FOUND,
+            RouteRequestResultCode.SINK_NOT_FOUND
+          ]
+        ],
+      ];
 
-  private static readonly ADD_RESULT_MESSAGE_MAP = 
-        new Map(ErrorMessageElement.ADD_RESULT_MESSAGE_CODES);
+  private static readonly ADD_RESULT_MESSAGE_MAP =
+      new Map(ErrorMessageElement.ADD_RESULT_MESSAGE_CODES);
 
   private static readonly CAST_RESULT_MESSAGE_MAP =
         new Map(ErrorMessageElement.CAST_RESULT_MESSAGE_CODES);

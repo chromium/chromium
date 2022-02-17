@@ -41,7 +41,6 @@ class MediaRouterBase : public MediaRouter {
       const MediaRoute::Id& route_id,
       const content::PresentationConnectionStateChangedCallback& callback)
       override;
-  void OnIncognitoProfileShutdown() override;
   IssueManager* GetIssueManager() final;
   std::vector<MediaRoute> GetCurrentRoutes() const override;
   std::unique_ptr<media::FlingingController> GetFlingingController(
