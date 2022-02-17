@@ -34,9 +34,6 @@ TEST(HistoryClustersUtilTest, ComputeURLForDeduping) {
 
 TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
   std::vector<history::Cluster> all_clusters;
-  // This first cluster with keywords is marked hidden on sensitive UI
-  // surfaces. This test thus verifies that it's hidden in the zero-query
-  // state, but the user can still get to it by searching for its keywords.
   all_clusters.push_back(
       history::Cluster(0,
                        {
@@ -58,9 +55,10 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
     const bool expect_first_cluster;
     const bool expect_second_cluster;
   } test_data[] = {
-      // Empty query should get only the second, because the first is marked
-      // hidden on prominent UI surfaces, including the zero query state.
-      {"", false, true},
+      // Empty query should get both clusters, even the non-prominent one,
+      // because this function only filters for query, and ignores whether the
+      // cluster is prominent or not.
+      {"", true, true},
       // Non matching query should get none.
       {"non_matching_query", false, false},
       // Query matching one cluster.
@@ -87,8 +85,8 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
                                     static_cast<int>(i),
                                     test_data[i].query.c_str()));
 
-    auto clusters =
-        FilterClustersMatchingQuery(test_data[i].query, all_clusters);
+    auto clusters = all_clusters;
+    FilterClustersMatchingQuery(test_data[i].query, &clusters);
 
     size_t expected_size =
         static_cast<size_t>(test_data[i].expect_first_cluster) +

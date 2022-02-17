@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 
 namespace history_clusters {
 
@@ -91,6 +92,8 @@ history::ClusterVisit GetHardcodedClusterVisit(history::VisitID visit_id) {
     history::ClusterVisit cluster_visit;
     cluster_visit.annotated_visit = visit;
     cluster_visit.normalized_url = visit.url_row.url();
+    cluster_visit.url_for_deduping =
+        ComputeURLForDeduping(cluster_visit.normalized_url);
     cluster_visit.score = 0.5;
     return cluster_visit;
   }

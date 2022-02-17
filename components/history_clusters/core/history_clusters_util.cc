@@ -83,21 +83,11 @@ GURL ComputeURLForDeduping(const GURL& url) {
   return url_for_deduping;
 }
 
-std::vector<history::Cluster> FilterClustersMatchingQuery(
-    std::string query,
-    std::vector<history::Cluster> clusters) {
-  if (query.empty()) {
-    // For the empty-query state, only show clusters with
-    // `should_show_on_prominent_ui_surfaces` set to true. This restriction is
-    // NOT applied when the user is searching for a specific keyword.
-    clusters.erase(base::ranges::remove_if(
-                       clusters,
-                       [](const history::Cluster& cluster) {
-                         return !cluster.should_show_on_prominent_ui_surfaces;
-                       }),
-                   clusters.end());
-    return clusters;
-  }
+void FilterClustersMatchingQuery(std::string query,
+                                 std::vector<history::Cluster>* clusters) {
+  DCHECK(clusters);
+  if (query.empty())
+    return;
 
   // Extract query nodes from the query string.
   query_parser::QueryNodeVector find_nodes;
@@ -105,13 +95,48 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
       base::UTF8ToUTF16(query),
       query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH, &find_nodes);
 
-  clusters.erase(base::ranges::remove_if(
-                     clusters,
-                     [&find_nodes](const history::Cluster& cluster) {
-                       return !DoesQueryMatchCluster(find_nodes, cluster);
-                     }),
-                 clusters.end());
-  return clusters;
+  clusters->erase(base::ranges::remove_if(
+                      *clusters,
+                      [&find_nodes](const history::Cluster& cluster) {
+                        return !DoesQueryMatchCluster(find_nodes, cluster);
+                      }),
+                  clusters->end());
+}
+
+void CullNonProminentOrDuplicateClusters(
+    std::string query,
+    std::vector<history::Cluster>* clusters,
+    std::set<GURL>* seen_single_visit_cluster_urls) {
+  DCHECK(clusters);
+  DCHECK(seen_single_visit_cluster_urls);
+  if (query.empty()) {
+    // For the empty-query state, only show clusters with
+    // `should_show_on_prominent_ui_surfaces` set to true. This restriction is
+    // NOT applied when the user is searching for a specific keyword.
+    clusters->erase(base::ranges::remove_if(
+                        *clusters,
+                        [](const history::Cluster& cluster) {
+                          return !cluster.should_show_on_prominent_ui_surfaces;
+                        }),
+                    clusters->end());
+  } else {
+    clusters->erase(base::ranges::remove_if(
+                        *clusters,
+                        [&](const history::Cluster& cluster) {
+                          // Erase all duplicate single-visit non-prominent
+                          // clusters.
+                          if (!cluster.should_show_on_prominent_ui_surfaces &&
+                              cluster.visits.size() == 1) {
+                            auto [unused_iterator, newly_inserted] =
+                                seen_single_visit_cluster_urls->insert(
+                                    cluster.visits[0].url_for_deduping);
+                            return !newly_inserted;
+                          }
+
+                          return false;
+                        }),
+                    clusters->end());
+  }
 }
 
 }  // namespace history_clusters

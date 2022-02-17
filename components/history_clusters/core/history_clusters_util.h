@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_UTIL_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_UTIL_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -20,12 +21,21 @@ namespace history_clusters {
 // should be separately canonicalized by TemplateURLService and not sent here.
 GURL ComputeURLForDeduping(const GURL& url);
 
-// Filter `clusters` matching `query`. There are additional filters (e.g.
-// `max_time`) used when requesting `QueryClusters()`, but this function is only
-// responsible for matching `query`.
-std::vector<history::Cluster> FilterClustersMatchingQuery(
+// Erases all clusters that don't match `query`. If `query` is an empty string,
+// leaves `clusters` unmodified.
+void FilterClustersMatchingQuery(std::string query,
+                                 std::vector<history::Cluster>* clusters);
+
+// If `query` is empty, erases all non-prominent clusters.
+//
+// If `query` is non-empty, we assume that the user is searching for something,
+// so we only cull duplicate occurrences of single-visit non-prominent clusters.
+// The set of single-visit clusters we've already seen is tracked by
+// `seen_single_visit_cluster_urls` and this function updates that set.
+void CullNonProminentOrDuplicateClusters(
     std::string query,
-    std::vector<history::Cluster> clusters);
+    std::vector<history::Cluster>* clusters,
+    std::set<GURL>* seen_single_visit_cluster_urls);
 
 }  // namespace history_clusters
 

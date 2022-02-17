@@ -53,7 +53,7 @@ class QueryClustersState {
   void LoadNextBatchOfClusters(ResultCallback callback);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(QueryClustersStateTest, PostProcessingOccurs);
+  friend class QueryClustersStateTest;
 
   // Private class containing state that's only accessed on
   // `post_processing_task_runner`.

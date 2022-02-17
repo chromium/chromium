@@ -4,11 +4,14 @@
 
 #include "components/history_clusters/core/query_clusters_state.h"
 
+#include <set>
+
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_util.h"
+#include "url/gurl.h"
 
 namespace history_clusters {
 
@@ -27,8 +30,10 @@ class QueryClustersState::PostProcessor
 
   std::vector<history::Cluster> PostProcess(
       std::vector<history::Cluster> clusters) {
-    // TODO(tommycli): Implement de-duplication of single-visit clusters here.
-    return FilterClustersMatchingQuery(query_, std::move(clusters));
+    FilterClustersMatchingQuery(query_, &clusters);
+    CullNonProminentOrDuplicateClusters(query_, &clusters,
+                                        &seen_single_visit_cluster_urls_);
+    return clusters;
   }
 
  private:
@@ -39,6 +44,9 @@ class QueryClustersState::PostProcessor
   ~PostProcessor() = default;
 
   const std::string query_;
+
+  // URLs of single-visit non-prominent clusters we've already seen.
+  std::set<GURL> seen_single_visit_cluster_urls_;
 };
 
 QueryClustersState::QueryClustersState(
