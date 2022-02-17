@@ -292,8 +292,8 @@ message TelemetryData {
   optional NetworksTelemetry networks_telemetry = 1;
   // Audio telemetry data.
   optional AudioTelemetry audio_telemetry = 2;
-  // Usb telemetry data
-  repeated UsbTelemetry usb_telemetry = 3;
+  // Peripherals telemetry data
+  optional PeripheralsTelemetry peripherals_telemetry = 3;
   // Boot Performance telemetry data.
   optional BootPerformanceTelemetry boot_performance_telemetry = 4;
 }
@@ -308,6 +308,10 @@ enum MetricEventType {
   USB_REMOVED = 6;
 }
 
+message PeripheralsTelemetry {
+  repeated UsbTelemetry usb_telemetry = 1;
+}
+
 message UsbTelemetry {
   // Vendor name
   optional string vendor = 1;
@@ -317,7 +321,7 @@ message UsbTelemetry {
   optional int32 vid = 3;
   // Product ID
   optional int32 pid = 4;
-  // List of names of USB categories the device falls under
+  // Categories the device belongs to
   // https://www.usb.org/defined-class-codes
   repeated string categories = 5;
   // Class ID

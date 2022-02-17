@@ -18,7 +18,9 @@ UsbEventsObserver::~UsbEventsObserver() = default;
 void UsbEventsObserver::OnAdd(UsbEventInfoPtr info) {
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(MetricEventType::USB_ADDED);
-  FillUsbTelemetry(metric_data.mutable_telemetry_data()->add_usb_telemetry(),
+  FillUsbTelemetry(metric_data.mutable_telemetry_data()
+                       ->mutable_peripherals_telemetry()
+                       ->add_usb_telemetry(),
                    std::move(info));
   OnEventObserved(std::move(metric_data));
 }
@@ -26,7 +28,9 @@ void UsbEventsObserver::OnAdd(UsbEventInfoPtr info) {
 void UsbEventsObserver::OnRemove(UsbEventInfoPtr info) {
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(MetricEventType::USB_REMOVED);
-  FillUsbTelemetry(metric_data.mutable_telemetry_data()->add_usb_telemetry(),
+  FillUsbTelemetry(metric_data.mutable_telemetry_data()
+                       ->mutable_peripherals_telemetry()
+                       ->add_usb_telemetry(),
                    std::move(info));
   OnEventObserved(std::move(metric_data));
 }

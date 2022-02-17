@@ -249,13 +249,17 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetryMultipleEntries) {
                   CrosHealthdMetricSampler::MetricType::kTelemetry);
 
   ASSERT_TRUE(result.has_telemetry_data());
-  ASSERT_EQ(result.telemetry_data().usb_telemetry_size(),
-            kExpectedUsbTelemetrySize);
+  ASSERT_TRUE(result.telemetry_data().has_peripherals_telemetry());
+  ASSERT_EQ(
+      result.telemetry_data().peripherals_telemetry().usb_telemetry_size(),
+      kExpectedUsbTelemetrySize);
 
   UsbTelemetry usb_telemetry_first =
-      result.telemetry_data().usb_telemetry(kIndexOfFirstUsbTelemetry);
+      result.telemetry_data().peripherals_telemetry().usb_telemetry(
+          kIndexOfFirstUsbTelemetry);
   UsbTelemetry usb_telemetry_second =
-      result.telemetry_data().usb_telemetry(kIndexOfSecondUsbTelemetry);
+      result.telemetry_data().peripherals_telemetry().usb_telemetry(
+          kIndexOfSecondUsbTelemetry);
 
   EXPECT_EQ(usb_telemetry_first.class_id(), kClassId);
   EXPECT_EQ(usb_telemetry_first.subclass_id(), kSubclassId);
@@ -302,11 +306,13 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
                   CrosHealthdMetricSampler::MetricType::kTelemetry);
 
   ASSERT_TRUE(result.has_telemetry_data());
-  ASSERT_EQ(result.telemetry_data().usb_telemetry_size(),
-            kExpectedUsbTelemetrySize);
+  ASSERT_EQ(
+      result.telemetry_data().peripherals_telemetry().usb_telemetry_size(),
+      kExpectedUsbTelemetrySize);
 
   UsbTelemetry usb_telemetry =
-      result.telemetry_data().usb_telemetry(kIndexOfUsbTelemetry);
+      result.telemetry_data().peripherals_telemetry().usb_telemetry(
+          kIndexOfUsbTelemetry);
 
   EXPECT_EQ(usb_telemetry.class_id(), kClassId);
   EXPECT_EQ(usb_telemetry.subclass_id(), kSubclassId);

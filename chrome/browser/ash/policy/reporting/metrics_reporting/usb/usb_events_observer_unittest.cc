@@ -77,11 +77,13 @@ TEST_F(UsbEventsObserverTest, UsbOnRemove) {
   usb_observer.OnRemove(std::move(test_usb_event_info));
 
   UsbTelemetry usb_telemetry =
-      metric_data.telemetry_data().usb_telemetry(kIndexOfUsbTelemetry);
+      metric_data.telemetry_data().peripherals_telemetry().usb_telemetry(
+          kIndexOfUsbTelemetry);
 
   ASSERT_TRUE(metric_data.has_event_data());
-  ASSERT_EQ(metric_data.telemetry_data().usb_telemetry_size(),
-            kExpectedUsbTelemetrySize);
+  ASSERT_EQ(
+      metric_data.telemetry_data().peripherals_telemetry().usb_telemetry_size(),
+      kExpectedUsbTelemetrySize);
 
   EXPECT_TRUE(usb_telemetry.has_name());
   EXPECT_TRUE(usb_telemetry.has_pid());
@@ -113,11 +115,13 @@ TEST_F(UsbEventsObserverTest, UsbOnAdd) {
   usb_observer.OnAdd(std::move(test_usb_event_info));
 
   UsbTelemetry usb_telemetry =
-      metric_data.telemetry_data().usb_telemetry().at(kIndexOfUsbTelemetry);
+      metric_data.telemetry_data().peripherals_telemetry().usb_telemetry().at(
+          kIndexOfUsbTelemetry);
 
   ASSERT_TRUE(metric_data.has_event_data());
-  ASSERT_EQ(metric_data.telemetry_data().usb_telemetry_size(),
-            kExpectedUsbTelemetrySize);
+  ASSERT_EQ(
+      metric_data.telemetry_data().peripherals_telemetry().usb_telemetry_size(),
+      kExpectedUsbTelemetrySize);
 
   EXPECT_TRUE(usb_telemetry.has_name());
   EXPECT_TRUE(usb_telemetry.has_pid());
@@ -150,11 +154,13 @@ TEST_F(UsbEventsObserverTest, UsbOnAddUsingFakeCrosHealthdClient) {
   const auto metric_data = result_metric_data.result();
 
   UsbTelemetry usb_telemetry =
-      metric_data.telemetry_data().usb_telemetry(kIndexOfUsbTelemetry);
+      metric_data.telemetry_data().peripherals_telemetry().usb_telemetry(
+          kIndexOfUsbTelemetry);
 
   ASSERT_TRUE(metric_data.has_event_data());
-  ASSERT_EQ(metric_data.telemetry_data().usb_telemetry_size(),
-            kExpectedUsbTelemetrySize);
+  ASSERT_EQ(
+      metric_data.telemetry_data().peripherals_telemetry().usb_telemetry_size(),
+      kExpectedUsbTelemetrySize);
   EXPECT_TRUE(usb_telemetry.has_name());
   EXPECT_TRUE(usb_telemetry.has_pid());
   EXPECT_TRUE(usb_telemetry.has_vendor());
