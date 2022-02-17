@@ -1925,24 +1925,30 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self.regularTabsDelegate selectItemWithID:itemID];
     // Record when a regular tab is opened.
     base::RecordAction(base::UserMetricsAction("MobileTabGridOpenRegularTab"));
+    if (self.tabGridMode == TabGridModeSearch) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabGridOpenRegularTabSearchResult"));
+    }
   } else if (gridViewController == self.incognitoTabsViewController) {
     alreadySelected = [self.incognitoTabsDelegate isItemWithIDSelected:itemID];
     [self.incognitoTabsDelegate selectItemWithID:itemID];
     // Record when an incognito tab is opened.
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridOpenIncognitoTab"));
+    if (self.tabGridMode == TabGridModeSearch) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabGridOpenIncognitoTabSearchResult"));
+    }
   }
 
-  if (IsTabsSearchEnabled()) {
-    // TODO(crbug.com/1297859): Log selecting tabs as a result of search.
-    if (self.tabGridMode == TabGridModeSearch &&
-        [self.regularTabsDelegate isItemWithIDSelected:itemID]) {
-      // That can happen when the search result that was selected is from
-      // another window. In that case don't change the active page for this
-      // window and don't close the tab grid.
-      // TODO(crbug.com/1297859): Log selecting tabs from other windows.
-      return;
-    }
+  if (IsTabsSearchEnabled() && self.tabGridMode == TabGridModeSearch &&
+      [self.regularTabsDelegate isItemWithIDSelected:itemID]) {
+    // That can happen when the search result that was selected is from
+    // another window. In that case don't change the active page for this
+    // window and don't close the tab grid.
+    base::RecordAction(base::UserMetricsAction(
+        "MobileTabGridOpenSearchResultInAnotherWindow"));
+    return;
   }
   self.activePage = self.currentPage;
   // When the tab grid is peeked, selecting an item should not close the grid

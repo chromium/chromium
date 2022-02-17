@@ -34,6 +34,8 @@ const char kTabGridAddToActionsHistogram[] =
     "Mobile.ContextMenu.TabGridAddTo.Actions";
 const char kTabGridEditActionsHistogram[] =
     "Mobile.ContextMenu.TabGridEdit.Actions";
+const char kTabGridSearchResultHistogram[] =
+    "Mobile.ContextMenu.TabGridSearchResult.Actions";
 const char KContextMenuImageActionsHistogram[] =
     "Mobile.ContextMenu.WebImage.Actions";
 const char KContextMenuImageLinkActionsHistogram[] =
@@ -76,6 +78,8 @@ const char* GetActionsHistogramName(MenuScenario scenario) {
       return kTabGridAddToActionsHistogram;
     case MenuScenario::kTabGridEdit:
       return kTabGridEditActionsHistogram;
+    case MenuScenario::kTabGridSearchResult:
+      return kTabGridSearchResultHistogram;
     case MenuScenario::kToolbarMenu:
       return kToolbarMenuActionsHistogram;
   }

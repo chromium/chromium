@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
+#import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -486,7 +487,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
-  return [self.menuProvider contextMenuConfigurationForGridCell:cell];
+  MenuScenario scenario = _mode == TabGridModeSearch
+                              ? MenuScenario::kTabGridSearchResult
+                              : MenuScenario::kTabGridEntry;
+  return [self.menuProvider contextMenuConfigurationForGridCell:cell
+                                                   menuScenario:scenario];
 }
 
 - (UICollectionViewTransitionLayout*)
@@ -687,6 +692,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Record when a tab is closed via the X.
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseControlTapped"));
+  if (_mode == TabGridModeSearch) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridCloseControlTappedDuringSearch"));
+  }
 }
 
 #pragma mark - IncognitoReauthConsumer

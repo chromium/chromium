@@ -11,7 +11,6 @@
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
-#import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
@@ -62,8 +61,9 @@
   }
 }
 
-- (UIContextMenuConfiguration*)contextMenuConfigurationForGridCell:
-    (GridCell*)gridCell {
+- (UIContextMenuConfiguration*)
+    contextMenuConfigurationForGridCell:(GridCell*)gridCell
+                           menuScenario:(MenuScenario)scenario {
   __weak __typeof(self) weakSelf = self;
 
   UIContextMenuActionProvider actionProvider =
@@ -75,7 +75,7 @@
         }
 
         NSArray<UIMenuElement*>* menuElements =
-            [strongSelf menuElementsForGridCell:gridCell];
+            [strongSelf menuElementsForGridCell:gridCell menuScenario:scenario];
         return [UIMenu menuWithTitle:@"" children:menuElements];
       };
 
@@ -85,12 +85,13 @@
                                                actionProvider:actionProvider];
 }
 
-- (NSArray<UIMenuElement*>*)menuElementsForGridCell:(GridCell*)gridCell {
+- (NSArray<UIMenuElement*>*)menuElementsForGridCell:(GridCell*)gridCell
+                                       menuScenario:(MenuScenario)scenario {
   // Record that this context menu was shown to the user.
-  RecordMenuShown(MenuScenario::kTabGridEntry);
+  RecordMenuShown(scenario);
 
   ActionFactory* actionFactory =
-      [[ActionFactory alloc] initWithScenario:MenuScenario::kTabGridEntry];
+      [[ActionFactory alloc] initWithScenario:scenario];
 
   GridItem* item = [self.actionsDataSource
       gridItemForCellIdentifier:gridCell.itemIdentifier];

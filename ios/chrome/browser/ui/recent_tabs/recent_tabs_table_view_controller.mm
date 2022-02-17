@@ -1503,6 +1503,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                               &toLoad)) {
     base::RecordAction(base::UserMetricsAction(
         "MobileRecentTabManagerTabFromOtherDeviceOpened"));
+    if (IsTabsSearchEnabled() && self.searchTerms.length) {
+      base::RecordAction(base::UserMetricsAction(
+          "MobileRecentTabManagerTabFromOtherDeviceOpenedSearchResult"));
+    }
     new_tab_page_uma::RecordAction(
         self.browserState, self.webStateList->GetActiveWebState(),
         new_tab_page_uma::ACTION_OPENED_FOREIGN_SESSION);
@@ -1539,6 +1543,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   base::RecordAction(
       base::UserMetricsAction("MobileRecentTabManagerRecentTabOpened"));
+  if (IsTabsSearchEnabled() && self.searchTerms.length) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileRecentTabManagerRecentTabOpenedSearchResult"));
+  }
   new_tab_page_uma::RecordAction(
       self.browserState, self.webStateList->GetActiveWebState(),
       new_tab_page_uma::ACTION_OPENED_RECENTLY_CLOSED_ENTRY);
