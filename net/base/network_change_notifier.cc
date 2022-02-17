@@ -11,6 +11,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -980,8 +981,11 @@ void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
 void NetworkChangeNotifier::NotifyObserversOfConnectionCostChange() {
   if (g_network_change_notifier &&
       !NetworkChangeNotifier::test_notifications_only_) {
+    NetworkChangeNotifier::ConnectionCost connection_cost = GetConnectionCost();
+    base::UmaHistogramEnumeration("Net.NetworkChangeNotifier.GetConnectionCost",
+                                  connection_cost, CONNECTION_COST_LAST);
     g_network_change_notifier->NotifyObserversOfConnectionCostChangeImpl(
-        GetConnectionCost());
+        connection_cost);
   }
 }
 

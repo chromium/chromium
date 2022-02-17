@@ -107,10 +107,13 @@ class NET_EXPORT NetworkChangeNotifier {
     SUBTYPE_LAST = SUBTYPE_WIFI_AD
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum ConnectionCost {
     CONNECTION_COST_UNKNOWN = 0,
     CONNECTION_COST_UNMETERED,
     CONNECTION_COST_METERED,
+    CONNECTION_COST_LAST = CONNECTION_COST_METERED
   };
 
   // DEPRECATED. Please use NetworkChangeObserver instead. crbug.com/754695.

@@ -64373,6 +64373,12 @@ Called by update_net_trust_anchors.py.-->
              pending"/>
 </enum>
 
+<enum name="NetworkConnectionCost">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Unmetered"/>
+  <int value="2" label="Metered"/>
+</enum>
+
 <enum name="NetworkConnectionIPType">
   <int value="0" label="IPv4"/>
   <int value="1" label="IPv6"/>
