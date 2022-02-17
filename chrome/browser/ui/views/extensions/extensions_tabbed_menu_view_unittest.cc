@@ -923,6 +923,32 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   }
 }
 
+TEST_F(ExtensionsTabbedMenuViewUnitTest,
+       SiteAccessTab_SiteSettingsButtonOpensSiteSettingsView) {
+  // Load an extension with all urls permissions so the site access settings can
+  // be accessed.
+  InstallExtensionWithHostPermissions("all_urls", {"<all_urls>"});
+
+  // Navigate to a url where the extension should have access to, and open the
+  // site access tab.
+  const GURL url("http://www.a.com");
+  web_contents_tester()->NavigateAndCommit(url);
+  WaitForAnimation();
+  ShowSiteAccessTabInMenu();
+
+  // Verify the site settings are hidden by default
+  auto* site_settings = extensions_tabbed_menu()->GetSiteSettingsForTesting();
+  EXPECT_FALSE(site_settings->GetVisible());
+
+  // Verify clicking the site settings button displays the site settings.
+  ClickButton(extensions_tabbed_menu()->GetSiteSettingsButtonForTesting());
+  EXPECT_TRUE(site_settings->GetVisible());
+
+  // Verify clicking again the site settings button hides the site settings.
+  ClickButton(extensions_tabbed_menu()->GetSiteSettingsButtonForTesting());
+  EXPECT_FALSE(site_settings->GetVisible());
+}
+
 TEST_F(ExtensionsTabbedMenuViewUnitTest, WindowTitle) {
   InstallExtension("Test Extension");
 

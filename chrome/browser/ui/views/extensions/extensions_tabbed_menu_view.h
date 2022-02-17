@@ -22,6 +22,7 @@ class TabbedPane;
 
 class ExtensionsMenuItemView;
 class ExtensionsContainer;
+class SiteSettingsExpandButton;
 
 // ExtensionsTabbedMenuView is the extensions menu dialog with a tabbed pane.
 // TODO(crbug.com/1263311): Brief explanation of each tabs goal after
@@ -76,6 +77,14 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
   // Returns the currently-showing `discover_more_button_` in the extensions
   // tab, if any exists.
   HoverButton* GetDiscoverMoreButtonForTesting() const;
+
+  // Returns the currently-showing `site_settings_button_` in the site access
+  // tab, if any exists.
+  HoverButton* GetSiteSettingsButtonForTesting() const;
+
+  // Returns the currently-showing `site_settings_` in the site access
+  // tab, if any exists.
+  views::View* GetSiteSettingsForTesting() const;
 
   // Returns the index of the currently selected tab.
   size_t GetSelectedTabIndex() const;
@@ -156,6 +165,10 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
   SiteAccessSection* GetSectionForSiteInteraction(
       extensions::SitePermissionsHelper::SiteInteraction site_interaction);
 
+  // Shows or hides the site setting options when `site_settings_button_` is
+  // pressed.
+  void OnSiteSettingsButtonPressed();
+
   // Runs a set of consistency checks on the appearance of the menu. This is a
   // no-op if DCHECKs are disabled.
   void ConsistencyCheck();
@@ -177,6 +190,15 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
 
   // The button used to open the webstore page in the extensions tab.
   HoverButton* discover_more_button_ = nullptr;
+
+  // The button used to open the site settings in the site access tab.
+  raw_ptr<SiteSettingsExpandButton> site_settings_button_ = nullptr;
+
+  // The view containing the site settings in the site access tab.
+  raw_ptr<views::View> site_settings_ = nullptr;
+
+  // The visibility of the site settings view. By default, it is not visible.
+  bool show_site_settings_ = false;
 
   // The different sections in the site access tab.
   SiteAccessSection requests_access_;

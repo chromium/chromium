@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/site_settings_expand_button.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -33,14 +35,21 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/radio_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
 namespace {
+
+// Site access settings group id for the radio buttons.
+constexpr int kGroupId = 1;
+
 ExtensionsTabbedMenuView* g_extensions_dialog = nullptr;
 
 // Adds a new tab in `tabbed_pane` at `index` with the given `contents` and
@@ -248,6 +257,14 @@ HoverButton* ExtensionsTabbedMenuView::GetDiscoverMoreButtonForTesting() const {
   return discover_more_button_;
 }
 
+HoverButton* ExtensionsTabbedMenuView::GetSiteSettingsButtonForTesting() const {
+  return site_settings_button_;
+}
+
+views::View* ExtensionsTabbedMenuView::GetSiteSettingsForTesting() const {
+  return site_settings_;
+}
+
 size_t ExtensionsTabbedMenuView::GetSelectedTabIndex() const {
   return tabbed_pane_->GetSelectedTabIndex();
 }
@@ -395,6 +412,8 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
                                             ->GetLastCommittedURL()
                                             .host());
 
+  // Create the site access items divided in requests access and has access
+  // sections.
   auto create_section =
       [current_site](ExtensionsTabbedMenuView::SiteAccessSection* section) {
         auto section_container = std::make_unique<views::View>();
@@ -436,10 +455,59 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
   site_access_items->AddChildView(create_section(&requests_access_));
   site_access_items->AddChildView(create_section(&has_access_));
 
-  auto site_access_tab_footer = std::make_unique<views::View>();
+  // Create the site access footer with site settings and a button that opens
+  // them.
+  auto site_access_footer =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .Build();
+
+  // The following bind is safe because the button will be owned by the parent
+  // views and therefore callback can only happen if the button exists and can
+  // be clicked.
+  auto site_settings_button =
+      std::make_unique<SiteSettingsExpandButton>(base::BindRepeating(
+          &ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed,
+          base::Unretained(this)));
+
+  auto site_settings =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetVisible(show_site_settings_)
+          .Build();
+
+  const auto create_radio_button = [](std::u16string label) {
+    auto radio_button = std::make_unique<views::RadioButton>(label, kGroupId);
+    // TODO(crbug.com/1263310): Add callback. Differentiate between types with a
+    // SiteSettings enum.
+    return radio_button;
+  };
+
+  site_settings->AddChildView(create_radio_button(l10n_util::GetStringFUTF16(
+      IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_ALLOW_ALL_TEXT,
+      current_site)));
+  site_settings->AddChildView(create_radio_button(l10n_util::GetStringFUTF16(
+      IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_BLOCK_ALL_TEXT,
+      current_site)));
+  site_settings->AddChildView(create_radio_button(l10n_util::GetStringUTF16(
+      IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_CUSTOMIZE_EACH_TEXT)));
+
+  site_settings_button_ =
+      site_access_footer->AddChildView(std::move(site_settings_button));
+  site_settings_ = site_access_footer->AddChildView(std::move(site_settings));
 
   CreateTab(tabbed_pane_, 0, IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_TITLE,
-            std::move(site_access_items), std::move(site_access_tab_footer));
+            std::move(site_access_items), std::move(site_access_footer));
+}
+
+void ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed() {
+  show_site_settings_ = !show_site_settings_;
+
+  site_settings_button_->SetIcon(show_site_settings_);
+  site_settings_->SetVisible(show_site_settings_);
+
+  // Resize the menu according to the site settings visibility.
+  SizeToContents();
 }
 
 void ExtensionsTabbedMenuView::CreateExtensionsTab() {
