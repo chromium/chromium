@@ -14,6 +14,18 @@
     android:background="@color/ntp_bg_incognito"
     tools:ignore="UnusedResources">
 
+    <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+        android:id="@+id/incognito_reauth_menu_button"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="24dp"
+        android:background="@null"
+        android:layout_gravity="top"
+        android:layout_height="48dp"
+        android:layout_width="48dp"
+        app:srcCompat="@drawable/ic_more_vert_24dp_on_dark_bg"
+        app:menuMaxWidth="@dimen/list_menu_width"
+        style="@style/ToolbarButton"/>
+
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/incognito_reauth_icon"
         android:layout_centerHorizontal="true"
