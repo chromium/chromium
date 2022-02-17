@@ -6,7 +6,6 @@
 
   #performUpdateButton {
     border-color: var(--google-blue-600);
-    border-radius: 12px;
   }
 </style>
 
@@ -34,8 +33,9 @@
     <p id="networkUnavailable" hidden$="[[networkAvailable]]">
       [[i18n('onboardingUpdateConnectToInternet')]]
     </p>
-    <cr-button id="performUpdateButton" disabled="[[allButtonsDisabled]]"
-        hidden$="[[!updateAvailable_]]" on-click="onUpdateButtonClicked_">
+    <cr-button id="performUpdateButton"
+        disabled="[[allButtonsDisabled]]" hidden$="[[!updateAvailable_]]"
+        on-click="onUpdateButtonClicked_">
         [[updateVersionText_]]
       <iron-icon id="restartIcon" icon="shimless-icon:update"
           class="small-icon">

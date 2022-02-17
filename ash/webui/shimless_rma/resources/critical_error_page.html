@@ -9,14 +9,7 @@
     position: absolute;
   }
 
-  #exitToLoginButton {
-    border-color: var(--google-blue-600);
-    border-radius: 12px;
-  }
-
   #rebootButton {
-    border-color: var(--google-blue-600);
-    border-radius: 12px;
     margin-inline-end: 8px;
   }
 </style>
@@ -29,11 +22,12 @@
     <div class="instructions">[[i18n('criticalErrorMessageText')]]</div>
     <div id="writeProtectStatus">[[statusString_]]</div>
     <div id="navigationButtonWrapper">
-      <cr-button id="rebootButton" on-click="onRebootButtonClicked_"
-          disabled="[[allButtonsDisabled]]">
+      <cr-button id="rebootButton" class="action-button"
+          on-click="onRebootButtonClicked_" disabled="[[allButtonsDisabled]]">
         [[i18n('criticalErrorRebootText')]]
       </cr-button>
-      <cr-button id="exitToLoginButton" on-click="onExitToLoginButtonClicked_"
+      <cr-button id="exitToLoginButton"
+          on-click="onExitToLoginButtonClicked_"
           disabled="[[allButtonsDisabled]]">
         [[i18n('criticalErrorExitText')]]
       </cr-button>

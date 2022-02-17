@@ -24,10 +24,6 @@
     text-align: end;
   }
 
-  cr-button {
-    border-radius: 15px;
-  }
-
   #back {
     border: 0;
     height: 80px;
@@ -106,7 +102,7 @@
       </paper-spinner-lite>
     </cr-button>
     <cr-button
-      id="next" on-click="onNextButtonClicked_"
+      id="next" class="action-button" on-click="onNextButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonNext, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonNext)]]">
       <span id="nextButtonLabel">
