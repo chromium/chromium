@@ -59,6 +59,11 @@ RemoteWebAuthnNativeMessagingHost::RemoteWebAuthnNativeMessagingHost(
 
 RemoteWebAuthnNativeMessagingHost::~RemoteWebAuthnNativeMessagingHost() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+
+  if (!id_to_request_canceller_.empty()) {
+    LOG(WARNING) << id_to_request_canceller_.size()
+                 << "Requests are still pending at destruction.";
+  }
 }
 
 void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
@@ -476,7 +481,9 @@ void RemoteWebAuthnNativeMessagingHost::RemoveRequestCancellerByMessageId(
     request_cancellers_.Remove(it->second);
     id_to_request_canceller_.erase(it);
   } else {
-    LOG(WARNING) << "Cannot find receiver for message ID " << message_id;
+    // This may happen, say if the request canceller is disconnected before the
+    // create/get response is received, so we just verbose-log it.
+    VLOG(1) << "Cannot find receiver for message ID " << message_id;
   }
 }
 
