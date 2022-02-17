@@ -728,6 +728,11 @@ gfx::Size Combobox::GetContentSize() const {
         item_width +=
             icon_skia.width() + LayoutProvider::Get()->GetDistanceMetric(
                                     DISTANCE_RELATED_LABEL_HORIZONTAL);
+        if (MenuConfig::instance().check_selected_combobox_item) {
+          item_width +=
+              kMenuCheckSize + LayoutProvider::Get()->GetDistanceMetric(
+                                   DISTANCE_RELATED_BUTTON_HORIZONTAL);
+        }
         height = std::max(height, icon_skia.height());
       }
       width = std::max(width, item_width);
