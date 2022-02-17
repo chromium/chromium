@@ -293,10 +293,13 @@ ExtensionDownloaderTask::ExtensionDownloaderTask(
   DCHECK(this->version.IsValid());
 }
 
+ExtensionDownloaderTask::ExtensionDownloaderTask(ExtensionDownloaderTask&&) =
+    default;
+ExtensionDownloaderTask& ExtensionDownloaderTask::operator=(
+    ExtensionDownloaderTask&&) = default;
 ExtensionDownloaderTask::~ExtensionDownloaderTask() = default;
 
-bool ExtensionDownloader::AddPendingExtension(
-    const ExtensionDownloaderTask& task) {
+bool ExtensionDownloader::AddPendingExtension(ExtensionDownloaderTask task) {
   ExtraParams extra;
   if (task.is_corrupt_reinstall)
     extra.is_corrupt_reinstall = true;
@@ -305,9 +308,7 @@ bool ExtensionDownloader::AddPendingExtension(
 
   delegate_->OnExtensionDownloadStageChanged(
       task.id, ExtensionDownloaderDelegate::Stage::PENDING);
-  return AddExtensionData(task.id, task.version, task.type,
-                          task.install_location, task.update_url, extra,
-                          task.request_id, task.fetch_priority);
+  return AddExtensionData(task, extra);
 }
 
 void ExtensionDownloader::StartAllPending(ExtensionCache* cache) {
@@ -382,22 +383,15 @@ void ExtensionDownloader::UpdateURLStats(const GURL& update_url,
   }
 }
 
-bool ExtensionDownloader::AddExtensionData(
-    const std::string& id,
-    const base::Version& version,
-    Manifest::Type extension_type,
-    mojom::ManifestLocation extension_location,
-    const GURL& extension_update_url,
-    const ExtraParams& extra,
-    int request_id,
-    ManifestFetchData::FetchPriority fetch_priority) {
-  GURL update_url(extension_update_url);
+bool ExtensionDownloader::AddExtensionData(const ExtensionDownloaderTask& task,
+                                           const ExtraParams& extra) {
+  GURL update_url(task.update_url);
   // Skip extensions with non-empty invalid update URLs.
   if (!update_url.is_empty() && !update_url.is_valid()) {
-    DLOG(WARNING) << "Extension " << id << " has invalid update url "
+    DLOG(WARNING) << "Extension " << task.id << " has invalid update url "
                   << update_url;
     delegate_->OnExtensionDownloadStageChanged(
-        id, ExtensionDownloaderDelegate::Stage::FINISHED);
+        task.id, ExtensionDownloaderDelegate::Stage::FINISHED);
     return false;
   }
 
@@ -407,14 +401,14 @@ bool ExtensionDownloader::AddExtensionData(
     update_url = extension_urls::GetWebstoreUpdateUrl();
 
   // Skip extensions with empty IDs.
-  if (id.empty()) {
+  if (task.id.empty()) {
     DLOG(WARNING) << "Found extension with empty ID";
     delegate_->OnExtensionDownloadStageChanged(
-        id, ExtensionDownloaderDelegate::Stage::FINISHED);
+        task.id, ExtensionDownloaderDelegate::Stage::FINISHED);
     return false;
   }
 
-  UpdateURLStats(update_url, extension_type);
+  UpdateURLStats(update_url, task.type);
   if (update_url.is_empty()) {
     // Fill in default update URL.
     update_url = extension_urls::GetWebstoreUpdateUrl();
@@ -430,39 +424,41 @@ bool ExtensionDownloader::AddExtensionData(
     install_source = kReinstallInstallSource;
 
   ManifestFetchData::PingData ping_data;
-  ManifestFetchData::PingData* optional_ping_data = NULL;
-  if (delegate_->GetPingDataForExtension(id, &ping_data))
+  ManifestFetchData::PingData* optional_ping_data = nullptr;
+  if (delegate_->GetPingDataForExtension(task.id, &ping_data))
     optional_ping_data = &ping_data;
 
   // Find or create a ManifestFetchData to add this extension to.
   bool added = false;
   bool is_new_extension_force_installed =
-      extension_location == mojom::ManifestLocation::kExternalPolicyDownload;
-  FetchDataGroupKey key(request_id, update_url,
+      task.install_location == mojom::ManifestLocation::kExternalPolicyDownload;
+  FetchDataGroupKey key(task.request_id, update_url,
                         is_new_extension_force_installed);
   auto existing_iter = fetches_preparing_.find(key);
   if (existing_iter != fetches_preparing_.end() &&
       !existing_iter->second.empty()) {
     // Try to add to the ManifestFetchData at the end of the list.
     ManifestFetchData* existing_fetch = existing_iter->second.back().get();
-    if (existing_fetch->AddExtension(
-            id, version.GetString(), optional_ping_data, extra.update_url_data,
-            install_source, extension_location, fetch_priority)) {
+    if (existing_fetch->AddExtension(task.id, task.version.GetString(),
+                                     optional_ping_data, extra.update_url_data,
+                                     install_source, task.install_location,
+                                     task.fetch_priority)) {
       added = true;
     }
   }
   if (!added) {
     // Otherwise add a new element to the list, if the list doesn't exist or
     // if its last element is already full.
-    std::unique_ptr<ManifestFetchData> fetch(
-        CreateManifestFetchData(update_url, request_id, fetch_priority));
+    std::unique_ptr<ManifestFetchData> fetch(CreateManifestFetchData(
+        update_url, task.request_id, task.fetch_priority));
     ManifestFetchData* fetch_ptr = fetch.get();
     if (is_new_extension_force_installed)
       fetch_ptr->set_is_all_external_policy_download();
     fetches_preparing_[key].push_back(std::move(fetch));
-    added = fetch_ptr->AddExtension(id, version.GetString(), optional_ping_data,
-                                    extra.update_url_data, install_source,
-                                    extension_location, fetch_priority);
+    added = fetch_ptr->AddExtension(task.id, task.version.GetString(),
+                                    optional_ping_data, extra.update_url_data,
+                                    install_source, task.install_location,
+                                    task.fetch_priority);
     DCHECK(added);
   }
 

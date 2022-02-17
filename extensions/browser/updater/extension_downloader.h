@@ -82,6 +82,10 @@ struct ExtensionDownloaderTask {
                           bool is_corrupt_reinstall,
                           int request_id,
                           ManifestFetchData::FetchPriority fetch_priority);
+
+  ExtensionDownloaderTask(ExtensionDownloaderTask&&);
+  ExtensionDownloaderTask& operator=(ExtensionDownloaderTask&&);
+
   ~ExtensionDownloaderTask();
 
   std::string id;
@@ -145,7 +149,7 @@ class ExtensionDownloader {
   // In that case, no callbacks will be performed on the |delegate_|. See
   // ExtensionDownloaderTask's description for more details and available
   // parameter.
-  bool AddPendingExtension(const ExtensionDownloaderTask& task);
+  bool AddPendingExtension(ExtensionDownloaderTask task);
 
   // Schedules a fetch of the manifest of all the extensions added with
   // AddExtension() and AddPendingExtension().
@@ -292,14 +296,8 @@ class ExtensionDownloader {
   void UpdateURLStats(const GURL& update_url, Manifest::Type extension_type);
 
   // Helper for AddExtension() and AddPendingExtension().
-  bool AddExtensionData(const std::string& id,
-                        const base::Version& version,
-                        Manifest::Type extension_type,
-                        mojom::ManifestLocation extension_location,
-                        const GURL& extension_update_url,
-                        const ExtraParams& extra,
-                        int request_id,
-                        ManifestFetchData::FetchPriority fetch_priority);
+  bool AddExtensionData(const ExtensionDownloaderTask& task,
+                        const ExtraParams& extra);
 
   // Adds all recorded stats taken so far to histogram counts.
   void ReportStats() const;
