@@ -1366,6 +1366,8 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
   if (existing_change_type == kNoStyleChange)
     MarkAncestorsWithChildNeedsStyleRecalc();
 
+  // NOTE: If we are being called from SetNeedsAnimationStyleRecalc(), the
+  // AnimationStyleChange bit may be reset to 'true'.
   if (auto* this_element = DynamicTo<Element>(this))
     this_element->SetAnimationStyleChange(false);
 
