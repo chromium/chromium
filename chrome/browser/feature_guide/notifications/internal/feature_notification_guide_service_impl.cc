@@ -66,6 +66,8 @@ void FeatureNotificationGuideServiceImpl::OnSchedulerInitialized(
     const std::set<std::string>& guids) {
   scheduled_feature_guids_ = guids;
 
+  VLOG(1) << __func__ << ": number of notifications scheduled: " << guids.size()
+          << ", config.featues_size: " << config_.enabled_features.size();
   tracker_->AddOnInitializedCallback(
       base::BindOnce(&FeatureNotificationGuideServiceImpl::OnTrackerInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -133,6 +135,7 @@ void FeatureNotificationGuideServiceImpl::CloseRedundantNotifications() {
 }
 
 void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures() {
+  VLOG(1) << __func__ << ": is_low_engaged_user=" << is_low_engaged_user_;
   bool schedule_immediately = true;
   for (auto feature : config_.enabled_features) {
     std::string guid = delegate_->GetNotificationParamGuidForFeature(feature);
@@ -148,6 +151,8 @@ void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures() {
 #if BUILDFLAG(IS_ANDROID)
     if (!tracker_->WouldTriggerHelpUI(
             GetNotificationIphFeatureForFeature(feature))) {
+      VLOG(0) << __func__ << ": didn't meet trigger criteria for feature="
+              << static_cast<int>(feature);
       continue;
     }
 #endif
@@ -166,6 +171,7 @@ void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures() {
 void FeatureNotificationGuideServiceImpl::ScheduleNotification(
     FeatureType feature,
     bool schedule_immediately) {
+  VLOG(1) << __func__ << ": feature=" << static_cast<int>(feature);
   notifications::NotificationData data;
   data.title = delegate_->GetNotificationTitle(feature);
   data.message = delegate_->GetNotificationMessage(feature);
@@ -195,6 +201,7 @@ void FeatureNotificationGuideServiceImpl::BeforeShowNotification(
     std::unique_ptr<notifications::NotificationData> notification_data,
     NotificationDataCallback callback) {
   FeatureType feature = FeatureFromCustomData(notification_data->custom_data);
+  VLOG(1) << __func__ << ": checking feature=" << static_cast<int>(feature);
   DCHECK(feature != FeatureType::kInvalid);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -204,6 +211,8 @@ void FeatureNotificationGuideServiceImpl::BeforeShowNotification(
     return;
   }
 #endif
+
+  VLOG(1) << __func__ << ": triggering feature " << static_cast<int>(feature);
   std::move(callback).Run(config_.feature_notification_tracking_only
                               ? nullptr
                               : std::move(notification_data));
