@@ -638,6 +638,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Handle dbus callback for GetSystemNoiseCancellationSupported.
   void HandleGetNoiseCancellationSupported(
+      OnNoiseCancellationSupportedCallback callback,
       absl::optional<bool> system_noise_cancellation_supported);
 
   // Handle dbus callback for GetSystemAecSupported.
