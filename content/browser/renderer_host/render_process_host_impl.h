@@ -42,6 +42,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-forward.h"
+#include "media/mojo/mojom/webrtc_video_perf.mojom-forward.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -585,6 +586,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void BindVideoDecodePerfHistory(
       mojo::PendingReceiver<media::mojom::VideoDecodePerfHistory> receiver)
       override;
+
+  // Binds |receiver| to the WebrtcVideoPerfHistory instance owned by the render
+  // process host, and is used by workers via BrowserInterfaceBroker.
+  void BindWebrtcVideoPerfHistory(
+      mojo::PendingReceiver<media::mojom::WebrtcVideoPerfHistory> receiver);
 
   // Binds `receiever` to the `PushMessagingManager` instance owned by the
   // render process host, and is used by workers via `BrowserInterfaceBroker`.
