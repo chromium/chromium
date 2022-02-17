@@ -1568,9 +1568,15 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
   // The combination of the `FPDF_REVERSE_BYTE_ORDER` rendering flag and the
   // `FPDFBitmap_BGRA` format when initializing `fpdf_bitmap` results in an RGBA
   // rendering, which is the format required by HTML <canvas>.
+  constexpr int kRenderingFlags = FPDF_ANNOT | FPDF_REVERSE_BYTE_ORDER;
   FPDF_RenderPageBitmap(fpdf_bitmap.get(), GetPage(), /*start_x=*/0,
                         /*start_y=*/0, image_size.width(), image_size.height(),
-                        /*rotate=*/0, FPDF_ANNOT | FPDF_REVERSE_BYTE_ORDER);
+                        /*rotate=*/0, kRenderingFlags);
+
+  // Draw the forms.
+  FPDF_FFLDraw(engine_->form(), fpdf_bitmap.get(), GetPage(), /*start_x=*/0,
+               /*start_y=*/0, image_size.width(), image_size.height(),
+               /*rotate=*/0, kRenderingFlags);
 
   return thumbnail;
 }

@@ -1,0 +1,52 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Annots [4 0 R]
+  /MediaBox [0 0 100 100]
+  /Parent 2 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Sig
+  /AP <<
+    /N 5 0 R
+  >>
+  /P 3 0 R
+  /Rect [40 50 60 70]
+  /T (Button)
+>>
+endobj
+{{object 5 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /FormType 1
+  /BBox [0 0 20 20]
+  /Resources <<
+    /ProcSet [/PDF]
+  >>
+  {{streamlen}}
+>>
+stream
+q
+1 0 0 rg
+0 0 20 20 re f
+Q
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

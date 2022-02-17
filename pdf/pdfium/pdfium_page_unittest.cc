@@ -821,4 +821,17 @@ TEST_F(PDFiumPageThumbnailTest, GenerateThumbnail) {
   }
 }
 
+// For crbug.com/1248455
+TEST_F(PDFiumPageThumbnailTest, GenerateThumbnailForAnnotation) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("signature_widget.pdf"));
+  TestGenerateThumbnail(*engine, /*page_index=*/0, /*device_pixel_ratio=*/1,
+                        /*expected_thumbnail_size=*/{140, 140},
+                        "signature_widget");
+  TestGenerateThumbnail(*engine, /*page_index=*/0, /*device_pixel_ratio=*/2,
+                        /*expected_thumbnail_size=*/{255, 255},
+                        "signature_widget");
+}
+
 }  // namespace chrome_pdf

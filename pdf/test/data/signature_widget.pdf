@@ -1,0 +1,64 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Annots [4 0 R]
+  /MediaBox [0 0 100 100]
+  /Parent 2 0 R
+>>
+endobj
+4 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Sig
+  /AP <<
+    /N 5 0 R
+  >>
+  /P 3 0 R
+  /Rect [40 50 60 70]
+  /T (Button)
+>>
+endobj
+5 0 obj <<
+  /Type /XObject
+  /Subtype /Form
+  /FormType 1
+  /BBox [0 0 20 20]
+  /Resources <<
+    /ProcSet [/PDF]
+  >>
+  /Length 28
+>>
+stream
+q
+1 0 0 rg
+0 0 20 20 re f
+Q
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000131 00000 n 
+0000000226 00000 n 
+0000000366 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 6
+>>
+startxref
+554
+%%EOF
