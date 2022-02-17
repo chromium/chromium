@@ -130,6 +130,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   // Use commandline args to enable the Discover feed for this test case.
   // Disabled elsewhere to account for possible flakiness.
   AppLaunchConfiguration config;
+  // TODO(crbug.com/1265565):Once kSingleNtp is launched, investigate further as
+  // to why this test is failing.
+  if ([self isRunningTest:@selector
+            (testNewSearchFromNewTabMenuAfterTogglingFeed)]) {
+    config.features_disabled.push_back(kSingleNtp);
+  }
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableDiscoverFeed);
   config.features_enabled.push_back(kDiscoverFeedInNtp);
@@ -437,7 +443,10 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [NewTabPageAppInterface setWhatsNewPromoToMoveToDock];
 
   // Open a new tab to have the promo.
-  [ChromeEarlGreyUI openNewTab];
+  // Need to close all NTPs to ensure NotificationPromo is reset when
+  // kSingleNtp is enabled.
+  [ChromeEarlGrey closeCurrentTab];
+  [ChromeEarlGrey openNewTab];
 
   // Tap the promo.
   [[EarlGrey

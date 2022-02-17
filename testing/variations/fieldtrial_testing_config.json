@@ -5400,6 +5400,21 @@
             ]
         }
     ],
+    "RemoveExcessNTPs": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RemoveExcessNTPs"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReportCertificateErrors": [
         {
             "platforms": [
@@ -5809,6 +5824,21 @@
                     "name": "SingleCellContentSuggestions",
                     "enable_features": [
                         "SingleCellContentSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SingleNTP": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SingleNTP"
                     ]
                 }
             ]
