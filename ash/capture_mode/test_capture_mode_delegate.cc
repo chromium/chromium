@@ -37,6 +37,8 @@ TestCaptureModeDelegate::TestCaptureModeDelegate()
   DCHECK(created_dir);
   created_dir = fake_android_files_path_.CreateUniqueTempDir();
   DCHECK(created_dir);
+  created_dir = fake_linux_files_path_.CreateUniqueTempDir();
+  DCHECK(created_dir);
 }
 
 TestCaptureModeDelegate::~TestCaptureModeDelegate() = default;
@@ -155,6 +157,10 @@ bool TestCaptureModeDelegate::GetDriveFsMountPointPath(
 
 base::FilePath TestCaptureModeDelegate::GetAndroidFilesPath() const {
   return fake_android_files_path_.GetPath();
+}
+
+base::FilePath TestCaptureModeDelegate::GetLinuxFilesPath() const {
+  return fake_linux_files_path_.GetPath();
 }
 
 std::unique_ptr<RecordingOverlayView>

@@ -717,6 +717,10 @@ bool CaptureModeController::IsAndroidFilesPath(
   return path == delegate_->GetAndroidFilesPath();
 }
 
+bool CaptureModeController::IsLinuxFilesPath(const base::FilePath& path) const {
+  return path == delegate_->GetLinuxFilesPath();
+}
+
 aura::Window* CaptureModeController::GetCameraPreviewParentWindow() const {
   // Trying to get camera preview's parent from `video_recording_watcher_` first
   // if a video recording is in progress. As a capture session can be started

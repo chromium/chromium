@@ -101,6 +101,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void OnServiceRemoteReset() override;
   bool GetDriveFsMountPointPath(base::FilePath* result) const override;
   base::FilePath GetAndroidFilesPath() const override;
+  base::FilePath GetLinuxFilesPath() const override;
   std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView()
       const override;
   void ConnectToVideoSourceProvider(
@@ -119,6 +120,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool should_save_after_dlp_check_ = true;
   base::ScopedTempDir fake_drive_fs_mount_path_;
   base::ScopedTempDir fake_android_files_path_;
+  base::ScopedTempDir fake_linux_files_path_;
   int64_t fake_drive_fs_free_bytes_ = std::numeric_limits<int64_t>::max();
 };
 

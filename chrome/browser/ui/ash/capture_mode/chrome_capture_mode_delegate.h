@@ -8,6 +8,7 @@
 #include "ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "components/drive/file_errors.h"
 
@@ -63,6 +64,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void OnServiceRemoteReset() override;
   bool GetDriveFsMountPointPath(base::FilePath* path) const override;
   base::FilePath GetAndroidFilesPath() const override;
+  base::FilePath GetLinuxFilesPath() const override;
   std::unique_ptr<ash::RecordingOverlayView> CreateRecordingOverlayView()
       const override;
   void ConnectToVideoSourceProvider(

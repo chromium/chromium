@@ -221,6 +221,11 @@ base::FilePath ChromeCaptureModeDelegate::GetAndroidFilesPath() const {
   return file_manager::util::GetAndroidFilesPath();
 }
 
+base::FilePath ChromeCaptureModeDelegate::GetLinuxFilesPath() const {
+  return file_manager::util::GetCrostiniMountDirectory(
+      ProfileManager::GetActiveUserProfile());
+}
+
 std::unique_ptr<ash::RecordingOverlayView>
 ChromeCaptureModeDelegate::CreateRecordingOverlayView() const {
   return std::make_unique<RecordingOverlayViewImpl>(

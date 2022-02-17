@@ -159,6 +159,9 @@ void CaptureModeSettingsView::OnCaptureFolderMayHaveChanged() {
   } else if (controller->IsAndroidFilesPath(custom_path)) {
     folder_name =
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_ANDROID_FILES);
+  } else if (controller->IsLinuxFilesPath(custom_path)) {
+    folder_name =
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_LINUX_FILES);
   }
 
   save_to_menu_group_->AddOrUpdateExistingOption(folder_name, kCustomFolder);

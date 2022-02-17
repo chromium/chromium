@@ -207,6 +207,10 @@ class ASH_EXPORT CaptureModeController
   // path, false otherwise.
   bool IsAndroidFilesPath(const base::FilePath& path) const;
 
+  // Returns true if the given `path` is the same as the Linux Files path, false
+  // otherwise.
+  bool IsLinuxFilesPath(const base::FilePath& path) const;
+
   // Returns the current parent window for
   // `CaptureModeCameraController::camera_preview_widget_`.
   aura::Window* GetCameraPreviewParentWindow() const;
