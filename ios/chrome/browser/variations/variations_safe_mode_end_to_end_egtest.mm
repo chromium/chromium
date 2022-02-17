@@ -136,7 +136,9 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 //
 // Corresponds to FieldTrialTest.SafeModeEndToEndTest in
 // variations_safe_mode_browsertest.cc.
-- (void)testVariationsSafeModeEndToEnd {
+// Disabled test due to multiple builder failures.
+// TODO(crbug.com/1298274): re-enable the test with fix.
+- (void)DISABLED_testVariationsSafeModeEndToEnd {
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     // TODO(crbug.com/1297123): Disabled on iPad device
