@@ -1413,7 +1413,6 @@ interface NetworkContext {
   // Enables the checking of static PKP records.
   EnableStaticKeyPinningForTesting() => ();
 
-  [Sync]
   // Verifies the given certificate using the context's CertVerifier.
   VerifyCertificateForTesting(X509Certificate certificate,
                               string hostname,
