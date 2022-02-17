@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
-#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_IMPL_H_

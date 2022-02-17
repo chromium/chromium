@@ -6,12 +6,13 @@
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -72,7 +73,7 @@ VirtualCardEnrollBubbleController* VirtualCardEnrollIconView::GetController()
   if (!web_contents)
     return nullptr;
 
-  return VirtualCardEnrollBubbleController::Get(web_contents);
+  return VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents);
 }
 
 }  // namespace autofill

@@ -5,11 +5,10 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
-#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_H_
 
 namespace autofill {
 
@@ -26,18 +25,6 @@ class VirtualCardEnrollBubbleController {
   VirtualCardEnrollBubbleController& operator=(
       const VirtualCardEnrollBubbleController&) = delete;
   virtual ~VirtualCardEnrollBubbleController() = default;
-
-  // Returns a reference to the VirtualCardEnrollBubbleController associated
-  // with the given |web_contents|. If controller does not exist, this will
-  // create the controller from the |web_contents| then return the reference.
-  static VirtualCardEnrollBubbleController* GetOrCreate(
-      content::WebContents* web_contents);
-
-  // Returns a reference to the VirtualCardEnrollBubbleController associated
-  // with the given |web_contents|. If controller does not exist, this will
-  // return nullptr.
-  static VirtualCardEnrollBubbleController* Get(
-      content::WebContents* web_contents);
 
   // Returns the title displayed in the bubble.
   virtual std::u16string GetWindowTitle() const = 0;
@@ -72,4 +59,4 @@ class VirtualCardEnrollBubbleController {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_H_

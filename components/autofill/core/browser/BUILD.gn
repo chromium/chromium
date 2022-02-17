@@ -323,6 +323,7 @@ static_library("browser") {
     "ui/payments/card_unmask_prompt_controller_impl.h",
     "ui/payments/card_unmask_prompt_view.h",
     "ui/payments/payments_bubble_closed_reasons.h",
+    "ui/payments/virtual_card_enroll_bubble_controller.h",
     "ui/popup_item_ids.h",
     "ui/popup_types.h",
     "ui/region_combobox_model.cc",

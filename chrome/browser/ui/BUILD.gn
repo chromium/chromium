@@ -3922,7 +3922,6 @@ static_library("ui") {
       "autofill/payments/save_upi_bubble_controller.h",
       "autofill/payments/save_upi_bubble_controller_impl.cc",
       "autofill/payments/save_upi_bubble_controller_impl.h",
-      "autofill/payments/virtual_card_enroll_bubble_controller.h",
       "autofill/payments/virtual_card_enroll_bubble_controller_impl.cc",
       "autofill/payments/virtual_card_enroll_bubble_controller_impl.h",
       "autofill/payments/virtual_card_manual_fallback_bubble_controller.h",

@@ -25,26 +25,6 @@ VirtualCardEnrollBubbleControllerImpl::VirtualCardEnrollBubbleControllerImpl(
 VirtualCardEnrollBubbleControllerImpl::
     ~VirtualCardEnrollBubbleControllerImpl() = default;
 
-// static
-VirtualCardEnrollBubbleController*
-VirtualCardEnrollBubbleController::GetOrCreate(
-    content::WebContents* web_contents) {
-  if (!web_contents)
-    return nullptr;
-
-  VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents);
-  return VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents);
-}
-
-// static
-VirtualCardEnrollBubbleController* VirtualCardEnrollBubbleController::Get(
-    content::WebContents* web_contents) {
-  if (!web_contents)
-    return nullptr;
-
-  return VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents);
-}
-
 void VirtualCardEnrollBubbleControllerImpl::ShowBubble(
     const VirtualCardEnrollmentFields* virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,
