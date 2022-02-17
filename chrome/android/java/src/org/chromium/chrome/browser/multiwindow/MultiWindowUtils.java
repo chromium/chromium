@@ -195,6 +195,8 @@ public class MultiWindowUtils implements ActivityStateListener {
      * Returns null if the current activity doesn't support opening/moving tabs to another activity.
      */
     public Class<? extends Activity> getOpenInOtherWindowActivity(Activity current) {
+        // Use always ChromeTabbedActivity when multi-instance support in S+ is enabled.
+        if (mMultiInstanceApi31Enabled) return ChromeTabbedActivity.class;
         if (current instanceof ChromeTabbedActivity2) {
             // If a second ChromeTabbedActivity is created, MultiWindowUtils needs to listen for
             // activity state changes to facilitate determining which ChromeTabbedActivity should
@@ -229,7 +231,8 @@ public class MultiWindowUtils implements ActivityStateListener {
         // LAUNCH_ADJACENT will create another CTA instance with just a single tab. There doesn't
         // seem to be a reliable way to check if an activity was started via an alias, so we're
         // removing the flag if any CTA instance is running. See crbug.com/771516 for details.
-        if (targetActivity.equals(ChromeTabbedActivity.class) && isPrimaryTabbedActivityRunning()) {
+        if (!isMultiInstanceApi31Enabled() && targetActivity.equals(ChromeTabbedActivity.class)
+                && isPrimaryTabbedActivityRunning()) {
             intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
 
@@ -357,6 +360,28 @@ public class MultiWindowUtils implements ActivityStateListener {
             baseActivity = ChromeTabbedActivity.class.getName();
         }
         return baseActivity;
+    }
+
+    /**
+     * @param current Current activity trying to find its adjacent one.
+     * @return ChromeTabbedActivity instance of the task running adjacently to the current one.
+     *         {@code null} if there is no such task.
+     */
+    public static Activity getAdjacentWindowActivity(Activity current) {
+        List<Activity> runningActivities = ApplicationStatus.getRunningActivities();
+        int currentTaskId = current.getTaskId();
+        for (Activity activity : runningActivities) {
+            int taskId = activity.getTaskId();
+            if (taskId != currentTaskId && isActivityVisible(activity)) {
+                // Found a visible task. Return its base ChromeTabbedActivity instance.
+                for (Activity a : runningActivities) {
+                    if (a instanceof ChromeTabbedActivity && a.getTaskId() == taskId) return a;
+                }
+                assert false : "Should have found the ChromeTabbedActivity of the visible task";
+                break;
+            }
+        }
+        return null;
     }
 
     /**
@@ -531,15 +556,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      *         in the foreground.
      */
     public boolean isChromeRunningInAdjacentWindow(Activity currentActivity) {
-        SparseBooleanArray ctaTasks = getAllChromeTabbedTasks();
-        SparseBooleanArray visibleTasks = getVisibleTasks();
-        int currentTask = currentActivity.getTaskId();
-        for (int i = 0; i < visibleTasks.size(); ++i) {
-            if (!visibleTasks.valueAt(i)) continue; // skip if not visible
-            int task = visibleTasks.keyAt(i);
-            if (ctaTasks.get(task) && task != currentTask) return true;
-        }
-        return false;
+        return getAdjacentWindowActivity(currentActivity) != null;
     }
 
     /**

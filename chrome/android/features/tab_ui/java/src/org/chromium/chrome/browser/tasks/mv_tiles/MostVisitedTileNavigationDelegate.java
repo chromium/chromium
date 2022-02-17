@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.mv_tiles;
 import android.app.Activity;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -92,6 +93,7 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
 
     private void openUrlInNewWindow(LoadUrlParams loadUrlParams) {
         mTabDelegate.createTabInOtherWindow(loadUrlParams, mActivity,
-                mParentTabSupplier.get() == null ? -1 : mParentTabSupplier.get().getId());
+                mParentTabSupplier.get() == null ? -1 : mParentTabSupplier.get().getId(),
+                MultiWindowUtils.getAdjacentWindowActivity(mActivity));
     }
 }

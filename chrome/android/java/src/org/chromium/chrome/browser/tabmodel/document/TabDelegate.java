@@ -96,7 +96,7 @@ public class TabDelegate extends AsyncTabCreator {
 
     @Override
     public void createTabInOtherWindow(
-            LoadUrlParams loadUrlParams, Activity activity, int parentId) {
+            LoadUrlParams loadUrlParams, Activity activity, int parentId, Activity otherActivity) {
         Intent intent = createNewTabIntent(
                 new AsyncTabCreationParams(loadUrlParams), parentId, false);
 
@@ -106,7 +106,19 @@ public class TabDelegate extends AsyncTabCreator {
 
         MultiWindowUtils.setOpenInOtherWindowIntentExtras(intent, activity, targetActivity);
         IntentUtils.addTrustedIntentExtras(intent);
+
         MultiInstanceManager.onMultiInstanceModeStarted();
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            // If there is a Chrome window running adjacently, open the link in it.
+            // Otherwise create a new window.
+            if (otherActivity != null) {
+                assert otherActivity instanceof ChromeTabbedActivity;
+                ((ChromeTabbedActivity) otherActivity).onNewIntent(intent);
+                return;
+            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
         activity.startActivity(
                 intent, MultiWindowUtils.getOpenInOtherWindowActivityOptions(activity));
     }

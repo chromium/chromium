@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.MailTo;
@@ -192,8 +193,10 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         TabDelegate tabDelegate = new TabDelegate(mTab.isIncognito());
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
-        tabDelegate.createTabInOtherWindow(loadUrlParams, TabUtils.getActivity(mTab),
-                CriticalPersistedTabData.from(mTab).getParentId());
+        Activity activity = TabUtils.getActivity(mTab);
+        tabDelegate.createTabInOtherWindow(loadUrlParams, activity,
+                CriticalPersistedTabData.from(mTab).getParentId(),
+                MultiWindowUtils.getAdjacentWindowActivity(activity));
     }
 
     @Override
