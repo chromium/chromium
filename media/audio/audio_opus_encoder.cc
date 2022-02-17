@@ -71,34 +71,98 @@ AudioParameters CreateOpusCompatibleParams(const AudioParameters& params) {
   return result;
 }
 
-// During this object's lifetime, it will use its |audio_bus_| to provide input
-// to its |converter_|.
-class ScopedConverterInputProvider : public AudioConverter::InputCallback {
+}  // namespace
+
+class AudioOpusEncoder::InputFramesFifo final
+    : public AudioConverter::InputCallback {
  public:
-  ScopedConverterInputProvider(AudioConverter* converter,
-                               const AudioBus* audio_bus)
-      : converter_(converter), audio_bus_(audio_bus) {
+  explicit InputFramesFifo(AudioConverter* converter) : converter_(converter) {
     DCHECK(converter_);
-    DCHECK(audio_bus_);
     converter_->AddInput(this);
   }
-  ScopedConverterInputProvider(const ScopedConverterInputProvider&) = delete;
-  ScopedConverterInputProvider& operator=(const ScopedConverterInputProvider&) =
-      delete;
-  ~ScopedConverterInputProvider() override { converter_->RemoveInput(this); }
+
+  ~InputFramesFifo() override { converter_->RemoveInput(this); }
+
+  // Releases all |inputs_| and resets internal state.
+  void Clear() {
+    inputs_.clear();
+    total_frames_ = 0;
+    front_frame_index_ = 0;
+    is_flushing_ = false;
+  }
+
+  // Add an input into the FIFO.
+  void Push(std::unique_ptr<AudioBus> input_bus) {
+    DCHECK(!is_flushing_);
+
+    total_frames_ += input_bus->frames();
+    inputs_.emplace_back(std::move(input_bus));
+  }
+
+  // Allows underflowing and filling data requests with silence.
+  void Flush() {
+    DCHECK(!is_flushing_);
+    is_flushing_ = true;
+  }
+
+  int frames() { return total_frames_; }
+  bool is_flushing() { return is_flushing_; }
 
   // AudioConverted::InputCallback:
   double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override {
-    audio_bus_->CopyTo(audio_bus);
+    int frames_needed = audio_bus->frames();
+    int frames_written = 0;
+
+    // If we aren't flushing, this should only be called if we have enough
+    // frames to completey satisfy the request.
+    DCHECK(is_flushing_ || total_frames_ >= frames_needed);
+
+    // Write until we've fulfilled the request or run out of frames.
+    while (frames_written < frames_needed && total_frames_) {
+      const AudioBus* front = inputs_.front().get();
+
+      int frames_in_front = front->frames() - front_frame_index_;
+      int frames_to_write =
+          std::min(frames_needed - frames_written, frames_in_front);
+
+      front->CopyPartialFramesTo(front_frame_index_, frames_to_write,
+                                 frames_written, audio_bus);
+
+      frames_written += frames_to_write;
+      front_frame_index_ += frames_to_write;
+      total_frames_ -= frames_to_write;
+
+      if (front_frame_index_ == front->frames()) {
+        // We exhausted all frames in the front buffer, remove it.
+        inputs_.pop_front();
+        front_frame_index_ = 0;
+      }
+    }
+
+    // We should only run out of frames if we're flushing.
+    if (frames_written != frames_needed) {
+      DCHECK(is_flushing_);
+      DCHECK(!total_frames_);
+      DCHECK(!inputs_.size());
+      audio_bus->ZeroFramesPartial(frames_written,
+                                   frames_needed - frames_written);
+    }
+
     return 1.0f;
   }
 
  private:
-  const raw_ptr<AudioConverter> converter_;
-  const raw_ptr<const AudioBus> audio_bus_;
-};
+  bool is_flushing_ = false;
 
-}  // namespace
+  // Index to the first unused frame in |inputs_.front()|.
+  int front_frame_index_ = 0;
+
+  // How many frames are in |inputs_|.
+  int total_frames_ = 0;
+
+  const raw_ptr<AudioConverter> converter_;
+  base::circular_deque<std::unique_ptr<AudioBus>> inputs_;
+};
 
 // TODO: Remove after switching to C++17
 constexpr int AudioOpusEncoder::kMinBitrate;
@@ -109,8 +173,8 @@ AudioOpusEncoder::AudioOpusEncoder()
 void AudioOpusEncoder::Initialize(const Options& options,
                                   OutputCB output_callback,
                                   EncoderStatusCB done_cb) {
-  DCHECK(!output_callback.is_null());
-  DCHECK(!done_cb.is_null());
+  DCHECK(output_callback);
+  DCHECK(done_cb);
 
   done_cb = BindToCurrentLoop(std::move(done_cb));
   if (opus_encoder_) {
@@ -141,8 +205,7 @@ void AudioOpusEncoder::Initialize(const Options& options,
                                        /*disable_fifo=*/false);
   timestamp_tracker_ =
       std::make_unique<AudioTimestampHelper>(converted_params_.sample_rate());
-  fifo_ = std::make_unique<AudioPushFifo>(base::BindRepeating(
-      &AudioOpusEncoder::OnFifoOutput, base::Unretained(this)));
+  fifo_ = std::make_unique<InputFramesFifo>(converter_.get());
   converted_audio_bus_ = AudioBus::Create(
       converted_params_.channels(), converted_params_.frames_per_buffer());
   buffer_.resize(converted_params_.channels() *
@@ -155,8 +218,8 @@ void AudioOpusEncoder::Initialize(const Options& options,
 
   opus_encoder_ = std::move(status_or_encoder).value();
   converter_->PrimeWithSilence();
-  fifo_->Reset(converter_->GetMaxInputFramesRequested(
-      converted_params_.frames_per_buffer()));
+  min_input_frames_needed_ = converter_->GetMaxInputFramesRequested(
+      converted_params_.frames_per_buffer());
 
   output_cb_ = BindToCurrentLoop(std::move(output_callback));
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
@@ -214,7 +277,7 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
                               EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(audio_bus->channels(), input_params_.channels());
-  DCHECK(!done_cb.is_null());
+  DCHECK(done_cb);
   DCHECK(timestamp_tracker_);
 
   current_done_cb_ = BindToCurrentLoop(std::move(done_cb));
@@ -227,18 +290,20 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
   if (timestamp_tracker_->base_timestamp() == kNoTimestamp)
     timestamp_tracker_->SetBaseTimestamp(capture_time - base::TimeTicks());
 
-  // The |fifo_| won't trigger OnFifoOutput() until we have enough frames
-  // suitable for the converter.
-  fifo_->Push(*audio_bus);
-  if (!current_done_cb_.is_null()) {
-    // Is |current_done_cb_| is null, it means OnFifoOutput() has already
+  fifo_->Push(std::move(audio_bus));
+
+  while (fifo_->frames() >= min_input_frames_needed_ && current_done_cb_)
+    OnEnoughInputFrames();
+
+  if (current_done_cb_) {
+    // Is |current_done_cb_| is null, it means OnEnoughInputFrames() has already
     // reported an error.
     std::move(current_done_cb_).Run(EncoderStatus::Codes::kOk);
   }
 }
 
 void AudioOpusEncoder::Flush(EncoderStatusCB done_cb) {
-  DCHECK(!done_cb.is_null());
+  DCHECK(done_cb);
 
   done_cb = BindToCurrentLoop(std::move(done_cb));
   if (!opus_encoder_) {
@@ -248,19 +313,36 @@ void AudioOpusEncoder::Flush(EncoderStatusCB done_cb) {
   }
 
   current_done_cb_ = std::move(done_cb);
+
+  // Start filling partially fulfilled ProvideInput() calls with silence.
   fifo_->Flush();
+
+  while (fifo_->frames())
+    OnEnoughInputFrames();
+
+  // Clear any excess buffered silence. Re-prime the |converter_|, otherwise
+  // the value of |min_input_frames_needed_| might be wrong for the first calls
+  // to Convert().
+  converter_->Reset();
+  converter_->PrimeWithSilence();
+
+  // Clear the flushing flag.
+  fifo_->Clear();
+
   timestamp_tracker_->SetBaseTimestamp(kNoTimestamp);
-  if (!current_done_cb_.is_null()) {
+  if (current_done_cb_) {
     // Is |current_done_cb_| is null, it means OnFifoOutput() has already
     // reported an error.
     std::move(current_done_cb_).Run(EncoderStatus::Codes::kOk);
   }
 }
 
-void AudioOpusEncoder::OnFifoOutput(const AudioBus& output_bus,
-                                    int frame_delay) {
+void AudioOpusEncoder::OnEnoughInputFrames() {
+  // We should have enough frames to satisfy all request, or be in the process
+  // of flushing the |fifo_|.
+  DCHECK(fifo_->frames() >= min_input_frames_needed_ || fifo_->is_flushing());
+
   // Provides input to the converter from |output_bus| within this scope only.
-  ScopedConverterInputProvider provider(converter_.get(), &output_bus);
   converter_->Convert(converted_audio_bus_.get());
   converted_audio_bus_->ToInterleaved<Float32SampleTypeTraits>(
       converted_audio_bus_->frames(), buffer_.data());
@@ -270,7 +352,7 @@ void AudioOpusEncoder::OnFifoOutput(const AudioBus& output_bus,
                                   converted_params_.frames_per_buffer(),
                                   encoded_data.get(), kOpusMaxDataBytes);
 
-  if (result < 0 && !current_done_cb_.is_null()) {
+  if (result < 0 && current_done_cb_) {
     std::move(current_done_cb_)
         .Run(EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
                            opus_strerror(result)));
