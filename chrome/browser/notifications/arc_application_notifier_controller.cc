@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/notifier_metadata.h"
 #include "base/bind.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/notifications/notifier_dataset.h"
@@ -80,7 +81,12 @@ ArcApplicationNotifierController::GetNotifierList(Profile* profile) {
                            gfx::ImageSkia());
     package_to_app_ids_.insert(
         std::make_pair(app_data.publisher_id, app_data.app_id));
-    CallLoadIcon(app_data.app_id, /*allow_placeholder_icon*/ true);
+  }
+  if (!package_to_app_ids_.empty()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ArcApplicationNotifierController::CallLoadIcons,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
   return notifiers;
 }
@@ -101,6 +107,12 @@ void ArcApplicationNotifierController::SetNotifierEnabled(
   apps::AppServiceProxy* service =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   service->SetPermission(notifier_id.id, std::move(permission));
+}
+
+void ArcApplicationNotifierController::CallLoadIcons() {
+  for (const auto& it : package_to_app_ids_) {
+    CallLoadIcon(it.second, /*allow_placeholder_icon*/ true);
+  }
 }
 
 void ArcApplicationNotifierController::CallLoadIcon(

@@ -32,6 +32,7 @@ class PwaNotifierController : public NotifierController,
                           bool enabled) override;
 
  private:
+  void CallLoadIcons();
   void CallLoadIcon(const std::string& app_id, bool allow_placeholder_icon);
   void OnLoadIcon(const std::string& app_id, apps::IconValuePtr icon_value);
 
