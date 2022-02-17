@@ -134,18 +134,6 @@ inline bool CrasInputStream::UseCrasAgc() const {
   return params_.effects() & AudioParameters::AUTOMATIC_GAIN_CONTROL;
 }
 
-inline bool CrasInputStream::DspBasedAecIsAllowed() const {
-  return params_.effects() & AudioParameters::ALLOW_DSP_ECHO_CANCELLER;
-}
-
-inline bool CrasInputStream::DspBasedNsIsAllowed() const {
-  return params_.effects() & AudioParameters::ALLOW_DSP_NOISE_SUPPRESSION;
-}
-
-inline bool CrasInputStream::DspBasedAgcIsAllowed() const {
-  return params_.effects() & AudioParameters::ALLOW_DSP_AUTOMATIC_GAIN_CONTROL;
-}
-
 void CrasInputStream::Start(AudioInputCallback* callback) {
   DCHECK(client_);
   DCHECK(callback);
@@ -229,24 +217,14 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
     return;
   }
 
-  if (UseCrasAec()) {
+  if (UseCrasAec())
     libcras_stream_params_enable_aec(stream_params);
-  }
 
   if (UseCrasNs())
     libcras_stream_params_enable_ns(stream_params);
 
   if (UseCrasAgc())
     libcras_stream_params_enable_agc(stream_params);
-
-  if (DspBasedAecIsAllowed())
-    libcras_stream_params_allow_aec_on_dsp(stream_params);
-
-  if (DspBasedNsIsAllowed())
-    libcras_stream_params_allow_ns_on_dsp(stream_params);
-
-  if (DspBasedAgcIsAllowed())
-    libcras_stream_params_allow_agc_on_dsp(stream_params);
 
   // Adding the stream will start the audio callbacks.
   if (libcras_client_add_pinned_stream(client_, pin_device_, &stream_id_,

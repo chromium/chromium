@@ -170,9 +170,6 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
                                            // experimentally be enabled.
     MULTIZONE = 1 << 7,
     AUDIO_PREFETCH = 1 << 8,
-    ALLOW_DSP_ECHO_CANCELLER = 1 << 9,
-    ALLOW_DSP_NOISE_SUPPRESSION = 1 << 10,
-    ALLOW_DSP_AUTOMATIC_GAIN_CONTROL = 1 << 11,
   };
 
   struct HardwareCapabilities {

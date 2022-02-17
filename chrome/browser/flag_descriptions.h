@@ -2568,15 +2568,6 @@ extern const char kQuickSettingsPWANotificationsDescription[];
 extern const char kDriveFsBidirectionalNativeMessagingName[];
 extern const char kDriveFsBidirectionalNativeMessagingDescription[];
 
-extern const char kCrOSDspBasedAecAllowedName[];
-extern const char kCrOSDspBasedAecAllowedDescription[];
-
-extern const char kCrOSDspBasedNsAllowedName[];
-extern const char kCrOSDspBasedNsAllowedDescription[];
-
-extern const char kCrOSDspBasedAgcAllowedName[];
-extern const char kCrOSDspBasedAgcAllowedDescription[];
-
 extern const char kCrOSEnforceSystemAecName[];
 extern const char kCrOSEnforceSystemAecDescription[];
 

@@ -126,68 +126,6 @@ bool IsSystemAecDeactivated(int aec_group_id) {
       false);
 }
 
-// Checks if the board with `aec_group_id` is flagged by the field trial to not
-// allow using DSP-based AEC effect.
-bool IsDspBasedAecDeactivated(int aec_group_id) {
-  return base::GetFieldTrialParamByFeatureAsBool(
-             features::kCrOSDspBasedAecDeactivatedGroups,
-             std::to_string(aec_group_id), false) ||
-         !base::FeatureList::IsEnabled(features::kCrOSDspBasedAecAllowed);
-}
-
-// Checks if the board with `aec_group_id` is flagged by the field trial to not
-// allow using DSP-based NS effect.
-bool IsDspBasedNsDeactivated(int aec_group_id) {
-  return base::GetFieldTrialParamByFeatureAsBool(
-             features::kCrOSDspBasedNsDeactivatedGroups,
-             std::to_string(aec_group_id), false) ||
-         !base::FeatureList::IsEnabled(features::kCrOSDspBasedNsAllowed);
-}
-
-// Checks if the board with `aec_group_id` is flagged by the field trial to not
-// allow using DSP-based AGC effect.
-bool IsDspBasedAgcDeactivated(int aec_group_id) {
-  return base::GetFieldTrialParamByFeatureAsBool(
-             features::kCrOSDspBasedAgcDeactivatedGroups,
-             std::to_string(aec_group_id), false) ||
-         !base::FeatureList::IsEnabled(features::kCrOSDspBasedAgcAllowed);
-}
-
-// Specifies which DSP-based effects are allowed based on media constraints and
-// any finch field trials.
-void SetAllowedDspBasedEffects(int aec_group_id, AudioParameters& params) {
-  int effects = params.effects();
-
-  // Allow AEC to be applied by CRAS on DSP if the AEC is active in CRAS and if
-  // using the AEC on DSP has not been deactivated by any field trials.
-  if ((effects & AudioParameters::ECHO_CANCELLER) &&
-      !IsDspBasedAecDeactivated(aec_group_id)) {
-    effects = effects | AudioParameters::ALLOW_DSP_ECHO_CANCELLER;
-  } else {
-    effects = effects & ~AudioParameters::ALLOW_DSP_ECHO_CANCELLER;
-  }
-
-  // Allow NS to be applied by CRAS on DSP if the NS is active in CRAS and if
-  // using the NS on DSP has not been deactivated by any field trials.
-  if ((effects & AudioParameters::NOISE_SUPPRESSION) &&
-      !IsDspBasedNsDeactivated(aec_group_id)) {
-    effects = effects | AudioParameters::ALLOW_DSP_NOISE_SUPPRESSION;
-  } else {
-    effects = effects & ~AudioParameters::ALLOW_DSP_NOISE_SUPPRESSION;
-  }
-
-  // Allow AGC to be applied by CRAS on DSP if the AGC is active in CRAS and if
-  // using the AGC on DSP has not been deactivated by any field trials.
-  if ((effects & AudioParameters::AUTOMATIC_GAIN_CONTROL) &&
-      !IsDspBasedAgcDeactivated(aec_group_id)) {
-    effects = effects | AudioParameters::ALLOW_DSP_AUTOMATIC_GAIN_CONTROL;
-  } else {
-    effects = effects & ~AudioParameters::ALLOW_DSP_AUTOMATIC_GAIN_CONTROL;
-  }
-
-  params.set_effects(effects);
-}
-
 }  // namespace
 
 bool AudioManagerChromeOS::HasAudioOutputDevices() {
@@ -620,7 +558,6 @@ AudioParameters AudioManagerChromeOS::GetStreamParametersForSystem(
       enforce_system_aec;
 
   if (!use_system_aec || IsSystemAecDeactivated(system_apm_info.aec_group_id)) {
-    SetAllowedDspBasedEffects(system_apm_info.aec_group_id, params);
     return params;
   }
 
@@ -628,20 +565,21 @@ AudioParameters AudioManagerChromeOS::GetStreamParametersForSystem(
   params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
 
   // Don't use system NS or AGC if the AEC has board-specific tunings.
-  if (!tuned_system_apm_available) {
-    // Activation of the system NS.
-    if (system_apm_info.ns_supported || enforce_system_ns) {
-      params.set_effects(params.effects() | AudioParameters::NOISE_SUPPRESSION);
-    }
-
-    // Activation of the system AGC.
-    if (system_apm_info.agc_supported || enforce_system_agc) {
-      params.set_effects(params.effects() |
-                         AudioParameters::AUTOMATIC_GAIN_CONTROL);
-    }
+  if (tuned_system_apm_available) {
+    return params;
   }
 
-  SetAllowedDspBasedEffects(system_apm_info.aec_group_id, params);
+  // Activation of the system NS.
+  if (system_apm_info.ns_supported || enforce_system_ns) {
+    params.set_effects(params.effects() | AudioParameters::NOISE_SUPPRESSION);
+  }
+
+  // Activation of the system AGC.
+  if (system_apm_info.agc_supported || enforce_system_agc) {
+    params.set_effects(params.effects() |
+                       AudioParameters::AUTOMATIC_GAIN_CONTROL);
+  }
+
   return params;
 }
 
