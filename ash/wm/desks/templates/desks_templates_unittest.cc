@@ -2674,4 +2674,73 @@ TEST_F(DesksTemplatesTest, CapTemplateItemsShown) {
   EXPECT_EQ(kMaxTemplateCount, grid_items.size());
 }
 
+// Tests that click or tap could exit grid view and commit name change when
+// appropriate. Regression test for https://crbug.com/1290568.
+TEST_F(DesksTemplatesTest, ClickOrTapToExitGridView) {
+  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template_2", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template_3", base::Time::Now());
+
+  // Test mouse click.
+  {
+    OpenOverviewAndShowTemplatesGrid();
+
+    DesksTemplatesNameView* name_view =
+        GetItemViewFromTemplatesGrid(0)->name_view();
+    EXPECT_FALSE(name_view->HasFocus());
+
+    // The name view should receive focus after getting a mouse click.
+    ClickOnView(name_view);
+    EXPECT_TRUE(name_view->HasFocus());
+
+    // The name view should release focus after getting a mouse click outside
+    // the grid item.
+    std::vector<DesksTemplatesItemView*> grid_items =
+        static_cast<DesksTemplatesGridView*>(GetOverviewGridList()[0]
+                                                 ->desks_templates_grid_widget()
+                                                 ->GetContentsView())
+            ->grid_items();
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(grid_items[0]->GetBoundsInScreen().origin() -
+                                 gfx::Vector2d(20, 20));
+    event_generator->ClickLeftButton();
+    EXPECT_FALSE(name_view->HasFocus());
+
+    // It should exit overview when click outside the grid items.
+    event_generator->ClickLeftButton();
+    EXPECT_FALSE(GetOverviewSession());
+  }
+
+  // Test gesture tap.
+  {
+    OpenOverviewAndShowTemplatesGrid();
+
+    DesksTemplatesNameView* name_view =
+        GetItemViewFromTemplatesGrid(0)->name_view();
+    EXPECT_FALSE(name_view->HasFocus());
+
+    // The name view should receive focus after getting a gesture tap.
+    auto* event_generator = GetEventGenerator();
+    event_generator->GestureTapAt(name_view->GetBoundsInScreen().CenterPoint());
+    EXPECT_TRUE(name_view->HasFocus());
+
+    // The name view should release focus after getting a gesture tap outside
+    // the grid item.
+    std::vector<DesksTemplatesItemView*> grid_items =
+        static_cast<DesksTemplatesGridView*>(GetOverviewGridList()[0]
+                                                 ->desks_templates_grid_widget()
+                                                 ->GetContentsView())
+            ->grid_items();
+    event_generator->GestureTapAt(
+        {grid_items[0]->GetBoundsInScreen().x() - 20,
+         grid_items[0]->GetBoundsInScreen().y() - 20});
+    EXPECT_FALSE(name_view->HasFocus());
+
+    // It should exit overview when tap outside the grid items.
+    event_generator->GestureTapAt(grid_items[0]->GetBoundsInScreen().origin() -
+                                  gfx::Vector2d(20, 20));
+    EXPECT_FALSE(GetOverviewSession());
+  }
+}
+
 }  // namespace ash
