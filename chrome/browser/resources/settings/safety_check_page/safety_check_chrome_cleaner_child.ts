@@ -209,6 +209,13 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-safety-check-chrome-cleaner-child':
+        SettingsSafetyCheckChromeCleanerChildElement;
+  }
+}
+
 customElements.define(
     SettingsSafetyCheckChromeCleanerChildElement.is,
     SettingsSafetyCheckChromeCleanerChildElement);
