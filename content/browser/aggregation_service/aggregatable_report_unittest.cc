@@ -14,12 +14,15 @@
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/json/json_writer.h"
+#include "base/strings/abseil_string_number_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
@@ -162,9 +165,16 @@ void VerifyReport(
         const cbor::Value::MapValue& data_map = data_array[0].GetMap();
 
         ASSERT_TRUE(CborMapContainsKeyAndType(data_map, "bucket",
-                                              cbor::Value::Type::UNSIGNED));
-        EXPECT_EQ(data_map.at(cbor::Value("bucket")).GetInteger(),
-                  expected_payload_contents.bucket);
+                                              cbor::Value::Type::BYTE_STRING));
+        const cbor::Value::BinaryValue& bucket_byte_string =
+            data_map.at(cbor::Value("bucket")).GetBytestring();
+        EXPECT_EQ(bucket_byte_string.size(), 16u);  // 16 bytes = 128 bits
+
+        // TODO(crbug.com/1298196): Replace with `base::ReadBigEndian()` when
+        // available.
+        absl::uint128 bucket;
+        base::HexStringToUInt128(base::HexEncode(bucket_byte_string), &bucket);
+        EXPECT_EQ(bucket, expected_payload_contents.bucket);
 
         ASSERT_TRUE(CborMapContainsKeyAndType(data_map, "value",
                                               cbor::Value::Type::UNSIGNED));
@@ -252,20 +262,12 @@ TEST(AggregatableReportTest, ValidDebugModeEnabledRequest_ValidReportReturned) {
 }
 
 TEST(AggregatableReportTest,
-     RequestCreatedWithNonPositiveBucketOrValue_FailsIfNegative) {
+     RequestCreatedWithNonPositiveValue_FailsIfNegative) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
   AggregatableReportSharedInfo shared_info = example_request.shared_info();
-
-  AggregationServicePayloadContents zero_bucket_payload_contents =
-      payload_contents;
-  zero_bucket_payload_contents.bucket = 0;
-  absl::optional<AggregatableReportRequest> zero_bucket_request =
-      AggregatableReportRequest::Create(zero_bucket_payload_contents,
-                                        shared_info);
-  EXPECT_TRUE(zero_bucket_request.has_value());
 
   AggregationServicePayloadContents zero_value_payload_contents =
       payload_contents;
@@ -274,14 +276,6 @@ TEST(AggregatableReportTest,
       AggregatableReportRequest::Create(zero_value_payload_contents,
                                         shared_info);
   EXPECT_TRUE(zero_value_request.has_value());
-
-  AggregationServicePayloadContents negative_bucket_payload_contents =
-      payload_contents;
-  negative_bucket_payload_contents.bucket = -1;
-  absl::optional<AggregatableReportRequest> negative_bucket_request =
-      AggregatableReportRequest::Create(negative_bucket_payload_contents,
-                                        shared_info);
-  EXPECT_FALSE(negative_bucket_request.has_value());
 
   AggregationServicePayloadContents negative_value_payload_contents =
       payload_contents;

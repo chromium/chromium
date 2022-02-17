@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -42,12 +43,12 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   };
 
   AggregationServicePayloadContents(Operation operation,
-                                    int bucket,
+                                    absl::uint128 bucket,
                                     int value,
                                     ProcessingType processing_type);
 
   Operation operation;
-  int bucket;
+  absl::uint128 bucket;
   int value;
   ProcessingType processing_type;
 };
@@ -104,15 +105,18 @@ class CONTENT_EXPORT AggregatableReport {
 
     // This payload is constructed using the data in the
     // AggregationServicePayloadContents and then encrypted with one of
-    // `origin`'s public keys. For the kTwoParty processing type, the plaintext
-    // of the encrypted payload is a serialized CBOR map structured as follows:
+    // `origin`'s public keys. For the `kSingleServer` processing type, the
+    // plaintext of the encrypted payload is a serialized CBOR map structured as
+    // follows:
     // {
     //   "operation": "<chosen operation as string>",
-    //   "dpf_key": <binary serialization of the DPF key>,
+    //   "data": [{
+    //     "bucket": <128-bit integer encoded as a big-endian bytestring>,
+    //     "value": <integer>,
+    //   }],
     // }
-    // For the kSingleServer processing type, the "dpf_key" field is replaced
-    // with:
-    //   "data": [{ "bucket": <bucket>, "value": <value> }]
+    // For the `kTwoParty` processing type, the "data" field is replaced with:
+    //   "dpf_key": <binary serialization of the DPF key>
     std::vector<uint8_t> payload;
 
     // Indicates the chosen encryption key.
@@ -214,18 +218,17 @@ class CONTENT_EXPORT AggregatableReport {
 // processing origin.
 class CONTENT_EXPORT AggregatableReportRequest {
  public:
-  // Returns `absl::nullopt` if `payload_contents` has a negative bucket or
-  // value. Also returns `absl::nullopt` if `shared_info.report_id` is not
-  // valid.
+  // Returns `absl::nullopt` if `payload_contents` has a negative value. Also
+  // returns `absl::nullopt` if `shared_info.report_id` is not valid.
   static absl::optional<AggregatableReportRequest> Create(
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info);
 
-  // Returns `absl::nullopt` if `payload_contents` has a negative bucket or
-  // value. Also returns `absl::nullopt` if `processing_origins.size()` is not
-  // valid for the `payload_contents.processing_type` (see
-  // `IsNumberOfProcessingOriginsValid` above). Also returns `absl::nullopt` if
-  // `shared_info.report_id` is not valid.
+  // Returns `absl::nullopt` if `payload_contents` has a negative value. Also
+  // returns `absl::nullopt` if `processing_origins.size()` is not valid for the
+  // `payload_contents.processing_type` (see `IsNumberOfProcessingOriginsValid`
+  // above). Also returns `absl::nullopt` if `shared_info.report_id` is not
+  // valid.
   static absl::optional<AggregatableReportRequest> CreateForTesting(
       std::vector<url::Origin> processing_origins,
       AggregationServicePayloadContents payload_contents,

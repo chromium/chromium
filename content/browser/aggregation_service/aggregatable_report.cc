@@ -146,6 +146,19 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTwoPartyPayloads(
   return unencrypted_payloads;
 }
 
+// TODO(crbug.com/1298196): Replace with `base::WriteBigEndian()` when available
+std::vector<uint8_t> EncodeBucketForPayload(absl::uint128 bucket) {
+  std::vector<uint8_t> byte_string(sizeof(absl::uint128) / sizeof(uint8_t));
+
+  // Construct the vector in reverse to ensure network byte (big-endian) order.
+  for (auto it = byte_string.rbegin(); it != byte_string.rend(); ++it) {
+    *it = static_cast<uint8_t>(bucket & 0xFF);
+    bucket >>= 8;
+  }
+  DCHECK_EQ(bucket, 0);
+  return byte_string;
+}
+
 // Returns a vector with a serialized CBOR map. See the AggregatableReport
 // documentation for more detail on the expected format. Returns an empty
 // vector in case of error.
@@ -158,7 +171,7 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedSingleServerPayload(
   // TODO(crbug.com/1272030): Support multiple contributions in one payload.
   cbor::Value::ArrayValue data;
   cbor::Value::MapValue data_map;
-  data_map.emplace("bucket", payload_contents.bucket);
+  data_map.emplace("bucket", EncodeBucketForPayload(payload_contents.bucket));
   data_map.emplace("value", payload_contents.value);
   data.push_back(cbor::Value(std::move(data_map)));
   value.emplace("data", std::move(data));
@@ -227,7 +240,7 @@ std::vector<uint8_t> EncryptWithHpke(
 
 AggregationServicePayloadContents::AggregationServicePayloadContents(
     Operation operation,
-    int bucket,
+    absl::uint128 bucket,
     int value,
     ProcessingType processing_type)
     : operation(operation),
@@ -327,7 +340,7 @@ AggregatableReportRequest::CreateInternal(
     return absl::nullopt;
   }
 
-  if (payload_contents.bucket < 0 || payload_contents.value < 0) {
+  if (payload_contents.value < 0) {
     return absl::nullopt;
   }
 
