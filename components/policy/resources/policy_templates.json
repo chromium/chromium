@@ -27583,9 +27583,9 @@ If you disable this policy, web page scrolling to specific text fragments via UR
 
       The restriction level can be set to BLOCK, ALLOW, REPORT, WARN.
       - If the restriction level is set to BLOCK, the action won't be allowed. If <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED">DataLeakPreventionReportingEnabled</ph> is set to True, the blocked action will be reported to the admin.
-      - If the resriction level is set to ALLOW, the action will be allowed.
-      - If the resriction level is set to REPORT and <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED">DataLeakPreventionReportingEnabled</ph> is set to True, the action will be reported to the admin.
-      - If the resriction level is set to WARN, a user will be warned and may choose to proceed with or cancel the action. If <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED">DataLeakPreventionReportingEnabled</ph> is set to True, showing the warning will be reported to the admin; proceeding with the action will also be reported.
+      - If the restriction level is set to ALLOW, the action will be allowed.
+      - If the restriction level is set to REPORT and <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED">DataLeakPreventionReportingEnabled</ph> is set to True, the action will be reported to the admin.
+      - If the restriction level is set to WARN, a user will be warned and may choose to proceed with or cancel the action. If <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED">DataLeakPreventionReportingEnabled</ph> is set to True, showing the warning will be reported to the admin; proceeding with the action will also be reported.
 
       Notes:
       - PRIVACY_SCREEN restriction doesn't block the ability to turn on privacy screen, but enforces it when the restriction class is set to BLOCK.
