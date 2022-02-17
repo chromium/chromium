@@ -17,6 +17,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -133,7 +134,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
   ASSERT_TRUE(predictor);
   content::WebContents* web_contents = GetActiveWebContents();
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
-  predictor->StartPrerendering(prerender_url, *web_contents, gfx::Size(50, 50));
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+  match.destination_url = prerender_url;
+  predictor->StartPrerendering(match, *web_contents, gfx::Size(50, 50));
 
   // Since preload setting is disabled, prerender shouldn't be triggered.
   base::RunLoop().RunUntilIdle();
@@ -147,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
 
   content::test::PrerenderHostRegistryObserver registry_observer(*web_contents);
   // Attempt to trigger prerendering again.
-  predictor->StartPrerendering(prerender_url, *web_contents, gfx::Size(50, 50));
+  predictor->StartPrerendering(match, *web_contents, gfx::Size(50, 50));
 
   // Since preload setting is enabled, prerender should be triggered
   // successfully.
@@ -174,8 +178,11 @@ IN_PROC_BROWSER_TEST_F(
   const GURL kPrerenderingUrl =
       embedded_test_server()->GetURL("/prerender/onprerendering_check.html");
 
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+  match.destination_url = kPrerenderingUrl;
   GetAutocompleteActionPredictor()->StartPrerendering(
-      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+      match, *GetActiveWebContents(), gfx::Size(50, 50));
 
   int host_id = prerender_helper().GetHostForUrl(kPrerenderingUrl);
   content::RenderFrameHost* prerender_frame_host =

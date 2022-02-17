@@ -16,6 +16,24 @@ namespace content {
 class Page;
 }
 
+namespace internal {
+extern const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[];
+}  // namespace internal
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PrerenderPredictionStatus {
+  // The prerender was not started.
+  kNotStarted = 0,
+  // The prerender was cancelled since the prediction is updated.
+  kCancelled = 1,
+  // The prerender was unused.
+  kUnused = 2,
+  // The predicted URL was used.
+  kHitFinished = 3,
+  kMaxValue = kHitFinished,
+};
+
 // Manages running prerenders in the //chrome.
 // Chrome manages running prerenders separately, as it prioritizes the latest
 // prerender requests, while the //content prioritizes the earliest requests.
@@ -33,9 +51,8 @@ class PrerenderManager : public content::WebContentsObserver,
   // The entry of prerender.
   // Calling this method will lead to the cancellation of the previous prerender
   // if the given `match`'s search terms differ from the ongoing one's.
-  // TODO(https://crbug.com/1278634): return a TriggerResult enum so that
-  // callers can record some metrics if they want.
-  void StartPrerenderAutocompleteMatch(const AutocompleteMatch& match);
+  base::WeakPtr<content::PrerenderHandle> StartPrerenderAutocompleteMatch(
+      const AutocompleteMatch& match);
 
   // The entry of direct url input prerender.
   // Calling this method will return WeakPtr of the started prerender, and lead

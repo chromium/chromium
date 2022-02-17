@@ -31,7 +31,6 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -414,22 +413,9 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents))
     return;
 
-  // Treat search hint differently. Since AutocompleteActionPredictor does not
-  // prerender search results, this logic won't take its traffic away.
-  // TODO(https://crbug.com/1278634): Refactor relevant code to reuse common
-  // code, and ensure metrics are correctly recorded.
-  if (AutocompleteMatch::IsSearchType(match.type)) {
-    DCHECK(prerender_utils::IsSearchSuggestionPrerenderEnabled());
-    DCHECK(BaseSearchProvider::ShouldPrerender(match));
-    PrerenderManager::CreateForWebContents(web_contents);
-    auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
-    prerender_manager->StartPrerenderAutocompleteMatch(match);
-  } else {
-    gfx::Rect container_bounds = web_contents->GetContainerBounds();
-    predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-        ->StartPrerendering(match.destination_url, *web_contents,
-                            container_bounds.size());
-  }
+  gfx::Rect container_bounds = web_contents->GetContainerBounds();
+  predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
+      ->StartPrerendering(match, *web_contents, container_bounds.size());
 }
 
 void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {

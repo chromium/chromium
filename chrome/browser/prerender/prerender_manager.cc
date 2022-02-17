@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prerender/prerender_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -11,6 +12,11 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
+
+namespace internal {
+const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[] =
+    "Prerender.Experimental.PredictionStatus.DefaultSearchEngine";
+}  // namespace internal
 
 namespace {
 
@@ -87,6 +93,21 @@ void PrerenderManager::PrimaryPageChanged(content::Page& page) {
     return;
   }
 
+  // Record whether or not the prediction is correct when prerendering for
+  // search suggestion was started. The value `kNotStarted` is recorded in
+  // AutocompleteActionPredictor::OnOmniboxOpenedUrl().
+  if (IsSearchDestinationMatch(prerendered_search_terms_args_.search_terms,
+                               *web_contents(),
+                               page.GetMainDocument().GetLastCommittedURL())) {
+    base::UmaHistogramEnumeration(
+        internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+        PrerenderPredictionStatus::kHitFinished);
+  } else {
+    base::UmaHistogramEnumeration(
+        internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+        PrerenderPredictionStatus::kUnused);
+  }
+
   // If `skip_template_url_service_for_testing_` is set for testing, no
   // TemplateUrlService will be provided for updating the URL, so it needs not
   // to update the URL.
@@ -125,20 +146,25 @@ void PrerenderManager::CancelPrerenderDirectUrlInput() {
   direct_url_input_prerender_handle_.reset();
 }
 
-void PrerenderManager::StartPrerenderAutocompleteMatch(
+base::WeakPtr<content::PrerenderHandle>
+PrerenderManager::StartPrerenderAutocompleteMatch(
     const AutocompleteMatch& match) {
   DCHECK(AutocompleteMatch::IsSearchType(match.type));
   TemplateURLRef::SearchTermsArgs& search_terms_args =
       *(match.search_terms_args);
-  std::u16string search_terms = search_terms_args.search_terms;
+  const std::u16string& search_terms = search_terms_args.search_terms;
 
   // Do not re-prerender the same search result.
-  if (search_prerender_handle_ &&
-      prerendered_search_terms_args_.search_terms == search_terms) {
-    return;
+  if (search_prerender_handle_) {
+    if (prerendered_search_terms_args_.search_terms == search_terms)
+      return search_prerender_handle_->GetWeakPtr();
+
+    base::UmaHistogramEnumeration(
+        internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+        PrerenderPredictionStatus::kCancelled);
+    search_prerender_handle_.reset();
   }
 
-  search_prerender_handle_.reset();
   // Make a copy. Use a copy instead of a reference, since we may modify it, and
   // we do not want to modify the original one which might be used to activate a
   // page.
@@ -166,7 +192,7 @@ void PrerenderManager::StartPrerenderAutocompleteMatch(
     TemplateURLService* template_url_service =
         GetTemplateURLServiceFromWebContents(*web_contents());
     if (!template_url_service)
-      return;
+      return nullptr;
 
     prerendered_search_terms_args_.is_prefetch = true;
     prerender_url =
@@ -183,6 +209,10 @@ void PrerenderManager::StartPrerenderAutocompleteMatch(
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       std::move(url_match_predicate));
+  if (search_prerender_handle_) {
+    return search_prerender_handle_->GetWeakPtr();
+  }
+  return nullptr;
 }
 
 PrerenderManager::PrerenderManager(content::WebContents* web_contents)

@@ -78,6 +78,15 @@ class AutocompleteActionPredictor
 
   ~AutocompleteActionPredictor() override;
 
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called once per FinishInitialization() call.
+    virtual void OnInitialized() {}
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Registers an AutocompleteResult for a given |user_text|. This will be used
   // when the user navigates from the Omnibox to determine early opportunities
   // to predict their actions.
@@ -102,10 +111,11 @@ class AutocompleteActionPredictor
   Action RecommendAction(const std::u16string& user_text,
                          const AutocompleteMatch& match) const;
 
-  // Begin prerendering |url|. The |size| gives the initial size for the target
-  // prerender. The predictor will run at most one prerender at a time, so
-  // launching a prerender will cancel our previous prerenders (if any).
-  void StartPrerendering(const GURL& url,
+  // Begin prerendering or prefetch with `match`. The `size` gives the initial
+  // size for the target prefetch. The predictor will run at most one prerender
+  // at a time, so launching a prerender will cancel our previous prerenders (if
+  // any).
+  void StartPrerendering(const AutocompleteMatch& match,
                          content::WebContents& web_contents,
                          const gfx::Size& size);
 
@@ -118,6 +128,8 @@ class AutocompleteActionPredictor
 
   // Should be called when a URL is opened from the omnibox.
   void OnOmniboxOpenedUrl(const OmniboxLog& log);
+
+  bool initialized() { return initialized_; }
 
  private:
   friend class AutocompleteActionPredictorTest;
@@ -254,7 +266,8 @@ class AutocompleteActionPredictor
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle_;
 
-  base::WeakPtr<content::PrerenderHandle> prerender_handle_;
+  base::WeakPtr<content::PrerenderHandle> search_prerender_handle_;
+  base::WeakPtr<content::PrerenderHandle> direct_url_input_prerender_handle_;
 
   // Local caches of the data store.  For incognito-owned predictors this is the
   // only copy of the data.
@@ -262,6 +275,8 @@ class AutocompleteActionPredictor
   DBIdCacheMap db_id_cache_;
 
   bool initialized_;
+
+  base::ObserverList<Observer> observers_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

@@ -72812,6 +72812,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="PAGEVIEW_EVENT_TOP_SITE_LOAD_START"/>
 </enum>
 
+<enum name="PrerenderPredictionStatus">
+  <int value="0" label="Prerender not started"/>
+  <int value="1" label="Prerender cancelled"/>
+  <int value="2" label="Prerender unused"/>
+  <int value="3" label="Prerender hit finished"/>
+</enum>
+
 <enum name="PrerenderRelTypes">
   <int value="0" label="PRERENDER_REL_TYPE_NONE"/>
   <int value="1" label="PRERENDER_REL_TYPE_PRERENDER"/>
