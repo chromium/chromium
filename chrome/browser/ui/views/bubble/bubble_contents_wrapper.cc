@@ -21,9 +21,13 @@ bool IsEscapeEvent(const content::NativeWebKeyboardEvent& event) {
 }
 
 content::WebContents::CreateParams GetWebContentsCreateParams(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    const GURL& webui_url) {
   content::WebContents::CreateParams create_params(browser_context);
   create_params.initially_hidden = true;
+  create_params.site_instance =
+      content::SiteInstance::CreateForURL(browser_context, webui_url);
+
   return create_params;
 }
 
@@ -36,6 +40,7 @@ bool BubbleContentsWrapper::Host::HandleKeyboardEvent(
 }
 
 BubbleContentsWrapper::BubbleContentsWrapper(
+    const GURL& webui_url,
     content::BrowserContext* browser_context,
     int task_manager_string_id,
     bool webui_resizes_host,
@@ -43,7 +48,7 @@ BubbleContentsWrapper::BubbleContentsWrapper(
     : webui_resizes_host_(webui_resizes_host),
       esc_closes_ui_(esc_closes_ui),
       web_contents_(content::WebContents::Create(
-          GetWebContentsCreateParams(browser_context))) {
+          GetWebContentsCreateParams(browser_context, webui_url))) {
   web_contents_->SetDelegate(this);
   WebContentsObserver::Observe(web_contents_.get());
 

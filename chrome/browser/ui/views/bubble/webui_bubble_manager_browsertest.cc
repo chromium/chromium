@@ -26,7 +26,8 @@ class BubbleContentsWrapperT<TestWebUIController>
                          int task_manager_string_id,
                          bool webui_resizes_host = true,
                          bool esc_closes_ui = true)
-      : BubbleContentsWrapper(browser_context,
+      : BubbleContentsWrapper(webui_url,
+                              browser_context,
                               task_manager_string_id,
                               webui_resizes_host,
                               esc_closes_ui) {}

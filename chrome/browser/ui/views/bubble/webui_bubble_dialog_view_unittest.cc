@@ -19,7 +19,7 @@ namespace {
 class TestBubbleContentsWrapper : public BubbleContentsWrapper {
  public:
   explicit TestBubbleContentsWrapper(Profile* profile)
-      : BubbleContentsWrapper(profile, 0, true, true) {}
+      : BubbleContentsWrapper(GURL(""), profile, 0, true, true) {}
   void ReloadWebContents() override {}
 };
 }  // namespace

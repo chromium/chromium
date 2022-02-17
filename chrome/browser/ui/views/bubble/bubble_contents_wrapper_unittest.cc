@@ -62,7 +62,7 @@ class MockHost : public BubbleContentsWrapper::Host {
 class TestBubbleContentsWrapper : public BubbleContentsWrapper {
  public:
   explicit TestBubbleContentsWrapper(Profile* profile)
-      : BubbleContentsWrapper(profile, 0, true, true) {}
+      : BubbleContentsWrapper(GURL(""), profile, 0, true, true) {}
   ~TestBubbleContentsWrapper() override = default;
 
   // BubbleContentsWrapper:
