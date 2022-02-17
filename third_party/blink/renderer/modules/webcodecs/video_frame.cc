@@ -1154,6 +1154,8 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  // SkImages are always immutable, so we don't actually need to make a copy of
+  // the image to satisfy the ImageBitmap spec.
   const auto orientation_enum = VideoTransformationToImageOrientation(
       local_handle->frame()->metadata().transformation.value_or(
           media::kNoTransformation));
@@ -1172,9 +1174,13 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
   auto* resource_provider =
       provider_cache.CreateProvider(local_handle->frame()->natural_size());
 
+  // We disable zero copy images since the ImageBitmap spec says created bitmaps
+  // are copies. Many other paths can avoid doing this w/o issue, but hardware
+  // decoders may have a limited number of outputs, so not making a copy becomes
+  // an observable issues to clients.
   const auto dest_rect = gfx::Rect(local_handle->frame()->natural_size());
   auto image = CreateImageFromVideoFrame(local_handle->frame(),
-                                         /*allow_zero_copy_images=*/true,
+                                         /*allow_zero_copy_images=*/false,
                                          resource_provider,
                                          /*video_renderer=*/nullptr, dest_rect);
   if (!image) {
