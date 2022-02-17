@@ -347,7 +347,8 @@ class GpuTestExpectationsValidation(unittest.TestCase):
   def testExpectationBugValidity(self):
     expectation_dir = os.path.join(os.path.dirname(__file__),
                                    'test_expectations')
-    for expectation_file in os.listdir(expectation_dir):
+    for expectation_file in (f for f in os.listdir(expectation_dir)
+                             if f.endswith('.txt')):
       with open(os.path.join(expectation_dir, expectation_file)) as f:
         content = f.read()
       list_parser = expectations_parser.TaggedTestListParser(content)

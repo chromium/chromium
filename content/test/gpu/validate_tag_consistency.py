@@ -80,7 +80,7 @@ EXPECTATION_DIR = os.path.join(os.path.dirname(__file__), 'gpu_tests',
 
 def Validate():
   retval = 0
-  for f in os.listdir(EXPECTATION_DIR):
+  for f in (f for f in os.listdir(EXPECTATION_DIR) if f.endswith('.txt')):
     with open(os.path.join(EXPECTATION_DIR, f)) as infile:
       content = infile.read()
       start_index = content.find(TAG_HEADER_BEGIN)
@@ -101,7 +101,7 @@ def Validate():
 
 def Apply():
   retval = 0
-  for f in os.listdir(EXPECTATION_DIR):
+  for f in (f for f in os.listdir(EXPECTATION_DIR) if f.endswith('.txt')):
     filepath = os.path.join(EXPECTATION_DIR, f)
     with open(filepath) as infile:
       content = infile.read()
