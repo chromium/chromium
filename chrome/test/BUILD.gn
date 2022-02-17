@@ -8,6 +8,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
+import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build/util/version.gni")
@@ -6425,6 +6426,12 @@ test("unit_tests") {
     if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
       sources +=
           [ "../browser/ui/webui/settings/url_handlers_handler_unittest.cc" ]
+    }
+    if (use_gtk) {
+      deps += [ "//ui/gtk" ]
+    }
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
     }
 
     deps += [
