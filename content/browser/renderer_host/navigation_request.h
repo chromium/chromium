@@ -1100,6 +1100,7 @@ class CONTENT_EXPORT NavigationRequest
       bool has_followed_redirect,
       bool url_upgraded_after_redirect,
       bool is_response_check,
+      bool is_opaque_fenced_frame,
       network::CSPContext::CheckCSPDisposition disposition);
 
   // Checks if CSP allows the navigation. This will check the frame-src,

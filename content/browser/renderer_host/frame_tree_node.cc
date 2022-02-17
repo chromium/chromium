@@ -847,6 +847,18 @@ void FrameTreeNode::SetFencedFrameNonceIfNeeded() {
   fenced_frame_nonce_ = nonce;
 }
 
+void FrameTreeNode::SetFencedFrameModeIfNeeded(
+    FencedFrameMode fenced_frame_mode) {
+  if (!IsFencedFrameRoot())
+    return;
+
+  // TODO(crbug.com/1123606): The 'mode' attribute cannot be changed once
+  // applied to a fenced frame. This will be enforced before this point so add
+  // a DCHECK here.
+
+  fenced_frame_mode_ = fenced_frame_mode;
+}
+
 bool FrameTreeNode::IsErrorPageIsolationEnabled() const {
   // Enable error page isolation for fenced frames in both MPArch and ShadowDOM
   // modes to address the issue with invalid urn:uuid (crbug.com/1264224).

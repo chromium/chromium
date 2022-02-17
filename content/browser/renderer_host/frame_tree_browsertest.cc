@@ -2062,6 +2062,80 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckInvalidUrnError) {
       net::ERR_INVALID_URL);
 }
 
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
+                       CheckCSPFencedFrameSrcOpaqueURL) {
+  const struct {
+    const char* csp;
+    bool expect_allowed;
+  } kTestCases[]{
+      {"fenced-frame-src 'none'", false},
+      {"fenced-frame-src 'self'", false},
+      {"fenced-frame-src *", true},
+      {"fenced-frame-src data:", false},
+      {"fenced-frame-src https:", true},
+      {"fenced-frame-src https://*:*", true},
+      {"fenced-frame-src https://*", false},
+      {"fenced-frame-src https://b.test:*", false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+    EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+    // It is safe to obtain the root frame tree node here, as it doesn't change.
+    FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                              ->GetPrimaryFrameTree()
+                              .root();
+
+    EXPECT_TRUE(ExecJs(root, JsReplace(R"(
+      var violation = new Promise(resolve => {
+        document.addEventListener("securitypolicyviolation", (e) => {
+          resolve(e.violatedDirective + ";" + e.blockedURI);
+        });
+      });
+
+      var meta = document.createElement('meta');
+      meta.httpEquiv = 'Content-Security-Policy';
+      meta.content = $1;
+      document.head.appendChild(meta);
+    )",
+                                       test_case.csp)));
+
+    EXPECT_TRUE(ExecJs(root,
+                       "var f = document.createElement('fencedframe');"
+                       "document.body.appendChild(f);"));
+
+    EXPECT_EQ(1U, root->child_count());
+
+    FrameTreeNode* fenced_frame_root_node =
+        GetFencedFrameRootNode(root->child_at(0));
+
+    GURL https_url(
+        https_server()->GetURL("b.test", "/fenced_frames/title1.html"));
+    FencedFrameURLMapping& url_mapping =
+        root->current_frame_host()->GetPage().fenced_frame_urls_map();
+    GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
+    EXPECT_TRUE(urn_uuid.is_valid());
+
+    std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+
+    net::Error expected_net_error_code =
+        test_case.expect_allowed ? net::OK : net::ERR_BLOCKED_BY_CSP;
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame_root_node, urn_uuid, navigate_urn_script,
+        expected_net_error_code);
+
+    if (!test_case.expect_allowed)
+      EXPECT_EQ("fenced-frame-src;", EvalJs(root, "violation"));
+
+    absl::optional<FrameTreeNode::FencedFrameMode> fenced_frame_mode =
+        fenced_frame_root_node->fenced_frame_mode();
+    EXPECT_TRUE(fenced_frame_mode.has_value());
+    EXPECT_EQ(fenced_frame_mode.value(),
+              FrameTreeNode::FencedFrameMode::kOpaque);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     FencedFrameTreeBrowserTest,

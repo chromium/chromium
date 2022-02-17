@@ -65,7 +65,8 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
                                 bool is_response_check,
                                 CSPContext* context,
                                 const mojom::SourceLocationPtr& source_location,
-                                bool is_form_submission);
+                                bool is_form_submission,
+                                bool is_opaque_fenced_frame = false);
 
 // Return true if the set of |policies| contains one "Upgrade-Insecure-request"
 // directive.

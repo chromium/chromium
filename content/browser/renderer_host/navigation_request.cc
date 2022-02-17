@@ -1723,9 +1723,14 @@ void NavigationRequest::BeginNavigation() {
 
   MaybeAssignInvalidPrerenderFrameTreeNodeId();
 
+  bool need_url_mapping = NeedFencedFrameURLMapping();
+  frame_tree_node_->SetFencedFrameModeIfNeeded(
+      need_url_mapping ? FrameTreeNode::FencedFrameMode::kOpaque
+                       : FrameTreeNode::FencedFrameMode::kDefault);
+
   // If this is a fenced frame with a urn:uuid, then convert it to a url before
   // starting the navigation; otherwise, proceed directly with the navigation.
-  if (NeedFencedFrameURLMapping()) {
+  if (need_url_mapping) {
     FencedFrameURLMapping& fenced_frame_urls_map = GetFencedFrameURLMap();
 
     // If the mapping finishes synchronously, OnFencedFrameURLMappingComplete
@@ -4771,6 +4776,7 @@ bool NavigationRequest::IsAllowedByCSPDirective(
     bool has_followed_redirect,
     bool url_upgraded_after_redirect,
     bool is_response_check,
+    bool is_opaque_fenced_frame,
     network::CSPContext::CheckCSPDisposition disposition) {
   GURL url;
   // If this request was upgraded in the net stack, downgrade the URL back to
@@ -4795,7 +4801,7 @@ bool NavigationRequest::IsAllowedByCSPDirective(
   return context->IsAllowedByCsp(
       policies, directive, url, commit_params_->original_url,
       has_followed_redirect, is_response_check, common_params_->source_location,
-      disposition, begin_params_->is_form_submission);
+      disposition, begin_params_->is_form_submission, is_opaque_fenced_frame);
 }
 
 net::Error NavigationRequest::CheckCSPDirectives(
@@ -4817,7 +4823,8 @@ net::Error NavigationRequest::CheckCSPDirectives(
         !IsAllowedByCSPDirective(
             initiator_policies->content_security_policies, &initiator_context,
             network::mojom::CSPDirectiveName::FormAction, has_followed_redirect,
-            url_upgraded_after_redirect, is_response_check, disposition)) {
+            url_upgraded_after_redirect, is_response_check,
+            /*is_opaque_fenced_frame=*/false, disposition)) {
       // net::ERR_ABORTED is used instead of net::ERR_BLOCKED_BY_CSP. This is
       // a better user experience as the user is not presented with an error
       // page. However if other CSP directives like frame-src are violated, it
@@ -4833,7 +4840,8 @@ net::Error NavigationRequest::CheckCSPDirectives(
               initiator_policies->content_security_policies, &initiator_context,
               network::mojom::CSPDirectiveName::NavigateTo,
               has_followed_redirect, url_upgraded_after_redirect,
-              is_response_check, disposition)) {
+              is_response_check, /*is_opaque_fenced_frame=*/false,
+              disposition)) {
         // net::ERR_ABORTED is used instead of net::ERR_BLOCKED_BY_CSP. This is
         // a better user experience as the user is not presented with an error
         // page. However if other CSP directives life frame-src are violated, it
@@ -4849,7 +4857,8 @@ net::Error NavigationRequest::CheckCSPDirectives(
                 &initiator_context,
                 network::mojom::CSPDirectiveName::PrefetchSrc,
                 has_followed_redirect, url_upgraded_after_redirect,
-                is_response_check, disposition)) {
+                is_response_check, /*is_opaque_fenced_frame=*/false,
+                disposition)) {
           error = net::ERR_BLOCKED_BY_CSP;
         }
       }
@@ -4857,15 +4866,18 @@ net::Error NavigationRequest::CheckCSPDirectives(
   }
 
   // [frame-src] or [fenced-frame-src]
-  if (parent_policies &&
-      !IsAllowedByCSPDirective(
-          parent_policies->content_security_policies, &parent_context,
-          frame_tree_node_->IsFencedFrameRoot()
-              ? network::mojom::CSPDirectiveName::FencedFrameSrc
-              : network::mojom::CSPDirectiveName::FrameSrc,
-          has_followed_redirect, url_upgraded_after_redirect, is_response_check,
-          disposition)) {
-    error = net::ERR_BLOCKED_BY_CSP;
+  if (parent_policies) {
+    bool is_opaque_fenced_frame = frame_tree_node_->fenced_frame_mode() ==
+                                  FrameTreeNode::FencedFrameMode::kOpaque;
+    if (!IsAllowedByCSPDirective(
+            parent_policies->content_security_policies, &parent_context,
+            frame_tree_node_->IsFencedFrameRoot()
+                ? network::mojom::CSPDirectiveName::FencedFrameSrc
+                : network::mojom::CSPDirectiveName::FrameSrc,
+            has_followed_redirect, url_upgraded_after_redirect,
+            is_response_check, is_opaque_fenced_frame, disposition)) {
+      error = net::ERR_BLOCKED_BY_CSP;
+    }
   }
 
   return error;

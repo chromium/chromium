@@ -14,17 +14,23 @@ namespace network {
 
 namespace {
 
+// A CSPSource used in test not interested checking the interactions with
+// 'self'. It doesn't match any URL.
+static const network::mojom::CSPSource no_self;
+
 // Allow() is an abbreviation of CheckCSPSourceList. Useful for writing
 // test expectations on one line.
-bool Allow(const mojom::CSPSourceListPtr& source_list,
-           const GURL& url,
-           const mojom::CSPSource& self,
-           bool is_redirect = false,
-           bool is_response_check = false,
-           mojom::CSPDirectiveName directive_name =
-               mojom::CSPDirectiveName::FrameSrc) {
+bool Allow(
+    const mojom::CSPSourceListPtr& source_list,
+    const GURL& url,
+    const mojom::CSPSource& self,
+    bool is_redirect = false,
+    bool is_response_check = false,
+    mojom::CSPDirectiveName directive_name = mojom::CSPDirectiveName::FrameSrc,
+    bool is_opaque_fenced_frame = false) {
   return CheckCSPSourceList(directive_name, *source_list, url, self,
-                            is_redirect, is_response_check);
+                            is_redirect, is_response_check,
+                            is_opaque_fenced_frame);
 }
 
 std::vector<mojom::ContentSecurityPolicyPtr> Parse(
@@ -1094,6 +1100,28 @@ TEST(CSPSourceList, SubsumeListNoScheme) {
         << " should " << (test.expected ? "" : "not ") << "subsume "
         << base::JoinString(test.response_csp, ", ");
   }
+}
+
+TEST(CSPSourceList, OpaqueURLMatchingAllowStar) {
+  auto source_list = mojom::CSPSourceList::New();
+  source_list->allow_star = true;
+  EXPECT_TRUE(Allow(source_list, GURL("https://not-example.com"), no_self,
+                    /*is_redirect=*/false,
+                    /*is_response_check=*/false,
+                    mojom::CSPDirectiveName::FencedFrameSrc,
+                    /*is_opaque_fenced_frame=*/true));
+}
+
+TEST(CSPSourceList, OpaqueURLMatchingAllowSelf) {
+  auto self = network::mojom::CSPSource::New("https", "example.com", 443, "",
+                                             false, false);
+
+  auto source_list = mojom::CSPSourceList::New();
+  source_list->allow_self = true;
+  EXPECT_FALSE(Allow(
+      source_list, GURL("https://example.com"), *self, /*is_redirect=*/false,
+      /*is_response_check=*/false, mojom::CSPDirectiveName::FencedFrameSrc,
+      /*is_opaque_fenced_frame=*/true));
 }
 
 }  // namespace network

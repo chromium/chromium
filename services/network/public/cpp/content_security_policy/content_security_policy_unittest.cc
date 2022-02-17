@@ -2168,4 +2168,22 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
   }
 }
 
+TEST(ContentSecurityPolicy, FencedFrameSrcOpaqueURL) {
+  CSPContextTest context;
+  auto policy = EmptyCSP();
+  policy->directives[CSPDirectiveName::FencedFrameSrc] =
+      mojom::CSPSourceList::New();
+  EXPECT_FALSE(CheckContentSecurityPolicy(
+      policy, CSPDirectiveName::FencedFrameSrc, GURL("https://a.com"), GURL(),
+      /*has_followed_redirect=*/false,
+      /*is_response_check=*/false, &context, SourceLocation(),
+      /*is_form_submission=*/false, /*is_opaque_fenced_frame=*/true));
+  ASSERT_EQ(1u, context.violations().size());
+  const char kConsoleMessage[] =
+      "Refused to frame 'urn:uuid' as a fenced frame because it violates the "
+      "following Content Security Policy directive: \"fenced-frame-src "
+      "'none'\".\n";
+  EXPECT_EQ(kConsoleMessage, context.violations()[0]->console_message);
+}
+
 }  // namespace network

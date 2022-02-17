@@ -6,6 +6,7 @@
 
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
 
+#include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -184,11 +185,32 @@ bool CSPSourceIsSchemeOnly(const mojom::CSPSource& source) {
 bool CheckCSPSource(const mojom::CSPSource& source,
                     const GURL& url,
                     const mojom::CSPSource& self_source,
-                    bool has_followed_redirect) {
+                    bool has_followed_redirect,
+                    bool is_opaque_fenced_frame) {
+  // Opaque fenced frames only allow https urls.
+  // TODO(crbug.com/1243568): Update the DCHECK and the return condition below
+  // if opaque fenced frames can map to non-https potentially trustworthy urls.
+  if (is_opaque_fenced_frame)
+    DCHECK_EQ(url.scheme(), url::kHttpsScheme);
+
   if (CSPSourceIsSchemeOnly(source)) {
+    // Opaque fenced frames only match 'https:' scheme source. Returns true for
+    // 'https:' scheme source assuming that the url has been validated on the
+    // fenced frame side.
+    if (is_opaque_fenced_frame)
+      return source.scheme == url::kHttpsScheme;
+
     return SourceAllowScheme(source, url, self_source) !=
            SchemeMatchingResult::NotMatching;
   }
+
+  // Only allow 'https://*:*' for opaque fenced frames. 'https://*' is not
+  // allowed as it could leak data about ports.
+  if (is_opaque_fenced_frame) {
+    return source.scheme == url::kHttpsScheme && source.is_host_wildcard &&
+           source.is_port_wildcard;
+  }
+
   PortMatchingResult portResult = SourceAllowPort(source, url);
   SchemeMatchingResult schemeResult =
       SourceAllowScheme(source, url, self_source);

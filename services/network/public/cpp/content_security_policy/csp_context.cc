@@ -42,14 +42,15 @@ bool CSPContext::IsAllowedByCsp(
     bool is_response_check,
     const mojom::SourceLocationPtr& source_location,
     CheckCSPDisposition check_csp_disposition,
-    bool is_form_submission) {
+    bool is_form_submission,
+    bool is_opaque_fenced_frame) {
   bool allow = true;
   for (const auto& policy : policies) {
     if (ShouldCheckPolicy(policy, check_csp_disposition)) {
       allow &= CheckContentSecurityPolicy(
           policy, directive_name, url, url_before_redirects,
           has_followed_redirect, is_response_check, this, source_location,
-          is_form_submission);
+          is_form_submission, is_opaque_fenced_frame);
     }
   }
 

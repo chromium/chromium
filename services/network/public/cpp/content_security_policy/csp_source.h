@@ -21,7 +21,8 @@ COMPONENT_EXPORT(NETWORK_CPP)
 bool CheckCSPSource(const mojom::CSPSource& source,
                     const GURL& url,
                     const mojom::CSPSource& self_source,
-                    bool has_followed_redirect = false);
+                    bool has_followed_redirect = false,
+                    bool is_opaque_fenced_frame = false);
 
 // Compute the source intersection of |source_a| and |source_b|.
 // https://w3c.github.io/webappsec-cspee/#intersection-source-expressions

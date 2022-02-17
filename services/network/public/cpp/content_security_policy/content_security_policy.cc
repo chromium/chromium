@@ -1230,11 +1230,18 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
                                 bool is_response_check,
                                 CSPContext* context,
                                 const mojom::SourceLocationPtr& source_location,
-                                bool is_form_submission) {
+                                bool is_form_submission,
+                                bool is_opaque_fenced_frame) {
   DCHECK(policy->self_origin);
 
-  if (ShouldBypassContentSecurityPolicy(context, directive_name, url))
+  if (is_opaque_fenced_frame &&
+      directive_name != CSPDirectiveName::FencedFrameSrc)
+    return false;
+
+  if (!is_opaque_fenced_frame &&
+      ShouldBypassContentSecurityPolicy(context, directive_name, url)) {
     return true;
+  }
 
   // 'navigate-to' has no effect when doing a form submission and a
   // 'form-action' directive is present.
@@ -1252,17 +1259,20 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
       continue;
 
     const auto& source_list = directive->second;
-    bool allowed = CheckCSPSourceList(directive_name, *source_list, url,
-                                      *(policy->self_origin),
-                                      has_followed_redirect, is_response_check);
+    bool allowed = CheckCSPSourceList(
+        directive_name, *source_list, url, *(policy->self_origin),
+        has_followed_redirect, is_response_check, is_opaque_fenced_frame);
 
     if (!allowed) {
-      ReportViolation(context, policy, effective_directive_name, directive_name,
-                      directive_name == CSPDirectiveName::FrameSrc ||
-                              directive_name == CSPDirectiveName::FencedFrameSrc
-                          ? url
-                          : url_before_redirects,
-                      has_followed_redirect, source_location);
+      ReportViolation(
+          context, policy, effective_directive_name, directive_name,
+          is_opaque_fenced_frame
+              ? GURL("urn:uuid")
+              : (directive_name == CSPDirectiveName::FrameSrc ||
+                         directive_name == CSPDirectiveName::FencedFrameSrc
+                     ? url
+                     : url_before_redirects),
+          has_followed_redirect, source_location);
     }
 
     return allowed ||
