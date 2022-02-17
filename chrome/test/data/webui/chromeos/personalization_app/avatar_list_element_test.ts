@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AvatarCamera} from 'chrome://personalization/trusted/user/avatar_camera_element.js';
 import {AvatarList} from 'chrome://personalization/trusted/user/avatar_list_element.js';
 import {UserActionName} from 'chrome://personalization/trusted/user/user_actions.js';
 import {UserImageObserver} from 'chrome://personalization/trusted/user/user_image_observer.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -127,14 +128,19 @@ export function AvatarListTest() {
     avatarListElement = initElement(AvatarList);
     await waitAfterNextRender(avatarListElement);
 
-    const avatarCamera = avatarListElement.$.avatarCamera;
-    assertFalse(avatarCamera.open, 'avatar-camera element should not be open');
+    assertTrue(
+        !avatarListElement.shadowRoot!.querySelector(AvatarCamera.is),
+        'avatar-camera element should not be open');
 
     const openCameraButton =
         avatarListElement!.shadowRoot!.getElementById('openCamera')!;
     openCameraButton.click();
 
-    assertTrue(avatarCamera.open, 'avatar-camera should be open after click');
+    await waitAfterNextRender(avatarListElement);
+
+    assertTrue(
+        !!avatarListElement.shadowRoot!.querySelector(AvatarCamera.is),
+        'avatar-camera should be open after click');
   });
 
   test('closes camera ui if camera goes offline', async () => {
@@ -147,15 +153,16 @@ export function AvatarListTest() {
     await waitAfterNextRender(avatarListElement);
 
     assertTrue(
-        avatarListElement.$.avatarCamera.open, 'avatar-camera should be open');
+        !!avatarListElement.shadowRoot!.querySelector(AvatarCamera.is),
+        'avatar-camera should be open');
 
     testPersonalizationStore.data.user.isCameraPresent = false;
     testPersonalizationStore.notifyObservers();
 
     await waitAfterNextRender(avatarListElement);
 
-    assertFalse(
-        avatarListElement.$.avatarCamera.open,
-        'avatar-camera should be closed because camera no longer available');
+    assertTrue(
+        !avatarListElement.shadowRoot!.querySelector(AvatarCamera.is),
+        'avatar-camera should be gone because camera no longer available');
   });
 }

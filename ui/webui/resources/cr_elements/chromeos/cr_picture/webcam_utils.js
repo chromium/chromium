@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {convertImageSequenceToPng} from './png.js';
+import {convertImageSequenceToPng, convertImageSequenceToPngBinary} from './png.js';
 
 /**
  * Dimensions for camera capture.
- * @const
  */
 export const CAPTURE_SIZE = {
   height: 576,
@@ -21,13 +20,12 @@ export const CAPTURE_INTERVAL_MS = 1000 / 10;
 
 /**
  * Duration of camera capture (milliseconds).
- * @const
+ * @type {number}
  */
 export const CAPTURE_DURATION_MS = 1000;
 
 /**
  * Default media constraints to request the front facing webcam.
- * @const
  */
 export const kDefaultVideoConstraints = {
   facingMode: 'user',
@@ -37,7 +35,7 @@ export const kDefaultVideoConstraints = {
 
 /**
  * Stops all video tracks associated with a MediaStream object.
- * @param {MediaStream} stream
+ * @param {?MediaStream} stream
  */
 export function stopMediaTracks(stream) {
   if (stream) {
@@ -50,9 +48,8 @@ export function stopMediaTracks(stream) {
  * Allocates a canvas for capturing a single still frame at a specific size.
  * @param {{width: number, height: number}} size Frame size.
  * @return {!HTMLCanvasElement} The allocated canvas.
- * @private
  */
-function allocateFrame_(size) {
+function allocateFrame(size) {
   const canvas =
       /** @type {!HTMLCanvasElement} */ (document.createElement('canvas'));
   canvas.width = size.width;
@@ -71,9 +68,8 @@ function allocateFrame_(size) {
  * @param {!HTMLVideoElement} video Video element to capture from.
  * @param {!HTMLCanvasElement} canvas Canvas to save frame in.
  * @return {!HTMLCanvasElement} The canvas frame was saved in.
- * @private
  */
-function writeVideoFrameToCanvas_(video, canvas) {
+function writeVideoFrameToCanvas(video, canvas) {
   const ctx =
       /** @type {!CanvasRenderingContext2D} */ (
           canvas.getContext('2d', {alpha: false}));
@@ -121,7 +117,7 @@ export async function captureFrames(video, captureSize, intervalMs, numFrames) {
     /** Pre-allocate all frames needed for capture. */
     const frames = [];
     while (frames.length < numFrames) {
-      frames.push(allocateFrame_(captureSize));
+      frames.push(allocateFrame(captureSize));
     }
 
     const capturedFrames = [];
@@ -129,7 +125,7 @@ export async function captureFrames(video, captureSize, intervalMs, numFrames) {
     const interval = window.setInterval(() => {
       /** Stop capturing frames when all allocated frames have been consumed. */
       if (frames.length) {
-        capturedFrames.push(writeVideoFrameToCanvas_(video, frames.pop()));
+        capturedFrames.push(writeVideoFrameToCanvas(video, frames.pop()));
       } else {
         window.clearInterval(interval);
         resolve(capturedFrames);
@@ -139,7 +135,20 @@ export async function captureFrames(video, captureSize, intervalMs, numFrames) {
 }
 
 /**
- * Encode frames and convert to animated PNG image.
+ * Mirrors the array around the last element by appending a reversed copy of
+ * itself (minus the first and last element). This makes playback appear
+ * continuous when played in a loop.
+ * @example ['a', 'b', 'c'] => ['a', 'b', 'c', 'b']
+ * @param {!Array<T>} arr
+ * @return {!Array<T>}
+ * @template T
+ */
+function mirror(arr) {
+  return arr.concat(arr.slice(1, -1).reverse());
+}
+
+/**
+ * Encode frames and convert to animated PNG image as a data URL.
  * @param {!Array<!HTMLCanvasElement>} frames The frames to convert to image.
  * @return {!string} The data URL for image.
  */
@@ -155,9 +164,18 @@ export function convertFramesToPng(frames) {
   }
 
   /** Create forward/backward image sequence. */
-  const forwardBackwardImageSequence =
-      encodedImages.concat(encodedImages.slice(1, -1).reverse());
+  const forwardBackwardImageSequence = mirror(encodedImages);
 
   /** Convert image sequence to animated PNG. */
   return convertImageSequenceToPng(forwardBackwardImageSequence);
+}
+
+/**
+ * Encode frames and convert to animated PNG image as a Uint8Array.
+ * @param {!Array<!HTMLCanvasElement>} frames
+ * @return {Uint8Array}
+ */
+export function convertFramesToPngBinary(frames) {
+  const encodedImages = frames.map(frame => frame.toDataURL('image/png'));
+  return convertImageSequenceToPngBinary(mirror(encodedImages));
 }

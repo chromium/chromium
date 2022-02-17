@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {DefaultUserImage, UserImageObserverRemote, UserInfo, UserProviderInterface} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -34,6 +35,7 @@ export class TestUserProvider extends
       'selectProfileImage',
       'getUserInfo',
       'selectDefaultImage',
+      'selectCameraImage',
     ]);
   }
 
@@ -64,5 +66,9 @@ export class TestUserProvider extends
     this.profileImage = {
       url: 'data://updated_test_url',
     };
+  }
+
+  selectCameraImage(data: BigBuffer) {
+    this.methodCalled('selectCameraImage', data);
   }
 }

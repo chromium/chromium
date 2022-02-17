@@ -7,12 +7,16 @@
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
 #include "components/user_manager/user_manager.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 class Profile;
 
@@ -52,6 +56,8 @@ class PersonalizationAppUserProviderImpl
 
   void SelectProfileImage() override;
 
+  void SelectCameraImage(::mojo_base::BigBuffer data) override;
+
   // user_manager::UserManager::Observer:
   void OnUserImageChanged(const user_manager::User& user) override;
 
@@ -62,6 +68,9 @@ class PersonalizationAppUserProviderImpl
   void OnCameraPresenceCheckDone(bool is_camera_present) override;
 
  private:
+  void OnCameraImageDecoded(scoped_refptr<base::RefCountedBytes> photo_bytes,
+                            const SkBitmap& decoded_bitmap);
+
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;
 
@@ -78,6 +87,9 @@ class PersonalizationAppUserProviderImpl
 
   mojo::Receiver<ash::personalization_app::mojom::UserProvider> user_receiver_{
       this};
+
+  base::WeakPtrFactory<PersonalizationAppUserProviderImpl>
+      image_decode_weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_USER_PROVIDER_IMPL_H_

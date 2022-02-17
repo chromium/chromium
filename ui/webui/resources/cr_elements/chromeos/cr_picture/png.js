@@ -129,12 +129,12 @@
   let CrPngState;
 
   /**
-   * Returns a data URL for an animated PNG image that is created
-   * from a sequence of images.
+   * Construct an internal representation of the png.
    * @param {!Array<string>} images The data URLs for each image.
-   * @return {string} A data URL for an animated PNG image.
+   * @return {!CrPngState}
+   * @private
    */
-  export function convertImageSequenceToPng(images) {
+  function convertDataUrlsToCrPng(images) {
     const png =
         /** @type {!CrPngState} */ ({frames: 0, sequences: 0, chunks: []});
 
@@ -198,6 +198,35 @@
     writeUInt32(IEND, getCRC(IEND, 4, 8), 8);
     png.chunks.push(IEND);
 
+    return png;
+  }
+
+  /**
+   * Get a binary representation of the png.
+   * @param {!Array<string>} images The data URLs for each image.
+   * @return {!Uint8Array} Binary data for animated png image.
+   */
+  export function convertImageSequenceToPngBinary(images) {
+    const png = convertDataUrlsToCrPng(images);
+    const numBytes =
+        png.chunks.reduce((value, next) => value + next.byteLength, 0);
+    const result = new Uint8Array(numBytes);
+    let offset = 0;
+    for (const chunk of png.chunks) {
+      result.set(/** @type {!ArrayBufferView} */ (chunk), offset);
+      offset += chunk.byteLength;
+    }
+    return result;
+  }
+
+  /**
+   * Returns a data URL for an animated PNG image that is created
+   * from a sequence of images.
+   * @param {!Array<string>} images The data URLs for each image.
+   * @return {string} A data URL for an animated PNG image.
+   */
+  export function convertImageSequenceToPng(images) {
+    const png = convertDataUrlsToCrPng(images);
     return 'data:image/png;base64,' +
         btoa(png.chunks
                  .map(function(chunk) {

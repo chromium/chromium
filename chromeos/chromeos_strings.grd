@@ -2002,6 +2002,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_AVATAR_LABEL" desc="Label for the Avatar page in Personalization app.">
         Avatar
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_TAKE_PHOTO" desc="Label for the button to take a webcam photo">
+        Take a photo
+      </message>
       <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL" desc="Label for the Screensaver page in Personalization app.">
         Screensaver
       </message>

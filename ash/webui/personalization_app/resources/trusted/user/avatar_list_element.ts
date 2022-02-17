@@ -92,14 +92,18 @@ export class AvatarList extends WithPersonalizationStore {
     getUserProvider().selectProfileImage();
   }
 
-  private openCamera_ = () => {
+  private openCamera_() {
     assert(this.isCameraPresent_, 'Camera needed to record an image');
     this.shouldShowCameraUi_ = true;
-  };
+  }
 
-  private onIsCameraPresentChanged_ = (value: boolean) => {
+  private onIsCameraPresentChanged_(value: boolean) {
     // Potentially hide camera UI if the camera has become unavailable.
     this.shouldShowCameraUi_ = this.shouldShowCameraUi_ && value;
+  }
+
+  private onCameraClosed_() {
+    this.shouldShowCameraUi_ = false;
   }
 }
 

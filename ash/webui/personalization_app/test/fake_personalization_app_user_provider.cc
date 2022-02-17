@@ -7,6 +7,7 @@
 #include "ash/public/cpp/personalization_app/user_display_info.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 
 namespace ash {
 
@@ -43,5 +44,7 @@ void FakePersonalizationAppUserProvider::GetDefaultUserImages(
 void FakePersonalizationAppUserProvider::SelectDefaultImage(int index) {}
 
 void FakePersonalizationAppUserProvider::SelectProfileImage() {}
+void FakePersonalizationAppUserProvider::SelectCameraImage(
+    ::mojo_base::BigBuffer data) {}
 
 }  // namespace ash

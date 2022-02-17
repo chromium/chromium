@@ -12,6 +12,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/unguessable_token.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -46,6 +47,7 @@ class FakePersonalizationAppUserProvider
   void GetDefaultUserImages(GetDefaultUserImagesCallback callback) override;
   void SelectDefaultImage(int index) override;
   void SelectProfileImage() override;
+  void SelectCameraImage(::mojo_base::BigBuffer data) override;
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::UserProvider> user_receiver_{

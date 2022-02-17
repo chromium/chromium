@@ -4,6 +4,7 @@
 
 module ash.personalization_app.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
@@ -328,6 +329,10 @@ interface UserProvider {
 
   // Select the downloaded profile image as the user image.
   SelectProfileImage();
+
+  // Set a camera image as the user's device avatar. |data| is a uint8 array of
+  // the png data.
+  SelectCameraImage(mojo_base.mojom.BigBuffer data);
 };
 
 // The source of the screensaver images come from.
