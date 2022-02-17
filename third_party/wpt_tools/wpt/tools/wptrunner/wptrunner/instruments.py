@@ -1,6 +1,8 @@
 import time
+import multiprocessing
 import threading
-from queue import Queue
+
+from . import mpcontext
 
 """Instrumentation for measuring high-level time spent on various tasks inside the runner.
 
@@ -52,10 +54,10 @@ class InstrumentWriter(object):
     def set(self, stack):
         stack.insert(0, threading.current_thread().name)
         stack = self._check_stack(stack)
-        self.queue.put(("set", threading.current_thread().ident, time.time(), stack))
+        self.queue.put(("set", threading.current_thread().native_id, time.time(), stack))
 
     def pause(self):
-        self.queue.put(("pause", threading.current_thread().ident, time.time(), None))
+        self.queue.put(("pause", threading.current_thread().native_id, time.time(), None))
 
     def _check_stack(self, stack):
         assert isinstance(stack, (tuple, list))
@@ -75,20 +77,21 @@ class Instrument(object):
         self.queue = None
         self.current = None
         self.start_time = None
-        self.thread = None
+        self.instrument_proc = None
 
     def __enter__(self):
-        assert self.thread is None
+        assert self.instrument_proc is None
         assert self.queue is None
-        self.queue = Queue()
-        self.thread = threading.Thread(target=self.run)
-        self.thread.start()
+        self.queue = multiprocessing.Queue()
+        mp = mpcontext.get_context()
+        self.instrument_proc = mp.Process(target=self.run)
+        self.instrument_proc.start()
         return InstrumentWriter(self.queue)
 
     def __exit__(self, *args, **kwargs):
         self.queue.put(("stop", None, time.time(), None))
-        self.thread.join()
-        self.thread = None
+        self.instrument_proc.join()
+        self.instrument_proc = None
         self.queue = None
 
     def run(self):
