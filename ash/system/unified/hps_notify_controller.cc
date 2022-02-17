@@ -48,6 +48,9 @@ HpsNotifyController::~HpsNotifyController() {
   // This is a no-op if the service isn't available or isn't enabled.
   // TODO(crbug.com/1241704): only disable if the service is enabled.
   chromeos::HpsDBusClient::Get()->DisableHpsNotify();
+
+  for (auto& observer : observers_)
+    observer.OnHpsNotifyControllerDestroyed();
 }
 
 // static

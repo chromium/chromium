@@ -61,7 +61,7 @@ HpsNotifyNotificationBlocker::HpsNotifyNotificationBlocker(
     : NotificationBlocker(message_center),
       message_center_(message_center),
       controller_(controller) {
-  controller_observer_.Observe(controller_);
+  controller_observation_.Observe(controller_);
 
   // Session controller is instantiated before us in the shell.
   SessionControllerImpl* session_controller =
@@ -69,7 +69,7 @@ HpsNotifyNotificationBlocker::HpsNotifyNotificationBlocker(
   DCHECK(session_controller);
   session_observation_.Observe(session_controller);
 
-  message_center_observer_.Observe(message_center_);
+  message_center_observation_.Observe(message_center_);
 
   UpdateInfoNotificationIfNecessary();
 }
@@ -125,6 +125,10 @@ void HpsNotifyNotificationBlocker::OnSnoopingStatusChanged(bool /*snooper*/) {
   // together, since that is translated to a "no snooper" event by the
   // controller.
   OnBlockingActiveChanged();
+}
+
+void HpsNotifyNotificationBlocker::OnHpsNotifyControllerDestroyed() {
+  controller_observation_.Reset();
 }
 
 void HpsNotifyNotificationBlocker::OnNotificationAdded(

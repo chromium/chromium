@@ -63,6 +63,7 @@ class ASH_EXPORT HpsNotifyNotificationBlocker
 
   // HpsNotifyController::Observer:
   void OnSnoopingStatusChanged(bool snooper) override;
+  void OnHpsNotifyControllerDestroyed() override;
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override;
@@ -99,10 +100,10 @@ class ASH_EXPORT HpsNotifyNotificationBlocker
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
   base::ScopedObservation<HpsNotifyController, HpsNotifyController::Observer>
-      controller_observer_{this};
+      controller_observation_{this};
   base::ScopedObservation<message_center::MessageCenter,
                           message_center::MessageCenterObserver>
-      message_center_observer_{this};
+      message_center_observation_{this};
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

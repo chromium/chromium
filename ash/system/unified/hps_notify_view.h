@@ -37,6 +37,7 @@ class ASH_EXPORT HpsNotifyView : public TrayItemView,
 
   // HpsNotifyController::Observer:
   void OnSnoopingStatusChanged(bool snooper) override;
+  void OnHpsNotifyControllerDestroyed() override;
 
  private:
   // Updates the system tray icon to use the color corresponding to the current
@@ -47,7 +48,7 @@ class ASH_EXPORT HpsNotifyView : public TrayItemView,
       session_observation_{this};
 
   base::ScopedObservation<HpsNotifyController, HpsNotifyController::Observer>
-      controller_observer_{this};
+      controller_observation_{this};
 
   // Must be last.
   base::WeakPtrFactory<HpsNotifyView> weak_ptr_factory_{this};

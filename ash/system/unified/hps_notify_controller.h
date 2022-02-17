@@ -34,6 +34,9 @@ class ASH_EXPORT HpsNotifyController
     // Called when an observer should show or hide itself because the snooping
     // status has changed. Argument is true if a snooper has now been detected.
     virtual void OnSnoopingStatusChanged(bool snooper) = 0;
+
+    // Used to coordinate observers that might outlive the controller.
+    virtual void OnHpsNotifyControllerDestroyed() = 0;
   };
 
   HpsNotifyController();
