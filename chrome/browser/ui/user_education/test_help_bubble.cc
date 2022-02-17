@@ -61,5 +61,5 @@ std::unique_ptr<HelpBubble> TestHelpBubbleFactory::CreateBubble(
 
 bool TestHelpBubbleFactory::CanBuildBubbleForTrackedElement(
     const ui::TrackedElement* element) const {
-  return element->IsA<ui::TestElement>();
+  return element->IsA<ui::test::TestElement>();
 }

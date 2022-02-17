@@ -938,10 +938,10 @@ TEST_F(ElementTrackerViewsTest, GetFirstMatchingViewWithNonViewsElements) {
   const ui::ElementContext context =
       ElementTrackerViews::GetContextForView(contents);
 
-  ui::TestElementPtr test_element1 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
-  ui::TestElementPtr test_element2 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element1 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element2 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
 
   test_element1->Show();
   contents->SetProperty(kElementIdentifierKey, kTestElementID);
@@ -1008,10 +1008,10 @@ TEST_F(ElementTrackerViewsTest, GetAllMatchingViewsWithNonViewsElements) {
   const ui::ElementContext context =
       ElementTrackerViews::GetContextForView(contents);
 
-  ui::TestElementPtr test_element1 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
-  ui::TestElementPtr test_element2 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element1 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element2 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
 
   test_element1->Show();
   contents->SetProperty(kElementIdentifierKey, kTestElementID);
@@ -1089,10 +1089,10 @@ TEST_F(ElementTrackerViewsTest, GetAllViewsInAnyContextWithNonViewsElements) {
   const ui::ElementContext context =
       ElementTrackerViews::GetContextForView(contents);
 
-  ui::TestElementPtr test_element1 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
-  ui::TestElementPtr test_element2 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element1 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element2 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
 
   test_element1->Show();
   contents->SetProperty(kElementIdentifierKey, kTestElementID);

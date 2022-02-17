@@ -113,7 +113,7 @@ TEST(TutorialTest, SingleInteractionTutorialRuns) {
   TutorialService service(&registry, bubble_factory_registry.get());
 
   // build elements and keep them for triggering show/hide
-  ui::TestElement element_1(kTestIdentifier1, kTestContext1);
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
   element_1.Show();
 
   // Build the tutorial Description
@@ -139,7 +139,7 @@ TEST(TutorialTest, TutorialWithCustomEvent) {
   TutorialService service(&registry, bubble_factory_registry.get());
 
   // build elements and keep them for triggering show/hide
-  ui::TestElement element_1(kTestIdentifier1, kTestContext1);
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
   element_1.Show();
 
   // Build the tutorial Description
@@ -168,7 +168,7 @@ TEST(TutorialTest, BuildAndRunTutorial) {
   TutorialService service(&registry, bubble_factory_registry.get());
 
   // build elements and keep them for triggering show/hide
-  ui::TestElement element(kTestIdentifier1, kTestContext1);
+  ui::test::TestElement element(kTestIdentifier1, kTestContext1);
   element.Show();
 
   Tutorial::Builder builder;

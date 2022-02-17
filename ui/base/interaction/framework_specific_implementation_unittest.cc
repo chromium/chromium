@@ -5,7 +5,6 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/interaction/element_test_util.h"
 
 namespace ui {
 

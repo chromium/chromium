@@ -50,7 +50,7 @@ class HelpBubbleFactoryRegistryTest : public testing::Test {
   }
 
   HelpBubbleFactoryRegistry help_bubble_factory_registry_;
-  ui::TestElement test_element_;
+  ui::test::TestElement test_element_;
 };
 
 TEST_F(HelpBubbleFactoryRegistryTest, ShowsBubble) {

@@ -7,7 +7,7 @@
 #include "base/test/bind.h"
 #include "ui/base/interaction/element_tracker.h"
 
-namespace ui {
+namespace ui::test {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestFrameworkIdentifier);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherFrameworkIdentifier);
@@ -71,4 +71,4 @@ TestElementOtherFramework::GetInstanceFrameworkIdentifier() const {
   return kOtherFrameworkIdentifier;
 }
 
-}  // namespace ui
+}  // namespace ui::test
