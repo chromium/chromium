@@ -509,8 +509,11 @@ void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
 
 void MediaStreamDispatcherHost::Crop(const base::UnguessableToken& device_id,
                                      const base::Token& crop_id,
+                                     uint32_t crop_version,
                                      CropCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  // TODO(crbug.com/1266378): Propagate |crop_version| to Viz.
 
   // Hop to the UI thread to verify that cropping to |crop_id| is permitted
   // from this particular context. Namely, cropping is currently only allowed
@@ -536,6 +539,7 @@ void MediaStreamDispatcherHost::OnCropValidationComplete(
     std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
     return;
   }
+
   media_stream_manager_->video_capture_manager()->Crop(device_id, crop_id,
                                                        std::move(callback));
 }

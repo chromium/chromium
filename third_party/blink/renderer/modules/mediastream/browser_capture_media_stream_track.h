@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/mediastream/focusable_media_stream_track.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
 
@@ -29,6 +30,10 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack final
                                  const String& descriptor_id,
                                  bool is_clone = false);
 
+#if !BUILDFLAG(IS_ANDROID)
+  void Trace(Visitor*) const override;
+#endif
+
   ScriptPromise cropTo(ScriptState*, const String&, ExceptionState&);
 
   BrowserCaptureMediaStreamTrack* clone(ScriptState*) override;
@@ -42,6 +47,24 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack final
   // pattern from the parent classes for clarity, and to make things easier
   // if we do in the future sub-class further.
   void CloneInternal(BrowserCaptureMediaStreamTrack*);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Resolves the Promise associated with |crop_version|.
+  void ResolveCropPromise(uint32_t crop_version,
+                          media::mojom::CropRequestResult result);
+
+  // Each time cropTo() is called on a given track, its crop version increments.
+  // Associate each Promise with its crop version, so that Viz can easily stamp
+  // each frame. When we see the first such frame, or an equivalent message,
+  // we can resolve the Promise. (An "equivalent message" can be a notification
+  // of a dropped frame, or a notification that a frame was not produced due
+  // to consisting of 0 pixels after the crop was applied, or anything similar.)
+  //
+  // Note that frames before the first call to cropTo() will be associated
+  // with a version of 0, both here and in Viz.
+  HeapHashMap<uint32_t, Member<ScriptPromiseResolver>> pending_promises_;
+  uint32_t current_crop_version_ = 0;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace blink

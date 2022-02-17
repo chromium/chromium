@@ -59,7 +59,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidId) {
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
 
-  EXPECT_CALL(*media_stream_video_source, Crop(GUIDToToken(valid_id), _))
+  EXPECT_CALL(*media_stream_video_source, Crop(GUIDToToken(valid_id), _, _))
       .Times(1);
 
   BrowserCaptureMediaStreamTrack* const track =
@@ -76,7 +76,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToInvalidIdIsRejected) {
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
 
-  EXPECT_CALL(*media_stream_video_source, Crop(_, _)).Times(0);
+  EXPECT_CALL(*media_stream_video_source, Crop(_, _, _)).Times(0);
 
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));
@@ -97,7 +97,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToFailsOnAndroid) {
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
 
-  EXPECT_CALL(*media_stream_video_source, Crop(_, _)).Times(0);
+  EXPECT_CALL(*media_stream_video_source, Crop(_, _, _)).Times(0);
 
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));

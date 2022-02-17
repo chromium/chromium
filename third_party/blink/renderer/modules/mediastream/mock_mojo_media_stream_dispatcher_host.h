@@ -53,9 +53,10 @@ class MockMojoMediaStreamDispatcherHost
   MOCK_METHOD1(OnStreamStarted, void(const WTF::String&));
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD2(FocusCapturedSurface, void(const WTF::String&, bool));
-  MOCK_METHOD3(Crop,
+  MOCK_METHOD4(Crop,
                void(const base::UnguessableToken&,
                     const base::Token&,
+                    uint32_t,
                     CropCallback));
 #endif
 

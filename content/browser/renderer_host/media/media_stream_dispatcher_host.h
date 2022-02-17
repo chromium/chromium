@@ -98,6 +98,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   void FocusCapturedSurface(const std::string& label, bool focus) override;
   void Crop(const base::UnguessableToken& device_id,
             const base::Token& crop_id,
+            uint32_t crop_version,
             CropCallback callback) override;
 
   void OnCropValidationComplete(const base::UnguessableToken& device_id,

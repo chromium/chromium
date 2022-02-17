@@ -520,6 +520,7 @@ bool MediaStreamVideoSource::SupportsEncodedOutput() const {
 #if !BUILDFLAG(IS_ANDROID)
 void MediaStreamVideoSource::Crop(
     const base::Token& crop_id,
+    uint32_t crop_version,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
 }
