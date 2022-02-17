@@ -8,6 +8,7 @@
 #include "ash/bubble/bubble_constants.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/style/system_shadow.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
@@ -65,6 +66,21 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_widget_->AddObserver(this);
+
+  // Add a system shadow.
+  shadow_ = std::make_unique<SystemShadow>(SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
+
+  gfx::Rect shadow_bounds = gfx::Rect(GetBoundsInScreen().size());
+  // Shift the shadow origin by the insets.
+  gfx::Insets insets = bubble_view_->GetBorderInsets();
+  shadow_bounds.Offset(gfx::Vector2d(insets.left(), insets.top()));
+  shadow_->SetContentBounds(shadow_bounds);
+
+  // Add shadow layer at the bottom of window layer.
+  auto* window = bubble_widget_->GetNativeView();
+  window->layer()->Add(shadow_->layer());
+  window->layer()->StackAtBottom(shadow_->layer());
 
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
   bubble_view_->InitializeAndShowBubble();
@@ -231,6 +247,15 @@ void UnifiedSystemTrayBubble::OnMessageCenterActivated() {
 
 void UnifiedSystemTrayBubble::OnDisplayConfigurationChanged() {
   UpdateBubbleBounds();
+}
+
+void UnifiedSystemTrayBubble::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  // Update the shadow bounds.
+  gfx::Rect shadow_bounds = gfx::Rect(new_bounds.size());
+  shadow_bounds.Inset(bubble_view_->GetBorderInsets());
+  shadow_->SetContentBounds(shadow_bounds);
 }
 
 void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {
