@@ -18,7 +18,7 @@
 
 <dom-module id="assistant-voice-match">
   <template>
-    <style include="oobe-dialog-host-styles">
+    <style include="oobe-dialog-host-styles assistant-common-styles">
       #voice-match-animation {
         height: 170px;
       }
@@ -43,7 +43,6 @@
         width: 100px;
       }
     </style>
-    <link rel="stylesheet" href="assistant_shared_styles.css">
     <oobe-adaptive-dialog id="voiceMatchIntroDialog" role="dialog"
         aria-label$="[[getDialogTitle_(locale, uiStep, childName_)]]"
         hide-shadow for-step="intro">

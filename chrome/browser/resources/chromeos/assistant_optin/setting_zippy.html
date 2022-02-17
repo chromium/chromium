@@ -10,7 +10,7 @@
 
 <dom-module id="setting-zippy">
   <template>
-    <style include="oobe-common-styles">
+    <style include="oobe-common-styles assistant-common-styles">
       #container:not([expandStyle]) {
         padding-top: 8px;
       }
@@ -92,7 +92,6 @@
         margin: 10px;
       }
     </style>
-    <link rel="stylesheet" href="assistant_shared_styles.css">
     <template is="dom-if" if="[[expandStyle]]">
       <cr-expand-button expanded="{{expanded_}}">
         <div id="container" class="flex layout horizontal"

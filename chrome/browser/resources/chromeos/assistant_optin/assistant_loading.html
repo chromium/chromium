@@ -18,7 +18,7 @@
 
 <dom-module id="assistant-loading">
   <template>
-    <style include="oobe-dialog-host-styles">
+    <style include="oobe-dialog-host-styles assistant-common-styles">
       #retry-button {
         margin-inline-end: 0;
       }
@@ -33,7 +33,6 @@
         width: 100%;
       }
     </style>
-    <link rel="stylesheet" href="assistant_shared_styles.css">
     <oobe-content-dialog id="loading-dialog" role="dialog" for-step="loading"
         no-buttons>
       <div slot="content" class="flex layout vertical center-justified">

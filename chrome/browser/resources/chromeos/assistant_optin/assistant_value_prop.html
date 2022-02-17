@@ -16,7 +16,7 @@
 
 <dom-module id="assistant-value-prop">
   <template>
-    <style include="oobe-dialog-host-styles">
+    <style include="oobe-dialog-host-styles assistant-common-styles">
       :host-context([orientation=vertical]) oobe-adaptive-dialog {
         --oobe-adaptive-dialog-content-top-padding: 0;
       }
@@ -64,7 +64,6 @@
         padding-top: 20px;
       }
     </style>
-    <link rel="stylesheet" href="assistant_shared_styles.css">
     <oobe-adaptive-dialog id="value-prop-dialog" role="dialog">
       <iron-icon slot="icon" icon="assistant-32:assistant"
           aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
