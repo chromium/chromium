@@ -73,12 +73,11 @@ void StatsCollector::AddProcessingTime(int pixel_size,
                                        size_t new_keyframes,
                                        const base::TimeTicks& now) {
   DCHECK(processing_time_ms_histogram_);
-
-  number_of_keyframes_ += new_keyframes;
   if (pixel_size == current_stats_key_.pixel_size &&
       is_hardware_accelerated == current_stats_key_.hw_accelerated) {
     // Store data.
     processing_time_ms_histogram_->Add(processing_time_ms);
+    number_of_keyframes_ += new_keyframes;
   } else {
     // New config.
     if (samples_collected() >= kMinSamplesThreshold) {

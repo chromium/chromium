@@ -29,7 +29,8 @@ WebrtcEncodingInfoHandler* WebrtcEncodingInfoHandler::Instance() {
 
 WebrtcEncodingInfoHandler::WebrtcEncodingInfoHandler()
     : WebrtcEncodingInfoHandler(blink::CreateWebrtcVideoEncoderFactory(
-                                    Platform::Current()->GetGpuFactories()),
+                                    Platform::Current()->GetGpuFactories(),
+                                    base::DoNothing()),
                                 blink::CreateWebrtcAudioEncoderFactory()) {}
 
 WebrtcEncodingInfoHandler::WebrtcEncodingInfoHandler(

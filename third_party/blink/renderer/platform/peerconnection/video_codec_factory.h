@@ -32,7 +32,8 @@ CreateHWVideoEncoderFactory(media::GpuVideoAcceleratorFactories* gpu_factories);
 
 PLATFORM_EXPORT std::unique_ptr<webrtc::VideoEncoderFactory>
 CreateWebrtcVideoEncoderFactory(
-    media::GpuVideoAcceleratorFactories* gpu_factories);
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    StatsCollector::StoreProcessingStatsCB stats_callback);
 PLATFORM_EXPORT std::unique_ptr<webrtc::VideoDecoderFactory>
 CreateWebrtcVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,

@@ -344,7 +344,7 @@ void ReportUmaEncodeDecodeCapabilities(
 
   // Create encoder/decoder factories.
   std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
-      blink::CreateWebrtcVideoEncoderFactory(gpu_factories);
+      blink::CreateWebrtcVideoEncoderFactory(gpu_factories, base::DoNothing());
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
       blink::CreateWebrtcVideoDecoderFactory(
           gpu_factories, media_decoder_factory, std::move(media_task_runner),
@@ -618,15 +618,18 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
       p2p_socket_dispatcher_.Get(), traffic_annotation);
 
   gpu_factories_ = gpu_factories;
-  std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
-      blink::CreateWebrtcVideoEncoderFactory(gpu_factories);
   // base::Unretained is safe below, because
   // PeerConnectionDependencyFactory (that holds `webrtc_video_perf_reporter_`)
-  // outlives the decoders that are using the callback. The lifetime of
-  // PeerConnectionDependencyFactory is tied to the ExecutionContext and the
-  // destruction of the decoders is triggered by a call to
+  // outlives the encoders and decoders that are using the callback. The
+  // lifetime of PeerConnectionDependencyFactory is tied to the ExecutionContext
+  // and the destruction of the encoders and decoders is triggered by a call to
   // RTCPeerConnection::ContextDestroyed() which happens just before the
   // ExecutionContext is destroyed.
+  std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
+      blink::CreateWebrtcVideoEncoderFactory(
+          gpu_factories,
+          base::BindRepeating(&WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
+                              base::Unretained(&webrtc_video_perf_reporter_)));
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
       blink::CreateWebrtcVideoDecoderFactory(
           gpu_factories, media_decoder_factory, std::move(media_task_runner),
