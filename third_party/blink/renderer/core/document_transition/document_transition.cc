@@ -100,7 +100,6 @@ void DocumentTransition::Trace(Visitor* visitor) const {
   visitor->Trace(prepare_promise_resolver_);
   visitor->Trace(start_promise_resolver_);
   visitor->Trace(active_shared_elements_);
-  visitor->Trace(effect_nodes_);
   visitor->Trace(signal_);
   visitor->Trace(style_tracker_);
 
@@ -204,8 +203,7 @@ ScriptPromise DocumentTransition::prepare(
   }
 
   // The root snapshot is handled as a shared element by the compositing stack.
-  if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled())
-    shared_elements_config.emplace_back();
+  shared_elements_config.emplace_back();
 
   if (options->hasAbortSignal()) {
     if (options->abortSignal()->aborted()) {
@@ -229,21 +227,17 @@ ScriptPromise DocumentTransition::prepare(
   prepare_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
-  const bool is_renderer_transition =
-      !RuntimeEnabledFeatures::DocumentTransitionVizEnabled();
   state_ = State::kPreparing;
   pending_request_ = DocumentTransitionRequest::CreatePrepare(
       effect, document_tag_, root_config, std::move(shared_elements_config),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyPrepareFinished,
           WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)),
-      is_renderer_transition);
+      /*is_renderer_transition=*/true);
 
-  if (is_renderer_transition) {
-    style_tracker_ =
-        MakeGarbageCollected<DocumentTransitionStyleTracker>(*document_);
-    style_tracker_->Prepare(active_shared_elements_);
-  }
+  style_tracker_ =
+      MakeGarbageCollected<DocumentTransitionStyleTracker>(*document_);
+  style_tracker_->Prepare(active_shared_elements_);
 
   NotifyHasChangesToCommit();
   return prepare_promise_resolver_->Promise();
@@ -295,17 +289,9 @@ ScriptPromise DocumentTransition::start(
   state_ = State::kStarted;
   start_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  if (RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
-    pending_request_ = DocumentTransitionRequest::CreateStart(
-        document_tag_, prepare_shared_element_count_,
-        ConvertToBaseOnceCallback(CrossThreadBindOnce(
-            &DocumentTransition::NotifyStartFinished,
-            WrapCrossThreadWeakPersistent(this), last_start_sequence_id_)));
-  } else {
-    pending_request_ =
-        DocumentTransitionRequest::CreateAnimateRenderer(document_tag_);
-    style_tracker_->Start(active_shared_elements_);
-  }
+  pending_request_ =
+      DocumentTransitionRequest::CreateAnimateRenderer(document_tag_);
+  style_tracker_->Start(active_shared_elements_);
 
   NotifyHasChangesToCommit();
   return start_promise_resolver_->Promise();
@@ -365,11 +351,9 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
   if (disable_end_transition_)
     return;
 
-  if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
-    style_tracker_->StartFinished();
-    pending_request_ = DocumentTransitionRequest::CreateRelease(document_tag_);
-    NotifyHasChangesToCommit();
-  }
+  style_tracker_->StartFinished();
+  pending_request_ = DocumentTransitionRequest::CreateRelease(document_tag_);
+  NotifyHasChangesToCommit();
   ResetState(/*abort_style_tracker=*/false);
 }
 
@@ -384,10 +368,9 @@ bool DocumentTransition::IsTransitionParticipant(
   DCHECK(state_ != State::kIdle || !style_tracker_);
 
   // The layout view is always a participant if there is a transition.
-  if (auto* layout_view = DynamicTo<LayoutView>(object)) {
-    return !RuntimeEnabledFeatures::DocumentTransitionVizEnabled() &&
-           state_ != State::kIdle;
-  }
+  if (auto* layout_view = DynamicTo<LayoutView>(object))
+    return state_ != State::kIdle;
+
   // Otherwise check if the layout object has an active shared element.
   auto* element = DynamicTo<Element>(object.GetNode());
   return element && active_shared_elements_.Contains(element);
@@ -413,7 +396,6 @@ PaintPropertyChangeType DocumentTransition::UpdateEffect(
   if (!element) {
     // The only non-element participant is the layout view.
     DCHECK(object.IsLayoutView());
-    DCHECK(!RuntimeEnabledFeatures::DocumentTransitionVizEnabled());
     // This matches one past the size of the shared element configs generated in
     // ::prepare().
     state.document_transition_shared_element_id.AddIndex(
@@ -431,20 +413,14 @@ PaintPropertyChangeType DocumentTransition::UpdateEffect(
     // This tags the shared element's content with the resource id used by the
     // first pseudo element. This is okay since in the eventual API we should
     // have a 1:1 mapping between shared elements and pseudo elements.
-    if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
-      if (!state.shared_element_resource_id.IsValid()) {
-        state.shared_element_resource_id =
-            style_tracker_->GetLiveSnapshotId(element);
-      }
+    if (!state.shared_element_resource_id.IsValid()) {
+      state.shared_element_resource_id =
+          style_tracker_->GetLiveSnapshotId(element);
     }
   }
 
-  if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled()) {
-    return style_tracker_->UpdateEffect(element, std::move(state),
-                                        current_effect);
-  }
-  return UpdateEffectWithoutStyleTracker(element, std::move(state),
-                                         current_effect);
+  return style_tracker_->UpdateEffect(element, std::move(state),
+                                      current_effect);
 }
 
 EffectPaintPropertyNode* DocumentTransition::GetEffect(
@@ -454,31 +430,7 @@ EffectPaintPropertyNode* DocumentTransition::GetEffect(
   auto* element = DynamicTo<Element>(object.GetNode());
   if (!element)
     return style_tracker_->GetRootEffect();
-
-  if (!RuntimeEnabledFeatures::DocumentTransitionVizEnabled())
-    return style_tracker_->GetEffect(element);
-
-  auto it = effect_nodes_.find(element);
-  DCHECK(it != effect_nodes_.end());
-  return it->value.get();
-}
-
-PaintPropertyChangeType DocumentTransition::UpdateEffectWithoutStyleTracker(
-    Element* element,
-    EffectPaintPropertyNode::State state,
-    const EffectPaintPropertyNodeOrAlias& current_effect) {
-  DCHECK(RuntimeEnabledFeatures::DocumentTransitionVizEnabled());
-  auto it = effect_nodes_.find(element);
-  if (it == effect_nodes_.end()) {
-    auto effect =
-        EffectPaintPropertyNode::Create(current_effect, std::move(state));
-#if DCHECK_IS_ON()
-    effect->SetDebugName("SharedElementTransition");
-#endif
-    effect_nodes_.insert(element, std::move(effect));
-    return PaintPropertyChangeType::kNodeAddedOrRemoved;
-  }
-  return it->value->Update(current_effect, std::move(state), {});
+  return style_tracker_->GetEffect(element);
 }
 
 void DocumentTransition::VerifySharedElements() {

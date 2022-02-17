@@ -135,11 +135,6 @@ class CORE_EXPORT DocumentTransition
   // finished situations.
   void ResetState(bool abort_style_tracker = true);
 
-  PaintPropertyChangeType UpdateEffectWithoutStyleTracker(
-      Element* element,
-      EffectPaintPropertyNode::State state,
-      const EffectPaintPropertyNodeOrAlias& current_effect);
-
   Member<Document> document_;
 
   State state_ = State::kIdle;
@@ -158,9 +153,6 @@ class CORE_EXPORT DocumentTransition
   // calls is the same.
   HeapVector<Member<Element>> active_shared_elements_;
   wtf_size_t prepare_shared_element_count_ = 0u;
-
-  HeapHashMap<Member<Element>, scoped_refptr<EffectPaintPropertyNode>>
-      effect_nodes_;
 
   // Created conditionally if renderer based SharedElementTransitions is
   // enabled.

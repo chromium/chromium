@@ -958,13 +958,6 @@
       name: "DocumentTransition",
     },
     {
-      // Document transitions, including shared element transitions.
-      // See https://github.com/WICG/shared-element-transitions
-      // Note that this uses a viz animation implementation.
-      name: "DocumentTransitionViz",
-      depends_on: ["DocumentTransition"]
-    },
-    {
       name: "DocumentWrite",
     },
     {
