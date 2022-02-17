@@ -583,7 +583,6 @@ UIWindow* GetAnyKeyWindow();
 // Executes JavaScript on current WebState, and waits for either the completion
 // or timeout. If execution does not complete within a timeout a GREYAssert is
 // induced.
-- (id)executeJavaScript:(NSString*)javaScript;
 
 - (base::Value)evaluateJavaScript:(NSString*)javaScript [[nodiscard]];
 
