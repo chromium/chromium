@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_id.h"
 
 namespace quick_answers {
 namespace {
@@ -95,10 +96,10 @@ TEST_F(DefinitionResultParserTest, Success) {
       static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
   EXPECT_EQ(expected_answer,
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
-  EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
+  EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
   auto* title = static_cast<QuickAnswerText*>(quick_answer.title[0].get());
   EXPECT_EQ(expected_title, GetQuickAnswerTextForTesting(quick_answer.title));
-  EXPECT_EQ(gfx::kGoogleGrey900, title->color);
+  EXPECT_EQ(ui::kColorLabelForeground, title->color_id);
 }
 
 TEST_F(DefinitionResultParserTest, EmptyValue) {

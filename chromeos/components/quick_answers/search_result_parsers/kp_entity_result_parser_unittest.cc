@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_id.h"
 
 namespace quick_answers {
 namespace {
@@ -73,7 +74,7 @@ TEST_F(KpEntityResultParserTest, SuccessWithRatingScoreRound) {
       static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
   EXPECT_EQ("4.5 ★ (100 reviews)",
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
-  EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
+  EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
 
   result.SetDoublePath(
       "knowledgePanelEntityResult.entity.ratingsAndReviews.google."
@@ -89,7 +90,7 @@ TEST_F(KpEntityResultParserTest, SuccessWithRatingScoreRound) {
       static_cast<QuickAnswerText*>(quick_answer2.first_answer_row[0].get());
   EXPECT_EQ("4.5 ★ (100 reviews)",
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
-  EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
+  EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
 }
 
 TEST_F(KpEntityResultParserTest, SuccessWithKnownForReason) {
@@ -109,7 +110,7 @@ TEST_F(KpEntityResultParserTest, SuccessWithKnownForReason) {
       static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
   EXPECT_EQ("44th U.S. President",
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
-  EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
+  EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
 }
 
 TEST_F(KpEntityResultParserTest, EmptyValue) {

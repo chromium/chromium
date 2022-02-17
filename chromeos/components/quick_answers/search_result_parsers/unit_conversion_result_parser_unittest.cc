@@ -13,6 +13,7 @@
 #include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_id.h"
 
 namespace quick_answers {
 namespace {
@@ -143,7 +144,7 @@ TEST_F(UnitConversionResultParserTest,
       static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
   EXPECT_EQ(kDestRawTextPound,
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
-  EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
+  EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
 }
 
 TEST_F(UnitConversionResultParserTest, ParseWithNoRuleSetShouldReturnRawText) {
@@ -163,7 +164,7 @@ TEST_F(UnitConversionResultParserTest, ParseWithNoRuleSetShouldReturnRawText) {
       static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
   EXPECT_EQ(kDestRawTextPound,
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
-  EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
+  EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
 }
 
 TEST_F(UnitConversionResultParserTest,
@@ -185,7 +186,7 @@ TEST_F(UnitConversionResultParserTest,
       static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
   EXPECT_EQ(kDestRawTextPound,
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
-  EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
+  EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
 }
 
 TEST_F(UnitConversionResultParserTest,
@@ -212,7 +213,7 @@ TEST_F(UnitConversionResultParserTest,
       static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
   EXPECT_EQ(expected_result,
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
-  EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
+  EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
 }
 
 }  // namespace quick_answers

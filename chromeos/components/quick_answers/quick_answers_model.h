@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "ui/gfx/color_palette.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -95,22 +95,23 @@ struct QuickAnswerUiElement {
 // class to describe an answer text.
 struct QuickAnswerText : public QuickAnswerUiElement {
   explicit QuickAnswerText(const std::string& text,
-                           SkColor color = gfx::kGoogleGrey900)
+                           ui::ColorId color_id = ui::kColorLabelForeground)
       : QuickAnswerUiElement(QuickAnswerUiElementType::kText),
         text(base::UTF8ToUTF16(text)),
-        color(color) {}
+        color_id(color_id) {}
 
   std::u16string text;
 
   // Attributes for text style.
-  SkColor color = SK_ColorBLACK;
+  ui::ColorId color_id;
 };
 
 struct QuickAnswerResultText : public QuickAnswerText {
  public:
-  QuickAnswerResultText(const std::string& text,
-                        SkColor color = gfx::kGoogleGrey700)
-      : QuickAnswerText(text, color) {}
+  QuickAnswerResultText(
+      const std::string& text,
+      ui::ColorId color_id = ui::kColorLabelForegroundSecondary)
+      : QuickAnswerText(text, color_id) {}
 };
 
 struct QuickAnswerImage : public QuickAnswerUiElement {

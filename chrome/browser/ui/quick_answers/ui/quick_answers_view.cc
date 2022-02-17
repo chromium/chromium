@@ -43,6 +43,7 @@
 namespace {
 
 using quick_answers::QuickAnswer;
+using quick_answers::QuickAnswerResultText;
 using quick_answers::QuickAnswerText;
 using quick_answers::QuickAnswerUiElement;
 using quick_answers::QuickAnswerUiElementType;
@@ -68,7 +69,7 @@ constexpr int kDogfoodIconBorderDip = 8;
 
 // Spacing between lines in the main view.
 constexpr int kLineSpacingDip = 4;
-constexpr int kLineHeightDip = 20;
+constexpr int kDefaultLineHeightDip = 20;
 
 // Spacing between labels in the horizontal elements view.
 constexpr int kLabelSpacingDip = 2;
@@ -91,18 +92,36 @@ constexpr int kReportQueryViewFontSize = 12;
 // Maximum height QuickAnswersView can expand to.
 int MaximumViewHeight() {
   return kMainViewInsets.height() + kContentViewInsets.height() +
-         kMaxRows * kLineHeightDip + (kMaxRows - 1) * kLineSpacingDip;
+         kMaxRows * kDefaultLineHeightDip + (kMaxRows - 1) * kLineSpacingDip;
 }
 
-// Adds |text_element| as label to the container.
-Label* AddTextElement(const QuickAnswerText& text_element, View* container) {
-  auto* label =
-      container->AddChildView(std::make_unique<Label>(text_element.text));
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  label->SetEnabledColor(text_element.color);
-  label->SetLineHeight(kLineHeightDip);
-  return label;
-}
+class QuickAnswersTextLabel : public views::Label {
+ public:
+  METADATA_HEADER(QuickAnswersTextLabel);
+
+  explicit QuickAnswersTextLabel(QuickAnswerText quick_answers_text)
+      : Label(quick_answers_text.text),
+        quick_answers_text_(quick_answers_text) {
+    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  }
+
+  QuickAnswersTextLabel(const QuickAnswersTextLabel&) = delete;
+  QuickAnswersTextLabel& operator=(const QuickAnswersTextLabel&) = delete;
+
+  ~QuickAnswersTextLabel() override = default;
+
+  // views::View:
+  void OnThemeChanged() override {
+    views::Label::OnThemeChanged();
+    SetEnabledColor(GetColorProvider()->GetColor(quick_answers_text_.color_id));
+  }
+
+ private:
+  QuickAnswerText quick_answers_text_;
+};
+
+BEGIN_METADATA(QuickAnswersTextLabel, views::Label)
+END_METADATA
 
 // Adds the list of |QuickAnswerUiElement| horizontally to the container.
 View* AddHorizontalUiElements(
@@ -120,8 +139,8 @@ View* AddHorizontalUiElements(
   for (const auto& element : elements) {
     switch (element->type) {
       case QuickAnswerUiElementType::kText:
-        AddTextElement(*static_cast<QuickAnswerText*>(element.get()),
-                       labels_container);
+        labels_container->AddChildView(std::make_unique<QuickAnswersTextLabel>(
+            *static_cast<QuickAnswerText*>(element.get())));
         break;
       case QuickAnswerUiElementType::kImage:
         // TODO(yanxiao): Add image view
@@ -375,13 +394,13 @@ void QuickAnswersView::ShowRetryView() {
   main_view_->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
 
   // Add title.
-  AddTextElement(QuickAnswerText(title_), content_view_);
+  content_view_->AddChildView(
+      std::make_unique<QuickAnswersTextLabel>(QuickAnswerText(title_)));
 
   // Add error label.
   std::vector<std::unique_ptr<QuickAnswerUiElement>> description_labels;
-  description_labels.push_back(std::make_unique<QuickAnswerText>(
-      l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_NETWORK_ERROR),
-      GetColorProvider()->GetColor(ui::kColorLabelForegroundSecondary)));
+  description_labels.push_back(std::make_unique<QuickAnswerResultText>(
+      l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_NETWORK_ERROR)));
   auto* description_container =
       AddHorizontalUiElements(description_labels, content_view_);
 
@@ -460,10 +479,12 @@ void QuickAnswersView::AddContentView() {
       .SetDefault(views::kMarginsKey,
                   gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/kLineSpacingDip,
                               /*right=*/0));
-  AddTextElement(QuickAnswerText(title_), content_view_);
+  content_view_->AddChildView(
+      std::make_unique<QuickAnswersTextLabel>(QuickAnswerText(title_)));
   std::string loading =
       l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_LOADING);
-  AddTextElement(QuickAnswerText(loading, gfx::kGoogleGrey700), content_view_);
+  content_view_->AddChildView(
+      std::make_unique<QuickAnswersTextLabel>(QuickAnswerResultText(loading)));
 }
 
 void QuickAnswersView::AddSettingsButton() {
@@ -588,7 +609,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   bool first_answer_is_single_label =
       first_answer_view->children().size() == 1 &&
       first_answer_view->children().front()->GetClassName() ==
-          views::Label::kViewClassName;
+          QuickAnswersTextLabel::kViewClassName;
   if (first_answer_is_single_label) {
     // Update announcement.
     auto* title_label = static_cast<Label*>(title_view->children().front());
@@ -607,8 +628,8 @@ void QuickAnswersView::UpdateQuickAnswerResult(
     // allow that label to wrap through to the row intended for the former.
     if (first_answer_is_single_label) {
       // Cache multi-line label for resizing when view bounds change.
-      first_answer_label_ =
-          static_cast<Label*>(first_answer_view->children().front());
+      first_answer_label_ = static_cast<QuickAnswersTextLabel*>(
+          first_answer_view->children().front());
       first_answer_label_->SetMultiLine(true);
       first_answer_label_->SetMaxLines(kMaxRows - /*exclude title*/ 1);
     }

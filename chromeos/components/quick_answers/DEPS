@@ -4,5 +4,6 @@ include_rules = [
   "+services/data_decoder/public",
   "+ui/base/l10n",
   "+ui/base/resource/resource_bundle.h",
+  "+ui/color",
   "+ui/gfx",
 ]

@@ -60,6 +60,7 @@ source_set("quick_answers") {
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp:cpp",
     "//ui/base",
+    "//ui/color:color_headers",
     "//ui/gfx",
   ]
 }
@@ -102,5 +103,6 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/color:color_headers",
   ]
 }
