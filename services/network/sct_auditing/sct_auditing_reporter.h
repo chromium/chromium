@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/hash_value.h"
@@ -51,14 +52,55 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   // (e.g., the retry counter has been incremented).
   using ReporterUpdatedCallback = base::RepeatingCallback<void()>;
 
+  // For hashdance requests, the client must select an SCT and set its metadata
+  // when building an SCTAuditingReporter.
+  struct COMPONENT_EXPORT(NETWORK_SERVICE) SCTHashdanceMetadata {
+    // Construct an SCTHashdanceMetadata from the given |value|. Returns
+    // absl::nullopt if |value| cannot be parsed into a valid
+    // SCTHashdanceMetadata.
+    static absl::optional<SCTHashdanceMetadata> FromValue(
+        const base::Value& value);
+
+    SCTHashdanceMetadata();
+    ~SCTHashdanceMetadata();
+    SCTHashdanceMetadata(const SCTHashdanceMetadata&) = delete;
+    SCTHashdanceMetadata operator=(const SCTHashdanceMetadata&) = delete;
+    SCTHashdanceMetadata(SCTHashdanceMetadata&&);
+    SCTHashdanceMetadata& operator=(SCTHashdanceMetadata&&);
+
+    // Returns a base::Value from which the SCTHashdanceMetadata can be
+    // reconstructed.
+    base::Value ToValue() const;
+
+    // Merkle tree leaf hash.
+    std::string leaf_hash;
+
+    // Date and time when this SCT was issued.
+    base::Time issued;
+
+    // Corresponding CT Log ID.
+    std::string log_id;
+
+    // Corresponding CT Log Maximum Merge Delay.
+    base::TimeDelta log_mmd;
+
+    // The certificate expiry date.
+    base::Time certificate_expiry;
+  };
+
   SCTAuditingReporter(
       net::HashValue reporter_key,
       std::unique_ptr<sct_auditing::SCTClientReport> report,
       bool is_hashdance,
-      absl::optional<std::string> leaf_hash,
+      absl::optional<SCTHashdanceMetadata> hashdance_metadata,
       mojom::URLLoaderFactory* url_loader_factory,
+      base::TimeDelta log_expected_ingestion_delay,
+      base::TimeDelta log_max_ingestion_random_delay,
       const GURL& report_uri,
+      const GURL& hashdance_lookup_uri,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      const net::MutableNetworkTrafficAnnotationTag&
+          hashdance_traffic_annotation,
       ReporterUpdatedCallback update_callback,
       ReporterDoneCallback done_callback,
       std::unique_ptr<net::BackoffEntry> backoff_entry = nullptr);
@@ -74,7 +116,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   net::HashValue key() { return reporter_key_; }
   sct_auditing::SCTClientReport* report() { return report_.get(); }
   net::BackoffEntry* backoff_entry() { return backoff_entry_.get(); }
-  absl::optional<std::string> leaf_hash() { return leaf_hash_; }
+  const absl::optional<SCTHashdanceMetadata>& sct_hashdance_metadata() {
+    return sct_hashdance_metadata_;
+  }
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -88,21 +132,30 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   static void SetRetryDelayForTesting(absl::optional<base::TimeDelta> delay);
 
  private:
-  void ScheduleRequestWithBackoff(base::OnceClosure request);
+  // Schedules a |request| using the backoff delay or |minimum_delay|, whichever
+  // is greatest.
+  void ScheduleRequestWithBackoff(base::OnceClosure request,
+                                  base::TimeDelta minimum_delay);
   void SendLookupQuery();
+  void OnSendLookupQueryComplete(std::unique_ptr<std::string> response_body);
   void SendReport();
   void OnSendReportComplete(scoped_refptr<net::HttpResponseHeaders> headers);
+  void MaybeRetryRequest();
 
   net::HashValue reporter_key_;
   std::unique_ptr<sct_auditing::SCTClientReport> report_;
   bool is_hashdance_;
-  // If |is_hashdance_| is true, |leaf_hash_| will contain the Merkle tree leaf
-  // hash for a randomly selected SCT from the report.
-  absl::optional<std::string> leaf_hash_;
+  // If |is_hashdance_| is true, |sct_hashdance_metadata_| will contain metadata
+  // for a randomly selected SCT from the report.
+  absl::optional<SCTHashdanceMetadata> sct_hashdance_metadata_;
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_remote_;
   std::unique_ptr<SimpleURLLoader> url_loader_;
   net::NetworkTrafficAnnotationTag traffic_annotation_;
+  net::NetworkTrafficAnnotationTag hashdance_traffic_annotation_;
+  base::TimeDelta log_expected_ingestion_delay_;
+  base::TimeDelta log_max_ingestion_random_delay_;
   GURL report_uri_;
+  GURL hashdance_lookup_uri_;
   ReporterUpdatedCallback update_callback_;
   ReporterDoneCallback done_callback_;
 

@@ -171,13 +171,18 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
   // required by Chrome to enforce its CT policy. Non Chrome used fields are
   // left unset.
   for (auto log : proto->log_list().logs()) {
+    std::string decoded_id;
+    if (!base::Base64Decode(log.log_id(), &decoded_id)) {
+      continue;
+    }
     std::string decoded_key;
     if (!base::Base64Decode(log.key(), &decoded_key)) {
       continue;
     }
     network::mojom::CTLogInfoPtr log_ptr = network::mojom::CTLogInfo::New();
+    log_ptr->id = std::move(decoded_id);
     log_ptr->name = log.description();
-    log_ptr->public_key = decoded_key;
+    log_ptr->public_key = std::move(decoded_key);
     // Operator history is ordered in inverse chronological order, so the 0th
     // element will be the current operator.
     if (!log.operator_history().empty()) {
@@ -223,6 +228,8 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
         log_ptr->disqualified_at = retired_since;
       }
     }
+
+    log_ptr->mmd = base::Seconds(log.mmd_secs());
     log_list_mojo.push_back(std::move(log_ptr));
   }
 

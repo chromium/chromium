@@ -738,11 +738,23 @@ void NetworkService::ClearSCTAuditingCache() {
 
 void NetworkService::ConfigureSCTAuditing(
     double sampling_rate,
+    base::TimeDelta log_expected_ingestion_delay,
+    base::TimeDelta log_max_ingestion_random_delay,
     const GURL& reporting_uri,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+    const GURL& hashdance_lookup_uri,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+    const net::MutableNetworkTrafficAnnotationTag&
+        hashdance_traffic_annotation) {
   sct_auditing_cache_->set_sampling_rate(sampling_rate);
+  sct_auditing_cache_->set_log_expected_ingestion_delay(
+      log_expected_ingestion_delay);
+  sct_auditing_cache_->set_log_max_ingestion_random_delay(
+      log_max_ingestion_random_delay);
   sct_auditing_cache_->set_report_uri(reporting_uri);
+  sct_auditing_cache_->set_hashdance_lookup_uri(hashdance_lookup_uri);
   sct_auditing_cache_->set_traffic_annotation(traffic_annotation);
+  sct_auditing_cache_->set_hashdance_traffic_annotation(
+      hashdance_traffic_annotation);
 }
 
 void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,

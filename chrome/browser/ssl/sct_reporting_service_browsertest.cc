@@ -5,9 +5,16 @@
 #include <memory>
 #include <tuple>
 
+#include "base/base64.h"
 #include "base/callback.h"
+#include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/time/time_to_iso8601.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -30,12 +37,17 @@
 #include "content/public/test/network_service_test_helper.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/sct_status_flags.h"
+#include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/ct_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/simple_connection_listener.h"
+#include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
@@ -88,6 +100,19 @@ void MakeTestSCTAndStatus(
   sct_list->push_back(net::SignedCertificateTimestampAndStatus(sct, status));
 }
 
+std::string ExtractRESTURLParameter(std::string url, std::string param) {
+  size_t length_start = url.find(param) + param.size() + 1;
+  size_t length_end = url.find('/', length_start);
+  return url.substr(length_start, length_end - length_start);
+}
+
+std::string HexToString(const char* hex) {
+  std::string result;
+  bool ok = base::HexStringToString(hex, &result);
+  DCHECK(ok);
+  return result;
+}
+
 }  // namespace
 
 class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
@@ -105,6 +130,8 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
     // set before the network service is initialized.
     std::ignore = report_server()->InitializeAndListen();
     SCTReportingService::GetReportURLInstance() = report_server()->GetURL("/");
+    SCTReportingService::GetHashdanceLookupQueryURLInstance() =
+        report_server()->GetURL("/hashdance/length/$1/prefix/$2");
   }
   ~SCTReportingServiceBrowserTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
@@ -141,8 +168,14 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
 
     // Mock the cert verify results so that it has valid CT verification
     // results.
+    cert_with_precert_ = CreateCertificateChainFromFile(
+        net::GetTestCertsDirectory(), "ct-test-embedded-cert.pem",
+        net::X509Certificate::FORMAT_AUTO);
+    ASSERT_TRUE(cert_with_precert_);
+    ASSERT_EQ(1u, cert_with_precert_->intermediate_buffers().size());
+
     net::CertVerifyResult verify_result;
-    verify_result.verified_cert = https_server()->GetCertificate().get();
+    verify_result.verified_cert = cert_with_precert_;
     verify_result.is_issued_by_known_root = true;
     // Add three "valid" SCTs and mark the certificate as compliant.
     // The default test set up is embedded SCTs where one SCT is from a Google
@@ -215,6 +248,10 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
                                                  enabled);
   }
+  // |suffix_list| must be sorted lexicographically.
+  void SetHashdanceSuffixList(std::vector<std::string> suffix_list) {
+    suffix_list_ = std::move(suffix_list);
+  }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
   net::EmbeddedTestServer* report_server() { return &report_server_; }
@@ -252,14 +289,14 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   // make a new navigation, and check that there is only a single report and it
   // was for this new navigation specifically. This should be used at the end of
   // any negative tests to reduce the chance of false successes.
-  bool FlushAndCheckZeroReports() {
+  bool FlushAndCheckZeroReports(size_t requests_so_far = 0) {
     SetSafeBrowsingEnabled(true);
     SetExtendedReportingEnabled(true);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         https_server()->GetURL("flush-and-check-zero-reports.test", "/")));
     WaitForRequests(1);
-    return (1u == requests_seen() &&
+    return (requests_so_far + 1 == requests_seen() &&
             "flush-and-check-zero-reports.test" == GetLastSeenReport()
                                                        .certificate_report(0)
                                                        .context()
@@ -268,6 +305,12 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   }
 
   void set_error_count(int error_count) { error_count_ = error_count; }
+
+  const std::string& last_seen_length() { return last_seen_length_; }
+  const std::string& last_seen_prefix() { return last_seen_prefix_; }
+  const scoped_refptr<net::X509Certificate> certificate() {
+    return cert_with_precert_;
+  }
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleReportRequest(
@@ -288,6 +331,63 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
       http_response->set_code(net::HTTP_OK);
     }
 
+    if (request.relative_url.find("hashdance") == std::string::npos) {
+      // Request is a report.
+      return http_response;
+    }
+
+    // Request is a hashdance lookup query.
+    // Parse the URL.
+    DCHECK(!request.has_content);
+    last_seen_length_ = ExtractRESTURLParameter(request.relative_url, "length");
+    last_seen_prefix_ = ExtractRESTURLParameter(request.relative_url, "prefix");
+
+    // Create a response.
+    // 2022-01-01 00:00:00 GMT.
+    base::Time server_time =
+        base::Time::UnixEpoch() + base::Seconds(1640995200);
+    base::Value response(base::Value::Type::DICTIONARY);
+    response.SetStringKey("responseStatus", "OK");
+    response.SetStringKey("now", base::TimeToISO8601(server_time));
+
+    base::Value suffixes(base::Value::Type::LIST);
+    for (const auto& suffix : suffix_list_) {
+      suffixes.Append(
+          base::Base64Encode(base::as_bytes(base::make_span(suffix))));
+    }
+    response.SetKey("hashSuffix", std::move(suffixes));
+
+    base::Value log_list(base::Value::Type::LIST);
+    {
+      base::Value log_status(base::Value::Type::DICTIONARY);
+      log_status.SetStringKey("logId", base::Base64Encode(kTestGoogleLogId));
+      log_status.SetStringKey("ingestedUntil",
+                              base::TimeToISO8601(server_time));
+      log_list.Append(std::move(log_status));
+    }
+    {
+      base::Value log_status(base::Value::Type::DICTIONARY);
+      log_status.SetStringKey("logId",
+                              base::Base64Encode(kTestNonGoogleLogId1));
+      log_status.SetStringKey("ingestedUntil",
+                              base::TimeToISO8601(server_time));
+      log_list.Append(std::move(log_status));
+    }
+    {
+      base::Value log_status(base::Value::Type::DICTIONARY);
+      log_status.SetStringKey("logId",
+                              base::Base64Encode(kTestNonGoogleLogId2));
+      log_status.SetStringKey("ingestedUntil",
+                              base::TimeToISO8601(server_time));
+      log_list.Append(std::move(log_status));
+    }
+    response.SetKey("logStatus", std::move(log_list));
+
+    std::string json;
+    bool ok = base::JSONWriter::Write(response, &json);
+    DCHECK(ok);
+    http_response->set_content(std::move(json));
+    http_response->set_content_type("application/octet-stream");
     return http_response;
   }
 
@@ -295,6 +395,7 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   net::EmbeddedTestServer report_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  scoped_refptr<net::X509Certificate> cert_with_precert_;
   std::unique_ptr<net::test_server::SimpleConnectionListener>
       report_connection_listener_;
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
@@ -304,6 +405,14 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   base::Lock requests_lock_;
   net::test_server::HttpRequest last_seen_request_;
   size_t requests_seen_ = 0;
+
+  // Lookup query received parameters.
+  std::string last_seen_length_;
+  std::string last_seen_prefix_;
+
+  // Lookup query settings.
+  std::vector<std::string> suffix_list_;
+
   base::OnceClosure requests_closure_;
 
   // How many times the report server should return an error before succeeding.
@@ -749,4 +858,78 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   EXPECT_EQ(
       "a.test",
       GetLastSeenReport().certificate_report(0).context().origin().hostname());
+}
+
+class SCTHashdanceBrowserTest : public SCTReportingServiceBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    SCTReportingServiceBrowserTest::SetUpOnMainThread();
+    SetExtendedReportingEnabled(false);
+
+    // Add a valid SCT that was issued at the beginning of time (and should
+    // therefore be assumed to have been ingested by the server already). We
+    // need to use a stable timestamp to get the same leaf hash in every run.
+    // This SCT results in the leaf hash
+    // 157F5BD43E660E1A87C45797CE524B4171A231CC10FE912A51A14ABA17EAB6B2.
+    net::CertVerifyResult verify_result;
+    verify_result.verified_cert = certificate();
+    verify_result.is_issued_by_known_root = true;
+    MakeTestSCTAndStatus(
+        net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
+        "signature1", base::Time::UnixEpoch(),
+        std::string(reinterpret_cast<const char*>(kTestGoogleLogId),
+                    base::size(kTestGoogleLogId)),
+        net::ct::SCT_STATUS_OK, &verify_result.scts);
+    mock_cert_verifier()->AddResultForCertAndHost(
+        https_server()->GetCertificate().get(), "hashdance.test", verify_result,
+        net::OK);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kSCTAuditingHashdance};
+};
+
+IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest, ReportSCTNotFound) {
+  SetHashdanceSuffixList(
+      {base::HexEncode(base::as_bytes(base::make_span(
+           "000000000000000000000000000000000000000000000000000000000000"))),
+       base::HexEncode(base::as_bytes(base::make_span(
+           "0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")))});
+
+  // Visit an HTTPS page and wait for the lookup query to be sent.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("hashdance.test", "/")));
+  WaitForRequests(2);
+
+  // Check that the lookup query was sent with the expected details.
+  EXPECT_EQ(requests_seen(), 2u);
+  EXPECT_EQ(last_seen_length(), "20");
+  EXPECT_EQ(last_seen_prefix(), "157F50");
+  EXPECT_EQ(
+      "hashdance.test",
+      GetLastSeenReport().certificate_report(0).context().origin().hostname());
+}
+
+IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest, DoNotReportSCTFound) {
+  SetHashdanceSuffixList(
+      {HexToString(
+           "000000000000000000000000000000000000000000000000000000000000"),
+       HexToString(
+           "5BD43E660E1A87C45797CE524B4171A231CC10FE912A51A14ABA17EAB6B2"),
+       HexToString(
+           "0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")});
+
+  // Visit an HTTPS page and wait for the lookup query to be sent.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("hashdance.test", "/")));
+  WaitForRequests(1);
+
+  // Check that the lookup query was sent with the expected details.
+  EXPECT_EQ(requests_seen(), 1u);
+  EXPECT_EQ(last_seen_length(), "20");
+  EXPECT_EQ(last_seen_prefix(), "157F50");
+
+  // No requests should have been sent.
+  EXPECT_TRUE(FlushAndCheckZeroReports(/*requests_so_far=*/1));
 }

@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/network_context.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
+#include "services/network/sct_auditing/sct_auditing_reporter.h"
 #include "url/gurl.h"
 
 namespace sct_auditing {
@@ -28,7 +29,6 @@ class SCTClientReport;
 namespace network {
 
 class NetworkContext;
-class SCTAuditingReporter;
 
 // SCTAuditingHandler owns SCT auditing reports for a specific NetworkContext.
 // Each SCTAuditingHandler is owned by its matching NetworkContext. The
@@ -89,10 +89,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
   // Merkle tree leaf hash of a randomly selected SCT.
   // Optionally takes in a BackoffEntry for recreating reporter state from
   // persisted storage.
-  void AddReporter(net::HashValue reporter_key,
-                   std::unique_ptr<sct_auditing::SCTClientReport> report,
-                   absl::optional<std::string> leaf_hash,
-                   std::unique_ptr<net::BackoffEntry> backoff_entry = nullptr);
+  void AddReporter(
+      net::HashValue reporter_key,
+      std::unique_ptr<sct_auditing::SCTClientReport> report,
+      absl::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata,
+      std::unique_ptr<net::BackoffEntry> backoff_entry = nullptr);
 
   // Loads serialized reports from `serialized` and creates a new
   // SCTAuditingReporter for each (if a reporter for that report does not yet

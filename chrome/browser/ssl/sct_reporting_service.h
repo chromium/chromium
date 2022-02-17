@@ -30,6 +30,7 @@ enum class SCTAuditingMode;
 class SCTReportingService : public KeyedService {
  public:
   static GURL& GetReportURLInstance();
+  static GURL& GetHashdanceLookupQueryURLInstance();
   static void ReconfigureAfterNetworkRestart();
 
   SCTReportingService(safe_browsing::SafeBrowsingService* safe_browsing_service,
