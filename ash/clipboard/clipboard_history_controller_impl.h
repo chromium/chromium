@@ -147,9 +147,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void GetHistoryValuesWithEncodedPNGs(
       const std::set<std::string>& item_id_filter,
       GetHistoryValuesCallback callback,
-      std::unique_ptr<std::map<base::UnguessableToken, std::vector<uint8_t>>>
-          encoded_pngs,
-      std::unique_ptr<base::Lock> map_lock);
+      std::map<base::UnguessableToken, std::vector<uint8_t>> encoded_pngs);
 
   void ExecuteSelectedMenuItem(int event_flags);
 
