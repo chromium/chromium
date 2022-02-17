@@ -15,13 +15,7 @@ namespace extensions {
 
 // Tests that we throw errors when you try using extension APIs that aren't
 // supported in content scripts.
-// Timey-outy on mac. http://crbug.com/89116
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Stubs DISABLED_Stubs
-#else
-#define MAYBE_Stubs Stubs
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_Stubs) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Stubs) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(RunExtensionTest("stubs")) << message_;
