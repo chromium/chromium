@@ -4,14 +4,20 @@
     width: 300px;
   }
 
+  #navigationButtonWrapper {
+    bottom: var(--footer-height);
+    position: absolute;
+  }
+
   #exitToLoginButton {
     border-color: var(--google-blue-600);
     border-radius: 12px;
   }
 
-  #recoverFirmwareButton {
+  #rebootButton {
     border-color: var(--google-blue-600);
     border-radius: 12px;
+    margin-inline-end: 8px;
   }
 </style>
 <base-page>
@@ -22,14 +28,16 @@
     <h1>[[i18n('criticalErrorTitleText')]]</h1>
     <div class="instructions">[[i18n('criticalErrorMessageText')]]</div>
     <div id="writeProtectStatus">[[statusString_]]</div>
-    <cr-button id="exitToLoginButton" on-click="onExitToLoginButtonClicked_"
-        disabled="[[allButtonsDisabled]]">
-      [[i18n('criticalErrorRebootText')]]
-    </cr-button>
-    <cr-button id="rebootButton" on-click="onRebootButtonClicked_"
-        disabled="[[allButtonsDisabled]]">
-      [[i18n('criticalErrorRecoverFirmwareText')]]
-    </cr-button>
+    <div id="navigationButtonWrapper">
+      <cr-button id="rebootButton" on-click="onRebootButtonClicked_"
+          disabled="[[allButtonsDisabled]]">
+        [[i18n('criticalErrorRebootText')]]
+      </cr-button>
+      <cr-button id="exitToLoginButton" on-click="onExitToLoginButtonClicked_"
+          disabled="[[allButtonsDisabled]]">
+        [[i18n('criticalErrorExitText')]]
+      </cr-button>
+    </div>
   </div>
   <div slot="right-pane">
     <!-- TODO(gavindodd): Replace with correct graphic -->
