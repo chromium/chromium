@@ -152,7 +152,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const IdentityProviderMetadata& idp_metadata,
       const ClientIdData& client_id_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
-      AccountSelectionCallback on_selected) {}
+      AccountSelectionCallback on_selected);
 
   // Shows the identity provider sign-in page at the given URL using the
   // |idp_web_contents| inside a modal window. The |on_closed| callback is
