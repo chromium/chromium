@@ -13,6 +13,10 @@ enum GPUDeviceLostReason {
     SecureContext
 ] interface GPUDeviceLostInfo {
     readonly attribute DOMString message;
-    readonly attribute GPUDeviceLostReason? reason;
+    // TODO: The type should be (GPUDeviceLostReason or undefined) but
+    // the bindings can't handle it now although it should be valid type.
+    // As a workaround we make the type any and do custom handling in Blink
+    // until the bindings supports it. Refer to crbug.com/1293259.
+    [CallWith=ScriptState] readonly attribute any reason;
 };
 
