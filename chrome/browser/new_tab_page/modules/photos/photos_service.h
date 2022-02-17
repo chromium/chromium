@@ -39,6 +39,14 @@ class PhotosService : public KeyedService,
     kCached = 2,
     kMaxValue = kCached,
   };
+
+  // These values should be in sync with featureParam values in aboutFlags.cc.
+  enum class OptInCardTitle {
+    kOptInRHTitle = 0,
+    kOptInFavoritesTitle = 1,
+    kOptInpersonalizedTitle = 2,
+  };
+
   static const char kLastDismissedTimePrefName[];
   static const char kOptInAcknowledgedPrefName[];
   static const char kLastMemoryOpenTimePrefName[];
@@ -91,6 +99,8 @@ class PhotosService : public KeyedService,
                       const std::unique_ptr<std::string> json_response);
   void OnJsonParsed(const std::string& token,
                     data_decoder::DataDecoder::ValueOrError result);
+  std::string ConstructPersonalizedString(
+      std::vector<photos::mojom::MemoryPtr> memories);
 
   // Used for fetching OAuth2 access tokens. Only non-null when a token
   // is made available, or a token is being fetched.

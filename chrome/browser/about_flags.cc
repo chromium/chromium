@@ -1498,6 +1498,21 @@ const FeatureEntry::FeatureVariation kNtpPhotosModuleVariations[] = {
     {" - Fake memories: 4", kNtpPhotosModuleFakeData4,
      base::size(kNtpPhotosModuleFakeData4), nullptr}};
 
+const FeatureEntry::FeatureParam kNtpPhotosModuleOptInRHTitle[] = {
+    {ntp_features::kNtpPhotosModuleOptInTitleParam, "0"}};
+const FeatureEntry::FeatureParam kNtpPhotosModuleOptInFavoriteTitle[] = {
+    {ntp_features::kNtpPhotosModuleOptInTitleParam, "1"}};
+const FeatureEntry::FeatureParam kNtpPhotosModuleOptInPersonalizedTitle[] = {
+    {ntp_features::kNtpPhotosModuleOptInTitleParam, "2"}};
+
+const FeatureEntry::FeatureVariation kNtpPhotosModuleOptInTitleVariations[] = {
+    {" - Recent Highlights", kNtpPhotosModuleOptInRHTitle,
+     base::size(kNtpPhotosModuleOptInRHTitle), nullptr},
+    {" - Favorite people", kNtpPhotosModuleOptInFavoriteTitle,
+     base::size(kNtpPhotosModuleOptInFavoriteTitle), nullptr},
+    {" - Personalized title", kNtpPhotosModuleOptInPersonalizedTitle,
+     base::size(kNtpPhotosModuleOptInPersonalizedTitle), nullptr}};
+
 const FeatureEntry::FeatureParam kRealboxMatchOmniboxThemeVar1[] = {
     {ntp_features::kRealboxMatchOmniboxThemeVariantParam, "1"}};
 const FeatureEntry::FeatureParam kRealboxMatchOmniboxThemeVar2[] = {
@@ -5160,6 +5175,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpPhotosModule,
                                     kNtpPhotosModuleVariations,
                                     "DesktopNtpModules")},
+
+    {"ntp-photos-opt-in-title",
+     flag_descriptions::kNtpPhotosModuleOptInTitleName,
+     flag_descriptions::kNtpPhotosModuleOptInTitleDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         ntp_features::kNtpPhotosModuleCustomizedOptInTitle,
+         kNtpPhotosModuleOptInTitleVariations,
+         "DesktopNtpModules")},
 
     {"ntp-recipe-tasks-module", flag_descriptions::kNtpRecipeTasksModuleName,
      flag_descriptions::kNtpRecipeTasksModuleDescription, kOsDesktop,

@@ -113,14 +113,13 @@ const base::Feature kNtpDriveModule{"NtpDriveModule",
 const base::Feature kNtpPhotosModule{"NtpPhotosModule",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, a customized title will be shown on the opt-in card.
+const base::Feature kNtpPhotosModuleCustomizedOptInTitle{
+    "NtpPhotosModuleCustomizedOptInTitle", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, Google Photos opt-in card will show a button to soft opt-out.
 const base::Feature kNtpPhotosModuleSoftOptOut(
     "NtpPhotosModuleSoftOptOut",
-    base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, A personalized message will be shown in the Photos opt-in card.
-const base::Feature kNtpPhotosModulePersonalizedOptInCard(
-    "NtpPhotosPersonalizedOptInCard",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, SafeBrowsing module will be shown to a target user.
@@ -157,6 +156,7 @@ const char kNtpDriveModuleCacheMaxAgeSParam[] =
 const char kNtpDriveModuleExperimentGroupParam[] =
     "NtpDriveModuleExperimentGroupParam";
 const char kNtpPhotosModuleDataParam[] = "NtpPhotosModuleDataParam";
+const char kNtpPhotosModuleOptInTitleParam[] = "NtpPhotosModuleOptInTitleParam";
 const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[] =
     "NtpSafeBrowsingModuleCooldownPeriodDaysParam";
 const char kNtpSafeBrowsingModuleCountMaxParam[] =

@@ -46,6 +46,7 @@ extern const base::Feature kNtpDummyModules;
 extern const base::Feature kNtpPhotosModule;
 extern const base::Feature kNtpPhotosModuleSoftOptOut;
 extern const base::Feature kNtpPhotosModulePersonalizedOptInCard;
+extern const base::Feature kNtpPhotosModuleCustomizedOptInTitle;
 extern const base::Feature kNtpSafeBrowsingModule;
 extern const base::Feature kNtpModulesDragAndDrop;
 
@@ -87,6 +88,8 @@ extern const char kNtpDriveModuleCacheMaxAgeSParam[];
 extern const char kNtpDriveModuleExperimentGroupParam[];
 // Parameter determining the type of Photos data to render.
 extern const char kNtpPhotosModuleDataParam[];
+// Parameter determining the title for the opt-in card.
+extern const char kNtpPhotosModuleOptInTitleParam[];
 // Parameter determining the number of times a module is shown to a user
 // before cooldown starts.
 extern const char kNtpSafeBrowsingModuleCountMaxParam[];

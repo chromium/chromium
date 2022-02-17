@@ -238,12 +238,35 @@ void PhotosService::OnMemoryOpen() {
 
 std::string PhotosService::GetOptInTitleText(
     std::vector<photos::mojom::MemoryPtr> memories) {
-  if (!base::FeatureList::IsEnabled(
-          ntp_features::kNtpPhotosModulePersonalizedOptInCard)) {
-    return l10n_util::GetStringUTF8(
-        IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_TITLE);
+  std::string customTitleChoiceString = base::GetFieldTrialParamValueByFeature(
+      ntp_features::kNtpPhotosModuleCustomizedOptInTitle,
+      ntp_features::kNtpPhotosModuleOptInTitleParam);
+  int customTitle = -1;
+
+  if (customTitleChoiceString != "") {
+    base::StringToInt(customTitleChoiceString, &customTitle);
   }
 
+  if (customTitle == static_cast<int>(OptInCardTitle::kOptInRHTitle)) {
+    return l10n_util::GetStringUTF8(
+        IDS_NTP_MODULES_PHOTOS_MEMORIES_RH_WELCOME_TITLE);
+  }
+
+  if (customTitle == static_cast<int>(OptInCardTitle::kOptInFavoritesTitle)) {
+    return l10n_util::GetStringUTF8(
+        IDS_NTP_MODULES_PHOTOS_MEMORIES_FAVORITE_PEOPLE_WELCOME_TITLE);
+  }
+
+  if (customTitle == static_cast<int>(OptInCardTitle::kOptInpersonalizedTitle)) {
+    return ConstructPersonalizedString(std::move(memories));
+  }
+
+  return l10n_util::GetStringUTF8(
+      IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_TITLE);
+}
+
+std::string PhotosService::ConstructPersonalizedString(
+    std::vector<photos::mojom::MemoryPtr> memories) {
   std::string personalizedTitle;
   bool recentHighlightsPresent = false;
   for (photos::mojom::MemoryPtr& memory : memories) {
