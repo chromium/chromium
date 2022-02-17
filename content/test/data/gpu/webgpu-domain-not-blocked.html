@@ -35,8 +35,8 @@ async function init() {
   // NOT result in the domain being blocked.
   console.log('Waiting for GPU termination to cause device loss');
   const lost = await device.lost;
-  if (lost.reason !== null) {
-    console.log('TEST FAILED - Expected null device lost reason');
+  if (lost.reason !== undefined) {
+    console.log('TEST FAILED - Expected undefined device lost reason');
     reportProgress('FAILED');
     return;
   }
