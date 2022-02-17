@@ -7,7 +7,7 @@
 #ifndef BASE_STRINGS_STRING_PIECE_FORWARD_H_
 #define BASE_STRINGS_STRING_PIECE_FORWARD_H_
 
-#include <string>
+#include <iosfwd>
 
 namespace base {
 
