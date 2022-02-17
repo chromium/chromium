@@ -205,7 +205,7 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
-- (void)presentationControllerWillDismiss:
+- (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self dismissPopupMenuAnimated:NO];
 }
