@@ -738,6 +738,14 @@
       },
     },
   },
+  'mac_12_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-12',
+      },
+    },
+  },
   'mac_arm64_apple_m1_gpu': {
     'swarming': {
       'dimensions': {

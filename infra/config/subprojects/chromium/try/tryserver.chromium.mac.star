@@ -252,6 +252,7 @@ ios_builder(
 ios_builder(
     name = "ios15-sdk-simulator",
     xcode = xcode.x13betabots,
+    os = os.MAC_12,
 )
 
 try_.gpu.optional_tests_builder(

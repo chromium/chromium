@@ -1086,7 +1086,7 @@ fyi_ios_builder(
             short_name = "dev",
         ),
     ],
-    os = os.MAC_ANY,
+    os = os.MAC_12,
     xcode = xcode.x13betabots,
 )
 
@@ -1098,7 +1098,7 @@ fyi_ios_builder(
             short_name = "sdk15",
         ),
     ],
-    os = os.MAC_ANY,
+    os = os.MAC_12,
     xcode = xcode.x13betabots,
 )
 
