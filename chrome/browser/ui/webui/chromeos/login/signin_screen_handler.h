@@ -28,7 +28,6 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/net_errors.h"
-#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -253,9 +252,6 @@ class SigninScreenHandler
   // Non-owning ptr.
   // TODO(antrim@): remove this dependency.
   GaiaScreenHandler* gaia_screen_handler_ = nullptr;
-
-  // Input Method Engine state used at signin screen.
-  scoped_refptr<input_method::InputMethodManager::State> ime_state_;
 
   bool is_offline_timeout_for_test_set_ = false;
   base::TimeDelta offline_timeout_for_test_;
