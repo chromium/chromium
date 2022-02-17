@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/thread.h"
+#include "third_party/webrtc_overrides/coalesced_tasks.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace webrtc {
@@ -162,6 +163,7 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // Executes WebRTC queued tasks from TaskQueueBase overrides on
   // |task_runner_|.
   void RunTaskQueueTask(std::unique_ptr<webrtc::QueuedTask> task);
+  void RunCoalescedTaskQueueTasks(base::TimeTicks scheduled_time);
 
   // Called before a task runs, returns an opaque optional timestamp which
   // should be passed into FinalizeRunTask.
@@ -188,6 +190,10 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   std::unique_ptr<PostTaskLatencySampler> latency_sampler_;
   SampledDurationCallback task_latency_callback_;
   SampledDurationCallback task_duration_callback_;
+  // If |metronome_source_| is used, low precision tasks are coalesced onto
+  // metronome ticks and stored in |coalesced_tasks_| until they are ready to
+  // run.
+  blink::CoalescedTasks coalesced_tasks_;
 
   base::WeakPtr<ThreadWrapper> weak_ptr_;
   base::WeakPtrFactory<ThreadWrapper> weak_ptr_factory_{this};

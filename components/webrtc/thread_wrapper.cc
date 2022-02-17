@@ -163,6 +163,7 @@ ThreadWrapper::~ThreadWrapper() {
   g_jingle_thread_wrapper.Get().Set(nullptr);
 
   Clear(nullptr, rtc::MQID_ANY, nullptr);
+  coalesced_tasks_.Clear();
 }
 
 void ThreadWrapper::WillDestroyCurrentMessageLoop() {
@@ -344,10 +345,20 @@ void ThreadWrapper::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
   base::TimeTicks target_time =
       base::TimeTicks::Now() + base::Milliseconds(milliseconds);
   if (metronome_source_) {
-    // Snap the target time to allow coalescing multiple tasks.
-    target_time =
+    // Coalesce tasks onto the metronome.
+    base::TimeTicks snapped_target_time =
         metronome_source_->GetTimeSnappedToNextMetronomeTick(target_time);
+    if (coalesced_tasks_.QueueDelayedTask(target_time, std::move(task),
+                                          snapped_target_time)) {
+      task_runner_->PostDelayedTaskAt(
+          base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
+          base::BindOnce(&ThreadWrapper::RunCoalescedTaskQueueTasks, weak_ptr_,
+                         snapped_target_time),
+          snapped_target_time, base::subtle::DelayPolicy::kPrecise);
+    }
+    return;
   }
+  // Do not coalesce tasks onto the metronome.
   task_runner_->PostDelayedTaskAt(
       base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       base::BindOnce(&ThreadWrapper::RunTaskQueueTask, weak_ptr_,
@@ -391,6 +402,17 @@ void ThreadWrapper::RunTaskQueueTask(std::unique_ptr<webrtc::QueuedTask> task) {
     task.release();
 
   FinalizeRunTask(std::move(task_start_timestamp));
+}
+
+void ThreadWrapper::RunCoalescedTaskQueueTasks(base::TimeTicks scheduled_time) {
+  // base::Unretained(this) is safe here because these callbacks are only used
+  // for the duration of the RunScheduledTasks() call.
+  coalesced_tasks_.RunScheduledTasks(
+      scheduled_time,
+      base::BindRepeating(&ThreadWrapper::PrepareRunTask,
+                          base::Unretained(this)),
+      base::BindRepeating(&ThreadWrapper::FinalizeRunTask,
+                          base::Unretained(this)));
 }
 
 void ThreadWrapper::RunTask(int task_id) {

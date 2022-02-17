@@ -104,13 +104,11 @@ TEST_P(MetronomeLikeTaskQueueTest,
   EXPECT_TRUE(callback.was_called());
 }
 
-// TODO(https://crbug.com/1297095): Implement guaranteed order of execution and
-// re-enable this test. It was flaking on bots: https://crbug.com/1296657.
-TEST_P(MetronomeLikeTaskQueueTest, DISABLED_DelayedTasksRunInOrder) {
+TEST_P(MetronomeLikeTaskQueueTest, DelayedTasksRunInOrder) {
   auto* task_queue = provider_->TaskQueue();
 
-  constexpr uint32_t kTime0Ms = 0;
-  constexpr uint32_t kTime1Ms = 1;
+  constexpr uint32_t kTime0Ms = 1;
+  constexpr uint32_t kTime1Ms = 2;
   std::vector<std::string> run_tasks;
 
   task_queue->PostDelayedTask(webrtc::ToQueuedTask([&run_tasks]() {
