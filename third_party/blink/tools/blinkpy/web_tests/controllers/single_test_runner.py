@@ -37,8 +37,6 @@ from blinkpy.web_tests.models import testharness_results
 
 _log = logging.getLogger(__name__)
 
-SKIA_GOLD_CORPUS = 'blink-web-tests'
-
 
 def run_single_test(port, options, results_directory, worker_name, driver,
                     test_input):
@@ -610,31 +608,6 @@ class SingleTestRunner(object):
         # image. This even occurs when results_directory is set.
         if not driver_output.image or not driver_output.image_hash:
             return []
-
-        # Do a dry run upload to Skia Gold, ignoring any of its output, for
-        # data collection to see if we can switch to using Gold for web tests
-        # in the future.
-        try:
-            gold_keys = self._port.skia_gold_json_keys()
-            gold_session = (
-                self._port.skia_gold_session_manager().GetSkiaGoldSession(
-                    gold_keys, corpus=SKIA_GOLD_CORPUS))
-            gold_properties = self._port.skia_gold_properties()
-            use_luci = not gold_properties.local_pixel_tests
-            img_path = self._filesystem.join(
-                str(self._port.skia_gold_temp_dir()),
-                '%s.png' % self._test_name.replace(self._filesystem.sep, '_'))
-            self._filesystem.write_binary_file(img_path, driver_output.image)
-            status, error = gold_session.RunComparison(name=self._test_name,
-                                                       png_file=img_path,
-                                                       use_luci=use_luci)
-            _log.debug('Ran Skia Gold dry run, got status %s and error %s',
-                       status, error)
-        except Exception as e:
-            _log.warning(
-                'Got exception while dry running Skia Gold. This can be '
-                'safely ignored unless you are actively working with Gold: %s',
-                e)
 
         if driver_output.image_hash != expected_driver_output.image_hash:
             diff, err_str = self._port.diff_image(expected_driver_output.image,

@@ -1579,8 +1579,7 @@
           "--num-retries=3",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
-          "--flag-specific=skia-vulkan-swiftshader",
-          "--git-revision=${got_revision}"
+          "--flag-specific=skia-vulkan-swiftshader"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -1590,11 +1589,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "vulkan_swiftshader_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -3072,8 +3066,7 @@
       },
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "experiment_percentage": 0,
         "isolate_name": "blink_web_tests",
@@ -3084,11 +3077,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -3716,7 +3704,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--git-revision=${got_revision}",
           "--flag-specific=disable-layout-ng"
         ],
         "isolate_name": "blink_web_tests",
@@ -3727,11 +3714,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -6932,7 +6914,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--git-revision=${got_revision}",
           "--target",
           "Release_x64"
         ],
@@ -6945,11 +6926,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -21691,8 +21667,7 @@
       {
         "args": [
           "--num-retries=3",
-          "--device=aemu",
-          "--git-revision=${got_revision}"
+          "--device=aemu"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -21702,11 +21677,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -77791,7 +77761,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--git-revision=${got_revision}",
           "--debug"
         ],
         "isolate_name": "blink_web_tests",
@@ -77802,11 +77771,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -79406,8 +79370,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -79417,11 +79380,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -79445,8 +79403,7 @@
       {
         "args": [
           "--flag-specific=highdpi",
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -79456,11 +79413,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "high_dpi_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -79483,8 +79435,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -79494,11 +79445,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -80267,8 +80213,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -80278,11 +80223,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -81030,8 +80970,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -81041,11 +80980,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -84428,7 +84362,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--git-revision=${got_revision}",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
         "isolate_name": "blink_web_tests",
@@ -84440,11 +84373,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -84576,8 +84504,7 @@
       {
         "args": [
           "--flag-specific=highdpi",
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
@@ -84588,11 +84515,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "high_dpi_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -84635,7 +84557,6 @@
         "args": [
           "--flag-specific=disable-site-isolation-trials",
           "--num-retries=3",
-          "--git-revision=${got_revision}",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
         "isolate_name": "blink_web_tests",
@@ -84647,11 +84568,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "not_site_per_process_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -84775,8 +84691,7 @@
           "--num-retries=3",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
-          "--flag-specific=skia-vulkan-swiftshader",
-          "--git-revision=${got_revision}"
+          "--flag-specific=skia-vulkan-swiftshader"
         ],
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
@@ -84787,11 +84702,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "vulkan_swiftshader_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -93256,8 +93166,7 @@
       },
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "experiment_percentage": 0,
         "isolate_name": "blink_web_tests",
@@ -93268,11 +93177,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -95513,8 +95417,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -95524,11 +95427,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -95552,8 +95450,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -95563,11 +95460,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -95594,8 +95486,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -95605,11 +95496,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -95634,8 +95520,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -95645,11 +95530,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -95676,8 +95556,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -95687,11 +95566,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -95716,8 +95590,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -95727,11 +95600,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -99465,8 +99333,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -99476,11 +99343,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -99504,8 +99366,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -99515,11 +99376,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -99543,8 +99399,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -99554,11 +99409,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },

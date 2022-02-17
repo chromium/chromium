@@ -11,11 +11,6 @@
 //build/android/pylib/local/emulator/proto/__init__.py
 //build/android/pylib/local/emulator/proto/avd_pb2.py
 //build/gn_helpers.py
-//build/skia_gold_common/__init__.py
-//build/skia_gold_common/output_managerless_skia_gold_session.py
-//build/skia_gold_common/skia_gold_properties.py
-//build/skia_gold_common/skia_gold_session.py
-//build/skia_gold_common/skia_gold_session_manager.py
 //build/util/lib/__init__.py
 //build/util/lib/results/__init__.py
 //build/util/lib/results/result_sink.py
@@ -85,9 +80,6 @@
 //third_party/blink/tools/blinkpy/web_tests/servers/pywebsocket.py
 //third_party/blink/tools/blinkpy/web_tests/servers/server_base.py
 //third_party/blink/tools/blinkpy/web_tests/servers/wptserve.py
-//third_party/blink/tools/blinkpy/web_tests/skia_gold/__init__.py
-//third_party/blink/tools/blinkpy/web_tests/skia_gold/blink_skia_gold_properties.py
-//third_party/blink/tools/blinkpy/web_tests/skia_gold/blink_skia_gold_session_manager.py
 //third_party/catapult/common/py_utils/py_utils/__init__.py
 //third_party/catapult/common/py_utils/py_utils/cloud_storage.py
 //third_party/catapult/common/py_utils/py_utils/cloud_storage_global_lock.py
