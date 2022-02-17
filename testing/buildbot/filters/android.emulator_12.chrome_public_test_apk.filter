@@ -66,3 +66,17 @@
 
 # crbug.com/1188920
 -org.chromium.chrome.browser.customtabs.CustomTabExternalNavigationTest.testIntentPickerNotShownForNormalUrl
+
+# crbug.com/1297370
+-org.chromium.chrome.browser.multiwindow.MultiWindowIntegrationTest.*
+-org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.*
+-org.chromium.chrome.browser.tabmodel.TabModelMergingTest.*
+-org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindow
+-org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindowFallback
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMultiWindowTest.*
+
+# crbug.com/1297678
+-org.chromium.ui.base.ClipboardAndroidTest.*
+
+# crbug.com/1297682
+-org.chromium.chrome.browser.download.DownloadForegroundServiceManagerTest.*
