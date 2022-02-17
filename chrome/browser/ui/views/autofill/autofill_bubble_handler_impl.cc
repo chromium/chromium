@@ -285,6 +285,8 @@ void AutofillBubbleHandlerImpl::OnAvatarHighlightAnimationFinished() {
   // animation has completed in case we are offering VCN enrollment.
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents)
+    return;
 
   autofill::ContentAutofillDriverFactory* driver =
       autofill::ContentAutofillDriverFactory::FromWebContents(web_contents);
