@@ -62,7 +62,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "net/base/escape.h"
@@ -1755,6 +1757,108 @@ IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
       current_browser(), src_server()->GetURL("/defaultresponse?landing")));
   InsertSpeculation(src_server()->GetURL("/hung"), FINAL_STATUS_TIMED_OUT,
                     /*should_navigate_away=*/true);
+}
+
+class NoStatePrefetchMPArchBrowserTest : public NoStatePrefetchBrowserTest {
+ public:
+  NoStatePrefetchMPArchBrowserTest() = default;
+  ~NoStatePrefetchMPArchBrowserTest() override = default;
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+};
+
+class NoStatePrefetchPrerenderBrowserTest
+    : public NoStatePrefetchMPArchBrowserTest {
+ public:
+  NoStatePrefetchPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &NoStatePrefetchPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~NoStatePrefetchPrerenderBrowserTest() override = default;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    NoStatePrefetchMPArchBrowserTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchPrerenderBrowserTest,
+                       ShouldNotRecordNavigation) {
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  bool recorded = GetNoStatePrefetchManager()->HasRecentlyBeenNavigatedTo(
+      ORIGIN_NONE, initial_url);
+  EXPECT_TRUE(recorded);
+
+  const GURL prerender_url = embedded_test_server()->GetURL(kPrefetchPage);
+
+  // Loads a page in the prerender.
+  const int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  // NoStatePrefetchManager should not record the navigation in prerendering.
+  recorded = GetNoStatePrefetchManager()->HasRecentlyBeenNavigatedTo(
+      ORIGIN_NONE, prerender_url);
+  EXPECT_FALSE(recorded);
+
+  // Activate the page from the prerendering.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  recorded = GetNoStatePrefetchManager()->HasRecentlyBeenNavigatedTo(
+      ORIGIN_NONE, prerender_url);
+  EXPECT_TRUE(recorded);
+}
+
+class NoStatePrefetchFencedFrameBrowserTest
+    : public NoStatePrefetchMPArchBrowserTest {
+ public:
+  NoStatePrefetchFencedFrameBrowserTest() = default;
+  ~NoStatePrefetchFencedFrameBrowserTest() override = default;
+  NoStatePrefetchFencedFrameBrowserTest(
+      const NoStatePrefetchFencedFrameBrowserTest&) = delete;
+
+  NoStatePrefetchFencedFrameBrowserTest& operator=(
+      const NoStatePrefetchFencedFrameBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchFencedFrameBrowserTest,
+                       ShouldNotRecordNavigation) {
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  bool recorded = GetNoStatePrefetchManager()->HasRecentlyBeenNavigatedTo(
+      ORIGIN_NONE, initial_url);
+  EXPECT_TRUE(recorded);
+
+  // Create a FencedFrame and navigate the given URL.
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+          fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+  // NoStatePrefetchManager should not record the navigation on fenced frame
+  // navigation.
+  recorded = GetNoStatePrefetchManager()->HasRecentlyBeenNavigatedTo(
+      ORIGIN_NONE, fenced_frame_url);
+  EXPECT_FALSE(recorded);
 }
 
 }  // namespace prerender
