@@ -765,9 +765,20 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
     }
   }
 
-  // No default task, check for an explicit file extension match (without
-  // MIME match) in the extension manifest and pick that over the fallback
-  // handlers below (see crbug.com/803930)
+  // No default task. If ShadowDocs is available for Office files, set as
+  // default.
+  for (FullTaskDescriptor& task : *tasks) {
+    if (isFilesAppId(task.task_descriptor.app_id) &&
+        parseFilesAppActionId(task.task_descriptor.action_id) ==
+            "open-web-drive-office") {
+      task.is_default = true;
+      return;
+    }
+  }
+
+  // Check for an explicit file extension match (without MIME match) in the
+  // extension manifest and pick that over the fallback handlers below (see
+  // crbug.com/803930)
   for (FullTaskDescriptor& task : *tasks) {
     if (task.is_file_extension_match && !task.is_generic_file_handler &&
         !IsFallbackFileHandler(task)) {
