@@ -10,22 +10,7 @@ android_library("delegate_java") {
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
-android_library("delegate_public_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegateImpl.java" ]
-  deps = [
-    ":delegate_java",
-    ":java",
-    "//base:base_java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/preferences:java",
-    "//components/embedder_support/android:util_java",
-    "//components/version_info/android:version_constants_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//ui/android:ui_java",
-  ]
-}
-
-android_library("java") {
+android_library("delegate_upstream_impl_java") {
   sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegateUpstreamImpl.java" ]
   jar_excluded_patterns = [ "*/CustomizationProviderDelegateImpl.class" ]
   deps = [
@@ -38,4 +23,23 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
+}
+
+android_library("delegate_public_impl_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegateImpl.java" ]
+  deps = [
+    ":delegate_java",
+    ":delegate_upstream_impl_java",
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//components/embedder_support/android:util_java",
+    "//components/version_info/android:version_constants_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/Placeholder.java" ]
 }
