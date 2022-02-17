@@ -11,7 +11,7 @@
 
 // clang-format off
 #define COMMON_CHROME_COLOR_IDS \
-  /* Bookmark Bar output colors. */ \
+  /* Bookmark Bar colors. */ \
   E(kColorBookmarkBarBackground, \
     ThemeProperties::COLOR_BOOKMARK_BAR_BACKGROUND, kChromeColorsStart) \
   E(kColorBookmarkBarForeground, ThemeProperties::COLOR_BOOKMARK_TEXT) \
@@ -19,7 +19,7 @@
   E(kColorBookmarkButtonIcon, ThemeProperties::COLOR_BOOKMARK_BUTTON_ICON) \
   E(kColorBookmarkFavicon, ThemeProperties::COLOR_BOOKMARK_FAVICON) \
   E_CPONLY(kColorBookmarkFolderIcon) \
-  /* Download Shelf output colors. */ \
+  /* Download Shelf colors. */ \
   E(kColorDownloadShelf, ThemeProperties::COLOR_DOWNLOAD_SHELF) \
   E(kColorDownloadShelfButtonBackground, \
     ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND) \
@@ -30,11 +30,13 @@
   E_CPONLY(kColorDownloadToolbarButtonRingBackground) \
   /* Google branding colors. */ \
   E_CPONLY(kColorGooglePayLogo) \
+  /* Location bar colors. */ \
+  E(kColorLocationBarBorder, ThemeProperties::COLOR_LOCATION_BAR_BORDER) \
   /* New Tab Page colors. */ \
   E(kColorNewTabPageBackground, ThemeProperties::COLOR_NTP_BACKGROUND) \
   E(kColorNewTabPageHeader, ThemeProperties::COLOR_NTP_HEADER) \
   E(kColorNewTabPageText, ThemeProperties::COLOR_NTP_TEXT) \
-  /* Omnibox output colors. */ \
+  /* Omnibox colors. */ \
   E(kColorOmniboxBackground, ThemeProperties::COLOR_OMNIBOX_BACKGROUND) \
   E(kColorOmniboxBackgroundHovered, \
     ThemeProperties::COLOR_OMNIBOX_BACKGROUND_HOVERED) \
@@ -70,7 +72,7 @@
     ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_SECURE) \
   E(kColorOmniboxText, ThemeProperties::COLOR_OMNIBOX_TEXT) \
   E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
-  /* Tab output colors. */ \
+  /* Tab colors. */ \
   E(kColorTabBackgroundActiveFrameActive, \
     ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE) \
   E(kColorTabBackgroundActiveFrameInactive, \
@@ -101,7 +103,7 @@
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_RED) \
   E(kColorTabGroupContextMenuYellow, \
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_YELLOW) \
-  /* Toolbar output colors. */ \
+  /* Toolbar colors. */ \
   E(kColorToolbar, ThemeProperties::COLOR_TOOLBAR) \
   E(kColorToolbarButtonIcon, ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON) \
   E(kColorToolbarContentAreaSeparator, \

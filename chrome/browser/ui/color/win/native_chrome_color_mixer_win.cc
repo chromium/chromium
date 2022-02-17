@@ -213,12 +213,11 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
 
   if (key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh) {
     // High contrast uses system colors.
+    mixer[kColorLocationBarBorder] = {ui::kColorNativeWindowText};
     mixer[kColorOmniboxBackground] = {ui::kColorNativeBtnFace};
     mixer[kColorOmniboxText] = {ui::kColorNativeBtnText};
     mixer[kColorToolbar] = {ui::kColorNativeWindow};
     mixer[kColorToolbarText] = {ui::kColorNativeBtnText};
-    mixer[ui::kColorFrameActive] = {ui::kColorNativeWindow};
-    mixer[ui::kColorFrameInactive] = {ui::kColorNativeWindow};
     mixer[kColorTabForegroundActiveFrameActive] = {
         ui::kColorNativeHighlightText};
     return;

@@ -139,8 +139,10 @@ void AddNativeUiColorMixer(ColorProvider* provider,
 
   // Window Background
   mixer[kColorBubbleFooterBackground] = {kColorNativeWindow};
-  mixer[kColorTooltipBackground] = {kColorNativeWindow};
   mixer[kColorButtonBackgroundProminentDisabled] = {kColorNativeWindow};
+  mixer[kColorFrameActive] = {ui::kColorNativeWindow};
+  mixer[kColorFrameInactive] = {ui::kColorNativeWindow};
+  mixer[kColorTooltipBackground] = {kColorNativeWindow};
 
   // Window Text
   mixer[kColorTableGroupingIndicator] = {kColorNativeWindowText};

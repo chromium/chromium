@@ -7,6 +7,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -118,9 +119,15 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   }
   for (auto& entry : kBgPropertiesMap) {
     if (key.custom_theme &&
-        key.custom_theme->GetColor(entry.property_id, &color))
+        key.custom_theme->GetColor(entry.property_id, &color)) {
       mixer[entry.color_id] = {color};
-    else
+    } else if (entry.color_id == kColorTabBackgroundInactiveFrameActive ||
+               entry.color_id == kColorTabBackgroundInactiveFrameInactive) {
+      mixer[entry.color_id] = {ui::HSLShift(
+          kBgColorMap.at(entry.color_id),
+          GetThemeTint(ThemeProperties::TINT_BACKGROUND_TAB, key))};
+    } else {
       mixer[entry.color_id] = {kBgColorMap.at(entry.color_id)};
+    }
   }
 }

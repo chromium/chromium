@@ -52,12 +52,12 @@ void AddChromeColorMixers(ui::ColorProvider* provider,
   ui::SetColorProviderUtilsCallbacks(
       chrome_color_provider_utils_callbacks.get());
   AddChromeColorMixer(provider, key);
-  AddNativeChromeColorMixer(provider, key);
-
   AddOmniboxColorMixer(provider, key);
   AddTabStripColorMixer(provider, key);
 
   if (key.custom_theme) {
     key.custom_theme->AddColorMixers(provider, key);
   }
+
+  AddNativeChromeColorMixer(provider, key);
 }
