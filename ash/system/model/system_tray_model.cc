@@ -40,8 +40,9 @@ SystemTrayModel::SystemTrayModel()
       active_network_icon_(
           std::make_unique<ActiveNetworkIcon>(network_state_model_.get())) {
   std::set<base::Time> prunable_months;
-  calendar_utils::GetSurroundingMonthsUTC(base::Time::Now(), 1,
-                                          prunable_months);
+  calendar_utils::GetSurroundingMonthsUTC(
+      base::Time::Now(), CalendarModel::kNumSurroundingMonthsCached,
+      prunable_months);
   calendar_model_ = std::make_unique<CalendarModel>(prunable_months);
 }
 
