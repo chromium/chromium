@@ -118,6 +118,7 @@ void InProcessLaunchedVideoCaptureDevice::ResumeDevice() {
 
 void InProcessLaunchedVideoCaptureDevice::Crop(
     const base::Token& crop_id,
+    uint32_t crop_version,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Unretained() is safe to use here because |device| would be null if it
@@ -126,7 +127,7 @@ void InProcessLaunchedVideoCaptureDevice::Crop(
   device_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&media::VideoCaptureDevice::Crop,
-                     base::Unretained(device_.get()), crop_id,
+                     base::Unretained(device_.get()), crop_id, crop_version,
                      base::BindPostTask(content::GetIOThreadTaskRunner({}),
                                         std::move(callback))));
 }

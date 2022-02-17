@@ -347,7 +347,7 @@ TEST_F(WebContentsFrameTrackerTest,
                   kInitSinkId, kCropId)))
       .Times(1);
 
-  tracker()->Crop(kCropId, std::move(callback));
+  tracker()->Crop(kCropId, /*crop_version=*/1, std::move(callback));
 
   RunAllTasksUntilIdle();
   EXPECT_TRUE(success);

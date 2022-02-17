@@ -208,9 +208,12 @@ void WebContentsFrameTracker::SetWebContentsAndContextFromRoutingId(
 
 void WebContentsFrameTracker::Crop(
     const base::Token& crop_id,
+    uint32_t crop_version,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(callback);
+
+  // TODO(crbug.com/1266378): Forward |crop_version| to Viz and use it there.
 
   crop_id_ = crop_id;
 

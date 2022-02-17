@@ -160,6 +160,7 @@ void FrameSinkVideoCaptureDevice::Resume() {
 
 void FrameSinkVideoCaptureDevice::Crop(
     const base::Token& crop_id,
+    uint32_t crop_version,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);

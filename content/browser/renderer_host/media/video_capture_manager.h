@@ -81,11 +81,18 @@ class CONTENT_EXPORT VideoCaptureManager
   void Close(const base::UnguessableToken& capture_session_id) override;
 
   // Start/stop cropping the video track.
+  //
   // Non-empty |crop_id| sets (or changes) the crop-target.
   // Empty |crop_id| reverts the capture to its original, uncropped state.
+  //
+  // |crop_version| must be incremented by at least one for each call.
+  // By including it in frame's metadata, Viz informs Blink what was the
+  // latest invocation of cropTo() before a given frame was produced.
+  //
   // The callback reports success/failure.
   void Crop(const base::UnguessableToken& session_id,
             const base::Token& crop_id,
+            uint32_t crop_version,
             base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
 
   // Called by VideoCaptureHost to locate a capture device for |capture_params|,

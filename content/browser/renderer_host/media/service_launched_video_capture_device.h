@@ -37,6 +37,7 @@ class ServiceLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
   void MaybeSuspendDevice() override;
   void ResumeDevice() override;
   void Crop(const base::Token& crop_id,
+            uint32_t crop_version,
             base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
       override;
   void RequestRefreshFrame() override;

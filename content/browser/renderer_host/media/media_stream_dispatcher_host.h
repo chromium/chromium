@@ -103,6 +103,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
 
   void OnCropValidationComplete(const base::UnguessableToken& device_id,
                                 const base::Token& crop_id,
+                                uint32_t crop_version,
                                 CropCallback callback,
                                 bool crop_id_passed_validation);
 #endif

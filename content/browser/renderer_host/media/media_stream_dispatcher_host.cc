@@ -513,8 +513,6 @@ void MediaStreamDispatcherHost::Crop(const base::UnguessableToken& device_id,
                                      CropCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  // TODO(crbug.com/1266378): Propagate |crop_version| to Viz.
-
   // Hop to the UI thread to verify that cropping to |crop_id| is permitted
   // from this particular context. Namely, cropping is currently only allowed
   // for self-capture, so the crop_id has to be associated with the top-level
@@ -525,12 +523,13 @@ void MediaStreamDispatcherHost::Crop(const base::UnguessableToken& device_id,
                      crop_id),
       base::BindOnce(&MediaStreamDispatcherHost::OnCropValidationComplete,
                      weak_factory_.GetWeakPtr(), device_id, crop_id,
-                     std::move(callback)));
+                     crop_version, std::move(callback)));
 }
 
 void MediaStreamDispatcherHost::OnCropValidationComplete(
     const base::UnguessableToken& device_id,
     const base::Token& crop_id,
+    uint32_t crop_version,
     CropCallback callback,
     bool crop_id_passed_validation) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -540,8 +539,8 @@ void MediaStreamDispatcherHost::OnCropValidationComplete(
     return;
   }
 
-  media_stream_manager_->video_capture_manager()->Crop(device_id, crop_id,
-                                                       std::move(callback));
+  media_stream_manager_->video_capture_manager()->Crop(
+      device_id, crop_id, crop_version, std::move(callback));
 }
 #endif
 

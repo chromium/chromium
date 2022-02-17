@@ -824,11 +824,12 @@ void VideoCaptureController::Resume() {
 
 void VideoCaptureController::Crop(
     const base::Token& crop_id,
+    uint32_t crop_version,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(launched_device_);
   EmitLogMessage(__func__, 3);
-  launched_device_->Crop(crop_id, std::move(callback));
+  launched_device_->Crop(crop_id, crop_version, std::move(callback));
 }
 
 void VideoCaptureController::RequestRefreshFrame() {
