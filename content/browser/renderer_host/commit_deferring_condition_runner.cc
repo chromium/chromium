@@ -6,9 +6,9 @@
 
 #include "base/no_destructor.h"
 #include "content/browser/renderer_host/back_forward_cache_commit_deferring_condition.h"
-#include "content/browser/renderer_host/commit_deferring_condition.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/public/browser/commit_deferring_condition.h"
 
 namespace content {
 
@@ -91,7 +91,8 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
   // Let WebContents add deferring conditions.
   std::vector<std::unique_ptr<CommitDeferringCondition>> delegate_conditions =
       navigation_request.GetDelegate()
-          ->CreateDeferringConditionsForNavigationCommit(navigation_request);
+          ->CreateDeferringConditionsForNavigationCommit(navigation_request,
+                                                         navigation_type_);
   for (auto& condition : delegate_conditions) {
     DCHECK(condition);
     AddCondition(std::move(condition));

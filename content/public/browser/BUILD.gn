@@ -103,6 +103,8 @@ source_set("browser_sources") {
     "client_hints.cc",
     "client_hints.h",
     "client_hints_controller_delegate.h",
+    "commit_deferring_condition.cc",
+    "commit_deferring_condition.h",
     "console_message.cc",
     "console_message.h",
     "contacts_picker_properties_requested.h",

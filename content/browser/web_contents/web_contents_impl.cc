@@ -7411,8 +7411,17 @@ WebContentsImpl::CreateThrottlesForNavigation(
 
 std::vector<std::unique_ptr<CommitDeferringCondition>>
 WebContentsImpl::CreateDeferringConditionsForNavigationCommit(
-    NavigationHandle& navigation_handle) {
-  std::vector<std::unique_ptr<CommitDeferringCondition>> conditions;
+    NavigationHandle& navigation_handle,
+    CommitDeferringCondition::NavigationType type) {
+  OPTIONAL_TRACE_EVENT2(
+      "content", "WebContentsImpl::CreateDeferringConditionsForNavigation",
+      "navigation", navigation_handle, "NavigationType", type);
+  std::vector<std::unique_ptr<CommitDeferringCondition>> conditions =
+      GetContentClient()
+          ->browser()
+          ->CreateCommitDeferringConditionsForNavigation(&navigation_handle,
+                                                         type);
+
   if (auto condition = JavaScriptDialogCommitDeferringCondition::MaybeCreate(
           static_cast<NavigationRequest&>(navigation_handle)))
     conditions.push_back(std::move(condition));

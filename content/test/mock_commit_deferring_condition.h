@@ -6,7 +6,7 @@
 #define CONTENT_TEST_MOCK_COMMIT_DEFERRING_CONDITION_H_
 
 #include "base/callback.h"
-#include "content/browser/renderer_host/commit_deferring_condition.h"
+#include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/mock_navigation_handle.h"
 

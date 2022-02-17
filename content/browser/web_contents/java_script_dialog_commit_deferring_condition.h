@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "content/browser/renderer_host/commit_deferring_condition.h"
+#include "content/public/browser/commit_deferring_condition.h"
 
 namespace content {
 

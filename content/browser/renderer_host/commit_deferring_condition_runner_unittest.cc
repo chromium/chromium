@@ -4,7 +4,7 @@
 
 #include "content/browser/renderer_host/commit_deferring_condition_runner.h"
 
-#include "content/browser/renderer_host/commit_deferring_condition.h"
+#include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/mock_commit_deferring_condition.h"
 

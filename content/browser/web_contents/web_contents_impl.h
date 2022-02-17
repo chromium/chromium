@@ -885,7 +885,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       NavigationHandle* navigation_handle) override;
   std::vector<std::unique_ptr<CommitDeferringCondition>>
   CreateDeferringConditionsForNavigationCommit(
-      NavigationHandle& navigation_handle) override;
+      NavigationHandle& navigation_handle,
+      CommitDeferringCondition::NavigationType type) override;
   std::unique_ptr<NavigationUIData> GetNavigationUIData(
       NavigationHandle* navigation_handle) override;
   void OnServiceWorkerAccessed(NavigationHandle* navigation,
