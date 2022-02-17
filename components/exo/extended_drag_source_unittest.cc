@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/data_source.h"
 #include "components/exo/data_source_delegate.h"
@@ -44,6 +45,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::SaveArg;
@@ -259,7 +261,7 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceAlreadyMapped) {
 // when it is guarantee the its state is properly set.
 class WindowObserverHookChecker : public aura::WindowObserver {
  public:
-  WindowObserverHookChecker(aura::Window* surface_window)
+  explicit WindowObserverHookChecker(aura::Window* surface_window)
       : surface_window_(surface_window) {
     DCHECK(!surface_window_->GetRootWindow());
     surface_window_->AddObserver(this);
@@ -289,6 +291,24 @@ class WindowObserverHookChecker : public aura::WindowObserver {
  private:
   aura::Window* surface_window_ = nullptr;
   aura::Window* dragged_window_ = nullptr;
+};
+
+// Differently than the window observer class above, this one observers
+// the window instance being directly provided to its ctor.
+class WindowObserverHookChecker2 : public aura::WindowObserver {
+ public:
+  explicit WindowObserverHookChecker2(aura::Window* surface_window)
+      : surface_window_(surface_window) {
+    surface_window_->AddObserver(this);
+  }
+  ~WindowObserverHookChecker2() { surface_window_->RemoveObserver(this); }
+  MOCK_METHOD(void,
+              OnWindowPropertyChanged,
+              (aura::Window*, const void*, intptr_t),
+              (override));
+
+ private:
+  aura::Window* surface_window_ = nullptr;
 };
 
 TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
@@ -402,7 +422,7 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet_TabletMode) {
 
   // Ensure drag 'n drop starts after
   // ExtendedDragSource::OnDraggedWindowVisibilityChanged()
-  aura::Window* toplevel_window;
+  aura::Window* toplevel_window = nullptr;
   WindowObserverHookChecker checker(detached_surface->window());
   EXPECT_CALL(checker, OnWindowVisibilityChanging(_, _))
       .Times(1)
@@ -436,6 +456,23 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet_TabletMode) {
   aura::Window* window = detached_shell_surface->GetWidget()->GetNativeWindow();
   EXPECT_TRUE(extended_drag_source_->GetDraggedWindowForTesting());
   EXPECT_EQ(window, extended_drag_source_->GetDraggedWindowForTesting());
+
+  WindowObserverHookChecker2 checker2(
+      shell_surface->GetWidget()->GetNativeWindow());
+  aura::Window* source_window = nullptr;
+  const void* property_key;
+  EXPECT_CALL(checker2, OnWindowPropertyChanged(_, _, _))
+      .Times(AnyNumber())
+      .WillRepeatedly(
+          DoAll(SaveArg<0>(&source_window), SaveArg<1>(&property_key),
+                InvokeWithoutArgs([&]() {
+                  if (property_key ==
+                      chromeos::kIsDeferredTabDraggingTargetWindowKey) {
+                    bool new_value = source_window->GetProperty(
+                        chromeos::kIsDeferredTabDraggingTargetWindowKey);
+                    EXPECT_TRUE(new_value);
+                  }
+                })));
 
   generator.ReleaseLeftButton();
   SetTabletModeEnabled(false);

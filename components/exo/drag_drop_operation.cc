@@ -36,6 +36,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/drag_drop/drag_drop_controller.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/extended_drag_source.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -405,17 +406,33 @@ void DragDropOperation::StartDragDropOperation() {
     return;
 
   if (op != DragOperation::kNone) {
-    // Success
+    // It is possible that Ash flags the dragged tab to snap its origin, and
+    // it uses the `chromeos::kIsDeferredTabDraggingTargetWindowKey` property to
+    // control that. The snap back behavior works as if the drag was cancelled.
+    bool force_tab_swallow = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    aura::Window* source_window = origin_->get()->window()->GetToplevelWindow();
+    force_tab_swallow =
+        (source_window && source_window->GetProperty(
+                              chromeos::kIsDeferredTabDraggingTargetWindowKey));
+    source_window->ClearProperty(
+        chromeos::kIsDeferredTabDraggingTargetWindowKey);
+#endif
+    if (force_tab_swallow) {
+      source_->get()->Cancelled();
+    } else {
+      // Success
 
-    // TODO(crbug.com/994065) This is currently not the actual mime type used by
-    // the recipient, just an arbitrary one we pick out of the offered types so
-    // we can report back whether or not the drop can succeed. This may need to
-    // change in the future.
-    source_->get()->Target(mime_type_);
+      // TODO(crbug.com/994065) This is currently not the actual mime type
+      // used by the recipient, just an arbitrary one we pick out of the
+      // offered types so we can report back whether or not the drop can
+      // succeed. This may need to change in the future.
+      source_->get()->Target(mime_type_);
 
-    source_->get()->Action(DragOperationToDndAction(op));
-    source_->get()->DndDropPerformed();
-    source_->get()->DndFinished();
+      source_->get()->Action(DragOperationToDndAction(op));
+      source_->get()->DndDropPerformed();
+      source_->get()->DndFinished();
+    }
 
     // Reset |source_| so it the destructor doesn't try to cancel it.
     source_.reset();
