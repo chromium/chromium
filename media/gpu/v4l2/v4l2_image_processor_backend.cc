@@ -274,8 +274,6 @@ V4L2ImageProcessorBackend::CreateWithOutputMode(
     return nullptr;
   }
 
-  // V4L2ImageProcessorBackend supports either DmaBuf-backed or memory-based
-  // video frame for input.
   VideoFrame::StorageType input_storage_type = VideoFrame::STORAGE_UNKNOWN;
   for (auto input_type : input_config.preferred_storage_types) {
     v4l2_memory v4l2_memory_type = InputStorageTypeToV4L2Memory(input_type);
@@ -290,8 +288,6 @@ V4L2ImageProcessorBackend::CreateWithOutputMode(
     return nullptr;
   }
 
-  // V4L2ImageProcessorBackend only supports DmaBuf-backed video frame for
-  // output.
   VideoFrame::StorageType output_storage_type = VideoFrame::STORAGE_UNKNOWN;
   for (auto output_type : output_config.preferred_storage_types) {
     v4l2_memory v4l2_memory_type = InputStorageTypeToV4L2Memory(output_type);
