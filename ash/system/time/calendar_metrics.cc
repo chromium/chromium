@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
@@ -83,7 +82,7 @@ void RecordEventListItemActivated(const ui::Event& event) {
 }
 
 void RecordMonthDwellTime(const base::TimeDelta& dwell_time) {
-  UMA_HISTOGRAM_TIMES(kCalendarMonthDwellTime, dwell_time);
+  base::UmaHistogramMediumTimes(kCalendarMonthDwellTime, dwell_time);
 }
 
 void RecordScrollSource(CalendarViewScrollSource source) {

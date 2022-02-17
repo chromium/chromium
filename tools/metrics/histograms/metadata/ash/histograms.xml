@@ -504,6 +504,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.MonthDwellTime" units="ms"
+    expires_after="2023-02-16">
+  <owner>kradtke@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the time a user spends in a calendar month. Records the time when
+    the user either scrolls to another month or closes the CalendarView.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.ScrollSource" enum="CalendarViewScrollSource"
     expires_after="2023-02-12">
   <owner>jiamingc@google.com</owner>
