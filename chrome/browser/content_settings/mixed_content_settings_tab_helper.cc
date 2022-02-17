@@ -40,7 +40,8 @@ MixedContentSettingsTabHelper::~MixedContentSettingsTabHelper() {}
 
 void MixedContentSettingsTabHelper::AllowRunningOfInsecureContent(
     RenderFrameHost& render_frame_host) {
-  auto* main_frame = render_frame_host.GetMainFrame();
+  DCHECK(!render_frame_host.IsNestedWithinFencedFrame());
+  auto* main_frame = render_frame_host.GetOutermostMainFrame();
   if (!base::Contains(settings_, main_frame)) {
     settings_[main_frame] = std::make_unique<PageSettings>(main_frame);
   }
@@ -63,7 +64,13 @@ void MixedContentSettingsTabHelper::RenderFrameDeleted(RenderFrameHost* frame) {
 
 bool MixedContentSettingsTabHelper::IsRunningInsecureContentAllowed(
     RenderFrameHost& render_frame_host) {
-  auto setting_it = settings_.find(render_frame_host.GetMainFrame());
+  // If render_frame_host is not nested in a Fenced Frame then the
+  // InsecureContent of the outermost main frame applies. If render_frame_host
+  // is a frame that is the root of a Fenced Frame or is nested inside a Fenced
+  // Frame the Insecure Content setting is ignored.
+  if (render_frame_host.IsNestedWithinFencedFrame())
+    return false;
+  auto setting_it = settings_.find(render_frame_host.GetOutermostMainFrame());
   if (setting_it == settings_.end())
     return false;
   return setting_it->second->is_running_insecure_content_allowed();
