@@ -202,13 +202,3 @@ try_.gpu.optional_tests_builder(
         ],
     ),
 )
-
-# RTS builders
-
-try_.builder(
-    name = "win10_chromium_x64_rel_ng_rts",
-    goma_jobs = goma.jobs.J150,
-    use_clang_coverage = True,
-    builderless = False,
-    cores = 16,
-)

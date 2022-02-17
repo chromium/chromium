@@ -444,17 +444,8 @@ as required builders.
 * [android-11-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-11-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-11-x86-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-11-x86-rel""))
   * Experiment percentage: 10.0
 
-* [android-marshmallow-arm64-rel-rts](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-arm64-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-marshmallow-arm64-rel-rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-arm64-rel-rts""))
-  * Experiment percentage: 5.0
-
-* [android-marshmallow-x86-rel-rts](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-marshmallow-x86-rel-rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-x86-rel-rts""))
-  * Experiment percentage: 5.0
-
 * [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-pie-arm64-coverage-experimental-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-coverage-experimental-rel""))
   * Experiment percentage: 3.0
-
-* [android-pie-arm64-rel-rts](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-pie-arm64-rel-rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-rel-rts""))
-  * Experiment percentage: 5.0
 
 * [fuchsia-binary-size](https://ci.chromium.org/p/chromium/builders/try/fuchsia-binary-size) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""fuchsia-binary-size"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia-binary-size""))
   * Experiment percentage: 20.0
@@ -462,11 +453,11 @@ as required builders.
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-1mbu-compile-fyi-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-1mbu-compile-fyi-rel""))
   * Experiment percentage: 5.0
 
+* [linux-chromeos-rel-rts](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-chromeos-rel-rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-chromeos-rel-rts""))
+  * Experiment percentage: 1.0
+
 * [linux-lacros-rel-code-coverage](https://ci.chromium.org/p/chromium/builders/try/linux-lacros-rel-code-coverage) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-lacros-rel-code-coverage"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-lacros-rel-code-coverage""))
   * Experiment percentage: 3.0
-
-* [linux-lacros-rel-rts](https://ci.chromium.org/p/chromium/builders/try/linux-lacros-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-lacros-rel-rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-lacros-rel-rts""))
-  * Experiment percentage: 1.0
 
 * [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-perfetto-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-perfetto-rel""))
   * Experiment percentage: 100.0
@@ -477,21 +468,6 @@ as required builders.
   * [`//components/tracing/.+`](https://cs.chromium.org/chromium/src/components/tracing/)
   * [`//content/browser/tracing/.+`](https://cs.chromium.org/chromium/src/content/browser/tracing/)
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
-
-* [linux-rel-rts](https://ci.chromium.org/p/chromium/builders/try/linux-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-rel-rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel-rts""))
-  * Experiment percentage: 5.0
-
-* [linux-stable-filter-combined-rel](https://ci.chromium.org/p/chromium/builders/try/linux-stable-filter-combined-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-stable-filter-combined-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-stable-filter-combined-rel""))
-  * Experiment percentage: 5.0
-
-* [linux-stable-filter-rel](https://ci.chromium.org/p/chromium/builders/try/linux-stable-filter-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-stable-filter-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-stable-filter-rel""))
-  * Experiment percentage: 5.0
-
-* [linux_chromium_asan_rel_ng_rts](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_rel_ng_rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux_chromium_asan_rel_ng_rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_chromium_asan_rel_ng_rts""))
-  * Experiment percentage: 5.0
-
-* [linux_chromium_tsan_rel_ng_rts](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_rel_ng_rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux_chromium_tsan_rel_ng_rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_chromium_tsan_rel_ng_rts""))
-  * Experiment percentage: 5.0
 
 * [mac11-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac11-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""mac11-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac11-arm64-rel""))
   * Experiment percentage: 100.0

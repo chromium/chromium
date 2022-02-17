@@ -287,19 +287,13 @@ try_.gpu.optional_tests_builder(
     ),
 )
 
-# RTS builders
-
-try_.builder(
-    name = "mac-rel-rts",
-    builderless = False,
-    goma_jobs = goma.jobs.J150,
-    use_clang_coverage = True,
-)
+# RTS builders (https://crbug.com/1203048)
 
 ios_builder(
     name = "ios-simulator-rts",
     builderless = False,
-    coverage_exclude_sources = "ios_test_files_and_test_utils",
-    coverage_test_types = ["unit"],
+    check_for_flakiness = True,
     use_clang_coverage = True,
+    coverage_exclude_sources = "ios_test_files_and_test_utils",
+    coverage_test_types = ["overall", "unit"],
 )

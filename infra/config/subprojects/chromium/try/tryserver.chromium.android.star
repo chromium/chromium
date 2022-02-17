@@ -199,22 +199,6 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-try_.builder(
-    name = "android-marshmallow-arm64-rel-rts",
-    builderless = not settings.is_main,
-    cores = 32 if settings.is_main else 16,
-    goma_jobs = goma.jobs.J300,
-    main_list_view = "try",
-    ssd = True,
-    use_java_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-    # TODO(crbug/1202741)
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
-)
-
 try_.orchestrator_builder(
     name = "android-marshmallow-x86-rel",
     compilator = "android-marshmallow-x86-rel-compilator",
@@ -296,20 +280,6 @@ try_.compilator_builder(
     name = "android-pie-arm64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-)
-
-try_.builder(
-    name = "android-pie-arm64-rel-rts",
-    builderless = not settings.is_main,
-    cores = 16,
-    goma_jobs = goma.jobs.J300,
-    ssd = True,
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-    # TODO(crbug/1202741)
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.builder(
@@ -517,18 +487,4 @@ try_.gpu.optional_tests_builder(
             ".+/[+]/ui/gl/.+",
         ],
     ),
-)
-
-# RTS builders
-
-try_.builder(
-    name = "android-marshmallow-x86-rel-rts",
-    goma_jobs = goma.jobs.J300,
-    builderless = False,
-    cores = 16,
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-    ssd = True,
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )

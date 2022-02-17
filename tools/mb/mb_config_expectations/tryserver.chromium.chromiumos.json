@@ -274,6 +274,21 @@
       "use_goma": true
     }
   },
+  "linux-chromeos-rel-rts": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": false,
+      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "target_os": "chromeos",
+      "use_clang_coverage": true,
+      "use_goma": true
+    }
+  },
   "linux-lacros-clang-tidy-rel": {
     "gn_args": {
       "also_build_ash_chrome": true,
@@ -323,19 +338,6 @@
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_goma": true
-    }
-  },
-  "linux-lacros-rel-rts": {
-    "gn_args": {
-      "also_build_ash_chrome": true,
-      "blink_enable_generated_code_formatting": false,
-      "chromeos_is_browser_only": true,
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_os": "chromeos",
       "use_goma": true
     }
   }

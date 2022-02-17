@@ -4,7 +4,6 @@
 """Definitions of builders in the tryserver.chromium.chromiumos builder group."""
 
 load("//lib/branches.star", "branches")
-load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "goma", "os")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -176,19 +175,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-lacros-rel-rts",
-    builderless = False,
-    cores = 16,
-    ssd = True,
-    goma_jobs = goma.jobs.J300,
-    main_list_view = "try",
-    os = os.LINUX_BIONIC_REMOVE,
-    tryjob = try_.job(
-        experiment_percentage = 1,
-    ),
-)
-
-try_.builder(
     name = "linux-chromeos-dbg",
 )
 
@@ -226,13 +212,11 @@ try_.builder(
 # RTS builders
 
 try_.builder(
-    name = "chromeos-amd64-generic-rel-rts",
-    mirrors = ["ci/chromeos-amd64-generic-rel"],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.ALWAYS,
-        ),
-    ),
+    name = "linux-chromeos-rel-rts",
     builderless = False,
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(
+        experiment_percentage = 1,
+    ),
 )
