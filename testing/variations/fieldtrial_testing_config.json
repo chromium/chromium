@@ -2102,21 +2102,6 @@
             ]
         }
     ],
-    "ContentSuggestionsHeaderMigration": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "ContentSuggestionsHeaderMigration",
-                    "enable_features": [
-                        "ContentSuggestionsHeaderMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextMenuGoogleLensChip": [
         {
             "platforms": [
