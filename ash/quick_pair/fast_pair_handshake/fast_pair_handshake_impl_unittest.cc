@@ -163,6 +163,12 @@ class FastPairHandshakeImplTest : public testing::Test {
   absl::optional<PairFailure> failure_ = absl::nullopt;
 };
 
+TEST_F(FastPairHandshakeImplTest, IsConnected) {
+  fake_fast_pair_gatt_service_client()->SetConnected(true);
+  EXPECT_TRUE(fake_fast_pair_gatt_service_client()->IsConnected());
+  EXPECT_TRUE(handshake_->IsConnected());
+}
+
 TEST_F(FastPairHandshakeImplTest, GattError) {
   histogram_tester().ExpectTotalCount(kHandshakeResult, 0);
   histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);

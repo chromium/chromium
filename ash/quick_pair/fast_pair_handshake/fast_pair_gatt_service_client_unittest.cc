@@ -153,19 +153,18 @@ class FakeBluetoothDevice
       device::BluetoothDevice::GattConnectionCallback callback,
       absl::optional<device::BluetoothUUID> service_uuid =
           absl::nullopt) override {
+    gatt_connection_ = std::make_unique<
+        testing::NiceMock<device::MockBluetoothGattConnection>>(
+        fake_adapter_, kTestBleDeviceAddress);
+
     if (has_gatt_connection_error_) {
-      std::move(callback).Run(
-          std::make_unique<
-              testing::NiceMock<device::MockBluetoothGattConnection>>(
-              fake_adapter_, kTestBleDeviceAddress),
-          /*error_code=*/device::BluetoothDevice::ConnectErrorCode::
-              ERROR_FAILED);
+      std::move(callback).Run(std::move(gatt_connection_),
+                              /*error_code=*/device::BluetoothDevice::
+                                  ConnectErrorCode::ERROR_FAILED);
     } else {
-      std::move(callback).Run(
-          std::make_unique<
-              testing::NiceMock<device::MockBluetoothGattConnection>>(
-              fake_adapter_, kTestBleDeviceAddress),
-          /*error_code=*/absl::nullopt);
+      ON_CALL(*gatt_connection_.get(), IsConnected)
+          .WillByDefault(testing::Return(true));
+      std::move(callback).Run(std::move(gatt_connection_), absl::nullopt);
     }
   }
 
@@ -178,6 +177,8 @@ class FakeBluetoothDevice
   FakeBluetoothDevice& operator=(const FakeBluetoothDevice&) = delete;
 
  protected:
+  std::unique_ptr<testing::NiceMock<device::MockBluetoothGattConnection>>
+      gatt_connection_;
   bool has_gatt_connection_error_ = false;
   FakeBluetoothAdapter* fake_adapter_;
 };
@@ -516,6 +517,7 @@ class FastPairGattServiceClientTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
 
  private:
   // We need temporary pointers to use for write/ready requests because we
@@ -547,7 +549,6 @@ class FastPairGattServiceClientTest : public testing::Test {
   std::unique_ptr<FakeBluetoothGattCharacteristic> fake_passkey_characteristic_;
   std::unique_ptr<testing::NiceMock<device::MockBluetoothGattService>>
       gatt_service_;
-  std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
   base::WeakPtrFactory<FastPairGattServiceClientTest> weak_ptr_factory_{this};
 };
 
@@ -603,6 +604,7 @@ TEST_F(FastPairGattServiceClientTest, GattConnectionSuccess) {
   histogram_tester().ExpectTotalCount(kNotifyPasskeyCharacteristicTime, 0);
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
+  EXPECT_TRUE(gatt_service_client_->IsConnected());
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionErrorMetric, 0);
