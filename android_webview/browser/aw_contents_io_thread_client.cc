@@ -231,31 +231,33 @@ void ClientMapEntryUpdater::WebContentsDestroyed() {
 std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
     content::GlobalRenderFrameHostId render_frame_host_id) {
   IoThreadClientData client_data;
-  if (!RfhToIoThreadClientMap::GetInstance()->Get(render_frame_host_id,
-                                                  &client_data))
-    return nullptr;
+  bool found = RfhToIoThreadClientMap::GetInstance()->Get(render_frame_host_id,
+                                                          &client_data);
 
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_delegate =
-      client_data.io_thread_client.get(env);
-  DCHECK(!client_data.pending_association || !java_delegate);
-  return std::make_unique<AwContentsIoThreadClient>(
-      client_data.pending_association, java_delegate);
+  if (!found || client_data.pending_association) {
+    return nullptr;
+  } else {
+    JNIEnv* env = AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> java_delegate =
+        client_data.io_thread_client.get(env);
+    return std::make_unique<AwContentsIoThreadClient>(java_delegate);
+  }
 }
 
 std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
     int frame_tree_node_id) {
   IoThreadClientData client_data;
-  if (!RfhToIoThreadClientMap::GetInstance()->Get(frame_tree_node_id,
-                                                  &client_data))
-    return nullptr;
+  bool found = RfhToIoThreadClientMap::GetInstance()->Get(frame_tree_node_id,
+                                                          &client_data);
 
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_delegate =
-      client_data.io_thread_client.get(env);
-  DCHECK(!client_data.pending_association || !java_delegate);
-  return std::make_unique<AwContentsIoThreadClient>(
-      client_data.pending_association, java_delegate);
+  if (!found || client_data.pending_association) {
+    return nullptr;
+  } else {
+    JNIEnv* env = AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> java_delegate =
+        client_data.io_thread_client.get(env);
+    return std::make_unique<AwContentsIoThreadClient>(java_delegate);
+  }
 }
 
 // static
@@ -313,24 +315,19 @@ AwContentsIoThreadClient::GetServiceWorkerIoThreadClient() {
   if (!java_delegate)
     return nullptr;
 
-  return std::make_unique<AwContentsIoThreadClient>(false, java_delegate);
+  return std::make_unique<AwContentsIoThreadClient>(java_delegate);
 }
 
-AwContentsIoThreadClient::AwContentsIoThreadClient(bool pending_association,
-                                                   const JavaRef<jobject>& obj)
-    : pending_association_(pending_association), java_object_(obj) {}
+AwContentsIoThreadClient::AwContentsIoThreadClient(const JavaRef<jobject>& obj)
+    : java_object_(obj) {
+  DCHECK(java_object_);
+}
 
 AwContentsIoThreadClient::~AwContentsIoThreadClient() = default;
-
-bool AwContentsIoThreadClient::PendingAssociation() const {
-  return pending_association_;
-}
 
 AwContentsIoThreadClient::CacheMode AwContentsIoThreadClient::GetCacheMode()
     const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!java_object_)
-    return AwContentsIoThreadClient::LOAD_DEFAULT;
 
   JNIEnv* env = AttachCurrentThread();
   return static_cast<AwContentsIoThreadClient::CacheMode>(
@@ -419,7 +416,7 @@ void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
   base::OnceCallback<std::unique_ptr<AwWebResourceInterceptResponse>()>
       get_response = base::BindOnce(&NoInterceptRequest);
   JNIEnv* env = AttachCurrentThread();
-  if (!bg_thread_client_object_ && java_object_) {
+  if (!bg_thread_client_object_) {
     bg_thread_client_object_.Reset(
         Java_AwContentsIoThreadClient_getBackgroundThreadClient(env,
                                                                 java_object_));
@@ -436,8 +433,6 @@ void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
 
 bool AwContentsIoThreadClient::ShouldBlockContentUrls() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!java_object_)
-    return false;
 
   JNIEnv* env = AttachCurrentThread();
   return Java_AwContentsIoThreadClient_shouldBlockContentUrls(env,
@@ -446,8 +441,6 @@ bool AwContentsIoThreadClient::ShouldBlockContentUrls() const {
 
 bool AwContentsIoThreadClient::ShouldBlockFileUrls() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!java_object_)
-    return false;
 
   JNIEnv* env = AttachCurrentThread();
   return Java_AwContentsIoThreadClient_shouldBlockFileUrls(env, java_object_);
@@ -455,8 +448,6 @@ bool AwContentsIoThreadClient::ShouldBlockFileUrls() const {
 
 bool AwContentsIoThreadClient::ShouldAcceptThirdPartyCookies() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!java_object_)
-    return false;
 
   JNIEnv* env = AttachCurrentThread();
   return Java_AwContentsIoThreadClient_shouldAcceptThirdPartyCookies(
@@ -465,8 +456,6 @@ bool AwContentsIoThreadClient::ShouldAcceptThirdPartyCookies() const {
 
 bool AwContentsIoThreadClient::GetSafeBrowsingEnabled() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!java_object_)
-    return false;
 
   JNIEnv* env = AttachCurrentThread();
   return Java_AwContentsIoThreadClient_getSafeBrowsingEnabled(env,
@@ -475,8 +464,6 @@ bool AwContentsIoThreadClient::GetSafeBrowsingEnabled() const {
 
 bool AwContentsIoThreadClient::ShouldBlockNetworkLoads() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!java_object_)
-    return false;
 
   JNIEnv* env = AttachCurrentThread();
   return Java_AwContentsIoThreadClient_shouldBlockNetworkLoads(env,
@@ -486,11 +473,8 @@ bool AwContentsIoThreadClient::ShouldBlockNetworkLoads() const {
 AwSettings::RequestedWithHeaderMode
 AwContentsIoThreadClient::GetRequestedWithHeaderMode() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!java_object_)
-    return AwSettings::GetDefaultRequestedWithHeaderMode();
 
   JNIEnv* env = AttachCurrentThread();
-
   return static_cast<AwSettings::RequestedWithHeaderMode>(
       Java_AwContentsIoThreadClient_getRequestedWithHeaderMode(env,
                                                                java_object_));
