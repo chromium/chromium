@@ -685,9 +685,8 @@ const char kQuickUnlockFingerprintRecord[] = "quick_unlock.fingerprint.record";
 
 // A list of allowed quick unlock modes. A quick unlock mode can only be used if
 // its type is on this list, or if type all (all quick unlock modes enabled) is
-// on this list. The pref name variable was changed to match the policy, the
-// actual pref name stays the same to preserve the backward compatibility
-const char kQuickUnlockModeAllowlist[] = "quick_unlock_mode_whitelist";
+// on this list.
+const char kQuickUnlockModeAllowlist[] = "quick_unlock_mode_allowlist";
 
 // String pref storing the salt for the pin quick unlock mechanism.
 const char kQuickUnlockPinSalt[] = "quick_unlock.pin.salt";

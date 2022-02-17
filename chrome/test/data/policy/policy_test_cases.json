@@ -10613,7 +10613,7 @@
       {
         "note": "Default value (no policies set).",
         "prefs": {
-          "quick_unlock_mode_whitelist": {
+          "quick_unlock_mode_allowlist": {
             "value": [ ]
           }
         }
@@ -10625,7 +10625,7 @@
           ]
         },
         "prefs": {
-          "quick_unlock_mode_whitelist": {
+          "quick_unlock_mode_allowlist": {
             "value": [
               "PIN"
             ]
@@ -10643,7 +10643,7 @@
           ]
         },
         "prefs": {
-          "quick_unlock_mode_whitelist": {
+          "quick_unlock_mode_allowlist": {
             "value": [
               "All"
             ]
@@ -10660,7 +10660,7 @@
       {
         "note": "Default value (no policies set).",
         "prefs": {
-          "quick_unlock_mode_whitelist": {
+          "quick_unlock_mode_allowlist": {
             "value": [ ]
           }
         }
@@ -10672,7 +10672,7 @@
           ]
         },
         "prefs": {
-          "quick_unlock_mode_whitelist": {
+          "quick_unlock_mode_allowlist": {
             "value": [
               "PIN"
             ]
