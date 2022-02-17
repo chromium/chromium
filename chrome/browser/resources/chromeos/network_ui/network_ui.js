@@ -132,6 +132,11 @@ Polymer({
   },
 
   /** @private */
+  onResetEuiccClick_() {
+    this.browserProxy_.resetEuicc();
+  },
+
+  /** @private */
   showAddNewWifi_() {
     this.browserProxy_.showAddNewWifi();
   },

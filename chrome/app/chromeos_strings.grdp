@@ -3257,6 +3257,9 @@
   <message name="IDS_NETWORK_UI_DISABLE_ACTIVE_ESIM_PROFILE_BUTTON_TEXT" desc="Text for button which, when pressed, disables the active eSIM profile.">
     Disable active eSIM profile
   </message>
+  <message name="IDS_NETWORK_UI_RESET_EUICC_LABEL" desc="Label and button text for section of the debug networking page which allows developers and QA testers to reset Euicc.">
+    Reset eSIM
+  </message>
   <message name="IDS_NETWORK_UI_ADD_NEW_WIFI_LABEL" desc="Label for section dealing with showing the 'Add new Wi-Fi network' dialog.">
     New Wi-Fi Network Dialog
   </message>

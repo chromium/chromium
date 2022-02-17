@@ -31,8 +31,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/network_ui_resources.h"
 #include "chrome/grit/network_ui_resources_map.h"
+#include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_esim_profile_handler_impl.h"
+#include "chromeos/network/cellular_esim_uninstall_handler.h"
+#include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/device_state.h"
+#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_state.h"
@@ -44,6 +48,7 @@
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -65,6 +70,7 @@ constexpr char kGetDeviceProperties[] = "getShillDeviceProperties";
 constexpr char kGetEthernetEAP[] = "getShillEthernetEAP";
 constexpr char kOpenCellularActivationUi[] = "openCellularActivationUi";
 constexpr char kResetESimCache[] = "resetESimCache";
+constexpr char kResetEuicc[] = "resetEuicc";
 constexpr char kShowNetworkDetails[] = "showNetworkDetails";
 constexpr char kShowNetworkConfig[] = "showNetworkConfig";
 constexpr char kShowAddNewWifiNetworkDialog[] = "showAddNewWifi";
@@ -102,6 +108,59 @@ void SetDeviceProperties(base::Value* dictionary) {
   }
   if (!device_dictionary.DictEmpty())
     dictionary->SetKey(shill::kDeviceProperty, std::move(device_dictionary));
+}
+
+bool IsGuestModeActive() {
+  return user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+         user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
+}
+
+// Get the euicc path for reset euicc operation. Return absl::nullopt if the
+// reset euicc is not allowed, i.e: the user is in guest mode, admin enables
+// restrict cellular network policy or a managed eSIM profile already installed.
+absl::optional<dbus::ObjectPath> GetEuiccResetPath() {
+  if (IsGuestModeActive()) {
+    NET_LOG(ERROR) << "Couldn't reset EUICC in guest mode.";
+    return absl::nullopt;
+  }
+  absl::optional<dbus::ObjectPath> euicc_path = chromeos::GetCurrentEuiccPath();
+  if (!euicc_path) {
+    NET_LOG(ERROR) << "No current EUICC. Unable to reset EUICC";
+    return absl::nullopt;
+  }
+  const ManagedNetworkConfigurationHandler*
+      managed_network_configuration_handler =
+          NetworkHandler::Get()->managed_network_configuration_handler();
+  if (!managed_network_configuration_handler)
+    return absl::nullopt;
+  if (managed_network_configuration_handler
+          ->AllowOnlyPolicyCellularNetworks()) {
+    NET_LOG(ERROR)
+        << "Couldn't reset EUICC if admin restricts cellular networks.";
+    return absl::nullopt;
+  }
+  NetworkStateHandler* network_state_handler =
+      NetworkHandler::Get()->network_state_handler();
+  if (!network_state_handler)
+    return absl::nullopt;
+  NetworkStateHandler::NetworkStateList state_list;
+  network_state_handler->GetNetworkListByType(NetworkTypePattern::Cellular(),
+                                              /*configured_only=*/false,
+                                              /*visible_only=*/false,
+                                              /*limit=*/0, &state_list);
+
+  HermesEuiccClient::Properties* euicc_properties =
+      HermesEuiccClient::Get()->GetProperties(*euicc_path);
+  const std::string& eid = euicc_properties->eid().value();
+  for (const NetworkState* network : state_list) {
+    if (network->eid() == eid && network->IsManagedByPolicy()) {
+      NET_LOG(ERROR)
+          << "Couldn't reset EUICC if a managed eSIM profile is installed.";
+      return absl::nullopt;
+    }
+  }
+
+  return euicc_path;
 }
 
 class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
@@ -174,6 +233,10 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
         base::BindRepeating(
             &NetworkConfigMessageHandler::DisableActiveESimProfile,
             base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        kResetEuicc,
+        base::BindRepeating(&NetworkConfigMessageHandler::ResetEuicc,
+                            base::Unretained(this)));
     web_ui()->RegisterMessageCallback(
         kShowNetworkDetails,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkDetails,
@@ -316,6 +379,27 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     CellularESimProfileHandlerImpl* handler_impl =
         static_cast<CellularESimProfileHandlerImpl*>(handler);
     handler_impl->DisableActiveESimProfile();
+  }
+
+  void ResetEuicc(base::Value::ConstListView arg_list) {
+    absl::optional<dbus::ObjectPath> euicc_path = GetEuiccResetPath();
+    if (!euicc_path)
+      return;
+
+    CellularESimUninstallHandler* handler =
+        NetworkHandler::Get()->cellular_esim_uninstall_handler();
+    if (!handler)
+      return;
+    NET_LOG(EVENT) << "Executing reset EUICC on " << euicc_path->value();
+    handler->ResetEuiccMemory(
+        *euicc_path, base::BindOnce(&NetworkConfigMessageHandler::OnEuiccReset,
+                                    base::Unretained(this)));
+  }
+
+  void OnEuiccReset(bool success) {
+    if (!success) {
+      NET_LOG(ERROR) << "Error occurred when resetting EUICC.";
+    }
   }
 
   void ShowNetworkDetails(base::Value::ConstListView arg_list) {
@@ -504,6 +588,10 @@ void NetworkUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
       "disableActiveESimProfileButtonText",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_DISABLE_ACTIVE_ESIM_PROFILE_BUTTON_TEXT));
+
+  localized_strings->SetStringKey(
+      "resetEuiccLabel",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_RESET_EUICC_LABEL));
 
   localized_strings->SetStringKey(
       "addNewWifiLabel",
