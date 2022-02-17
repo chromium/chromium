@@ -1485,6 +1485,31 @@ TEST_F(DesksTemplatesTest, AddRemoveSupportedWindows) {
   EXPECT_EQ(0, desk_1->num_supported_windows());
 }
 
+// Tests that adding and removing unsupported windows is counted correctly.
+TEST_F(DesksTemplatesTest, AddRemoveUnsupportedWindows) {
+  auto window1 = CreateTestWindow();
+  auto window2 = CreateTestWindow();
+
+  ToggleOverview();
+  EXPECT_TRUE(InOverviewSession());
+
+  EXPECT_EQ(0, GetOverviewGridList()[0]->num_incognito_windows());
+  EXPECT_EQ(2, GetOverviewGridList()[0]->num_unsupported_windows());
+
+  window1.reset();
+
+  // Expect `num_unsupported_windows_` to be 0.
+  EXPECT_EQ(0, GetOverviewGridList()[0]->num_incognito_windows());
+  EXPECT_EQ(1, GetOverviewGridList()[0]->num_unsupported_windows());
+
+  window2.reset();
+
+  // Re-open overview because all the windows closing caused it to close too.
+  ToggleOverview();
+  EXPECT_EQ(0, GetOverviewGridList()[0]->num_incognito_windows());
+  EXPECT_EQ(0, GetOverviewGridList()[0]->num_unsupported_windows());
+}
+
 // Tests the mouse and touch hover behavior on the template item view.
 TEST_F(DesksTemplatesTest, HoverOnTemplateItemView) {
   auto test_window = CreateAppWindow();

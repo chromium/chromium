@@ -437,6 +437,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return save_desk_as_template_widget_.get();
   }
 
+  int num_incognito_windows() const { return num_incognito_windows_; }
+
+  int num_unsupported_windows() const { return num_unsupported_windows_; }
+
  private:
   class TargetWindowObserver;
   friend class DesksTemplatesTest;
@@ -518,6 +522,11 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Called when the animation for fading the `save_desk_as_template_widget_`
   // out is completed.
   void OnSaveDeskAsTemplateButtonFadedOut();
+
+  // Either increment or decrement `num_incognito_windows_` and
+  // `num_unsupported_windows`.
+  void UpdateNumIncognitoUnsupportedWindows(aura::Window* window,
+                                            bool increment);
 
   // Returns the height of `desks_bar_view_`.
   int GetDesksBarHeight() const;
@@ -607,6 +616,14 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // A widget that contains a button which creates a new desk template when
   // pressed.
   std::unique_ptr<views::Widget> save_desk_as_template_widget_;
+
+  // The number of incognito windows in this grid. Used by Desk Templates to
+  // identify the unsupported window type to the user.
+  int num_incognito_windows_ = 0;
+
+  // The number of unsupported windows in this grid. Used by Desk Templates to
+  // identify the unsupported window type to the user.
+  int num_unsupported_windows_ = 0;
 
   base::WeakPtrFactory<OverviewGrid> weak_ptr_factory_{this};
 };

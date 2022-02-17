@@ -68,6 +68,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor_observer.h"
@@ -445,6 +446,8 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
       window->layer()->GetAnimator()->StopAnimating();
     window_list_.push_back(
         std::make_unique<OverviewItem>(window, overview_session_, this));
+
+    UpdateNumIncognitoUnsupportedWindows(window, /*increment*/true);
   }
 }
 
@@ -643,6 +646,8 @@ void OverviewGrid::AddItem(aura::Window* window,
   DCHECK(!GetOverviewItemContaining(window));
   DCHECK_LE(index, window_list_.size());
 
+  UpdateNumIncognitoUnsupportedWindows(window, /*increment*/true);
+
   window_list_.insert(
       window_list_.begin() + index,
       std::make_unique<OverviewItem>(window, overview_session_, this));
@@ -705,6 +710,9 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
   auto iter = std::find_if(window_list_.rbegin(), window_list_.rend(),
                            base::MatchesUniquePtr(overview_item));
   DCHECK(iter != window_list_.rend());
+
+  UpdateNumIncognitoUnsupportedWindows(overview_item->GetWindow(),
+                                       /*increment*/false);
 
   // This can also be called when shutting down |this|, at which the item will
   // be cleaning up and its associated view may be nullptr. |overview_item|
@@ -2401,6 +2409,32 @@ void OverviewGrid::OnDesksTemplatesGridFadedOut() {
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonFadedOut() {
   save_desk_as_template_widget_->Hide();
+}
+
+void OverviewGrid::UpdateNumIncognitoUnsupportedWindows(aura::Window* window,
+                                                        bool increment) {
+  if (!desks_templates_util::AreDesksTemplatesEnabled())
+    return;
+
+  // Count apps without full restore in `num_unsupported_windows_`. This is to
+  // ensure Save Template behavior, which will disable the button if
+  // num_unsupported_windows_ == window_list.size().
+  // TODO(crbug.com/1297710): Separate apps without Full Restore app id from
+  // unsupported apps so that they are not labeled as "Linux" apps in text.
+  const bool has_restore_id =
+      wm::GetTransientParent(window) &&
+      (Shell::Get()
+           ->desks_controller()
+           ->disable_app_id_check_for_desk_templates() ||
+       !full_restore::GetAppId(window).empty());
+  int addend = increment ? 1 : -1;
+  if (!ash::DeskTemplate::IsAppTypeSupported(window) || !has_restore_id)
+    num_unsupported_windows_ += addend;
+  else if (Shell::Get()->desks_templates_delegate()->IsIncognitoWindow(window))
+    num_incognito_windows_ += addend;
+
+  DCHECK_GE(num_unsupported_windows_, 0);
+  DCHECK_GE(num_incognito_windows_, 0);
 }
 
 int OverviewGrid::GetDesksBarHeight() const {
