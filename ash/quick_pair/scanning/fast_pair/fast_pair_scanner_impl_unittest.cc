@@ -70,6 +70,26 @@ class FakeBluetoothAdapter
       observer.DeviceChanged(this, mock_device_ptr);
   }
 
+  void RemoveDevice(const std::string& address) {
+    auto mock_device = CreateTestBluetoothDevice(address);
+    auto* mock_device_ptr = mock_device.get();
+    mock_device->SetServiceDataForUUID(ash::quick_pair::kFastPairBluetoothUuid,
+                                       {4, 5, 6});
+
+    for (auto& observer : GetObservers())
+      observer.DeviceRemoved(this, mock_device_ptr);
+  }
+
+  void DevicePairedChanged(const std::string& address) {
+    auto mock_device = CreateTestBluetoothDevice(address);
+    auto* mock_device_ptr = mock_device.get();
+    mock_device->SetServiceDataForUUID(ash::quick_pair::kFastPairBluetoothUuid,
+                                       {4, 5, 6});
+
+    for (auto& observer : GetObservers())
+      observer.DevicePairedChanged(this, mock_device_ptr, false);
+  }
+
  private:
   ~FakeBluetoothAdapter() override = default;
 };
@@ -114,7 +134,6 @@ class FastPairScannerImplTest : public testing::Test {
         .WillByDefault(
             Invoke(this, &FastPairScannerImplTest::StartLowEnergyScanSession));
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
-    EXPECT_CALL(adapter(), AddObserver);
     scanner_ = base::MakeRefCounted<FastPairScannerImpl>();
     scanner_observer_ = std::make_unique<FastPairScannerObserver>();
     scanner().AddObserver(scanner_observer_.get());
@@ -123,7 +142,6 @@ class FastPairScannerImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    EXPECT_CALL(adapter(), RemoveObserver(scanner_.get()));
     scanner().RemoveObserver(scanner_observer_.get());
     FastPairHandshakeLookup::GetInstance()->Clear();
   }
@@ -195,20 +213,84 @@ class FastPairScannerImplTest : public testing::Test {
     return handshake;
   }
 
+  void SetUpFactoryScanner() {
+    scanner_.reset();
+    scanner_ = FastPairScannerImpl::Factory::Create();
+    scanner_->AddObserver(scanner_observer_.get());
+    task_environment_.RunUntilIdle();
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  scoped_refptr<FastPairScannerImpl> scanner_;
+  scoped_refptr<FastPairScanner> scanner_;
   device::MockBluetoothLowEnergyScanSession* mock_scan_session_ = nullptr;
   std::unique_ptr<FastPairScannerObserver> scanner_observer_;
   base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate_;
   base::WeakPtrFactory<FastPairScannerImplTest> weak_ptr_factory_{this};
 };
 
+TEST_F(FastPairScannerImplTest, FactoryCreate) {
+  SetUpFactoryScanner();
+  TriggerOnDeviceFound(kTestBleDeviceAddress1);
+  EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice(
+      kTestBleDeviceAddress1));
+}
+
+TEST_F(FastPairScannerImplTest, SessionStartedSuccessfully) {
+  delegate_->OnSessionStarted(mock_scan_session_,
+                              /*error_code=*/absl::nullopt);
+  TriggerOnDeviceFound(kTestBleDeviceAddress1);
+  EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice(
+      kTestBleDeviceAddress1));
+}
+
+TEST_F(FastPairScannerImplTest, SessionStartedFailure) {
+  delegate_->OnSessionStarted(
+      mock_scan_session_,
+      device::BluetoothLowEnergyScanSession::ErrorCode::kFailed);
+  delegate_ = nullptr;
+  TriggerOnDeviceFound(kTestBleDeviceAddress1);
+  EXPECT_FALSE(scanner_observer().DoesDeviceListContainTestDevice(
+      kTestBleDeviceAddress1));
+}
+
+TEST_F(FastPairScannerImplTest, SessionInvalidated) {
+  delegate_->OnSessionInvalidated(mock_scan_session_);
+  TriggerOnDeviceFound(kTestBleDeviceAddress1);
+  EXPECT_FALSE(scanner_observer().DoesDeviceListContainTestDevice(
+      kTestBleDeviceAddress1));
+}
+
 TEST_F(FastPairScannerImplTest, DeviceAddedNotifiesObservers) {
   TriggerOnDeviceFound(kTestBleDeviceAddress1);
   EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice(
+      kTestBleDeviceAddress1));
+}
+
+TEST_F(FastPairScannerImplTest, DeviceRemoved) {
+  TriggerOnDeviceFound(kTestBleDeviceAddress1);
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
+  adapter().RemoveDevice(kTestBleDeviceAddress1);
+  adapter().ChangeDevice(kTestBleDeviceAddress1,
+                         /*change_service_data_len=*/false);
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
+}
+
+TEST_F(FastPairScannerImplTest, DevicePairedChanged) {
+  TriggerOnDeviceFound(kTestBleDeviceAddress1);
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
+  adapter().DevicePairedChanged(kTestBleDeviceAddress1);
+  adapter().ChangeDevice(kTestBleDeviceAddress1,
+                         /*change_service_data_len=*/false);
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
+}
+
+TEST_F(FastPairScannerImplTest, DeviceAddedAlreadyHasHandshake) {
+  AddConnectedHandshake(kTestBleDeviceAddress1);
+  TriggerOnDeviceFound(kTestBleDeviceAddress1);
+  EXPECT_FALSE(scanner_observer().DoesDeviceListContainTestDevice(
       kTestBleDeviceAddress1));
 }
 
@@ -227,7 +309,7 @@ TEST_F(FastPairScannerImplTest, DeviceChangedNewServiceDataLength) {
   // This simulates a change in service data from Initial to Subsequent pairing.
   // We should notify observers in this case.
   adapter().ChangeDevice(kTestBleDeviceAddress1,
-                         /* change_service_data_len= */ true);
+                         /*change_service_data_len=*/true);
   EXPECT_EQ(scanner_observer().on_device_found_count(), 2);
 }
 
@@ -237,8 +319,29 @@ TEST_F(FastPairScannerImplTest, DeviceChangedSameServiceDataLength) {
   // This simulates a change of service data within one of the ongoing pairing
   // scenarios, in which case we do not notify observers.
   adapter().ChangeDevice(kTestBleDeviceAddress1,
-                         /* change_service_data_len= */ false);
+                         /*change_service_data_len=*/false);
   EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
+}
+
+TEST_F(FastPairScannerImplTest, DeviceAddedNoServiceData) {
+  auto mock_device =
+      std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+          /*adapter=*/nullptr, /*bluetooth_class=*/0, kTestBleDeviceName,
+          kTestBleDeviceAddress1, /*paired=*/true, /*connected=*/true);
+  delegate_->OnDeviceFound(mock_scan_session_, mock_device.get());
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 0);
+}
+
+TEST_F(FastPairScannerImplTest, DeviceChangedNoServiceData) {
+  auto mock_device =
+      std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+          /*adapter=*/nullptr, /*bluetooth_class=*/0, kTestBleDeviceName,
+          kTestBleDeviceAddress1, /*paired=*/true, /*connected=*/true);
+  delegate_->OnDeviceFound(mock_scan_session_, mock_device.get());
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 0);
+  adapter().ChangeDevice(kTestBleDeviceAddress1,
+                         /*change_service_data_len=*/false);
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 0);
 }
 
 TEST_F(FastPairScannerImplTest, IgnoresEventDuringActiveHandshake) {
