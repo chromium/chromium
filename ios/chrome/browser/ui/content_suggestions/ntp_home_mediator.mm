@@ -57,6 +57,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -605,6 +607,13 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   } else if (IsSingleNtpEnabled()) {
     // Remove this if NTPs are ever scoped back to the WebState.
     [self.ntpViewController setContentOffsetToTop];
+    // Refresh NTP content if there is is no saved scrolled state or when a new
+    // NTP is opened. Since the same NTP is being shared across tabs, this
+    // ensures that new content is being fetched.
+    [self.suggestionsMediator refreshMostVisitedTiles];
+    // TODO(crbug.com/1293518): Once API is available, call
+    // RefreshFeedIfNeeded() to prevent unnecessary refreshes.
+    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
   }
 }
 

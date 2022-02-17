@@ -79,8 +79,11 @@ class WebStateList;
 // Disconnects the mediator.
 - (void)disconnect;
 
-// Reloads content suggestions.
+// Reloads content suggestions with most updated model state.
 - (void)reloadAllData;
+
+// Trigger a refresh of the Content Suggestions Most Visited tiles.
+- (void)refreshMostVisitedTiles;
 
 // The notification promo owned by this mediator.
 - (NotificationPromoWhatsNew*)notificationPromo;
