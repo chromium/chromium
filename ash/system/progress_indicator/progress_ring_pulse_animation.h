@@ -24,7 +24,7 @@ class ProgressRingPulseAnimation : public ProgressRingAnimation {
   void UpdateAnimatableProperties(double fraction,
                                   float* start_value,
                                   float* end_value,
-                                  float* outer_ring_opacity) override;
+                                  float* opacity) override;
 };
 
 }  // namespace ash

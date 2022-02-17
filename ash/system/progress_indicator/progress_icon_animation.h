@@ -25,7 +25,6 @@ class ASH_EXPORT ProgressIconAnimation : public ProgressIndicatorAnimation {
   float inner_ring_stroke_width_scale_factor() const {
     return inner_ring_stroke_width_scale_factor_;
   }
-  float opacity() const { return opacity_; }
 
  private:
   // ProgressIndicatorAnimation:
@@ -34,7 +33,6 @@ class ASH_EXPORT ProgressIconAnimation : public ProgressIndicatorAnimation {
   // Animatable properties.
   float inner_icon_translate_y_scale_factor_ = -0.5f;
   float inner_ring_stroke_width_scale_factor_ = 0.f;
-  float opacity_ = 0.f;
 };
 
 }  // namespace ash

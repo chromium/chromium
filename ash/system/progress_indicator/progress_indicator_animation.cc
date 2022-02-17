@@ -31,10 +31,6 @@ void ProgressIndicatorAnimation::Start() {
   StartInternal(/*is_cyclic_restart=*/false);
 }
 
-bool ProgressIndicatorAnimation::HasAnimated() const {
-  return animator_ != nullptr;
-}
-
 bool ProgressIndicatorAnimation::IsAnimating() const {
   return animator_ && animator_->is_animating();
 }

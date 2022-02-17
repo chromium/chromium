@@ -134,38 +134,6 @@ void SetUpAnimation(ui::ScopedLayerAnimationSettings* animation_settings) {
   animation_settings->SetTweenType(gfx::Tween::EASE_OUT);
 }
 
-// OneShotLayerAnimationObserver -----------------------------------------------
-
-// A self-deleting `ui::LayerAnimationObserver` which invokes a callback on
-// animation completion just prior to self-destruction.
-class OneShotLayerAnimationObserver : public ui::LayerAnimationObserver {
- public:
-  explicit OneShotLayerAnimationObserver(
-      base::OnceClosure animation_completed_callback)
-      : animation_completed_callback_(std::move(animation_completed_callback)) {
-  }
-
- private:
-  // ui::LayerAnimationObserver:
-  void OnLayerAnimationScheduled(ui::LayerAnimationSequence*) override {}
-
-  void OnLayerAnimationEnded(ui::LayerAnimationSequence*) override {
-    OnLayerAnimationCompleted();
-  }
-
-  void OnLayerAnimationAborted(ui::LayerAnimationSequence*) override {
-    OnLayerAnimationCompleted();
-  }
-
-  void OnLayerAnimationCompleted() {
-    if (animation_completed_callback_)
-      std::move(animation_completed_callback_).Run();
-    delete this;
-  }
-
-  base::OnceClosure animation_completed_callback_;
-};
-
 }  // namespace
 
 // HoldingSpaceTrayIconPreview::ImageLayerOwner --------------------------------
@@ -415,18 +383,8 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
     transform_.Translate(translation);
   }
 
-  if (!NeedsLayer()) {
-    // Since the holding space tray icon preview will not be animated, any
-    // associated progress icon animation can `Start()` immediately.
-    if (features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
-      auto* key = progress_indicator_->animation_key();
-      auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
-      auto* animation = registry->GetProgressIconAnimationForKey(key);
-      if (animation && !animation->HasAnimated())
-        animation->Start();
-    }
+  if (!NeedsLayer())
     return;
-  }
 
   int pre_translate_y = -preview_size.height();
   if (IsHorizontal(shelf_->alignment())) {
@@ -464,19 +422,6 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
           transform_, kBounceAnimationSegmentDuration);
   rebound->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN_3);
   sequence->AddElement(std::move(rebound));
-
-  // Any associated progress icon animation should `Start()` only after
-  // completion of the holding space tray icon preview animation.
-  if (features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
-    sequence->AddObserver(new OneShotLayerAnimationObserver(base::BindOnce(
-        [](const void* key) {
-          auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
-          auto* animation = registry->GetProgressIconAnimationForKey(key);
-          if (animation && !animation->HasAnimated())
-            animation->Start();
-        },
-        progress_indicator_->animation_key())));
-  }
 
   layer()->GetAnimator()->StartAnimation(sequence.release());
 }
