@@ -3139,4 +3139,135 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunElementFinderFromOOPIF) {
   WaitForElementRemove(Selector({"#iframeExternal", "#div"}));
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ExecuteJSForFocusAndBlur) {
+  ClientStatus element_status;
+  ElementFinder::Result element;
+  FindElement(Selector({"#input1"}), &element_status, &element);
+  EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
+
+  ClientStatus focus_status;
+  base::RunLoop focus_run_loop;
+  web_controller_->ExecuteJS(
+      "this.focus();", element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), focus_run_loop.QuitClosure(),
+                     &focus_status));
+  focus_run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, focus_status.proto_status());
+  EXPECT_TRUE(
+      content::EvalJs(
+          shell(),
+          R"(document.activeElement === document.getElementById('input1'))")
+          .ExtractBool());
+
+  ClientStatus blur_status;
+  base::RunLoop blur_run_loop;
+  web_controller_->ExecuteJS(
+      "this.blur();", element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), blur_run_loop.QuitClosure(),
+                     &blur_status));
+  blur_run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, blur_status.proto_status());
+  EXPECT_TRUE(
+      content::EvalJs(shell(), R"(document.activeElement === document.body)")
+          .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ExecuteJSWithClientStatus) {
+  ClientStatus element_status;
+  ElementFinder::Result element;
+  FindElement(Selector({"#input1"}), &element_status, &element);
+  EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
+
+  ClientStatus valid_result_status;
+  base::RunLoop valid_run_loop;
+  web_controller_->ExecuteJS(
+      "return 27; // ELEMENT_NOT_ON_TOP", element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), valid_run_loop.QuitClosure(),
+                     &valid_result_status));
+  valid_run_loop.Run();
+  EXPECT_EQ(ELEMENT_NOT_ON_TOP, valid_result_status.proto_status());
+
+  ClientStatus invalid_result_status;
+  base::RunLoop invalid_run_loop;
+  web_controller_->ExecuteJS(
+      "return -1;", element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), invalid_run_loop.QuitClosure(),
+                     &invalid_result_status));
+  invalid_run_loop.Run();
+  EXPECT_EQ(INVALID_ACTION, invalid_result_status.proto_status());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ExecuteJSWithBadReturnValue) {
+  ClientStatus element_status;
+  ElementFinder::Result element;
+  FindElement(Selector({"#input1"}), &element_status, &element);
+  EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
+
+  ClientStatus result_status;
+  base::RunLoop run_loop;
+  web_controller_->ExecuteJS(
+      "return 'text';", element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), run_loop.QuitClosure(),
+                     &result_status));
+  run_loop.Run();
+  EXPECT_EQ(INVALID_ACTION, result_status.proto_status());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ExecuteJSWithPromise) {
+  ClientStatus element_status;
+  ElementFinder::Result element;
+  FindElement(Selector({"#input1"}), &element_status, &element);
+  EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
+
+  ClientStatus success_status;
+  base::RunLoop success_run_loop;
+  web_controller_->ExecuteJS(
+      R"(
+        return new Promise((fulfill, reject) => {
+          fulfill();
+        });
+      )",
+      element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), success_run_loop.QuitClosure(),
+                     &success_status));
+  success_run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, success_status.proto_status());
+
+  ClientStatus error_status;
+  base::RunLoop error_run_loop;
+  web_controller_->ExecuteJS(
+      R"(
+        return new Promise((fulfill, reject) => {
+          fulfill(27); // ELEMENT_NOT_ON_TOP
+        });
+      )",
+      element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), error_run_loop.QuitClosure(),
+                     &error_status));
+  error_run_loop.Run();
+  EXPECT_EQ(ELEMENT_NOT_ON_TOP, error_status.proto_status());
+
+  ClientStatus reject_status;
+  base::RunLoop reject_run_loop;
+  web_controller_->ExecuteJS(
+      R"(
+        return new Promise((fulfill, reject) => {
+          reject();
+        });
+      )",
+      element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), reject_run_loop.QuitClosure(),
+                     &reject_status));
+  reject_run_loop.Run();
+  EXPECT_EQ(UNEXPECTED_JS_ERROR, reject_status.proto_status());
+}
+
 }  // namespace autofill_assistant

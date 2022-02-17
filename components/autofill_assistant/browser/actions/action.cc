@@ -262,6 +262,9 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kSaveSubmittedPassword:
       out << "SaveSubmittedPassword";
       break;
+    case ActionProto::ActionInfoCase::kExecuteJs:
+      out << "ExecuteJs";
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";
       break;

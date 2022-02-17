@@ -20,6 +20,7 @@
 #include "components/autofill_assistant/browser/actions/delete_password_action.h"
 #include "components/autofill_assistant/browser/actions/dispatch_js_event_action.h"
 #include "components/autofill_assistant/browser/actions/edit_password_action.h"
+#include "components/autofill_assistant/browser/actions/execute_js_action.h"
 #include "components/autofill_assistant/browser/actions/expect_navigation_action.h"
 #include "components/autofill_assistant/browser/actions/generate_password_for_form_field_action.h"
 #include "components/autofill_assistant/browser/actions/get_element_status_action.h"
@@ -445,6 +446,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<ResetPendingCredentialsAction>(delegate, action);
     case ActionProto::ActionInfoCase::kSaveSubmittedPassword:
       return std::make_unique<SaveSubmittedPasswordAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kExecuteJs:
+      return std::make_unique<ExecuteJsAction>(delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);
@@ -700,6 +703,10 @@ absl::optional<ActionProto> ProtocolUtils::ParseFromString(
     case ActionProto::ActionInfoCase::kSaveSubmittedPassword:
       success = ParseActionFromString(action_id, bytes, error_message,
                                       proto.mutable_save_submitted_password());
+      break;
+    case ActionProto::ActionInfoCase::kExecuteJs:
+      success = ParseActionFromString(action_id, bytes, error_message,
+                                      proto.mutable_execute_js());
       break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       // This is an "unknown action", handled as such in CreateAction.

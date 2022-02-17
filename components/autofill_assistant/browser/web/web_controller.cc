@@ -541,7 +541,7 @@ void WebController::OnJavaScriptResultForStringArray(
   std::move(callback).Run(status, v);
 }
 
-void WebController::ExecuteVoidJsWithoutArguments(
+void WebController::ExecuteJsWithoutArguments(
     const ElementFinder::Result& element,
     const std::string& js_snippet,
     WebControllerErrorInfoProto::WebAction web_action,
@@ -550,12 +550,43 @@ void WebController::ExecuteVoidJsWithoutArguments(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())
           .SetFunctionDeclaration(js_snippet)
+          .SetReturnByValue(true)
+          .SetAwaitPromise(true)
           .Build(),
       element.node_frame_id(),
-      base::BindOnce(&WebController::OnJavaScriptResult,
+      base::BindOnce(&WebController::OnExecuteJsWithoutArguments,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::BindOnce(&DecorateWebControllerStatus, web_action,
                                     std::move(callback))));
+}
+
+void WebController::OnExecuteJsWithoutArguments(
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<runtime::CallFunctionOnResult> result) {
+  ClientStatus status =
+      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
+  if (!status.ok()) {
+    DVLOG(1) << __func__ << " Failed JavaScript with status: " << status;
+    std::move(callback).Run(status);
+    return;
+  }
+
+  if (!result->GetResult() || !result->GetResult()->HasValue()) {
+    // No result means everything went as expected.
+    std::move(callback).Run(OkClientStatus());
+    return;
+  }
+  int value;
+  if (!SafeGetIntValue(result->GetResult(), &value) ||
+      !ProcessedActionStatusProto_IsValid(value)) {
+    // If a result is present, we expect it to be an integer.
+    std::move(callback).Run(ClientStatus(INVALID_ACTION));
+    return;
+  }
+
+  std::move(callback).Run(
+      ClientStatus(static_cast<ProcessedActionStatusProto>(value)));
 }
 
 void WebController::ScrollIntoView(
@@ -725,9 +756,9 @@ void WebController::OnWaitUntilElementIsStable(
 void WebController::JsClickElement(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  ExecuteVoidJsWithoutArguments(element, std::string(kClickElementScript),
-                                WebControllerErrorInfoProto::JS_CLICK_ELEMENT,
-                                std::move(callback));
+  ExecuteJsWithoutArguments(element, std::string(kClickElementScript),
+                            WebControllerErrorInfoProto::JS_CLICK_ELEMENT,
+                            std::move(callback));
 }
 
 void WebController::ClickOrTapElement(
@@ -1280,9 +1311,9 @@ void WebController::GetStringAttribute(
 void WebController::SelectFieldValue(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  ExecuteVoidJsWithoutArguments(element, std::string(kSelectFieldValueScript),
-                                WebControllerErrorInfoProto::SELECT_FIELD_VALUE,
-                                std::move(callback));
+  ExecuteJsWithoutArguments(element, std::string(kSelectFieldValueScript),
+                            WebControllerErrorInfoProto::SELECT_FIELD_VALUE,
+                            std::move(callback));
 }
 
 void WebController::SetValueAttribute(
@@ -1404,17 +1435,17 @@ void WebController::OnSendKeyboardInputDone(
 void WebController::FocusField(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  ExecuteVoidJsWithoutArguments(element, std::string(kFocusFieldScript),
-                                WebControllerErrorInfoProto::FOCUS_FIELD,
-                                std::move(callback));
+  ExecuteJsWithoutArguments(element, std::string(kFocusFieldScript),
+                            WebControllerErrorInfoProto::FOCUS_FIELD,
+                            std::move(callback));
 }
 
 void WebController::BlurField(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  ExecuteVoidJsWithoutArguments(element, std::string(kBlurFieldScript),
-                                WebControllerErrorInfoProto::BLUR_FIELD,
-                                std::move(callback));
+  ExecuteJsWithoutArguments(element, std::string(kBlurFieldScript),
+                            WebControllerErrorInfoProto::BLUR_FIELD,
+                            std::move(callback));
 }
 
 void WebController::GetVisualViewport(
@@ -1556,9 +1587,9 @@ void WebController::GetElementTag(
 void WebController::SendChangeEvent(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  ExecuteVoidJsWithoutArguments(element, std::string(kSendChangeEventScript),
-                                WebControllerErrorInfoProto::SEND_CHANGE_EVENT,
-                                std::move(callback));
+  ExecuteJsWithoutArguments(element, std::string(kSendChangeEventScript),
+                            WebControllerErrorInfoProto::SEND_CHANGE_EVENT,
+                            std::move(callback));
 }
 
 void WebController::DispatchJsEvent(
@@ -1588,6 +1619,18 @@ void WebController::OnDispatchJsEvent(
             << "Failed dispatching JavaScript event with status: " << status;
   }
   std::move(callback).Run(status);
+}
+
+void WebController::ExecuteJS(
+    const std::string& js_snippet,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  // We do not add a leading newline to have consistent line numbers from
+  // errors. We cannot omit the trailing newline, in case the snippet ends
+  // with a comment.
+  ExecuteJsWithoutArguments(
+      element, base::StrCat({"function() { ", js_snippet, "\n}"}),
+      WebControllerErrorInfoProto::EXECUTE_JS, std::move(callback));
 }
 
 base::WeakPtr<WebController> WebController::GetWeakPtr() const {
