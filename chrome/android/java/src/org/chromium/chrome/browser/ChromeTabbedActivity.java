@@ -118,6 +118,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleDialogController;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
@@ -927,6 +929,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
         if (isTablet()) ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
+
+        NotificationPermissionController notificationPermissionController =
+                new NotificationPermissionController(getWindowAndroid(),
+                        new NotificationPermissionRationaleDialogController(
+                                this, getModalDialogManager()));
+        notificationPermissionController.requestPermissionIfNeeded();
     }
 
     @Override
