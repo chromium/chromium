@@ -95,16 +95,13 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
     case WM_EVENT_MINIMIZE:
     case WM_EVENT_FULLSCREEN:
     case WM_EVENT_SNAP_PRIMARY:
-    case WM_EVENT_SNAP_SECONDARY: {
+    case WM_EVENT_SNAP_SECONDARY:
+    case WM_EVENT_RESTORE: {
       WindowStateType next_state =
           GetResolvedNextWindowStateType(window_state, event);
       UpdateWindowForTransitionEvents(window_state, next_state, event_type);
       break;
     }
-    case WM_EVENT_RESTORE:
-      UpdateWindowForTransitionEvents(
-          window_state, window_state->GetRestoreWindowState(), event_type);
-      break;
     case WM_EVENT_SHOW_INACTIVE:
       NOTREACHED();
       break;
@@ -300,8 +297,20 @@ WindowStateType ClientControlledState::GetResolvedNextWindowStateType(
   const WindowStateType next = GetStateForTransitionEvent(window_state, event);
 
   if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      next == WindowStateType::kNormal && window_state->CanMaximize())
+      next == WindowStateType::kNormal && window_state->CanMaximize()) {
     return WindowStateType::kMaximized;
+  }
+
+  // For app-requested fullscreen, don't allow it to restore back to kMaximized
+  // window state due to some restrictions on ARC++ side. see b/215710461 for
+  // details. This is a stopgap fix for M99. And we should revisit this behavior
+  // later and see if we can remove this restrictions.
+  const WMEventType type = event->type();
+  if ((type == WM_EVENT_RESTORE || type == WM_EVENT_NORMAL) &&
+      state_type_ == WindowStateType::kFullscreen &&
+      next == WindowStateType::kMaximized) {
+    return WindowStateType::kNormal;
+  }
 
   return next;
 }
