@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/debug/alias.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -110,6 +111,10 @@ class WindowsModule : public ModuleCache::Module {
 };
 
 ScopedModuleHandle GetModuleHandleForAddress(DWORD64 address) {
+  // Record the address in crash dumps to help understand the source of
+  // GetModuleHandleEx crashes on Windows 11 observed in
+  // https://crbug.com/1297776.
+  debug::Alias(&address);
   HMODULE module_handle = nullptr;
   // GetModuleHandleEx() increments the module reference count, which is then
   // managed and ultimately decremented by ScopedModuleHandle.
