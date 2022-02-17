@@ -62,7 +62,9 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   ModelTypeSet GetEncryptedTypes() override;
   Cryptographer* GetCryptographer() override;
   PassphraseType GetPassphraseType() override;
-  void SetEncryptionPassphrase(const std::string& passphrase) override;
+  void SetEncryptionPassphrase(
+      const std::string& passphrase,
+      const KeyDerivationParams& key_derivation_params) override;
   void SetExplicitPassphraseDecryptionKey(std::unique_ptr<Nigori> key) override;
   void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys) override;

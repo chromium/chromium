@@ -148,31 +148,35 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
   return nigori;
 }
 
-std::unique_ptr<Cryptographer> InitCustomPassphraseCryptographerFromNigori(
-    const sync_pb::NigoriSpecifics& nigori,
-    const std::string& passphrase) {
-  std::unique_ptr<CryptographerImpl> cryptographer;
-  sync_pb::EncryptedData keybag = nigori.encryption_keybag();
-
-  std::string decoded_salt;
+KeyDerivationParams InitCustomPassphraseKeyDerivationParamsFromNigori(
+    const sync_pb::NigoriSpecifics& nigori) {
   switch (ProtoKeyDerivationMethodToEnum(
       nigori.custom_passphrase_key_derivation_method())) {
-    case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
-      cryptographer = CryptographerImpl::FromSingleKeyForTesting(passphrase);
-      break;
-    case KeyDerivationMethod::SCRYPT_8192_8_11:
+    case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003: {
+      return KeyDerivationParams::CreateForPbkdf2();
+    }
+    case KeyDerivationMethod::SCRYPT_8192_8_11: {
+      std::string decoded_salt;
       EXPECT_TRUE(base::Base64Decode(
           nigori.custom_passphrase_key_derivation_salt(), &decoded_salt));
-      cryptographer = CryptographerImpl::FromSingleKeyForTesting(
-          passphrase, KeyDerivationParams::CreateForScrypt(decoded_salt));
-      break;
+      return KeyDerivationParams::CreateForScrypt(decoded_salt);
+    }
     case KeyDerivationMethod::UNSUPPORTED:
       // This test cannot pass since we wouldn't know how to decrypt data
       // encrypted using an unsupported method.
       ADD_FAILURE() << "Unsupported key derivation method encountered: "
                     << nigori.custom_passphrase_key_derivation_method();
-      return CryptographerImpl::CreateEmpty();
+      return KeyDerivationParams::CreateForPbkdf2();
   }
+}
+
+std::unique_ptr<Cryptographer> InitCustomPassphraseCryptographerFromNigori(
+    const sync_pb::NigoriSpecifics& nigori,
+    const std::string& passphrase) {
+  KeyDerivationParams key_derivation_params =
+      InitCustomPassphraseKeyDerivationParamsFromNigori(nigori);
+  auto cryptographer = CryptographerImpl::FromSingleKeyForTesting(
+      passphrase, key_derivation_params);
 
   std::string decrypted_keys_str;
   EXPECT_TRUE(cryptographer->DecryptToString(nigori.encryption_keybag(),

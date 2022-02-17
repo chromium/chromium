@@ -115,7 +115,9 @@ class SyncEncryptionHandler {
   // and triggers re-encryption as appropriate. If an explicit password has been
   // set previously, we drop subsequent requests to set a passphrase.
   // |passphrase| shouldn't be empty.
-  virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
+  virtual void SetEncryptionPassphrase(
+      const std::string& passphrase,
+      const KeyDerivationParams& key_derivation_params) = 0;
 
   // Provides a key for decrypting the user's existing sync data.
   // Notifies observers of the result of the operation via

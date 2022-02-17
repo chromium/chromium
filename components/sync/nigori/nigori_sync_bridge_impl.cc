@@ -417,11 +417,12 @@ PassphraseType NigoriSyncBridgeImpl::GetPassphraseType() {
 }
 
 void NigoriSyncBridgeImpl::SetEncryptionPassphrase(
-    const std::string& passphrase) {
+    const std::string& passphrase,
+    const KeyDerivationParams& key_derivation_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  QueuePendingLocalCommit(
-      PendingLocalNigoriCommit::ForSetCustomPassphrase(passphrase));
+  QueuePendingLocalCommit(PendingLocalNigoriCommit::ForSetCustomPassphrase(
+      passphrase, key_derivation_params));
 }
 
 void NigoriSyncBridgeImpl::SetExplicitPassphraseDecryptionKey(

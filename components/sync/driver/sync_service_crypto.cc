@@ -329,7 +329,16 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
   // encrypted with an explicit passphrase.
   DCHECK(!IsExplicitPassphrase(state_.cached_passphrase_type));
 
-  state_.engine->SetEncryptionPassphrase(passphrase);
+  const auto key_derivation_params =
+      KeyDerivationParams::CreateForScrypt(Nigori::GenerateScryptSalt());
+  state_.engine->SetEncryptionPassphrase(passphrase, key_derivation_params);
+
+  // Immediately store new bootstrap token.
+  std::unique_ptr<Nigori> nigori =
+      Nigori::CreateByDerivation(key_derivation_params, passphrase);
+  DCHECK(nigori);
+  delegate_->SetEncryptionBootstrapToken(
+      SerializeNigoriAsBootstrapToken(*nigori));
 }
 
 bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {

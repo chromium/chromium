@@ -244,11 +244,13 @@ void SyncEngineImpl::StartSyncingWithServer() {
                                 last_poll_time));
 }
 
-void SyncEngineImpl::SetEncryptionPassphrase(const std::string& passphrase) {
+void SyncEngineImpl::SetEncryptionPassphrase(
+    const std::string& passphrase,
+    const KeyDerivationParams& key_derivation_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoSetEncryptionPassphrase,
-                                backend_, passphrase));
+                                backend_, passphrase, key_derivation_params));
 }
 
 void SyncEngineImpl::SetExplicitPassphraseDecryptionKey(

@@ -72,7 +72,9 @@ void FakeSyncEngine::StartConfiguration() {}
 
 void FakeSyncEngine::StartSyncingWithServer() {}
 
-void FakeSyncEngine::SetEncryptionPassphrase(const std::string& passphrase) {}
+void FakeSyncEngine::SetEncryptionPassphrase(
+    const std::string& passphrase,
+    const KeyDerivationParams& key_derivation_params) {}
 
 void FakeSyncEngine::SetExplicitPassphraseDecryptionKey(
     std::unique_ptr<Nigori> key) {}

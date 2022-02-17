@@ -36,8 +36,10 @@ namespace {
 
 using testing::_;
 using testing::Eq;
+using testing::IsEmpty;
 using testing::IsNull;
 using testing::Ne;
+using testing::Not;
 using testing::NotNull;
 using testing::Return;
 
@@ -82,6 +84,12 @@ std::string CreateBootstrapToken(const std::string& passphrase,
   std::string encoded_key;
   base::Base64Encode(encrypted_key, &encoded_key);
   return encoded_key;
+}
+
+MATCHER(IsScryptKeyDerivationParams, "") {
+  const KeyDerivationParams& params = arg;
+  return params.method() == KeyDerivationMethod::SCRYPT_8192_8_11 &&
+         !params.scrypt_salt().empty();
 }
 
 MATCHER_P2(BootstrapTokenDerivedFrom,
@@ -394,7 +402,9 @@ TEST_F(SyncServiceCryptoTest, ShouldSetUpNewCustomPassphrase) {
   ASSERT_THAT(crypto_.GetPassphraseType(),
               Ne(PassphraseType::kCustomPassphrase));
 
-  EXPECT_CALL(engine_, SetEncryptionPassphrase(kTestPassphrase));
+  EXPECT_CALL(delegate_, SetEncryptionBootstrapToken(Not(IsEmpty())));
+  EXPECT_CALL(engine_, SetEncryptionPassphrase(kTestPassphrase,
+                                               IsScryptKeyDerivationParams()));
   crypto_.SetEncryptionPassphrase(kTestPassphrase);
 
   // Mimic completion of the procedure in the sync engine.

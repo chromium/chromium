@@ -58,7 +58,8 @@ void FakeSyncEncryptionHandler::RemoveObserver(Observer* observer) {
 }
 
 void FakeSyncEncryptionHandler::SetEncryptionPassphrase(
-    const std::string& passphrase) {
+    const std::string& passphrase,
+    const KeyDerivationParams& key_derivation_params) {
   // Do nothing.
 }
 

@@ -79,11 +79,18 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
     const KeyParamsForTesting& passphrase_key_params,
     const absl::optional<KeyParamsForTesting>& old_key_params = absl::nullopt);
 
+// Initializes KeyDerivationParams as described in a given |nigori|. This
+// function will fail the test (using ADD_FAILURE/EXPECT) if the |nigori| is
+// not a custom passphrase one.
+KeyDerivationParams InitCustomPassphraseKeyDerivationParamsFromNigori(
+    const sync_pb::NigoriSpecifics& nigori);
+
 // Given a |nigori| with CUSTOM_PASSPHRASE passphrase type, initializes the
-// given |cryptographer| with the key described in it. Since the key inside the
-// Nigori is encrypted (by design), the provided |passphrase| will be used to
-// decrypt it. This function will fail the test (using ASSERT) if the Nigori is
-// not a custom passphrase one, or if the key cannot be decrypted.
+// Cryptographer with the key described in it. Since the key inside the Nigori
+// is encrypted (by design), the provided |passphrase| will be used to
+// decrypt it. This function will fail the test (using ADD_FAILURE/EXPECT) if
+// the |nigori| is not a custom passphrase one, or if the key cannot be
+// decrypted.
 std::unique_ptr<Cryptographer> InitCustomPassphraseCryptographerFromNigori(
     const sync_pb::NigoriSpecifics& nigori,
     const std::string& passphrase);
