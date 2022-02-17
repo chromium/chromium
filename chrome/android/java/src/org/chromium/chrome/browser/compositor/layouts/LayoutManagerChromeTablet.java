@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurface.Controller;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -29,7 +28,6 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * the tablet.
  */
 public class LayoutManagerChromeTablet extends LayoutManagerChrome {
-    private Controller mStartSurfaceController;
     private StripLayoutHelperManager mTabStripLayoutHelperManager;
 
     // Internal State
@@ -42,7 +40,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param startSurface An interface to talk to the Grid Tab Switcher.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param layerTitleCacheSupplier Supplier of the {@link LayerTitleCache}.
      * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
@@ -60,13 +57,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 host.getContext(), this, mHost.getLayoutRenderHost(), () -> mLayerTitleCache);
         addSceneOverlay(mTabStripLayoutHelperManager);
 
-        if (startSurface != null) {
-            mStartSurfaceController = startSurface.getController();
-            if (mStartSurfaceController != null) {
-                mStartSurfaceController.addOverviewModeObserver(
-                        mTabStripLayoutHelperManager.getStartSurfaceObserver());
-            }
-        }
+        addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
 
         setNextLayout(null, true);
     }
@@ -80,12 +71,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             mLayerTitleCache = null;
         }
 
-        if (mStartSurfaceController != null && mTabStripLayoutHelperManager != null) {
-            mStartSurfaceController.removeOverviewModeObserver(
-                    mTabStripLayoutHelperManager.getStartSurfaceObserver());
-        }
-
         if (mTabStripLayoutHelperManager != null) {
+            removeObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
             mTabStripLayoutHelperManager.destroy();
             mTabStripLayoutHelperManager = null;
         }
