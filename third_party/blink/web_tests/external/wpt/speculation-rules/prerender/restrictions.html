@@ -1,17 +1,14 @@
 <!DOCTYPE html>
-<title>Same-origin prerendering restrictions</title>
+<title>Same-origin prerendering can access localStorage</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/utils.js"></script>
 <script src="resources/utils.js"></script>
 <body>
 <script>
 
 setup(() => assertSpeculationRulesIsSupported());
-setup(test_driver.set_permission({name: 'geolocation'}, 'granted', true));
 
 test_prerender_restricted(
   () => navigator.clipboard.writeText(location.href),
@@ -29,12 +26,9 @@ test_prerender_restricted(async () => {
   await div.requestFullscreen();
 }, "TypeError", "prerendering pages should not be able to access the FullScreen API");
 
-test_prerender_defer(() =>
-  new Promise(resolve =>
-    navigator.geolocation.getCurrentPosition(
-      p => resolve(p.toString()), e => resolve(e.message),
-      {timeout: 100, maximumAge: 0})),
-  "Geolocation API error should be deferred");
+test_prerender_defer(() => new Promise(
+  resolve => navigator.geolocation.getCurrentPosition(p => resolve(p.toString()))),
+  "Geolocation API should be deferred");
 
 </script>
 </body>
