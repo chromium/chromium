@@ -1527,7 +1527,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kOsUISettingsURL), GURL(chrome::kOsUISignInInternalsUrl),
       GURL(chrome::kChromeUISlowURL), GURL(chrome::kChromeUISmbShareURL),
       GURL(chrome::kOsUISyncInternalsUrl),
-      GURL(chrome::kChromeUISysInternalsUrl),
+      GURL(chrome::kChromeUISysInternalsUrl), GURL(chrome::kOsUITerms),
       GURL(chrome::kChromeUIUserImageURL), GURL(chrome::kOsUIVersionURL),
       GURL(chrome::kChromeUIVmUrl),
       // The CL to land this didn't land yet. Once landed they need to be moved

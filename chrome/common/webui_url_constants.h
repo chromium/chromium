@@ -350,6 +350,7 @@ extern const char kOsUIScanningAppURL[];
 extern const char kOsUISettingsURL[];
 extern const char kOsUISignInInternalsUrl[];
 extern const char kOsUISyncInternalsUrl[];
+extern const char kOsUITerms[];
 
 // Returns true if this web UI is part of the "system UI". Generally this is
 // UI that opens in a window (not a browser tab) and that on other operating
