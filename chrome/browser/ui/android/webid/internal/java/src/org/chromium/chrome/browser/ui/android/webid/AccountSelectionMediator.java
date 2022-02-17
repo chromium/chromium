@@ -169,6 +169,13 @@ class AccountSelectionMediator {
 
         addAccounts(mIdpUrl, Arrays.asList(account), /*areAccountsClickable=*/false);
         showContent();
+
+        // When TalkBack is enabled, updating |mSheetItems| clears the current item's accessibility
+        // focus and TalkBack reads the bottom sheet's content description -
+        // {@link AccountSelectionBottomSheetContent#getSheetContentDescriptionStringId()}.
+        // Make TalkBack announce the verify header text to clarify to the user that the browser is
+        // not showing a second sign in prompt.
+        mBottomSheetContent.announceVerifyHeaderText();
     }
 
     void hideBottomSheet() {

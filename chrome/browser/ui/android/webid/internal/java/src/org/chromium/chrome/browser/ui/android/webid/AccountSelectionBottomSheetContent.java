@@ -33,6 +33,15 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
         mBackPressHandler = backPressHandler;
     }
 
+    public void announceVerifyHeaderText() {
+        // {@link mContentView} is null for some tests.
+        if (mContentView == null) return;
+
+        String headerText = mContentView.getResources().getString(
+                AccountSelectionViewBinder.getVerifyHeaderStringId());
+        mContentView.announceForAccessibility(headerText);
+    }
+
     @Override
     public void destroy() {}
 

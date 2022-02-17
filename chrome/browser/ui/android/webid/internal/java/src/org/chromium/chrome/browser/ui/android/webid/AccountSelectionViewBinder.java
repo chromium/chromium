@@ -335,10 +335,17 @@ class AccountSelectionViewBinder {
         }
     }
 
+    /**
+     * Returns text for the {@link HeaderType.VERIFY} header.
+     */
+    static @StringRes int getVerifyHeaderStringId() {
+        return R.string.verify_sheet_title;
+    }
+
     private static String computeHeaderTitle(
             Resources resources, HeaderProperties.HeaderType type, String rpUrl, String idpUrl) {
         if (type == HeaderProperties.HeaderType.VERIFY) {
-            return resources.getString(R.string.verify_sheet_title);
+            return resources.getString(getVerifyHeaderStringId());
         }
         @StringRes
         int titleStringId = (type == HeaderProperties.HeaderType.AUTO_SIGN_IN)
