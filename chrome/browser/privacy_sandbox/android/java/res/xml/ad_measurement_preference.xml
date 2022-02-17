@@ -6,8 +6,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:summary="@string/privacy_sandbox_description_placeholder"
+  <org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference
+        android:summary="@string/privacy_sandbox_ad_measurement_description"
         app:allowDividerBelow="false"/>
 
 </PreferenceScreen>

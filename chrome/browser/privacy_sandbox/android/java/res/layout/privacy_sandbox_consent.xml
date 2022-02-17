@@ -43,6 +43,7 @@
                 android:layout_marginBottom="@dimen/list_item_default_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAlignment="center"
                 android:text="@string/privacy_sandbox_consent_subtitle"
                 style="@style/TextAppearance.TextMedium.Primary" />
 

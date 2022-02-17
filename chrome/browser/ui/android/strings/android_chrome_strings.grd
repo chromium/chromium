@@ -893,14 +893,25 @@ Privacy Sandbox trials are still in active development and are available in sele
       <message name="IDS_PRIVACY_SANDBOX_TRIALS_TITLE" desc="Title shown at the top of privacy sandbox settings." translateable="false">
         Trials
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION" desc="Description shown at the top of privacy sandbox settings." translateable="false">
+       With Privacy Sandbox trials, sites can deliver the same browsing experience using less of your data. That means more privacy for you and less cross-site tracking. We’ll add new trials as they’re ready to test.
+      </message>
       <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_TITLE" desc="Title of the settings page to configure ad personalization." translateable="false">
         Ad personalization
       </message>
       <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUMMARY" desc="Summary of the settings page to configure ad personalization." translateable="false">
         Your browsing history affects the ads you see
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_TITLE" desc="Title of the settings apge to explain ad measurement." translateable="false">
+      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DESCRIPTION" desc="Description of the settings page to configure ad personalization" translateable="false">
+       Your browsing history affects the ads you see and the interests as estimated below. Chrome auto-deletes your interests every few weeks to protect your privacy. Interests refresh unless you remove them.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_TITLE" desc="Title of the settings page to explain ad measurement." translateable="false">
         Ad measurement
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_DESCRIPTION" desc="Description of the settings page to explain ad measurement" translateable="false">
+        Ad measurement allows sites you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
+
+You can control measurement information associated with you by accessing <ph name="BEGIN_LINK">&lt;link&gt;</ph>your browsing history.<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_SUMMARY" desc="Summary of the settings page to explain ad measurement." translateable="false">
         Advertisers can understand how ads perform
@@ -911,14 +922,27 @@ Privacy Sandbox trials are still in active development and are available in sele
       <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_SUMMARY" desc="Summary of the settings page to configure spam and fraud reduction." translateable="false">
         Help sites fight fraud and distinguish bots from people
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_DESCRIPTION" desc="Description of the settings page to configure spam and fraud reduction." translateable="false">
+        Spam &amp; fraud reduction relies on trust tokens to help sites fight fraud and distinguish bots from people.
+
+Based on your interaction with a site, like regularly signing in to an account, that site can issue a trust token to your browser. Later, if other sites you visit check for and find a valid trust token, they’re more likely to treat you like a person and not a bot.
+
+Trust tokens improve privacy on the web and can’t be used to find out who you are.
+      </message>
       <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_LINK" desc="Text of a link to explain ad personalization." translateable="false">
        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more about browser-based ad personalization<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_TITLE_1" desc="Title of the page to learn more about the Topics API for the privacy sandbox." translateable="false">
-       Your interests as estimated by Chrome
+        Your interests as estimated by Chrome
       </message>
       <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_1" desc="Description of the page to learn more about the Topics API for the privacy sandbox." translateable="false">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Lorem ipsum dolor sit amet:<ph name="END_BOLD1">&lt;/b&gt;</ph> Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>What data is used:<ph name="END_BOLD1">&lt;/b&gt;</ph> Your browsing history, a record of sites you’ve visited using Chrome on this device.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_2" desc="Description of the page to learn more about the Topics API for the privacy sandbox." translateable="false">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How we use this data:<ph name="END_BOLD1">&lt;/b&gt;</ph> Chrome can estimate your interests. Later, a site you visit can ask Chrome to see your interests in order to personalize the ads you see.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_3" desc="Description of the page to learn more about the Topics API for the privacy sandbox." translateable="false">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How you can manage your data:<ph name="END_BOLD1">&lt;/b&gt;</ph> Your interests are deleted and refreshed each week. You can also block an interest anytime.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_TITLE" desc="Title of the settings page to explain ad personalization." translateable="false">
         About personalized ads
@@ -938,6 +962,9 @@ Privacy Sandbox trials are still in active development and are available in sele
        <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_TITLE" desc="Title of the settings page to configure interests that were removed from ad personalization." translateable="false">
         Interests you removed
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_DESCRIPTION" desc="Description of the settings page to configure interests that were removed from ad personalization." translateable="false">
+        Add an interest if you think ads related to that interest would be useful to you
+      </message>
        <message name="IDS_PRIVACY_SANDBOX_TOPIC_INTERESTS_CATEGORY" desc="Title of a section of the settings page to configure ad personalization." translateable="false">
         Your interests as estimated by Chrome
       </message>
@@ -952,9 +979,6 @@ Privacy Sandbox trials are still in active development and are available in sele
       </message>
        <message name="IDS_PRIVACY_SANDBOX_FLEDGE_UNDER_DEVELOPMENT_NOTICE" desc="Text to explain that a feature for ad personalization is not implemented yet." translateable="false">
         This feature is currently under development
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION_PLACEHOLDER" desc="This is only used until final strings are approved and should never be translated." translateable="false">
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
       </message>
 
       <!-- Privacy Sandbox dialog. The strings are preliminary. -->
@@ -974,40 +998,43 @@ Privacy Sandbox trials are still in active development and are available in sele
         Help us build a more private web
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_SUBTITLE" desc="Subtitle for the Privacy Sandbox consent dialog." translateable="false">
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna.
+        Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your info
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_HEADING_ONE" desc="First heading for the Privacy Sandbox consent dialog text." translateable="false">
-        Lorem ipsum dolor sit
+        Limit sharing between sites
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_DESCRIPTION_ONE" desc="First paragraph for the Privacy Sandbox consent dialog text." translateable="false">
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+        We’re exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_HEADING_TWO" desc="Second heading for the Privacy Sandbox consent dialog text." translateable="false">
-        Lorem ipsum dolor sit
+        Try more transparent ads
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_DESCRIPTION_TWO" desc="Second paragraph for the Privacy Sandbox consent dialog text." translateable="false">
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+        During the experiment, Chrome will estimate topics you may be interested in, based on your recent browsing history. Then, without learning who you are, some sites you visit will use this info to show you relevant ads.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_BUTTON" desc="Text on the button for the dropdown element in the the Privacy Sandbox consent dialog" translateable="false">
-        Learn more about Lorem ipsum dolor sit
+        Learn more about Browser-based ad personalization
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_HEADING" desc="Heading for the dropdown element in the the Privacy Sandbox consent dialog" translateable="false">
-        Lorem ipsum dolor sit amet
+        Your interests as estimated by Chrome
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_ONE" desc="First element of the dropdown in the the Privacy Sandbox consent dialog" translateable="false">
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+        What data is used: Your browsing history, a record of sites you’ve visited using Chrome on this device.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_TWO" desc="Second element of the dropdown in the the Privacy Sandbox consent dialog" translateable="false">
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+        How we use this data: Chrome can estimate your interests. Later, a site you visit can ask Chrome to see your interests in order to personalize the ads you see.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_THREE" desc="Third element of the dropdown in the the Privacy Sandbox consent dialog" translateable="false">
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+        How you can manage your data: Your interests are deleted and refreshed each week. You can also block an interest anytime.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_CONSENT_DESCRIPTION_THREE" desc="Third paragraph for the Privacy Sandbox consent dialog text." translateable="false">
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+        You can change your mind at any time in Chrome settings. During trials, your interaction with sites may not be more private than it is without these new features.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_NOTICE_TITLE" desc="Title for the Privacy Sandbox notice dialog." translateable="false">
-        Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your data
+        We’re exploring new features that allow sites to deliver the same browsing experience using less of your info
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_NOTICE_DESCRIPTION" desc="Last paragraph of the Privacy Sandbox consent dialog text" translateable="false">
+        You can learn more about these features in Chrome settings. During trials, your interaction with sites may not be more private than it is without these new features.
       </message>
 
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->

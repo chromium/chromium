@@ -10,7 +10,7 @@
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="privacy_sandbox_toggle"
         android:title="@string/privacy_sandbox_trials_title"
-        android:summary="@string/privacy_sandbox_description_placeholder"
+        android:summary="@string/privacy_sandbox_description"
         android:persistent="false"
         app:allowDividerBelow="false" />
 

@@ -35,8 +35,8 @@ public class LearnMoreFragment extends PreferenceFragmentCompat {
         topicDescription.setSelectable(true);
         topicDescription.setSummary(TextUtils.concat(
                 formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_1), "\n\n",
-                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_1), "\n\n",
-                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_1)));
+                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_2), "\n\n",
+                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_3)));
     }
 
     private SpannableString formatLearnMoreBullet(@StringRes int stringId) {
