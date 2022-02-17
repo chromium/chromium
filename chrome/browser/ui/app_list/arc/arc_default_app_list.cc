@@ -195,13 +195,12 @@ void ArcDefaultAppList::OnPropertyFilesExpanded(bool result) {
   }
 
   VLOG(1) << "Getting the board name";
-  const char* source_dir = arc::IsArcVmEnabled()
-                               ? arc::kGeneratedPropertyFilesPathVm
-                               : arc::kGeneratedPropertyFilesPath;
+  const char* source_file = arc::IsArcVmEnabled()
+                                ? arc::kGeneratedCombinedPropertyFilePathVm
+                                : arc::kGeneratedBuildPropertyFilePath;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&GetBoardName,
-                     base::FilePath(source_dir).Append("build.prop")),
+      base::BindOnce(&GetBoardName, base::FilePath(source_file)),
       base::BindOnce(&ArcDefaultAppList::LoadDefaultApps,
                      weak_ptr_factory_.GetWeakPtr()));
 }

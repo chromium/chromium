@@ -32,9 +32,13 @@ class Profile;
 
 namespace arc {
 
-constexpr const char kGeneratedPropertyFilesPath[] = "/run/arc/host_generated";
-constexpr const char kGeneratedPropertyFilesPathVm[] =
-    "/run/arcvm/host_generated";
+// The file exists only when ARC container is in use.
+constexpr const char kGeneratedBuildPropertyFilePath[] =
+    "/run/arc/host_generated/build.prop";
+
+// The file exists only when ARCVM is in use.
+constexpr const char kGeneratedCombinedPropertyFilePathVm[] =
+    "/run/arcvm/host_generated/combined.prop";
 
 class ArcAndroidManagementChecker;
 class ArcDataRemover;
