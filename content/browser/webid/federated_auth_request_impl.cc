@@ -739,7 +739,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         // this account before.
         if (GetSharingPermissionContext() &&
             GetSharingPermissionContext()->HasSharingPermissionForAccount(
-                url::Origin::Create(provider_), origin_, account.account_id)) {
+                url::Origin::Create(provider_), origin_, account.id)) {
           login_state = LoginState::kSignIn;
         }
         account.login_state = login_state;

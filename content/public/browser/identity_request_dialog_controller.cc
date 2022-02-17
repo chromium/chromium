@@ -22,13 +22,13 @@ namespace content {
 const char kSecFedCmCsrfHeader[] = "Sec-FedCM-CSRF";
 
 IdentityRequestAccount::IdentityRequestAccount(
-    const std::string& account_id,
+    const std::string& id,
     const std::string& email,
     const std::string& name,
     const std::string& given_name,
     const GURL& picture,
     absl::optional<LoginState> login_state)
-    : account_id{account_id},
+    : id{id},
       email{email},
       name{name},
       given_name{given_name},

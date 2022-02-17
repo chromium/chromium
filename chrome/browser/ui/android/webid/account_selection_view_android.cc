@@ -35,7 +35,7 @@ namespace {
 ScopedJavaLocalRef<jobject> ConvertToJavaAccount(JNIEnv* env,
                                                  const Account& account) {
   return Java_Account_Constructor(
-      env, ConvertUTF8ToJavaString(env, account.account_id),
+      env, ConvertUTF8ToJavaString(env, account.id),
       ConvertUTF8ToJavaString(env, account.email),
       ConvertUTF8ToJavaString(env, account.name),
       ConvertUTF8ToJavaString(env, account.given_name),

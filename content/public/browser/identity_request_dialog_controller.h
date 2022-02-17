@@ -47,7 +47,7 @@ struct CONTENT_EXPORT IdentityRequestAccount {
   };
 
   IdentityRequestAccount(
-      const std::string& account_id,
+      const std::string& id,
       const std::string& email,
       const std::string& name,
       const std::string& given_name,
@@ -56,7 +56,7 @@ struct CONTENT_EXPORT IdentityRequestAccount {
   IdentityRequestAccount(const IdentityRequestAccount&);
   ~IdentityRequestAccount();
 
-  std::string account_id;
+  std::string id;
   std::string email;
   std::string name;
   std::string given_name;

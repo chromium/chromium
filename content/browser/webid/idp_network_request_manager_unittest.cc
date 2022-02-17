@@ -211,7 +211,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingle) {
   const auto* test_single_account_json = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example",
       "given_name": "Ken",
@@ -228,21 +228,21 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingle) {
 
   EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
   EXPECT_EQ(1UL, accounts.size());
-  EXPECT_EQ("1234", accounts[0].account_id);
+  EXPECT_EQ("1234", accounts[0].id);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountMultiple) {
   const auto* test_accounts_json = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example",
       "given_name": "Ken",
       "picture": "https://idp.test/profile/1"
     },
     {
-      "account_id" : "5678",
+      "id" : "5678",
       "email": "sam@idp.test",
       "name": "Sam G. Test",
       "given_name": "Sam",
@@ -258,8 +258,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMultiple) {
 
   EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
   EXPECT_EQ(2UL, accounts.size());
-  EXPECT_EQ("1234", accounts[0].account_id);
-  EXPECT_EQ("5678", accounts[1].account_id);
+  EXPECT_EQ("1234", accounts[0].id);
+  EXPECT_EQ("5678", accounts[1].id);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
@@ -267,7 +267,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
   const auto* test_accounts_json = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -281,7 +281,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
-  EXPECT_EQ("1234", accounts[0].account_id);
+  EXPECT_EQ("1234", accounts[0].id);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
@@ -302,7 +302,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
   }
   {
     const auto* test_accounts_missing_email_json = R"({"accounts" : [{
-      "account_id" : "1234",
+      "id" : "1234",
       "name": "Ken R. Example"
     }]})";
     FetchStatus accounts_response;
@@ -316,7 +316,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
   }
   {
     const auto* test_accounts_missing_name_json = R"({"accounts" : [{
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test"
     }]})";
     FetchStatus accounts_response;
@@ -334,13 +334,13 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountPictureUrl) {
   const auto* test_accounts_json = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example",
       "picture": "https://idp.test/profile/1234"
     },
     {
-      "account_id" : "567",
+      "id" : "567",
       "email": "sam@idp.test",
       "name": "Sam R. Example",
       "picture": "invalid_url"
@@ -366,7 +366,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
     const auto* json = R"({
      "accounts" : [
         {
-          "account_id" : "1234",
+          "id" : "1234",
           "email": "ken@idp.test",
           "%s": "%s"
         }
@@ -421,7 +421,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountBranding) {
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -449,7 +449,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountBrandingRemoveAlpha) {
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -474,7 +474,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountBrandingInvalidColor) {
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -499,7 +499,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -526,7 +526,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -551,7 +551,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountBrandingSelectBestSize) {
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -607,7 +607,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -652,7 +652,7 @@ TEST_F(IdpNetworkRequestManagerTest, AccountRequestReferrer) {
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "id" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -684,30 +684,30 @@ TEST_F(IdpNetworkRequestManagerTest, AccountSignedInStatus) {
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1",
+      "id" : "1",
       "email": "ken@idp.test",
       "name": "Ken R. Example",
       "approved_clients": ["xxx"]
     },
     {
-      "account_id" : "2",
+      "id" : "2",
       "email": "jim@idp.test",
       "name": "Jim R. Example",
       "approved_clients": []
     },
     {
-      "account_id" : "3",
+      "id" : "3",
       "email": "rashida@idp.test",
       "name": "Rashida R. Example",
       "approved_clients": ["yyy"]
     },
     {
-      "account_id" : "4",
+      "id" : "4",
       "email": "wei@idp.test",
       "name": "Wei R. Example"
     },
     {
-      "account_id" : "5",
+      "id" : "5",
       "email": "hans@idp.test",
       "name": "Hans R. Example",
       "approved_clients": ["xxx", "yyy"]

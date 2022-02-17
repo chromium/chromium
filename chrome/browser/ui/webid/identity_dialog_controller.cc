@@ -115,7 +115,7 @@ void IdentityDialogController::ShowAccountsDialog(
   CHECK(idp_url.SchemeIs(url::kHttpsScheme));
 #if !BUILDFLAG(IS_ANDROID)
   std::move(on_selected)
-      .Run(accounts[0].account_id,
+      .Run(accounts[0].id,
            accounts[0].login_state ==
                content::IdentityRequestAccount::LoginState::kSignIn);
 #else
@@ -133,7 +133,7 @@ void IdentityDialogController::ShowAccountsDialog(
 
 void IdentityDialogController::OnAccountSelected(const Account& account) {
   std::move(on_account_selection_)
-      .Run(account.account_id,
+      .Run(account.id,
            account.login_state ==
                content::IdentityRequestAccount::LoginState::kSignIn);
 }
