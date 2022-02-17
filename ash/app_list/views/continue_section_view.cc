@@ -20,6 +20,7 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -34,6 +35,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -44,12 +46,15 @@ namespace {
 bool g_nudge_accepted_for_test = false;
 
 // Header paddings in dips.
-constexpr int kHeaderVerticalSpacing = 4;
 constexpr int kHeaderHorizontalPadding = 12;
 
 // Suggested tasks layout constants.
 constexpr size_t kMinFilesForContinueSectionClamshellMode = 3;
 constexpr size_t kMinFilesForContinueSectionTabletMode = 2;
+
+// Privacy toast icon size.
+constexpr size_t kPrivacyIconSizeClamshell = 64;
+constexpr size_t kPrivacyIconSizeTablet = 48;
 
 // Delay before marking the privacy notice as swhon.
 const base::TimeDelta kPrivacyNoticeShownDelay = base::Seconds(6);
@@ -89,14 +94,14 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
   if (Shell::HasInstance())
     Shell::Get()->app_list_controller()->AddObserver(this);
 
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kHeaderVerticalSpacing));
-  layout->set_main_axis_alignment(
-      tablet_mode ? views::BoxLayout::MainAxisAlignment::kCenter
-                  : views::BoxLayout::MainAxisAlignment::kStart);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStretch);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetOrientation(views::LayoutOrientation::kVertical)
+      .SetDefault(views::kFlexBehaviorKey,
+                  views::FlexSpecification(
+                      views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
+                      views::MaximumFlexSizeRule::kUnbounded));
 
   if (!tablet_mode) {
     continue_label_ = AddChildView(CreateContinueLabel(
@@ -258,7 +263,13 @@ void ContinueSectionView::MaybeCreatePrivacyNotice() {
                          &ContinueSectionView::MarkPrivacyNoticeAccepted,
                          base::Unretained(this)))
           .SetStyleForTabletMode(tablet_mode_)
+          .SetIconSize(tablet_mode_ ? kPrivacyIconSizeTablet
+                                    : kPrivacyIconSizeClamshell)
           .Build());
+  privacy_toast_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kScaleToMaximum));
 }
 
 bool ContinueSectionView::FirePrivacyNoticeShownTimerForTest() {

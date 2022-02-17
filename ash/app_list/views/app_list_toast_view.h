@@ -12,6 +12,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class BoxLayout;
 class Label;
 class LabelButton;
 class ImageView;
@@ -46,6 +47,7 @@ class ASH_EXPORT AppListToastView : public views::View {
     Builder& SetIcon(const gfx::VectorIcon* icon);
     Builder& SetThemingIcons(const gfx::VectorIcon* dark_icon,
                              const gfx::VectorIcon* light_icon);
+    Builder& SetIconSize(int icon_size);
 
     Builder& SetSubtitle(const std::u16string subtitle);
     Builder& SetButton(std::u16string button_text,
@@ -59,6 +61,7 @@ class ASH_EXPORT AppListToastView : public views::View {
     const gfx::VectorIcon* icon_ = nullptr;
     const gfx::VectorIcon* dark_icon_ = nullptr;
     const gfx::VectorIcon* light_icon_ = nullptr;
+    absl::optional<int> icon_size_;
     views::Button::PressedCallback button_callback_;
     bool has_button_ = false;
     bool style_for_tablet_mode_ = false;
@@ -72,6 +75,7 @@ class ASH_EXPORT AppListToastView : public views::View {
   // views::View:
   gfx::Size GetMaximumSize() const override;
   gfx::Size GetMinimumSize() const override;
+  gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
   void SetButton(std::u16string button_text,
@@ -80,8 +84,11 @@ class ASH_EXPORT AppListToastView : public views::View {
   void SetIcon(const gfx::VectorIcon* icon);
   void SetThemingIcons(const gfx::VectorIcon* dark_icon,
                        const gfx::VectorIcon* light_icon);
+  void SetIconSize(int icon_size);
   void SetTitle(const std::u16string title);
   void SetSubtitle(const std::u16string subtitle);
+
+  void UpdateInteriorMargins(const gfx::Insets& margins);
 
   // Styles the toast for display in tablet mode launcher UI - for example, adds
   // background blur, and sets rounded corners on the toast layer.
@@ -102,6 +109,8 @@ class ASH_EXPORT AppListToastView : public views::View {
   // Vector icon to use if there are not dark or light mode specific icons.
   const gfx::VectorIcon* default_icon_ = nullptr;
 
+  absl::optional<int> icon_size_;
+
   // Whether the toast UI should be style for tablet mode app list UI.
   bool style_for_tablet_mode_ = false;
 
@@ -115,6 +124,8 @@ class ASH_EXPORT AppListToastView : public views::View {
   views::LabelButton* toast_button_ = nullptr;
   // Helper view to layout labels.
   views::View* label_container_ = nullptr;
+  // Layout manager for the view.
+  views::BoxLayout* layout_manager_ = nullptr;
 };
 
 }  // namespace ash
