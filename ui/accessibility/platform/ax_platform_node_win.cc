@@ -7098,11 +7098,19 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       // content is not. We want to avoid reading out a button, moving to the
       // next item, and then reading out the button's text child, causing the
       // text to be effectively repeated.
-      auto* parent = FromNativeViewAccessible(GetDelegate()->GetParent());
-      while (parent) {
-        if (IsCellOrTableHeader(parent->GetRole()))
+      auto* ancestor = FromNativeViewAccessible(GetDelegate()->GetParent());
+      while (ancestor) {
+        if (IsCellOrTableHeader(ancestor->GetRole()))
           return false;
-        switch (parent->GetRole()) {
+        switch (ancestor->GetRole()) {
+          case ax::mojom::Role::kListItem:
+            // We only want to hide in the case that the list item is able
+            // to have its name generated from its children.
+            // See |ComputeListItemNameAsBstr|. This is only possible when the
+            // element is a direct child of the list item, otherwise the child
+            // should be exposed as a UIA Control.
+            return ancestor !=
+                   FromNativeViewAccessible(GetDelegate()->GetParent());
           case ax::mojom::Role::kButton:
           case ax::mojom::Role::kCheckBox:
           case ax::mojom::Role::kGroup:
@@ -7110,7 +7118,6 @@ bool AXPlatformNodeWin::IsUIAControl() const {
           case ax::mojom::Role::kLineBreak:
           case ax::mojom::Role::kLink:
           case ax::mojom::Role::kListBoxOption:
-          case ax::mojom::Role::kListItem:
           case ax::mojom::Role::kMenuItem:
           case ax::mojom::Role::kMenuItemCheckBox:
           case ax::mojom::Role::kMenuItemRadio:
@@ -7128,7 +7135,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
           default:
             break;
         }
-        parent = FromNativeViewAccessible(parent->GetParent());
+        ancestor = FromNativeViewAccessible(ancestor->GetParent());
       }
     }  // end of text only case.
 

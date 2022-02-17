@@ -2445,6 +2445,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityListItemLevel) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityListItemNestedDiv) {
+  RunHtmlTest(FILE_PATH_LITERAL("list-item-nested-div.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityListItemAriaSetsizeUnknown) {
   RunHtmlTest(FILE_PATH_LITERAL("list-item-aria-setsize-unknown.html"));
 }
