@@ -92,12 +92,6 @@ MessageCenterController::MessageCenterController() {
   session_state_notification_blocker_ =
       std::make_unique<SessionStateNotificationBlocker>(MessageCenter::Get());
 
-  if (features::IsSnoopingProtectionEnabled()) {
-    hps_notify_notification_blocker_ =
-        std::make_unique<HpsNotifyNotificationBlocker>(
-            MessageCenter::Get(), Shell::Get()->hps_notify_controller());
-  }
-
   Shell::Get()->session_controller()->AddObserver(this);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -109,6 +103,15 @@ MessageCenterController::MessageCenterController() {
   if (chromeos::features::IsPhoneHubEnabled()) {
     phone_hub_notification_controller_ =
         std::make_unique<PhoneHubNotificationController>();
+  }
+
+  // The HPS blocker must come last so that the set of blockers doesn't change
+  // during its lifetime. If they do, it may assume that popups are visible that
+  // are actually blocked by new blockers.
+  if (features::IsSnoopingProtectionEnabled()) {
+    hps_notify_notification_blocker_ =
+        std::make_unique<HpsNotifyNotificationBlocker>(
+            MessageCenter::Get(), Shell::Get()->hps_notify_controller());
   }
 
   // Set the system notification source display name ("Chrome OS" or "Chromium
@@ -123,8 +126,8 @@ MessageCenterController::~MessageCenterController() {
 
   // These members all depend on the MessageCenter instance, so must be
   // destroyed first.
-  all_popup_blocker_.reset();
   hps_notify_notification_blocker_.reset();
+  all_popup_blocker_.reset();
   session_state_notification_blocker_.reset();
   inactive_user_notification_blocker_.reset();
   fullscreen_notification_blocker_.reset();

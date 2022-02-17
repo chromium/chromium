@@ -91,6 +91,12 @@ FakeMessageCenter::GetPopupNotifications() {
   return NotificationList::PopupNotifications();
 }
 
+NotificationList::PopupNotifications
+FakeMessageCenter::GetPopupNotificationsWithoutBlocker(
+    const NotificationBlocker& blocker) const {
+  return NotificationList::PopupNotifications();
+}
+
 void FakeMessageCenter::AddNotification(
     std::unique_ptr<Notification> notification) {
   std::string id = notification->id();

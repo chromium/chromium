@@ -25,6 +25,20 @@ namespace message_center {
 
 using NotificationState = NotificationList::NotificationState;
 
+// A trivial blocker that allows all popups.
+class NopNotificationBlocker : public NotificationBlocker {
+ public:
+  NopNotificationBlocker() : NotificationBlocker(/*message_center=*/nullptr) {}
+  NopNotificationBlocker(const NopNotificationBlocker&) = delete;
+  NopNotificationBlocker& operator=(const NopNotificationBlocker&) = delete;
+  ~NopNotificationBlocker() override = default;
+
+  bool ShouldShowNotificationAsPopup(
+      const Notification& notification) const override {
+    return true;
+  }
+};
+
 class NotificationListTest : public testing::Test {
  public:
   NotificationListTest() {}
@@ -90,6 +104,13 @@ class NotificationListTest : public testing::Test {
 
   size_t GetPopupCounts() {
     return GetPopups().size();
+  }
+
+  size_t GetPopupForBlockersCounts() {
+    return notification_list_
+        ->GetPopupNotificationsWithoutBlocker(blockers_,
+                                              NopNotificationBlocker())
+        .size();
   }
 
   Notification* GetNotification(const std::string& id) {
@@ -346,6 +367,20 @@ TEST_F(NotificationListTest, Priority) {
   EXPECT_EQ(kMaxVisiblePopupNotifications * 4,
             notification_list_->NotificationCount(blockers_));
   EXPECT_EQ(kMaxVisiblePopupNotifications * 4, GetPopupCounts());
+}
+
+TEST_F(NotificationListTest, WithoutOneBlocker) {
+  ASSERT_EQ(0u, notification_list_->NotificationCount(blockers_));
+
+  // Limit is not considered, even for default priority popups.
+  for (size_t i = 0; i <= kMaxVisiblePopupNotifications; ++i)
+    AddNotification();
+  EXPECT_EQ(kMaxVisiblePopupNotifications + 1,
+            notification_list_->NotificationCount(blockers_));
+  EXPECT_EQ(kMaxVisiblePopupNotifications + 1, GetPopupForBlockersCounts());
+
+  // Popups aren't marked as shown.
+  EXPECT_EQ(kMaxVisiblePopupNotifications + 1, GetPopupForBlockersCounts());
 }
 
 // Tests that GetNotificationsByAppId returns notifications regardless of their

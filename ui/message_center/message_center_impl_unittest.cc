@@ -600,6 +600,49 @@ TEST_F(MessageCenterImplTest, NotificationBlocker) {
   EXPECT_EQ(2u, message_center()->GetVisibleNotifications().size());
 }
 
+TEST_F(MessageCenterImplTest, PopupsWithoutBlocker) {
+  NotifierId notifier_id1(NotifierType::APPLICATION, "app1");
+  NotifierId notifier_id2(NotifierType::APPLICATION, "app2");
+  NotifierId notifier_id3(NotifierType::APPLICATION, "app3");
+  PopupNotificationBlocker blocker_1(message_center(), notifier_id1);
+  PopupNotificationBlocker blocker_2(message_center(), notifier_id2);
+  PopupNotificationBlocker blocker_3(message_center(), notifier_id3);
+
+  message_center()->AddNotification(std::make_unique<Notification>(
+      NOTIFICATION_TYPE_SIMPLE, "id1", u"title", u"message",
+      gfx::Image() /* icon */, std::u16string() /* display_source */, GURL(),
+      notifier_id1, RichNotificationData(), nullptr));
+  message_center()->AddNotification(std::make_unique<Notification>(
+      NOTIFICATION_TYPE_SIMPLE, "id2", u"title", u"message",
+      gfx::Image() /* icon */, std::u16string() /* display_source */, GURL(),
+      notifier_id2, RichNotificationData(), nullptr));
+
+  // Verify that the method doesn't mark popups as seen.
+  NotificationList::PopupNotifications initial_popups =
+      message_center()->GetPopupNotificationsWithoutBlocker(blocker_3);
+  NotificationList::PopupNotifications final_popups =
+      message_center()->GetPopupNotificationsWithoutBlocker(blocker_3);
+  EXPECT_EQ(2u, initial_popups.size());
+  EXPECT_TRUE(PopupNotificationsContain(initial_popups, "id1"));
+  EXPECT_TRUE(PopupNotificationsContain(initial_popups, "id2"));
+  EXPECT_EQ(initial_popups, final_popups);
+
+  blocker_1.SetPopupNotificationsEnabled(false);
+  blocker_2.SetPopupNotificationsEnabled(false);
+
+  // Without blocker 1, popup 2 can be seen.
+  NotificationList::PopupNotifications popups_1 =
+      message_center()->GetPopupNotificationsWithoutBlocker(blocker_1);
+  EXPECT_EQ(1u, popups_1.size());
+  EXPECT_TRUE(PopupNotificationsContain(popups_1, "id2"));
+
+  // Without blocker 2, popup 1 can be seen.
+  NotificationList::PopupNotifications popups_2 =
+      message_center()->GetPopupNotificationsWithoutBlocker(blocker_2);
+  EXPECT_EQ(1u, popups_2.size());
+  EXPECT_TRUE(PopupNotificationsContain(popups_2, "id1"));
+}
+
 TEST_F(MessageCenterImplTest, NotificationsDuringBlocked) {
   NotifierId notifier_id(NotifierType::APPLICATION, "app1");
   ToggledNotificationBlocker blocker(message_center());

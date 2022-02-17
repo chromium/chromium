@@ -5,6 +5,7 @@
 #include "ash/system/message_center/hps_notify_notification_blocker.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -47,20 +48,29 @@ void SetBlockerPref(bool enabled) {
   base::RunLoop().RunUntilIdle();
 }
 
-// Add a notification to the message center.
-void AddNotification(const std::string& notification_id, bool system_priority) {
-  const message_center::NotifierType type =
-      system_priority ? message_center::NotifierType::SYSTEM_COMPONENT
-                      : message_center::NotifierType::APPLICATION;
+// Add a notification to the message center. An empty notifier title creates a
+// system notification.
+void AddNotification(const std::string& notification_id,
+                     const std::u16string& notifier_title) {
+  const message_center::NotifierId notifier_id =
+      notifier_title.empty()
+          ? message_center::NotifierId(
+                message_center::NotifierType::SYSTEM_COMPONENT, "system")
+          : message_center::NotifierId(/*url=*/GURL(), notifier_title);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(
           message_center::NOTIFICATION_TYPE_BASE_FORMAT, notification_id,
-          u"test_title", u"test message", /*icon=*/gfx::Image(),
+          u"test-title", u"test-message", /*icon=*/gfx::Image(),
           /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
-          message_center::NotifierId(type, "test"),
-          message_center::RichNotificationData(),
+          notifier_id, message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::NotificationDelegate>()));
+}
+
+// Removes the notification with the given ID.
+void RemoveNotification(const std::string& notification_id) {
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id,
+                                                           /*by_user=*/true);
 }
 
 // Returns the number of popup notifications that are currently visible in the
@@ -74,6 +84,46 @@ size_t VisiblePopupCount() {
 size_t VisibleNotificationCount() {
   return message_center::MessageCenter::Get()->GetVisibleNotifications().size();
 }
+
+// Returns true if the HPS notify informational popup is popped-up.
+bool InfoPopupVisible() {
+  return message_center::MessageCenter::Get()->FindPopupNotificationById(
+             HpsNotifyNotificationBlocker::kInfoNotificationId) != nullptr;
+}
+
+// Returns the index at which the given substring appears in the informational
+// popup's message, or npos otherwise.
+size_t PositionInInfoPopupMessage(const std::u16string& substr) {
+  const message_center::Notification* notification =
+      message_center::MessageCenter::Get()->FindPopupNotificationById(
+          HpsNotifyNotificationBlocker::kInfoNotificationId);
+  return notification ? notification->message().find(substr)
+                      : std::u16string::npos;
+}
+
+// A blocker that blocks only a popup with the given ID.
+class IdPopupBlocker : public message_center::NotificationBlocker {
+ public:
+  IdPopupBlocker(message_center::MessageCenter* message_center)
+      : NotificationBlocker(message_center) {}
+  IdPopupBlocker(const IdPopupBlocker&) = delete;
+  IdPopupBlocker& operator=(const IdPopupBlocker&) = delete;
+  ~IdPopupBlocker() override = default;
+
+  void SetTargetId(const std::string& target_id) {
+    target_id_ = target_id;
+    NotifyBlockingStateChanged();
+  }
+
+  // message_center::NotificationBlocker:
+  bool ShouldShowNotificationAsPopup(
+      const message_center::Notification& notification) const override {
+    return notification.id() != target_id_;
+  }
+
+ private:
+  std::string target_id_;
+};
 
 // A test fixture that gives access to the HPS notify controller (to fake
 // snooping events).
@@ -111,10 +161,12 @@ class HpsNotifyNotificationBlockerTest : public AshTestBase {
     SetSnoopingPref(true);
 
     controller_ = Shell::Get()->hps_notify_controller();
+    message_center_ = message_center::MessageCenter::Get();
   }
 
  protected:
   HpsNotifyController* controller_ = nullptr;
+  message_center::MessageCenter* message_center_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -124,7 +176,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, Snooping) {
   SetBlockerPref(true);
 
   // By default, no snooper detected.
-  AddNotification("notification 1", /*system_priority=*/false);
+  AddNotification("notification-1", u"notifier-1");
   EXPECT_EQ(VisiblePopupCount(), 1u);
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
@@ -133,14 +185,14 @@ TEST_F(HpsNotifyNotificationBlockerTest, Snooping) {
 
   // When snooping is detected, the popup notification should be hidden but
   // remain in the notification queue. Note that, since the popup has been
-  // shown, it won't be shown again.
   EXPECT_EQ(VisiblePopupCount(), 0u);
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
   // Add notifications while a snooper is present.
-  AddNotification("notification 2", /*system_priority=*/false);
-  AddNotification("notification 3", /*system_priority=*/false);
-  EXPECT_EQ(VisiblePopupCount(), 0u);
+  AddNotification("notification-2", u"notifier-2");
+  AddNotification("notification-3", u"notifier-3");
+  EXPECT_EQ(VisiblePopupCount(), 1u);  // Only our info popup.
+  EXPECT_TRUE(InfoPopupVisible());
   EXPECT_EQ(VisibleNotificationCount(), 3u);
 
   // Simulate snooper absence.
@@ -148,6 +200,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, Snooping) {
 
   // The unshown popups should appear since snooper has left.
   EXPECT_EQ(VisiblePopupCount(), 2u);
+  EXPECT_FALSE(InfoPopupVisible());
   EXPECT_EQ(VisibleNotificationCount(), 3u);
 }
 
@@ -155,8 +208,9 @@ TEST_F(HpsNotifyNotificationBlockerTest, DISABLED_Pref) {
   SetBlockerPref(false);
 
   // Start with one notification that shouldn't be hidden.
-  AddNotification("notification 1", /*system_priority=*/false);
+  AddNotification("notification-1", u"notifier-1");
   EXPECT_EQ(VisiblePopupCount(), 1u);
+  EXPECT_FALSE(InfoPopupVisible());
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
   // Simulate snooper presence.
@@ -167,15 +221,17 @@ TEST_F(HpsNotifyNotificationBlockerTest, DISABLED_Pref) {
   EXPECT_EQ(VisibleNotificationCount(), 1u);
   SetBlockerPref(true);
 
-  // Note that, since the popup has been previously shown, it won't be shown
-  // again.
-  EXPECT_EQ(VisiblePopupCount(), 0u);
+  // The only popup now visible should be our info popup. Note that, since
+  // notification-1 has been previously shown, it won't be shown again.
+  EXPECT_EQ(VisiblePopupCount(), 1u);
+  EXPECT_TRUE(InfoPopupVisible());
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
   // Add a notification while the feature is disabled.
-  AddNotification("notification 2", /*system_priority=*/false);
-  AddNotification("notification 3", /*system_priority=*/false);
-  EXPECT_EQ(VisiblePopupCount(), 0u);
+  AddNotification("notification-2", u"notifier-2");
+  AddNotification("notification-3", u"notifier-3");
+  EXPECT_EQ(VisiblePopupCount(), 1u);
+  EXPECT_TRUE(InfoPopupVisible());
   EXPECT_EQ(VisibleNotificationCount(), 3u);
 
   // Notifications should be shown if *either* the whole setting or the
@@ -184,6 +240,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, DISABLED_Pref) {
 
   // The new popups should appear when the feature is disabled.
   EXPECT_EQ(VisiblePopupCount(), 2u);
+  EXPECT_FALSE(InfoPopupVisible());
   EXPECT_EQ(VisibleNotificationCount(), 3u);
 }
 
@@ -193,12 +250,13 @@ TEST_F(HpsNotifyNotificationBlockerTest, SystemNotification) {
   // One regular notification, one important notification that should be
   // allowlisted, and one important notification that could contain sensitive
   // information (and should therefore still be blocked).
-  AddNotification("notification 1", /*system_priority=*/false);
-  AddNotification("notification 2", /*system_priority=*/true);
+  AddNotification("notification-1", u"notifier-1");
+  AddNotification("notification-2", /*notifier_title=*/u"");
   AddNotification(
-      SmsObserver::kNotificationPrefix + std::string("_notification_3"),
-      /*system_priority=*/true);
+      SmsObserver::kNotificationPrefix + std::string("-notification-3"),
+      /*notifier_title=*/u"");
   EXPECT_EQ(VisiblePopupCount(), 3u);
+  EXPECT_FALSE(InfoPopupVisible());
   EXPECT_EQ(VisibleNotificationCount(), 3u);
 
   // Simulate snooper presence.
@@ -206,8 +264,116 @@ TEST_F(HpsNotifyNotificationBlockerTest, SystemNotification) {
 
   // The safe notification shouldn't be suppressed, but the sensitive
   // notification should be.
-  EXPECT_EQ(VisiblePopupCount(), 1u);
+  EXPECT_EQ(VisiblePopupCount(), 2u);
+  EXPECT_TRUE(InfoPopupVisible());
+  // Regular notification disappears because it was already shown before the
+  // snooper arrived.
+  EXPECT_EQ(PositionInInfoPopupMessage(u"notifier-1"), std::u16string::npos);
+  // Title used for system popups is currently Web.
+  EXPECT_NE(PositionInInfoPopupMessage(u"Web"), std::u16string::npos);
   EXPECT_EQ(VisibleNotificationCount(), 3u);
+}
+
+TEST_F(HpsNotifyNotificationBlockerTest, InfoPopup) {
+  SetBlockerPref(true);
+
+  // Simulate snooper presence.
+  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+
+  // Two notifications we're blocking.
+  AddNotification("notification-1", u"notifier-1");
+  AddNotification("notification-2", u"notifier-2");
+  EXPECT_EQ(VisiblePopupCount(), 1u);  // Only our info popup.
+  EXPECT_NE(PositionInInfoPopupMessage(u"notifier-1"), std::u16string::npos);
+  EXPECT_NE(PositionInInfoPopupMessage(u"notifier-2"), std::u16string::npos);
+  EXPECT_EQ(VisibleNotificationCount(), 2u);
+
+  // Check that the user can remove the info popup and it will return.
+  RemoveNotification(HpsNotifyNotificationBlocker::kInfoNotificationId);
+  EXPECT_EQ(VisiblePopupCount(), 0u);
+  AddNotification("notification-3", u"notifier-3");
+  EXPECT_EQ(VisiblePopupCount(), 1u);  // Only our info popup.
+  EXPECT_NE(PositionInInfoPopupMessage(u"notifier-2"), std::u16string::npos);
+  EXPECT_NE(PositionInInfoPopupMessage(u"notifier-3"), std::u16string::npos);
+}
+
+// Test that we don't report the notifiers of popups that we (alone) aren't
+// blocking.
+TEST_F(HpsNotifyNotificationBlockerTest, InfoPopupOtherBlocker) {
+  IdPopupBlocker other_blocker(message_center_);
+  other_blocker.SetTargetId("notification-2");
+
+  SetBlockerPref(true);
+
+  // Simulate snooper presence.
+  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+
+  // One notification only we are blocking, and one notification that is also
+  // blocked by another blocker.
+  AddNotification("notification-1", u"notifier-1");
+  AddNotification("notification-2", u"notifier-2");
+  EXPECT_EQ(VisiblePopupCount(), 1u);
+  EXPECT_NE(PositionInInfoPopupMessage(u"notifier-1"), std::u16string::npos);
+  // Do not report that we're blocking a notification when it won't show up
+  // after snooping ends.
+  EXPECT_EQ(PositionInInfoPopupMessage(u"notifier-2"), std::u16string::npos);
+  EXPECT_EQ(VisibleNotificationCount(), 2u);
+
+  // Now update our other blocker not to block either notification.
+  other_blocker.SetTargetId("notification-3");
+
+  // We are now the sole blockers of both notifications, so should report both.
+  EXPECT_EQ(VisiblePopupCount(), 1u);
+  EXPECT_NE(PositionInInfoPopupMessage(u"notifier-1"), std::u16string::npos);
+  EXPECT_NE(PositionInInfoPopupMessage(u"notifier-2"), std::u16string::npos);
+  EXPECT_EQ(VisibleNotificationCount(), 2u);
+}
+
+// Test that the info popup message is changed as relevant notifications are
+// added and removed.
+TEST_F(HpsNotifyNotificationBlockerTest, InfoPopupChangingNotifications) {
+  SetBlockerPref(true);
+
+  // Simulate snooper presence.
+  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+
+  // Newer notifiers should come before older ones.
+  AddNotification("notification-1", u"notifier-1");
+  AddNotification("notification-2", u"notifier-2");
+  {
+    const size_t pos_1 = PositionInInfoPopupMessage(u"notifier-1");
+    const size_t pos_2 = PositionInInfoPopupMessage(u"notifier-2");
+    EXPECT_LE(pos_2, pos_1);
+    EXPECT_LE(pos_1, std::u16string::npos);
+  }
+
+  // Positions should be swapped if we see an old notifier again.
+  AddNotification("notification-3", u"notifier-1");
+  {
+    const size_t pos_1 = PositionInInfoPopupMessage(u"notifier-1");
+    const size_t pos_2 = PositionInInfoPopupMessage(u"notifier-2");
+    EXPECT_LE(pos_1, pos_2);
+    EXPECT_LE(pos_2, std::u16string::npos);
+  }
+
+  // Notifiers don't repeat.
+  AddNotification("notification-4", u"notifier-1");
+  {
+    const size_t pos_1 = PositionInInfoPopupMessage(u"notifier-1");
+    const size_t pos_2 = PositionInInfoPopupMessage(u"notifier-2");
+    EXPECT_LE(pos_1, pos_2);
+    EXPECT_LE(pos_2, std::u16string::npos);
+  }
+
+  // Notifiers are removed correctly.
+  RemoveNotification("notification-4");
+  RemoveNotification("notification-2");
+  {
+    const size_t pos_1 = PositionInInfoPopupMessage(u"notifier-1");
+    const size_t pos_2 = PositionInInfoPopupMessage(u"notifier-2");
+    EXPECT_NE(pos_1, std::u16string::npos);
+    EXPECT_EQ(pos_2, std::u16string::npos);
+  }
 }
 
 }  // namespace

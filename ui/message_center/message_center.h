@@ -110,10 +110,19 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // in this list.
   virtual const NotificationList::Notifications& GetVisibleNotifications() = 0;
 
-  // Gets all notifications being shown as popups.  This should not be affected
+  // Gets all notifications being shown as popups. This should not be affected
   // by the change queue since notifications are not held up while the state is
   // VISIBILITY_TRANSIENT or VISIBILITY_SETTINGS.
+  //
+  // Popups returned by this method are assumed to have now been shown to the
+  // user.
   virtual NotificationList::PopupNotifications GetPopupNotifications() = 0;
+
+  // Gets all notifications that would be popups if not for the given blocker.
+  // Ignores limits in the number of popups (e.g. for screen space).
+  virtual NotificationList::PopupNotifications
+  GetPopupNotificationsWithoutBlocker(
+      const NotificationBlocker& blocker) const = 0;
 
   // Management of NotificationBlockers.
   virtual void AddNotificationBlocker(NotificationBlocker* blocker) = 0;

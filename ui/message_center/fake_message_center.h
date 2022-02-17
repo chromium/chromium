@@ -27,7 +27,7 @@ class FakeMessageCenter : public MessageCenter {
 
   ~FakeMessageCenter() override;
 
-  // Overridden from FakeMessageCenter.
+  // Overridden from MessageCenter.
   void AddObserver(MessageCenterObserver* observer) override;
   void RemoveObserver(MessageCenterObserver* observer) override;
   void AddNotificationBlocker(NotificationBlocker* blocker) override;
@@ -45,6 +45,8 @@ class FakeMessageCenter : public MessageCenter {
   NotificationList::Notifications GetNotifications() override;
   const NotificationList::Notifications& GetVisibleNotifications() override;
   NotificationList::PopupNotifications GetPopupNotifications() override;
+  NotificationList::PopupNotifications GetPopupNotificationsWithoutBlocker(
+      const NotificationBlocker& blocker) const override;
   void AddNotification(std::unique_ptr<Notification> notification) override;
   void UpdateNotification(
       const std::string& old_id,

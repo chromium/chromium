@@ -234,6 +234,14 @@ MessageCenterImpl::GetPopupNotifications() {
   return notification_list_->GetPopupNotifications(blockers_, nullptr);
 }
 
+NotificationList::PopupNotifications
+MessageCenterImpl::GetPopupNotificationsWithoutBlocker(
+    const NotificationBlocker& blocker) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return notification_list_->GetPopupNotificationsWithoutBlocker(blockers_,
+                                                                 blocker);
+}
+
 //------------------------------------------------------------------------------
 // Client code interface.
 void MessageCenterImpl::AddNotification(
