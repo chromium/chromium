@@ -4026,10 +4026,15 @@ class ChromeDriverTestLegacy(ChromeDriverBaseTestWithWebServer):
     self.assertEqual('events: touchstart touchend', events.GetText())
 
 class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
-  def setUp(self):
-    self._driver = self.CreateDriver(chrome_switches=['--site-per-process', '--enable-features=FencedFrames:implementation_type/mparch'])
+  def testCanSwitchToFencedFrame_ShadowDom(self):
+    self.runTest('shadow_dom')
 
-  def testCanSwitchToFencedFrame(self):
+  def testCanSwitchToFencedFrame_MPArch(self):
+    self.runTest('mparch')
+
+  def runTest(self, fenced_frame_implementation):
+    self._driver = self.CreateDriver(chrome_switches=['--site-per-process',
+        '--enable-features=FencedFrames:implementation_type/%s' % fenced_frame_implementation])
     self._http_server.SetDataForPath('/main.html', bytes("""
       <!DOCTYPE html>
         <html>

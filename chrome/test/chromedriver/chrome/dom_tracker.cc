@@ -118,15 +118,64 @@ bool DomTracker::ProcessNode(const base::Value& node) {
     node_to_frame_map_.insert(std::make_pair(*node_id, frame_id));
   }
 
+  const std::string* node_name = dict->FindStringKey("nodeName");
+  if (node_name && *node_name == "FENCEDFRAME")
+    ProcessFencedFrameShadowDom(node);
+
   if (const base::Value* children = dict->FindKey("children"))
     return ProcessNodeList(*children);
   return true;
+}
+
+// When fenced frames use their shadow-dom implementation, they have an iframe
+// nested inside the shadow dom. We link the frameId of this iframe to the
+// fenced frame element to allow switchToFrame to work correctly.
+void DomTracker::ProcessFencedFrameShadowDom(const base::Value& node) {
+  const base::Value* shadow_roots = node.FindListKey("shadowRoots");
+  if (!shadow_roots)
+    return;
+
+  // Find user-agent shadow root inside fenced frame.
+  const base::Value* ua_shadow_root = nullptr;
+  for (const base::Value& shadow_root : shadow_roots->GetListDeprecated()) {
+    const std::string* shadow_root_type =
+        shadow_root.FindStringKey("shadowRootType");
+    if (shadow_root_type && *shadow_root_type == "user-agent") {
+      ua_shadow_root = &shadow_root;
+      break;
+    }
+  }
+  if (!ua_shadow_root ||
+      ua_shadow_root->FindIntKey("childNodeCount").value_or(0) == 0)
+    return;
+
+  // Find iframe inside fenced frame's shadow dom.
+  const base::Value* iframe_node = nullptr;
+  const base::Value* shadow_root_children =
+      ua_shadow_root->FindListKey("children");
+  DCHECK(shadow_root_children);
+  for (const base::Value& child : shadow_root_children->GetListDeprecated()) {
+    if (*child.FindStringKey("nodeName") == "IFRAME") {
+      iframe_node = &child;
+      break;
+    }
+  }
+  if (!iframe_node)
+    return;
+
+  // Associate fenced frame element with nested iframe's frame id.
+  const std::string* child_frame_id = iframe_node->FindStringKey("frameId");
+  if (child_frame_id) {
+    node_to_frame_map_.insert(
+        std::make_pair(*(node.FindIntKey("nodeId")), *child_frame_id));
+  }
 }
 
 Status DomTracker::RebuildMapping(DevToolsClient* client) {
   node_to_frame_map_.clear();
   base::DictionaryValue params;
   params.SetInteger("depth", -1);
+  params.SetBoolKey("pierce", true);
   base::Value result;
   // Fetch the root document and traverse it populating node_to_frame_map_.
   // The map will be updated later whenever Inspector pushes DOM node
