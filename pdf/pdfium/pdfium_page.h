@@ -430,7 +430,21 @@ class PDFiumPage {
 
 // Converts page orientations to the PDFium equivalents, as defined by
 // FPDF_RenderPage().
-int ToPDFiumRotation(PageOrientation orientation);
+constexpr int ToPDFiumRotation(PageOrientation orientation) {
+  // Could use static_cast<int>(orientation), but using an exhaustive switch
+  // will trigger an error if we ever change the definition of
+  // `PageOrientation`.
+  switch (orientation) {
+    case PageOrientation::kOriginal:
+      return 0;
+    case PageOrientation::kClockwise90:
+      return 1;
+    case PageOrientation::kClockwise180:
+      return 2;
+    case PageOrientation::kClockwise270:
+      return 3;
+  }
+}
 
 constexpr uint32_t MakeARGB(unsigned int a,
                             unsigned int r,
