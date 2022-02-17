@@ -12,31 +12,27 @@
   // navigates it to `navigate-ancestor-helper.html`.
 
   // navigate_ancestor_from_nested_key sent by us to our embedder to
-  // indicate either:
-  //   - PASS: The nested iframe correctly navigated its ancestor (this) frame
-  //           when it tried to navigate either "_parent" or "_top"
-  //   - FAIL: The nested iframe navigated *itself* when it tried to navigate
-  //           its ancestor frame
-  // We listen to messages on this navigate_ancestor_key, but we should never
-  // hear messages from it.
+  // indicate that an message was sent from the nested iframe when it failed to
+  // navigate the ancestor (this) frame.
   const [navigate_ancestor_key, navigate_ancestor_from_nested_key,
       ancestor_type] = parseKeylist();
 
-  window.onbeforeunload = e => {
-    writeValueToServer(navigate_ancestor_from_nested_key,
-        "PASS nested iframe " + ancestor_type);
-  }
+  // An message should be sent from the iframe.
+  window.addEventListener('message', (e) => {
+    window.onbeforeunload = null;
+    writeValueToServer(
+        navigate_ancestor_from_nested_key,
+        `PASS: [${ancestor_type}] ${e.data}`);
+  });
 
-  // When the iframe tries to navigate its ancestor frame, it should navigate
-  // *this* frame
+  // When the iframe tries to navigate its ancestor frame, it should not
+  // navigate *this* frame, because the sandboxed navigation browsing context
+  // flag [1] must be set in fenced frame trees.
+  // [1] https://html.spec.whatwg.org/multipage/origin.html#sandboxed-navigation-browsing-context-flag
   const iframe = document.createElement('iframe');
   iframe.src = generateURL(`navigate-ancestor-helper.html`,
       [navigate_ancestor_key, ancestor_type]);
   document.body.append(iframe);
-
-  await nextValueFromServer(navigate_ancestor_key);
-  // We should never get here, because we should be unloaded first.
-  writeValueToServer(navigate_ancestor_from_nested_key, "FAIL");
 })();
 </script>
 </body>

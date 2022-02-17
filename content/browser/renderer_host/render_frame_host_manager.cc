@@ -479,15 +479,21 @@ void RenderFrameHostManager::DidNavigateFrame(
       return;
     }
 
-    // Policy updates can only happen when the frame has a parent.
-    CHECK(frame_tree_node_->parent());
-
     // There should be no children of this frame; any policy changes should only
     // happen on navigation commit which will delete any child frames.
     DCHECK(!frame_tree_node_->child_count());
 
-    browsing_context_state_->SendFramePolicyUpdatesToProxies(
-        frame_tree_node_->parent()->GetSiteInstance(), frame_policy);
+    if (!frame_tree_node_->parent()) {
+      // Policy updates for root node happens only when the frame is a fenced
+      // frame root.
+      // Note: SendFramePolicyUpdatesToProxies doesn't need to be invoked for
+      // MPArch fenced frames, because the root fenced frame must use a static
+      // policy not to introduce a communication channel.
+      CHECK(frame_tree_node_->IsFencedFrameRoot());
+    } else {
+      browsing_context_state_->SendFramePolicyUpdatesToProxies(
+          frame_tree_node_->parent()->GetSiteInstance(), frame_policy);
+    }
   }
 }
 
