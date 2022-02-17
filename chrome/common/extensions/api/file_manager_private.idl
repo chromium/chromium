@@ -977,6 +977,16 @@ dictionary ProgressStatus {
   DOMString errorName;
 };
 
+// A Guest OS that supports guest->host file sharing. This definition should
+// match the one in file_manager_private.js.
+dictionary MountableGuest {
+  // The ID of this guest, used to identify it in calls to the backend.
+  long id;
+
+  // The localised display name of this guest as e.g. shown in the sidebar.
+  DOMString displayName;
+};
+
 // Callback that does not take arguments.
 callback SimpleCallback = void();
 
@@ -1127,6 +1137,9 @@ callback GetAndroidPickerAppsCallback = void(AndroidApp[] apps);
 
 // |state| Describes the current holding space state.
 callback HoldingSpaceStateCallback = void(HoldingSpaceState state);
+
+// |guests| List of Guest OSs which have available mounts.
+callback ListMountableGuestsCallback = void(MountableGuest[] guest);
 
 interface Functions {
   // Logout the current user for navigating to the re-authentication screen for
@@ -1632,6 +1645,9 @@ interface Functions {
   // Cancels an I/O task by id. Task ids are communicated to the Files App in
   // each I/O task's progress status.
   static void cancelIOTask(long taskId);
+
+  // Lists mountable Guest OSs.
+  static void listMountableGuests(ListMountableGuestsCallback callback);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.
@@ -1665,5 +1681,9 @@ interface Events {
   static void onTabletModeChanged(boolean enabled);
 
   static void onIOTaskProgressStatus(ProgressStatus status);
+
+  // Event broadcast when the list of Guest OSs that support Guest->Host file
+  // sharing changes.
+  static void onMountableGuestsChanged(MountableGuest[] guests);
 };
 };

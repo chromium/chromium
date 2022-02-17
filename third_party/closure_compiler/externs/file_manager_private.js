@@ -592,6 +592,14 @@ chrome.fileManagerPrivate.LinuxPackageInfo;
 
 /**
  * @typedef {{
+ * id: number,
+ * displayName: string,
+ * }}
+ */
+chrome.fileManagerPrivate.MountableGuest;
+
+/**
+ * @typedef {{
  * eventType: chrome.fileManagerPrivate.CrostiniEventType,
  * vmName: string,
  * entries: !Array<!Entry>,
@@ -1187,6 +1195,13 @@ chrome.fileManagerPrivate.getVolumeRoot = function(options, callback) {};
 chrome.fileManagerPrivate.mountCrostini = function(callback) {};
 
 /**
+ * Lists guests
+ * @param {function((!Array<!chrome.fileManagerPrivate.MountableGuest>))} callback
+ *     chrome.runtime.lastError will be set if there was an error.
+ */
+chrome.fileManagerPrivate.listMountableGuests = function(callback) {};
+
+/**
  * Shares paths with crostini container.
  * @param {string} vmName VM to share path with.
  * @param {!Array<!Entry>} entries Entries of the files and directories to
@@ -1421,7 +1436,8 @@ chrome.fileManagerPrivate.onCrostiniChanged;
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onTabletModeChanged;
 
-/**
- * @type {!ChromeEvent}
- */
+/** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onIOTaskProgressStatus;
+
+/** @type {!ChromeEvent} */
+chrome.fileManagerPrivate.onMountableGuestsChanged;

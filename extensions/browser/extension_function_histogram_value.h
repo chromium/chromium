@@ -1688,6 +1688,7 @@ enum HistogramValue {
   OS_DIAGNOSTICS_RUNNVMEWEARLEVELROUTINE = 1625,
   AUTOFILLPRIVATE_ADDVIRTUALCARD = 1626,
   AUTOFILLPRIVATE_REMOVEVIRTUALCARD = 1627,
+  FILEMANAGERPRIVATE_LISTMOUNTABLEGUESTS = 1628,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
