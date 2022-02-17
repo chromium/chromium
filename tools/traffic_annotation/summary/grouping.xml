@@ -42,6 +42,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="rlz"/>
       <traffic_annotation unique_id="webapk_create"/>
       <traffic_annotation unique_id="webapk_update"/>
+      <traffic_annotation unique_id="webview_proxy_config"/>
     </sender>
     <sender name="Feed Library">
       <traffic_annotation unique_id="interest_feedv2_send"/>
@@ -224,6 +225,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="box_access_token_fetcher"/>
       <traffic_annotation unique_id="web_app_origin_association_download"/>
       <traffic_annotation unique_id="digital_asset_links"/>
+      <traffic_annotation unique_id="device_trust_key_rotation"/>
     </sender>
   </group>
   <group name="Admin Features">

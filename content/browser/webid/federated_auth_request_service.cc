@@ -25,7 +25,8 @@ void FederatedAuthRequestService::Create(
   // but DocumentService::origin() should be used thereafter.
   if (!IsSameOriginWithAncestors(host, host->GetLastCommittedOrigin())) {
     mojo::ReportBadMessage(
-        "navigator.id.get cannot be invoked from within cross-origin iframes.");
+        "navigator.credentials.get() cannot be invoked from within "
+        "cross-origin iframes.");
     return;
   }
 

@@ -105,8 +105,9 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
             "browser-mediated alternative to previously existing federated "
             "sign-in implementations."
           trigger:
-            "A website executes the navigator.id.get() JavaScript method to "
-            "initiate federated user sign-in to a designated provider."
+            "A website executes the navigator.credentials.get() JavaScript "
+            "method to initiate federated user sign-in to a designated "
+            "provider."
           data:
             "An identity request contains a scope of claims specifying what "
             "user information is being requested from the identity provider, "
