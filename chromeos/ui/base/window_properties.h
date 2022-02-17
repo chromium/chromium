@@ -54,9 +54,10 @@ extern const ui::ClassProperty<bool>* const kEscHoldToExitFullscreen;
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kUseOverviewToExitFullscreen;
 
-// Whether to promote users to use Overview to exit pointer lock.
-// Borealis apps set this since they permit pointer lock and
-// don't have other visible affordances to let the user break the lock.
+// If true, Exo clients may request pointer lock for this window.
+// When the lock activates, users will be notified to use Overview to exit
+// pointer lock.
+// Only ARC++ and Lacros may use pointer lock without this property being set.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kUseOverviewToExitPointerLock;
 

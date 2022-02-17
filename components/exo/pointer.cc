@@ -11,6 +11,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/pointer_constraint_delegate.h"
 #include "components/exo/pointer_delegate.h"
@@ -262,12 +263,16 @@ bool Pointer::ConstrainPointer(PointerConstraintDelegate* delegate) {
     delegate->OnDefunct();
     return false;
   }
-  // Pointer lock should be enabled for ARC by default. The kExoPointerLock
-  // should only apply to Crostini windows.
-  bool is_arc_window =
-      ash::IsArcWindow(constrained_surface->window()->GetToplevelWindow());
-  if (!is_arc_window &&
-      !base::FeatureList::IsEnabled(chromeos::features::kExoPointerLock)) {
+
+  // Pointer lock is permitted for ARC windows, and for windows configured to
+  // notify the user on lock activation. In the latter case, the
+  // kExoPointerLock feature must be enabled.
+  aura::Window* toplevel = constrained_surface->window()->GetToplevelWindow();
+  bool permitted =
+      ash::IsArcWindow(toplevel) ||
+      (base::FeatureList::IsEnabled(chromeos::features::kExoPointerLock) &&
+       toplevel->GetProperty(chromeos::kUseOverviewToExitPointerLock));
+  if (!permitted) {
     delegate->OnDefunct();
     return false;
   }

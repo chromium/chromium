@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/data_source.h"
 #include "components/exo/data_source_delegate.h"
@@ -183,7 +184,7 @@ class PointerConstraintTest : public PointerTest {
     PointerTest::SetUp();
     feature_list_.InitAndEnableFeature(chromeos::features::kExoPointerLock);
 
-    shell_surface_ = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+    shell_surface_ = BuildShellSurfaceWhichPermitsPointerLock();
     surface_ = shell_surface_->surface_for_testing();
     seat_ = std::make_unique<Seat>();
     pointer_ = std::make_unique<Pointer>(&delegate_, seat_.get());
@@ -214,6 +215,18 @@ class PointerConstraintTest : public PointerTest {
     base::RunLoop().RunUntilIdle();
 
     PointerTest::TearDown();
+  }
+
+  std::unique_ptr<ShellSurface> BuildShellSurfaceWhichPermitsPointerLock() {
+    std::unique_ptr<ShellSurface> shell_surface =
+        test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+
+    shell_surface->surface_for_testing()
+        ->window()
+        ->GetToplevelWindow()
+        ->SetProperty(chromeos::kUseOverviewToExitPointerLock, true);
+
+    return shell_surface;
   }
 
   std::unique_ptr<ui::test::EventGenerator> generator_;
@@ -1363,6 +1376,24 @@ TEST_F(PointerConstraintTest, ConstrainPointer) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PointerConstraintTest, CanOnlyConstrainPermittedWindows) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  EXPECT_CALL(constraint_delegate_, GetConstrainedSurface())
+      .WillRepeatedly(testing::Return(shell_surface->surface_for_testing()));
+  // Called once when ConstrainPointer is denied, and again when the delegate
+  // is destroyed.
+  EXPECT_CALL(constraint_delegate_, OnDefunct()).Times(2);
+
+  EXPECT_FALSE(pointer_->ConstrainPointer(&constraint_delegate_));
+
+  pointer_->OnPointerConstraintDelegateDestroying(&constraint_delegate_);
+  EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
+  pointer_.reset();
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, OneConstraintPerSurface) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(false));
@@ -1390,8 +1421,7 @@ TEST_F(PointerConstraintTest, OneConstraintPerSurface) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, OneShotConstraintActivatedOnFirstFocus) {
-  auto second_shell_surface =
-      test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto second_shell_surface = BuildShellSurfaceWhichPermitsPointerLock();
   Surface* second_surface = second_shell_surface->surface_for_testing();
 
   EXPECT_CALL(delegate_, CanAcceptPointerEventsForSurface(second_surface))
@@ -1493,8 +1523,7 @@ TEST_F(PointerConstraintTest, MultipleSurfacesCanBeConstrained) {
   EXPECT_EQ(constraint_delegate_.activated_count, 1);
 
   // Arrange: Second surface + persistent constraint
-  auto second_shell_surface =
-      test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto second_shell_surface = BuildShellSurfaceWhichPermitsPointerLock();
   Surface* second_surface = second_shell_surface->surface_for_testing();
   focus_client_->FocusWindow(second_surface->window());
   EXPECT_CALL(delegate_, CanAcceptPointerEventsForSurface(second_surface))

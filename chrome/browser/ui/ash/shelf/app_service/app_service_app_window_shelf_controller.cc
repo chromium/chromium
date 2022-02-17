@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -590,6 +591,9 @@ void AppServiceAppWindowShelfController::RegisterWindow(
     window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
   } else if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
     window->SetProperty(chromeos::kUseOverviewToExitFullscreen, true);
+    window->SetProperty(chromeos::kUseOverviewToExitPointerLock, true);
+  } else if (crostini::IsCrostiniWindow(window)) {
+    // Permit pointer lock in Crostini (and Bruschetta).
     window->SetProperty(chromeos::kUseOverviewToExitPointerLock, true);
   }
 
