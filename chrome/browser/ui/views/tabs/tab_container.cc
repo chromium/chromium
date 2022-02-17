@@ -4,20 +4,28 @@
 
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
-TabContainer::TabContainer() = default;
+TabContainer::TabContainer(TabStripController* controller_)
+    : layout_helper_(std::make_unique<TabStripLayoutHelper>(
+          controller_,
+          base::BindRepeating(&TabContainer::tabs_view_model,
+                              base::Unretained(this)))) {}
 
 TabContainer::~TabContainer() {
   RemoveAllChildViews();
 }
 
-Tab* TabContainer::AddTab(std::unique_ptr<Tab> tab, int model_index) {
+Tab* TabContainer::AddTab(std::unique_ptr<Tab> tab,
+                          int model_index,
+                          TabPinned pinned) {
   absl::optional<tab_groups::TabGroupId> group = tab->group();
   Tab* tab_ptr = AddChildViewAt(
       std::move(tab), GetViewInsertionIndex(group, absl::nullopt, model_index));
   tabs_view_model_.Add(tab_ptr, model_index);
+  layout_helper_->InsertTabAt(model_index, tab_ptr, pinned);
   return tab_ptr;
 }
 
@@ -25,10 +33,13 @@ void TabContainer::MoveTab(Tab* tab, int from_model_index, int to_model_index) {
   ReorderChildView(tab, GetViewInsertionIndex(tab->group(), from_model_index,
                                               to_model_index));
   tabs_view_model_.Move(from_model_index, to_model_index);
+  layout_helper_->MoveTab(tab->group(), from_model_index, to_model_index);
 }
 
 void TabContainer::RemoveTabFromViewModel(int index) {
+  Tab* tab = GetTabAtModelIndex(index);
   tabs_view_model_.Remove(index);
+  layout_helper_->RemoveTabAt(index, tab);
 }
 
 void TabContainer::MoveGroupHeader(TabGroupHeader* group_header,
@@ -59,6 +70,12 @@ int TabContainer::GetTabCount() const {
   return tabs_view_model_.view_size();
 }
 
+gfx::Size TabContainer::GetMinimumSize() const {
+  int minimum_width = layout_helper_->CalculateMinimumWidth();
+
+  return gfx::Size(minimum_width, GetLayoutConstant(TAB_HEIGHT));
+}
+
 int TabContainer::GetViewInsertionIndex(
     absl::optional<tab_groups::TabGroupId> group,
     absl::optional<int> from_model_index,
@@ -68,23 +85,23 @@ int TabContainer::GetViewInsertionIndex(
   if (to_model_index < 0)
     return 0;
 
-  // If to_model_index is beyond the end of the tab strip, then the tab is newly
-  // added to the end of the tab strip. In that case we can just return one
-  // beyond the view index of the last existing tab.
+  // If to_model_index is beyond the end of the tab strip, then the tab is
+  // newly added to the end of the tab strip. In that case we can just return
+  // one beyond the view index of the last existing tab.
   if (to_model_index >= GetTabCount())
     return (GetTabCount() ? GetViewIndexForModelIndex(GetTabCount() - 1) + 1
                           : 0);
 
-  // If there is no from_model_index, then the tab is newly added in the middle
-  // of the tab strip. In that case we treat it as coming from the end of the
-  // tab strip, since new views are ordered at the end by default.
+  // If there is no from_model_index, then the tab is newly added in the
+  // middle of the tab strip. In that case we treat it as coming from the end
+  // of the tab strip, since new views are ordered at the end by default.
   if (!from_model_index.has_value())
     from_model_index = GetTabCount();
 
   DCHECK_NE(to_model_index, from_model_index.value());
 
-  // Since we don't have an absolute mapping from model index to view index, we
-  // anchor on the last known view index at the given to_model_index.
+  // Since we don't have an absolute mapping from model index to view index,
+  // we anchor on the last known view index at the given to_model_index.
   Tab* other_tab = GetTabAtModelIndex(to_model_index);
   int other_view_index = GetViewIndexForModelIndex(to_model_index);
 
@@ -92,8 +109,9 @@ int TabContainer::GetViewInsertionIndex(
     return 0;
 
   // When moving to the right, just use the anchor index because the tab will
-  // replace that position in both the model and the view. This happens because
-  // the tab itself occupies a lower index that the other tabs will shift into.
+  // replace that position in both the model and the view. This happens
+  // because the tab itself occupies a lower index that the other tabs will
+  // shift into.
   if (to_model_index > from_model_index.value())
     return other_view_index;
 

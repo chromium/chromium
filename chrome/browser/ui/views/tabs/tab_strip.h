@@ -49,7 +49,6 @@ class Tab;
 class TabHoverCardController;
 class TabStripController;
 class TabStripObserver;
-class TabStripLayoutHelper;
 
 namespace gfx {
 class Rect;
@@ -423,7 +422,7 @@ class TabStrip : public views::View,
   std::map<tab_groups::TabGroupId, TabGroupHeader*> GetGroupHeaders();
 
   // Invoked from |AddTabAt| after the newly created tab has been inserted.
-  void StartInsertTabAnimation(int model_index, TabPinned pinned);
+  void StartInsertTabAnimation(int model_index);
 
   // Animates the removal of the tab at |model_index|. Defers to the old
   // animation style when appropriate.
@@ -624,16 +623,14 @@ class TabStrip : public views::View,
 
   base::ObserverList<TabStripObserver>::Unchecked observers_;
 
+  std::unique_ptr<TabStripController> controller_;
+
   // The View parent for the tabs and the various group views.
   TabContainer* tab_container_;
 
   std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>> group_views_;
 
-  std::unique_ptr<TabStripController> controller_;
-
   base::RepeatingCallback<int()> available_width_callback_;
-
-  std::unique_ptr<TabStripLayoutHelper> layout_helper_;
 
   // Responsible for animating tabs in response to model changes.
   views::BoundsAnimator bounds_animator_;

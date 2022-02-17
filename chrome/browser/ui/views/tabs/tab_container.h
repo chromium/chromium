@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -20,10 +21,10 @@ class TabContainer : public views::View {
  public:
   METADATA_HEADER(TabContainer);
 
-  TabContainer();
+  explicit TabContainer(TabStripController* controller_);
   ~TabContainer() override;
 
-  Tab* AddTab(std::unique_ptr<Tab> tab, int model_index);
+  Tab* AddTab(std::unique_ptr<Tab> tab, int model_index, TabPinned pinned);
   void MoveTab(Tab* tab, int from_model_index, int to_model_index);
 
   // Remove the tab from |tabs_view_model_|, but *not* from the View hierarchy,
@@ -39,6 +40,13 @@ class TabContainer : public views::View {
   Tab* GetTabAtModelIndex(int index) const;
 
   int GetTabCount() const;
+
+  // TODO (1295774): Move callers down into TabContainer so this
+  // encapsulation-breaking getter can be removed.
+  TabStripLayoutHelper* layout_helper() const { return layout_helper_.get(); }
+
+  // views::View
+  gfx::Size GetMinimumSize() const override;
 
  private:
   // Returns the corresponding view index of a |tab| to be inserted at
@@ -61,6 +69,8 @@ class TabContainer : public views::View {
   // |layout_helper_| (and remains a View child) until
   // the remove animation completes.
   views::ViewModelT<Tab> tabs_view_model_;
+
+  std::unique_ptr<TabStripLayoutHelper> layout_helper_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_H_

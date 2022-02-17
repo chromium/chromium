@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 #include <memory>
 
+#include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -19,11 +20,18 @@ class TabContainerTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    tab_container_ = std::make_unique<TabContainer>();
+    tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
+    tab_container_ =
+        std::make_unique<TabContainer>(tab_strip_controller_.get());
     tab_controller_ = std::make_unique<FakeTabController>();
   }
 
-  void TearDown() override { ChromeViewsTestBase::TearDown(); }
+  void TearDown() override {
+    ChromeViewsTestBase::TearDown();
+    tab_strip_controller_.reset();
+    tab_container_.reset();
+    tab_controller_.reset();
+  }
 
  protected:
   // Returns all TabSlotViews in the order that they have as ViewChildren of
@@ -52,17 +60,21 @@ class TabContainerTest : public ChromeViewsTestBase {
     return ordered_views;
   }
 
+  std::unique_ptr<FakeBaseTabStripController> tab_strip_controller_;
   std::unique_ptr<FakeTabController> tab_controller_;
   std::unique_ptr<TabContainer> tab_container_;
 };
 
 // Verifies child view order matches model order.
 TEST_F(TabContainerTest, TabViewOrder) {
-  tab_container_->AddTab(std::make_unique<Tab>(tab_controller_.get()), 0);
+  tab_container_->AddTab(std::make_unique<Tab>(tab_controller_.get()), 0,
+                         TabPinned::kUnpinned);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  tab_container_->AddTab(std::make_unique<Tab>(tab_controller_.get()), 1);
+  tab_container_->AddTab(std::make_unique<Tab>(tab_controller_.get()), 1,
+                         TabPinned::kUnpinned);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  tab_container_->AddTab(std::make_unique<Tab>(tab_controller_.get()), 2);
+  tab_container_->AddTab(std::make_unique<Tab>(tab_controller_.get()), 2,
+                         TabPinned::kUnpinned);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
 
   tab_container_->MoveTab(tab_container_->GetTabAtModelIndex(0), 0, 1);
