@@ -1856,6 +1856,18 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER" desc="The text of the header (text above the icon list) of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Unsupported apps
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_TOOLTIP" desc="The disabled Save Desk as Template button tooltip text when the desk contains all unsupported apps (i.e. Crostini app).">
+        Linux apps aren’t currently supported
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_TOOLTIP" desc="The disabled Save Desk as Template button tooltip text when the desk contains all incognito and unsupported apps (i.e. Crostini app).">
+        Linux apps and Incognito windows aren’t currently supported
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_TOOLTIP" desc="The disabled Save Desk as Template button tooltip text when the desk contains all incognito and unsupported apps (i.e. Crostini app).">
+        Incognito windows aren’t currently supported
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_MAX_TEMPLATES_TOOLTIP" desc="The disabled Save Desk as Template button tooltip text when maximum number of templates has been reached.">
+        Only 6 templates allowed. Remove a template to save a new one.
+      </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON" desc="The text of the desks templates button in the overview desks bar.">
         Templates
       </message>
