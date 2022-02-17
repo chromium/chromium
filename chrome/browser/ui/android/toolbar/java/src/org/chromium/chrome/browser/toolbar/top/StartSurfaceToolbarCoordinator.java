@@ -223,12 +223,10 @@ public class StartSurfaceToolbarCoordinator {
      * @return Whether or not toolbar phone layout view should be shown.
      */
     boolean shouldShowRealSearchBox() {
-        int fakeSearchBoxMarginToScreenTop = 0;
-        if (mView != null) {
-            fakeSearchBoxMarginToScreenTop = mView.getHeight()
-                    + mStub.getResources().getDimensionPixelOffset(
-                            R.dimen.start_surface_fake_search_box_top_margin);
-        }
+        int fakeSearchBoxMarginToScreenTop =
+                mStub.getResources().getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow)
+                + mStub.getResources().getDimensionPixelOffset(
+                        R.dimen.start_surface_fake_search_box_top_margin);
         return mToolbarMediator.shouldShowRealSearchBox(fakeSearchBoxMarginToScreenTop);
     }
 
