@@ -1805,7 +1805,7 @@ bool OverviewGrid::IsShowingDesksTemplatesGrid() const {
 
 bool OverviewGrid::IsTemplateNameBeingModified() const {
   return desks_templates_grid_view_ &&
-         desks_templates_grid_view_->IsTemplateNameBeingModified();
+         desks_templates_grid_view_->GridItemBeingModified();
 }
 
 void OverviewGrid::UpdateNoWindowsWidget(bool no_items) {

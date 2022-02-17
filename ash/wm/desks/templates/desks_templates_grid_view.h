@@ -51,9 +51,16 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   // Removes templates from the grid by UUID.
   void DeleteTemplates(const std::vector<std::string>& uuids);
 
-  // Returns true if a template name is being modified using an item view's
-  // `DesksTemplatesNameView` in this grid.
-  bool IsTemplateNameBeingModified() const;
+  // Returns the grid item view if there is a template name is being modified,
+  // otherwise returns `nullptr`.
+  DesksTemplatesItemView* GridItemBeingModified();
+
+  // Returns whether the given `point_in_screen` intersects with the feedback
+  // button.
+  bool IntersectsWithFeedbackButton(const gfx::Point& point_in_screen);
+
+  // Returns whether the given `point_in_screen` intersect with any grid item.
+  bool IntersectsWithGridItem(const gfx::Point& point_in_screen);
 
   // views::View:
   void Layout() override;
