@@ -89617,6 +89617,11 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Privacy Settings"/>
   <int value="2" label="Trusted Surface"/>
   <int value="3" label="Transactions"/>
+  <int value="4" label="Privacy Sandbox 3 Consent Accept"/>
+  <int value="5" label="Privacy Sandbox 3 Consent Decline"/>
+  <int value="6" label="Privacy Sandbox 3 Notice Dismiss"/>
+  <int value="7" label="Privacy Sandbox 3 Notice Ok"/>
+  <int value="8" label="Privacy Sandbox 3 Notice Settings"/>
 </enum>
 
 <enum name="TrustTokenRequestHelperFactoryOutcome">

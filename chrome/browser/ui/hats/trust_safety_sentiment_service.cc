@@ -52,6 +52,20 @@ std::string GetHatsTriggerForFeatureArea(
       return kHatsSurveyTriggerTrustSafetyTrustedSurface;
     case (TrustSafetySentimentService::FeatureArea::kTransactions):
       return kHatsSurveyTriggerTrustSafetyTransactions;
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3ConsentAccept):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentAccept;
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3ConsentDecline):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline;
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeDismiss):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss;
+    case (TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeOk):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk;
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeSettings):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings;
     default:
       NOTREACHED();
       return "";
@@ -71,6 +85,35 @@ bool ProbabilityCheck(TrustSafetySentimentService::FeatureArea feature_area) {
     case (TrustSafetySentimentService::FeatureArea::kTransactions):
       return base::RandDouble() <
              features::kTrustSafetySentimentSurveyTransactionsProbability.Get();
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3ConsentAccept):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3ConsentAcceptProbability
+                     .Get();
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3ConsentDecline):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3ConsentDeclineProbability
+                     .Get();
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeDismiss):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeDismissProbability
+                     .Get();
+    case (TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeOk):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeOkProbability
+                     .Get();
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeSettings):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsProbability
+                     .Get();
     default:
       NOTREACHED();
       return false;
@@ -323,6 +366,12 @@ void TrustSafetySentimentService::OpenedPasswordManager(
 
 void TrustSafetySentimentService::SavedCard() {
   TriggerOccurred(FeatureArea::kTransactions, {{"Saved password", false}});
+}
+
+void TrustSafetySentimentService::InteractedWithPrivacySandbox3(
+    FeatureArea feature_area,
+    const std::map<std::string, bool>& product_specific_data) {
+  TriggerOccurred(feature_area, product_specific_data);
 }
 
 void TrustSafetySentimentService::OnOffTheRecordProfileCreated(

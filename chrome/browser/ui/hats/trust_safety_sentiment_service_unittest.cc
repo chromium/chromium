@@ -48,9 +48,24 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string privacy_settings_probability = "0.6";
     std::string trusted_surface_probability = "0.4";
     std::string transactions_probability = "0.05";
+    std::string privacy_sandbox_3_consent_accept_probability = "0.08";
+    std::string privacy_sandbox_3_consent_decline_probability = "0.1";
+    std::string privacy_sandbox_3_notice_dismiss_probability = "0.1";
+    std::string privacy_sandbox_3_notice_ok_probability = "0.4";
+    std::string privacy_sandbox_3_notice_settings_probability = "0.7";
     std::string privacy_settings_trigger_id = "privacy-settings-test";
     std::string trusted_surface_trigger_id = "trusted-surface-test";
     std::string transactions_trigger_id = "transactions-test";
+    std::string privacy_sandbox_3_consent_accept_trigger_id =
+        "privacy-sandbox-3-consent-accept";
+    std::string privacy_sandbox_3_consent_decline_trigger_id =
+        "privacy-sandbox-3-consent-decline";
+    std::string privacy_sandbox_3_notice_dismiss_trigger_id =
+        "privacy-sandbox-3-notice-dismiss";
+    std::string privacy_sandbox_3_notice_ok_trigger_id =
+        "privacy-sandbox-3-ok-dismiss";
+    std::string privacy_sandbox_3_notice_settings_trigger_id =
+        "privacy-sandbox-3-settings-dismiss";
     std::string transactions_password_manager_time = "20s";
   };
 
@@ -67,9 +82,29 @@ class TrustSafetySentimentServiceTest : public testing::Test {
              params.privacy_settings_probability},
             {"trusted-surface-probability", params.trusted_surface_probability},
             {"transactions-probability", params.transactions_probability},
+            {"privacy-sandbox-3-consent-accept-probability",
+             params.privacy_sandbox_3_consent_accept_probability},
+            {"privacy-sandbox-3-consent-decline-probability",
+             params.privacy_sandbox_3_consent_decline_probability},
+            {"privacy-sandbox-3-notice-dismiss-probability",
+             params.privacy_sandbox_3_notice_dismiss_probability},
+            {"privacy-sandbox-3-notice-ok-probability",
+             params.privacy_sandbox_3_notice_ok_probability},
+            {"privacy-sandbox-3-notice-settings-probability",
+             params.privacy_sandbox_3_notice_settings_probability},
             {"privacy-settings-trigger-id", params.privacy_settings_trigger_id},
             {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
             {"transactions-trigger-id", params.transactions_trigger_id},
+            {"privacy-sandbox-3-consent-accept-trigger-id",
+             params.privacy_sandbox_3_consent_accept_trigger_id},
+            {"privacy-sandbox-3-consent-decline-trigger-id",
+             params.privacy_sandbox_3_consent_decline_trigger_id},
+            {"privacy-sandbox-3-notice-dismiss-trigger-id",
+             params.privacy_sandbox_3_notice_dismiss_trigger_id},
+            {"privacy-sandbox-3-notice-ok-trigger-id",
+             params.privacy_sandbox_3_notice_ok_trigger_id},
+            {"privacy-sandbox-3-notice-settings-trigger-id",
+             params.privacy_sandbox_3_notice_settings_trigger_id},
             {"transactions-password-manager-time",
              params.transactions_password_manager_time},
         });
@@ -402,6 +437,129 @@ TEST_F(TrustSafetySentimentServiceTest, SavedCard) {
               LaunchSurvey(kHatsSurveyTriggerTrustSafetyTransactions, _, _,
                            expected_psd, _));
   service()->SavedCard();
+  service()->OpenedNewTabPage();
+}
+
+TEST_F(TrustSafetySentimentServiceTest,
+       InteractedWithPrivacySandbox3ConsentAccept) {
+  // Accepting Privacy Sandbox 3 consent is considered a trigger, and should
+  // make a user eligible to receive a survey.
+  FeatureParams params;
+  params.privacy_sandbox_3_consent_accept_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParameters(params);
+
+  SurveyBitsData expected_psd = {{"Stable channel", true},
+                                 {"3P cookies blocked", false},
+                                 {"Privacy Sandbox enabled", true}};
+
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentAccept, _,
+                   _, expected_psd, _));
+  service()->InteractedWithPrivacySandbox3(
+      TrustSafetySentimentService::FeatureArea::kPrivacySandbox3ConsentAccept,
+      expected_psd);
+  service()->OpenedNewTabPage();
+}
+
+TEST_F(TrustSafetySentimentServiceTest,
+       InteractedWithPrivacySandbox3ConsentDecline) {
+  // Declining Privacy Sandbox 3 consent is considered a trigger, and should
+  // make a user eligible to receive a survey.
+  FeatureParams params;
+  params.privacy_sandbox_3_consent_decline_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParameters(params);
+
+  SurveyBitsData expected_psd = {{"Stable channel", true},
+                                 {"3P cookies blocked", false},
+                                 {"Privacy Sandbox enabled", true}};
+
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline,
+                   _, _, expected_psd, _));
+  service()->InteractedWithPrivacySandbox3(
+      TrustSafetySentimentService::FeatureArea::kPrivacySandbox3ConsentDecline,
+      expected_psd);
+  service()->OpenedNewTabPage();
+}
+
+TEST_F(TrustSafetySentimentServiceTest,
+       InteractedWithPrivacySandbox3NoticeDismiss) {
+  // Dismissing Privacy Sandbox 3 notice is considered a trigger, and should
+  // make a user eligible to receive a survey.
+  FeatureParams params;
+  params.privacy_sandbox_3_notice_dismiss_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParameters(params);
+
+  SurveyBitsData expected_psd = {{"Stable channel", true},
+                                 {"3P cookies blocked", false},
+                                 {"Privacy Sandbox enabled", true}};
+
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss, _,
+                   _, expected_psd, _));
+  service()->InteractedWithPrivacySandbox3(
+      TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeDismiss,
+      expected_psd);
+  service()->OpenedNewTabPage();
+}
+
+TEST_F(TrustSafetySentimentServiceTest, InteractedWithPrivacySandbox3NoticeOk) {
+  // Okaying the Privacy Sandbox 3 notice is considered a trigger, and should
+  // make a user eligible to receive a survey.
+  FeatureParams params;
+  params.privacy_sandbox_3_notice_ok_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParameters(params);
+
+  SurveyBitsData expected_psd = {{"Stable channel", true},
+                                 {"3P cookies blocked", false},
+                                 {"Privacy Sandbox enabled", true}};
+
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk,
+                           _, _, expected_psd, _));
+  service()->InteractedWithPrivacySandbox3(
+      TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeOk,
+      expected_psd);
+  service()->OpenedNewTabPage();
+}
+
+TEST_F(TrustSafetySentimentServiceTest,
+       InteractedWithPrivacySandbox3NoticeSettings) {
+  // Going to settings from the Privacy Sandbox 3 notice is considered a
+  // trigger, and should make a user eligible to receive a survey.
+  FeatureParams params;
+  params.privacy_sandbox_3_notice_settings_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParameters(params);
+
+  SurveyBitsData expected_psd = {{"Stable channel", true},
+                                 {"3P cookies blocked", false},
+                                 {"Privacy Sandbox enabled", true}};
+
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings,
+                   _, _, expected_psd, _));
+  service()->InteractedWithPrivacySandbox3(
+      TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeSettings,
+      expected_psd);
   service()->OpenedNewTabPage();
 }
 
