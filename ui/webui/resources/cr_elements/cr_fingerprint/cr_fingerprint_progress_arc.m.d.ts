@@ -5,8 +5,8 @@
 import {CrLottieElement} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
 import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
-export const FINGEPRINT_TICK_DARK_URL: string;
-export const FINGEPRINT_TICK_LIGHT_URL: string;
+export const FINGERPRINT_TICK_DARK_URL: string;
+export const FINGERPRINT_TICK_LIGHT_URL: string;
 
 interface CrFingerprintProgressArcElement extends LegacyElementMixin,
                                                   HTMLElement {

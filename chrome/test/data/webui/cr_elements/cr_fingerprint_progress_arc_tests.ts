@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
 
-import {CrFingerprintProgressArcElement, FINGEPRINT_TICK_DARK_URL, FINGEPRINT_TICK_LIGHT_URL} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
+import {CrFingerprintProgressArcElement, FINGERPRINT_TICK_DARK_URL, FINGERPRINT_TICK_LIGHT_URL} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -13,24 +13,45 @@ import {MockController} from 'chrome://webui-test/mock_controller.js';
 // clang-format on
 
 class FakeMediaQueryList extends EventTarget implements MediaQueryList {
-  matches: boolean = false;
-  media: string;
-  listener: (() => void)|null = null;
+  private listener_: ((e: MediaQueryListEvent) => any)|null = null;
+  private matches_: boolean = false;
+  private media_: string;
 
-  constructor(query: string) {
+  constructor(media: string) {
     super();
-    this.media = query;
+    this.media_ = media;
   }
 
-  addListener(listener: () => void) {
-    this.listener = listener;
+  addListener(listener: (e: MediaQueryListEvent) => any) {
+    this.listener_ = listener;
   }
 
-  removeListener(listener: () => void) {
-    assertEquals(listener, this.listener);
-    this.listener = null;
+  removeListener(listener: (e: MediaQueryListEvent) => any) {
+    assertEquals(listener, this.listener_);
+    this.listener_ = null;
   }
-  onchange() {}
+
+  onchange() {
+    if (this.listener_) {
+      this.listener_(new MediaQueryListEvent(
+          'change', {media: this.media_, matches: this.matches_}));
+    }
+  }
+
+  get media(): string {
+    return this.media_;
+  }
+
+  get matches(): boolean {
+    return this.matches_;
+  }
+
+  set matches(matches: boolean) {
+    if (this.matches_ !== matches) {
+      this.matches_ = matches;
+      this.onchange();
+    }
+  }
 }
 
 /** @fileoverview Suite of tests for cr-fingerprint-progress-arc. */
@@ -60,7 +81,7 @@ suite('cr_fingerprint_progress_arc_test', function() {
   const white: Color = {r: 255, g: 255, b: 255};
 
   let mockController: MockController;
-  let darkModeQuery: FakeMediaQueryList;
+  let fakeMediaQueryList: FakeMediaQueryList;
 
   function clearCanvas(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d')!;
@@ -73,8 +94,8 @@ suite('cr_fingerprint_progress_arc_test', function() {
     const matchMediaMock =
         mockController.createFunctionMock(window, 'matchMedia');
     matchMediaMock.addExpectation('(prefers-color-scheme: dark)');
-    darkModeQuery = new FakeMediaQueryList('(prefers-color-scheme: dark)');
-    matchMediaMock.returnValue = darkModeQuery;
+    fakeMediaQueryList = new FakeMediaQueryList('(prefers-color-scheme: dark)');
+    matchMediaMock.returnValue = fakeMediaQueryList;
 
     document.body.innerHTML = '';
     progressArc = /** @type {!CrFingerprintProgressArcElement} */ (
@@ -189,12 +210,10 @@ suite('cr_fingerprint_progress_arc_test', function() {
 
   test('TestSwitchToDarkMode', function() {
     const scanningAnimation = progressArc.$.scanningAnimation;
-
     progressArc.setProgress(0, 1, true);
-    assertEquals(FINGEPRINT_TICK_LIGHT_URL, scanningAnimation.animationUrl);
-    darkModeQuery.matches = true;
-    darkModeQuery.listener!();
+    assertEquals(FINGERPRINT_TICK_LIGHT_URL, scanningAnimation.animationUrl);
 
-    assertEquals(FINGEPRINT_TICK_DARK_URL, scanningAnimation.animationUrl);
+    fakeMediaQueryList.matches = true;
+    assertEquals(FINGERPRINT_TICK_DARK_URL, scanningAnimation.animationUrl);
   });
 });

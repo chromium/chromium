@@ -1,3 +1,4 @@
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-media-query/iron-media-query.html">
 <link rel="import" href="../../html/polymer.html">
 <link rel="import" href="cr_fingerprint_icon.html">
 <link rel="import" href="../cr_lottie/cr_lottie.html">
@@ -32,6 +33,9 @@
 
     <div id="canvasDiv">
       <canvas id="canvas" height="240" width="460"></canvas>
+      <iron-media-query query="(prefers-color-scheme: dark)"
+          query-matches="{{isDarkModeActive_}}">
+      </iron-media-query>
       <cr-lottie id="scanningAnimation" aria-hidden="true"
           autoplay="[[autoplay]]">
       </cr-lottie>
