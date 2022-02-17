@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_number_conversions.h"
@@ -170,12 +171,18 @@ void SimpleURLLoaderThrottle::NotifyWhenReady(base::OnceClosure callback) {
   DCHECK(callback_.is_null());
   DCHECK(!timeout_timer_.IsRunning());
 
-  if (!delegate_->ShouldThrottle()) {
+  bool should_throttle = delegate_->ShouldThrottle();
+  base::UmaHistogramBoolean("Network.Radio.SimpleURLLoaderIsThrottled",
+                            should_throttle);
+
+  if (!should_throttle) {
     std::move(callback).Run();
     return;
   }
 
+  throttling_start_time_ = base::TimeTicks::Now();
   callback_ = std::move(callback);
+
   // Unretained is safe because `this` owns `timeout_timer_`.
   timeout_timer_.Start(FROM_HERE, timeout_,
                        base::BindOnce(&SimpleURLLoaderThrottle::OnTimeout,
@@ -186,6 +193,12 @@ void SimpleURLLoaderThrottle::OnReadyToStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback_);
   timeout_timer_.Stop();
+
+  base::TimeDelta throttled_time =
+      base::TimeTicks::Now() - throttling_start_time_;
+  base::UmaHistogramLongTimes("Network.Radio.SimpleURLLoaderThrottledTime",
+                              throttled_time);
+
   std::move(callback_).Run();
 }
 

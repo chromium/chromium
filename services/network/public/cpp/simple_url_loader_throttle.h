@@ -76,6 +76,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoaderThrottle {
   base::TimeDelta timeout_ = kDefaultTimeout;
   base::OneShotTimer timeout_timer_;
 
+  base::TimeTicks throttling_start_time_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
