@@ -96,12 +96,6 @@ enum class AlternateFontName {
   kLastResort
 };
 
-typedef HashMap<unsigned,
-                std::unique_ptr<FontPlatformData>,
-                WTF::IntHash<unsigned>,
-                WTF::UnsignedWithZeroKeyHashTraits<unsigned>>
-    SizedFontPlatformDataSet;
-typedef HashMap<FontCacheKey, SizedFontPlatformDataSet> FontPlatformDataCache;
 typedef HashMap<FallbackListCompositeKey,
                 std::unique_ptr<ShapeCache>,
                 FallbackListCompositeKeyHash,
@@ -116,7 +110,7 @@ extern const char kColorEmojiLocale[];
 extern const char kNotoColorEmojiCompat[];
 #endif
 
-class PLATFORM_EXPORT FontCache {
+class PLATFORM_EXPORT FontCache final {
   friend class FontCachePurgePreventer;
 
   USING_FAST_MALLOC(FontCache);
@@ -299,6 +293,47 @@ class PLATFORM_EXPORT FontCache {
   ~FontCache() = default;
 
  private:
+  class FontPlatformDataCache final {
+   public:
+    FontPlatformDataCache();
+    ~FontPlatformDataCache();
+
+    FontPlatformData* Add(FontCache* font_cache,
+                          const FontDescription& font_description,
+                          const FontFaceCreationParams& creation_params,
+                          AlternateFontName alternate_font_name);
+    size_t ByteSize() const;
+    void Clear();
+    void Purge(const FontDataCache& font_data_cache);
+
+   private:
+    using SizedFontPlatformDataSet =
+        HashMap<unsigned,
+                std::unique_ptr<FontPlatformData>,
+                WTF::IntHash<unsigned>,
+                WTF::UnsignedWithZeroKeyHashTraits<unsigned>>;
+
+    SizedFontPlatformDataSet* GetOrNewEntry(FontCacheKey key);
+
+    HashMap<FontCacheKey, SizedFontPlatformDataSet> map_;
+
+    // A maximum float value to which we limit incoming font sizes. This is the
+    // smallest float so that multiplying it by
+    // FontCacheKey::PrecisionMultiplier() is still smaller than
+    // std::numeric_limits<unsigned>::max() - 1 in order to avoid hitting
+    // HashMap sentinel values (placed at std::numeric_limits<unsigned>::max()
+    // and std::numeric_limits<unsigned>::max() - 1) for
+    // SizedFontPlatformDataSet and FontPlatformDataCache.
+    const float font_size_limit_;
+
+    // When true, the font size is removed from primary keys in |map_|.
+    // The font size is not necessary in the primary key, because per-size
+    // FontPlatformData are held in a nested map.
+    // This is controlled by a base::Feature to assess impact with an
+    // experiment.
+    const bool no_size_in_key_;
+  };
+
   // BCP47 list used when requesting fallback font for a character.
   // inlineCapacity is set to 4: the array vector not need to hold more than 4
   // elements.
@@ -366,14 +401,8 @@ class PLATFORM_EXPORT FontCache {
       const FontDescription&,
       UChar32);
 
-  // When true, the font size is removed from primary keys in
-  // |font_platform_data_cache_|. The font size is not necessary in the primary
-  // key, because per-size FontPlatformData are held in a nested map. This is
-  // controlled by a base::Feature to assess impact with an experiment.
-  const bool no_size_in_key_;
-
   // Don't purge if this count is > 0;
-  int purge_prevent_count_;
+  int purge_prevent_count_ = 0;
 
   sk_sp<SkFontMgr> font_manager_;
 
@@ -416,15 +445,6 @@ class PLATFORM_EXPORT FontCache {
 
   void PurgePlatformFontDataCache();
   void PurgeFallbackListShaperCache();
-
-  // A maximum float value to which we limit incoming font sizes. This is the
-  // smallest float so that multiplying it by
-  // FontCacheKey::PrecisionMultiplier() is still smaller than
-  // std::numeric_limits<unsigned>::max() - 1 in order to avoid hitting HashMap
-  // sentinel values (placed at std::numeric_limits<unsigned>::max() and
-  // std::numeric_limits<unsigned>::max() - 1) for SizedFontPlatformDataSet and
-  // FontPlatformDataCache.
-  const float font_size_limit_;
 
   friend class SimpleFontData;  // For fontDataFromFontPlatformData
   friend class FontFallbackList;
