@@ -315,9 +315,8 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
   }
 
   if (HasServerError(response_string)) {
-    LOG(ERROR) << "CAST2CLASS: Did not recieve a response from server while "
-                  "attempting to"
-               << " validate discovery device.";
+    LOG(ERROR) << "CAST2CLASS: Did not receive a response from server while "
+                  "attempting to validate discovery device.";
     ReportError(AddSinkResultCode::SERVER_ERROR);
     return;
   }

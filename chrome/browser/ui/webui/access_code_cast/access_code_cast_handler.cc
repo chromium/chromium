@@ -197,6 +197,9 @@ void AccessCodeCastHandler::OnAccessCodeValidated(
     absl::optional<DiscoveryDevice> discovery_device,
     AddSinkResultCode result_code) {
   if (result_code != AddSinkResultCode::OK) {
+    LOG(ERROR) << "CAST2CLASS: Device could not be properly validated with "
+                  "result code "
+               << result_code;
     std::move(add_sink_callback_).Run(result_code);
     return;
   }
@@ -300,6 +303,8 @@ void AccessCodeCastHandler::CastToSink(CastToSinkCallback callback) {
   if (RequiresScreenCapturePermission(cast_mode)) {
     const bool screen_capture_allowed = GetScreenCapturePermission();
     if (!screen_capture_allowed) {
+      LOG(ERROR) << "CAST2CLASS: Screen capture is not allowed. The Route "
+                    "Request has been cancelled";
       std::move(callback).Run(RouteRequestResultCode::CANCELLED);
       return;
     }
@@ -338,6 +343,7 @@ absl::optional<RouteParameters> AccessCodeCastHandler::GetRouteParameters(
       query_result_manager_->GetSourceForCastModeAndSink(cast_mode,
                                                          sink_id_.value());
   if (!source) {
+    LOG(WARNING) << "CAST2CLASS: Source has not been set for cast mode.";
     return absl::nullopt;
   }
   params.source_id = source->id();
