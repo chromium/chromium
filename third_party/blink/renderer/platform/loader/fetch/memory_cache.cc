@@ -128,10 +128,6 @@ MemoryCache::ResourceMap* MemoryCache::EnsureResourceMap(
 
 void MemoryCache::Add(Resource* resource) {
   DCHECK(resource);
-  // The memory cache is disabled if its size is 0.
-  if (capacity_ == 0)
-    return;
-
   ResourceMap* resources = EnsureResourceMap(resource->CacheIdentifier());
   AddInternal(resources, MakeGarbageCollected<MemoryCacheEntry>(resource));
   RESOURCE_LOADING_DVLOG(1)

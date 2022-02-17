@@ -167,7 +167,6 @@ TEST_F(MemoryCacheCorrectnessTest, FreshFromLastModified) {
 
   MockResource* fetched = FetchMockResource();
   EXPECT_EQ(fresh200, fetched);
-  EXPECT_NE(GetMemoryCache()->size(), 0u);
 }
 
 TEST_F(MemoryCacheCorrectnessTest, FreshFromExpires) {
@@ -361,16 +360,6 @@ TEST_F(MemoryCacheCorrectnessTest, RequestWithNoStore) {
       ResourceFromResourceRequest(std::move(no_store_request));
   MockResource* fetched = FetchMockResource();
   EXPECT_NE(no_store_resource, fetched);
-}
-
-TEST_F(MemoryCacheCorrectnessTest, DisableCache) {
-  GetMemoryCache()->SetCapacity(0);
-  ResourceRequest request;
-  request.SetRequestorOrigin(GetSecurityOrigin());
-  MockResource* resource = ResourceFromResourceRequest(std::move(request));
-  MockResource* fetched = FetchMockResource();
-  EXPECT_NE(resource, fetched);
-  EXPECT_EQ(GetMemoryCache()->size(), 0u);
 }
 
 // FIXME: Determine if ignoring must-revalidate for blink is correct behaviour.

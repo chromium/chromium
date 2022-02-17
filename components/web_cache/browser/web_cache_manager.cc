@@ -327,7 +327,7 @@ void WebCacheManager::ClearRendererCache(
 }
 
 void WebCacheManager::ReviseAllocationStrategy() {
-  DCHECK(!base::FeatureList::IsEnabled(kDisableWebCache));
+  DCHECK(!base::FeatureList::IsEnabled(kTrimWebCacheOnMemoryPressureOnly));
 
   DCHECK(stats_.size() <=
       active_renderers_.size() + inactive_renderers_.size());
@@ -380,7 +380,7 @@ void WebCacheManager::ReviseAllocationStrategy() {
 }
 
 void WebCacheManager::ReviseAllocationStrategyLater() {
-  if (base::FeatureList::IsEnabled(kDisableWebCache))
+  if (base::FeatureList::IsEnabled(kTrimWebCacheOnMemoryPressureOnly))
     return;
 
   // Ask to be called back in a few milliseconds to actually recompute our

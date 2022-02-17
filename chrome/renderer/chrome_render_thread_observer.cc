@@ -87,7 +87,8 @@ class RendererResourceDelegate
 
     // No need to update the browser if the WebCache manager doesn't need this
     // information.
-    if (base::FeatureList::IsEnabled(web_cache::kDisableWebCache)) {
+    if (base::FeatureList::IsEnabled(
+            web_cache::kTrimWebCacheOnMemoryPressureOnly)) {
       return;
     }
     // Rate limit informing the host of our cache stats.
@@ -114,7 +115,8 @@ class RendererResourceDelegate
 
  private:
   void InformHostOfCacheStats() {
-    DCHECK(!base::FeatureList::IsEnabled(web_cache::kDisableWebCache));
+    DCHECK(!base::FeatureList::IsEnabled(
+        web_cache::kTrimWebCacheOnMemoryPressureOnly));
     WebCache::UsageStats stats;
     WebCache::GetUsageStats(&stats);
     if (!cache_stats_recorder_) {

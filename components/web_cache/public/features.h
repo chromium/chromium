@@ -9,7 +9,10 @@
 
 namespace web_cache {
 
-extern const base::Feature kDisableWebCache;
+// Disable the logic that try to coordinate the in-memory cache resource usage
+// of all renderers and simply trim the caches on memory pressure. Renderers
+// get a memory pressure signal a few minutes after they've been backgrounded.
+extern const base::Feature kTrimWebCacheOnMemoryPressureOnly;
 
 }  // namespace web_cache
 
