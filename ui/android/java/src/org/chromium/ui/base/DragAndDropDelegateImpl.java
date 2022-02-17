@@ -82,6 +82,15 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
     public boolean onDrag(View view, DragEvent dragEvent) {
         if (dragEvent.getAction() == DragEvent.ACTION_DRAG_ENDED) {
             reset();
+            if (!dragEvent.getResult()) {
+                // Clear the image data immediately when not used.
+                DropDataContentProvider.clearCache();
+                // TODO: add metric
+            } else {
+                // Otherwise, clear it with a delay to allow asynchronous data transfer.
+                DropDataContentProvider.clearCacheWithDelay();
+                // TODO: add metric
+            }
         }
         // Return false so this listener does not consume the drag event of the view it listened to.
         return false;

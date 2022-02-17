@@ -17,8 +17,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Test basic functionality of {@link DropDataContentProvider}.
@@ -80,5 +83,38 @@ public class DropDataContentProviderTest {
         int colIdx = cursor.getColumnIndex(OpenableColumns.SIZE);
         Assert.assertEquals("The file size should be 100", 100, cursor.getInt(colIdx));
         cursor.close();
+    }
+
+    @Test
+    @SmallTest
+    public void testClearCache() {
+        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A);
+        DropDataContentProvider.clearCache();
+        Assert.assertNull("Image bytes should be null after clearing cache.",
+                DropDataContentProvider.getImageBytesForTesting());
+        Assert.assertNull("Handler should be null after clearing cache.",
+                DropDataContentProvider.getHandlerForTesting());
+        Assert.assertNull("MIME type should be null after clearing cache.",
+                mDropDataContentProvider.getType(uri));
+    }
+
+    @Test
+    @SmallTest
+    public void testClearCacheWithDelay() {
+        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A);
+        DropDataContentProvider.clearCacheWithDelay();
+        Assert.assertNotNull(
+                "Image bytes should not be null immediately after clear cache with delay.",
+                DropDataContentProvider.getImageBytesForTesting());
+        Assert.assertNotNull("Handler should not be null after clear cache with delay.",
+                DropDataContentProvider.getHandlerForTesting());
+        Assert.assertEquals("The MIME type for jpg file should be image/jpeg", "image/jpeg",
+                mDropDataContentProvider.getType(uri));
+        ShadowLooper.idleMainLooper(
+                DropDataContentProvider.CLEAR_CACHED_DATA_INTERVAL_MS + 1, TimeUnit.MILLISECONDS);
+        Assert.assertNull("Image bytes should be null after the delayed time.",
+                DropDataContentProvider.getImageBytesForTesting());
+        Assert.assertNull("MIME type should be null after the delayed time.",
+                mDropDataContentProvider.getType(uri));
     }
 }

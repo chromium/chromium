@@ -11,6 +11,8 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
@@ -47,17 +49,25 @@ public class DropDataContentProvider extends ContentProvider {
 
     private static final String[] COLUMNS = {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE};
     private static final String URI_AUTHORITY_SUFFIX = ".DropDataProvider";
+    // Needed by DropDataContentProviderTest.
+    protected static final int CLEAR_CACHED_DATA_INTERVAL_MS = 60000;
     private static byte[] sImageBytes;
     private static String sEncodingFormat;
     /** The URI handled by this content provider. */
     private static Uri sContentProviderUri;
     private static String sTimestamp;
+    private static Handler sHandler;
     private DropPipeDataWriter mDropPipeDataWriter;
 
     /**
      * Cache the passed-in image data of Drag and Drop.
      */
     public static Uri cache(byte[] imageBytes, String encodingFormat) {
+        // Cancel pending task if any to avoid new image data being cleared.
+        if (sHandler != null) {
+            sHandler.removeCallbacksAndMessages(null);
+            sHandler = null;
+        }
         sImageBytes = imageBytes;
         sEncodingFormat = encodingFormat;
         sTimestamp = String.valueOf(System.currentTimeMillis());
@@ -69,18 +79,32 @@ public class DropDataContentProvider extends ContentProvider {
                              .path(sTimestamp)
                              .build();
         sContentProviderUri = newUri;
+        // TODO: add metric on image data size
         return newUri;
     }
 
     /**
      * Clear the image data of Drag and Drop.
      */
-    // TODO: Determine when to null out the image data
     public static void clearCache() {
         sImageBytes = null;
         sEncodingFormat = null;
         sContentProviderUri = null;
         sTimestamp = null;
+        if (sHandler != null) {
+            sHandler.removeCallbacksAndMessages(null);
+            sHandler = null;
+        }
+    }
+
+    /**
+     * Clear the image data of Drag and Drop with delay.
+     */
+    public static void clearCacheWithDelay() {
+        if (sHandler == null) {
+            sHandler = new Handler(Looper.getMainLooper());
+        }
+        sHandler.postDelayed(DropDataContentProvider::clearCache, CLEAR_CACHED_DATA_INTERVAL_MS);
     }
 
     /**
@@ -192,5 +216,10 @@ public class DropDataContentProvider extends ContentProvider {
     @VisibleForTesting
     public static byte[] getImageBytesForTesting() {
         return sImageBytes;
+    }
+
+    @VisibleForTesting
+    public static Handler getHandlerForTesting() {
+        return sHandler;
     }
 }
