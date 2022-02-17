@@ -6,14 +6,14 @@
 
 #include "base/containers/contains.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/test/fake_url_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_protocol_handler_manager.h"
-#include "chrome/browser/web_applications/url_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_file_handler_manager.h"
-#include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
-#include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 
 namespace web_app {

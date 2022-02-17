@@ -14,7 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"

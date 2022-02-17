@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

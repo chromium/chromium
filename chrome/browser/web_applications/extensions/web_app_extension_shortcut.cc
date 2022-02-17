@@ -35,7 +35,7 @@
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/web_applications/web_app_shortcut_win.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)

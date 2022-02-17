@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "url/gurl.h"
 

@@ -29,7 +29,9 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -38,7 +40,6 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -47,7 +48,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -75,8 +75,8 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "base/command_line.h"
+#include "chrome/browser/web_applications/os_integration/url_handler_manager_impl.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
-#include "chrome/browser/web_applications/url_handler_manager_impl.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

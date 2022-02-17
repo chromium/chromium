@@ -8,7 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_features.h"

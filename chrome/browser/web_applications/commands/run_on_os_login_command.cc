@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"

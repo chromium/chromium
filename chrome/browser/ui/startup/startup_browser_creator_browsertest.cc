@@ -137,7 +137,7 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "base/json/json_string_value_serializer.h"
 #include "chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -157,7 +157,7 @@
 #include "chrome/browser/ui/startup/web_app_url_handling_startup_test_utils.h"
 #include "chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/url_handler_manager_impl.h"
+#include "chrome/browser/web_applications/os_integration/url_handler_manager_impl.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 

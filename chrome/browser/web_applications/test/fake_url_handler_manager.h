@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_URL_HANDLER_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_URL_HANDLER_MANAGER_H_
 
-#include "chrome/browser/web_applications/url_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 

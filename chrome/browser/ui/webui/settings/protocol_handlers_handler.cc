@@ -14,7 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/url_constants.h"
 #include "components/google/core/common/google_util.h"

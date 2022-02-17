@@ -10,8 +10,8 @@
 
 #include "base/callback_forward.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_shortcut.h"
 
 class Profile;
 

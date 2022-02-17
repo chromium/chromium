@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_app_file_handler_registration.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 
 #include <string>
 

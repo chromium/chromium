@@ -24,8 +24,8 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "chrome/browser/web_applications/os_integration_manager.h"
-#include "chrome/browser/web_applications/url_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #endif
 

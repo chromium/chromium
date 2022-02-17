@@ -104,8 +104,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #include "base/win/windows_version.h"
-#include "chrome/browser/web_applications/web_app_handler_registration_utils_win.h"
-#include "chrome/browser/web_applications/web_app_shortcuts_menu_win.h"
+#include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu_win.h"
 #include "chrome/browser/win/jumplist_updater.h"
 #include "chrome/installer/util/shell_util.h"
 #endif
