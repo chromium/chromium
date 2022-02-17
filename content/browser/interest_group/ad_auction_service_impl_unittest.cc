@@ -68,6 +68,12 @@ constexpr char kTrustedBiddingSignalsUrlPath[] =
     "/interest_group/trusted_bidding_signals.json";
 constexpr char kDailyUpdateUrlPath[] =
     "/interest_group/daily_update_partial.json";
+constexpr char kDailyUpdateUrlPath2[] =
+    "/interest_group/daily_update_partial_2.json";
+constexpr char kDailyUpdateUrlPathB[] =
+    "/interest_group/daily_update_partial_b.json";
+constexpr char kDailyUpdateUrlPathC[] =
+    "/interest_group/daily_update_partial_c.json";
 
 class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
  public:
@@ -179,9 +185,18 @@ class NetworkResponder {
 
   // Make the next request fail with `error` -- subsequent requests will succeed
   // again unless another FailNextUpdateRequestWithError() call is made.
+  //
+  // TODO(crbug.com/1298593): Replace this with FailUpdateRequestWithError().
   void FailNextUpdateRequestWithError(net::Error error) {
     base::AutoLock auto_lock(lock_);
     next_error_ = error;
+  }
+
+  // Like FailNextUpdateRequestWithError(), but for a specific path.
+  void FailUpdateRequestWithError(const std::string& path, net::Error error) {
+    base::AutoLock auto_lock(lock_);
+    error_ = error;
+    error_path_ = path;
   }
 
   // Returns the number of updates that occurred -- does not include other
@@ -250,6 +265,13 @@ class NetworkResponder {
       return true;
     }
 
+    if (params->url_request.url.path() == error_path_) {
+      CHECK(error_ != net::OK);
+      params->client->OnComplete(network::URLLoaderCompletionStatus(error_));
+      next_error_ = net::OK;
+      return true;
+    }
+
     if (next_error_ != net::OK) {
       params->client->OnComplete(
           network::URLLoaderCompletionStatus(next_error_));
@@ -299,7 +321,16 @@ class NetworkResponder {
   mojo::Remote<network::mojom::URLLoaderClient> stored_url_loader_client_
       GUARDED_BY(lock_);
 
+  // Fail the next request with `next_error_` if `next_error_` is not net::OK.
   net::Error next_error_ GUARDED_BY(lock_) = net::OK;
+
+  // The error to return if `error_path_` matches the path of the current
+  // request.
+  net::Error error_ GUARDED_BY(lock_) = net::OK;
+
+  // If the current request's path matches `error_path_`, fail the request with
+  // `error_`.
+  std::string error_path_ GUARDED_BY(lock_);
 
   size_t update_count_ GUARDED_BY(lock_) = 0;
 
@@ -551,6 +582,9 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   const GURL kTrustedBiddingSignalsUrlA =
       kUrlA.Resolve(kTrustedBiddingSignalsUrlPath);
   const GURL kUpdateUrlA = kUrlA.Resolve(kDailyUpdateUrlPath);
+  const GURL kUpdateUrlA2 = kUrlA.Resolve(kDailyUpdateUrlPath2);
+  const GURL kUpdateUrlB = kUrlB.Resolve(kDailyUpdateUrlPathB);
+  const GURL kUpdateUrlC = kUrlC.Resolve(kDailyUpdateUrlPathC);
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -762,9 +796,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -813,9 +847,9 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -867,9 +901,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -917,9 +951,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -974,9 +1008,9 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1017,9 +1051,9 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1072,9 +1106,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupName1));
@@ -1088,9 +1122,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   interest_group_2.trusted_bidding_signals_keys.emplace();
   interest_group_2.trusted_bidding_signals_keys->push_back("key1");
   interest_group_2.ads.emplace();
-  ad = blink::InterestGroup::Ad();
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupName2));
@@ -1146,9 +1180,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1164,9 +1198,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   interest_group_b.trusted_bidding_signals_keys.emplace();
   interest_group_b.trusted_bidding_signals_keys->push_back("key1");
   interest_group_b.ads.emplace();
-  ad = blink::InterestGroup::Ad();
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -1219,9 +1253,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1237,9 +1271,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group_b.trusted_bidding_signals_keys.emplace();
   interest_group_b.trusted_bidding_signals_keys->push_back("key1");
   interest_group_b.ads.emplace();
-  ad = blink::InterestGroup::Ad();
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -1255,9 +1289,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group_c.trusted_bidding_signals_keys.emplace();
   interest_group_c.trusted_bidding_signals_keys->push_back("key1");
   interest_group_c.ads.emplace();
-  ad = blink::InterestGroup::Ad();
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group_c.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_c);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
@@ -1342,9 +1376,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1377,9 +1411,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1418,15 +1452,18 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
                                               kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to the next rate limit
+  // period without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::Days(30);
   interest_group.update_url = kUpdateUrlA;
   interest_group.bidding_url = kBiddingLogicUrlA;
   interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1443,13 +1480,32 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].interest_group;
+  auto group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
   EXPECT_EQ(group.ads.value()[0].metadata,
             "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Try another IG update, this time with no crash. It should succceed.
+  // (We need to advance time since this next attempt is rate-limited).
+  in_process_data_decoder.service().SimulateJsonParserCrashForTesting(
+      /*drop=*/false);
+  task_environment()->FastForwardBy(
+      InterestGroupStorage::kUpdateSucceededBackoffPeriod);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that the ads *did* change this time.
+  groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1463,9 +1519,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1497,9 +1553,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1549,9 +1605,9 @@ TEST_F(AdAuctionServiceImplTest,
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1629,9 +1685,9 @@ TEST_F(AdAuctionServiceImplTest,
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1677,6 +1733,54 @@ TEST_F(AdAuctionServiceImplTest,
   EXPECT_EQ(0u, GetInterestGroupsForOwner(kOriginA).size());
 }
 
+// Start an update, and delay the server response so that the test ends before
+// the interest group finishes updating. Nothing should crash.
+TEST_F(AdAuctionServiceImplTest, UpdateNeverFinishesBeforeDestruction) {
+  // It doesn't really matter what we "respond", since we'll never actually send
+  // this.
+  const std::string kServerResponse = base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}}]
+})",
+                                                         kOriginStringA);
+  network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Start an interest group update, but never respond to network requests. The
+  // update shouldn't happen.
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // No updates have happened yet, nor will they before the test ends.
+  std::vector<StorageInterestGroup> a_groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(a_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // The test ends while the update is in progress. Nothing should crash as we
+  // run destructors.
+}
+
 // The update doesn't happen because the update URL isn't specified at
 // Join() time.
 TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
@@ -1694,9 +1798,9 @@ TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1735,9 +1839,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
   interest_group.trusted_bidding_signals_keys.emplace();
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1798,9 +1902,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   interest_group.expiry = base::Time::Now() + base::Days(30);
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1897,9 +2001,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   interest_group.expiry = base::Time::Now() + base::Days(30);
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1998,9 +2102,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   interest_group.expiry = base::Time::Now() + base::Days(30);
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2099,9 +2203,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   interest_group.expiry = base::Time::Now() + base::Days(30);
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2144,6 +2248,120 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   EXPECT_EQ(group2.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
 }
 
+// Nothing crashes if we have a disconnect and a successful update in-flight at
+// the same time.
+//
+// Join 2 interest groups that have the same owner.
+//
+// Update both interest groups; the first has a delayed response, and the second
+// fails with net::ERR_INTERNET_DISCONNECTED. After that, the first update
+// response arrives.
+//
+// Check that the second interest group is not updated. Intentionally don't
+// whether the first interest group updates or not.
+//
+// Nothing should crash.
+//
+// Afterwards, updating should successfully update both interest groups, without
+// rate limiting.
+TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
+  // Create 2 interest groups belonging to the same owner.
+  const std::string kServerResponse1 = base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}}]
+})",
+                                                          kOriginStringA);
+  network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
+
+  blink::InterestGroup interest_group_1 = CreateInterestGroup();
+  interest_group_1.expiry = base::Time::Now() + base::Days(30);
+  interest_group_1.update_url = kUpdateUrlA;
+  interest_group_1.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group_1.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_1);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  network_responder_->FailUpdateRequestWithError(
+      kDailyUpdateUrlPath2, net::ERR_INTERNET_DISCONNECTED);
+
+  constexpr char kInterestGroupName2[] = "group2";
+  blink::InterestGroup interest_group_2 = CreateInterestGroup();
+  interest_group_2.name = kInterestGroupName2;
+  interest_group_2.expiry = base::Time::Now() + base::Days(30);
+  interest_group_2.update_url = kUpdateUrlA2;
+  interest_group_2.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group_2.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_2);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName2));
+
+  // Start the update. The second group update will fail with
+  // ERR_INTERNET_DISCONNECTED.
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Now, let the first group's update response be sent.
+  network_responder_->DoDeferredUpdateResponse(kServerResponse1);
+  task_environment()->RunUntilIdle();
+
+  // The second update fails (internet disconnected), so that interest group
+  // doesn't update. We don't have any particular requirement what happens to
+  // the "successful" update that happened at the same time.
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 2u);
+  auto group_2 = groups[0].interest_group.name == kInterestGroupName2
+                     ? groups[0].interest_group
+                     : groups[1].interest_group;
+  ASSERT_TRUE(group_2.ads.has_value());
+  ASSERT_EQ(group_2.ads->size(), 1u);
+  EXPECT_EQ(group_2.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(group_2.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Now, try to update both interest groups. Both should now succeed.
+  const std::string kServerResponse2 = base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url2",
+         "metadata": {"new_a": "b2"}}]
+})",
+                                                          kOriginStringA);
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                             kServerResponse1);
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath2,
+                                             kServerResponse2);
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that both groups updated.
+  groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 2u);
+  auto group_1 = groups[0].interest_group.name == kInterestGroupName
+                     ? groups[0].interest_group
+                     : groups[1].interest_group;
+  group_2 = groups[0].interest_group.name == kInterestGroupName2
+                ? groups[0].interest_group
+                : groups[1].interest_group;
+
+  ASSERT_TRUE(group_1.ads.has_value());
+  ASSERT_EQ(group_1.ads->size(), 1u);
+  EXPECT_EQ(group_1.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(group_1.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+
+  ASSERT_TRUE(group_2.ads.has_value());
+  ASSERT_EQ(group_2.ads->size(), 1u);
+  EXPECT_EQ(group_2.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url2", kOriginStringA));
+  EXPECT_EQ(group_2.ads.value()[0].metadata, "{\"new_a\":\"b2\"}");
+}
+
 // Fire off many updates rapidly in a loop. Only one update should happen.
 TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   network_responder_->RegisterUpdateResponse(
@@ -2160,9 +2378,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   interest_group.expiry = base::Time::Now() + base::Days(30);
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
-  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2188,6 +2406,173 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
 }
 
+// Test that creates 3 interest groups for different origins, then runs update
+// for each origin, with the first update delayed.
+//
+// The second and third IGs shouldn't get updated until the first is allowed to
+// proceed.
+TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
+  // kOriginA's update will be deferred, whereas kOriginB's and kOriginC's
+  // updates will be allowed to proceed immediately.
+  const std::string kServerResponseA = base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}}]
+})",
+                                                          kOriginStringA);
+  network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
+
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPathB, base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                               kOriginStringB));
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPathC, base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                               kOriginStringC));
+
+  // Create interest group for kOriginA.
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to the next rate limit
+  // period without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Create interest group for kOriginB.
+  NavigateAndCommit(kUrlB);
+  interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to the next rate limit
+  // period without the interest group expiring.
+  interest_group.owner = kOriginB;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlB;
+  interest_group.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
+
+  // Create interest group for kOriginC.
+  NavigateAndCommit(kUrlC);
+  interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to the next rate limit
+  // period without the interest group expiring.
+  interest_group.owner = kOriginC;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlC;
+  interest_group.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
+
+  EXPECT_EQ(network_responder_->UpdateCount(), 0u);
+
+  // Attempt to update kOriginA's interest groups. The update doesn't happen
+  // yet, because the server delays its response.
+  NavigateAndCommit(kUrlA);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  std::vector<StorageInterestGroup> a_groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(a_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Now, try to update kOriginB's interest groups. The update shouldn't happen
+  // yet, because we're still updating kOriginA's interest groups.
+  NavigateAndCommit(kUrlB);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  std::vector<StorageInterestGroup> b_groups =
+      GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  auto b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(b_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Now, try to update kOriginC's interest groups. The update shouldn't happen
+  // yet, because we're still updating kOriginA's interest groups.
+  NavigateAndCommit(kUrlC);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  std::vector<StorageInterestGroup> c_groups =
+      GetInterestGroupsForOwner(kOriginC);
+  ASSERT_EQ(c_groups.size(), 1u);
+  auto c_group = c_groups[0].interest_group;
+  ASSERT_TRUE(c_group.ads.has_value());
+  ASSERT_EQ(c_group.ads->size(), 1u);
+  EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(c_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Only one network request should have been made (for the kOriginA update).
+  EXPECT_EQ(network_responder_->UpdateCount(), 1u);
+
+  // Now, the server finishes sending the kOriginA response. Both interest
+  // groups should now update, since kOriginA's update completion unblocks
+  // kOriginB's update.
+  network_responder_->DoDeferredUpdateResponse(kServerResponseA);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 3u);
+
+  // kOriginA's groups have updated.
+  a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(a_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+
+  // kOriginB's groups have updated.
+  b_groups = GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(b_groups.size(), 1u);
+  b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringB));
+  EXPECT_EQ(b_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+
+  // kOriginC's groups have updated.
+  b_groups = GetInterestGroupsForOwner(kOriginC);
+  ASSERT_EQ(b_groups.size(), 1u);
+  b_group = b_groups[0].interest_group;
+  ASSERT_TRUE(b_group.ads.has_value());
+  ASSERT_EQ(b_group.ads->size(), 1u);
+  EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringC));
+  EXPECT_EQ(b_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+}
+
 // Add an interest group, and run an ad auction.
 TEST_F(AdAuctionServiceImplTest, RunAdAuction) {
   constexpr char kBiddingScript[] = R"(
@@ -2211,8 +2596,9 @@ function scoreAd(
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2270,8 +2656,9 @@ function reportResult(auctionConfig, browserSignals) {
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2340,8 +2727,9 @@ function reportResult() {}
   interest_group.expiry = base::Time::Now() + base::Days(10);
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2507,8 +2895,9 @@ function reportResult() {}
   interest_group.expiry = base::Time::Now() + base::Days(10);
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2672,8 +3061,9 @@ function reportResult() {}
   interest_group.expiry = base::Time::Now() + base::Days(10);
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2786,8 +3176,9 @@ function reportResult() {}
   interest_group.expiry = base::Time::Now() + base::Days(10);
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2912,8 +3303,9 @@ function reportResult() {}
   interest_group.expiry = base::Time::Now() + base::Days(10);
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad;
-  ad.render_url = GURL("https://example.com/render");
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));

@@ -1634,9 +1634,9 @@ void InterestGroupStorage::UpdateInterestGroup(
   }
 }
 
-void InterestGroupStorage::ReportUpdateFetchFailed(const url::Origin& owner,
-                                                   const std::string& name,
-                                                   bool net_disconnected) {
+void InterestGroupStorage::ReportUpdateFailed(const url::Origin& owner,
+                                              const std::string& name,
+                                              bool net_disconnected) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     NOTREACHED();  // We already fetched interest groups to update...

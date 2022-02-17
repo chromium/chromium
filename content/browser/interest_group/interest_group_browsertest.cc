@@ -50,6 +50,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -128,10 +129,19 @@ class AllowlistedOriginContentBrowserClient : public TestContentBrowserClient {
   base::flat_set<url::Origin> allow_list_;
 };
 
+// A special path for updates that allows deferring the server response. Only
+// update requests to this path can be deferred, because the path must be
+// registered before the EmbeddedTestServer starts.
+constexpr char kDeferredUpdateResponsePath[] =
+    "/interest_group/daily_update_deferred.json";
+
+constexpr char kFledgeHeader[] = "X-Allow-FLEDGE";
+
 // Allows registering responses to network requests.
 class NetworkResponder {
  public:
-  explicit NetworkResponder(net::EmbeddedTestServer& server) {
+  explicit NetworkResponder(net::EmbeddedTestServer& server)
+      : controllable_response_(&server, kDeferredUpdateResponsePath) {
     server.RegisterRequestHandler(base::BindRepeating(
         &NetworkResponder::RequestHandler, base::Unretained(this)));
   }
@@ -164,6 +174,18 @@ function generateBid(
     RegisterNetworkResponse(url_path, script, "application/javascript");
   }
 
+  // Perform the deferred response -- the test hangs if the client isn't waiting
+  // on a response to kDeferredUpdateResponsePath.
+  void DoDeferredUpdateResponse(
+      const std::string& response,
+      const std::string& content_type = "application/json") {
+    controllable_response_.WaitForRequest();
+    controllable_response_.Send(net::HTTP_OK, content_type, response,
+                                /*cookies=*/{},
+                                /*extra_headers=*/{std::string(kFledgeHeader)});
+    controllable_response_.Done();
+  }
+
  private:
   struct Response {
     std::string body;
@@ -177,7 +199,7 @@ function generateBid(
     if (it == response_map_.end())
       return nullptr;
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->AddCustomHeader("X-Allow-FLEDGE", "true");
+    response->AddCustomHeader(kFledgeHeader, "true");
     response->set_code(net::HTTP_OK);
     response->set_content(it->second.body);
     response->set_content_type(it->second.mime_type);
@@ -194,6 +216,8 @@ function generateBid(
   // path. If so, the server returns the mapped value string as the response.
   base::flat_map<std::string, Response> response_map_
       GUARDED_BY(response_map_lock_);
+
+  net::test_server::ControllableHttpResponse controllable_response_;
 };
 
 class InterestGroupTestObserver
@@ -4752,6 +4776,150 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
             }
             return found_updated_group;
           }));
+}
+
+// Create three interest groups, each belonging to different origins. Update one
+// on a private network, but delay its server response. Update the second on a
+// public network (thus expecting the request to be blocked). Update the final
+// interest group on a private interest group -- it should be updated after the
+// first two. After the server responds to the first update request, all updates
+// should proceed -- the first should succeed, and the second should be blocked
+// since the page is on a public network, and the third should succeed.
+IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
+                       PrivateNetProtectionsApplyToSubsequentUpdates) {
+  constexpr char kLocallyUpdateGroupName[] = "Locally updated group";
+  constexpr char kPubliclyUpdateGroupName[] = "Publicly updated group";
+
+  // The update for a.test happens locally and gets deferred, whereas the update
+  // for b.test and c.test are allowed to proceed immediately.
+  const GURL update_url_a =
+      https_server_->GetURL("a.test", kDeferredUpdateResponsePath);
+  const GURL update_url_b = https_server_->GetURL(
+      "b.test", "/interest_group/daily_update_partial_b.json");
+  const GURL update_url_c = https_server_->GetURL(
+      "c.test", "/interest_group/daily_update_partial_c.json");
+
+  constexpr char kInitialBiddingPath[] =
+      "/interest_group/initial_bidding_logic.js";
+  const GURL initial_bidding_url_a =
+      https_server_->GetURL("a.test", kInitialBiddingPath);
+  const GURL initial_bidding_url_b =
+      https_server_->GetURL("b.test", kInitialBiddingPath);
+  const GURL initial_bidding_url_c =
+      https_server_->GetURL("c.test", kInitialBiddingPath);
+
+  constexpr char kNewBiddingPath[] = "/interest_group/new_bidding_logic.js";
+  const GURL new_bidding_url_a =
+      https_server_->GetURL("a.test", kNewBiddingPath);
+  const GURL new_bidding_url_b =
+      https_server_->GetURL("b.test", kNewBiddingPath);
+  const GURL new_bidding_url_c =
+      https_server_->GetURL("c.test", kNewBiddingPath);
+
+  // The server JSON updates biddingLogicUrl only.
+  constexpr char kUpdateContentTemplate[] = R"(
+{
+  "biddingLogicUrl": $1
+}
+)";
+  // a.test's response is delayed until later.
+  network_responder_->RegisterNetworkResponse(
+      update_url_b.path(),
+      JsReplace(kUpdateContentTemplate, new_bidding_url_b));
+  network_responder_->RegisterNetworkResponse(
+      update_url_c.path(),
+      JsReplace(kUpdateContentTemplate, new_bidding_url_c));
+
+  // First, create an interest group in a.test and start updating it from a
+  // private site. The update doesn't finish yet because the network response
+  // is delayed.
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+
+  ASSERT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/url::Origin::Create(initial_bidding_url_a),
+      kLocallyUpdateGroupName, initial_bidding_url_a,
+      /*bidding_wasm_helper_url=*/absl::nullopt, update_url_a,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/
+      {{{GURL("https://example.com/render"), /*metadata=*/absl::nullopt}}},
+      /*ad_components=*/absl::nullopt)));
+
+  EXPECT_EQ("done", UpdateInterestGroupsInJS());
+
+  // Now, create an interest group in b.test and start updating it from a
+  // public site. The update will be delayed because the first interest group
+  // hasn't finished updating, and it should get blocked because we are on a
+  // public page.
+  ASSERT_TRUE(NavigateToURL(
+      shell(),
+      https_server_->GetURL(
+          "b.test",
+          "/set-header?Content-Security-Policy: treat-as-public-address")));
+
+  ASSERT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/url::Origin::Create(initial_bidding_url_b),
+      kPubliclyUpdateGroupName, initial_bidding_url_b,
+      /*bidding_wasm_helper_url=*/absl::nullopt, update_url_b,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/
+      {{{GURL("https://example.com/render"), /*metadata=*/absl::nullopt}}},
+      /*ad_components=*/absl::nullopt)));
+
+  EXPECT_EQ("done", UpdateInterestGroupsInJS());
+
+  // Finally, create and update the last interest group on a private network --
+  // this update shouldn't be blocked.
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("c.test", "/echo")));
+
+  ASSERT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/url::Origin::Create(initial_bidding_url_c),
+      kLocallyUpdateGroupName, initial_bidding_url_c,
+      /*bidding_wasm_helper_url=*/absl::nullopt, update_url_c,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/
+      {{{GURL("https://example.com/render"), /*metadata=*/absl::nullopt}}},
+      /*ad_components=*/absl::nullopt)));
+
+  EXPECT_EQ("done", UpdateInterestGroupsInJS());
+
+  // Now, finish the first interest group update by responding to its update
+  // network request. All interest groups should be able to update now.
+  network_responder_->DoDeferredUpdateResponse(
+      JsReplace(kUpdateContentTemplate, new_bidding_url_a));
+
+  // Wait for the c.test to update -- after it updates, all the other interest
+  // groups should have updated too.
+  WaitForInterestGroupsSatisfying(
+      url::Origin::Create(initial_bidding_url_c),
+      base::BindLambdaForTesting(
+          [&](const std::vector<StorageInterestGroup>& storage_groups) {
+            return storage_groups.size() == 1 &&
+                   storage_groups[0].interest_group.bidding_url ==
+                       new_bidding_url_c;
+          }));
+
+  // By this point, all the interest group updates should have completed.
+  std::vector<StorageInterestGroup> a_groups =
+      GetInterestGroupsForOwner(url::Origin::Create(initial_bidding_url_a));
+  ASSERT_EQ(a_groups.size(), 1u);
+  EXPECT_EQ(a_groups[0].interest_group.bidding_url, new_bidding_url_a);
+
+  std::vector<StorageInterestGroup> b_groups =
+      GetInterestGroupsForOwner(url::Origin::Create(initial_bidding_url_b));
+  ASSERT_EQ(b_groups.size(), 1u);
+
+  // Because it was updated on a public address, the update for b.test didn't
+  // happen.
+  EXPECT_EQ(b_groups[0].interest_group.bidding_url, initial_bidding_url_b);
 }
 
 // Interest group APIs succeeded (i.e., feature join-ad-interest-group is

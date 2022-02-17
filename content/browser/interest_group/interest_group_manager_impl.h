@@ -11,17 +11,15 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/interest_group_update_manager.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -32,13 +30,6 @@ namespace base {
 class FilePath;
 
 }  // namespace base
-
-namespace network {
-
-class SimpleURLLoader;
-class SharedURLLoaderFactory;
-
-}  // namespace network
 
 namespace content {
 
@@ -86,11 +77,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void JoinInterestGroup(blink::InterestGroup group, const GURL& joining_url);
   // Remove the interest group if it exists.
   void LeaveInterestGroup(const url::Origin& owner, const std::string& name);
-  // Updates the interest group of the same name based on the information in
-  // the provided group. This does not update the interest group expiration
-  // time or user bidding signals. Silently fails if the interest group does
-  // not exist.
-  void UpdateInterestGroup(blink::InterestGroup group);
   // Loads all interest groups owned by `owner`, then updates their definitions
   // by fetching their `dailyUpdateUrl`. Interest group updates that fail to
   // load or validate are skipped, but other updates will proceed.
@@ -117,14 +103,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Gets a list of all interest groups with their bidding information
   // associated with the provided owner.
   void GetInterestGroupsForOwner(
-      const url::Origin& owner,
-      base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
-  // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
-  // that are currently rate-limited for updates. Additionally, this will update
-  // the `next_update_after` field such that a subsequent
-  // ClaimInterestGroupsForUpdate() call with the same `owner` won't return
-  // anything until after the success rate limit period passes.
-  void ClaimInterestGroupsForUpdate(
       const url::Origin& owner,
       base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
   // Clear out storage for the matching owning origin. If the callback is empty
@@ -156,24 +134,36 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   }
 
  private:
-  using UrlLoadersList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
+  // InterestGroupUpdateManager calls private members to write updates to the
+  // database.
+  friend class InterestGroupUpdateManager;
 
-  void DidUpdateInterestGroupsOfOwnerDbLoad(
-      url::Origin owner,
-      network::mojom::ClientSecurityStatePtr client_security_state,
-      std::vector<StorageInterestGroup> storage_groups);
-  void DidUpdateInterestGroupsOfOwnerNetFetch(
-      UrlLoadersList::iterator simple_url_loader,
-      url::Origin owner,
-      std::string name,
-      std::unique_ptr<std::string> fetch_body);
-  void DidUpdateInterestGroupsOfOwnerJsonParse(
-      url::Origin owner,
-      std::string name,
-      data_decoder::DataDecoder::ValueOrError result);
-  void ReportUpdateFetchFailed(const url::Origin& owner,
-                               const std::string& name,
-                               bool net_disconnected);
+  // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
+  // that are currently rate-limited for updates. Additionally, this will update
+  // the `next_update_after` field such that a subsequent
+  // ClaimInterestGroupsForUpdate() call with the same `owner` won't return
+  // anything until after the success rate limit period passes.
+  //
+  // To be called only by `update_manager_`.
+  void ClaimInterestGroupsForUpdate(
+      const url::Origin& owner,
+      base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
+
+  // Updates the interest group of the same name based on the information in
+  // the provided group. This does not update the interest group expiration
+  // time or user bidding signals. Silently fails if the interest group does
+  // not exist.
+  //
+  // To be called only by `update_manager_`.
+  void UpdateInterestGroup(blink::InterestGroup group);
+
+  // If `net_disconnected` is false, modifies the update rate limits stored in
+  // the database.
+  //
+  // To be called only by `update_manager_`.
+  void ReportUpdateFailed(const url::Origin& owner,
+                          const std::string& name,
+                          bool net_disconnected);
   void NotifyInterestGroupAccessed(
       InterestGroupObserverInterface::AccessType type,
       const std::string& owner_origin,
@@ -186,18 +176,17 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Stored as pointer so that tests can override it.
   std::unique_ptr<AuctionProcessManager> auction_process_manager_;
 
-  // Used for fetching interest group update JSON over the network.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // All active network requests -- active requests will be cancelled when
-  // destroyed.
-  UrlLoadersList url_loaders_;
-
   base::ObserverList<InterestGroupObserverInterface> observers_;
 
-  // TODO(crbug.com/1186444): Do we need to test InterestGroupManager
-  // destruction during update? If so, how?
-  base::WeakPtrFactory<InterestGroupManagerImpl> weak_factory_{this};
+  // Manages the logic required to support UpdateInterestGroupsOfOwner().
+  //
+  // InterestGroupUpdateManager keeps a pointer to this InterestGroupManagerImpl
+  // to make database writes via calls to ClaimInterestGroupsForUpdate(),
+  // UpdateInterestGroup(), and ReportUpdateFailed().
+  //
+  // Therefore, `update_manager_` *must* be declared after fields used by those
+  // methods so that updates are cancelled before those fields are destroyed.
+  InterestGroupUpdateManager update_manager_;
 };
 
 }  // namespace content

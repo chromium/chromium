@@ -70,9 +70,12 @@ class CONTENT_EXPORT InterestGroupStorage {
   // automatically updates the rate limit duration. If `net_disconnected` is
   // true, the rate limit duration is set to 0, since updates can retry
   // immediately if the network is disconnected.
-  void ReportUpdateFetchFailed(const url::Origin& owner,
-                               const std::string& name,
-                               bool net_disconnected);
+  //
+  // TODO(crbug.com/1186444): Remove `net_disconnected` after removing claim
+  // system.
+  void ReportUpdateFailed(const url::Origin& owner,
+                          const std::string& name,
+                          bool net_disconnected);
   // Adds an entry to the bidding history for this interest group.
   void RecordInterestGroupBid(const url::Origin& owner,
                               const std::string& name);

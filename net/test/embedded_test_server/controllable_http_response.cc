@@ -68,10 +68,12 @@ void ControllableHttpResponse::WaitForRequest() {
   state_ = State::READY_TO_SEND_DATA;
 }
 
-void ControllableHttpResponse::Send(net::HttpStatusCode http_status,
-                                    const std::string& content_type,
-                                    const std::string& content,
-                                    const std::vector<std::string>& cookies) {
+void ControllableHttpResponse::Send(
+    net::HttpStatusCode http_status,
+    const std::string& content_type,
+    const std::string& content,
+    const std::vector<std::string>& cookies,
+    const std::vector<std::string>& extra_headers) {
   TRACE_EVENT("test", "ControllableHttpResponse::Send", "http_status",
               http_status, "content_type", content_type, "content", content,
               "cookies", cookies);
@@ -80,6 +82,8 @@ void ControllableHttpResponse::Send(net::HttpStatusCode http_status,
       net::GetHttpReasonPhrase(http_status), content_type.c_str()));
   for (auto& cookie : cookies)
     content_data += "Set-Cookie: " + cookie + "\n";
+  for (auto& header : extra_headers)
+    content_data += header + "\n";
   content_data += "\n";
   content_data += content;
   Send(content_data);
