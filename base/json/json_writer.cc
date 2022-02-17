@@ -70,10 +70,7 @@ bool JSONWriter::BuildJSONString(absl::monostate node, size_t depth) {
 }
 
 bool JSONWriter::BuildJSONString(bool node, size_t depth) {
-  // Note: We are explicitly invoking the std::string constructor in order
-  // to avoid ASAN errors on Windows: https://crbug.com/900041
-  // TODO(dcheng): This makes no sense. Try to revert this.
-  json_string_->append(node ? std::string("true") : std::string("false"));
+  json_string_->append(node ? "true" : "false");
   return true;
 }
 
