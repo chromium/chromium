@@ -3354,8 +3354,18 @@ PaintPropertyTreeBuilder::ContextForFragment(
     // Match against parent_fragments if the fragment and parent_fragments are
     // under the same flow thread.
     if (parent_is_under_same_flow_thread) {
-      DCHECK(object_.Parent()->PaintingLayer()->EnclosingPaginationLayer() ==
-             pagination_layer);
+#if DCHECK_IS_ON()
+      // See LayoutObject::PaintingLayer() for special rules for floats inside
+      // inlines (legacy layout).
+      if (object_.Parent()->IsInline() && object_.IsFloating()) {
+        DCHECK(!object_.IsInLayoutNGInlineFormattingContext());
+        DCHECK_EQ(object_.PaintingLayer()->EnclosingPaginationLayer(),
+                  pagination_layer);
+      } else {
+        DCHECK_EQ(object_.Parent()->PaintingLayer()->EnclosingPaginationLayer(),
+                  pagination_layer);
+      }
+#endif
       for (const auto& parent_context : parent_fragments) {
         if (logical_top_in_flow_thread ==
             parent_context.logical_top_in_flow_thread) {
