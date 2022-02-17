@@ -102,6 +102,14 @@ export class AvatarList extends WithPersonalizationStore {
     this.shouldShowCameraUi_ = this.shouldShowCameraUi_ && value;
   }
 
+  private onSelectImageFromDisk_(event: Event) {
+    if (!isSelectionEvent(event)) {
+      return;
+    }
+
+    getUserProvider().selectImageFromDisk();
+  }
+
   private onCameraClosed_() {
     this.shouldShowCameraUi_ = false;
   }

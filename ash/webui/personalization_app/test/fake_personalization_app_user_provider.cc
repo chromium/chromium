@@ -47,4 +47,6 @@ void FakePersonalizationAppUserProvider::SelectProfileImage() {}
 void FakePersonalizationAppUserProvider::SelectCameraImage(
     ::mojo_base::BigBuffer data) {}
 
+void FakePersonalizationAppUserProvider::SelectImageFromDisk() {}
+
 }  // namespace ash

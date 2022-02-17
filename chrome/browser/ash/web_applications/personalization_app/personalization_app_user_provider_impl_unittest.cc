@@ -12,6 +12,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/login/users/avatar/fake_user_image_file_selector.h"
+#include "chrome/browser/ash/login/users/avatar/mock_user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
@@ -123,7 +125,6 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
-
     AddAndLoginUser(AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
                     kFakeTestName);
 
@@ -139,6 +140,8 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   }
 
   TestingProfile* profile() { return profile_; }
+
+  content::TestWebUI* web_ui() { return &web_ui_; }
 
   mojo::Remote<ash::personalization_app::mojom::UserProvider>*
   user_provider_remote() {
@@ -262,6 +265,39 @@ TEST_F(PersonalizationAppUserProviderImplTest, SelectProfileImage) {
   const gfx::ImageSkia& profile_image = CreateImage(50, 50);
   user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
   user_provider_remote()->get()->SelectProfileImage();
+  user_provider_remote()->FlushForTesting();
+
   EXPECT_EQ(GURL(webui::GetBitmapDataUrl(*profile_image.bitmap())),
             current_profile_image());
+}
+
+class PersonalizationAppUserProviderImplWithMockTest
+    : public PersonalizationAppUserProviderImplTest {
+ protected:
+  void SetUp() override {
+    GetFakeUserManager()->SetMockUserImageManagerForTesting();
+    PersonalizationAppUserProviderImplTest::SetUp();
+  }
+
+  ash::MockUserImageManager* mock_user_image_manager() {
+    return static_cast<ash::MockUserImageManager*>(
+        ash::ChromeUserManager::Get()->GetUserImageManager(
+            GetAccountId(profile())));
+  }
+};
+
+TEST_F(PersonalizationAppUserProviderImplWithMockTest, SelectImageFromDisk) {
+  const base::FilePath base_file_path("/this/is/a/test/directory/Base Name");
+  const base::FilePath dir_path = base_file_path.AppendASCII("dir1");
+  const base::FilePath file_path = dir_path.AppendASCII("file1.txt");
+
+  EXPECT_CALL(*mock_user_image_manager(), SaveUserImageFromFile(file_path));
+
+  auto fake_file_selector =
+      std::make_unique<ash::FakeUserImageFileSelector>(web_ui());
+  fake_file_selector->SetFilePath(file_path);
+  user_provider()->SetUserImageFileSelectorForTesting(
+      std::move(fake_file_selector));
+  user_provider_remote()->get()->SelectImageFromDisk();
+  user_provider_remote()->FlushForTesting();
 }

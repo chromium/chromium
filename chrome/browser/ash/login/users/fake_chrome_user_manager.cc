@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/login/users/avatar/mock_user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
@@ -219,6 +220,12 @@ UserImageManager* FakeChromeUserManager::GetUserImageManager(
       user_image_managers_.find(account_id);
   if (user_image_manager_it != user_image_managers_.end())
     return user_image_manager_it->second.get();
+  if (mock_user_image_manager_enabled_) {
+    auto mgr = std::make_unique<MockUserImageManager>(account_id);
+    MockUserImageManager* mgr_raw = mgr.get();
+    user_image_managers_[account_id] = std::move(mgr);
+    return mgr_raw;
+  }
   auto mgr = std::make_unique<UserImageManagerImpl>(account_id, this);
   UserImageManagerImpl* mgr_raw = mgr.get();
   user_image_managers_[account_id] = std::move(mgr);

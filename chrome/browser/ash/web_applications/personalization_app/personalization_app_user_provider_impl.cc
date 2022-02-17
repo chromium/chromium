@@ -7,10 +7,12 @@
 #include "ash/public/cpp/personalization_app/user_display_info.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
+#include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_file_selector.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
@@ -48,6 +50,8 @@ PersonalizationAppUserProviderImpl::PersonalizationAppUserProviderImpl(
       ash::ChromeUserManager::Get()->GetUserImageManager(
           GetAccountId(profile_));
   user_image_manager->DownloadProfileImage();
+  user_image_file_selector_ =
+      std::make_unique<ash::UserImageFileSelector>(web_ui);
 }
 
 PersonalizationAppUserProviderImpl::~PersonalizationAppUserProviderImpl() =
@@ -101,6 +105,13 @@ void PersonalizationAppUserProviderImpl::GetDefaultUserImages(
   std::move(callback).Run(std::move(images));
 }
 
+void PersonalizationAppUserProviderImpl::SelectImageFromDisk() {
+  user_image_file_selector_->SelectFile(
+      base::BindOnce(&PersonalizationAppUserProviderImpl::OnFileSelected,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::DoNothing());
+}
+
 void PersonalizationAppUserProviderImpl::SelectDefaultImage(int index) {
   if (!ash::default_user_image::IsInCurrentImageSet(index)) {
     mojo::ReportBadMessage("Invalid user image selected");
@@ -117,6 +128,7 @@ void PersonalizationAppUserProviderImpl::SelectProfileImage() {
   ash::UserImageManager* user_image_manager =
       ash::ChromeUserManager::Get()->GetUserImageManager(
           GetAccountId(profile_));
+
   user_image_manager->SaveUserImageFromProfileImage();
 }
 
@@ -135,6 +147,15 @@ void PersonalizationAppUserProviderImpl::SelectCameraImage(
       base::BindOnce(&PersonalizationAppUserProviderImpl::OnCameraImageDecoded,
                      image_decode_weak_ptr_factory_.GetWeakPtr(),
                      std::move(ref_counted)));
+}
+
+void PersonalizationAppUserProviderImpl::OnFileSelected(
+    const base::FilePath& path) {
+  ash::UserImageManager* user_image_manager =
+      ash::ChromeUserManager::Get()->GetUserImageManager(
+          GetAccountId(profile_));
+
+  user_image_manager->SaveUserImageFromFile(path);
 }
 
 void PersonalizationAppUserProviderImpl::OnUserImageChanged(
@@ -192,4 +213,9 @@ void PersonalizationAppUserProviderImpl::OnCameraImageDecoded(
       GetAccountId(profile_));
 
   user_image_manager->SaveUserImage(std::move(user_image));
+}
+
+void PersonalizationAppUserProviderImpl::SetUserImageFileSelectorForTesting(
+    std::unique_ptr<ash::UserImageFileSelector> file_selector) {
+  user_image_file_selector_ = std::move(file_selector);
 }

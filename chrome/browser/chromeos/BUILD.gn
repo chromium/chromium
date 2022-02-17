@@ -2213,6 +2213,8 @@ source_set("chromeos") {
     "../ash/login/user_online_signin_notifier.h",
     "../ash/login/users/affiliation.cc",
     "../ash/login/users/affiliation.h",
+    "../ash/login/users/avatar/user_image_file_selector.cc",
+    "../ash/login/users/avatar/user_image_file_selector.h",
     "../ash/login/users/avatar/user_image_loader.cc",
     "../ash/login/users/avatar/user_image_loader.h",
     "../ash/login/users/avatar/user_image_manager.cc",

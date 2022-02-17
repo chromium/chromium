@@ -58,28 +58,6 @@ using ::ash::AccessibilityManager;
 using ::ash::PlaySoundOption;
 using ::content::BrowserThread;
 
-// Returns info about extensions for files we support as user images.
-ui::SelectFileDialog::FileTypeInfo GetUserImageFileTypeInfo() {
-  ui::SelectFileDialog::FileTypeInfo file_type_info;
-  file_type_info.extensions.resize(1);
-
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("bmp"));
-
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("jpg"));
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("jpeg"));
-
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("png"));
-
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("tif"));
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("tiff"));
-
-  file_type_info.extension_description_overrides.resize(1);
-  file_type_info.extension_description_overrides[0] =
-      l10n_util::GetStringUTF16(IDS_IMAGE_FILES);
-
-  return file_type_info;
-}
-
 void RecordUserImageChanged(int sample) {
   // Although |ChangePictureHandler::kUserImageChangedHistogramName| is an
   // enumerated histogram, we intentionally use UmaHistogramExactLinear() to
@@ -106,10 +84,7 @@ ChangePictureHandler::ChangePictureHandler()
                       bundle.GetRawDataResource(IDR_SOUND_CAMERA_SNAP_WAV));
 }
 
-ChangePictureHandler::~ChangePictureHandler() {
-  if (select_file_dialog_.get())
-    select_file_dialog_->ListenerDestroyed();
-}
+ChangePictureHandler::~ChangePictureHandler() = default;
 
 void ChangePictureHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -150,8 +125,7 @@ void ChangePictureHandler::OnJavascriptDisallowed() {
       CameraPresenceNotifier::GetInstance()));
   camera_observation_.Reset();
 
-  if (select_file_dialog_.get())
-    select_file_dialog_->ListenerDestroyed();
+  user_image_file_selector_.reset();
 }
 
 void ChangePictureHandler::SendDefaultImages() {
@@ -166,24 +140,13 @@ void ChangePictureHandler::SendDefaultImages() {
 
 void ChangePictureHandler::HandleChooseFile(base::Value::ConstListView args) {
   DCHECK(args.empty());
-  select_file_dialog_ = ui::SelectFileDialog::Create(
-      this,
-      std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
-
-  base::FilePath downloads_path;
-  if (!base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_path)) {
-    NOTREACHED();
-    return;
-  }
-
-  // Static so we initialize it only once.
-  static base::NoDestructor<ui::SelectFileDialog::FileTypeInfo> file_type_info(
-      GetUserImageFileTypeInfo());
-
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE,
-      l10n_util::GetStringUTF16(IDS_DOWNLOAD_TITLE), downloads_path,
-      file_type_info.get(), 0, FILE_PATH_LITERAL(""), GetBrowserWindow(), NULL);
+  user_image_file_selector_ =
+      std::make_unique<ash::UserImageFileSelector>(web_ui());
+  user_image_file_selector_->SelectFile(
+      base::BindOnce(&ChangePictureHandler::FileSelected,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ChangePictureHandler::FileSelectionCanceled,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChangePictureHandler::HandleDiscardPhoto(base::Value::ConstListView args) {
@@ -388,9 +351,7 @@ void ChangePictureHandler::HandleRequestSelectedImage(
   SendSelectedImage();
 }
 
-void ChangePictureHandler::FileSelected(const base::FilePath& path,
-                                        int index,
-                                        void* params) {
+void ChangePictureHandler::FileSelected(const base::FilePath& path) {
   auto* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(GetUser()->GetAccountId());
 
@@ -401,7 +362,7 @@ void ChangePictureHandler::FileSelected(const base::FilePath& path,
   VLOG(1) << "Selected image from file";
 }
 
-void ChangePictureHandler::FileSelectionCanceled(void* params) {
+void ChangePictureHandler::FileSelectionCanceled() {
   SendSelectedImage();
 }
 
@@ -441,12 +402,6 @@ void ChangePictureHandler::OnUserProfileImageUpdated(
     const gfx::ImageSkia& profile_image) {
   // User profile image has been updated.
   SendProfileImage(profile_image, false);
-}
-
-gfx::NativeWindow ChangePictureHandler::GetBrowserWindow() {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
-  return browser->window()->GetNativeWindow();
 }
 
 void ChangePictureHandler::OnImageDecoded(const SkBitmap& decoded_image) {

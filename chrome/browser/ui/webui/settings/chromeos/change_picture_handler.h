@@ -8,12 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_file_selector.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace user_manager {
 class User;
@@ -25,7 +24,6 @@ namespace settings {
 
 // ChromeOS user image settings page UI handler.
 class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
-                             public ui::SelectFileDialog::Listener,
                              public user_manager::UserManager::Observer,
                              public ImageDecoder::ImageRequest,
                              public CameraPresenceNotifier::Observer {
@@ -92,11 +90,9 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   // Requests the currently selected image.
   void HandleRequestSelectedImage(base::Value::ConstListView args);
 
-  // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const base::FilePath& path);
+
+  void FileSelectionCanceled();
 
   // user_manager::UserManager::Observer implementation.
   void OnUserImageChanged(const user_manager::User& user) override;
@@ -107,9 +103,6 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   void SetImageFromCamera(const gfx::ImageSkia& photo,
                           base::RefCountedBytes* image_bytes);
 
-  // Returns handle to browser window or NULL if it can't be found.
-  gfx::NativeWindow GetBrowserWindow();
-
   // Overriden from ImageDecoder::ImageRequest:
   void OnImageDecoded(const SkBitmap& decoded_image) override;
   void OnDecodeImageFailed() override;
@@ -117,8 +110,6 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   // Returns user related to current WebUI. If this user doesn't exist,
   // returns active user.
   const user_manager::User* GetUser();
-
-  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
   // Previous user image from camera/file and its data URL.
   gfx::ImageSkia previous_image_;
@@ -141,6 +132,8 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   base::ScopedObservation<CameraPresenceNotifier,
                           CameraPresenceNotifier::Observer>
       camera_observation_{this};
+
+  std::unique_ptr<ash::UserImageFileSelector> user_image_file_selector_;
 
   base::WeakPtrFactory<ChangePictureHandler> weak_ptr_factory_{this};
 };

@@ -1,4 +1,8 @@
 <style>
+  #container {
+    display: flex;
+    flex-flow: row wrap;
+  }
   avatar-camera {
     bottom: 0;
     left: 0;
@@ -6,7 +10,19 @@
     right: 0;
     top: 0;
   }
-
+  .folder-container {
+    background-color: rgb(151, 208, 235);
+    border-radius: 100%;
+    display: inline-block;
+    height: 96px;
+    line-height: 96px;
+    text-align: center;
+    vertical-align: middle;
+    width: 96px;
+  }
+  #folderIcon {
+    line-height: inherit;
+  }
 </style>
 <div id="container">
   <p>Avatar list</p>
@@ -16,6 +32,11 @@
       <p>Open Camera</p>
     </div>
   </template>
+  <div class="folder-container">
+    <iron-icon id="folderIcon" icon="cr:folder-filled"
+        on-click="onSelectImageFromDisk_" on-keypress="onSelectImageFromDisk_">
+    </iron-icon>
+  </div>
   <template is="dom-if" if="[[profileImage_]]">
     <img id="profileImage" src$="[[profileImage_.url]]"
         on-click="onSelectProfileImage_"

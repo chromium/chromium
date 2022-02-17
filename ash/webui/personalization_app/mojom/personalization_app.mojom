@@ -333,6 +333,10 @@ interface UserProvider {
   // Set a camera image as the user's device avatar. |data| is a uint8 array of
   // the png data.
   SelectCameraImage(mojo_base.mojom.BigBuffer data);
+
+  // Select one of the available images on disk as user's device image.
+  // This opens a file dialog box from which the user can select a file.
+  SelectImageFromDisk();
 };
 
 // The source of the screensaver images come from.

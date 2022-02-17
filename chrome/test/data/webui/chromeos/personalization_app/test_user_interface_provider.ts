@@ -36,6 +36,7 @@ export class TestUserProvider extends
       'getUserInfo',
       'selectDefaultImage',
       'selectCameraImage',
+      'selectImageFromDisk',
     ]);
   }
 
@@ -70,5 +71,9 @@ export class TestUserProvider extends
 
   selectCameraImage(data: BigBuffer) {
     this.methodCalled('selectCameraImage', data);
+  }
+
+  selectImageFromDisk() {
+    this.methodCalled('selectImageFromDisk');
   }
 }

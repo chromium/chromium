@@ -474,6 +474,8 @@ static_library("test_support") {
       "../browser/ash/login/test/test_condition_waiter.h",
       "../browser/ash/login/test/test_predicate_waiter.cc",
       "../browser/ash/login/test/test_predicate_waiter.h",
+      "../browser/ash/login/users/avatar/fake_user_image_file_selector.cc",
+      "../browser/ash/login/users/avatar/fake_user_image_file_selector.h",
       "../browser/ash/login/users/fake_chrome_user_manager.cc",
       "../browser/ash/login/users/fake_chrome_user_manager.h",
       "../browser/ash/ownership/fake_owner_settings_service.cc",
