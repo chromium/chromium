@@ -130,17 +130,13 @@ class ZeroStateDriveProvider : public SearchProvider,
   // hypothetical query on wake.
   bool screen_off_ = true;
 
-  // Whether the suggested files feature is enabled. True if both the experiment
-  // is enabled, and the suggested content toggle is enabled.
-  const bool suggested_files_enabled_;
-
-  // Whether we have sent at least one request to ItemSuggest to warm up the
-  // results cache.
-  bool have_warmed_up_cache_ = false;
-
   // A file needs to have been modified more recently than this to be considered
   // valid.
   const base::TimeDelta max_last_modified_time_;
+
+  // Whether or not zero-state drive files are enabled. True iff the
+  // productivity launcher is enabled.
+  const bool enabled_;
 
   base::ScopedObservation<drive::DriveIntegrationService,
                           drive::DriveIntegrationServiceObserver>

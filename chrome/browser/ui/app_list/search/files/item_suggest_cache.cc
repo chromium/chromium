@@ -167,7 +167,6 @@ const base::Feature ItemSuggestCache::kExperiment{
 constexpr base::FeatureParam<bool> ItemSuggestCache::kEnabled;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kServerUrl;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kModelName;
-constexpr base::FeatureParam<int> ItemSuggestCache::kMinMinutesBetweenUpdates;
 constexpr base::FeatureParam<bool> ItemSuggestCache::kMultipleQueriesPerSession;
 
 ItemSuggestCache::Result::Result(
@@ -194,11 +193,12 @@ ItemSuggestCache::Results::~Results() = default;
 ItemSuggestCache::ItemSuggestCache(
     Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::RepeatingCallback<void()> on_results_updated)
+    base::RepeatingCallback<void()> on_results_updated,
+    base::TimeDelta min_time_between_updates)
     : made_request_(false),
       enabled_(kEnabled.Get()),
       server_url_(kServerUrl.Get()),
-      min_time_between_updates_(base::Minutes(kMinMinutesBetweenUpdates.Get())),
+      min_time_between_updates_(min_time_between_updates),
       multiple_queries_per_session_(
           app_list_features::IsSuggestedFilesEnabled() ||
           kMultipleQueriesPerSession.Get()),

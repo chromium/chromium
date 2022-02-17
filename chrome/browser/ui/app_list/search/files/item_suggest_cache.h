@@ -57,7 +57,8 @@ class ItemSuggestCache {
   ItemSuggestCache(
       Profile* profile,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::RepeatingCallback<void()> on_results_updated);
+      base::RepeatingCallback<void()> on_results_updated,
+      base::TimeDelta min_time_between_updates);
   ~ItemSuggestCache();
 
   ItemSuggestCache(const ItemSuggestCache&) = delete;
@@ -111,9 +112,6 @@ class ItemSuggestCache {
   // requests.
   static constexpr base::FeatureParam<std::string> kModelName{
       &kExperiment, "model_name", "quick_access"};
-
-  static constexpr base::FeatureParam<int> kMinMinutesBetweenUpdates{
-      &kExperiment, "min_minutes_between_updates", 15};
 
   // Whether ItemSuggest should be queried more than once per session. Multiple
   // queries are issued if either this param is true or the suggested files

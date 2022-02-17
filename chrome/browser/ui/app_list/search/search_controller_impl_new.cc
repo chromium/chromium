@@ -431,8 +431,7 @@ void SearchControllerImplNew::Publish() {
           // This happens before sorting on display_score, as a trade-off
           // between ranking accuracy and UX pop-in mitigation.
           return a->scoring().burnin_iteration < b->scoring().burnin_iteration;
-        } else if (a->scoring().continue_rank != -1 ||
-                   b->scoring().continue_rank != -1) {
+        } else if (a->scoring().continue_rank != b->scoring().continue_rank) {
           return a->scoring().continue_rank > b->scoring().continue_rank;
         } else {
           // Lastly, sort by display score.

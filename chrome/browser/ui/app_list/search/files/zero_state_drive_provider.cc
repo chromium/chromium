@@ -82,11 +82,6 @@ void LogStatus(Status status) {
                                 status);
 }
 
-void LogShouldWarm(bool should_warm) {
-  base::UmaHistogramBoolean("Apps.AppList.DriveZeroStateProvider.ShouldWarm",
-                            should_warm);
-}
-
 void LogLatency(base::TimeDelta latency) {
   base::UmaHistogramTimes("Apps.AppList.DriveZeroStateProvider.Latency",
                           latency);
@@ -152,13 +147,16 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
           profile,
           std::move(url_loader_factory),
           base::BindRepeating(&ZeroStateDriveProvider::OnCacheUpdated,
-                              base::Unretained(this))),
-      suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled() ||
-                               ash::features::IsProductivityLauncherEnabled()),
+                              base::Unretained(this)),
+          base::Minutes(base::GetFieldTrialParamByFeatureAsInt(
+              ash::features::kProductivityLauncher,
+              "itemsuggest_query_cooldown",
+              10))),
       max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
           ash::features::kProductivityLauncher,
           "max_last_modified_time",
-          8))) {
+          8))),
+      enabled_(ash::features::IsProductivityLauncherEnabled()) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -189,48 +187,44 @@ ZeroStateDriveProvider::~ZeroStateDriveProvider() = default;
 void ZeroStateDriveProvider::OnFileSystemMounted() {
   MaybeLogHypotheticalQuery();
 
-  // Warm the results cache if or when drivefs is mounted by fetching from the
-  // Drive QuickAccess API. This is necessary only if the suggested files
-  // experiment is enabled, so that results are ready for display in the
-  // suggested chips on the first launcher open after login. To prevent
-  // unnecessary queries to ItemSuggest, only warm the cache if the launcher has
-  // been used before.
-  const bool launcher_used = profile_->GetPrefs()->GetBoolean(
-      chromeos::prefs::kLauncherResultEverLaunched);
-  const bool gate_on_use = base::GetFieldTrialParamByFeatureAsBool(
-      app_list_features::kEnableSuggestedFiles, "gate_warm_on_launcher_use",
-      true);
-  const bool productivity_launcher =
-      ash::features::IsProductivityLauncherEnabled();
-  const bool should_warm =
-      !gate_on_use || launcher_used || productivity_launcher;
-  LogShouldWarm(should_warm);
+  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
+      ash::features::kProductivityLauncher,
+      "itemsuggest_query_on_filesystem_mounted", true);
 
-  // TODO(crbug.com/1258415): Remove the IsSuggestedFilesEnabled dependency for
-  // cache warming.
-  if (have_warmed_up_cache_ || !suggested_files_enabled_ || !should_warm)
-    return;
-  have_warmed_up_cache_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ZeroStateDriveProvider::MaybeUpdateCache,
-                     weak_factory_.GetWeakPtr()),
-      kFirstUpdateDelay);
+  if (kUpdateCache && enabled_) {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ZeroStateDriveProvider::MaybeUpdateCache,
+                       weak_factory_.GetWeakPtr()),
+        kFirstUpdateDelay);
+  }
 }
 
 void ZeroStateDriveProvider::OnSessionStateChanged() {
+  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
+      ash::features::kProductivityLauncher,
+      "itemsuggest_query_on_session_state_changed", true);
+
   // Perform a hypothetical query if the user has logged in.
   if (session_manager_->session_state() ==
       session_manager::SessionState::ACTIVE) {
     MaybeLogHypotheticalQuery();
+    if (kUpdateCache)
+      MaybeUpdateCache();
   }
 }
 
 void ZeroStateDriveProvider::ScreenIdleStateChanged(
     const power_manager::ScreenIdleState& proto) {
+  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
+      ash::features::kProductivityLauncher,
+      "itemsuggest_query_on_screen_idle_state_changed", true);
+
   // Perform a hypothetical query if the screen changed from off to on.
   if (screen_off_ && !proto.dimmed() && !proto.off()) {
     MaybeLogHypotheticalQuery();
+    if (kUpdateCache)
+      MaybeUpdateCache();
   }
   screen_off_ = proto.off();
 }
@@ -238,7 +232,13 @@ void ZeroStateDriveProvider::ScreenIdleStateChanged(
 void ZeroStateDriveProvider::ViewClosing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MaybeLogHypotheticalQuery();
-  MaybeUpdateCache();
+
+  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
+      ash::features::kProductivityLauncher, "itemsuggest_query_on_view_closing",
+      true);
+  if (kUpdateCache) {
+    MaybeUpdateCache();
+  }
 }
 
 ash::AppListSearchResultType ZeroStateDriveProvider::ResultType() const {
@@ -252,6 +252,9 @@ bool ZeroStateDriveProvider::ShouldBlockZeroState() const {
 void ZeroStateDriveProvider::StartZeroState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearResultsSilently();
+
+  if (!enabled_)
+    return;
 
   // TODO(crbug.com/1034842): Add query latency metrics.
 
