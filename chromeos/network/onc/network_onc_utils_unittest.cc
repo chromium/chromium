@@ -120,5 +120,15 @@ TEST(ONCPasswordVariable, MultipleNetworksPasswordNotAvailable) {
   EXPECT_FALSE(HasUserPasswordSubsitutionVariable(network_list));
 }
 
+TEST(ONCPasswordVariable, MultipleNetworksPasswordAvailableForL2tpVpn) {
+  const auto network_dictionary = test_utils::ReadTestDictionaryValue(
+      "managed_toplevel_with_password_variable_in_l2tp_vpn.onc");
+  const base::Value* network_list =
+      network_dictionary.FindListKey("NetworkConfigurations");
+  ASSERT_TRUE(network_list);
+
+  EXPECT_TRUE(HasUserPasswordSubsitutionVariable(network_list));
+}
+
 }  // namespace onc
 }  // namespace chromeos

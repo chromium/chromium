@@ -362,6 +362,17 @@ void ShillToONCTranslator::TranslateL2TP() {
     onc_object_.SetKey(::onc::l2tp::kLcpEchoDisabled,
                        std::move(lcp_echo_disabled_value));
   }
+
+  // TODO(b/147658302): shill::kL2tpIpsecUseLoginPasswordProperty is a string
+  // property containing "false" or "true". Migrate it to a bool to match
+  // shill::kEapUseLoginPasswordProperty.
+  const std::string* use_login_password = shill_dictionary_->FindStringKey(
+      shill::kL2tpIpsecUseLoginPasswordProperty);
+  if (use_login_password && *use_login_password == "true") {
+    onc_object_.SetKey(
+        ::onc::l2tp::kPassword,
+        base::Value(::onc::substitutes::kPasswordPlaceholderVerbatim));
+  }
 }
 
 void ShillToONCTranslator::TranslateThirdPartyVPN() {

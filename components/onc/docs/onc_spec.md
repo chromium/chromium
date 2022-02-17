@@ -1941,9 +1941,10 @@ expansions. These allow one ONC to have basic user-specific variations.
 
 
 ## String Substitutions
-The value of **WiFi.EAP.Password** is subject to string substitution. These
-differ from the **String Expansions** section above in that an exact match of
-the substitution variable is required in order to substitute the real value.
+The values of **WiFi.EAP.Password** and **VPN.L2TP.Password** are subject to
+string substitution. These differ from the **String Expansions** section above
+in that an exact match of the substitution variable is required in order to
+substitute the real value.
 
 ### Example expansions, assuming the user password was *helloworld*:
 

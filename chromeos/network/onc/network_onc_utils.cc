@@ -601,10 +601,14 @@ bool HasUserPasswordSubsitutionVariable(const OncValueSignature& signature,
   if (&signature == &kEAPSignature) {
     const std::string* password_field =
         onc_object->FindStringKey(::onc::eap::kPassword);
-    if (!password_field)
-      return false;
-    if (*password_field == ::onc::substitutes::kPasswordPlaceholderVerbatim)
-      return true;
+    return password_field &&
+           *password_field == ::onc::substitutes::kPasswordPlaceholderVerbatim;
+  }
+  if (&signature == &kL2TPSignature) {
+    const std::string* password_field =
+        onc_object->FindStringKey(::onc::l2tp::kPassword);
+    return password_field &&
+           *password_field == ::onc::substitutes::kPasswordPlaceholderVerbatim;
   }
 
   // Recurse into nested objects.

@@ -52,6 +52,8 @@ INSTANTIATE_TEST_SUITE_P(
                        "shill_wifi_wep_8021x_clientcert.json"),
         std::make_pair("valid_wifi_clientref.onc", "shill_wifi_clientref.json"),
         std::make_pair("valid_l2tpipsec.onc", "shill_l2tpipsec.json"),
+        std::make_pair("l2tpipsec_with_password_variable.onc",
+                       "shill_l2tpipsec_with_password_variable.json"),
         std::make_pair("wifi_dhcp.onc", "shill_wifi_dhcp.json"),
         std::make_pair("wifi_eap_tls.onc", "shill_wifi_eap_tls.json"),
         std::make_pair("wifi_eap_ttls.onc", "shill_wifi_eap_ttls.json"),
@@ -134,6 +136,9 @@ INSTANTIATE_TEST_SUITE_P(
                        "translation_of_shill_ikev2_psk.onc"),
         std::make_pair("shill_output_l2tpipsec.json",
                        "translation_of_shill_l2tpipsec.onc"),
+        std::make_pair(
+            "shill_output_l2tpipsec_with_password_variable.json",
+            "translation_of_shill_l2tpipsec_with_password_variable.onc"),
         std::make_pair("shill_output_wireguard.json",
                        "translation_of_shill_wireguard.onc"),
         std::make_pair("shill_output_openvpn.json",

@@ -60,6 +60,25 @@ void ExpandField(const std::string& fieldname,
   variable_expander.ExpandString(field_value);
 }
 
+bool CanContainPasswordPlaceholder(const std::string& field_name,
+                                   const OncValueSignature& object_signature) {
+  return (&object_signature == &kEAPSignature &&
+          field_name == ::onc::eap::kPassword) ||
+         (&object_signature == &kL2TPSignature &&
+          field_name == ::onc::l2tp::kPassword);
+}
+
+bool IsUserLoginPasswordPlaceholder(const std::string& field_name,
+                                    const OncValueSignature& object_signature,
+                                    const base::Value& onc_value) {
+  if (!CanContainPasswordPlaceholder(field_name, object_signature)) {
+    return false;
+  }
+  DCHECK(onc_value.is_string());
+  return onc_value.GetString() ==
+         ::onc::substitutes::kPasswordPlaceholderVerbatim;
+}
+
 // A |Mapper| for masking sensitive fields (e.g. credentials such as
 // passphrases) in ONC.
 class OncMaskValues : public Mapper {
@@ -85,10 +104,8 @@ class OncMaskValues : public Mapper {
     if (FieldIsCredential(object_signature, field_name)) {
       // If it's the password field and the substitution string is used, don't
       // mask it.
-      if (&object_signature == &kEAPSignature &&
-          field_name == ::onc::eap::kPassword &&
-          onc_value.GetString() ==
-              ::onc::substitutes::kPasswordPlaceholderVerbatim) {
+      if (IsUserLoginPasswordPlaceholder(field_name, object_signature,
+                                         onc_value)) {
         return Mapper::MapField(field_name, object_signature, onc_value,
                                 found_unknown_field, error);
       }
@@ -99,6 +116,7 @@ class OncMaskValues : public Mapper {
     }
   }
 
+ private:
   // Mask to insert in place of the sensitive values.
   std::string mask_;
 };
