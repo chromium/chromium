@@ -8351,23 +8351,87 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Share link to <ph name="SHARE_TARGET">$1<ex>Facebook</ex></ph>
       </message>
 
-      <!-- Desktop screenshot -->
-      <message name="IDS_BROWSER_SHARING_SCREENSHOT_POST_CAPTURE_TITLE"
-          desc="Title for the dialog shown after a screenshot is captured.">
-       Screenshot copied to clipboard
-      </message>
-      <message name="IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_DOWNLOAD_BUTTON_LABEL"
-          desc="Button text for the Screenshot dialog download button.">
-        Download
-      </message>
-      <message name="IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_EDIT_BUTTON_LABEL"
-          desc="Button text for the Screenshot dialog edit button.">
-        Edit
-      </message>
-      <message name="IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_SHARE_BUTTON_LABEL"
-          desc="Button text for the Screenshot dialog share button.">
-        Share
-      </message>
+      <!-- Desktop Screenshots feature within the share hub; desktop-only. -->
+      <if expr="not is_android">
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_POST_CAPTURE_TITLE"
+            desc="Title for the dialog shown after a screenshot is captured.">
+        Screenshot copied to clipboard
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_DOWNLOAD_BUTTON_LABEL"
+            desc="Button text for the Screenshot dialog download button.">
+          Download
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_EDIT_BUTTON_LABEL"
+            desc="Button text for the Screenshot dialog edit button.">
+          Edit
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_SHARE_BUTTON_LABEL"
+            desc="Button text for the Screenshot dialog share button.">
+          Share
+        </message>
+        <!-- Desktop Screenshots Image Editor app strings; filled in to component webui
+            loaded into chrome-untrusted://image-editor -->
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_SELECTION" desc="The tooltip for the image editor's selection tool button.">
+          Selection Tool
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_CROP" desc="The tooltip for the image editor's crop tool button.">
+          Crop Tool
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_TEXT" desc="The tooltip for the image editor's text tool button.">
+          Text Tool
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_ELLIPSE" desc="The tooltip for the image editor's ellipse tool button.">
+          Ellipse Tool
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_RECTANGLE" desc="The tooltip for the image editor's rectangle tool button.">
+          Rectangle Tool
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_LINE" desc="The tooltip for the image editor's line tool button.">
+          Line Tool
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_ARROW" desc="The tooltip for the image editor's arrow tool button.">
+          Arrow Tool
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_BRUSH" desc="The tooltip for the image editor's brush tool button.">
+          Brush Tool
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_EMOJI" desc="The tooltip for the image editor's emoji tool button.">
+          Emoji Tool
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_HIGHLIGHTER" desc="The tooltip for the image editor's highlither tool button.">
+          Highlighter Tool
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_UNDO" desc="The tooltip for the image editor's undo button.">
+          Undo
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_REDO" desc="The tooltip for the image editor's redo button.">
+          Redo
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_ZOOM_IN" desc="The tooltip for the image editor's zoom in button.">
+          Zoom In
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_ZOOM_OUT" desc="The tooltip for the image editor's zoom out button.">
+          Zoom Out
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_COMMIT_CROP" desc="The button text for the image editor's confirm crop button.">
+          Crop
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_COMMIT_CROP" desc="The tooltip for the image editor's confirm crop button.">
+          Confirm Crop
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_CANCEL_CROP" desc="The button text for the image editor's cancel crop button.">
+          Cancel
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_CANCEL_CROP" desc="The tooltip for the image editor's cancel crop button.">
+          Cancel Crop
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_BUTTON_DOWNLOAD_IMAGE" desc="The tooltip for the image editor's download image button that saves the image.">
+          Download Image
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_BUTTON_COPY" desc="The button text for the image editor's copy to clipboard button.">
+          Copy to Clipboard
+        </message>
+      </if>
 
       <!-- Clipboard History Menu feature. -->
       <message name="IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU"
