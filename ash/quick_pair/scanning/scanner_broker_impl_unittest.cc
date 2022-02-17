@@ -206,6 +206,7 @@ class ScannerBrokerImplTest : public AshTestBase,
   }
 
   void TearDown() override {
+    scanner_broker_->RemoveObserver(this);
     scanner_broker_.reset();
     ClearLogin();
     AshTestBase::TearDown();
@@ -214,7 +215,6 @@ class ScannerBrokerImplTest : public AshTestBase,
   void CreateScannerBroker() {
     scanner_broker_ =
         std::make_unique<ScannerBrokerImpl>(process_manager_.get());
-    adapter_.reset();
     scanner_broker_->AddObserver(this);
   }
 
@@ -289,6 +289,24 @@ TEST_F(ScannerBrokerImplTest, RegularUser_DiscoverableFound) {
   EXPECT_TRUE(device_found_);
 }
 
+TEST_F(ScannerBrokerImplTest, ChildUser_DiscoverableFound) {
+  Login(user_manager::UserType::USER_TYPE_CHILD);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(not_discoverable_scanner_factory_->create_instance());
+  EXPECT_FALSE(discoverable_scanner_factory_->create_instance());
+  CreateScannerBroker();
+
+  scanner_broker_->StartScanning(Protocol::kFastPairInitial);
+  EXPECT_FALSE(device_found_);
+  EXPECT_TRUE(not_discoverable_scanner_factory_->create_instance());
+  EXPECT_TRUE(discoverable_scanner_factory_->create_instance());
+
+  TriggerDiscoverableDeviceFound();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(device_found_);
+}
+
 TEST_F(ScannerBrokerImplTest, RegularUser_NotDiscoverableFound) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
@@ -326,6 +344,68 @@ TEST_F(ScannerBrokerImplTest, GuestUser_DiscoverableFound) {
 
 TEST_F(ScannerBrokerImplTest, GuestUser_NotDiscoverableNotCreated) {
   Login(user_manager::UserType::USER_TYPE_GUEST);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(not_discoverable_scanner_factory_->create_instance());
+  EXPECT_FALSE(discoverable_scanner_factory_->create_instance());
+
+  CreateScannerBroker();
+  scanner_broker_->StartScanning(Protocol::kFastPairInitial);
+  EXPECT_FALSE(not_discoverable_scanner_factory_->create_instance());
+  EXPECT_TRUE(discoverable_scanner_factory_->create_instance());
+}
+
+TEST_F(ScannerBrokerImplTest, GuestUser_RegularUserLogsIn) {
+  Login(user_manager::UserType::USER_TYPE_GUEST);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(not_discoverable_scanner_factory_->create_instance());
+  EXPECT_FALSE(discoverable_scanner_factory_->create_instance());
+
+  CreateScannerBroker();
+  scanner_broker_->StartScanning(Protocol::kFastPairInitial);
+  EXPECT_FALSE(not_discoverable_scanner_factory_->create_instance());
+  EXPECT_TRUE(discoverable_scanner_factory_->create_instance());
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(not_discoverable_scanner_factory_->create_instance());
+}
+
+TEST_F(ScannerBrokerImplTest, RegularUser_GuestUserLogsIn) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(not_discoverable_scanner_factory_->create_instance());
+  EXPECT_FALSE(discoverable_scanner_factory_->create_instance());
+
+  CreateScannerBroker();
+  scanner_broker_->StartScanning(Protocol::kFastPairInitial);
+  EXPECT_TRUE(not_discoverable_scanner_factory_->create_instance());
+  EXPECT_TRUE(discoverable_scanner_factory_->create_instance());
+
+  Login(user_manager::UserType::USER_TYPE_GUEST);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(not_discoverable_scanner_factory_->create_instance());
+}
+
+TEST_F(ScannerBrokerImplTest, PublicUser_NotDiscoverableNotCreated) {
+  Login(user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(not_discoverable_scanner_factory_->create_instance());
+  EXPECT_FALSE(discoverable_scanner_factory_->create_instance());
+
+  CreateScannerBroker();
+  scanner_broker_->StartScanning(Protocol::kFastPairInitial);
+  EXPECT_FALSE(not_discoverable_scanner_factory_->create_instance());
+  EXPECT_TRUE(discoverable_scanner_factory_->create_instance());
+}
+
+TEST_F(ScannerBrokerImplTest, Kiosk_NotDiscoverableNotCreated) {
+  Login(user_manager::UserType::USER_TYPE_KIOSK_APP);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(not_discoverable_scanner_factory_->create_instance());
