@@ -129,6 +129,7 @@ class ChromeSearchResult {
   void SetIsRecommendation(bool is_recommendation);
   void SetEquivalentResultId(const std::string& equivalent_result_id);
   void SetIcon(const IconInfo& icon);
+  void SetIconDimension(const int dimension);
   void SetChipIcon(const gfx::ImageSkia& icon);
   void SetBadgeIcon(const ui::ImageModel& badge_icon);
   void SetUseBadgeIconBackground(bool use_badge_icon_background);

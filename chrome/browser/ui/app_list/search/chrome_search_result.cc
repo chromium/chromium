@@ -172,6 +172,11 @@ void ChromeSearchResult::SetIcon(const IconInfo& icon) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetIconDimension(const int dimension) {
+  metadata_->icon.dimension = dimension;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetChipIcon(const gfx::ImageSkia& chip_icon) {
   chip_icon.EnsureRepsForSupportedScales();
   metadata_->chip_icon = chip_icon;

@@ -314,8 +314,8 @@ void KeyboardShortcutResult::UpdateIcon() {
   // KeyboardShortcutResult is promoted to an answer card.
   gfx::ImageSkia icon =
       gfx::CreateVectorIcon(chromeos::kKeyboardShortcutsIcon,
-                            kSystemIconDimension, SK_ColorTRANSPARENT);
-  SetIcon(IconInfo(icon, kSystemIconDimension));
+                            GetAppIconDimension(), SK_ColorTRANSPARENT);
+  SetIcon(IconInfo(icon, GetAppIconDimension()));
 }
 
 }  // namespace app_list

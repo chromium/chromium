@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 
 namespace app_list {
 namespace {
@@ -137,6 +138,7 @@ void AnswerRanker::PromoteChosenAnswer() {
     return;
 
   chosen_answer_->SetDisplayType(DisplayType::kAnswerCard);
+  chosen_answer_->SetIconDimension(GetAnswerCardIconDimension());
   chosen_answer_->scoring().filter = false;
 }
 
