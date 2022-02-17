@@ -94,6 +94,16 @@ struct CardUnmaskOptions {
     return *this;
   }
 
+  CardUnmaskOptions& with_only_non_legacy_id() {
+    use_only_non_legacy_id = true;
+    return *this;
+  }
+
+  CardUnmaskOptions& with_only_legacy_id() {
+    use_only_legacy_id = true;
+    return *this;
+  }
+
   // By default, use cvc authentication.
   bool use_cvc = true;
   // If true, use FIDO authentication.
@@ -109,6 +119,10 @@ struct CardUnmaskOptions {
   bool virtual_card = false;
   // If true, set context_token in the request.
   bool set_context_token = true;
+  // If true, use only non-legacy instrument id.
+  bool use_only_non_legacy_id = false;
+  // If true, use only legacy instrument id.
+  bool use_only_legacy_id = false;
 };
 
 }  // namespace
@@ -259,7 +273,12 @@ class PaymentsClientTest : public testing::Test {
     PaymentsClient::UnmaskRequestDetails request_details;
     request_details.billing_customer_number = 111222333444;
 
-    request_details.card = test::GetMaskedServerCard();
+    request_details.card = options.use_only_non_legacy_id
+                               ? test::GetMaskedServerCardWithNonLegacyId()
+                               : options.use_only_legacy_id
+                                     ? test::GetMaskedServerCardWithLegacyId()
+                                     : test::GetMaskedServerCard();
+
     request_details.risk_data = "some risk data";
     if (options.use_fido) {
       request_details.fido_assertion_info =
@@ -848,6 +867,67 @@ TEST_F(PaymentsClientTest, UnmaskIncludesChromeUserContext) {
   // ChromeUserContext was set.
   EXPECT_TRUE(GetUploadData().find("chrome_user_context") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("full_sync_enabled") != std::string::npos);
+}
+
+TEST_F(PaymentsClientTest, UnmaskIncludesLegacyAndNonLegacyId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
+
+  StartUnmasking(CardUnmaskOptions());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{}");
+
+  // Non-legacy Instrument id and legacy server id are both set.
+  EXPECT_TRUE(GetUploadData().find("%22instrument_id%22:%221%22") !=
+              std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("%22credit_card_id%22:%22a123%22") !=
+              std::string::npos);
+}
+
+TEST_F(PaymentsClientTest, UnmaskIncludesOnlyLegacyId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
+
+  StartUnmasking(CardUnmaskOptions().with_only_legacy_id());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{}");
+
+  // Only legacy server id is set.
+  EXPECT_TRUE(GetUploadData().find("instrument_id") == std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("%22credit_card_id%22:%22a123%22") !=
+              std::string::npos);
+}
+
+TEST_F(PaymentsClientTest, UnmaskIncludesOnlyNonLegacyId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
+
+  StartUnmasking(CardUnmaskOptions().with_only_non_legacy_id());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{}");
+
+  // Only non-legacy instrument id is set.
+  EXPECT_TRUE(GetUploadData().find("%22instrument_id%22:%221%22") !=
+              std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("credit_card_id") == std::string::npos);
+}
+
+TEST_F(PaymentsClientTest, UnmaskDoesNotIncludeInstrumentIdIfFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
+
+  StartUnmasking(CardUnmaskOptions());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{}");
+
+  // Instrument id is not set if flag is disabled.
+  EXPECT_TRUE(GetUploadData().find("instrument_id") == std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("%22credit_card_id%22:%22a123%22") !=
+              std::string::npos);
 }
 
 TEST_F(PaymentsClientTest,

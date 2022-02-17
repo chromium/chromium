@@ -84,9 +84,13 @@ class CreditCard : public AutofillDataModel {
 
   CreditCard(const std::string& guid, const std::string& origin);
 
-  // Creates a server card.  The type must be MASKED_SERVER_CARD or
+  // Creates a server card. The type must be MASKED_SERVER_CARD or
   // FULL_SERVER_CARD.
   CreditCard(RecordType type, const std::string& server_id);
+
+  // Creates a server card with non-legacy instrument id. The type must be
+  // MASKED_SERVER_CARD or FULL_SERVER_CARD.
+  CreditCard(RecordType type, const int64_t& instrument_id);
 
   // For use in STL containers.
   CreditCard();

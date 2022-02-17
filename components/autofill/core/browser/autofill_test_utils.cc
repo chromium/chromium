@@ -523,6 +523,24 @@ CreditCard GetMaskedServerCard() {
   return credit_card;
 }
 
+CreditCard GetMaskedServerCardWithLegacyId() {
+  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  test::SetCreditCardInfo(&credit_card, "Bonnie Parker",
+                          "2109" /* Mastercard */, NextMonth().c_str(),
+                          NextYear().c_str(), "1");
+  credit_card.SetNetworkForMaskedCard(kMasterCard);
+  return credit_card;
+}
+
+CreditCard GetMaskedServerCardWithNonLegacyId() {
+  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, 1);
+  test::SetCreditCardInfo(&credit_card, "Bonnie Parker",
+                          "2109" /* Mastercard */, NextMonth().c_str(),
+                          NextYear().c_str(), "1");
+  credit_card.SetNetworkForMaskedCard(kMasterCard);
+  return credit_card;
+}
+
 CreditCard GetMaskedServerCardAmex() {
   CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "b456");
   test::SetCreditCardInfo(&credit_card, "Justin Thyme", "8431" /* Amex */,

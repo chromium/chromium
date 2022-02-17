@@ -159,6 +159,13 @@ CreditCard::CreditCard(RecordType type, const std::string& server_id)
   server_id_ = server_id;
 }
 
+CreditCard::CreditCard(RecordType type, const int64_t& instrument_id)
+    : CreditCard() {
+  DCHECK(type == MASKED_SERVER_CARD || type == FULL_SERVER_CARD);
+  record_type_ = type;
+  instrument_id_ = instrument_id;
+}
+
 CreditCard::CreditCard() : CreditCard(base::GenerateGUID(), std::string()) {}
 
 CreditCard::CreditCard(const CreditCard& credit_card) : CreditCard() {
