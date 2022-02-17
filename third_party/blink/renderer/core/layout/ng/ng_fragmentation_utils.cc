@@ -234,8 +234,11 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
     return;
 
   builder->SetFragmentainerBlockSize(parent_space.FragmentainerBlockSize());
-  builder->SetFragmentainerOffsetAtBfc(parent_space.FragmentainerOffsetAtBfc() +
-                                       fragmentainer_offset_delta);
+  LayoutUnit fragmentainer_offset_at_bfc =
+      parent_space.FragmentainerOffsetAtBfc() + fragmentainer_offset_delta;
+  builder->SetFragmentainerOffsetAtBfc(fragmentainer_offset_at_bfc);
+  if (fragmentainer_offset_at_bfc <= LayoutUnit())
+    builder->SetIsAtFragmentainerStart();
   builder->SetFragmentationType(parent_space.BlockFragmentationType());
   builder->SetShouldPropagateChildBreakValues();
   DCHECK(!requires_content_before_breaking ||

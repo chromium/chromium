@@ -131,6 +131,10 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
       space_.EnsureRareData()->fragmentainer_offset_at_bfc = offset;
   }
 
+  void SetIsAtFragmentainerStart() {
+    space_.EnsureRareData()->is_at_fragmentainer_start = true;
+  }
+
   void SetIsFixedInlineSize(bool b) {
     if (LIKELY(is_in_parallel_flow_))
       space_.bitfields_.is_fixed_inline_size = b;

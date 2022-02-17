@@ -60,7 +60,8 @@ NGLayoutOpportunity FindLayoutOpportunityForFloat(
 // should only be set when we want to fragmentation to occur.
 NGConstraintSpace CreateConstraintSpaceForFloat(
     const NGUnpositionedFloat& unpositioned_float,
-    absl::optional<LayoutUnit> origin_block_offset = absl::nullopt) {
+    absl::optional<LayoutUnit> origin_block_offset = absl::nullopt,
+    absl::optional<NGBoxStrut> margins = absl::nullopt) {
   const ComputedStyle& style = unpositioned_float.node.Style();
   const NGConstraintSpace& parent_space = unpositioned_float.parent_space;
   NGConstraintSpaceBuilder builder(parent_space, style.GetWritingDirection(),
@@ -70,12 +71,22 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
   builder.SetIsPaintedAtomically(true);
 
   if (origin_block_offset) {
+    DCHECK(margins);
     DCHECK(parent_space.HasBlockFragmentation());
     DCHECK_EQ(style.GetWritingMode(), parent_space.GetWritingMode());
 
     SetupSpaceBuilderForFragmentation(
         parent_space, unpositioned_float.node, *origin_block_offset, &builder,
         /* is_new_fc */ true, /* requires_content_before_breaking */ false);
+
+    // For other node types, what matters is whether the block-start border edge
+    // is at the fragmentainer start, but for floats, it's the block start
+    // *margin* edge, since float margins are unbreakable and are never
+    // truncated.
+    LayoutUnit margin_edge_offset = parent_space.FragmentainerOffsetAtBfc() +
+                                    *origin_block_offset - margins->block_start;
+    if (margin_edge_offset <= LayoutUnit())
+      builder.SetIsAtFragmentainerStart();
   } else {
     builder.SetFragmentationType(NGFragmentationType::kFragmentNone);
   }
@@ -256,9 +267,12 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
       optimistically_placed = true;
     }
 
+    bool is_at_fragmentainer_start;
     do {
       NGConstraintSpace space = CreateConstraintSpaceForFloat(
-          *unpositioned_float, fragmentainer_delta);
+          *unpositioned_float, fragmentainer_delta, fragment_margins);
+
+      is_at_fragmentainer_start = space.IsAtFragmentainerStart();
 
       layout_result = node.Layout(space, unpositioned_float->token);
 
@@ -299,10 +313,6 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
       break;
     } while (true);
 
-    LayoutUnit fragmentainer_margin_edge_block_offset =
-        parent_space.FragmentainerOffsetAtBfc() +
-        opportunity.rect.start_offset.block_offset;
-
     // Note that we don't check if we're at a valid class A, B or C breakpoint
     // (we only check that we're not at the start of the fragmentainer (in which
     // case breaking typically wouldn't eliminate the unappealing break inside
@@ -322,9 +332,11 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     // Should we always split them if they occur at fragmentainer boundaries? Or
     // even allow them to collapse with the fragmentainer boundary? Exact
     // behavior is currently unspecified.
-    if (fragmentainer_margin_edge_block_offset > LayoutUnit()) {
+    if (!is_at_fragmentainer_start) {
       LayoutUnit fragmentainer_block_offset =
-          fragmentainer_margin_edge_block_offset + fragment_margins.block_start;
+          parent_space.FragmentainerOffsetAtBfc() +
+          opportunity.rect.start_offset.block_offset +
+          fragment_margins.block_start;
       if (!MovePastBreakpoint(parent_space, node, *layout_result,
                               fragmentainer_block_offset, kBreakAppealPerfect,
                               /* builder */ nullptr)) {

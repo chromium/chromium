@@ -452,7 +452,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
         }
         // Otherwise we have nothing here, and need to break before the multicol
         // container. No fragment will be produced.
-        DCHECK(!BreakToken());
+        DCHECK(!IsResumingLayout(BreakToken()));
         return NGBreakStatus::kBrokeBefore;
       }
 
@@ -662,29 +662,9 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
   if (may_resume_in_next_outer_fragmentainer) {
     if (intrinsic_block_size_) {
       may_have_more_space_in_next_outer_fragmentainer = true;
-    } else {
-      if (ConstraintSpace().FragmentainerOffsetAtBfc() > LayoutUnit()) {
-        if (!BreakToken()) {
-          may_have_more_space_in_next_outer_fragmentainer = true;
-        } else {
-          // We have already added a break for this multicol container, but we
-          // think that we're not at the start of the fragmentainer. This may be
-          // the case if we have a nested floated multicol container with a
-          // non-zero block-start margin. Float margins are unbreakable and are
-          // never truncated. So we may have broken before it, and kept the
-          // margin for the next fragmentainer (as we should), but since a
-          // fragmentainer offset is a border-box offset, we'll now think that
-          // we're past the fragmentainer start (the margin edge is at the
-          // start, but the border edge isn't). This is not ideal, but for now
-          // just avoid breaking before *again*, which would cause an infinite
-          // loop with no content progress. DCHECK that this is the situation.
-          // TODO(mstensho): Find a solution to this. We may have added an
-          // unnecessary break now. Pushing the float to the next fragmentainer
-          // may not have solved anything.
-          DCHECK(Node().IsFloating());
-          DCHECK(BreakToken()->IsBreakBefore());
-        }
-      }
+    } else if (!ConstraintSpace().IsAtFragmentainerStart()) {
+      DCHECK(!IsResumingLayout(BreakToken()));
+      may_have_more_space_in_next_outer_fragmentainer = true;
     }
   }
 

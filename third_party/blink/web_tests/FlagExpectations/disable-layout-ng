@@ -398,6 +398,7 @@ crbug.com/792446 external/wpt/css/css-multicol/multicol-span-float-001.xht [ Fai
 crbug.com/792446 external/wpt/css/css-multicol/multicol-span-float-002.html [ Failure ]
 crbug.com/792446 external/wpt/css/css-multicol/multicol-span-float-003.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/nested-at-outer-boundary-as-fieldset.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-multicol/nested-floated-multicol-with-monolithic-child.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/nested-past-fragmentation-line.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/nested-with-too-tall-line.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/non-adjacent-spanners-000.html [ Failure ]
