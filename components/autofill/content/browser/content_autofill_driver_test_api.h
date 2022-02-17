@@ -32,6 +32,10 @@ class ContentAutofillDriverTestApi {
     return driver_->GetFormWithFrameAndFormMetaData(form);
   }
 
+  const mojo::AssociatedReceiver<mojom::AutofillDriver>& receiver() const {
+    return driver_->receiver_;
+  }
+
  private:
   // Non-null pointer to wrapped ContentAutofillDriver.
   raw_ptr<ContentAutofillDriver> driver_;

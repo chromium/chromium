@@ -214,6 +214,11 @@ const base::Feature kAutofillEnableSupportForHonorificPrefixes{
     "AutofillEnableSupportForHonorificPrefixes",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables autofill to function within a FencedFrame, and is disabled by default
+// TODO(crbug.com/1294378): Remove once launched.
+const base::Feature kAutofillEnableWithinFencedFrame{
+    "AutofillEnableWithinFencedFrame", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether or not all datalist shall be extracted into FormFieldData.
 // This feature is enabled in both WebView and WebLayer where all datalists
 // instead of only the focused one shall be extracted and sent to Android

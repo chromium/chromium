@@ -49,6 +49,8 @@ extern const base::Feature kAutofillComplementCountryCodeOnImport;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillConsiderVariationCountryCodeForPhoneNumbers;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillEnableWithinFencedFrame;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillCreateDataForTest;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillDelayPopupControllerDeletion;
