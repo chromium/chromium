@@ -1,0 +1,3 @@
+# For bot updates to Chrome Root Store
+per-file root_store.certs=mdb.chrome-pki-metadata@google.com
+per-file root_store.textproto=mdb.chrome-pki-metadata@google.com
