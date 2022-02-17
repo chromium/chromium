@@ -72,24 +72,21 @@ void AppIconSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  const std::string path_lower =
-      base::ToLowerASCII(content::URLDataSource::URLToRequestPath(url));
+  std::string request_path = content::URLDataSource::URLToRequestPath(url);
   std::vector<std::string> path_parts = base::SplitString(
-      path_lower, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      request_path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  // Check data exists, load default image if it doesn't.
-  if (path_lower.empty() || path_parts.size() < 2) {
+  // Check whether data exists, load default image if not.
+  if (request_path.empty() || path_parts.size() < 2) {
     LoadDefaultImage(std::move(callback));
     return;
   }
 
-  // Check data is correct type, load default image if not.
-  const std::string app_id = path_parts[0];
-  std::string size_param = path_parts[1];
+  // Check whether data is of correct type, load default image if not.
+  std::string size_param = base::ToLowerASCII(path_parts[1]);
   size_t query_position = size_param.find("?");
   if (query_position != std::string::npos)
     size_param = size_param.substr(0, query_position);
-
   int size_in_dip = 0;
   if (!base::StringToInt(size_param, &size_in_dip)) {
     LoadDefaultImage(std::move(callback));
@@ -98,7 +95,7 @@ void AppIconSource::StartDataRequest(
 
   auto* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
-
+  const std::string app_id = path_parts[0];
   const apps::mojom::AppType app_type =
       app_service_proxy->AppRegistryCache().GetAppType(app_id);
   constexpr bool allow_placeholder_icon = false;
