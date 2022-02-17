@@ -291,6 +291,46 @@ CronetTransactionMetrics* NativeToIOSMetrics(Metrics& metrics)
   return [_delegate respondsToSelector:aSelector];
 }
 
+- (BOOL)isEqual:(id)object {
+    return [_delegate isEqual:object];
+}
+
+- (NSUInteger)hash {
+    return [_delegate hash];
+}
+
+- (Class)superclass {
+    return [_delegate superclass];
+}
+
+- (Class)class {
+    return [_delegate class];
+}
+
+- (BOOL)isKindOfClass:(Class)aClass {
+    return [_delegate isKindOfClass:aClass];
+}
+
+- (BOOL)isMemberOfClass:(Class)aClass {
+    return [_delegate isMemberOfClass:aClass];
+}
+
+- (BOOL)conformsToProtocol:(Protocol *)aProtocol {
+    return [_delegate conformsToProtocol:aProtocol];
+}
+
+- (BOOL)isProxy {
+    return YES;
+}
+
+- (NSString *)description {
+    return [_delegate description];
+}
+
+- (NSString *)debugDescription {
+    return [_delegate debugDescription];
+}
+
 @end
 
 @implementation NSURLSession (Cronet)
