@@ -244,46 +244,48 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
   // the prerender. Use a CommitDeferringCondition to pause activation
   // before it completes.
   std::unique_ptr<NavigationSimulatorImpl> navigation;
-  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
-  {
-    MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
 
+  {
+    MockCommitDeferringConditionInstaller installer(
+        kPrerenderingUrl,
+        /*is_ready_to_commit=*/false);
     // Start trying to activate the prerendered page.
     navigation = CreateActivation(kPrerenderingUrl, *web_contents);
     navigation->Start();
 
     // Wait for the condition to pause the activation.
-    condition.WaitUntilInvoked();
+    installer.WaitUntilInstalled();
+    installer.condition().WaitUntilInvoked();
+
+    // The request should be deferred by the condition.
+    NavigationRequest* navigation_request =
+        static_cast<NavigationRequest*>(navigation->GetNavigationHandle());
+    EXPECT_TRUE(
+        navigation_request->IsCommitDeferringConditionDeferredForTesting());
+
+    // The primary page should still be the original page.
+    EXPECT_EQ(web_contents->GetLastCommittedURL(), kOriginUrl);
+
+    const GURL kBadUrl("https://example2.test/");
+    TestNavigationManager tno(web_contents.get(), kBadUrl);
+
+    // Start a cross-origin navigation in the prerendered page. It should be
+    // cancelled.
+    auto navigation_2 = NavigationSimulatorImpl::CreateRendererInitiated(
+        kBadUrl, prerender_rfh);
+    navigation_2->Start();
+    EXPECT_EQ(NavigationThrottle::CANCEL,
+              navigation_2->GetLastThrottleCheckResult());
+    tno.WaitForNavigationFinished();
+    EXPECT_FALSE(tno.was_committed());
+
+    // The cross-origin navigation cancels the activation.
+    installer.condition().CallResumeClosure();
+    activation_observer.WaitUntilHostDestroyed();
+    EXPECT_FALSE(activation_observer.was_activated());
+    EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+    ExpectFinalStatus(PrerenderHost::FinalStatus::kMainFrameNavigation);
   }
-
-  // The request should be deferred by the condition.
-  NavigationRequest* navigation_request =
-      static_cast<NavigationRequest*>(navigation->GetNavigationHandle());
-  EXPECT_TRUE(
-      navigation_request->IsCommitDeferringConditionDeferredForTesting());
-
-  // The primary page should still be the original page.
-  EXPECT_EQ(web_contents->GetLastCommittedURL(), kOriginUrl);
-
-  const GURL kBadUrl("https://example2.test/");
-  TestNavigationManager tno(web_contents.get(), kBadUrl);
-
-  // Start a cross-origin navigation in the prerendered page. It should be
-  // cancelled.
-  auto navigation_2 =
-      NavigationSimulatorImpl::CreateRendererInitiated(kBadUrl, prerender_rfh);
-  navigation_2->Start();
-  EXPECT_EQ(NavigationThrottle::CANCEL,
-            navigation_2->GetLastThrottleCheckResult());
-  tno.WaitForNavigationFinished();
-  EXPECT_FALSE(tno.was_committed());
-
-  // The cross-origin navigation cancels the activation.
-  condition.CallResumeClosure();
-  activation_observer.WaitUntilHostDestroyed();
-  EXPECT_FALSE(activation_observer.was_activated());
-  EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
-  ExpectFinalStatus(PrerenderHost::FinalStatus::kMainFrameNavigation);
 
   // The activation falls back to regular navigation.
   navigation->Commit();

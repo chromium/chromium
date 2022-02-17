@@ -3100,18 +3100,6 @@ void TestNavigationManager::DidStartNavigation(NavigationHandle* handle) {
     // WillStartRequest since we don't run throttles. Callers should use
     // WaitForResponse() or WaitForFirstYieldAfterDidStartNavigation().
     DCHECK_NE(desired_state_, NavigationState::STARTED);
-
-    // For prerendered page activation, CommitDeferringConditions has already
-    // been run before starting navigation. Don't run them again.
-    if (!request_->IsPrerenderedPageActivation()) {
-      auto condition = std::make_unique<MockCommitDeferringCondition>(
-          /*is_ready_to_commit=*/false,
-          base::BindOnce(
-              &TestNavigationManager::OnRunningCommitDeferringConditions,
-              weak_factory_.GetWeakPtr()));
-      request_->RegisterCommitDeferringConditionForTesting(
-          std::move(condition));
-    }
   } else {
     auto throttle = std::make_unique<TestNavigationManagerThrottle>(
         request_,
@@ -3255,6 +3243,245 @@ void TestNavigationManager::WriteIntoTrace(
   dict.Add("navigation_paused", navigation_paused_);
   dict.Add("current_state", current_state_);
   dict.Add("desired_state", desired_state_);
+}
+
+namespace {
+
+// A helper CommitDeferringCondition instantiated and inserted into all
+// navigations from TestActivationManager. It delegates WillCommitNavigation
+// method of the CommitDeferringCondition back to the TestActivationManager so
+// that the manager can see and decide how to proceed with the condition for
+// every occurring navigation.
+class TestActivationManagerCondition : public CommitDeferringCondition {
+  using WillCommitCallback =
+      base::OnceCallback<Result(CommitDeferringCondition&, base::OnceClosure)>;
+
+ public:
+  TestActivationManagerCondition(NavigationHandle& handle,
+                                 WillCommitCallback on_will_commit_navigation)
+      : CommitDeferringCondition(handle),
+        on_will_commit_navigation_(std::move(on_will_commit_navigation)) {}
+  ~TestActivationManagerCondition() override = default;
+
+  TestActivationManagerCondition(const TestActivationManagerCondition&) =
+      delete;
+  TestActivationManagerCondition& operator=(
+      const TestActivationManagerCondition&) = delete;
+
+  Result WillCommitNavigation(base::OnceClosure resume) override {
+    return std::move(on_will_commit_navigation_).Run(*this, std::move(resume));
+  }
+
+ private:
+  WillCommitCallback on_will_commit_navigation_;
+};
+
+// We need this wrapper since the TestActivationManager can be destroyed while
+// navigations are ongoing so we need to pass the callback with a WeakPtr.
+// However, we can't bind a WeakPtr to a method that returns non-void so we use
+// this wrapper to provide the default return value.
+CommitDeferringCondition::Result ConditionCallbackWeakWrapper(
+    base::WeakPtr<TestActivationManager> manager,
+    base::RepeatingCallback<
+        CommitDeferringCondition::Result(TestActivationManager*,
+                                         CommitDeferringCondition&,
+                                         base::OnceClosure)> manager_func,
+    CommitDeferringCondition& condition,
+    base::OnceClosure resume_callback) {
+  // If the manager was destroyed, we don't need to pause navigation any longer
+  // so just proceed.
+  if (!manager)
+    return CommitDeferringCondition::Result::kProceed;
+
+  return manager_func.Run(manager.get(), condition, std::move(resume_callback));
+}
+
+}  // namespace
+
+class TestActivationManager::ConditionInserter {
+  using WillCommitCallback =
+      base::RepeatingCallback<CommitDeferringCondition::Result(
+          CommitDeferringCondition&,
+          base::OnceClosure)>;
+
+ public:
+  explicit ConditionInserter(WillCommitCallback callback,
+                             CommitDeferringConditionRunner::InsertOrder order)
+      : condition_callback_(std::move(callback)),
+        generator_id_(
+            CommitDeferringConditionRunner::InstallConditionGeneratorForTesting(
+                base::BindRepeating(&ConditionInserter::Install,
+                                    base::Unretained(this)),
+                order)) {}
+  ~ConditionInserter() {
+    CommitDeferringConditionRunner::UninstallConditionGeneratorForTesting(
+        generator_id_);
+  }
+
+ private:
+  std::unique_ptr<CommitDeferringCondition> Install(
+      NavigationHandle& handle,
+      CommitDeferringCondition::NavigationType navigation_type) {
+    // TestActivationManager should only pause during checks for an activating
+    // navigation. It's possible for a navigation to start off as activating
+    // but become non-activating after the initial checks. In that case,
+    // CommitDeferringConditions will be run a second time as non-activating so
+    // we'll avoid registering the second time with this early out.
+    // TODO(bokan): We can't check navigation_type here because BFCache is
+    // considered kOther. Ideally all page activations would be a single type.
+    // crbug.com/1226442.
+    auto* request = NavigationRequest::From(&handle);
+    if (!request->IsServedFromBackForwardCache() &&
+        !request->is_potentially_prerendered_page_activation_for_testing()) {
+      return nullptr;
+    }
+
+    return std::make_unique<TestActivationManagerCondition>(
+        handle, condition_callback_);
+  }
+
+  WillCommitCallback condition_callback_;
+  const int generator_id_;
+};
+
+TestActivationManager::TestActivationManager(WebContents* web_contents,
+                                             const GURL& url)
+    : WebContentsObserver(web_contents), url_(url) {
+  first_condition_inserter_ = std::make_unique<ConditionInserter>(
+      base::BindRepeating(
+          &ConditionCallbackWeakWrapper, weak_factory_.GetWeakPtr(),
+          base::BindRepeating(&TestActivationManager::FirstConditionCallback)),
+      CommitDeferringConditionRunner::InsertOrder::kBefore);
+  last_condition_inserter_ = std::make_unique<ConditionInserter>(
+      base::BindRepeating(
+          &ConditionCallbackWeakWrapper, weak_factory_.GetWeakPtr(),
+          base::BindRepeating(&TestActivationManager::LastConditionCallback)),
+      CommitDeferringConditionRunner::InsertOrder::kAfter);
+}
+
+TestActivationManager::~TestActivationManager() {
+  DCHECK(!quit_closure_);
+  if (is_paused())
+    std::move(resume_callback_).Run();
+}
+
+bool TestActivationManager::WaitForBeforeChecks() {
+  TRACE_EVENT("test", "TestActivationManager::WaitForBeforeChecks");
+  desired_state_ = ActivationState::kBeforeChecks;
+  return WaitForDesiredState();
+}
+
+bool TestActivationManager::WaitForAfterChecks() {
+  TRACE_EVENT("test", "TestActivationManager::WaitForAfterChecks");
+  desired_state_ = ActivationState::kAfterChecks;
+  return WaitForDesiredState();
+}
+
+void TestActivationManager::WaitForNavigationFinished() {
+  TRACE_EVENT("test", "TestActivationManager::WaitForNavigationFinished");
+  desired_state_ = ActivationState::kFinished;
+  bool finished = WaitForDesiredState();
+  DCHECK(finished);
+}
+
+void TestActivationManager::ResumeActivation() {
+  TRACE_EVENT("test", "TestActivationManager::ResumeActivation");
+  DCHECK(is_paused());
+  std::move(resume_callback_).Run();
+}
+
+NavigationHandle* TestActivationManager::GetNavigationHandle() {
+  return request_;
+}
+
+CommitDeferringCondition::Result TestActivationManager::FirstConditionCallback(
+    CommitDeferringCondition& condition,
+    base::OnceClosure resume_callback) {
+  if (condition.GetNavigationHandle().GetURL() != url_)
+    return CommitDeferringCondition::Result::kProceed;
+
+  DCHECK(!is_tracking_activation_)
+      << "Second request for watched URL: " << url_;
+  is_tracking_activation_ = true;
+
+  DCHECK(!request_);
+  request_ = NavigationRequest::From(&condition.GetNavigationHandle());
+  DCHECK(request_->is_potentially_prerendered_page_activation_for_testing() ||
+         request_->IsServedFromBackForwardCache())
+      << "TestActivationManager should only be used for for page "
+         "activations. For regular navigations, use TestNavigationManager.";
+
+  DCHECK_EQ(current_state_, ActivationState::kInitial);
+  current_state_ = ActivationState::kBeforeChecks;
+
+  if (current_state_ < desired_state_)
+    return CommitDeferringCondition::Result::kProceed;
+
+  resume_callback_ = std::move(resume_callback);
+  StopWaitingIfNeeded();
+
+  // Always defer here so test code gets a chance to set WaitFor... before the
+  // navigation finishes.
+  return CommitDeferringCondition::Result::kDefer;
+}
+
+CommitDeferringCondition::Result TestActivationManager::LastConditionCallback(
+    CommitDeferringCondition& condition,
+    base::OnceClosure resume_callback) {
+  if (request_ != &condition.GetNavigationHandle())
+    return CommitDeferringCondition::Result::kProceed;
+
+  DCHECK(is_tracking_activation_);
+
+  current_state_ = ActivationState::kAfterChecks;
+  if (current_state_ < desired_state_)
+    return CommitDeferringCondition::Result::kProceed;
+
+  resume_callback_ = std::move(resume_callback);
+  StopWaitingIfNeeded();
+
+  return CommitDeferringCondition::Result::kDefer;
+}
+
+void TestActivationManager::DidFinishNavigation(NavigationHandle* handle) {
+  if (handle == request_) {
+    DCHECK(is_tracking_activation_);
+    was_committed_ = handle->HasCommitted();
+    was_successful_ = was_committed_ && !handle->IsErrorPage();
+    was_activated_ = was_successful_ && handle->IsPageActivation();
+    request_ = nullptr;
+    current_state_ = ActivationState::kFinished;
+    StopWaitingIfNeeded();
+  }
+}
+
+bool TestActivationManager::WaitForDesiredState() {
+  DCHECK_LE(current_state_, desired_state_);
+
+  // If the desired state has already been reached, just return.
+  if (current_state_ == desired_state_)
+    return true;
+
+  // Resume the navigation if it was paused.
+  if (is_paused())
+    ResumeActivation();
+
+  // Wait for the desired state if needed.
+  if (current_state_ < desired_state_) {
+    DCHECK(!quit_closure_);
+    base::RunLoop run_loop(base::RunLoop::Type::kDefault);
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  // Return false if the navigation did not reach the state specified by the
+  // user.
+  return current_state_ == desired_state_;
+}
+
+void TestActivationManager::StopWaitingIfNeeded() {
+  if (current_state_ == desired_state_ && quit_closure_)
+    std::move(quit_closure_).Run();
 }
 
 NavigationHandleCommitObserver::NavigationHandleCommitObserver(

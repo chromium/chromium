@@ -851,18 +851,27 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a1->IsInBackForwardCache());
   EXPECT_NE(rfh_a1, rfh_b2);
 
-  // 3) Start navigation to page A, and flush the cache during the navigation.
-  TestNavigationManager navigation_manager(shell()->web_contents(), url_a);
-  web_contents()->GetController().GoBack();
+  // 3) Start navigation to page A, and flush the cache before activation
+  // checks finish (i.e. before disabling JS eviction in the renderer).
+  {
+    // In a scope to make sure the activation_manager is deleted before the
+    // reissued navigation begins.
+    TestActivationManager activation_manager(shell()->web_contents(), url_a);
 
-  EXPECT_TRUE(navigation_manager.WaitForResponse());
+    web_contents()->GetController().GoBack();
 
-  // Flush the cache, which contains the document being navigated to.
-  web_contents()->GetController().GetBackForwardCache().Flush();
+    // Wait for the activating navigation to start.
+    EXPECT_TRUE(activation_manager.WaitForBeforeChecks());
 
-  // The navigation should get canceled, then reissued; ultimately resulting in
-  // a successful navigation using a new RenderFrameHost.
-  navigation_manager.WaitForNavigationFinished();
+    // Flush the cache, which contains the document being navigated to.
+    web_contents()->GetController().GetBackForwardCache().Flush();
+
+    // The navigation should get canceled, then reissued; ultimately resulting
+    // in a successful navigation using a new RenderFrameHost. Ensure the
+    // initial activating navigation isn't committed.
+    activation_manager.WaitForNavigationFinished();
+    EXPECT_FALSE(activation_manager.was_committed());
+  }
 
   // rfh_a should have been deleted, and page A navigated to normally.
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
@@ -3201,9 +3210,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell, url_b));
 
   // 3) Start navigating back.
-  TestNavigationManager nav_manager(shell->web_contents(), url_a);
+  TestActivationManager activation_manager(shell->web_contents(), url_a);
   shell->web_contents()->GetController().GoBack();
-  nav_manager.WaitForFirstYieldAfterDidStartNavigation();
+  EXPECT_TRUE(activation_manager.WaitForBeforeChecks());
 
   ::testing::NiceMock<MockWebContentsObserver> observer(shell->web_contents());
   EXPECT_CALL(observer, DidFinishNavigation(_))

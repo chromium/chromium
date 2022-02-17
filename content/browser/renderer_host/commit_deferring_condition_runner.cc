@@ -14,11 +14,12 @@ namespace content {
 
 namespace {
 
-std::map<int, CommitDeferringConditionRunner::ConditionGenerator>&
-GetConditionGenerators() {
-  static base::NoDestructor<
-      std::map<int, CommitDeferringConditionRunner::ConditionGenerator>>
-      generators;
+using GeneratorOrderPair =
+    std::pair<CommitDeferringConditionRunner::ConditionGenerator,
+              CommitDeferringConditionRunner::InsertOrder>;
+
+std::map<int, GeneratorOrderPair>& GetConditionGenerators() {
+  static base::NoDestructor<std::map<int, GeneratorOrderPair>> generators;
   return *generators;
 }
 
@@ -108,15 +109,21 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
       navigation_request));
 
   // Run condition generators for testing.
-  for (auto& iter : GetConditionGenerators())
-    AddCondition(iter.second.Run(navigation_request));
+  for (auto& iter : GetConditionGenerators()) {
+    GeneratorOrderPair& generator_order_pair = iter.second;
+    AddCondition(
+        generator_order_pair.first.Run(navigation_request, navigation_type_),
+        generator_order_pair.second);
+  }
 }
 
 // static
 int CommitDeferringConditionRunner::InstallConditionGeneratorForTesting(
-    ConditionGenerator generator) {
+    ConditionGenerator generator,
+    InsertOrder order) {
   static int generator_id = 0;
-  GetConditionGenerators().emplace(generator_id, std::move(generator));
+  GetConditionGenerators().emplace(generator_id,
+                                   std::make_pair(std::move(generator), order));
   return generator_id++;
 }
 
@@ -153,11 +160,15 @@ void CommitDeferringConditionRunner::ProcessConditions() {
 }
 
 void CommitDeferringConditionRunner::AddCondition(
-    std::unique_ptr<CommitDeferringCondition> condition) {
+    std::unique_ptr<CommitDeferringCondition> condition,
+    InsertOrder order) {
   if (!condition)
     return;
 
-  conditions_.push_back(std::move(condition));
+  if (order == InsertOrder::kAfter)
+    conditions_.push_back(std::move(condition));
+  else
+    conditions_.insert(conditions_.begin(), std::move(condition));
 }
 
 }  // namespace content

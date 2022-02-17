@@ -2026,15 +2026,15 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   WebContents* web_contents = shell()->web_contents();
   ReadyToCommitObserver observer(web_contents);
 
-  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/true);
-  MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
+  MockCommitDeferringConditionInstaller installer(simple_url,
+                                                  /*is_ready_to_commit=*/true);
 
   shell()->LoadURL(simple_url);
   ASSERT_TRUE(manager.WaitForResponse());
   manager.ResumeNavigation();
 
   // Ready to commit should be reached synchronously after a response.
-  EXPECT_TRUE(condition.WasInvoked());
+  EXPECT_TRUE(installer.condition().WasInvoked());
   EXPECT_TRUE(observer.ReadyToCommitNavigationWasCalled());
   EXPECT_TRUE(manager.GetNavigationHandle()->IsWaitingToCommit());
 
@@ -2050,11 +2050,10 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   TestNavigationManager manager(shell()->web_contents(), simple_url);
   WebContents* web_contents = shell()->web_contents();
 
-  MockCommitDeferringConditionWrapper condition1(/*is_ready_to_commit=*/false);
-  MockCommitDeferringConditionInstaller installer1(condition1.PassToDelegate());
-
-  MockCommitDeferringConditionWrapper condition2(/*is_ready_to_commit=*/false);
-  MockCommitDeferringConditionInstaller installer2(condition2.PassToDelegate());
+  MockCommitDeferringConditionInstaller installer1(
+      simple_url, /*is_ready_to_commit=*/false);
+  MockCommitDeferringConditionInstaller installer2(
+      simple_url, /*is_ready_to_commit=*/false);
 
   ReadyToCommitObserver observer(web_contents);
 
@@ -2070,20 +2069,20 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // checked until the first is resolved.
   EXPECT_LT(request->state(), NavigationRequest::READY_TO_COMMIT);
   EXPECT_FALSE(observer.ReadyToCommitNavigationWasCalled());
-  EXPECT_TRUE(condition1.WasInvoked());
-  EXPECT_FALSE(condition2.WasInvoked());
+  EXPECT_TRUE(installer1.condition().WasInvoked());
+  EXPECT_FALSE(installer2.condition().WasInvoked());
   EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
 
   // Resume from the first condition. This should now block on the second
   // condition.
-  condition1.CallResumeClosure();
+  installer1.condition().CallResumeClosure();
   EXPECT_LT(request->state(), NavigationRequest::READY_TO_COMMIT);
   EXPECT_FALSE(observer.ReadyToCommitNavigationWasCalled());
-  EXPECT_TRUE(condition2.WasInvoked());
+  EXPECT_TRUE(installer2.condition().WasInvoked());
 
   // Resuming from the second condition should now resume the navigaiton. This
   // should call ReadyToCommit and commit the navigation.
-  condition2.CallResumeClosure();
+  installer2.condition().CallResumeClosure();
   EXPECT_TRUE(observer.ReadyToCommitNavigationWasCalled());
   EXPECT_EQ(request->state(), NavigationRequest::READY_TO_COMMIT);
   EXPECT_FALSE(request->IsCommitDeferringConditionDeferredForTesting());
@@ -2099,13 +2098,13 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   TestNavigationManager manager(shell()->web_contents(), simple_url);
   WebContents* web_contents = shell()->web_contents();
 
-  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
-  MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
+  MockCommitDeferringConditionInstaller installer1(
+      simple_url, /*is_ready_to_commit=*/false);
 
   // We'll cancel the navigation while the first condition is deferred so this
   // is added only to make sure it's never invoked.
-  MockCommitDeferringConditionWrapper condition2(/*is_ready_to_commit=*/false);
-  MockCommitDeferringConditionInstaller installer2(condition2.PassToDelegate());
+  MockCommitDeferringConditionInstaller installer2(
+      simple_url, /*is_ready_to_commit=*/false);
 
   shell()->LoadURL(simple_url);
   ASSERT_TRUE(manager.WaitForResponse());
@@ -2117,23 +2116,24 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // The navigation should have passed all checks but is now deferred from
   // committing by |condition|.
   EXPECT_LT(request->state(), NavigationRequest::READY_TO_COMMIT);
-  EXPECT_TRUE(condition.WasInvoked());
+  EXPECT_TRUE(installer1.condition().WasInvoked());
   EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
 
   // While the commit is deferred, cancel the navigation. This should delete
   // the navigation request.
-  EXPECT_FALSE(condition.IsDestroyed());
+  EXPECT_FALSE(installer1.condition().IsDestroyed());
   web_contents->Stop();
   manager.WaitForNavigationFinished();
   EXPECT_EQ(manager.GetNavigationHandle(), nullptr);
-  EXPECT_TRUE(condition.IsDestroyed());
-  EXPECT_TRUE(condition2.IsDestroyed());
+  EXPECT_TRUE(installer1.condition().IsDestroyed());
+  EXPECT_TRUE(installer2.condition().IsDestroyed());
 
-  // Call resume on |condition|, as could happen when e.g. the renderer
-  // responds after the navigation is stopped. Make sure we don't crash.
-  condition.CallResumeClosure();
+  // Call resume on `installer1`'s condition, as could happen when e.g. the
+  // renderer responds after the navigation is stopped. Make sure we don't
+  // crash.
+  installer1.condition().CallResumeClosure();
 
-  EXPECT_FALSE(condition2.WasInvoked());
+  EXPECT_FALSE(installer2.condition().WasInvoked());
 }
 
 // Ensure throttles registered by tests using RegisterThrottleForTesting() are

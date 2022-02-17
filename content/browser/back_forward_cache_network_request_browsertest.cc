@@ -342,20 +342,23 @@ IN_PROC_BROWSER_TEST_F(
   // for back-forward cache.
   EXPECT_TRUE(rfh_1->IsInBackForwardCache());
 
-  // 3) Go back to the first page using TestNavigationManager so that we split
+  // 3) Go back to the first page using TestActivationManager so that we split
   // the navigation into stages.
-  TestNavigationManager navigation_manager_back(shell()->web_contents(), url);
+  TestActivationManager restore_activation_manager(shell()->web_contents(),
+                                                   url);
   web_contents()->GetController().GoBack();
-  EXPECT_TRUE(navigation_manager_back.WaitForResponse());
+  EXPECT_TRUE(restore_activation_manager.WaitForBeforeChecks());
 
   // Before we try to commit the navigation, BFCache will defer to wait
   // asynchronously for renderers to reply that they've unfrozen. Finish the
   // image response in that time.
-  navigation_manager_back.ResumeNavigation();
+  restore_activation_manager.ResumeActivation();
+  auto* navigation_request =
+      NavigationRequest::From(restore_activation_manager.GetNavigationHandle());
   ASSERT_TRUE(
-      NavigationRequest::From(navigation_manager_back.GetNavigationHandle())
-          ->IsCommitDeferringConditionDeferredForTesting());
-  ASSERT_FALSE(navigation_manager_back.GetNavigationHandle()->HasCommitted());
+      navigation_request->IsCommitDeferringConditionDeferredForTesting());
+  ASSERT_FALSE(restore_activation_manager.is_paused());
+  ASSERT_FALSE(navigation_request->HasCommitted());
 
   image_response.Send(net::HTTP_OK, "image/png");
   std::string body(kMaxBufferedBytesPerProcess + 1, '*');
@@ -363,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(
   image_response.Done();
 
   // Finish the navigation.
-  navigation_manager_back.WaitForNavigationFinished();
+  restore_activation_manager.WaitForNavigationFinished();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectRestored(FROM_HERE);
 }

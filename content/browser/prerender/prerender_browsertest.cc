@@ -3440,21 +3440,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   auto* prerender_ftn = prerendered_rfh->frame_tree_node();
   EXPECT_FALSE(prerender_ftn->HasNavigation());
 
-  // Start an activation navigation for the prerender. Use a
-  // CommitDeferringCondition to pause activation before it completes.
-  TestNavigationManager activation_observer(shell()->web_contents(),
+  // Start an activation navigation for the prerender and pause it before it
+  // completes.
+  TestActivationManager activation_observer(shell()->web_contents(),
                                             kPrerenderingUrl);
-  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
   {
-    MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
     ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
 
-    // Wait for the condition to pause the activation.
-    condition.WaitUntilInvoked();
-    NavigationRequest* request =
-        web_contents_impl()->GetPrimaryFrameTree().root()->navigation_request();
-    EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
+    // Pause the activation before it's committed.
+    EXPECT_TRUE(activation_observer.WaitForBeforeChecks());
+    EXPECT_TRUE(activation_observer.GetNavigationHandle()
+                    ->IsCommitDeferringConditionDeferredForTesting());
     EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
   }
 
@@ -3467,7 +3464,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // PrerenderNavigationThrottle also cancels the activation and then starts
   // regular navigation.
-  condition.CallResumeClosure();
+  activation_observer.ResumeActivation();
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // The prerender host should have been abandoned.
@@ -3484,7 +3481,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Wait for completion of the navigation. This shouldn't be the prerendered
   // page activation.
   activation_observer.WaitForNavigationFinished();
-  EXPECT_FALSE(activation_observer.was_prerendered_page_activation());
+  EXPECT_FALSE(activation_observer.was_activated());
+  EXPECT_TRUE(activation_observer.was_successful());
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
@@ -3826,23 +3824,19 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     ASSERT_TRUE(child_frame);
   }
 
-  // Start an activation navigation for the prerender. Use a
-  // CommitDeferringCondition to pause activation before it completes.
+  // Start an activation navigation for the prerender. Pause activation before
+  // it completes.
   test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                  kPrerenderingUrl);
-  TestNavigationManager activation_observer(shell()->web_contents(),
+  TestActivationManager activation_observer(shell()->web_contents(),
                                             kPrerenderingUrl);
-  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
   {
-    MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
     ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
 
-    // Wait for the condition to pause the activation.
-    condition.WaitUntilInvoked();
-    NavigationRequest* request =
-        web_contents_impl()->GetPrimaryFrameTree().root()->navigation_request();
-    EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
+    EXPECT_TRUE(activation_observer.WaitForBeforeChecks());
+    EXPECT_TRUE(activation_observer.GetNavigationHandle()
+                    ->IsCommitDeferringConditionDeferredForTesting());
     EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
   }
 
@@ -3866,9 +3860,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_TRUE(child_navigation->IsDeferredForTesting());
 
   // Allow the activation navigation to complete.
-  condition.CallResumeClosure();
   activation_observer.WaitForNavigationFinished();
-  EXPECT_TRUE(activation_observer.was_prerendered_page_activation());
+  EXPECT_TRUE(activation_observer.was_activated());
 
   // The iframe navigation should finish.
   iframe_nav_observer.WaitForNavigationFinished();
@@ -3900,23 +3893,19 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     ASSERT_TRUE(child_frame);
   }
 
-  // Start an activation navigation for the prerender. Use a
-  // CommitDeferringCondition to pause activation before it completes.
+  // Start an activation navigation for the prerender and pause before it
+  // completes.
   test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                  kPrerenderingUrl);
-  TestNavigationManager activation_observer(shell()->web_contents(),
+  TestActivationManager activation_observer(shell()->web_contents(),
                                             kPrerenderingUrl);
-  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
   {
-    MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
     ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
 
-    // Wait for the condition to pause the activation.
-    condition.WaitUntilInvoked();
-    NavigationRequest* request =
-        web_contents_impl()->GetPrimaryFrameTree().root()->navigation_request();
-    EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
+    EXPECT_TRUE(activation_observer.WaitForBeforeChecks());
+    EXPECT_TRUE(activation_observer.GetNavigationHandle()
+                    ->IsCommitDeferringConditionDeferredForTesting());
     EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
   }
 
@@ -3934,9 +3923,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   }
 
   // Allow the activation navigation to complete.
-  condition.CallResumeClosure();
   activation_observer.WaitForNavigationFinished();
-  EXPECT_TRUE(activation_observer.was_prerendered_page_activation());
+  EXPECT_TRUE(activation_observer.was_activated());
 }
 
 class ScopedDataSaverTestContentBrowserClient
