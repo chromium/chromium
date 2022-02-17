@@ -2040,9 +2040,17 @@ bool PaintLayerScrollableArea::HitTestResizerInFragments(
 
 void PaintLayerScrollableArea::UpdateResizerStyle(
     const ComputedStyle* old_style) {
-  if (!resizer_ && !GetLayoutBox()->CanResize())
+  // Change of resizer status affects HasOverlayOverflowControls(). Invalid
+  // z-order lists to refresh overflow control painting order.
+  bool had_resizer = old_style && old_style->HasResize();
+  bool needs_resizer = GetLayoutBox()->CanResize();
+  if (had_resizer != needs_resizer)
+    layer_->DirtyStackingContextZOrderLists();
+
+  if (!resizer_ && !needs_resizer)
     return;
 
+  // Update custom resizer style.
   const LayoutObject& style_source = ScrollbarStyleSource(*GetLayoutBox());
   scoped_refptr<ComputedStyle> resizer =
       GetLayoutBox()->IsScrollContainer()

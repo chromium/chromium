@@ -1594,4 +1594,36 @@ TEST_P(PaintLayerScrollableAreaTest,
       scroller->GetLayoutBox()->Layer()->NeedsReorderOverlayOverflowControls());
 }
 
+TEST_P(PaintLayerScrollableAreaTest, RemoveAddResizerWithoutScrollbars) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target"
+         style="width: 100px; height: 100px; resize: both; overflow: hidden">
+      <div style="position: relative; height: 50px"></div>
+    </div>
+  )HTML");
+
+  auto* target = GetDocument().getElementById("target");
+  auto* scrollable_area = target->GetLayoutBox()->GetScrollableArea();
+  ASSERT_TRUE(scrollable_area);
+  EXPECT_FALSE(scrollable_area->HasScrollbar());
+  EXPECT_TRUE(scrollable_area->HasOverlayOverflowControls());
+  EXPECT_TRUE(scrollable_area->Layer()->NeedsReorderOverlayOverflowControls());
+
+  target->RemoveInlineStyleProperty(CSSPropertyID::kResize);
+  LOG(ERROR) << "REMOVE";
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(scrollable_area, target->GetLayoutBox()->GetScrollableArea());
+  ASSERT_FALSE(scrollable_area->HasScrollbar());
+  EXPECT_FALSE(scrollable_area->HasOverlayOverflowControls());
+  EXPECT_FALSE(scrollable_area->Layer()->NeedsReorderOverlayOverflowControls());
+
+  target->SetInlineStyleProperty(CSSPropertyID::kResize, "both");
+  LOG(ERROR) << "ADD";
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(scrollable_area, target->GetLayoutBox()->GetScrollableArea());
+  ASSERT_FALSE(scrollable_area->HasScrollbar());
+  EXPECT_TRUE(scrollable_area->HasOverlayOverflowControls());
+  EXPECT_TRUE(scrollable_area->Layer()->NeedsReorderOverlayOverflowControls());
+}
+
 }  // namespace blink
