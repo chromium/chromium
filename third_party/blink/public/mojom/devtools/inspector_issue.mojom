@@ -8,7 +8,6 @@ import "url/mojom/url.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/blocked_by_response_reason.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
-import "third_party/blink/public/mojom/webid/federated_auth_request.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // A code that uniquely identifies an issue. This type should be descriptive
@@ -177,8 +176,35 @@ struct LowTextContrastIssue {
   string font_weight;
 };
 
+// Represents the fetch result from a federated authentication request. Should
+// be updated alongside FederatedAuthRequestIssueReason in
+// third_party/blink/public/devtools_protocol/browser_protocol.pdl, which
+// includes all cases except for kSuccess.
+enum FederatedAuthRequestResult {
+  kSuccess,
+  kApprovalDeclined,
+  kErrorTooManyRequests,
+  kErrorFetchingManifestHttpNotFound,
+  kErrorFetchingManifestNoResponse,
+  kErrorFetchingManifestInvalidResponse,
+  kErrorFetchingClientMetadataHttpNotFound,
+  kErrorFetchingClientMetadataNoResponse,
+  kErrorFetchingClientMetadataInvalidResponse,
+  kErrorFetchingAccountsHttpNotFound,
+  kErrorFetchingAccountsNoResponse,
+  kErrorFetchingAccountsInvalidResponse,
+  kErrorFetchingIdTokenHttpNotFound,
+  kErrorFetchingIdTokenNoResponse,
+  kErrorFetchingIdTokenInvalidResponse,
+  kErrorFetchingIdTokenInvalidRequest,
+  kErrorFetchingSignin,
+  kErrorInvalidSigninResponse,
+  kErrorCanceled,
+  kError,
+};
+
 struct FederatedAuthRequestIssueDetails {
-  RequestIdTokenStatus status;
+  FederatedAuthRequestResult status;
 };
 
 enum GenericIssueErrorType {

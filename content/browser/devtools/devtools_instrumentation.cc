@@ -161,70 +161,71 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildTWAQualityIssue(
   return issue;
 }
 
-std::string RequestIdTokenStatusToProtocol(
-    blink::mojom::RequestIdTokenStatus status) {
-  using blink::mojom::RequestIdTokenStatus;
+std::string FederatedAuthRequestResultToProtocol(
+    blink::mojom::FederatedAuthRequestResult result) {
+  using blink::mojom::FederatedAuthRequestResult;
   namespace FederatedAuthRequestIssueReasonEnum =
       protocol::Audits::FederatedAuthRequestIssueReasonEnum;
-  switch (status) {
-    case RequestIdTokenStatus::kApprovalDeclined: {
+  switch (result) {
+    case FederatedAuthRequestResult::kApprovalDeclined: {
       return FederatedAuthRequestIssueReasonEnum::ApprovalDeclined;
     }
-    case RequestIdTokenStatus::kErrorTooManyRequests: {
+    case FederatedAuthRequestResult::kErrorTooManyRequests: {
       return FederatedAuthRequestIssueReasonEnum::TooManyRequests;
     }
-    case RequestIdTokenStatus::kErrorFetchingManifestHttpNotFound: {
+    case FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::ManifestHttpNotFound;
     }
-    case RequestIdTokenStatus::kErrorFetchingManifestNoResponse: {
+    case FederatedAuthRequestResult::kErrorFetchingManifestNoResponse: {
       return FederatedAuthRequestIssueReasonEnum::ManifestNoResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingManifestInvalidResponse: {
+    case FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::ManifestInvalidResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingClientMetadataHttpNotFound: {
+    case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::ClientMetadataHttpNotFound;
     }
-    case RequestIdTokenStatus::kErrorFetchingClientMetadataNoResponse: {
+    case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse: {
       return FederatedAuthRequestIssueReasonEnum::ClientMetadataNoResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingClientMetadataInvalidResponse: {
+    case FederatedAuthRequestResult::
+        kErrorFetchingClientMetadataInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::ClientMetadataInvalidResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingSignin: {
+    case FederatedAuthRequestResult::kErrorFetchingSignin: {
       return FederatedAuthRequestIssueReasonEnum::ErrorFetchingSignin;
     }
-    case RequestIdTokenStatus::kErrorInvalidSigninResponse: {
+    case FederatedAuthRequestResult::kErrorInvalidSigninResponse: {
       return FederatedAuthRequestIssueReasonEnum::InvalidSigninResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingAccountsHttpNotFound: {
+    case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::AccountsHttpNotFound;
     }
-    case RequestIdTokenStatus::kErrorFetchingAccountsNoResponse: {
+    case FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse: {
       return FederatedAuthRequestIssueReasonEnum::AccountsNoResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingAccountsInvalidResponse: {
+    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::AccountsInvalidResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingIdTokenHttpNotFound: {
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenHttpNotFound;
     }
-    case RequestIdTokenStatus::kErrorFetchingIdTokenNoResponse: {
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenNoResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingIdTokenInvalidResponse: {
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingIdTokenInvalidRequest: {
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidRequest: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidRequest;
     }
-    case RequestIdTokenStatus::kErrorCanceled: {
+    case FederatedAuthRequestResult::kErrorCanceled: {
       return FederatedAuthRequestIssueReasonEnum::Canceled;
     }
-    case RequestIdTokenStatus::kError: {
+    case FederatedAuthRequestResult::kError: {
       return FederatedAuthRequestIssueReasonEnum::ErrorIdToken;
     }
-    case RequestIdTokenStatus::kSuccess: {
+    case FederatedAuthRequestResult::kSuccess: {
       DCHECK(false);
       return "";
     }
@@ -235,7 +236,7 @@ std::unique_ptr<protocol::Audits::InspectorIssue>
 BuildFederatedAuthRequestIssue(
     const blink::mojom::FederatedAuthRequestIssueDetailsPtr& issue_details) {
   protocol::String type_string =
-      RequestIdTokenStatusToProtocol(issue_details->status);
+      FederatedAuthRequestResultToProtocol(issue_details->status);
 
   auto federated_auth_request_details =
       protocol::Audits::FederatedAuthRequestIssueDetails::Create()

@@ -16,6 +16,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
@@ -103,7 +104,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   void DispatchOneLogout();
   void OnLogoutCompleted();
   std::unique_ptr<WebContents> CreateIdpWebContents();
-  void CompleteRequest(blink::mojom::RequestIdTokenStatus,
+  void CompleteRequest(blink::mojom::FederatedAuthRequestResult,
                        const std::string& id_token);
   void CompleteLogoutRequest(blink::mojom::LogoutRpsStatus);
   void OnManifestFetchedForRevoke(IdpNetworkRequestManager::FetchStatus status,
@@ -126,7 +127,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
 
   // Creates an inspector issue related to a federated authentication request to
   // the Issues panel in DevTools.
-  void AddInspectorIssue(blink::mojom::RequestIdTokenStatus status);
+  void AddInspectorIssue(blink::mojom::FederatedAuthRequestResult result);
 
   // Adds a console error message related to a federated authentication request
   // issue. The Issues panel is preferred, but for now we also surface console
@@ -134,7 +135,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   // TODO(crbug.com/1294415): When the FedCM API is more stable, we should
   // ensure that the Issues panel contains all of the needed debugging
   // information and then we can remove the console error messages.
-  void AddConsoleErrorMessage(blink::mojom::RequestIdTokenStatus status);
+  void AddConsoleErrorMessage(blink::mojom::FederatedAuthRequestResult result);
 
   const raw_ptr<RenderFrameHostImpl> render_frame_host_ = nullptr;
   const url::Origin origin_;

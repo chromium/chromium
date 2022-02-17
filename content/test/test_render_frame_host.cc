@@ -241,8 +241,8 @@ int TestRenderFrameHost::GetHeavyAdIssueCount(
 }
 
 int TestRenderFrameHost::GetFederatedAuthRequestIssueCount(
-    blink::mojom::RequestIdTokenStatus status) {
-  auto it = federated_auth_counts_.find(status);
+    blink::mojom::FederatedAuthRequestResult result) {
+  auto it = federated_auth_counts_.find(result);
   if (it == federated_auth_counts_.end())
     return 0;
   return it->second;
