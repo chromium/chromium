@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -42,6 +43,18 @@ public class PrivacySandboxBridgeTest {
             PrivacySandboxBridge.setPrivacySandboxEnabled(true);
             assertTrue(PrivacySandboxBridge.isPrivacySandboxEnabled());
         });
+    }
+
+    @Test
+    @SmallTest
+    public void testNoDialogWhenFreDisabled() {
+        // Check that when ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE is present, the bridge
+        // returns that no dialog is shown. This is important to prevent tests that rely on using
+        // that flag to get a blank activity with no dialogs from breaking.
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> assertEquals("Returned dialog type", DialogType.NONE,
+                                PrivacySandboxBridge.getRequiredDialogType()));
     }
 
     @Test
