@@ -1082,5 +1082,11 @@
       "--enable-features=SystemCursorSizeSupported",
       "--disable-headless-mode"
     ]
+  },
+  {
+    "prefix": "document-pip",
+    "bases": [],
+    "args": ["--enable-features=PictureInPictureV2",
+             "--enable-blink-features=PictureInPictureV2"]
   }
 ]

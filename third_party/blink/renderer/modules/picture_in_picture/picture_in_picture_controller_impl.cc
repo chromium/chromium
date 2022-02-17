@@ -378,17 +378,25 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   web_options.size = gfx::Size(options->width(), options->height());
   web_options.constrain_aspect_ratio = options->constrainAspectRatio();
 
-  opener.openPictureInPictureWindow(script_state->GetIsolate(), web_options,
-                                    exception_state);
+  auto* dom_window = opener.openPictureInPictureWindow(
+      script_state->GetIsolate(), web_options, exception_state);
 
-  if (exception_state.HadException()) {
+  // If we can't create a window then reject the promise with the exception
+  // state.
+  if (!dom_window || exception_state.HadException()) {
     resolver->Reject();
     return;
   }
 
-  // TODO(https://crbug.com/1253970): Resolve with a PictureInPictureWindow
-  // object.
-  resolver->Resolve();
+  auto* local_dom_window = dom_window->ToLocalDOMWindow();
+  DCHECK(local_dom_window);
+
+  // TODO(https://crbug.com/1253970): Use the real size returned by the browser
+  // side when we get one.
+  picture_in_picture_window_ = MakeGarbageCollected<PictureInPictureWindow>(
+      GetExecutionContext(), web_options.size, local_dom_window->document());
+
+  resolver->Resolve(picture_in_picture_window_);
 }
 
 void PictureInPictureControllerImpl::PageVisibilityChanged() {
