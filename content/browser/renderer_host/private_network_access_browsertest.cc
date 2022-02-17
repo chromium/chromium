@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -306,6 +307,18 @@ class PrivateNetworkAccessBrowserTest
                 features::kPrivateNetworkAccessSendPreflights,
             },
             {}) {}
+};
+
+class PrivateNetworkAccessBrowserTestDisableWebSecurity
+    : public PrivateNetworkAccessBrowserTest {
+ public:
+  PrivateNetworkAccessBrowserTestDisableWebSecurity() = default;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrivateNetworkAccessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableWebSecurity);
+  }
 };
 
 // Test with insecure private network subresource requests blocked, including
@@ -2169,6 +2182,32 @@ IN_PROC_BROWSER_TEST_F(
 // These tests verify the correct setting of
 // `ClientSecurityState.private_network_request_policy` in various situations.
 
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestDisableWebSecurity,
+                       PrivateNetworkPolicyIsAllowInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestDisableWebSecurity,
+                       PrivateNetworkPolicyIsAllowSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
 // This test verifies that with the blocking feature disabled, the private
 // network request policy used by RenderFrameHostImpl is to warn about requests
 // from non-secure contexts.
@@ -2582,6 +2621,17 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 // are not blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
                        PrivateNetworkRequestIsNotBlockedByDefault) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
+
+  // Check that the page can load a local resource.
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(InsecureLocalURL(kCorsPath))));
+}
+
+// Check that the `--disable-web-security` command-line switch disables PNA
+// checks.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestDisableWebSecurity,
+                       PrivateNetworkRequestIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   // Check that the page can load a local resource.

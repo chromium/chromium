@@ -8,6 +8,7 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
@@ -28,6 +29,12 @@ Policy DerivePrivateNetworkRequestPolicy(
 Policy DerivePrivateNetworkRequestPolicy(
     const network::mojom::IPAddressSpace ip_address_space,
     bool is_web_secure_context) {
+  // Disable PNA checks entirely when running with --disable-web-security`.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableWebSecurity)) {
+    return Policy::kAllow;
+  }
+
   // The goal is to eliminate occurrences of this case as much as possible,
   // before removing this special case.
   if (ip_address_space == network::mojom::IPAddressSpace::kUnknown) {

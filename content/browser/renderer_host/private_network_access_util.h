@@ -6,12 +6,9 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_
 
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
-
-namespace network::mojom {
-class URLResponseHead;
-enum class IPAddressSpace;
-}  // namespace network::mojom
 
 namespace content {
 
