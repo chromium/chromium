@@ -3187,23 +3187,16 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                     ad_component_frame);
 
   // Navigate the ad component's nested fenced frame (3 fenced frames deep) to
-  // some of the URNs, which should navigate it to about:blank. MPArch mode
-  // currently crashes on navigations to about:blank, so skip in that case.
-  //
-  // TODO(https://crbug.com/1268238): Always do this once MPArch can handle
-  // about:blank navigations.
-  if (GetParam() != blink::features::FencedFramesImplementationType::kMPArch) {
-    absl::optional<std::vector<GURL>> all_component_urls =
-        GetAdAuctionComponentsInJS(ad_component_frame,
-                                   blink::kMaxAdAuctionAdComponents);
-    ASSERT_TRUE(all_component_urls);
-    NavigateFencedFrameAndWait((*all_component_urls)[0],
-                               GURL(url::kAboutBlankURL),
-                               GetFencedFrameRenderFrameHost(shell()));
-    NavigateFencedFrameAndWait(
-        (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
-        GURL(url::kAboutBlankURL), GetFencedFrameRenderFrameHost(shell()));
-  }
+  // some of the URNs, which should navigate it to about:blank.
+  absl::optional<std::vector<GURL>> all_component_urls =
+      GetAdAuctionComponentsInJS(ad_component_frame,
+                                 blink::kMaxAdAuctionAdComponents);
+  ASSERT_TRUE(all_component_urls);
+  NavigateFencedFrameAndWait((*all_component_urls)[0],
+                             GURL(url::kAboutBlankURL), ad_component_frame);
+  NavigateFencedFrameAndWait(
+      (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
+      GURL(url::kAboutBlankURL), ad_component_frame);
 
   // Load a new URL in the top-level fenced frame, which should cause future
   // navigator.adComponents() calls to fail. Use a new URL, so can wait for the
@@ -3212,7 +3205,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
   GURL new_url = https_server_->GetURL(
       ad_frame->GetLastCommittedOrigin().host(), "/echoall");
 
-  // Use to wait for navigation completion in the ShadowDOM case only.
+  // Used to wait for navigation completion in the ShadowDOM case only.
   // Harmlessly created but not used in the MPArch case.
   TestFrameNavigationObserver observer(ad_frame);
 
