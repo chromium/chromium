@@ -687,7 +687,10 @@ public class RootUiCoordinator
     }
 
     private void initScrollCapture() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+                || DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) {
+            return;
+        }
 
         mScrollCaptureManager = new ScrollCaptureManager(mActivityTabProvider);
     }
