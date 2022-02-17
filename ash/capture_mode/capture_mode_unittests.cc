@@ -498,6 +498,16 @@ class CaptureModeTest : public AshTestBase {
                                                  : ".ClamshellMode");
     return prefix;
   }
+
+  void OpenSettingsView() {
+    CaptureModeSession* session =
+        CaptureModeController::Get()->capture_mode_session();
+    DCHECK(session);
+    ClickOnView(CaptureModeSessionTestApi(session)
+                    .GetCaptureModeBarView()
+                    ->settings_button(),
+                GetEventGenerator());
+  }
 };
 
 class CaptureSessionWidgetObserver : public views::WidgetObserver {
@@ -3343,17 +3353,26 @@ TEST_F(CaptureModeTest, DisplayRotation) {
 
   auto* controller = StartImageRegionCapture();
   SelectRegion(gfx::Rect(1200, 400));
+  OpenSettingsView();
 
-  // Rotate the primary display by 90 degrees. Test that the region and capture
-  // bar fit within the rotated bounds, and the capture label widget is still
-  // centered in the region.
+  // Rotate the primary display by 90 degrees. Test that the region, capture
+  // bar and capture settings fit within the rotated bounds, and the capture
+  // label widget is still centered in the region.
   Shell::Get()->display_manager()->SetDisplayRotation(
       WindowTreeHostManager::GetPrimaryDisplayId(), display::Display::ROTATE_90,
       display::Display::RotationSource::USER);
   const gfx::Rect rotated_root_bounds(600, 1200);
   EXPECT_TRUE(rotated_root_bounds.Contains(controller->user_capture_region()));
-  EXPECT_TRUE(rotated_root_bounds.Contains(
-      GetCaptureModeBarView()->GetBoundsInScreen()));
+  const gfx::Rect capture_bar_bounds =
+      GetCaptureModeBarView()->GetBoundsInScreen();
+  const gfx::Rect settings_bounds =
+      CaptureModeSettingsTestApi().GetSettingsView()->GetBoundsInScreen();
+  EXPECT_TRUE(rotated_root_bounds.Contains(capture_bar_bounds));
+  EXPECT_TRUE(rotated_root_bounds.Contains(settings_bounds));
+  // Verify that the space between the bottom of the settings and the top
+  // of the capture bar is `kSpaceBetweenCaptureBarAndSettingsMenu`.
+  EXPECT_EQ(capture_bar_bounds.y() - settings_bounds.bottom(),
+            capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu);
   views::Widget* capture_label_widget = GetCaptureModeLabelWidget();
   ASSERT_TRUE(capture_label_widget);
   EXPECT_EQ(controller->user_capture_region().CenterPoint(),
