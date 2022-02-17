@@ -25,14 +25,6 @@ struct LazyInstanceTraitsBase;
 
 }  // namespace base
 
-namespace partition_alloc {
-
-class AddressSpaceStatsDumper;
-struct AddressSpaceStats;
-struct PoolStats;
-
-}  // namespace partition_alloc
-
 namespace partition_alloc::internal {
 
 // (64bit version)
@@ -93,18 +85,11 @@ class BASE_EXPORT AddressPoolManager {
   }
 #endif  // !defined(PA_HAS_64_BITS_POINTERS)
 
-  void DumpStats(AddressSpaceStatsDumper* dumper);
-
  private:
   friend class AddressPoolManagerForTesting;
 
   AddressPoolManager();
   ~AddressPoolManager();
-
-  // Populates `stats` if applicable.
-  // Returns whether `stats` was populated. (They might not be, e.g.
-  // if PartitionAlloc is wholly unused in this process.)
-  bool GetStats(AddressSpaceStats* stats);
 
 #if defined(PA_HAS_64_BITS_POINTERS)
   class Pool {
@@ -123,8 +108,6 @@ class BASE_EXPORT AddressPoolManager {
 
     void GetUsedSuperPages(std::bitset<kMaxSuperPagesInPool>& used);
     uintptr_t GetBaseAddress();
-
-    void GetStats(PoolStats* stats);
 
    private:
     Lock lock_;
@@ -150,10 +133,6 @@ class BASE_EXPORT AddressPoolManager {
     PA_DCHECK(0 < handle && handle <= kNumPools);
     return &pools_[handle - 1];
   }
-
-  // Gets the stats for the pool identified by `handle`, if
-  // initialized.
-  void GetPoolStats(pool_handle handle, PoolStats* stats);
 
   Pool pools_[kNumPools];
 
