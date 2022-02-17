@@ -10,8 +10,6 @@ import {SpeechParser} from './parse/speech_parser.js';
 import {HintContext, UIController, UIState} from './ui_controller.js';
 
 const ErrorEvent = chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent;
-const HintType = chrome.accessibilityPrivate.DictationBubbleHintType;
-const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
 const ResultEvent =
     chrome.speechRecognitionPrivate.SpeechRecognitionResultEvent;
 const StartOptions = chrome.speechRecognitionPrivate.StartOptions;
