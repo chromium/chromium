@@ -112,7 +112,7 @@ bool IsDriveDisabled(Profile* profile) {
 // filtered out are replaced by absl::nullopt, because the length and order of
 // the return vector must remain consistent with |cache_results_|.
 std::vector<absl::optional<base::FilePath>> FilterPathsByTime(
-    std::vector<base::FilePath> paths,
+    std::vector<absl::optional<base::FilePath>> paths,
     const base::TimeDelta& max_last_modified_time) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -121,7 +121,8 @@ std::vector<absl::optional<base::FilePath>> FilterPathsByTime(
   const base::Time now = base::Time::Now();
   for (const auto& path : paths) {
     base::File::Info info;
-    if (base::PathExists(path) && base::GetFileInfo(path, &info) &&
+    if (path && base::PathExists(path.value()) &&
+        base::GetFileInfo(path.value(), &info) &&
         (now - info.last_modified <= max_last_modified_time)) {
       filtered_paths.push_back(path);
     } else {
@@ -298,12 +299,16 @@ void ZeroStateDriveProvider::OnFilePathsLocated(
   }
 
   bool all_files_errored = true;
-  std::vector<base::FilePath> filepaths;
+  std::vector<absl::optional<base::FilePath>> filepaths;
   for (const auto& path_or_error : paths.value()) {
     if (path_or_error->is_path()) {
       all_files_errored = false;
       filepaths.push_back(
           ReparentToDriveMount(path_or_error->get_path(), drive_service_));
+    } else {
+      // The length and order of |filepaths| must remain consistent with
+      // |cache_results_|.
+      filepaths.push_back(absl::nullopt);
     }
   }
 
