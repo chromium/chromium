@@ -1152,7 +1152,7 @@ class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
         MockAffectedFile('content/test/data/accessibility/aria/foo.html',
           [''], action='A'),
         MockAffectedFile(
-          'accessibility/WebContentsAccessibilityEventsTest.java',
+          'accessibility/WebContentsAccessibilityTreeTest.java',
           [''], action='M')
     ]
 
@@ -1176,7 +1176,7 @@ class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
         MockAffectedFile('content/test/data/accessibility/html/foo.html',
           [''], action='A'),
         MockAffectedFile(
-          'accessibility/WebContentsAccessibilityEventsTest.java',
+          'accessibility/WebContentsAccessibilityTreeTest.java',
           [''], action='M')
     ]
 

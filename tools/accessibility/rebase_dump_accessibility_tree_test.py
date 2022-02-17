@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -27,7 +27,7 @@ import sys
 import tempfile
 import time
 import urllib
-import urlparse
+import urllib.parse
 
 # The location of the DumpAccessibilityTree html test files and expectations.
 TEST_DATA_PATH = os.path.join(os.getcwd(), 'content/test/data/accessibility')

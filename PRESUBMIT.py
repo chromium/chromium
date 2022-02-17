@@ -4395,7 +4395,7 @@ _ACCESSIBILITY_ANDROID_EVENTS_TEST_PATH = (
 )
 
 _ACCESSIBILITY_ANDROID_TREE_TEST_PATH = (
-    r"^.*[\\/]WebContentsAccessibilityEventsTest\.java",
+    r"^.*[\\/]WebContentsAccessibilityTreeTest\.java",
 )
 
 def CheckAccessibilityEventsTestsAreIncludedForAndroid(input_api, output_api):
