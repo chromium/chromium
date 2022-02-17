@@ -115,7 +115,8 @@ void CellularPolicyHandler::AttemptInstallESim() {
       std::move(new_shill_properties),
       base::BindOnce(
           &CellularPolicyHandler::OnESimProfileInstallAttemptComplete,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr()),
+      remaining_install_requests_.front()->retry_backoff.failure_count() == 0);
 }
 
 const std::string& CellularPolicyHandler::GetCurrentSmdpAddress() const {

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/onc/onc_utils.h"
@@ -39,6 +40,13 @@ const char kTestEid[] = "12345678901234567890123456789012";
 const char kTestEid2[] = "12345678901234567890123456789000";
 const char kCellularGuid[] = "cellular_guid";
 const char kICCID[] = "1000000000000000002";
+const char kInstallViaPolicyOperationHistogram[] =
+    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult";
+const char kInstallViaPolicyInitialOperationHistogram[] =
+    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.InitialAttempt";
+const char kInstallViaPolicyRetryOperationHistogram[] =
+    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.Retry";
+const base::TimeDelta kInstallationRetryOnceDelay = base::Minutes(15);
 
 void CheckShillConfiguration(bool is_installed) {
   std::string service_path =
@@ -170,7 +178,11 @@ class CellularPolicyHandlerTest : public testing::Test {
         base::Milliseconds(150);
     // Connect can result in two profile refresh calls before and after
     // enabling profile. Fast forward by delay after refresh.
-    task_environment_.FastForwardBy(2 * kProfileRefreshCallbackDelay);
+    FastForwardBy(2 * kProfileRefreshCallbackDelay);
+  }
+
+  void FastForwardBy(base::TimeDelta delay) {
+    task_environment_.FastForwardBy(delay);
   }
 
  private:
@@ -199,21 +211,49 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileSuccess) {
                                  ->GenerateFakeActivationCode());
   // Verify esim profile get installed successfully when installing policy esim
   // with a fake SMDP address.
+  base::HistogramTester histogram_tester;
   InstallESimPolicy(policy,
                     HermesEuiccClient::Get()
                         ->GetTestInterface()
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/true);
   CheckShillConfiguration(/*is_installed=*/true);
+
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyInitialOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyRetryOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/0);
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
   // Verify esim profile doesn't get installed when installing policy esim
   // with a invalid SMDP address.
   const std::string policy = GenerateCellularPolicy("000");
+  base::HistogramTester histogram_tester;
   InstallESimPolicy(policy,
                     /*activation_code=*/std::string(),
                     /*expect_install_success=*/false);
+  FastForwardBy(kInstallationRetryOnceDelay);
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyInitialOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyRetryOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/1);
   CheckShillConfiguration(/*is_installed=*/false);
 }
 
