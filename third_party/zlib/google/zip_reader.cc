@@ -211,11 +211,11 @@ bool ZipReader::OpenCurrentEntryInZip() {
   current_entry_ = nullptr;
 
   // Get entry info.
-  unz_file_info info = {};
+  unz_file_info64 info = {};
   char path_in_zip[internal::kZipMaxPath] = {};
-  if (const int err = unzGetCurrentFileInfo(zip_file_, &info, path_in_zip,
-                                            sizeof(path_in_zip) - 1, nullptr, 0,
-                                            nullptr, 0);
+  if (const int err = unzGetCurrentFileInfo64(zip_file_, &info, path_in_zip,
+                                              sizeof(path_in_zip) - 1, nullptr,
+                                              0, nullptr, 0);
       err != UNZ_OK) {
     LOG(ERROR) << "Cannot get entry from ZIP: " << UnzipError(err);
     return false;

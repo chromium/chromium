@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <iomanip>
+#include <limits>
 #include <map>
 #include <set>
 #include <string>
@@ -21,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -46,6 +49,46 @@ bool CreateFile(const std::string& content,
       *file_path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
   return file->IsValid();
 }
+
+// A WriterDelegate that logs progress once per second.
+class ProgressWriterDelegate : public zip::WriterDelegate {
+ public:
+  explicit ProgressWriterDelegate(int64_t expected_size)
+      : expected_size_(expected_size) {
+    CHECK_GT(expected_size_, 0);
+  }
+
+  bool WriteBytes(const char* data, int num_bytes) override {
+    received_bytes_ += num_bytes;
+    LogProgressIfNecessary();
+    return true;
+  }
+
+  void SetTimeModified(const base::Time& time) override { LogProgress(); }
+
+  int64_t received_bytes() const { return received_bytes_; }
+
+ private:
+  void LogProgressIfNecessary() {
+    const base::TimeTicks now = base::TimeTicks::Now();
+    if (next_progress_report_time_ > now)
+      return;
+
+    next_progress_report_time_ = now + progress_period_;
+    LogProgress();
+  }
+
+  void LogProgress() const {
+    LOG(INFO) << "Unzipping... " << std::setw(3)
+              << (100 * received_bytes_ / expected_size_) << "%";
+  }
+
+  const base::TimeDelta progress_period_ = base::Seconds(1);
+  base::TimeTicks next_progress_report_time_ =
+      base::TimeTicks::Now() + progress_period_;
+  const uint64_t expected_size_;
+  int64_t received_bytes_ = 0;
+};
 
 // A virtual file system containing:
 // /test
@@ -813,7 +856,9 @@ TEST_F(ZipTest, NestedZip) {
 
 // Tests that there is no 2GB or 4GB limits. Tests that big files can be zipped
 // (crbug.com/1207737) and that big ZIP files can be created
-// (crbug.com/1221447).
+// (crbug.com/1221447). Tests that the big ZIP can be opened, that its entries
+// are correctly enumerated (crbug.com/1298347), and that the big file can be
+// extracted.
 TEST_F(ZipTest, DISABLED_BigFile) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -825,15 +870,26 @@ TEST_F(ZipTest, DISABLED_BigFile) {
   // purpose of this test, it doesn't really matter.
   const int64_t src_size = 5'000'000'000;
 
+  const base::FilePath src_file = src_dir.AppendASCII("src.zip");
+  LOG(INFO) << "Creating big file " << src_file;
   {
-    base::File f(src_dir.AppendASCII("src.zip"),
-                 base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    base::File f(src_file, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     ASSERT_TRUE(f.SetLength(src_size));
   }
 
   // Zip the dummy ZIP file.
   const base::FilePath dest_file = temp_dir.GetPath().AppendASCII("dest.zip");
-  EXPECT_TRUE(zip::Zip({.src_dir = src_dir, .dest_file = dest_file}));
+  LOG(INFO) << "Zipping big file into " << dest_file;
+  zip::ProgressCallback progress_callback =
+      base::BindLambdaForTesting([&](const zip::Progress& progress) {
+        LOG(INFO) << "Zipping... " << std::setw(3)
+                  << (100 * progress.bytes / src_size) << "%";
+        return true;
+      });
+  EXPECT_TRUE(zip::Zip({.src_dir = src_dir,
+                        .dest_file = dest_file,
+                        .progress_callback = std::move(progress_callback),
+                        .progress_period = base::Seconds(1)}));
 
   // Since the dummy source (inner) ZIP file should simply be stored in the
   // destination (outer) ZIP file, the destination file should be bigger than
@@ -842,6 +898,25 @@ TEST_F(ZipTest, DISABLED_BigFile) {
   ASSERT_TRUE(base::GetFileSize(dest_file, &dest_file_size));
   EXPECT_GT(dest_file_size, src_size + 100);
   EXPECT_LT(dest_file_size, src_size + 300);
+
+  LOG(INFO) << "Reading big ZIP " << dest_file;
+  zip::ZipReader reader;
+  ASSERT_TRUE(reader.Open(dest_file));
+
+  const zip::ZipReader::Entry* const entry = reader.Next();
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(FP("src.zip"), entry->path);
+  EXPECT_EQ(src_size, entry->original_size);
+  EXPECT_FALSE(entry->is_directory);
+  EXPECT_FALSE(entry->is_encrypted);
+
+  ProgressWriterDelegate writer(src_size);
+  EXPECT_TRUE(reader.ExtractCurrentEntry(&writer,
+                                         std::numeric_limits<uint64_t>::max()));
+  EXPECT_EQ(src_size, writer.received_bytes());
+
+  EXPECT_FALSE(reader.Next());
+  EXPECT_TRUE(reader.ok());
 }
 
 }  // namespace
