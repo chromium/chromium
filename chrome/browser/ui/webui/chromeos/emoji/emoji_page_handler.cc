@@ -100,6 +100,7 @@ class EmojiObserver : public ui::InputMethodObserver {
           ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
       inserted_ = true;
       DestroySelf();
+      return;
     }
     if (focus_change_count_ > 2) {
       DestroySelf();
