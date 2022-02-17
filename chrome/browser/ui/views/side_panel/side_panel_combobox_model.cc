@@ -37,6 +37,15 @@ SidePanelEntry::Id SidePanelComboboxModel::GetIdAt(int index) const {
   return entries_[index].id;
 }
 
+int SidePanelComboboxModel::GetIndexForId(SidePanelEntry::Id id) {
+  for (size_t index = 0; index < entries_.size(); index++) {
+    if (entries_[index].id == id)
+      return index;
+  }
+  // Default to the first entry if the id doesn't exist.
+  return 0;
+}
+
 int SidePanelComboboxModel::GetItemCount() const {
   return entries_.size();
 }

@@ -38,6 +38,10 @@ class SidePanelComboboxModel : public ui::ComboboxModel {
   void AddItem(SidePanelEntry* entry);
   SidePanelEntry::Id GetIdAt(int index) const;
 
+  // Returns the index for the given side panel entry id, if the id doesn't
+  // exist in entries_ then default to 0.
+  int GetIndexForId(SidePanelEntry::Id id);
+
   // ui::ComboboxModel:
   int GetItemCount() const override;
   std::u16string GetItemAt(int index) const override;

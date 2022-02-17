@@ -9,27 +9,36 @@
 #include <vector>
 
 #include "base/observer_list.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 
-class SidePanelEntry;
 class SidePanelRegistryObserver;
 
 // This class is used for storing SidePanelEntries specific to a context. This
 // context can be one per tab or one per window. See also SidePanelCoordinator.
-class SidePanelRegistry final {
+class SidePanelRegistry final : public SidePanelEntryObserver {
  public:
   SidePanelRegistry();
   SidePanelRegistry(const SidePanelRegistry&) = delete;
   SidePanelRegistry& operator=(const SidePanelRegistry&) = delete;
-  ~SidePanelRegistry();
+  ~SidePanelRegistry() override;
 
   void AddObserver(SidePanelRegistryObserver* observer);
   void RemoveObserver(SidePanelRegistryObserver* observer);
 
   void Register(std::unique_ptr<SidePanelEntry> entry);
 
+  absl::optional<SidePanelEntry::Id> last_active_entry() {
+    return last_active_entry_;
+  }
   std::vector<std::unique_ptr<SidePanelEntry>>& entries() { return entries_; }
 
+  // SidePanelEntryObserver:
+  void OnEntryShown(SidePanelEntry::Id id) override;
+
  private:
+  absl::optional<SidePanelEntry::Id> last_active_entry_;
+
   std::vector<std::unique_ptr<SidePanelEntry>> entries_;
 
   base::ObserverList<SidePanelRegistryObserver> observers_;

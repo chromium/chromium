@@ -100,8 +100,9 @@ SidePanelCoordinator::~SidePanelCoordinator() = default;
 
 void SidePanelCoordinator::Show(absl::optional<SidePanelEntry::Id> entry_id) {
   if (!entry_id.has_value()) {
-    // TODO(corising): Handle reopening to the last seen entry.
-    entry_id = SidePanelEntry::Id::kReadingList;
+    // TODO(corising): Handle choosing between last active entries when there
+    // are multiple registries.
+    entry_id = GetLastActiveEntry();
   }
 
   SidePanelEntry* entry = GetEntryForId(entry_id.value());
@@ -206,6 +207,13 @@ void SidePanelCoordinator::PopulateSidePanel(SidePanelEntry* entry) {
   DCHECK(content_wrapper);
   content_wrapper->RemoveAllChildViews();
   content_wrapper->AddChildView(entry->CreateContent());
+  entry->OnEntryShown();
+}
+
+SidePanelEntry::Id SidePanelCoordinator::GetLastActiveEntry() const {
+  return global_registry_->last_active_entry().has_value()
+             ? global_registry_->last_active_entry().value()
+             : SidePanelEntry::Id::kReadingList;
 }
 
 std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
@@ -256,10 +264,8 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
 
 std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   auto combobox = std::make_unique<views::Combobox>(combobox_model_.get());
-
-  // TODO(corising): Update this to use the SidePanelEntry::Id to select the
-  // correct index once a new combobox model is created.
-  combobox->SetSelectedIndex(0);
+  combobox->SetSelectedIndex(
+      combobox_model_->GetIndexForId(GetLastActiveEntry()));
   // TODO(corising): Replace this with something appropriate.
   combobox->SetAccessibleName(
       combobox_model_->GetItemAt(combobox->GetSelectedIndex()));
