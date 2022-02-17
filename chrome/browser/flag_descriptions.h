@@ -3114,9 +3114,6 @@ extern const char kLauncherNudgeShortIntervalDescription[];
 extern const char kDesktopCaptureLacrosV2Name[];
 extern const char kDesktopCaptureLacrosV2Description[];
 
-extern const char kLacrosMergeIcuDataFileName[];
-extern const char kLacrosMergeIcuDataFileDescription[];
-
 extern const char kLacrosNonSyncingProfilesName[];
 extern const char kLacrosNonSyncingProfilesDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)

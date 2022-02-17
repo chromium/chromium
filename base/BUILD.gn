@@ -2760,13 +2760,6 @@ component("i18n") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "i18n/icu_mergeable_data_file.cc",
-      "i18n/icu_mergeable_data_file.h",
-    ]
-  }
-
   if (is_mac) {
     frameworks = [ "CoreFoundation.framework" ]
   }
@@ -3740,10 +3733,6 @@ test("base_unittests") {
       # Set rpath to find libmalloc_wrapper.so even in a non-component build.
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
     }
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [ "i18n/icu_mergeable_data_file_unittest.cc" ]
   }
 
   if (is_linux || is_chromeos_lacros) {
