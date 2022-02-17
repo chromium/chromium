@@ -14,6 +14,7 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -220,7 +221,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   EXPECT_FALSE(GenerationPopupShowing());
   // The same flow happens when user generates a password from the context menu.
   password_manager_util::UserTriggeredManualGenerationFromContextMenu(
-      ChromePasswordManagerClient::FromWebContents(WebContents()));
+      ChromePasswordManagerClient::FromWebContents(WebContents()),
+      autofill::ChromeAutofillClient::FromWebContents(WebContents()));
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
   EXPECT_TRUE(GenerationPopupShowing());
   SendKeyToPopup(ui::VKEY_DOWN);

@@ -12,6 +12,10 @@
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -51,6 +55,198 @@ class MockPasswordManagerClient
                    password_manager::PasswordManagerClient::ReauthSucceeded)>),
               (override));
   MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
+};
+
+class MockAutofillClient : public autofill::AutofillClient {
+ public:
+  MockAutofillClient() = default;
+  MockAutofillClient(const MockAutofillClient&) = delete;
+  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
+  ~MockAutofillClient() override = default;
+
+  MOCK_METHOD(version_info::Channel, GetChannel, (), (const, override));
+  MOCK_METHOD(autofill::PersonalDataManager*,
+              GetPersonalDataManager,
+              (),
+              (override));
+  MOCK_METHOD(autofill::AutocompleteHistoryManager*,
+              GetAutocompleteHistoryManager,
+              (),
+              (override));
+  MOCK_METHOD(PrefService*, GetPrefs, (), (override));
+  MOCK_METHOD(const PrefService*, GetPrefs, (), (const, override));
+  MOCK_METHOD(syncer::SyncService*, GetSyncService, (), (override));
+  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
+  MOCK_METHOD(autofill::FormDataImporter*, GetFormDataImporter, (), (override));
+  MOCK_METHOD(autofill::payments::PaymentsClient*,
+              GetPaymentsClient,
+              (),
+              (override));
+  MOCK_METHOD(autofill::StrikeDatabase*, GetStrikeDatabase, (), (override));
+  MOCK_METHOD(ukm::UkmRecorder*, GetUkmRecorder, (), (override));
+  MOCK_METHOD(ukm::SourceId, GetUkmSourceId, (), (override));
+  MOCK_METHOD(autofill::AddressNormalizer*,
+              GetAddressNormalizer,
+              (),
+              (override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
+  MOCK_METHOD(security_state::SecurityLevel,
+              GetSecurityLevelForUmaHistograms,
+              (),
+              (override));
+  MOCK_METHOD(const translate::LanguageState*,
+              GetLanguageState,
+              (),
+              (override));
+  MOCK_METHOD(translate::TranslateDriver*, GetTranslateDriver, (), (override));
+  MOCK_METHOD(void, ShowAutofillSettings, (bool), (override));
+  MOCK_METHOD(void,
+              ShowUnmaskPrompt,
+              (const autofill::CreditCard&,
+               UnmaskCardReason,
+               base::WeakPtr<autofill::CardUnmaskDelegate>),
+              (override));
+  MOCK_METHOD(void,
+              OnUnmaskVerificationResult,
+              (PaymentsRpcResult),
+              (override));
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  MOCK_METHOD(std::vector<std::string>,
+              GetAllowedMerchantsForVirtualCards,
+              (),
+              (override));
+  MOCK_METHOD(std::vector<std::string>,
+              GetAllowedBinRangesForVirtualCards,
+              (),
+              (override));
+  MOCK_METHOD(void,
+              ShowLocalCardMigrationDialog,
+              (base::OnceClosure),
+              (override));
+  MOCK_METHOD(void,
+              ConfirmMigrateLocalCardToCloud,
+              (const autofill::LegalMessageLines&,
+               const std::string&,
+               const std::vector<autofill::MigratableCreditCard>&,
+               LocalCardMigrationCallback),
+              (override));
+  MOCK_METHOD(void,
+              ShowLocalCardMigrationResults,
+              (const bool,
+               const std::u16string&,
+               const std::vector<autofill::MigratableCreditCard>&,
+               MigrationDeleteCardCallback),
+              (override));
+  MOCK_METHOD(void,
+              ShowWebauthnOfferDialog,
+              (WebauthnDialogCallback),
+              (override));
+  MOCK_METHOD(void,
+              ShowWebauthnVerifyPendingDialog,
+              (WebauthnDialogCallback),
+              (override));
+  MOCK_METHOD(void, UpdateWebauthnOfferDialogWithError, (), (override));
+  MOCK_METHOD(bool, CloseWebauthnDialog, (), (override));
+  MOCK_METHOD(void,
+              ConfirmSaveUpiIdLocally,
+              (const std::string&,
+               base::OnceCallback<void(bool user_decision)>),
+              (override));
+  MOCK_METHOD(void,
+              OfferVirtualCardOptions,
+              (const std::vector<autofill::CreditCard*>&,
+               base::OnceCallback<void(const std::string&)>),
+              (override));
+#else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  MOCK_METHOD(void,
+              ConfirmAccountNameFixFlow,
+              (base::OnceCallback<void(const std::u16string&)>),
+              (override));
+  MOCK_METHOD(
+      void,
+      ConfirmExpirationDateFixFlow,
+      (const autofill::CreditCard&,
+       base::OnceCallback<void(const std::u16string&, const std::u16string&)>),
+      (override));
+#endif
+  MOCK_METHOD(void,
+              ConfirmSaveCreditCardLocally,
+              (const autofill::CreditCard&,
+               autofill::AutofillClient::SaveCreditCardOptions,
+               LocalSaveCardPromptCallback),
+              (override));
+  MOCK_METHOD(void,
+              ConfirmSaveCreditCardToCloud,
+              (const autofill::CreditCard&,
+               const autofill::LegalMessageLines&,
+               SaveCreditCardOptions,
+               UploadSaveCardPromptCallback),
+              (override));
+  MOCK_METHOD(void, CreditCardUploadCompleted, (bool), (override));
+  MOCK_METHOD(void,
+              ConfirmCreditCardFillAssist,
+              (const autofill::CreditCard&, base::OnceClosure),
+              (override));
+  MOCK_METHOD(void,
+              ConfirmSaveAddressProfile,
+              (const autofill::AutofillProfile&,
+               const autofill::AutofillProfile*,
+               SaveAddressProfilePromptOptions,
+               AddressProfileSavePromptCallback),
+              (override));
+  MOCK_METHOD(bool, HasCreditCardScanFeature, (), (override));
+  MOCK_METHOD(void, ScanCreditCard, (CreditCardScanCallback), (override));
+  MOCK_METHOD(void,
+              ShowAutofillPopup,
+              (const PopupOpenArgs&,
+               base::WeakPtr<autofill::AutofillPopupDelegate>),
+              (override));
+  MOCK_METHOD(void,
+              UpdateAutofillPopupDataListValues,
+              (const std::vector<std::u16string>&,
+               const std::vector<std::u16string>&),
+              (override));
+  MOCK_METHOD(void, PinPopupView, (), (override));
+  MOCK_METHOD(PopupOpenArgs, GetReopenPopupArgs, (), (const, override));
+  MOCK_METHOD(base::span<const autofill::Suggestion>,
+              GetPopupSuggestions,
+              (),
+              (const, override));
+  MOCK_METHOD(void,
+              UpdatePopup,
+              (const std::vector<autofill::Suggestion>&, autofill::PopupType),
+              (override));
+  MOCK_METHOD(void,
+              HideAutofillPopup,
+              (autofill::PopupHidingReason),
+              (override));
+  MOCK_METHOD(bool, IsAutocompleteEnabled, (), (override));
+  MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
+  MOCK_METHOD(void,
+              PropagateAutofillPredictions,
+              (content::RenderFrameHost*,
+               const std::vector<autofill::FormStructure*>&),
+              (override));
+  MOCK_METHOD(void,
+              DidFillOrPreviewField,
+              (const std::u16string&, const std::u16string&),
+              (override));
+  MOCK_METHOD(bool, IsContextSecure, (), (const, override));
+  MOCK_METHOD(bool, ShouldShowSigninPromo, (), (override));
+  MOCK_METHOD(bool, AreServerCardsSupported, (), (const, override));
+  MOCK_METHOD(void, ExecuteCommand, (int), (override));
+  MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const, override));
+  MOCK_METHOD(const autofill::AutofillAblationStudy&,
+              GetAblationStudy,
+              (),
+              (const, override));
+#if BUILDFLAG(IS_IOS)
+  MOCK_METHOD(bool, IsQueryIDRelevant, (int), (override));
+#endif
+  MOCK_METHOD(void,
+              LoadRiskData,
+              (base::OnceCallback<void(const std::string&)>),
+              (override));
 };
 
 PasswordForm GetTestAndroidCredential() {
@@ -475,7 +671,7 @@ TEST(PasswordManagerUtil, ManualGenerationShouldNotReauthIfNotNeeded) {
   EXPECT_CALL(mock_client, TriggerReauthForPrimaryAccount).Times(0);
   EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
 
-  UserTriggeredManualGenerationFromContextMenu(&mock_client);
+  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
 }
 
 TEST(PasswordManagerUtil,
@@ -499,7 +695,7 @@ TEST(PasswordManagerUtil,
           });
   EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
 
-  UserTriggeredManualGenerationFromContextMenu(&mock_client);
+  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
 }
 
 TEST(PasswordManagerUtil,
@@ -524,7 +720,19 @@ TEST(PasswordManagerUtil,
           });
   EXPECT_CALL(mock_client, GeneratePassword).Times(0);
 
-  UserTriggeredManualGenerationFromContextMenu(&mock_client);
+  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
+}
+
+TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
+  password_manager::StubPasswordManagerClient stub_password_client;
+  MockAutofillClient mock_autofill_client;
+
+  EXPECT_CALL(mock_autofill_client,
+              HideAutofillPopup(
+                  autofill::PopupHidingReason::kOverlappingWithAnotherPrompt));
+
+  UserTriggeredManualGenerationFromContextMenu(&stub_password_client,
+                                               &mock_autofill_client);
 }
 
 TEST(PasswordManagerUtil, StripAuthAndParams) {
