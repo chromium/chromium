@@ -12,7 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/i18n/case_conversion.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -239,8 +239,9 @@ void AutocompleteActionPredictor::StartPrerendering(
       }
       // `url` does not match with previously prerendered url. Reset the
       // handle to trigger cancellation.
-      UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.PrerenderStatus",
-                                PrerenderPredictionStatus::kCancelled);
+      base::UmaHistogramEnumeration(
+          "AutocompleteActionPredictor.PrerenderStatus",
+          PrerenderPredictionStatus::kCancelled);
       prerender_manager->CancelPrerenderDirectUrlInput();
     }
 
@@ -258,7 +259,7 @@ void AutocompleteActionPredictor::StartPrerendering(
       }
       // `url` does not match with previously prefetched url. Reset the
       // handle to trigger cancellation.
-      UMA_HISTOGRAM_ENUMERATION(
+      base::UmaHistogramEnumeration(
           "AutocompleteActionPredictor.NoStatePrefetchStatus",
           PredictionStatus::kCancelled);
       no_state_prefetch_handle_->OnCancel();
@@ -283,11 +284,12 @@ AutocompleteActionPredictor::RecommendAction(
   const double confidence = CalculateConfidence(user_text, match, &is_in_db);
   DCHECK(confidence >= 0.0 && confidence <= 1.0);
 
-  UMA_HISTOGRAM_BOOLEAN("AutocompleteActionPredictor.MatchIsInDb", is_in_db);
+  base::UmaHistogramBoolean("AutocompleteActionPredictor.MatchIsInDb",
+                            is_in_db);
 
   if (is_in_db) {
-    UMA_HISTOGRAM_COUNTS_100("AutocompleteActionPredictor.Confidence",
-                             confidence * 100);
+    base::UmaHistogramCounts100("AutocompleteActionPredictor.Confidence",
+                                confidence * 100);
   }
 
   // Map the confidence to an action.
@@ -346,16 +348,16 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
           // complete successfully or not, but we know it's no longer active, so
           // we log this as kHitFinished.
           || !no_state_prefetch_handle_->contents()) {
-        UMA_HISTOGRAM_ENUMERATION(
+        base::UmaHistogramEnumeration(
             "AutocompleteActionPredictor.NoStatePrefetchStatus",
             PredictionStatus::kHitFinished);
       } else {
-        UMA_HISTOGRAM_ENUMERATION(
+        base::UmaHistogramEnumeration(
             "AutocompleteActionPredictor.NoStatePrefetchStatus",
             PredictionStatus::kHitUnfinished);
       }
     } else {
-      UMA_HISTOGRAM_ENUMERATION(
+      base::UmaHistogramEnumeration(
           "AutocompleteActionPredictor.NoStatePrefetchStatus",
           PredictionStatus::kUnused);
     }
@@ -367,18 +369,20 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
     // PrerenderManager.
     if (direct_url_input_prerender_handle_->GetInitialPrerenderingUrl() ==
         opened_url) {
-      UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.PrerenderStatus",
-                                PrerenderPredictionStatus::kHitFinished);
+      base::UmaHistogramEnumeration(
+          "AutocompleteActionPredictor.PrerenderStatus",
+          PrerenderPredictionStatus::kHitFinished);
     } else {
-      UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.PrerenderStatus",
-                                PrerenderPredictionStatus::kUnused);
+      base::UmaHistogramEnumeration(
+          "AutocompleteActionPredictor.PrerenderStatus",
+          PrerenderPredictionStatus::kUnused);
     }
   } else {
-    UMA_HISTOGRAM_ENUMERATION(
+    base::UmaHistogramEnumeration(
         "AutocompleteActionPredictor.NoStatePrefetchStatus",
         PredictionStatus::kNotStarted);
-    UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.PrerenderStatus",
-                              PrerenderPredictionStatus::kNotStarted);
+    base::UmaHistogramEnumeration("AutocompleteActionPredictor.PrerenderStatus",
+                                  PrerenderPredictionStatus::kNotStarted);
   }
 
   // TODO:(crbug.com/1297441): Move this logic outside
@@ -387,7 +391,7 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
   // values (kHitFinished, kUnused, kCancelled) are recorded in
   // PrerenderManager.
   if (!search_prerender_handle_) {
-    UMA_HISTOGRAM_ENUMERATION(
+    base::UmaHistogramEnumeration(
         internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
         PrerenderPredictionStatus::kNotStarted);
   }
@@ -461,8 +465,8 @@ void AutocompleteActionPredictor::DeleteAllRows() {
                        table_));
   }
 
-  UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.DatabaseAction",
-                            DatabaseAction::kDeleteAll);
+  base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
+                                DatabaseAction::kDeleteAll);
 }
 
 void AutocompleteActionPredictor::DeleteRowsFromCaches(
@@ -500,8 +504,8 @@ void AutocompleteActionPredictor::AddAndUpdateRows(
 
     db_cache_[key] = value;
     db_id_cache_[key] = it->id;
-    UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.DatabaseAction",
-                              DatabaseAction::kAdd);
+    base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
+                                  DatabaseAction::kAdd);
   }
   for (auto it = rows_to_update.begin(); it != rows_to_update.end(); ++it) {
     const DBCacheKey key = { it->user_text, it->url };
@@ -512,8 +516,8 @@ void AutocompleteActionPredictor::AddAndUpdateRows(
 
     db_it->second.number_of_hits = it->number_of_hits;
     db_it->second.number_of_misses = it->number_of_misses;
-    UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.DatabaseAction",
-                              DatabaseAction::kUpdate);
+    base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
+                                  DatabaseAction::kUpdate);
   }
 
   if (table_.get()) {
@@ -740,8 +744,8 @@ void AutocompleteActionPredictor::OnURLsDeleted(
                                   table_, std::move(id_list)));
   }
 
-  UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.DatabaseAction",
-                            DatabaseAction::kDeleteSome);
+  base::UmaHistogramEnumeration("AutocompleteActionPredictor.DatabaseAction",
+                                DatabaseAction::kDeleteSome);
 }
 
 void AutocompleteActionPredictor::OnHistoryServiceLoaded(
