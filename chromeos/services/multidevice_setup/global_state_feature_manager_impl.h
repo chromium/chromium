@@ -44,8 +44,6 @@ class GlobalStateFeatureManagerImpl
   class Factory {
    public:
     enum class Option {
-      // Corresponds to |mojom::Feature::kPhoneHubCameraRoll|.
-      kPhoneHubCameraRoll,
       // Corresponds to |mojom::Feature::kWifiSync|.
       kWifiSync
     };

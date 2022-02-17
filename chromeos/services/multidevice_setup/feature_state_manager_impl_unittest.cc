@@ -122,9 +122,6 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
     fake_android_sms_pairing_state_tracker_->SetPairingComplete(true);
 
     fake_global_state_feature_managers_.emplace(
-        mojom::Feature::kPhoneHubCameraRoll,
-        std::make_unique<FakeGlobalStateFeatureManager>());
-    fake_global_state_feature_managers_.emplace(
         mojom::Feature::kWifiSync,
         std::make_unique<FakeGlobalStateFeatureManager>());
 
@@ -132,11 +129,7 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
         test_pref_service_.get(), fake_host_status_provider_.get(),
         fake_device_sync_client_.get(),
         fake_android_sms_pairing_state_tracker_.get(),
-        {{mojom::Feature::kPhoneHubCameraRoll,
-          fake_global_state_feature_managers_
-              .at(mojom::Feature::kPhoneHubCameraRoll)
-              .get()},
-         {mojom::Feature::kWifiSync,
+        {{mojom::Feature::kWifiSync,
           fake_global_state_feature_managers_.at(mojom::Feature::kWifiSync)
               .get()}},
         is_secondary_user);
@@ -816,15 +809,13 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHub) {
 
 TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, CameraRoll) {
   SetupFeatureStateManager();
-  // Set the initial global state to disabled, so that the camera roll feature
-  // state will be |kDisabledByUser| when it becomes supported on both the host
-  // and client devices.
-  global_state_feature_managers()[mojom::Feature::kPhoneHubCameraRoll]
-      ->SetIsFeatureEnabled(false);
+
   TryAllUnverifiedHostStatesAndVerifyFeatureState(
       mojom::Feature::kPhoneHubCameraRoll);
 
   SetVerifiedHost();
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kPhoneHub);
   VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
                      mojom::Feature::kPhoneHubCameraRoll);
 
@@ -836,70 +827,61 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, CameraRoll) {
       multidevice::SoftwareFeature::kPhoneHubCameraRollClient,
       multidevice::SoftwareFeatureState::kSupported);
   VerifyFeatureState(mojom::FeatureState::kNotSupportedByPhone,
+                     mojom::Feature::kPhoneHub);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByPhone,
                      mojom::Feature::kPhoneHubCameraRoll);
 
   SetSoftwareFeatureState(false /* use_local_device */,
                           multidevice::SoftwareFeature::kPhoneHubHost,
                           multidevice::SoftwareFeatureState::kEnabled);
-  VerifyFeatureState(mojom::FeatureState::kNotSupportedByPhone,
-                     mojom::Feature::kPhoneHubCameraRoll);
-
-  // Camera Roll is considered disabled if it host is supported but disabled.
-  SetSoftwareFeatureState(false /* use_local_device */,
-                          multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
-                          multidevice::SoftwareFeatureState::kSupported);
-  VerifyFeatureState(mojom::FeatureState::kDisabledByUser,
-                     mojom::Feature::kPhoneHubCameraRoll);
-
-  // Camera Roll does not automatically enable with Phone Hub.
-  test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, true);
-  VerifyFeatureState(mojom::FeatureState::kDisabledByUser,
-                     mojom::Feature::kPhoneHubCameraRoll);
-
-  // The GlobalStateFeatureManager should be updated when the host state changes
-  // to |kEnabled|. It will then update the feature state to |kEnabledByUser|.
-  global_state_feature_managers()[mojom::Feature::kPhoneHubCameraRoll]
-      ->SetIsFeatureEnabled(true);
   SetSoftwareFeatureState(false /* use_local_device */,
                           multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
                           multidevice::SoftwareFeatureState::kEnabled);
-  VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
-                     mojom::Feature::kPhoneHubCameraRoll);
-
-  // Simulate user toggling the camera roll state, and verify that the
-  // GlobalStateFeatureManager was updated accordingly.
-  manager()->SetFeatureEnabledState(mojom::Feature::kPhoneHubCameraRoll, false);
+  VerifyFeatureState(mojom::FeatureState::kDisabledByUser,
+                     mojom::Feature::kPhoneHub);
   VerifyFeatureState(mojom::FeatureState::kDisabledByUser,
                      mojom::Feature::kPhoneHubCameraRoll);
-  EXPECT_FALSE(
-      global_state_feature_managers()[mojom::Feature::kPhoneHubCameraRoll]
-          ->IsFeatureEnabled());
 
-  manager()->SetFeatureEnabledState(mojom::Feature::kPhoneHubCameraRoll, true);
+  // Camera Roll does not automatically enable with Phone Hub
+  test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, true);
+  VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
+                     mojom::Feature::kPhoneHub);
+  VerifyFeatureState(mojom::FeatureState::kDisabledByUser,
+                     mojom::Feature::kPhoneHubCameraRoll);
+
+  // Enable Camera Roll
+  test_pref_service()->SetBoolean(kPhoneHubCameraRollEnabledPrefName, true);
+  VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
+                     mojom::Feature::kPhoneHub);
   VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
                      mojom::Feature::kPhoneHubCameraRoll);
-  EXPECT_TRUE(
-      global_state_feature_managers()[mojom::Feature::kPhoneHubCameraRoll]
-          ->IsFeatureEnabled());
 
   // Camera Roll is automatically disabled when Phone Hub is disabled
   test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, false);
+  VerifyFeatureState(mojom::FeatureState::kDisabledByUser,
+                     mojom::Feature::kPhoneHub);
   VerifyFeatureState(mojom::FeatureState::kUnavailableTopLevelFeatureDisabled,
                      mojom::Feature::kPhoneHubCameraRoll);
 
   // Camera Roll restores its previous state when Phone Hub is enabled
   test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, true);
   VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
+                     mojom::Feature::kPhoneHub);
+  VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
                      mojom::Feature::kPhoneHubCameraRoll);
 
   // Prohibiting Camera Roll does not prohibit Phone Hub
   test_pref_service()->SetBoolean(kPhoneHubCameraRollAllowedPrefName, false);
+  VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
+                     mojom::Feature::kPhoneHub);
   VerifyFeatureState(mojom::FeatureState::kProhibitedByPolicy,
                      mojom::Feature::kPhoneHubCameraRoll);
 
   // Prohibiting Phone Hub does prohibit Camera Roll
   test_pref_service()->SetBoolean(kPhoneHubCameraRollAllowedPrefName, true);
   test_pref_service()->SetBoolean(kPhoneHubAllowedPrefName, false);
+  VerifyFeatureState(mojom::FeatureState::kProhibitedByPolicy,
+                     mojom::Feature::kPhoneHub);
   VerifyFeatureState(mojom::FeatureState::kProhibitedByPolicy,
                      mojom::Feature::kPhoneHubCameraRoll);
 }

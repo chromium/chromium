@@ -721,6 +721,12 @@ const char kMediaRouterEnableCloudServices[] =
     "media_router.cloudservices.enabled";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 02/2022
+const char kPhoneHubCameraRollPendingStatePrefName[] =
+    "multidevice_setup.phone_hub_camera_roll_pending_state";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -939,6 +945,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterUint64Pref(kFlocIdFinchConfigVersionPrefKey, 0);
   registry->RegisterUint64Pref(kFlocIdSortingLshVersionPrefKey, 0);
   registry->RegisterTimePref(kFlocIdComputeTimePrefKey, base::Time());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kPhoneHubCameraRollPendingStatePrefName, 0);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -1852,6 +1862,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kMediaRouterCloudServicesPrefSet);
   profile_prefs->ClearPref(kMediaRouterEnableCloudServices);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 02/2022
+  profile_prefs->ClearPref(kPhoneHubCameraRollPendingStatePrefName);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

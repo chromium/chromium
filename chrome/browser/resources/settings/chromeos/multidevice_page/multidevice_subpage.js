@@ -184,6 +184,16 @@ Polymer({
    * @return {boolean}
    * @private
    */
+  isPhoneHubCameraRollSetupRequired_() {
+    return this.isFeatureSupported(
+               settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL) &&
+        !this.pageContentData.isCameraRollFilePermissionGranted;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
   isPhoneHubAppsSetupRequired_() {
     return this.isFeatureSupported(settings.MultiDeviceFeature.ECHE) &&
         this.pageContentData.isPhoneHubPermissionsDialogSupported &&
@@ -203,12 +213,23 @@ Polymer({
    * @return {boolean}
    * @private
    */
+  shouldShowPhoneHubCameraRollItem_() {
+    return this.isFeatureSupported(
+               settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL) &&
+        (!this.isPhoneHubCameraRollSetupRequired_() ||
+         !this.shouldShowPhoneHubCombinedSetupItem_());
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
   shouldShowPhoneHubNotificationsItem_() {
     return this.isFeatureSupported(
                settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS) &&
-        !this.shouldShowPhoneHubCombinedSetupItem_();
+        (!this.isPhoneHubNotificationsSetupRequired_() ||
+         !this.shouldShowPhoneHubCombinedSetupItem_());
   },
-
 
   /**
    * @return {boolean}
@@ -216,17 +237,40 @@ Polymer({
    */
   shouldShowPhoneHubAppsItem_() {
     return this.isFeatureSupported(settings.MultiDeviceFeature.ECHE) &&
-        !this.shouldShowPhoneHubCombinedSetupItem_();
+        (!this.isPhoneHubAppsSetupRequired_() ||
+         !this.shouldShowPhoneHubCombinedSetupItem_());
   },
 
   /**
-   * @return {boolean} True if both Phone Hub Notifications and Apps need to
-   *     complete the setup process, we will display a combined setup item.
+   * @return {boolean}
    * @private
    */
   shouldShowPhoneHubCombinedSetupItem_() {
-    return this.isPhoneHubAppsSetupRequired_() &&
-        this.isPhoneHubNotificationsSetupRequired_();
+    let numFeaturesSetupRequired = 0;
+    if (this.isPhoneHubCameraRollSetupRequired_()) {
+      numFeaturesSetupRequired++;
+    }
+    if (this.isPhoneHubNotificationsSetupRequired_()) {
+      numFeaturesSetupRequired++;
+    }
+    if (this.isPhoneHubAppsSetupRequired_()) {
+      numFeaturesSetupRequired++;
+    }
+    return numFeaturesSetupRequired >= 2;
+  },
+
+  /** @private */
+  handlePhoneHubCameraRollSetupClick_() {
+    this.fire(
+        'permission-setup-requested',
+        {mode: PhoneHubPermissionsSetupMode.CAMERA_ROLL_SETUP_MODE});
+  },
+
+  /** @private */
+  handlePhoneHubNotificationsSetupClick_() {
+    this.fire(
+        'permission-setup-requested',
+        {mode: PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE});
   },
 
   /** @private */
@@ -236,10 +280,11 @@ Polymer({
         {mode: PhoneHubPermissionsSetupMode.APPS_SETUP_MODE});
   },
 
-  /** @private */
-  handlePhoneHubCombinedSetupClick_() {
-    this.fire(
-        'permission-setup-requested',
-        {mode: PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE});
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isPhoneHubDisabled_() {
+    return !this.isSuiteOn() || !this.isPhoneHubOn();
   },
 });

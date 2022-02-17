@@ -150,7 +150,6 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
       grandfathered_easy_unlock_host_disabler_;
   std::unique_ptr<HostDeviceTimestampManager> host_device_timestamp_manager_;
   std::unique_ptr<AccountStatusChangeDelegateNotifier> delegate_notifier_;
-  std::unique_ptr<GlobalStateFeatureManager> camera_roll_feature_manager_;
   std::unique_ptr<GlobalStateFeatureManager> wifi_sync_feature_manager_;
   std::unique_ptr<WifiSyncNotificationController>
       wifi_sync_notification_controller_;

@@ -138,13 +138,6 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
               host_device_timestamp_manager_.get(),
               oobe_completion_tracker,
               base::DefaultClock::GetInstance())),
-      camera_roll_feature_manager_(
-          GlobalStateFeatureManagerImpl::Factory::Create(
-              GlobalStateFeatureManagerImpl::Factory::Option::
-                  kPhoneHubCameraRoll,
-              host_status_provider_.get(),
-              pref_service,
-              device_sync_client)),
       wifi_sync_feature_manager_(GlobalStateFeatureManagerImpl::Factory::Create(
           GlobalStateFeatureManagerImpl::Factory::Option::kWifiSync,
           host_status_provider_.get(),
@@ -162,9 +155,7 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
           host_status_provider_.get(),
           device_sync_client,
           android_sms_pairing_state_tracker,
-          {{mojom::Feature::kPhoneHubCameraRoll,
-            camera_roll_feature_manager_.get()},
-           {mojom::Feature::kWifiSync, wifi_sync_feature_manager_.get()}},
+          {{mojom::Feature::kWifiSync, wifi_sync_feature_manager_.get()}},
           is_secondary_user)),
       android_sms_app_installing_host_observer_(
           android_sms_app_helper_delegate

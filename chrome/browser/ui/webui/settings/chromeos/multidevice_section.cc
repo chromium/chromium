@@ -427,6 +427,22 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE},
       {"multidevicePhoneHubAppsAndNotificationsItemTitle",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SECTION_TITLE},
+      {"multidevicePhoneHubCameraRollAndNotificationsItemTitle",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_NOTIFICATIONS_SECTION_TITLE},
+      {"multidevicePhoneHubCameraRollAndAppsItemTitle",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_APPS_SECTION_TITLE},
+      {"multidevicePhoneHubCameraRollNotificationsAndAppsItemTitle",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_NOTIFICATIONS_AND_APPS_SECTION_TITLE},
+      {"multidevicePhoneHubNotificationsItemSummary",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY},
+      {"multidevicePhoneHubAppsItemSummary",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SUMMARY},
+      {"multidevicePhoneHubAppsAndNotificationsItemSummary",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SUMMARY},
+      {"multidevicePhoneHubCameraRollAndAppsItemSummary",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_APPS_SUMMARY},
+      {"multidevicePhoneHubCameraRollNotificationsAndAppsItemSummary",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_NOTIFICATIONS_AND_APPS_SUMMARY},
       {"multideviceLearnMoreWithoutURL", IDS_SETTINGS_LEARN_MORE},
       {"multidevicePermissionsSetupNotificationsTitle",
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ITEM_TITLE},
@@ -518,10 +534,6 @@ void MultiDeviceSection::AddLoadTimeData(
       ui::SubstituteChromeOSDeviceType(
           IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SUMMARY));
   html_source->AddString(
-      "multidevicePhoneHubNotificationsItemSummary",
-      ui::SubstituteChromeOSDeviceType(
-          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY));
-  html_source->AddString(
       "multideviceNotificationAccessSetupAckTitle",
       ui::SubstituteChromeOSDeviceType(
           IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE));
@@ -549,22 +561,13 @@ void MultiDeviceSection::AddLoadTimeData(
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_DISABLED_SUMMARY,
           GetHelpUrlWithBoard(phonehub::kPhoneHubLearnMoreLink)));
-  html_source->AddString("multidevicePhoneHubAppsItemSummary",
-                         ui::SubstituteChromeOSDeviceType(
-                             IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SUMMARY));
   html_source->AddString(
-      "multidevicePhoneHubAppsAndNotificationsItemSummary",
+      "multidevicePhoneHubCameraRollAndNotificationsItemSummary",
       ui::SubstituteChromeOSDeviceType(
-          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SUMMARY));
+          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_NOTIFICATIONS_SUMMARY));
   html_source->AddString(
       "multidevicePhoneHubPermissionsLearnMoreURL",
       GetHelpUrlWithBoard(chrome::kPhoneHubPermissionLearnMoreURL));
-  html_source->AddString(
-      "multidevicePhoneHubCameraRollDisabledItemSummary",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_DISABLED_SUMMARY,
-          ui::GetChromeOSDeviceName(),
-          GetHelpUrlWithBoard(phonehub::kPhoneHubLearnMoreLink)));
   html_source->AddString(
       "multidevicePermissionsSetupAckTitle",
       ui::SubstituteChromeOSDeviceType(

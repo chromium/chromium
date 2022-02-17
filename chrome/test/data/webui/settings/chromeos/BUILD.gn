@@ -100,7 +100,7 @@ js_modulizer("modulize") {
     "keyboard_shortcut_banner_test.js",
     "localized_link_test.js",
     "manage_accessibility_page_tests.js",
-    "multidevice_camera_roll_item_tests.js",
+    "multidevice_combined_setup_item_tests.js",
     "multidevice_feature_item_tests.js",
     "multidevice_feature_toggle_tests.js",
     "multidevice_notification_access_setup_dialog_tests.js",

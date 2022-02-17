@@ -105,7 +105,8 @@ cr.define('settings', function() {
     INIT_MODE: 0,
     NOTIFICATION_SETUP_MODE: 1,
     APPS_SETUP_MODE: 2,
-    ALL_PERMISSIONS_SETUP_MODE: 3,
+    CAMERA_ROLL_SETUP_MODE: 3,
+    ALL_PERMISSIONS_SETUP_MODE: 4,
   };
 
   /**
