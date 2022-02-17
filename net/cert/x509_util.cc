@@ -80,6 +80,21 @@ const EVP_MD* ToEVP(DigestAlgorithm alg) {
   return nullptr;
 }
 
+class BufferPoolSingleton {
+ public:
+  BufferPoolSingleton() : pool_(CRYPTO_BUFFER_POOL_new()) {}
+  CRYPTO_BUFFER_POOL* pool() { return pool_; }
+
+ private:
+  // The singleton is leaky, so there is no need to use a smart pointer.
+  raw_ptr<CRYPTO_BUFFER_POOL> pool_;
+};
+
+base::LazyInstance<BufferPoolSingleton>::Leaky g_buffer_pool_singleton =
+    LAZY_INSTANCE_INITIALIZER;
+
+}  // namespace
+
 // Adds an X.509 Name with the specified distinguished name to |cbb|.
 bool AddName(CBB* cbb, base::StringPiece name) {
   // See RFC 4519.
@@ -148,21 +163,6 @@ bool AddName(CBB* cbb, base::StringPiece name) {
   }
   return true;
 }
-
-class BufferPoolSingleton {
- public:
-  BufferPoolSingleton() : pool_(CRYPTO_BUFFER_POOL_new()) {}
-  CRYPTO_BUFFER_POOL* pool() { return pool_; }
-
- private:
-  // The singleton is leaky, so there is no need to use a smart pointer.
-  raw_ptr<CRYPTO_BUFFER_POOL> pool_;
-};
-
-base::LazyInstance<BufferPoolSingleton>::Leaky g_buffer_pool_singleton =
-    LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
 
 bool CBBAddTime(CBB* cbb, base::Time time) {
   der::GeneralizedTime generalized_time;
