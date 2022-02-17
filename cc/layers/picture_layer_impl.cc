@@ -999,7 +999,7 @@ const PaintWorkletRecordMap& PictureLayerImpl::GetPaintWorkletRecords() const {
 }
 
 bool PictureLayerImpl::IsDirectlyCompositedImage() const {
-  return directly_composited_image_default_raster_scale_ != 0.f;
+  return directly_composited_image_default_raster_scale_ > 0.f;
 }
 
 bool PictureLayerImpl::ScrollInteractionInProgress() const {
@@ -1125,6 +1125,7 @@ void PictureLayerImpl::SetDirectlyCompositedImageDefaultRasterScale(
 
 void PictureLayerImpl::SetDirectlyCompositedImageDefaultRasterScale(
     float scale) {
+  DCHECK_GE(scale, 0.f);
   if (directly_composited_image_default_raster_scale_ == scale)
     return;
 
@@ -1176,16 +1177,25 @@ float PictureLayerImpl::CalculateDirectlyCompositedImageRasterScale() const {
 
   float clamped_ideal_source_scale =
       base::clamp(ideal_source_scale_key(), min_scale, max_scale);
-  while (adjusted_raster_scale < clamped_ideal_source_scale)
-    adjusted_raster_scale *= 2.f;
+  // Use clamped_ideal_source_scale if adjusted_raster_scale is too far away.
+  constexpr float kFarAwayFactor = 32.f;
+  if (adjusted_raster_scale < clamped_ideal_source_scale / kFarAwayFactor) {
+    adjusted_raster_scale = clamped_ideal_source_scale;
+  } else if (adjusted_raster_scale >
+             clamped_ideal_source_scale * kFarAwayFactor) {
+    adjusted_raster_scale = clamped_ideal_source_scale;
+  } else {
+    while (adjusted_raster_scale < clamped_ideal_source_scale)
+      adjusted_raster_scale *= 2.f;
 
-  // Make sure the adjusted scale is not more than 2x away from the ideal scale
-  // in order to save memory. Note that ShouldAdjustRasterScale() uses factor 4
-  // to determine when the scale needs to be updated. This means that the layer
-  // may need to be re-rasterized if scale is increased by factor of 2, but not
-  // again when it's scaled back to the original size.
-  while (adjusted_raster_scale >= 2 * clamped_ideal_source_scale)
-    adjusted_raster_scale /= 2.f;
+    // Make sure the adjusted scale is not more than 2x away from the ideal
+    // scale in order to save memory. Note that ShouldAdjustRasterScale() uses
+    // factor 4 to determine when the scale needs to be updated. This means that
+    // the layer may need to be re-rasterized if scale is increased by factor
+    // of 2, but not again when it's scaled back to the original size.
+    while (adjusted_raster_scale >= 2 * clamped_ideal_source_scale)
+      adjusted_raster_scale /= 2.f;
+  }
 
   adjusted_raster_scale =
       base::clamp(adjusted_raster_scale, min_scale, max_scale);

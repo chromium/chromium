@@ -5876,6 +5876,38 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterOnChange) {
                               ->contents_scale_key());
 }
 
+TEST_F(LegacySWPictureLayerImplTest, CompositedImageTinyRasterScale) {
+  gfx::Size layer_bounds(512, 512);
+  scoped_refptr<FakeRasterSource> pending_raster_source =
+      FakeRasterSource::CreateFilled(layer_bounds);
+
+  SetupPendingTree(pending_raster_source);
+
+  pending_layer()->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(1e-20f, 1e-20f));
+  SetupDrawPropertiesAndUpdateTiles(pending_layer(), 1.f, 1.f, 1.f);
+  EXPECT_FLOAT_EQ(1.f / 512, pending_layer()
+                                 ->picture_layer_tiling_set()
+                                 ->FindTilingWithResolution(HIGH_RESOLUTION)
+                                 ->contents_scale_key());
+}
+
+TEST_F(LegacySWPictureLayerImplTest, CompositedImageHugeRasterScale) {
+  gfx::Size layer_bounds(400, 400);
+  scoped_refptr<FakeRasterSource> pending_raster_source =
+      FakeRasterSource::CreateFilled(layer_bounds);
+
+  SetupPendingTree(pending_raster_source);
+
+  pending_layer()->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(1e20f, 1e20f));
+  SetupDrawPropertiesAndUpdateTiles(pending_layer(), 1.f, 1.f, 1.f);
+  EXPECT_FLOAT_EQ(1.0f, pending_layer()
+                            ->picture_layer_tiling_set()
+                            ->FindTilingWithResolution(HIGH_RESOLUTION)
+                            ->contents_scale_key());
+}
+
 TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterHighResScreen) {
   gfx::Size layer_bounds(100, 100);
   scoped_refptr<FakeRasterSource> pending_raster_source =
