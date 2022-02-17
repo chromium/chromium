@@ -114,6 +114,31 @@ public class TabPersistentStore {
         int OTHER = 2;
     }
 
+    /**
+     * Values are recorded in metrics and should not be changed.
+     */
+    @IntDef({TabRestoreMethod.TAB_STATE, TabRestoreMethod.CRITICAL_PERSISTED_TAB_DATA,
+            TabRestoreMethod.CREATE_NEW_TAB, TabRestoreMethod.FAILED_TO_RESTORE,
+            TabRestoreMethod.SKIPPED_NTP, TabRestoreMethod.SKIPPED_EMPTY_URL,
+            TabRestoreMethod.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    protected @interface TabRestoreMethod {
+        /** Tab restored using TabState. */
+        int TAB_STATE = 0;
+        /** Tab restored using CriticalPersistedTabData. */
+        int CRITICAL_PERSISTED_TAB_DATA = 1;
+        /** Tab restored by creating a new Tab from Tab metadata file. */
+        int CREATE_NEW_TAB = 2;
+        /** Failed to restore Tab using any of the above methods. */
+        int FAILED_TO_RESTORE = 3;
+        /** In some situations the NTP is skipped when we re-create the Tab as a fallback. */
+        int SKIPPED_NTP = 4;
+        /** The URL was empty so restoration was skipped. */
+        int SKIPPED_EMPTY_URL = 5;
+        int NUM_ENTRIES = 6;
+    }
+
     public void onNativeLibraryReady() {
         mTabModelSelector.addObserver(new TabModelSelectorObserver() {
             @Override
@@ -726,9 +751,18 @@ public class TabPersistentStore {
         }
 
         int tabId = tabToRestore.id;
-        if (tabState != null
-                || !CriticalPersistedTabData.isEmptySerialization(
-                        serializedCriticalPersistedTabData)) {
+        boolean useTabState = tabState != null;
+        boolean useCriticalPersistedTabData =
+                !CriticalPersistedTabData.isEmptySerialization(serializedCriticalPersistedTabData);
+        if (useTabState || useCriticalPersistedTabData) {
+            assert useTabState
+                    == !useCriticalPersistedTabData
+                : "Must only restore using TabState or CriticalPersistedTabData";
+            @TabRestoreMethod
+            int tabRestoreMethod = useTabState ? TabRestoreMethod.TAB_STATE
+                                               : TabRestoreMethod.CRITICAL_PERSISTED_TAB_DATA;
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabRestoreMethod", tabRestoreMethod, TabRestoreMethod.NUM_ENTRIES);
             mTabCreatorManager.getTabCreator(isIncognito)
                     .createFrozenTab(tabState, serializedCriticalPersistedTabData, tabToRestore.id,
                             isIncognito, restoredIndex);
@@ -736,9 +770,13 @@ public class TabPersistentStore {
             if (UrlUtilities.isNTPUrl(tabToRestore.url) && !setAsActive
                     && !tabToRestore.fromMerge) {
                 Log.i(TAG, "Skipping restore of non-selected NTP.");
+                RecordHistogram.recordEnumeratedHistogram("Tabs.TabRestoreMethod",
+                        TabRestoreMethod.SKIPPED_NTP, TabRestoreMethod.NUM_ENTRIES);
                 return;
             } else if (TextUtils.isEmpty(tabToRestore.url)) {
                 Log.i(TAG, "Skipping restore of empty Tabs.");
+                RecordHistogram.recordEnumeratedHistogram("Tabs.TabRestoreMethod",
+                        TabRestoreMethod.SKIPPED_EMPTY_URL, TabRestoreMethod.NUM_ENTRIES);
                 return;
             }
 
@@ -747,7 +785,14 @@ public class TabPersistentStore {
                                       .createNewTab(new LoadUrlParams(tabToRestore.url),
                                               TabLaunchType.FROM_RESTORE, null);
 
-            if (fallbackTab == null) return;
+            if (fallbackTab == null) {
+                RecordHistogram.recordEnumeratedHistogram("Tabs.TabRestoreMethod",
+                        TabRestoreMethod.FAILED_TO_RESTORE, TabRestoreMethod.NUM_ENTRIES);
+                return;
+            }
+
+            RecordHistogram.recordEnumeratedHistogram("Tabs.TabRestoreMethod",
+                    TabRestoreMethod.CREATE_NEW_TAB, TabRestoreMethod.NUM_ENTRIES);
 
             tabId = fallbackTab.getId();
             model.moveTab(tabId, restoredIndex);

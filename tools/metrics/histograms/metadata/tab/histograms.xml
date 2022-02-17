@@ -2401,6 +2401,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tabs.TabRestoreMethod" enum="TabRestoreMethod"
+    expires_after="2023-02-19">
+  <owner>davidjm@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    CriticalPersistedTabData is a schema based Tab restoration system which
+    persists Tab metadata such as web contents and time last accessed across
+    restarts. CriticalPersistedTabData will replace legacy hand-written
+    TabState.
+
+    This metric records how many Tabs are restored using
+    CriticalPersistedTabData, TabState, are re-created, skipped or failed to be
+    restored. As we migrate from TabState to CriticalPersistedTabData it is
+    imperative we can compare the success rate of each system vs. how many Tabs
+    are re-created or failed to be restored. This metric is emitted once for
+    each Tab restoration on startup.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabSearch.CloseAction" enum="TabSearchCloseActions"
     expires_after="2022-10-26">
   <owner>tluk@chromium.org</owner>

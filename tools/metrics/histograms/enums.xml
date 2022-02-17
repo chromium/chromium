@@ -87221,6 +87221,15 @@ would be helpful to identify which type is being sent.
   <int value="5" label="Not protected in background app"/>
 </enum>
 
+<enum name="TabRestoreMethod">
+  <int value="0" label="TabState"/>
+  <int value="1" label="CriticalPersistedTabData"/>
+  <int value="2" label="Create new Tab"/>
+  <int value="3" label="Failed to restore"/>
+  <int value="4" label="Skipped (NTP)"/>
+  <int value="5" label="Skipped (Empty URL)"/>
+</enum>
+
 <enum name="TabRestoreResult">
   <int value="0" label="Failure (other)"/>
   <int value="1" label="Success"/>
