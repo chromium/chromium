@@ -240,10 +240,13 @@ function test_prerender_defer(fn, label) {
     let activated = false;
     const deferred = exec(fn);
 
-    const post = new Promise(resolve =>
+    const post = new Promise((resolve, reject) =>
       deferred.then(result => {
         assert_true(activated, "Deferred operation should occur only after activation");
         resolve(result);
+      }, reason => {
+        assert_true(activated, "Deferred operation should occur only after activation (reject)");
+        reject(reason);
       }));
 
     await new Promise(resolve => t.step_timeout(resolve, 100));
