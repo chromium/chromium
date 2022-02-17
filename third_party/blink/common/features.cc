@@ -1193,7 +1193,7 @@ const base::Feature kClientHintsMetaHTTPEquivAcceptCH{
 
 // Allow use of a named meta tag to set client hints.
 const base::Feature kClientHintsMetaNameAcceptCH{
-    "ClientHintsMetaNameAcceptCH", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ClientHintsMetaNameAcceptCH", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kOriginAgentClusterDefaultEnabled{
     "OriginAgentClusterDefaultEnable", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1203,7 +1203,7 @@ const base::Feature kOriginAgentClusterDefaultWarning{
 
 // Allow third-party delegation of client hint information.
 const base::Feature kClientHintThirdPartyDelegation{
-    "ClientHintThirdPartyDelegation", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ClientHintThirdPartyDelegation", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables prefetching Android fonts on renderer startup.

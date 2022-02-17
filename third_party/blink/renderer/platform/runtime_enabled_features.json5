@@ -400,11 +400,11 @@
     },
     {
       name: "ClientHintsMetaNameAcceptCH",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ClientHintThirdPartyDelegation",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ClipboardCustomFormats",
