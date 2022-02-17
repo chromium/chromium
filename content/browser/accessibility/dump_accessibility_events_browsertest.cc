@@ -662,6 +662,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsIframeSrcChanged) {
+  RunEventTest(FILE_PATH_LITERAL("iframe-src-changed.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsInnerHtmlChange) {
   RunEventTest(FILE_PATH_LITERAL("inner-html-change.html"));
 }

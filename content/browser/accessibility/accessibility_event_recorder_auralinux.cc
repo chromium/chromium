@@ -98,6 +98,7 @@ void AccessibilityEventRecorderAuraLinux::AddATKEventListeners() {
   g_object_unref(atk_no_op_object_new(gobject));
   g_object_unref(gobject);
 
+  AddATKEventListener("ATK:AtkDocument:load-complete");
   AddATKEventListener("ATK:AtkObject:state-change");
   AddATKEventListener("ATK:AtkObject:focus-event");
   AddATKEventListener("ATK:AtkObject:property-change");
@@ -233,6 +234,7 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
 // in the libatspi documentation at:
 // https://developer.gnome.org/libatspi/stable/AtspiEventListener.html#atspi-event-listener-register
 const char* const kEventNames[] = {
+    "document:load-complete",
     "object:active-descendant-changed",
     "object:children-changed",
     "object:column-deleted",
