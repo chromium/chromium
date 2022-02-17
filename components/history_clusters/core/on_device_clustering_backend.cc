@@ -20,6 +20,7 @@
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
 #include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/keyword_cluster_finalizer.h"
 #include "components/history_clusters/core/noisy_cluster_finalizer.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
@@ -233,14 +234,20 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
       // release of persisted search metadata.
       absl::optional<std::pair<GURL, std::u16string>> maybe_search_metadata =
           GetSearchMetadataForVisit(visit, template_url_service_);
-      cluster_visit.normalized_url = maybe_search_metadata
-                                         ? maybe_search_metadata->first
-                                         : visit.url_row.url();
-      cluster_visit.search_terms =
-          maybe_search_metadata ? maybe_search_metadata->second : u"";
+      if (maybe_search_metadata) {
+        cluster_visit.normalized_url = maybe_search_metadata->first;
+        cluster_visit.url_for_deduping = cluster_visit.normalized_url;
+        cluster_visit.search_terms = maybe_search_metadata->second;
+      } else {
+        cluster_visit.normalized_url = visit.url_row.url();
+        cluster_visit.url_for_deduping =
+            ComputeURLForDeduping(cluster_visit.normalized_url);
+      }
     } else {
       cluster_visit.normalized_url =
           visit.content_annotations.search_normalized_url;
+      // Search visits just use the `normalized_url` for deduping.
+      cluster_visit.url_for_deduping = cluster_visit.normalized_url;
       cluster_visit.search_terms = visit.content_annotations.search_terms;
     }
 

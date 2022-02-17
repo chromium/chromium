@@ -826,6 +826,13 @@ struct ClusterVisit {
   // should not be used by the UI.
   float engagement_score = 0.0;
 
+  // The visit URL modified for better dupe finding.  The result may not be
+  // navigable or even valid; it's only meant to be used for detecting
+  // duplicates. This is similar in intent to
+  // `AutocompleteMatch::stripped_destination_url`, but is not the same, as
+  // History Clusters and Omnibox have different deduping requirements.
+  GURL url_for_deduping;
+
   // TODO(crbug/1296394): Remove the below fields once most clients have
   // persisted search metadata.
 

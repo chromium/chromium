@@ -42,7 +42,7 @@ TEST_F(SimilarVisitDeduperClusterFinalizerTest, DedupeExactSimilarVisit) {
       base::Seconds(20);
 
   history::ClusterVisit canonical_visit = testing::CreateClusterVisit(
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/abc")));
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/#abc")));
   canonical_visit.annotated_visit.url_row.set_title(u"sametitle");
 
   history::Cluster cluster;
@@ -65,7 +65,7 @@ TEST_F(SimilarVisitDeduperClusterFinalizerTest,
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/")));
 
   history::ClusterVisit canonical_visit = testing::CreateClusterVisit(
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://foo.com/")));
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/")));
   canonical_visit.annotated_visit.url_row.set_title(u"someothertitle");
 
   history::Cluster cluster;

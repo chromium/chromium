@@ -17,7 +17,7 @@ void UrlDeduperClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   // First do a prepass to find the canonical visit for each URL. This simply
   // marks the last visit in `cluster` with any given URL as the canonical one.
   for (auto& visit : cluster.visits) {
-    url_to_canonical_visit[visit.normalized_url] = &visit;
+    url_to_canonical_visit[visit.url_for_deduping] = &visit;
   }
 
   cluster.visits.erase(
@@ -26,7 +26,7 @@ void UrlDeduperClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
           [&](auto& visit) {
             // We are guaranteed to find a matching canonical visit, due to our
             // prepass above.
-            auto it = url_to_canonical_visit.find(visit.normalized_url);
+            auto it = url_to_canonical_visit.find(visit.url_for_deduping);
             DCHECK(it != url_to_canonical_visit.end());
             history::ClusterVisit* canonical_visit = it->second;
 

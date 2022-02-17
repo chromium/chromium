@@ -6,10 +6,11 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/query_parser/query_parser.h"
 #include "components/url_formatter/url_formatter.h"
-#include "url/gurl.h"
 
 namespace history_clusters {
 
@@ -54,6 +55,33 @@ bool DoesQueryMatchCluster(const query_parser::QueryNodeVector& find_nodes,
 }
 
 }  // namespace
+
+GURL ComputeURLForDeduping(const GURL& url) {
+  // Below is a simplified version of `AutocompleteMatch::GURLToStrippedGURL`
+  // that is thread-safe, stateless, never hits the disk, a bit more aggressive,
+  // and without a dependency on omnibox components.
+  if (!url.is_valid())
+    return url;
+
+  GURL url_for_deduping = url;
+
+  GURL::Replacements replacements;
+
+  // Strip out www, but preserve the eTLD+1. This matches the omnibox behavior.
+  // Make an explicit local, as a StringPiece can't point to a temporary.
+  std::string stripped_host = url_formatter::StripWWW(url_for_deduping.host());
+  replacements.SetHostStr(base::StringPiece(stripped_host));
+
+  // Replace http protocol with https. It's just for deduplication.
+  if (url_for_deduping.SchemeIs(url::kHttpScheme))
+    replacements.SetSchemeStr(url::kHttpsScheme);
+
+  if (url.has_ref())
+    replacements.ClearRef();
+
+  url_for_deduping = url_for_deduping.ReplaceComponents(replacements);
+  return url_for_deduping;
+}
 
 std::vector<history::Cluster> FilterClustersMatchingQuery(
     std::string query,

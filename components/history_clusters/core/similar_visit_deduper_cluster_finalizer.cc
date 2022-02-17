@@ -16,18 +16,18 @@ struct SimilarVisit {
   SimilarVisit() = default;
   explicit SimilarVisit(const history::ClusterVisit& visit)
       : title(visit.annotated_visit.url_row.title()),
-        host(visit.normalized_url.host()) {}
+        url_for_deduping(visit.url_for_deduping) {}
   SimilarVisit(const SimilarVisit&) = default;
   ~SimilarVisit() = default;
 
   std::u16string title;
-  std::string host;
+  GURL url_for_deduping;
 
   struct Comp {
     bool operator()(const SimilarVisit& lhs, const SimilarVisit& rhs) const {
       if (lhs.title != rhs.title)
         return lhs.title < rhs.title;
-      return lhs.host < rhs.host;
+      return lhs.url_for_deduping < rhs.url_for_deduping;
     }
   };
 };

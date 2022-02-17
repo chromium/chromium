@@ -12,6 +12,26 @@
 namespace history_clusters {
 namespace {
 
+TEST(HistoryClustersUtilTest, ComputeURLForDeduping) {
+  EXPECT_EQ(ComputeURLForDeduping(GURL("https://www.google.com/")),
+            "https://google.com/")
+      << "Strip off WWW.";
+  EXPECT_EQ(ComputeURLForDeduping(GURL("http://google.com/")),
+            "https://google.com/")
+      << "Normalizes scheme to https.";
+  EXPECT_EQ(
+      ComputeURLForDeduping(GURL("https://google.com/path?foo=bar#reftag")),
+      "https://google.com/path?foo=bar")
+      << "Strips ref, leaves path and query.";
+  EXPECT_EQ(
+      ComputeURLForDeduping(GURL("http://www.google.com/path?foo=bar#reftag")),
+      "https://google.com/path?foo=bar")
+      << "Does all of the above at once.";
+  EXPECT_EQ(ComputeURLForDeduping(GURL("https://google.com/path?foo=bar")),
+            "https://google.com/path?foo=bar")
+      << "Sanity check when no replacements needed.";
+}
+
 TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
   std::vector<history::Cluster> all_clusters;
   // This first cluster with keywords is marked hidden on sensitive UI

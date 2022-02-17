@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 
 namespace history_clusters {
 namespace testing {
@@ -85,6 +86,8 @@ history::ClusterVisit CreateClusterVisit(
   cluster_visit.score = score;
   cluster_visit.normalized_url =
       normalized_url ? *normalized_url : annotated_visit.url_row.url();
+  cluster_visit.url_for_deduping =
+      ComputeURLForDeduping(cluster_visit.normalized_url);
   return cluster_visit;
 }
 
