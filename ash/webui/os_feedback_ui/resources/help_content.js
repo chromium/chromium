@@ -4,7 +4,7 @@
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HelpContentList} from './feedback_types.js';
+import {HelpContent, HelpContentList, mojoString16ToString} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -27,6 +27,26 @@ export class HelpContentElement extends PolymerElement {
        */
       helpContentList: {type: HelpContentList, value: () => []}
     };
+  }
+
+  /**
+   * Extract the url string from help content.
+   * @param {!HelpContent} helpContent
+   * @return {string}
+   * @protected
+   */
+  getUrl_(helpContent) {
+    return helpContent.url.url;
+  }
+
+  /**
+   * Extract the title as JS string from help content.
+   * @param {!HelpContent} helpContent
+   * @return {string}
+   * @protected
+   */
+  getTitle_(helpContent) {
+    return mojoString16ToString(helpContent.title);
   }
 }
 

@@ -23,13 +23,13 @@ function initialize() {
       return;
     }
     // After receiving help content sent from parent page, display them.
-    helpContent.helpContentList = event.data.helpContentList;
+    helpContent.helpContentList = event.data.response.results;
 
     // Post a message to parent to make testing easier.
     window.parent.postMessage(
         {
           id: 'help-content-received-for-testing',
-          count: event.data.helpContentList.length,
+          count: event.data.response.results.length,
         },
         OS_FEEDBACK_TRUSTED_ORIGIN);
   });

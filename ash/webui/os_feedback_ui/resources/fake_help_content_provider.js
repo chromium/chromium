@@ -4,7 +4,7 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
-import {HelpContentList, HelpContentProviderInterface} from './feedback_types.js';
+import {HelpContentProviderInterface, mojoString16ToString, SearchRequest, SearchResponse} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -33,20 +33,19 @@ export class FakeHelpContentProvider {
   }
 
   /**
-   * @param {string} query
-   * @param {number} maxResults
-   * @return {!Promise<!HelpContentList>}
+   * @param {!SearchRequest} request
+   * @return {!Promise<{response: !SearchResponse}>}
    */
-  getHelpContents(query, maxResults) {
-    this.lastQuery_ = query;
+  getHelpContents(request) {
+    this.lastQuery_ = mojoString16ToString(request.query);
     return this.methods_.resolveMethod('getHelpContents');
   }
 
   /**
    * Sets the value that will be returned when calling getHelpContents().
-   * @param {!HelpContentList} helpContents
+   * @param {!SearchResponse} response
    */
-  setFakeHelpContents(helpContents) {
-    this.methods_.setResult('getHelpContents', helpContents);
+  setFakeSearchResponse(response) {
+    this.methods_.setResult('getHelpContents', {response: response});
   }
 }

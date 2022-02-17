@@ -15,7 +15,7 @@
     <template>
       <div class="help-item">
         <!--TODO(xiangdongkong): add icon -->
-        <a href="[[item.url]]" target="_blank">[[item.title]]</a>
+        <a href="[[getUrl_(item)]]" target="_blank">[[getTitle_(item)]]</a>
       </div>
     </template>
   </dom-repeat>

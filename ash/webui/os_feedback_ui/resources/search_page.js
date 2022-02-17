@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HelpContentList, HelpContentProviderInterface} from './feedback_types.js';
+import {HelpContentProviderInterface, SearchRequest, SearchResponse, stringToMojoString16} from './feedback_types.js';
 import {getHelpContentProvider} from './mojo_interface_provider.js';
 
 /**
@@ -94,24 +94,31 @@ export class SearchPageElement extends PolymerElement {
 
     if (Math.abs(newCharCount - this.lastCharCount_) >= MIN_CHARS_COUNT) {
       this.lastCharCount_ = newCharCount;
-      this.fetchHelpContent_(newInput);
+
+      /** @type {!SearchRequest} */
+      const request = {
+        query: stringToMojoString16(newInput),
+        maxResults: MAX_RESULTS,
+      };
+
+      this.fetchHelpContent_(request);
     }
   }
 
   /**
-   * @param {string} query
+   * @param {!SearchRequest} request
    * @private
    */
-  fetchHelpContent_(query) {
-    this.helpContentProvider_.getHelpContents(query, MAX_RESULTS)
-        .then((/** !HelpContentList */ newContentList) => {
+  fetchHelpContent_(request) {
+    this.helpContentProvider_.getHelpContents(request).then(
+        /**  {{response: !SearchResponse}} */ (response) => {
           if (!this.iframe_) {
             console.warn('untrusted iframe is not found');
             return;
           }
 
           const data = {
-            helpContentList: newContentList,
+            response: response.response,
           };
 
           // Wait for the iframe to complete loading before postMessage.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {HelpContentList, HelpContentType} from './feedback_types.js';
+import {HelpContentList, HelpContentType, SearchRequest, SearchResponse, stringToMojoString16} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -12,28 +12,42 @@ import {HelpContentList, HelpContentType} from './feedback_types.js';
 /** @type {!HelpContentList} */
 export const fakeHelpContentList = [
   {
-    title: 'Fix connection problems',
-    url: 'https://support.google.com/chromebook/?q=6318213',
-    content_type: HelpContentType.ARTICLE
+    title: stringToMojoString16('Fix connection problems'),
+    url: {url: 'https://support.google.com/chromebook/?q=6318213'},
+    content_type: HelpContentType.kArticle
   },
   {
-    title: 'Why won\'t my wireless mouse with a USB piece wor...?',
-    url: 'https://support.google.com/chromebook/?q=123920509',
-    content_type: HelpContentType.FORUM
+    title: stringToMojoString16(
+        'Why won\'t my wireless mouse with a USB piece wor...?'),
+    url: {url: 'https://support.google.com/chromebook/?q=123920509'},
+    content_type: HelpContentType.kForum
   },
   {
-    title: 'Wifi Issues - only on Chromebooks',
-    url: 'https://support.google.com/chromebook/?q=114174470',
-    content_type: HelpContentType.FORUM
+    title: stringToMojoString16('Wifi Issues - only on Chromebooks'),
+    url: {url: 'https://support.google.com/chromebook/?q=114174470'},
+    content_type: HelpContentType.kForum
   },
   {
-    title: 'Network Connectivity Fault',
-    url: 'https://support.google.com/chromebook/?q=131459420',
-    content_type: HelpContentType.FORUM
+    title: stringToMojoString16('Network Connectivity Fault'),
+    url: {url: 'https://support.google.com/chromebook/?q=131459420'},
+    content_type: HelpContentType.kForum
   },
   {
-    title: 'Connected to WiFi but can\'t connect to the internet',
-    url: 'https://support.google.com/chromebook/?q=22864239',
-    content_type: HelpContentType.FORUM
+    title: stringToMojoString16(
+        'Connected to WiFi but can\'t connect to the internet'),
+    url: {url: 'https://support.google.com/chromebook/?q=22864239'},
+    content_type: HelpContentType.kForum
   }
 ];
+
+/** @type {!SearchRequest} */
+export const fakeSearchRequest = {
+  maxResults: 5,
+  query: stringToMojoString16('wifi not working'),
+};
+
+/** @type {!SearchResponse} */
+export const fakeSearchResponse = {
+  results: fakeHelpContentList,
+  totalResults: 10,
+};

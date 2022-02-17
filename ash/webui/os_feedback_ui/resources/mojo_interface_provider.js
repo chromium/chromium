@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {fakeHelpContentList} from './fake_data.js';
+import {fakeHelpContentList, fakeSearchResponse} from './fake_data.js';
 import {FakeHelpContentProvider} from './fake_help_content_provider.js';
 import {HelpContentProviderInterface} from './feedback_types.js';
 
@@ -20,7 +20,7 @@ import {HelpContentProviderInterface} from './feedback_types.js';
 let helpContentProvider = null;
 
 /**
- * @param {!HelpContentProviderInterface} testProvider
+ * @param {?HelpContentProviderInterface} testProvider
  */
 export function setHelpContentProviderForTesting(testProvider) {
   helpContentProvider = testProvider;
@@ -34,8 +34,8 @@ function setupFakeHelpContentProvider() {
   // Create provider.
   const provider = new FakeHelpContentProvider();
 
-  // Setup help contents.
-  provider.setFakeHelpContents(fakeHelpContentList);
+  // Setup search response.
+  provider.setFakeSearchResponse(fakeSearchResponse);
 
   // Set the fake provider.
   setHelpContentProviderForTesting(provider);

@@ -43,6 +43,9 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
                                     IDR_ASH_OS_FEEDBACK_HELP_CONTENT_JS);
   untrusted_source->AddResourcePath("feedback_types.js",
                                     IDR_ASH_OS_FEEDBACK_FEEDBACK_TYPES_JS);
+  untrusted_source->AddResourcePath(
+      "mojom/os_feedback_ui.mojom-lite.js",
+      IDR_ASH_OS_FEEDBACK_MOJOM_OS_FEEDBACK_UI_MOJOM_LITE_JS);
 
   untrusted_source->SetDefaultResource(
       IDR_ASH_OS_FEEDBACK_UNTRUSTED_UNTRUSTED_INDEX_HTML);

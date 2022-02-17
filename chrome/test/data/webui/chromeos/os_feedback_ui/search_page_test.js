@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeHelpContentList} from 'chrome://os-feedback/fake_data.js';
+import {fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {HelpContentElement} from 'chrome://os-feedback/help_content.js';
 import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {OS_FEEDBACK_UNTRUSTED_ORIGIN, SearchPageElement} from 'chrome://os-feedback/search_page.js';
+
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks} from '../../test_util.js';
 
@@ -21,8 +22,8 @@ export function searchPageTestSuite() {
     document.body.innerHTML = '';
     // Create provider.
     provider = new FakeHelpContentProvider();
-    // Setup help contents.
-    provider.setFakeHelpContents(fakeHelpContentList);
+    // Setup search response.
+    provider.setFakeSearchResponse(fakeSearchResponse);
     // Set the fake provider.
     setHelpContentProviderForTesting(provider);
   });
@@ -141,7 +142,7 @@ export function searchPageTestSuite() {
     });
 
     const data = {
-      helpContentList: fakeHelpContentList,
+      response: fakeSearchResponse,
     };
     iframe.contentWindow.postMessage(data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
 
