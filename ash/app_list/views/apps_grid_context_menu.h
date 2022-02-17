@@ -47,8 +47,15 @@ class ASH_EXPORT AppsGridContextMenu : public ui::SimpleMenuModel::Delegate,
   // Returns true if the apps grid context menu is showing.
   bool IsMenuShowing() const;
 
+  // Closes the context menu if it's showning.
+  void Cancel();
+
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+
+  void set_owner_touch_dragging(bool touch_dragging) {
+    owner_touch_dragging_ = touch_dragging;
+  }
 
   views::MenuItemView* root_menu_item_view() const {
     return root_menu_item_view_;
@@ -76,6 +83,11 @@ class ASH_EXPORT AppsGridContextMenu : public ui::SimpleMenuModel::Delegate,
 
   // The root menu item view of `context_menu_model_`. Cached for testing.
   views::MenuItemView* root_menu_item_view_ = nullptr;
+
+  // Whether the owner view is currently touch dragging, in which case touch
+  // events will be forwarded from the context menu to the owner view (so the
+  // view can transition from showing a context menu to item drag).
+  bool owner_touch_dragging_ = false;
 };
 
 }  // namespace ash

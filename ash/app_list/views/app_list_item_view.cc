@@ -528,6 +528,9 @@ void AppListItemView::SetTouchDragging(bool touch_dragging) {
 
   touch_dragging_ = touch_dragging;
 
+  if (context_menu_for_folder_)
+    context_menu_for_folder_->set_owner_touch_dragging(touch_dragging_);
+
   SetState(STATE_NORMAL);
   SetUIState(touch_dragging_ ? UI_STATE_DRAGGING : UI_STATE_NORMAL);
 
@@ -590,16 +593,20 @@ void AppListItemView::OnDragEnded() {
   touch_dragging_ = false;
   touch_drag_timer_.Stop();
 
+  if (context_menu_for_folder_)
+    context_menu_for_folder_->set_owner_touch_dragging(false);
+
   SetUIState(UI_STATE_NORMAL);
   drag_state_ = DragState::kNone;
 }
 
 void AppListItemView::CancelContextMenu() {
-  if (!item_menu_model_adapter_)
-    return;
-
-  menu_close_initiated_from_drag_ = true;
-  item_menu_model_adapter_->Cancel();
+  if (item_menu_model_adapter_) {
+    menu_close_initiated_from_drag_ = true;
+    item_menu_model_adapter_->Cancel();
+  }
+  if (context_menu_for_folder_)
+    context_menu_for_folder_->Cancel();
 }
 
 gfx::Point AppListItemView::GetDragImageOffset() {

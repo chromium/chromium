@@ -25,6 +25,11 @@ bool AppsGridContextMenu::IsMenuShowing() const {
   return menu_runner_ && menu_runner_->IsRunning();
 }
 
+void AppsGridContextMenu::Cancel() {
+  if (IsMenuShowing())
+    menu_runner_->Cancel();
+}
+
 void AppsGridContextMenu::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case AppsGridCommandId::kReorderByNameAlphabetical:
@@ -58,6 +63,9 @@ void AppsGridContextMenu::ShowContextMenuForViewImpl(
   int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                   views::MenuRunner::CONTEXT_MENU |
                   views::MenuRunner::FIXED_ANCHOR;
+  if (source_type == ui::MENU_SOURCE_TOUCH && owner_touch_dragging_)
+    run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
+
   menu_runner_ =
       std::make_unique<views::MenuRunner>(root_menu_item_view_, run_types);
   menu_runner_->RunMenuAt(
