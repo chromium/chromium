@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/api/omnibox/suggestion_parser.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -289,15 +290,45 @@ ExtensionFunction::ResponseAction OmniboxSetDefaultSuggestionFunction::Run() {
       SetDefaultSuggestion::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  if (!params->suggestion.description_styles) {
+    ParseDescriptionAndStyles(
+        params->suggestion.description,
+        base::BindOnce(
+            &OmniboxSetDefaultSuggestionFunction::OnParsedDescriptionAndStyles,
+            this));
+    return RespondLater();
+  }
+
+  SetDefaultSuggestion(params->suggestion);
+  return RespondNow(NoArguments());
+}
+
+void OmniboxSetDefaultSuggestionFunction::OnParsedDescriptionAndStyles(
+    std::unique_ptr<DescriptionAndStyles> description_and_styles) {
+  if (!description_and_styles) {
+    // TODO(devlin): Provide a more descriptive error.
+    Respond(Error("Failed to parse suggestion."));
+    return;
+  }
+
+  omnibox::DefaultSuggestResult default_suggestion;
+  default_suggestion.description =
+      base::UTF16ToUTF8(description_and_styles->description);
+  default_suggestion.description_styles =
+      std::make_unique<std::vector<api::omnibox::MatchClassification>>();
+  default_suggestion.description_styles->swap(description_and_styles->styles);
+  SetDefaultSuggestion(default_suggestion);
+  Respond(NoArguments());
+}
+
+void OmniboxSetDefaultSuggestionFunction::SetDefaultSuggestion(
+    const omnibox::DefaultSuggestResult& suggestion) {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (SetOmniboxDefaultSuggestion(profile, extension_id(),
-                                  params->suggestion)) {
+  if (SetOmniboxDefaultSuggestion(profile, extension_id(), suggestion)) {
     OmniboxSuggestionsWatcher::GetForBrowserContext(
         profile->GetOriginalProfile())
         ->NotifyDefaultSuggestionChanged();
   }
-
-  return RespondNow(NoArguments());
 }
 
 // This function converts style information populated by the JSON schema

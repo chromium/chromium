@@ -549,14 +549,25 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SetDefaultSuggestion) {
+using ContextType = extensions::ExtensionBrowserTest::ContextType;
+
+class OmniboxApiTestWithContextType
+    : public extensions::ExtensionApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  OmniboxApiTestWithContextType() : extensions::ExtensionApiTest(GetParam()) {}
+  ~OmniboxApiTestWithContextType() override = default;
+};
+
+IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType,
+                       SetDefaultSuggestionFailures) {
   constexpr char kManifest[] =
       R"({
            "name": "SetDefaultSuggestion",
            "manifest_version": 2,
            "version": "0.1",
            "omnibox": { "keyword": "word" },
-           "background": { "scripts": [ "background.js" ] }
+           "background": { "scripts": [ "background.js" ], "persistent": true }
          })";
   constexpr char kBackground[] =
       R"(chrome.test.runTests([
@@ -577,6 +588,51 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SetDefaultSuggestion) {
                  expectedError);
              chrome.test.succeed();
            },
+           async function invalidXml_NoClosingTag() {
+             // Service worker-based and background page-based extensions behave
+             // differently here. In the background page case, the description
+             // is parsed synchronously in the renderer; this results in an
+             // error being emitted that must be caught with a try/catch. In
+             // service worker contexts, we parse the description
+             // asynchronously from the browser, and the error is returned via
+             // runtime.lastError.
+             // Because of this difference, getting the emitted error is a bit
+             // of a pain.
+             let expectedError;
+             let error = await new Promise((resolve) => {
+               try {
+                 chrome.omnibox.setDefaultSuggestion(
+                     {description: '<tag> <match>match</match> world'},
+                     () => {
+                       expectedError = /Failed to parse suggestion./;
+                       resolve(chrome.runtime.lastError.message);
+                     });
+               } catch (e) {
+                 expectedError = /Opening and ending tag mismatch/;
+                 resolve(e.message);
+               }
+             });
+             chrome.test.assertTrue(expectedError.test(error), error);
+             chrome.test.succeed();
+           }
+         ]);)";
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType, SetDefaultSuggestion) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "SetDefaultSuggestion",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "word" },
+           "background": { "scripts": [ "background.js" ], "persistent": true }
+         })";
+  constexpr char kBackground[] =
+      R"(chrome.test.runTests([
            function setDefaultSuggestion() {
              chrome.omnibox.setDefaultSuggestion(
                  {description: 'hello <match>match</match> world'},
@@ -638,3 +694,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SetDefaultSuggestion) {
     EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         OmniboxApiTestWithContextType,
+                         testing::Values(ContextType::kServiceWorker));
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         OmniboxApiTestWithContextType,
+                         testing::Values(ContextType::kPersistentBackground));

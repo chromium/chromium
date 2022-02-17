@@ -35,6 +35,7 @@ class Image;
 }
 
 namespace extensions {
+struct DescriptionAndStyles;
 
 // Event router class for events related to the omnibox API.
 class ExtensionOmniboxEventRouter {
@@ -155,7 +156,16 @@ class OmniboxSetDefaultSuggestionFunction : public ExtensionFunction {
                              OMNIBOX_SETDEFAULTSUGGESTION)
 
  protected:
-  ~OmniboxSetDefaultSuggestionFunction() override {}
+  ~OmniboxSetDefaultSuggestionFunction() override = default;
+
+  // Called asynchronously with the parsed description and styles for the
+  // default suggestion.
+  void OnParsedDescriptionAndStyles(
+      std::unique_ptr<DescriptionAndStyles> description_and_styles);
+
+  // Sets the default suggestion in the extension preferences.
+  void SetDefaultSuggestion(
+      const api::omnibox::DefaultSuggestResult& suggestion);
 
   // ExtensionFunction:
   ResponseAction Run() override;
