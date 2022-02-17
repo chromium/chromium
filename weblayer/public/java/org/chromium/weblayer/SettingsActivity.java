@@ -68,6 +68,25 @@ public class SettingsActivity extends AppCompatActivity {
                 context, profileName, isIncognito);
     }
 
+    /**
+     * Creates an Intent that will launch Accessibility Settings UI.
+     *
+     * @param profileName The name of the profile.
+     * @param isIncognito If the profile is incognito.
+     * @return the Intent to start the settings.
+     *
+     * @since 100
+     */
+    public static Intent createIntentForAccessibilitySettings(
+            Context context, String profileName, boolean isIncognito) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 100) {
+            throw new UnsupportedOperationException();
+        }
+        return SettingsIntentHelper.createIntentForAccessibilitySettings(
+                context, profileName, isIncognito);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ensureActivityNotExported();

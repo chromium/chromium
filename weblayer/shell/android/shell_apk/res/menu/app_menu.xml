@@ -14,6 +14,8 @@
         android:title="Clear find in page" />
     <item android:id="@+id/site_settings_menu_id"
         android:title="Site Settings" />
+    <item android:id="@+id/accessibility_settings_menu_id"
+        android:title="Accessibility Settings" />
     <item android:id="@+id/translate_menu_id"
         android:title="Translate" />
     <item android:id="@+id/clear_browsing_data_menu_id"

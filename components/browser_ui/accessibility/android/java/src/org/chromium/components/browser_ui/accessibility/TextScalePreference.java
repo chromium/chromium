@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility.settings;
+package org.chromium.components.browser_ui.accessibility;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -10,10 +10,9 @@ import android.util.TypedValue;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
-
-import org.chromium.chrome.R;
 
 import java.text.NumberFormat;
 
@@ -115,7 +114,8 @@ public class TextScalePreference extends Preference implements SeekBar.OnSeekBar
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {}
 
-    CharSequence getAmountForTesting() {
+    @VisibleForTesting
+    public CharSequence getAmountForTesting() {
         return mAmount.getText();
     }
 }

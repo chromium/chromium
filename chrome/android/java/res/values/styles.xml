@@ -147,10 +147,6 @@
         <item name="navigationIconTint">?attr/colorOnSurface</item>
     </style>
 
-    <style name="TextAppearance.AccessibilityTextPreference">
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-    </style>
-
     <!-- Manage Space Activity styles -->
     <style name="ManageSpaceActionBarModern" parent="Widget.MaterialComponents.ActionBar.Primary">
         <item name="titleTextStyle">@style/TextAppearance.Headline.Primary.Baseline.Light</item>

@@ -123,7 +123,7 @@ public class FontSizePrefs {
     public void setUserFontScaleFactor(float userFontScaleFactor) {
         ContextUtils.getAppSharedPreferences()
                 .edit()
-                .putFloat(FontSizePrefsConstants.FONT_USER_FONT_SCALE_FACTOR, userFontScaleFactor)
+                .putFloat(AccessibilityConstants.FONT_USER_FONT_SCALE_FACTOR, userFontScaleFactor)
                 .apply();
         setFontScaleFactor(userFontScaleFactor * getSystemFontScale());
     }
@@ -135,7 +135,7 @@ public class FontSizePrefs {
         float userFontScaleFactor;
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             userFontScaleFactor = ContextUtils.getAppSharedPreferences().getFloat(
-                    FontSizePrefsConstants.FONT_USER_FONT_SCALE_FACTOR, 0f);
+                    AccessibilityConstants.FONT_USER_FONT_SCALE_FACTOR, 0f);
         }
         if (userFontScaleFactor == 0f) {
             float fontScaleFactor = getFontScaleFactor();
@@ -153,7 +153,7 @@ public class FontSizePrefs {
             ContextUtils.getAppSharedPreferences()
                     .edit()
                     .putFloat(
-                            FontSizePrefsConstants.FONT_USER_FONT_SCALE_FACTOR, userFontScaleFactor)
+                            AccessibilityConstants.FONT_USER_FONT_SCALE_FACTOR, userFontScaleFactor)
                     .apply();
         }
         return userFontScaleFactor;
@@ -200,7 +200,7 @@ public class FontSizePrefs {
 
     private void recordUserFontPrefHistogram(String histogramName) {
         // User font size prefs range from 0.5 to 2.0 (50% to 200%) and can be updated in increments
-        // of 5% (see org.chromium.chrome.browser.accessibility.settings.TextScalePreference).
+        // of 5% (see org.chromium.components.browser_ui.accessibility.TextScalePreference).
         int sample = (int) (getUserFontScaleFactor() * 100);
         assert sample >= 50 && sample <= 200 : "Unexpected font size pref";
         RecordHistogram.recordSparseHistogram(histogramName, sample);
@@ -222,7 +222,7 @@ public class FontSizePrefs {
     private void setForceEnableZoom(boolean enabled, boolean fromUser) {
         ContextUtils.getAppSharedPreferences()
                 .edit()
-                .putBoolean(FontSizePrefsConstants.FONT_USER_SET_FORCE_ENABLE_ZOOM, fromUser)
+                .putBoolean(AccessibilityConstants.FONT_USER_SET_FORCE_ENABLE_ZOOM, fromUser)
                 .apply();
         FontSizePrefsJni.get().setForceEnableZoom(
                 mFontSizePrefsAndroidPtr, FontSizePrefs.this, enabled);
@@ -231,7 +231,7 @@ public class FontSizePrefs {
     private boolean getUserSetForceEnableZoom() {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return ContextUtils.getAppSharedPreferences().getBoolean(
-                    FontSizePrefsConstants.FONT_USER_SET_FORCE_ENABLE_ZOOM, false);
+                    AccessibilityConstants.FONT_USER_SET_FORCE_ENABLE_ZOOM, false);
         }
     }
 

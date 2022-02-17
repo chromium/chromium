@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -105,6 +106,9 @@ public class SettingsFragmentImpl extends FragmentHostingRemoteFragmentImpl {
                 intent = SettingsIntentHelper.createIntentForSiteSettingsSingleWebsite(
                         mEmbedderContext, profile.getName(), profile.isIncognito(),
                         address.getOrigin());
+            } else if (newFragmentClassName.equals(AccessibilitySettings.class.getName())) {
+                intent = SettingsIntentHelper.createIntentForAccessibilitySettings(
+                        mEmbedderContext, profile.getName(), profile.isIncognito());
             } else {
                 throw new IllegalArgumentException("Unsupported Fragment: " + newFragmentClassName);
             }
@@ -150,6 +154,10 @@ public class SettingsFragmentImpl extends FragmentHostingRemoteFragmentImpl {
                 mFragmentArguments = SingleWebsiteSettings.createFragmentArgsForSite(
                         fragmentArgs.getString(SettingsFragmentArgs.SINGLE_WEBSITE_URL));
                 break;
+            case SettingsFragmentArgs.ACCESSIBILITY:
+                mFragmentClass = AccessibilitySettings.class;
+                mFragmentArguments = null;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Site Settings Fragment");
         }
@@ -172,6 +180,9 @@ public class SettingsFragmentImpl extends FragmentHostingRemoteFragmentImpl {
                 if (settingsFragment instanceof SiteSettingsPreferenceFragment) {
                     ((SiteSettingsPreferenceFragment) settingsFragment)
                             .setSiteSettingsDelegate(new WebLayerSiteSettingsDelegate(mProfile));
+                } else if (settingsFragment instanceof AccessibilitySettings) {
+                    ((AccessibilitySettings) settingsFragment)
+                            .setDelegate(new WebLayerAccessibilitySettingsDelegate(mProfile));
                 }
                 getSupportFragmentManager()
                         .beginTransaction()

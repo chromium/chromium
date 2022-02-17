@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility.settings;
+package org.chromium.components.browser_ui.accessibility;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,37 +11,30 @@ import android.provider.Settings;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
+import org.chromium.base.ContextUtils;
+import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.BooleanPreferenceDelegate;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.user_prefs.UserPrefs;
 
 /**
  * Fragment to keep track of all the accessibility related preferences.
  */
 public class AccessibilitySettings
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
-    static final String PREF_TEXT_SCALE = "text_scale";
-    static final String PREF_FORCE_ENABLE_ZOOM = "force_enable_zoom";
-    static final String PREF_READER_FOR_ACCESSIBILITY = "reader_for_accessibility";
-    static final String PREF_CAPTIONS = "captions";
-    static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
+    public static final String PREF_TEXT_SCALE = "text_scale";
+    public static final String PREF_FORCE_ENABLE_ZOOM = "force_enable_zoom";
+    public static final String PREF_READER_FOR_ACCESSIBILITY = "reader_for_accessibility";
+    public static final String PREF_CAPTIONS = "captions";
 
     private TextScalePreference mTextScalePref;
     private ChromeBaseCheckBoxPreference mForceEnableZoomPref;
     private boolean mRecordFontSizeChangeOnStop;
+    private AccessibilitySettingsDelegate mDelegate;
+    private BooleanPreferenceDelegate mReaderForAccessibilityDelegate;
+    private BooleanPreferenceDelegate mAccessibilityTabSwitcherDelegate;
 
-    private FontSizePrefs mFontSizePrefs =
-            FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile());
+    private FontSizePrefs mFontSizePrefs;
     private FontSizePrefsObserver mFontSizePrefsObserver = new FontSizePrefsObserver() {
         @Override
         public void onFontScaleFactorChanged(float fontScaleFactor, float userFontScaleFactor) {
@@ -54,11 +47,17 @@ public class AccessibilitySettings
         }
     };
 
+    public void setDelegate(AccessibilitySettingsDelegate delegate) {
+        mDelegate = delegate;
+        mFontSizePrefs = FontSizePrefs.getInstance(delegate.getBrowserContextHandle());
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getActivity().setTitle(R.string.prefs_accessibility);
+        getActivity().setTitle(
+                ContextUtils.getApplicationContext().getString(R.string.prefs_accessibility));
         setDivider(null);
     }
 
@@ -78,19 +77,22 @@ public class AccessibilitySettings
 
         ChromeBaseCheckBoxPreference readerForAccessibilityPref =
                 (ChromeBaseCheckBoxPreference) findPreference(PREF_READER_FOR_ACCESSIBILITY);
-        readerForAccessibilityPref.setChecked(UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                                      .getBoolean(Pref.READER_FOR_ACCESSIBILITY));
-        readerForAccessibilityPref.setOnPreferenceChangeListener(this);
-
-        ChromeBaseCheckBoxPreference mAccessibilityTabSwitcherPref =
-                (ChromeBaseCheckBoxPreference) findPreference(
-                        ChromePreferenceKeys.ACCESSIBILITY_TAB_SWITCHER);
-        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-            mAccessibilityTabSwitcherPref.setChecked(
-                    SharedPreferencesManager.getInstance().readBoolean(
-                            ChromePreferenceKeys.ACCESSIBILITY_TAB_SWITCHER, true));
+        mReaderForAccessibilityDelegate = mDelegate.getReaderForAccessibilityDelegate();
+        if (mReaderForAccessibilityDelegate != null) {
+            readerForAccessibilityPref.setChecked(mReaderForAccessibilityDelegate.isEnabled());
+            readerForAccessibilityPref.setOnPreferenceChangeListener(this);
         } else {
-            getPreferenceScreen().removePreference(mAccessibilityTabSwitcherPref);
+            getPreferenceScreen().removePreference(readerForAccessibilityPref);
+        }
+
+        ChromeBaseCheckBoxPreference accessibilityTabSwitcherPref =
+                (ChromeBaseCheckBoxPreference) findPreference(
+                        AccessibilityConstants.ACCESSIBILITY_TAB_SWITCHER);
+        mAccessibilityTabSwitcherDelegate = mDelegate.getAccessibilityTabSwitcherDelegate();
+        if (mAccessibilityTabSwitcherDelegate != null) {
+            accessibilityTabSwitcherPref.setChecked(mAccessibilityTabSwitcherDelegate.isEnabled());
+        } else {
+            getPreferenceScreen().removePreference(accessibilityTabSwitcherPref);
         }
 
         Preference captions = findPreference(PREF_CAPTIONS);
@@ -105,9 +107,7 @@ public class AccessibilitySettings
             return true;
         });
 
-        Preference imageDescriptionsPreference = findPreference(PREF_IMAGE_DESCRIPTIONS);
-        imageDescriptionsPreference.setVisible(
-                ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem());
+        mDelegate.addExtraPreferences(this);
     }
 
     @Override
@@ -134,10 +134,9 @@ public class AccessibilitySettings
         } else if (PREF_FORCE_ENABLE_ZOOM.equals(preference.getKey())) {
             mFontSizePrefs.setForceEnableZoomFromUser((Boolean) newValue);
         } else if (PREF_READER_FOR_ACCESSIBILITY.equals(preference.getKey())) {
-            RecordHistogram.recordBooleanHistogram(
-                    "DomDistiller.ReaderModeAccessibilitySettingSelected", (Boolean) newValue);
-            UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) newValue);
+            if (mReaderForAccessibilityDelegate != null) {
+                mReaderForAccessibilityDelegate.setEnabled((Boolean) newValue);
+            }
         }
         return true;
     }

@@ -371,6 +371,13 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 return true;
             }
 
+            if (item.getItemId() == R.id.accessibility_settings_menu_id) {
+                Intent intent = SiteSettingsActivity.createIntentForAccessibilitySettings(
+                        this, mProfile.getName(), mProfile.isIncognito());
+                IntentUtils.safeStartActivity(this, intent);
+                return true;
+            }
+
             if (item.getItemId() == R.id.translate_menu_id) {
                 mBrowser.getActiveTab().showTranslateUi();
                 return true;

@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -59,6 +60,7 @@ import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
+import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
@@ -415,6 +417,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof PrivacySettings) {
             ((PrivacySettings) fragment).setBottomSheetController(mBottomSheetController);
             ((PrivacySettings) fragment).setDialogContainer(findViewById(R.id.dialog_container));
+        }
+        if (fragment instanceof AccessibilitySettings) {
+            ((AccessibilitySettings) fragment)
+                    .setDelegate(new ChromeAccessibilitySettingsDelegate());
         }
     }
 

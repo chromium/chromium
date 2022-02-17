@@ -8,7 +8,7 @@ import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBO
 import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI_TIMESTAMP;
 
 import org.chromium.base.annotations.CheckDiscard;
-import org.chromium.components.browser_ui.accessibility.FontSizePrefsConstants;
+import org.chromium.components.browser_ui.accessibility.AccessibilityConstants;
 
 import java.util.Arrays;
 import java.util.List;
@@ -51,7 +51,8 @@ public final class ChromePreferenceKeys {
      * sync with accessibility_preferences.xml.
      * Default value is true.
      */
-    public static final String ACCESSIBILITY_TAB_SWITCHER = "accessibility_tab_switcher";
+    public static final String ACCESSIBILITY_TAB_SWITCHER =
+            AccessibilityConstants.ACCESSIBILITY_TAB_SWITCHER;
 
     /** Whether the current adaptive toolbar customization is enabled. */
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED =
@@ -435,9 +436,9 @@ public final class ChromePreferenceKeys {
             "Chrome.Flags.LastCachedMinimalBrowserFlagsTimeMillis";
 
     public static final String FONT_USER_FONT_SCALE_FACTOR =
-            FontSizePrefsConstants.FONT_USER_FONT_SCALE_FACTOR;
+            AccessibilityConstants.FONT_USER_FONT_SCALE_FACTOR;
     public static final String FONT_USER_SET_FORCE_ENABLE_ZOOM =
-            FontSizePrefsConstants.FONT_USER_SET_FORCE_ENABLE_ZOOM;
+            AccessibilityConstants.FONT_USER_SET_FORCE_ENABLE_ZOOM;
 
     public static final String HISTORY_SHOW_HISTORY_INFO = "history_home_show_info";
 

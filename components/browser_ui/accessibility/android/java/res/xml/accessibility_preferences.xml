@@ -5,7 +5,7 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <org.chromium.chrome.browser.accessibility.settings.TextScalePreference
+    <org.chromium.components.browser_ui.accessibility.TextScalePreference
         android:key="text_scale"
         android:title="@string/font_size"
         android:selectable="false" />
@@ -28,10 +28,5 @@
     <Preference
         android:key="captions"
         android:title="@string/accessibility_captions_title"/>
-
-    <Preference
-        android:fragment="org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings"
-        android:key="image_descriptions"
-        android:title="@string/image_descriptions_settings_title" />
 
 </PreferenceScreen>
