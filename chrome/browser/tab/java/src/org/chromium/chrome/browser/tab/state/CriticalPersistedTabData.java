@@ -480,9 +480,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             webContentsState = mWebContentsState == null ? getWebContentsStateFromTab(mTab)
                                                          : mWebContentsState;
             byteBuffer = webContentsState == null ? null : webContentsState.buffer();
-            if (byteBuffer != null) {
-                byteBuffer.rewind();
-            }
             openerAppId = mOpenerAppId;
             parentId = mParentId;
             rootId = mRootId;
@@ -494,6 +491,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
         }
         return () -> {
             try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Serialize")) {
+                if (byteBuffer != null) {
+                    byteBuffer.rewind();
+                }
                 FlatBufferBuilder fbb = new FlatBufferBuilder();
                 int wcs = CriticalPersistedTabDataFlatBuffer.createWebContentsStateBytesVector(fbb,
                         byteBuffer == null ? ByteBuffer.allocate(0).put(new byte[] {})
