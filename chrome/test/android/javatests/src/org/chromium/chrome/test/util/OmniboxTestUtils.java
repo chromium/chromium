@@ -218,7 +218,7 @@ public class OmniboxTestUtils {
         checkSuggestionsShown();
         AtomicReference<SuggestionInfo<T>> result = new AtomicReference<>();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
+        CriteriaHelper.pollUiThread(() -> {
             ModelList currentModels =
                     mLocationBar.getAutocompleteCoordinator().getSuggestionModelListForTest();
             for (int i = 0; i < currentModels.size(); i++) {
@@ -226,10 +226,11 @@ public class OmniboxTestUtils {
                 if (info.type == type) {
                     result.set(new SuggestionInfo<T>(i, info.type, mAutocomplete.getSuggestionAt(i),
                             info.model, getSuggestionViewForIndex(i)));
-                    return;
+                    return true;
                 }
             }
-        });
+            return false;
+        }, MAX_TIME_TO_POLL_MS, POLL_INTERVAL_MS);
 
         return result.get();
     }

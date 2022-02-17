@@ -499,7 +499,7 @@ public class OmniboxPedalsTest {
         verifyHistogram(OmniboxPedalType.PLAY_CHROME_DINO_GAME);
     }
 
-    @Test
+    @Test(expected = AssertionError.class)
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testNoPedalSuggestionAfterTop3() {
@@ -510,8 +510,8 @@ public class OmniboxPedalsTest {
 
         mOmniboxUtils.setSuggestions(
                 AutocompleteResult.fromCache(suggestionsList, null), "Suggestion");
-
         mOmniboxUtils.checkSuggestionsShown();
+
         SuggestionInfo<PedalSuggestionView> info =
                 mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
         Assert.assertNull(
@@ -529,8 +529,8 @@ public class OmniboxPedalsTest {
 
         mOmniboxUtils.setSuggestions(
                 AutocompleteResult.fromCache(suggestionsList, null), "Suggestion");
-
         mOmniboxUtils.checkSuggestionsShown();
+
         SuggestionInfo<PedalSuggestionView> info =
                 mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
         Assert.assertNotNull("Should show a pedal if the suggestion is in top 3 suggestions", info);
