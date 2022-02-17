@@ -27,8 +27,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/aura/window.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace chromeos {
@@ -64,6 +66,30 @@ void OnDialogLoaded(bool& is_loaded, base::OnceClosure& on_loaded_callback) {
 }
 
 }  // namespace
+
+// Cleans up the delegate for a WebContentsModalDialogManager on destruction, or
+// on WebContents destruction, whichever comes first.
+class LockScreenStartReauthDialog::ModalDialogManagerCleanup
+    : public content::WebContentsObserver {
+ public:
+  // This constructor automatically observes |web_contents| for its lifetime.
+  explicit ModalDialogManagerCleanup(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+  ModalDialogManagerCleanup(const ModalDialogManagerCleanup&) = delete;
+  ModalDialogManagerCleanup& operator=(const ModalDialogManagerCleanup&) =
+      delete;
+  ~ModalDialogManagerCleanup() override { ResetDelegate(); }
+
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override { ResetDelegate(); }
+
+  void ResetDelegate() {
+    if (!web_contents())
+      return;
+    web_modal::WebContentsModalDialogManager::FromWebContents(web_contents())
+        ->SetDelegate(nullptr);
+  }
+};
 
 // static
 gfx::Size LockScreenStartReauthDialog::CalculateLockScreenReauthDialogSize(
@@ -118,16 +144,6 @@ void LockScreenStartReauthDialog::Dismiss() {
     g_dialog->Close();
 }
 
-void LockScreenStartReauthDialog::OnDialogClosed(
-    const std::string& json_retval) {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-  auto* password_sync_manager =
-      InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-  password_sync_manager->ResetDialog();
-}
-
 bool LockScreenStartReauthDialog::IsRunning() {
   return g_dialog;
 }
@@ -147,6 +163,28 @@ void LockScreenStartReauthDialog::DeleteLockScreenNetworkDialog() {
     auto* password_sync_manager = GetInSessionPasswordSyncManager();
     password_sync_manager->DismissDialog();
   }
+}
+
+void LockScreenStartReauthDialog::OnDialogShown(content::WebUI* webui) {
+  BaseLockDialog::OnDialogShown(webui);
+
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      webui->GetWebContents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      webui->GetWebContents())
+      ->SetDelegate(this);
+  modal_dialog_manager_cleanup_ =
+      std::make_unique<ModalDialogManagerCleanup>(webui->GetWebContents());
+}
+
+void LockScreenStartReauthDialog::OnDialogClosed(
+    const std::string& json_retval) {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
+  auto* password_sync_manager =
+      InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+  password_sync_manager->ResetDialog();
 }
 
 void LockScreenStartReauthDialog::DismissLockScreenNetworkDialog() {
@@ -235,6 +273,39 @@ void LockScreenStartReauthDialog::UpdateState(
       lock_screen_network_dialog_->Close();
     }
   }
+}
+
+web_modal::WebContentsModalDialogHost*
+LockScreenStartReauthDialog::GetWebContentsModalDialogHost() {
+  return this;
+}
+
+gfx::Size LockScreenStartReauthDialog::GetMaximumDialogSize() {
+  gfx::Size size;
+  GetDialogSize(&size);
+  return size;
+}
+
+gfx::NativeView LockScreenStartReauthDialog::GetHostView() const {
+  return dialog_window();
+}
+
+gfx::Point LockScreenStartReauthDialog::GetDialogPosition(
+    const gfx::Size& size) {
+  gfx::Size host_size = GetHostView()->bounds().size();
+
+  // Show all sub-dialogs at center-top.
+  return gfx::Point(std::max(0, (host_size.width() - size.width()) / 2), 0);
+}
+
+void LockScreenStartReauthDialog::AddObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observer_list_.AddObserver(observer);
+}
+
+void LockScreenStartReauthDialog::RemoveObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observer_list_.RemoveObserver(observer);
 }
 
 }  // namespace chromeos

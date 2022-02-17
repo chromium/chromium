@@ -5,13 +5,16 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_DIALOGS_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_DIALOGS_H_
 
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/base_lock_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace chromeos {
@@ -21,7 +24,9 @@ class LockScreenNetworkDialog;
 
 class LockScreenStartReauthDialog
     : public BaseLockDialog,
-      public NetworkStateInformer::NetworkStateInformerObserver {
+      public NetworkStateInformer::NetworkStateInformerObserver,
+      public ChromeWebModalDialogManagerDelegate,
+      public web_modal::WebContentsModalDialogHost {
  public:
   LockScreenStartReauthDialog();
   LockScreenStartReauthDialog(LockScreenStartReauthDialog const&) = delete;
@@ -58,12 +63,28 @@ class LockScreenStartReauthDialog
   }
 
  private:
+  class ModalDialogManagerCleanup;
+
   void OnProfileCreated(Profile* profile, Profile::CreateStatus status);
-  void OnDialogClosed(const std::string& json_retval) override;
   void DeleteLockScreenNetworkDialog();
+
+  // BaseLockDialog:
+  void OnDialogShown(content::WebUI* webui) override;
+  void OnDialogClosed(const std::string& json_retval) override;
 
   // NetworkStateInformer::NetworkStateInformerObserver:
   void UpdateState(NetworkError::ErrorReason reason) override;
+
+  // ChromeWebModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
+      override;
+
+  // web_modal::WebContentsModalDialogHost:
+  gfx::Size GetMaximumDialogSize() override;
+  gfx::NativeView GetHostView() const override;
+  gfx::Point GetDialogPosition(const gfx::Size& size) override;
+  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
   void OnCaptivePortalDialogReadyForTesting();
 
@@ -84,6 +105,10 @@ class LockScreenStartReauthDialog
   base::OnceClosure on_captive_portal_dialog_loaded_callback_for_testing_;
   bool is_network_dialog_loaded_for_testing_ = false;
   bool is_captive_portal_dialog_loaded_for_testing_ = false;
+
+  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+      modal_dialog_host_observer_list_;
+  std::unique_ptr<ModalDialogManagerCleanup> modal_dialog_manager_cleanup_;
 
   base::WeakPtrFactory<LockScreenStartReauthDialog> weak_factory_{this};
 };
