@@ -432,6 +432,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAddAlertContent) {
+  RunEventTest(FILE_PATH_LITERAL("add-alert-content.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAddChild) {
   RunEventTest(FILE_PATH_LITERAL("add-child.html"));
 }

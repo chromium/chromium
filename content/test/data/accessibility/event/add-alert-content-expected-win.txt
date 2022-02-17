@@ -1,0 +1,11 @@
+EVENT_OBJECT_LIVEREGIONCHANGED on <div#foo> role=ROLE_SYSTEM_ALERT name="Foo"
+EVENT_OBJECT_SHOW on role=ROLE_SYSTEM_STATICTEXT name="First alert"
+IA2_EVENT_TEXT_INSERTED on <div#foo> role=ROLE_SYSTEM_ALERT name="Foo" new_text={'First alert' start=0 end=11}
+=== Start Continuation ===
+EVENT_OBJECT_LIVEREGIONCHANGED on <div#bar> role=ROLE_SYSTEM_ALERT name="Bar"
+EVENT_OBJECT_SHOW on <p> role=ROLE_SYSTEM_GROUPING
+IA2_EVENT_TEXT_INSERTED on <div#bar> role=ROLE_SYSTEM_ALERT name="Bar" new_text={'<obj>' start=0 end=1}
+=== Start Continuation ===
+EVENT_OBJECT_LIVEREGIONCHANGED on <div> role=ROLE_SYSTEM_ALERT name="Baz"
+EVENT_OBJECT_SHOW on role=ROLE_SYSTEM_STATICTEXT name="Third alert"
+IA2_EVENT_TEXT_INSERTED on <p#baz> role=ROLE_SYSTEM_GROUPING new_text={'Third alert' start=0 end=11}

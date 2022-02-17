@@ -1480,9 +1480,12 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
   const bool ignored = owner()->IsIgnored();
 
   // Suppress all of these events when the node is ignored, or when the ignored
-  // state has changed.
-  if (ignored || (old_win_attributes_->ignored != ignored))
+  // state has changed on a node that isn't part of an active live region.
+  if (ignored || (old_win_attributes_->ignored != ignored &&
+                  !owner()->GetData().IsContainedInActiveLiveRegion() &&
+                  !owner()->GetData().IsActiveLiveRegionRoot())) {
     return;
+  }
 
   // The rest of the events only fire on changes, not on new objects.
 

@@ -148,6 +148,12 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_addAlertContent() {
+        performTest("add-alert-content.html", "add-alert-content-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_addChild() {
         performTest("add-child.html", EMPTY_EXPECTATIONS_FILE);
     }

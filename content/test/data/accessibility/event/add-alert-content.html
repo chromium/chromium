@@ -1,0 +1,28 @@
+<!--
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@UIA-WIN-DENY:StructureChanged/*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<div id="foo" aria-label="Foo" role="alert"></div>
+<div id="bar" aria-label="Bar" role="alert"></div>
+<div aria-label="Baz" role="alert">
+  <p id="baz"></p>
+</div>
+<script>
+  var go_passes = [
+    () => document.getElementById("foo").innerHTML = "First alert",
+    () => document.getElementById("bar").innerHTML = "<p>Second alert</p>",
+    () => document.getElementById("baz").innerHTML = "Third alert",
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>
