@@ -230,15 +230,6 @@ bool IsIconRepCircleShaped(const gfx::ImageSkiaRep& rep) {
   return (percentage_diff_pixels < kCircleShapePixelDifferenceThreshold);
 }
 
-// Returns whether the shape of the icon is roughly circle shaped.
-bool IsIconCircleShaped(const gfx::ImageSkia& image) {
-  for (gfx::ImageSkiaRep rep : image.image_reps()) {
-    if (IsIconRepCircleShaped(rep))
-      return true;
-  }
-  return false;
-}
-
 absl::optional<gfx::ImageSkiaRep> StandardizeSizeOfImageRep(
     const gfx::ImageSkiaRep& rep,
     float scale) {

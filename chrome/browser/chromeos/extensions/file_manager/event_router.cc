@@ -358,20 +358,6 @@ bool ShouldShowNotificationForVolume(
   return true;
 }
 
-std::set<std::string> GetEventListenerExtensionIds(
-    Profile* profile,
-    const std::string& event_name) {
-  const extensions::EventListenerMap::ListenerList& listeners =
-      extensions::EventRouter::Get(profile)
-          ->listeners()
-          .GetEventListenersByName(event_name);
-  std::set<std::string> extension_ids;
-  for (const auto& listener : listeners) {
-    extension_ids.insert(listener->extension_id());
-  }
-  return extension_ids;
-}
-
 // Sub-part of the event router for handling device events.
 class DeviceEventRouterImpl : public DeviceEventRouter {
  public:

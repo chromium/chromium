@@ -262,18 +262,6 @@ user_manager::UserType CalculateUserType(const AccountId& account_id) {
   return user_manager::USER_TYPE_REGULAR;
 }
 
-std::string GetAdErrorMessage(authpolicy::ErrorType error) {
-  switch (error) {
-    case authpolicy::ERROR_NETWORK_PROBLEM:
-      return l10n_util::GetStringUTF8(IDS_AD_AUTH_NETWORK_ERROR);
-    case authpolicy::ERROR_KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE:
-      return l10n_util::GetStringUTF8(IDS_AD_AUTH_NOT_SUPPORTED_ENCRYPTION);
-    default:
-      DLOG(WARNING) << "Unhandled error code: " << error;
-      return l10n_util::GetStringUTF8(IDS_AD_AUTH_UNKNOWN_ERROR);
-  }
-}
-
 PinDialogManager* GetLoginScreenPinDialogManager() {
   DCHECK(ProfileHelper::IsSigninProfileInitialized());
   CertificateProviderService* certificate_provider_service =

@@ -37,15 +37,6 @@ app_notification::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
   return app;
 }
 
-std::vector<app_notification::mojom::AppPtr> Clone(
-    const std::vector<app_notification::mojom::AppPtr>& apps) {
-  std::vector<app_notification::mojom::AppPtr> cloned_apps;
-  for (const auto& app : apps) {
-    cloned_apps.push_back(app.Clone());
-  }
-  return cloned_apps;
-}
-
 bool ShouldIncludeApp(const apps::AppUpdate& update) {
   // Only apps that can be shown in management are supported.
   if (update.ShowInManagement() != apps::mojom::OptionalBool::kTrue) {

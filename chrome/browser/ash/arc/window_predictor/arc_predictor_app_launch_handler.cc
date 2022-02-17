@@ -9,18 +9,6 @@
 #include "ui/display/types/display_constants.h"
 
 namespace arc {
-namespace {
-
-std::unique_ptr<app_restore::WindowInfo> GetAppWindowInfo(
-    arc::mojom::WindowInfoPtr window_info) {
-  auto app_window_info = std::make_unique<app_restore::WindowInfo>();
-  if (window_info->bounds.has_value()) {
-    app_window_info->current_bounds = window_info->bounds.value();
-  }
-  return app_window_info;
-}
-
-}  // namespace
 
 ArcPredictorAppLaunchHandler::ArcPredictorAppLaunchHandler(Profile* profile)
     : ash::AppLaunchHandler(profile) {

@@ -132,23 +132,6 @@ const user_manager::User* GetUserFromBrowserContext(
   return user;
 }
 
-ash::WallpaperType GetWallpaperType(wallpaper_private::WallpaperSource source) {
-  switch (source) {
-    case wallpaper_private::WALLPAPER_SOURCE_ONLINE:
-      return ash::WallpaperType::kOnline;
-    case wallpaper_private::WALLPAPER_SOURCE_DAILY:
-      return ash::WallpaperType::kDaily;
-    case wallpaper_private::WALLPAPER_SOURCE_CUSTOM:
-      return ash::WallpaperType::kCustomized;
-    case wallpaper_private::WALLPAPER_SOURCE_OEM:
-      return ash::WallpaperType::kDefault;
-    case wallpaper_private::WALLPAPER_SOURCE_THIRDPARTY:
-      return ash::WallpaperType::kThirdParty;
-    default:
-      return ash::WallpaperType::kOnline;
-  }
-}
-
 // Helper function to parse the data from a |backdrop::Image| object and save it
 // to |image_info_out|.
 void ParseImageInfo(
