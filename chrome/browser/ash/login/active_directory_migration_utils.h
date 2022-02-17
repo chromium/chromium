@@ -11,8 +11,8 @@ namespace ash {
 
 // Utils that provides functionalities related to skipping some OOBE screens
 // during the migration of Chromad devices into cloud management.
-// TODO(crbug/1295308): Remove this file and it's usage when Chromad
-// deprecation if over.
+// TODO(crbug/1298038): Remove this file and it's usage when Chromad to clould
+// migration is complete.
 namespace ad_migration_utils {
 
 void CheckChromadMigrationOobeFlow(base::OnceCallback<void(bool)> callback);
