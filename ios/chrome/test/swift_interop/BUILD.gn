@@ -17,9 +17,25 @@ source_set("objc_interop_tests") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("swift_interop_tests_support_files") {
+  testonly = true
+  sources = [
+    "classes/inlined_class.h",
+    "classes/outlined_class.h",
+    "classes/outlined_impl.cc",
+    "enum/enum.h",
+  ]
+}
+
 swift_source_set("swift_interop_tests") {
   testonly = true
-  sources = [ "swift_xctest.swift" ]
+  configs += [ "//build/config/ios:enable_swift_cxx_interop" ]
+  bridge_header = "swift_bridge.h"
+  sources = [
+    "classes/inlined_xctest.swift",
+    "classes/outlined_xctest.swift",
+    "enum/enum_xctest.swift",
+  ]
   frameworks = [ "UIKit.framework" ]
   deps = [
     "//base",
@@ -40,6 +56,7 @@ ios_test_runner_xcuitest("ios_swift_interop_xcuitests_module") {
   deps = [
     ":objc_interop_tests",
     ":swift_interop_tests",
+    ":swift_interop_tests_support_files",
   ]
   data_deps = [ ":ios_swift_interop_xcuitests" ]
 }
