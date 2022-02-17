@@ -17,14 +17,15 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
-#include "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
+#include "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
+#include "testing/platform_test.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,19 +37,24 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
-class WebSessionStateTabHelperTest : public ChromeWebTest {
+class WebSessionStateTabHelperTest : public PlatformTest {
  public:
   WebSessionStateTabHelperTest()
-      : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
+      : web_client_(std::make_unique<ChromeWebClient>()) {}
 
   void SetUp() override {
-    ChromeWebTest::SetUp();
+    PlatformTest::SetUp();
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
 
     WebSessionStateTabHelper::CreateForWebState(web_state());
 
-    session_cache_directory_ =
-        web_state()->GetBrowserState()->GetStatePath().Append(
-            kWebSessionCacheDirectoryName);
+    session_cache_directory_ = browser_state_.get()->GetStatePath().Append(
+        kWebSessionCacheDirectoryName);
   }
 
   // Flushes all the runloops internally used by the cache.
@@ -57,6 +63,13 @@ class WebSessionStateTabHelperTest : public ChromeWebTest {
     base::RunLoop().RunUntilIdle();
   }
 
+ protected:
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
   base::FilePath session_cache_directory_;
 };
 
@@ -132,7 +145,7 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   }
 
   // Create a new webState with a live WKWebView.
-  web::WebState::CreateParams createParams(GetBrowserState());
+  web::WebState::CreateParams createParams(browser_state_.get());
   std::unique_ptr<web::WebState> web_state =
       web::WebState::Create(createParams);
   WebSessionStateTabHelper::CreateForWebState(web_state.get());
