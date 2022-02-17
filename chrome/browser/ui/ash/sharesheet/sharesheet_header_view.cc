@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/image_util.h"
+#include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
@@ -49,7 +50,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
@@ -166,7 +167,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
         was_pressed_);
   }
 
-  views::ImageView* GetImageViewAt(size_t index) {
+  RoundedImageView* GetImageViewAt(size_t index) {
     if (index >= image_views_.size()) {
       return nullptr;
     }
@@ -215,8 +216,10 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
 
   void AddImageViewTo(views::View* parent_view, const gfx::Size& size) {
     auto* image_view =
-        parent_view->AddChildView(std::make_unique<views::ImageView>());
-    image_view->SetImageSize(size);
+        parent_view->AddChildView(std::make_unique<RoundedImageView>(
+            kImagePreviewIconCornerRadius,
+            RoundedImageView::Alignment::kCenter));
+    image_view->SetPreferredSize(size);
     image_views_.push_back(image_view);
   }
 
@@ -239,7 +242,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
     AddImageViewTo(parent_view, size);
   }
 
-  std::vector<views::ImageView*> image_views_;
+  std::vector<RoundedImageView*> image_views_;
 
   // Used for recording UMA to indicate whether or not a user tried to interact
   // with the image preview.
@@ -491,6 +494,8 @@ void SharesheetHeaderView::OnImageLoaded(const gfx::Size& size, size_t index) {
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
   image_preview_->GetImageViewAt(index)->SetImage(
       images_[index]->GetImageSkia(size));
+  // TODO(crbug.com/1293668): Investigate why this SchedulePaint is needed.
+  image_preview_->GetImageViewAt(index)->SchedulePaint();
 }
 
 BEGIN_METADATA(SharesheetHeaderView, views::View)
