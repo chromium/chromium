@@ -21,10 +21,15 @@ namespace history_clusters {
 // should be separately canonicalized by TemplateURLService and not sent here.
 GURL ComputeURLForDeduping(const GURL& url);
 
-// Erases all clusters that don't match `query`. If `query` is an empty string,
-// leaves `clusters` unmodified.
-void FilterClustersMatchingQuery(std::string query,
-                                 std::vector<history::Cluster>* clusters);
+// Stable sorts visits according to score, then reverse-chronologically.
+void StableSortVisits(std::vector<history::ClusterVisit>* visits);
+
+// Erases all clusters that don't match `query`. Also may re-score the visits
+// within matching clusters.
+//
+// If `query` is an empty string, leaves `clusters` unmodified.
+void ApplySearchQuery(const std::string& query,
+                      std::vector<history::Cluster>* clusters);
 
 // If `query` is empty, erases all non-prominent clusters.
 //

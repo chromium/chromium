@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
 #include "base/containers/contains.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 
 namespace history_clusters {
@@ -78,20 +79,9 @@ void MergeDuplicateVisitIntoCanonicalVisit(
 
 void SortClusters(std::vector<history::Cluster>* clusters) {
   DCHECK(clusters);
-  // Within each cluster, sort visits from best to worst using score.
-  // TODO(crbug.com/1184879): Once cluster persistence is done, maybe we can
-  //  eliminate this sort step, if they are stored in-order.
+  // Within each cluster, sort visits.
   for (auto& cluster : *clusters) {
-    base::ranges::stable_sort(cluster.visits, [](auto& v1, auto& v2) {
-      if (v1.score != v2.score) {
-        // Use v1 > v2 to get higher scored visits BEFORE lower scored visits.
-        return v1.score > v2.score;
-      }
-
-      // Use v1 > v2 to get more recent visits BEFORE older visits.
-      return v1.annotated_visit.visit_row.visit_time >
-             v2.annotated_visit.visit_row.visit_time;
-    });
+    StableSortVisits(&cluster.visits);
   }
 
   // After that, sort clusters reverse-chronologically based on their highest

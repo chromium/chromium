@@ -817,6 +817,11 @@ struct ClusterVisit {
   // visit is to the containing cluster.
   float score = 0.0;
 
+  // Flagged as true if this cluster visit matches the user's search query.
+  // This value depends on the user's search query, and is not meant to be ever
+  // persisted. It's a UI-state-specific flag that's convenient to buffer here.
+  bool matches_search_query = false;
+
   // A list of visits that have been de-duplicated into this visit. The parent
   // visit is considered the best visit among all the duplicates, and the worse
   // visits are now contained here.

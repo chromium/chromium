@@ -69,6 +69,9 @@ const base::FeatureParam<double> kMinScoreToAlwaysShowAboveTheFold{
 const base::FeatureParam<int> kNumVisitsToAlwaysShowAboveTheFold{
     &internal::kJourneys, "JourneysNumVisitsToAlwaysShowAboveTheFold", 3};
 
+const base::FeatureParam<bool> kRescoreVisitsWithinClustersForQuery{
+    &internal::kJourneys, "JourneysRescoreVisitsWithinClustersForQuery", true};
+
 // Default to true, as this new alternate action text was recommended by our UX
 // writers.
 const base::FeatureParam<bool> kAlternateOmniboxActionText{

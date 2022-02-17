@@ -55,10 +55,6 @@ extern const base::FeatureParam<bool> kPersistClustersInHistoryDb;
 // builds, so it won't work in unofficial builds.
 extern const base::FeatureParam<bool> kUseOnDeviceClusteringBackend;
 
-// If enabled, changes the History Clusters omnibox action text to be:
-// "Resume your research" instead of "Resume your journey".
-extern const base::FeatureParam<bool> kAlternateOmniboxActionText;
-
 // If enabled, this is the min score that a visit needs to have to always be
 // shown above the fold regardless of the number of visits already shown.
 extern const base::FeatureParam<double> kMinScoreToAlwaysShowAboveTheFold;
@@ -66,6 +62,14 @@ extern const base::FeatureParam<double> kMinScoreToAlwaysShowAboveTheFold;
 // If enabled, this is the number of non-zero scored visits to always show
 // above the fold regardless of score.
 extern const base::FeatureParam<int> kNumVisitsToAlwaysShowAboveTheFold;
+
+// If enabled, when there is a Journeys search query, the backend re-scores
+// visits within a cluster to account for whether or not that visit matches.
+extern const base::FeatureParam<bool> kRescoreVisitsWithinClustersForQuery;
+
+// If enabled, changes the History Clusters omnibox action text to be:
+// "Resume your research" instead of "Resume your journey".
+extern const base::FeatureParam<bool> kAlternateOmniboxActionText;
 
 // Features
 

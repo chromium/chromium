@@ -4,11 +4,15 @@
 
 #include "components/history_clusters/core/history_clusters_util.h"
 
+#include <algorithm>
+
 #include "base/i18n/case_conversion.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/features.h"
 #include "components/query_parser/query_parser.h"
 #include "components/url_formatter/url_formatter.h"
 
@@ -16,22 +20,32 @@ namespace history_clusters {
 
 namespace {
 
-// Returns true if `find_nodes` matches `cluster`.
-// This is deliberately meant to closely mirror the History implementation..
-// TODO(tommycli): Merge with `URLDatabase::GetTextMatchesWithAlgorithm()`.
-bool DoesQueryMatchCluster(const query_parser::QueryNodeVector& find_nodes,
-                           const history::Cluster& cluster) {
-  query_parser::QueryWordVector find_in_words;
-
+// Returns true if `find_nodes` matches `cluster_keywords`.
+bool DoesQueryMatchClusterKeywords(
+    const query_parser::QueryNodeVector& find_nodes,
+    const std::vector<std::u16string>& cluster_keywords) {
   // All of the cluster's `keyword`s go into `find_in_words`.
   // Each `keyword` may have multiple terms, so loop over them.
-  for (auto& keyword : cluster.keywords) {
+  query_parser::QueryWordVector find_in_words;
+  for (auto& keyword : cluster_keywords) {
     query_parser::QueryParser::ExtractQueryWords(base::i18n::ToLower(keyword),
                                                  &find_in_words);
   }
 
-  // Also extract all of the visits' URLs and titles into `find_in_words`.
-  for (const auto& visit : cluster.visits) {
+  return query_parser::QueryParser::DoesQueryMatch(find_in_words, find_nodes);
+}
+
+// Flags any elements within `cluster_visits` that match `find_nodes`. The
+// matching is deliberately meant to closely mirror the History implementation.
+// Returns true if any elements match, and returns false if none of them do.
+bool FlagMatchingVisits(const query_parser::QueryNodeVector& find_nodes,
+                        std::vector<history::ClusterVisit>* cluster_visits) {
+  DCHECK(cluster_visits);
+
+  bool any_visits_match = false;
+
+  for (auto& visit : *cluster_visits) {
+    query_parser::QueryWordVector find_in_words;
     GURL gurl = visit.annotated_visit.url_row.url();
 
     std::u16string url_lower =
@@ -49,9 +63,36 @@ bool DoesQueryMatchCluster(const query_parser::QueryNodeVector& find_nodes,
     std::u16string title_lower =
         base::i18n::ToLower(visit.annotated_visit.url_row.title());
     query_parser::QueryParser::ExtractQueryWords(title_lower, &find_in_words);
+
+    if (query_parser::QueryParser::DoesQueryMatch(find_in_words, find_nodes)) {
+      visit.matches_search_query = true;
+      any_visits_match = true;
+    }
   }
 
-  return query_parser::QueryParser::DoesQueryMatch(find_in_words, find_nodes);
+  return any_visits_match;
+}
+
+// Re-scores and re-sorts `cluster_visits` so that all visits that match the
+// search query are promoted above all visits that don't match the search query.
+// All visits are likely to be rescored in this case.
+//
+// Note, this should NOT be called for `cluster_visits` with NO matching visits.
+void PromoteMatchingVisitsAboveNonMatchingVisits(
+    std::vector<history::ClusterVisit>* cluster_visits) {
+  DCHECK(cluster_visits);
+  for (auto& visit : *cluster_visits) {
+    if (visit.matches_search_query) {
+      // Smash all matching scores into the range that's above the fold.
+      visit.score = kMinScoreToAlwaysShowAboveTheFold.Get() +
+                    visit.score * (1 - kMinScoreToAlwaysShowAboveTheFold.Get());
+    } else {
+      // Smash all non-matching scores into the range that's below the fold.
+      visit.score = visit.score * kMinScoreToAlwaysShowAboveTheFold.Get();
+    }
+  }
+
+  StableSortVisits(cluster_visits);
 }
 
 }  // namespace
@@ -83,8 +124,22 @@ GURL ComputeURLForDeduping(const GURL& url) {
   return url_for_deduping;
 }
 
-void FilterClustersMatchingQuery(std::string query,
-                                 std::vector<history::Cluster>* clusters) {
+void StableSortVisits(std::vector<history::ClusterVisit>* visits) {
+  DCHECK(visits);
+  base::ranges::stable_sort(*visits, [](auto& v1, auto& v2) {
+    if (v1.score != v2.score) {
+      // Use v1 > v2 to get higher scored visits BEFORE lower scored visits.
+      return v1.score > v2.score;
+    }
+
+    // Use v1 > v2 to get more recent visits BEFORE older visits.
+    return v1.annotated_visit.visit_row.visit_time >
+           v2.annotated_visit.visit_row.visit_time;
+  });
+}
+
+void ApplySearchQuery(const std::string& query,
+                      std::vector<history::Cluster>* clusters) {
   DCHECK(clusters);
   if (query.empty())
     return;
@@ -95,12 +150,24 @@ void FilterClustersMatchingQuery(std::string query,
       base::UTF8ToUTF16(query),
       query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH, &find_nodes);
 
-  clusters->erase(base::ranges::remove_if(
-                      *clusters,
-                      [&find_nodes](const history::Cluster& cluster) {
-                        return !DoesQueryMatchCluster(find_nodes, cluster);
-                      }),
-                  clusters->end());
+  // Move all the passed in `clusters` into `all_clusters`, and start rebuilding
+  // `clusters` to only contain the matching ones.
+  std::vector<history::Cluster> all_clusters;
+  std::swap(all_clusters, *clusters);
+
+  for (auto& cluster : all_clusters) {
+    bool any_visits_match = FlagMatchingVisits(find_nodes, &cluster.visits);
+    if (any_visits_match && kRescoreVisitsWithinClustersForQuery.Get()) {
+      PromoteMatchingVisitsAboveNonMatchingVisits(&cluster.visits);
+    }
+
+    // If any of the visits match, or if any of the `cluster.keywords` match,
+    // move this cluster into the list of surviving clusters.
+    if (any_visits_match ||
+        DoesQueryMatchClusterKeywords(find_nodes, cluster.keywords)) {
+      clusters->push_back(std::move(cluster));
+    }
+  }
 }
 
 void CullNonProminentOrDuplicateClusters(

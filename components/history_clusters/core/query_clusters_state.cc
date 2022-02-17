@@ -30,7 +30,7 @@ class QueryClustersState::PostProcessor
 
   std::vector<history::Cluster> PostProcess(
       std::vector<history::Cluster> clusters) {
-    FilterClustersMatchingQuery(query_, &clusters);
+    ApplySearchQuery(query_, &clusters);
     CullNonProminentOrDuplicateClusters(query_, &clusters,
                                         &seen_single_visit_cluster_urls_);
     return clusters;
