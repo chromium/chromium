@@ -88,6 +88,21 @@
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 101
   },
+   {
+    "name": "allow-dsp-based-aec",
+    "owners": [ "peah" ],
+    "expiry_milestone": 110
+  },
+  {
+    "name": "allow-dsp-based-agc",
+    "owners": [ "peah" ],
+    "expiry_milestone": 110
+  },
+  {
+    "name": "allow-dsp-based-ns",
+    "owners": [ "peah" ],
+    "expiry_milestone": 110
+  },
   {
     "name": "allow-insecure-localhost",
     "owners": [ "security-dev" ],
@@ -3100,7 +3115,7 @@
     "owners": ["jennyz", "erikchen"],
     "expiry_milestone": 130
   },
-   {
+  {
     "name": "enforce-system-aec",
     "owners": [ "peah" ],
     "expiry_milestone": 100

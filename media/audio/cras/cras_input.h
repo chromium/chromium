@@ -84,6 +84,15 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   // Return true to use AGC in CRAS for this input stream.
   inline bool UseCrasAgc() const;
 
+  // Return true to allow AEC on DSP for this input stream.
+  inline bool DspBasedAecIsAllowed() const;
+
+  // Return true to allow NS on DSP for this input stream.
+  inline bool DspBasedNsIsAllowed() const;
+
+  // Return true to allow AGC on DSP for this input stream.
+  inline bool DspBasedAgcIsAllowed() const;
+
   // Non-refcounted pointer back to the audio manager.
   // The AudioManager indirectly holds on to stream objects, so we don't
   // want circular references.  Additionally, stream objects live on the audio

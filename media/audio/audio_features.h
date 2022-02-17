@@ -27,6 +27,12 @@ MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAecNsAgc;
 MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAecNs;
 MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAecAgc;
 MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAec;
+MEDIA_EXPORT extern const base::Feature kCrOSDspBasedAecDeactivatedGroups;
+MEDIA_EXPORT extern const base::Feature kCrOSDspBasedNsDeactivatedGroups;
+MEDIA_EXPORT extern const base::Feature kCrOSDspBasedAgcDeactivatedGroups;
+MEDIA_EXPORT extern const base::Feature kCrOSDspBasedAecAllowed;
+MEDIA_EXPORT extern const base::Feature kCrOSDspBasedNsAllowed;
+MEDIA_EXPORT extern const base::Feature kCrOSDspBasedAgcAllowed;
 #endif
 
 #if BUILDFLAG(IS_WIN)
