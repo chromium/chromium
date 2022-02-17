@@ -13,7 +13,6 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -134,6 +133,9 @@ class ListValue;
 // another `Value::Type::DICT` under the "aaa" dict associated with the
 // key "bbb", and then a `Value::Type::STRING` under the "bbb" dict associated
 // with the key "ccc".
+//
+// If a path only has one component (i.e. has no dots), please use the regular,
+// non-path APIs.
 //
 // Lists support:
 // - `empty()`, `size()`, `begin()`, `end()`, `cbegin()`, `cend()`,
@@ -300,10 +302,11 @@ class BASE_EXPORT GSL_OWNER Value {
   // Constructor for `Value::Type::LIST`.
   explicit Value(List&& value) noexcept;
 
-  // TODO(dcheng): File a bug for removing these constructors.
+  // DEPRECATED: prefer `Value(Dict&&)`.
   explicit Value(const DictStorage& value);
   explicit Value(DictStorage&& value);
 
+  // DEPRECATED: prefer `Value(List&&)`.
   explicit Value(span<const Value> value);
   explicit Value(ListStorage&& value) noexcept;
 
@@ -469,10 +472,13 @@ class BASE_EXPORT GSL_OWNER Value {
     // intermediate dictionaries, with components delimited by ".". Paths may
     // not be empty.
     //
-    // In general, prefer the non-path methods above. Originally, the path-based
-    // APIs were the only way of specifying a key, so there are likely to be
-    // many legacy (and unnecessary) uses of the path APIs that do not require
-    // the special path behavior.
+    // Prefer the non-path methods above when possible. Paths that have only one
+    // component (i.e. no dots in the path) should never use the path-based
+    // methods.
+    //
+    // Originally, the path-based APIs were the only way of specifying a key, so
+    // there are likely to be many legacy (and unnecessary) uses of the path
+    // APIs that do not actually require traversing nested dictionaries.
     const Value* FindByDottedPath(StringPiece path) const;
     Value* FindByDottedPath(StringPiece path);
 
@@ -489,9 +495,10 @@ class BASE_EXPORT GSL_OWNER Value {
     const List* FindListByDottedPath(StringPiece path) const;
     List* FindListByDottedPath(StringPiece path);
 
-    // These methods will fail if any non-last component of the path refers to
-    // an already-existing entry that is not a dictionary. Returns `nullptr` on
-    // failure.
+    // Creates a new entry with a dictionary for any non-last component that is
+    // missing an entry while performing the path traversal. Will fail if any
+    // non-last component of the path refers to an already-existing entry that
+    // is not a dictionary. Returns `nullptr` on failure.
     Value* SetByDottedPath(StringPiece path, Value&& value);
     Value* SetByDottedPath(StringPiece path, bool value);
     template <typename T>
@@ -627,174 +634,178 @@ class BASE_EXPORT GSL_OWNER Value {
     std::vector<Value> storage_;
   };
 
+  // ===== DEPRECATED methods that require `type() == Type::LIST` =====
+
   // Returns the Values in a list as a view. The mutable overload allows for
   // modification of the underlying values, but does not allow changing the
   // structure of the list. If this is desired, use `TakeListDeprecated()`,
   // perform the operations, and return the list back to the Value via move
   // assignment.
+  //
+  // DEPRECATED: prefer direct use `base::Value::List` where possible, or
+  // `GetList()` otherwise.
   DeprecatedListView GetListDeprecated();
   DeprecatedConstListView GetListDeprecated() const;
 
   // Transfers ownership of the underlying list to the caller. Subsequent
   // calls to `GetListDeprecated()` will return an empty list.
-  // Note: This requires that `type()` is Type::LIST.
+  //
+  // DEPRECATED: prefer direct use of `base::Value::List` where possible, or
+  // `std::move(value.GetList())` otherwise.
   DeprecatedListStorage TakeListDeprecated() &&;
 
   // Appends `value` to the end of the list.
-  // Note: These CHECK that `type()` is Type::LIST.
-  void Append(bool value);
-  void Append(int value);
-  void Append(double value);
-
-  void Append(const char* value);
-  void Append(StringPiece value);
-  void Append(std::string&& value);
-  void Append(const char16_t* value);
-
-  // Disable `Append()` from other pointers, so that there is no silent
-  // conversion to bool.
-  template <typename T,
-            typename = std::enable_if_t<
-                !std::is_convertible<T*, std::string>::value &&
-                !std::is_convertible<T*, std::u16string>::value>>
-  void Append(T* ptr) = delete;
-
-  void Append(StringPiece16 value);
+  //
+  // DEPRECATED: prefer `Value::List::Append()`.
   void Append(Value&& value);
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(bool value);
+  template <typename T>
+  void Append(const T* ptr) = delete;
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(int value);
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(double value);
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(StringPiece value);
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(StringPiece16 value);
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(const char* value);
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(const char16_t* value);
+  // DEPRECATED: prefer `Value::List::Append()`.
+  void Append(std::string&& value);
 
   // Inserts `value` before `pos`.
-  // Note: This CHECK that `type()` is Type::LIST.
+  //
+  // DEPRECATED: prefer `Value::List::Insert()`.
   CheckedContiguousIterator<Value> Insert(
       CheckedContiguousConstIterator<Value> pos,
       Value&& value);
 
   // Erases the Value pointed to by `iter`. Returns false if `iter` is out of
   // bounds.
-  // Note: This requires that `type()` is Type::LIST.
+  //
+  // DEPRECATED: prefer `Value::List::erase(iter)`.
   bool EraseListIter(CheckedContiguousConstIterator<Value> iter);
 
   // Erases all Values that compare equal to `val`. Returns the number of
   // deleted Values.
-  // Note: This requires that `type()` is Type::LIST.
+  //
+  // DEPRECATED: prefer `Value::List::EraseValue(val)`.
   size_t EraseListValue(const Value& val);
 
   // Erases all Values for which `pred` returns true. Returns the number of
   // deleted Values.
-  // Note: This requires that `type()` is Type::LIST.
+  //
+  // DEPRECATED: prefer `Value::List::EraseIf(pred)`.
   template <typename Predicate>
   size_t EraseListValueIf(Predicate pred) {
     return base::EraseIf(list(), pred);
   }
 
   // Erases all Values from the list.
-  // Note: This requires that `type()` is Type::LIST.
+  //
+  // DEPRECATED: prefer `Value::List::clear()`.
   void ClearList();
+
+  // ===== DEPRECATED methods that require `type() == Type::DICT` =====
 
   // `FindKey` looks up `key` in the underlying dictionary. If found, it returns
   // a pointer to the element. Otherwise it returns nullptr.
-  // returned. Callers are expected to perform a check against null before using
-  // the pointer.
-  // Note: This requires that `type()` is Type::DICT.
   //
-  // Example:
-  //   auto* found = FindKey("foo");
+  // DEPRECATED: prefer `Value::Dict::Find()`.
   Value* FindKey(StringPiece key);
   const Value* FindKey(StringPiece key) const;
 
   // `FindKeyOfType` is similar to `FindKey`, but it also requires the found
   // value to have type `type`. If no type is found, or the found value is of a
   // different type nullptr is returned.
-  // Callers are expected to perform a check against null before using the
-  // pointer.
-  // Note: This requires that `type()` is Type::DICT.
   //
-  // Example:
-  //   auto* found = FindKey("foo", Type::DOUBLE);
+  // DEPRECATED: prefer `Value::Dict::FindBool()`, `Value::Dict::FindInt()`, et
+  // cetera.
   Value* FindKeyOfType(StringPiece key, Type type);
   const Value* FindKeyOfType(StringPiece key, Type type) const;
 
-  // These are convenience forms of `FindKey`. They return absl::nullopt if
-  // the value is not found or doesn't have the type specified in the
-  // function's name.
+  // These are convenience forms of `FindKey`. They return `absl::nullopt` or
+  // `nullptr` if the value is not found or doesn't have the type specified in
+  // the function's name.
+  //
+  // DEPRECATED: prefer `Value::Dict::FindBool()`.
   absl::optional<bool> FindBoolKey(StringPiece key) const;
+  // DEPRECATED: prefer `Value::Dict::FindInt()`.
   absl::optional<int> FindIntKey(StringPiece key) const;
-  // Note `FindDoubleKey()` will auto-convert INTEGER keys to their double
-  // value, for consistency with `GetDouble()`.
+  // Returns a non-null value for both `Value::Type::DOUBLE` and
+  // `Value::Type::INT`, converting the latter to a double.
+  //
+  // DEPRECATED: prefer `Value::Dict::FindDouble()`.
   absl::optional<double> FindDoubleKey(StringPiece key) const;
-
-  // `FindStringKey` returns `nullptr` if value is not found or not a string.
+  // DEPRECATED: prefer `Value::Dict::FindString()`.
   const std::string* FindStringKey(StringPiece key) const;
   std::string* FindStringKey(StringPiece key);
-
-  // Returns nullptr is value is not found or not a binary.
+  // DEPRECATED: prefer `Value::Dict::FindBlob()`.
   const BlobStorage* FindBlobKey(StringPiece key) const;
-
-  // Returns nullptr if value is not found or not a dictionary.
+  // DEPRECATED: prefer `Value::Dict::FindDict()`.
   const Value* FindDictKey(StringPiece key) const;
   Value* FindDictKey(StringPiece key);
-
-  // Returns nullptr if value is not found or not a list.
+  // DEPRECATED: prefer `Value::Dict::FindList()`.
   const Value* FindListKey(StringPiece key) const;
   Value* FindListKey(StringPiece key);
 
   // `SetKey` looks up `key` in the underlying dictionary and sets the mapped
   // value to `value`. If `key` could not be found, a new element is inserted.
   // A pointer to the modified item is returned.
-  // Note: This requires that `type()` is Type::DICT.
-  // Note: Prefer `Set<Type>Key()` for simple values.
   //
-  // Example:
-  //   SetKey("foo", std::move(myvalue));
+  // Note: Prefer `Set<Type>Key()` if the input is not already a `Value`.
+  //
+  // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetKey(StringPiece key, Value&& value);
 
   // `Set`Type>Key` looks up `key` in the underlying dictionary and associates a
   // corresponding Value() constructed from the second parameter. Compared to
   // `SetKey()`, this avoids un-necessary temporary `Value()` creation, as well
   // ambiguities in the value type.
+  //
+  // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetBoolKey(StringPiece key, bool val);
+  // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetIntKey(StringPiece key, int val);
+  // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetDoubleKey(StringPiece key, double val);
+  // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetStringKey(StringPiece key, StringPiece val);
+  // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetStringKey(StringPiece key, StringPiece16 val);
-  // NOTE: The following two overloads are provided as performance / code
-  // generation optimizations.
+  // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetStringKey(StringPiece key, const char* val);
+  // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetStringKey(StringPiece key, std::string&& val);
 
   // This attempts to remove the value associated with `key`. In case of
   // failure, e.g. the key does not exist, false is returned and the underlying
   // dictionary is not changed. In case of success, `key` is deleted from the
   // dictionary and the method returns true.
-  // Note: This requires that `type()` is Type::DICT.
   //
-  // Example:
-  //   bool success = dict.RemoveKey("foo");
+  // Deprecated: Prefer `Value::Dict::Remove()`.
   bool RemoveKey(StringPiece key);
 
   // This attempts to extract the value associated with `key`. In case of
   // failure, e.g. the key does not exist, nullopt is returned and the
   // underlying dictionary is not changed. In case of success, `key` is deleted
   // from the dictionary and the method returns the extracted Value.
-  // Note: This requires that `type()` is Type::DICT.
   //
-  // Example:
-  //   absl::optional<Value> maybe_value = dict.ExtractKey("foo");
+  // DEPRECATED: Prefer `Value::Dict::Extract()`.
   absl::optional<Value> ExtractKey(StringPiece key);
 
   // Searches a hierarchy of dictionary values for a given value. If a path
   // of dictionaries exist, returns the item at that path. If any of the path
   // components do not exist or if any but the last path components are not
-  // dictionaries, returns nullptr.
-  //
-  // The type of the leaf Value is not checked.
-  //
-  // Implementation note: This can't return an iterator because the iterator
-  // will actually be into another Value, so it can't be compared to iterators
-  // from this one (in particular, the DictItems().end() iterator).
+  // dictionaries, returns nullptr. The type of the leaf Value is not checked.
   //
   // This version takes a StringPiece for the path, using dots as separators.
-  // Example:
-  //    auto* found = FindPath("foo.bar");
+  //
+  // DEPRECATED: Prefer `Value::Dict::FindByDottedPath()`.
   Value* FindPath(StringPiece path);
   const Value* FindPath(StringPiece path) const;
 
@@ -808,6 +819,9 @@ class BASE_EXPORT GSL_OWNER Value {
   // Example:
   //   std::vector<StringPiece> components = ...
   //   auto* found = FindPath(components);
+  //
+  // DEPRECATED: These are not common, and there is no currently planned
+  // replacement.
   Value* FindPath(std::initializer_list<StringPiece> path);
   Value* FindPath(span<const StringPiece> path);
   const Value* FindPath(std::initializer_list<StringPiece> path) const;
@@ -819,24 +833,52 @@ class BASE_EXPORT GSL_OWNER Value {
   //
   // Note: If there is only one component in the path, use `FindKeyOfType()`
   // instead for slightly better performance.
+  //
+  // DEPRECATED: Use `Value::Dict::FindBoolByDottedPath()`,
+  // `Value::Dict::FindIntByDottedPath()`, et cetera.
   Value* FindPathOfType(StringPiece path, Type type);
   const Value* FindPathOfType(StringPiece path, Type type) const;
 
   // Convenience accessors used when the expected type of a value is known.
   // Similar to Find<Type>Key() but accepts paths instead of keys.
+  //
+  // DEPRECATED: Use `Value::Dict::FindBoolByDottedPath()`, or
+  // `Value::Dict::FindBool()` if the path only has one component, i.e. has no
+  // dots.
   absl::optional<bool> FindBoolPath(StringPiece path) const;
+  // DEPRECATED: Use `Value::Dict::FindIntByDottedPath()`, or
+  // `Value::Dict::FindInt()` if the path only has one component, i.e. has no
+  // dots.
   absl::optional<int> FindIntPath(StringPiece path) const;
+  // DEPRECATED: Use `Value::Dict::FindDoubleByDottedPath()`, or
+  // `Value::Dict::FindDouble()` if the path only has one component, i.e. has no
+  // dots.
   absl::optional<double> FindDoublePath(StringPiece path) const;
+  // DEPRECATED: Use `Value::Dict::FindStringByDottedPath()`, or
+  // `Value::Dict::FindString()` if the path only has one component, i.e. has no
+  // dots.
   const std::string* FindStringPath(StringPiece path) const;
   std::string* FindStringPath(StringPiece path);
+  // DEPRECATED: Use `Value::Dict::FindBlobByDottedPath()`, or
+  // `Value::Dict::FindBlob()` if the path only has one component, i.e. has no
+  // dots.
   const BlobStorage* FindBlobPath(StringPiece path) const;
+  // DEPRECATED: Use `Value::Dict::FindDictByDottedPath()`, or
+  // `Value::Dict::FindDict()` if the path only has one component, i.e. has no
+  // dots.
   Value* FindDictPath(StringPiece path);
   const Value* FindDictPath(StringPiece path) const;
+  // DEPRECATED: Use `Value::Dict::FindListByDottedPath()`, or
+  // `Value::Dict::FindList()` if the path only has one component, i.e. has no
+  // dots.
   Value* FindListPath(StringPiece path);
   const Value* FindListPath(StringPiece path) const;
 
   // The following forms are deprecated too, use the ones that take the path
   // as a single StringPiece instead.
+  //
+  // DEPRECATED: These are not common, and there is no currently planned
+  // replacement.
   Value* FindPathOfType(std::initializer_list<StringPiece> path, Type type);
   Value* FindPathOfType(span<const StringPiece> path, Type type);
   const Value* FindPathOfType(std::initializer_list<StringPiece> path,
@@ -852,24 +894,31 @@ class BASE_EXPORT GSL_OWNER Value {
   // component will be unconditionally overwritten if it exists, and created if
   // it doesn't.
   //
-  // Example:
-  //   value.SetPath("foo.bar", std::move(myvalue));
-  //
   // Note: If there is only one component in the path, use `SetKey()` instead.
   // Note: Using `Set<Type>Path()` might be more convenient and efficient.
+  //
+  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
   Value* SetPath(StringPiece path, Value&& value);
 
   // These setters are more convenient and efficient than the corresponding
   // SetPath(...) call.
+  //
+  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
   Value* SetBoolPath(StringPiece path, bool value);
+  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
   Value* SetIntPath(StringPiece path, int value);
+  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
   Value* SetDoublePath(StringPiece path, double value);
+  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
   Value* SetStringPath(StringPiece path, StringPiece value);
+  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
   Value* SetStringPath(StringPiece path, const char* value);
+  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
   Value* SetStringPath(StringPiece path, std::string&& value);
+  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
   Value* SetStringPath(StringPiece path, StringPiece16 value);
 
-  // Deprecated: use the `SetPath(StringPiece, ...)` methods above instead.
+  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
   Value* SetPath(std::initializer_list<StringPiece> path, Value&& value);
   Value* SetPath(span<const StringPiece> path, Value&& value);
 
@@ -882,8 +931,7 @@ class BASE_EXPORT GSL_OWNER Value {
   // Note: If there is only one component in the path, use `RemoveKey()`
   // instead.
   //
-  // Example:
-  //   bool success = value.RemovePath("foo.bar");
+  // DEPRECATED: Use `Value::Dict::RemoveByDottedPath()`.
   bool RemovePath(StringPiece path);
 
   // Tries to extract a Value at the given path.
@@ -896,8 +944,7 @@ class BASE_EXPORT GSL_OWNER Value {
   // Note: If there is only one component in the path, use `ExtractKey()`
   // instead.
   //
-  // Example:
-  //   absl::optional<Value> maybe_value = value.ExtractPath("foo.bar");
+  // DEPRECATED: Use `Value::Dict::ExtractByDottedPath()`.
   absl::optional<Value> ExtractPath(StringPiece path);
 
   using dict_iterator_proxy = detail::dict_iterator_proxy;
@@ -915,19 +962,25 @@ class BASE_EXPORT GSL_OWNER Value {
   //     Mutate(kv.second);
   // will actually alter `my_value` in place (if it isn't const).
   //
-  // Note: These CHECK that `type()` is Type::DICT.
+  // DEPRECATED: Use a range-based for loop over `base::Value::Dict` directly
+  // instead.
   dict_iterator_proxy DictItems();
   const_dict_iterator_proxy DictItems() const;
 
   // Transfers ownership of the underlying dict to the caller. Subsequent
   // calls to DictItems() will return an empty dict.
-  // Note: This requires that `type()` is Type::DICT.
+  //
+  // DEPRECATED: prefer direct use of `base::Value::Dict` where possible, or
+  // `std::move(value.GetDict())` otherwise.
   DeprecatedDictStorage TakeDictDeprecated() &&;
 
-  // Returns the size of the dictionary, if the dictionary is empty, and clears
-  // the dictionary. Note: These CHECK that `type()` is Type::DICT.
+  // DEPRECATED: prefer `Value::Dict::size()`.
   size_t DictSize() const;
+
+  // DEPRECATED: prefer `Value::Dict::empty()`.
   bool DictEmpty() const;
+
+  // DEPRECATED: prefer `Value::Dict::clear()`.
   void DictClear();
 
   // Merge `dictionary` into this value. This is done recursively, i.e. any
@@ -937,6 +990,8 @@ class BASE_EXPORT GSL_OWNER Value {
   // be freed any time after this call.
   // Note: This requires that `type()` and `dictionary->type()` is
   // Type::DICT.
+  //
+  // DEPRECATED: prefer `Value::Dict::Merge()`.
   void MergeDictionary(const Value* dictionary);
 
   // These methods allow the convenient retrieval of the contents of the Value.
@@ -944,10 +999,15 @@ class BASE_EXPORT GSL_OWNER Value {
   // returned through the `out_value` parameter and true is returned;
   // otherwise, false is returned and `out_value` is unchanged.
   // ListValue::From is the equivalent for std::unique_ptr conversions.
-  // DEPRECATED, use `is_list()` instead.
+  //
+  // DEPRECATED: prefer direct use `base::Value::List` where possible, or
+  // `GetIfList()` otherwise.
   bool GetAsList(ListValue** out_value);
   bool GetAsList(const ListValue** out_value) const;
   // DictionaryValue::From is the equivalent for std::unique_ptr conversions.
+  //
+  // DEPRECATED: prefer direct use `base::Value::Dict` where possible, or
+  // `GetIfDict()` otherwise.
   bool GetAsDictionary(DictionaryValue** out_value);
   bool GetAsDictionary(const DictionaryValue** out_value) const;
   // Note: Do not add more types. See the file-level comment above for why.
@@ -956,8 +1016,9 @@ class BASE_EXPORT GSL_OWNER Value {
   // to the copy. The caller gets ownership of the copy, of course.
   // Subclasses return their own type directly in their overrides;
   // this works because C++ supports covariant return types.
-  // DEPRECATED, use `Value::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
+  //
+  // DEPRECATED: prefer `Value::Clone()`.
   std::unique_ptr<Value> CreateDeepCopy() const;
 
   // Comparison operators so that Values can easily be used with standard
@@ -972,6 +1033,8 @@ class BASE_EXPORT GSL_OWNER Value {
   // Compares if two Value objects have equal contents.
   // DEPRECATED, use `operator==(const Value& lhs, const Value& rhs)` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
+  //
+  // DEPRECATED: prefer direct use of the equality operator instead.
   bool Equals(const Value* other) const;
 
   // Estimates dynamic memory usage. Requires tracing support
@@ -1083,8 +1146,8 @@ class BASE_EXPORT GSL_OWNER Value {
 // DictionaryValue provides a key-value dictionary with (optional) "path"
 // parsing for recursive access; see the comment at the top of the file. Keys
 // are std::string's and should be UTF-8 encoded.
-// DEPRECATED: Use DictStorage or base::Value(base::Value::Type::DICT)
-// instead.
+//
+// DEPRECATED: prefer `Value::Dict`.
 class BASE_EXPORT DictionaryValue : public Value {
  public:
   // Returns `value` if it is a dictionary, nullptr otherwise.
@@ -1095,7 +1158,8 @@ class BASE_EXPORT DictionaryValue : public Value {
   explicit DictionaryValue(LegacyDictStorage&& in_dict) noexcept;
 
   // Returns true if the current dictionary has a value for the given key.
-  // DEPRECATED, use `Value::FindKey(key)` instead.
+  //
+  // DEPRECATED: prefer `Value::Dict::contains()`.
   bool HasKey(StringPiece key) const;
 
   // Sets the Value associated with the given path starting from this object.
@@ -1106,27 +1170,44 @@ class BASE_EXPORT DictionaryValue : public Value {
   // a DictionaryValue, a new DictionaryValue will be created and attached
   // to the path in that location. `in_value` must be non-null.
   // Returns a pointer to the inserted value.
-  // DEPRECATED, use `Value::SetPath(path, value)` instead.
+  //
+  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
+  // otherwise.
   Value* Set(StringPiece path, std::unique_ptr<Value> in_value);
 
   // Convenience forms of Set().  These methods will replace any existing
   // value at that path, even if it has a different type.
-  // DEPRECATED, use `Value::SetBoolKey()` or `Value::SetBoolPath()`.
+  //
+  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
+  // otherwise.
   Value* SetBoolean(StringPiece path, bool in_value);
-  // DEPRECATED, use `Value::SetIntKey()` or `Value::SetBoolPath()`.
+  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
+  // otherwise.
   Value* SetInteger(StringPiece path, int in_value);
-  // DEPRECATED, use `Value::SetDoubleKey()` or `Value::SetDoublePath()`.
+  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
+  // otherwise.
   Value* SetDouble(StringPiece path, double in_value);
-  // DEPRECATED, use `Value::SetStringKey()` or `Value::SetStringPath()`.
+  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
+  // otherwise.
   Value* SetString(StringPiece path, StringPiece in_value);
-  // DEPRECATED, use `Value::SetStringKey()` or `Value::SetStringPath()`.
+  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
+  // otherwise.
   Value* SetString(StringPiece path, const std::u16string& in_value);
-  // DEPRECATED, use `Value::SetKey()` or `Value::SetPath()`.
+  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
+  // otherwise.
   ListValue* SetList(StringPiece path, std::unique_ptr<ListValue> in_value);
 
   // Like Set(), but without special treatment of '.'.  This allows e.g. URLs to
   // be used as paths.
-  // DEPRECATED, use `Value::SetKey(key, value)` instead.
+  //
+  // DEPRECATED: prefer `Value::Dict::Set()`.
   Value* SetWithoutPathExpansion(StringPiece key,
                                  std::unique_ptr<Value> in_value);
 
@@ -1138,35 +1219,36 @@ class BASE_EXPORT DictionaryValue : public Value {
   // Otherwise, it will return false and `out_value` will be untouched.
   // Note that the dictionary always owns the value that's returned.
   // `out_value` is optional and will only be set if non-NULL.
-  // DEPRECATED, use `Value::FindKey(key)` or `Value::FindPath(path)` instead.
+  //
+  // DEPRECATED: prefer `Value::Dict::Find()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::FindByDottedPath()`
+  // otherwise.
   bool Get(StringPiece path, const Value** out_value) const;
-  // DEPRECATED, use `Value::FindKey(key)` or `Value::FindPath(path)` instead.
   bool Get(StringPiece path, Value** out_value);
 
   // These are convenience forms of `Get()`.  The value will be retrieved
   // and the return value will be true if the path is valid and the value at
   // the end of the path can be returned in the form specified.
   // `out_value` is optional and will only be set if non-NULL.
-  // DEPRECATED, use `Value::FindIntKey(key)` or `Value::FindIntPath(path)`
-  // instead.
+  //
+  // DEPRECATED: prefer `Value::Dict::FindInt()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::FindIntByDottedPath()`
+  // otherwise.
   bool GetInteger(StringPiece path, int* out_value) const;
-  // DEPRECATED, use `Value::FindStringKey(key)` or
-  // `Value::FindStringPath(path)` instead.
+  // DEPRECATED: prefer `Value::Dict::FindString()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::FindStringByDottedPath()`
+  // otherwise.
   bool GetString(StringPiece path, std::string* out_value) const;
-  // DEPRECATED, use `Value::FindStringKey(key)` or
-  // `Value::FindStringPath(path)` instead.
   bool GetString(StringPiece path, std::u16string* out_value) const;
-  // DEPRECATED, use `Value::FindDictKey(key)` or `Value::FindDictPah(path)`,
-  // and Value's Dictionary API instead.
+  // DEPRECATED: prefer `Value::Dict::FindDict()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::FindDictByDottedPath()`
+  // otherwise.
   bool GetDictionary(StringPiece path, const DictionaryValue** out_value) const;
-  // DEPRECATED, use `Value::FindDictKey(key)` or `Value::FindDictPath(path)`,
-  // and Value's Dictionary API instead.
   bool GetDictionary(StringPiece path, DictionaryValue** out_value);
-  // DEPRECATED, use `Value::FindListKey(key)` or `Value::FindListPath(path)`,
-  // and `Value::GetListDeprecated()` instead.
+  // DEPRECATED: prefer `Value::Dict::FindList()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::FindListByDottedPath()`
+  // otherwise.
   bool GetList(StringPiece path, const ListValue** out_value) const;
-  // DEPRECATED, use `Value::FindListKey(key)` or `Value::FindListPath(path)`,
-  // and `Value::GetListDeprecated()` instead.
   bool GetList(StringPiece path, ListValue** out_value);
 
   // Like `Get()`, but without special treatment of '.'.  This allows e.g. URLs
@@ -1193,7 +1275,9 @@ class BASE_EXPORT DictionaryValue : public Value {
 
   // This class provides an iterator over both keys and values in the
   // dictionary.  It can't be used to modify the dictionary.
-  // DEPRECATED, use `Value::DictItems()` instead.
+  //
+  // DEPRECATED: Use a range-based for loop over `base::Value::Dict` directly
+  // instead.
   class BASE_EXPORT Iterator {
    public:
     explicit Iterator(const DictionaryValue& target);
@@ -1211,16 +1295,17 @@ class BASE_EXPORT DictionaryValue : public Value {
     detail::const_dict_iterator it_;
   };
 
-  // DEPRECATED, use `Value::Clone()` instead.
+  // DEPRECATED, use `Value::Dict::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
   DictionaryValue* DeepCopy() const;
-  // DEPRECATED, use `Value::Clone()` instead.
+  // DEPRECATED, use `Value::Dict::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
   std::unique_ptr<DictionaryValue> CreateDeepCopy() const;
 };
 
 // This type of Value represents a list of other Value values.
-// DEPRECATED: Use std::vector<base::Value> instead.
+//
+// DEPRECATED: prefer `base::Value::List`.
 class BASE_EXPORT ListValue : public Value {
  public:
   using const_iterator = ListView::const_iterator;
@@ -1237,30 +1322,24 @@ class BASE_EXPORT ListValue : public Value {
   // only if the index is valid and the Value at that index can be returned
   // in the specified form.
   // `out_value` is optional and will only be set if non-NULL.
-
+  //
+  // DEPRECATED: prefer `Value::List::operator[]` + `GetIfDict()`.
   bool GetDictionary(size_t index, const DictionaryValue** out_value) const;
   bool GetDictionary(size_t index, DictionaryValue** out_value);
 
-  using Value::Append;
   // Appends a Value to the end of the list.
-  // DEPRECATED, use `Value::Append()` instead.
+  // DEPRECATED: prefer `Value::List::Append()`.
+  using Value::Append;
+  // DEPRECATED: prefer `Value::List::Append()`.
   void Append(std::unique_ptr<Value> in_value);
 
   // Swaps contents with the `other` list.
-  // DEPRECATED, use `GetListDeprecated()::swap()` instead.
+  //
+  // DEPRECATED: prefer `base::Value::List` + `std::swap()`.
   void Swap(ListValue* other);
 
-  // Iteration.
-  //
-  // ListValue no longer supports iteration. Instead, use GetListDeprecated() to
-  // get the underlying list:
-  //
-  // for (const auto& entry : list_value.GetListDeprecated()) {
-  //   ...
-  //
-  // for (auto it = list_value.GetListDeprecated().begin();
-  //      it != list_value.GetListDeprecated().end(); ++it) {
-  //   ...
+  // Iteration: Use a range-based for loop over `base::Value::List` directly
+  // instead.
 };
 
 // Adapter so `Value::Dict` or `Value::List` can be directly passed to JSON
