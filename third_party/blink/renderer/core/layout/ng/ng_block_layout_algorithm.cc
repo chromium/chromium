@@ -2364,6 +2364,28 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
   // non-empty child content yet (as that would have resolved the BFC offset).
   DCHECK(container_builder_.BfcBlockOffset());
 
+  bool pushed_to_next_fragmentainer_by_float = false;
+  if (layout_result.Status() == NGLayoutResult::kSuccess && child.IsBlock()) {
+    const auto* child_box_fragment =
+        To<NGPhysicalBoxFragment>(&layout_result.PhysicalFragment());
+
+    // If we're at a resumed fragment, don't break before it. Once we've found
+    // room for the first fragment, we cannot skip fragmentainers afterwards. We
+    // might be out of space at a subsequent fragment e.g. if all space is taken
+    // up by a float that got pushed ahead from a previous fragmentainer, but we
+    // still need to allow this fragment here. Inserting a break before on a
+    // node that has already started producing fragments would result in
+    // restarting layout from scratch once we find room for a fragment
+    // again. Preventing breaking here should have no visual effect, since the
+    // block-size of the fragment will typically be 0 anyway.
+    if (!child_box_fragment->IsFirstForNode())
+      return NGBreakStatus::kContinue;
+
+    if (exclusion_space_.NeedsClearancePastFragmentainer(
+            child.Style().Clear(Style())))
+      pushed_to_next_fragmentainer_by_float = true;
+  }
+
   LayoutUnit fragmentainer_block_offset =
       ConstraintSpace().FragmentainerOffsetAtBfc() + bfc_block_offset -
       layout_result.AnnotationBlockOffsetAdjustment();
@@ -2383,16 +2405,6 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
   NGBreakAppeal appeal_before =
       CalculateBreakAppealBefore(ConstraintSpace(), child, layout_result,
                                  container_builder_, has_container_separation);
-
-  bool pushed_to_next_fragmentainer_by_float = false;
-  if (layout_result.Status() == NGLayoutResult::kSuccess && child.IsBlock() &&
-      exclusion_space_.NeedsClearancePastFragmentainer(
-          child.Style().Clear(Style()))) {
-    const auto* child_box_fragment =
-        DynamicTo<NGPhysicalBoxFragment>(&layout_result.PhysicalFragment());
-    if (child_box_fragment->IsFirstForNode())
-      pushed_to_next_fragmentainer_by_float = true;
-  }
 
   // Unless clearance forces the child to the next fragmentainer, attempt to
   // move past the break point, and if we can do that, also assess the appeal of
