@@ -39,9 +39,6 @@ public class PermissionPrefs {
     private static final String ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX =
             "AndroidPermissionRequestTimestamp::";
 
-    /** The permission string for notification permission. */
-    private static final String PERMISSION_NOTIFICATION = "android.permission.POST_NOTIFICATION";
-
     /**
      * Returns normalized permission name for the given permission considering OS versions.
      * @param permission The permission name.
@@ -118,7 +115,8 @@ public class PermissionPrefs {
      */
     public static long getAndroidNotificationPermissionRequestTimestamp() {
         String prefName = ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX
-                + PermissionPrefs.normalizePermissionName(PERMISSION_NOTIFICATION);
+                + PermissionPrefs.normalizePermissionName(
+                        PermissionConstants.NOTIFICATION_PERMISSION);
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         return prefs.getLong(prefName, 0);
     }
@@ -129,7 +127,7 @@ public class PermissionPrefs {
     static void onAndroidPermissionRequestUiShown(String[] permissions) {
         boolean isNotification = false;
         for (String permission : permissions) {
-            if (TextUtils.equals(permission, PERMISSION_NOTIFICATION)) {
+            if (TextUtils.equals(permission, PermissionConstants.NOTIFICATION_PERMISSION)) {
                 isNotification = true;
                 break;
             }
@@ -137,7 +135,8 @@ public class PermissionPrefs {
         if (!isNotification) return;
 
         String prefName = ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX
-                + PermissionPrefs.normalizePermissionName(PERMISSION_NOTIFICATION);
+                + PermissionPrefs.normalizePermissionName(
+                        PermissionConstants.NOTIFICATION_PERMISSION);
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         prefs.edit().putLong(prefName, System.currentTimeMillis()).apply();
     }

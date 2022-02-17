@@ -12,6 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.PermissionConstants;
 import org.chromium.ui.permissions.PermissionPrefs;
 
 import java.lang.annotation.Retention;
@@ -50,9 +51,6 @@ public class NotificationPermissionController {
         void showRationaleUi(Callback<Boolean> callback);
     }
 
-    /** The permission string for notification permission. */
-    // TODO(shaktisahu): Replace this with permission constant from {@link Manifest.permission}.
-    private static final String NOTIFICATION_PERMISSION = "android.permission.POST_NOTIFICATION";
     private static final long PERMISSION_REQUEST_RETRIGGER_INTERVAL = TimeUnit.DAYS.toMillis(7);
 
     private final AndroidPermissionDelegate mAndroidPermissionDelegate;
@@ -96,14 +94,15 @@ public class NotificationPermissionController {
     @PermissionRequestMode
     int shouldRequestPermission() {
         if (!BuildInfo.isAtLeastT()) return PermissionRequestMode.DO_NOT_REQUEST;
-        if (mAndroidPermissionDelegate.hasPermission(NOTIFICATION_PERMISSION)) {
+        if (mAndroidPermissionDelegate.hasPermission(PermissionConstants.NOTIFICATION_PERMISSION)) {
             return PermissionRequestMode.DO_NOT_REQUEST;
         }
-        if (!mAndroidPermissionDelegate.canRequestPermission(NOTIFICATION_PERMISSION)) {
+        if (!mAndroidPermissionDelegate.canRequestPermission(
+                    PermissionConstants.NOTIFICATION_PERMISSION)) {
             return PermissionRequestMode.DO_NOT_REQUEST;
         }
         if (mAndroidPermissionDelegate.shouldShowRequestPermissionRationale(
-                    NOTIFICATION_PERMISSION)) {
+                    PermissionConstants.NOTIFICATION_PERMISSION)) {
             // Also check if we have already shown rationale.
             boolean wasRationaleShown =
                     SharedPreferencesManager.getInstance().readLong(
@@ -127,7 +126,7 @@ public class NotificationPermissionController {
     }
 
     private void requestAndroidPermission() {
-        String[] permissionsToRequest = {NOTIFICATION_PERMISSION};
+        String[] permissionsToRequest = {PermissionConstants.NOTIFICATION_PERMISSION};
         mAndroidPermissionDelegate.requestPermissions(
                 permissionsToRequest, (permissions, grantResults) -> {});
     }

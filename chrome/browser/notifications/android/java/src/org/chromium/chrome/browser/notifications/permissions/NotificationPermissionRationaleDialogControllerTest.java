@@ -32,6 +32,9 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modelutil.PropertyModel;
 
+/**
+ * Tests for {@link NotificationPermissionRationaleDialogController}.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NotificationPermissionRationaleDialogControllerTest {
     private ModalDialogManager mModalDialogManager;
@@ -50,7 +53,7 @@ public class NotificationPermissionRationaleDialogControllerTest {
                 new NotificationPermissionRationaleDialogController(mContext, mModalDialogManager);
 
         // Show the dialog, we don't dismiss it so the callback shouldn't be called.
-        dialog.showRationale(result -> { assert false; });
+        dialog.showRationaleUi(result -> { assert false; });
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
 
@@ -83,7 +86,7 @@ public class NotificationPermissionRationaleDialogControllerTest {
                 new NotificationPermissionRationaleDialogController(mContext, mModalDialogManager);
 
         Callback<Boolean> mockCallback = Mockito.mock(Callback.class);
-        dialog.showRationale(mockCallback);
+        dialog.showRationaleUi(mockCallback);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
 
@@ -98,7 +101,7 @@ public class NotificationPermissionRationaleDialogControllerTest {
                 new NotificationPermissionRationaleDialogController(mContext, mModalDialogManager);
 
         Callback<Boolean> mockCallback = Mockito.mock(Callback.class);
-        dialog.showRationale(mockCallback);
+        dialog.showRationaleUi(mockCallback);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
 

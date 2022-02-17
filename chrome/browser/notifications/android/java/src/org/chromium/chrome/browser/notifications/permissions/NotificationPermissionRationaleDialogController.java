@@ -11,6 +11,7 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.notifications.R;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleDelegate;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -22,7 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * Dialog to explain the advantages of Chrome notifications.
  */
-public class NotificationPermissionRationaleDialogController {
+public class NotificationPermissionRationaleDialogController implements RationaleDelegate {
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
 
@@ -42,7 +43,8 @@ public class NotificationPermissionRationaleDialogController {
      * @param rationaleCallback A callback indicating whether the user accepted to enable
      * notifications.
      */
-    public void showRationale(Callback<Boolean> rationaleCallback) {
+    @Override
+    public void showRationaleUi(Callback<Boolean> rationaleCallback) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         Resources resources = mContext.getResources();
 

@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
+import org.chromium.ui.permissions.PermissionConstants;
 import org.chromium.ui.permissions.PermissionPrefs;
 
 import java.lang.ref.WeakReference;
@@ -37,7 +38,6 @@ import java.lang.ref.WeakReference;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NotificationPermissionControllerTest {
-    private static final String NOTIFICATION_PERMISSION = "android.permission.POST_NOTIFICATION";
     private static final long TEN_DAYS_IN_MILLIS = 10 * 24 * 3600 * 1000;
 
     @Before
@@ -67,7 +67,8 @@ public class NotificationPermissionControllerTest {
                             rationaleDelegate);
 
             // Has permission already. We shouldn't show anything.
-            Shadows.shadowOf(activity).grantPermissions(NOTIFICATION_PERMISSION);
+            Shadows.shadowOf(activity).grantPermissions(
+                    PermissionConstants.NOTIFICATION_PERMISSION);
             assertEquals(PermissionRequestMode.DO_NOT_REQUEST,
                     notificationPermissionController.shouldRequestPermission());
         });
@@ -86,7 +87,7 @@ public class NotificationPermissionControllerTest {
                             rationaleDelegate);
 
             // First time ever. We should show OS prompt.
-            Shadows.shadowOf(activity).denyPermissions(NOTIFICATION_PERMISSION);
+            Shadows.shadowOf(activity).denyPermissions(PermissionConstants.NOTIFICATION_PERMISSION);
             assertEquals(PermissionRequestMode.REQUEST_ANDROID_PERMISSION,
                     notificationPermissionController.shouldRequestPermission());
             assertEquals(0, PermissionPrefs.getAndroidNotificationPermissionRequestTimestamp());
@@ -107,14 +108,16 @@ public class NotificationPermissionControllerTest {
 
             // Show OS prompt shown for the first time.
             Shadows.shadowOf(activity.getPackageManager())
-                    .setShouldShowRequestPermissionRationale(NOTIFICATION_PERMISSION, false);
+                    .setShouldShowRequestPermissionRationale(
+                            PermissionConstants.NOTIFICATION_PERMISSION, false);
             notificationPermissionController.requestPermissionIfNeeded();
             assertNotEquals(0, PermissionPrefs.getAndroidNotificationPermissionRequestTimestamp());
 
             // Try showing it for the second time before sufficient time has elapsed assuming user
             // dismissed the OS prompt by touching outside.
             Shadows.shadowOf(activity.getPackageManager())
-                    .setShouldShowRequestPermissionRationale(NOTIFICATION_PERMISSION, false);
+                    .setShouldShowRequestPermissionRationale(
+                            PermissionConstants.NOTIFICATION_PERMISSION, false);
 
             assertEquals(PermissionRequestMode.DO_NOT_REQUEST,
                     notificationPermissionController.shouldRequestPermission());
@@ -122,7 +125,8 @@ public class NotificationPermissionControllerTest {
             // Try showing it for the second time before sufficient time has elapsed assuming user
             // dismissed the OS prompt by touching outside.
             Shadows.shadowOf(activity.getPackageManager())
-                    .setShouldShowRequestPermissionRationale(NOTIFICATION_PERMISSION, true);
+                    .setShouldShowRequestPermissionRationale(
+                            PermissionConstants.NOTIFICATION_PERMISSION, true);
 
             assertEquals(PermissionRequestMode.DO_NOT_REQUEST,
                     notificationPermissionController.shouldRequestPermission());
@@ -142,17 +146,20 @@ public class NotificationPermissionControllerTest {
 
             // Show OS prompt shown for the first time.
             Shadows.shadowOf(activity.getPackageManager())
-                    .setShouldShowRequestPermissionRationale(NOTIFICATION_PERMISSION, false);
+                    .setShouldShowRequestPermissionRationale(
+                            PermissionConstants.NOTIFICATION_PERMISSION, false);
             notificationPermissionController.requestPermissionIfNeeded();
 
             // Try showing the second time after 10 days.
             ContextUtils.getAppSharedPreferences()
                     .edit()
-                    .putLong("AndroidPermissionRequestTimestamp::" + NOTIFICATION_PERMISSION,
+                    .putLong("AndroidPermissionRequestTimestamp::"
+                                    + PermissionConstants.NOTIFICATION_PERMISSION,
                             System.currentTimeMillis() - TEN_DAYS_IN_MILLIS)
                     .commit();
             Shadows.shadowOf(activity.getPackageManager())
-                    .setShouldShowRequestPermissionRationale(NOTIFICATION_PERMISSION, true);
+                    .setShouldShowRequestPermissionRationale(
+                            PermissionConstants.NOTIFICATION_PERMISSION, true);
 
             assertEquals(PermissionRequestMode.REQUEST_PERMISSION_WITH_RATIONALE,
                     notificationPermissionController.shouldRequestPermission());
@@ -172,17 +179,20 @@ public class NotificationPermissionControllerTest {
 
             // Show OS prompt shown for the first time.
             Shadows.shadowOf(activity.getPackageManager())
-                    .setShouldShowRequestPermissionRationale(NOTIFICATION_PERMISSION, false);
+                    .setShouldShowRequestPermissionRationale(
+                            PermissionConstants.NOTIFICATION_PERMISSION, false);
             notificationPermissionController.requestPermissionIfNeeded();
 
             // Show for the second time after 10 days with rationale.
             ContextUtils.getAppSharedPreferences()
                     .edit()
-                    .putLong("AndroidPermissionRequestTimestamp::" + NOTIFICATION_PERMISSION,
+                    .putLong("AndroidPermissionRequestTimestamp::"
+                                    + PermissionConstants.NOTIFICATION_PERMISSION,
                             System.currentTimeMillis() - TEN_DAYS_IN_MILLIS)
                     .commit();
             Shadows.shadowOf(activity.getPackageManager())
-                    .setShouldShowRequestPermissionRationale(NOTIFICATION_PERMISSION, true);
+                    .setShouldShowRequestPermissionRationale(
+                            PermissionConstants.NOTIFICATION_PERMISSION, true);
             Integer rationaleDialogAction = DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE;
             rationaleDelegate.setDialogAction(rationaleDialogAction);
             notificationPermissionController.requestPermissionIfNeeded();
@@ -192,7 +202,8 @@ public class NotificationPermissionControllerTest {
                     ChromePreferenceKeys.NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
                     System.currentTimeMillis() - TEN_DAYS_IN_MILLIS);
             Shadows.shadowOf(activity.getPackageManager())
-                    .setShouldShowRequestPermissionRationale(NOTIFICATION_PERMISSION, true);
+                    .setShouldShowRequestPermissionRationale(
+                            PermissionConstants.NOTIFICATION_PERMISSION, true);
 
             assertEquals(PermissionRequestMode.DO_NOT_REQUEST,
                     notificationPermissionController.shouldRequestPermission());

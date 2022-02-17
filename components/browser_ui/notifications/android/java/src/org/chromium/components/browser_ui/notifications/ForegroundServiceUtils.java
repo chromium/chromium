@@ -20,6 +20,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForQ;
+import org.chromium.ui.permissions.PermissionConstants;
 import org.chromium.ui.permissions.PermissionPrefs;
 
 /**
@@ -28,7 +29,6 @@ import org.chromium.ui.permissions.PermissionPrefs;
  */
 public class ForegroundServiceUtils {
     private static final String TAG = "ForegroundService";
-    private static final String NOTIFICATION_PERMISSION = "android.permission.POST_NOTIFICATION";
     private ForegroundServiceUtils() {}
 
     /**
@@ -110,7 +110,8 @@ public class ForegroundServiceUtils {
     private static boolean hasEverRequestedNotificationPermission() {
         boolean hasPermission =
                 ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
-                        NOTIFICATION_PERMISSION, Process.myPid(), Process.myUid())
+                        PermissionConstants.NOTIFICATION_PERMISSION, Process.myPid(),
+                        Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
         if (hasPermission) return true;
 
