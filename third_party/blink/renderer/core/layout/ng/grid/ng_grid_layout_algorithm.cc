@@ -378,12 +378,12 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
         &intrinsic_block_size, &column_track_collection, &row_track_collection);
   }
 
+  Vector<EBreakBetween> row_break_between;
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     // Either retrieve all items offsets, or generate them using the
     // non-fragmented |PlaceGridItems| pass.
     Vector<GridItemOffsets> offsets;
     Vector<LayoutUnit> row_offset_adjustments;
-    Vector<EBreakBetween> row_break_between;
     if (IsResumingLayout(BreakToken())) {
       const auto* grid_data =
           To<NGGridBreakTokenData>(BreakToken()->TokenData());
@@ -393,9 +393,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
     } else {
       row_offset_adjustments =
           Vector<LayoutUnit>(grid_geometry.row_geometry.sets.size());
-      row_break_between = Vector<EBreakBetween>(
-          grid_geometry.row_geometry.sets.size(), EBreakBetween::kAuto);
-      PlaceGridItems(grid_items, grid_geometry, &offsets, &row_break_between);
+      PlaceGridItems(grid_items, grid_geometry, &row_break_between, &offsets);
     }
 
     PlaceGridItemsForFragmentation(
@@ -406,7 +404,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
         container_builder_.GetBreakTokenData(), grid_geometry, offsets,
         row_offset_adjustments, row_break_between, intrinsic_block_size));
   } else {
-    PlaceGridItems(grid_items, grid_geometry);
+    PlaceGridItems(grid_items, grid_geometry, &row_break_between);
   }
 
   auto layout_data = std::make_unique<NGGridLayoutData>(BundleLayoutData(
@@ -467,6 +465,11 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
     // fragmentation related fields should have been set.
     container_builder_.CheckNoBlockFragmentation();
 #endif
+  }
+  // Set our break-before/break-after.
+  if (constraint_space.ShouldPropagateChildBreakValues()) {
+    container_builder_.SetInitialBreakBefore(row_break_between.front());
+    container_builder_.SetPreviousBreakAfter(row_break_between.back());
   }
 
   PlaceOutOfFlowItems(*layout_data, block_size);
@@ -3036,11 +3039,19 @@ class BaselineAccumulator {
 void NGGridLayoutAlgorithm::PlaceGridItems(
     const GridItems& grid_items,
     const NGGridGeometry& grid_geometry,
-    Vector<GridItemOffsets>* out_offsets,
-    Vector<EBreakBetween>* out_row_break_between) {
+    Vector<EBreakBetween>* out_row_break_between,
+    Vector<GridItemOffsets>* out_offsets) {
+  DCHECK(out_row_break_between);
   const auto& container_space = ConstraintSpace();
   const auto container_writing_direction =
       container_space.GetWritingDirection();
+  bool should_propagate_child_break_values =
+      ConstraintSpace().ShouldPropagateChildBreakValues();
+
+  if (should_propagate_child_break_values) {
+    *out_row_break_between = Vector<EBreakBetween>(
+        grid_geometry.row_geometry.sets.size(), EBreakBetween::kAuto);
+  }
 
   BaselineAccumulator baseline_accumulator;
 
@@ -3118,7 +3129,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
                                       containing_grid_area.offset.block_offset);
     }
 
-    if (out_row_break_between) {
+    if (should_propagate_child_break_values) {
       auto item_break_before = JoinFragmentainerBreakValues(
           item_style.BreakBefore(), result->InitialBreakBefore());
       auto item_break_after = JoinFragmentainerBreakValues(
