@@ -89,7 +89,7 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
     absl::optional<BlinkSchemefulSite> top_level_site;
     if (GetExecutionContext()->IsWindow()) {
       auto* window = To<LocalDOMWindow>(GetExecutionContext());
-      if (window->top()->GetFrame()) {
+      if (window->top() && window->top()->GetFrame()) {
         top_level_site = BlinkSchemefulSite(window->top()
                                                 ->GetFrame()
                                                 ->GetSecurityContext()
@@ -163,7 +163,7 @@ void PublicURLManager::Resolve(
             absl::optional<BlinkSchemefulSite> top_level_site;
             if (execution_context->IsWindow()) {
               auto* window = To<LocalDOMWindow>(execution_context);
-              if (window->top()->GetFrame()) {
+              if (window->top() && window->top()->GetFrame()) {
                 top_level_site = BlinkSchemefulSite(window->top()
                                                         ->GetFrame()
                                                         ->GetSecurityContext()
