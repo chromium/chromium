@@ -5,6 +5,7 @@
 #include <pointer-gestures-unstable-v1-server-protocol.h>
 #include <wayland-util.h>
 
+#include "build/chromeos_buildflags.h"
 #include "ui/events/event.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
@@ -74,6 +75,14 @@ class WaylandPointerGesturesTest : public WaylandTest {
   }
 };
 
+// TODO(crbug.com/1298099): Reenable test when exo has been fixed and the
+// libinput behavior has been restored.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE(x) DISABLED_##x
+#else
+#define MAYBE(x) x
+#endif
+
 // Tests that scale in pinch zoom events is fixed to the progression expected by
 // the compositor.
 //
@@ -85,7 +94,7 @@ class WaylandPointerGesturesTest : public WaylandTest {
 // WaylandZwpPointerGestures methods.
 //
 // See https://crbug.com/1283652
-TEST_P(WaylandPointerGesturesTest, PinchZoomScale) {
+TEST_P(WaylandPointerGesturesTest, MAYBE(PinchZoomScale)) {
   auto* const mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
 
