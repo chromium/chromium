@@ -82,6 +82,7 @@ bool NetworkScreen::MaybeSkip(WizardContext* context) {
   first_time_shown_ = false;
 
   if (features::IsOobeNetworkScreenSkipEnabled() &&
+      !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
       network_state_helper_->IsConnectedToEthernet()) {
     if (chromeos::features::IsOobeConsolidatedConsentEnabled())
       exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);

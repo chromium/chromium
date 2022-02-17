@@ -49,6 +49,7 @@ class NetworkScreenTest : public OobeBaseTest {
             features::kEnableOobeNetworkScreenSkip,
         },
         {});
+    needs_network_screen_skip_check_ = true;
   }
 
   NetworkScreenTest(const NetworkScreenTest&) = delete;
