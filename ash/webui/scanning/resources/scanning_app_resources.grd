@@ -56,6 +56,7 @@
       <include name="IDR_SCANNING_APP_ICON_256" file="scanning_app_icon_256.png" type="BINDATA" />
       <include name="IDR_SCANNING_APP_SCANNERS_LOADING_SVG" file="svg/scanners_loading.svg" type="BINDATA" />
       <include name="IDR_SCANNING_APP_NO_SCANNERS_SVG" file="svg/no_scanners.svg" type="BINDATA" />
+      <include name="IDR_SCANNING_APP_NO_SCANNERS_DARK_SVG" file="svg/no_scanners_dark.svg" type="BINDATA" />
       <include name="IDR_SCANNING_APP_READY_TO_SCAN_SVG" file="svg/ready_to_scan.svg" type="BINDATA" />
       <include name="IDR_SCANNING_APP_REMOVE_PAGE_SVG" file="svg/remove_page.svg" type="BINDATA" />
       <include name="IDR_SCANNING_APP_RESCAN_PAGE_SVG" file="svg/rescan_page.svg" type="BINDATA" />

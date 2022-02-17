@@ -47,6 +47,9 @@
     height: 256px;
   }
 </style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+  query-matches="{{isDarkModeEnabled_}}">
+</iron-media-query>
 <div id="loadingContainer">
   <div id="loadingDiv" hidden="[[noScannersAvailable_]]">
     <img src="svg/scanners_loading.svg" alt="[[i18n('scannersLoadingText')]]">
@@ -54,7 +57,8 @@
     <paper-progress indeterminate></paper-progress>
   </div>
   <div id="noScannersDiv" hidden="[[!noScannersAvailable_]]">
-    <img src="svg/no_scanners.svg" alt="[[i18n('noScannersText')]]">
+    <img src$="[[getNoScannersSvgSrc_(isDarkModeEnabled_)]]"
+        alt="[[i18n('noScannersText')]]">
     <h1>[[i18n('noScannersText')]]</h1>
     <span id="noScannersSubtext">[[i18n('noScannersSubtext')]]</span>
     <div id="buttonDiv">

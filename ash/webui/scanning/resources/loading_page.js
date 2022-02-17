@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -28,11 +29,26 @@ Polymer({
       observer: 'onAppStateChange_',
     },
 
+    /** @protected {boolean} */
+    isDarkModeEnabled_: {
+      type: Boolean,
+    },
+
     /** @private {boolean} */
     noScannersAvailable_: {
       type: Boolean,
       value: false,
     },
+  },
+
+  /**
+   * Determines correct SVG for "no scanners" based on dark mode.
+   * @protected
+   * @return {string}
+   */
+  getNoScannersSvgSrc_() {
+    return this.isDarkModeEnabled_ ? 'svg/no_scanners_dark.svg' :
+                                     'svg/no_scanners.svg';
   },
 
   /** @private */
