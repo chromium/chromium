@@ -33,16 +33,21 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
                       kChromeosProjectorAppBundleResourcesSize));
   source->AddResourcePath("", IDR_ASH_PROJECTOR_APP_UNTRUSTED_APP_INDEX_HTML);
 
-  // Provide a list of specific script resources(javascript files and inlined
+  // Provide a list of specific script resources (javascript files and inlined
   // scripts inside html) or their sha-256 hashes to allow to be executed.
-  // "wasm-eval" is added to allow wasm.
+  // "wasm-eval" is added to allow wasm. "chrome-untrusted://resources" is
+  // needed to allow the post message api.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src 'self' chrome-untrusted://resources;");
+  // Allow fonts.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FontSrc,
+      "font-src https://fonts.gstatic.com;");
   // Allow styles to include inline styling needed for Polymer elements.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
-      "style-src 'self' 'unsafe-inline';");
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::MediaSrc,
       // Allows streaming video.
