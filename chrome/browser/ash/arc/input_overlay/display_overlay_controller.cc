@@ -130,6 +130,8 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
 
 void DisplayOverlayController::AddInputMappingView(
     views::Widget* overlay_widget) {
+  if (input_mapping_view_)
+    return;
   DCHECK(overlay_widget);
   auto input_mapping_view = std::make_unique<InputMappingView>(this);
   input_mapping_view->SetPosition(gfx::Point());
@@ -140,6 +142,8 @@ void DisplayOverlayController::AddInputMappingView(
 }
 
 void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
+  if (menu_entry_)
+    return;
   DCHECK(overlay_widget);
   auto game_icon = gfx::CreateVectorIcon(
       vector_icons::kVideogameAssetOutlineIcon, SK_ColorBLACK);
@@ -179,26 +183,23 @@ void DisplayOverlayController::OnMenuEntryPressed() {
 }
 
 void DisplayOverlayController::RemoveInputMenuView() {
-  auto* overlay_widget = GetOverlayWidget();
-  if (!input_menu_view_ || !overlay_widget)
+  if (!input_menu_view_)
     return;
-  overlay_widget->GetContentsView()->RemoveChildViewT(input_menu_view_);
+  input_menu_view_->parent()->RemoveChildViewT(input_menu_view_);
   input_menu_view_ = nullptr;
 }
 
 void DisplayOverlayController::RemoveInputMappingView() {
-  auto* overlay_widget = GetOverlayWidget();
-  if (!input_mapping_view_ || !overlay_widget)
+  if (!input_mapping_view_)
     return;
-  overlay_widget->GetContentsView()->RemoveChildViewT(input_mapping_view_);
+  input_mapping_view_->parent()->RemoveChildViewT(input_mapping_view_);
   input_mapping_view_ = nullptr;
 }
 
 void DisplayOverlayController::RemoveMenuEntryView() {
-  auto* overlay_widget = GetOverlayWidget();
-  if (!menu_entry_ || !overlay_widget)
+  if (!menu_entry_)
     return;
-  overlay_widget->GetContentsView()->RemoveChildViewT(menu_entry_);
+  menu_entry_->parent()->RemoveChildViewT(menu_entry_);
   menu_entry_ = nullptr;
 }
 
@@ -245,11 +246,9 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
           aura::EventTargetingPolicy::kTargetAndDescendants);
       break;
     case DisplayMode::kView:
-      if (!input_mapping_view_)
-        AddInputMappingView(overlay_widget);
-      DCHECK(!menu_entry_);
-      if (!menu_entry_)
-        AddMenuEntryView(overlay_widget);
+      RemoveInputMenuView();
+      AddInputMappingView(overlay_widget);
+      AddMenuEntryView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kNone);
       break;

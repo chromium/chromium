@@ -10,6 +10,7 @@
 #include "base/bind.h"
 // TODO(djacobo): Callbacks seem like an overkill provided how tightly
 // integrated these classes are, but may be worthy to write it that way.
+#include "chrome/browser/ash/arc/input_overlay/display_mode.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
@@ -79,7 +80,7 @@ InputMenuView::~InputMenuView() {}
 
 void InputMenuView::CloseMenu() {
   if (display_overlay_controller_)
-    display_overlay_controller_->RemoveInputMenuView();
+    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
 }
 
 void InputMenuView::Init() {
