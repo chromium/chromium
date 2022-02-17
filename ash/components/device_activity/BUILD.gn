@@ -30,12 +30,19 @@ component("device_activity") {
   ]
 
   sources = [
+    "daily_use_case_impl.cc",
+    "daily_use_case_impl.h",
+    "device_active_use_case.cc",
+    "device_active_use_case.h",
     "device_activity_client.cc",
     "device_activity_client.h",
     "device_activity_controller.cc",
     "device_activity_controller.h",
     "fresnel_pref_names.cc",
     "fresnel_pref_names.h",
+    "monthly_use_case_impl.cc",
+    "monthly_use_case_impl.h",
+    "trigger.h",
   ]
 }
 
@@ -43,8 +50,10 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "daily_use_case_impl_unittest.cc",
     "device_activity_client_unittest.cc",
     "device_activity_controller_unittest.cc",
+    "monthly_use_case_impl_unittest.cc",
   ]
 
   deps = [

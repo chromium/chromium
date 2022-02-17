@@ -22,10 +22,11 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
-namespace psm_rlwe = private_membership::rlwe;
-
 namespace ash {
 namespace device_activity {
+
+namespace psm_rlwe = private_membership::rlwe;
+
 namespace {
 
 // Amount of time to wait before retriggering repeating timer.

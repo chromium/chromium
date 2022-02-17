@@ -16,10 +16,10 @@
 #include "google_apis/google_api_keys.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
-namespace psm_rlwe = private_membership::rlwe;
-
 namespace ash {
 namespace device_activity {
+
+namespace psm_rlwe = private_membership::rlwe;
 
 namespace {
 DeviceActivityController* g_ash_device_activity_controller = nullptr;
