@@ -686,11 +686,10 @@ TEST_F(CalendarModelTest, PruneEvents) {
   const char* kId12 = "id_12";
   const char* kSummary12 = "summary_12";
 
-  // Current time is kStartTime1, which means event in the previous month is
-  // kStartTime0 and kStartTime2 is in the next month.  IMPORTANT: because these
-  // three months are the "now" current/prev/next month when the calendar was
-  // opened, they will NOT be pruned.
-  // Current date is just kStartTime1.
+  // Current time is `kStartTime1`, which means event in the previous month is
+  // kStartTime0 and `kStartTime2` is in the next month.  IMPORTANT: because
+  // these three months are the "now" current/prev/next month when the calendar
+  // was opened, they will NOT be pruned. Current date is just `kStartTime1`.
   base::Time current_date;
   bool result = base::Time::FromString(kStartTime1, &current_date);
   DCHECK(result);
@@ -758,9 +757,10 @@ TEST_F(CalendarModelTest, PruneEvents) {
   event_list->InjectItemForTesting(std::move(event12));
   event_fetcher_->InjectEvents(std::move(event_list));
 
-  // Fetch events, as if the user just opened the CrOS calendar with kStartTime1
-  // as the currently on-screen month.  This means events from kStartTime0
-  // (prev), kStartTime1 (current), and kStartTime2 (next) will be fetched.
+  // Fetch events, as if the user just opened the CrOS calendar with
+  // `kStartTime1` as the currently on-screen month.  This means events from
+  // `kStartTime0` (prev), `kStartTime1` (current), and `kStartTime2` (next)
+  // will be fetched.
   event_fetcher_->FetchEvents(months);
 
   // Events 0, 1, and 2 should be cached, but not 3.
@@ -773,14 +773,14 @@ TEST_F(CalendarModelTest, PruneEvents) {
   events.clear();
   EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime3, &events));
 
-  // Advance us to kStartTime2 and fetch again.
+  // Advance us to `kStartTime2` and fetch again.
   result = base::Time::FromString(kStartTime2, &current_date);
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
   event_fetcher_->FetchEvents(months);
 
-  // Now kStartTime3 should be cached.
+  // Now `kStartTime3` should be cached.
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime3, &events));
 
@@ -827,13 +827,13 @@ TEST_F(CalendarModelTest, PruneEvents) {
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime8, &events));
 
   // Now we're about to add a 10th month to the cache, so we're going to need to
-  // prune the least-recently-used prunable month, which is kStartTime6.  So,
-  // kStartTime6 should show up as a day with events before we advance, but not
-  // after, which means we pruned as expected.
+  // prune the least-recently-used prunable month, which is `kStartTime0`.  So,
+  // `kStartTime0` should show up as a day with events before we advance, but
+  // not after, which means we pruned as expected.
 
-  // If we advance again, kStartTime6 should be pruned.
+  // If we advance again, `kStartTime0` should be pruned.
   events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime6, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime0, &events));
   result = base::Time::FromString(kStartTime8, &current_date);
   DCHECK(result);
   months.clear();
@@ -842,78 +842,46 @@ TEST_F(CalendarModelTest, PruneEvents) {
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime9, &events));
   events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime6, &events));
+  EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime0, &events));
 
-  // Verify that our non-prunable months are still present.
-  events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime0, &events));
+  // If we advance again, `kStartTime1` should be pruned.
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime1, &events));
-  events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime2, &events));
-
-  // If we advance again, kStartTime7 should be pruned.
-  events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime7, &events));
-  result = base::Time::FromString(kStartTime8, &current_date);
-  DCHECK(result);
-  months.clear();
-  calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
-  event_fetcher_->FetchEvents(months);
-  events.clear();
-  EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime10, &events));
-  events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime7, &events));
-
-  // Verify that our non-prunable months are still present.
-  events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime0, &events));
-  events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime1, &events));
-  events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime2, &events));
-
-  // If we advance again, kStartTime8 should be pruned.
-  events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime8, &events));
   result = base::Time::FromString(kStartTime9, &current_date);
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
   event_fetcher_->FetchEvents(months);
   events.clear();
-  EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime11, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime10, &events));
   events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime8, &events));
+  EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime1, &events));
 
-  // Verify that our non-prunable months are still present.
-  events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime0, &events));
-  events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime1, &events));
+  // If we advance again, `kStartTime2` should be pruned.
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime2, &events));
-
-  // If we advance again, kStartTime9 should be pruned.
-  events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime9, &events));
   result = base::Time::FromString(kStartTime10, &current_date);
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
   event_fetcher_->FetchEvents(months);
   events.clear();
-  EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime12, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime11, &events));
   events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime9, &events));
+  EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime2, &events));
 
-  // Verify that our non-prunable months are still present.
+  // If we advance again, `kStartTime3` should be pruned.
   events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime0, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime3, &events));
+  result = base::Time::FromString(kStartTime11, &current_date);
+  DCHECK(result);
+  months.clear();
+  calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
+  event_fetcher_->FetchEvents(months);
   events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime1, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime12, &events));
   events.clear();
-  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime2, &events));
+  EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime3, &events));
 }
 
 TEST_F(CalendarModelTest, RecordFetchResultHistogram_Success) {

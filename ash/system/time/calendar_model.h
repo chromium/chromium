@@ -30,7 +30,7 @@ using SingleDayEventList = std::list<google_apis::calendar::CalendarEvent>;
 // Controller of the `CalendarView`.
 class ASH_EXPORT CalendarModel {
  public:
-  explicit CalendarModel(const std::set<base::Time>& non_prunable_months);
+  explicit CalendarModel(const std::set<base::Time>& base_months);
   CalendarModel(const CalendarModel& other) = delete;
   CalendarModel& operator=(const CalendarModel& other) = delete;
   virtual ~CalendarModel();
@@ -59,9 +59,6 @@ class ASH_EXPORT CalendarModel {
 
   // Requests events that fall in |months|.
   void FetchEvents(const std::set<base::Time>& months);
-
-  // Requests events that fall in the set of non-prunable "base" months.
-  void FetchEventsForBaseMonths();
 
   // Same as `FindEvents`, except that return of any events on `day` constitutes
   // "use" in the most-recently-used sense, so the month that includes day will
@@ -122,10 +119,6 @@ class ASH_EXPORT CalendarModel {
   bool IsMonthAlreadyFetched(base::Time start_of_month) const;
 
   // Officially declare the month denoted by |start_of_month| as "fetched."
-  // If the month is non-prunable then we won't attempt to fetch it again unless
-  // the calendar is closed and re-opened.  If the month is prunable then we'll
-  // attempt a re-fetch if it gets pruned and our visible window includes it
-  // again.
   void MarkMonthAsFetched(base::Time start_of_month);
 
   // Add a month to the queue of months eligible for pruning when we need to
@@ -151,12 +144,6 @@ class ASH_EXPORT CalendarModel {
   // Months whose events we've fetched, that are eligible for pruning, in
   // most-recently-used (MRU) order.
   std::deque<base::Time> prunable_months_mru_;
-
-  // The set of months exempt from pruning.
-  const std::set<base::Time> non_prunable_months_;
-
-  // The set of months exempt from pruning that have been fetched.
-  std::set<base::Time> non_prunable_months_fetched_;
 
   // All fetch requests that are still in-progress.
   std::map<base::Time, std::unique_ptr<CalendarEventFetch>> pending_fetches_;

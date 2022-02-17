@@ -106,9 +106,8 @@ class CalendarEventFetch {
 };
 
 // The calendar model itself.
-CalendarModel::CalendarModel(const std::set<base::Time>& non_prunable_months)
-    : non_prunable_months_(non_prunable_months) {
-  FetchEventsForBaseMonths();
+CalendarModel::CalendarModel(const std::set<base::Time>& base_months) {
+  FetchEvents(base_months);
 }
 
 CalendarModel::~CalendarModel() = default;
@@ -124,11 +123,6 @@ void CalendarModel::RemoveObserver(Observer* observer) {
 }
 
 bool CalendarModel::IsMonthAlreadyFetched(base::Time start_of_month) const {
-  if (non_prunable_months_fetched_.find(start_of_month) !=
-      non_prunable_months_fetched_.end()) {
-    return true;
-  }
-
   for (auto& month : prunable_months_mru_) {
     if (month == start_of_month)
       return true;
@@ -167,17 +161,10 @@ void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
 }
 
 void CalendarModel::MarkMonthAsFetched(base::Time start_of_month) {
-  if (non_prunable_months_.find(start_of_month) != non_prunable_months_.end())
-    non_prunable_months_fetched_.emplace(start_of_month);
-  else
-    QueuePrunableMonth(start_of_month);
+  QueuePrunableMonth(start_of_month);
 }
 
 void CalendarModel::QueuePrunableMonth(base::Time start_of_month) {
-  // For safety, make sure we aren't queuing a non-prunable month.
-  if (non_prunable_months_.find(start_of_month) != non_prunable_months_.end())
-    return;
-
   // If start_of_month is already most-recently-used, nothing to do.
   if (!prunable_months_mru_.empty() &&
       prunable_months_mru_.front() == start_of_month)
@@ -197,11 +184,6 @@ void CalendarModel::QueuePrunableMonth(base::Time start_of_month) {
 
 void CalendarModel::FetchEvents(const std::set<base::Time>& months) {
   for (auto& month : months)
-    MaybeFetchMonth(month.UTCMidnight());
-}
-
-void CalendarModel::FetchEventsForBaseMonths() {
-  for (auto& month : non_prunable_months_)
     MaybeFetchMonth(month.UTCMidnight());
 }
 
