@@ -99,7 +99,7 @@ class ChromeTrustedVaultService {
   // data is cleared. |callback| Block called when clearing data is complete.
   virtual void ClearLocalDataForIdentity(ChromeIdentity* chrome_identity,
                                          void (^callback)(BOOL success,
-                                                          NSError* error));
+                                                          NSError* error)) = 0;
 
  protected:
   // Functions to notify observers.
