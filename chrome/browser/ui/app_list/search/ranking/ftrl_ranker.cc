@@ -254,29 +254,40 @@ MrfuCategoryRanker::~MrfuCategoryRanker() = default;
 void MrfuCategoryRanker::Start(const std::u16string& query,
                                ResultsMap& results,
                                CategoriesList& categories) {
-  // Because usage-based category scores don't change when new results arrive,
-  // calculate the scores in Start and reuse them for each GetCategoryRanks
-  // call.
-
-  // Build a map of the MRFU category scores, with 0.0 for unseen categories.
-  base::flat_map<Category, double> scores_map;
-  for (const auto& id_score : mrfu_->GetAllNormalized())
-    scores_map[StringToCategory(id_score.first)] = id_score.second;
-
-  current_category_scores_.clear();
-  for (const auto& category : categories) {
-    const auto it = scores_map.find(category.category);
-    current_category_scores_.push_back(it != scores_map.end() ? it->second
-                                                              : 0.0);
-  }
-  DCHECK_EQ(current_category_scores_.size(), categories.size());
+  if (mrfu_->initialized() && mrfu_->empty())
+    SetDefaultCategoryScores();
 }
 
 std::vector<double> MrfuCategoryRanker::GetCategoryRanks(
     const ResultsMap& results,
     const CategoriesList& categories,
     ProviderType provider) {
-  return current_category_scores_;
+  if (!mrfu_->initialized())
+    return std::vector<double>(categories.size(), 0.0);
+
+  // Build a map of the MRFU category scores, with 0.0 for unseen categories.
+  base::flat_map<Category, double> scores_map;
+  for (const auto& id_score : mrfu_->GetAllNormalized())
+    scores_map[StringToCategory(id_score.first)] = id_score.second;
+
+  std::vector<double> scores;
+  for (const auto& category : categories) {
+    const auto it = scores_map.find(category.category);
+    scores.push_back(it != scores_map.end() ? it->second : 0.0);
+  }
+  DCHECK_EQ(scores.size(), categories.size());
+  return scores;
+}
+
+void MrfuCategoryRanker::UpdateCategoryRanks(const ResultsMap& results,
+                                             CategoriesList& categories,
+                                             ProviderType provider) {
+  const auto& scores = GetCategoryRanks(results, categories, provider);
+  DCHECK_EQ(scores.size(), categories.size());
+  if (scores.size() != categories.size())
+    return;
+  for (size_t i = 0; i < categories.size(); ++i)
+    categories[i].score = scores[i];
 }
 
 void MrfuCategoryRanker::Train(const LaunchData& launch) {
@@ -285,6 +296,10 @@ void MrfuCategoryRanker::Train(const LaunchData& launch) {
     return;
   }
   mrfu_->Use(CategoryToString(ResultTypeToCategory(launch.result_type)));
+}
+
+void MrfuCategoryRanker::SetDefaultCategoryScores() {
+  // TODO(crbug.com/1199206): Implement.
 }
 
 }  // namespace app_list

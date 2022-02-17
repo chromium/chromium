@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/app_list/search/ranking/answer_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/best_match_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/continue_ranker.h"
@@ -93,16 +95,28 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
   AddRanker(std::move(result_ranker));
 
   // 4. Ranking for categories.
-  auto category_ranker = std::make_unique<FtrlRanker>(
-      FtrlRanker::RankingKind::kCategories, ftrl_category_params,
-      PersistentProto<FtrlOptimizerProto>(
-          state_dir.AppendASCII("ftrl_categories.pb"), kStandardWriteDelay));
-  category_ranker->AddExpert(std::make_unique<MrfuCategoryRanker>(
-      mrfu_category_params,
-      PersistentProto<MrfuCacheProto>(
-          state_dir.AppendASCII("mrfu_categories.pb"), kStandardWriteDelay)));
-  category_ranker->AddExpert(std::make_unique<BestResultCategoryRanker>());
-  AddRanker(std::move(category_ranker));
+  std::string category_ranking = base::GetFieldTrialParamValueByFeature(
+      ash::features::kProductivityLauncher, "category_ranking");
+  if (category_ranking == "ftrl") {
+    auto category_ranker = std::make_unique<FtrlRanker>(
+        FtrlRanker::RankingKind::kCategories, ftrl_category_params,
+        PersistentProto<FtrlOptimizerProto>(
+            state_dir.AppendASCII("ftrl_categories.pb"), kStandardWriteDelay));
+    category_ranker->AddExpert(std::make_unique<MrfuCategoryRanker>(
+        mrfu_category_params,
+        PersistentProto<MrfuCacheProto>(
+            state_dir.AppendASCII("mrfu_categories.pb"), kStandardWriteDelay)));
+    category_ranker->AddExpert(std::make_unique<BestResultCategoryRanker>());
+    AddRanker(std::move(category_ranker));
+  } else if (category_ranking == "score") {
+    AddRanker(std::make_unique<BestResultCategoryRanker>());
+  } else {
+    // == "usage" and any other mis-set value.
+    AddRanker(std::make_unique<MrfuCategoryRanker>(
+        mrfu_category_params,
+        PersistentProto<MrfuCacheProto>(
+            state_dir.AppendASCII("mrfu_categories.pb"), kStandardWriteDelay)));
+  }
 
   // 5. Result post-processing.
   // Nb. the best match ranker relies on score normalization, and the answer

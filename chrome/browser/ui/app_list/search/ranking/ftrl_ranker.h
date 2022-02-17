@@ -98,6 +98,9 @@ class BestResultCategoryRanker : public Ranker {
 
 // An expert that keeps track of category usage with a
 // most-recently-frequently-used cache of launch history.
+//
+// Can be used to either immutably return category scores with GetCategoryRanks,
+// or modify them with UpdateCategoryRanks.
 class MrfuCategoryRanker : public Ranker {
  public:
   MrfuCategoryRanker(MrfuCache::Params params,
@@ -108,12 +111,17 @@ class MrfuCategoryRanker : public Ranker {
   void Start(const std::u16string& query,
              ResultsMap& results,
              CategoriesList& categories) override;
+  void UpdateCategoryRanks(const ResultsMap& results,
+                           CategoriesList& categories,
+                           ProviderType provider) override;
   std::vector<double> GetCategoryRanks(const ResultsMap& results,
                                        const CategoriesList& categories,
                                        ProviderType provider) override;
   void Train(const LaunchData& launch) override;
 
  private:
+  void SetDefaultCategoryScores();
+
   std::unique_ptr<MrfuCache> mrfu_;
   std::vector<double> current_category_scores_;
 };
