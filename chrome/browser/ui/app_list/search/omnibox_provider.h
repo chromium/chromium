@@ -58,6 +58,11 @@ class OmniboxProvider : public SearchProvider,
   // eliminates the results as they come in.
   std::unique_ptr<AutocompleteController> controller_;
 
+  // The AutocompleteController can sometimes update its results more than once
+  // after reporting it is done. This flag is set to ensure we only update the
+  // UI once.
+  bool query_finished_ = false;
+
   FaviconCache favicon_cache_;
 };
 

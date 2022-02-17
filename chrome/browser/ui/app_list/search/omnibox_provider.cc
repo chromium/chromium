@@ -110,6 +110,7 @@ void OmniboxProvider::Start(const std::u16string& query) {
   last_query_.emplace(query, TokenizedString::Mode::kCamelCase);
 
   controller_->Stop(false);
+  query_finished_ = false;
   // The new page classification value(CHROMEOS_APP_LIST) is introduced
   // to differentiate the suggest requests initiated by ChromeOS app_list from
   // the ones by Chrome omnibox.
@@ -183,7 +184,10 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
   std::move(list_results.begin(), list_results.end(),
             std::back_inserter(new_results));
 
-  SwapResults(&new_results);
+  if (controller_->done() && !query_finished_) {
+    query_finished_ = true;
+    SwapResults(&new_results);
+  }
 }
 
 void OmniboxProvider::OnResultChanged(AutocompleteController* controller,
