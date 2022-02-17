@@ -461,9 +461,12 @@ def _struct_to_dict(obj):
     return json.decode(json.encode(obj))
 
 _ALLOW_LIST = (
+    ("ci", "chromeos-amd64-generic-rel"),
     ("ci", "chromeos-arm-generic-rel"),
     ("ci", "linux-bootstrap"),
     ("ci", "linux-bootstrap-tests"),
+    ("try", "chromeos-amd64-generic-rel"),
+    ("try", "chromeos-amd64-generic-rel-rts"),
     ("try", "chromeos-arm-generic-rel"),
     ("try", "linux-bootstrap"),
 )
