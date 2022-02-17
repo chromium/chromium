@@ -311,6 +311,21 @@ TEST_F(AppListBubblePresenterTest, DismissWhileWaitingForZeroStateSearch) {
   EXPECT_TRUE(presenter->bubble_widget_for_test());
 }
 
+TEST_F(AppListBubblePresenterTest, DismissOnFocusLoss) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Creating a window in these containers should not dismiss the launcher.
+  for (int id : kContainersThatWontHideAppListOnFocus) {
+    std::unique_ptr<views::Widget> widget = CreateTestWidget(nullptr, id);
+    EXPECT_TRUE(presenter->IsShowing());
+  }
+
+  // Creating a window in the default window container dismisses the launcher.
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  EXPECT_FALSE(presenter->IsShowing());
+}
+
 // Regression test for https://crbug.com/1275755
 TEST_F(AppListBubblePresenterTest, AssistantKeyOpensToAssistantPage) {
   // Simulate production behavior for animations, assistant, and zero-state

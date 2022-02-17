@@ -26,7 +26,6 @@
 #include "ash/wm/container_finder.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
@@ -125,9 +124,6 @@ class CallbackRunnerLayerAnimationObserver
 };
 
 }  // namespace
-
-constexpr std::array<int, 7>
-    AppListPresenterImpl::kIdsOfContainersThatWontHideAppList;
 
 AppListPresenterImpl::AppListPresenterImpl(AppListControllerImpl* controller)
     : controller_(controller) {
@@ -553,8 +549,7 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
   // change since the app list is still visible for the most part.
   const bool gained_focus_hides_app_list =
       gained_focus_container_id != kShellWindowId_Invalid &&
-      !base::Contains(kIdsOfContainersThatWontHideAppList,
-                      gained_focus_container_id);
+      ShouldCloseAppListForFocusInContainer(gained_focus_container_id);
 
   const bool app_list_gained_focus = applist_window->Contains(gained_focus) ||
                                      applist_container->Contains(gained_focus);
