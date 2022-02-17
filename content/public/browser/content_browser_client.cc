@@ -908,6 +908,11 @@ bool ContentBrowserClient::ShouldOverrideUrlLoading(
     bool* ignore_navigation) {
   return true;
 }
+
+bool ContentBrowserClient::
+    ShouldIgnoreInitialNavigationEntryNavigationStateChangedForLegacySupport() {
+  return false;
+}
 #endif
 
 bool ContentBrowserClient::AllowRenderingMhtmlOverHttp(

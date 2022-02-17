@@ -795,6 +795,15 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
       url, has_user_gesture, is_redirect, is_main_frame, ignore_navigation);
 }
 
+bool AwContentBrowserClient::
+    ShouldIgnoreInitialNavigationEntryNavigationStateChangedForLegacySupport() {
+  // On Android WebView, we should not fire the initial NavigationEntry
+  // creation/modification NavigationStateChanged calls to preserve legacy
+  // behavior (not firing extra onPageFinished calls), as initial
+  // NavigationEntries used to not exist. See https://crbug.com/1277414.
+  return true;
+}
+
 bool AwContentBrowserClient::CreateThreadPool(base::StringPiece name) {
   if (g_should_create_thread_pool) {
     base::ThreadPoolInstance::Create(name);
