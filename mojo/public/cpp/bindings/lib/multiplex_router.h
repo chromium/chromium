@@ -197,8 +197,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
     return connector_.handle();
   }
 
-  bool SimulateReceivingMessageForTesting(Message* message) {
-    return dispatcher_.Accept(message);
+  bool SimulateReceivingMessageForTesting(ScopedMessageHandle handle) {
+    return connector_.SimulateReadMessage(std::move(handle));
   }
 
  private:

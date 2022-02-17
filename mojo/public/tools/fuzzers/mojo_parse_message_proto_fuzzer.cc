@@ -12,6 +12,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/system/message.h"
 #include "mojo/public/tools/fuzzers/fuzz_impl.h"
 #include "mojo/public/tools/fuzzers/mojo_fuzzer.pb.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -26,18 +27,22 @@ void FuzzMessage(const MojoFuzzerMessages& mojo_fuzzer_messages,
 
   for (auto& message_str : mojo_fuzzer_messages.messages()) {
     // Create a mojo message with the appropriate payload size.
-    mojo::Message message(0, 0, message_str.size(), 0, nullptr);
-    if (message.data_num_bytes() < message_str.size()) {
-      message.payload_buffer()->Allocate(message_str.size() -
-                                         message.data_num_bytes());
-    }
-
-    // Set the raw message data.
-    memcpy(message.mutable_data(), message_str.data(), message_str.size());
+    mojo::ScopedMessageHandle handle;
+    mojo::CreateMessage(&handle, MOJO_CREATE_MESSAGE_FLAG_NONE);
+    MojoAppendMessageDataOptions options = {
+        .struct_size = sizeof(options),
+        .flags = MOJO_APPEND_MESSAGE_DATA_FLAG_COMMIT_SIZE};
+    void* buffer;
+    uint32_t buffer_size;
+    MojoAppendMessageData(handle->value(),
+                          static_cast<uint32_t>(message_str.size()), nullptr, 0,
+                          &options, &buffer, &buffer_size);
+    CHECK_GE(buffer_size, static_cast<uint32_t>(message_str.size()));
+    memcpy(buffer, message_str.data(), message_str.size());
 
     // Run the message through header validation, payload validation, and
     // dispatch to the impl.
-    router->SimulateReceivingMessageForTesting(&message);
+    router->SimulateReceivingMessageForTesting(std::move(handle));
   }
 
   // Allow the harness function to return now.

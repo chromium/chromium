@@ -270,14 +270,13 @@ bool Connector::WaitForIncomingMessage() {
     return false;
   }
 
-  Message message;
-  if ((rv = ReadMessage(&message)) != MOJO_RESULT_OK) {
+  ScopedMessageHandle message;
+  if ((rv = ReadMessage(message)) != MOJO_RESULT_OK) {
     HandleError(rv != MOJO_RESULT_FAILED_PRECONDITION /* force_pipe_reset */,
                 false /* force_async_handler */);
     return false;
   }
 
-  DCHECK(!message.IsNull());
   return DispatchMessage(std::move(message));
 }
 
@@ -415,6 +414,10 @@ void Connector::OverrideDefaultSerializationBehaviorForTesting(
   g_default_incoming_serialization_mode = incoming_mode;
 }
 
+bool Connector::SimulateReadMessage(ScopedMessageHandle message) {
+  return DispatchMessage(std::move(message));
+}
+
 void Connector::OnWatcherHandleReady(MojoResult result) {
   OnHandleReadyInternal(result);
 }
@@ -493,39 +496,29 @@ uint64_t Connector::QueryPendingMessageCount() const {
   return pending_message_count;
 }
 
-MojoResult Connector::ReadMessage(Message* message) {
-  ScopedMessageHandle handle;
-  MojoResult result =
-      ReadMessageNew(message_pipe_.get(), &handle, MOJO_READ_MESSAGE_FLAG_NONE);
-  if (result != MOJO_RESULT_OK)
-    return result;
+MojoResult Connector::ReadMessage(ScopedMessageHandle& message) {
+  return ReadMessageNew(message_pipe_.get(), &message,
+                        MOJO_READ_MESSAGE_FLAG_NONE);
+}
 
-  *message = Message::CreateFromMessageHandle(&handle);
+bool Connector::DispatchMessage(ScopedMessageHandle handle) {
+  DCHECK(!paused_);
 
-  if (message->IsNull()) {
-    // Even if the read was successful, the Message may still be null if there
-    // was a problem extracting handles from it. We treat this essentially as
-    // a bad IPC because we don't really have a better option.
-    //
-    // We include |interface_name_| in the error message since it usually
-    // (via this Connector's owner) provides useful information about which
-    // binding interface is using this Connector.
+  Message message = Message::CreateFromMessageHandle(&handle);
+  if (message.IsNull()) {
+    // If the Message is null, there was a problem extracting handles from it.
     NotifyBadMessage(
         handle.get(),
         base::StrCat({interface_name_,
                       " One or more handle attachments were invalid."}));
-    return MOJO_RESULT_ABORTED;
+    HandleError(/*force_pipe_reset=*/true, /*force_async_handler=*/false);
+    return false;
   }
 
-  if (!header_validator_.Accept(message)) {
-    return MOJO_RESULT_ABORTED;
+  if (!header_validator_.Accept(&message)) {
+    HandleError(/*force_pipe_reset=*/true, /*force_async_handler=*/false);
+    return false;
   }
-
-  return MOJO_RESULT_OK;
-}
-
-bool Connector::DispatchMessage(Message message) {
-  DCHECK(!paused_);
 
   base::WeakPtr<Connector> weak_self = weak_self_;
   absl::optional<ActiveDispatchTracker> dispatch_tracker;
@@ -615,12 +608,11 @@ void Connector::ReadAllAvailableMessages() {
   base::WeakPtr<Connector> weak_self = weak_self_;
 
   do {
-    Message message;
-    MojoResult rv = ReadMessage(&message);
+    ScopedMessageHandle message;
+    MojoResult rv = ReadMessage(message);
 
     switch (rv) {
       case MOJO_RESULT_OK:
-        DCHECK(!message.IsNull());
         if (!DispatchMessage(std::move(message)) || !weak_self || paused_) {
           return;
         }

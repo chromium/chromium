@@ -267,7 +267,8 @@ TEST_F(MojoBindingsPerftest, MultiplexRouterDispatchCost) {
     base::TimeTicks start_time = base::TimeTicks::Now();
     for (size_t j = 0; j < kIterations[i]; ++j) {
       Message message(0, 0, 8, 0, nullptr);
-      bool result = router->SimulateReceivingMessageForTesting(&message);
+      bool result =
+          router->SimulateReceivingMessageForTesting(message.TakeMojoMessage());
       DCHECK(result);
     }
 

@@ -234,6 +234,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
       OutgoingSerializationMode outgoing_mode,
       IncomingSerializationMode incoming_mode);
 
+  // Feeds a message to the Connector as if the Connector read it from a pipe.
+  // Used for testing and fuzzing.
+  bool SimulateReadMessage(ScopedMessageHandle message);
+
  private:
   class ActiveDispatchTracker;
   class RunLoopNestingObserver;
@@ -252,12 +256,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // Attempts to read a single Message from the pipe. Returns |MOJO_RESULT_OK|
   // and a valid message in |*message| iff a message was successfully read and
   // prepared for dispatch.
-  MojoResult ReadMessage(Message* message);
+  MojoResult ReadMessage(ScopedMessageHandle& message);
 
   // Dispatches |message| to the receiver. Returns |true| if the message was
   // accepted by the receiver, and |false| otherwise (e.g. if it failed
   // validation).
-  bool DispatchMessage(Message message);
+  bool DispatchMessage(ScopedMessageHandle handle);
 
   // Posts a task to read the next message from the pipe. These two functions
   // keep |num_pending_read_tasks_| up to date to limit the number of posted
