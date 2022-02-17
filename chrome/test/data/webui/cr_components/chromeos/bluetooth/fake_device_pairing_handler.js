@@ -259,8 +259,10 @@ export class FakeDevicePairingHandler {
   /**
    * @param {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
    */
-  completeFetchDevice(device) {
-    assert(this.fetchDeviceCallback_, 'fetchDevice() was never called');
+  async completeFetchDevice(device) {
+    if (!this.fetchDeviceCallback_) {
+      await this.waitForFetchDevice();
+    }
     this.fetchDeviceCallback_({device: device});
   }
 }

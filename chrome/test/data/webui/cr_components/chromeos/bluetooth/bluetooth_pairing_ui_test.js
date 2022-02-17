@@ -267,12 +267,11 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     assertTrue(!!getSpinnerPage());
     assertFalse(!!getDeviceSelectionPage());
 
-    await bluetoothConfig.getLastCreatedPairingHandler().waitForFetchDevice();
-    bluetoothConfig.getLastCreatedPairingHandler().completeFetchDevice(
-        device.deviceProperties);
+    const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+    await deviceHandler.completeFetchDevice(device.deviceProperties);
 
     // Wait for DevicePairingHandler.PairDevice() to be called.
-    await bluetoothConfig.getLastCreatedPairingHandler().waitForPairDevice();
+    await deviceHandler.waitForPairDevice();
 
     // Once we begin pairing we should still be in the spinner page.
     assertTrue(!!getSpinnerPage());
@@ -694,7 +693,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
   });
 
   test(
-      'Close dialog after attempting to pair to a device address not found',
+      'Cancel after attempting to pair to a device with address not found',
       async function() {
         await init(/*pairingDeviceAddress=*/ '123456');
 
@@ -703,11 +702,9 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
         assertTrue(!!getSpinnerPage());
         assertFalse(!!getDeviceSelectionPage());
 
-        const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
-        await deviceHandler.waitForFetchDevice();
-
         // Return no device.
-        deviceHandler.completeFetchDevice(null);
+        const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+        await deviceHandler.completeFetchDevice(null);
 
         // Pairing is not initialized since device does not exit in discoverable
         // devices list.
