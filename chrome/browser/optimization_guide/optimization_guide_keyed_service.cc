@@ -94,6 +94,36 @@ Profile* GetProfileForOTROptimizationGuide(Profile* profile) {
   return profile->GetOriginalProfile();
 }
 
+// Logs info about the common optimization guide feature flags.
+void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
+                         Profile* profile) {
+  if (!optimization_guide::switches::IsDebugLogsEnabled())
+    return;
+  if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger,
+                           "FEATURE_FLAG Hints component disabled");
+  }
+  if (!optimization_guide::features::IsRemoteFetchingEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger,
+                           "FEATURE_FLAG remote fetching feature disabled");
+  }
+  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile->IsOffTheRecord(), profile->GetPrefs())) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_logger,
+        "FEATURE_FLAG remote fetching user permission disabled");
+  }
+  if (!optimization_guide::features::IsPushNotificationsEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_logger,
+        "FEATURE_FLAG remote push notification feature disabled");
+  }
+  if (!optimization_guide::features::IsModelDownloadingEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger,
+                           "FEATURE_FLAG model downloading feature disabled");
+  }
+}
+
 }  // namespace
 
 // static
@@ -218,6 +248,8 @@ void OptimizationGuideKeyedService::Initialize() {
 
   OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_,
                          "OptimizationGuide: KeyedService is initalized");
+
+  LogFeatureFlagsInfo(optimization_guide_logger_.get(), profile);
 }
 
 optimization_guide::ChromeHintsManager*
