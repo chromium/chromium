@@ -1241,9 +1241,10 @@ id<GREYMatcher> EditDoneButton() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
-  [[[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_EXPORT_PASSWORDS)]
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                                 IDS_IOS_EXPORT_PASSWORDS),
+                             grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
       onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
