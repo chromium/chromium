@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -101,8 +102,10 @@ void TerminaInstaller::Install(base::OnceCallback<void(InstallResult)> callback,
 void TerminaInstaller::InstallDlc(
     base::OnceCallback<void(InstallResult)> callback,
     bool is_initial_install) {
+  dlcservice::InstallRequest install_request;
+  install_request.set_id(kCrostiniDlcName);
   chromeos::DlcserviceClient::Get()->Install(
-      kCrostiniDlcName,
+      install_request,
       base::BindOnce(&TerminaInstaller::OnInstallDlc,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      is_initial_install),

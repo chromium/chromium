@@ -22,7 +22,7 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
   ~FakeDlcserviceClient() override;
 
   // DlcserviceClient:
-  void Install(const std::string& dlc_id,
+  void Install(const dlcservice::InstallRequest& install_request,
                InstallCallback callback,
                ProgressCallback progress_callback) override;
   // Uninstalling disables the DLC.

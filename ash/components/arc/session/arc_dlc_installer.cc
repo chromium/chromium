@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 
 namespace arc {
 
@@ -61,8 +62,10 @@ void ArcDlcInstaller::Install() {
 
   state_ = InstallerState::kInstalling;
   VLOG(2) << "Installing ARC DLC: " << kHoudiniRvcDlc;
+  dlcservice::InstallRequest install_request;
+  install_request.set_id(kHoudiniRvcDlc);
   chromeos::DlcserviceClient::Get()->Install(
-      kHoudiniRvcDlc,
+      install_request,
       base::BindOnce(&ArcDlcInstaller::OnDlcInstalled,
                      weak_ptr_factory_.GetWeakPtr(), kHoudiniRvcDlc),
       base::DoNothing());

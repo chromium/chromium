@@ -53,6 +53,7 @@ static_library("session") {
     "//ash/public/cpp/external_arc:external_arc",
     "//chromeos/components/sensors:buildflags",
     "//chromeos/dbus/dlcservice:dlcservice",
+    "//chromeos/dbus/dlcservice:dlcservice_proto",
     "//chromeos/dbus/session_manager",
     "//chromeos/dbus/upstart",
     "//chromeos/memory:memory",

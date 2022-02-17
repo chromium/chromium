@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 
 namespace borealis {
 
@@ -60,8 +61,10 @@ MountDlc::~MountDlc() = default;
 void MountDlc::RunInternal(BorealisContext* context) {
   // TODO(b/172279567): Ensure the DLC is present before trying to install,
   // otherwise we will silently download borealis here.
+  dlcservice::InstallRequest install_request;
+  install_request.set_id(kBorealisDlcName);
   chromeos::DlcserviceClient::Get()->Install(
-      kBorealisDlcName,
+      install_request,
       base::BindOnce(&MountDlc::OnMountDlc, weak_factory_.GetWeakPtr(),
                      context),
       base::DoNothing());

@@ -24,6 +24,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/prefs/pref_service.h"
@@ -416,8 +417,10 @@ void PluginVmManagerImpl::InstallDlcAndUpdateVmState(
     base::OnceCallback<void(bool default_vm_exists)> success_callback,
     base::OnceClosure error_callback) {
   LOG_FUNCTION_CALL();
+  dlcservice::InstallRequest install_request;
+  install_request.set_id(kPitaDlc);
   chromeos::DlcserviceClient::Get()->Install(
-      "pita",
+      install_request,
       base::BindOnce(&PluginVmManagerImpl::OnInstallPluginVmDlc,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(success_callback), std::move(error_callback)),

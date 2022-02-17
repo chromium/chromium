@@ -110,30 +110,31 @@ class DlcserviceClientImpl : public DlcserviceClient {
 
   ~DlcserviceClientImpl() override = default;
 
-  void Install(const std::string& dlc_id,
+  void Install(const dlcservice::InstallRequest& install_request,
                InstallCallback install_callback,
                ProgressCallback progress_callback) override {
     CheckServiceAvailable("Install");
+    const std::string& id = install_request.id();
     // If another installation for the same DLC ID was already called, go ahead
     // and hold the installation fields.
-    if (installation_holder_.find(dlc_id) != installation_holder_.end()) {
-      HoldInstallation(dlc_id, std::move(install_callback),
+    if (installation_holder_.find(id) != installation_holder_.end()) {
+      HoldInstallation(install_request, std::move(install_callback),
                        std::move(progress_callback));
       return;
     }
     if (installing_) {
-      EnqueueTask(base::BindOnce(&DlcserviceClientImpl::Install,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 std::move(dlc_id), std::move(install_callback),
-                                 std::move(progress_callback)));
+      EnqueueTask(base::BindOnce(
+          &DlcserviceClientImpl::Install, weak_ptr_factory_.GetWeakPtr(),
+          std::move(install_request), std::move(install_callback),
+          std::move(progress_callback)));
       return;
     }
 
     TaskStarted();
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
-                                 dlcservice::kInstallDlcMethod);
+                                 dlcservice::kInstallMethod);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendString(dlc_id);
+    writer.AppendProtoAsArrayOfBytes(install_request);
 
     VLOG(1) << "Requesting to install DLC(s).";
     // TODO(b/166782419): dlcservice hashes preloadable DLC images which can
@@ -142,9 +143,10 @@ class DlcserviceClientImpl : public DlcserviceClient {
     constexpr int timeout_ms = 5 * 60 * 1000;
     dlcservice_proxy_->CallMethodWithErrorResponse(
         &method_call, timeout_ms,
-        base::BindOnce(
-            &DlcserviceClientImpl::OnInstall, weak_ptr_factory_.GetWeakPtr(),
-            dlc_id, std::move(install_callback), std::move(progress_callback)));
+        base::BindOnce(&DlcserviceClientImpl::OnInstall,
+                       weak_ptr_factory_.GetWeakPtr(), install_request,
+                       std::move(install_callback),
+                       std::move(progress_callback)));
   }
 
   void Uninstall(const std::string& dlc_id,
@@ -235,12 +237,12 @@ class DlcserviceClientImpl : public DlcserviceClient {
   // Fields related to an installation allowing for multiple installations to be
   // in flight concurrently and handled by this dlcservice client. The callbacks
   // are used to report progress and the final installation.
-  struct InstallationCallbacks {
+  struct InstallationHolder {
     InstallCallback install_callback;
     ProgressCallback progress_callback;
 
-    InstallationCallbacks(InstallCallback install_callback,
-                          ProgressCallback progress_callback)
+    InstallationHolder(InstallCallback install_callback,
+                       ProgressCallback progress_callback)
         : install_callback(std::move(install_callback)),
           progress_callback(std::move(progress_callback)) {}
   };
@@ -260,11 +262,11 @@ class DlcserviceClientImpl : public DlcserviceClient {
   // Clears any state an installation had setup while being performed.
   void TaskEnded() { installing_ = false; }
 
-  void HoldInstallation(const std::string& id,
+  void HoldInstallation(const dlcservice::InstallRequest& install_request,
                         InstallCallback install_callback,
                         ProgressCallback progress_callback) {
-    installation_holder_[id].emplace_back(std::move(install_callback),
-                                          std::move(progress_callback));
+    installation_holder_[install_request.id()].emplace_back(
+        std::move(install_callback), std::move(progress_callback));
   }
 
   void ReleaseInstallation(const std::string& id) {
@@ -357,27 +359,29 @@ class DlcserviceClientImpl : public DlcserviceClient {
     LOG_IF(ERROR, !success) << "Failed to connect to DlcStateChanged signal.";
   }
 
-  void OnInstall(const std::string& dlc_id,
+  void OnInstall(const dlcservice::InstallRequest& install_request,
                  InstallCallback install_callback,
                  ProgressCallback progress_callback,
                  dbus::Response* response,
                  dbus::ErrorResponse* err_response) {
+    const std::string& id = install_request.id();
     if (response) {
-      HoldInstallation(dlc_id, std::move(install_callback),
+      HoldInstallation(install_request, std::move(install_callback),
                        std::move(progress_callback));
       return;
     }
 
     const auto err = DlcserviceErrorResponseHandler(err_response).get_err();
     if (err == dlcservice::kErrorBusy) {
-      EnqueueTask(base::BindOnce(
-          &DlcserviceClientImpl::Install, weak_ptr_factory_.GetWeakPtr(),
-          dlc_id, std::move(install_callback), std::move(progress_callback)));
+      EnqueueTask(base::BindOnce(&DlcserviceClientImpl::Install,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 install_request, std::move(install_callback),
+                                 std::move(progress_callback)));
     } else {
-      HoldInstallation(dlc_id, std::move(install_callback),
+      HoldInstallation(install_request, std::move(install_callback),
                        std::move(progress_callback));
       dlcservice::DlcState dlc_state;
-      dlc_state.set_id(dlc_id);
+      dlc_state.set_id(id);
       dlc_state.set_last_error_code(err);
       SendCompleted(dlc_state);
     }
@@ -436,9 +440,8 @@ class DlcserviceClientImpl : public DlcserviceClient {
                    << " called when dlcservice is not available.";
   }
 
-  // DLC ID to |InstallationCallbacks| mapping.
-  std::map<std::string, std::vector<InstallationCallbacks>>
-      installation_holder_;
+  // DLC ID to `InstallationHolder` mapping.
+  std::map<std::string, std::vector<InstallationHolder>> installation_holder_;
 
   dbus::ObjectProxy* dlcservice_proxy_;
 
