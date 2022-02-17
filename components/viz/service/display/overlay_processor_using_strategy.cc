@@ -88,24 +88,8 @@ static void LogStrategyEnumUMA(OverlayStrategy strategy) {
 
 OverlayProcessorUsingStrategy::ProposedCandidateKey
 OverlayProcessorUsingStrategy::ToProposeKey(
-    const OverlayProcessorUsingStrategy::Strategy::OverlayProposedCandidate&
-        proposed) {
+    const OverlayProposedCandidate& proposed) {
   return {proposed.candidate.tracking_id, proposed.strategy->GetUMAEnum()};
-}
-
-// Default implementation of whether a strategy would remove the output surface
-// as overlay plane.
-bool OverlayProcessorUsingStrategy::Strategy::RemoveOutputSurfaceAsOverlay() {
-  return false;
-}
-
-OverlayStrategy OverlayProcessorUsingStrategy::Strategy::GetUMAEnum() const {
-  return OverlayStrategy::kUnknown;
-}
-
-gfx::RectF OverlayProcessorUsingStrategy::Strategy::GetPrimaryPlaneDisplayRect(
-    const PrimaryPlane* primary_plane) {
-  return primary_plane ? primary_plane->display_rect : gfx::RectF();
 }
 
 OverlayProcessorUsingStrategy::OverlayProcessorUsingStrategy()
@@ -440,7 +424,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
 }
 
 void OverlayProcessorUsingStrategy::SortProposedOverlayCandidatesPrioritized(
-    Strategy::OverlayProposedCandidateList* proposed_candidates) {
+    std::vector<OverlayProposedCandidate>* proposed_candidates) {
   // Removes trackers for candidates that are no longer being rendered.
   for (auto it = tracked_candidates_.begin();
        it != tracked_candidates_.end();) {
@@ -550,7 +534,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
     std::vector<gfx::Rect>* content_bounds,
     gfx::Rect* incoming_damage) {
   last_successful_strategy_ = nullptr;
-  Strategy::OverlayProposedCandidateList proposed_candidates;
+  std::vector<OverlayProposedCandidate> proposed_candidates;
   for (const auto& strategy : strategies_) {
     strategy->ProposePrioritized(
         output_color_matrix, render_pass_backdrop_filters, resource_provider,
@@ -656,7 +640,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
 }
 
 bool OverlayProcessorUsingStrategy::ShouldAttemptMultipleOverlays(
-    const Strategy::OverlayProposedCandidateList& sorted_candidates) {
+    const std::vector<OverlayProposedCandidate>& sorted_candidates) {
   if (max_overlays_considered_ <= 1) {
     return false;
   }
@@ -681,21 +665,21 @@ bool OverlayProcessorUsingStrategy::ShouldAttemptMultipleOverlays(
 }
 
 bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
-    const Strategy::OverlayProposedCandidateList& sorted_candidates,
+    const std::vector<OverlayProposedCandidate>& sorted_candidates,
     OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     AggregatedRenderPass* render_pass,
     OverlayCandidateList& candidates) {
   int max_overlays_possible = std::min(
       max_overlays_considered_, static_cast<int>(sorted_candidates.size()));
 
-  Strategy::OverlayProposedCandidateList test_candidates;
+  std::vector<OverlayProposedCandidate> test_candidates;
   // Reserve max possible overlays so iterators remain stable while we insert
   // candidates.
   test_candidates.reserve(max_overlays_possible);
   bool testing_underlay = false;
   // We'll keep track of the underlays that we're testing so we can assign their
   // `plane_z_order`s based on their order in the QuadList.
-  std::vector<Strategy::OverlayProposedCandidateList::iterator> underlay_iters;
+  std::vector<std::vector<OverlayProposedCandidate>::iterator> underlay_iters;
   // Used to prevent testing multiple candidates representing the same DrawQuad.
   std::set<size_t> used_quad_indices;
 
@@ -739,7 +723,7 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   if (!testing_underlay || !primary_plane) {
     CheckOverlaySupport(primary_plane, &candidates);
   } else {
-    Strategy::PrimaryPlane new_plane_candidate(*primary_plane);
+    OverlayProcessorStrategy::PrimaryPlane new_plane_candidate(*primary_plane);
     new_plane_candidate.enable_blending = true;
     // Check for support.
     CheckOverlaySupport(&new_plane_candidate, &candidates);
@@ -780,8 +764,8 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   // could probably replace them with solid colour quads or make them invisible
   // instead.
   std::sort(test_candidates.begin(), test_candidates.end(),
-            [](const Strategy::OverlayProposedCandidate& c1,
-               const Strategy::OverlayProposedCandidate& c2) -> bool {
+            [](const OverlayProposedCandidate& c1,
+               const OverlayProposedCandidate& c2) -> bool {
               return c1.quad_iter.index() > c2.quad_iter.index();
             });
   // Commit successful candidates.
@@ -793,13 +777,13 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
 }
 
 void OverlayProcessorUsingStrategy::AssignUnderlayZOrders(
-    std::vector<Strategy::OverlayProposedCandidateList::iterator>&
+    std::vector<std::vector<OverlayProposedCandidate>::iterator>&
         underlay_iters) {
   // Sort the underlay iterators by DrawQuad order, frontmost first.
   std::sort(
       underlay_iters.begin(), underlay_iters.end(),
-      [](const Strategy::OverlayProposedCandidateList::iterator& c1,
-         const Strategy::OverlayProposedCandidateList::iterator& c2) -> bool {
+      [](const std::vector<OverlayProposedCandidate>::iterator& c1,
+         const std::vector<OverlayProposedCandidate>::iterator& c2) -> bool {
         return c1->quad_iter.index() < c2->quad_iter.index();
       });
   // Assign underlay candidate plane_z_orders based on DrawQuad order.

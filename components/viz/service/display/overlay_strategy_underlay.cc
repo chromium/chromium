@@ -97,7 +97,7 @@ void OverlayStrategyUnderlay::ProposePrioritized(
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
     const PrimaryPlane* primary_plane,
-    OverlayProposedCandidateList* candidates,
+    std::vector<OverlayProposedCandidate>* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
   QuadList& quad_list = render_pass->quad_list;

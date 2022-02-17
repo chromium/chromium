@@ -57,6 +57,7 @@
 #elif BUILDFLAG(IS_APPLE)
 #include "components/viz/service/display/overlay_processor_mac.h"
 #elif BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
+#include "components/viz/service/display/overlay_processor_strategy.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
@@ -2606,10 +2607,10 @@ class TestOverlayProcessor : public OverlayProcessorMac {
 
 class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
  public:
-  class Strategy : public OverlayProcessorUsingStrategy::Strategy {
+  class TestStrategy : public OverlayProcessorStrategy {
    public:
-    Strategy() = default;
-    ~Strategy() override = default;
+    TestStrategy() = default;
+    ~TestStrategy() override = default;
 
     MOCK_METHOD8(
         Attempt,
@@ -2631,7 +2632,7 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
         AggregatedRenderPassList* render_pass_list,
         SurfaceDamageRectList* surface_damage_rect_list,
         const PrimaryPlane* primary_plane,
-        OverlayProposedCandidateList* candidates,
+        std::vector<OverlayProposedCandidate>* candidates,
         std::vector<gfx::Rect>* content_bounds) override {
       auto* render_pass = render_pass_list->back().get();
       QuadList& quad_list = render_pass->quad_list;
@@ -2667,15 +2668,14 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* surfaces) override {}
 
-  Strategy& strategy() {
+  TestStrategy& strategy() {
     auto* strategy = strategies_.back().get();
-    return *(static_cast<Strategy*>(strategy));
+    return *(static_cast<TestStrategy*>(strategy));
   }
 
   MOCK_CONST_METHOD0(NeedsSurfaceDamageRectList, bool());
-  explicit TestOverlayProcessor(OutputSurface* output_surface)
-      : OverlayProcessorUsingStrategy() {
-    strategies_.push_back(std::make_unique<Strategy>());
+  explicit TestOverlayProcessor(OutputSurface* output_surface) {
+    strategies_.push_back(std::make_unique<TestStrategy>());
     prioritization_config_.changing_threshold = false;
     prioritization_config_.damage_rate_threshold = false;
   }
@@ -3839,11 +3839,11 @@ TEST_F(GLRendererWithMockContextTest,
 #if defined(USE_OZONE) || BUILDFLAG(IS_ANDROID)
 class ContentBoundsOverlayProcessor : public OverlayProcessorUsingStrategy {
  public:
-  class Strategy : public OverlayProcessorUsingStrategy::Strategy {
+  class TestStrategy : public OverlayProcessorStrategy {
    public:
-    explicit Strategy(const std::vector<gfx::Rect>& content_bounds)
+    explicit TestStrategy(const std::vector<gfx::Rect>& content_bounds)
         : content_bounds_(content_bounds) {}
-    ~Strategy() override = default;
+    ~TestStrategy() override = default;
 
     bool Attempt(const skia::Matrix44& output_color_matrix,
                  const OverlayProcessorInterface::FilterOperationsMap&
@@ -3866,7 +3866,7 @@ class ContentBoundsOverlayProcessor : public OverlayProcessorUsingStrategy {
         AggregatedRenderPassList* render_pass_list,
         SurfaceDamageRectList* surface_damage_rect_list,
         const PrimaryPlane* primary_plane,
-        OverlayProposedCandidateList* candidates,
+        std::vector<OverlayProposedCandidate>* candidates,
         std::vector<gfx::Rect>* content_bounds) override {
       auto* render_pass = render_pass_list->back().get();
       QuadList& quad_list = render_pass->quad_list;
@@ -3902,12 +3902,14 @@ class ContentBoundsOverlayProcessor : public OverlayProcessorUsingStrategy {
       const std::vector<gfx::Rect>& content_bounds)
       : OverlayProcessorUsingStrategy(), content_bounds_(content_bounds) {
     strategies_.push_back(
-        std::make_unique<Strategy>(std::move(content_bounds_)));
+        std::make_unique<TestStrategy>(std::move(content_bounds_)));
     prioritization_config_.changing_threshold = false;
     prioritization_config_.damage_rate_threshold = false;
   }
 
-  Strategy& strategy() { return static_cast<Strategy&>(*strategies_.back()); }
+  TestStrategy& strategy() {
+    return static_cast<TestStrategy&>(*strategies_.back());
+  }
   // Empty mock methods since this test set up uses strategies, which are only
   // for ozone and android.
   MOCK_CONST_METHOD0(NeedsSurfaceDamageRectList, bool());

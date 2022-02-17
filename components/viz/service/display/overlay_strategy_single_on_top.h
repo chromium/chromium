@@ -9,13 +9,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/overlay_candidate.h"
+#include "components/viz/service/display/overlay_processor_strategy.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace viz {
 
 class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
-    : public OverlayProcessorUsingStrategy::Strategy {
+    : public OverlayProcessorStrategy {
  public:
   explicit OverlayStrategySingleOnTop(
       OverlayProcessorUsingStrategy* capability_checker);
@@ -43,7 +44,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
                           AggregatedRenderPassList* render_pass_list,
                           SurfaceDamageRectList* surface_damage_rect_list,
                           const PrimaryPlane* primary_plane,
-                          OverlayProposedCandidateList* candidates,
+                          std::vector<OverlayProposedCandidate>* candidates,
                           std::vector<gfx::Rect>* content_bounds) override;
 
   bool AttemptPrioritized(

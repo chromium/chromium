@@ -20,6 +20,8 @@
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_candidate_temporal_tracker.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
+#include "components/viz/service/display/overlay_processor_strategy.h"
+#include "components/viz/service/display/overlay_proposed_candidate.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 
@@ -34,103 +36,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
     : public OverlayProcessorInterface {
  public:
   using CandidateList = OverlayCandidateList;
-  // TODO(weiliangc): Move it to an external class.
-  class VIZ_SERVICE_EXPORT Strategy {
-   public:
-    class VIZ_SERVICE_EXPORT OverlayProposedCandidate {
-     public:
-      OverlayProposedCandidate(QuadList::Iterator it,
-                               OverlayCandidate overlay_candidate,
-                               Strategy* overlay_strategy)
-          : quad_iter(it),
-            candidate(overlay_candidate),
-            strategy(overlay_strategy) {}
-
-      // A iterator in the vector of quads.
-      QuadList::Iterator quad_iter;
-      // This is needed to sort candidates based on DrawQuad order.
-      size_t quad_index;
-      OverlayCandidate candidate;
-      raw_ptr<Strategy> strategy = nullptr;
-
-      // heuristic sort element
-      int relative_power_gain = 0;
-    };
-
-    using OverlayProposedCandidateList = std::vector<OverlayProposedCandidate>;
-
-    virtual ~Strategy() = default;
-    using PrimaryPlane = OverlayProcessorInterface::OutputSurfaceOverlayPlane;
-
-    // Returns false if the strategy cannot be made to work with the
-    // current set of render passes. Returns true if the strategy was successful
-    // and adds any additional passes necessary to represent overlays to
-    // |render_pass_list|. Most strategies should look at the primary
-    // RenderPass, the last element.
-    virtual bool Attempt(
-        const skia::Matrix44& output_color_matrix,
-        const FilterOperationsMap& render_pass_backdrop_filters,
-        DisplayResourceProvider* resource_provider,
-        AggregatedRenderPassList* render_pass_list,
-        SurfaceDamageRectList* surface_damage_rect_list,
-        const PrimaryPlane* primary_plane,
-        OverlayCandidateList* candidates,
-        std::vector<gfx::Rect>* content_bounds) = 0;
-
-    // Appends all legitimate overlay candidates to the list |candidates|
-    // for this strategy.  It is very important to note that this function
-    // should not attempt a specific candidate it should merely identify them
-    // and save the necessary data required to for a later attempt.
-    virtual void ProposePrioritized(
-        const skia::Matrix44& output_color_matrix,
-        const FilterOperationsMap& render_pass_backdrop_filters,
-        DisplayResourceProvider* resource_provider,
-        AggregatedRenderPassList* render_pass_list,
-        SurfaceDamageRectList* surface_damage_rect_list,
-        const PrimaryPlane* primary_plane,
-        OverlayProposedCandidateList* candidates,
-        std::vector<gfx::Rect>* content_bounds) = 0;
-
-    // Returns false if the specific |proposed_candidate| cannot be made to work
-    // for this strategy with the current set of render passes. Returns true if
-    // the strategy was successful and adds any additional passes necessary to
-    // represent overlays to |render_pass_list|. Most strategies should look at
-    // the primary RenderPass, the last element.
-    virtual bool AttemptPrioritized(
-        const skia::Matrix44& output_color_matrix,
-        const FilterOperationsMap& render_pass_backdrop_filters,
-        DisplayResourceProvider* resource_provider,
-        AggregatedRenderPassList* render_pass_list,
-        SurfaceDamageRectList* surface_damage_rect_list,
-        const PrimaryPlane* primary_plane,
-        OverlayCandidateList* candidates,
-        std::vector<gfx::Rect>* content_bounds,
-        const OverlayProposedCandidate& proposed_candidate) = 0;
-
-    // Commits to using the proposed candidate by updating |render_pass| as
-    // appropriate when this candidate is presented in an overlay plane.
-    virtual void CommitCandidate(
-        const OverlayProposedCandidate& proposed_candidate,
-        AggregatedRenderPass* render_pass) = 0;
-
-    // Currently this is only overridden by the Underlay strategy: the underlay
-    // strategy needs to enable blending for the primary plane in order to show
-    // content underneath.
-    virtual void AdjustOutputSurfaceOverlay(
-        OutputSurfaceOverlayPlane* output_surface_plane) {}
-
-    // Currently this is only overridden by the Fullscreen strategy: the
-    // fullscreen strategy covers the entire screen and there is no need to use
-    // the primary plane.
-    virtual bool RemoveOutputSurfaceAsOverlay();
-
-    virtual OverlayStrategy GetUMAEnum() const;
-
-    // Does a null-check on |primary_plane| and returns it's |display_rect|
-    // member if non-null and an empty gfx::RectF otherwise.
-    gfx::RectF GetPrimaryPlaneDisplayRect(const PrimaryPlane* primary_plane);
-  };
-  using StrategyList = std::vector<std::unique_ptr<Strategy>>;
 
   OverlayProcessorUsingStrategy(const OverlayProcessorUsingStrategy&) = delete;
   OverlayProcessorUsingStrategy& operator=(
@@ -193,8 +98,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   virtual gfx::Rect GetOverlayDamageRectForOutputSurface(
       const OverlayCandidate& overlay) const;
 
-  StrategyList strategies_;
-  raw_ptr<Strategy> last_successful_strategy_ = nullptr;
+  std::vector<std::unique_ptr<OverlayProcessorStrategy>> strategies_;
+  raw_ptr<OverlayProcessorStrategy> last_successful_strategy_ = nullptr;
 
   gfx::Rect overlay_damage_rect_;
   gfx::Rect previous_frame_overlay_rect_;
@@ -294,7 +199,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // `max_overlays_considered_`, the strategies proposed, and if any of the
   // candidates require an overlay.
   bool ShouldAttemptMultipleOverlays(
-      const Strategy::OverlayProposedCandidateList& sorted_candidates);
+      const std::vector<OverlayProposedCandidate>& sorted_candidates);
 
   // Attempts to promote multiple candidates to overlays. Returns a boolean
   // indicating if any of the attempted candidates were successfully promoted to
@@ -303,7 +208,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // TODO(khaslett): Write unit tests for this function before launching
   // UseMultipleOverlays feature.
   bool AttemptMultipleOverlays(
-      const Strategy::OverlayProposedCandidateList& sorted_candidates,
+      const std::vector<OverlayProposedCandidate>& sorted_candidates,
       OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       AggregatedRenderPass* render_pass,
       OverlayCandidateList& candidates);
@@ -314,7 +219,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // TODO(khaslett): Write unit tests for this function before launching
   // UseMultipleOverlays feature.
   void AssignUnderlayZOrders(
-      std::vector<Strategy::OverlayProposedCandidateList::iterator>&
+      std::vector<std::vector<OverlayProposedCandidate>::iterator>&
           underlay_iters);
 
   // This function reorders and removes |proposed_candidates| based on a
@@ -322,7 +227,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // of Hardware overlays. Effectiveness here is primarily about power and
   // secondarily about of performance.
   virtual void SortProposedOverlayCandidatesPrioritized(
-      Strategy::OverlayProposedCandidateList* proposed_candidates);
+      std::vector<OverlayProposedCandidate>* proposed_candidates);
 
   // Used by Android pre-SurfaceControl to notify promotion hints.
   virtual void NotifyOverlayPromotion(
@@ -361,7 +266,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   };
 
   static ProposedCandidateKey ToProposeKey(
-      const Strategy::OverlayProposedCandidate& proposed);
+      const OverlayProposedCandidate& proposed);
 
   const int max_overlays_considered_;
 

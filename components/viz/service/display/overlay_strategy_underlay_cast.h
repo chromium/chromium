@@ -48,7 +48,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
                           AggregatedRenderPassList* render_pass_list,
                           SurfaceDamageRectList* surface_damage_rect_list,
                           const PrimaryPlane* primary_plane,
-                          OverlayProposedCandidateList* candidates,
+                          std::vector<OverlayProposedCandidate>* candidates,
                           std::vector<gfx::Rect>* content_bounds) override;
 
   bool AttemptPrioritized(

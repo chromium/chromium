@@ -40,6 +40,7 @@
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_candidate_temporal_tracker.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
+#include "components/viz/service/display/overlay_proposed_candidate.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
@@ -268,7 +269,7 @@ class SizeSortedMultiOverlayProcessor : public MultiOverlayProcessorBase {
 
   // Sort candidates only by their display_rect area.
   void SortProposedOverlayCandidatesPrioritized(
-      Strategy::OverlayProposedCandidateList* proposed_candidates) override {
+      std::vector<OverlayProposedCandidate>* proposed_candidates) override {
     std::sort(proposed_candidates->begin(), proposed_candidates->end(),
               [](const auto& a, const auto& b) {
                 return a.candidate.display_rect.size().GetArea() >
