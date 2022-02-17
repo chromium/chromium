@@ -24,6 +24,8 @@ class FirmwareUpdateSystemAppDelegate : public web_app::SystemWebAppDelegate {
   bool IsAppEnabled() const override;
   bool ShouldAllowMaximize() const override;
   bool ShouldAllowResize() const override;
+  bool ShouldShowInLauncher() const override;
+  bool ShouldShowInSearch() const override;
   gfx::Rect GetDefaultBounds(Browser*) const override;
 };
 

@@ -74,6 +74,14 @@ bool FirmwareUpdateSystemAppDelegate::ShouldAllowResize() const {
   return false;
 }
 
+bool FirmwareUpdateSystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+
+bool FirmwareUpdateSystemAppDelegate::ShouldShowInSearch() const {
+  return false;
+}
+
 gfx::Rect FirmwareUpdateSystemAppDelegate::GetDefaultBounds(
     Browser* browser) const {
   return GetDefaultBoundsForFirmwareUpdateApp(browser);
