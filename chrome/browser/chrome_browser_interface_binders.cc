@@ -349,14 +349,9 @@ void BindImageAnnotator(
 void BindCommerceHintObserver(
     content::RenderFrameHost* const frame_host,
     mojo::PendingReceiver<cart::mojom::CommerceHintObserver> receiver) {
-  // This is specifically restricting this to main frames, whether they are the
-  // main frame of the tab or a <portal> element, while preventing this from
-  // working in subframes and fenced frames.
-  if (frame_host->GetParent() || frame_host->IsFencedFrameRoot()) {
-    mojo::ReportBadMessage(
-        "Unexpected the message from subframe or fenced frame.");
+  DCHECK(!frame_host->GetParentOrOuterDocument());
+  if (frame_host->GetParentOrOuterDocument())
     return;
-  }
 
   // Cart is not available for non-signin single-profile users.
   Profile* profile = Profile::FromBrowserContext(
@@ -564,8 +559,7 @@ void PopulateChromeFrameBinders(
   // We should not request this mojo interface's binding for the subframes in
   // the renderer.
   if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
-      !render_frame_host->GetParent() &&
-      !render_frame_host->IsFencedFrameRoot()) {
+      !render_frame_host->GetParentOrOuterDocument()) {
     map->Add<cart::mojom::CommerceHintObserver>(
         base::BindRepeating(&BindCommerceHintObserver));
   }
