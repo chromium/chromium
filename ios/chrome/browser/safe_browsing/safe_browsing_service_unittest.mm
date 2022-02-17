@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/metadata.pb.h"
@@ -19,6 +20,7 @@
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
@@ -82,6 +84,15 @@ class TestUrlCheckerClient {
     result_pending_ = true;
     url_checker_ = safe_browsing_service_->CreateUrlChecker(
         network::mojom::RequestDestination::kDocument, &web_state_);
+    base::PostTask(FROM_HERE, {web::WebThread::IO},
+                   base::BindOnce(&TestUrlCheckerClient::CheckUrlOnIOThread,
+                                  base::Unretained(this), url));
+  }
+
+  void CheckSubFrameUrl(const GURL& url) {
+    result_pending_ = true;
+    url_checker_ = safe_browsing_service_->CreateUrlChecker(
+        network::mojom::RequestDestination::kIframe, &web_state_);
     base::PostTask(FROM_HERE, {web::WebThread::IO},
                    base::BindOnce(&TestUrlCheckerClient::CheckUrlOnIOThread,
                                   base::Unretained(this), url));
@@ -309,6 +320,69 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
   browser_state_->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   client.CheckUrl(unsafe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       RealTimeSafeAndUnsafePagesWithEnhancedProtection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(safe_browsing::kEnhancedProtection);
+
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get());
+
+  // Wait for an initial result to make sure the Safe Browsing database has
+  // been initialized, before calling into functions that mark URLs as safe
+  // or unsafe in the database.
+  GURL safe_url(kSafePage);
+  client.CheckUrl(safe_url);
+  client.WaitForResult();
+
+  // Opt into real-time checks and also does real-time checks for subframe url.
+  browser_state_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  MarkUrlAsRealTimeSafe(safe_url);
+  client.CheckUrl(safe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+
+  MarkUrlAsRealTimeSafe(safe_url);
+  client.CheckSubFrameUrl(safe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+
+  GURL unsafe_url(kMalwarePage);
+  MarkUrlAsRealTimeUnsafe(unsafe_url);
+  client.CheckUrl(unsafe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_TRUE(client.url_is_unsafe());
+
+  MarkUrlAsRealTimeUnsafe(unsafe_url);
+  client.CheckSubFrameUrl(unsafe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_TRUE(client.url_is_unsafe());
+
+  // Opt out of real-time checks, and ensure that unsafe URLs are no longer
+  // flagged.
+  browser_state_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  client.CheckUrl(unsafe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+
+  client.CheckSubFrameUrl(unsafe_url);
   EXPECT_TRUE(client.result_pending());
   client.WaitForResult();
   EXPECT_FALSE(client.result_pending());

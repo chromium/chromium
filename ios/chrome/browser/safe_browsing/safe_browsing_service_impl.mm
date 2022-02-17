@@ -122,10 +122,12 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
           ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
+  bool can_realtime_check_subresource_url =
+      url_lookup_service && url_lookup_service->CanCheckSubresourceURL();
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       request_destination, url_checker_delegate_,
       web_state->CreateDefaultGetter(), can_perform_full_url_lookup,
-      /*can_rt_check_subresource_url=*/false,
+      can_realtime_check_subresource_url,
       base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr);
 }
