@@ -46,8 +46,9 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
   size_t previous_fenced_frame_count =
       fenced_frame_parent_rfh->GetFencedFrames().size();
 
-  EXPECT_TRUE(
-      ExecJs(fenced_frame_parent_rfh, JsReplace(kAddFencedFrameScript, url)));
+  EXPECT_TRUE(ExecJs(fenced_frame_parent_rfh,
+                     JsReplace(kAddFencedFrameScript, url),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   std::vector<FencedFrame*> fenced_frames =
       fenced_frame_parent_rfh->GetFencedFrames();
