@@ -508,15 +508,18 @@ void BrowserManager::NewTab() {
   browser_service_->service->NewTab(base::DoNothing());
 }
 
-void BrowserManager::OpenUrl(const GURL& url) {
+void BrowserManager::OpenUrl(const GURL& url,
+                             crosapi::mojom::OpenUrlFrom from) {
   OpenUrlImpl(
       url,
-      crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kNewForegroundTab);
+      crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kNewForegroundTab,
+      from);
 }
 
 void BrowserManager::SwitchToTab(const GURL& url) {
   OpenUrlImpl(
-      url, crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab);
+      url, crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab,
+      crosapi::mojom::OpenUrlFrom::kUnspecified);
 }
 
 void BrowserManager::RestoreTab() {
@@ -1293,9 +1296,10 @@ void BrowserManager::RecordLacrosLaunchMode() {
 
 void BrowserManager::OpenUrlImpl(
     const GURL& url,
-    crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition) {
+    crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
+    crosapi::mojom::OpenUrlFrom from) {
   auto result = MaybeStart(browser_util::InitialBrowserAction(
-      mojom::InitialBrowserAction::kOpenWindowWithUrls, {url}));
+      mojom::InitialBrowserAction::kOpenWindowWithUrls, {url}, from));
   if (result != MaybeStartResult::kRunning)
     return;
 
@@ -1312,6 +1316,7 @@ void BrowserManager::OpenUrlImpl(
   using OpenUrlParams = crosapi::mojom::OpenUrlParams;
   auto params = OpenUrlParams::New();
   params->disposition = disposition;
+  params->from = from;
   browser_service_->service->OpenUrl(url, std::move(params), base::DoNothing());
 }
 

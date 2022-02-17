@@ -84,6 +84,12 @@
 #include "components/app_restore/full_restore_utils.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 namespace {
 
 // Utility functions ----------------------------------------------------------
@@ -233,6 +239,14 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     browser = Browser::Create(params);
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* init_params = chromeos::LacrosService::Get()->init_params();
+  bool from_arc =
+      init_params->initial_browser_action ==
+          crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls &&
+      init_params->startup_urls_from == crosapi::mojom::OpenUrlFrom::kArc;
+#endif
+
   bool first_tab = true;
   custom_handlers::ProtocolHandlerRegistry* registry =
       profile_ ? ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_)
@@ -279,6 +293,17 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
     Navigate(&params);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (from_arc) {
+      auto* tab = params.navigated_or_inserted_contents;
+      if (tab) {
+        // Add a flag to remember this tab originated in the ARC context.
+        tab->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
+                         std::make_unique<arc::ArcWebContentsData>(tab));
+      }
+    }
+#endif
 
     first_tab = false;
   }

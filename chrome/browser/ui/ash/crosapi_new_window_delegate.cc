@@ -13,6 +13,20 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 
+namespace {
+
+crosapi::mojom::OpenUrlFrom ToMojom(ash::NewWindowDelegate::OpenUrlFrom from) {
+  switch (from) {
+    case ash::NewWindowDelegate::OpenUrlFrom::kUnspecified:
+    case ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction:
+      return crosapi::mojom::OpenUrlFrom::kUnspecified;
+    case ash::NewWindowDelegate::OpenUrlFrom::kArc:
+      return crosapi::mojom::OpenUrlFrom::kArc;
+  }
+}
+
+}  // namespace
+
 CrosapiNewWindowDelegate::WindowObserver::WindowObserver(
     CrosapiNewWindowDelegate* owner,
     NewWindowForDetachingTabCallback closure)
@@ -123,12 +137,7 @@ void CrosapiNewWindowDelegate::NewWindowForDetachingTab(
 }
 
 void CrosapiNewWindowDelegate::OpenUrl(const GURL& url, OpenUrlFrom from) {
-  if (from == NewWindowDelegate::OpenUrlFrom::kArc) {
-    // TODO(crbug.com/1291192): Support ARC.
-    delegate_->OpenUrl(url, from);
-  } else {
-    crosapi::BrowserManager::Get()->OpenUrl(url);
-  }
+  crosapi::BrowserManager::Get()->OpenUrl(url, ToMojom(from));
 }
 
 void CrosapiNewWindowDelegate::OpenCalculator() {

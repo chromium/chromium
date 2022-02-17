@@ -31,7 +31,8 @@ base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
 struct InitialBrowserAction {
   explicit InitialBrowserAction(crosapi::mojom::InitialBrowserAction action);
   InitialBrowserAction(crosapi::mojom::InitialBrowserAction action,
-                       std::vector<GURL> urls);
+                       std::vector<GURL> urls,
+                       crosapi::mojom::OpenUrlFrom from);
   InitialBrowserAction(InitialBrowserAction&&);
   InitialBrowserAction& operator=(InitialBrowserAction&&);
   ~InitialBrowserAction();
@@ -42,6 +43,9 @@ struct InitialBrowserAction {
   // If action is kOpenWindowWithUrls, URLs here is passed to Lacros Chrome,
   // and they will be opened.
   std::vector<GURL> urls;
+
+  // Where this request comes from.
+  crosapi::mojom::OpenUrlFrom from = crosapi::mojom::OpenUrlFrom::kUnspecified;
 };
 
 // Returns the initial parameter to be passed to Crosapi client,

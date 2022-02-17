@@ -259,8 +259,9 @@ InitialBrowserAction::InitialBrowserAction(
 
 InitialBrowserAction::InitialBrowserAction(
     crosapi::mojom::InitialBrowserAction action,
-    std::vector<GURL> urls)
-    : action(action), urls(std::move(urls)) {
+    std::vector<GURL> urls,
+    crosapi::mojom::OpenUrlFrom from)
+    : action(action), urls(std::move(urls)), from(from) {
   // Currently, only kOpenWindowWithUrls can take the URLs as its argument.
   DCHECK_EQ(action, crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls);
 }
@@ -316,6 +317,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   if (initial_browser_action.action ==
       crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls) {
     params->startup_urls = std::move(initial_browser_action.urls);
+    params->startup_urls_from = initial_browser_action.from;
   }
 
   params->web_apps_enabled = web_app::IsWebAppsCrosapiEnabled();

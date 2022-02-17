@@ -144,7 +144,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Opens the specified URL in lacros-chrome. If it is not running,
   // it launches lacros-chrome with the given URL.
   // See crosapi::mojom::BrowserService::OpenUrl for more details.
-  void OpenUrl(const GURL& url);
+  void OpenUrl(const GURL& url, crosapi::mojom::OpenUrlFrom from);
 
   // If there's already a tab opening the URL in lacros-chrome, in some window
   // of the primary profile, activate the tab. Otherwise, opens a tab for
@@ -412,7 +412,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Shared implementation of OpenUrl and SwitchToTab.
   void OpenUrlImpl(
       const GURL& url,
-      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition);
+      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
+      crosapi::mojom::OpenUrlFrom from);
 
   // Returns true if the crosapi interface of the currently running lacros
   // supports NewGuestWindow API. If lacros is older or lacros is not running,

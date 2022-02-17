@@ -13,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/feedback_util.h"
@@ -376,6 +377,14 @@ void BrowserServiceLacros::OpenUrlImpl(Profile* profile,
   // was minimized for example).
   navigate_params.window_action = NavigateParams::SHOW_WINDOW;
   Navigate(&navigate_params);
+
+  auto* tab = navigate_params.navigated_or_inserted_contents;
+  if (tab && params->from == crosapi::mojom::OpenUrlFrom::kArc) {
+    // Add a flag to remember this tab originated in the ARC context.
+    tab->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
+                     std::make_unique<arc::ArcWebContentsData>(tab));
+  }
+
   std::move(callback).Run();
 }
 
