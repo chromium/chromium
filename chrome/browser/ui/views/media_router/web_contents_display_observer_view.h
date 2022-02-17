@@ -28,7 +28,7 @@ class WebContentsDisplayObserverView : public WebContentsDisplayObserver,
   void OnBrowserSetLastActive(Browser* browser) override;
 
   // views::WidgetObserver overrides:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
 
