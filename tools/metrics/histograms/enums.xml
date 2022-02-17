@@ -8508,7 +8508,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="265" label="BIBI_BIND_GAMEPAD_MONITOR_FOR_FENCED_FRAME"/>
   <int value="266" label="BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_FOR_FENCED_FRAME"/>
   <int value="267" label="BIBI_BIND_BATTERY_MONITOR_FOR_FENCED_FRAME"/>
-  <int value="268" label="RFH_CREATE_FENCED_FRAME_IN_SANDBOXED_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

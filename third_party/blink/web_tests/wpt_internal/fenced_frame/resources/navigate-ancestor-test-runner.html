@@ -59,9 +59,14 @@ window.runTest = function(test_type, ancestor_type) {
          ancestor_type]));
       test_promise = nextValueFromServer(navigate_ancestor_from_nested_key)
         .then(message => {
-          if (message != `PASS: [${ancestor_type}] location change failed.`) {
+          if (message != `PASS nested iframe ${ancestor_type}`) {
             throw message;
           }
+
+          // Since the nested fenced frame navigated to this page, we should
+          // clean up the lingering message that the destination page posted to
+          // the server.
+          return nextValueFromServer(navigate_ancestor_key);
         });
 
       break;

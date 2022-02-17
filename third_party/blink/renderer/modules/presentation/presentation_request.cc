@@ -52,12 +52,7 @@ PresentationRequest* PresentationRequest::Create(
   if (execution_context->IsSandboxed(
           network::mojom::blink::WebSandboxFlags::kPresentationController)) {
     exception_state.ThrowSecurityError(
-        DynamicTo<LocalDOMWindow>(execution_context)
-                ->GetFrame()
-                ->IsInFencedFrameTree()
-            ? "PresentationRequest is not supported in a fenced frame tree."
-            : "The document is sandboxed and lacks the 'allow-presentation' "
-              "flag.");
+        "The document is sandboxed and lacks the 'allow-presentation' flag.");
     return nullptr;
   }
 

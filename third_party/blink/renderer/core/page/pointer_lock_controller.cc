@@ -96,23 +96,24 @@ ScriptPromise PointerLockController::RequestPointerLock(
           network::mojom::blink::WebSandboxFlags::kPointerLock)) {
     // FIXME: This message should be moved off the console once a solution to
     // https://bugs.webkit.org/show_bug.cgi?id=103274 exists.
-    if (!window->GetFrame()->IsInFencedFrameTree()) {
-      window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kSecurity,
-          mojom::blink::ConsoleMessageLevel::kError,
-          "Blocked pointer lock on an element because the element's frame is "
-          "sandboxed and the 'allow-pointer-lock' permission is not set."));
-    }
+    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "Blocked pointer lock on an element because the element's frame is "
+        "sandboxed and the 'allow-pointer-lock' permission is not set."));
     EnqueueEvent(event_type_names::kPointerlockerror, target);
     exception_state.ThrowSecurityError(
-        window->GetFrame()->IsInFencedFrameTree()
-            ? "Blocked pointer lock on an element because the element is "
-              "contained "
-              "in a fence frame tree."
-            : "Blocked pointer lock on an element because the element's frame "
-              "is "
-              "sandboxed and the 'allow-pointer-lock' permission is not set.",
+        "Blocked pointer lock on an element because the element's frame is "
+        "sandboxed and the 'allow-pointer-lock' permission is not set.",
         "");
+    return promise;
+  }
+
+  if (window->GetFrame()->IsInFencedFrameTree()) {
+    EnqueueEvent(event_type_names::kPointerlockerror, target);
+    exception_state.ThrowSecurityError(
+        "Blocked pointer lock on an element because the element is contained "
+        "in a fence frame tree");
     return promise;
   }
 

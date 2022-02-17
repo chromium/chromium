@@ -1588,8 +1588,7 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
   // its `source_frame` is to recursively check if ancestors can navigate the
   // top frame.
   DCHECK(&initiating_frame == &source_frame ||
-         target_frame ==
-             initiating_frame.Tree().Top(FrameTreeBoundary::kIgnoreFence));
+         target_frame == initiating_frame.Tree().Top());
 
   // Only report navigation blocking on the initial call to CanNavigateHelper,
   // not the recursive calls.
@@ -1622,24 +1621,13 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
 
   if (source_frame.GetSecurityContext()->IsSandboxed(
           network::mojom::blink::WebSandboxFlags::kNavigation)) {
-    // 'allow-top-navigation' and 'allow-top-navigation-by-user-activation'
-    // allow the outermost frame navigations. They don't allow root fenced frame
-    // navigations from the descendant frames.
-    const bool target_is_outermost_frame =
-        target_frame.IsMainFrame() &&
-        !target_frame.GetPage()->IsMainFrameFencedFrameRoot();
-
     if (!target_frame.Tree().IsDescendantOf(&source_frame) &&
-        !target_is_outermost_frame) {
+        !target_frame.IsMainFrame()) {
       if (should_report) {
         initiating_frame.PrintNavigationErrorMessage(
             target_frame,
-            source_frame.IsInFencedFrameTree()
-                ? "The frame attempting navigation is in a fenced frame tree, "
-                  "and is therefore disallowed from navigating its ancestors."
-                : "The frame attempting navigation is sandboxed, and is "
-                  "therefore "
-                  "disallowed from navigating its ancestors.");
+            "The frame attempting navigation is sandboxed, and is therefore "
+            "disallowed from navigating its ancestors.");
       }
       return false;
     }
@@ -1647,9 +1635,8 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
     // Sandboxed frames can also navigate popups, if the
     // 'allow-sandbox-escape-via-popup' flag is specified, or if
     // 'allow-popups' flag is specified and the popup's opener is the frame.
-    if (target_is_outermost_frame &&
-        target_frame !=
-            source_frame.Tree().Top(FrameTreeBoundary::kIgnoreFence) &&
+    if (target_frame.IsMainFrame() &&
+        target_frame != source_frame.Tree().Top() &&
         source_frame.GetSecurityContext()->IsSandboxed(
             network::mojom::blink::WebSandboxFlags::
                 kPropagatesToAuxiliaryBrowsingContexts) &&
@@ -1668,11 +1655,7 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
 
     // Top navigation is forbidden in sandboxed frames unless opted-in, and only
     // then if the ancestor chain allowed to navigate the top frame.
-    // Note: We don't check root fenced frames for kTop* flags since the kTop*
-    // flags imply the actual top-level page.
-    if ((target_frame ==
-         source_frame.Tree().Top(FrameTreeBoundary::kIgnoreFence)) &&
-        !target_frame.GetPage()->IsMainFrameFencedFrameRoot()) {
+    if (target_frame == source_frame.Tree().Top()) {
       if (source_frame.GetSecurityContext()->IsSandboxed(
               network::mojom::blink::WebSandboxFlags::kTopNavigation) &&
           source_frame.GetSecurityContext()->IsSandboxed(

@@ -1220,13 +1220,10 @@ void LocalDOMWindow::alert(ScriptState* script_state, const String& message) {
   if (IsSandboxed(network::mojom::blink::WebSandboxFlags::kModals)) {
     UseCounter::Count(this, WebFeature::kDialogInSandboxedContext);
     GetFrameConsole()->AddMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        GetFrame()->IsInFencedFrameTree()
-            ? "Ignored call to 'alert()'. The document is in a fenced frame "
-              "tree."
-            : "Ignored call to 'alert()'. The document is sandboxed, and the "
-              "'allow-modals' keyword is not set."));
+        mojom::ConsoleMessageSource::kSecurity,
+        mojom::ConsoleMessageLevel::kError,
+        "Ignored call to 'alert()'. The document is sandboxed, and the "
+        "'allow-modals' keyword is not set."));
     return;
   }
 
@@ -1256,13 +1253,10 @@ bool LocalDOMWindow::confirm(ScriptState* script_state, const String& message) {
   if (IsSandboxed(network::mojom::blink::WebSandboxFlags::kModals)) {
     UseCounter::Count(this, WebFeature::kDialogInSandboxedContext);
     GetFrameConsole()->AddMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        GetFrame()->IsInFencedFrameTree()
-            ? "Ignored call to 'confirm()'. The document is in a fenced frame "
-              "tree."
-            : "Ignored call to 'confirm()'. The document is sandboxed, and the "
-              "'allow-modals' keyword is not set."));
+        mojom::ConsoleMessageSource::kSecurity,
+        mojom::ConsoleMessageLevel::kError,
+        "Ignored call to 'confirm()'. The document is sandboxed, and the "
+        "'allow-modals' keyword is not set."));
     return false;
   }
 
@@ -1294,13 +1288,10 @@ String LocalDOMWindow::prompt(ScriptState* script_state,
   if (IsSandboxed(network::mojom::blink::WebSandboxFlags::kModals)) {
     UseCounter::Count(this, WebFeature::kDialogInSandboxedContext);
     GetFrameConsole()->AddMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        GetFrame()->IsInFencedFrameTree()
-            ? "Ignored call to 'prompt()'. The document is in a fenced frame "
-              "tree."
-            : "Ignored call to 'prompt()'. The document is sandboxed, and the "
-              "'allow-modals' keyword is not set."));
+        mojom::ConsoleMessageSource::kSecurity,
+        mojom::ConsoleMessageLevel::kError,
+        "Ignored call to 'prompt()'. The document is sandboxed, and the "
+        "'allow-modals' keyword is not set."));
     return String();
   }
 

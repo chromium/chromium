@@ -7648,6 +7648,10 @@ crbug.com/1296736 external/wpt/html/semantics/document-metadata/interactions-of-
 # Sheriff 2022-02-07
 crbug.com/1289759 [ Linux ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
 
+# Need to unuse the beforeunload event.
+crbug.com/1271408 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/navigate-ancestor.html [ Skip ]
+crbug.com/1271408 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor.html [ Skip ]
+
 # Sheriff 2022-02-08
 crbug.com/1295317 [ Mac11-arm64 ] compositing/geometry/video-fixed-scrolling.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] compositing/geometry/video-opacity-overlay.html [ Failure ]
