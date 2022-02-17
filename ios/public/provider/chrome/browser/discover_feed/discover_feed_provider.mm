@@ -47,6 +47,8 @@ void DiscoverFeedProvider::RemoveFeedViewController(
 
 void DiscoverFeedProvider::UpdateTheme() {}
 
+void DiscoverFeedProvider::RefreshFeedIfNeeded() {}
+
 void DiscoverFeedProvider::RefreshFeed() {}
 
 void DiscoverFeedProvider::UpdateFeedForAccountChange() {}

@@ -67,6 +67,9 @@ class DiscoverFeedProvider {
   virtual void RemoveFeedViewController(UIViewController* feedViewController);
   // Updates the feed's theme to match the user's theme (light/dark).
   virtual void UpdateTheme();
+  // Refreshes the Discover Feed if needed. The provider decides if a refresh is
+  // needed or not.
+  virtual void RefreshFeedIfNeeded();
   // Refreshes the Discover Feed. Once the Feed model is refreshed it will
   // update all ViewControllers returned by NewFeedViewController.
   virtual void RefreshFeed();
