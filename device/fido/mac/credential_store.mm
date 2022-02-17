@@ -348,8 +348,24 @@ bool TouchIdCredentialStore::DeleteCredentialsForUserId(
   return true;
 }
 
-bool TouchIdCredentialStore::DeleteCredentials(base::Time created_not_before,
-                                               base::Time created_not_after) {
+void TouchIdCredentialStore::DeleteCredentials(base::Time created_not_before,
+                                               base::Time created_not_after,
+                                               base::OnceClosure callback) {
+  DeleteCredentialsSync(created_not_before, created_not_after);
+  std::move(callback).Run();
+}
+
+void TouchIdCredentialStore::CountCredentials(
+    base::Time created_not_before,
+    base::Time created_not_after,
+    base::OnceCallback<void(size_t)> callback) {
+  std::move(callback).Run(
+      CountCredentialsSync(created_not_before, created_not_after));
+}
+
+bool TouchIdCredentialStore::DeleteCredentialsSync(
+    base::Time created_not_before,
+    base::Time created_not_after) {
   // Touch ID uses macOS APIs available in 10.12.2 or newer. No need to check
   // for credentials in lower OS versions.
   if (__builtin_available(macos 10.12.2, *)) {
@@ -360,8 +376,9 @@ bool TouchIdCredentialStore::DeleteCredentials(base::Time created_not_before,
   return true;
 }
 
-size_t TouchIdCredentialStore::CountCredentials(base::Time created_not_before,
-                                                base::Time created_not_after) {
+size_t TouchIdCredentialStore::CountCredentialsSync(
+    base::Time created_not_before,
+    base::Time created_not_after) {
   if (__builtin_available(macos 10.12.2, *)) {
     return DoCountWebAuthnCredentials(config_.keychain_access_group,
                                       config_.metadata_secret,
