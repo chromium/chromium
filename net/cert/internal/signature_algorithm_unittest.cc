@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -21,10 +22,10 @@ namespace {
 
 // Creates a SignatureAlgorithm given the DER as a byte array. Returns true on
 // success and fills |*out| with a non-null pointer.
-template <size_t N>
-bool ParseDer(const uint8_t (&data)[N],
+bool ParseDer(base::span<const uint8_t> data,
               std::unique_ptr<SignatureAlgorithm>* out) {
-  *out = SignatureAlgorithm::Create(der::Input(data, N), nullptr);
+  *out =
+      SignatureAlgorithm::Create(der::Input(data.data(), data.size()), nullptr);
   bool success = !!*out;
 
   return success;
@@ -1277,6 +1278,321 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssMultipleDefaultParameterValues) {
 
   histogram_tester.ExpectUniqueSample("Net.CertVerifier.InvalidRsaPssParams",
                                       true, 1);
+}
+
+TEST(SignatureAlgorithmTest, RsaPssClassification) {
+  // Test data generated with https://github.com/google/der-ascii.
+  struct {
+    std::vector<uint8_t> data;
+    RsaPssClassification expected_classification;
+  } kTests[] = {
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # sha256
+      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # sha384
+      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.2 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x3c, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
+        0x01, 0x0a, 0x30, 0x2f, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60,
+        0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0xa1,
+        0x1c, 0x30, 0x1a, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d,
+        0x01, 0x01, 0x08, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+        0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00},
+       RsaPssClassification::kDigestMismatch},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # md5
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.2.5 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # md5
+      //           OBJECT_IDENTIFIER { 1.2.840.113549.2.5 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //     [2] {
+      //       INTEGER { 16 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x3f, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
+        0x01, 0x0a, 0x30, 0x32, 0xa0, 0x0e, 0x30, 0x0c, 0x06, 0x08, 0x2a,
+        0x86, 0x48, 0x86, 0xf7, 0x0d, 0x02, 0x05, 0x05, 0x00, 0xa1, 0x1b,
+        0x30, 0x19, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
+        0x01, 0x08, 0x30, 0x0c, 0x06, 0x08, 0x2a, 0x86, 0x48, 0x86, 0xf7,
+        0x0d, 0x02, 0x05, 0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x10},
+       RsaPssClassification::kLegacyDigest},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   # SHA-1 with salt length 20 is the default.
+      //   SEQUENCE {}
+      // }
+      {{0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x0a, 0x30, 0x00},
+       RsaPssClassification::kSha1},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [2] {
+      //       INTEGER { 21 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x12, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d,
+        0x01, 0x01, 0x0a, 0x30, 0x05, 0xa2, 0x03, 0x02, 0x01, 0x15},
+       RsaPssClassification::kSha1NonstandardSalt},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # sha256
+      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # sha256
+      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //     [2] {
+      //       INTEGER { 32 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x41, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x0a, 0x30, 0x34, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
+        0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
+        0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
+        0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01,
+        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x20},
+       RsaPssClassification::kSha256},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # sha256
+      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # sha256
+      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //     [2] {
+      //       INTEGER { 33 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x41, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x0a, 0x30, 0x34, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
+        0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
+        0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
+        0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01,
+        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x21},
+       RsaPssClassification::kSha256NonstandardSalt},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # sha384
+      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.2 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # sha384
+      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.2 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //     [2] {
+      //       INTEGER { 48 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x41, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x0a, 0x30, 0x34, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
+        0x01, 0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
+        0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
+        0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02,
+        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x30},
+       RsaPssClassification::kSha384},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # sha384
+      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.2 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # sha384
+      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.2 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //     [2] {
+      //       INTEGER { 49 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x41, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x0a, 0x30, 0x34, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
+        0x01, 0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
+        0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
+        0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02,
+        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x31},
+       RsaPssClassification::kSha384NonstandardSalt},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # sha512
+      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.3 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # sha512
+      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.3 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //     [2] {
+      //       INTEGER { 64 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x41, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x0a, 0x30, 0x34, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
+        0x01, 0x65, 0x03, 0x04, 0x02, 0x03, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
+        0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
+        0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03,
+        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x40},
+       RsaPssClassification::kSha512},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # sha512
+      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.3 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # sha512
+      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.3 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //     [2] {
+      //       INTEGER { 65 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x41, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x0a, 0x30, 0x34, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
+        0x01, 0x65, 0x03, 0x04, 0x02, 0x03, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
+        0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
+        0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03,
+        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x41},
+       RsaPssClassification::kSha512NonstandardSalt},
+  };
+  for (const auto& t : kTests) {
+    base::HistogramTester histogram_tester;
+
+    std::unique_ptr<SignatureAlgorithm> algorithm;
+    // The legacy digests are not currently reachable because
+    // `ParseHashAlgorithm` does not support them.
+    if (t.expected_classification == RsaPssClassification::kLegacyDigest) {
+      EXPECT_FALSE(ParseDer(t.data, &algorithm));
+      continue;
+    }
+    ASSERT_TRUE(ParseDer(t.data, &algorithm));
+    ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
+
+    histogram_tester.ExpectUniqueSample("Net.CertVerifier.RsaPssClassification",
+                                        t.expected_classification, 1);
+  }
 }
 
 // Parses a md5WithRSAEncryption which contains a NULL parameters field.

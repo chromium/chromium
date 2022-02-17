@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "net/cert/internal/cert_error_params.h"
 #include "net/cert/internal/cert_errors.h"
@@ -414,6 +415,36 @@ std::unique_ptr<SignatureAlgorithm> ParseEcdsa(DigestAlgorithm digest,
   return true;
 }
 
+RsaPssClassification ClassifyRsaPssParams(DigestAlgorithm digest,
+                                          DigestAlgorithm mgf1_hash,
+                                          uint32_t salt_length) {
+  if (digest != mgf1_hash) {
+    return RsaPssClassification::kDigestMismatch;
+  }
+  switch (digest) {
+    case DigestAlgorithm::Sha1:
+      return salt_length == 20 ? RsaPssClassification::kSha1
+                               : RsaPssClassification::kSha1NonstandardSalt;
+    case DigestAlgorithm::Sha256:
+      return salt_length == 32 ? RsaPssClassification::kSha256
+                               : RsaPssClassification::kSha256NonstandardSalt;
+    case DigestAlgorithm::Sha384:
+      return salt_length == 48 ? RsaPssClassification::kSha384
+                               : RsaPssClassification::kSha384NonstandardSalt;
+    case DigestAlgorithm::Sha512:
+      return salt_length == 64 ? RsaPssClassification::kSha512
+                               : RsaPssClassification::kSha512NonstandardSalt;
+    case DigestAlgorithm::Md2:
+    case DigestAlgorithm::Md4:
+    case DigestAlgorithm::Md5:
+      // Assuming anything using RSA-PSS long postdates these digests. Note this
+      // is also unreachable because `ParseHashAlgorithm` does not output these.
+      return RsaPssClassification::kLegacyDigest;
+  }
+  NOTREACHED();
+  return RsaPssClassification::kLegacyDigest;
+}
+
 // Parses the parameters for an RSASSA-PSS signature algorithm, as defined by
 // RFC 5912:
 //
@@ -536,6 +567,10 @@ std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
     return nullptr;
 
   UMA_HISTOGRAM_BOOLEAN("Net.CertVerifier.InvalidRsaPssParams", der_error);
+
+  // See https://crbug.com/1279975.
+  UMA_HISTOGRAM_ENUMERATION("Net.CertVerifier.RsaPssClassification",
+                            ClassifyRsaPssParams(hash, mgf1_hash, salt_length));
 
   return SignatureAlgorithm::CreateRsaPss(hash, mgf1_hash, salt_length);
 }
