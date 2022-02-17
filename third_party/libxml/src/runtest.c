@@ -1231,7 +1231,7 @@ charactersDebug(void *ctx ATTRIBUTE_UNUSED, const xmlChar *ch, int len)
     if (quiet)
 	return;
     for (i = 0;(i<len) && (i < 30);i++)
-	output[i] = ch[i];
+	output[i] = (char) ch[i];
     output[i] = 0;
 
     fprintf(SAXdebug, "SAX.characters(%s, %d)\n", output, len);
@@ -1273,7 +1273,7 @@ ignorableWhitespaceDebug(void *ctx ATTRIBUTE_UNUSED, const xmlChar *ch, int len)
     if (quiet)
 	return;
     for (i = 0;(i<len) && (i < 30);i++)
-	output[i] = ch[i];
+	output[i] = (char) ch[i];
     output[i] = 0;
     fprintf(SAXdebug, "SAX.ignorableWhitespace(%s, %d)\n", output, len);
 }
@@ -2131,6 +2131,75 @@ errParseTest(const char *filename, const char *result, const char *err,
 
     return(0);
 }
+
+/**
+ * fdParseTest:
+ * @filename: the file to parse
+ * @result: the file with expected result
+ * @err: the file with error messages
+ *
+ * Parse a file using the xmlReadFd API and check for errors.
+ *
+ * Returns 0 in case of success, an error code otherwise
+ */
+static int
+fdParseTest(const char *filename, const char *result, const char *err,
+             int options) {
+    xmlDocPtr doc;
+    const char *base = NULL;
+    int size, res = 0;
+
+    nb_tests++;
+    int fd = open(filename, RD_FLAGS);
+#ifdef LIBXML_HTML_ENABLED
+    if (options & XML_PARSE_HTML) {
+        doc = htmlReadFd(fd, filename, NULL, options);
+    } else
+#endif
+    {
+	xmlGetWarningsDefaultValue = 1;
+	doc = xmlReadFd(fd, filename, NULL, options);
+    }
+    close(fd);
+    xmlGetWarningsDefaultValue = 0;
+    if (result) {
+	if (doc == NULL) {
+	    base = "";
+	    size = 0;
+	} else {
+#ifdef LIBXML_HTML_ENABLED
+	    if (options & XML_PARSE_HTML) {
+		htmlDocDumpMemory(doc, (xmlChar **) &base, &size);
+	    } else
+#endif
+	    xmlDocDumpMemory(doc, (xmlChar **) &base, &size);
+	}
+	res = compareFileMem(result, base, size);
+    }
+    if (doc != NULL) {
+	if (base != NULL)
+	    xmlFree((char *)base);
+	xmlFreeDoc(doc);
+    }
+    if (res != 0) {
+        fprintf(stderr, "Result for %s failed in %s\n", filename, result);
+        return(-1);
+    }
+    if (err != NULL) {
+	res = compareFileMem(err, testErrors, testErrorsSize);
+	if (res != 0) {
+	    fprintf(stderr, "Error for %s failed\n", filename);
+	    return(-1);
+	}
+    } else if (options & XML_PARSE_DTDVALID) {
+        if (testErrorsSize != 0)
+	    fprintf(stderr, "Validation for %s failed\n", filename);
+    }
+
+    return(0);
+}
+
+
 
 #ifdef LIBXML_READER_ENABLED
 /************************************************************************
@@ -4249,6 +4318,9 @@ testDesc testDescriptions[] = {
     { "Error cases regression tests",
       errParseTest, "./test/errors/*.xml", "result/errors/", "", ".err",
       0 },
+    { "Error cases regression tests from file descriptor",
+      fdParseTest, "./test/errors/*.xml", "result/errors/", "", ".err",
+      0 },
     { "Error cases regression tests with entity substitution",
       errParseTest, "./test/errors/*.xml", "result/errors/", NULL, ".ent",
       XML_PARSE_NOENT },
@@ -4291,6 +4363,9 @@ testDesc testDescriptions[] = {
 #ifdef LIBXML_HTML_ENABLED
     { "HTML regression tests" ,
       errParseTest, "./test/HTML/*", "result/HTML/", "", ".err",
+      XML_PARSE_HTML },
+    { "HTML regression tests from file descriptor",
+      fdParseTest, "./test/HTML/*", "result/HTML/", "", ".err",
       XML_PARSE_HTML },
 #ifdef LIBXML_PUSH_ENABLED
     { "Push HTML regression tests" ,

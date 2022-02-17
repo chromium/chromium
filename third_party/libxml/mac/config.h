@@ -22,7 +22,8 @@
 /* Define to 1 if you have the <ctype.h> header file. */
 #define HAVE_CTYPE_H 1
 
-/* Define to 1 if you have the <dirent.h> header file. */
+/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
+   */
 #define HAVE_DIRENT_H 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
@@ -61,17 +62,8 @@
 /* Define to 1 if you have the `isascii' function. */
 #define HAVE_ISASCII 1
 
-/* Define if isinf is there */
-#define HAVE_ISINF /**/
-
-/* Define if isnan is there */
-#define HAVE_ISNAN /**/
-
 /* Define if history library is there (-lhistory) */
 /* #undef HAVE_LIBHISTORY */
-
-/* Define if pthread library is there (-lpthread) */
-/* #undef HAVE_LIBPTHREAD */
 
 /* Define if readline library is there (-lreadline) */
 /* #undef HAVE_LIBREADLINE */

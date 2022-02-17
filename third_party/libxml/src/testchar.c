@@ -32,7 +32,7 @@ static void testDocumentRangeByte1(xmlParserCtxtPtr ctxt, char *document,
 	lastError = 0;
 	xmlCtxtReset(ctxt);
 
-        data[0] = i;
+        data[0] = (char) i;
 
 	res = xmlReadMemory(document, len, "test", NULL, 0);
 
@@ -73,8 +73,8 @@ static void testDocumentRangeByte2(xmlParserCtxtPtr ctxt, char *document,
 	lastError = 0;
 	xmlCtxtReset(ctxt);
 
-        data[0] = i;
-        data[1] = j;
+        data[0] = (char) i;
+        data[1] = (char) j;
 
 	res = xmlReadMemory(document, len, "test", NULL, 0);
 
@@ -248,7 +248,7 @@ static void testCharRangeByte1(xmlParserCtxtPtr ctxt, char *data) {
     data[2] = 0;
     data[3] = 0;
     for (i = 0;i <= 0xFF;i++) {
-        data[0] = i;
+        data[0] = (char) i;
 	ctxt->charset = XML_CHAR_ENCODING_UTF8;
 
 	lastError = 0;
@@ -275,8 +275,8 @@ static void testCharRangeByte2(xmlParserCtxtPtr ctxt, char *data) {
     data[3] = 0;
     for (i = 0x80;i <= 0xFF;i++) {
 	for (j = 0;j <= 0xFF;j++) {
-	    data[0] = i;
-	    data[1] = j;
+	    data[0] = (char) i;
+	    data[1] = (char) j;
 	    ctxt->charset = XML_CHAR_ENCODING_UTF8;
 
 	    lastError = 0;
@@ -353,8 +353,8 @@ static void testCharRangeByte3(xmlParserCtxtPtr ctxt, char *data) {
     for (i = 0xE0;i <= 0xFF;i++) {
     for (j = 0;j <= 0xFF;j++) {
     for (k = 0;k < 6;k++) {
-	data[0] = i;
-	data[1] = j;
+	data[0] = (char) i;
+	data[1] = (char) j;
 	K = lows[k];
 	data[2] = (char) K;
 	value = (K & 0x3F) + ((j & 0x3F) << 6) + ((i & 0xF) << 12);
@@ -440,8 +440,8 @@ static void testCharRangeByte4(xmlParserCtxtPtr ctxt, char *data) {
     for (j = 0;j <= 0xFF;j++) {
     for (k = 0;k < 6;k++) {
     for (l = 0;l < 6;l++) {
-	data[0] = i;
-	data[1] = j;
+	data[0] = (char) i;
+	data[1] = (char) j;
 	K = lows[k];
 	data[2] = (char) K;
 	L = lows[l];

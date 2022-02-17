@@ -86,7 +86,7 @@ static unsigned long
 xmlHashComputeKey(xmlHashTablePtr table, const xmlChar *name,
 	          const xmlChar *name2, const xmlChar *name3) {
     unsigned long value = 0L;
-    char ch;
+    unsigned long ch;
 
 #ifdef HASH_RANDOMIZATION
     value = table->random_seed;
@@ -94,19 +94,19 @@ xmlHashComputeKey(xmlHashTablePtr table, const xmlChar *name,
     if (name != NULL) {
 	value += 30 * (*name);
 	while ((ch = *name++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     value = value ^ ((value << 5) + (value >> 3));
     if (name2 != NULL) {
 	while ((ch = *name2++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     value = value ^ ((value << 5) + (value >> 3));
     if (name3 != NULL) {
 	while ((ch = *name3++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     return (value % table->size);
@@ -121,7 +121,7 @@ xmlHashComputeQKey(xmlHashTablePtr table,
 		   const xmlChar *prefix2, const xmlChar *name2,
 		   const xmlChar *prefix3, const xmlChar *name3) {
     unsigned long value = 0L;
-    char ch;
+    unsigned long ch;
 
 #ifdef HASH_RANDOMIZATION
     value = table->random_seed;
@@ -133,37 +133,37 @@ xmlHashComputeQKey(xmlHashTablePtr table,
 
     if (prefix != NULL) {
 	while ((ch = *prefix++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
 	value = value ^ ((value << 5) + (value >> 3) + (unsigned long)':');
     }
     if (name != NULL) {
 	while ((ch = *name++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     value = value ^ ((value << 5) + (value >> 3));
     if (prefix2 != NULL) {
 	while ((ch = *prefix2++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
 	value = value ^ ((value << 5) + (value >> 3) + (unsigned long)':');
     }
     if (name2 != NULL) {
 	while ((ch = *name2++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     value = value ^ ((value << 5) + (value >> 3));
     if (prefix3 != NULL) {
 	while ((ch = *prefix3++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
 	value = value ^ ((value << 5) + (value >> 3) + (unsigned long)':');
     }
     if (name3 != NULL) {
 	while ((ch = *name3++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     return (value % table->size);

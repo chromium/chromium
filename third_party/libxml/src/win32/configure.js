@@ -408,6 +408,14 @@ function configureLibxmlPy()
 			of.WriteLine(s.replace(/\@prefix\@/, buildPrefix));
 		} else if (s.search(/\@WITH_THREADS\@/) != -1) {
 			of.WriteLine(s.replace(/\@WITH_THREADS\@/, withThreads == "no"? "0" : "1"));
+		} else if (s.search(/\@WITH_ZLIB\@/) != -1) {
+			of.WriteLine(s.replace(/\@WITH_ZLIB\@/, withZlib? "1" : "0"));
+		} else if (s.search(/\@WITH_LZMA\@/) != -1) {
+			of.WriteLine(s.replace(/\@WITH_LZMA\@/, withLzma? "1" : "0"));
+		} else if (s.search(/\@WITH_ICONV\@/) != -1) {
+            of.WriteLine(s.replace(/\@WITH_ICONV\@/, withIconv? "1" : "0"));
+		} else if (s.search(/\@WITH_ICU\@/) != -1) {
+			of.WriteLine(s.replace(/\@WITH_ICU\@/, withIcu? "1" : "0"));
 		} else
 			of.WriteLine(ln);
 	}
