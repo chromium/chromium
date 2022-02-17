@@ -106,6 +106,19 @@ chromium-metrics-reviews@google.com.
       summary="Snackbar shown after virtual card is autofilled."/>
 </variants>
 
+<variants name="Autofill.VirtualCard.RequestSource">
+  <variant name="Downstream"
+      summary="The enrollment change happens after an Autofill Downstream
+               retrieving the actual card information"/>
+  <variant name="SettingsPage"
+      summary="The enrollment change comes from the Chrome payments settings
+               page"/>
+  <variant name="Unknown" summary="Unknown source, should not be used"/>
+  <variant name="Upstream"
+      summary="The enrollment change happens after an Autofill Upstream
+               saving the actual card to Google Payments"/>
+</variants>
+
 <variants name="Autofill.VirtualCardUnmaskFlowType">
   <variant name="Fido" summary="FIDO authentication only"/>
   <variant name="Otp" summary="OTP auth only"/>
@@ -3206,6 +3219,29 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillFormType" variants="AutofillFormType">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram name="Autofill.VirtualCard.GetDetailsForEnrollment.Attempt.{Source}"
+    enum="BooleanAttempted" expires_after="2022-08-07">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true whenever a virtual card GetDetailsForEnrollment request is sent.
+    It is broken down by the source of the request.
+  </summary>
+  <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
+</histogram>
+
+<histogram name="Autofill.VirtualCard.GetDetailsForEnrollment.Result.{Source}"
+    enum="BooleanSuccess" expires_after="2022-08-07">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits whenever a virtual card GetDetailsForEnrollment response is received.
+    It is broken down by the source of the request and logged based on whether
+    the request suceeded.
+  </summary>
+  <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
 </histogram>
 
 <histogram name="Autofill.VirtualCard.MetadataSynced" enum="BooleanExists"
