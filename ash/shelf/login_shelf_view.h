@@ -16,6 +16,7 @@
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/scoped_guest_button_blocker.h"
+#include "ash/shelf/shelf_shutdown_confirmation_bubble.h"
 #include "ash/shutdown_controller_impl.h"
 #include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
@@ -159,6 +160,9 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // strings.
   void HandleLocaleChange();
 
+  // Returns true if the shutdown confirmation is visible
+  ShelfShutdownConfirmationBubble* GetShutdownConfirmationBubbleForTesting();
+
  private:
   class ScopedGuestButtonBlockerImpl;
 
@@ -174,6 +178,17 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   // Updates the total bounds of all buttons.
   void UpdateButtonUnionBounds();
+
+  // Callback functions of the buttons on the shutdown confirmation bubble.
+  // If confirmed, the confirmation bubble would go hidden and the device would
+  // shutdown. If cancelled, the bubble would go hidden.
+  void OnRequestShutdownConfirmed();
+  void OnRequestShutdownCancelled();
+
+  // RequestShutdown is triggered by the shutdown button. If the feature flag
+  // kShutdownConfirmationDialog is enabled, a shutdown confirmation bubble
+  // would appear. If not, the device would shutdown immediately.
+  void RequestShutdown();
 
   bool ShouldShowGuestButton() const;
 
@@ -218,6 +233,10 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // The kiosk app button will only be created for the primary display's login
   // shelf.
   KioskAppsButton* kiosk_apps_button_ = nullptr;
+
+  // This is used in tests to check if the confirmation bubble is visible and to
+  // click its buttons.
+  ShelfShutdownConfirmationBubble* test_shutdown_confirmation_bubble_ = nullptr;
 
   // This is used in tests to wait until UI is updated.
   std::unique_ptr<TestUiUpdateDelegate> test_ui_update_delegate_;

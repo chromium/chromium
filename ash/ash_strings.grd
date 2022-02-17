@@ -3570,6 +3570,14 @@ This file contains the strings for ash.
         Power
       </message>
 
+      <!-- Shutdown confirmation dialog  -->
+      <message name ="IDS_ASH_SHUTDOWN_CONFIRM_BUTTON" desc="Confirm the shutdown action in the shutdown confirmation dialog.">
+        Shut down
+      </message>
+      <message name ="IDS_ASH_SHUTDOWN_CONFIRMATION_TITLE" desc="Title of the shutdown confirmation dialog after pressing the shutdown button on the shelf.">
+        Shut down device?
+      </message>
+
       <!-- Detachable base notifications -->
       <message name="IDS_ASH_DETACHABLE_BASE_NOTIFICATION_DEVICE_CHANGED_TITLE" desc="Title for the notification shown when the user connects a detachable keyboard different from the one they used previously.">
         Different keyboard connected

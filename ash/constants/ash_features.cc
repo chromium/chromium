@@ -1213,6 +1213,10 @@ const base::Feature kShowBluetoothDebugLogToggle{
 const base::Feature kShowPlayInDemoMode{"ShowPlayInDemoMode",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the shutdown confirmation bubble from the login shelf view.
+const base::Feature kShutdownConfirmationBubble{
+    "ShutdownConfirmationBubble", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Uses experimental component version for smart dim.
 const base::Feature kSmartDimExperimentalComponent{
     "SmartDimExperimentalComponent", base::FEATURE_DISABLED_BY_DEFAULT};
