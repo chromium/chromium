@@ -146,6 +146,8 @@ class BASE_EXPORT AddressPoolManagerBitmap {
                std::memory_order_relaxed) == 0;
 #endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   }
+
+  static void IncrementBlocklistHitCount() { ++blocklist_hit_count_; }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
  private:
@@ -163,6 +165,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
   static std::array<std::atomic_uint32_t, kAddressSpaceSize / kSuperPageSize>
       super_page_refcount_map_;
 #endif
+  static std::atomic_size_t blocklist_hit_count_;
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 };
 
