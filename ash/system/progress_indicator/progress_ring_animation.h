@@ -34,7 +34,7 @@ class ASH_EXPORT ProgressRingAnimation : public ProgressIndicatorAnimation {
   // Returns animatable properties.
   float start_position() const { return start_position_; }
   float end_position() const { return end_position_; }
-  float opacity() const { return opacity_; }
+  float outer_ring_opacity() const { return outer_ring_opacity_; }
 
  protected:
   ProgressRingAnimation(Type type, base::TimeDelta duration, bool is_cyclic);
@@ -56,7 +56,7 @@ class ASH_EXPORT ProgressRingAnimation : public ProgressIndicatorAnimation {
   // Animatable properties.
   float start_position_ = 0.f;
   float end_position_ = 0.f;
-  float opacity_ = 1.f;
+  float outer_ring_opacity_ = 1.f;
 };
 
 }  // namespace ash

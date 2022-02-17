@@ -66,21 +66,24 @@ TEST_F(ProgressIndicatorTest, CreateDefaultInstance) {
   progress = 0.f;
   layer_delegate->UpdateVisualState();
   EXPECT_EQ(progress_indicator->progress(), progress);
-  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  ASSERT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key)->HasAnimated());
   EXPECT_FALSE(registry->GetProgressRingAnimationForKey(key));
 
   // Update `progress` to 50%. Verify progress and animation states.
   progress = 0.5f;
   layer_delegate->UpdateVisualState();
   EXPECT_EQ(progress_indicator->progress(), progress);
-  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  ASSERT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key)->HasAnimated());
   EXPECT_FALSE(registry->GetProgressRingAnimationForKey(key));
 
   // Update `progress` to indeterminate. Verify progress and animation states.
   progress = absl::nullopt;
   layer_delegate->UpdateVisualState();
   EXPECT_EQ(progress_indicator->progress(), progress);
-  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  ASSERT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key)->HasAnimated());
   ASSERT_TRUE(registry->GetProgressRingAnimationForKey(key));
   EXPECT_EQ(registry->GetProgressRingAnimationForKey(key)->type(),
             ProgressRingAnimation::Type::kIndeterminate);
@@ -89,7 +92,8 @@ TEST_F(ProgressIndicatorTest, CreateDefaultInstance) {
   progress = 0.75f;
   layer_delegate->UpdateVisualState();
   EXPECT_EQ(progress_indicator->progress(), progress);
-  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  ASSERT_TRUE(registry->GetProgressIconAnimationForKey(key));
+  EXPECT_TRUE(registry->GetProgressIconAnimationForKey(key)->HasAnimated());
   EXPECT_FALSE(registry->GetProgressRingAnimationForKey(key));
 
   // Update `progress` to 100%. Verify progress an animation states.

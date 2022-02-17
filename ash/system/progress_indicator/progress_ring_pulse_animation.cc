@@ -71,7 +71,7 @@ void ProgressRingPulseAnimation::UpdateAnimatableProperties(
     double fraction,
     float* start_position,
     float* end_position,
-    float* opacity) {
+    float* outer_ring_opacity) {
   *end_position = 1.f;
 
   // Loop over all animation key frames until the correct key frames for the
@@ -89,9 +89,9 @@ void ProgressRingPulseAnimation::UpdateAnimatableProperties(
     fraction = (fraction - previous_key_frame.fraction) /
                (target_key_frame.fraction - previous_key_frame.fraction);
 
-    // Interpolate `opacity` between the `previous_key_frame` and
+    // Interpolate `outer_ring_opacity` between the `previous_key_frame` and
     // `target_key_frame`.
-    *opacity = gfx::Tween::FloatValueBetween(
+    *outer_ring_opacity = gfx::Tween::FloatValueBetween(
         fraction, /*start_opacity=*/previous_key_frame.opacity,
         /*target_opacity=*/target_key_frame.opacity);
     return;
