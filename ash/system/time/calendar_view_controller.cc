@@ -19,7 +19,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,8 +59,8 @@ CalendarViewController::~CalendarViewController() {
   if (user_journey_time_recorded_)
     return;
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("Ash.Calendar.UserJourneyTime.EventNotLaunched",
-                             base::TimeTicks::Now() - calendar_open_time_);
+  UmaHistogramMediumTimes("Ash.Calendar.UserJourneyTime.EventNotLaunched",
+                          base::TimeTicks::Now() - calendar_open_time_);
 }
 
 void CalendarViewController::AddObserver(Observer* observer) {
@@ -236,8 +235,8 @@ void CalendarViewController::OnEventListClosed() {
 }
 
 void CalendarViewController::OnCalendarEventWillLaunch() {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Ash.Calendar.UserJourneyTime.EventLaunched",
-                             base::TimeTicks::Now() - calendar_open_time_);
+  UmaHistogramMediumTimes("Ash.Calendar.UserJourneyTime.EventLaunched",
+                          base::TimeTicks::Now() - calendar_open_time_);
   user_journey_time_recorded_ = true;
 }
 
