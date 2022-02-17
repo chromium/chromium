@@ -256,8 +256,23 @@ bool MoveMigrator::SetupLacrosDir(
       browser_data_migrator_util::GetTargetItems(
           original_profile_dir, browser_data_migrator_util::ItemType::kLacros);
 
-  // TODO(ythjkt): Add a check to make sure that the current process has write
-  // permission to all the items in `lacros_items`.
+  // This check ensures that the migrator can at least rename the directory to
+  // `<kRemoveDir>/<item.path.BaseName()>` to make it inaccessible from ash in
+  // `RemoveHardLinksFromOriginalDir()`. Note that not having write permission
+  // to a directory does not automatically mean that creating a hard link fails.
+  // As long as the process has rx permission to the parent directory, a hard
+  // link can be created for a file. Also note that for a file, write permission
+  // is not required for renaming. Only the w permission for the parent
+  // directory is checked.
+  for (const auto& item : lacros_items.items) {
+    if (item.is_directory && !base::PathIsWritable(item.path)) {
+      // TODO(ythjkt): Add a UMA.
+      PLOG(ERROR) << "The current process does not have write permission to "
+                     "the directory "
+                  << item.path.value();
+      return false;
+    }
+  }
 
   if (!browser_data_migrator_util::CopyTargetItemsByHardLinks(
           tmp_profile_dir, lacros_items, cancel_flag.get())) {

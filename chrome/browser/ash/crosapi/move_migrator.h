@@ -86,6 +86,8 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
  private:
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, PreMigrationCleanUp);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, SetupLacrosDir);
+  FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest,
+                           SetupLacrosDirFailIfNoWritePermForLacrosItem);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, RemoveHardLinksFromOriginalDir);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest,
                            MigrateResumeFromRemoveHardLinks);

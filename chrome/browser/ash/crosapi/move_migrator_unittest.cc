@@ -164,6 +164,25 @@ TEST(MoveMigratorTest, SetupLacrosDir) {
   EXPECT_EQ(st_1.st_ino, st_2.st_ino);
 }
 
+TEST(MoveMigratorTest, SetupLacrosDirFailIfNoWritePermForLacrosItem) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath original_profile_dir = scoped_temp_dir.GetPath();
+  SetUpProfileDirectory(original_profile_dir);
+
+  std::unique_ptr<MigrationProgressTracker> progress_tracker =
+      std::make_unique<FakeMigrationProgressTracker>();
+  scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag =
+      base::MakeRefCounted<browser_data_migrator_util::CancelFlag>();
+
+  // Remove write permission from a lacros item.
+  base::SetPosixFilePermissions(original_profile_dir.Append(kBookmarksFilePath),
+                                0500);
+
+  EXPECT_FALSE(MoveMigrator::SetupLacrosDir(
+      original_profile_dir, std::move(progress_tracker), cancel_flag));
+}
+
 TEST(MoveMigratorTest, RemoveHardLinksFromOriginalDir) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
