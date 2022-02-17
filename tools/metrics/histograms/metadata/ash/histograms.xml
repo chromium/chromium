@@ -571,6 +571,76 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.CalendarView.CloseEventList.AnimationSmoothness" units="%"
+    expires_after="2023-02-18">
+  <owner>newcomer@google.com</owner>
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>Recorded when the close event list animation is finished.</summary>
+</histogram>
+
+<histogram name="Ash.CalendarView.OnMonthChanged.AnimationSmoothness" units="%"
+    expires_after="2023-02-18">
+  <owner>newcomer@google.com</owner>
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>Recorded when the on month changed animation is finished.</summary>
+</histogram>
+
+<histogram
+    name="Ash.CalendarView.OpenEventList.{CalendarChildView}.AnimationSmoothness"
+    units="%" expires_after="2023-02-18">
+  <owner>newcomer@google.com</owner>
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the open event list animation is finished on the
+    {CalendarChildView}.
+  </summary>
+  <token key="CalendarChildView">
+    <variant name="EventListView" summary="event list view"/>
+    <variant name="LabelView" summary="label view"/>
+    <variant name="MonthView" summary="month view"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Ash.CalendarView.ScrollOneMonth.{CalendarChildView}.AnimationSmoothness"
+    units="%" expires_after="2023-02-18">
+  <owner>newcomer@google.com</owner>
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the scroll one month animation is finished on the
+    {CalendarChildView}.
+  </summary>
+  <token key="CalendarChildView">
+    <variant name="HeaderView" summary="header view"/>
+    <variant name="LabelView" summary="label view"/>
+    <variant name="MonthView" summary="month view"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Ash.CalendarView.{Animation}.{CalendarChildView}.AnimationSmoothness"
+    units="%" expires_after="2023-02-18">
+  <owner>newcomer@google.com</owner>
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the {Animation} animation is finished on the
+    {CalendarChildView}.
+  </summary>
+  <token key="Animation">
+    <variant name="FadeInCurrentMonth" summary="event list item"/>
+    <variant name="ResetToToday" summary="reset to today"/>
+  </token>
+  <token key="CalendarChildView">
+    <variant name="ContentView" summary="content view"/>
+    <variant name="HeaderView" summary="header view"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.BarButtons.{TabletOrClamshell}"
     enum="CaptureModeBarButtonType" expires_after="2022-09-29">
   <owner>afakhry@chromium.org</owner>

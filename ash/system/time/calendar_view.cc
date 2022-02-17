@@ -26,6 +26,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/tween.h"
@@ -85,6 +86,43 @@ constexpr int kDefaultWeekTitles[] = {
     IDS_ASH_CALENDAR_SUN, IDS_ASH_CALENDAR_MON, IDS_ASH_CALENDAR_TUE,
     IDS_ASH_CALENDAR_WED, IDS_ASH_CALENDAR_THU, IDS_ASH_CALENDAR_FRI,
     IDS_ASH_CALENDAR_SAT};
+
+constexpr char kMonthViewScrollOneMonthAnimationHistogram[] =
+    "Ash.CalendarView.ScrollOneMonth.MonthView.AnimationSmoothness";
+
+constexpr char kLabelViewScrollOneMonthAnimationHistogram[] =
+    "Ash.CalendarView.ScrollOneMonth.LabelView.AnimationSmoothness";
+
+constexpr char kHeaderViewScrollOneMonthAnimationHistogram[] =
+    "Ash.CalendarView.ScrollOneMonth.HeaderView.AnimationSmoothness";
+
+constexpr char kContentViewResetToTodayAnimationHistogram[] =
+    "Ash.CalendarView.ResetToToday.ContentView.AnimationSmoothness";
+
+constexpr char kHeaderViewResetToTodayAnimationHistogram[] =
+    "Ash.CalendarView.ResetToToday.HeaderView.AnimationSmoothness";
+
+constexpr char kContentViewFadeInCurrentMonthAnimationHistogram[] =
+    "Ash.CalendarView.FadeInCurrentMonth.ContentView.AnimationSmoothness";
+
+constexpr char kHeaderViewFadeInCurrentMonthAnimationHistogram[] =
+    "Ash.CalendarView.FadeInCurrentMonth.HeaderView.AnimationSmoothness";
+
+constexpr char kOnMonthChangedAnimationHistogram[] =
+    "Ash.CalendarView.OnMonthChanged.AnimationSmoothness";
+
+constexpr char kCloseEventListAnimationHistogram[] =
+    "Ash.CalendarView.CloseEventList.AnimationSmoothness";
+
+constexpr char kMonthViewOpenEventListAnimationHistogram[] =
+    "Ash.CalendarView.OpenEventList.MonthView.AnimationSmoothness";
+
+constexpr char kLabelViewOpenEventListAnimationHistogram[] =
+    "Ash.CalendarView.OpenEventList.LabelView.AnimationSmoothness";
+
+constexpr char kEventListViewOpenEventListAnimationHistogram[] =
+    "Ash.CalendarView.OpenEventList.EventListView.AnimationSmoothness";
+
 // The overridden `Label` view used in `CalendarView`.
 class CalendarLabel : public views::Label {
  public:
@@ -503,14 +541,9 @@ int CalendarView::PositionOfSelectedDate() const {
          next_label_->GetPreferredSize().height() + row_height;
 }
 
-void CalendarView::SetHeaderAndMonthsOpacity(float opacity) {
+void CalendarView::SetHeaderAndContentViewOpacity(float opacity) {
   header_->layer()->SetOpacity(opacity);
-  previous_label_->layer()->SetOpacity(opacity);
-  current_label_->layer()->SetOpacity(opacity);
-  next_label_->layer()->SetOpacity(opacity);
-  previous_month_->layer()->SetOpacity(opacity);
-  current_month_->layer()->SetOpacity(opacity);
-  next_month_->layer()->SetOpacity(opacity);
+  content_view_->layer()->SetOpacity(opacity);
 }
 
 void CalendarView::SetShouldMonthsAnimateAndScrollEnabled(bool enabled) {
@@ -525,6 +558,14 @@ void CalendarView::ResetToTodayWithAnimation() {
   if (!should_months_animate_)
     return;
   SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/false);
+
+  content_view_->SetPaintToLayer();
+  content_view_->layer()->SetFillsBoundsOpaquely(false);
+
+  auto content_reporter = calendar_metrics::CreateAnimationReporter(
+      content_view_, kContentViewResetToTodayAnimationHistogram);
+  auto header_reporter = calendar_metrics::CreateAnimationReporter(
+      header_, kHeaderViewResetToTodayAnimationHistogram);
 
   // Fades out on-screen month. When animation ends sets date to today by
   // calling `ResetToToday` and fades in updated views after.
@@ -554,12 +595,7 @@ void CalendarView::ResetToTodayWithAnimation() {
       .Once()
       .SetDuration(calendar_utils::kResetToTodayFadeAnimationDuration)
       .SetOpacity(header_, 0.0f)
-      .SetOpacity(previous_label_, 0.0f)
-      .SetOpacity(current_label_, 0.0f)
-      .SetOpacity(next_label_, 0.0f)
-      .SetOpacity(previous_month_, 0.0f)
-      .SetOpacity(current_month_, 0.0f)
-      .SetOpacity(next_month_, 0.0f);
+      .SetOpacity(content_view_, 0.0f);
 }
 
 void CalendarView::ResetToToday() {
@@ -609,7 +645,15 @@ void CalendarView::FadeInCurrentMonth() {
     return;
   SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/false);
 
-  SetHeaderAndMonthsOpacity(/*opacity=*/0.0f);
+  content_view_->SetPaintToLayer();
+  content_view_->layer()->SetFillsBoundsOpaquely(false);
+  SetHeaderAndContentViewOpacity(/*opacity=*/0.0f);
+
+  auto content_reporter = calendar_metrics::CreateAnimationReporter(
+      content_view_, kContentViewFadeInCurrentMonthAnimationHistogram);
+  auto header_reporter = calendar_metrics::CreateAnimationReporter(
+      header_, kHeaderViewFadeInCurrentMonthAnimationHistogram);
+
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -627,18 +671,13 @@ void CalendarView::FadeInCurrentMonth() {
               return;
             calendar_view->SetShouldMonthsAnimateAndScrollEnabled(
                 /*enabled=*/true);
-            calendar_view->SetHeaderAndMonthsOpacity(/*opacity=*/1.0f);
+            calendar_view->SetHeaderAndContentViewOpacity(/*opacity=*/1.0f);
           },
           weak_factory_.GetWeakPtr()))
       .Once()
       .SetDuration(calendar_utils::kResetToTodayFadeAnimationDuration)
       .SetOpacity(header_, 1.0f)
-      .SetOpacity(previous_label_, 1.0f)
-      .SetOpacity(current_label_, 1.0f)
-      .SetOpacity(next_label_, 1.0f)
-      .SetOpacity(previous_month_, 1.0f)
-      .SetOpacity(current_month_, 1.0f)
-      .SetOpacity(next_month_, 1.0f);
+      .SetOpacity(content_view_, 1.0f);
 }
 
 void CalendarView::UpdateHeaders() {
@@ -833,6 +872,9 @@ void CalendarView::OnMonthChanged(const base::Time::Exploded current_month) {
   initial_state.Translate(moving_location);
   set_should_header_animate(false);
 
+  auto header_reporter = calendar_metrics::CreateAnimationReporter(
+      header_, kOnMonthChangedAnimationHistogram);
+
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -923,6 +965,17 @@ void CalendarView::OpenEventList() {
              scroll_view_->GetBoundsInScreen().bottom() -
              calendar_view_controller_->expanded_area_available_height()));
 
+  // Tracks animation smoothness. For now, we only track animation smoothness
+  // for 1 month and 1 label since all 2 month views and 2 label views are
+  // similar and perform the same animation. If this is not the case in the
+  // future, we should add additional metrics for the rest.
+  auto month_reporter = calendar_metrics::CreateAnimationReporter(
+      current_month_, kMonthViewOpenEventListAnimationHistogram);
+  auto label_reporter = calendar_metrics::CreateAnimationReporter(
+      current_label_, kLabelViewOpenEventListAnimationHistogram);
+  auto event_list_reporter = calendar_metrics::CreateAnimationReporter(
+      event_list_view_, kEventListViewOpenEventListAnimationHistogram);
+
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -978,6 +1031,9 @@ void CalendarView::CloseEventList() {
   list_view_moving.Translate(gfx::Vector2dF(
       0, calendar_view_controller_->expanded_area_available_height() +
              init_position));
+
+  auto event_list_reporter = calendar_metrics::CreateAnimationReporter(
+      event_list_view_, kCloseEventListAnimationHistogram);
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -1128,6 +1184,17 @@ void CalendarView::ScrollOneMonthWithAnimation(bool scroll_up) {
       0, is_scrolling_up_ ? header_height / 2 : -header_height / 2);
   gfx::Transform header_moving;
   header_moving.Translate(header_moving_location);
+
+  // Tracks animation smoothness. For now, we only track animation smoothness
+  // for 1 month and 1 label since all 3 month views and 3 label views are
+  // similar and perform the same animation. If this is not the case in the
+  // future, we should add additional metrics for the rest.
+  auto month_reporter = calendar_metrics::CreateAnimationReporter(
+      current_month_, kMonthViewScrollOneMonthAnimationHistogram);
+  auto label_reporter = calendar_metrics::CreateAnimationReporter(
+      current_label_, kLabelViewScrollOneMonthAnimationHistogram);
+  auto header_reporter = calendar_metrics::CreateAnimationReporter(
+      header_, kHeaderViewScrollOneMonthAnimationHistogram);
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(

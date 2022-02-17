@@ -5,13 +5,20 @@
 #ifndef ASH_SYSTEM_TIME_CALENDAR_METRICS_H_
 #define ASH_SYSTEM_TIME_CALENDAR_METRICS_H_
 
+#include <string>
+
 namespace ui {
+class AnimationThroughputReporter;
 class Event;
 }  // namespace ui
 
 namespace base {
 class TimeDelta;
 }  // namespace base
+
+namespace views {
+class View;
+}  // namespace views
 
 namespace ash {
 
@@ -71,6 +78,10 @@ void RecordEventListItemActivated(const ui::Event& event);
 void RecordMonthDwellTime(const base::TimeDelta& dwell_time);
 
 void RecordScrollSource(CalendarViewScrollSource source);
+
+ui::AnimationThroughputReporter CreateAnimationReporter(
+    views::View* view,
+    const std::string& animation_histogram_name);
 
 }  // namespace calendar_metrics
 

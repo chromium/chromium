@@ -4,11 +4,16 @@
 
 #include "ash/system/time/calendar_metrics.h"
 
+#include "ash/public/cpp/metrics_util.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "ui/compositor/animation_throughput_reporter.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/events/event.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -87,6 +92,19 @@ void RecordMonthDwellTime(const base::TimeDelta& dwell_time) {
 
 void RecordScrollSource(CalendarViewScrollSource source) {
   base::UmaHistogramEnumeration(kCalendarScrollSource, source);
+}
+
+ui::AnimationThroughputReporter CreateAnimationReporter(
+    views::View* view,
+    const std::string& animation_histogram_name) {
+  // TODO(crbug.com/1297376): Add unit tests for animation metrics recording.
+  return ui::AnimationThroughputReporter(
+      view->layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating(
+          [](const std::string& animation_histogram_name, int smoothness) {
+            base::UmaHistogramPercentage(animation_histogram_name, smoothness);
+          },
+          animation_histogram_name)));
 }
 
 }  // namespace calendar_metrics

@@ -195,9 +195,9 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Scrolls up/down one row based on `scroll_up`.
   void ScrollOneRowWithAnimation(bool scroll_up);
 
-  // Sets opacity for header, previous, current and next month with their
-  // labels.
-  void SetHeaderAndMonthsOpacity(float opacity);
+  // Sets opacity for header and content view (which contains previous, current
+  // and next month with their labels),
+  void SetHeaderAndContentViewOpacity(float opacity);
 
   // Enables or disables `should_months_animate_` and `scroll_view_` vertical
   // scroll bar mode.
