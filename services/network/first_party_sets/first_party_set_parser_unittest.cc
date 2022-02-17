@@ -177,6 +177,27 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
                                         SerializesTo("https://foo.test"))));
 }
 
+TEST(FirstPartySetParser, AcceptsMultipleSetsWithWhitespace) {
+  // Note the leading blank line, middle blank line, trailing blank line, and
+  // leading whitespace on each line.
+  const std::string input = R"(
+      {"owner": "https://example.test", "members": ["https://member1.test"]}
+
+      {"owner": "https://foo.test", "members": ["https://member2.test"]}
+    )";
+
+  std::istringstream stream(input);
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromStream(stream),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://foo.test"))));
+}
+
 TEST(FirstPartySetParser, RejectsInvalidSets_InvalidOwner) {
   const std::string input = R"({"owner": 3, "members": ["https://member1.test"]}
     {"owner": "https://foo.test", "members": ["https://member2.test"]})";

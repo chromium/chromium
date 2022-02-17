@@ -14,6 +14,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -193,8 +194,11 @@ FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
   base::flat_map<net::SchemefulSite, net::SchemefulSite> map;
   base::flat_set<net::SchemefulSite> elements;
   for (std::string line; std::getline(input, line);) {
+    base::StringPiece trimmed = base::TrimWhitespaceASCII(line, base::TRIM_ALL);
+    if (trimmed.empty())
+      continue;
     absl::optional<base::Value> maybe_value = base::JSONReader::Read(
-        line, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+        trimmed, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (!maybe_value.has_value())
       return {};
     if (!ParseSet(*maybe_value, map, elements))
