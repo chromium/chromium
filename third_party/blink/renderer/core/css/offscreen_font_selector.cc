@@ -24,7 +24,7 @@ OffscreenFontSelector::OffscreenFontSelector(WorkerGlobalScope* worker)
     : worker_(worker) {
   DCHECK(worker);
   font_face_cache_ = MakeGarbageCollected<FontFaceCache>();
-  FontCache::GetFontCache()->AddClient(this);
+  FontCache::Get().AddClient(this);
 }
 
 OffscreenFontSelector::~OffscreenFontSelector() = default;
@@ -68,8 +68,8 @@ scoped_refptr<FontData> OffscreenFontSelector::GetFontData(
       family_name, font_description.GetScript(),
       font_description.GenericFamily(), settings_family_name);
 
-  auto font_data = FontCache::GetFontCache()->GetFontData(font_description,
-                                                          settings_family_name);
+  auto font_data =
+      FontCache::Get().GetFontData(font_description, settings_family_name);
 
   worker_->GetFontMatchingMetrics()->ReportFontLookupByUniqueOrFamilyName(
       settings_family_name, font_description, font_data.get());

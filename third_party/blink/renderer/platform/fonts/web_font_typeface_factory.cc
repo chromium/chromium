@@ -148,7 +148,7 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForSbix() {
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::DefaultFontManager() {
 #if BUILDFLAG(IS_WIN)
-  return FontCache::GetFontCache()->FontManager();
+  return FontCache::Get().FontManager();
 #else
   return sk_sp<SkFontMgr>(SkFontMgr::RefDefault());
 #endif

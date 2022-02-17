@@ -76,9 +76,8 @@ void FontMetadata::BlobImpl(ScriptPromiseResolver* resolver,
 
   FontDescription description;
   scoped_refptr<SimpleFontData> font_data =
-      FontCache::GetFontCache()->GetFontData(
-          description, AtomicString(postscriptName),
-          AlternateFontName::kLocalUniqueFace);
+      FontCache::Get().GetFontData(description, AtomicString(postscriptName),
+                                   AlternateFontName::kLocalUniqueFace);
   if (!font_data) {
     auto message = String::Format("The font %s could not be accessed.",
                                   postscriptName.Latin1().c_str());

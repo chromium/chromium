@@ -15,7 +15,7 @@ FontDataForRangeSet::FontDataForRangeSet(const FontDataForRangeSet& other) {
 
 FontDataForRangeSetFromCache::~FontDataForRangeSetFromCache() {
   if (font_data_ && !font_data_->IsCustomFont()) {
-    FontCache::GetFontCache()->ReleaseFontData(font_data_.get());
+    FontCache::Get().ReleaseFontData(font_data_.get());
   }
 }
 

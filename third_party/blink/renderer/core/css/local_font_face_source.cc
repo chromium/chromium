@@ -41,9 +41,8 @@ bool LocalFontFaceSource::IsLocalFontAvailable(
     const FontDescription& font_description) const {
   // TODO(crbug.com/1027158): Remove metrics code after metrics collected.
   // TODO(crbug.com/1025945): Properly handle Windows prior to 10 and Android.
-  bool font_available =
-      FontCache::GetFontCache()->IsPlatformFontUniqueNameMatchAvailable(
-          font_description, font_name_);
+  bool font_available = FontCache::Get().IsPlatformFontUniqueNameMatchAvailable(
+      font_description, font_name_);
   if (font_available)
     font_selector_->ReportSuccessfulLocalFontMatch(font_name_);
   else
@@ -56,8 +55,8 @@ LocalFontFaceSource::CreateLoadingFallbackFontData(
     const FontDescription& font_description) {
   FontCachePurgePreventer font_cache_purge_preventer;
   scoped_refptr<SimpleFontData> temporary_font =
-      FontCache::GetFontCache()->GetLastResortFallbackFont(font_description,
-                                                           kDoNotRetain);
+      FontCache::Get().GetLastResortFallbackFont(font_description,
+                                                 kDoNotRetain);
   if (!temporary_font) {
     NOTREACHED();
     return nullptr;
@@ -107,10 +106,8 @@ scoped_refptr<SimpleFontData> LocalFontFaceSource::CreateFontData(
   unstyled_description.SetStyle(NormalSlopeValue());
   unstyled_description.SetWeight(NormalWeightValue());
 #endif
-  scoped_refptr<SimpleFontData> font_data =
-      FontCache::GetFontCache()->GetFontData(
-          unstyled_description, font_name_,
-          AlternateFontName::kLocalUniqueFace);
+  scoped_refptr<SimpleFontData> font_data = FontCache::Get().GetFontData(
+      unstyled_description, font_name_, AlternateFontName::kLocalUniqueFace);
   histograms_.Record(font_data.get());
   ReportFontLookup(unstyled_description, font_data.get());
   return font_data;

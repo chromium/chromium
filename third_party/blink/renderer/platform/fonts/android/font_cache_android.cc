@@ -67,7 +67,7 @@ static AtomicString DefaultFontFamily(sk_sp<SkFontMgr> font_manager) {
 }
 
 static AtomicString DefaultFontFamily() {
-  if (sk_sp<SkFontMgr> font_manager = FontCache::GetFontCache()->FontManager())
+  if (sk_sp<SkFontMgr> font_manager = FontCache::Get().FontManager())
     return DefaultFontFamily(font_manager);
   return DefaultFontFamily(SkFontMgr::RefDefault());
 }

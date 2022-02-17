@@ -53,7 +53,7 @@ CSSFontSelector::CSSFontSelector(const TreeScope& tree_scope)
                                       .GetFrame()
                                       ->GetSettings()
                                       ->GetGenericFontFamilySettings();
-  FontCache::GetFontCache()->AddClient(this);
+  FontCache::Get().AddClient(this);
   if (tree_scope.RootNode().IsDocumentNode()) {
     font_face_cache_ = MakeGarbageCollected<FontFaceCache>();
     FontFaceSetDocument::From(tree_scope.GetDocument())
@@ -126,8 +126,7 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
       font_description.GenericFamily(), settings_family_name);
 
   scoped_refptr<SimpleFontData> font_data =
-      FontCache::GetFontCache()->GetFontData(font_description,
-                                             settings_family_name);
+      FontCache::Get().GetFontData(font_description, settings_family_name);
 
   document.GetFontMatchingMetrics()->ReportFontLookupByUniqueOrFamilyName(
       settings_family_name, font_description, font_data.get());

@@ -23,8 +23,8 @@ bool CSSFontSelectorBase::IsPlatformFamilyMatchAvailable(
   AtomicString family = FamilyNameFromSettings(font_description, passed_family);
   if (family.IsEmpty())
     family = passed_family.FamilyName();
-  return FontCache::GetFontCache()->IsPlatformFamilyMatchAvailable(
-      font_description, family);
+  return FontCache::Get().IsPlatformFamilyMatchAvailable(font_description,
+                                                         family);
 }
 
 void CSSFontSelectorBase::WillUseFontData(

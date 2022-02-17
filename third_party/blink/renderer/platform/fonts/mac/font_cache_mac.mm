@@ -80,7 +80,7 @@ static void InvalidateFontCache() {
         FROM_HERE, WTF::Bind(&InvalidateFontCache));
     return;
   }
-  FontCache::GetFontCache()->Invalidate();
+  FontCache::Get().Invalidate();
 }
 
 static void FontCacheRegisteredFontsChangedNotificationCallback(
@@ -89,7 +89,7 @@ static void FontCacheRegisteredFontsChangedNotificationCallback(
     CFStringRef name,
     const void*,
     CFDictionaryRef) {
-  DCHECK_EQ(observer, FontCache::GetFontCache());
+  DCHECK_EQ(observer, &FontCache::Get());
   DCHECK(CFEqual(name, kCTFontManagerRegisteredFontsChangedNotification));
   InvalidateFontCache();
 }

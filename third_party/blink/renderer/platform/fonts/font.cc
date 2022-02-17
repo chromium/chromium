@@ -54,7 +54,7 @@ namespace {
 FontFallbackMap& GetFontFallbackMap(FontSelector* font_selector) {
   if (font_selector)
     return font_selector->GetFontFallbackMap();
-  return FontCache::GetFontCache()->GetFontFallbackMap();
+  return FontCache::Get().GetFontFallbackMap();
 }
 
 scoped_refptr<FontFallbackList> GetOrCreateFontFallbackList(

@@ -126,9 +126,7 @@ class PLATFORM_EXPORT FontCache {
   // configured through a call from the browser process. CreateIfNeeded helps
   // avoid early creation of a font cache when these globals have not yet
   // been set.
-  // TODO(yosin): Make |GetFontCache()| to return |FontCache&|.
-  // TODO(yosin): Rename |GetFontCache()| to return |Get()|.
-  static FontCache* GetFontCache();
+  static FontCache& Get();
 
   void ReleaseFontData(const SimpleFontData*);
 
@@ -437,10 +435,10 @@ class PLATFORM_EXPORT FontCachePurgePreventer {
   USING_FAST_MALLOC(FontCachePurgePreventer);
 
  public:
-  FontCachePurgePreventer() { FontCache::GetFontCache()->DisablePurging(); }
+  FontCachePurgePreventer() { FontCache::Get().DisablePurging(); }
   FontCachePurgePreventer(const FontCachePurgePreventer&) = delete;
   FontCachePurgePreventer& operator=(const FontCachePurgePreventer&) = delete;
-  ~FontCachePurgePreventer() { FontCache::GetFontCache()->EnablePurging(); }
+  ~FontCachePurgePreventer() { FontCache::Get().EnablePurging(); }
 };
 
 AtomicString ToAtomicString(const SkString&);

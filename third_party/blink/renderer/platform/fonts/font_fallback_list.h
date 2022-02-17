@@ -79,8 +79,7 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   ShapeCache* GetShapeCache(const FontDescription& font_description) {
     if (!shape_cache_) {
       FallbackListCompositeKey key = CompositeKey(font_description);
-      shape_cache_ =
-          FontCache::GetFontCache()->GetShapeCache(key)->GetWeakPtr();
+      shape_cache_ = FontCache::Get().GetShapeCache(key)->GetWeakPtr();
     }
     DCHECK(shape_cache_);
     if (GetFontSelector())

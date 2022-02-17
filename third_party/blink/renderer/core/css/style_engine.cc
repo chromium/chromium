@@ -678,7 +678,7 @@ void StyleEngine::UpdateGenericFontFamilySettings() {
   font_selector_->UpdateGenericFontFamilySettings(*document_);
   if (resolver_)
     resolver_->InvalidateMatchedPropertiesCache();
-  FontCache::GetFontCache()->InvalidateShapeCache();
+  FontCache::Get().InvalidateShapeCache();
 }
 
 void StyleEngine::RemoveFontFaceRules(

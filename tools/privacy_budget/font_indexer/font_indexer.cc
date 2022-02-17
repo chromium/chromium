@@ -87,7 +87,7 @@ const char kOutputHeader[] =
     "digest\tPostScript name string digest";
 const char kOutputSeparator[] = "\t";
 
-FontIndexer::FontIndexer() : font_cache_(blink::FontCache::GetFontCache()) {}
+FontIndexer::FontIndexer() : font_cache_(&blink::FontCache::Get()) {}
 FontIndexer::~FontIndexer() = default;
 
 void FontIndexer::PrintAllFonts() {

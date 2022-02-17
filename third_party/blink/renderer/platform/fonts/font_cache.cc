@@ -97,8 +97,8 @@ bool FontCache::lcd_text_enabled_ = false;
 bool FontCache::use_skia_font_fallback_ = false;
 #endif  // BUILDFLAG(IS_WIN)
 
-FontCache* FontCache::GetFontCache() {
-  return &FontGlobalContext::GetFontCache();
+FontCache& FontCache::Get() {
+  return FontGlobalContext::GetFontCache();
 }
 
 FontCache::FontCache()
@@ -276,7 +276,7 @@ void FontCache::SetFontManager(sk_sp<SkFontMgr> font_manager) {
 
 void FontCache::AcceptLanguagesChanged(const String& accept_languages) {
   LayoutLocale::AcceptLanguagesChanged(accept_languages);
-  GetFontCache()->InvalidateShapeCache();
+  Get().InvalidateShapeCache();
 }
 
 scoped_refptr<SimpleFontData> FontCache::GetFontData(

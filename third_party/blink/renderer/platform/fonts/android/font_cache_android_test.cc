@@ -15,11 +15,11 @@ class FontCacheAndroidTest : public testing::Test {
   // Returns a locale-specific `serif` typeface, or `nullptr` if the system
   // does not have a locale-specific `serif`.
   sk_sp<SkTypeface> CreateSerifTypeface(const LayoutLocale* locale) {
-    FontCache* font_cache = FontCache::GetFontCache();
+    FontCache& font_cache = FontCache::Get();
     FontDescription font_description;
     font_description.SetLocale(locale);
     font_description.SetGenericFamily(FontDescription::kSerifFamily);
-    return font_cache->CreateLocaleSpecificTypeface(font_description, "serif");
+    return font_cache.CreateLocaleSpecificTypeface(font_description, "serif");
   }
 
   FontCachePurgePreventer purge_preventer;
@@ -42,10 +42,9 @@ TEST_F(FontCacheAndroidTest, FallbackFontForCharacter) {
     ASSERT_EQ(USCRIPT_SIMPLIFIED_HAN, font_description.GetScript());
     font_description.SetGenericFamily(family_type);
 
-    FontCache* font_cache = FontCache::GetFontCache();
-    ASSERT_TRUE(font_cache);
+    FontCache& font_cache = FontCache::Get();
     scoped_refptr<SimpleFontData> font_data =
-        font_cache->FallbackFontForCharacter(font_description, kTestChar, 0);
+        font_cache.FallbackFontForCharacter(font_description, kTestChar, 0);
     EXPECT_TRUE(font_data);
   }
 }
@@ -62,12 +61,10 @@ TEST_F(FontCacheAndroidTest, FallbackFontForCharacterSerif) {
   FontDescription font_description;
   font_description.SetGenericFamily(FontDescription::kSerifFamily);
   font_description.SetLocale(ja);
-  FontCache* font_cache = FontCache::GetFontCache();
-  ASSERT_TRUE(font_cache);
+  FontCache& font_cache = FontCache::Get();
   const UChar32 kTestChar = 0x4E00;  // U+4E00 CJK UNIFIED IDEOGRAPH-4E00
   scoped_refptr<SimpleFontData> font_data =
-      font_cache->FallbackFontForCharacter(font_description, kTestChar,
-                                           nullptr);
+      font_cache.FallbackFontForCharacter(font_description, kTestChar, nullptr);
   EXPECT_TRUE(font_data);
   EXPECT_EQ(serif_ja_typeface.get(), font_data->PlatformData().Typeface());
 }
@@ -91,8 +88,8 @@ TEST_F(FontCacheAndroidTest, LocaleSpecificTypeface) {
     standard_ja_description.SetLocale(ja);
     standard_ja_description.SetGenericFamily(family_type);
     std::string name;
-    FontCache* font_cache = FontCache::GetFontCache();
-    sk_sp<SkTypeface> standard_ja_typeface = font_cache->CreateTypeface(
+    FontCache& font_cache = FontCache::Get();
+    sk_sp<SkTypeface> standard_ja_typeface = font_cache.CreateTypeface(
         standard_ja_description, FontFaceCreationParams(), name);
     EXPECT_NE(serif_ja_typeface.get(), standard_ja_typeface.get());
   }

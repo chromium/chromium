@@ -193,7 +193,7 @@ class ScopedSubpixelOverride {
     // Fonts cached with a different subpixel positioning state are not
     // automatically invalidated and need to be cleared between test
     // runs.
-    FontCache::GetFontCache()->Invalidate();
+    FontCache::Get().Invalidate();
   }
 
  private:
