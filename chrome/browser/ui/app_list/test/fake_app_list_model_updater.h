@@ -35,7 +35,9 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
       bool update_name,
       bool update_folder) override;
   void RemoveItem(const std::string& id, bool is_uninstall) override;
-  void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) override;
+  void SetItemIconAndColor(const std::string& id,
+                           const gfx::ImageSkia& icon,
+                           const ash::IconColor& icon_color) override;
   void SetItemFolderId(const std::string& id,
                        const std::string& folder_id) override;
   void SetItemPosition(const std::string& id,

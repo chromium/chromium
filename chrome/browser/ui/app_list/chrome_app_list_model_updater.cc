@@ -233,7 +233,7 @@ void ChromeAppListModelUpdater::AddAppItemToFolder(
   // Set the item's default icon if it has one.
   if (!item_added->icon().isNull()) {
     ash::AppListItem* item = model_.FindItem(item_added->id());
-    item->SetDefaultIcon(item_added->icon());
+    item->SetDefaultIconAndColor(item_added->icon(), item_added->icon_color());
   }
 
   if (add_from_local) {
@@ -358,11 +358,22 @@ void ChromeAppListModelUpdater::SetItemIconVersion(const std::string& id,
     item->SetIconVersion(icon_version);
 }
 
-void ChromeAppListModelUpdater::SetItemIcon(const std::string& id,
-                                            const gfx::ImageSkia& icon) {
-  ash::AppListItem* item = model_.FindItem(id);
-  if (item)
-    item->SetDefaultIcon(icon);
+void ChromeAppListModelUpdater::SetItemIconAndColor(
+    const std::string& id,
+    const gfx::ImageSkia& icon,
+    const ash::IconColor& icon_color) {
+  ChromeAppListItem* chrome_item = FindItem(id);
+  if (!chrome_item)
+    return;
+
+  base::AutoReset auto_reset(&item_with_icon_update_, chrome_item->id());
+
+  std::unique_ptr<ash::AppListItemMetadata> data = chrome_item->CloneMetadata();
+  data->icon = icon;
+  data->icon_color = icon_color;
+  MaybeUpdatePositionWhenIconColorChange(data.get());
+
+  model_.SetItemMetadata(id, std::move(data));
 }
 
 void ChromeAppListModelUpdater::SetItemName(const std::string& id,
@@ -429,13 +440,6 @@ void ChromeAppListModelUpdater::SetNotificationBadgeColor(const std::string& id,
   ash::AppListItem* item = model_.FindItem(id);
   if (item)
     item->SetNotificationBadgeColor(color);
-}
-
-void ChromeAppListModelUpdater::SetIconColor(const std::string& id,
-                                             const ash::IconColor icon_color) {
-  ash::AppListItem* item = model_.FindItem(id);
-  if (item)
-    item->SetIconColor(icon_color);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -705,8 +709,12 @@ void ChromeAppListModelUpdater::OnAppListItemUpdated(ash::AppListItem* item) {
   if (!chrome_item)
     return;
 
-  // Preserve icon once it cannot be modified at ash.
-  item->SetDefaultIcon(chrome_item->icon());
+  // Do not update the icon or the color of `chrome_item` if `item` is not
+  // in icon update process.
+  if (!item_with_icon_update_ || *item_with_icon_update_ != item->id()) {
+    item->SetDefaultIconAndColor(chrome_item->icon(),
+                                 chrome_item->icon_color());
+  }
 
   const std::string copy_id = item->id();
   item_manager_->UpdateChromeItem(copy_id, item->CloneMetadata());
@@ -1224,4 +1232,27 @@ void ChromeAppListModelUpdater::ResetPrefSortOrderInNonTemporaryMode(
   // The tablet mode controller may not exist in tests.
   if (ash::TabletMode::Get())
     ReportPrefOrderClearAction(event, ash::TabletMode::Get()->IsInTabletMode());
+}
+
+void ChromeAppListModelUpdater::MaybeUpdatePositionWhenIconColorChange(
+    ash::AppListItemMetadata* data) {
+  // No op if the color info is invalid.
+  if (!data->icon_color.IsValid())
+    return;
+
+  syncer::StringOrdinal position_under_color_order;
+  bool success = false;
+  if (is_under_temporary_sort() && temporary_sort_manager_->temporary_order() ==
+                                       ash::AppListSortOrder::kColor) {
+    success = app_list::reorder::CalculateItemPositionInOrder(
+        temporary_sort_manager_->temporary_order(), *data, GetItems(),
+        /*global_items=*/nullptr, &position_under_color_order);
+  } else if (order_delegate_ && order_delegate_->GetPermanentSortingOrder() ==
+                                    ash::AppListSortOrder::kColor) {
+    success = order_delegate_->CalculateItemPositionInPermanentSortOrder(
+        *data, &position_under_color_order);
+  }
+
+  if (success)
+    data->position = position_under_color_order;
 }

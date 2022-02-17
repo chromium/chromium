@@ -79,7 +79,7 @@ class ChromeAppListItem {
   // The following methods set Chrome side data here, and call model updater
   // interfaces that talk to ash directly.
   void IncrementIconVersion();
-  void SetIcon(const gfx::ImageSkia& icon);
+  void SetIcon(const gfx::ImageSkia& icon, bool is_place_holder_icon);
   void SetAppStatus(ash::AppStatus app_status);
   void SetFolderId(const std::string& folder_id);
   void SetIsPageBreak(bool is_page_break);

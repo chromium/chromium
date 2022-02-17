@@ -1794,9 +1794,7 @@ void AppListSyncableService::InitNewItemPosition(ChromeAppListItem* new_item) {
   if (!is_successful) {
     DCHECK(!position.IsValid());
     position = CalculateGlobalFrontPosition();
-    profile()->GetPrefs()->SetInteger(
-        prefs::kAppListPreferredOrder,
-        static_cast<int>(ash::AppListSortOrder::kCustom));
+    SetAppListPreferredOrder(ash::AppListSortOrder::kCustom);
   }
 
   DCHECK(position.IsValid());
