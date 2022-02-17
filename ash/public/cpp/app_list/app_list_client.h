@@ -137,6 +137,10 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // Invoked to load an icon of the app identified by `app_id`.
   virtual void LoadIcon(int profile_id, const std::string& app_id) = 0;
 
+  // Returns the sorting order that is saved in perf service and gets shared
+  // among synced devices.
+  virtual ash::AppListSortOrder GetPermanentSortingOrder() const = 0;
+
  protected:
   virtual ~AppListClient() = default;
 };

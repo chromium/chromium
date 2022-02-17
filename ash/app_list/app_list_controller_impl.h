@@ -113,6 +113,7 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
+  void OnUserSessionAdded(const AccountId& account_id) override;
 
   // Methods used in ash:
   bool GetTargetVisibility(const absl::optional<int64_t>& display_id) const;

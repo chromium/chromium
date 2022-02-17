@@ -58,6 +58,11 @@ constexpr char kClamshellPrefOrderClearActionHistogram[] =
 constexpr char kTabletPrefOrderClearActionHistogram[] =
     "Apps.Launcher.AppListSortClearAction.TabletMode";
 
+constexpr char kClamshellAppListSortOrderOnSessionStartHistogram[] =
+    "Apps.AppList.SortOrderOnSessionStart.ClamshellMode";
+constexpr char kTabletAppListSortOrderOnSessionStartHistogram[] =
+    "Apps.AppList.SortOrderOnSessionStart.TabletMode";
+
 void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
                                          SearchResultType type,
                                          bool is_tablet_mode) {
@@ -168,6 +173,20 @@ void RecordFirstSearchResult(SearchResultType type, bool in_tablet) {
     UMA_HISTOGRAM_ENUMERATION(
         "Apps.AppList.LaunchedResultInNewUsersFirstSearch.ClamshellMode", type,
         SEARCH_RESULT_TYPE_BOUNDARY);
+  }
+}
+
+void ReportPrefSortOrderOnSessionStart(AppListSortOrder permanent_order,
+                                       bool in_tablet) {
+  // NOTE: kNameReverseAlphabetical is not used outside of tests.
+  DCHECK(permanent_order != AppListSortOrder::kNameReverseAlphabetical);
+
+  if (in_tablet) {
+    base::UmaHistogramEnumeration(
+        kTabletAppListSortOrderOnSessionStartHistogram, permanent_order);
+  } else {
+    base::UmaHistogramEnumeration(
+        kClamshellAppListSortOrderOnSessionStartHistogram, permanent_order);
   }
 }
 

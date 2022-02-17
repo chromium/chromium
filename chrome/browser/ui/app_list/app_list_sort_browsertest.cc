@@ -15,6 +15,9 @@
 #include "base/files/file_util.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
@@ -1350,4 +1353,56 @@ IN_PROC_BROWSER_TEST_F(AppListSortColorOrderBrowserTest,
   EXPECT_EQ(
       GetAppIdsInOrdinalOrder({app1_id_, app2_id_, app3_id_, yellow_app_id}),
       std::vector<std::string>({app2_id_, yellow_app_id, app3_id_, app1_id_}));
+}
+
+class AppListSortLoginTest
+    : public ash::LoginManagerTest,
+      public ::testing::WithParamInterface</*in_tablet=*/bool> {
+ public:
+  AppListSortLoginTest() : LoginManagerTest() {
+    login_mixin_.AppendRegularUsers(2);
+    account_id1_ = login_mixin_.users()[0].account_id;
+    account_id2_ = login_mixin_.users()[1].account_id;
+
+    feature_list_.InitWithFeatures(
+        {ash::features::kProductivityLauncher, ash::features::kLauncherAppSort},
+        /*disabled_features=*/{});
+  }
+  ~AppListSortLoginTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ash::ShellTestApi().SetTabletModeEnabledForTest(GetParam());
+    ash::LoginManagerTest::SetUpOnMainThread();
+  }
+
+  AccountId account_id1_;
+  AccountId account_id2_;
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, AppListSortLoginTest, testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(AppListSortLoginTest,
+                       RecordPrefSortOrderOnSessionStart) {
+  // Verify that the pref sort order is recorded when a primary user logs in.
+  base::HistogramTester histogram;
+  LoginUser(account_id1_);
+  const char* histogram_name =
+      GetParam() ? ash::kTabletAppListSortOrderOnSessionStartHistogram
+                 : ash::kClamshellAppListSortOrderOnSessionStartHistogram;
+  histogram.ExpectBucketCount(histogram_name, ash::AppListSortOrder::kCustom,
+                              1);
+
+  // Verify that the pref sort order is recorded when a secondary user logs in.
+  ash::UserAddingScreen::Get()->Start();
+  AddUser(account_id2_);
+  histogram.ExpectBucketCount(histogram_name, ash::AppListSortOrder::kCustom,
+                              2);
+
+  // Switch back to the primary user. Verify that the pref sort order is not
+  // recorded again.
+  user_manager::UserManager::Get()->SwitchActiveUser(account_id1_);
+  histogram.ExpectBucketCount(histogram_name, ash::AppListSortOrder::kCustom,
+                              2);
 }

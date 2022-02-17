@@ -469,6 +469,17 @@ void AppListControllerImpl::OnSessionStateChanged(
     OnVisibilityChanged(true, last_visible_display_id_);
 }
 
+void AppListControllerImpl::OnUserSessionAdded(const AccountId& account_id) {
+  if (!ash::features::IsLauncherAppSortEnabled())
+    return;
+
+  if (!client_)
+    return;
+
+  ash::ReportPrefSortOrderOnSessionStart(client_->GetPermanentSortingOrder(),
+                                         IsTabletMode());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Methods used in Ash
 

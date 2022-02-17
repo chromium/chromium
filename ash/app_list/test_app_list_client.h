@@ -66,6 +66,7 @@ class TestAppListClient : public AppListClient {
       int position_index) override {}
   AppListNotifier* GetNotifier() override;
   void LoadIcon(int profile_id, const std::string& app_id) override {}
+  ash::AppListSortOrder GetPermanentSortingOrder() const override;
 
   int start_zero_state_search_count() const {
     return start_zero_state_search_count_;

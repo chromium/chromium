@@ -700,6 +700,16 @@ void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {
   requested_model_updater->LoadAppIcon(app_id);
 }
 
+ash::AppListSortOrder AppListClientImpl::GetPermanentSortingOrder() const {
+  // `profile_` could be set after a user session gets added to the existing
+  // session in tests, which does not happen on real devices.
+  if (!profile_)
+    return ash::AppListSortOrder::kCustom;
+
+  return app_list::AppListSyncableServiceFactory::GetForProfile(profile_)
+      ->GetPermanentSortingOrder();
+}
+
 void AppListClientImpl::MaybeRecordViewShown() {
   // Record the time duration between session activation and the first launcher
   // showing if the current user is new.

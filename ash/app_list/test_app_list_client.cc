@@ -87,4 +87,9 @@ TestAppListClient::GetAndClearInvokedResultActions() {
   return result;
 }
 
+ash::AppListSortOrder TestAppListClient::GetPermanentSortingOrder() const {
+  NOTIMPLEMENTED();
+  return ash::AppListSortOrder::kCustom;
+}
+
 }  // namespace ash
