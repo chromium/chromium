@@ -221,16 +221,19 @@ class DlpFilesExternalDestinationTest
     DlpFilesControllerTest::SetUp();
 
     mount_points_ = storage::ExternalMountPoints::GetSystemInstance();
+    ASSERT_TRUE(mount_points_);
 
-    mount_points_->RegisterFileSystem(
+    mount_points_->RevokeAllFileSystems();
+
+    ASSERT_TRUE(mount_points_->RegisterFileSystem(
         file_manager::util::GetAndroidFilesMountPointName(),
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-        base::FilePath(file_manager::util::kAndroidFilesPath));
+        base::FilePath(file_manager::util::kAndroidFilesPath)));
 
-    mount_points_->RegisterFileSystem(
+    ASSERT_TRUE(mount_points_->RegisterFileSystem(
         chromeos::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(),
-        base::FilePath(file_manager::util::kRemovableMediaPath));
+        base::FilePath(file_manager::util::kRemovableMediaPath)));
 
     // Setup for Crostini.
     crostini::FakeCrostiniFeatures crostini_features;
@@ -244,16 +247,17 @@ class DlpFilesExternalDestinationTest
 
     crostini::CrostiniManager* crostini_manager =
         crostini::CrostiniManager::GetForProfile(profile_.get());
+    ASSERT_TRUE(crostini_manager);
     crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
     crostini_manager->AddRunningContainerForTesting(
         crostini::kCrostiniDefaultVmName,
         crostini::ContainerInfo(crostini::kCrostiniDefaultContainerName,
                                 "testuser", "/home/testuser",
                                 "PLACEHOLDER_IP"));
-    mount_points_->RegisterFileSystem(
+    ASSERT_TRUE(mount_points_->RegisterFileSystem(
         file_manager::util::GetCrostiniMountPointName(profile_.get()),
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-        file_manager::util::GetCrostiniMountDirectory(profile_.get()));
+        file_manager::util::GetCrostiniMountDirectory(profile_.get())));
 
     // Setup for DriveFS.
     profile_->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
@@ -263,9 +267,9 @@ class DlpFilesExternalDestinationTest
         drive::DriveIntegrationServiceFactory::GetForProfile(profile_.get());
     ASSERT_TRUE(integration_service);
     base::FilePath mount_point_drive = integration_service->GetMountPointPath();
-    mount_points_->RegisterFileSystem(
+    ASSERT_TRUE(mount_points_->RegisterFileSystem(
         mount_point_drive.BaseName().value(), storage::kFileSystemTypeLocal,
-        storage::FileSystemMountOption(), mount_point_drive);
+        storage::FileSystemMountOption(), mount_point_drive));
   }
 
   void TearDown() override {
