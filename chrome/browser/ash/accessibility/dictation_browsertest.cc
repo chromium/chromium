@@ -695,9 +695,16 @@ class DictationExtensionTest : public DictationBaseTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(crbug.com/1247299): Merge this test suite with
+    // DictationCommandsExtensionTest once Dictation commands have successfully
+    // launched.
     DictationBaseTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kExperimentalAccessibilityDictationExtension);
+    std::vector<base::Feature> enabled_features = {
+        ::features::kExperimentalAccessibilityDictationExtension};
+    std::vector<base::Feature> disabled_features = {
+        ::features::kExperimentalAccessibilityDictationCommands,
+        ::features::kExperimentalAccessibilityDictationHints};
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SendFinalSpeechResultAndWaitForTextAreaValue(const std::string& result,

@@ -132,7 +132,7 @@ bool IsDictationOfflineAvailableAndEnabled() {
 
 const base::Feature kExperimentalAccessibilityDictationCommands{
     "ExperimentalAccessibilityDictationCommands",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsExperimentalAccessibilityDictationCommandsEnabled() {
   return base::FeatureList::IsEnabled(
@@ -150,7 +150,7 @@ bool IsExperimentalAccessibilityDictationExtensionEnabled() {
 
 const base::Feature kExperimentalAccessibilityDictationHints{
     "ExperimentalAccessibilityDictationHints",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsExperimentalAccessibilityDictationHintsEnabled() {
   return base::FeatureList::IsEnabled(
