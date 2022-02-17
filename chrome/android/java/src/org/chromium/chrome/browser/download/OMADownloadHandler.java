@@ -956,6 +956,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
         private final DownloadInfo mDownloadInfo;
         private final String mStatusMessage;
         private final long mDownloadId;
+        private DownloadInfo mNewDownloadInfo;
 
         public PostStatusTask(
                 OMAInfo omaInfo, DownloadInfo downloadInfo, long downloadId, String statusMessage) {
@@ -1025,16 +1026,11 @@ public class OMADownloadHandler extends BroadcastReceiver {
                             String uri = DownloadCollectionBridge.publishDownload(pendingUri);
                             fromFile.delete();
                             // Post a nofification to open the Android download page.
-                            DownloadInfo newInfo =
-                                    DownloadInfo.Builder.fromDownloadInfo(mDownloadInfo)
-                                            .setFilePath(uri)
-                                            .setContentId(
-                                                    new ContentId("", String.valueOf(mDownloadId)))
-                                            .build();
-                            DownloadManagerService.getDownloadManagerService()
-                                    .getDownloadNotifier()
-                                    .notifyDownloadSuccessful(newInfo, mDownloadId,
-                                            false /*canResolve*/, false /*isSupportedMimeType*/);
+                            mNewDownloadInfo = DownloadInfo.Builder.fromDownloadInfo(mDownloadInfo)
+                                                       .setFilePath(uri)
+                                                       .setContentId(new ContentId(
+                                                               "", String.valueOf(mDownloadId)))
+                                                       .build();
                         } else {
                             DownloadCollectionBridge.deleteIntermediateUri(pendingUri);
                         }
@@ -1076,6 +1072,12 @@ public class OMADownloadHandler extends BroadcastReceiver {
         @Override
         protected void onPostExecute(Boolean success) {
             if (success) {
+                if (mNewDownloadInfo != null) {
+                    DownloadManagerService.getDownloadManagerService()
+                            .getDownloadNotifier()
+                            .notifyDownloadSuccessful(mNewDownloadInfo, mDownloadId,
+                                    false /*canResolve*/, false /*isSupportedMimeType*/);
+                }
                 showNextUrlDialog(mOMAInfo);
             } else if (mDownloadId != DownloadConstants.INVALID_DOWNLOAD_ID) {
                 // Remove the downloaded content.
