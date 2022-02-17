@@ -4369,7 +4369,7 @@ const char kCrostiniResetLxdDbDescription[] =
     "Recreates the LXD database every time we launch it";
 
 const char kCrostiniUseLxd4Name[] =
-    "Use LXD 4 instead of the default - Irreversible";
+    "Use LXD 4 instead of the default - Dangerous & Irreversible";
 const char kCrostiniUseLxd4Description[] =
     "Uses LXD version 4 instead of the default version. WARNING: Once this is "
     "set you can't unset it without deleting your entire container";
