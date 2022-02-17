@@ -32,6 +32,7 @@
 #include "base/process/kill.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -11084,6 +11085,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
         prefetch_loader_factory,
     blink::mojom::PolicyContainerPtr policy_container,
     const base::UnguessableToken& devtools_navigation_token) {
+  TRACE_EVENT0("navigation", "RenderFrameHostImpl::SendCommitNavigation");
+  base::ElapsedTimer timer;
   DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
   IncreaseCommitNavigationCounter();
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
@@ -11150,6 +11153,10 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(policy_container), std::move(code_cache_host),
       std::move(cookie_manager_info), std::move(storage_info),
       BuildCommitNavigationCallback(navigation_request));
+  base::UmaHistogramTimes(
+      base::StrCat({"Navigation.SendCommitNavigationTime.",
+                    is_main_frame() ? "MainFrame" : "Subframe"}),
+      timer.Elapsed());
 }
 
 void RenderFrameHostImpl::SendCommitFailedNavigation(

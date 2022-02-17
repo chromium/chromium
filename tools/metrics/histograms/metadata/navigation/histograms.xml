@@ -1083,6 +1083,17 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.SendCommitNavigationTime.{FrameType}" units="ms"
+    expires_after="2022-08-15">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the time RenderFrameHostImpl::SendCommitNavigation takes to run.
+    Recorded every time the method executes.
+  </summary>
+  <token key="FrameType" variants="FrameTypes"/>
+</histogram>
+
 <histogram name="Navigation.StartToCommit" units="ms"
     expires_after="2022-06-26">
   <owner>nasko@chromium.org</owner>
