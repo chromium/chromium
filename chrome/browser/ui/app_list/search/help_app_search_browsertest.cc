@@ -121,6 +121,9 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 // the chip is shown.
 IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
                        ReleaseNotesDecreasesTimesShownOnAppListOpen) {
+  if (ash::features::IsProductivityLauncherEnabled())
+    return;
+
   web_app::WebAppProvider::GetForTest(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();

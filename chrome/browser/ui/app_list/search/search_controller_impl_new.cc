@@ -236,6 +236,9 @@ void SearchControllerImplNew::AddProvider(
   if (provider->ShouldBlockZeroState())
     ++total_zero_state_blockers_;
   provider->set_controller(this);
+  provider->set_result_changed_callback(
+      base::BindRepeating(&SearchControllerImplNew::OnResultsChangedWithType,
+                          base::Unretained(this), provider->ResultType()));
   providers_.emplace_back(std::move(provider));
 }
 
@@ -257,9 +260,6 @@ void SearchControllerImplNew::SetResults(const SearchProvider* provider,
   } else {
     SetSearchResults(provider);
   }
-
-  if (results_changed_callback_)
-    results_changed_callback_.Run(provider->ResultType());
 }
 
 void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
@@ -549,6 +549,12 @@ void SearchControllerImplNew::AppListShown() {
 void SearchControllerImplNew::ViewClosing() {
   for (const auto& provider : providers_)
     provider->ViewClosing();
+}
+
+void SearchControllerImplNew::OnResultsChangedWithType(
+    ash::AppListSearchResultType result_type) {
+  if (results_changed_callback_)
+    results_changed_callback_.Run(result_type);
 }
 
 void SearchControllerImplNew::AddObserver(Observer* observer) {

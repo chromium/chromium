@@ -105,6 +105,8 @@ class SearchControllerImplNew : public SearchController {
 
   void OnBurnInPeriodElapsed();
 
+  void OnResultsChangedWithType(ash::AppListSearchResultType result_type);
+
   Profile* profile_;
 
   // The query associated with the most recent search.
