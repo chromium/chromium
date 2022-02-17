@@ -129,6 +129,17 @@ class SoftwareVideoEncoderTest
     return frame;
   }
 
+  scoped_refptr<VideoFrame> CreateNV12Frame(gfx::Size size,
+                                            uint32_t color,
+                                            base::TimeDelta timestamp) {
+    auto i420_frame = CreateI420Frame(size, color, timestamp);
+    auto nv12_frame = VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, size,
+                                              gfx::Rect(size), size, timestamp);
+    auto status = ConvertAndScaleFrame(*i420_frame, *nv12_frame, resize_buff_);
+    EXPECT_TRUE(status.is_ok());
+    return nv12_frame;
+  }
+
   scoped_refptr<VideoFrame> CreateRGBFrame(gfx::Size size,
                                            uint32_t color,
                                            base::TimeDelta timestamp) {
@@ -153,6 +164,8 @@ class SoftwareVideoEncoderTest
     switch (format) {
       case PIXEL_FORMAT_I420:
         return CreateI420Frame(size, color, timestamp);
+      case PIXEL_FORMAT_NV12:
+        return CreateNV12Frame(size, color, timestamp);
       case PIXEL_FORMAT_XRGB:
         return CreateRGBFrame(size, color, timestamp);
       default:
@@ -279,6 +292,7 @@ class SoftwareVideoEncoderTest
   VideoCodec codec_;
   VideoCodecProfile profile_;
   VideoPixelFormat pixel_format_;
+  std::vector<uint8_t> resize_buff_;
 
   MockMediaLog media_log_;
   base::test::TaskEnvironment task_environment_;
@@ -857,6 +871,7 @@ INSTANTIATE_TEST_SUITE_P(H264TemporalSvc,
 #if BUILDFLAG(ENABLE_LIBVPX)
 SwVideoTestParams kVpxParams[] = {
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_NV12},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_XRGB},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_XRGB}};
@@ -887,6 +902,7 @@ INSTANTIATE_TEST_SUITE_P(VpxTemporalSvc,
 #if BUILDFLAG(ENABLE_LIBAOM)
 SwVideoTestParams kAv1Params[] = {
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_NV12},
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_XRGB}};
 
 INSTANTIATE_TEST_SUITE_P(Av1Generic,
