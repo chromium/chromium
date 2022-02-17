@@ -16,12 +16,15 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/mac/mac_logging.h"
+#include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_listener.h"
@@ -46,11 +49,13 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_features.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -60,87 +65,194 @@ namespace {
 const base::Feature kAppShimProfileMenuIcons{"AppShimProfileMenuIcons",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Create a SHA1 hex digest of a certificate, for use specifically in building
-// a code signing requirement string in IsAcceptablyCodeSigned(), below.
-std::string CertificateSHA1Digest(SecCertificateRef certificate) {
-  base::ScopedCFTypeRef<CFDataRef> certificate_data(
-      SecCertificateCopyData(certificate));
-  char hash[base::kSHA1Length];
-  base::SHA1HashBytes(CFDataGetBytePtr(certificate_data),
-                      CFDataGetLength(certificate_data),
-                      reinterpret_cast<unsigned char*>(hash));
-  return base::HexEncode(hash, base::kSHA1Length);
+// A crash key that is used when dumping because of errors when building and
+// verifying the app shim requirement.
+crash_reporter::CrashKeyString<256> app_shim_requirement_crash_key(
+    "AppShimRequirement");
+
+// This function logs the status and error_details using OSSTATUS_LOG(). It also
+// calls base::debug::DumpWithoutCrashing() using app_shim_requirement_crash_key
+// as a crash key. The status and error_details are appended to the crash key.
+void DumpOSStatusError(OSStatus status, std::string error_details) {
+  OSSTATUS_LOG(ERROR, status) << error_details;
+  crash_reporter::ScopedCrashKeyString crash_key_value(
+      &app_shim_requirement_crash_key,
+      base::StringPrintf("%s: %s (%d)", error_details.c_str(),
+                         logging::DescriptionFromOSStatus(status).c_str(),
+                         status));
+  base::debug::DumpWithoutCrashing();
 }
 
-// Returns whether |pid|'s code signature is trusted:
-// - True if the caller is unsigned (there's nothing to verify).
-// - True if |pid| satisfies the caller's designated requirement.
-// - False otherwise (|pid| does not satisfy caller's designated requirement).
-bool IsAcceptablyCodeSignedInternal(pid_t pid) {
-  base::ScopedCFTypeRef<SecCodeRef> own_code;
-  base::ScopedCFTypeRef<CFDictionaryRef> own_signing_info;
+// This function is similar to DumpOSStatusError(), however it operates without
+// an OSStatus.
+void DumpError(std::string error_details) {
+  LOG(ERROR) << error_details;
+  crash_reporter::ScopedCrashKeyString crash_key_value(
+      &app_shim_requirement_crash_key, error_details);
+  base::debug::DumpWithoutCrashing();
+}
 
-  // Fetch the calling process's designated requirement. The shim can only be
-  // validated if the caller has one (i.e. if the caller is code signed).
+// Creates a requirement for the app shim based on the framework bundle's
+// designated requirement. The caller will own the returned SecRequirementRef.
+// If the returned optional:
+//   * "has_value() == true" app shim validation should occur.
+//   * "has_value() == false" app shim validation should be skipped.
+//   * "has_value() == true && value() == null" validation should always fail.
+absl::optional<SecRequirementRef> CreateAppShimRequirement() {
+  // Note: Don't validate |framework_code|: We don't need to waste time
+  // validating. We are only interested in discovering if the framework bundle
+  // is code-signed, and if so what the designated requirement is.
+  base::ScopedCFTypeRef<CFURLRef> framework_url =
+      base::mac::FilePathToCFURL(base::mac::FrameworkBundlePath());
+  base::ScopedCFTypeRef<SecStaticCodeRef> framework_code;
+  OSStatus status = SecStaticCodeCreateWithPath(
+      framework_url, kSecCSDefaultFlags, framework_code.InitializeInto());
+
+  // If the framework bundle is unsigned there is nothing else to do. We treat
+  // this as success because there’s no identity to protect or even match, so
+  // it’s not dangerous to let the shim connect.
+  if (status == errSecCSUnsigned) {
+    return absl::nullopt;  // has_value() == false
+  }
+
+  // If there was an error obtaining the SecStaticCodeRef something is very
+  // broken or something bad is happening, deny.
+  if (status != errSecSuccess) {
+    DumpOSStatusError(status, "SecStaticCodeCreateWithPath");
+    return nullptr;  // has_value() == true
+  }
+
+  // Copy the signing info from the SecStaticCodeRef.
+  base::ScopedCFTypeRef<CFDictionaryRef> framework_signing_info;
+  status = SecCodeCopySigningInformation(
+      framework_code.get(), kSecCSSigningInformation,
+      framework_signing_info.InitializeInto());
+  if (status != errSecSuccess) {
+    DumpOSStatusError(status, "SecCodeCopySigningInformation");
+    return nullptr;  // has_value() == true
+  }
+
+  // Look up the code signing flags. If the flags are absent treat this as
+  // unsigned. This decision is consistent with the StaticCode source:
+  // https://github.com/apple-oss-distributions/Security/blob/Security-60157.40.30.0.1/OSX/libsecurity_codesigning/lib/StaticCode.cpp#L2270
+  CFNumberRef framework_signing_info_flags =
+      base::mac::GetValueFromDictionary<CFNumberRef>(framework_signing_info,
+                                                     kSecCodeInfoFlags);
+  if (!framework_signing_info_flags) {
+    return absl::nullopt;  // has_value() == false
+  }
+
+  // If the framework bundle is ad-hoc signed there is nothing else to
+  // do. While the framework bundle is code-signed an ad-hoc signature does not
+  // contain any identities to match against. Treat this as a success.
   //
-  // Note: Don't validate |own_code|: updates modify the browser's bundle and
-  // invalidate its code signature while an update is pending. This can be
-  // revisited after https://crbug.com/496298 is resolved.
-  if (SecCodeCopySelf(kSecCSDefaultFlags, own_code.InitializeInto()) !=
-          errSecSuccess ||
-      SecCodeCopySigningInformation(own_code.get(), kSecCSSigningInformation,
-                                    own_signing_info.InitializeInto()) !=
-          errSecSuccess) {
-    LOG(ERROR) << "Failed to get own code signing information.";
-    return false;
+  // Note: Using a long long to extract the value from the CFNumberRef to be
+  // consistent with how it was packed by Security.framework.
+  // https://github.com/apple-oss-distributions/Security/blob/Security-60157.40.30.0.1/OSX/libsecurity_utilities/lib/cfutilities.h#L262
+  long long flags;
+  if (!CFNumberGetValue(framework_signing_info_flags, kCFNumberLongLongType,
+                        &flags)) {
+    DumpError("CFNumberGetValue");
+    return nullptr;  // has_value() == true
+  }
+  if (static_cast<uint32_t>(flags) & kSecCodeSignatureAdhoc) {
+    return absl::nullopt;  // has_value() == false
   }
 
-  auto* own_certificates = base::mac::GetValueFromDictionary<CFArrayRef>(
-      own_signing_info, kSecCodeInfoCertificates);
-  if (!own_certificates || CFArrayGetCount(own_certificates) < 1) {
-    return true;
+  // Moving on. Time to start building a requirement that we will use to
+  // validate the app shim's code signature. First let's get the framework
+  // bundle requirement. We will build a suitable requirement for the app shim
+  // based off that.
+  base::ScopedCFTypeRef<SecRequirementRef> framework_requirement;
+  status =
+      SecCodeCopyDesignatedRequirement(framework_code, kSecCSDefaultFlags,
+                                       framework_requirement.InitializeInto());
+  if (status != errSecSuccess) {
+    DumpOSStatusError(status, "SecCodeCopyDesignatedRequirement");
+    return nullptr;  // has_value() == true
   }
 
-  auto* own_certificate = base::mac::CFCast<SecCertificateRef>(
-      CFArrayGetValueAtIndex(own_certificates, 0));
-  auto own_certificate_hash = CertificateSHA1Digest(own_certificate);
+  base::ScopedCFTypeRef<CFStringRef> framework_requirement_string;
+  status =
+      SecRequirementCopyString(framework_requirement, kSecCSDefaultFlags,
+                               framework_requirement_string.InitializeInto());
+  if (status != errSecSuccess) {
+    DumpOSStatusError(status, "SecRequirementCopyString");
+    return nullptr;  // has_value() == true
+  }
 
   base::ScopedCFTypeRef<CFStringRef> shim_requirement_string(
-      CFStringCreateWithFormat(
-          kCFAllocatorDefault, nullptr,
-          CFSTR(
-              "identifier \"app_mode_loader\" and certificate leaf = H\"%s\""),
-          own_certificate_hash.c_str()));
+      apps::AppShimManager::
+          BuildAppShimRequirementStringFromFrameworkRequirementString(
+              framework_requirement_string));
+  if (!shim_requirement_string) {
+    return nullptr;  // has_value() == true
+  }
 
-  base::ScopedCFTypeRef<SecRequirementRef> shim_requirement;
-  if (SecRequirementCreateWithString(
-          shim_requirement_string, kSecCSDefaultFlags,
-          shim_requirement.InitializeInto()) != errSecSuccess) {
-    LOG(ERROR)
-        << "Failed to create a SecRequirementRef from the requirement string \""
-        << shim_requirement_string << "\"";
+  // Parse the requirement.
+  // Using a naked SecRequirementRef here. Since the sole caller of this
+  // function will be storing the returned SecRequirementRef for the lifetime of
+  // the process there is no added benefit to wrapping the return value in a
+  // base::ScopedCFTypeRef.
+  SecRequirementRef shim_requirement;
+  status = SecRequirementCreateWithString(
+      shim_requirement_string, kSecCSDefaultFlags, &shim_requirement);
+  if (status != errSecSuccess) {
+    DumpOSStatusError(status,
+                      std::string("SecRequirementCreateWithString: ") +
+                          base::SysCFStringRefToUTF8(shim_requirement_string));
+    return nullptr;
+  }
+  return shim_requirement;
+}
+
+// Returns whether |app_shim_pid|'s code signature is trusted:
+// - True if the framework bundle is unsigned (there's nothing to verify).
+// - True if |app_shim_pid| satisfies the constructed designated requirement
+// tailored for the app shim based on the framework bundle's requirement.
+// - False otherwise (|app_shim_pid| does not satisfy the constructed designated
+// requirement).
+bool IsAcceptablyCodeSignedInternal(pid_t app_shim_pid) {
+  static absl::optional<SecRequirementRef> app_shim_requirement =
+      CreateAppShimRequirement();
+  if (!app_shim_requirement.has_value()) {
+    // App shim validation is not required because framework bundle is not
+    // code-signed or is ad-hoc code-signed.
+    return true;
+  }
+  if (!app_shim_requirement.value()) {
+    // Framework bundle is code-signed however we were unable to create the app
+    // shim requirement. Deny.
+    // apps::AppShimManager::BuildAppShimRequirementStringFromFrameworkRequirementString
+    // already did the base::debug::DumpWithoutCrashing, possibly on a previous
+    // call. We can return false here without any additional explanation.
     return false;
   }
 
-  base::ScopedCFTypeRef<SecCodeRef> guest_code;
-
-  base::ScopedCFTypeRef<CFNumberRef> pid_cf(
-      CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &pid));
-  const void* guest_attribute_keys[] = {kSecGuestAttributePid};
-  const void* guest_attribute_values[] = {pid_cf};
-  base::ScopedCFTypeRef<CFDictionaryRef> guest_attributes(CFDictionaryCreate(
-      nullptr, guest_attribute_keys, guest_attribute_values,
-      base::size(guest_attribute_keys), &kCFTypeDictionaryKeyCallBacks,
+  // Verify the app shim.
+  base::ScopedCFTypeRef<CFNumberRef> app_shim_pid_cf(
+      CFNumberCreate(nullptr, kCFNumberIntType, &app_shim_pid));
+  const void* app_shim_attribute_keys[] = {kSecGuestAttributePid};
+  const void* app_shim_attribute_values[] = {app_shim_pid_cf};
+  base::ScopedCFTypeRef<CFDictionaryRef> app_shim_attributes(CFDictionaryCreate(
+      nullptr, app_shim_attribute_keys, app_shim_attribute_values,
+      base::size(app_shim_attribute_keys), &kCFTypeDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks));
-  if (SecCodeCopyGuestWithAttributes(nullptr, guest_attributes,
-                                     kSecCSDefaultFlags,
-                                     guest_code.InitializeInto())) {
-    LOG(ERROR) << "Failed to create a SecCodeRef from the app shim's pid.";
+  base::ScopedCFTypeRef<SecCodeRef> app_shim_code;
+  OSStatus status = SecCodeCopyGuestWithAttributes(
+      nullptr, app_shim_attributes, kSecCSDefaultFlags,
+      app_shim_code.InitializeInto());
+  if (status != errSecSuccess) {
+    DumpOSStatusError(status, "SecCodeCopyGuestWithAttributes");
     return false;
   }
-
-  return SecCodeCheckValidity(guest_code, kSecCSDefaultFlags,
-                              shim_requirement) == errSecSuccess;
+  status = SecCodeCheckValidity(app_shim_code, kSecCSDefaultFlags,
+                                app_shim_requirement.value());
+  if (status != errSecSuccess) {
+    DumpOSStatusError(status, "SecCodeCheckValidity");
+    return false;
+  }
+  return true;
 }
 
 bool ProfileMenuItemComparator(const chrome::mojom::ProfileMenuItemPtr& a,
@@ -1152,6 +1264,45 @@ AppShimManager::LoadAndLaunchAppParams::operator=(
 
 bool AppShimManager::LoadAndLaunchAppParams::HasFilesOrURLs() const {
   return !files.empty() || !urls.empty() || !override_url.is_empty();
+}
+
+base::ScopedCFTypeRef<CFStringRef>
+AppShimManager::BuildAppShimRequirementStringFromFrameworkRequirementString(
+    CFStringRef framwork_requirement) {
+  // Make sure the framework bundle requirement is in the expected format.
+  // It should start with "identifier" and have exactly 2 quotes.
+  CFIndex len = CFStringGetLength(framwork_requirement);
+  base::ScopedCFTypeRef<CFArrayRef> quote_ranges(
+      CFStringCreateArrayWithFindResults(nullptr, framwork_requirement,
+                                         CFSTR("\""), CFRangeMake(0, len), 0));
+  if (!CFStringHasPrefix(framwork_requirement, CFSTR("identifier \"")) ||
+      !quote_ranges || CFArrayGetCount(quote_ranges) != 2) {
+    DumpError("Framework bundle requirement is malformed.");
+    return base::ScopedCFTypeRef<CFStringRef>(nullptr);
+  }
+
+  // Get the index of the second quote.
+  CFIndex second_quote_index =
+      static_cast<const CFRange*>(CFArrayGetValueAtIndex(quote_ranges, 1))
+          ->location;
+
+  // Make sure there is something to read after the second quote.
+  if (second_quote_index + 1 >= len) {
+    DumpError("Framework bundle requirement is too short");
+    return base::ScopedCFTypeRef<CFStringRef>(nullptr);
+  }
+
+  // Build the app shim requirement. Keep the data from the framework bundle
+  // requirement starting after second quote.
+  base::ScopedCFTypeRef<CFStringRef> right_of_second_quote(
+      CFStringCreateWithSubstring(
+          nullptr, framwork_requirement,
+          CFRangeMake(second_quote_index + 1, len - second_quote_index - 1)));
+  base::ScopedCFTypeRef<CFMutableStringRef> shim_requirement_string(
+      CFStringCreateMutableCopy(nullptr, 0,
+                                CFSTR("identifier \"app_mode_loader\"")));
+  CFStringAppend(shim_requirement_string, right_of_second_quote);
+  return base::ScopedCFTypeRef<CFStringRef>(shim_requirement_string);
 }
 
 }  // namespace apps
