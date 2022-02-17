@@ -332,18 +332,12 @@ var CrSettingsPasswordsCheckTest = class extends CrSettingsBrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/password_check_test.js&host=webui-test';
   }
-  testGenPreamble() {
-    GEN('  LOG(INFO) << "Hardcoding timeout to 60s because ' +
-        'CrSettingsPasswordsCheckTest tests are slow.";');
-    GEN('  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, ' +
-        'base::Seconds(60));');
-  }
 };
 
-TEST_F('CrSettingsPasswordsCheckTest', 'All', function() {
+// Flaky https://crbug.com/1143801
+TEST_F('CrSettingsPasswordsCheckTest', 'DISABLED_All', function() {
   mocha.run();
-}, /*opt_preamble=*/ '#include "base/test/scoped_run_loop_timeout.h"');
-GEN('#undef MAYBE_All');
+});
 
 var CrSettingsSafetyCheckPageTest = class extends CrSettingsBrowserTest {
   /** @override */
