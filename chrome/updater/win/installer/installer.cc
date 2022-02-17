@@ -43,6 +43,7 @@
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/util_constants.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
 #include "chrome/updater/win/installer/pe_resource.h"
@@ -54,19 +55,10 @@ using PathString = StackString<MAX_PATH>;
 
 namespace {
 
-// Initializes |temp_path| to "Temp" within the target directory, and
-// |unpack_path| to a random directory beginning with "source" within
-// |temp_path|. Returns false on error.
-bool CreateTemporaryAndUnpackDirectories(
-    installer::SelfCleaningTempDir* temp_path,
-    base::FilePath* unpack_path) {
-  DCHECK(temp_path && unpack_path);
-
-  // Because there is no UpdaterScope yet, ::IsUserAnAdmin() is used to
-  // determine whether the process is running with Admin privileges. If the
-  // process is running with Admin privileges, a secure unpack location under
-  // %ProgramFiles% (a directory that only admins can write to by default) is
-  // used.
+// If the process is running with Admin privileges, a secure unpack location
+// under %ProgramFiles% (a directory that only admins can write to by default)
+// is used.
+bool CreateSecureTempDir(installer::SelfCleaningTempDir& temp_path) {
   base::FilePath temp_dir;
   if (!base::PathService::Get(
           ::IsUserAnAdmin() ? base::DIR_PROGRAM_FILES : base::DIR_TEMP,
@@ -74,13 +66,33 @@ bool CreateTemporaryAndUnpackDirectories(
     return false;
   }
 
-  if (!temp_path->Initialize(temp_dir, kTempPrefix)) {
+  temp_dir = temp_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
+                 .AppendASCII(PRODUCT_FULLNAME_STRING);
+
+  if (!temp_path.Initialize(temp_dir, L"UPDATER_TEMP_DIR")) {
     PLOG(ERROR) << "Could not create temporary path.";
     return false;
   }
-  VLOG(1) << "Created path " << temp_path->path().value();
 
-  if (!base::CreateTemporaryDirInDir(temp_path->path(), L"source",
+  VLOG(2) << "Created temp path " << temp_path.path().value();
+  return true;
+}
+
+// Initializes |temp_path| to "Temp" within the target directory, and
+// |unpack_path| to a random directory beginning with "source" within
+// |temp_path|. Returns false on error.
+bool CreateTemporaryAndUnpackDirectories(
+    installer::SelfCleaningTempDir& temp_path,
+    base::FilePath* unpack_path) {
+  DCHECK(unpack_path);
+
+  // Because there is no UpdaterScope yet, ::IsUserAnAdmin() is used to
+  // determine whether the process is running with Admin privileges.
+  if (!CreateSecureTempDir(temp_path)) {
+    return false;
+  }
+
+  if (!base::CreateTemporaryDirInDir(temp_path.path(), L"source",
                                      unpack_path)) {
     PLOG(ERROR) << "Could not create temporary path for unpacked archive.";
     return false;
@@ -479,7 +491,7 @@ ProcessExitResult WMain(HMODULE module) {
   // Create a temp folder where the archives are unpacked.
   base::FilePath unpack_path;
   installer::SelfCleaningTempDir temp_path;
-  if (!CreateTemporaryAndUnpackDirectories(&temp_path, &unpack_path))
+  if (!CreateTemporaryAndUnpackDirectories(temp_path, &unpack_path))
     return ProcessExitResult(static_cast<DWORD>(installer::TEMP_DIR_FAILED));
 
   // Unpack the compressed archive to extract the uncompressed archive file.

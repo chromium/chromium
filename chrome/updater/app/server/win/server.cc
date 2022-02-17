@@ -90,8 +90,6 @@ bool SwapUninstallCmdLine(UpdaterScope scope,
   return true;
 }
 
-// Creates a temp directory, which is under a secure location for System
-// installs.
 bool CreateSecureTempDir(UpdaterScope scope,
                          installer::SelfCleaningTempDir& temp_path) {
   base::FilePath temp_dir;
@@ -102,13 +100,15 @@ bool CreateSecureTempDir(UpdaterScope scope,
     return false;
   }
 
-  constexpr wchar_t kTempPrefix[] = L"UPDATER_TEMP_DIR";
-  if (!temp_path.Initialize(temp_dir, kTempPrefix)) {
+  temp_dir = temp_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
+                 .AppendASCII(PRODUCT_FULLNAME_STRING);
+
+  if (!temp_path.Initialize(temp_dir, L"UPDATER_TEMP_DIR")) {
     PLOG(ERROR) << "Could not create temporary path.";
     return false;
   }
 
-  VLOG(1) << "Created temp path " << temp_path.path().value();
+  VLOG(2) << "Created temp path " << temp_path.path().value();
   return true;
 }
 
