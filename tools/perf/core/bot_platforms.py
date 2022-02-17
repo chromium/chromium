@@ -309,35 +309,25 @@ _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite([
     _GetBenchmarkConfig('system_health.common_desktop')
 ])
 
+FUCHSIA_EXEC_ARGS = {'astro': None, 'sherlock': None, 'atlas': None}
+FUCHSIA_EXEC_CONFIGS = {'astro': None, 'sherlock': None, 'atlas': None}
+_IMAGE_PATHS = {
+    'astro': ('astro-release', 'smart_display_eng_arrested'),
+    'atlas': ('chromebook-x64-release', 'sucrose_eng'),
+    'sherlock': ('sherlock-release', 'smart_display_max_eng_arrested'),
+}
 _FUCHSIA_IMAGE_DIR = '../../third_party/fuchsia-sdk/images-internal/%s/%s'
-_ASTRO_IMAGE_DIR = _FUCHSIA_IMAGE_DIR % ('astro-release',
-                                         'smart_display_eng_arrested')
-_SHERLOCK_IMAGE_DIR = _FUCHSIA_IMAGE_DIR % ('sherlock-release',
-                                            'smart_display_max_eng_arrested')
 _COMMON_FUCHSIA_ARGS = ['-d', '--os-check=update']
-ASTRO_EXEC_FLAGS = _COMMON_FUCHSIA_ARGS + [
-    '--system-image-dir=%s' % _ASTRO_IMAGE_DIR
-]
-SHERLOCK_EXEC_FLAGS = _COMMON_FUCHSIA_ARGS + [
-    '--system-image-dir=%s' % _SHERLOCK_IMAGE_DIR
-]
-ATLAS_EXEC_FLAGS = ['-d', '--os-check=ignore']
-
-_FUCHSIA_ASTRO_EXECUTABLE_CONFIGS = frozenset([
-    _base_perftests(900,
-                    path='bin/run_base_perftests',
-                    additional_flags=ASTRO_EXEC_FLAGS)
-])
-_FUCHSIA_SHERLOCK_EXECUTABLE_CONFIGS = frozenset([
-    _base_perftests(900,
-                    path='bin/run_base_perftests',
-                    additional_flags=SHERLOCK_EXEC_FLAGS)
-])
-_FUCHSIA_ATLAS_EXECUTABLE_CONFIGS = frozenset([
-    _base_perftests(900,
-                    path='bin/run_base_perftests',
-                    additional_flags=ATLAS_EXEC_FLAGS)
-])
+for board, path_parts in _IMAGE_PATHS.items():
+  image_dir = _FUCHSIA_IMAGE_DIR % path_parts
+  FUCHSIA_EXEC_ARGS[board] = _COMMON_FUCHSIA_ARGS + [
+      '--system-image-dir=%s' % image_dir
+  ]
+  FUCHSIA_EXEC_CONFIGS[board] = frozenset([
+      _base_perftests(900,
+                      path='bin/run_base_perftests',
+                      additional_flags=FUCHSIA_EXEC_ARGS[board])
+  ])
 
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
@@ -659,7 +649,7 @@ FUCHSIA_PERF_FYI = PerfPlatform('fuchsia-perf-fyi',
                                 10,
                                 'fuchsia',
                                 is_fyi=True,
-                                executables=_FUCHSIA_ASTRO_EXECUTABLE_CONFIGS)
+                                executables=FUCHSIA_EXEC_CONFIGS['astro'])
 FUCHSIA_PERF_SHERLOCK_FYI = PerfPlatform(
     'fuchsia-perf-sherlock-fyi',
     '',
@@ -667,15 +657,14 @@ FUCHSIA_PERF_SHERLOCK_FYI = PerfPlatform(
     6,
     'fuchsia',
     is_fyi=True,
-    executables=_FUCHSIA_SHERLOCK_EXECUTABLE_CONFIGS)
-FUCHSIA_PERF_ATLAS_FYI = PerfPlatform(
-    'fuchsia-perf-atlas-fyi',
-    '',
-    _FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS,
-    1,
-    'fuchsia',
-    is_fyi=True,
-    executables=_FUCHSIA_ATLAS_EXECUTABLE_CONFIGS)
+    executables=FUCHSIA_EXEC_CONFIGS['sherlock'])
+FUCHSIA_PERF_ATLAS_FYI = PerfPlatform('fuchsia-perf-atlas-fyi',
+                                      '',
+                                      _FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS,
+                                      1,
+                                      'fuchsia',
+                                      is_fyi=True,
+                                      executables=FUCHSIA_EXEC_CONFIGS['atlas'])
 
 # Calibration bots
 LINUX_PERF_CALIBRATION = PerfPlatform(

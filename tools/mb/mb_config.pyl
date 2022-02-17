@@ -590,6 +590,7 @@
       'android_arm64-cfi-builder-perf-fyi': 'official_goma_minimal_symbols_android_thin_lto_opt_arm64',
       'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official',
       'fuchsia-builder-perf-fyi': 'official_goma_fuchsia_arm64_perf',
+      'fuchsia-builder-perf-x64': 'official_goma_fuchsia_x64_perf',
     },
 
     'chromium.reclient.fyi': {
@@ -1155,6 +1156,7 @@
       'Android arm64 Compile Perf': 'official_goma_minimal_symbols_android_arm64',
       'Chromeos Amd64 Generic Lacros Builder Perf': 'chromeos_amd64-generic_lacros_official',
       'Fuchsia Builder Perf': 'official_goma_fuchsia_arm64_perf',
+      'Fuchsia Builder Perf x64': 'official_goma_fuchsia_x64_perf',
       'Linux Builder Perf': 'official_goma_linux_perf',
       'Mac Builder Perf': 'official_goma_mac_perf',
       'Mac arm Builder Perf': 'official_goma_mac_arm_perf',
@@ -2825,6 +2827,9 @@
     'official_goma_fuchsia_arm64_perf': [
       'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator'
     ],
+    'official_goma_fuchsia_x64_perf': [
+      'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_workstation_image', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator'
+    ],
 
     'official_goma_linux_pgo': [
       'official', 'goma', 'static', 'no_symbols', 'pgo_phase_1',
@@ -3587,7 +3592,7 @@
     },
 
     'fuchsia_include_workstation_image': {
-      'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images/qemu-x64-release/"]',
+      'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images/qemu-x64-release/","//third_party/fuchsia-sdk/images-internal/chromebook-x64-release/"]',
     },
 
     'full_symbols': {

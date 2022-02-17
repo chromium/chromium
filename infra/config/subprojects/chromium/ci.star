@@ -121,7 +121,9 @@ consoles.console_view(
     ("fuchsia-fyi-astro", "astro", "gpu"),
     ("fuchsia-fyi-sherlock", "sherlock", "gpu"),
     ("fuchsia-builder-perf-fyi", "fyi", "builder-perf"),
+    ("fuchsia-builder-perf-x64", "fyi", "builder-perf-x64"),
     ("fuchsia-perf-fyi", "astro", "perf"),
+    ("fuchsia-perf-atlas-fyi", "atlas", "perf"),
     ("fuchsia-perf-sherlock-fyi", "sherlock", "perf"),
     ("fuchsia-x64", "ci", "x64-chrome"),
 )]

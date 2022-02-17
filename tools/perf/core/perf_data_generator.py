@@ -230,15 +230,34 @@ FYI_BUILDERS = {
             'performance_web_engine_test_suite',
             'extra_args':
             ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
-            bot_platforms.ASTRO_EXEC_FLAGS,
+            bot_platforms.FUCHSIA_EXEC_ARGS['astro'],
             'type':
             TEST_TYPES.TELEMETRY,
         }],
         'platform':
-        'fuchsia',
+        'fuchsia-wes',
         'dimension': {
             'cpu': None,
             'device_type': 'Astro',
+            'os': 'Fuchsia',
+            'pool': 'chrome.tests',
+        },
+    },
+    'fuchsia-perf-atlas-fyi': {
+        'tests': [{
+            'isolate':
+            'performance_web_engine_test_suite',
+            'extra_args':
+            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            bot_platforms.FUCHSIA_EXEC_ARGS['atlas'],
+            'type':
+            TEST_TYPES.TELEMETRY,
+        }],
+        'platform':
+        'fuchsia-chrome',
+        'dimension': {
+            'cpu': None,
+            'device_type': 'Atlas',
             'os': 'Fuchsia',
             'pool': 'chrome.tests',
         },
@@ -249,12 +268,12 @@ FYI_BUILDERS = {
             'performance_web_engine_test_suite',
             'extra_args':
             ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
-            bot_platforms.SHERLOCK_EXEC_FLAGS,
+            bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
             'type':
             TEST_TYPES.TELEMETRY,
         }],
         'platform':
-        'fuchsia',
+        'fuchsia-wes',
         'dimension': {
             'cpu': None,
             'device_type': 'Sherlock',
@@ -318,6 +337,9 @@ FYI_BUILDERS = {
             'web_engine_shell_pkg', 'cast_runner_pkg', 'web_runner_pkg',
             'chromium_builder_perf', 'base_perftests'
         ],
+    },
+    'fuchsia-builder-perf-x64': {
+        'additional_compile_targets': ['chrome_pkg', 'base_perftests'],
     },
 }
 
@@ -1445,8 +1467,10 @@ def generate_telemetry_args(tester_config, platform):
   elif (tester_config['platform'] == 'win'
     and tester_config['target_bits'] == 64):
     browser_name = 'release_x64'
-  elif tester_config['platform'] == 'fuchsia':
+  elif tester_config['platform'] == 'fuchsia-wes':
     browser_name = 'web-engine-shell'
+  elif tester_config['platform'] == 'fuchsia-chrome':
+    browser_name = 'fuchsia-chrome'
   else:
     browser_name ='release'
   test_args = [
