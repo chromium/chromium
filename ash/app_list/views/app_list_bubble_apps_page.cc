@@ -491,6 +491,20 @@ void AppListBubbleAppsPage::MoveFocusUpFromRecents() {
 }
 
 void AppListBubbleAppsPage::MoveFocusDownFromRecents(int column) {
+  // When showing the sort undo toast, default to the default behavior that
+  // moves focus to the toast.
+  if (toast_container_ && toast_container_->is_toast_visible() &&
+      toast_container_->current_toast() ==
+          AppListToastContainerView::ToastType::kReorderUndo) {
+    views::View* last_recent =
+        recent_apps_->GetItemViewAt(recent_apps_->GetItemViewCount() - 1);
+    views::View* next_view = GetFocusManager()->GetNextFocusableView(
+        last_recent, GetWidget(), /*reverse=*/false, /*dont_loop=*/false);
+    DCHECK(next_view);
+    next_view->RequestFocus();
+    return;
+  }
+
   int top_level_item_count =
       scrollable_apps_grid_view_->view_model()->view_size();
   if (top_level_item_count <= 0)
@@ -506,6 +520,14 @@ void AppListBubbleAppsPage::MoveFocusDownFromRecents(int column) {
 
 bool AppListBubbleAppsPage::MoveFocusUpFromAppsGrid(int column) {
   DVLOG(1) << __FUNCTION__;
+  // When showing the sort undo toast, default to the default behavior that
+  // moves focus to the toast.
+  if (toast_container_ && toast_container_->is_toast_visible() &&
+      toast_container_->current_toast() ==
+          AppListToastContainerView::ToastType::kReorderUndo) {
+    return false;
+  }
+
   const int recent_app_count = recent_apps_->GetItemViewCount();
   // If there aren't any recent apps, don't change focus here. Fall back to the
   // app grid's default behavior.
