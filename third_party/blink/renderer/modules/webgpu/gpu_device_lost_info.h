@@ -7,7 +7,6 @@
 
 #include <dawn/webgpu.h>
 
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -25,7 +24,7 @@ class GPUDeviceLostInfo : public ScriptWrappable {
 
   // gpu_device_lost_info.idl
   const String& message() const;
-  const ScriptValue reason(ScriptState* script_state) const;
+  const String& reason() const;
 
  private:
   String message_;
