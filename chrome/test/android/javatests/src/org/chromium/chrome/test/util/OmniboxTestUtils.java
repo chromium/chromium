@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemViewInfo;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownAdapter;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
@@ -260,6 +261,21 @@ public class OmniboxTestUtils {
             }
 
             return null;
+        });
+    }
+
+    /**
+     * Highligh suggestion at a specific index.
+     *
+     * @param index The index of the suggestion to be highlighted.
+     */
+    public void focusSuggestion(int index) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OmniboxSuggestionsDropdownAdapter adapter =
+                    (OmniboxSuggestionsDropdownAdapter) mLocationBar.getAutocompleteCoordinator()
+                            .getSuggestionsDropdownForTest()
+                            .getAdapter();
+            adapter.setSelectedViewIndex(index);
         });
     }
 

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -53,6 +54,11 @@ public class PedalSuggestionView<T extends View> extends SimpleVerticalLayoutVie
         final @Px int pedalBottomPaddingPx = getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_semicompact_padding);
         setPaddingRelative(0, 0, 0, pedalBottomPaddingPx);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return mPedal.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
 
     /** @return base suggestion view. */

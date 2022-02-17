@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import com.google.android.material.color.MaterialColors;
 
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SimpleHorizontalLayoutView;
+import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.util.ColorUtils;
 
@@ -47,6 +49,24 @@ public class PedalView extends SimpleHorizontalLayoutView {
                 ColorUtils.getColorWithOverlay(baseColor, overlayColor, alpha));
 
         addView(mPedal);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_TAB) {
+            mPedal.setSelected(!mPedal.isSelected());
+            return true;
+        } else if (KeyNavigationUtil.isEnter(event) && mPedal.isSelected()) {
+            return mPedal.performClick();
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void setSelected(boolean isSelected) {
+        super.setSelected(isSelected);
+        mPedal.setSelected(false);
     }
 
     @Override

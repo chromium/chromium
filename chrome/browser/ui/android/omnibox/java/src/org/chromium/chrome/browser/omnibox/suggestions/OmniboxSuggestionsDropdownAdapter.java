@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
@@ -16,7 +17,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** ModelListAdapter for OmniboxSuggestionsDropdown (RecyclerView version). */
-class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter {
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter {
     private int mSelectedItem = RecyclerView.NO_POSITION;
     private LayoutManager mLayoutManager;
 
@@ -71,7 +73,8 @@ class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter {
      *
      * @param index end index.
      */
-    boolean setSelectedViewIndex(int index) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public boolean setSelectedViewIndex(int index) {
         if (mLayoutManager == null) return false;
         if (index != RecyclerView.NO_POSITION && (index < 0 || index >= getItemCount())) {
             return false;

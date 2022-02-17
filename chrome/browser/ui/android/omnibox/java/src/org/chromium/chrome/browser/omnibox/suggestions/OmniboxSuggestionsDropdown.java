@@ -402,16 +402,17 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (!isShown()) return false;
 
+        View selectedView = mAdapter.getSelectedView();
+        if (selectedView != null && selectedView.onKeyDown(keyCode, event)) {
+            return true;
+        }
+
         int selectedPosition = mAdapter.getSelectedViewIndex();
         if (KeyNavigationUtil.isGoDown(event)) {
             return mAdapter.setSelectedViewIndex(selectedPosition + 1);
         } else if (KeyNavigationUtil.isGoUp(event)) {
             return mAdapter.setSelectedViewIndex(selectedPosition - 1);
-        } else if (KeyNavigationUtil.isGoRight(event) || KeyNavigationUtil.isGoLeft(event)) {
-            View selectedView = mAdapter.getSelectedView();
-            if (selectedView != null) return selectedView.onKeyDown(keyCode, event);
         } else if (KeyNavigationUtil.isEnter(event)) {
-            View selectedView = mAdapter.getSelectedView();
             if (selectedView != null) return selectedView.performClick();
         }
         return super.onKeyDown(keyCode, event);
