@@ -311,11 +311,8 @@ class GpuIntegrationTest(
       network_controller_backend.Close()
       network_controller_backend.Open(wpr_mode)
 
-  def _ShouldForceRetryOnFailureFirstTest(self):
-    tags = self.GetPlatformTags(self.browser)
-    # Force RetryOnFailure of the first test on a shard on MacOS12 Debug/ASAN.
-    # See crbug.com/1296318.
-    return 'monterey' in tags and ('asan' in tags or 'debug' in tags)
+  def _ShouldForceRetryOnFailureFirstTest(self):  # pylint: disable=no-self-use
+    return False
 
   def _DetermineFirstTestRetryWorkaround(self, test_name):
     """Potentially allows retries for the first test run on a shard.
@@ -351,10 +348,9 @@ class GpuIntegrationTest(
   def _RunGpuTest(self, url, test_name, *args):
     expected_results, should_retry_on_failure = (
         self.GetExpectationsForTest()[:2])
-    if not ResultType.Skip in expected_results:
-      should_retry_on_failure = (
-          should_retry_on_failure
-          or self._DetermineFirstTestRetryWorkaround(test_name))
+    should_retry_on_failure = (
+        should_retry_on_failure
+        or self._DetermineFirstTestRetryWorkaround(test_name))
     try:
       # TODO(nednguyen): For some reason the arguments are getting wrapped
       # in another tuple sometimes (like in the WebGL extension tests).
