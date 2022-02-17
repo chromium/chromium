@@ -7,8 +7,8 @@
 
 import unittest
 
-from name_style_converter import NameStyleConverter
-from name_style_converter import tokenize_name
+from .name_style_converter import NameStyleConverter
+from .name_style_converter import tokenize_name
 
 
 class SmartTokenizerTest(unittest.TestCase):
