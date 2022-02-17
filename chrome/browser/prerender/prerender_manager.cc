@@ -5,10 +5,15 @@
 #include "chrome/browser/prerender/prerender_manager.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/common/pref_names.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/omnibox/browser/base_search_provider.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
@@ -19,6 +24,24 @@ const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[] =
 }  // namespace internal
 
 namespace {
+
+bool IsJavascriptDisabled(content::WebContents& web_contents, const GURL& url) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  if (!profile)
+    return true;
+
+  if (!profile->GetPrefs() ||
+      !profile->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
+    return true;
+  }
+
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  return (!content_settings || content_settings->GetContentSetting(
+                                   url, url, ContentSettingsType::JAVASCRIPT) ==
+                                   CONTENT_SETTING_BLOCK);
+}
 
 TemplateURLService* GetTemplateURLServiceFromWebContents(
     content::WebContents& web_contents) {
@@ -150,6 +173,13 @@ base::WeakPtr<content::PrerenderHandle>
 PrerenderManager::StartPrerenderAutocompleteMatch(
     const AutocompleteMatch& match) {
   DCHECK(AutocompleteMatch::IsSearchType(match.type));
+
+  // Since search pages require Javascirpt to perform the basic prerender
+  // loading logic, do not prerender a search result if Javascript is disabled.
+  if (IsJavascriptDisabled(*web_contents(), match.destination_url)) {
+    return nullptr;
+  }
+
   TemplateURLRef::SearchTermsArgs& search_terms_args =
       *(match.search_terms_args);
   const std::u16string& search_terms = search_terms_args.search_terms;
