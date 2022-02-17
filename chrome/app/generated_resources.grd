@@ -2545,6 +2545,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Footer link in the Download Bubble">
         Show all downloads
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR"
+               desc="A separator to place between download size and download time. A symbol, in this case a bullet •, with a white space before it and a white space after it, is used to separate them. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
+        ''' • '''
+      </message>
 
       <!-- Desktop omnibox PWA install icon -->
       <if expr="not is_android">

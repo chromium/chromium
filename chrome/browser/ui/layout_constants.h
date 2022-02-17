@@ -34,6 +34,12 @@ enum LayoutConstant {
   BOOKMARK_BAR_NTP_PADDING,
 #endif
 
+  // The size of icons used in Download bubbles.
+  // TODO(crbug/1296323): We should be sourcing the size of the file icon from
+  // the layout
+  // provider rather than relying on hardcoded constants.
+  DOWNLOAD_ICON_SIZE,
+
   // The vertical padding between the edge of a location bar bubble and its
   // contained text.
   LOCATION_BAR_BUBBLE_FONT_VERTICAL_PADDING,
@@ -109,6 +115,9 @@ enum LayoutConstant {
 };
 
 enum LayoutInset {
+  // The padding around icons used in Download bubbles.
+  DOWNLOAD_ICON,
+
   // The padding used around the icon inside the LocationBar. The full width of
   // the icon would be LOCATION_BAR_ICON_SIZE + 2 * inset.width(). The full
   // height of the icon would be LOCATION_BAR_ICON_SIZE + 2 * inset.height().

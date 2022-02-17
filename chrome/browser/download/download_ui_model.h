@@ -251,6 +251,10 @@ class DownloadUIModel {
   // and so can't give an estimate.
   virtual bool TimeRemaining(base::TimeDelta* remaining) const;
 
+  // Returns the end/completion time for a completed download. base::Time()
+  // if the download has not completed yet.
+  virtual base::Time GetEndTime() const;
+
   // Returns true if the download has been opened.
   virtual bool GetOpened() const;
 

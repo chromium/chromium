@@ -492,6 +492,10 @@ bool DownloadItemModel::TimeRemaining(base::TimeDelta* remaining) const {
   return download_->TimeRemaining(remaining);
 }
 
+base::Time DownloadItemModel::GetEndTime() const {
+  return download_->GetEndTime();
+}
+
 bool DownloadItemModel::GetOpened() const {
   return download_->GetOpened();
 }

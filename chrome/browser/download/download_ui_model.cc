@@ -493,6 +493,10 @@ bool DownloadUIModel::TimeRemaining(base::TimeDelta* remaining) const {
   return false;
 }
 
+base::Time DownloadUIModel::GetEndTime() const {
+  return base::Time();
+}
+
 bool DownloadUIModel::GetOpened() const {
   return false;
 }

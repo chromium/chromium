@@ -56,6 +56,7 @@ class OfflineItemModel : public DownloadUIModel,
   download::DownloadItem::DownloadState GetState() const override;
   bool IsPaused() const override;
   bool TimeRemaining(base::TimeDelta* remaining) const override;
+  base::Time GetEndTime() const override;
   bool IsDone() const override;
   base::FilePath GetFullPath() const override;
   bool CanResume() const override;

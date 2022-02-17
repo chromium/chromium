@@ -87,6 +87,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 12 : 8;
     case PAGE_INFO_ICON_SIZE:
       return 16;
+    case DOWNLOAD_ICON_SIZE:
+      return 16;
     default:
       break;
   }
@@ -111,6 +113,9 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
 
     case TOOLBAR_INTERIOR_MARGIN:
       return touch_ui ? gfx::Insets() : gfx::Insets(4, 8);
+
+    case DOWNLOAD_ICON:
+      return gfx::Insets(4);
   }
   NOTREACHED();
   return gfx::Insets();

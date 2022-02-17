@@ -168,6 +168,10 @@ bool OfflineItemModel::TimeRemaining(base::TimeDelta* remaining) const {
   return true;
 }
 
+base::Time OfflineItemModel::GetEndTime() const {
+  return offline_item_->completion_time;
+}
+
 bool OfflineItemModel::IsDone() const {
   if (!offline_item_)
     return true;
