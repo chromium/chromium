@@ -16,7 +16,6 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/quick_pair/scanning/fast_pair/fake_fast_pair_scanner.h"
-#include "ash/quick_pair/scanning/fast_pair/fake_quick_pair_process_manager.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner.h"
 #include "ash/services/quick_pair/fast_pair_data_parser.h"
 #include "ash/services/quick_pair/mock_quick_pair_process_manager.h"
@@ -45,6 +44,51 @@ namespace {
 
 constexpr char kValidModelId[] = "718c17";
 const std::string kAddress = "test_address";
+
+class FakeQuickPairProcessManager
+    : public ash::quick_pair::QuickPairProcessManager {
+ public:
+  FakeQuickPairProcessManager(
+      base::test::SingleThreadTaskEnvironment* task_environment)
+      : task_enviornment_(task_environment) {
+    data_parser_ = std::make_unique<ash::quick_pair::FastPairDataParser>(
+        fast_pair_data_parser_.InitWithNewPipeAndPassReceiver());
+
+    data_parser_remote_.Bind(std::move(fast_pair_data_parser_),
+                             task_enviornment_->GetMainThreadTaskRunner());
+  }
+
+  ~FakeQuickPairProcessManager() override = default;
+
+  std::unique_ptr<ProcessReference> GetProcessReference(
+      ProcessStoppedCallback on_process_stopped_callback) override {
+    on_process_stopped_callback_ = std::move(on_process_stopped_callback);
+
+    if (process_stopped_) {
+      std::move(on_process_stopped_callback_)
+          .Run(
+              ash::quick_pair::QuickPairProcessManager::ShutdownReason::kCrash);
+    }
+
+    return std::make_unique<
+        ash::quick_pair::QuickPairProcessManagerImpl::ProcessReferenceImpl>(
+        data_parser_remote_, base::DoNothing());
+  }
+
+  void SetProcessStopped(bool process_stopped) {
+    process_stopped_ = process_stopped;
+  }
+
+ private:
+  bool process_stopped_ = false;
+  mojo::SharedRemote<ash::quick_pair::mojom::FastPairDataParser>
+      data_parser_remote_;
+  mojo::PendingRemote<ash::quick_pair::mojom::FastPairDataParser>
+      fast_pair_data_parser_;
+  std::unique_ptr<ash::quick_pair::FastPairDataParser> data_parser_;
+  base::test::SingleThreadTaskEnvironment* task_enviornment_;
+  ProcessStoppedCallback on_process_stopped_callback_;
+};
 
 }  // namespace
 
