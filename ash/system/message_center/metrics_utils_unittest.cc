@@ -17,6 +17,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/views/widget/widget_utils.h"
 
 using message_center::Notification;
@@ -75,6 +76,7 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
         message_center::SettingsButtonHandler::INLINE;
     message_center::NotifierId notifier_id;
     notifier_id.profile_id = "a@b.com";
+    notifier_id.type = message_center::NotifierType::WEB_PAGE;
     return std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_BASE_FORMAT,
         base::NumberToString(current_id_++), u"title", u"message", gfx::Image(),

@@ -163,7 +163,8 @@ Notification* MessageCenterImpl::FindParentNotification(
   // the same website for the same user. If either fields are empty there can
   // not be a parent notification.
   if (notification->origin_url().is_empty() ||
-      notification->notifier_id().profile_id.empty()) {
+      notification->notifier_id().profile_id.empty() ||
+      notification->notifier_id().type != NotifierType::WEB_PAGE) {
     return nullptr;
   }
 
@@ -255,6 +256,12 @@ void MessageCenterImpl::AddNotification(
   for (NotificationBlocker* blocker : blockers_)
     blocker->CheckState();
 
+  auto* parent = FindParentNotification(notification.get());
+  if (notification->allow_group() && parent && !notification->group_parent()) {
+    parent->SetGroupParent();
+    notification->SetGroupChild();
+  }
+
   // Sometimes the notification can be added with the same id and the
   // |notification_list| will replace the notification instead of adding new.
   // This is essentially an update rather than addition.
@@ -262,12 +269,6 @@ void MessageCenterImpl::AddNotification(
   if (already_exists) {
     UpdateNotification(id, std::move(notification));
     return;
-  }
-
-  auto* parent = FindParentNotification(notification.get());
-  if (notification->allow_group() && parent && !notification->group_parent()) {
-    parent->SetGroupParent();
-    notification->SetGroupChild();
   }
 
   notification_list_->AddNotification(std::move(notification));

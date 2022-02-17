@@ -65,6 +65,7 @@ class NotificationGroupingControllerTest : public AshTestBase {
     id_out = base::StringPrintf(kIdFormat, notifications_counter_);
     message_center::NotifierId notifier_id;
     notifier_id.profile_id = "abc@gmail.com";
+    notifier_id.type = message_center::NotifierType::WEB_PAGE;
     auto notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, id_out,
         u"id" + base::NumberToString16(notifications_counter_),
