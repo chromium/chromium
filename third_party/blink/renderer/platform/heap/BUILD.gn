@@ -14,10 +14,7 @@ buildflag_header("blink_heap_buildflags") {
   header = "heap_buildflags.h"
   header_dir = "third_party/blink/renderer/platform/heap"
 
-  flags = [
-    "BLINK_HEAP_VERIFICATION=$enable_blink_heap_verification",
-    "BLINK_HEAP_YOUNG_GENERATION=$cppgc_enable_young_generation",
-  ]
+  flags = [ "VERBOSE_PERSISTENT=$cppgc_enable_object_names" ]
 }
 
 blink_platform_sources("heap") {

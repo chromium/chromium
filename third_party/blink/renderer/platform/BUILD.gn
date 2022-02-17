@@ -198,7 +198,6 @@ buildflag_header("bindings_buildflags") {
   header_dir = "third_party/blink/renderer/platform/bindings"
 
   flags = [
-    "RAW_HEAP_SNAPSHOTS=$enable_additional_blink_object_names",
     "RCS_COUNT_EVERYTHING=$runtime_call_stats_count_everything",
     "BLINK_BINDINGS_TRACE_ENABLED=$enable_blink_bindings_tracing",
   ]

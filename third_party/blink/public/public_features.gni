@@ -5,23 +5,6 @@
 import("//build/config/ui.gni")
 
 declare_args() {
-  # Enables additional Oilpan heap verification instrumentation.
-  enable_blink_heap_verification = false
-
-  # Enables young generation collections in Oilpan.
-  enable_blink_heap_young_generation = false
-}
-
-declare_args() {
-  # If enable_additional_blink_object_names is set to true, then blink provides
-  # additional debug names of blink-internal (i.e. oilpan) object names at the
-  # cost of additional memory. Many of these objects only show up in heap
-  # snapshots if the parameter `treatGlobalObjectsAsRoots` of `takeHeapSnapshot`
-  # is set.
-  enable_additional_blink_object_names = enable_blink_heap_verification
-}
-
-declare_args() {
   # If true, adds support for JPEG XL image decoding.
   enable_jxl_decoder = !is_ios
 }
@@ -33,8 +16,3 @@ enable_unhandled_tap = is_android
 
 # Use Minikin hyphenation engine.
 use_minikin_hyphenation = !is_mac
-
-# Forward the request for naming to cppgc.
-if (enable_additional_blink_object_names) {
-  cppgc_enable_object_names = true
-}
