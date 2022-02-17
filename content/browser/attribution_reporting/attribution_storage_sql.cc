@@ -127,11 +127,15 @@ namespace content {
 // Version 20 - 2022/02/07 - https://crrev.com/c/3444062
 //
 // Version 20 adds the rate_limits.scope column and corresponding indexes.
-const int AttributionStorageSql::kCurrentVersionNumber = 20;
+//
+// Version 21 - 2022/02/16 - https://crrev.com/c/3465916
+//
+// Version 21 changes the dedup_keys.dedup_key column from int64_t to uint64_t.
+const int AttributionStorageSql::kCurrentVersionNumber = 21;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 20;
+const int AttributionStorageSql::kCompatibleVersionNumber = 21;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -147,7 +151,9 @@ const int AttributionStorageSql::kCompatibleVersionNumber = 20;
 // Version 18 was deprecated by https://crrev.com/c/3421868.
 //
 // Version 19 was deprecated by https://crrev.com/c/3444062.
-const int AttributionStorageSql::kDeprecatedVersionNumber = 19;
+//
+// Version 20 was deprecated by https://crrev.com/c/3465916.
+const int AttributionStorageSql::kDeprecatedVersionNumber = 20;
 
 namespace {
 
@@ -406,7 +412,7 @@ AttributionStorageSql::DeactivateSources(
     return absl::nullopt;
 
   for (auto& deactivated_source : deactivated_sources) {
-    absl::optional<std::vector<int64_t>> dedup_keys =
+    absl::optional<std::vector<uint64_t>> dedup_keys =
         ReadDedupKeys(deactivated_source.source.source_id());
     if (!dedup_keys.has_value())
       return absl::nullopt;
@@ -843,7 +849,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     sql::Statement insert_dedup_key_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kInsertDedupKeySql));
     insert_dedup_key_statement.BindInt64(0, *report.source().source_id());
-    insert_dedup_key_statement.BindInt64(1, *trigger.dedup_key());
+    insert_dedup_key_statement.BindInt64(1,
+                                         SerializeUint64(*trigger.dedup_key()));
     if (!insert_dedup_key_statement.Run()) {
       return CreateReportResult(AttributionTrigger::Result::kInternalError,
                                 std::move(report));
@@ -1400,7 +1407,7 @@ bool AttributionStorageSql::HasCapacityForStoringSource(
 
 AttributionStorageSql::ReportAlreadyStoredStatus
 AttributionStorageSql::ReportAlreadyStored(StoredSource::Id source_id,
-                                           absl::optional<int64_t> dedup_key) {
+                                           absl::optional<uint64_t> dedup_key) {
   if (!dedup_key.has_value())
     return ReportAlreadyStoredStatus::kNotStored;
 
@@ -1410,7 +1417,7 @@ AttributionStorageSql::ReportAlreadyStored(StoredSource::Id source_id,
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountReportsSql));
   statement.BindInt64(0, *source_id);
-  statement.BindInt64(1, *dedup_key);
+  statement.BindInt64(1, SerializeUint64(*dedup_key));
 
   // If there's an error, return true so `MaybeCreateAndStoreReport()`
   // returns early.
@@ -1479,7 +1486,7 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
     return {};
 
   for (auto& source : sources) {
-    absl::optional<std::vector<int64_t>> dedup_keys =
+    absl::optional<std::vector<uint64_t>> dedup_keys =
         ReadDedupKeys(source.source_id());
     if (!dedup_keys.has_value())
       return {};
@@ -1489,7 +1496,7 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
   return sources;
 }
 
-absl::optional<std::vector<int64_t>> AttributionStorageSql::ReadDedupKeys(
+absl::optional<std::vector<uint64_t>> AttributionStorageSql::ReadDedupKeys(
     StoredSource::Id source_id) {
   static constexpr char kDedupKeySql[] =
       "SELECT dedup_key FROM dedup_keys WHERE impression_id = ?";
@@ -1497,9 +1504,9 @@ absl::optional<std::vector<int64_t>> AttributionStorageSql::ReadDedupKeys(
       db_->GetCachedStatement(SQL_FROM_HERE, kDedupKeySql));
   statement.BindInt64(0, *source_id);
 
-  std::vector<int64_t> dedup_keys;
+  std::vector<uint64_t> dedup_keys;
   while (statement.Step()) {
-    dedup_keys.push_back(statement.ColumnInt64(0));
+    dedup_keys.push_back(DeserializeUint64(statement.ColumnInt64(0)));
   }
   if (!statement.Succeeded())
     return absl ::nullopt;

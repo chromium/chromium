@@ -277,7 +277,7 @@ SourceBuilder& SourceBuilder::SetSourceId(StoredSource::Id source_id) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetDedupKeys(std::vector<int64_t> dedup_keys) {
+SourceBuilder& SourceBuilder::SetDedupKeys(std::vector<uint64_t> dedup_keys) {
   dedup_keys_ = std::move(dedup_keys);
   return *this;
 }
@@ -339,7 +339,8 @@ TriggerBuilder& TriggerBuilder::SetPriority(int64_t priority) {
   return *this;
 }
 
-TriggerBuilder& TriggerBuilder::SetDedupKey(absl::optional<int64_t> dedup_key) {
+TriggerBuilder& TriggerBuilder::SetDedupKey(
+    absl::optional<uint64_t> dedup_key) {
   dedup_key_ = dedup_key;
   return *this;
 }

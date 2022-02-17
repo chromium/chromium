@@ -147,7 +147,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   ReportAlreadyStoredStatus ReportAlreadyStored(
       StoredSource::Id source_id,
-      absl::optional<int64_t> dedup_key)
+      absl::optional<uint64_t> dedup_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class ConversionCapacityStatus {
@@ -179,8 +179,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       AttributionReport::EventLevelData::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<std::vector<int64_t>> ReadDedupKeys(StoredSource::Id source_id)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  absl::optional<std::vector<uint64_t>> ReadDedupKeys(
+      StoredSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool HasCapacityForUniqueDestinationLimitForPendingSource(
       const StorableSource& source) VALID_CONTEXT_REQUIRED(sequence_checker_);

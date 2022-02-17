@@ -16,7 +16,7 @@ AttributionTrigger::AttributionTrigger(
     url::Origin reporting_origin,
     uint64_t event_source_trigger_data,
     int64_t priority,
-    absl::optional<int64_t> dedup_key,
+    absl::optional<uint64_t> dedup_key,
     absl::optional<uint64_t> debug_key)
     : trigger_data_(trigger_data),
       conversion_destination_(std::move(conversion_destination)),

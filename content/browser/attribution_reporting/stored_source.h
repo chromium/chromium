@@ -48,9 +48,9 @@ class CONTENT_EXPORT StoredSource {
 
   Id source_id() const { return source_id_; }
 
-  const std::vector<int64_t>& dedup_keys() const { return dedup_keys_; }
+  const std::vector<uint64_t>& dedup_keys() const { return dedup_keys_; }
 
-  void SetDedupKeys(std::vector<int64_t> dedup_keys) {
+  void SetDedupKeys(std::vector<uint64_t> dedup_keys) {
     dedup_keys_ = std::move(dedup_keys);
   }
 
@@ -63,7 +63,7 @@ class CONTENT_EXPORT StoredSource {
 
   // Dedup keys associated with the source. Only set in values returned from
   // `AttributionStorage::GetActiveSources()`.
-  std::vector<int64_t> dedup_keys_;
+  std::vector<uint64_t> dedup_keys_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

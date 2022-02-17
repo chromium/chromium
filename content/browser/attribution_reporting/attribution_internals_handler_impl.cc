@@ -41,7 +41,7 @@ using Attributability =
 mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
     const CommonSourceInfo& source,
     Attributability attributability,
-    const std::vector<int64_t>& dedup_keys) {
+    const std::vector<uint64_t>& dedup_keys) {
   return mojom::WebUIAttributionSource::New(
       source.source_event_id(), source.impression_origin(),
       source.ConversionDestination().Serialize(), source.reporting_origin(),

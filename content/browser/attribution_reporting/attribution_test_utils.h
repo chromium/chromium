@@ -326,7 +326,7 @@ class SourceBuilder {
 
   SourceBuilder& SetSourceId(StoredSource::Id source_id);
 
-  SourceBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys);
+  SourceBuilder& SetDedupKeys(std::vector<uint64_t> dedup_keys);
 
   StorableSource Build() const;
 
@@ -350,7 +350,7 @@ class SourceBuilder {
   // `base::StrongAlias` does not automatically initialize the value here.
   // Ensure that we don't use uninitialized memory.
   StoredSource::Id source_id_{0};
-  std::vector<int64_t> dedup_keys_;
+  std::vector<uint64_t> dedup_keys_;
 };
 
 // Returns a AttributionTrigger with default data which matches the default
@@ -376,7 +376,7 @@ class TriggerBuilder {
 
   TriggerBuilder& SetPriority(int64_t priority);
 
-  TriggerBuilder& SetDedupKey(absl::optional<int64_t> dedup_key);
+  TriggerBuilder& SetDedupKey(absl::optional<uint64_t> dedup_key);
 
   TriggerBuilder& SetDebugKey(absl::optional<uint64_t> debug_key);
 
@@ -388,7 +388,7 @@ class TriggerBuilder {
   net::SchemefulSite conversion_destination_;
   url::Origin reporting_origin_;
   int64_t priority_ = 0;
-  absl::optional<int64_t> dedup_key_;
+  absl::optional<uint64_t> dedup_key_;
   absl::optional<uint64_t> debug_key_;
 };
 
