@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -22,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service.h"
@@ -256,6 +258,23 @@ void AddChoosePrivateKeyRuleToPolicy(
   filtered_policies->SetKey(kChoosePrivateKeyRules, std::move(rules));
 }
 
+// Finds managed configurations of applications in |arc_policy| and replace
+// string values that refer to template variables.
+void ReplaceManagedConfigurationVariables(const Profile* profile,
+                                          base::Value* arc_policy) {
+  // Replace template variables in application managed configuration.
+  base::Value* applications =
+      arc_policy->FindListKey(ArcPolicyBridge::kApplications);
+  if (applications) {
+    base::Value::ListView list_view = applications->GetListDeprecated();
+    for (base::Value& entry : list_view) {
+      base::Value* config = entry.FindDictKey("managedConfiguration");
+      if (config)
+        RecursivelyReplaceManagedConfigurationVariables(profile, config);
+    }
+  }
+}
+
 std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
                                     const std::string& guid,
                                     bool is_affiliated,
@@ -377,6 +396,8 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   AddRequiredKeyPairs(cert_store_service, &filtered_policies);
   AddChoosePrivateKeyRuleToPolicy(policy_service, cert_store_service,
                                   &filtered_policies);
+
+  ReplaceManagedConfigurationVariables(profile, &filtered_policies);
 
   std::string policy_json;
   JSONStringValueSerializer serializer(&policy_json);
