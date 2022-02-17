@@ -5,6 +5,8 @@
 #ifndef ASH_APP_LIST_VIEWS_APP_LIST_TOAST_CONTAINER_VIEW_H_
 #define ASH_APP_LIST_VIEWS_APP_LIST_TOAST_CONTAINER_VIEW_H_
 
+#include <memory>
+
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ui/views/view.h"
 
@@ -17,6 +19,7 @@ namespace ash {
 class AppListA11yAnnouncer;
 class AppListNudgeController;
 class AppListToastView;
+class AppsGridContextMenu;
 enum class AppListSortOrder;
 
 // A container view accommodating a toast view with type `ToastType`. See
@@ -94,6 +97,10 @@ class AppListToastContainerView : public views::View {
       AppListSortOrder order) const;
 
   AppListA11yAnnouncer* const a11y_announcer_;
+
+  // The app list toast container is visually part of the apps grid and should
+  // provide context menu options generally available in the apps grid.
+  std::unique_ptr<AppsGridContextMenu> context_menu_;
 
   // Whether the toast container is part of the tablet mode app list UI.
   const bool tablet_mode_;

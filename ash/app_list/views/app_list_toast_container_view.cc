@@ -11,6 +11,7 @@
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_view.h"
+#include "ash/app_list/views/apps_grid_context_menu.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -54,6 +55,9 @@ AppListToastContainerView::AppListToastContainerView(
                   views::FlexSpecification(
                       views::MinimumFlexSizeRule::kPreferred,
                       views::MaximumFlexSizeRule::kScaleToMaximum));
+
+  context_menu_ = std::make_unique<AppsGridContextMenu>();
+  set_context_menu_controller(context_menu_.get());
 }
 
 AppListToastContainerView::~AppListToastContainerView() {
