@@ -143,9 +143,6 @@ void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
   if (!client)
     return;
 
-  // TODO https://crbug.com/1258002 Don't do any of this if the user is guest,
-  // the screen is locked, or we're in OOBE or any other non-logged-in mode.
-
   // No need to fetch.
   if (IsMonthAlreadyFetched(start_of_month))
     return;
@@ -255,8 +252,8 @@ void CalendarModel::OnEventsFetched(
 
 void CalendarModel::InsertEvent(
     const google_apis::calendar::CalendarEvent* event) {
-  base::Time start_day = event->start_time().date_time().UTCMidnight();
-  base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(start_day);
+  base::Time start_of_month =
+      calendar_utils::GetStartOfMonthUTC(GetStartTimeMidnightAdjusted(event));
 
   auto it = event_months_.find(start_of_month);
   if (it == event_months_.end()) {
@@ -274,20 +271,30 @@ void CalendarModel::InsertEvent(
 void CalendarModel::InsertEventInMonth(
     SingleMonthEventMap& month,
     const google_apis::calendar::CalendarEvent* event) {
-  base::Time midnight = event->start_time().date_time().UTCMidnight();
+  base::Time start_time_midnight = GetStartTimeMidnightAdjusted(event);
 
-  auto it = month.find(midnight);
+  auto it = month.find(start_time_midnight);
   if (it == month.end()) {
     // No events stored for this day, so create a new list, add the event to
     // it, and insert the list in the map.
     SingleDayEventList list;
     list.push_back(*event);
-    month.emplace(midnight, list);
+    month.emplace(start_time_midnight, list);
   } else {
     // Already have some events for this day.
     SingleDayEventList& list = it->second;
     list.push_back(*event);
   }
+}
+
+base::Time CalendarModel::GetStartTimeMidnightAdjusted(
+    const google_apis::calendar::CalendarEvent* event) const {
+  if (time_difference_minutes_.has_value()) {
+    return (event->start_time().date_time() +
+            base::Minutes(time_difference_minutes_.value()))
+        .UTCMidnight();
+  }
+  return event->start_time().date_time().UTCMidnight();
 }
 
 void CalendarModel::InsertEvents(
@@ -313,6 +320,41 @@ SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
     return event_list;
 
   return it2->second;
+}
+
+void CalendarModel::RedistributeEvents(int time_difference_minutes) {
+  // Early returns if the time difference is not changed.
+  if (time_difference_minutes_.has_value() &&
+      time_difference_minutes == time_difference_minutes_.value()) {
+    return;
+  }
+
+  // Early returns if the `time_difference_minutes_` is not assigned and the
+  // difference is 0.
+  if (!time_difference_minutes_.has_value() && time_difference_minutes == 0) {
+    time_difference_minutes_ = time_difference_minutes;
+    return;
+  }
+
+  // Redistributes all the fetched events to the date map with the
+  // `time_difference_minutes_`.
+  time_difference_minutes_ = time_difference_minutes;
+  SingleDayEventList to_be_redistributed_events;
+  for (auto month = event_months_.begin(); month != event_months_.end();
+       month++) {
+    SingleMonthEventMap& event_map = month->second;
+    for (auto it = event_map.begin(); it != event_map.end(); it++) {
+      for (const google_apis::calendar::CalendarEvent& event : it->second) {
+        to_be_redistributed_events.push_back(event);
+      }
+    }
+  }
+
+  event_months_.clear();
+  for (const google_apis::calendar::CalendarEvent& event :
+       to_be_redistributed_events) {
+    InsertEvent(&event);
+  }
 }
 
 void CalendarModel::PruneEventCache() {

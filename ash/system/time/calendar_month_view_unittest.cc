@@ -23,12 +23,11 @@ namespace {
 
 std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList() {
   auto event_list = std::make_unique<google_apis::calendar::EventList>();
-  event_list->set_time_zone("America/Los_Angeles");
-
+  event_list->set_time_zone("Greenwich Mean Time");
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
       "id_0", "summary_0", "18 Aug 2021 8:30 GMT", "18 Nov 2021 9:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
-      "id_1", "summary_1", "18 Aug 2021 7:30 GMT", "18 Nov 2021 11:30 GMT"));
+      "id_1", "summary_1", "18 Aug 2021 8:15 GMT", "18 Nov 2021 11:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
       "id_2", "summary_2", "18 Aug 2021 11:30 GMT", "18 Nov 2021 12:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(

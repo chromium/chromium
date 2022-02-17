@@ -113,7 +113,7 @@ class ASH_EXPORT CalendarViewController {
     expanded_area_available_height_ = height;
   }
 
-  int time_difference_hours() { return time_difference_hours_; }
+  int time_difference_minutes() { return time_difference_minutes_; }
 
   // Getters of the today's row position, top and bottom.
   int GetTodayRowTopHeight() const;
@@ -202,8 +202,8 @@ class ASH_EXPORT CalendarViewController {
   // The current row index when the event list view is shown.
   int expanded_row_index_ = 0;
 
-  // The time difference between UTC and local time in hour.
-  int time_difference_hours_ = 0;
+  // The time difference between UTC and local time in minutes.
+  int time_difference_minutes_ = 0;
 
   // The event list of the currently selected date.
   SingleDayEventList* selected_date_events_;

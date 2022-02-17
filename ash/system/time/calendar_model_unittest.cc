@@ -393,6 +393,78 @@ TEST_F(CalendarModelTest, DayWithEvents_TwoDays) {
   EXPECT_FALSE(events.empty());
 }
 
+TEST_F(CalendarModelTest, ChangeTimeDifference) {
+  const char* kStartTime0 = "23 Oct 2009 11:30 GMT";
+  const char* kEndTime0 = "23 Oct 2009 12:30 GMT";
+  const char* kId0 = "id_0";
+  const char* kSummary0 = "summary_0";
+  const char* kStartTime1 = "24 Oct 2009 07:30 GMT";
+  const char* kEndTime1 = "25 Oct 2009 08:30 GMT";
+  const char* kId1 = "id_1";
+  const char* kSummary1 = "summary_1";
+
+  // Current date is just kStartTime0.
+  base::Time current_date;
+  bool result = base::Time::FromString(kStartTime0, &current_date);
+  DCHECK(result);
+  SetFakeNow(current_date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarModelTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  base::Time now = base::Time::Now();
+  std::set<base::Time> months;
+  calendar_utils::GetSurroundingMonthsUTC(now, 1, months);
+  event_fetcher_ = std::make_unique<TestableCalendarModel>(months);
+
+  // Get ready to inject two events.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->set_time_zone("America/Los_Angeles");
+  std::unique_ptr<google_apis::calendar::CalendarEvent> event0 =
+      calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
+  std::unique_ptr<google_apis::calendar::CalendarEvent> event1 =
+      calendar_test_utils::CreateEvent(kId1, kSummary1, kStartTime1, kEndTime1);
+  SingleDayEventList events;
+
+  // Inject both events.
+  event_list->InjectItemForTesting(std::move(event0));
+  event_list->InjectItemForTesting(std::move(event1));
+  event_fetcher_->InjectEvents(std::move(event_list));
+  event_fetcher_->FetchEvents(months);
+
+  // Based on the tesing timezone "America/Los_Angeles" these 2 events are
+  // distributed into 2 days. Each day has one event.
+  events.clear();
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
+
+  events.clear();
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime1, &events));
+
+  // Adjusts the time with -10 hours.
+  // kStartTime0 "23 Oct 2009 11:30" -> "23 Oct 2009 1:30".
+  // kStartTime1 "24 Oct 2009 07:30" -> "23 Oct 2009 21:30"
+  // Both events should be on the 23rd.
+  event_fetcher_->RedistributeEvents(/*time_difference_minutes=*/-10 * 60);
+  events.clear();
+  EXPECT_EQ(2, EventsNumberOfDay(kStartTime0, &events));
+
+  events.clear();
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime1, &events));
+
+  // Adjusts the time with +15 hours.
+  // kStartTime0 "23 Oct 2009 11:30" -> "24 Oct 2009 2:30".
+  // kStartTime1 "24 Oct 2009 07:30" -> "24 Oct 2009 22:30"
+  // Both events should be on the 24rd.
+  event_fetcher_->RedistributeEvents(/*time_difference_minutes=*/15 * 60);
+  events.clear();
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
+
+  events.clear();
+  EXPECT_EQ(2, EventsNumberOfDay(kStartTime1, &events));
+}
+
 TEST_F(CalendarModelTest, OnlyFetchOnce) {
   const char* kStartTime0 = "23 Oct 2009 11:30 GMT";
   const char* kEndTime0 = "23 Oct 2009 12:30 GMT";

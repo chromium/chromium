@@ -135,7 +135,8 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   // date] is currently selected.
   if (is_selected_) {
     base::Time local_date =
-        date_ + base::Hours(calendar_view_controller_->time_difference_hours());
+        date_ +
+        base::Minutes(calendar_view_controller_->time_difference_minutes());
     base::Time::Exploded date_exploded =
         calendar_utils::GetExplodedUTC(local_date);
     base::Time first_day_of_week =
@@ -312,7 +313,7 @@ CalendarMonthView::CalendarMonthView(
   // generate the exploded.
   base::Time first_day_of_month_local =
       first_day_of_month +
-      base::Hours(calendar_view_controller_->time_difference_hours());
+      base::Minutes(calendar_view_controller_->time_difference_minutes());
   base::Time::Exploded first_day_of_month_exploded =
       calendar_utils::GetExplodedUTC(first_day_of_month_local);
 

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -70,6 +71,16 @@ class ASH_EXPORT CalendarModel {
   // likely to be pruned if we need to trim down to stay within storage limits.
   SingleDayEventList FindEvents(base::Time day) const;
 
+  // Redistributes all the fetched events to the date map with the
+  // `time_difference_minutes_`. This only happens once per calendar view's life
+  // cycle.
+  void RedistributeEvents(int time_difference_minutes);
+
+  // Updates the time difference in minutes.
+  void set_time_difference_minutes(int minutes) {
+    time_difference_minutes_ = minutes;
+  }
+
  protected:
   // Fetch events for |start_of_month| if we haven't already done so since the
   // calendar was opened.  This registers our callback OnCalendarEventsFetched.
@@ -89,6 +100,12 @@ class ASH_EXPORT CalendarModel {
   // start date.
   void InsertEventInMonth(SingleMonthEventMap& month,
                           const google_apis::calendar::CalendarEvent* event);
+
+  // Returns the event's `start_time` midnight adjusted by the
+  // `time_difference_minutes_`. So the each event will be mapped to the date
+  // map by the local device/set time.
+  base::Time GetStartTimeMidnightAdjusted(
+      const google_apis::calendar::CalendarEvent* event) const;
 
   // Insert EventList |events| in the EventCache.
   void InsertEvents(const google_apis::calendar::EventList* events);
@@ -139,6 +156,9 @@ class ASH_EXPORT CalendarModel {
 
   // All fetch requests that are still in-progress.
   std::map<base::Time, std::unique_ptr<CalendarEventFetch>> pending_fetches_;
+
+  // Time difference between the UTC time and the local time in minutes.
+  absl::optional<int> time_difference_minutes_;
 
   base::ObserverList<Observer> observers_;
 
