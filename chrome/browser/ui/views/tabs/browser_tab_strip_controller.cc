@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/common/chrome_switches.h"
@@ -671,6 +672,10 @@ void BrowserTabStripController::OnTabStripModelChanged(
 
   if (selection.selection_changed())
     tabstrip_->SetSelection(selection.new_model);
+}
+
+void BrowserTabStripController::OnTabWillBeAdded() {
+  tabstrip_->EndDrag(EndDragReason::END_DRAG_MODEL_ADDED_TAB);
 }
 
 void BrowserTabStripController::OnTabGroupChanged(

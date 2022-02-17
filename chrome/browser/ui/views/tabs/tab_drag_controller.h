@@ -460,7 +460,7 @@ class TabDragController : public views::WidgetObserver {
   // BrowserView.
   views::Widget* GetAttachedBrowserWidget();
 
-  // Returns true if the tabs were originality one after the other in
+  // Returns true if the tabs were originally one after the other in
   // |source_context_|.
   bool AreTabsConsecutive();
 

@@ -331,6 +331,12 @@ class TabStripModelObserver {
                                       const TabStripModelChange& change,
                                       const TabStripSelectionChange& selection);
 
+  // Notification that a tab will be added to the TabStripModel, which allows
+  // an observer to react to an impending change to the TabStripModel. The only
+  // use case of this signal that is currently supported is the drag controller
+  // cancelling/completing a the drag before a tab is added during header drag.
+  virtual void OnTabWillBeAdded();
+
   // |change| is a change in the Tab Group model or metadata. These
   // changes may cause repainting of some Tab Group UI. They are
   // independent of the tabstrip model and do not affect any tab state.

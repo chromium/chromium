@@ -844,7 +844,9 @@ class TabStripModel : public TabGroupController {
   // no tabs. Returns that group.
   absl::optional<tab_groups::TabGroupId> UngroupTab(int index);
 
-  // Helper function for MoveAndSetGroup. Adds the tab at |index| to |group|.
+  // Helper function for MoveAndSetGroup. Adds the tab at |index| to |group|,
+  // updates the group model, and notifies the observers if the group at that
+  // index would change.
   void GroupTab(int index, const tab_groups::TabGroupId& group);
 
   // Changes the pinned state of the tab at |index|.

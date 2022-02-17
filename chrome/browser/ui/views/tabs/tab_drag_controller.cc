@@ -680,6 +680,17 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
 void TabDragController::EndDrag(EndDragReason reason) {
   TRACE_EVENT0("views", "TabDragController::EndDrag");
 
+  // Some drags need to react to the model being mutated before the model can
+  // change its state.
+  if (reason == END_DRAG_MODEL_ADDED_TAB) {
+    // if the drag is not a header drag, ignore this signal. We must place the
+    // drag at the current position in the tabstrip or else we will be
+    // re-entering into tabstrip mutation code.
+    if (header_drag_)
+      EndDragImpl(source_context_ == attached_context_ ? CANCELED : NORMAL);
+    return;
+  }
+
   // If we're dragging a window ignore capture lost since it'll ultimately
   // trigger the move loop to end and we'll revert the drag when RunMoveLoop()
   // finishes.
