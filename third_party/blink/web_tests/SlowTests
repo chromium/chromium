@@ -197,6 +197,7 @@ crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-incremental-r
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Slow ]
 crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
 crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
+crbug.com/1041847 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-colorManaged-convertToBlob-roundtrip.html [ Slow ]
 
 # Slow canvas tests
 crbug.com/1170041 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-createImageBitmap-e_srgb.html [ Slow ]
@@ -726,7 +727,6 @@ crbug.com/1046784 http/tests/devtools/forced-layout-in-microtask.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
 crbug.com/1046784 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Slow ]
-crbug.com/1041847 virtual/gpu/fast/canvas/color-space/canvas-colorManaged-convertToBlob-roundtrip.html [ Slow ]
 crbug.com/1048597 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Slow ]
 crbug.com/1057807 http/tests/misc/destroy-middle-click-locked-target-crash.html [ Slow ]
 crbug.com/1042694 fast/forms/form-control-with-state-eager-tracing-crashTest.html [ Slow ]
