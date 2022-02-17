@@ -46,6 +46,7 @@
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/variations/variations_ids_provider.h"
+#include "components/translate/core/common/translate_util.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/viz/common/features.h"
 #include "content/public/browser/android/media_url_interceptor_register.h"
@@ -271,6 +272,11 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     // TODO(crbug.com/933055): WebUSB is not yet supported on WebView.
     features.DisableIfNotSet(::features::kWebUsb);
+
+    // Disable TFLite based language detection on webview until webview supports
+    // ML model delivery via Optimization Guide component.
+    // TODO(crbug.com/1292622): Enable the feature on Webview.
+    features.DisableIfNotSet(::translate::kTFLiteLanguageDetectionEnabled);
   }
 
   android_webview::RegisterPathProvider();
