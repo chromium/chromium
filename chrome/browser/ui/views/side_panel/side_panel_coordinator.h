@@ -53,6 +53,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver {
   void OnComboboxChanged();
 
   std::unique_ptr<views::View> CreateBookmarksWebView(Browser* browser);
+  std::unique_ptr<views::View> CreateReaderModeWebView(Browser* browser);
 
   // SidePanelRegistryObserver:
   void OnEntryRegistered(SidePanelEntry* entry) override;

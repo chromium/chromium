@@ -8,8 +8,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../../read_later_api_proxy.js';
-
 import {ReaderModeApiProxy} from './reader_mode_api_proxy.js';
 
 const ReaderModeElementBase = WebUIListenerMixin(PolymerElement);
@@ -33,17 +31,11 @@ export class ReaderModeElement extends ReaderModeElementBase {
   }
 
   private apiProxy_: ReaderModeApiProxy = ReaderModeApiProxy.getInstance();
-  private readLaterApi_: ReadLaterApiProxy =
-      ReadLaterApiProxyImpl.getInstance();
   private listenerIds_: number[];
   private paragraphs_: string[];
 
   connectedCallback() {
     super.connectedCallback();
-    if (loadTimeData.getBoolean('unifiedSidePanel')) {
-      // Show the UI as soon as the app is connected.
-      this.readLaterApi_.showUI();
-    }
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_ = [callbackRouter.onEssentialContent.addListener(

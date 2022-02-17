@@ -17,7 +17,7 @@
 class SidePanelEntry final {
  public:
   // Note this order matches that of the combobox options in the side panel.
-  enum class Id { kReadingList, kBookmarks };
+  enum class Id { kReadingList, kBookmarks, kReaderMode };
 
   // TODO(pbos): Add an icon ImageModel here.
   SidePanelEntry(Id id,
