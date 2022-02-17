@@ -35,6 +35,10 @@ class ASH_EXPORT CalendarModel {
   CalendarModel& operator=(const CalendarModel& other) = delete;
   virtual ~CalendarModel();
 
+  // Number of months, before and after the month currently on-display, that we
+  // cache-ahead.
+  static constexpr int kNumSurroundingMonthsCached = 2;
+
   // Maps a day, i.e. midnight on the day of the event's start_time, to a
   // SingleDayEventList.
   using SingleMonthEventMap = std::map<base::Time, SingleDayEventList>;

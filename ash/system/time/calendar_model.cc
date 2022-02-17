@@ -28,7 +28,7 @@ constexpr int kMinNumberOfMonthsCached = 6;
 
 // Number of additional months to cache, to be adjusted as needed for optimal
 // UX.
-constexpr int kAdditionalNumberOfMonthsCached = 1;
+constexpr int kAdditionalNumberOfMonthsCached = 4;
 
 // Maximum number of months to cache.
 constexpr int kMaxNumberOfMonthsCached =
