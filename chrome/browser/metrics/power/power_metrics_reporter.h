@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
-#include "chrome/browser/metrics/power/power_details_provider.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
@@ -39,6 +38,10 @@
 //
 // This class should be created shortly after
 // performance_monitor::ProcessMonitor.
+//
+// Previous histograms reported by this class:
+// - Main screen brightness, removed by https://crrev.com/c/3431905
+// Historical data: go/chrome-historical-power-histograms
 class PowerMetricsReporter
     : public performance_monitor::ProcessMonitor::Observer {
  public:
@@ -86,11 +89,6 @@ class PowerMetricsReporter
   static int64_t GetBucketForSampleForTesting(base::TimeDelta value);
   static std::vector<const char*> GetLongIntervalSuffixesForTesting(
       const UsageScenarioDataStore::IntervalData& interval_data);
-
-  void set_power_details_provider_for_testing(
-      std::unique_ptr<PowerDetailsProvider> provider) {
-    power_details_provider_ = std::move(provider);
-  }
 
  protected:
   // Any change to this enum should be reflected in the corresponding enums.xml
@@ -165,8 +163,7 @@ class PowerMetricsReporter
   void ReportUKMs(const UsageScenarioDataStore::IntervalData& interval_data,
                   const ProcessMonitor::Metrics& aggregated_process_metrics,
                   base::TimeDelta interval_duration,
-                  BatteryDischarge battery_discharge,
-                  absl::optional<int64_t> main_screen_brightness) const;
+                  BatteryDischarge battery_discharge) const;
 
   // Computes and returns the battery discharge mode and rate during the
   // interval, and reset |battery_state_| to the current state. If the discharge
@@ -193,8 +190,6 @@ class PowerMetricsReporter
   raw_ptr<UsageScenarioDataStore> long_usage_scenario_data_store_;
 
   std::unique_ptr<BatteryLevelProvider> battery_level_provider_;
-
-  std::unique_ptr<PowerDetailsProvider> power_details_provider_;
 
   BatteryLevelProvider::BatteryState battery_state_{0, 0, absl::nullopt, false,
                                                     base::TimeTicks::Now()};

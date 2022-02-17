@@ -15494,6 +15494,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="MainScreenBrightnessPercent">
+    <obsolete>
+      Removed 02/2022 because it's not actively used.
+    </obsolete>
     <summary>
       The brightness of the main screen in percent or -1 if not available.
       Samples have a 20% granularity, e.g. 65% will report as 60%.

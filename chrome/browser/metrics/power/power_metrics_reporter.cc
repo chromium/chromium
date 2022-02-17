@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/metrics/power/power_details_provider.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
@@ -34,10 +33,6 @@ constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode";
 constexpr const char* kBatterySamplingDelayHistogramName =
     "Power.BatterySamplingDelay";
-constexpr const char* kMainScreenBrightnessHistogramName =
-    "Power.MainScreenBrightness2";
-constexpr const char* kMainScreenBrightnessAvailableHistogramName =
-    "Power.MainScreenBrightnessAvailable";
 
 #if BUILDFLAG(IS_MAC)
 // Reports `proportion` of a time used to a histogram in permyriad (1/100 %).
@@ -232,7 +227,6 @@ PowerMetricsReporter::PowerMetricsReporter(
                      weak_factory_.GetWeakPtr()));
 
 #if BUILDFLAG(IS_MAC)
-  power_details_provider_ = PowerDetailsProvider::Create();
   iopm_power_source_sampling_event_source_.Start(
       base::BindRepeating(&PowerMetricsReporter::OnIOPMPowerSourceSamplingEvent,
                           base::Unretained(this)));
@@ -398,27 +392,6 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
   auto long_interval_data =
       long_usage_scenario_data_store_->ResetIntervalData();
 
-  // Evaluate and report main screen brightness.
-  absl::optional<int64_t> main_screen_brightness;
-  if (power_details_provider_.get()) {
-    absl::optional<double> brightness =
-        power_details_provider_->GetMainScreenBrightnessLevel();
-    if (brightness.has_value()) {
-      // Report the percentage as an integer as UMA doesn't allow reporting
-      // reals.
-      main_screen_brightness = brightness.value() * 100;
-      // The brightness value reported by the system sometimes exceeds 100%,
-      // allow values up to 150 to understand this better.
-      // An histogram with 50 buckets, a minimum of 1 and a maximum of 150 will
-      // have 43 buckets in the [1, 100] range and 7 in the 100+ range.
-      base::UmaHistogramCustomCounts(kMainScreenBrightnessHistogramName,
-                                     main_screen_brightness.value(), 1, 150,
-                                     50);
-    }
-  }
-  base::UmaHistogramBoolean(kMainScreenBrightnessAvailableHistogramName,
-                            main_screen_brightness.has_value());
-
 #if BUILDFLAG(IS_MAC)
   // Sample coalition resource usage rate.
   absl::optional<power_metrics::CoalitionResourceUsageRate>
@@ -431,7 +404,7 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
 
   // Report UKMs.
   ReportUKMs(long_interval_data, aggregated_process_metrics, interval_duration,
-             battery_discharge, main_screen_brightness);
+             battery_discharge);
 
   // Report histograms.
   ReportLongIntervalHistograms(long_interval_data, aggregated_process_metrics,
@@ -564,8 +537,7 @@ void PowerMetricsReporter::ReportUKMs(
     const UsageScenarioDataStore::IntervalData& interval_data,
     const ProcessMonitor::Metrics& metrics,
     base::TimeDelta interval_duration,
-    BatteryDischarge battery_discharge,
-    absl::optional<int64_t> main_screen_brightness) const {
+    BatteryDischarge battery_discharge) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // UKM may be unavailable in content_shell or other non-chrome/ builds; it
@@ -631,11 +603,6 @@ void PowerMetricsReporter::ReportUKMs(
       GetBucketForSample(interval_data.time_playing_audio));
   builder.SetOriginVisibilityTimeSeconds(
       GetBucketForSample(interval_data.longest_visible_origin_duration));
-  if (main_screen_brightness.has_value()) {
-    // The data should be reported with a 20% granularity.
-    builder.SetMainScreenBrightnessPercent(
-        ukm::GetLinearBucketMin(main_screen_brightness.value(), 20));
-  }
   builder.SetDeviceSleptDuringInterval(interval_data.sleep_events);
 
   builder.Record(ukm_recorder);

@@ -1102,28 +1102,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.MainScreenBrightness2" units="%"
-    expires_after="2021-11-30">
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The level of the screen backlight in percent if it's not available. Only
-    recorded on Mac devices with an Intel processor. Recorded every 2 minutes.
-    Note: the reported value can sometime exceed 100%, this histogram allows
-    value up to 150%.
-  </summary>
-</histogram>
-
-<histogram name="Power.MainScreenBrightnessAvailable" units="Boolean"
-    expires_after="2022-06-12">
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Indicates if the screen backlight level value is available. Recorded every
-    time an attempt to record |Power.MainScreenBrightness| is made.
-  </summary>
-</histogram>
-
 <histogram name="Power.MetricsDailyEventInterval" enum="DailyEventIntervalType"
     expires_after="M100">
   <owner>puthik@chromium.org</owner>

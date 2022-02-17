@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/metrics/power/power_details_provider.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -34,10 +33,6 @@ constexpr const char* kBatteryDischargeRateHistogramName =
     "Power.BatteryDischargeRate2";
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode";
-constexpr const char* kMainScreenBrightnessHistogramName =
-    "Power.MainScreenBrightness2";
-constexpr const char* kMainScreenBrightnessAvailableHistogramName =
-    "Power.MainScreenBrightnessAvailable";
 
 constexpr base::TimeDelta kExpectedMetricsCollectionInterval =
     base::Seconds(120);
@@ -164,28 +159,6 @@ class TestUsageScenarioDataStoreImpl : public UsageScenarioDataStoreImpl {
   IntervalData fake_data_;
 };
 
-class TestPowerDetailsProvider : public PowerDetailsProvider {
- public:
-  TestPowerDetailsProvider() = default;
-  explicit TestPowerDetailsProvider(double return_value)
-      : brightness_to_return_(return_value) {}
-  TestPowerDetailsProvider(const TestPowerDetailsProvider& rhs) = delete;
-  TestPowerDetailsProvider& operator=(const TestPowerDetailsProvider& rhs) =
-      delete;
-  ~TestPowerDetailsProvider() override = default;
-
-  absl::optional<double> GetMainScreenBrightnessLevel() override {
-    return brightness_to_return_;
-  }
-
-  void set_brightness_to_return(absl::optional<double> brightness_to_return) {
-    brightness_to_return_ = brightness_to_return;
-  }
-
- private:
-  absl::optional<double> brightness_to_return_;
-};
-
 // This doesn't use the typical {class being tested}Test name pattern because
 // there's already a PowerMetricsReporterTest class in the chromeos namespace
 // and this conflicts with it.
@@ -222,8 +195,6 @@ class PowerMetricsReporterUnitTest : public testing::Test {
         std::move(coalition_resource_usage_provider)
 #endif  // BUILDFLAG(IS_MAC)
     );
-    power_metrics_reporter_->set_power_details_provider_for_testing(
-        std::make_unique<TestPowerDetailsProvider>());
     power_metrics_reporter_->OnFirstSampleForTesting(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -381,9 +352,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       entries[0], UkmEntry::kOriginVisibilityTimeSecondsName,
       PowerMetricsReporter::GetBucketForSampleForTesting(
           fake_interval_data.longest_visible_origin_duration));
-  EXPECT_EQ(nullptr,
-            test_ukm_recorder_.GetEntryMetric(
-                entries[0], UkmEntry::kMainScreenBrightnessPercentName));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kDeviceSleptDuringIntervalName, false);
 
@@ -1206,27 +1174,6 @@ TEST_F(PowerMetricsReporterUnitTest, DurationsLongerThanIntervalAreCapped) {
           kExpectedMetricsCollectionInterval * 2));
 }
 
-TEST_F(PowerMetricsReporterUnitTest, UKMBrightnessLevel) {
-  const double kFakeBrightnessLevel = 0.64;
-  power_metrics_reporter_->set_power_details_provider_for_testing(
-      std::make_unique<TestPowerDetailsProvider>(kFakeBrightnessLevel));
-  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
-  battery_states_.push(BatteryLevelProvider::BatteryState{
-      0, 0, 1.0, false, base::TimeTicks::Now()});
-
-  UsageScenarioDataStore::IntervalData fake_interval_data;
-  fake_interval_data.source_id_for_longest_visible_origin =
-      ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
-  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
-  WaitForNextSample({});
-
-  auto entries = test_ukm_recorder_.GetEntriesByName(
-      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  test_ukm_recorder_.ExpectEntryMetric(
-      entries[0], UkmEntry::kMainScreenBrightnessPercentName, 60);
-}
-
 TEST_F(PowerMetricsReporterUnitTest, UKMsWithSleepEvent) {
   UsageScenarioDataStore::IntervalData fake_interval_data = {};
   fake_interval_data.sleep_events = 1;
@@ -1243,44 +1190,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsWithSleepEvent) {
 
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kDeviceSleptDuringIntervalName, true);
-}
-
-TEST_F(PowerMetricsReporterUnitTest, MainScreenBrightnessHistogram) {
-  std::unique_ptr<PowerDetailsProvider> detail_provider =
-      std::make_unique<TestPowerDetailsProvider>();
-  TestPowerDetailsProvider* detail_provider_raw =
-      static_cast<TestPowerDetailsProvider*>(detail_provider.get());
-  power_metrics_reporter_->set_power_details_provider_for_testing(
-      std::move(detail_provider));
-
-  UsageScenarioDataStore::IntervalData fake_interval_data = {};
-
-  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
-  battery_states_.push(BatteryLevelProvider::BatteryState{
-      1, 1, 0.50, true, base::TimeTicks::Now()});
-  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
-
-  performance_monitor::ProcessMonitor::Metrics fake_metrics =
-      GetFakeProcessMetrics();
-  WaitForNextSample(fake_metrics);
-
-  histogram_tester_.ExpectTotalCount(kMainScreenBrightnessHistogramName, 0);
-  histogram_tester_.ExpectBucketCount(
-      kMainScreenBrightnessAvailableHistogramName, false, 1);
-
-  double kBrightnessValue = 0.5;
-  detail_provider_raw->set_brightness_to_return(kBrightnessValue);
-
-  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
-  battery_states_.push(BatteryLevelProvider::BatteryState{
-      1, 1, 0.50, true, base::TimeTicks::Now()});
-  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
-  WaitForNextSample(fake_metrics);
-
-  histogram_tester_.ExpectBucketCount(kMainScreenBrightnessHistogramName,
-                                      kBrightnessValue * 100, 1);
-  histogram_tester_.ExpectBucketCount(
-      kMainScreenBrightnessAvailableHistogramName, true, 1);
 }
 
 #if BUILDFLAG(IS_MAC)
