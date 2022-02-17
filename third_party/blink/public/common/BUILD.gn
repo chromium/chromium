@@ -35,6 +35,27 @@ blink_python_runner("make_generated_origin_trial_feature") {
   ]
 }
 
+blink_python_runner("make_generated_permissions_policy_helper") {
+  script = "../../renderer/build/scripts/make_policy_helper_public.py"
+
+  inputs = scripts_for_json5_files + [
+             "../../renderer/build/scripts/make_policy_helper_public.py",
+             "../../renderer/core/permissions_policy/permissions_policy_features.json5",
+             "../../renderer/build/scripts/templates/policy_helper.cc.tmpl",
+           ]
+  outputs = [ "$root_gen_dir/third_party/blink/public/common/permissions_policy/policy_helper_public.cc" ]
+
+  args = [
+    rebase_path(
+        "../../renderer/core/permissions_policy/permissions_policy_features.json5",
+        root_build_dir),
+    "--output_dir",
+    rebase_path(
+        "$root_gen_dir/third_party/blink/public/common/permissions_policy",
+        root_build_dir),
+  ]
+}
+
 # Public common API headers, mojom and libraries that can be linked and
 # referenced both by browser-side and renderer-side components.
 component("common") {
@@ -223,6 +244,7 @@ source_set("headers") {
     "permissions_policy/permissions_policy.h",
     "permissions_policy/permissions_policy_features.h",
     "permissions_policy/permissions_policy_forward.h",
+    "permissions_policy/policy_helper_public.h",
     "permissions_policy/policy_value.h",
     "renderer_preferences/renderer_preferences.h",
     "responsiveness_metrics/user_interaction_latency.h",
@@ -256,9 +278,11 @@ source_set("headers") {
   ]
 
   sources += get_target_outputs(":make_generated_origin_trial_feature")
+  sources += get_target_outputs(":make_generated_permissions_policy_helper")
 
   public_deps = [
     ":make_generated_origin_trial_feature",
+    ":make_generated_permissions_policy_helper",
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",
