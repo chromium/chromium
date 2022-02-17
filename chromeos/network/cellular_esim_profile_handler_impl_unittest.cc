@@ -152,7 +152,11 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
   }
 
   bool HasAutoRefreshedEuicc(int euicc_num) {
-    return handler_->HasRefreshedProfilesForEuicc(CreateTestEid(euicc_num));
+    // Check both variants of HasRefreshedProfilesForEuicc using EID and EUICC
+    // Path.
+    return handler_->HasRefreshedProfilesForEuicc(CreateTestEid(euicc_num)) &&
+           handler_->HasRefreshedProfilesForEuicc(
+               dbus::ObjectPath(CreateTestEuiccPath(euicc_num)));
   }
 
   void DisableActiveESimProfile() { handler_->DisableActiveESimProfile(); }

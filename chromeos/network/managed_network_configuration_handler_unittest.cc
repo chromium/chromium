@@ -200,7 +200,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
         ui_proxy_config_service_.get());
     managed_network_configuration_handler_->AddObserver(&policy_observer_);
     cellular_policy_handler_->Init(
-        cellular_esim_installer_.get(), network_profile_handler_.get(),
+        cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
+        network_profile_handler_.get(),
         managed_network_configuration_handler_.get());
 
     base::RunLoop().RunUntilIdle();
@@ -252,6 +253,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath), kTestEid, /*is_active=*/true,
         /*physical_slot=*/0);
+    cellular_esim_profile_handler_->SetHasRefreshedProfilesForEuicc(
+        kTestEid, dbus::ObjectPath(kTestEuiccPath), /*has_refreshed=*/true);
     base::RunLoop().RunUntilIdle();
   }
 

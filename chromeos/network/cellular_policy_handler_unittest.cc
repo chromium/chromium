@@ -36,6 +36,9 @@ namespace {
 
 const char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
 const char kTestEuiccPath2[] = "/org/chromium/Hermes/Euicc/1";
+const char kTestESimProfilePath[] =
+    "/org/chromium/Hermes/Euicc/1/Profile/1000000000000000002";
+const char kTesServicePath[] = "/service/1";
 const char kTestEid[] = "12345678901234567890123456789012";
 const char kTestEid2[] = "12345678901234567890123456789000";
 const char kCellularGuid[] = "cellular_guid";
@@ -70,12 +73,22 @@ void CheckShillConfiguration(bool is_installed) {
   EXPECT_EQ(kICCID, *iccid);
 }
 
-std::string GenerateCellularPolicy(const std::string& smdp_address) {
+std::string GenerateCellularPolicy(
+    const std::string& smdp_address,
+    absl::optional<std::string> iccid = absl::nullopt) {
+  if (!iccid) {
+    return base::StringPrintf(
+        R"({"GUID": "%s", "Type": "Cellular",
+                          "Name": "cellular1",
+                          "Cellular": { "SMDPAddress": "%s"}})",
+        kCellularGuid, smdp_address.c_str());
+  }
+
   return base::StringPrintf(
       R"({"GUID": "%s", "Type": "Cellular",
                         "Name": "cellular1",
-                        "Cellular": { "SMDPAddress": "%s"}})",
-      kCellularGuid, smdp_address.c_str());
+                        "Cellular": { "ICCID": "%s", "SMDPAddress": "%s"}})",
+      kCellularGuid, iccid->c_str(), smdp_address.c_str());
 }
 
 }  // namespace
@@ -123,9 +136,9 @@ class CellularPolicyHandlerTest : public testing::Test {
             /*UIProxyConfigService=*/nullptr);
     cellular_policy_handler_ = std::make_unique<CellularPolicyHandler>();
     cellular_policy_handler_->Init(
-        cellular_esim_installer_.get(), network_profile_handler_.get(),
+        cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
+        network_profile_handler_.get(),
         managed_network_configuration_handler_.get());
-    SetupEuicc();
   }
 
   void SetupEuicc() {
@@ -133,6 +146,29 @@ class CellularPolicyHandlerTest : public testing::Test {
     HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath), kTestEid, /*is_active=*/true,
         /*physical_slot=*/0);
+    cellular_esim_profile_handler_->SetHasRefreshedProfilesForEuicc(
+        kTestEid, dbus::ObjectPath(kTestEuiccPath), /*has_refreshed=*/true);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetupEuicc2() {
+    HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
+        dbus::ObjectPath(kTestEuiccPath2), kTestEid2, /*is_active=*/true,
+        /*physical_slot=*/1);
+    cellular_esim_profile_handler_->SetHasRefreshedProfilesForEuicc(
+        kTestEid2, dbus::ObjectPath(kTestEuiccPath2), /*has_refreshed=*/true);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetupESimProfile() {
+    HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
+        dbus::ObjectPath(kTestESimProfilePath),
+        dbus::ObjectPath(kTestEuiccPath), kICCID, /*name=*/std::string(),
+        /*service_provider=*/std::string(), /*activation_code=*/std::string(),
+        kTesServicePath, hermes::profile::State::kInactive,
+        hermes::profile::ProfileClass::kOperational,
+        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+            kAddProfileWithoutService);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -205,6 +241,7 @@ class CellularPolicyHandlerTest : public testing::Test {
 };
 
 TEST_F(CellularPolicyHandlerTest, InstallProfileSuccess) {
+  SetupEuicc();
   const std::string policy =
       GenerateCellularPolicy(HermesEuiccClient::Get()
                                  ->GetTestInterface()
@@ -233,7 +270,26 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileSuccess) {
       /*expected_count=*/0);
 }
 
+TEST_F(CellularPolicyHandlerTest, InstallWaitForEuicc) {
+  HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
+  const std::string policy =
+      GenerateCellularPolicy(HermesEuiccClient::Get()
+                                 ->GetTestInterface()
+                                 ->GenerateFakeActivationCode());
+  // Verify the configuration is created automatically after EUICC becomes
+  // available.
+  InstallESimPolicy(policy,
+                    HermesEuiccClient::Get()
+                        ->GetTestInterface()
+                        ->GenerateFakeActivationCode(),
+                    /*expect_install_success=*/false);
+  CheckShillConfiguration(/*is_installed=*/false);
+  SetupEuicc();
+  CheckShillConfiguration(/*is_installed=*/true);
+}
+
 TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
+  SetupEuicc();
   // Verify esim profile doesn't get installed when installing policy esim
   // with a invalid SMDP address.
   const std::string policy = GenerateCellularPolicy("000");
@@ -258,14 +314,12 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallOnExternalEUICC) {
+  SetupEuicc();
   // Verify esim profile get installed successfully when installing policy
   // on the external EUICC.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kCellularUseExternalEuicc);
-  HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
-      dbus::ObjectPath(kTestEuiccPath2), kTestEid2, /*is_active=*/true,
-      /*physical_slot=*/1);
-  base::RunLoop().RunUntilIdle();
+  SetupEuicc2();
   const std::string policy =
       GenerateCellularPolicy(HermesEuiccClient::Get()
                                  ->GetTestInterface()
@@ -279,6 +333,7 @@ TEST_F(CellularPolicyHandlerTest, InstallOnExternalEUICC) {
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallNoEUICCAvailable) {
+  SetupEuicc();
   // Verify esim profile doesn't get installed when installing policy esim
   // with no available EUICC.
   HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
@@ -296,6 +351,7 @@ TEST_F(CellularPolicyHandlerTest, InstallNoEUICCAvailable) {
 }
 
 TEST_F(CellularPolicyHandlerTest, UpdateSMDPAddress) {
+  SetupEuicc();
   // Verify that the first request should be invalidated when the second
   // request is queued.
   std::string policy = GenerateCellularPolicy("000");
@@ -311,6 +367,23 @@ TEST_F(CellularPolicyHandlerTest, UpdateSMDPAddress) {
                         ->GetTestInterface()
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/true);
+  CheckShillConfiguration(/*is_installed=*/true);
+}
+
+TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfile) {
+  SetupEuicc();
+  SetupESimProfile();
+
+  const std::string policy =
+      GenerateCellularPolicy(HermesEuiccClient::Get()
+                                 ->GetTestInterface()
+                                 ->GenerateFakeActivationCode(),
+                             kICCID);
+  InstallESimPolicy(policy,
+                    HermesEuiccClient::Get()
+                        ->GetTestInterface()
+                        ->GenerateFakeActivationCode(),
+                    /*expect_install_success=*/false);
   CheckShillConfiguration(/*is_installed=*/true);
 }
 

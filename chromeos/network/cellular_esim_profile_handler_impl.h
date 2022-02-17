@@ -61,6 +61,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
   void InitInternal() override;
   std::vector<CellularESimProfile> GetESimProfiles() override;
   bool HasRefreshedProfilesForEuicc(const std::string& eid) override;
+  bool HasRefreshedProfilesForEuicc(
+      const dbus::ObjectPath& euicc_path) override;
   void SetDevicePrefs(PrefService* device_prefs) override;
   void OnHermesPropertiesUpdated() override;
 

@@ -116,6 +116,19 @@ bool CellularESimProfileHandlerImpl::HasRefreshedProfilesForEuicc(
   return false;
 }
 
+bool CellularESimProfileHandlerImpl::HasRefreshedProfilesForEuicc(
+    const dbus::ObjectPath& euicc_path) {
+  base::flat_set<std::string> euicc_paths =
+      GetAutoRefreshedEuiccPathsFromPrefs();
+
+  for (const auto& path : euicc_paths) {
+    if (euicc_path.value() == path)
+      return true;
+  }
+
+  return false;
+}
+
 void CellularESimProfileHandlerImpl::SetDevicePrefs(PrefService* device_prefs) {
   device_prefs_ = device_prefs;
   OnHermesPropertiesUpdated();

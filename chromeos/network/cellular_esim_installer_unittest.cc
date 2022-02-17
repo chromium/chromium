@@ -13,6 +13,7 @@
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -178,6 +179,23 @@ class CellularESimInstallerTest : public testing::Test {
     run_loop.Run();
     return std::make_tuple(out_install_result, out_esim_profile_path,
                            out_service_path);
+  }
+
+  absl::optional<dbus::ObjectPath> ConfigureESimService(
+      const dbus::ObjectPath euicc_path,
+      const dbus::ObjectPath& profile_path,
+      base::Value& new_shill_properties) {
+    absl::optional<dbus::ObjectPath> service_path_out;
+    base::RunLoop run_loop;
+    cellular_esim_installer_->ConfigureESimService(
+        new_shill_properties, euicc_path, profile_path,
+        base::BindLambdaForTesting(
+            [&](absl::optional<dbus::ObjectPath> service_path) {
+              service_path_out = service_path;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return service_path_out;
   }
 
   void CheckInstallSuccess(const InstallResultTuple& actual_result_tuple) {
@@ -449,6 +467,57 @@ TEST_F(CellularESimInstallerTest, InstallProfileCreateShillConfigFailure) {
       /*new_shill_properties=*/base::Value(base::Value::Type::DICTIONARY),
       /*wait_for_connect=*/false, /*fail_connect=*/false);
   CheckInstallSuccess(result_tuple);
+}
+
+TEST_F(CellularESimInstallerTest, ConfigureESimService) {
+  dbus::ObjectPath profile_path =
+      HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
+          dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kInactive,
+          /*activation_code=*/"",
+          HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+              kAddProfileWithoutService);
+
+  base::Value new_shill_properties(base::Value::Type::DICTIONARY);
+  std::unique_ptr<NetworkUIData> ui_data =
+      NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
+  new_shill_properties.SetStringKey(shill::kUIDataProperty,
+                                    ui_data->GetAsJson());
+  absl::optional<dbus::ObjectPath> service_path = ConfigureESimService(
+      dbus::ObjectPath(kTestEuiccPath), profile_path, new_shill_properties);
+  EXPECT_TRUE(service_path.has_value());
+
+  HermesProfileClient::Properties* profile_properties =
+      HermesProfileClient::Get()->GetProperties(profile_path);
+  const base::Value* service_properties =
+      ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
+          service_path->value());
+  ASSERT_TRUE(service_properties);
+  const std::string* type =
+      service_properties->FindStringKey(shill::kTypeProperty);
+  EXPECT_EQ(shill::kTypeCellular, *type);
+  const std::string* iccid =
+      service_properties->FindStringKey(shill::kIccidProperty);
+  EXPECT_EQ(profile_properties->iccid().value(), *iccid);
+  const std::string* eid =
+      service_properties->FindStringKey(shill::kEidProperty);
+  EXPECT_EQ(kTestEid, *eid);
+}
+
+TEST_F(CellularESimInstallerTest, ConfigureESimServiceFailure) {
+  dbus::ObjectPath profile_path =
+      HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
+          dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kInactive,
+          /*activation_code=*/"",
+          HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+              kAddProfileWithoutService);
+
+  ShillManagerClient::Get()->GetTestInterface()->SetSimulateConfigurationResult(
+      FakeShillSimulatedResult::kFailure);
+
+  base::Value new_shill_properties(base::Value::Type::DICTIONARY);
+  absl::optional<dbus::ObjectPath> service_path = ConfigureESimService(
+      dbus::ObjectPath(kTestEuiccPath), profile_path, new_shill_properties);
+  EXPECT_FALSE(service_path.has_value());
 }
 
 }  // namespace chromeos

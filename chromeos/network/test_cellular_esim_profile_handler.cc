@@ -18,13 +18,16 @@ TestCellularESimProfileHandler::~TestCellularESimProfileHandler() = default;
 
 void TestCellularESimProfileHandler::SetHasRefreshedProfilesForEuicc(
     const std::string& eid,
+    const dbus::ObjectPath& euicc_path,
     bool has_refreshed) {
   if (has_refreshed) {
     refreshed_eids_.insert(eid);
+    refreshed_euicc_paths_.insert(euicc_path);
     return;
   }
 
   refreshed_eids_.erase(eid);
+  refreshed_euicc_paths_.erase(euicc_path);
 }
 
 void TestCellularESimProfileHandler::SetEnableNotifyProfileListUpdate(
@@ -44,6 +47,11 @@ TestCellularESimProfileHandler::GetESimProfiles() {
 bool TestCellularESimProfileHandler::HasRefreshedProfilesForEuicc(
     const std::string& eid) {
   return base::Contains(refreshed_eids_, eid);
+}
+
+bool TestCellularESimProfileHandler::HasRefreshedProfilesForEuicc(
+    const dbus::ObjectPath& euicc_path) {
+  return base::Contains(refreshed_euicc_paths_, euicc_path);
 }
 
 void TestCellularESimProfileHandler::SetDevicePrefs(PrefService* device_prefs) {

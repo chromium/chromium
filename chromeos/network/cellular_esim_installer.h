@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
 
 namespace dbus {
@@ -56,6 +57,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
                               absl::optional<dbus::ObjectPath> profile_path,
                               absl::optional<std::string> service_path)>;
 
+  // Return callback for the ConfigureESimService method. |service_path|
+  // is the path of the newly configured eSIM service. A nullopt |service_path|
+  // indicates failure.
+  using ConfigureESimServiceCallback =
+      base::OnceCallback<void(absl::optional<dbus::ObjectPath> service_path)>;
+
   // Installs an ESim profile and network with given |activation_code|,
   // |confirmation_code| and |euicc_path|. This method will attempt to create
   // the Shill configuration with given |new_shill_properties| and then enable
@@ -70,6 +77,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       base::Value new_shill_properties,
       InstallProfileFromActivationCodeCallback callback,
       bool is_initial_install = true);
+
+  // Attempts to create a Shill service configuration with given
+  // |new_shill_properties| for eSIM with |profile_path| and |euicc_path|.
+  // |callback| is called with the newly configure service path.
+  void ConfigureESimService(const base::Value& new_shill_properties,
+                            const dbus::ObjectPath& euicc_path,
+                            const dbus::ObjectPath& profile_path,
+                            ConfigureESimServiceCallback callback);
 
  private:
   friend class CellularESimInstallerTest;
@@ -119,19 +134,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       HermesResponseStatus status,
       const dbus::ObjectPath* object_path);
   void OnShillConfigurationCreationSuccess(
-      InstallProfileFromActivationCodeCallback callback,
-      const dbus::ObjectPath& euicc_path,
-      const dbus::ObjectPath& profile_path,
+      ConfigureESimServiceCallback callback,
       const dbus::ObjectPath& service_path);
   void OnShillConfigurationCreationFailure(
-      InstallProfileFromActivationCodeCallback callback,
-      const dbus::ObjectPath& euicc_path,
-      const dbus::ObjectPath& profile_path,
+      ConfigureESimServiceCallback callback,
       const std::string& error_name,
       const std::string& error_message);
   void EnableProfile(InstallProfileFromActivationCodeCallback callback,
                      const dbus::ObjectPath& euicc_path,
-                     const dbus::ObjectPath& profile_path);
+                     const dbus::ObjectPath& profile_path,
+                     absl::optional<dbus::ObjectPath> service_path);
   void OnPrepareCellularNetworkForConnectionSuccess(
       const dbus::ObjectPath& profile_path,
       InstallProfileFromActivationCodeCallback callback,
@@ -154,8 +166,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
   NetworkProfileHandler* network_profile_handler_;
   NetworkStateHandler* network_state_handler_;
 
-  // Maps profile dbus paths to unique pointer of InhibitLocks that are pending
-  // to uninhibit.
+  // Maps profile dbus paths to unique pointer of InhibitLocks that are
+  // pending to uninhibit.
   std::map<dbus::ObjectPath, std::unique_ptr<CellularInhibitor::InhibitLock>>
       pending_inhibit_locks_;
 

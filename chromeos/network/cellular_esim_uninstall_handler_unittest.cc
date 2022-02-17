@@ -187,7 +187,7 @@ class CellularESimUninstallHandlerTest : public testing::Test {
 
   void SetHasRefreshedProfiles(bool has_refreshed) {
     cellular_esim_profile_handler_->SetHasRefreshedProfilesForEuicc(
-        kDefaultEid, has_refreshed);
+        kDefaultEid, dbus::ObjectPath(kDefaultEuiccPath), has_refreshed);
   }
 
   void ExpectResult(CellularESimUninstallHandler::UninstallESimResult result,
