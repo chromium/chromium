@@ -16,10 +16,10 @@ public interface IncognitoTabModelObserver {
          * An event which is fired to control the visibility of the Incognito re-authentication
          * dialog.
          *
-         * @param oldModel The previous {@link TabModel} which was active.
          * @param newModel The new {@link TabModel} which is now active.
+         * @param oldModel The previous {@link TabModel} which was active.
          */
-        void onAfterTabModelSelected(TabModel oldModel, TabModel newModel);
+        void onAfterTabModelSelected(TabModel newModel, TabModel oldModel);
     }
 
     /**
