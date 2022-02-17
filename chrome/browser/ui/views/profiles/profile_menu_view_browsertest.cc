@@ -857,8 +857,15 @@ constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncPaused[] = {
     // there are no other buttons at the end.
     ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
+// TODO(crbug.com/1298490): flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ProfileMenuClickTest_SyncPaused \
+  DISABLED_ProfileMenuClickTest_SyncPaused
+#else
+#define MAYBE_ProfileMenuClickTest_SyncPaused ProfileMenuClickTest_SyncPaused
+#endif
 PROFILE_MENU_CLICK_TEST(kActionableItems_SyncPaused,
-                        ProfileMenuClickTest_SyncPaused) {
+                        MAYBE_ProfileMenuClickTest_SyncPaused) {
   ASSERT_TRUE(sync_harness()->SetupSync());
   sync_harness()->EnterSyncPausedStateForPrimaryAccount();
   // Check that the setup was successful.
