@@ -5,9 +5,7 @@
 #include "ash/test/layer_animation_stopped_waiter.h"
 
 #include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animator.h"
 
 namespace ash {
 
@@ -21,9 +19,7 @@ void LayerAnimationStoppedWaiter::Wait(ui::Layer* layer) {
 
   // Temporarily cache and observe `layer`'s animator.
   layer_animator_ = layer->GetAnimator();
-  base::ScopedObservation<ui::LayerAnimator, ui::LayerAnimationObserver>
-      layer_animator_observer{this};
-  layer_animator_observer.Observe(layer_animator_);
+  layer_animator_observer_.Observe(layer_animator_);
 
   // Loop until the `layer`'s animation is stopped.
   wait_loop_ = std::make_unique<base::RunLoop>();
@@ -36,14 +32,18 @@ void LayerAnimationStoppedWaiter::Wait(ui::Layer* layer) {
 
 void LayerAnimationStoppedWaiter::OnLayerAnimationAborted(
     ui::LayerAnimationSequence* sequence) {
-  if (!layer_animator_->is_animating())
+  if (!layer_animator_->is_animating()) {
+    layer_animator_observer_.Reset();
     wait_loop_->Quit();
+  }
 }
 
 void LayerAnimationStoppedWaiter::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
-  if (!layer_animator_->is_animating())
+  if (!layer_animator_->is_animating()) {
+    layer_animator_observer_.Reset();
     wait_loop_->Quit();
+  }
 }
 
 }  // namespace ash

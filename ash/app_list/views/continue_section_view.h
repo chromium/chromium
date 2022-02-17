@@ -67,10 +67,9 @@ class ASH_EXPORT ContinueSectionView : public views::View,
 
   void SetNudgeController(AppListNudgeController* nudge_controller);
 
-  // Fire `privacy_notice_shown_timer_` for testing purposes.
-  bool FirePrivacyNoticeShownTimerForTest();
-
-  AppListToastView* GetPrivacyNoticeForTest() const { return privacy_toast_; }
+  ContinueTaskContainerView* suggestions_container() {
+    return suggestions_container_;
+  }
 
   // AppListControllerObserver:
   void OnAppListVisibilityChanged(bool shown, int64_t display_id) override;
@@ -80,6 +79,11 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   }
 
   static void SetPrivacyNoticeAcceptedForTest(bool is_disabled);
+
+  // Fire `privacy_notice_shown_timer_` for testing purposes.
+  bool FirePrivacyNoticeShownTimerForTest();
+
+  AppListToastView* GetPrivacyNoticeForTest() const { return privacy_toast_; }
 
  private:
   // Whether there are a sufficient number of files to display the

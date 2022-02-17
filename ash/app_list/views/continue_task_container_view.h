@@ -5,13 +5,17 @@
 #ifndef ASH_APP_LIST_VIEWS_CONTINUE_TASK_CONTAINER_VIEW_H_
 #define ASH_APP_LIST_VIEWS_CONTINUE_TASK_CONTAINER_VIEW_H_
 
+#include <map>
 #include <memory>
+#include <set>
+#include <string>
 #include <vector>
 
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/ash_export.h"
 #include "base/callback.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "ui/base/models/list_model_observer.h"
 #include "ui/views/view.h"
 
@@ -53,6 +57,9 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   void ListItemMoved(size_t index, size_t target_index) override;
   void ListItemsChanged(size_t start, size_t count) override;
 
+  // views::View:
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+
   void Update();
   size_t num_results() const { return num_results_; }
 
@@ -61,8 +68,14 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   // See AppsGridView::DisableFocusForShowingActiveFolder().
   void DisableFocusForShowingActiveFolder(bool disabled);
 
+  base::OneShotTimer* animations_timer_for_test() { return &animations_timer_; }
+
  private:
   void ScheduleUpdate();
+
+  // Sets the `view` to be ignored by the continue task container layout
+  // manager, and disables the view.
+  void RemoveViewFromLayout(ContinueTaskView* view);
 
   // Initializes the view's layout manager to use |flex_layout_|. FlexLayout is
   // used in tablet mode only. Views will be laid out in a single row centered
@@ -77,7 +90,57 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   // multiple rows.
   void InitializeTableLayout();
 
+  // Describes how old task views should animate when the set of tasks shown in
+  // the container updates.
+  enum class TaskViewRemovalAnimation {
+    // The task remained in the same position - the view does not animate.
+    kNone,
+    // The task got removed - the view should fade out.
+    kFadeOut,
+    // The associated result has moved within the container, and will slide and
+    // fade out from the current position while the new result view slides and
+    // fades in).
+    kSlideOut,
+  };
+
+  // Determines how a task view that's shown in the continue task container
+  // before a task list update should animate when the list of tasks changes.
+  // `old_index` - the task index in task list from before container update.
+  // `new_task_ids` - the list of task that will be shown in the container after
+  // container update.
+  TaskViewRemovalAnimation GetRemovalAnimationForTaskView(
+      ContinueTaskView* task_view,
+      size_t old_index,
+      const std::vector<std::string>& new_task_ids);
+
+  // Schedules animation for updating list of results shown in the task
+  // container.
+  // `views_to_fade_out` - Set of views whose associated results got removed,
+  // and that should be faded out. These views will be removed when the
+  // animation completes.
+  // `views_to_slide_out` - Views whose associated results moved to another
+  // index within the task container, and which should slide out of the task
+  // container bounds (while the new result view slides in). Views are mapped by
+  // the associated result ID. These views will be removed when the animation
+  // completes.
+  // `views_remaining_in_place` - Views whose associated results remained at the
+  // same index within the tack container. These views will not animate, and
+  // will be replaced by new views immediately. These views will be removed when
+  // the animation completes.
+  void ScheduleContainerUpdateAnimation(
+      const std::set<views::View*>& views_to_fade_out,
+      const std::map<std::string, views::View*>& views_to_slide_out,
+      const std::map<std::string, views::View*>& views_remaining_in_place);
+
+  // Aborts all in-progress tasks update animations.
+  void AbortTasksUpdateAnimations();
+
+  // Removes all child views that have been kept around just for container
+  // update animation.
+  void ClearAnimatingViews();
+
   AppListViewDelegate* const view_delegate_;
+
   // A callback to be invoked after an Update request finishes.
   OnResultsChanged update_callback_;
   SearchModel::SearchResults* results_ = nullptr;  // Owned by SearchModel.
@@ -101,6 +164,18 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
 
   // Whether or not the view is showing for a table mode launcher or not.
   bool tablet_mode_ = false;
+
+  // Set of results that need to animate out of the task container when the set
+  // of results shown in the container gets updated. The views are only still
+  // needed for the update animation and should be removed once the animation
+  // completes.
+  std::vector<ContinueTaskView*> views_to_remove_after_animation_;
+
+  // Timer which when active disables container update animations. The timer
+  // gets started when the container gets shown. The goal is to disable update
+  // animations after the container gets first shown until the initial set of
+  // results stabilizes.
+  base::OneShotTimer animations_timer_;
 
   base::ScopedObservation<SearchModel::SearchResults, ui::ListModelObserver>
       list_model_observation_{this};

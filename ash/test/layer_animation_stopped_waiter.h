@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/scoped_observation.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animator.h"
 
 namespace base {
 class RunLoop;
@@ -44,6 +46,8 @@ class LayerAnimationStoppedWaiter : public ui::LayerAnimationObserver {
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
 
   ui::LayerAnimator* layer_animator_ = nullptr;
+  base::ScopedObservation<ui::LayerAnimator, ui::LayerAnimationObserver>
+      layer_animator_observer_{this};
   std::unique_ptr<base::RunLoop> wait_loop_;
 };
 

@@ -70,6 +70,9 @@ int GetCornerRadius(bool tablet_mode) {
 ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
                                    bool tablet_mode)
     : view_delegate_(view_delegate), is_tablet_mode_(tablet_mode) {
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetCallback(base::BindRepeating(&ContinueTaskView::OnButtonPressed,
                                   base::Unretained(this)));
@@ -95,11 +98,10 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
 
   UpdateStyleForTabletMode();
 
-  views::BoxLayout* layout_manager =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          tablet_mode ? kInteriorMarginTablet : kInteriorMarginClamshell,
-          kBetweenChildPadding));
+  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      tablet_mode ? kInteriorMarginTablet : kInteriorMarginClamshell,
+      kBetweenChildPadding));
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
@@ -206,16 +208,17 @@ void ContinueTaskView::SetResult(SearchResult* result) {
   search_result_observation_.Reset();
 
   result_ = result;
-  if (result_)
+  if (result_) {
     search_result_observation_.Observe(result_);
-
-  UpdateResult();
+    UpdateResult();
+  }
 }
 
 void ContinueTaskView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
+  // May be null if the result got reset, and the task view is animating out.
   if (!result())
     return;
 
@@ -272,7 +275,10 @@ void ContinueTaskView::MenuClosed(ui::SimpleMenuModel* menu) {
 }
 
 void ContinueTaskView::OpenResult(int event_flags) {
-  DCHECK(result());
+  // May be null if the result got reset, and the task view is animating out.
+  if (!result())
+    return;
+
   view_delegate_->OpenSearchResult(
       result()->id(), event_flags,
       AppListLaunchedFrom::kLaunchedFromContinueTask,
@@ -281,11 +287,14 @@ void ContinueTaskView::OpenResult(int event_flags) {
 }
 
 void ContinueTaskView::RemoveResult() {
-  // TODO(crbug.com/1264530): The ML service may change the way Search Results
-  // are removed.
-  DCHECK(result());
+  // May be null if the result got reset, and the task view is animating out.
+  if (!result())
+    return;
 
   LogMetricsOnResultRemoved();
+
+  // TODO(crbug.com/1264530): The ML service may change the way Search Results
+  // are removed.
   view_delegate_->InvokeSearchResultAction(result()->id(),
                                            SearchResultActionType::kRemove);
 }
@@ -305,8 +314,6 @@ void ContinueTaskView::UpdateStyleForTabletMode() {
   if (!is_tablet_mode_)
     return;
 
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   layer()->SetRoundedCornerRadius(

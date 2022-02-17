@@ -19,7 +19,10 @@
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -66,6 +69,57 @@ std::vector<SearchResult*> GetTasksResultsForContinueSection(
   return continue_results;
 }
 
+// Fades out continue task view `view` from the container.
+void ScheduleFadeOutAnimation(views::View* view,
+                              views::AnimationSequenceBlock* sequence) {
+  // Animate views for results that have been removed.
+  // Opacity changes 100% -> 0%, while the size changes from 100% -> 75%
+  // original size.
+  gfx::Transform scale;
+  scale.Scale(0.75f, 0.75f);
+  sequence->SetTransform(
+      view->layer(),
+      gfx::TransformAboutPivot(view->GetLocalBounds().CenterPoint(), scale),
+      gfx::Tween::FAST_OUT_LINEAR_IN);
+  sequence->SetOpacity(view->layer(), 0.0f, gfx::Tween::FAST_OUT_LINEAR_IN);
+}
+
+// Slides (and fades) in a new result view into the task container.
+// The view is translated from right into target position while animating
+// opacity from 1 -> 0. `offfset` is the initial horizontal translation from
+// which the view will slide in the target position. The offset direction is
+// flipped if `is_rtl` is set.
+void ScheduleSlideInAnimation(views::View* view,
+                              int offset,
+                              bool is_rtl,
+                              views::AnimationSequenceBlock* sequence) {
+  gfx::Transform initial_translate;
+  initial_translate.Translate(offset * (is_rtl ? -1 : 1), 0);
+  view->layer()->SetTransform(initial_translate);
+  sequence->SetTransform(view->layer(), gfx::Transform(),
+                         gfx::Tween::ACCEL_LIN_DECEL_100_3);
+
+  view->layer()->SetOpacity(0.0f);
+  sequence->SetOpacity(view->layer(), 1.0f, gfx::Tween::ACCEL_LIN_DECEL_100_3);
+}
+
+// Slides (and fades) out an old result views from the task container.
+// The view is translated from its current position to the left, while animating
+// opacity from 1 -> 0. `offfset` is the target view's horizontal translation
+// from the initial position. The offset direction is flipped if `is_rtl` is
+// set.
+void ScheduleSlideOutAnimation(views::View* view,
+                               int offset,
+                               bool is_rtl,
+                               views::AnimationSequenceBlock* sequence) {
+  gfx::Transform target_translate;
+  target_translate.Translate(offset * (is_rtl ? -1 : 1), 0);
+
+  sequence->SetTransform(view->layer(), target_translate,
+                         gfx::Tween::FAST_OUT_LINEAR_IN);
+  sequence->SetOpacity(view->layer(), 0.0f, gfx::Tween::FAST_OUT_LINEAR_IN);
+}
+
 }  // namespace
 
 ContinueTaskContainerView::ContinueTaskContainerView(
@@ -108,16 +162,95 @@ void ContinueTaskContainerView::ListItemsChanged(size_t start, size_t count) {
   ScheduleUpdate();
 }
 
+void ContinueTaskContainerView::VisibilityChanged(views::View* starting_from,
+                                                  bool is_visible) {
+  if (!is_visible) {
+    AbortTasksUpdateAnimations();
+  } else {
+    animations_timer_.Start(FROM_HERE, base::Seconds(2), base::DoNothing());
+  }
+}
+
 void ContinueTaskContainerView::Update() {
   // Invalidate this callback to cancel a scheduled update.
   update_factory_.InvalidateWeakPtrs();
+  AbortTasksUpdateAnimations();
+
   std::vector<SearchResult*> tasks =
       GetTasksResultsForContinueSection(results_);
 
-  RemoveAllChildViews();
+  // Collect updated set of result IDs, which will be used to determine which
+  // views need to be animated.
+  std::vector<std::string> new_ids;
+  for (const SearchResult* task : tasks) {
+    new_ids.push_back(task->id());
+  }
+
+  // Only animate container contents update - when continue section is being
+  // initialized, show the contents immediately.
+  const bool first_show = animations_timer_.IsRunning() || !GetWidget() ||
+                          !IsDrawn() || suggestion_tasks_views_.empty();
+
+  std::set<views::View*> views_to_fade_out;
+  std::map<std::string, views::View*> views_to_slide_out;
+  std::map<std::string, views::View*> views_remaining_in_place;
+
+  // Determine whether an animation is needed and gather information needed to
+  // configure update animation.
+  const bool chip_count_changed =
+      tasks.size() != suggestion_tasks_views_.size();
+  bool needs_animation = !first_show && chip_count_changed;
+  if (!first_show) {
+    for (size_t i = 0; i < suggestion_tasks_views_.size(); ++i) {
+      ContinueTaskView* result_view = suggestion_tasks_views_[i];
+
+      // Some views may be kept around during update animation, so they can
+      // animate out - remove the from layout manager so they don't affect new
+      // layout.
+      RemoveViewFromLayout(result_view);
+
+      TaskViewRemovalAnimation animation =
+          GetRemovalAnimationForTaskView(result_view, i, new_ids);
+      switch (animation) {
+        case TaskViewRemovalAnimation::kFadeOut:
+          views_to_fade_out.insert(result_view);
+          break;
+        case TaskViewRemovalAnimation::kSlideOut:
+          views_to_slide_out.emplace(result_view->result()->id(), result_view);
+          break;
+        case TaskViewRemovalAnimation::kNone:
+          // In tablet mode, if the number of chips has changed, the chip bounds
+          // and size are likely to change, so slide out existing items even if
+          // they remain at the same logical position in the container.
+          if (tablet_mode_ && chip_count_changed) {
+            views_to_slide_out.emplace(result_view->result()->id(),
+                                       result_view);
+          } else {
+            views_remaining_in_place.emplace(result_view->result()->id(),
+                                             result_view);
+          }
+          break;
+      }
+
+      // Unless the result view remains in the same position within the task
+      // container, the task update requires animation.
+      if (animation != TaskViewRemovalAnimation::kNone)
+        needs_animation = true;
+    }
+  }
+
+  if (needs_animation) {
+    views_to_remove_after_animation_.swap(suggestion_tasks_views_);
+  } else {
+    // When not animating, all views can be removed immediately.
+    RemoveAllChildViews();
+  }
+
   suggestion_tasks_views_.clear();
+
   num_results_ = std::min(kMaxFilesForContinueSection, tasks.size());
 
+  // Create new result views.
   for (size_t i = 0; i < num_results_; ++i) {
     auto task =
         std::make_unique<ContinueTaskView>(view_delegate_, tablet_mode_);
@@ -127,6 +260,16 @@ void ContinueTaskContainerView::Update() {
     task->SetResult(tasks[i]);
     suggestion_tasks_views_.emplace_back(task.get());
     AddChildView(std::move(task));
+  }
+
+  // Layout the container so the task bounds are set to their intended
+  // positions, which will be used to configure container update animation
+  // sequences when animating.
+  Layout();
+
+  if (needs_animation) {
+    ScheduleContainerUpdateAnimation(views_to_fade_out, views_to_slide_out,
+                                     views_remaining_in_place);
   }
 
   auto* notifier = view_delegate_->GetNotifier();
@@ -139,6 +282,112 @@ void ContinueTaskContainerView::Update() {
   }
   if (!update_callback_.is_null())
     update_callback_.Run();
+}
+
+ContinueTaskContainerView::TaskViewRemovalAnimation
+ContinueTaskContainerView::GetRemovalAnimationForTaskView(
+    ContinueTaskView* task_view,
+    size_t old_index,
+    const std::vector<std::string>& new_task_ids) {
+  // If the result associated with the result was reset, animate the view
+  // out.
+  if (!task_view->result())
+    return TaskViewRemovalAnimation::kFadeOut;
+
+  const std::string& task_id = task_view->result()->id();
+  auto new_ids_it =
+      std::find(new_task_ids.begin(), new_task_ids.end(), task_id);
+
+  // If the associated result was removed from the task list, animate it out.
+  if (new_ids_it == new_task_ids.end())
+    return TaskViewRemovalAnimation::kFadeOut;
+
+  const size_t new_index = (new_ids_it - new_task_ids.begin());
+
+  if (old_index != new_index)
+    return TaskViewRemovalAnimation::kSlideOut;
+
+  return TaskViewRemovalAnimation::kNone;
+}
+
+void ContinueTaskContainerView::ScheduleContainerUpdateAnimation(
+    const std::set<views::View*>& views_to_fade_out,
+    const std::map<std::string, views::View*>& views_to_slide_out,
+    const std::map<std::string, views::View*>& views_remaining_in_place) {
+  views::AnimationBuilder animation_builder;
+  animation_builder.OnEnded(base::BindOnce(
+      &ContinueTaskContainerView::ClearAnimatingViews, base::Unretained(this)));
+  animation_builder.OnAborted(base::BindOnce(
+      &ContinueTaskContainerView::ClearAnimatingViews, base::Unretained(this)));
+
+  views::AnimationSequenceBlock last_sequence = animation_builder.Once();
+  last_sequence.SetDuration(base::Milliseconds(100));
+
+  // Fade out views for results that got removed.
+  for (auto* view : views_to_fade_out)
+    ScheduleFadeOutAnimation(view, &last_sequence);
+
+  // Immediately hide views that remained in place, and for which the new result
+  // views will not be animated in.
+  for (auto& view : views_remaining_in_place)
+    view.second->SetVisible(false);
+
+  const bool is_rtl = base::i18n::IsRTL();
+
+  // Slide out old result views for results whose position changed.
+  base::TimeDelta delay =
+      views_to_fade_out.empty() ? base::TimeDelta() : base::Milliseconds(200);
+  last_sequence = last_sequence.At(delay);
+  last_sequence.SetDuration(base::Milliseconds(100));
+  for (auto& view : views_to_slide_out) {
+    ScheduleSlideOutAnimation(view.second, tablet_mode_ ? 0 : -34, is_rtl,
+                              &last_sequence);
+  }
+
+  // Animate new views in.
+  delay = views_to_fade_out.empty() ? base::Milliseconds(100)
+                                    : base::Milliseconds(300);
+  last_sequence = last_sequence.At(delay);
+  last_sequence.SetDuration(base::Milliseconds(300));
+
+  for (auto* view : suggestion_tasks_views_) {
+    const std::string& result_id = view->result()->id();
+    // If view remained in place, it does not need to be animated in.
+    auto view_remaining_in_place_it = views_remaining_in_place.find(result_id);
+    if (view_remaining_in_place_it != views_remaining_in_place.end())
+      continue;
+
+    int initial_offset = 60;
+    // In tablet mode, direction from which the view slides in depends on
+    // whether the view is coming in from left or right - if the result existed
+    // before the update, and its old view bounds were left of the new view
+    // bounds, slide the view in from the left by flipping offset direction.
+    if (tablet_mode_) {
+      const auto& old_view_it = views_to_slide_out.find(result_id);
+      if (old_view_it != views_to_slide_out.end() &&
+          old_view_it->second->x() < view->x()) {
+        initial_offset = -initial_offset;
+      }
+    }
+    ScheduleSlideInAnimation(view, initial_offset, is_rtl, &last_sequence);
+  }
+}
+
+void ContinueTaskContainerView::AbortTasksUpdateAnimations() {
+  for (auto* view : suggestion_tasks_views_)
+    view->layer()->GetAnimator()->StopAnimating();
+  ClearAnimatingViews();
+}
+
+void ContinueTaskContainerView::ClearAnimatingViews() {
+  // Clear `views_to_remove_after_animation_` before starting to remove views in
+  // case view removal causes an aborted view animation that calls back into
+  // `ClearAnimatingViews()`. Clearing `views_to_remove_after_animation_` mid
+  // iteraion over the vector would not be safe.
+  std::vector<ContinueTaskView*> views_to_remove;
+  views_to_remove_after_animation_.swap(views_to_remove);
+  for (auto* view : views_to_remove)
+    RemoveChildViewT(view);
 }
 
 void ContinueTaskContainerView::SetResults(
@@ -156,6 +405,15 @@ void ContinueTaskContainerView::DisableFocusForShowingActiveFolder(
     bool disabled) {
   for (views::View* child : suggestion_tasks_views_)
     child->SetEnabled(!disabled);
+}
+
+void ContinueTaskContainerView::RemoveViewFromLayout(ContinueTaskView* view) {
+  view->SetEnabled(false);
+  if (table_layout_) {
+    table_layout_->SetChildViewIgnoredByLayout(view, true);
+  } else if (flex_layout_) {
+    flex_layout_->SetChildViewIgnoredByLayout(view, true);
+  }
 }
 
 void ContinueTaskContainerView::ScheduleUpdate() {
