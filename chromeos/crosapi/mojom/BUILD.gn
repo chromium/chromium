@@ -67,6 +67,7 @@ mojom("mojom") {
     "tts.mojom",
     "url_handler.mojom",
     "video_capture.mojom",
+    "web_app_types.mojom",
     "web_page_info.mojom",
   ]
   disable_variants = true
@@ -174,9 +175,14 @@ mojom("mojom") {
           cpp = "::apps::mojom::PreferredAppChangesPtr"
           move_only = true
         },
+        {
+          mojom = "crosapi.mojom.WebAppInstallResultCode"
+          cpp = "::webapps::InstallResultCode"
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
+        "//chromeos/crosapi/mojom/web_app_types_mojom_traits.h",
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
         "//components/services/app_service/public/cpp/app_types.h",
         "//chromeos/crosapi/mojom/sharesheet_mojom_traits.h",
@@ -187,12 +193,14 @@ mojom("mojom") {
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.cc",
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.cc",
         "//chromeos/crosapi/mojom/sharesheet_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/web_app_types_mojom_traits.cc",
       ]
       traits_public_deps = [
         "//components/services/app_service/public/cpp:app_types",
         "//components/services/app_service/public/cpp:browser_app_instance_registry_update",
         "//components/services/app_service/public/cpp:icon_types",
         "//components/services/app_service/public/mojom:mojom",
+        "//components/webapps/browser:constants",
       ]
     },
   ]
