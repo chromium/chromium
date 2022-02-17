@@ -102,6 +102,7 @@ suite('PrivacyPage', function() {
           {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
       privacy_sandbox: {
         apis_enabled: {value: true},
+        apis_enabled_v2: {value: true},
       },
       privacy_guide: {
         viewed: {
@@ -181,7 +182,9 @@ suite('PrivacyPage', function() {
   });
 
   test('privacySandboxRowSublabel', async function() {
+    loadTimeData.overrideValues({privacySandboxSettings3Enabled: false});
     page.set('prefs.privacy_sandbox.apis_enabled.value', true);
+    page.set('prefs.privacy_sandbox.apis_enabled_v2.value', true);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('privacySandboxTrialsEnabled'),
@@ -191,6 +194,20 @@ suite('PrivacyPage', function() {
     await flushTasks();
     assertEquals(
         loadTimeData.getString('privacySandboxTrialsDisabled'),
+        page.$.privacySandboxLinkRow.subLabel);
+
+    loadTimeData.overrideValues({privacySandboxSettings3Enabled: true});
+    page.set('prefs.privacy_sandbox.apis_enabled.value', true);
+    page.set('prefs.privacy_sandbox.apis_enabled_v2.value', false);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('privacySandboxTrialsDisabled'),
+        page.$.privacySandboxLinkRow.subLabel);
+
+    page.set('prefs.privacy_sandbox.apis_enabled_v2.value', true);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('privacySandboxTrialsEnabled'),
         page.$.privacySandboxLinkRow.subLabel);
   });
 
@@ -216,6 +233,7 @@ suite('PrivacyGuideEnabled', function() {
       // Need privacy_sandbox pref for the page's setup.
       privacy_sandbox: {
         apis_enabled: {value: true},
+        apis_enabled_v2: {value: true},
       },
       privacy_guide: {
         viewed: {

@@ -400,9 +400,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   private computePrivacySandboxSublabel_(): string {
-    return this.getPref('privacy_sandbox.apis_enabled').value ?
-        this.i18n('privacySandboxTrialsEnabled') :
-        this.i18n('privacySandboxTrialsDisabled');
+    const enabled = loadTimeData.getBoolean('privacySandboxSettings3Enabled') ?
+        this.getPref('privacy_sandbox.apis_enabled_v2').value :
+        this.getPref('privacy_sandbox.apis_enabled').value;
+    return enabled ? this.i18n('privacySandboxTrialsEnabled') :
+                     this.i18n('privacySandboxTrialsDisabled');
   }
 }
 
