@@ -5,6 +5,7 @@
 #include "ash/capture_mode/user_nudge_controller.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -106,7 +107,7 @@ UserNudgeController::~UserNudgeController() {
   DCHECK(toast_widget_);
   toast_widget_->CloseNow();
   if (should_dismiss_nudge_forever_)
-    CaptureModeController::Get()->DisableFolderSelectionNudgeForever();
+    CaptureModeController::Get()->DisableUserNudgeForever();
 }
 
 void UserNudgeController::Reposition() {
@@ -293,9 +294,12 @@ void UserNudgeController::BuildToastWidget() {
   toast_widget_->Init(CreateWidgetParams(GetParentWindow(),
                                          CalculateToastWidgetScreenBounds()));
 
+  const int message_id =
+      features::IsCaptureModeSelfieCameraEnabled()
+          ? IDS_ASH_SCREEN_CAPTURE_SHOW_CAMERA_USER_NUDGE
+          : IDS_ASH_SCREEN_CAPTURE_FOLDER_SELECTION_USER_NUDGE;
   toast_label_view_ = toast_widget_->SetContentsView(
-      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-          IDS_ASH_SCREEN_CAPTURE_FOLDER_SELECTION_USER_NUDGE)));
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(message_id)));
   toast_label_view_->SetMultiLine(true);
   auto* color_provider = AshColorProvider::Get();
   SkColor background_color = color_provider->GetBaseLayerColor(

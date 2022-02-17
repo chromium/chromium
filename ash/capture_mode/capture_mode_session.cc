@@ -1232,7 +1232,7 @@ void CaptureModeSession::MaybeCreateUserNudge() {
   if (is_in_projector_mode_)
     return;
 
-  if (!controller_->CanShowFolderSelectionNudge())
+  if (!controller_->CanShowUserNudge())
     return;
 
   user_nudge_controller_ = std::make_unique<UserNudgeController>(

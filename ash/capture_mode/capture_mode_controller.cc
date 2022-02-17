@@ -110,6 +110,12 @@ constexpr char kUsesDefaultCapturePathPrefName[] =
 constexpr char kCanShowFolderSelectionNudge[] =
     "ash.capture_mode.can_show_folder_selection_nudge";
 
+// The name of a boolean pref that determines whether we can show the selfie
+// camera user nudge. When this pref is false, it means that we showed the
+// nudge at some point and the user interacted with the capture mode session UI
+// in such a way that the nudge no longer needs to be displayed again.
+constexpr char kCanShowCameraNudge[] = "ash.capture_mode.can_show_camera_nudge";
+
 // The screenshot notification button index.
 enum ScreenshotNotificationButtonIndex {
   BUTTON_EDIT = 0,
@@ -456,8 +462,10 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                  /*default_value=*/base::FilePath());
   registry->RegisterBooleanPref(kUsesDefaultCapturePathPrefName,
                                 /*default_value=*/false);
-  registry->RegisterBooleanPref(kCanShowFolderSelectionNudge,
-                                /*default_value=*/true);
+  const auto* pref_name = features::IsCaptureModeSelfieCameraEnabled()
+                              ? kCanShowCameraNudge
+                              : kCanShowFolderSelectionNudge;
+  registry->RegisterBooleanPref(pref_name, /*default_value=*/true);
 }
 
 bool CaptureModeController::IsActive() const {
@@ -529,7 +537,7 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
     camera_controller_->MaybeReparentPreviewWidget();
 }
 
-bool CaptureModeController::CanShowFolderSelectionNudge() const {
+bool CaptureModeController::CanShowUserNudge() const {
   auto* session_controller = Shell::Get()->session_controller();
   DCHECK(session_controller->IsActiveUserSessionStarted());
 
@@ -555,11 +563,17 @@ bool CaptureModeController::CanShowFolderSelectionNudge() const {
 
   auto* pref_service = session_controller->GetActivePrefService();
   DCHECK(pref_service);
-  return pref_service->GetBoolean(kCanShowFolderSelectionNudge);
+  const auto* pref_name = features::IsCaptureModeSelfieCameraEnabled()
+                              ? kCanShowCameraNudge
+                              : kCanShowFolderSelectionNudge;
+  return pref_service->GetBoolean(pref_name);
 }
 
-void CaptureModeController::DisableFolderSelectionNudgeForever() {
-  GetActiveUserPrefService()->SetBoolean(kCanShowFolderSelectionNudge, false);
+void CaptureModeController::DisableUserNudgeForever() {
+  const auto* pref_name = features::IsCaptureModeSelfieCameraEnabled()
+                              ? kCanShowCameraNudge
+                              : kCanShowFolderSelectionNudge;
+  GetActiveUserPrefService()->SetBoolean(pref_name, false);
 }
 
 void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {

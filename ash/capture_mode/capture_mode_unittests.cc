@@ -5477,8 +5477,7 @@ TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
     SimulateUserLogin("example@gmail.com", test_case.user_type);
 
     auto* controller = StartImageRegionCapture();
-    EXPECT_EQ(test_case.can_see_nudge,
-              controller->CanShowFolderSelectionNudge());
+    EXPECT_EQ(test_case.can_see_nudge, controller->CanShowUserNudge());
 
     auto* nudge_controller = GetUserNudgeController();
     EXPECT_EQ(test_case.can_see_nudge, !!nudge_controller);
