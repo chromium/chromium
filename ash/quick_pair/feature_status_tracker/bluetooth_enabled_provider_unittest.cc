@@ -107,5 +107,13 @@ TEST_F(BluetoothEnabledProviderTest, HardwareSupportBecomesAvailable) {
   EXPECT_TRUE(provider_->is_enabled());
 }
 
+TEST_F(BluetoothEnabledProviderTest, AdapterPresentChanges) {
+  EXPECT_FALSE(provider_->is_enabled());
+  adapter().SetBluetoothIsPresent(true);
+  EXPECT_FALSE(provider_->is_enabled());
+  adapter().SetBluetoothIsPowered(true);
+  EXPECT_TRUE(provider_->is_enabled());
+}
+
 }  // namespace quick_pair
 }  // namespace ash
