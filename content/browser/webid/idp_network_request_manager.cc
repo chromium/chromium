@@ -39,7 +39,7 @@ using LoginState = IdentityRequestAccount::LoginState;
 
 // fedcm.json configuration keys.
 constexpr char kIdpEndpointKey[] = "idp_endpoint";
-constexpr char kTokenEndpointKey[] = "idtoken_endpoint";
+constexpr char kTokenEndpointKey[] = "id_token_endpoint";
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kRevokeEndpoint[] = "revoke_endpoint";
