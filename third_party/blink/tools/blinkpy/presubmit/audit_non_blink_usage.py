@@ -1140,12 +1140,21 @@ _CONFIG = [
         'paths': [
             'third_party/blink/renderer/modules/encryptedmedia/',
             'third_party/blink/renderer/modules/media/',
-            'third_party/blink/renderer/modules/media_capabilities/',
             'third_party/blink/renderer/modules/video_rvfc/',
         ],
         'allowed': [
             'media::.+',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/media_capabilities/',
+        ],
+        'allowed': [
+            'media::.+',
             'media_capabilities_identifiability_metrics::.+',
+            'webrtc::SdpVideoFormat',
+            'webrtc::SdpAudioFormat',
         ]
     },
     {

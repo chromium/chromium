@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_decoding_info_handler.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_encoding_info_handler.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -455,6 +456,37 @@ WebMediaConfiguration ToWebMediaConfiguration(
   return web_configuration;
 }
 
+webrtc::SdpAudioFormat ToSdpAudioFormat(
+    const AudioConfiguration* configuration) {
+  DCHECK(configuration->hasContentType());
+  // Convert audio_configuration to SdpAudioFormat.
+  ParsedContentType parsed_content_type(configuration->contentType());
+  DCHECK(parsed_content_type.IsValid());
+  const String codec_name =
+      WebrtcCodecNameFromMimeType(parsed_content_type.MimeType(), "audio");
+  // TODO(https://crbug.com/1187565): Deal with the special case where the clock
+  // rate is not the same as the sample rate.
+  const int clockrate_hz =
+      configuration->hasSamplerate() ? configuration->samplerate() : 0;
+  const size_t channels = configuration->hasChannels()
+                              ? configuration->channels().ToUIntStrict()
+                              : 0;
+  return {codec_name.Utf8(), clockrate_hz, channels};
+}
+
+webrtc::SdpVideoFormat ToSdpVideoFormat(
+    const VideoConfiguration* configuration) {
+  DCHECK(configuration->hasContentType());
+  // Convert video_configuration to SdpVideoFormat.
+  ParsedContentType parsed_content_type(configuration->contentType());
+  DCHECK(parsed_content_type.IsValid());
+  const String codec_name =
+      WebrtcCodecNameFromMimeType(parsed_content_type.MimeType(), "video");
+  const webrtc::SdpVideoFormat::Parameters parameters =
+      ConvertToSdpVideoFormatParameters(parsed_content_type.GetParameters());
+  return {codec_name.Utf8(), parameters};
+}
+
 bool CheckMseSupport(const String& mime_type, const String& codec) {
   // For MSE queries, we assume the queried audio and video streams will be
   // placed into separate source buffers.
@@ -775,20 +807,20 @@ ScriptPromise MediaCapabilities::decodingInfo(
           MakeGarbageCollected<MediaCapabilities::PendingCallbackState>(
               resolver, nullptr, request_time, absl::nullopt));
 
-      absl::optional<String> audio_mime_type =
+      absl::optional<webrtc::SdpAudioFormat> sdp_audio_format =
           config->hasAudio()
-              ? absl::make_optional(config->audio()->contentType())
+              ? absl::make_optional(ToSdpAudioFormat(config->audio()))
               : absl::nullopt;
-      absl::optional<String> video_mime_type =
+      absl::optional<webrtc::SdpVideoFormat> sdp_video_format =
           config->hasVideo()
-              ? absl::make_optional(config->video()->contentType())
+              ? absl::make_optional(ToSdpVideoFormat(config->video()))
               : absl::nullopt;
       absl::optional<String> scalability_mode =
           config->hasVideo() && config->video()->hasScalabilityMode()
               ? absl::make_optional(config->video()->scalabilityMode())
               : absl::nullopt;
       handler->DecodingInfo(
-          audio_mime_type, video_mime_type, scalability_mode,
+          sdp_audio_format, sdp_video_format, scalability_mode,
           WTF::Bind(&MediaCapabilities::OnWebrtcDecodingInfoSupport,
                     WrapPersistent(this), callback_id));
 
@@ -943,20 +975,20 @@ ScriptPromise MediaCapabilities::encodingInfo(
           MakeGarbageCollected<MediaCapabilities::PendingCallbackState>(
               resolver, nullptr, request_time, absl::nullopt));
 
-      absl::optional<String> audio_mime_type =
+      absl::optional<webrtc::SdpAudioFormat> sdp_audio_format =
           config->hasAudio()
-              ? absl::make_optional(config->audio()->contentType())
+              ? absl::make_optional(ToSdpAudioFormat(config->audio()))
               : absl::nullopt;
-      absl::optional<String> video_mime_type =
+      absl::optional<webrtc::SdpVideoFormat> sdp_video_format =
           config->hasVideo()
-              ? absl::make_optional(config->video()->contentType())
+              ? absl::make_optional(ToSdpVideoFormat(config->video()))
               : absl::nullopt;
       absl::optional<String> scalability_mode =
           config->hasVideo() && config->video()->hasScalabilityMode()
               ? absl::make_optional(config->video()->scalabilityMode())
               : absl::nullopt;
       handler->EncodingInfo(
-          audio_mime_type, video_mime_type, scalability_mode,
+          sdp_audio_format, sdp_video_format, scalability_mode,
           WTF::Bind(&MediaCapabilities::OnWebrtcEncodingInfoSupport,
                     WrapPersistent(this), callback_id));
 

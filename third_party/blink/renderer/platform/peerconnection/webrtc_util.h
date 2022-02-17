@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 
@@ -35,9 +36,11 @@ bool OptionalEquals(const OptionalT1& lhs, const OptionalT2& rhs) {
   return *lhs == *rhs;
 }
 
-String WebrtcCodecNameFromMimeType(const String& mime_type, const char* prefix);
+String PLATFORM_EXPORT WebrtcCodecNameFromMimeType(const String& mime_type,
+                                                   const char* prefix);
 
-webrtc::SdpVideoFormat::Parameters ConvertToSdpVideoFormatParameters(
+webrtc::SdpVideoFormat::Parameters PLATFORM_EXPORT
+ConvertToSdpVideoFormatParameters(
     const ParsedContentHeaderFieldParameters& parameters);
 
 }  // namespace blink
