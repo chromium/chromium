@@ -194,7 +194,7 @@ void NGInlineLayoutAlgorithm::RebuildBoxStates(
   line_info.ItemsData().GetOpenTagItems(break_token->ItemIndex(), &open_items);
 
   // Create box states for tags that are not closed yet.
-  NGLogicalLineItems line_box;
+  NGLogicalLineItems& line_box = *MakeGarbageCollected<NGLogicalLineItems>();
   box_states->OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
                                 quirks_mode_, &line_box);
   for (const NGInlineItem* item : open_items) {
@@ -203,6 +203,7 @@ void NGInlineLayoutAlgorithm::RebuildBoxStates(
                                         Node().IsSvgText(), &item_result);
     HandleOpenTag(*item, item_result, &line_box, box_states);
   }
+  line_box.clear();
 }
 
 #if DCHECK_IS_ON()
@@ -211,11 +212,12 @@ void NGInlineLayoutAlgorithm::CheckBoxStates(
     const NGInlineBreakToken* break_token) const {
   NGInlineLayoutStateStack rebuilt;
   RebuildBoxStates(line_info, break_token, &rebuilt);
-  NGLogicalLineItems line_box;
+  NGLogicalLineItems& line_box = *MakeGarbageCollected<NGLogicalLineItems>();
   rebuilt.OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
                             quirks_mode_, &line_box);
   DCHECK(box_states_);
   box_states_->CheckSame(rebuilt);
+  line_box.clear();
 }
 #endif
 
@@ -1511,12 +1513,14 @@ void NGInlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
   NGBidiParagraph::IndicesInVisualOrder(levels, &indices_in_visual_order);
 
   // Reorder to the visual order.
-  NGLogicalLineItems visual_items;
+  NGLogicalLineItems& visual_items =
+      *MakeGarbageCollected<NGLogicalLineItems>();
   visual_items.ReserveInitialCapacity(line_box->size());
   for (unsigned logical_index : indices_in_visual_order)
     visual_items.AddChild(std::move((*line_box)[logical_index]));
   DCHECK_EQ(line_box->size(), visual_items.size());
-  *line_box = std::move(visual_items);
+  line_box->swap(visual_items);
+  visual_items.clear();
 }
 
 }  // namespace blink

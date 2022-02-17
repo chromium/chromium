@@ -40,10 +40,11 @@ NGFragmentItemsBuilder::NGFragmentItemsBuilder(
 NGFragmentItemsBuilder::~NGFragmentItemsBuilder() {
   ReleaseCurrentLogicalLineItems();
 
-  // Delete leftovers that were associated, but were not added.
+  // Delete leftovers that were associated, but were not added. Clear() is
+  // explicitly called here for memory performance.
   for (const auto& i : line_items_map_) {
     if (i.value != line_items_pool_)
-      delete i.value;
+      i.value->clear();
   }
 }
 
@@ -62,7 +63,7 @@ void NGFragmentItemsBuilder::ReleaseCurrentLogicalLineItems() {
     DCHECK(is_line_items_pool_acquired_);
     is_line_items_pool_acquired_ = false;
   } else {
-    delete current_line_items_;
+    current_line_items_->clear();
   }
   current_line_items_ = nullptr;
 }
@@ -85,7 +86,7 @@ NGLogicalLineItems* NGFragmentItemsBuilder::AcquireLogicalLineItems() {
   }
   MoveCurrentLogicalLineItemsToMap();
   DCHECK(!current_line_items_);
-  current_line_items_ = new NGLogicalLineItems();
+  current_line_items_ = MakeGarbageCollected<NGLogicalLineItems>();
   return current_line_items_;
 }
 
