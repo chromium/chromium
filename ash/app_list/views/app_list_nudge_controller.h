@@ -26,7 +26,7 @@ class ASH_EXPORT AppListNudgeController {
     kNone,
     // A nudge in continue section which notifies that recommended files are
     // going to be shown in continue section.
-    kPrivacyMessage,
+    kPrivacyNotice,
     // A nudge in app list that guide users to reorder apps using context menu.
     kReorderNudge,
   };
@@ -54,12 +54,17 @@ class ASH_EXPORT AppListNudgeController {
   void OnTemporarySortOrderChanged(
       const absl::optional<AppListSortOrder>& new_order);
 
-  // Sets the new nudge visible state and update the prefs. The caller of
+  // Updates the nudge type when the privacy notice is showing or hiding. The
+  // caller of this function is responsible for the actual creation and removal
+  // of the nudge view.
+  void SetPrivacyNoticeShown(bool shown);
+
+  // Sets the new nudge visible state and updates the prefs. The caller of
   // this function is responsible for the actual creation and removal of the
   // nudge view.
   void SetNudgeVisible(bool is_nudge_visible, NudgeType type);
 
-  // Sets the new nudge active state and update the prefs. The caller of
+  // Sets the new nudge active state and updates the prefs. The caller of
   // this function is responsible for the actual creation and removal of the
   // nudge view. Note that inactive nudge state does not necessarily mean that
   // the nudge is hidden. A inactive nudge could be visible in the background.

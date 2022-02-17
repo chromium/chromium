@@ -91,6 +91,10 @@ bool AppListNudgeController::ShouldShowReorderNudge() const {
   if (!prefs)
     return false;
 
+  // Don't show the reorder nudge if the privacy notice is showing.
+  if (current_nudge_ == NudgeType::kPrivacyNotice)
+    return false;
+
   if (GetShownCount(prefs, NudgeType::kReorderNudge) < kMaxShowCount &&
       !WasAppListReorderedPreviously(prefs)) {
     return true;
@@ -110,6 +114,12 @@ void AppListNudgeController::OnTemporarySortOrderChanged(
   update->SetBoolPath(kConfirmed, true);
 }
 
+void AppListNudgeController::SetPrivacyNoticeShown(bool shown) {
+  DCHECK(current_nudge_ != NudgeType::kReorderNudge);
+
+  current_nudge_ = shown ? NudgeType::kPrivacyNotice : NudgeType::kNone;
+}
+
 void AppListNudgeController::SetNudgeVisible(bool is_nudge_visible,
                                              NudgeType type) {
   // Do not update the state and prefs if it didn't change.
@@ -117,6 +127,11 @@ void AppListNudgeController::SetNudgeVisible(bool is_nudge_visible,
       current_nudge_ == type) {
     return;
   }
+
+  // All NudgeType transition must start from or end to kNone to make sure the
+  // prefs is correctly recorded.
+  DCHECK(current_nudge_ == NudgeType::kNone || type == NudgeType::kNone ||
+         current_nudge_ == type);
 
   const bool is_visible_updated = is_visible_ != is_nudge_visible;
   const bool is_active_updated = is_active_ != is_nudge_visible;
@@ -134,6 +149,11 @@ void AppListNudgeController::SetNudgeActive(bool is_nudge_active,
   // Do not update the state and prefs if it didn't change.
   if (is_active_ == is_nudge_active && current_nudge_ == type)
     return;
+
+  // All NudgeType transition must start from or end to kNone to make sure the
+  // prefs is correctly recorded.
+  DCHECK(current_nudge_ == NudgeType::kNone || type == NudgeType::kNone ||
+         current_nudge_ == type);
 
   // The nudge must be visible to change its active state.
   DCHECK(is_visible_);
@@ -162,7 +182,7 @@ void AppListNudgeController::UpdateCurrentNudgeStateInPrefs(
           current_nudge_show_timestamp_ = base::Time::Now();
         break;
       }
-      case NudgeType::kPrivacyMessage:
+      case NudgeType::kPrivacyNotice:
       case NudgeType::kNone:
         break;
     }
@@ -182,14 +202,13 @@ void AppListNudgeController::UpdateCurrentNudgeStateInPrefs(
         is_nudge_considered_as_shown_ = true;
 
       // Update the number of times that the reorder nudge was
-      // shown to users if the visibility
-      // updates.
+      // shown to users if the visibility updates.
       if (is_visible_updated) {
         MaybeIncrementShownCountInPrefs(update, shown_duration);
         is_nudge_considered_as_shown_ = false;
       }
     } break;
-    case NudgeType::kPrivacyMessage:
+    case NudgeType::kPrivacyNotice:
     case NudgeType::kNone:
       break;
   }

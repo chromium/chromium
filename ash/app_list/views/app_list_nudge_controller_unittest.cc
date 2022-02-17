@@ -190,6 +190,7 @@ TEST_F(AppListNudgeControllerTest, TabletModeVisibilityTest) {
   EXPECT_TRUE(GetToastContainerView()->is_toast_visible());
 
   // Exit the search view. The nudge should be visible and active now.
+  search_box->SetSearchBoxActive(false, ui::ET_MOUSE_PRESSED);
   EXPECT_TRUE(GetToastContainerView()->is_toast_visible());
   EXPECT_EQ(AppListToastContainerView::ToastType::kReorderNudge,
             GetToastContainerView()->current_toast());

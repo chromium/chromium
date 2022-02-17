@@ -18,6 +18,7 @@ class Label;
 
 namespace ash {
 
+class AppListNudgeController;
 class AppListViewDelegate;
 class AppListToastView;
 class ContinueTaskContainerView;
@@ -60,6 +61,12 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // Whether the continue files should be shown to the user.
   bool ShouldShowFilesSection() const;
 
+  // Stops the running `privacy_notice_shown_timer_` if the privacy notice is
+  // shown in background.
+  void SetShownInBackground(bool shown_in_background);
+
+  void SetNudgeController(AppListNudgeController* nudge_controller);
+
   // Fire `privacy_notice_shown_timer_` for testing purposes.
   bool FirePrivacyNoticeShownTimerForTest();
 
@@ -67,6 +74,10 @@ class ASH_EXPORT ContinueSectionView : public views::View,
 
   // AppListControllerObserver:
   void OnAppListVisibilityChanged(bool shown, int64_t display_id) override;
+
+  AppListNudgeController* nudge_controller_for_test() const {
+    return nudge_controller_;
+  }
 
   static void SetPrivacyNoticeAcceptedForTest(bool is_disabled);
 
@@ -94,15 +105,18 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   void OnPrivacyNoticeCountTimerDone();
 
   // Whether the user has already accepted the privacy notice.
-  bool Accepted() const;
+  bool IsPrivacyNoticeAccepted() const;
 
   // Whether the user has already seen the privacy notice.
-  bool Shown() const;
+  bool IsPrivacyNoticeShown() const;
 
   bool tablet_mode_ = false;
 
   // Timer for marking the privacy notice as shown.
   base::OneShotTimer privacy_notice_shown_timer_;
+
+  // Not owned.
+  AppListNudgeController* nudge_controller_ = nullptr;
 
   views::Label* continue_label_ = nullptr;
   AppListToastView* privacy_toast_ = nullptr;

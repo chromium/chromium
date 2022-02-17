@@ -145,6 +145,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   continue_section_ =
       scroll_contents->AddChildView(std::make_unique<ContinueSectionView>(
           view_delegate, kContinueColumnCount, /*tablet_mode=*/false));
+  continue_section_->SetNudgeController(app_list_nudge_controller_.get());
+
   // Observe changes in continue section visibility, to keep separator
   // visibility in sync.
   continue_section_->AddObserver(this);

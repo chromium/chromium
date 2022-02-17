@@ -14,6 +14,8 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_bubble_apps_page.h"
+#include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
@@ -29,6 +31,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -56,8 +59,10 @@ void AddSearchResultToModel(const std::string& id,
 class ContinueSectionViewTestBase : public AshTestBase {
  public:
   explicit ContinueSectionViewTestBase(bool tablet_mode)
-      : tablet_mode_(tablet_mode) {
-    scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        tablet_mode_(tablet_mode) {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kLauncherAppSort, features::kProductivityLauncher}, {});
   }
   ~ContinueSectionViewTestBase() override = default;
 
@@ -68,6 +73,10 @@ class ContinueSectionViewTestBase : public AshTestBase {
     if (Shell::Get()->tablet_mode_controller()->InTabletMode())
       return GetAppListTestHelper()->GetFullscreenContinueSectionView();
     return GetAppListTestHelper()->GetBubbleContinueSectionView();
+  }
+
+  AppListNudgeController* GetAppListNudgeController() {
+    return GetContinueSectionView()->nudge_controller_for_test();
   }
 
   views::View* GetRecentAppsView() {
@@ -146,6 +155,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
     if (tablet_mode_param()) {
       // Convert to tablet mode to show fullscren launcher.
       Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+      Shell::Get()->app_list_controller()->ShowAppList();
       test_api_ = std::make_unique<test::AppsGridViewTestApi>(
           GetAppListTestHelper()->GetRootPagedAppsGridView());
     } else {
@@ -177,6 +187,11 @@ class ContinueSectionViewTestBase : public AshTestBase {
     } else {
       RightClickOn(view);
     }
+  }
+
+  bool IsPrivacyNoticeVisible() {
+    auto* privacy_notice = GetContinueSectionView()->GetPrivacyNoticeForTest();
+    return privacy_notice && privacy_notice->GetVisible();
   }
 
   test::AppsGridViewTestApi* test_api() { return test_api_.get(); }
@@ -211,9 +226,39 @@ class ContinueSectionViewTabletModeTest : public ContinueSectionViewTestBase {
   ~ContinueSectionViewTabletModeTest() override = default;
 };
 
+class ContinueSectionViewWithReorderNudgeTest
+    : public ContinueSectionViewTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContinueSectionViewWithReorderNudgeTest()
+      : ContinueSectionViewTestBase(/*tablet_mode=*/GetParam()) {}
+  ~ContinueSectionViewWithReorderNudgeTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    GetAppListTestHelper()->DisableAppListNudge(false);
+  }
+
+  AppListToastContainerView* GetToastContainerView() {
+    if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      return GetAppListTestHelper()
+          ->GetBubbleAppsPage()
+          ->toast_container_for_test();
+    }
+
+    return GetAppListTestHelper()
+        ->GetAppsContainerView()
+        ->toast_container_for_test();
+  }
+};
+
 // Instantiate the values in the parameterized tests. Used to toggle tablet
 // mode.
 INSTANTIATE_TEST_SUITE_P(All, ContinueSectionViewTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContinueSectionViewWithReorderNudgeTest,
+                         testing::Bool());
 
 TEST_P(ContinueSectionViewTest, CreatesViewsForTasks) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
@@ -776,7 +821,7 @@ TEST_P(ContinueSectionViewTest, TaskViewHidesRippleAfterMenuCloses) {
                                              ->GetTargetInkDropState());
 }
 
-TEST_P(ContinueSectionViewTest, ShowPrivacyNotice) {
+TEST_P(ContinueSectionViewWithReorderNudgeTest, ShowPrivacyNotice) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
@@ -785,11 +830,14 @@ TEST_P(ContinueSectionViewTest, ShowPrivacyNotice) {
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
 
-  EXPECT_TRUE(
-      GetContinueSectionView()->GetPrivacyNoticeForTest()->GetVisible());
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+  EXPECT_NE(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
 }
 
-TEST_P(ContinueSectionViewTest, AcceptPrivacyNotice) {
+TEST_P(ContinueSectionViewWithReorderNudgeTest, AcceptPrivacyNotice) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
@@ -798,16 +846,28 @@ TEST_P(ContinueSectionViewTest, AcceptPrivacyNotice) {
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
 
-  EXPECT_TRUE(
-      GetContinueSectionView()->GetPrivacyNoticeForTest()->GetVisible());
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+  EXPECT_NE(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
 
   GestureTapOn(
       GetContinueSectionView()->GetPrivacyNoticeForTest()->toast_button());
 
   EXPECT_FALSE(GetContinueSectionView()->ShouldShowPrivacyNotice());
+
+  HideLauncher();
+  EnsureLauncherShown();
+
+  EXPECT_FALSE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kReorderNudge);
+  EXPECT_EQ(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
 }
 
-TEST_P(ContinueSectionViewTest, TimeDismissPrivacyNotice) {
+TEST_P(ContinueSectionViewWithReorderNudgeTest, TimeDismissPrivacyNotice) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
@@ -816,17 +876,158 @@ TEST_P(ContinueSectionViewTest, TimeDismissPrivacyNotice) {
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
 
-  EXPECT_TRUE(
-      GetContinueSectionView()->GetPrivacyNoticeForTest()->GetVisible());
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+  EXPECT_NE(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
 
   ASSERT_TRUE(GetContinueSectionView()->FirePrivacyNoticeShownTimerForTest());
 
-  EXPECT_TRUE(
-      GetContinueSectionView()->GetPrivacyNoticeForTest()->GetVisible());
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+  EXPECT_NE(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
+}
 
+TEST_P(ContinueSectionViewWithReorderNudgeTest,
+       DoNotShowPrivacyNoticeAndReorderNudgeAlternitively) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  ResetPrivacyNoticePref();
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+  EXPECT_NE(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
+
+  // Close the launcher without waiting long enough for the privacy notice to be
+  // considered shown.
+  HideLauncher();
+
+  // The privacy notice should be showing instead of the reorder nudge when the
+  // next time the launcher is open.
+  EnsureLauncherShown();
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+  EXPECT_NE(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
+}
+
+TEST_P(ContinueSectionViewWithReorderNudgeTest,
+       DoNotShowPrivacyNoticeAndReorderNudgeAlternitively2) {
+  // Open the launcher without any search result added.
+  EnsureLauncherShown();
+
+  // Reorder nudge should be showing and privacy notice should not.
+  EXPECT_FALSE(GetContinueSectionView()->ShouldShowPrivacyNotice());
+  EXPECT_FALSE(GetContinueSectionView()->GetPrivacyNoticeForTest());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kReorderNudge);
+  EXPECT_EQ(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
+
+  // Wait for long enough for the reorder nudge to be considered shown.
+  task_environment()->AdvanceClock(base::Seconds(1));
+  HideLauncher();
+
+  // After hiding the launcher, add some search results and open the launcher
+  // again.
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  ResetPrivacyNoticePref();
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  // If the reorder nudge was shown and hasn't reached the shown times limit,
+  // keep showing the reorder nudge instead of the privacy notice.
+  EXPECT_FALSE(GetContinueSectionView()->ShouldShowPrivacyNotice());
+  EXPECT_FALSE(GetContinueSectionView()->GetPrivacyNoticeForTest());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kReorderNudge);
+  EXPECT_EQ(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
+  // Wait for long enough for the reorder nudge to be considered shown.
+  task_environment()->AdvanceClock(base::Seconds(1));
+  HideLauncher();
+
+  EnsureLauncherShown();
+  EXPECT_FALSE(GetContinueSectionView()->ShouldShowPrivacyNotice());
+  EXPECT_FALSE(GetContinueSectionView()->GetPrivacyNoticeForTest());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kReorderNudge);
+  EXPECT_EQ(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
+  // Wait for long enough for the reorder nudge to be considered shown.
+  task_environment()->AdvanceClock(base::Seconds(1));
+  HideLauncher();
+
+  EnsureLauncherShown();
+  // After the reorder nudge has been shown for three times, starts showing the
+  // privacy notice and removes the reorder nudge.
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+  EXPECT_NE(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
+}
+
+TEST_F(ContinueSectionViewTabletModeTest, PrivacyNoticeIsShownInBackground) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  ResetPrivacyNoticePref();
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+
+  // Activate the search box. The privacy notice will become inactive but the
+  // view still exists.
+  auto* search_box = GetAppListTestHelper()->GetSearchBoxView();
+  search_box->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
+
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+
+  // The privacy notice is not considered as shown when the search box is
+  // active. Therefore the privacy notice timer should not be running.
+  EXPECT_FALSE(GetContinueSectionView()->FirePrivacyNoticeShownTimerForTest());
+
+  // Reopen the app list.
   HideLauncher();
   EnsureLauncherShown();
 
+  // As the privacy notice was not active during the last shown, shows the
+  // notice again.
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+
+  // Activate the search box and then deactivate it.
+  search_box->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
+  search_box->SetSearchBoxActive(false, ui::ET_MOUSE_PRESSED);
+
+  // The privacy notice timer should be restarted after the search box becomes
+  // inactive.
+  EXPECT_TRUE(GetContinueSectionView()->FirePrivacyNoticeShownTimerForTest());
+
+  // Reopen the app list. The privacy notice should be removed.
+  HideLauncher();
+  EnsureLauncherShown();
   EXPECT_FALSE(GetContinueSectionView()->ShouldShowPrivacyNotice());
   EXPECT_FALSE(GetContinueSectionView()->GetPrivacyNoticeForTest());
 }

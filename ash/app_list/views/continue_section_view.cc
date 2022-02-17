@@ -14,6 +14,7 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_model.h"
+#include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/continue_task_view.h"
 #include "ash/bubble/bubble_utils.h"
@@ -64,6 +65,9 @@ std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
 }
 
 PrefService* GetActiveUserPrefService() {
+  if (!Shell::HasInstance())
+    return nullptr;
+
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
 
   auto* pref_service =
@@ -160,13 +164,43 @@ bool ContinueSectionView::HasMinimumFilesToShow() const {
 }
 
 bool ContinueSectionView::ShouldShowPrivacyNotice() const {
-  // TODO(crbug.com/1277666): Retrieve other nudges show status to handle edge
-  // cases where no two nudges should be shown at the same time in the launcher.
-  return HasMinimumFilesToShow() && !(Accepted() || Shown());
+  // Don't show the privacy notice if the reorder nudge is showing.
+  if (nudge_controller_ &&
+      nudge_controller_->current_nudge() ==
+          AppListNudgeController::NudgeType::kReorderNudge) {
+    return false;
+  }
+
+  return HasMinimumFilesToShow() &&
+         !(IsPrivacyNoticeAccepted() || IsPrivacyNoticeShown());
 }
 
 bool ContinueSectionView::ShouldShowFilesSection() const {
-  return HasMinimumFilesToShow() && !ShouldShowPrivacyNotice();
+  return HasMinimumFilesToShow() && !ShouldShowPrivacyNotice() &&
+         !privacy_toast_;
+}
+
+void ContinueSectionView::SetShownInBackground(bool shown_in_background) {
+  // If the privacy notice becomes inactive when it is shown in background, stop
+  // the privacy notice shown timer to restart the count on the next show.
+  if (shown_in_background && privacy_notice_shown_timer_.IsRunning()) {
+    privacy_notice_shown_timer_.AbandonAndStop();
+    return;
+  }
+
+  // If the privacy notice becomes active again, restart the
+  // `privacy_notice_shown_timer_`.
+  if (!shown_in_background && !IsPrivacyNoticeShown() && privacy_toast_) {
+    privacy_notice_shown_timer_.Start(
+        FROM_HERE, kPrivacyNoticeShownDelay,
+        base::BindOnce(&ContinueSectionView::MarkPrivacyNoticeShown,
+                       base::Unretained(this)));
+  }
+}
+
+void ContinueSectionView::SetNudgeController(
+    AppListNudgeController* nudge_controller) {
+  nudge_controller_ = nudge_controller;
 }
 
 void ContinueSectionView::MarkPrivacyNoticeAccepted() {
@@ -179,6 +213,7 @@ void ContinueSectionView::MarkPrivacyNoticeAccepted() {
     RemoveChildViewT(privacy_toast_);
     privacy_toast_ = nullptr;
   }
+  nudge_controller_->SetPrivacyNoticeShown(false);
   UpdateElementsVisibility();
 }
 
@@ -189,8 +224,17 @@ void ContinueSectionView::MarkPrivacyNoticeShown() {
 }
 
 void ContinueSectionView::MaybeCreatePrivacyNotice() {
-  if (!ShouldShowPrivacyNotice())
+  if (!ShouldShowPrivacyNotice()) {
+    // Reset the nudge controller state if privacy notice shouldn't be showing.
+    if (nudge_controller_->current_nudge() ==
+        AppListNudgeController::NudgeType::kPrivacyNotice) {
+      nudge_controller_->SetPrivacyNoticeShown(false);
+    }
+
     return;
+  }
+
+  nudge_controller_->SetPrivacyNoticeShown(true);
 
   if (privacy_toast_)
     return;
@@ -234,12 +278,15 @@ void ContinueSectionView::UpdateElementsVisibility() {
     continue_label_->SetVisible(show_files_section);
 }
 
-bool ContinueSectionView::Accepted() const {
+bool ContinueSectionView::IsPrivacyNoticeAccepted() const {
   if (g_nudge_accepted_for_test)
     return true;
 
-  const base::Value* result = GetActiveUserPrefService()
-                                  ->Get(prefs::kLauncherFilesPrivacyNotice)
+  const PrefService* prefs = GetActiveUserPrefService();
+  if (!prefs)
+    return false;
+
+  const base::Value* result = prefs->Get(prefs::kLauncherFilesPrivacyNotice)
                                   ->FindKey(kPrivacyNoticeAcceptedKey);
   if (!result || !result->is_bool())
     return false;
@@ -247,9 +294,12 @@ bool ContinueSectionView::Accepted() const {
   return result->GetBool();
 }
 
-bool ContinueSectionView::Shown() const {
-  const base::Value* result = GetActiveUserPrefService()
-                                  ->Get(prefs::kLauncherFilesPrivacyNotice)
+bool ContinueSectionView::IsPrivacyNoticeShown() const {
+  const PrefService* prefs = GetActiveUserPrefService();
+  if (!prefs)
+    return false;
+
+  const base::Value* result = prefs->Get(prefs::kLauncherFilesPrivacyNotice)
                                   ->FindKey(kPrivacyNoticeShownKey);
   if (!result || !result->is_bool())
     return false;
@@ -264,14 +314,25 @@ void ContinueSectionView::OnAppListVisibilityChanged(bool shown,
     privacy_toast_ = nullptr;
   }
 
+  // Update the nudge type in nudge controller if the privacy notice is
+  // considered shown and will not be shown again.
+  if (!shown && IsPrivacyNoticeShown() &&
+      nudge_controller_->current_nudge() ==
+          AppListNudgeController::NudgeType::kPrivacyNotice) {
+    nudge_controller_->SetPrivacyNoticeShown(false);
+  }
+
   // When hiding the launcher, stop the privacy notice shown timer to restart
   // the count on the next show.
   if (!shown && privacy_notice_shown_timer_.IsRunning())
     privacy_notice_shown_timer_.AbandonAndStop();
 
+  if (shown)
+    MaybeCreatePrivacyNotice();
   UpdateElementsVisibility();
 }
 
+// static
 void ContinueSectionView::SetPrivacyNoticeAcceptedForTest(bool is_disabled) {
   g_nudge_accepted_for_test = is_disabled;
 }

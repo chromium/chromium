@@ -116,9 +116,17 @@ void AppListToastContainerView::RemoveCurrentView() {
 void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
   visibility_state_ = state;
 
+  // Return early if the reorder nudge is not showing when the app list is
+  // hiding.
   if (nudge_controller_->is_visible() &&
       nudge_controller_->current_nudge() !=
           AppListNudgeController::NudgeType::kReorderNudge) {
+    return;
+  }
+
+  // Return early if the privacy notice should be showing.
+  if (nudge_controller_->current_nudge() ==
+      AppListNudgeController::NudgeType::kPrivacyNotice) {
     return;
   }
 

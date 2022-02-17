@@ -162,7 +162,6 @@ class AppsContainerView::ContinueContainer : public views::View {
         view_delegate, kContinueColumnCount, /*tablet_mode=*/true));
     continue_section_->SetPaintToLayer();
     continue_section_->layer()->SetFillsBoundsOpaquely(false);
-    continue_section_->UpdateSuggestionTasks();
 
     recent_apps_ = AddChildView(
         std::make_unique<RecentAppsView>(apps_container, view_delegate));
@@ -267,6 +266,12 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
   if (features::IsProductivityLauncherEnabled()) {
     continue_container_ = scrollable_container_->AddChildView(
         std::make_unique<ContinueContainer>(this, view_delegate));
+    continue_container_->continue_section()->SetNudgeController(
+        app_list_nudge_controller_.get());
+    // Update the suggestion tasks after the app list nudge controller is set in
+    // continue section.
+    continue_container_->continue_section()->UpdateSuggestionTasks();
+
     // Add a empty container view. A toast view should be added to
     // `toast_container_` when the app list starts temporary sorting.
     if (features::IsLauncherAppSortEnabled()) {
@@ -1008,6 +1013,11 @@ void AppsContainerView::OnShown() {
 
   GetViewAccessibility().OverrideIsLeaf(false);
   is_active_page_ = true;
+
+  // Update the continue section.
+  if (continue_container_)
+    continue_container_->continue_section()->SetShownInBackground(false);
+
   // Updates the visibility state in toast container.
   if (toast_container_) {
     toast_container_->UpdateVisibilityState(
@@ -1030,6 +1040,10 @@ void AppsContainerView::OnHidden() {
   GetViewAccessibility().OverrideIsLeaf(true);
 
   is_active_page_ = false;
+
+  // Update the continue section.
+  if (continue_container_)
+    continue_container_->continue_section()->SetShownInBackground(true);
 
   // Updates the visibility state in toast container.
   if (toast_container_) {
