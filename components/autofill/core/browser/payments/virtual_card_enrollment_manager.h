@@ -79,12 +79,18 @@ class VirtualCardEnrollmentManager {
  public:
   // The parameters should outlive the VirtualCardEnrollmentManager.
   VirtualCardEnrollmentManager(
-      raw_ptr<AutofillClient> autofill_client,
-      raw_ptr<PersonalDataManager> personal_data_manager);
+      raw_ptr<PersonalDataManager> personal_data_manager,
+      raw_ptr<payments::PaymentsClient> payments_client,
+      raw_ptr<AutofillClient> autofill_client = nullptr);
   VirtualCardEnrollmentManager(const VirtualCardEnrollmentManager&) = delete;
   VirtualCardEnrollmentManager& operator=(const VirtualCardEnrollmentManager&) =
       delete;
   virtual ~VirtualCardEnrollmentManager();
+
+  using RiskAssessmentFunction = base::OnceCallback<void(
+      base::OnceCallback<void(const std::string&)> callback,
+      uint64_t obfuscated_gaia_id,
+      raw_ptr<PrefService> user_prefs)>;
 
   // Starting point for the VCN enroll flow. The fields in |credit_card| will
   // be used throughout the flow, such as for request fields as well as credit
@@ -94,7 +100,17 @@ class VirtualCardEnrollmentManager {
   // the source we originated from.
   void OfferVirtualCardEnroll(
       const CreditCard& credit_card,
-      VirtualCardEnrollmentSource virtual_card_enrollment_source);
+      VirtualCardEnrollmentSource virtual_card_enrollment_source,
+      // |user_prefs| will be populated if we are in the clank settings page,
+      // to then be used for loading risk data. Otherwise it will always be
+      // nullptr, and we should load risk data through |autofill_client_| as we
+      // have access to web contents.
+      const raw_ptr<PrefService> user_prefs = nullptr,
+      // Callback that will be run in the Clank settings page use cases. It will
+      // take in a |callback|, |obfuscated_gaia_id|, and |user_prefs| that will
+      // end up being passed into the overloaded risk_util::LoadRiskData() call
+      // that does not require web contents.
+      RiskAssessmentFunction risk_assessment_function = base::DoNothing());
 
   // Updates |avatar_animation_complete| to true if the user is beginning the
   // upstream enrollment flow. This is a prerequisite to showing the enrollment
@@ -137,6 +153,12 @@ class VirtualCardEnrollmentManager {
   // |state_|.
   VirtualCardEnrollmentProcessState state_;
 
+  // The associated autofill client, used to load risk data and show the
+  // VirtualCardEnrollBubble. Weak reference. Can be nullptr, which indicates
+  // that we are in the Clank settings page, from which Autofill Client is not
+  // accessible.
+  raw_ptr<AutofillClient> autofill_client_;
+
   // Used to get a pointer to the strike database for virtual card enrollment.
   VirtualCardEnrollmentStrikeDatabase* GetVirtualCardEnrollmentStrikeDatabase()
       const;
@@ -148,12 +170,19 @@ class VirtualCardEnrollmentManager {
   // Whether we've received GetDetailsForEnrollResponseDetails.
   bool enroll_response_details_received_ = false;
 
- private:
+  // Loads risk data for the respective use case and then continues the virtual
+  // card enrollment flow. |user_prefs| will only be present in Clank settings
+  // page use cases, as we will not have access to web contents.
+  virtual void LoadRiskDataAndContinueFlow(
+      raw_ptr<PrefService> user_prefs,
+      base::OnceCallback<void(const std::string&)> callback);
+
   // Shows the VirtualCardEnrollmentBubble. |state_|'s
   // |virtual_card_enrollment_fields| will contain all of the dynamic fields
   // VirtualCardEnrollmentBubbleController needs to display the correct bubble.
-  virtual void ShowVirtualCardEnrollmentBubble();
+  virtual void ShowVirtualCardEnrollBubble();
 
+ private:
   // Called once the risk data is loaded. The |risk_data| will be used with
   // |state_|'s |virtual_card_enrollment_fields|'s |credit_card|'s
   // |instrument_id_| field to make a GetDetailsForEnroll request, and
@@ -161,13 +190,13 @@ class VirtualCardEnrollmentManager {
   // show the bubble so that we show the correct bubble version.
   void OnRiskDataLoadedForVirtualCard(const std::string& risk_data);
 
-  // Sends the GetDetailsForEnrollRequest using |autofill_client_|'s
-  // |payments_client_|. |state_|'s |risk_data| and its
-  // |virtual_card_enrollment_fields|'s |credit_card|'s |instrument_id| are the
-  // fields the server requires for the GetDetailsForEnrollRequest, and will be
-  // used by |autofill_client_|'s |payments_client_|. |state_|'s
-  // |virtual_card_enrollment_fields_|'s |virtual_card_enrollment_source| is
-  // passed here so that it can be forwarded to ShowVirtualCardEnrollBubble.
+  // Sends the GetDetailsForEnrollRequest using |payments_client_|. |state_|'s
+  // |risk_data| and its |virtual_card_enrollment_fields|'s |credit_card|'s
+  // |instrument_id| are the fields the server requires for the
+  // GetDetailsForEnrollRequest, and will be used by |payments_client_|.
+  // |state_|'s |virtual_card_enrollment_fields_|'s
+  // |virtual_card_enrollment_source| is passed here so that it can be forwarded
+  // to ShowVirtualCardEnrollBubble.
   void GetDetailsForEnroll();
 
   // Handles the response from the GetDetailsForEnrollRequest. |result| and
@@ -179,43 +208,46 @@ class VirtualCardEnrollmentManager {
       const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
           response);
 
-  // Uses |autofill_client_|'s |payments_client_| to send the enroll request
-  // when the user accepts the bubble. |state_|'s |vcn_context_token_|, which
-  // should be set when we receive the GetDetailsForEnrollResponse, is used in
-  // the UpdateVirtualCardEnrollmentRequest to enroll the correct card.
-  void OnVirtualCardEnrollmentBubbleAccepted();
+  // Uses |payments_client_| to send the enroll request. |state_|'s
+  // |vcn_context_token_|, which should be set when we receive the
+  // GetDetailsForEnrollResponse, is used in the
+  // UpdateVirtualCardEnrollmentRequest to enroll the correct card.
+  void Enroll();
 
   // Cancels the entire Virtual Card Enrollment process.
   void OnVirtualCardEnrollmentBubbleCancelled();
 
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest, Enroll);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            OnDidGetDetailsForEnrollResponse);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           OnDidGetDetailsForEnrollResponse_NoAutofillClient);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            OnDidGetDetailsForEnrollResponse_Reset);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            OnRiskDataLoadedForVirtualCard);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           OnVirtualCardEnrollmentBubbleAccepted);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            UpstreamAnimationSync_AnimationFirst);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            UpstreamAnimationSync_ResponseFirst);
-
-  // The associated autofill client, used to load risk data at the point that we
-  // need it. Weak reference.
-  raw_ptr<AutofillClient> autofill_client_;
-
-  raw_ptr<payments::PaymentsClient> payments_client_;
 
   // The associated personal data manager, used to save and load personal data
   // to/from the web database. Weak reference. May be nullptr, which indicates
   // OTR.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
+  // The associated |payments_client_| that is used for all requests to the
+  // server.
+  raw_ptr<payments::PaymentsClient> payments_client_;
+
   // The database that is used to count guid-keyed strikes to suppress prompting
   // users to enroll in virtual cards.
   std::unique_ptr<VirtualCardEnrollmentStrikeDatabase>
       virtual_card_enrollment_strike_database_;
+
+  // Used in scenarios where we do not have access to web contents, and need to
+  // pass in a callback to the overloaded risk_util::LoadRiskData.
+  RiskAssessmentFunction risk_assessment_function_;
 
   base::WeakPtrFactory<VirtualCardEnrollmentManager> weak_ptr_factory_{this};
 };

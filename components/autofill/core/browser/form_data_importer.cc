@@ -242,9 +242,9 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
       personal_data_manager_(personal_data_manager),
       app_locale_(app_locale),
       virtual_card_enrollment_manager_(
-          std::make_unique<VirtualCardEnrollmentManager>(
-              client,
-              personal_data_manager)) {
+          std::make_unique<VirtualCardEnrollmentManager>(personal_data_manager,
+                                                         payments_client,
+                                                         client)) {
 }
 
 FormDataImporter::~FormDataImporter() = default;

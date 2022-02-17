@@ -8,23 +8,34 @@
 namespace autofill {
 
 TestVirtualCardEnrollmentManager::TestVirtualCardEnrollmentManager(
-    raw_ptr<TestAutofillClient> autofill_client,
-    raw_ptr<TestPersonalDataManager> personal_data_manager)
-    : VirtualCardEnrollmentManager(autofill_client, personal_data_manager) {}
+    raw_ptr<TestPersonalDataManager> personal_data_manager,
+    raw_ptr<payments::TestPaymentsClient> payments_client,
+    raw_ptr<TestAutofillClient> autofill_client = nullptr)
+    : VirtualCardEnrollmentManager(personal_data_manager,
+                                   payments_client,
+                                   autofill_client) {}
 
 TestVirtualCardEnrollmentManager::~TestVirtualCardEnrollmentManager() = default;
+
+void TestVirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
+    raw_ptr<PrefService> user_prefs,
+    base::OnceCallback<void(const std::string&)> callback) {
+  std::move(callback).Run("some risk data");
+}
 
 void TestVirtualCardEnrollmentManager::
     OnDidGetUpdateVirtualCardEnrollmentResponse(
         AutofillClient::PaymentsRpcResult result) {
   result_ = result;
+  VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
+      result);
 }
 
 void TestVirtualCardEnrollmentManager::Reset() {
   reset_called_ = true;
 }
 
-void TestVirtualCardEnrollmentManager::ShowVirtualCardEnrollmentBubble() {
+void TestVirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
   bubble_shown_ = true;
 }
 

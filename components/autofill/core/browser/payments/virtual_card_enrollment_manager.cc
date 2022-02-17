@@ -32,15 +32,12 @@ VirtualCardEnrollmentProcessState::~VirtualCardEnrollmentProcessState() =
     default;
 
 VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
-    raw_ptr<AutofillClient> autofill_client,
-    raw_ptr<PersonalDataManager> personal_data_manager)
+    raw_ptr<PersonalDataManager> personal_data_manager,
+    raw_ptr<payments::PaymentsClient> payments_client,
+    raw_ptr<AutofillClient> autofill_client)
     : autofill_client_(autofill_client),
-      payments_client_(autofill_client->GetPaymentsClient()),
-      personal_data_manager_(personal_data_manager) {
-  // Here only check autofill_client_ because in some tests payments_client_
-  // does not exist.
-  DCHECK(autofill_client_);
-
+      personal_data_manager_(personal_data_manager),
+      payments_client_(payments_client) {
   StrikeDatabaseBase* strike_database = autofill_client->GetStrikeDatabase();
   virtual_card_enrollment_strike_database_ =
       std::make_unique<VirtualCardEnrollmentStrikeDatabase>(strike_database);
@@ -50,10 +47,13 @@ VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
 
 void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
     const CreditCard& credit_card,
-    VirtualCardEnrollmentSource virtual_card_enrollment_source) {
+    VirtualCardEnrollmentSource virtual_card_enrollment_source,
+    const raw_ptr<PrefService> user_prefs,
+    RiskAssessmentFunction risk_assessment_function) {
   Reset();
   DCHECK_NE(virtual_card_enrollment_source, VirtualCardEnrollmentSource::kNone);
   state_.virtual_card_enrollment_fields.credit_card = credit_card;
+  risk_assessment_function_ = std::move(risk_assessment_function);
 
   // The |card_art_image| might not be synced yet from the sync server which
   // will result in a nullptr. This situation can occur in the upstream flow. If
@@ -67,9 +67,12 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
 
   state_.virtual_card_enrollment_fields.virtual_card_enrollment_source =
       virtual_card_enrollment_source;
-  autofill_client_->LoadRiskData(base::BindOnce(
-      &VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard,
-      weak_ptr_factory_.GetWeakPtr()));
+
+  LoadRiskDataAndContinueFlow(
+      user_prefs,
+      base::BindOnce(
+          &VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VirtualCardEnrollmentManager::OnCardSavedAnimationComplete() {
@@ -78,7 +81,7 @@ void VirtualCardEnrollmentManager::OnCardSavedAnimationComplete() {
     avatar_animation_complete_ = true;
 
     if (enroll_response_details_received_)
-      ShowVirtualCardEnrollmentBubble();
+      ShowVirtualCardEnrollBubble();
   }
 }
 
@@ -145,6 +148,31 @@ VirtualCardEnrollmentManager::GetVirtualCardEnrollmentStrikeDatabase() const {
   return virtual_card_enrollment_strike_database_.get();
 }
 
+void VirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
+    raw_ptr<PrefService> user_prefs,
+    base::OnceCallback<void(const std::string&)> callback) {
+  if (autofill_client_) {
+    autofill_client_->LoadRiskData(std::move(callback));
+  } else {
+    // No |autofill_client_| present indicates we are in the clank settings page
+    // use case, so we load risk data using a method that does not require web
+    // contents to be present.
+    std::move(risk_assessment_function_)
+        .Run(std::move(callback), /*obfuscated_gaia_id=*/0, user_prefs);
+  }
+}
+
+void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
+  DCHECK(autofill_client_);
+  autofill_client_->ShowVirtualCardEnrollDialog(
+      &(state_.virtual_card_enrollment_fields),
+      base::BindOnce(&VirtualCardEnrollmentManager::Enroll,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
 void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(
     const std::string& risk_data) {
   state_.risk_data = risk_data;
@@ -179,9 +207,9 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
   // permanent error, show temporary error dialog for the rest of the failure
   // cases since currently only virtual card is supported.
   if (result != AutofillClient::PaymentsRpcResult::kSuccess) {
-    autofill_client_->ShowVirtualCardErrorDialog(
-        /*is_permanent_error=*/result ==
-        AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
+    // Showing an error dialog here would provide a confusing user experience as
+    // it is an error for a flow that is not user-initiated, so we fail
+    // silently.
     Reset();
     return;
   }
@@ -218,21 +246,15 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
     return;
   }
 
-  ShowVirtualCardEnrollmentBubble();
+  if (autofill_client_) {
+    ShowVirtualCardEnrollBubble();
+  } else {
+    // TODO(crbug.com/1281695): Run the callback that is passed from the Clank
+    // settings page here to display the Virtual Card Enroll Dialog.
+  }
 }
 
-void VirtualCardEnrollmentManager::ShowVirtualCardEnrollmentBubble() {
-  autofill_client_->ShowVirtualCardEnrollDialog(
-      &(state_.virtual_card_enrollment_fields),
-      base::BindOnce(
-          &VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleAccepted,
-          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(
-          &VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled,
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
-void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleAccepted() {
+void VirtualCardEnrollmentManager::Enroll() {
   payments::PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails
       request_details;
   request_details.virtual_card_enrollment_source =

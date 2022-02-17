@@ -16,8 +16,9 @@ class TestPersonalDataManager;
 class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
  public:
   TestVirtualCardEnrollmentManager(
-      raw_ptr<TestAutofillClient> autofill_client,
-      raw_ptr<TestPersonalDataManager> personal_data_manager);
+      raw_ptr<TestPersonalDataManager> personal_data_manager,
+      raw_ptr<payments::TestPaymentsClient> payments_client,
+      raw_ptr<TestAutofillClient> autofill_client);
   TestVirtualCardEnrollmentManager(const TestVirtualCardEnrollmentManager&) =
       delete;
   TestVirtualCardEnrollmentManager& operator=(
@@ -32,6 +33,10 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
 
   AutofillClient::PaymentsRpcResult GetPaymentsRpcResult() { return result_; }
 
+  void SetPaymentsRpcResult(AutofillClient::PaymentsRpcResult result) {
+    result_ = result;
+  }
+
   bool GetResetCalled() { return reset_called_; }
 
   void SetResetCalled(bool reset_called) { reset_called_ = reset_called; }
@@ -43,11 +48,20 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
     return &state_;
   }
 
+  void SetAutofillClient(raw_ptr<AutofillClient> autofill_client) {
+    autofill_client_ = autofill_client;
+  }
+
+  bool AutofillClientIsPresent() { return autofill_client_ != nullptr; }
+
   // VirtualCardEnrollmentManager:
+  void LoadRiskDataAndContinueFlow(
+      raw_ptr<PrefService> user_prefs,
+      base::OnceCallback<void(const std::string&)> callback) override;
   void OnDidGetUpdateVirtualCardEnrollmentResponse(
       AutofillClient::PaymentsRpcResult result) override;
   void Reset() override;
-  void ShowVirtualCardEnrollmentBubble() override;
+  void ShowVirtualCardEnrollBubble() override;
 
  private:
   AutofillClient::PaymentsRpcResult result_;

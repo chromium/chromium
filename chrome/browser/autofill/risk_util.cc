@@ -80,9 +80,19 @@ void LoadRiskData(uint64_t obfuscated_gaia_id,
   window_bounds = GetBaseWindowForWebContents(web_contents)->GetBounds();
 #endif
 
-  const PrefService* user_prefs =
+  const raw_ptr<PrefService> user_prefs =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetPrefs();
+
+  LoadRiskData(obfuscated_gaia_id, user_prefs, std::move(callback),
+               web_contents, window_bounds);
+}
+
+void LoadRiskData(uint64_t obfuscated_gaia_id,
+                  const raw_ptr<PrefService> user_prefs,
+                  base::OnceCallback<void(const std::string&)> callback,
+                  const raw_ptr<content::WebContents> web_contents,
+                  gfx::Rect window_bounds) {
   std::string charset = user_prefs->GetString(::prefs::kDefaultCharset);
   std::string accept_languages =
       user_prefs->GetString(::language::prefs::kAcceptLanguages);
