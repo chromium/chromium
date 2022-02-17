@@ -8,9 +8,14 @@ import android.content.Context;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 
+import com.google.android.material.color.MaterialColors;
+
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SimpleHorizontalLayoutView;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * Container view for the {@link ChipView}.
@@ -19,6 +24,8 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  * the end of the chip need to be same as the action in BaseSuggestionView.
  */
 public class PedalView extends SimpleHorizontalLayoutView {
+    private static final String TAG = "PedalView";
+
     private final @NonNull ChipView mPedal;
 
     /**
@@ -31,6 +38,14 @@ public class PedalView extends SimpleHorizontalLayoutView {
 
         mPedal = new ChipView(context, null);
         mPedal.setLayoutParams(LayoutParams.forDynamicView());
+
+        final int baseColor = MaterialColors.getColor(context, R.attr.colorSurface, TAG);
+        final int overlayColor = MaterialColors.getColor(context, R.attr.colorOutline, TAG);
+        final float alpha =
+                ResourcesCompat.getFloat(context.getResources(), R.dimen.chip_outline_alpha);
+        mPedal.setBorder(context.getResources().getDimensionPixelSize(R.dimen.chip_border_width),
+                ColorUtils.getColorWithOverlay(baseColor, overlayColor, alpha));
+
         addView(mPedal);
     }
 
