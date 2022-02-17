@@ -305,14 +305,17 @@ void Frame::NotifyUserActivationInFrameTree(
 
 bool Frame::ConsumeTransientUserActivationInFrameTree() {
   bool was_active = user_activation_state_.IsActive();
-  Frame& root = Tree().Top();
+  // TODO(crbug.com/1262022): Remove this once we use MPArch as the underlying
+  // fenced frames implementation, instead of ShadowDOM.
+  Frame& root = Tree().Top(FrameTreeBoundary::kFenced);
 
   // To record UMA once per consumption, we arbitrarily picked the LocalFrame
   // for root.
   if (IsA<LocalFrame>(root))
     root.user_activation_state_.RecordPreconsumptionUma();
 
-  for (Frame* node = &root; node; node = node->Tree().TraverseNext())
+  for (Frame* node = &root; node;
+       node = node->Tree().TraverseNext(&root, FrameTreeBoundary::kFenced))
     node->user_activation_state_.ConsumeIfActive();
 
   return was_active;
