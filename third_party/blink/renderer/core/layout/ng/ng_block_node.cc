@@ -1405,9 +1405,10 @@ void NGBlockNode::PlaceChildrenInFlowThread(
       should_append_fragmentainer_group = false;
 
       // If there is no column set after the spanner, we should expand the last
-      // column set to encompass any columns that were created after the
-      // spanner.
-      should_expand_last_set = !pending_column_set;
+      // column set (if any) to encompass any columns that were created after
+      // the spanner.
+      should_expand_last_set =
+          !pending_column_set && flow_thread->LastMultiColumnSet();
       continue;
     }
 
