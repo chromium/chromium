@@ -61,9 +61,9 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
   ftrl_category_params.num_experts = 2u;
 
   MrfuCache::Params mrfu_category_params;
-  mrfu_category_params.half_life = 10.0f;
-  mrfu_category_params.boost_factor = 5.0f;
-  mrfu_category_params.max_items = 200u;
+  mrfu_category_params.half_life = 20.0f;
+  mrfu_category_params.boost_factor = 7.0f;
+  mrfu_category_params.max_items = 20u;
 
   const auto state_dir = RankerStateDirectory(profile);
 
