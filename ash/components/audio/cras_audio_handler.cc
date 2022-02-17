@@ -269,20 +269,10 @@ void CrasAudioHandler::MediaSessionInfoChanged(
   if (!session_info)
     return;
 
-  std::string state;
-
-  switch (session_info->state) {
-    case media_session::mojom::MediaSessionInfo::SessionState::kActive:
-    case media_session::mojom::MediaSessionInfo::SessionState::kDucking:
-      state = "playing";
-      break;
-    case media_session::mojom::MediaSessionInfo::SessionState::kSuspended:
-      state = "paused";
-      break;
-    case media_session::mojom::MediaSessionInfo::SessionState::kInactive:
-      state = "stopped";
-      break;
-  }
+  std::string state = session_info->playback_state ==
+                              media_session::mojom::MediaPlaybackState::kPlaying
+                          ? "playing"
+                          : "paused";
 
   CrasAudioClient::Get()->SetPlayerPlaybackStatus(state);
 }
