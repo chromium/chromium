@@ -950,10 +950,15 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                   GURL(kChromeUINewTabURL))];
 }
 
-// Dismisses the menu and and updates the follow status of the website.
-- (void)updateFollowStatus:(BOOL)newStatus {
+// Updates the follow status of the website to |followStatus|, and dismisses the
+// menu.
+- (void)updateFollowStatus:(BOOL)followStatus {
+  if (followStatus) {
+    ios::GetChromeBrowserProvider().GetFollowProvider()->UpdateFollowStatus(
+        self.siteInfo, YES);
+  }
+  // TODO(crbug.com/1264872): add implementation when the followStatus is NO.
   [self.dispatcher dismissPopupMenuAnimated:YES];
-  // TODO(crbug.com/1264872): implement.
 }
 
 // Dismisses the menu and adds the current page as a bookmark or opens the
