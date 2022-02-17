@@ -109,10 +109,7 @@ bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
 }
 
 void RecordFormFactorMetric() {
-  auto form_factor =
-      ash::TabletMode::Get()->InTabletMode()
-          ? ::sharesheet::SharesheetMetrics::FormFactor::kTablet
-          : ::sharesheet::SharesheetMetrics::FormFactor::kClamshell;
+  auto form_factor = ::sharesheet::SharesheetMetrics::GetFormFactorForMetrics();
   ::sharesheet::SharesheetMetrics::RecordSharesheetFormFactor(form_factor);
 }
 

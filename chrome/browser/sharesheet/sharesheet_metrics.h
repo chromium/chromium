@@ -25,6 +25,7 @@ extern const char kSharesheetIsDriveFolderResultHistogram[];
 extern const char kSharesheetIsImagePressedResultHistogram[];
 extern const char kSharesheetMimeTypeResultHistogram[];
 extern const char kSharesheetCopyToClipboardMimeTypeResultHistogram[];
+extern const char kSharesheetCopyToClipboardFormFactorResultHistogram[];
 
 class SharesheetMetrics {
  public:
@@ -89,11 +90,14 @@ class SharesheetMetrics {
   static void RecordSharesheetMimeType(const MimeType mime_type);
   static void RecordCopyToClipboardShareActionMimeType(
       const MimeType mime_type);
+  static void RecordCopyToClipboardShareActionFormFactor(
+      const FormFactor form_factor);
 
   // Utility Functions
   static MimeType ConvertMimeTypeForMetrics(std::string mime_type);
   static base::flat_set<MimeType> GetMimeTypesFromIntentForMetrics(
       const apps::mojom::IntentPtr& intent);
+  static FormFactor GetFormFactorForMetrics();
 };
 
 }  // namespace sharesheet

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -38,6 +39,8 @@ const char kSharesheetMimeTypeResultHistogram[] =
     "ChromeOS.Sharesheet.Invocation.MimeType";
 const char kSharesheetCopyToClipboardMimeTypeResultHistogram[] =
     "ChromeOS.Sharesheet.CopyToClipboard.MimeType";
+const char kSharesheetCopyToClipboardFormFactorResultHistogram[] =
+    "ChromeOS.Sharesheet.CopyToClipboard.FormFactor";
 
 SharesheetMetrics::SharesheetMetrics() = default;
 
@@ -101,6 +104,12 @@ void SharesheetMetrics::RecordCopyToClipboardShareActionMimeType(
       kSharesheetCopyToClipboardMimeTypeResultHistogram, mime_type);
 }
 
+void SharesheetMetrics::RecordCopyToClipboardShareActionFormFactor(
+    const FormFactor form_factor) {
+  base::UmaHistogramEnumeration(
+      kSharesheetCopyToClipboardFormFactorResultHistogram, form_factor);
+}
+
 SharesheetMetrics::MimeType SharesheetMetrics::ConvertMimeTypeForMetrics(
     std::string mime_type) {
   std::vector<std::string> type =
@@ -152,6 +161,11 @@ SharesheetMetrics::GetMimeTypesFromIntentForMetrics(
     }
   }
   return mime_types_to_record;
+}
+
+SharesheetMetrics::FormFactor SharesheetMetrics::GetFormFactorForMetrics() {
+  return ash::TabletMode::Get()->InTabletMode() ? FormFactor::kTablet
+                                                : FormFactor::kClamshell;
 }
 
 }  // namespace sharesheet

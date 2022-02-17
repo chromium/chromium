@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/sharesheet/copy_to_clipboard_share_action.h"
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharesheet/share_action/share_action_cache.h"
@@ -240,6 +241,41 @@ TEST_F(CopyToClipboardShareActionTest, CopyToClipboardMultipleImageFiles) {
   histograms.ExpectBucketCount(
       ::sharesheet::kSharesheetCopyToClipboardMimeTypeResultHistogram,
       ::sharesheet::SharesheetMetrics::MimeType::kImageFile, 1);
+}
+
+TEST_F(CopyToClipboardShareActionTest, CopyToClipboardRecordFormFactorTablet) {
+  base::HistogramTester histograms;
+
+  // Set Tablet mode
+  ash::TabletMode::Get()->SetEnabledForTest(true);
+
+  // Invoke copy to clipboard action then check metrics update
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  copy_action->LaunchAction(/*controller=*/nullptr, /*root_view=*/nullptr,
+                            ::sharesheet::CreateValidTextIntent());
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetCopyToClipboardFormFactorResultHistogram,
+      ::sharesheet::SharesheetMetrics::FormFactor::kTablet, 1);
+}
+
+TEST_F(CopyToClipboardShareActionTest,
+       CopyToClipboardRecordFormFactorClamshell) {
+  base::HistogramTester histograms;
+
+  // Set Clamshell mode
+  ash::TabletMode::Get()->SetEnabledForTest(false);
+
+  // Invoke copy to clipboard action then check metrics update
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  copy_action->LaunchAction(/*controller=*/nullptr, /*root_view=*/nullptr,
+                            ::sharesheet::CreateValidTextIntent());
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetCopyToClipboardFormFactorResultHistogram,
+      ::sharesheet::SharesheetMetrics::FormFactor::kClamshell, 1);
 }
 
 }  // namespace sharesheet

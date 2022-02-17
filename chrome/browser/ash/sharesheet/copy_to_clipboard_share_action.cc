@@ -30,6 +30,12 @@
 namespace {
 const char kToastId[] = "copy_to_clipboard_share_action";
 
+void RecordFormFactorMetric() {
+  auto form_factor = ::sharesheet::SharesheetMetrics::GetFormFactorForMetrics();
+  ::sharesheet::SharesheetMetrics::RecordCopyToClipboardShareActionFormFactor(
+      form_factor);
+}
+
 void RecordMimeTypes(
     const base::flat_set<::sharesheet::SharesheetMetrics::MimeType>&
         mime_types_to_record) {
@@ -100,6 +106,7 @@ void CopyToClipboardShareAction::LaunchAction(
     clipboard_writer.WriteFilenames(ui::FileInfosToURIList(file_infos));
   }
 
+  RecordFormFactorMetric();
   RecordMimeTypes(
       ::sharesheet::SharesheetMetrics::GetMimeTypesFromIntentForMetrics(
           intent));
