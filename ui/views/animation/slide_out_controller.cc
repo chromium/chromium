@@ -37,7 +37,7 @@ SlideOutController::~SlideOutController() = default;
 void SlideOutController::CaptureControlOpenState() {
   if (!has_swipe_control_)
     return;
-  if (mode_ == SlideMode::kFull &&
+  if ((mode_ == SlideMode::kFull || mode_ == SlideMode::kPartial) &&
       fabs(gesture_amount_) >= swipe_control_width_) {
     control_open_state_ = gesture_amount_ < 0
                               ? SwipeControlOpenState::kOpenOnRight

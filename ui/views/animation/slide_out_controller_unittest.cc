@@ -239,7 +239,30 @@ TEST_F(SlideOutControllerTest, SlideLittleAmountAndNotClose) {
   EXPECT_EQ(0, delegate()->slide_out_count_);
 }
 
-TEST_F(SlideOutControllerTest, SetSwipeControlWidth_SwipeLessThanControlWidth) {
+class SwipeControlTest
+    : public SlideOutControllerTest,
+      public testing::WithParamInterface<SlideOutController::SlideMode> {
+ public:
+  SwipeControlTest() = default;
+
+  SwipeControlTest(const SwipeControlTest&) = delete;
+  SwipeControlTest& operator=(const SwipeControlTest&) = delete;
+
+  ~SwipeControlTest() override = default;
+
+  void SetUp() override {
+    SlideOutControllerTest::SetUp();
+    slide_out_controller()->set_slide_mode(GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SwipeControlTest,
+    ::testing::Values(SlideOutController::SlideMode::kFull,
+                      SlideOutController::SlideMode::kPartial));
+
+TEST_P(SwipeControlTest, SetSwipeControlWidth_SwipeLessThanControlWidth) {
   // Set the width of swipe control.
   slide_out_controller()->SetSwipeControlWidth(kSwipeControlWidth);
 
@@ -285,7 +308,7 @@ TEST_F(SlideOutControllerTest, SetSwipeControlWidth_SwipeLessThanControlWidth) {
   EXPECT_EQ(0, delegate()->slide_out_count_);
 }
 
-TEST_F(SlideOutControllerTest, SwipeControlWidth_SwipeMoreThanControlWidth) {
+TEST_P(SwipeControlTest, SwipeControlWidth_SwipeMoreThanControlWidth) {
   // Set the width of swipe control.
   slide_out_controller()->SetSwipeControlWidth(kSwipeControlWidth);
 
@@ -332,7 +355,10 @@ TEST_F(SlideOutControllerTest, SwipeControlWidth_SwipeMoreThanControlWidth) {
   EXPECT_EQ(0, delegate()->slide_out_count_);
 }
 
-TEST_F(SlideOutControllerTest, SetSwipeControlWidth_SwipeOut) {
+TEST_P(SwipeControlTest, SetSwipeControlWidth_SwipeOut) {
+  const bool swipe_out_supported =
+      slide_out_controller()->mode() == SlideOutController::SlideMode::kFull;
+
   // Set the width of swipe control.
   slide_out_controller()->SetSwipeControlWidth(kSwipeControlWidth);
 
@@ -362,12 +388,13 @@ TEST_F(SlideOutControllerTest, SetSwipeControlWidth_SwipeOut) {
   PostSequentialGestureEvent(
       ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
 
-  // ... and it is automatically slided out.
+  // ... and it is automatically slided out if |swipe_out_supported|.
   EXPECT_EQ(0, delegate()->slide_started_count_);
   EXPECT_TRUE(delegate()->IsOnSlideChangedCalled());
-  EXPECT_FALSE(delegate()->slide_changed_last_value_.value());
+  EXPECT_EQ(delegate()->slide_changed_last_value_.value(),
+            !swipe_out_supported);
   EXPECT_EQ(0, delegate()->slide_out_count_);
-  EXPECT_EQ(kTargetWidth,
+  EXPECT_EQ(swipe_out_supported ? kTargetWidth : kSwipeControlWidth,
             delegate()->GetSlideOutLayer()->transform().To2dTranslation().x());
 
   delegate()->reset();
@@ -375,10 +402,13 @@ TEST_F(SlideOutControllerTest, SetSwipeControlWidth_SwipeOut) {
   // Ensure a deferred SlideOut handler is called once.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(delegate()->IsOnSlideChangedCalled());
-  EXPECT_EQ(1, delegate()->slide_out_count_);
+  EXPECT_EQ(swipe_out_supported ? 1 : 0, delegate()->slide_out_count_);
 }
 
-TEST_F(SlideOutControllerTest, SwipeControlWidth_SnapAndSwipeOut) {
+TEST_P(SwipeControlTest, SwipeControlWidth_SnapAndSwipeOut) {
+  const bool swipe_out_supported =
+      slide_out_controller()->mode() == SlideOutController::SlideMode::kFull;
+
   // Set the width of swipe control.
   slide_out_controller()->SetSwipeControlWidth(kSwipeControlWidth);
 
@@ -406,12 +436,13 @@ TEST_F(SlideOutControllerTest, SwipeControlWidth_SnapAndSwipeOut) {
   PostSequentialGestureEvent(
       ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
 
-  // ... and it is automatically slided out.
+  // ... and it is automatically slided out if if |swipe_out_supported|.
   EXPECT_EQ(1, delegate()->slide_started_count_);
   EXPECT_TRUE(delegate()->IsOnSlideChangedCalled());
-  EXPECT_FALSE(delegate()->slide_changed_last_value_.value());
+  EXPECT_EQ(delegate()->slide_changed_last_value_.value(),
+            !swipe_out_supported);
   EXPECT_EQ(0, delegate()->slide_out_count_);
-  EXPECT_EQ(kTargetWidth,
+  EXPECT_EQ(swipe_out_supported ? kTargetWidth : kSwipeControlWidth,
             delegate()->GetSlideOutLayer()->transform().To2dTranslation().x());
 
   delegate()->reset();
@@ -419,10 +450,10 @@ TEST_F(SlideOutControllerTest, SwipeControlWidth_SnapAndSwipeOut) {
   // Ensure a deferred OnSlideOut handler is called.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(delegate()->IsOnSlideChangedCalled());
-  EXPECT_EQ(1, delegate()->slide_out_count_);
+  EXPECT_EQ(swipe_out_supported ? 1 : 0, delegate()->slide_out_count_);
 }
 
-TEST_F(SlideOutControllerTest, SwipeControlWidth_SnapAndSnapToControl) {
+TEST_P(SwipeControlTest, SwipeControlWidth_SnapAndSnapToControl) {
   // Set the width of swipe control.
   slide_out_controller()->SetSwipeControlWidth(kSwipeControlWidth);
 
@@ -456,7 +487,7 @@ TEST_F(SlideOutControllerTest, SwipeControlWidth_SnapAndSnapToControl) {
   EXPECT_EQ(0, delegate()->slide_out_count_);
 }
 
-TEST_F(SlideOutControllerTest, SwipeControlWidth_SnapAndBackToOrigin) {
+TEST_P(SwipeControlTest, SwipeControlWidth_SnapAndBackToOrigin) {
   // Set the width of swipe control.
   slide_out_controller()->SetSwipeControlWidth(kSwipeControlWidth);
 
@@ -490,7 +521,7 @@ TEST_F(SlideOutControllerTest, SwipeControlWidth_SnapAndBackToOrigin) {
   EXPECT_EQ(0, delegate()->slide_out_count_);
 }
 
-TEST_F(SlideOutControllerTest, SwipeControlWidth_NotSnapAndBackToOrigin) {
+TEST_P(SwipeControlTest, SwipeControlWidth_NotSnapAndBackToOrigin) {
   // Set the width of swipe control.
   slide_out_controller()->SetSwipeControlWidth(kSwipeControlWidth);
 
