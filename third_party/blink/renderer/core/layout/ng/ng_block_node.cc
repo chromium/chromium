@@ -1152,12 +1152,16 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   NGBoxStrut border_scrollbar_padding = borders + scrollbars + padding;
   bool is_last_fragment = !physical_fragment.BreakToken();
 
-  // For each fragment we process, we'll accumulate the logical height. We reset
-  // it at the first fragment, and accumulate at each method call for fragments
-  // belonging to the same layout object. Logical width will only be set at the
-  // first fragment and is expected to remain the same throughout all subsequent
-  // fragments, since legacy layout doesn't support non-uniform fragmentainer
-  // widths.
+  // For each fragment we process, we'll accumulate the block-size. We reset it
+  // at the first fragment, and accumulate at each method call for fragments
+  // belonging to the same layout object. Inline-size will only be set at the
+  // first fragment. Subsequent fragments may have different inline-size (either
+  // because fragmentainer inline-size is variable, or e.g. because available
+  // inline-size is affected by floats). The legacy engine doesn't handle
+  // variable inline-size (since it doesn't really understand fragmentation).
+  // This means that things like offsetWidth won't work correctly (since that's
+  // still being handled by the legacy engine), but at least layout, painting
+  // and hit-testing will be correct.
   if (LIKELY(physical_fragment.IsFirstForNode())) {
     box_->SetSize(LayoutSize(physical_fragment.Size().width,
                              physical_fragment.Size().height));
@@ -1176,8 +1180,6 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
           border_scrollbar_padding.BlockSum());
     }
   } else {
-    DCHECK_EQ(box_->LogicalWidth(), fragment_logical_size.inline_size)
-        << "Variable fragment inline size not supported";
     // Update logical height, unless this fragment is past the block-end of the
     // generating node (happens with overflow).
     if (previous_break_token && !previous_break_token->IsAtBlockEnd()) {
