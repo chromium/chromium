@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 
+class OptimizationGuideLogger;
 class Profile;
 
 namespace optimization_guide {
@@ -25,7 +26,8 @@ class OptimizationGuideMessageHandler : public SharingMessageHandler {
       Profile* profile);
 
   explicit OptimizationGuideMessageHandler(
-      optimization_guide::PushNotificationManager* push_notification_manager);
+      optimization_guide::PushNotificationManager* push_notification_manager,
+      OptimizationGuideLogger* optimization_guide_logger);
   OptimizationGuideMessageHandler(const OptimizationGuideMessageHandler&) =
       delete;
   OptimizationGuideMessageHandler& operator=(
@@ -41,6 +43,10 @@ class OptimizationGuideMessageHandler : public SharingMessageHandler {
   // nullptr.
   raw_ptr<optimization_guide::PushNotificationManager>
       push_notification_manager_;
+
+  // Owned by OptimizationGuideKeyedService, must outlive this class. Can be
+  // nullptr.
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 };
 
 #endif  // CHROME_BROWSER_SHARING_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_MESSAGE_HANDLER_H_
