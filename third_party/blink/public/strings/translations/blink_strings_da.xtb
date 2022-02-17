@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Værdien skal være større end eller lig med <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Ikke markeret. I gruppe, valgmulighed <ph name="INDEX" /> af <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Angiv den del, der kommer før "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" er ufuldstændig.</translation>
 <translation id="5334352251556557839">Mediet kunne ikke afspilles.</translation>
 <translation id="537648784377940524">Minimumsdatoen (<ph name="MIN_DATE_OR_TIME" />) skal finde sted før maksimumsdatoen (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Andre...</translation>
 <translation id="6709093583001123835">Værdien skal være <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Dårlig afspilningskvalitet</translation>
+<translation id="6719914554879143100">Markeret. I gruppe, valgmulighed <ph name="INDEX" /> af <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6820355525329141109">Pluginnet kunne ikke indlæses.</translation>
 <translation id="6831465880655513317">Farvevælger med todimensionel skyder til valg af mætning og lysstyrke</translation>

@@ -44,6 +44,7 @@
 <translation id="142228117786570094">Am o pereche de chei</translation>
 <translation id="1442433966118452622">Sursa imaginii</translation>
 <translation id="1451536289672181509">Dispozitivul este o tastatură.</translation>
+<translation id="1459693405370120464">Meteo</translation>
 <translation id="1468664791493211953">Oferte</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestionează acest dispozitiv și poate să îți monitorizeze activitatea.</translation>
 <translation id="1478594628797167447">Scaner</translation>
@@ -103,6 +104,7 @@
 <translation id="2212733584906323460">Rezolvarea pentru nume</translation>
 <translation id="2217935453350629363">Viteza actuală</translation>
 <translation id="2224337661447660594">Nu există conexiune la internet</translation>
+<translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stare de activare</translation>
 <translation id="2287186687001756809">Nicio imagine disponibilă. Pentru a adăuga fotografii, accesează <ph name="LINK" /></translation>
@@ -207,6 +209,7 @@
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3865414814144988605">Rezoluție</translation>
 <translation id="387301095347517405">Numărul de cicluri complete de încărcare a bateriei</translation>
+<translation id="3923184630988645767">Utilizarea datelor</translation>
 <translation id="3924044641767672375">Conectarea la Wi-Fi este recomandată pentru a simplifica procesul de reparare. Rețeaua se va salva.</translation>
 <translation id="3932043219784172185">Niciun dispozitiv conectat</translation>
 <translation id="3941014780699102620">Nu s-a putut rezolva gazda</translation>
@@ -376,6 +379,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5784136236926853061">Latență mare a solicitărilor HTTP</translation>
 <translation id="5832805196449965646">Adăugați un utilizator</translation>
 <translation id="583281660410589416">Necunoscut</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Codul furnizorului local</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5866840822086176774">Foarte puternic</translation>
@@ -384,6 +388,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fișierul a fost scanat și salvat în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Fișierele au fost scanate și salvate în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fișierele au fost scanate și salvate în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fișierul nu a fost găsit</translation>
+<translation id="5939518447894949180">Resetează</translation>
 <translation id="594552776027197022">Generează o pereche de chei aleatorie</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Alimentatorul de documente al scanerului este gol. Adaugă documente și încearcă din nou.</translation>

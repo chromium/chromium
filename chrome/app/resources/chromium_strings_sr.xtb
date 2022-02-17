@@ -142,7 +142,6 @@
 <translation id="5398878173008909840">Доступна је нова верзија Chromium-а.</translation>
 <translation id="5427571867875391349">Подеси Chromium као подразумевани прегледач</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium бета</translation>
-<translation id="5479196819031988440">Chromium ОС не може да отвори ову страницу.</translation>
 <translation id="5480860683791598150">Chromium тражи приступ вашој локацији да бисте је делили са овим сајтом</translation>
 <translation id="549669000822060376">Сачекајте да Chromium инсталира најновија ажурирања система.</translation>
 <translation id="5496810170689441661">Chromium покушава да измени лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
@@ -203,7 +202,6 @@
 <translation id="6734291798041940871">Chromium је већ инсталиран за све кориснике на рачунару.</translation>
 <translation id="673636774878526923">Да бисте приступали Chromium садржају на свим уређајима, пријавите се, па укључите синхронизацију.</translation>
 <translation id="6774082503108938489">Родитељ је искључио Дозволе за сајтове, апликације и додатке за Chromium. Омогућавање ове ставке (<ph name="EXTENSION_TYPE_PARAMETER" />) није дозвољено.</translation>
-<translation id="6808964260981102146">Дозволе које сте већ дали веб-сајтовима и апликацијама могу да важе за овај налог. Ако не желите да веб-сајтови или апликације приступају информацијама о налогу, користите <ph name="LINK_BEGIN" />Режим госта<ph name="LINK_END" /> у Chromium прегледачу. Google налозима можете да управљате и у <ph name="LINK_2_BEGIN" />Подешавањима<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium вас обавештава ако су лозинке угрожене</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирано у Chromium)</translation>
@@ -227,7 +225,6 @@
 Chromium не може да врати подешавања.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Нови прозор</translation>
-<translation id="7342713658732509484">Дозволе које сте већ дали веб-сајтовима и апликацијама могу да важе за овај налог. Ако не желите да веб-сајтови или апликације приступају информацијама о налогу, користите Режим госта у Chromium прегледачу. Google налозима можете да управљате и у <ph name="LINK_2_BEGIN" />Подешавањима<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">Веб, обележивачи и други Chromium садржај се овде уживо приказују.</translation>
 <translation id="7349591376906416160">Администратор система је конфигурисао Chromium да отвара прегледач <ph name="ALTERNATIVE_BROWSER_NAME" /> да би приступао <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7398989605938454041">Помоћу Chromium профила можете да раздвојите све Chromium садржаје. На тај начин ћете лакше моћи да раздвојите посао и забаву.</translation>

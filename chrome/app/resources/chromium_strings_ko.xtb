@@ -142,7 +142,6 @@
 <translation id="5398878173008909840">Chromium의 새 버전이 출시되었습니다.</translation>
 <translation id="5427571867875391349">Chromium을 기본 브라우저로 설정</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium 베타</translation>
-<translation id="5479196819031988440">Chromium OS에서 이 페이지를 열 수 없음</translation>
 <translation id="5480860683791598150">이 사이트와 위치를 공유하려면 Chromium에 내 위치 액세스 권한이 있어야 합니다</translation>
 <translation id="549669000822060376">Chromium에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
 <translation id="5496810170689441661">Chromium에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
@@ -203,7 +202,6 @@
 <translation id="6734291798041940871">모든 사용자가 사용할 수 있도록 컴퓨터에 Chromium이 이미 설치되어 있습니다.</translation>
 <translation id="673636774878526923">모든 기기에서 Chromium 계정 정보에 액세스하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="6774082503108938489">부모님이 Chromium의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 사용은 허용되지 않습니다.</translation>
-<translation id="6808964260981102146">이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. 웹사이트나 앱에서 계정 정보에 액세스하기를 원하지 않으면 Chromium 브라우저에서 <ph name="LINK_BEGIN" />게스트 모드<ph name="LINK_END" />를 사용하세요. <ph name="LINK_2_BEGIN" />설정<ph name="LINK_2_END" />에서 Google 계정을 관리할 수도 있습니다.</translation>
 <translation id="6847869444787758381">비밀번호가 유출되면 Chromium에서 알려줍니다.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay(Chromium에 복사됨)</translation>
@@ -227,7 +225,6 @@
 Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">새 창</translation>
-<translation id="7342713658732509484">웹사이트와 앱에 이미 부여한 권한이 계정에 적용될 수 있습니다. 웹사이트나 앱에서 계정 정보에 액세스하기를 원하지 않으면 Chromium 브라우저에서 게스트 모드를 사용하세요. <ph name="LINK_2_BEGIN" />설정<ph name="LINK_2_END" />에서 Google 계정을 관리할 수도 있습니다.</translation>
 <translation id="734373864078049451">웹, 북마크 및 기타 Chromium 콘텐츠가 여기에 저장됩니다.</translation>
 <translation id="7349591376906416160">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 <ph name="ALTERNATIVE_BROWSER_NAME" />을(를) 열도록 Chromium을 구성했습니다.</translation>
 <translation id="7398989605938454041">Chromium 프로필을 사용하면 모든 Chromium 데이터를 분리할 수 있습니다. 업무용 데이터와 개인용 데이터를 더 쉽게 분리해 보세요.</translation>

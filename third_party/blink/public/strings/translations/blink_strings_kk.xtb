@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Мән <ph name="MINIMUM" /> мәнінен үлкен немесе тең болуы керек.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
+<translation id="5272594226096532950">Белгіленбеген. Топта, <ph name="INDEX" />/<ph name="COUNT" /> опция</translation>
 <translation id="5307600278924710095">"<ph name="ATSIGN" />" болып жалғасатын бөлікті енгізіңіз. "<ph name="INVALIDADDRESS" />" толық емес.</translation>
 <translation id="5334352251556557839">Медиафайл ойнатылмады.</translation>
 <translation id="537648784377940524">Минималды күн (<ph name="MIN_DATE_OR_TIME" />) максималды күннен (<ph name="MAX_DATE_OR_TIME" />) бұрын болуы тиіс.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Басқа…</translation>
 <translation id="6709093583001123835">Қажетті мән: <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Ойнату сапасы нашар</translation>
+<translation id="6719914554879143100">Белгіленген. Топта, <ph name="INDEX" />/<ph name="COUNT" /> опция</translation>
 <translation id="6790428901817661496">Ойнату</translation>
 <translation id="6820355525329141109">Плагинді жүктеу мүмкін емес.</translation>
 <translation id="6831465880655513317">Қанықтық пен ашықтықты таңдауға арналған екі өлшемді сырғытпасы бар түстер шеңбері</translation>

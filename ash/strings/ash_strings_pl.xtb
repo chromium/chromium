@@ -117,7 +117,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
 <translation id="1610778689852195798">„Cofnij”</translation>
 <translation id="1611993646327628135">Włączono</translation>
-<translation id="1620510694547887537">Aparat</translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Funkcję Switch Access możesz wyłączyć, otwierając Ustawienia &gt; Ułatwienia dostępu.</translation>
 <translation id="1637505162081889933">Urządzenia: <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Rozpocznij zapytanie głosowe</translation>
@@ -348,7 +348,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="324366796737464147">Wyciszanie szumów</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> zostało przeniesione z biurka <ph name="ACTIVE_DESK" /> na biurko <ph name="TARGET_DESK" /></translation>
-<translation id="3252248118006571685">Aby odblokować Chromebooka, włącz Bluetooth na telefonie</translation>
 <translation id="3255483164551725916">Co potrafisz?</translation>
 <translation id="3269597722229482060">Kliknij prawym</translation>
 <translation id="3289674678944039601">Ładowanie z zasilacza.</translation>
@@ -407,6 +406,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3571734092741541777">Konfiguruj</translation>
 <translation id="3573179567135747900">Zmień z powrotem na „<ph name="FROM_LOCALE" />” (wymaga ponownego uruchomienia)</translation>
 <translation id="3576141592585647168">Zmień strefę czasową</translation>
+<translation id="3577473026931028326">Coś poszło nie tak. Spróbuj ponownie.</translation>
 <translation id="3580650856351781466">Pobieram pliki z mową</translation>
 <translation id="3593039967545720377">Aby wyświetlić schowek i jego historię, naciśnij <ph name="SHORTCUT_KEY_NAME" /> + V. Najpierw skopiuj element.</translation>
 <translation id="3593646411856133110">Aby zobaczyć otwarte aplikacje, przesuń palcem w górę i przytrzymaj</translation>
@@ -615,6 +615,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="485634149294284819">Otwórz menu klawiatury</translation>
 <translation id="4860284199500934869">Aby pobrać plik <ph name="FILENAME" />, sprawdź połączenie sieciowe</translation>
 <translation id="486056901304535126">Spróbuję je pobrać później. Do momentu ukończenia pobierania mowa będzie wysyłana do Google i tam przetwarzana.</translation>
+<translation id="4864369630010738180">Loguję...</translation>
 <translation id="4868492592575313542">aktywna</translation>
 <translation id="4872237917498892622">Alt+Szukaj lub Shift</translation>
 <translation id="4881695831933465202">Otwórz</translation>
@@ -686,7 +687,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5322611492012084517">Nie udało się znaleźć telefonu</translation>
 <translation id="5327248766486351172">Nazwa</translation>
 <translation id="5329548388331921293">Łączę…</translation>
-<translation id="5330201449517439522">Kliknij, aby rozpocząć</translation>
 <translation id="5331975486040154427">Urządzenie USB-C (tylny port na lewym boku)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (prawa)</translation>
 <translation id="5352250171825660495">Ciemny motyw jest włączony</translation>
@@ -899,7 +899,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6801878137098616817">Niedawno edytowane</translation>
 <translation id="6803622936009808957">Nie można wyświetlić odbicia lustrzanego, ponieważ nie znaleziono obsługiwanych rozdzielczości. Zamiast tego został włączony pulpit rozszerzony.</translation>
-<translation id="6811454077060061666">Dysk Google na komputer jest niedostępny</translation>
 <translation id="6818242057446442178">Cofnij o jedno słowo</translation>
 <translation id="6820676911989879663">Zrób sobie przerwę</translation>
 <translation id="6827049576281411231">Zamknij panel wydarzeń</translation>
@@ -1016,7 +1015,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7564874036684306347">Przenoszenie okien na inny pulpit może spowodować nieoczekiwane zachowanie. Kolejne powiadomienia, okna i okna dialogowe mogą pojawiać się na różnych pulpitach.</translation>
 <translation id="7569509451529460200">Włączono Braille'a i ChromeVox</translation>
 <translation id="7569983096843329377">Czarny</translation>
-<translation id="757941033127302446">Zalogowano</translation>
 <translation id="7579778809502851308">Zrzut ekranu</translation>
 <translation id="7590883480672980941">Ustawienia wprowadzania</translation>
 <translation id="7593891976182323525">Szukaj lub Shift</translation>
@@ -1130,7 +1128,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="826107067893790409">Naciśnij Enter, by odblokować dla: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8270450402312105425">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 godziny}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godziny}}</translation>
-<translation id="8281279285293265212">Nie udało się zapisać screencastu</translation>
 <translation id="8284362522226889623">Aby przełączyć się na poprzednie biurko, przesuń 4 palcami w lewo</translation>
 <translation id="828708037801473432">Wyłączono</translation>
 <translation id="8297006494302853456">Słaby</translation>

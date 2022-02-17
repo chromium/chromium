@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Balioak <ph name="MINIMUM" /> edo gehiago izan behar du.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Ez dago markatuta. Taldeko <ph name="COUNT" /> aukeretatik <ph name="INDEX" />garrena</translation>
 <translation id="5307600278924710095">Idatzi zati bat eta, ondoren, "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" ez dago osorik.</translation>
 <translation id="5334352251556557839">Ezin da erreproduzitu multimedia-edukia.</translation>
 <translation id="537648784377940524">Gutxieneko datak (<ph name="MIN_DATE_OR_TIME" />) gehienekoaren aurrekoa izan behar du (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Beste bat…</translation>
 <translation id="6709093583001123835">Balioak <ph name="VALUE" /> izan behar du.</translation>
 <translation id="6709570249143506788">Erreprodukzio-kalitate txarra</translation>
+<translation id="6719914554879143100">Markatuta. Taldeko <ph name="COUNT" /> aukeretatik <ph name="INDEX" />garrena</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6820355525329141109">Ezin izan da kargatu plugina.</translation>
 <translation id="6831465880655513317">Bi dimentsioko graduatzailea duen zirkulu kromatikoa, asetasuna eta argitasuna hautatzeko</translation>

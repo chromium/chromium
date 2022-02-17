@@ -138,7 +138,6 @@
 <translation id="5398878173008909840">Доступна новая версия Chromium.</translation>
 <translation id="5427571867875391349">Сделать Chromium браузером по умолчанию</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium (бета-версия)</translation>
-<translation id="5479196819031988440">Chromium OS не может открыть эту страницу</translation>
 <translation id="5480860683791598150">Для этого сайта Chromium запрашивает доступ к данным о вашем местоположении.</translation>
 <translation id="549669000822060376">Подождите, пока Chromium устанавливает последние обновления системы</translation>
 <translation id="5496810170689441661">Chromium пытается изменить пароли. Чтобы разрешить это действие, введите свой пароль Windows.</translation>
@@ -199,7 +198,6 @@
 <translation id="6734291798041940871">Chromium уже установлен для всех пользователей вашего компьютера</translation>
 <translation id="673636774878526923">Чтобы получить доступ к данным в Chromium на всех своих устройствах, выполните вход и включите синхронизацию.</translation>
 <translation id="6774082503108938489">Родители отключили в Chromium параметр "Разрешения для сайтов, приложений и расширений". Включать это <ph name="EXTENSION_TYPE_PARAMETER" /> запрещено.</translation>
-<translation id="6808964260981102146">Разрешения, предоставленные сайтам и приложениям, могут применяться к этому аккаунту. Если вы не хотите, чтобы у сайтов или приложений был доступ к данным вашего аккаунта, используйте <ph name="LINK_BEGIN" />гостевой режим<ph name="LINK_END" /> в браузере Chromium. Аккаунтами Google также можно управлять в <ph name="LINK_2_BEGIN" />настройках<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium сообщит вам, если возникнет проблема с безопасностью ваших паролей.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопирована в Chromium)</translation>
@@ -220,7 +218,6 @@
 <translation id="7318036098707714271">Файл настроек поврежден или недействителен. Chromium не может восстановить ваши параметры.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Новое окно</translation>
-<translation id="7342713658732509484">Разрешения, предоставленные сайтам и приложениям, могут применяться к этому аккаунту. Если вы не хотите, чтобы у сайтов или приложений был доступ к данным вашего аккаунта, используйте гостевой режим в браузере Chromium. Аккаунтами Google также можно управлять в <ph name="LINK_2_BEGIN" />настройках<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">Все веб-страницы, закладки и другие данные Chromium можно найти здесь.</translation>
 <translation id="7349591376906416160">Ваш системный администратор задал настройки, согласно которым Chromium должен запускать <ph name="ALTERNATIVE_BROWSER_NAME" /> для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7398989605938454041">Профили Chromium позволяют хранить личные и рабочие данные в браузере раздельно.</translation>

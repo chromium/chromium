@@ -44,6 +44,7 @@
 <translation id="142228117786570094">I have a keypair</translation>
 <translation id="1442433966118452622">Image source</translation>
 <translation id="1451536289672181509">Device is a keyboard.</translation>
+<translation id="1459693405370120464">Weather</translation>
 <translation id="1468664791493211953">Offers</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> manages this device and may be able to monitor your activity.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -103,6 +104,7 @@
 <translation id="2212733584906323460">Name resolution</translation>
 <translation id="2217935453350629363">Current speed</translation>
 <translation id="2224337661447660594">No Internet</translation>
+<translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Activation status</translation>
 <translation id="2287186687001756809">No image available. To add photos, go to <ph name="LINK" /></translation>
@@ -207,6 +209,7 @@
 <translation id="3858860766373142691">Name</translation>
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="387301095347517405">The number of times that your battery has gone through a full charging cycle</translation>
+<translation id="3923184630988645767">Data usage</translation>
 <translation id="3924044641767672375">Connecting to Wi-Fi is recommended to make the repair process easier. Your network will be saved.</translation>
 <translation id="3932043219784172185">No device connected</translation>
 <translation id="3941014780699102620">Failed to resolve host</translation>
@@ -376,6 +379,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5784136236926853061">High HTTP latency</translation>
 <translation id="5832805196449965646">Add Person</translation>
 <translation id="583281660410589416">Unknown</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Home provider code</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5866840822086176774">Very strong</translation>
@@ -384,6 +388,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Your file has been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File not found</translation>
+<translation id="5939518447894949180">Reset</translation>
 <translation id="594552776027197022">Generate random keypair</translation>
 <translation id="5972388717451707488">Update engine</translation>
 <translation id="6037291330010597344">The scanner’s document feeder is empty. Add documents and try again.</translation>

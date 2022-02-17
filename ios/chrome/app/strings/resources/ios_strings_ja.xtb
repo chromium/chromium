@@ -250,7 +250,6 @@
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3224641773458703735">パスワードをエクスポートするには、まずデバイスでパスコードを設定する必要があります。</translation>
 <translation id="3227137524299004712">マイク</translation>
-<translation id="3230318355092723906">同期がオフになっている場合でも、このデバイスのブックマーク、履歴、パスワードなどの設定は、引き続き使用できます。これらの設定に変更を加えた場合、変更内容はアカウントと同期されません。</translation>
 <translation id="3240426699337459095">リンクをコピーしました</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />、<ph name="ADDITIONAL_INFO" />、<ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
@@ -379,6 +378,7 @@
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> での保存パスワードの表示と管理</translation>
 <translation id="4536418791685807335">もう一度ログインしてみてください。</translation>
 <translation id="4540780316273593836">エラーが発生しました</translation>
+<translation id="4572065712096155137">アクセス</translation>
 <translation id="457386861538956877">その他...</translation>
 <translation id="4592368184551360546">キーボード</translation>
 <translation id="461440297010471931">Google 検索エンジンを使用</translation>
@@ -570,6 +570,7 @@
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} 個のタブを閉じる}other{{COUNT} 個のタブを閉じる}}</translation>
 <translation id="6219688215832490856">翻訳しない</translation>
 <translation id="6223816392543092032">ブックマーク、履歴、パスワードなどの設定をどのデバイスでも利用できるようにします。</translation>
+<translation id="6231782223312638214">候補</translation>
 <translation id="6232329973559504466">シークレット検索</translation>
 <translation id="6232736989810857397">このアクセス権により、Google レンズを使用してカレンダーの予定を簡単に作成できるようになります。</translation>
 <translation id="6254066287920239840">ブラウザの代わりにアプリでリンクを開きます。</translation>
@@ -655,7 +656,6 @@
 <translation id="6801927553864092214">シークレット モードで閲覧するにはシークレット タブを開きます</translation>
 <translation id="6807889908376551050">すべて表示...</translation>
 <translation id="681368974849482173">作成済みのアイテム</translation>
-<translation id="681450999322335505">同期は組織によってオフにされています。</translation>
 <translation id="683022620450280906">保存したパスワードは他のデバイスで使用できます。パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます</translation>
 <translation id="6830804042318138535">詳細</translation>
 <translation id="6831043979455480757">翻訳</translation>

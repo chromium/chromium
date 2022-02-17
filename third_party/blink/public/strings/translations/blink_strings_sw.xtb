@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Lazima thamani iwe kubwa kuliko au sawa na <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650">PB <ph name="QUANTITY" /></translation>
+<translation id="5272594226096532950">Haijachaguliwa. Kwenye kikundi, chaguo la <ph name="INDEX" /> kati ya <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Tafadhali ingiza sehemu ikifuatiwa na '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' haijakamilika.</translation>
 <translation id="5334352251556557839">Imeshindwa kucheza maudhui.</translation>
 <translation id="537648784377940524">Tarehe ya awali zaidi (<ph name="MIN_DATE_OR_TIME" />) lazima ije kabla ya Tarehe ya baadaye zaidi (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Mengine...</translation>
 <translation id="6709093583001123835">Ni lazima thamani iwe <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Ubora wa chini wa kucheza video</translation>
+<translation id="6719914554879143100">Imechaguliwa. Kwenye kikundi, chaguo la <ph name="INDEX" /> kati ya <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6820355525329141109">Haikuweza kupakia programu jalizi.</translation>
 <translation id="6831465880655513317">Paka rangi vizuri ukitumia kitelezi cha pande mbili cha kuchagua ukolezaji na ung'aavu</translation>

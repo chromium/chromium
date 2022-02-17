@@ -140,7 +140,6 @@
 <translation id="5398878173008909840">È disponibile una nuova versione di Chromium.</translation>
 <translation id="5427571867875391349">Imposta Chromium come browser predefinito</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium beta</translation>
-<translation id="5479196819031988440">Chromium OS non è in grado di aprire la pagina.</translation>
 <translation id="5480860683791598150">Chromium deve poter accedere alla tua posizione per condividerla con questo sito</translation>
 <translation id="549669000822060376">Attendi mentre Chromium installa gli aggiornamenti di sistema più recenti.</translation>
 <translation id="5496810170689441661">Chromium sta cercando di modificare le password. Per consentire la modifica, digita la tua password Windows.</translation>
@@ -201,7 +200,6 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="6734291798041940871">Chromium è già installato per tutti gli utenti sul computer.</translation>
 <translation id="673636774878526923">Per accedere ai tuoi contenuti Chromium su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione.</translation>
 <translation id="6774082503108938489">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chromium. L'attivazione di <ph name="EXTENSION_TYPE_PARAMETER" /> non è consentita.</translation>
-<translation id="6808964260981102146">A questo account potrebbero essere applicate le autorizzazioni già concesse a siti web e app. Se non vuoi consentire a siti web o app di accedere ai dati del tuo account, usa la <ph name="LINK_BEGIN" />modalità Ospite<ph name="LINK_END" /> nel browser Chromium. Puoi anche gestire i tuoi Account Google nelle <ph name="LINK_2_BEGIN" />Impostazioni<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium ti avvisa se le tue password vengono compromesse</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiata in Chromium)</translation>
@@ -224,7 +222,6 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
-<translation id="7342713658732509484">A questo account potrebbero essere applicate le autorizzazioni già concesse a siti web e app. Se non vuoi consentire a siti web o app di accedere ai dati del tuo account, usa la modalità Ospite nel browser Chromium. Puoi anche gestire i tuoi Account Google nelle <ph name="LINK_2_BEGIN" />Impostazioni<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">I tuoi siti web, i tuoi segnalibri e gli altri contenuti Chromium sempre disponibili e aggiornati qui.</translation>
 <translation id="7349591376906416160">L'amministratore di sistema ha configurato Chromium per l'apertura di <ph name="ALTERNATIVE_BROWSER_NAME" /> per accedere a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7398989605938454041">Con i profili Chromium puoi separare tutti i tuoi contenuti di Chromium. In questo modo potrai alternare lavoro e divertimento con più facilità.</translation>

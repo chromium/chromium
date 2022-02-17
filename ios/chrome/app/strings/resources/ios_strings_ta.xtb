@@ -250,7 +250,6 @@
 <translation id="3207960819495026254">புக்மார்க் செய்யப்பட்டது</translation>
 <translation id="3224641773458703735">கடவுச்சொற்களை ஏற்ற, முதலில் உங்கள் சாதனத்தில் கடவுக்குறியீட்டை அமைக்க வேண்டும்.</translation>
 <translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
-<translation id="3230318355092723906">ஒத்திசைவு முடக்கப்பட்டிருந்தாலும் இந்தச் சாதனத்திலுள்ள புக்மார்க்குகள், இதுவரை பார்த்தவை, கடவுச்சொற்கள், பிற அமைப்புகள் ஆகிய அனைத்தையும் உங்களால் பார்க்க முடியும். மாற்றங்களைச் செய்தால் அவை உங்கள் கணக்குடன் ஒத்திசைக்கப்படாது.</translation>
 <translation id="3240426699337459095">இணைப்பு நகலெடுக்கப்பட்டது</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
@@ -379,6 +378,7 @@
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> இல் சேமித்த கடவுச்சொற்களைப் பார்க்கலாம் மற்றும் நிர்வகிக்கலாம்.</translation>
 <translation id="4536418791685807335">மீண்டும் உள்நுழைந்து முயலவும்.</translation>
 <translation id="4540780316273593836">ஏதோ தவறாகிவிட்டது</translation>
+<translation id="4572065712096155137">அணுகு</translation>
 <translation id="457386861538956877">மேலும்...</translation>
 <translation id="4592368184551360546">கீபோர்டு</translation>
 <translation id="461440297010471931">Google மூலம் தேடுகிறது</translation>
@@ -570,6 +570,7 @@
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} தாவலை மூடுக}other{{COUNT} தாவல்களை மூடுக}}</translation>
 <translation id="6219688215832490856">எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
 <translation id="6223816392543092032">உங்கள் புக்மார்க்குகள், இதுவரையான செயல்பாடுகள், கடவுச்சொற்கள் மற்றும் பிற அமைப்புகளை உங்கள் சாதனங்கள் அனைத்திலும் பெறலாம்.</translation>
+<translation id="6231782223312638214">பரிந்துரைக்கப்படுவது</translation>
 <translation id="6232329973559504466">மறைநிலையில் தேடுக</translation>
 <translation id="6232736989810857397">Google Lensஸைப் பயன்படுத்தி கேலெண்டர் நிகழ்வுகளை எளிதாக உருவாக்க இது உதவும்.</translation>
 <translation id="6254066287920239840">உலாவியில் திறப்பதற்குப் பதிலாக இணைப்புகளைப் பயன்பாட்டில் திற.</translation>
@@ -655,7 +656,6 @@
 <translation id="6801927553864092214">தனிப்பட்ட முறையில் உலாவ, மறைநிலைத் தாவலைத் திறக்கவும்</translation>
 <translation id="6807889908376551050">எல்லாவற்றையும் காட்டு...</translation>
 <translation id="681368974849482173">புத்தகக்குறி உருவாக்கப்பட்டது</translation>
-<translation id="681450999322335505">உங்கள் நிறுவனம் ஒத்திசைவை முடக்கியுள்ளது.</translation>
 <translation id="683022620450280906">சேமிக்கப்பட்டுள்ள கடவுச்சொற்களை எந்தச் சாதனத்திலும் பயன்படுத்தலாம். <ph name="EMAIL" /> கணக்கின் Google கடவுச்சொல் நிர்வாகியில் இவை சேமிக்கப்படும்</translation>
 <translation id="6830804042318138535">மேலும் காட்டு</translation>
 <translation id="6831043979455480757">Translate</translation>

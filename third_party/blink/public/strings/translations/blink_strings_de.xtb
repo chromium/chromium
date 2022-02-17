@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Wert muss größer als oder gleich <ph name="MINIMUM" /> sein.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Nicht ausgewählt. Option <ph name="INDEX" /> von <ph name="COUNT" /> in der Gruppe</translation>
 <translation id="5307600278924710095">Geben Sie etwas vor dem <ph name="ATSIGN" />-Zeichen ein. Die Angabe "<ph name="INVALIDADDRESS" />" ist unvollständig.</translation>
 <translation id="5334352251556557839">Medien können nicht abgespielt werden.</translation>
 <translation id="537648784377940524">Das Mindestdatum (<ph name="MIN_DATE_OR_TIME" />) muss vor dem Maximaldatum (<ph name="MAX_DATE_OR_TIME" />) liegen.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Andere...</translation>
 <translation id="6709093583001123835">Der Wert muss <ph name="VALUE" /> sein.</translation>
 <translation id="6709570249143506788">Schlechte Wiedergabequalität</translation>
+<translation id="6719914554879143100">Ausgewählt. Option <ph name="INDEX" /> von <ph name="COUNT" /> in der Gruppe</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="6820355525329141109">Plug-in konnte nicht geladen werden.</translation>
 <translation id="6831465880655513317">Farbrad mit zweidimensionalem Schieberegler zum Einstellen von Sättigung und Helligkeit</translation>

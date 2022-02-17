@@ -241,6 +241,7 @@
 <translation id="3078461028045006476">Partekatu <ph name="EXTENSION_NAME" /> luzapenarekin</translation>
 <translation id="3083975830683400843">Chromebit-ak</translation>
 <translation id="3085752524577180175">SOCKS ostalaria</translation>
+<translation id="3104793765551262433"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />,<ph name="CONNECTION_STATUS" />, Seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, Administratzaileak blokeatu du, Xehetasunak</translation>
 <translation id="3113153474486991170">Ezin izan da ireki "<ph name="PATH" />" kokapen honetatik. Irekitzeko, kopia ezazu "Nire fitxategiak" atalean.</translation>
 <translation id="3113592018909187986">Saiakera bat gelditzen zaizu. Ezingo duzu erabili sarea beste PIN bat konfiguratzen duzun arte.</translation>
 <translation id="3124404833828281817">Esna dagoela ametsetan ari den pertsona</translation>
@@ -882,6 +883,7 @@
 <translation id="8551494947769799688">Letoniarra</translation>
 <translation id="8560515948038859357">Kantondarra</translation>
 <translation id="8561206103590473338">Elefantea</translation>
+<translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, Administratzaileak blokeatu du, Xehetasunak</translation>
 <translation id="8569764466147087991">Hautatu irekitzeko fitxategi bat</translation>
 <translation id="8577897833047451336">Kroaziarra</translation>
 <translation id="8578308463707544055">Indonesiarra</translation>

@@ -42,7 +42,9 @@
 <translation id="1413240736185167732">Nije uspjelo – filtar ne radi</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Imam par ključeva</translation>
+<translation id="1442433966118452622">Izvor slike</translation>
 <translation id="1451536289672181509">Uređaj je tipkovnica.</translation>
+<translation id="1459693405370120464">Vrijeme</translation>
 <translation id="1468664791493211953">Ponude</translation>
 <translation id="1476467821656042872">Uređajem upravlja <ph name="MANAGER" /> i taj upravitelj možda može nadzirati vašu aktivnost.</translation>
 <translation id="1478594628797167447">Skener</translation>
@@ -102,6 +104,7 @@
 <translation id="2212733584906323460">Razlučivost naziva</translation>
 <translation id="2217935453350629363">Trenutačna brzina</translation>
 <translation id="2224337661447660594">Nema interneta</translation>
+<translation id="2230005943220647148">Celzij</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Status aktivacije</translation>
 <translation id="2287186687001756809">Slika nije dostupna. Da biste dodali fotografije, posjetite <ph name="LINK" /></translation>
@@ -131,6 +134,7 @@
 <translation id="2619761439309613843">Dnevno osvježavanje</translation>
 <translation id="2620436844016719705">Sustav</translation>
 <translation id="2695514675076754339">Unesite osmeroznamenkasti kôd za otključavanje.</translation>
+<translation id="2712812801627182647">Ključ za TLS autentifikaciju</translation>
 <translation id="2740531572673183784">U redu</translation>
 <translation id="2751739896257479635">2. faza autentifikacije za EAP</translation>
 <translation id="2783010256799387990">USPJEŠNO</translation>
@@ -167,6 +171,7 @@
 <translation id="3268178239013324452">Nije uspjelo – vratašca su otvorena</translation>
 <translation id="3283504360622356314">{0,plural, =1{Uredi datoteku}one{Uredi datoteke}few{Uredi datoteke}other{Uredi datoteke}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Glavna smjernica</translation>
 <translation id="3310640316857623290">Latencija DNS-a značajno iznad dopuštenog praga</translation>
 <translation id="3328783797891415197">Test se izvodi</translation>
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije za desnu slušalicu.</translation>
@@ -204,6 +209,7 @@
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3865414814144988605">Razlučivost</translation>
 <translation id="387301095347517405">Koliko se puta vaša baterija potpuno napunila</translation>
+<translation id="3923184630988645767">Potrošnja podatkovnog prometa</translation>
 <translation id="3924044641767672375">Preporučuje se povezivanje s Wi-Fijem radi lakšeg popravka. Mreža će se spremiti.</translation>
 <translation id="3932043219784172185">Nije povezan nijedan uređaj</translation>
 <translation id="3941014780699102620">Razrješavanje hosta nije uspjelo</translation>
@@ -279,6 +285,7 @@
 <translation id="475869545581454722">Zaporka za OS Chrome je ažurirana</translation>
 <translation id="4773299976671772492">Zaustavljeno</translation>
 <translation id="4782311465517282004">Pronađite definicije, prijevode ili pretvorbe jedinica kada tekst kliknete desnom tipkom ili ga dodirnete i držite</translation>
+<translation id="4793756956024303490">Algoritam kompresije</translation>
 <translation id="4794140124556169553">Testiranje procesora može utjecati na rad vašeg sustava</translation>
 <translation id="4808449224298348341">Otkazan zadatak ispisa dokumenta <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Moje slike</translation>
@@ -291,6 +298,7 @@
 <translation id="484790837831576105">(Android) Razrješavanje DNS-a</translation>
 <translation id="4848429997038228357">IZVODI SE</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostao je {0} pokušaj.}one{<ph name="ERROR_MESSAGE" /> Preostao je {0} pokušaj.}few{<ph name="ERROR_MESSAGE" /> Preostala su {0} pokušaja.}other{<ph name="ERROR_MESSAGE" /> Preostalo je {0} pokušaja.}}</translation>
+<translation id="4873827928179867585">Algoritam autentifikacije</translation>
 <translation id="4880328057631981605">Naziv pristupne točke</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Odmah odaberite novu</translation>
@@ -308,6 +316,7 @@
 <translation id="4999333166442584738">Sakrij izvješće</translation>
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Kad je zaslon neaktivan, prikažite fotografije, vremensku prognozu i medijske informacije.</translation>
 <translation id="5039804452771397117">Dopusti</translation>
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Naziv grupe</translation>
@@ -370,6 +379,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5784136236926853061">Visoka latencija HTTP-a</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
 <translation id="583281660410589416">Nepoznato</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kôd davatelja usluge kućne mreže</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5866840822086176774">Vrlo jak</translation>
@@ -378,6 +388,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5916664084637901428">Uključi</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaša je datoteka skenirana i spremljena u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaše su datoteke skenirane i spremljene u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaše su datoteke skenirane i spremljene u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaše su datoteke skenirane i spremljene u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Datoteka nije pronađena</translation>
+<translation id="5939518447894949180">Ponovno postavi</translation>
 <translation id="594552776027197022">Generiraj nasumični par ključeva</translation>
 <translation id="5972388717451707488">Ažuriraj alat</translation>
 <translation id="6037291330010597344">Ulagač dokumenata u skener je prazan. Dodajte dokumente i pokušajte ponovo.</translation>
@@ -436,6 +447,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6618744767048954150">U tijeku</translation>
 <translation id="6620487321149975369">Zadaci ispisa prikazivat će se u povijesti ako se ne uklone ručno</translation>
 <translation id="6643016212128521049">Izbriši</translation>
+<translation id="6647510110698214773">Algoritam šifriranja</translation>
 <translation id="6657585470893396449">Zaporka</translation>
 <translation id="6692996468359469499">Dohvaćanje informacija povezanih s vašim odabirom</translation>
 <translation id="6704062477274546131">Razrješavanje DNS-a</translation>

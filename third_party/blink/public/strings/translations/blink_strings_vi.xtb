@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Giá trị phải lớn hơn hoặc bằng <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Chưa chọn. Trong nhóm, tuỳ chọn <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Vui lòng nhập phần đứng trước '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' không hoàn chỉnh.</translation>
 <translation id="5334352251556557839">Không thể phát nội dung đa phương tiện.</translation>
 <translation id="537648784377940524">Ngày tối thiểu (<ph name="MIN_DATE_OR_TIME" />) phải trước ngày tối đa (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Khác...</translation>
 <translation id="6709093583001123835">Giá trị phải là <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Chất lượng phát kém</translation>
+<translation id="6719914554879143100">Đã chọn. Trong nhóm, tuỳ chọn <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6820355525329141109">Không thể tải plugin.</translation>
 <translation id="6831465880655513317">Vòng tròn màu có thanh trượt hai chiều để chọn độ bão hòa và độ sáng</translation>

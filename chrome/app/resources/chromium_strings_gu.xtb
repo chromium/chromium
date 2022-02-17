@@ -142,7 +142,6 @@
 <translation id="5398878173008909840">Chromiumનું નવું વર્ઝન ઉપલબ્ધ છે.</translation>
 <translation id="5427571867875391349">Chromium ને તમારા ડિફોલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium બીટા</translation>
-<translation id="5479196819031988440">Chromium OS, આ પેજને ખોલી શકતું નથી.</translation>
 <translation id="5480860683791598150">Chromiumને આ સાઇટ સાથે તમારું સ્થાન શેર કરવા માટે તમારા સ્થાનના ઍક્સેસની જરૂર પડે છે</translation>
 <translation id="549669000822060376">કૃપા કરીને Chromium, નવીનતમ સિસ્ટમ અપડેટ્સ ઇન્સ્ટોલ કરે ત્યાં સુધી રાહ જુઓ.</translation>
 <translation id="5496810170689441661">Chromium પાસવર્ડમાં ફેરફાર કરવાનો પ્રયાસ કરે છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
@@ -203,7 +202,6 @@
 <translation id="6734291798041940871">Chromium, તમારા કમ્પ્યુટર પર તમામ વપરાશકર્તાઓ માટે પહેલાંથી ઇન્સ્ટૉલ કરેલ છે.</translation>
 <translation id="673636774878526923">Chromium પરની તમારી વસ્તુઓને તમારા બધા ડિવાઇસ પર ઍક્સેસ કરવા માટે, સાઇન ઇન કરો અને પછી સિંક કરવાની સુવિધા ચાલુ કરો.</translation>
 <translation id="6774082503108938489">તમારા માતાપિતાએ Chromium માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ચાલુ કરવાની મંજૂરી નથી.</translation>
-<translation id="6808964260981102146">તમે વેબસાઇટ અને ઍપને પહેલાંથી જે પરવાનગીઓ આપી હોય, તે આ એકાઉન્ટ પર લાગુ થઈ શકે છે. જો તમે ઇચ્છતા ન હો કે વેબસાઇટ અથવા ઍપ તમારા એકાઉન્ટની માહિતી ઍક્સેસ કરે, તો Chromium બ્રાઉઝરમાં <ph name="LINK_BEGIN" />અતિથિ મોડ<ph name="LINK_END" />નો ઉપયોગ કરો. તમે <ph name="LINK_2_BEGIN" />સેટિંગ<ph name="LINK_2_END" />માંથી પણ તમારા Google એકાઉન્ટને મેનેજ કરી શકો છો.</translation>
 <translation id="6847869444787758381">Chromium વડે તમે તમારા પાસવર્ડમાં ક્યારેક ચેડાં થાય તો તેના વિશે જાણકારી મેળવી શકો છો</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium પર કૉપિ કરેલું છે)</translation>
@@ -227,7 +225,6 @@
 Chromium તમારા સેટિંગને રિકવર શકતું નથી.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">નવી વિંડો</translation>
-<translation id="7342713658732509484">તમે વેબસાઇટ અને ઍપને પહેલેથી જે પરવાનગીઓ આપી છે, તે આ એકાઉન્ટ પર લાગુ થઈ શકે છે. જો તમે ઇચ્છતા ન હો કે વેબસાઇટ અથવા ઍપ તમારા એકાઉન્ટની માહિતી ઍક્સેસ કરે, તો Chromium બ્રાઉઝરમાં અતિથિ મોડનો ઉપયોગ કરો. તમે <ph name="LINK_2_BEGIN" />સેટિંગ<ph name="LINK_2_END" />માં જઈને પણ તમારા Google એકાઉન્ટને મેનેજ કરી શકો છો.</translation>
 <translation id="734373864078049451">તમારું વેબ, બુકમાર્ક અને અન્ય Chromium સામગ્રી અહીં હોય છે.</translation>
 <translation id="7349591376906416160">તમારા સિસ્ટમ વ્યવસ્થાપકે <ph name="TARGET_URL_HOSTNAME" />ને ઍક્સેસ કરવા Chromiumને <ph name="ALTERNATIVE_BROWSER_NAME" /> ખોલવા માટે ગોઠવેલું છે.</translation>
 <translation id="7398989605938454041">Chromium પ્રોફાઇલ વડે તમે તમારી બધી વસ્તુઓ Chromium પર અલગ-અલગ રાખી શકો છો. આનાથી ઑફિસ અને મનોરંજન વચ્ચે વિભાજન કરવાનું સરળ બને છે.</translation>

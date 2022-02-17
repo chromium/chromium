@@ -42,7 +42,9 @@
 <translation id="1413240736185167732">Misslyckades – filterfel</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Jag har ett nyckelpar</translation>
+<translation id="1442433966118452622">Bildkälla</translation>
 <translation id="1451536289672181509">Enheten är ett tangentbord.</translation>
+<translation id="1459693405370120464">Väder</translation>
 <translation id="1468664791493211953">Erbjudanden</translation>
 <translation id="1476467821656042872">Den här enheten hanteras av <ph name="MANAGER" />, som kan ha möjlighet att övervaka din aktivitet.</translation>
 <translation id="1478594628797167447">Skanner</translation>
@@ -102,6 +104,7 @@
 <translation id="2212733584906323460">Namnmatchning</translation>
 <translation id="2217935453350629363">Nuvarande hastighet</translation>
 <translation id="2224337661447660594">Inget internet</translation>
+<translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2287186687001756809">Det finns inga bilder. Du kan lägga till foton via <ph name="LINK" /></translation>
@@ -131,6 +134,7 @@
 <translation id="2619761439309613843">Daglig uppdatering</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2695514675076754339">Ange koden för upplåsning som består av åtta tecken</translation>
+<translation id="2712812801627182647">TLS-autentiseringsnyckel</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Fas 2 i EAP-autentisering</translation>
 <translation id="2783010256799387990">SLUTFÖRT</translation>
@@ -167,6 +171,7 @@
 <translation id="3268178239013324452">Misslyckades – luckan är öppen</translation>
 <translation id="3283504360622356314">{0,plural, =1{Redigera fil}other{Redigera filer}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Nyckelriktning</translation>
 <translation id="3310640316857623290">DNS-latensen är avsevärt högre än det godtagbara tröskelvärdet</translation>
 <translation id="3328783797891415197">Testet körs</translation>
 <translation id="3340011300870565703">Batterinivån för höger hörsnäcka på enheten är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -204,6 +209,7 @@
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3865414814144988605">Upplösning</translation>
 <translation id="387301095347517405">Antalet gånger som batteriet har laddats hela sin kapacitet</translation>
+<translation id="3923184630988645767">Dataanvändning</translation>
 <translation id="3924044641767672375">Vi rekommenderar att du ansluter till wifi för att göra reparationsprocessen enklare. Nätverket sparas.</translation>
 <translation id="3932043219784172185">Det finns ingen ansluten enhet</translation>
 <translation id="3941014780699102620">DNS-matchningen misslyckades för värden</translation>
@@ -279,6 +285,7 @@
 <translation id="475869545581454722">Lösenordet för Chrome OS har uppdaterats</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
 <translation id="4782311465517282004">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text</translation>
+<translation id="4793756956024303490">Komprimeringsalgoritm</translation>
 <translation id="4794140124556169553">Systemet kan bli långsammare när du kör ett CPU-test</translation>
 <translation id="4808449224298348341">Utskriftsjobbet <ph name="DOCUMENT_TITLE" /> har avbrutits</translation>
 <translation id="4813136279048157860">Mina bilder</translation>
@@ -291,6 +298,7 @@
 <translation id="484790837831576105">(Android) DNS-upplösning</translation>
 <translation id="4848429997038228357">KÖRS</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} försök kvar}other{<ph name="ERROR_MESSAGE" /> {0} försök kvar}}</translation>
+<translation id="4873827928179867585">Autentiseringsalgoritm</translation>
 <translation id="4880328057631981605">Namn på åtkomstpunkt (APN)</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Välj ett nytt omedelbart</translation>
@@ -308,6 +316,7 @@
 <translation id="4999333166442584738">Dölj rapporten</translation>
 <translation id="500920857929044050">Avsluta testet</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Visa foton, tid, väder och medieinformation på skärmen vid inaktivitet.</translation>
 <translation id="5039804452771397117">Tillåt</translation>
 <translation id="5049856988445523908">SIM-kortet är låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppnamn</translation>
@@ -370,6 +379,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5784136236926853061">Hög HTTP-latens</translation>
 <translation id="5832805196449965646">Lägg till person</translation>
 <translation id="583281660410589416">Okänd</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kod för hemleverantör</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5866840822086176774">Mycket stark</translation>
@@ -378,6 +388,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Filen har genomsökts och sparats i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Filerna har genomsökts och sparats i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Filen hittades inte</translation>
+<translation id="5939518447894949180">Återställ</translation>
 <translation id="594552776027197022">Generera slumpmässigt nyckelpar</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Skannerns dokumentmatare är tom. Fyll på med dokument och försök igen.</translation>
@@ -436,6 +447,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6618744767048954150">Körs</translation>
 <translation id="6620487321149975369">Utskriftsjobb visas i historiken såvida de inte tas bort manuellt</translation>
 <translation id="6643016212128521049">Rensa</translation>
+<translation id="6647510110698214773">Krypteringsalgoritm</translation>
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6692996468359469499">Få information utifrån det du markerar</translation>
 <translation id="6704062477274546131">DNS-matchning</translation>

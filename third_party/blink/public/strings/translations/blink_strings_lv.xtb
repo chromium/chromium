@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Vērtībai ir jābūt lielākai vai vienādai ar <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Nav atzīmēta. Grupā, <ph name="INDEX" />. opcija no <ph name="COUNT" />.</translation>
 <translation id="5307600278924710095">Lūdzu, ievadiet daļu, kas atrodas pirms zīmes <ph name="ATSIGN" />. “<ph name="INVALIDADDRESS" />” ir nepilna adrese.</translation>
 <translation id="5334352251556557839">Nevar atskaņot multividi.</translation>
 <translation id="537648784377940524">Minimālajai datuma vērtībai (<ph name="MIN_DATE_OR_TIME" />) ir jābūt pirms maksimālās datuma vērtības (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Cits</translation>
 <translation id="6709093583001123835">Jābūt šādai vērtībai: <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Slikta atskaņošanas kvalitāte</translation>
+<translation id="6719914554879143100">Atzīmēta. Grupā, <ph name="INDEX" />. opcija no <ph name="COUNT" />.</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6820355525329141109">Nevarēja ielādēt spraudni.</translation>
 <translation id="6831465880655513317">Krāsu palete ar divu dimensiju slīdni piesātinājuma un gaišuma iestatīšanai</translation>

@@ -44,6 +44,7 @@
 <translation id="142228117786570094">Ich habe ein Schlüsselpaar</translation>
 <translation id="1442433966118452622">Bildquelle</translation>
 <translation id="1451536289672181509">Das Gerät ist eine Tastatur.</translation>
+<translation id="1459693405370120464">Wetter</translation>
 <translation id="1468664791493211953">Angebote</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> verwaltet dieses Gerät und kann möglicherweise deine Aktivitäten überwachen.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -103,6 +104,7 @@
 <translation id="2212733584906323460">Namensauflösung</translation>
 <translation id="2217935453350629363">Momentane Geschwindigkeit</translation>
 <translation id="2224337661447660594">Kein Internet</translation>
+<translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktivierungsstatus</translation>
 <translation id="2287186687001756809">Kein Bild verfügbar. Sie können Fotos unter <ph name="LINK" /> hinzufügen.</translation>
@@ -207,6 +209,7 @@
 <translation id="3858860766373142691">Name</translation>
 <translation id="3865414814144988605">Auflösung</translation>
 <translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
+<translation id="3923184630988645767">Datennutzung</translation>
 <translation id="3924044641767672375">Eine Verbindung zum WLAN wird empfohlen, um den Reparaturvorgang zu vereinfachen. Ihr Netzwerk wird gespeichert.</translation>
 <translation id="3932043219784172185">Kein Gerät verbunden</translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
@@ -376,6 +379,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5784136236926853061">Hohe HTTP-Latenz</translation>
 <translation id="5832805196449965646">Person hinzufügen</translation>
 <translation id="583281660410589416">Unbekannt</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Code des Homepageanbieters</translation>
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5866840822086176774">Sehr stark</translation>
@@ -384,6 +388,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Ihre Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Ihre Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>
 <translation id="5931523347251946569">Datei nicht gefunden</translation>
+<translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="594552776027197022">Zufälliges Schlüsselpaar generieren</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Der Dokumenteneinzug des Scanners ist leer. Legen Sie Dokumente ein und versuchen Sie es noch einmal.</translation>

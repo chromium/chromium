@@ -250,7 +250,6 @@
 <translation id="3207960819495026254">С отметка</translation>
 <translation id="3224641773458703735">За да експортирате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
-<translation id="3230318355092723906">Когато синхронизирането е изключено, пак можете да преглеждате отметките, историята, паролите и другите си настройки на това устройство. В случай че направите промени, те няма да се синхронизират с профила ви.</translation>
 <translation id="3240426699337459095">Връзката е копирана</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> от <ph name="NUM_SUGGESTIONS" /></translation>
@@ -379,6 +378,7 @@
 <translation id="4526249700380860531">Преглед и управление на запазените пароли на адрес <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Опитайте да влезете отново.</translation>
 <translation id="4540780316273593836">Нещо се обърка</translation>
+<translation id="4572065712096155137">Достъп</translation>
 <translation id="457386861538956877">Още...</translation>
 <translation id="4592368184551360546">Клавиатура</translation>
 <translation id="461440297010471931">Търсене с Google</translation>
@@ -570,6 +570,7 @@
 <translation id="6202364442240589072">{COUNT,plural, =1{Затваряне на {COUNT} раздел}other{Затваряне на {COUNT} раздела}}</translation>
 <translation id="6219688215832490856">Никога да не се превежда</translation>
 <translation id="6223816392543092032">Получете отметките, историята, паролите и другите си настройки на всичките си устройства.</translation>
+<translation id="6231782223312638214">Предложени</translation>
 <translation id="6232329973559504466">Търсене в режим „инкогнито“</translation>
 <translation id="6232736989810857397">Това ви дава възможност лесно да създавате събития в календара посредством Google Обектив.</translation>
 <translation id="6254066287920239840">Отваряне на връзките в приложението вместо в браузъра.</translation>
@@ -655,7 +656,6 @@
 <translation id="6801927553864092214">За да сърфирате частно, отворете раздел в режим „инкогнито“</translation>
 <translation id="6807889908376551050">Показване на всички...</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
-<translation id="681450999322335505">Организацията ви изключи синхронизирането.</translation>
 <translation id="683022620450280906">Можете да използвате запазените пароли на което и да е устройство. Те се запазват в мениджъра на паролите в Google за <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Прочетете повече</translation>
 <translation id="6831043979455480757">Превод</translation>
@@ -840,6 +840,7 @@
 <translation id="8591976964826315682">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="8605219856220328675">Затваряне на раздела.</translation>
 <translation id="8620640915598389714">Редактиране</translation>
+<translation id="8626393685701737946">Можете да зададете настолния сайт като основен в „Настройки &gt; Настройки за съдържанието“</translation>
 <translation id="863090005774946393">Браузърът се управлява от организацията ви. Някои функции може да са деактивирани.</translation>
 <translation id="8636825310635137004">Включете синхронизирането, за да получите разделите си от другите си устройства.</translation>
 <translation id="8654802032646794042">Отказ</translation>
@@ -859,6 +860,7 @@
 <translation id="8803639129939845298">Сигурно</translation>
 <translation id="8806823403540278281">Организацията ви изисква да сърфирате частно. В режим „инкогнито“ разделите не се запазват.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="8810413591309742901">Основна версия на сайта</translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="8840513115188359703">Няма да излезете от профила си в Google.</translation>
 <translation id="8843129975935593190">Организацията ви ограничава това какво можете да синхронизирате.</translation>

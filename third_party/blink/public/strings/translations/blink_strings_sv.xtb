@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Värdet måste vara större än eller lika med <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Inte markerad. Ingår i en grupp, alternativ <ph name="INDEX" /> av <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Ange en del följt av <ph name="ATSIGN" />. <ph name="INVALIDADDRESS" /> är ofullständig.</translation>
 <translation id="5334352251556557839">Det går inte att spela upp media.</translation>
 <translation id="537648784377940524">Tidigaste datum (<ph name="MIN_DATE_OR_TIME" />) måste vara före senaste datum (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Annan...</translation>
 <translation id="6709093583001123835">Värdet måste vara <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Låg uppspelningskvalitet</translation>
+<translation id="6719914554879143100">Markerad. Ingår i en grupp, alternativ <ph name="INDEX" /> av <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6820355525329141109">Det gick inte att läsa in plugin-programmet.</translation>
 <translation id="6831465880655513317">Färgkälla med skjutreglage för mättnad och ljushet</translation>

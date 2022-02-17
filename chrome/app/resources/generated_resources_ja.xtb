@@ -280,7 +280,6 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> をアンインストールできませんでした</translation>
 <translation id="1277020343994096713">現在の PIN とは異なる新しい PIN を作成してください</translation>
 <translation id="1278859221870828664">Google Play のアプリとサービスの確認</translation>
-<translation id="1279024913354609713">許可しない</translation>
 <translation id="127946606521051357">付近のデバイスが共有中です</translation>
 <translation id="1280965841156951489">ファイルを編集</translation>
 <translation id="1282465000333679776">システムの音声を共有</translation>
@@ -1169,8 +1168,6 @@
 <translation id="2154502158735983655">Chrome OS のデバイス情報とデバイスデータを読み取ります。</translation>
 <translation id="2155772377859296191">表示上のサイズ: <ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
-<translation id="2156557113115192526">今後このアプリで次のファイル形式を開くときには確認メッセージを表示しない:
-<ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">安全確認を再実行</translation>
 <translation id="2157474325782140681">すべての機能を利用できるようにするには、この Chromebook に対応した Dell のドッキング ステーションを使用してください。</translation>
 <translation id="215753907730220065">全画面表示を終了</translation>
@@ -1419,7 +1416,6 @@
 <translation id="2379281330731083556">システム ダイアログを使用して印刷... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">共有タブのプレビュー</translation>
 <translation id="2381756643783702095">送信する前に確認する（推奨）</translation>
-<translation id="2384058592260508453">パソコンから離れると、画面が自動的にロックされプライバシーを保護します。</translation>
 <translation id="2387052489799050037">ホームに移動</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">プロキシに接続できません。もう一度ログインしてください</translation>
@@ -2009,7 +2005,6 @@
 <translation id="2963151496262057773">プラグイン（<ph name="PLUGIN_NAME" />）は応答していません。強制終了しますか？</translation>
 <translation id="2964193600955408481">Wi-Fi を無効にする</translation>
 <translation id="2964245677645334031">ニアバイシェアの検出設定</translation>
-<translation id="2966843186151190402">誰かが背後からのぞき見しているのを検知すると、通知をマスキングしてプライバシーを保護します。</translation>
 <translation id="2966937470348689686">Android 設定を管理</translation>
 <translation id="2972581237482394796">やり直し(&amp;R)</translation>
 <translation id="2973324205039581528">サイトをミュート</translation>
@@ -2302,6 +2297,7 @@
 <translation id="33022249435934718">GDI ハンドル</translation>
 <translation id="3302388252085547855">理由を入力してください...</translation>
 <translation id="3303260552072730022">拡張機能によって自動的に全画面表示になりました。</translation>
+<translation id="3303795387212510132">アプリに <ph name="PROTOCOL_SCHEME" /> リンクの表示を許可しますか？</translation>
 <translation id="3303818374450886607">部数</translation>
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> オフ</translation>
@@ -2433,7 +2429,6 @@
 <translation id="343578350365773421">用紙がありません</translation>
 <translation id="3435896845095436175">有効にする</translation>
 <translation id="3438633801274389918">忍者</translation>
-<translation id="3438867728845998048">Smart Privacy Protection でプライバシーを保護する</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> によるマイクへのアクセスを常に許可する</translation>
 <translation id="3439970425423980614">PDF をプレビューしています</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> に対するその他の操作</translation>
@@ -2489,7 +2484,6 @@
 <translation id="3484273680291419129">有害なソフトウェアを削除しています...</translation>
 <translation id="3484869148456018791">新しい証明書を取得</translation>
 <translation id="3487007233252413104">無名関数</translation>
-<translation id="348780365869651045">AppCache を待機しています...</translation>
 <translation id="3490695139702884919">ダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">お子様のアカウントは、ファミリー リンクの保護者による使用制限が設定されていません。セットアップが完了すると、保護者による使用制限を設定できます。保護者による使用制限に関する情報は、「使い方・ヒント」アプリで確認できます。</translation>
 <translation id="3491678231052507920">多くのサイトは、VR セッションに参加するためにバーチャル リアリティ デバイスとデータを使用します。</translation>
@@ -3054,6 +3048,7 @@
 <translation id="4033963223187371752">セキュリティで保護されたサイトに、セキュリティで保護されていない画像やウェブフレームなどのコンテンツが埋め込まれている場合があります</translation>
 <translation id="4034824040120875894">プリンタ</translation>
 <translation id="4035758313003622889">タスク マネージャ(&amp;T)</translation>
+<translation id="4035877632587724847">許可しない</translation>
 <translation id="4036778507053569103">サーバーからダウンロードされたポリシーが無効です。</translation>
 <translation id="4037084878352560732">馬</translation>
 <translation id="403725336528835653">試してみる</translation>
@@ -3176,7 +3171,6 @@
 <translation id="4167686856635546851">多くのサイトは、インタラクティブなビデオゲームやウェブフォームなどを表示するために JavaScript を使用します。</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> に帰属する設定の一部を共有しています。これらの設定は、マルチログインを使用した場合にのみこのアカウントに適用されます。</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />（末尾 4 桁: <ph name="LAST_FOUR_DIGITS" />）</translation>
-<translation id="4169535189173047238">許可しない</translation>
 <translation id="4170314459383239649">終了時に削除</translation>
 <translation id="417096670996204801">プロフィールを選択してください</translation>
 <translation id="4175137578744761569">明るい紫と白</translation>
@@ -3246,7 +3240,6 @@
 <translation id="425573743389990240">バッテリーの放電率（ワット、負の値の場合は充電中）</translation>
 <translation id="4256316378292851214">名前を付けて動画を保存(&amp;V)...</translation>
 <translation id="4258348331913189841">ファイル システム</translation>
-<translation id="4258786365875464621"><ph name="APP_ORIGIN" /> が次のファイルを開く許可を求めています:</translation>
 <translation id="4259388776256904261">しばらくお待ちください</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google の高度な保護機能に送信してスキャンしますか？ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="4261429981378979799">拡張機能の権限</translation>
@@ -4584,7 +4577,6 @@
 <translation id="56702779821643359">近くのユーザーとファイルを共有できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">画像がブロックされました</translation>
 <translation id="5671658447180261823">候補<ph name="SUGGESTION_NAME" />を削除します</translation>
-<translation id="5672394489561088904">Smart Privacy Protection は内蔵センサーを使用して人の気配を検知します。データは暗号化されて安全に処理され、使用後は完全に削除されます。Google がこのデータにアクセスすることはありません。</translation>
 <translation id="567587836466137939">このデバイスでは、<ph name="MONTH_AND_YEAR" /> までソフトウェアとセキュリティが自動更新されます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="567643736130151854">ログインして同期を有効にすれば、ブックマーク、パスワード、その他の設定をどのデバイスからでもご利用いただけます</translation>
 <translation id="567740581294087470">お送りいただくフィードバックの種類を選択してください。</translation>
@@ -4855,7 +4847,6 @@
 <translation id="5957987129450536192">プロフィール画像の近くにある「選択して読み上げ」アイコンをタップして、読み上げる対象を選択します。</translation>
 <translation id="5959471481388474538">ネットワークは利用できません</translation>
 <translation id="595959584676692139">この拡張機能を使用するにはページを再読み込みします</translation>
-<translation id="5963117322306686970">タブをグループ化するには、タブを右クリックしてください</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" />（最大 <ph name="NUM_KILOBYTES_LIVE" />）</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
 <translation id="5965661248935608907">この拡張機能では、ホーム ボタンのクリック時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>
@@ -4971,6 +4962,7 @@
 <translation id="6078769373519310690">「<ph name="CHROME_EXTENSION_NAME" />」が HID デバイスへの接続を要求しています</translation>
 <translation id="608029822688206592">ネットワークが見つかりません。SIM を挿入してもう一度お試しください。</translation>
 <translation id="6080689532560039067">システムの時刻の確認</translation>
+<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 名前のないグループの一部</translation>
 <translation id="6085886413119427067">ウェブサイトに安全に接続する方法を決定します</translation>
 <translation id="6086004606538989567">確認を行ったアカウントにはこのデバイスにアクセスする権限がありません。</translation>
@@ -5369,7 +5361,6 @@
 <translation id="6498249116389603658">選択したすべての言語(&amp;A)</translation>
 <translation id="6499143127267478107">プロキシ スクリプト内のホストを解決しています...</translation>
 <translation id="6499764981457476645">付近にデバイスは見つかりませんでした</translation>
-<translation id="6501086852992132091"><ph name="APP_ORIGIN" /> が次のファイルを開く許可を求めています:</translation>
 <translation id="65017764184991091">Linux アプリとファイルをバックアップできませんでした。デバイスの空き容量が不足している可能性があります。デバイスの空き容量を確保するか、バックアップ先として別の場所を選択してください。</translation>
 <translation id="6501957628055559556">すべてのコンテナ</translation>
 <translation id="650266656685499220">アルバムを作成するには、Google フォトにアクセスします</translation>
@@ -6072,7 +6063,6 @@
 <translation id="7241389281993241388">クライアント証明書をインポートするには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="7241763419756062043">検索とブラウジングの品質を選択する</translation>
 <translation id="7243632151880336635">削除してログアウト</translation>
-<translation id="7243784282103630670">Linux のアップグレード中にエラーが発生しました。バックアップを使用してコンテナを復元します。</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" />（最適）</translation>
 <translation id="7246230585855757313">セキュリティ キーを挿入し直して、もう一度お試しください</translation>
 <translation id="7249197363678284330">アドレスバーでこの設定を変更できます。</translation>
@@ -6372,8 +6362,6 @@
 <translation id="7552846755917812628">次のことをお試しください。</translation>
 <translation id="7553012839257224005">Linux コンテナを確認しています</translation>
 <translation id="7553242001898162573">パスワードを入力してください</translation>
-<translation id="7553347517399115470">今後このアプリで次のファイル形式を開くときには確認メッセージを表示しない:
-<ph name="FILE_FORMATS" /></translation>
 <translation id="755472745191515939">この言語は管理者が許可していません</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
 <translation id="7556033326131260574">Smart Lock でアカウントを確認できませんでした。ログインするにはパスワードを入力してください。</translation>
@@ -6634,7 +6622,6 @@
 <translation id="7797246427375693110">オン / <ph name="TIME" /> に自動的にオフ</translation>
 <translation id="7797571222998226653">オフ</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />を自動ブロック</translation>
-<translation id="7799220949286681310">スマート画面ロック</translation>
 <translation id="7799299114731150374">壁紙の設定が完了しました</translation>
 <translation id="7799817062559422778">ライトモード</translation>
 <translation id="7800159967992492578">サイド検索を切り替えます。サイド検索は有効になっています。</translation>
@@ -6662,24 +6649,6 @@
 <translation id="782590969421016895">現在のページを使用</translation>
 <translation id="7826249772873145665">ADB デバッグが無効になりました</translation>
 <translation id="7826254698725248775">競合するデバイス識別子です。</translation>
-<translation id="7826790948326204519"><ph name="BEGIN_H3" />デバッグ機能<ph name="END_H3" />
-    <ph name="BR" />
-    Chrome OS デバイスでは、カスタムコードをインストールしてテストする目的でデバッグ機能を有効にできます。デバッグ機能を使うと次のことが可能です。<ph name="BR" />
-    <ph name="BEGIN_LIST" />
-      <ph name="LIST_ITEM" />オペレーティング システムのファイルに変更を加えるために rootfs の確認を無効化できます。
-      <ph name="LIST_ITEM" />標準のテストキーを使ってデバイスへの SSH アクセスを有効化できます。これにより、<ph name="BEGIN_CODE" />'cros flash'<ph name="END_CODE" /> のようなツールを使ってデバイスにアクセスできるようになります。
-      <ph name="LIST_ITEM" />USB ドライブから OS イメージをインストールできるように、USB からの起動を有効化できます。
-      <ph name="LIST_ITEM" />デバイスに SSH で手動アクセスできるように、dev とシステム ルート ログイン パスワードの両方をカスタム値に設定できます。
-    <ph name="END_LIST" />
-    <ph name="BR" />
-    デバッグ機能をいったん有効にすると、企業の管理対象デバイスで Powerwash やデータ消去を実行した後でも、ほとんどのデバッグ機能は有効なまま維持されます。すべてのデバッグ機能を完全に無効にするには、Chrome OS の復元処理を行ってください（https://support.google.com/chromebook/answer/1080595 をご覧ください）。
-    <ph name="BR" />
-    <ph name="BR" />
-    デバッグ機能について詳しくは以下をご覧ください。<ph name="BR" />
-    https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> この処理中、システムの再起動が行われます。</translation>
 <translation id="7828731929332799387">サードパーティのコンテキストで使用される Cookie とサイトデータがすべて削除されます。続行しますか？</translation>
 <translation id="7829877209233347340">保護者の方に、ログインして学校用アカウントの追加を許可してもらってください。</translation>
 <translation id="7830594666202422257">Linux に接続</translation>
@@ -6939,7 +6908,6 @@
 <translation id="8076492880354921740">タブ</translation>
 <translation id="8076835018653442223">デバイスのローカル ファイルへのアクセスは管理者によって無効にされています</translation>
 <translation id="808089508890593134">Google</translation>
-<translation id="8081243065355858508">Android アプリで使用できるアカウント</translation>
 <translation id="8081989000209387414">ADB デバッグを無効にしますか？</translation>
 <translation id="8082106343289440791">「<ph name="DEVICE_NAME" />」とペア設定しますか？</translation>
 <translation id="8082390128630131497">ADB デバッグを無効にすると、この <ph name="DEVICE_TYPE" /> が出荷時の設定にリセットされます。ユーザー アカウントとローカルデータはすべて消去されます。</translation>
@@ -7201,7 +7169,6 @@
 <translation id="8342861492835240085">コレクションを選択</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
 <translation id="834785183489258869">シークレット モードのとき、サイトは Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどを行えなくなります。一部のサイトで機能を使用できなくなる可能性があります。</translation>
-<translation id="8349499562373871073">Android アプリで使用する既存のアカウントを選択するか、新しい Google アカウントを追加できます。Android アプリにログインしたら、他の Android アプリでも同じアカウントを使用できます。Android アプリのアクセス権限は、<ph name="LINK_BEGIN" />[設定] &gt; [アカウント]<ph name="LINK_END" /> で変更できます。</translation>
 <translation id="8350789879725387295">Dock のタッチペン ツール</translation>
 <translation id="8351316842353540018">ユーザー補助設定オプションを常に表示する</translation>
 <translation id="8351419472474436977">この拡張機能によってプロキシ設定が制御されています。オンラインで行う操作は、この拡張機能によって変更、遮断、傍受される可能性があります。この変更が行われた理由に心当たりがない場合、これは不正な変更と考えられます。</translation>
@@ -7281,7 +7248,6 @@
 <translation id="8438566539970814960">検索とブラウジングを改善する</translation>
 <translation id="8439506636278576865">この言語のページで翻訳ツールを表示する</translation>
 <translation id="8440630305826533614">Linux アプリ</translation>
-<translation id="8445421592098584385">のぞき見の検知</translation>
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8447409163267621480">Ctrl キーまたは Alt キーが必要です</translation>
 <translation id="8448729345478502352">アイテムの表示サイズを変更します</translation>

@@ -140,7 +140,6 @@
 <translation id="5398878173008909840">Доступна нова версія Chromium.</translation>
 <translation id="5427571867875391349">Зробити Chromium веб-переглядачем за умовчанням</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Бета-версія Chromium</translation>
-<translation id="5479196819031988440">Неможливо відкрити цю сторінку в ОС Chromium.</translation>
 <translation id="5480860683791598150">Chromium потрібен доступ до геоданих, щоб повідомляти ваше місцезнаходження цьому сайту</translation>
 <translation id="549669000822060376">Зачекайте, доки Chromium установить найновіші оновлення системи.</translation>
 <translation id="5496810170689441661">Chromium намагається змінити паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
@@ -201,7 +200,6 @@
 <translation id="6734291798041940871">Chromium уже встановлено для всіх користувачів на вашому комп’ютері.</translation>
 <translation id="673636774878526923">Щоб мати доступ до своїх даних Chromium на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію.</translation>
 <translation id="6774082503108938489">Хтось із твоїх батьків вимкнув "Дозволи для сайтів, додатків і розширень" у Chromium. Вмикати це <ph name="EXTENSION_TYPE_PARAMETER" /> заборонено.</translation>
-<translation id="6808964260981102146">Дозволи, надані веб-сайтам і додаткам, можуть діяти для цього облікового запису. Якщо ви не хочете, щоб веб-сайти чи додатки мали доступ до даних облікового запису, можете користуватися веб-переглядачем Chromium у <ph name="LINK_BEGIN" />режимі гостя<ph name="LINK_END" />. Ви також можете керувати своїми обліковими записами Google у <ph name="LINK_2_BEGIN" />Налаштуваннях<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Якщо ваші паролі колись викрадуть, Chromium повідомить вас про це</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопійовано в Chromium)</translation>
@@ -225,7 +223,6 @@
 Chromium не може відновити ваші налаштування.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Нове вікно</translation>
-<translation id="7342713658732509484">Дозволи, надані веб-сайтам і додаткам, можуть діяти для цього облікового запису. Якщо ви не хочете, щоб веб-сайти чи додатки мали доступ до даних облікового запису, можете користуватися веб-переглядачем Chromium у режимі гостя. Ви також можете керувати своїми обліковими записами Google у <ph name="LINK_2_BEGIN" />Налаштуваннях<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">Тут містяться ваші веб-сторінки, закладки та інші дані Chromium.</translation>
 <translation id="7349591376906416160">Ваш системний адміністратор налаштував Chromium відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7398989605938454041">Створюйте профілі Chromium для різних цілей (наприклад, робочий і особистий), щоб розмежовувати роботу й дозвілля.</translation>

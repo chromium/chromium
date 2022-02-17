@@ -44,6 +44,7 @@
 <translation id="142228117786570094">키 쌍 있음</translation>
 <translation id="1442433966118452622">이미지 출처</translation>
 <translation id="1451536289672181509">키보드 기기입니다.</translation>
+<translation id="1459693405370120464">날씨</translation>
 <translation id="1468664791493211953">혜택</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" />에서 이 기기를 관리하며 내 활동을 모니터링할 수도 있습니다.</translation>
 <translation id="1478594628797167447">스캐너</translation>
@@ -103,6 +104,7 @@
 <translation id="2212733584906323460">이름 결정</translation>
 <translation id="2217935453350629363">현재 속도</translation>
 <translation id="2224337661447660594">인터넷 연결 없음</translation>
+<translation id="2230005943220647148">섭씨</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">활성화 상태</translation>
 <translation id="2287186687001756809">사용할 수 있는 이미지가 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
@@ -207,6 +209,7 @@
 <translation id="3858860766373142691">이름</translation>
 <translation id="3865414814144988605">해상도</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
+<translation id="3923184630988645767">데이터 사용</translation>
 <translation id="3924044641767672375">수리 과정을 간편하게 진행하려면 Wi-Fi에 연결하는 것이 좋습니다. 네트워크가 저장됩니다.</translation>
 <translation id="3932043219784172185">연결된 기기 없음</translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
@@ -376,6 +379,7 @@
 <translation id="5784136236926853061">HTTP 지연 시간 높음</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
 <translation id="583281660410589416">알 수 없음</translation>
+<translation id="5843706793424741864">화씨</translation>
 <translation id="5849570051105887917">홈 공급자 코드</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5866840822086176774">매우 강함</translation>
@@ -384,6 +388,7 @@
 <translation id="5916664084637901428">사용</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}other{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}}</translation>
 <translation id="5931523347251946569">파일을 찾을 수 없음</translation>
+<translation id="5939518447894949180">초기화</translation>
 <translation id="594552776027197022">임의의 키 쌍 생성</translation>
 <translation id="5972388717451707488">엔진 업데이트</translation>
 <translation id="6037291330010597344">스캐너의 급지대가 비어 있습니다. 문서를 추가한 후 다시 시도해 보세요.</translation>

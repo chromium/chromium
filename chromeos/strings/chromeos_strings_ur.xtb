@@ -44,6 +44,7 @@
 <translation id="142228117786570094">میرے پاس کلیدوں کا ایک جوڑا ہے</translation>
 <translation id="1442433966118452622">تصویر کا ماخذ</translation>
 <translation id="1451536289672181509">آلہ ایک کی بورڈ ہے۔</translation>
+<translation id="1459693405370120464">موسم</translation>
 <translation id="1468664791493211953">پیشکشیں</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور آپ کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="1478594628797167447">اسکینر</translation>
@@ -103,6 +104,7 @@
 <translation id="2212733584906323460">ریزولیوشن کا نام دیں</translation>
 <translation id="2217935453350629363">موجودہ رفتار</translation>
 <translation id="2224337661447660594">انٹرنیٹ نہیں ہے</translation>
+<translation id="2230005943220647148">سیلسیئس</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">فعالیت کی صورتحال</translation>
 <translation id="2287186687001756809">کوئی تصویر دستیاب نہیں ہے۔ تصاویر شامل کرنے کے لیے، <ph name="LINK" /> پر جائیں</translation>
@@ -207,6 +209,7 @@
 <translation id="3858860766373142691">نام</translation>
 <translation id="3865414814144988605">ریزولیوشن</translation>
 <translation id="387301095347517405">آپ کی بیٹری کے مکمل طور پر چارج ہونے کی تعداد</translation>
+<translation id="3923184630988645767">ڈیٹا کا استعمال</translation>
 <translation id="3924044641767672375">‏مرمت کے عمل کو آسان بنانے کے لیے Wi-Fi سے منسلک ہونے کی تجویز کی جاتی ہے۔ آپ کے نیٹ ورک کو محفوظ کیا جائے گا۔</translation>
 <translation id="3932043219784172185">کوئی آلہ منسلک نہیں ہے</translation>
 <translation id="3941014780699102620">میزبان کو حل کرنے میں ناکام</translation>
@@ -375,6 +378,7 @@
 <translation id="5784136236926853061">‏زیادہ HTTPS تاخیر</translation>
 <translation id="5832805196449965646">شخص کو شامل کریں</translation>
 <translation id="583281660410589416">نامعلوم</translation>
+<translation id="5843706793424741864">فارن ہائیٹ</translation>
 <translation id="5849570051105887917">گھر فراہم کرنے والے کا کوڈ</translation>
 <translation id="5860033963881614850">آف</translation>
 <translation id="5866840822086176774">کافی مضبوط</translation>
@@ -383,6 +387,7 @@
 <translation id="5916664084637901428">آن</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{آپ کی فائل کامیابی کے ساتھ اسکین ہو گئی ہے اور اسے <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> پر محفوظ کر دیا گیا ہے۔}other{آپ کی فائلیں کامیابی کے ساتھ اسکین ہو گئی ہیں اور انہیں <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> پر محفوظ کر دیا گیا ہے۔}}</translation>
 <translation id="5931523347251946569">فائل نہیں ملی</translation>
+<translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
 <translation id="594552776027197022">رینڈم کلیدوں کا جوڑا بنائیں</translation>
 <translation id="5972388717451707488">انجن اپ ڈیٹ کریں</translation>
 <translation id="6037291330010597344">اسکینر کا دستاویز فیڈر خالی ہے۔ دستاویزات شامل کریں اور دوبارہ کوشش کریں۔</translation>

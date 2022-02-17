@@ -140,7 +140,6 @@
 <translation id="5398878173008909840">Chromium の最新バージョンをぜひお試しください。</translation>
 <translation id="5427571867875391349">Chromium をデフォルト ブラウザに設定する</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
-<translation id="5479196819031988440">Chromium OS ではこのページを開けません。</translation>
 <translation id="5480860683791598150">このサイトで現在地を共有するには、Chromium で位置情報の使用を許可する必要があります</translation>
 <translation id="549669000822060376">Chromium は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="5496810170689441661">Chromium でパスワードを編集しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
@@ -201,7 +200,6 @@
 <translation id="6734291798041940871">Chromium は既にパソコンのすべてのユーザーに対してインストールされています。</translation>
 <translation id="673636774878526923">お使いのすべてのデバイスで Chromium の設定やデータを使用するには、ログインして同期を有効にしてください。</translation>
 <translation id="6774082503108938489">保護者が Chromium の「サイト、アプリ、拡張機能の権限」をオフにしました。この <ph name="EXTENSION_TYPE_PARAMETER" /> を有効にすることはできません。</translation>
-<translation id="6808964260981102146">これまでにウェブサイトやアプリに許可した権限がこのアカウントに適用される可能性があります。ウェブサイトやアプリがアカウント情報にアクセスすることを望まない場合は、Chromium ブラウザの<ph name="LINK_BEGIN" />ゲストモード<ph name="LINK_END" />を使用してください。Google アカウントは [<ph name="LINK_2_BEGIN" />設定<ph name="LINK_2_END" />] でも管理できます。</translation>
 <translation id="6847869444787758381">Chromium では、特定のパスワードが侵害された事実の有無がわかります</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay（Chromium にコピー）</translation>
@@ -224,7 +222,6 @@
 設定を復元できません。</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
-<translation id="7342713658732509484">これまでにウェブサイトやアプリに許可した権限がこのアカウントに適用される可能性があります。ウェブサイトやアプリがアカウント情報にアクセスすることを望まない場合は、Chromium ブラウザのゲストモードを使用してください。Google アカウントは [<ph name="LINK_2_BEGIN" />設定<ph name="LINK_2_END" />] でも管理できます。</translation>
 <translation id="734373864078049451">ウェブ、ブックマーク、その他の Chromium データを好みに設定できます。</translation>
 <translation id="7349591376906416160">システム管理者が、<ph name="TARGET_URL_HOSTNAME" /> へのアクセスに <ph name="ALTERNATIVE_BROWSER_NAME" /> を開くよう Chromium を設定しています。</translation>
 <translation id="7398989605938454041">Chromium プロフィールを使うと、Chromium のあらゆる項目や設定を個別に管理できます。これにより、仕事と遊びの使い分けが簡単になります。</translation>

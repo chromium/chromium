@@ -138,7 +138,6 @@
 <translation id="5398878173008909840">Chromium brauzerining yangi versiyasi chiqdi.</translation>
 <translation id="5427571867875391349">Chromium‘ni standart brauzer sifatida tayinlash.</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
-<translation id="5479196819031988440">Chromium OS bu sahifani ocha olmaydi.</translation>
 <translation id="5480860683791598150">Bu sayt manzilingizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="549669000822060376">Chromium tizimning oxirgi yangilanishlarini o‘rnatib olgunicha kutib turing.</translation>
 <translation id="5496810170689441661">Chromium parollarni tahrirlashga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
@@ -199,7 +198,6 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="6734291798041940871">Chromium allaqachon kompyuterdagi barcha foydalanuvchilar uchun o‘rnatilgan.</translation>
 <translation id="673636774878526923">Chromium brauzeridagi axborotlardan barcha qurilmalaringizda foydalanish uchun hisobingizga kiring va sinxronizatsiyani yoqing.</translation>
 <translation id="6774082503108938489">Chromiumdagi “Sayt, ilova va kengaytmalarga ruxsat” ota-onangiz tomonidan faolsizlantirilgan. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> yoqilishi taqiqlangan.</translation>
-<translation id="6808964260981102146">Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Sayt va ilovalarni hisob axborotingizga kirishini istamasangiz, Chromium brauzerida <ph name="LINK_BEGIN" />Mehmon rejimidan<ph name="LINK_END" /> foydalaning. Google hisoblarini <ph name="LINK_2_BEGIN" />Sozlamalar<ph name="LINK_2_END" /> orqali ham boshqarish mumkin.</translation>
 <translation id="6847869444787758381">Parollaringiz oshkor etilsa, Chromium bu haqida xabar qiladi</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium brauzeriga nusxalandi)</translation>
@@ -223,7 +221,6 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Yangi oyna</translation>
-<translation id="7342713658732509484">Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Sayt va ilovalarni hisob axborotingizga kirishini istamasangiz, Chromium brauzerida Mehmon rejimidan foydalaning. Google hisoblarini <ph name="LINK_2_BEGIN" />Sozlamalar<ph name="LINK_2_END" /> orqali ham boshqarish mumkin.</translation>
 <translation id="734373864078049451">Chromium’dagi barcha veb-sahifalar, xatcho‘plar va boshqa ma’lumotlarni bu yerdan topish mumkin.</translation>
 <translation id="7349591376906416160">Tizim administratori tomonidan Chromium brauzeri <ph name="TARGET_URL_HOSTNAME" /> sahifasini <ph name="ALTERNATIVE_BROWSER_NAME" /> orqali ochiladigan qilib sozlangan.</translation>
 <translation id="7398989605938454041">Chromium profillari brauzerdan alohida foydalanish uchun kerak. Bunda ish va hordiqni ajratish osonlashadi.</translation>

@@ -142,7 +142,6 @@
 <translation id="5398878173008909840">ມີ Chromium ລຸ້ນໃໝ່ຢູ່.</translation>
 <translation id="5427571867875391349">ຕັ້ງ Chromium ເປັນບຣາວ​ເຊີມາດຕະຖານຂອງທ່ານ</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
-<translation id="5479196819031988440">Chromium OS ບໍ່ສາມາດເປີດໜ້ານີ້ໄດ້.</translation>
 <translation id="5480860683791598150">Chromium ຕ້ອງການເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານເພື່ອແບ່ງປັນສະຖານທີ່ຂອງທ່ານກັບເວັບໄຊນີ້</translation>
 <translation id="549669000822060376">ກະ​ລຸ​ນາ​ລໍ​ຖ້າ​ໃນ​ຂະ​ນະ​ທີ່ Chromium ​ຕິດ​ຕັ້ງ​ການອັບເດດລະບົບຫລ້າ​ສຸດ.</translation>
 <translation id="5496810170689441661">Chromium ກໍາລັງພະຍາຍາມແກ້ໄຂລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດໃຫ້ສຳເນົາໄດ້.</translation>
@@ -203,7 +202,6 @@
 <translation id="6734291798041940871">ຕິດຕັ້ງ Chromium ສຳລັບຜູ້ໃຊ້ທຸກຄົນໃນຄອມພິວເຕີຂອງທ່ານແລ້ວ.</translation>
 <translation id="673636774878526923">ເພື່ອເຂົ້າເຖິງຂໍ້ມູນໃນ Chromium ຂອງທ່ານຢູ່ໃນອຸປະກອນທັງໝົດຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລ້ວເປີດການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="6774082503108938489">ພໍ່ແມ່ຂອງທ່ານໄດ້ປິດ "ການອະນຸຍາດສຳລັບເວັບໄຊ, ແອັບ ແລະ ສ່ວນຂະຫຍາຍ" ສຳລັບ Chromium ແລ້ວ. ການເປີດການນຳໃຊ້ <ph name="EXTENSION_TYPE_PARAMETER" /> ນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດ.</translation>
-<translation id="6808964260981102146">ການອະນຸຍາດທີ່ທ່ານໄດ້ມອບໃຫ້ເວັບໄຊ ແລະ ແອັບຕ່າງໆໄປກ່ອນແລ້ວອາດມີຜົນກັບບັນຊີນີ້ນຳ. ຫາກທ່ານບໍ່ຕ້ອງການໃຫ້ແອັບ ຫຼື ເວັບໄຊຕ່າງໆເຂົ້າເຖິງຂໍ້ມູນບັນຊີຂອງທ່ານໄດ້, ໃຫ້ໃຊ້ <ph name="LINK_BEGIN" />ໂໝດແຂກ<ph name="LINK_END" /> ໃນໂປຣແກຣມທ່ອງເວັບ Chromium. ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດຈັດການບັນຊີ Google ຂອງທ່ານໄດ້ໃນ <ph name="LINK_2_BEGIN" />ການຕັ້ງຄ່າ<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium ແຈ້ງໃຫ້ທ່ານຮູ້ຖ້າມີຄົນຮູ້ລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (ສຳເນົາໄວ້ໃນ Chromium ແລ້ວ)</translation>
@@ -227,7 +225,6 @@
 Chromium ບໍ່ສາມາດກູ້ການຕັ້ງຄ່າຂອງທ່ານຄືນໄດ້.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">ໜ້າ​ຕ່າງໃໝ່</translation>
-<translation id="7342713658732509484">ການອະນຸຍາດທີ່ທ່ານໄດ້ມອບໃຫ້ເວັບໄຊ ແລະ ແອັບຕ່າງໆໄປກ່ອນແລ້ວອາດມີຜົນກັບບັນຊີນີ້ນຳ. ຫາກທ່ານບໍ່ຕ້ອງການໃຫ້ແອັບ ຫຼື ເວັບໄຊຕ່າງໆເຂົ້າເຖິງຂໍ້ມູນບັນຊີຂອງທ່ານໄດ້, ໃຫ້ໃຊ້ໂໝດແຂກໃນໂປຣແກຣມທ່ອງເວັບ Chromium. ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດຈັດການບັນຊີ Google ຂອງທ່ານໄດ້ໃນ <ph name="LINK_2_BEGIN" />ການຕັ້ງຄ່າ<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">ເວັບຂອງທ່ານ, ບຸກມາກສ໌, ແລະ Chromium ອື່ນສົດຢູ່ທີ່ນີ້.</translation>
 <translation id="7349591376906416160">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ກຳນົດຄ່າໃຫ້ Chromium ເປີດ <ph name="ALTERNATIVE_BROWSER_NAME" /> ເພື່ອເຂົ້າເຖິງ <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7398989605938454041">ດ້ວຍໂປຣໄຟລ໌ Chromium ທ່ານສາມາດແຍກຂໍ້ມູນ Chromium ຂອງທ່ານທັງໝົດໄດ້. ນີ້ຈະເຮັດໃຫ້ແຍກລະຫວ່າງວຽກ ແລະ ຄວາມມ່ວນໄດ້ງ່າຍຂຶ້ນ.</translation>

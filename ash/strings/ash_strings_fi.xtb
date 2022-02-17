@@ -347,7 +347,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="324366796737464147">Taustahälyn vaimennus</translation>
 <translation id="3249513730522716925">Ikkuna <ph name="WINDOW_TITLE" /> siirretty työpöydältä <ph name="ACTIVE_DESK" /> työpöydälle <ph name="TARGET_DESK" /></translation>
-<translation id="3252248118006571685">Voit avata Chromebookin lukituksen laittamalla puhelimen Bluetoothin päälle</translation>
 <translation id="3255483164551725916">Mitä osaat tehdä?</translation>
 <translation id="3269597722229482060">Klikkaa kakkospainiketta</translation>
 <translation id="3289674678944039601">Ladataan virtalähteen kautta</translation>
@@ -406,6 +405,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3571734092741541777">Määritä</translation>
 <translation id="3573179567135747900">Vaihda takaisin kieleksi <ph name="FROM_LOCALE" /> (vaatii uudelleenkäynnistyksen)</translation>
 <translation id="3576141592585647168">Muuta aikavyöhykettä</translation>
+<translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="3580650856351781466">Ladataan puhetiedostoja</translation>
 <translation id="3593039967545720377">Avaa leikepöytä painamalla <ph name="SHORTCUT_KEY_NAME" /> + V, jotta voit nähdä leikepöydän historian. Aloita kopioimalla kohde.</translation>
 <translation id="3593646411856133110">Näet avoimet sovellukset pyyhkäisemällä ylös ja painamalla pitkään</translation>
@@ -614,6 +614,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="485634149294284819">Avaa näppäimistövalikko</translation>
 <translation id="4860284199500934869">Tarkista verkkoyhteys, jotta <ph name="FILENAME" /> voidaan ladata</translation>
 <translation id="486056901304535126">Lataamista yritetään myöhemmin. Puhe lähetetään Googlelle käsittelyyn, kunnes lataus on valmis.</translation>
+<translation id="4864369630010738180">Kirjaudutaan...</translation>
 <translation id="4868492592575313542">otettu käyttöön</translation>
 <translation id="4872237917498892622">Alt + haku tai Shift</translation>
 <translation id="4881695831933465202">Avaa</translation>
@@ -685,7 +686,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5322611492012084517">Puhelintasi ei löydy</translation>
 <translation id="5327248766486351172">Nimi</translation>
 <translation id="5329548388331921293">Yhdistetään…</translation>
-<translation id="5330201449517439522">Avaa napauttamalla tai klikkaamalla</translation>
 <translation id="5331975486040154427">C-tyypin USB-laite (vasemman sivun taaimmainen portti)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (oikea)</translation>
 <translation id="5352250171825660495">Tumma teema on päällä</translation>
@@ -899,7 +899,6 @@ Uusi asennus</translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6801878137098616817">Muokattu hiljattain</translation>
 <translation id="6803622936009808957">Näyttöjen peilaaminen ei onnistunut, sillä tuettua resoluutiota ei löytynyt. Sen sijaan valittiin työpöydän laajennus.</translation>
-<translation id="6811454077060061666">Google Drive ‑työpöytäsovellus ei ole käytettävissä</translation>
 <translation id="6818242057446442178">Yksi sana taaksepäin</translation>
 <translation id="6820676911989879663">Pidä tauko</translation>
 <translation id="6827049576281411231">Sulje tapahtumapaneeli</translation>
@@ -1016,7 +1015,6 @@ Uusi asennus</translation>
 <translation id="7564874036684306347">Ikkunan siirtämisellä toiselle työpöydälle voi olla odottamattomia seurauksia. Myöhemmät ilmoitukset, ikkunat ja valintaikkunat voidaan jakaa työpöytien välillä.</translation>
 <translation id="7569509451529460200">Pistekirjoitus ja ChromeVox käytössä</translation>
 <translation id="7569983096843329377">Musta</translation>
-<translation id="757941033127302446">Kirjautunut sisään</translation>
 <translation id="7579778809502851308">Kuvakaappaus</translation>
 <translation id="7590883480672980941">Syöttöasetukset</translation>
 <translation id="7593891976182323525">Haku tai Shift</translation>
@@ -1130,7 +1128,6 @@ Uusi asennus</translation>
 <translation id="826107067893790409">Avaa painamalla Enter: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8270450402312105425">{0,plural, =1{Päivitä laite aiempaan versioon tunnin kuluessa}other{Päivitä laite aiempaan versioon # tunnin kuluessa}}</translation>
-<translation id="8281279285293265212">Screencastin tallennus epäonnistui</translation>
 <translation id="8284362522226889623">Siirry edelliseen työpöytään pyyhkäisemälle vasemmalle neljällä sormella</translation>
 <translation id="828708037801473432">Poissa päältä</translation>
 <translation id="8297006494302853456">Heikko</translation>

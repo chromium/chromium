@@ -241,6 +241,7 @@
 <translation id="3078461028045006476">Partager avec <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Hôte SOCKS</translation>
+<translation id="3104793765551262433">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puissance du signal <ph name="SIGNAL_STRENGTH" /> %, bloqué par votre administrateur, détails</translation>
 <translation id="3113153474486991170">Impossible d'ouvrir « <ph name="PATH" /> » à partir de cet endroit. Veuillez copier l'élément sous « Mes fichiers » pour l'ouvrir.</translation>
 <translation id="3113592018909187986">Il vous reste une tentative. Vous ne pourrez pas utiliser ce réseau tant que vous n'aurez pas configuré un nouveau NIP.</translation>
 <translation id="3124404833828281817">Personne rêvassant</translation>
@@ -884,6 +885,7 @@
 <translation id="8551494947769799688">Letton</translation>
 <translation id="8560515948038859357">Cantonais</translation>
 <translation id="8561206103590473338">Éléphant</translation>
+<translation id="8566466896628108558">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, puissance du signal <ph name="SIGNAL_STRENGTH" /> %, bloqué par votre administrateur, détails</translation>
 <translation id="8569764466147087991">Sélectionner le fichier à ouvrir</translation>
 <translation id="8577897833047451336">Croate</translation>
 <translation id="8578308463707544055">Indonésien</translation>

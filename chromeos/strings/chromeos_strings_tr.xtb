@@ -42,7 +42,9 @@
 <translation id="1413240736185167732">İşlem başarısız - Filtre başarısız</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Anahtar çiftim var</translation>
+<translation id="1442433966118452622">Resim kaynağı</translation>
 <translation id="1451536289672181509">Cihazın türü klavye.</translation>
+<translation id="1459693405370120464">Hava durumu</translation>
 <translation id="1468664791493211953">Teklifler</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> bu cihazı yönetiyor ve etkinliklerinizi izleyebilir.</translation>
 <translation id="1478594628797167447">Tarayıcı</translation>
@@ -102,6 +104,7 @@
 <translation id="2212733584906323460">Ad Çözümlemesi</translation>
 <translation id="2217935453350629363">Şu anki hız</translation>
 <translation id="2224337661447660594">İnternet bağlantısı yok</translation>
+<translation id="2230005943220647148">Santigrat</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Etkinleştirme durumu</translation>
 <translation id="2287186687001756809">Resim yok. Fotoğraf eklemek için <ph name="LINK" /> adresine gidin</translation>
@@ -131,6 +134,7 @@
 <translation id="2619761439309613843">Günlük Yenileme</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2695514675076754339">8 karakterli kilit açma kodunu girin</translation>
+<translation id="2712812801627182647">TLS kimlik doğrulama anahtarı</translation>
 <translation id="2740531572673183784">Tamam</translation>
 <translation id="2751739896257479635">EAP Aşama 2 kimlik doğrulaması</translation>
 <translation id="2783010256799387990">BAŞARILI OLDU</translation>
@@ -167,6 +171,7 @@
 <translation id="3268178239013324452">İşlem başarısız - Kapak açık</translation>
 <translation id="3283504360622356314">{0,plural, =1{Dosyayı düzenle}other{Dosyaları düzenle}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Anahtar yönü</translation>
 <translation id="3310640316857623290">DNS gecikmesi, izin verilen eşiğin çok üzerinde</translation>
 <translation id="3328783797891415197">Test çalışıyor</translation>
 <translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
@@ -204,6 +209,7 @@
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3865414814144988605">Çözünürlük</translation>
 <translation id="387301095347517405">Pilinizin tam şarj döngüsünden geçme sayısı</translation>
+<translation id="3923184630988645767">Veri kullanımı</translation>
 <translation id="3924044641767672375">Onarım sürecini kolaylaştırmak için kablosuz ağa bağlanmanız önerilir. Ağınız kaydedilir.</translation>
 <translation id="3932043219784172185">Bağlı cihaz yok</translation>
 <translation id="3941014780699102620">Ana makine çözümlenemedi</translation>
@@ -279,6 +285,7 @@
 <translation id="475869545581454722">Chrome OS şifresi güncellendi</translation>
 <translation id="4773299976671772492">Durduruldu</translation>
 <translation id="4782311465517282004">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın</translation>
+<translation id="4793756956024303490">Sıkıştırma algoritması</translation>
 <translation id="4794140124556169553">CPU testi çalıştırmak sisteminizin performansını etkileyebilir</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> yazdırma işi iptal edildi</translation>
 <translation id="4813136279048157860">Görsellerim</translation>
@@ -291,6 +298,7 @@
 <translation id="484790837831576105">(Android) DNS çözümleme</translation>
 <translation id="4848429997038228357">ÇALIŞIYOR</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}other{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}}</translation>
+<translation id="4873827928179867585">Kimlik doğrulama algoritması</translation>
 <translation id="4880328057631981605">Erişim noktası adı</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Hemen yeni bir tane seçin</translation>
@@ -308,6 +316,7 @@
 <translation id="4999333166442584738">Raporu gizle</translation>
 <translation id="500920857929044050">Testi durdur</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Ekranınız aktif değilken fotoğrafları, saati, hava durumunu ve medya bilgilerini gösterir.</translation>
 <translation id="5039804452771397117">İzin ver</translation>
 <translation id="5049856988445523908">SIM Kilitlendi (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grup adı</translation>
@@ -370,6 +379,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5784136236926853061">Yüksek HTTP gecikmesi</translation>
 <translation id="5832805196449965646">Kişi Ekle</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
+<translation id="5843706793424741864">Fahrenhayt</translation>
 <translation id="5849570051105887917">Ev sağlayıcı kodu</translation>
 <translation id="5860033963881614850">Kapalı</translation>
 <translation id="5866840822086176774">Çok güçlü</translation>
@@ -378,6 +388,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Dosyanız başarıyla taranarak <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> klasörüne kaydedildi.}other{Dosyalarınız başarıyla taranarak <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> klasörüne kaydedildi.}}</translation>
 <translation id="5931523347251946569">Dosya bulunamadı</translation>
+<translation id="5939518447894949180">Sıfırla</translation>
 <translation id="594552776027197022">Rastgele anahtar çifti oluşturun</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Tarayıcının doküman besleyicisi boş. Doküman ekleyip tekrar deneyin.</translation>
@@ -436,6 +447,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6618744767048954150">Çalışıyor</translation>
 <translation id="6620487321149975369">Yazdırma işleri, manuel olarak kaldırılmadığı sürece geçmişte görünür</translation>
 <translation id="6643016212128521049">Temizle</translation>
+<translation id="6647510110698214773">Şifreleme algoritması</translation>
 <translation id="6657585470893396449">Şifre</translation>
 <translation id="6692996468359469499">Seçiminizle alakalı bilgi edinin</translation>
 <translation id="6704062477274546131">DNS Çözümlemesi</translation>

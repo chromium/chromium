@@ -138,7 +138,6 @@
 <translation id="5398878173008909840">‏גרסה חדשה של Chromium זמינה כעת.</translation>
 <translation id="5427571867875391349">‏הגדרת Chromium כדפדפן ברירת המחדל שלך</translation>
 <translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - Chromium בגרסת בטא</translation>
-<translation id="5479196819031988440">‏מערכת ההפעלה של Chromium אינה יכול לפתוח את הדף הזה.</translation>
 <translation id="5480860683791598150">‏Chromium זקוק לגישה למיקום שלך כדי לשתף אותו עם האתר הזה</translation>
 <translation id="549669000822060376">‏יש להמתין בזמן ש-Chromium מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="5496810170689441661">‏Chromium מנסה לערוך את הסיסמאות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
@@ -199,7 +198,6 @@
 <translation id="6734291798041940871">‏Chromium כבר מותקן במחשב ונגיש לכל המשתמשים.</translation>
 <translation id="673636774878526923">‏כדי לקבל גישה אל הפריטים שלך ב-Chromium בכל המכשירים, יש להיכנס לחשבון ולהפעיל את הסנכרון.</translation>
 <translation id="6774082503108938489">‏אחד מההורים השבית ב-Chromium את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להפעיל את <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6808964260981102146">‏יכול להיות שהרשאות שכבר ניתנו לאתרים ולאפליקציות יחולו על החשבון הזה. אם אינך רוצה שלאתרים או לאפליקציות תהיה גישה לפרטי החשבון שלך, צריך להשתמש ב<ph name="LINK_BEGIN" />מצב אורח<ph name="LINK_END" /> בדפדפן Chromium. יש לך גם אפשרות לנהל את חשבונות Google שלך ב<ph name="LINK_2_BEGIN" />הגדרות<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">‏Chromium מודיע לך אם הסיסמאות שלך נמצאות בסיכון</translation>
 <translation id="6857782730669500492">‏Chromium‏ - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (‏הועתק ל-Chromium)</translation>
@@ -223,7 +221,6 @@
 Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
-<translation id="7342713658732509484">‏יכול להיות שהרשאות שכבר ניתנו לאתרים ולאפליקציות יחולו על החשבון הזה. אם אינך רוצה שלאתרים או לאפליקציות תהיה גישה לפרטי החשבון שלך, צריך להשתמש ב'מצב אורח' בדפדפן Chromium. יש לך גם אפשרות לנהל את חשבונות Google שלך ב<ph name="LINK_2_BEGIN" />הגדרות<ph name="LINK_2_END" />.</translation>
 <translation id="734373864078049451">‏היסטוריית האתרים, הסימניות ונתונים נוספים מ-Chromium נמצאים כאן.</translation>
 <translation id="7349591376906416160">‏לפי הגדרת מנהל המערכת, Chromium יפתח את<ph name="ALTERNATIVE_BROWSER_NAME" /> כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7398989605938454041">‏באמצעות פרופילים ב-Chromium, מפרידים את כל הפריטים ב-Chromium. באופן הזה קל יותר להפריד בין עבודה לפנאי.</translation>

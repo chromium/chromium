@@ -348,7 +348,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3227137524299004712">Micròfon</translation>
 <translation id="324366796737464147">Cancel·lació de soroll</translation>
 <translation id="3249513730522716925">La finestra <ph name="WINDOW_TITLE" /> ha passat de l'escriptori <ph name="ACTIVE_DESK" /> a l'escriptori <ph name="TARGET_DESK" /></translation>
-<translation id="3252248118006571685">Per desbloquejar el Chromebook, activa el Bluetooth del telèfon</translation>
 <translation id="3255483164551725916">Què pots fer?</translation>
 <translation id="3269597722229482060">Clic amb el botó dret</translation>
 <translation id="3289674678944039601">S'està carregant per adaptador</translation>
@@ -407,6 +406,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3571734092741541777">Configura</translation>
 <translation id="3573179567135747900">Torna a canviar a "<ph name="FROM_LOCALE" />" (requereix reiniciar)</translation>
 <translation id="3576141592585647168">Canvia la zona horària</translation>
+<translation id="3577473026931028326">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="3580650856351781466">S'estan baixant els fitxers de veu</translation>
 <translation id="3593039967545720377">Accedeix a l'historial del porta-retalls prement <ph name="SHORTCUT_KEY_NAME" />+V. Copia un element per començar.</translation>
 <translation id="3593646411856133110">Llisca cap amunt i mantén premut per veure les aplicacions obertes</translation>
@@ -615,6 +615,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="485634149294284819">Menú per seleccionar el teclat</translation>
 <translation id="4860284199500934869">Comprova la connexió a la xarxa per baixar <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">La baixada s'intentarà més tard. Fins que es completi, s'enviarà la parla a Google perquè la processi.</translation>
+<translation id="4864369630010738180">S'està iniciant la sessió...</translation>
 <translation id="4868492592575313542">activada</translation>
 <translation id="4872237917498892622">Alt+Cerca o Maj</translation>
 <translation id="4881695831933465202">Obre</translation>
@@ -686,7 +687,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5322611492012084517">No es troba el telèfon</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5329548388331921293">S'està connectant...</translation>
-<translation id="5330201449517439522">Toca o fes clic per entrar</translation>
 <translation id="5331975486040154427">Dispositiu USB-C (port posterior esquerre)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (auricular dret)</translation>
 <translation id="5352250171825660495">El tema fosc està activat</translation>
@@ -900,7 +900,6 @@ Instal·lació nova</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6801878137098616817">Editat fa poc</translation>
 <translation id="6803622936009808957">No s'han pogut projectar les pantalles, perquè no s'ha trobat cap resolució compatible. S'ha entrat al mode d'escriptori ampliat.</translation>
-<translation id="6811454077060061666">Google Drive per a ordinadors no està disponible</translation>
 <translation id="6818242057446442178">Enrere per paraula</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
 <translation id="6827049576281411231">Tanca el tauler d'esdeveniments</translation>
@@ -1017,7 +1016,6 @@ Instal·lació nova</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
 <translation id="7569509451529460200">S'ha activat el braille i ChromeVox</translation>
 <translation id="7569983096843329377">Negre</translation>
-<translation id="757941033127302446">Sessió iniciada</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7590883480672980941">Configuració de l'entrada</translation>
 <translation id="7593891976182323525">Cerca o Maj</translation>
@@ -1131,7 +1129,6 @@ Instal·lació nova</translation>
 <translation id="826107067893790409">Prem Retorn per desbloquejar-lo per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8270450402312105425">{0,plural, =1{Canvia el dispositiu a la versió anterior en el termini d’una hora}other{Canvia el dispositiu a la versió anterior en el termini de # hores}}</translation>
-<translation id="8281279285293265212">No s'ha pogut desar la captura de pantalla de vídeo</translation>
 <translation id="8284362522226889623">Fes lliscar quatre dits cap a l'esquerra per canviar a l'escriptori anterior</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Feble</translation>

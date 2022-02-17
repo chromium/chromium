@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">मूल्य <ph name="MINIMUM" /> पेक्षा मोठे किंवा समान असावे.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">निवडलेले नाही. गटामधील <ph name="COUNT" /> पैकी <ph name="INDEX" /> पर्याय</translation>
 <translation id="5307600278924710095">कृपया '<ph name="ATSIGN" />' मागुन येणारा भाग एंटर करा. '<ph name="INVALIDADDRESS" />' अपूर्ण आहे.</translation>
 <translation id="5334352251556557839">मीडिया प्ले करता आला नाही.</translation>
 <translation id="537648784377940524">आधीची तारीख (<ph name="MIN_DATE_OR_TIME" />) नंतरच्या तारखेपूर्वी (<ph name="MAX_DATE_OR_TIME" />) येणे आवश्यक आहे.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">अन्य...</translation>
 <translation id="6709093583001123835">मूल्य <ph name="VALUE" /> असणे आवश्यक आहे.</translation>
 <translation id="6709570249143506788">खराब प्लेबॅक गुणवत्ता</translation>
+<translation id="6719914554879143100">निवडले. गटामधील <ph name="COUNT" /> पैकी <ph name="INDEX" /> पर्याय</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
 <translation id="6820355525329141109">प्लग-इन लोड करणे शक्य झाले नाही.</translation>
 <translation id="6831465880655513317">सॅच्युरेशन आणि फिकटपणा निवडण्यासाठी द्विमितीय स्लायडरसह असलेले कलर वेल</translation>

@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Значення має бути більшим або дорівнювати <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Пб</translation>
+<translation id="5272594226096532950">Не вибрано. У групі, варіант <ph name="INDEX" /> з <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Введіть частину електронної адреси до знака "<ph name="ATSIGN" />". Електронна адреса "<ph name="INVALIDADDRESS" />" неповна.</translation>
 <translation id="5334352251556557839">Не вдалося відтворити медіавміст.</translation>
 <translation id="537648784377940524">Мінімальна дата (<ph name="MIN_DATE_OR_TIME" />) має передувати максимальній (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Інший...</translation>
 <translation id="6709093583001123835">Укажіть значення <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Низька якість відтворення</translation>
+<translation id="6719914554879143100">Вибрано. У групі, варіант <ph name="INDEX" /> з <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="6820355525329141109">Не вдалося завантажити плагін.</translation>
 <translation id="6831465880655513317">Палітра вибору кольору з двовимірним повзунком для налаштування насиченості й світлості</translation>

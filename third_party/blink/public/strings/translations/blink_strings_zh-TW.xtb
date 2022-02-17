@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">值必須大於或等於 <ph name="MINIMUM" />。</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">未勾選。位於群組中，選項 <ph name="INDEX" /> (共 <ph name="COUNT" /> 個)</translation>
 <translation id="5307600278924710095">請輸入「<ph name="ATSIGN" />」後面的部分。「<ph name="INVALIDADDRESS" />」不是完整值。</translation>
 <translation id="5334352251556557839">無法播放媒體。</translation>
 <translation id="537648784377940524">最小日期 (<ph name="MIN_DATE_OR_TIME" />) 必須早於最大日期 (<ph name="MAX_DATE_OR_TIME" />)。</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">其他...</translation>
 <translation id="6709093583001123835">值必須是 <ph name="VALUE" />。</translation>
 <translation id="6709570249143506788">播放品質不佳</translation>
+<translation id="6719914554879143100">已勾選。位於群組中，選項 <ph name="INDEX" /> (共 <ph name="COUNT" /> 個)</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6820355525329141109">無法載入外掛程式。</translation>
 <translation id="6831465880655513317">附有二維滑桿的色環，用來選取飽和度與亮度</translation>

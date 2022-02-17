@@ -42,7 +42,9 @@
 <translation id="1413240736185167732">Handlingen mislykkedes – Filterfejl</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Jeg har et nøglepar</translation>
+<translation id="1442433966118452622">Billedkilde</translation>
 <translation id="1451536289672181509">Enheden er et tastatur.</translation>
+<translation id="1459693405370120464">Vejr</translation>
 <translation id="1468664791493211953">Tilbud</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> administrerer din enhed og kan muligvis overvåge din aktivitet.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -102,6 +104,7 @@
 <translation id="2212733584906323460">Navneløsning</translation>
 <translation id="2217935453350629363">Nuværende hastighed</translation>
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
+<translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2287186687001756809">Der er ingen tilgængelige billeder. Du kan tilføje billeder ved at gå til <ph name="LINK" /></translation>
@@ -131,6 +134,7 @@
 <translation id="2619761439309613843">Nyt hver dag</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2695514675076754339">Angiv den ottecifrede oplåsningskode</translation>
+<translation id="2712812801627182647">TLS-godkendelsesnøgle</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP fase 2-godkendelse</translation>
 <translation id="2783010256799387990">GENNEMFØRT</translation>
@@ -167,6 +171,7 @@
 <translation id="3268178239013324452">Handlingen mislykkedes – Åben låge</translation>
 <translation id="3283504360622356314">{0,plural, =1{Rediger fil}one{Rediger fil}other{Rediger filer}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Nøgleretning</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
 <translation id="3328783797891415197">Testen kører</translation>
 <translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>
@@ -204,6 +209,7 @@
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3865414814144988605">Opløsning</translation>
 <translation id="387301095347517405">Antal gange dit batteri har gennemgået en fuld opladningscyklus</translation>
+<translation id="3923184630988645767">Dataforbrug</translation>
 <translation id="3924044641767672375">Det anbefales at oprette forbindelse til Wi-Fi for at gøre reparationsprocessen nemmere. Dit netværk gemmes.</translation>
 <translation id="3932043219784172185">Der er ikke nogen forbundne enheder</translation>
 <translation id="3941014780699102620">Der kunne ikke identificeres en host</translation>
@@ -279,6 +285,7 @@
 <translation id="475869545581454722">Chrome OS-adgangskoden er opdateret</translation>
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4782311465517282004">Få definitioner, oversættelser eller enhedsomregninger, når du højreklikker på eller holder tekst nede</translation>
+<translation id="4793756956024303490">Algoritme til komprimering</translation>
 <translation id="4794140124556169553">Systemets ydeevne kan blive påvirket under kørsel af en CPU-test</translation>
 <translation id="4808449224298348341">Udskriftsjobbet <ph name="DOCUMENT_TITLE" /> blev annulleret</translation>
 <translation id="4813136279048157860">Mine billeder</translation>
@@ -291,6 +298,7 @@
 <translation id="484790837831576105">(Android) DNS-oversættelse</translation>
 <translation id="4848429997038228357">KØRER</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}one{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}other{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}}</translation>
+<translation id="4873827928179867585">Algoritme til godkendelse</translation>
 <translation id="4880328057631981605">Navn på adgangspunkt</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Vælg omgående en ny adgangskode</translation>
@@ -308,6 +316,7 @@
 <translation id="4999333166442584738">Skjul rapport</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Se billeder, klokken, vejret og medieoplysninger, når din skærm er inaktiv.</translation>
 <translation id="5039804452771397117">Tillad</translation>
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenavn</translation>
@@ -369,6 +378,7 @@
 <translation id="5784136236926853061">Stor HTTP-forsinkelse</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
 <translation id="583281660410589416">Ukendt</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kode til udbyder til hjem</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5866840822086176774">Meget stærk</translation>
@@ -377,6 +387,7 @@
 <translation id="5916664084637901428">Til</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Dine filer blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Filen blev ikke fundet</translation>
+<translation id="5939518447894949180">Nulstil</translation>
 <translation id="594552776027197022">Generér vilkårligt nøglepar</translation>
 <translation id="5972388717451707488">Opdater maskine</translation>
 <translation id="6037291330010597344">Scannerens dokumentføder er tom. Tilføj dokumenter, og prøv igen.</translation>
@@ -435,6 +446,7 @@
 <translation id="6618744767048954150">Kører</translation>
 <translation id="6620487321149975369">Udskriftsjobs vises i historikken, medmindre de fjernes manuelt</translation>
 <translation id="6643016212128521049">Ryd</translation>
+<translation id="6647510110698214773">Algoritme til kryptering</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
 <translation id="6692996468359469499">Få oplysninger om det, du har markeret</translation>
 <translation id="6704062477274546131">DNS-udførelse</translation>

@@ -42,7 +42,9 @@
 <translation id="1413240736185167732">Hutsegitea - Iragazkiak huts egin du</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Gako pare bat dut</translation>
+<translation id="1442433966118452622">Irudiaren iturburua</translation>
 <translation id="1451536289672181509">Gailua teklatu bat da.</translation>
+<translation id="1459693405370120464">Eguraldia</translation>
 <translation id="1468664791493211953">Eskaintzak</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta baliteke zure jardueren jarraipena egin ahal izatea.</translation>
 <translation id="1478594628797167447">Eskanerra</translation>
@@ -102,6 +104,7 @@
 <translation id="2212733584906323460">Izenen ebazpena</translation>
 <translation id="2217935453350629363">Une honetako abiadura</translation>
 <translation id="2224337661447660594">Ez dago Interneteko konexiorik</translation>
+<translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktibazioaren egoera</translation>
 <translation id="2287186687001756809">Ez dago irudirik. Argazkiak gehitzeko, joan <ph name="LINK" /> helbidera.</translation>
@@ -131,6 +134,7 @@
 <translation id="2619761439309613843">Freskatu egunero</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2695514675076754339">Idatzi zortzi karaktere dituen desblokeatzeko kodea</translation>
+<translation id="2712812801627182647">TLS autentifikazio-gakoa</translation>
 <translation id="2740531572673183784">Ados</translation>
 <translation id="2751739896257479635">EAP 2. fasearen autentifikazioa</translation>
 <translation id="2783010256799387990">GAINDITUTA</translation>
@@ -167,6 +171,7 @@
 <translation id="3268178239013324452">Hutsegitea - Atea irekita dago</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editatu fitxategia}other{Editatu fitxategiak}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Gakoaren norabidea</translation>
 <translation id="3310640316857623290">DNSaren latentzia onartzen den atalasetik askoz gorago dago</translation>
 <translation id="3328783797891415197">Abian da proba</translation>
 <translation id="3340011300870565703">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren eskuineko aurikularrari.</translation>
@@ -204,6 +209,7 @@
 <translation id="3858860766373142691">Izena</translation>
 <translation id="3865414814144988605">Bereizmena</translation>
 <translation id="387301095347517405">Bateriak kargatze-ziklo osoa zenbat aldiz egin duen</translation>
+<translation id="3923184630988645767">Datuen erabilera</translation>
 <translation id="3924044641767672375">Konponketa-prozesua errazteko, wifira konektatzea gomendatzen da. Sarea gorde egingo da.</translation>
 <translation id="3932043219784172185">Ez dago gailurik konektatuta</translation>
 <translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
@@ -279,6 +285,7 @@
 <translation id="475869545581454722">Chrome OS-ko pasahitza eguneratu egin da</translation>
 <translation id="4773299976671772492">Gelditu egin da</translation>
 <translation id="4782311465517282004">Eskuratu definizioak, itzulpenak edo unitate-bihurketak testua eskuineko botoiarekin sakatzean edo sakatuta edukitzean</translation>
+<translation id="4793756956024303490">Konprimatze-algoritmoa</translation>
 <translation id="4794140124556169553">Baliteke PUZaren proba bat egiteak sistemaren errendimenduan eragina izatea</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> inprimatze-lana bertan behera utzi da</translation>
 <translation id="4813136279048157860">Nire irudiak</translation>
@@ -291,6 +298,7 @@
 <translation id="484790837831576105">DNS bidezko ebazpena (Android)</translation>
 <translation id="4848429997038228357">ABIAN</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} saiaketa gelditzen da}other{<ph name="ERROR_MESSAGE" /> {0} saiakera gelditzen dira}}</translation>
+<translation id="4873827928179867585">Autentifikazio-algoritmoa</translation>
 <translation id="4880328057631981605">Sarbide-puntuaren izena</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Aukeratu beste bat berehala</translation>
@@ -308,6 +316,7 @@
 <translation id="4999333166442584738">Ezkutatu txostena</translation>
 <translation id="500920857929044050">Gelditu proba</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Pantaila inaktibo dagoenean, erakutsi argazkiak, ordua, eguraldia eta albisteak.</translation>
 <translation id="5039804452771397117">Baimendu</translation>
 <translation id="5049856988445523908">SIMa blokeatuta dago (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Taldearen izena</translation>
@@ -370,6 +379,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5784136236926853061">HTTP eskaeren latentzia luzea da</translation>
 <translation id="5832805196449965646">Gehitu pertsona bat</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Hasierako hornitzailearen kodea</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5866840822086176774">Oso indartsua</translation>
@@ -378,6 +388,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fitxategia eskaneatu da, eta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> karpetan gorde.}other{Fitxategiak eskaneatu dira, eta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> karpetan gorde.}}</translation>
 <translation id="5931523347251946569">Ez da aurkitu fitxategia</translation>
+<translation id="5939518447894949180">Berrezarri</translation>
 <translation id="594552776027197022">Sortu ausazko gako pare bat</translation>
 <translation id="5972388717451707488">Eguneratu motorra</translation>
 <translation id="6037291330010597344">Eskanerraren dokumentu-elikatzailea hutsik dago. Gehitu dokumentuak eta saiatu berriro.</translation>
@@ -436,6 +447,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6618744767048954150">Abian</translation>
 <translation id="6620487321149975369">Inprimatze-lanak historian agertuko dira, eskuz kendu ezean</translation>
 <translation id="6643016212128521049">Garbitu</translation>
+<translation id="6647510110698214773">Enkriptatze-algoritmoa</translation>
 <translation id="6657585470893396449">Pasahitza</translation>
 <translation id="6692996468359469499">Lortu hautatutakoari buruzko informazioa</translation>
 <translation id="6704062477274546131">DNS bidezko ebazpena</translation>

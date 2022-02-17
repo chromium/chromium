@@ -42,7 +42,9 @@
 <translation id="1413240736185167732">Échec : problème de filtre</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">J'ai une biclé</translation>
+<translation id="1442433966118452622">Source de l'image</translation>
 <translation id="1451536289672181509">L'appareil est un clavier.</translation>
+<translation id="1459693405370120464">Météo</translation>
 <translation id="1468664791493211953">Offres</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gère cet appareil et pourrait surveiller votre activité sur celui-ci.</translation>
 <translation id="1478594628797167447">Numériseur</translation>
@@ -102,6 +104,7 @@
 <translation id="2212733584906323460">Résolution des noms</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
 <translation id="2224337661447660594">Aucune connexion Internet</translation>
+<translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">État de l'activation</translation>
 <translation id="2287186687001756809">Aucune image proposée. Pour ajouter des photos, accédez au site <ph name="LINK" /></translation>
@@ -131,6 +134,7 @@
 <translation id="2619761439309613843">Actualiser tous les jours</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2695514675076754339">Entrer le code de déverrouillage à 8 caractères</translation>
+<translation id="2712812801627182647">Clé d'authentification TLS</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
 <translation id="2783010256799387990">TEST RÉUSSI</translation>
@@ -167,6 +171,7 @@
 <translation id="3268178239013324452">Échec : porte de l'imprimante ouverte</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifier le fichier}one{Modifier le fichier}other{Modifier les fichiers}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Direction de la clé</translation>
 <translation id="3310640316857623290">La latence du DNS dépasse le seuil acceptable de manière considérable</translation>
 <translation id="3328783797891415197">Exécution du test en cours…</translation>
 <translation id="3340011300870565703">Le niveau de la pile de l'écouteur droit est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -204,6 +209,7 @@
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="387301095347517405">Le nombre de cycles de recharge complets effectués par la pile de votre appareil</translation>
+<translation id="3923184630988645767">Utilisation de données</translation>
 <translation id="3924044641767672375">Il est recommandé de se connecter au réseau Wi-Fi pour faciliter le processus de réparation. Votre réseau sera enregistré.</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
@@ -279,6 +285,7 @@
 <translation id="475869545581454722">Mot de passe de Chrome OS mis à jour</translation>
 <translation id="4773299976671772492">Arrêté</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
+<translation id="4793756956024303490">Algorithme de compression</translation>
 <translation id="4794140124556169553">Effectuer un test de processeur peut avoir un impact sur les performances de votre système</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée : <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Mes images</translation>
@@ -291,6 +298,7 @@
 <translation id="484790837831576105">Résolution DNS (Android)</translation>
 <translation id="4848429997038228357">EXÉCUTION EN COURS…</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}one{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}other{<ph name="ERROR_MESSAGE" /> Il reste {0} tentatives}}</translation>
+<translation id="4873827928179867585">Algorithme d'authentification</translation>
 <translation id="4880328057631981605">Nom du point d'accès</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Choisissez-en un immédiatement</translation>
@@ -308,6 +316,7 @@
 <translation id="4999333166442584738">Masquer le rapport</translation>
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Quand l'écran est en veille, vous pouvez afficher des photos, l'heure, la météo et des informations multimédias.</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5049856988445523908">Carte SIM verrouillée (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom du groupe</translation>
@@ -370,6 +379,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5784136236926853061">Latence HTTP élevée</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="583281660410589416">Inconnu</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Code de propriétaire</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5866840822086176774">Très fort</translation>
@@ -378,6 +388,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vos fichiers ont été numérisés et enregistrés dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fichier introuvable</translation>
+<translation id="5939518447894949180">Recommencer</translation>
 <translation id="594552776027197022">Générer une biclé aléatoire</translation>
 <translation id="5972388717451707488">Mettre à jour le moteur</translation>
 <translation id="6037291330010597344">Le chargeur de documents du numériseur est vide. Ajoutez des documents, puis réessayez.</translation>
@@ -436,6 +447,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6618744767048954150">En cours…</translation>
 <translation id="6620487321149975369">Les tâches d'impression s'afficheront dans l'historique, sauf si vous les retirez manuellement</translation>
 <translation id="6643016212128521049">Effacer</translation>
+<translation id="6647510110698214773">Algorithme de chiffrement</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6692996468359469499">Obtenir de l'information sur votre sélection</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>

@@ -44,6 +44,7 @@
 <translation id="142228117786570094">Saya mempunyai pasangan kunci</translation>
 <translation id="1442433966118452622">Sumber imej</translation>
 <translation id="1451536289672181509">Peranti ialah papan kekunci.</translation>
+<translation id="1459693405370120464">Cuaca</translation>
 <translation id="1468664791493211953">Tawaran</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> mengurus peranti ini dan mungkin dapat memantau aktiviti anda.</translation>
 <translation id="1478594628797167447">Pengimbas</translation>
@@ -103,6 +104,7 @@
 <translation id="2212733584906323460">Namakan Peleraian</translation>
 <translation id="2217935453350629363">Kelajuan semasa</translation>
 <translation id="2224337661447660594">Tiada Internet</translation>
+<translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Status pengaktifan</translation>
 <translation id="2287186687001756809">Tiada imej tersedia. Untuk menambah foto, lawati <ph name="LINK" /></translation>
@@ -207,6 +209,7 @@
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3865414814144988605">Peleraian</translation>
 <translation id="387301095347517405">Bilangan kali bateri anda telah melalui kitaran pengecasan penuh</translation>
+<translation id="3923184630988645767">Penggunaan data</translation>
 <translation id="3924044641767672375">Anda disyorkan supaya menyambung kepada Wi-Fi untuk memudahkan lagi proses pembaikan. Rangkaian anda akan disimpan.</translation>
 <translation id="3932043219784172185">Tiada peranti disambungkan</translation>
 <translation id="3941014780699102620">Gagal untuk menyelesaikan hos</translation>
@@ -376,6 +379,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5784136236926853061">Kependaman HTTP tinggi</translation>
 <translation id="5832805196449965646">Tambah Orang</translation>
 <translation id="583281660410589416">Tidak diketahui</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kod penyedia tempatan</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
 <translation id="5866840822086176774">Sangat kuat</translation>
@@ -384,6 +388,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fail tidak dijumpai</translation>
+<translation id="5939518447894949180">Tetapkan semula</translation>
 <translation id="594552776027197022">Jana pasangan kunci rawak</translation>
 <translation id="5972388717451707488">Enjin Kemaskinian</translation>
 <translation id="6037291330010597344">Penyuap dokumen pengimbas kosong. Tambah dokumen dan cuba lagi.</translation>

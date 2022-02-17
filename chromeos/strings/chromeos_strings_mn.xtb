@@ -44,6 +44,7 @@
 <translation id="142228117786570094">Надад хос түлхүүр байгаа</translation>
 <translation id="1442433966118452622">Зургийн эх сурвалж</translation>
 <translation id="1451536289672181509">Төхөөрөмж нь гар байна.</translation>
+<translation id="1459693405370120464">Цаг агаар</translation>
 <translation id="1468664791493211953">Саналууд</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд таны үйл ажиллагааг хянах боломжтой байж болзошгүй.</translation>
 <translation id="1478594628797167447">Скан хийгч</translation>
@@ -103,6 +104,7 @@
 <translation id="2212733584906323460">Нэр тодорхойлох</translation>
 <translation id="2217935453350629363">Одоогийн хурд</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
+<translation id="2230005943220647148">Цельс</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Идэвхжүүлэх статус</translation>
 <translation id="2287186687001756809">Боломжтой зураг байхгүй. Зураг нэмэхийн тулд <ph name="LINK" /> руу очно уу</translation>
@@ -207,6 +209,7 @@
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="3865414814144988605">Нягтрал</translation>
 <translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
+<translation id="3923184630988645767">Дата ашиглалт</translation>
 <translation id="3924044641767672375">Засварын явцыг илүү хялбар болгохын тулд Wi-Fi-д холбогдохыг зөвлөж байна. Таны сүлжээг хадгална.</translation>
 <translation id="3932043219784172185">Холбогдсон төхөөрөмж алга</translation>
 <translation id="3941014780699102620">Хостыг шийдвэрлэж чадсангүй</translation>
@@ -376,6 +379,7 @@
 <translation id="5784136236926853061">HTTP-н өндөр хоцролт</translation>
 <translation id="5832805196449965646">Хүн нэм</translation>
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
+<translation id="5843706793424741864">Фаренгейт</translation>
 <translation id="5849570051105887917">Нүүр хуудас бэлтгэх код</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="5866840822086176774">Маш хүчтэй</translation>
@@ -384,6 +388,7 @@
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Таны файлыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}other{Таны файлуудыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}}</translation>
 <translation id="5931523347251946569">Файл олдсонгүй</translation>
+<translation id="5939518447894949180">Дахин сэргээх</translation>
 <translation id="594552776027197022">Санамсаргүй хос түлхүүр үүсгэх</translation>
 <translation id="5972388717451707488">Системийг шинэчлэх</translation>
 <translation id="6037291330010597344">Сканнерын документ дамжуулах тавиур хоосон байна. Документ нэмээд, дахин оролдоно уу.</translation>

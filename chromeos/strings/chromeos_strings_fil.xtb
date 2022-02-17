@@ -44,6 +44,7 @@
 <translation id="142228117786570094">May keypair ako</translation>
 <translation id="1442433966118452622">Source ng larawan</translation>
 <translation id="1451536289672181509">Keyboard ang device.</translation>
+<translation id="1459693405370120464">Lagay ng Panahon</translation>
 <translation id="1468664791493211953">Mga Alok</translation>
 <translation id="1476467821656042872">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at puwede nitong masubaybayan ang iyong aktibidad.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -103,6 +104,7 @@
 <translation id="2212733584906323460">Name Resolution</translation>
 <translation id="2217935453350629363">Kasalukuyang bilis</translation>
 <translation id="2224337661447660594">Walang internet</translation>
+<translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Status ng pag-activate</translation>
 <translation id="2287186687001756809">Walang available na larawan. Para magdagdag ng mga larawan, pumunta sa <ph name="LINK" /></translation>
@@ -207,6 +209,7 @@
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="387301095347517405">Ang dami ng beses na na-full charge ang iyong baterya</translation>
+<translation id="3923184630988645767">Paggamit ng data</translation>
 <translation id="3924044641767672375">Inirerekomenda ang pagkonekta sa Wi-Fi para mas mapadali ang proseso ng pag-aayos. Ise-save ang iyong network.</translation>
 <translation id="3932043219784172185">Walang nakakonektang device</translation>
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
@@ -376,6 +379,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5784136236926853061">Mataas na latency ng HTTP</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Home provider code</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5866840822086176774">Napakalakas</translation>
@@ -384,6 +388,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Na-scan at na-save na ang iyong file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Hindi nahanap ang file</translation>
+<translation id="5939518447894949180">I-reset</translation>
 <translation id="594552776027197022">Bumuo ng random na keypair</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Walang laman ang document feeder ng scanner. Magdagdag ng mga dokumento at subukan ulit.</translation>

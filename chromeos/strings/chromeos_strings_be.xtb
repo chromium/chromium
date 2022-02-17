@@ -42,7 +42,9 @@
 <translation id="1413240736185167732">Збой: фільтр не працуе</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">У мяне ёсць пара ключоў</translation>
+<translation id="1442433966118452622">Крыніца відарыса</translation>
 <translation id="1451536289672181509">Гэта клавіятура.</translation>
+<translation id="1459693405370120464">Надвор'е</translation>
 <translation id="1468664791493211953">Прапановы</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> кіруе гэтай прыладай і можа адсочваць вашы дзеянні.</translation>
 <translation id="1478594628797167447">Сканер</translation>
@@ -102,6 +104,7 @@
 <translation id="2212733584906323460">Пераўтварэнне імён</translation>
 <translation id="2217935453350629363">Бягучая хуткасць</translation>
 <translation id="2224337661447660594">Няма падключэння да інтэрнэту</translation>
+<translation id="2230005943220647148">Шкала Цэльсія</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Стан актывацыі</translation>
 <translation id="2287186687001756809">Відарыс недаступны. Дадаць фота можна з сайта <ph name="LINK" /></translation>
@@ -131,6 +134,7 @@
 <translation id="2619761439309613843">Штодзённае абнаўленне</translation>
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2695514675076754339">Увядзіце 8-значны код для разблакіроўкі</translation>
+<translation id="2712812801627182647">Ключ аўтэнтыфікацыі TLS</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Фаза 2 аўтэнтыфікацыі EAP</translation>
 <translation id="2783010256799387990">ПРОЙДЗЕНА</translation>
@@ -167,6 +171,7 @@
 <translation id="3268178239013324452">Збой: дзверцы прынтара адкрыты</translation>
 <translation id="3283504360622356314">{0,plural, =1{Змяніць файл}one{Змяніць файлы}few{Змяніць файлы}many{Змяніць файлы}other{Змяніць файлы}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
+<translation id="3291996639387199448">Кірунак ключа</translation>
 <translation id="3310640316857623290">Затрымка DNS значна перавышае дапушчальнае парогавае значэнне</translation>
 <translation id="3328783797891415197">Выконваецца праверка</translation>
 <translation id="3340011300870565703">Узровень зараду акумулятара ў правым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -204,6 +209,7 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3865414814144988605">Раздзяляльнасць</translation>
 <translation id="387301095347517405">Колькасць поўных пройдзеных цыклаў зарадкі акумулятара</translation>
+<translation id="3923184630988645767">Выкарыстанне трафіка</translation>
 <translation id="3924044641767672375">Для спрашчэння працэсу рамонту рэкамендуем падключыцца да Wi-Fi. Ваша сетка будзе захавана.</translation>
 <translation id="3932043219784172185">Няма падключаных прылад</translation>
 <translation id="3941014780699102620">Не ўдалося супаставіць хост</translation>
@@ -279,6 +285,7 @@
 <translation id="475869545581454722">Пароль Chrome OS зменены</translation>
 <translation id="4773299976671772492">Спынена</translation>
 <translation id="4782311465517282004">Атрымлівайце азначэнні, пераклады або пераводзьце адзінкі вымярэння: для гэтага вам трэба дакрануцца да тэксту і ўтрымліваць палец або націснуць на тэкст правай кнопкай мышы.</translation>
+<translation id="4793756956024303490">Алгарытм сціскання</translation>
 <translation id="4794140124556169553">Выкананне праверкі ЦП можа паўплываць на прадукцыйнасць сістэмы</translation>
 <translation id="4808449224298348341">Заданне друку "<ph name="DOCUMENT_TITLE" />" скасавана</translation>
 <translation id="4813136279048157860">Мае відарысы</translation>
@@ -291,6 +298,7 @@
 <translation id="484790837831576105">(Android) DNS-пераўтварэнне</translation>
 <translation id="4848429997038228357">ВЫКОНВАЕЦЦА</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}many{<ph name="ERROR_MESSAGE" /> Засталося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}}</translation>
+<translation id="4873827928179867585">Алгарытм аўтэнтыфікацыі</translation>
 <translation id="4880328057631981605">Назва пункта доступу</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Неадкладна задайце новы</translation>
@@ -308,6 +316,7 @@
 <translation id="4999333166442584738">Схаваць справаздачу</translation>
 <translation id="500920857929044050">Спыніць праверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Паказваць фота, час, надвор'е і інфармацыю пра медыяфайлы, калі экран неактыўны.</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5049856988445523908">SIM-карта заблакіравана (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Назва групы</translation>
@@ -370,6 +379,7 @@
 <translation id="5784136236926853061">Вялікая затрымка HTTP-запытаў</translation>
 <translation id="5832805196449965646">Дадаць карыстальніка</translation>
 <translation id="583281660410589416">Невядома</translation>
+<translation id="5843706793424741864">Шкала Фарэнгейта</translation>
 <translation id="5849570051105887917">Код аператара</translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5866840822086176774">Вельмі моцны</translation>
@@ -378,6 +388,7 @@
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Сканіраванне завершана. Файл захаваны ў папку <ph name="LINK_BEGIN" />"<ph name="FOLDER_NAME" />"<ph name="LINK_END" />.}one{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файл не знойдзены</translation>
+<translation id="5939518447894949180">Скінуць</translation>
 <translation id="594552776027197022">Стварэнне выпадковай пары ключоў</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Прыстасаванне сканера для падачы дакументаў не загружана. Пакладзіце ў яго дакументы і паўтарыце спробу.</translation>
@@ -436,6 +447,7 @@
 <translation id="6618744767048954150">Выконваецца</translation>
 <translation id="6620487321149975369">Заданні друку будуць паказвацца ў гісторыі, пакуль яны не будуць выдалены ўручную</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
+<translation id="6647510110698214773">Алгарытм шыфравання</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6692996468359469499">Атрыманне інфармацыі, звязанай з вылучаным вамі</translation>
 <translation id="6704062477274546131">Супастаўленне імён DNS</translation>

@@ -42,7 +42,9 @@
 <translation id="1413240736185167732">Mistókst – bilun í síu</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ég er með lyklasett</translation>
+<translation id="1442433966118452622">Uppruni myndar</translation>
 <translation id="1451536289672181509">Tækið er lyklaborð.</translation>
+<translation id="1459693405370120464">Veður</translation>
 <translation id="1468664791493211953">Tilboð</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> hefur umsjón með þessu tæki og getur hugsanlega fylgst með því sem þú gerir.</translation>
 <translation id="1478594628797167447">Skanni</translation>
@@ -102,6 +104,7 @@
 <translation id="2212733584906323460">Sundurgreining heita</translation>
 <translation id="2217935453350629363">Núverandi hraði</translation>
 <translation id="2224337661447660594">Engin nettenging</translation>
+<translation id="2230005943220647148">Celsíus</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Virkjunarstaða</translation>
 <translation id="2287186687001756809">Engin mynd tiltæk. Opnaðu <ph name="LINK" /> til að bæta við myndum</translation>
@@ -131,6 +134,7 @@
 <translation id="2619761439309613843">Uppfæra daglega</translation>
 <translation id="2620436844016719705">Kerfi</translation>
 <translation id="2695514675076754339">Sláðu inn átta stafa kóðann til að taka úr lás</translation>
+<translation id="2712812801627182647">TLS-auðkenningarlykill</translation>
 <translation id="2740531572673183784">Í lagi</translation>
 <translation id="2751739896257479635">Annars stigs EAP-auðkenning</translation>
 <translation id="2783010256799387990">STÓÐST</translation>
@@ -167,6 +171,7 @@
 <translation id="3268178239013324452">Mistókst – hlíf er opin</translation>
 <translation id="3283504360622356314">{0,plural, =1{Breyta skrá}one{Breyta skrám}other{Breyta skrám}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Lykilstefna</translation>
 <translation id="3310640316857623290">DNS-biðtími er töluvert yfir leyfðum þröskuldi</translation>
 <translation id="3328783797891415197">Próf í gangi</translation>
 <translation id="3340011300870565703">Rafhleðsla hægra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -204,6 +209,7 @@
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3865414814144988605">Upplausn</translation>
 <translation id="387301095347517405">Fjöldi skipta sem rafhlaðan hefur tæmst og verið fullhlaðin aftur</translation>
+<translation id="3923184630988645767">Gagnanotkun</translation>
 <translation id="3924044641767672375">Ráðlagt er að tengjast Wi-Fi til að einfalda viðgerðarferlið. Netkerfið þitt verður vistað.</translation>
 <translation id="3932043219784172185">Ekkert tæki tengt</translation>
 <translation id="3941014780699102620">Ekki tókst að ákvarða hýsil</translation>
@@ -279,6 +285,7 @@
 <translation id="475869545581454722">Aðgangsorð Chrome OS var uppfært</translation>
 <translation id="4773299976671772492">Stöðvað</translation>
 <translation id="4782311465517282004">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða heldur texta inni</translation>
+<translation id="4793756956024303490">Þjöppunarreiknirit</translation>
 <translation id="4794140124556169553">Keyrsla örgjörvaprófs kann að hafa áhrif á afköst kerfisins</translation>
 <translation id="4808449224298348341">Hætt við prentverkið <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">Myndirnar mínar</translation>
@@ -291,6 +298,7 @@
 <translation id="484790837831576105">(Android) DNS-lausn</translation>
 <translation id="4848429997038228357">Í GANGI</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}one{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}other{<ph name="ERROR_MESSAGE" /> {0} tilraunir eftir}}</translation>
+<translation id="4873827928179867585">Auðkenningarreiknirit</translation>
 <translation id="4880328057631981605">Heiti aðgangsstaðar</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Veldu nýtt án tafar</translation>
@@ -308,6 +316,7 @@
 <translation id="4999333166442584738">Fela skýrslu</translation>
 <translation id="500920857929044050">Stöðva próf</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Sjáðu myndir, klukku, veður og upplýsingar úr fjölmiðlum þegar skjárinn er aðgerðalaus.</translation>
 <translation id="5039804452771397117">Leyfa</translation>
 <translation id="5049856988445523908">SIM læst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Heiti hóps</translation>
@@ -370,6 +379,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5784136236926853061">Langur HTTP-biðtími</translation>
 <translation id="5832805196449965646">Bæta notanda við</translation>
 <translation id="583281660410589416">Óþekkt</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kóði heimaveitu</translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="5866840822086176774">Mjög mikill</translation>
@@ -378,6 +388,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skráin var skönnuð og vistuð í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Skráin fannst ekki</translation>
+<translation id="5939518447894949180">Endurstilla</translation>
 <translation id="594552776027197022">Búa til handahófsvalið lyklasett</translation>
 <translation id="5972388717451707488">Uppfæra vél</translation>
 <translation id="6037291330010597344">Skjalamatarinn á skannanum er tómur. Bættu við skjölum og reyndu aftur.</translation>
@@ -436,6 +447,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6618744767048954150">Í gangi</translation>
 <translation id="6620487321149975369">Prentverk birtast í ferli nema þau séu fjarlægð handvirkt</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
+<translation id="6647510110698214773">Dulkóðunarreiknirit</translation>
 <translation id="6657585470893396449">Aðgangsorð</translation>
 <translation id="6692996468359469499">Fá upplýsingar í tengslum við val þitt</translation>
 <translation id="6704062477274546131">DNS-upplausn</translation>

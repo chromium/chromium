@@ -44,6 +44,7 @@
 <translation id="142228117786570094">Ik heb een sleutelpaar</translation>
 <translation id="1442433966118452622">Afbeeldingsbron</translation>
 <translation id="1451536289672181509">Apparaat is een toetsenbord.</translation>
+<translation id="1459693405370120464">Weer</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -103,6 +104,7 @@
 <translation id="2212733584906323460">Naamresolutie</translation>
 <translation id="2217935453350629363">Huidige snelheid</translation>
 <translation id="2224337661447660594">Geen internet</translation>
+<translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Activeringsstatus</translation>
 <translation id="2287186687001756809">Geen afbeelding beschikbaar. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
@@ -207,6 +209,7 @@
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3865414814144988605">Resolutie</translation>
 <translation id="387301095347517405">Het aantal keren dat de batterij een volledige oplaadcyclus heeft doorlopen</translation>
+<translation id="3923184630988645767">Datagebruik</translation>
 <translation id="3924044641767672375">Verbinding met wifi wordt aanbevolen om het reparatieproces makkelijker te maken. Je netwerk wordt opgeslagen.</translation>
 <translation id="3932043219784172185">Geen apparaat aangesloten</translation>
 <translation id="3941014780699102620">Kan host niet omzetten</translation>
@@ -376,6 +379,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5784136236926853061">Hoge HTTP-vertraging</translation>
 <translation id="5832805196449965646">Persoon toevoegen</translation>
 <translation id="583281660410589416">Onbekend</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Code thuisprovider</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5866840822086176774">Zeer sterk</translation>
@@ -384,6 +388,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Je bestand is gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Je bestanden zijn gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Bestand niet gevonden</translation>
+<translation id="5939518447894949180">Resetten</translation>
 <translation id="594552776027197022">Willekeurig sleutelpaar genereren</translation>
 <translation id="5972388717451707488">Engine updaten</translation>
 <translation id="6037291330010597344">De documentinvoer van de scanner is leeg. Voeg documenten toe en probeer het opnieuw.</translation>

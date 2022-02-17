@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Стойността трябва да е по-голяма или равна на <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
+<translation id="5272594226096532950">Без отметка. В група, опция <ph name="INDEX" /> от <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Моля, въведете текст преди „<ph name="ATSIGN" />“. „<ph name="INVALIDADDRESS" />“ е непълно.</translation>
 <translation id="5334352251556557839">Мултимедийното съдържание не може да бъде възпроизведено.</translation>
 <translation id="537648784377940524">Най-ранната дата (<ph name="MIN_DATE_OR_TIME" />) трябва да е преди най-късната (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Друг...</translation>
 <translation id="6709093583001123835">Стойността трябва да е <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Лошо качество на възпроизвеждането</translation>
+<translation id="6719914554879143100">С отметка. В група, опция <ph name="INDEX" /> от <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6820355525329141109">Приставката не можа да се зареди.</translation>
 <translation id="6831465880655513317">Цветова контрола с плъзгач в две измерения за избор на наситеност и яркост</translation>

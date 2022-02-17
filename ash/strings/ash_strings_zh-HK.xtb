@@ -348,7 +348,6 @@
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="324366796737464147">消噪</translation>
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
-<translation id="3252248118006571685">如要解鎖 Chromebook，請開啟手機的藍牙功能</translation>
 <translation id="3255483164551725916">你可以做咩嘢？</translation>
 <translation id="3269597722229482060">按滑鼠右鍵</translation>
 <translation id="3289674678944039601">正在透過電源適配器充電</translation>
@@ -407,6 +406,7 @@
 <translation id="3571734092741541777">設定</translation>
 <translation id="3573179567135747900">改回「<ph name="FROM_LOCALE" />」(需要重新啟動)</translation>
 <translation id="3576141592585647168">變更時區</translation>
+<translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3580650856351781466">正在下載語音檔案</translation>
 <translation id="3593039967545720377">如要存取剪貼簿記錄，按下<ph name="SHORTCUT_KEY_NAME" /> + V 鍵即可查看剪貼簿。複製項目即可開始使用。</translation>
 <translation id="3593646411856133110">向上滑動並按住螢幕，即可查看開啟的應用程式</translation>
@@ -615,6 +615,7 @@
 <translation id="485634149294284819">輸入鍵盤選單</translation>
 <translation id="4860284199500934869">請檢查網路連線以下載「<ph name="FILENAME" />」</translation>
 <translation id="486056901304535126">系統稍後將再次嘗試下載，語音會暫時傳送給 Google 處理，直至下載完成。</translation>
+<translation id="4864369630010738180">正在登入…</translation>
 <translation id="4868492592575313542">已啟用</translation>
 <translation id="4872237917498892622">Alt + 搜尋鍵或 Shift 鍵</translation>
 <translation id="4881695831933465202">開啟</translation>
@@ -685,7 +686,6 @@
 <translation id="5322611492012084517">找不到手機</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5329548388331921293">正在連線…</translation>
-<translation id="5330201449517439522">輕按或按一下即可繼續使用</translation>
 <translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右邊)</translation>
 <translation id="5352250171825660495">深色主題背景已開啟</translation>
@@ -898,7 +898,6 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="6801878137098616817">最近編輯過</translation>
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
-<translation id="6811454077060061666">無法使用「Google 雲端硬碟」桌面版</translation>
 <translation id="6818242057446442178">往後一個字詞</translation>
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6827049576281411231">閂活動面板</translation>
@@ -1015,7 +1014,6 @@
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致非預期的行為。後續的通知、視窗和對話框可能會在不同的桌面上分開顯示。</translation>
 <translation id="7569509451529460200">已啟用點字和 ChromeVox</translation>
 <translation id="7569983096843329377">黑色</translation>
-<translation id="757941033127302446">已登入</translation>
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
@@ -1129,7 +1127,6 @@
 <translation id="826107067893790409">㩒 Enter 掣就可以解鎖 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8270450402312105425">{0,plural, =1{在 1 小時內將裝置回復為先前的版本}other{在 # 小時內將裝置回復為先前的版本}}</translation>
-<translation id="8281279285293265212">無法儲存螢幕截圖</translation>
 <translation id="8284362522226889623">請用四隻手指向左滑動以切換至上一個桌面</translation>
 <translation id="828708037801473432">已關閉</translation>
 <translation id="8297006494302853456">弱</translation>

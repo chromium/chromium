@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Değer <ph name="MINIMUM" /> veya daha büyük olmalıdır.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">İşaretlenmedi. Gruptaki <ph name="COUNT" /> seçenekten <ph name="INDEX" />.</translation>
 <translation id="5307600278924710095">Lütfen başına "<ph name="ATSIGN" />" ekleyin. "<ph name="INVALIDADDRESS" />" adresi eksik.</translation>
 <translation id="5334352251556557839">Medya oynatılamıyor.</translation>
 <translation id="537648784377940524">Minimum tarih (<ph name="MIN_DATE_OR_TIME" />), Maksimum tarihten (<ph name="MAX_DATE_OR_TIME" />) önce gelmelidir.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Diğer...</translation>
 <translation id="6709093583001123835">Değer, <ph name="VALUE" /> olmalıdır.</translation>
 <translation id="6709570249143506788">Oynatma kalitesi kötü</translation>
+<translation id="6719914554879143100">İşaretlendi. Gruptaki <ph name="COUNT" /> seçenekten <ph name="INDEX" />.</translation>
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6820355525329141109">Eklenti yüklenemedi.</translation>
 <translation id="6831465880655513317">Renk doygunluğunu ve açıklığını seçmek için iki boyutlu kaydırma çubuğu olan renk çemberi</translation>

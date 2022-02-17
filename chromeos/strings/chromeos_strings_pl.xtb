@@ -42,7 +42,9 @@
 <translation id="1413240736185167732">Niepowodzenie – błąd filtra</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Mam parę kluczy</translation>
+<translation id="1442433966118452622">Źródło obrazu</translation>
 <translation id="1451536289672181509">Urządzenie to klawiatura.</translation>
+<translation id="1459693405370120464">Pogoda</translation>
 <translation id="1468664791493211953">Oferty</translation>
 <translation id="1476467821656042872">Tym urządzeniem zarządza <ph name="MANAGER" />. Może też monitorować Twoją aktywność.</translation>
 <translation id="1478594628797167447">Skanery</translation>
@@ -102,6 +104,7 @@
 <translation id="2212733584906323460">Rozwiązanie nazwy</translation>
 <translation id="2217935453350629363">Obecna szybkość</translation>
 <translation id="2224337661447660594">Brak internetu</translation>
+<translation id="2230005943220647148">Stopnie Celsjusza</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stan aktywacji</translation>
 <translation id="2287186687001756809">Brak dostępnych obrazów. Aby dodać zdjęcia, wejdź na <ph name="LINK" /></translation>
@@ -131,6 +134,7 @@
 <translation id="2619761439309613843">Codziennie nowa</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2695514675076754339">Wpisz 8-znakowy kod odblokowania</translation>
+<translation id="2712812801627182647">Klucz uwierzytelniania TLS</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Uwierzytelnianie EAP Phase 2</translation>
 <translation id="2783010256799387990">ZALICZONY</translation>
@@ -167,6 +171,7 @@
 <translation id="3268178239013324452">Niepowodzenie – otwarte drzwiczki drukarki</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edytuj plik}few{Edytuj pliki}many{Edytuj pliki}other{Edytuj pliki}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Kierunek klucza</translation>
 <translation id="3310640316857623290">Opóźnienie DNS znacznie przekracza dopuszczalny próg</translation>
 <translation id="3328783797891415197">Test w toku</translation>
 <translation id="3340011300870565703">Poziom naładowania baterii prawej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -204,6 +209,7 @@
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3865414814144988605">Rozdzielczość</translation>
 <translation id="387301095347517405">Liczba wykonanych pełnych cykli ładowania baterii</translation>
+<translation id="3923184630988645767">Transmisja danych</translation>
 <translation id="3924044641767672375">Aby ułatwić proces naprawy, zalecamy połączenie się przez Wi-Fi. Oszczędzisz dane sieciowe.</translation>
 <translation id="3932043219784172185">Brak podłączonych urządzeń</translation>
 <translation id="3941014780699102620">Nie udało się znaleźć hosta</translation>
@@ -279,6 +285,7 @@
 <translation id="475869545581454722">Hasło do Chrome OS zostało zaktualizowane</translation>
 <translation id="4773299976671772492">Zatrzymano</translation>
 <translation id="4782311465517282004">Kliknij tekst prawym przyciskiem lub naciśnij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek</translation>
+<translation id="4793756956024303490">Algorytm kompresji</translation>
 <translation id="4794140124556169553">Uruchomienie testu procesora może wpłynąć na wydajność systemu</translation>
 <translation id="4808449224298348341">Zadanie drukowania <ph name="DOCUMENT_TITLE" /> zostało anulowane</translation>
 <translation id="4813136279048157860">Moje obrazy</translation>
@@ -291,6 +298,7 @@
 <translation id="484790837831576105">(Android) Rozpoznawanie nazw DNS</translation>
 <translation id="4848429997038228357">W TOKU</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Pozostała {0} próba.}few{<ph name="ERROR_MESSAGE" /> Pozostały {0} próby.}many{<ph name="ERROR_MESSAGE" /> Pozostało {0} prób.}other{<ph name="ERROR_MESSAGE" /> Pozostało {0} próby.}}</translation>
+<translation id="4873827928179867585">Algorytm uwierzytelniania</translation>
 <translation id="4880328057631981605">Nazwa punktu dostępu</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Jak najszybciej wybierz nowe.</translation>
@@ -308,6 +316,7 @@
 <translation id="4999333166442584738">Ukryj raport</translation>
 <translation id="500920857929044050">Zatrzymaj test</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Kiedy ekran jest nieaktywny, wyświetlają się zdjęcia, godzina, pogoda i wiadomości.</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
 <translation id="5049856988445523908">Karta SIM zablokowana (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nazwa grupy</translation>
@@ -370,6 +379,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5784136236926853061">Duże opóźnienie HTTP</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
 <translation id="583281660410589416">Nieznany</translation>
+<translation id="5843706793424741864">Stopnie Fahrenheita</translation>
 <translation id="5849570051105887917">Kod operatora macierzystego</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5866840822086176774">Bardzo silny</translation>
@@ -378,6 +388,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Plik został zeskanowany i zapisany w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Nie znaleziono pliku</translation>
+<translation id="5939518447894949180">Resetuj</translation>
 <translation id="594552776027197022">Wygeneruj losową parę kluczy</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Podajnik dokumentów w skanerze jest pusty. Dodaj dokumenty i spróbuj ponownie.</translation>
@@ -436,6 +447,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6618744767048954150">W toku</translation>
 <translation id="6620487321149975369">Zadania drukowania będą widoczne w historii, dopóki ich nie usuniesz</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
+<translation id="6647510110698214773">Algorytm szyfrowania</translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6692996468359469499">Uzyskiwanie informacji związanych z zaznaczoną treścią</translation>
 <translation id="6704062477274546131">Rozwiązywanie nazw DNS</translation>

@@ -250,7 +250,6 @@
 <translation id="3207960819495026254">ဘွတ်မက်လုပ်ပြီး၏</translation>
 <translation id="3224641773458703735">စကားဝှက်များကို တင်ပို့ရန် သင့်စက်တွင် လျှို့ဝှက်ကုဒ်တစ်ခုကို ဦးစွာ သတ်မှတ်ရပါမည်။</translation>
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
-<translation id="3230318355092723906">စင့်ခ်လုပ်ခြင်းကို ပိတ်ထားချိန်၌ ဤစက်ပေါ်ရှိ သင်၏လိပ်စာ၊ မှတ်တမ်း၊ စကားဝှက်နှင့် အခြားဆက်တင်များ အားလုံးကို ကြည့်နိုင်ပါသေးသည်။ အပြောင်းအလဲများ ပြုလုပ်ပါက ၎င်းတို့ကို သင်၏အကောင့်နှင့် စင့်ခ်လုပ်မည်မဟုတ်ပါ။</translation>
 <translation id="3240426699337459095">လင့်ခ်ကူးယူပြီးပါပြီ</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> ၏<ph name="VALUE" />၊ <ph name="ADDITIONAL_INFO" />၊ <ph name="INDEX" /></translation>
@@ -379,6 +378,7 @@
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> တွင် သိမ်းဆည်းထားသော စကားဝှက်များအား ကြည့်ပြီး စီမံပါ</translation>
 <translation id="4536418791685807335">ထပ်မံ၍ လက်မှတ်ထိုးဝင်ကြည့်ပါ။</translation>
 <translation id="4540780316273593836">တစ်ခုခု မှားသွားပါသည်</translation>
+<translation id="4572065712096155137">အသုံးပြုရန်</translation>
 <translation id="457386861538956877">နောက်ထပ်...</translation>
 <translation id="4592368184551360546">ကီးဘုတ်</translation>
 <translation id="461440297010471931">Google ဖြင့် ရှာနေသည်</translation>
@@ -569,6 +569,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6202364442240589072">{COUNT,plural, =1{တဘ် {COUNT} ခု ပိတ်ရန်}other{တဘ် {COUNT} ခု ပိတ်ရန်}}</translation>
 <translation id="6219688215832490856">ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="6223816392543092032">သင်၏စက်အားလုံးတွင် လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြားဆက်တင်များ ရယူပါ။</translation>
+<translation id="6231782223312638214">အကြံပေးထား</translation>
 <translation id="6232329973559504466">ရုပ်ဖျက်မုဒ်ဖြင့် ရှာရန်</translation>
 <translation id="6232736989810857397">ဤနည်းအားဖြင့် Google Lens သုံး၍ ပြက္ခဒိန်အစီအစဉ်များကို အလွယ်တကူပြုလုပ်နိုင်မည်။</translation>
 <translation id="6254066287920239840">ဘရောင်ဇာတွင် ဖွင့်မည့်အစား လင့်ခ်ကို အက်ပ်အတွင်းတွင် ဖွင့်ပါ။</translation>
@@ -654,7 +655,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6801927553864092214">သီးသန့်ကြည့်ရှုရန် ရုပ်ဖျက်တဘ် ဖွင့်ပါ</translation>
 <translation id="6807889908376551050">အားလုံးကို ပြရန်...</translation>
 <translation id="681368974849482173">အကြောင်းအရာ ဖန်တီးပြီးပါပြီ</translation>
-<translation id="681450999322335505">သင့်အဖွဲ့အစည်းက စင့်ခ်လုပ်ခြင်း ပိတ်ထားသည်။</translation>
 <translation id="683022620450280906">သိမ်းထားသော စကားဝှက်များကို မည်သည့်စက်တွင်မဆို သုံးနိုင်သည်။ ၎င်းတို့ကို <ph name="EMAIL" /> အတွက် ‘Google စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းထားသည်</translation>
 <translation id="6830804042318138535">နောက်ထပ်ဖတ်ရန်</translation>
 <translation id="6831043979455480757">ဘာသာပြန်ရန်</translation>

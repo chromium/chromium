@@ -241,6 +241,7 @@
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" />ৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS হ’ষ্ট</translation>
+<translation id="3104793765551262433"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে, সবিশেষ</translation>
 <translation id="3113153474486991170">এই অৱস্থানটোৰ পৰা "<ph name="PATH" />" খুলিব পৰা নগ'ল। খুলিবলৈ অনুগ্ৰহ কৰি "মোৰ ফাইল"লৈ প্ৰতিলিপি কৰক।</translation>
 <translation id="3113592018909187986">আপোনাৰ ১ টা প্ৰয়াস বাকী আছে। আপুনি এটা নতুন পিন ছেট নকৰা পৰ্যন্ত এই নেটৱৰ্কটো ব্যৱহাৰ কৰিবলৈ সক্ষম নহ’ব।</translation>
 <translation id="3124404833828281817">দিবাস্বপ্ন দেখি থকা ব্যক্তিৰ ছবি</translation>
@@ -882,6 +883,7 @@
 <translation id="8551494947769799688">লাটভিয়ান</translation>
 <translation id="8560515948038859357">কেণ্টনীজ</translation>
 <translation id="8561206103590473338">হাতী</translation>
+<translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে, সবিশেষ</translation>
 <translation id="8569764466147087991">খুলিবলৈ এটা ফাইল বাছনি কৰক</translation>
 <translation id="8577897833047451336">ক্ৰ’ৱেশ্বিয়ান</translation>
 <translation id="8578308463707544055">ইণ্ডোনেছিয়ান</translation>

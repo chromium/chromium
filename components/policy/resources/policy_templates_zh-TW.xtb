@@ -189,6 +189,18 @@
 <translation id="1223789468190631420">信任來源的安全瀏覽功能啟用狀態</translation>
 <translation id="123018742985150697">要求比對本機使用者和遠端存取主機擁有者</translation>
 <translation id="123081309365616809">允許將內容投放至裝置</translation>
+<translation id="1239526922294123540">控管是否允許網站以不安全的方式，向更私密的網路端點傳送要求。如果將這項政策設為 True，系統會為所有來源停用<ph name="PRIVATE_NETWORK_ACCESS" />檢查。這可能會讓攻擊者有機會對私人網路伺服器執行 <ph name="CSRF" /> 攻擊。
+
+          如果不設定這項政策或設為 False，向更私密的網路端點傳送要求的預設行為將取決於使用者對 <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />、<ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> 和 <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" /> 功能旗標的個人設定，使用者可以透過實際測試或指令列來進行設定。
+
+          這項政策與<ph name="PRIVATE_NETWORK_ACCESS" />規格有關，詳情請參閱 https://wicg.github.io/private-network-access/。
+
+          當網路端點符合以下條件時，私密程度較高：
+          1) 其 IP 位址為 localhost，且其他網路端點的 IP 位址不是 localhost。
+          2) 其 IP 位址為私人位址，且其他網路端點的 IP 位址為公開位址。
+          視未來的規格演進而定，這項政策可能會適用於向私人 IP 或 localhost 發出的所有跨來源要求。
+
+          如果將這項政策設為 True，網站即可向任何網路端點發出要求，並且需通過其他跨來源檢查。</translation>
 <translation id="1240722269871366886">這項政策可讓 <ph name="PRODUCT_OS_NAME" />在使用者透過虛擬或實體鍵盤輸入文字時提供表情符號建議。
       如果將這項政策設為 True，系統會啟用這項功能，且使用者將可變更這項設定。
       這項政策的預設值為 False，系統不會提供任何表情符號建議，且使用者無法覆寫這項設定。</translation>
@@ -2101,7 +2113,6 @@
 <translation id="3284094172359247914">控制 WebUSB API 使用權限</translation>
 <translation id="3288595667065905535">發布頻道</translation>
 <translation id="3291318845269544294">啟用 Projector</translation>
-<translation id="3292784416244243447">允許使用者選擇哪些網站可以使用畫面的相關資訊來開啟及放置視窗</translation>
 <translation id="3294430356898755483">你可以透過這項政策，讓管理員為使用者設定印表機清單。印表機選取作業會在使用者第一次嘗試列印時啟動。
 
       這項政策的用途如下：
@@ -2786,6 +2797,14 @@
       如果將這項政策設為停用，政策就不會因為來源而遭到忽略。政策只會在發生衝突或沒有最高優先權的情況下遭到忽略。
 
       如果透過雲端來源設定這項政策，就不能將特定使用者設為政策目標。</translation>
+<translation id="4166865262840412074">這項政策預設為允許使用 origin-keyed 代理程式叢集。
+
+      Origin-Agent-Cluster：HTTP 標頭會控制系統要在 origin-keyed 代理程式叢集或 site-keyed 代理程式叢集中隔離文件。這個做法有安全性疑慮，因為 origin-keyed 代理程式叢集允許系統按來源隔離文件。對開發人員來說，啟用這項政策就無法再設定 document.domain 存取子。
+
+      預設行為 - 未設定 Origin-Agent-Cluster 標頭時 - 在 M106 版本中從 site-keyed 變更為 origin-keyed。如果將這項政策設為啟用或不設定，瀏覽器會自該版本起採用這項新的預設設定。如果將這項政策設為停用，系統會復原這項變更，並將未包含 Origin-Agent-Cluster 標頭的文件指派給 site-keyed 代理程式叢集。因此在預設情況下，開發人員仍可設定 document.domain 存取子。這個做法與舊版行為相符。
+
+      詳情請參閱 https://developer.chrome.com/blog/immutable-document-domain/。
+      </translation>
 <translation id="4169692397912242417">在登入畫面上啟用互動朗讀無障礙功能。
 
           如果將這項政策設為 True，系統將一律在登入畫面上啟用互動朗讀功能。
@@ -3141,16 +3160,6 @@
 <translation id="4617338332148204752">在 <ph name="PRODUCT_FRAME_NAME" /> 內略過中繼標記檢查</translation>
 <translation id="4624417808625504735">禁止 JavaScript 在這些網站上使用 JIT</translation>
 <translation id="4625915093043961294">設定擴充功能安裝許可清單</translation>
-<translation id="4631165564645497047">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 會使用內建的憑證驗證器執行伺服器憑證驗證作業。
-      如果停用這項設定，則 <ph name="PRODUCT_NAME" /> 會使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
-      如果未設定這項政策，系統可能會使用內建或舊版的憑證驗證器。
-
-      我們計劃將這項政策從 <ph name="PRODUCT_OS_NAME" /> 81 版中移除，屆時也將停止支援 <ph name="PRODUCT_OS_NAME" />的舊版憑證驗證器。
-
-     我們計劃將這項政策從 Linux 適用的 <ph name="PRODUCT_NAME" /> 83 版中移除，屆時也將停止支援 Linux 的舊版憑證驗證器。
-
-      我們計劃將這項政策從 Mac OS X 適用的 <ph name="PRODUCT_NAME" /> 104 版中移除，屆時也將停止支援 Mac OS X 的舊版憑證驗證器。
-      </translation>
 <translation id="4632343302005518762">允許 <ph name="PRODUCT_FRAME_NAME" /> 處理下列內容類型</translation>
 <translation id="4632566332417930481">禁止在由企業政策安裝的擴充功能中使用開發人員工具，允許在其他情況下使用開發人員工具</translation>
 <translation id="4635284822166984665">裝置開始充電的時間 (根據裝置當地時區)。</translation>
@@ -3217,6 +3226,33 @@
 <translation id="475479145997699293">如果將這項政策設為 <ph name="ASK_FILE_HANDLING" />，網頁應用程式就能要求透過 File Handling API 存取特定類型的檔案。如果將這項政策設為 <ph name="BLOCK_FILE_HANDLING" />，系統會禁止網頁應用程式存取特定類型的檔案。
 
       如果不設定這項政策，就表示網頁應用程式可以要求存取權，但使用者可以變更這項設定。</translation>
+<translation id="4755492101519343259">設定規則清單，避免 <ph name="PRODUCT_OS_NAME" /> 發生資料外洩。
+      複製及貼上資料、傳輸檔案、列印、分享螢幕畫面或擷取螢幕畫面等動作都有可能導致資料外洩。
+
+      每條規則都包含下列項目：
+      - 定義為網址的來源清單。系統會將來源中的所有資料都視為機密資料並套用限制。
+      - 定義為網址或元件的目的地清單，可允許或禁止將機密資料分享到清單中的目的地。
+      - 要套用到來源資料的限制清單。
+
+      你可以透過新增規則控管下列項目：
+      - 來源與目的地共用的剪貼簿資料。
+      - 任何來源的螢幕畫面擷取動作設定。
+      - 任何來源的列印動作設定。
+      - 任何來源在顯示狀態下的隱私保護畫面設定。
+      - 任何來源的螢幕畫面分享動作設定。
+
+      限制等級可設為「BLOCK」、「ALLOW」、「REPORT」或「WARN」。
+      - 如果將限制等級設為「BLOCK」，將無法執行該動作。如果將 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 設為 True，系統會將遭禁止的動作回報給管理員。
+      - 如果將限制等級設為「ALLOW」，則可以執行該動作。
+      - 如果將限制等級設為「REPORT」，並將 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 設為 True，系統會將該動作回報給管理員。
+      - 如果將限制等級設為「WARN」，系統會顯示警告訊息，使用者可能可以選擇繼續執行或取消動作。如果將 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 設為 True，系統會將顯示警告的動作回報給管理員。假如使用者繼續執行動作，系統也會一併回報。
+
+      注意：
+      - PRIVACY_SCREEN 限制等級設為「BLOCK」時，不會禁止啟用隱私保護畫面，而會強制執行該功能。
+      - 如果有任一限制是「CLIPBOARD」，請勿將目的地留空，但目的地對其餘限制沒有影響。
+      - 網址格式如下：https://www.chromium.org/administrators/url-blocklist-filter-format。
+
+      如未設定這項政策，系統不會套用任何限制。</translation>
 <translation id="4757053978738874325">啟用單聲道音訊無障礙功能。
 
           這項功能可管理立體聲音訊的輸出，其中包括左聲道和右聲道的不同設定，讓使用者的左耳和右耳聽見不同的聲音。
@@ -3884,9 +3920,6 @@
 <translation id="5526184558582921522">允許向 Quirks Server 發送查詢，並有機會下載硬體專屬設定檔</translation>
 <translation id="5526701598901867718">全部 (不安全)</translation>
 <translation id="5534079385061985566">啟用完整還原功能。</translation>
-<translation id="5535012472025435092">如果啟用這項政策，系統將自動針對所有網站授予視窗放置的權限。
-      這可以讓網站查看和使用已連線畫面的相關資訊來開啟及放置視窗。
-      如果未設定或已停用，這項政策將沿用瀏覽器的預設值，並允許使用者選擇每個網站的這項權限。</translation>
 <translation id="5535256585099022933">設定重新啟動的時間間隔</translation>
 <translation id="5535973522252703021">Kerberos 委派伺服器許可清單</translation>
 <translation id="553806128266843748">布林值標記，表示是否已啟用節流功能。</translation>
@@ -3975,7 +4008,6 @@
       注意：請以半形逗號分隔伺服器名稱，可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。</translation>
 <translation id="5645779841392247734">允許這些網站的 Cookie</translation>
 <translation id="5646234199535103501">OnBulkDataEntry Chrome Enterprise Connector 的配置政策</translation>
-<translation id="5647868527087096729">允許所有網站使用畫面的相關資訊來開啟及放置視窗</translation>
 <translation id="5649046890958064703">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLACKLIST" />，系統會根據 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。
 
       這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />。</translation>
@@ -5720,7 +5752,6 @@
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">允許使用系統通知</translation>
 <translation id="7643883929273267746">限制在 <ph name="PRODUCT_NAME" /> 中顯示的帳戶</translation>
-<translation id="7644125656003029520">在所有網站上啟用視窗放置權限</translation>
 <translation id="7648664871086956188">這項政策可用來開啟或關閉 DataLeakPreventionRulesList 政策中定義的所有規則。
       如果將這項政策設為 True，系統會開啟資料外洩防護事件的即時回報功能；
       如果將這項政策設為 False 或不設定，系統則會關閉回報功能，
@@ -5929,6 +5960,13 @@
 <translation id="7904177352786629708">如果將這項政策設為啟用，系統會略過 CNAME 查詢。系統產生 Kerberos SPN 時會使用先前輸入的伺服器名稱。
 
       如果將這項政策設為停用或不設定，系統產生 Kerberos SPN 時，CNAME 查詢會決定伺服器的標準名稱。</translation>
+<translation id="7904434413881624417">網址模式清單。來自相符來源提供的網站所傳送的要求，不受<ph name="PRIVATE_NETWORK_ACCESS" />檢查影響。
+
+          如果不設定，這項政策的運作方式會等同於設為空白清單。
+
+          如果來源不符合此處指定的模式，系統會根據 <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> 政策 (如有設定) 套用全域預設值；如未設定，則會根據使用者的個人設定套用全域預設值。
+
+          如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="7906983682927840536">在瀏覽器關閉時擷取保持運作時間長度</translation>
 <translation id="7908384265697653397">將使用者登出前的緩衝天數。如果使用者未將 <ph name="PRODUCT_OS_NAME" />版本更新為指定的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> 版，系統會在設定的天數過後將該使用者登出</translation>
 <translation id="7912255076272890813">設定允許的應用程式/擴充功能類型</translation>

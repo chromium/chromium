@@ -138,7 +138,6 @@
 <translation id="5398878173008909840">Chromium'un yeni bir sürümü çıktı.</translation>
 <translation id="5427571867875391349">Chromium'u varsayılan tarayıcım olarak ayarla</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
-<translation id="5479196819031988440">Chromium OS bu sayfayı açamıyor.</translation>
 <translation id="5480860683791598150">Konumunuzu bu siteyle paylaşabilmek için Chromium'un konum bilgilerinize erişmesi gerekiyor</translation>
 <translation id="549669000822060376">Chromium en son sistem güncellemelerini yüklerken lütfen bekleyin.</translation>
 <translation id="5496810170689441661">Chromium şifreleri düzenlemeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
@@ -199,7 +198,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6734291798041940871">Chromium zaten bilgisayarınızdaki tüm kullanıcılar için yüklendi.</translation>
 <translation id="673636774878526923">Chromium öğelerinize tüm cihazlarınızda erişmek için oturum açın ve senkronizasyonu etkinleştirin.</translation>
 <translation id="6774082503108938489">Ebeveyniniz, Chromium'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> uzantısının etkinleştirilmesine izin verilmiyor.</translation>
-<translation id="6808964260981102146">Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olabilir. Web sitelerinin veya uygulamaların hesap bilgilerinize erişmesini istemiyorsanız Chromium tarayıcıdaki <ph name="LINK_BEGIN" />Misafir modunu<ph name="LINK_END" /> kullanın. Google Hesaplarınızı <ph name="LINK_2_BEGIN" />Ayarlar<ph name="LINK_2_END" /> bölümünden de yönetebilirsiniz.</translation>
 <translation id="6847869444787758381">Chromium, şifrelerinizin güvenliğinin ihlal edilip edilmediğini size bildirir</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium'a kopyalandı)</translation>
@@ -222,7 +220,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
-<translation id="7342713658732509484">Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olabilir. Web sitelerinin veya uygulamaların hesap bilgilerinize erişmesini istemiyorsanız Chromium tarayıcıdaki Misafir Modu'nu kullanın. Google Hesaplarınızı <ph name="LINK_2_BEGIN" />Ayarlar<ph name="LINK_2_END" /> bölümünden de yönetebilirsiniz.</translation>
 <translation id="734373864078049451">Web, yer işaretleri ve diğer Chromium bilgileriniz burada bulunur.</translation>
 <translation id="7349591376906416160">Sistem yöneticiniz Chromium'u <ph name="TARGET_URL_HOSTNAME" /> adresine erişmek için <ph name="ALTERNATIVE_BROWSER_NAME" /> tarayıcısını açacak şekilde yapılandırmış.</translation>
 <translation id="7398989605938454041">Chromium profilleri ile tüm Chromium öğelerinizi ayırabilirsiniz. Bu özellik, iş ile eğlenceyi daha kolay ayırmayı sağlar.</translation>

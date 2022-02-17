@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">הערך חייב להיות גדול מ-<ph name="MINIMUM" /> או שווה לו.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
+<translation id="5272594226096532950">לא מסומן. בקבוצה, אפשרות <ph name="INDEX" /> מתוך <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">יש להזין חלק ואחריו '<ph name="ATSIGN" />'‏. השדה '<ph name="INVALIDADDRESS" />' אינו מלא.</translation>
 <translation id="5334352251556557839">לא ניתן להפעיל את המדיה.</translation>
 <translation id="537648784377940524">התאריך המוקדם ביותר (<ph name="MIN_DATE_OR_TIME" />) חייב לחול לפני התאריך המאוחר ביותר (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">אחר...</translation>
 <translation id="6709093583001123835">הערך חייב להיות <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">איכות הפעלה נמוכה</translation>
+<translation id="6719914554879143100">מסומן. בקבוצה, אפשרות <ph name="INDEX" /> מתוך <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6820355525329141109">לא ניתן היה לטעון את הפלאגין.</translation>
 <translation id="6831465880655513317">דוגמית צבע עם מחוון דו-ממדי לבחירת הרוויה והבהירות</translation>

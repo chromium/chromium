@@ -44,6 +44,7 @@
 <translation id="142228117786570094">माझ्याकडे कीपेअर आहे</translation>
 <translation id="1442433966118452622">इमेजचा स्रोत</translation>
 <translation id="1451536289672181509">डिव्हाइस हे कीबोर्ड आहे.</translation>
+<translation id="1459693405370120464">हवामान</translation>
 <translation id="1468664791493211953">ऑफर</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> हे डिव्हाइस व्यवस्थापित करतो आणि तो तुमच्या अ‍ॅक्टिव्हिटीचे निरीक्षण करू शकतो.</translation>
 <translation id="1478594628797167447">स्कॅनर</translation>
@@ -103,6 +104,7 @@
 <translation id="2212733584906323460">नाव रेझोल्यूशन</translation>
 <translation id="2217935453350629363">सध्याचा वेग</translation>
 <translation id="2224337661447660594">इंटरनेट नाही</translation>
+<translation id="2230005943220647148">सेल्सियस</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">सक्रियन स्थिती</translation>
 <translation id="2287186687001756809">इमेज उपलब्ध नाही. फोटो जोडण्यासाठी, <ph name="LINK" /> वर जा</translation>
@@ -207,6 +209,7 @@
 <translation id="3858860766373142691">नाव</translation>
 <translation id="3865414814144988605">रिझोल्युशन</translation>
 <translation id="387301095347517405">तुमची बॅटरी किती वेळा पूर्ण चार्ज झाली त्याची संख्या</translation>
+<translation id="3923184630988645767">डेटा वापर</translation>
 <translation id="3924044641767672375">दुरुस्तीची प्रक्रिया सोपी करण्यासाठी, वाय-फायशी कनेक्ट करण्याची शिफारस केली जाते. तुमचे नेटवर्क सेव्ह केले जाईल.</translation>
 <translation id="3932043219784172185">कोणतेही डिव्हाइस कनेक्ट केले नाही</translation>
 <translation id="3941014780699102620">होस्टचे निराकरण करता आले नाही</translation>
@@ -376,6 +379,7 @@
 <translation id="5784136236926853061">उच्च HTTP लेटन्सी</translation>
 <translation id="5832805196449965646">व्यक्ती जोडा</translation>
 <translation id="583281660410589416">अज्ञात</translation>
+<translation id="5843706793424741864">फॅरेनहाइट</translation>
 <translation id="5849570051105887917">होम प्रोव्हाइडर कोड</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5866840822086176774">खूप मजबूत</translation>
@@ -384,6 +388,7 @@
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{तुमची फाइल यशस्वीरीत्या स्कॅन करण्यात आली आहे आणि <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> वर सेव्ह केली आहे.}other{तुमच्या फाइल यशस्वीरीत्या स्कॅन करण्यात आल्या आहेत आणि <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> वर सेव्ह केल्या आहेत.}}</translation>
 <translation id="5931523347251946569">फाइल सापडली नाही</translation>
+<translation id="5939518447894949180">रीसेट करा</translation>
 <translation id="594552776027197022">रँडम कीपेअर जनरेट करा</translation>
 <translation id="5972388717451707488">इंजीन अपडेट करा</translation>
 <translation id="6037291330010597344">स्कॅनरचा दस्तऐवज फीडर रिकामा आहे. दस्तऐवज जोडा आणि पुन्हा प्रयत्न करा.</translation>

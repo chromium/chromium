@@ -250,7 +250,6 @@
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
 <translation id="3224641773458703735">पासवर्डहरू निर्यात गर्नका लागि सर्वप्रथम तपाईंले आफ्नो यन्त्रमा अनिवार्य रूपमा कुनै पासकोड सेट गर्नु पर्छ।</translation>
 <translation id="3227137524299004712">माइक्रोफोन</translation>
-<translation id="3230318355092723906">सिंक गर्ने सुविधा अफ गरिएका बेला पनि तपाईं यो डिभाइसमा आफ्ना सबै बुकमार्क, इतिहास, पासवर्ड र अन्य सेटिङ देख्न सक्नुहुन्छ। तपाईंले यी कुरा परिवर्तन गर्नुभयो भने ती परिवर्तन तपाईंको खातामा सिंक हुने छैनन्।</translation>
 <translation id="3240426699337459095">लिंक प्रतिलिपि गरियो</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> को <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
@@ -379,6 +378,7 @@
 <translation id="4526249700380860531">हेर्नुहोस् र <ph name="BEGIN_LINK" /> passwords.google.com <ph name="END_LINK" /> सुरक्षित गरिएका पासवर्डहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4536418791685807335">फेरि साइन इन गरी हेर्नुहोस्।</translation>
 <translation id="4540780316273593836">केही चिज गडबड भयो</translation>
+<translation id="4572065712096155137">पहुँच</translation>
 <translation id="457386861538956877">थप...</translation>
 <translation id="4592368184551360546">किबोर्ड</translation>
 <translation id="461440297010471931">Google मार्फत खोज गर्दै</translation>
@@ -570,6 +570,7 @@
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} वटा ट्याब बन्द गर्नुहोस्}other{{COUNT} वटा ट्याब बन्द गर्नुहोस्}}</translation>
 <translation id="6219688215832490856">कहिल्यै पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="6223816392543092032">आफ्ना बुकमार्क, इतिहास, पासवर्ड र अन्य सेटिङ आफ्ना सबै डिभाइसहरूमा उपलब्ध गराउनुहोस्।</translation>
+<translation id="6231782223312638214">सुझाव गरिएको</translation>
 <translation id="6232329973559504466">इन्कोग्निटो खोज</translation>
 <translation id="6232736989810857397">तपाईं यसका सहायताले Google लेन्स प्रयोग गरी सजिलैसँग पात्रोमा कार्यक्रमहरू सेट गर्न सक्नुहुन्छ।</translation>
 <translation id="6254066287920239840">लिंंकहरूलाई ब्राउजरको सट्टा यो एपमा खोल्नुहोस्।</translation>
@@ -655,7 +656,6 @@
 <translation id="6801927553864092214">गोप्य रूपमा ब्राउज गर्न इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="6807889908376551050">सबै देखाउनुहोस्...</translation>
 <translation id="681368974849482173">वस्तु सिर्जना गरियो</translation>
-<translation id="681450999322335505">तपाईंको सङ्गठनले सिंक गर्ने सुविधा अफ गरेको छ।</translation>
 <translation id="683022620450280906">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्</translation>
 <translation id="6830804042318138535">थप पढ्नुहोस्</translation>
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>

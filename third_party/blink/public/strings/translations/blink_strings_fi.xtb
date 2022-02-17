@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Arvon tulee olla suurempi tai yhtä suuri kuin <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Pt</translation>
+<translation id="5272594226096532950">Ei valittu Ryhmän vaihtoehto <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Lisää <ph name="ATSIGN" />-osaa ennen tuleva osa. <ph name="INVALIDADDRESS" /> on puutteellinen.</translation>
 <translation id="5334352251556557839">Mediaa ei voi toistaa.</translation>
 <translation id="537648784377940524">Vähimmäispäivämäärän (<ph name="MIN_DATE_OR_TIME" />) on oltava ennen enimmäispäivämäärää (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Joku muu profiili...</translation>
 <translation id="6709093583001123835">Arvon on oltava <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Heikko toiston laatu</translation>
+<translation id="6719914554879143100">Valittu. Ryhmän vaihtoehto <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6820355525329141109">Laajennuksen lataaminen epäonnistui.</translation>
 <translation id="6831465880655513317">Väripyörä, jossa on kahteen suuntaan liikkuva liukusäädin kylläisyyden ja valoisuuden valintaan</translation>

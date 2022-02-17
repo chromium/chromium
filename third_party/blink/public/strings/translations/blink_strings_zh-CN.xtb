@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">值必须大于或等于 <ph name="MINIMUM" />。</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">未选中。群组中的第 <ph name="INDEX" /> 个选项，共 <ph name="COUNT" /> 个</translation>
 <translation id="5307600278924710095">请在“<ph name="ATSIGN" />”前面输入内容。“<ph name="INVALIDADDRESS" />”不完整。</translation>
 <translation id="5334352251556557839">无法播放媒体。</translation>
 <translation id="537648784377940524">最早日期 (<ph name="MIN_DATE_OR_TIME" />) 必须早于最晚日期 (<ph name="MAX_DATE_OR_TIME" />)。</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">其他...</translation>
 <translation id="6709093583001123835">值必须为 <ph name="VALUE" />。</translation>
 <translation id="6709570249143506788">播放质量不佳</translation>
+<translation id="6719914554879143100">已选中。群组中的第 <ph name="INDEX" /> 个选项，共 <ph name="COUNT" /> 个</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6820355525329141109">无法加载插件。</translation>
 <translation id="6831465880655513317">色井带有二维滑块，用于选择饱和度和亮度</translation>

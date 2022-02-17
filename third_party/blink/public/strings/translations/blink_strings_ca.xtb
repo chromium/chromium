@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">El valor ha de ser més gran o igual que <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">No marcat. En un grup, opció <ph name="INDEX" /> de <ph name="COUNT" />.</translation>
 <translation id="5307600278924710095">Introduïu un nom d'usuari seguit de "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" no és una adreça completa.</translation>
 <translation id="5334352251556557839">No s'ha pogut reproduir el contingut multimèdia.</translation>
 <translation id="537648784377940524">La data mínima (<ph name="MIN_DATE_OR_TIME" />) ha de ser anterior a la data màxima (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Altres...</translation>
 <translation id="6709093583001123835">El valor ha de ser <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Qualitat de reproducció deficient</translation>
+<translation id="6719914554879143100">Marcat. En un grup, opció <ph name="INDEX" /> de <ph name="COUNT" />.</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6820355525329141109">El connector no s'ha pogut carregar.</translation>
 <translation id="6831465880655513317">Cercle cromàtic amb un control lliscant bidimensional per seleccionar la saturació i la lluminositat</translation>

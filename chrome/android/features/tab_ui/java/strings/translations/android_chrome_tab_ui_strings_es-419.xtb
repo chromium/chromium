@@ -45,6 +45,7 @@
 <translation id="492284538114688557">Se detectó un descuento</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5073204694187207510">Oculta la cuadrícula de pantalla completa</translation>
+<translation id="5076161749301278626">¿Quieres ver las opiniones de la tienda?</translation>
 <translation id="5082793167783849073">Forma un grupo para comparar las páginas rápidamente. Para comenzar, mantén presionado un vínculo.</translation>
 <translation id="5490235265819901748">Se expandió el grupo de pestañas</translation>
 <translation id="5533021382642990449">Mostrar más tarde</translation>
@@ -71,6 +72,7 @@
 <translation id="7326879924029668159">Consulta la política de devoluciones y más.</translation>
 <translation id="7352298686197644113">Consulta qué artículo de los que se muestran en las pestañas abiertas tiene el precio más bajo.</translation>
 <translation id="753732157349120914">Alternador de pestañas</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> opinión de Google}other{<ph name="REVIEWS_COUNT_MANY" /> opiniones de Google}}</translation>
 <translation id="7559245342362162951">Muestra las pestañas del grupo en la cuadrícula de pantalla completa</translation>
 <translation id="7792771145871471484">Revisa las sugerencias.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Agrupar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>

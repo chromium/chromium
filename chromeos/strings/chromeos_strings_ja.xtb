@@ -44,6 +44,7 @@
 <translation id="142228117786570094">入力した鍵ペアを使用</translation>
 <translation id="1442433966118452622">画像ソース</translation>
 <translation id="1451536289672181509">デバイスの種類はキーボードです。</translation>
+<translation id="1459693405370120464">天気</translation>
 <translation id="1468664791493211953">クーポン</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> はこのデバイスを管理しており、アクティビティを監視できる可能性があります。</translation>
 <translation id="1478594628797167447">スキャナ</translation>
@@ -103,6 +104,7 @@
 <translation id="2212733584906323460">名前解決</translation>
 <translation id="2217935453350629363">現在の速度</translation>
 <translation id="2224337661447660594">インターネットに接続されていません</translation>
+<translation id="2230005943220647148">摂氏</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">起動状態</translation>
 <translation id="2287186687001756809">画像がありません。写真を追加するには、<ph name="LINK" /> にアクセスしてください</translation>
@@ -207,6 +209,7 @@
 <translation id="3858860766373142691">名前</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
+<translation id="3923184630988645767">データ使用</translation>
 <translation id="3924044641767672375">修理手続きをスムーズに進めるため、Wi-Fi に接続することをおすすめします。ネットワークは保存されます。</translation>
 <translation id="3932043219784172185">接続されているデバイスはありません</translation>
 <translation id="3941014780699102620">ホストを解決できませんでした</translation>
@@ -376,6 +379,7 @@
 <translation id="5784136236926853061">HTTP レイテンシが高くなっています</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="583281660410589416">不明</translation>
+<translation id="5843706793424741864">華氏</translation>
 <translation id="5849570051105887917">ホーム プロバイダのコード</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5866840822086176774">非常に強い</translation>
@@ -384,6 +388,7 @@
 <translation id="5916664084637901428">オン</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}other{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}}</translation>
 <translation id="5931523347251946569">ファイルが見つかりません</translation>
+<translation id="5939518447894949180">リセット</translation>
 <translation id="594552776027197022">ランダムな鍵ペアを生成</translation>
 <translation id="5972388717451707488">エンジンを更新</translation>
 <translation id="6037291330010597344">スキャナの給紙トレイが空です。用紙を追加してから、もう一度お試しください。</translation>

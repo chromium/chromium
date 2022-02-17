@@ -139,7 +139,6 @@
 <translation id="5398878173008909840">‏نسخه جدیدی از Chromium موجود است.</translation>
 <translation id="5427571867875391349">‏تنظیم Chromium به عنوان مرورگر پیش‌فرضتان</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
-<translation id="5479196819031988440">‏Chromium OS نمی‌تواند این صفحه را باز کند.</translation>
 <translation id="5480860683791598150">‏Chromium برای هم‌رسانی مکانتان با این سایت باید به مکان شما دسترسی داشته باشد</translation>
 <translation id="549669000822060376">‏وقتی Chromium جدیدترین به‌روزرسانی‌های سیستم را نصب می‌کند، لطفاً صبر کنید.</translation>
 <translation id="5496810170689441661">‏Chromium می‌خواهد گذرواژه‌ها را ویرایش کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
@@ -200,7 +199,6 @@
 <translation id="6734291798041940871">‏Chromium از قبل برای همه کاربران این رایانه نصب شده است.</translation>
 <translation id="673636774878526923">‏برای دسترسی به چیزهای Chromium در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید.</translation>
 <translation id="6774082503108938489">‏ولی‌تان «اجازه‌های مربوط به سایت‌ها، برنامه‌ها، و افزونه‌ها» را برای Chromium خاموش کرده است. فعال کردن این <ph name="EXTENSION_TYPE_PARAMETER" /> مجاز نیست.</translation>
-<translation id="6808964260981102146">‏اجازه‌هایی که قبلاً به وب‌سایت‌ها و برنامه‌ها اعطا کرده‌اید ممکن است در این حساب اعمال شود. اگر نمی‌خواهید سایت‌ها یا برنامه‌ها به اطلاعات حسابتان دسترسی داشته باشند، از <ph name="LINK_BEGIN" />حالت مهمان<ph name="LINK_END" /> در مرورگر Chromium استفاده کنید. می‌توانید «حساب‌های Google» خود را در <ph name="LINK_2_BEGIN" />تنظیمات<ph name="LINK_2_END" /> هم مدیریت کنید.</translation>
 <translation id="6847869444787758381">‏Chromium می‌تواند، اگر گذرواژه‌هایتان در معرض خطر باشد، مطلعتان کند</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (در Chromium کپی شد)</translation>
@@ -223,7 +221,6 @@
 Chromium قادر به بازیابی تنظیمات شما نیست.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">پنجرهٔ جدید</translation>
-<translation id="7342713658732509484">‏اجازه‌هایی که قبلاً به وب‌سایت‌ها و برنامه‌ها اعطا کرده‌اید ممکن است در این حساب اعمال شود. اگر نمی‌خواهید سایت‌ها یا برنامه‌ها به اطلاعات حسابتان دسترسی داشته باشند، از «حالت مهمان» در مرورگر Chromium استفاده کنید. می‌توانید «حساب‌های Google» خود را در <ph name="LINK_2_BEGIN" />تنظیمات<ph name="LINK_2_END" /> هم مدیریت کنید.</translation>
 <translation id="734373864078049451">‏وب، نشانک‌ها و موارد دیگر Chromium شما در اینجا هستند.</translation>
 <translation id="7349591376906416160">‏سرپرست سیستم برای باز شدن <ph name="ALTERNATIVE_BROWSER_NAME" /> جهت دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Chromium را پیکربندی کرده است.</translation>
 <translation id="7398989605938454041">‏با نمایه‌های Chromium می‌توانید همه‌چیزتان را در Chromium جدا کنید. با این کار، راحت‌تر می‌توان کار و سرگرمی را ازهم جدا کرد.</translation>

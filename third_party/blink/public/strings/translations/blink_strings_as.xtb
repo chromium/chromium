@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">মান <ph name="MINIMUM" />ৰ সমান বা ইয়াতকৈ ডাঙৰ হ'বই লাগিব।</translation>
 <translation id="5196716972587102051">২</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> পি.বি.</translation>
+<translation id="5272594226096532950">পৰীক্ষা কৰা হোৱা নাই। গোটত <ph name="COUNT" />ৰ ভিতৰত <ph name="INDEX" /> টা বিকল্প</translation>
 <translation id="5307600278924710095">অনুগ্ৰহ কৰি '<ph name="ATSIGN" />'ৰ পূর্বৰ অংশ দিয়ক। '<ph name="INVALIDADDRESS" />' অসম্পূর্ণ হৈছে।</translation>
 <translation id="5334352251556557839">মিডিয়া প্লে' কৰিব পৰা নগ'ল।</translation>
 <translation id="537648784377940524">সৰ্বনিম্ন তাৰিখ (<ph name="MIN_DATE_OR_TIME" />) সৰ্বোচ্চ তাৰিখ (<ph name="MAX_DATE_OR_TIME" />)তকৈ আগতে হ’বই লাগিব।</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">অন্য...</translation>
 <translation id="6709093583001123835">মানটো <ph name="VALUE" /> হ’বই লাগিব।</translation>
 <translation id="6709570249143506788">প্লে’বেকৰ মান নিম্নমানৰ</translation>
+<translation id="6719914554879143100">পৰীক্ষা কৰা হ’ল। গোটত <ph name="COUNT" />ৰ ভিতৰত <ph name="INDEX" /> টা বিকল্প</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6820355525329141109">প্লাগইন ল'ড কৰিব পৰা নগ'ল।</translation>
 <translation id="6831465880655513317">সংপৃক্তি আৰু দৃশ্যমানতা বাছনি কৰিবলৈ দ্বিমাত্ৰিক শ্লাইডাৰযুক্ত ৰঙৰ বাকচ</translation>

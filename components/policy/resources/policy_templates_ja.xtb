@@ -2047,7 +2047,6 @@
 <translation id="3284094172359247914">WebUSB API の使用を管理する</translation>
 <translation id="3288595667065905535">リリース チャンネル</translation>
 <translation id="3291318845269544294">プロジェクターを有効にする</translation>
-<translation id="3292784416244243447">画面の情報を使ってウィンドウを開いて配置できるサイトをユーザーが選択できるようにする</translation>
 <translation id="3294430356898755483">このポリシーを設定した場合、管理者はユーザー用のプリンタのリストを設定できます。プリンタの選択は、ユーザーが初めて印刷しようとしたときに行われます。
 
       このポリシーの使用方法:
@@ -3076,16 +3075,6 @@
 <translation id="4617338332148204752"><ph name="PRODUCT_FRAME_NAME" /> でのメタ タグ チェックをスキップする</translation>
 <translation id="4624417808625504735">JavaScript での JIT の使用をブロックするサイトを指定する</translation>
 <translation id="4625915093043961294">拡張機能インストールの許可リストを設定する</translation>
-<translation id="4631165564645497047">有効な場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。
-      無効な場合、<ph name="PRODUCT_NAME" /> はプラットフォームから提供される従来の証明書確認機能を使用してサーバー証明書の確認を行います。
-      未設定の場合、組み込みまたは従来の証明書確認機能が使用される可能性があります。
-
-      このポリシーは <ph name="PRODUCT_OS_NAME" /> バージョン 81 で削除される予定です（<ph name="PRODUCT_OS_NAME" /> での従来の証明書確認機能のサポートがバージョン 81 で削除されるため）。
-
-      このポリシーは Linux 向け <ph name="PRODUCT_NAME" /> バージョン 83 で削除される予定です（Linux での従来の証明書確認機能のサポートがバージョン 83 で削除されるため）。
-
-      このポリシーは Mac OS X 向け <ph name="PRODUCT_NAME" /> バージョン 104 で削除される予定です（Mac OS X での従来の証明書確認機能のサポートがバージョン 104 で削除されるため）。
-      </translation>
 <translation id="4632343302005518762">リストで指定したコンテンツ タイプの処理を <ph name="PRODUCT_FRAME_NAME" /> に対して許可する</translation>
 <translation id="4632566332417930481">企業ポリシーによってインストールされた拡張機能でのデベロッパー ツールの使用を禁止し、その他の状況におけるデベロッパー ツールの使用を許可する</translation>
 <translation id="4635284822166984665">デバイスの充電を開始する時間（デバイスのローカル タイムゾーン）です。</translation>
@@ -3807,7 +3796,6 @@
 <translation id="5526184558582921522">Quirks サーバーへのクエリの送信と、必要に応じたハードウェア固有の設定ファイルのダウンロードを許可する</translation>
 <translation id="5526701598901867718">すべて（安全ではありません）</translation>
 <translation id="5534079385061985566">完全復元機能を有効にする</translation>
-<translation id="5535012472025435092">このポリシーを有効にすると、ウィンドウの配置に関する権限がすべてのサイトに自動的に付与されます。これにより、サイトは接続された画面の情報を参照し、それを使用してウィンドウを開いて配置できるようになります。設定しないか無効にした場合、このポリシーはブラウザのデフォルトに従うようになり、この権限をユーザーがサイトごとに選択できるようになります。</translation>
 <translation id="5535256585099022933">再起動の時間間隔を設定する</translation>
 <translation id="5535973522252703021">Kerberos 委任サーバーのホワイトリスト</translation>
 <translation id="553806128266843748">ネットワーク制限を有効にするかどうかを示すブール値のフラグです。</translation>
@@ -3895,7 +3883,6 @@
       注: 複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。</translation>
 <translation id="5645779841392247734">これらのサイトの Cookie を許可する</translation>
 <translation id="5646234199535103501">OnBulkDataEntry Chrome Enterprise コネクタの設定ポリシー</translation>
-<translation id="5647868527087096729">すべてのサイトで画面の情報を使ってウィンドウを開いて配置することを許可する</translation>
 <translation id="5649046890958064703"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_BLACKLIST" /> が選択されている場合、<ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> でユーザーが使用できないプリンタを指定できます。ユーザーは、このポリシーで指定されている ID 以外のすべてのプリンタを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。
 
       このポリシーはサポートが終了しています。代わりに <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> を使用してください。</translation>
@@ -5599,7 +5586,6 @@
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">システム通知の使用を許可する</translation>
 <translation id="7643883929273267746"><ph name="PRODUCT_NAME" /> に表示されるアカウントを制限する</translation>
-<translation id="7644125656003029520">すべてのサイトでウィンドウの配置の権限を有効にする</translation>
 <translation id="7648664871086956188">このポリシーは、DataLeakPreventionRulesList ポリシーで定義されたすべてのルールに対する一般的なスイッチです。
       このポリシーを True に設定すると、データ漏洩防止イベントのリアルタイム レポートがオンになります。
       このポリシーを False に設定するか未設定のままにした場合、レポートはオフになります。

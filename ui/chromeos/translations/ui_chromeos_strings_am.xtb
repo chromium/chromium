@@ -241,6 +241,7 @@
 <translation id="3078461028045006476">ለ<ph name="EXTENSION_NAME" /> አጋራ</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">የSOCKS አስተናጋጅ</translation>
+<translation id="3104793765551262433">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በአስተዳዳሪዎ የታገደ፣ ዝርዝሮች</translation>
 <translation id="3113153474486991170">ከዚህ አካባቢ «<ph name="PATH" />»ን መክፈት አልተቻለም። ለመክፈት እባክዎን ወደ «የእኔ ፋይሎች» ይቅዱ።</translation>
 <translation id="3113592018909187986">1 ቀሪ ሙከራ አለዎት። አዲስ ፒን እስኪያዋቅሩ ድረስ ይህን አውታረ መረብ መጠቀም አይችሉም።</translation>
 <translation id="3124404833828281817">የሰው ቀን ህልም ማየት</translation>
@@ -883,6 +884,7 @@
 <translation id="8551494947769799688">ላትቪያን</translation>
 <translation id="8560515948038859357">ካንቶኒዝ</translation>
 <translation id="8561206103590473338">ዝሆን</translation>
+<translation id="8566466896628108558">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በአስተዳዳሪዎ የታገደ፣ ዝርዝሮች</translation>
 <translation id="8569764466147087991">የሚከፈት ፋይል ይምረጡ</translation>
 <translation id="8577897833047451336">ክሮሽያኛ</translation>
 <translation id="8578308463707544055">የኢንዶኔዢያኛ</translation>

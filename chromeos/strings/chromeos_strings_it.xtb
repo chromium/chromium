@@ -42,7 +42,9 @@
 <translation id="1413240736185167732">Operazione non riuscita - Errore del filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ho una coppia di chiavi</translation>
+<translation id="1442433966118452622">Origine immagine</translation>
 <translation id="1451536289672181509">Il dispositivo è una tastiera.</translation>
+<translation id="1459693405370120464">Meteo</translation>
 <translation id="1468664791493211953">Offerte</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestisce questo dispositivo e potrebbe essere in grado di monitorare le tue attività.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -102,6 +104,7 @@
 <translation id="2212733584906323460">Risoluzione nome</translation>
 <translation id="2217935453350629363">Velocità attuale</translation>
 <translation id="2224337661447660594">Nessuna connessione a Internet</translation>
+<translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stato attivazione</translation>
 <translation id="2287186687001756809">Nessuna immagine disponibile. Per aggiungere foto, visita la pagina <ph name="LINK" />.</translation>
@@ -131,6 +134,7 @@
 <translation id="2619761439309613843">Aggiornam. quotidiano</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2695514675076754339">Inserisci il codice di sblocco di 8 caratteri</translation>
+<translation id="2712812801627182647">Chiave di autenticazione TLS</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Autenticazione fase 2 di tipo EAP</translation>
 <translation id="2783010256799387990">SUPERATO</translation>
@@ -167,6 +171,7 @@
 <translation id="3268178239013324452">Operazione non riuscita - Sportello aperto</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifica file}one{Modifica file}other{Modifica file}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3291996639387199448">Direzione chiave</translation>
 <translation id="3310640316857623290">la latenza DNS è sostanzialmente al di sopra della soglia consentita</translation>
 <translation id="3328783797891415197">Test in esecuzione</translation>
 <translation id="3340011300870565703">Percentuale di batteria dell'auricolare destro del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -204,6 +209,7 @@
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3865414814144988605">Risoluzione</translation>
 <translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
+<translation id="3923184630988645767">Utilizzo dei dati</translation>
 <translation id="3924044641767672375">È consigliabile connettersi al Wi-Fi per semplificare la procedura di riparazione. La rete verrà salvata.</translation>
 <translation id="3932043219784172185">Nessun dispositivo connesso</translation>
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
@@ -279,6 +285,7 @@
 <translation id="475869545581454722">Password di Chrome OS aggiornata</translation>
 <translation id="4773299976671772492">Interrotta</translation>
 <translation id="4782311465517282004">Ricevi definizioni, traduzioni o conversioni di unità quando tocchi e tieni premuto del testo oppure quando ci fai clic sopra con il pulsante destro del mouse.</translation>
+<translation id="4793756956024303490">Algoritmo di compressione</translation>
 <translation id="4794140124556169553">L'esecuzione di un test della CPU potrebbe incidere sulle prestazioni del sistema</translation>
 <translation id="4808449224298348341">Processo di stampa <ph name="DOCUMENT_TITLE" /> annullato</translation>
 <translation id="4813136279048157860">Le mie immagini</translation>
@@ -291,6 +298,7 @@
 <translation id="484790837831576105">(Android) risoluzione DNS</translation>
 <translation id="4848429997038228357">IN ESECUZIONE</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativo rimanente}one{<ph name="ERROR_MESSAGE" /> {0} tentativi rimanenti}other{<ph name="ERROR_MESSAGE" /> {0} tentativi rimanenti}}</translation>
+<translation id="4873827928179867585">Algoritmo di autenticazione</translation>
 <translation id="4880328057631981605">Nome punto di accesso</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Scegline subito una nuova</translation>
@@ -308,6 +316,7 @@
 <translation id="4999333166442584738">Nascondi rapporto</translation>
 <translation id="500920857929044050">Interrompi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Quando il tuo schermo è inattivo, mostra foto, ora, meteo e informazioni multimediali.</translation>
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5049856988445523908">SIM bloccata (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome del gruppo</translation>
@@ -370,6 +379,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5784136236926853061">Latenza HTTP elevata</translation>
 <translation id="5832805196449965646">Aggiungi persona</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
+<translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Codice del provider principale</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5866840822086176774">Molto forte</translation>
@@ -378,6 +388,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Il file è stato scansionato correttamente e salvato in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{I file sono stati scansionati correttamente e salvati in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{I file sono stati scansionati correttamente e salvati in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File non trovato</translation>
+<translation id="5939518447894949180">Reimposta</translation>
 <translation id="594552776027197022">Genera coppia di chiavi casuale</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">L'alimentatore di documenti dello scanner è vuoto. Aggiungi documenti e riprova.</translation>
@@ -436,6 +447,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6618744767048954150">In corso</translation>
 <translation id="6620487321149975369">I processi di stampa verranno mostrati nella cronologia a meno che non vengano rimossi manualmente</translation>
 <translation id="6643016212128521049">Cancella</translation>
+<translation id="6647510110698214773">Algoritmo di crittografia</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6692996468359469499">Ricevi informazioni correlate alla tua selezione</translation>
 <translation id="6704062477274546131">Risoluzione DNS</translation>

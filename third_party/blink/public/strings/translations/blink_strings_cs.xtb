@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Hodnota musí být větší nebo rovna <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Nezaškrtnuto. Ve skupině, možnost <ph name="INDEX" /> z <ph name="COUNT" />.</translation>
 <translation id="5307600278924710095">Zadejte část před znakem <ph name="ATSIGN" />. Adresa <ph name="INVALIDADDRESS" /> není úplná.</translation>
 <translation id="5334352251556557839">Médium nelze přehrát.</translation>
 <translation id="537648784377940524">Minimální datum (<ph name="MIN_DATE_OR_TIME" />) musí být před maximálním datem (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Další...</translation>
 <translation id="6709093583001123835">Hodnota musí být <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Špatná kvalita přehrávání</translation>
+<translation id="6719914554879143100">Zaškrtnuto. Ve skupině, možnost <ph name="INDEX" /> z <ph name="COUNT" />.</translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6820355525329141109">Plugin se nepodařilo načíst.</translation>
 <translation id="6831465880655513317">Zásobník barev s plošným posuvníkem k výběru sytosti a světlosti</translation>

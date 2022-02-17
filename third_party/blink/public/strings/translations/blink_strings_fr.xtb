@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Cette valeur doit être supérieure ou égale à <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Po</translation>
+<translation id="5272594226096532950">Non cochée. Dans le groupe, option <ph name="INDEX" /> sur <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Veuillez saisir la partie manquante avant le caractère "<ph name="ATSIGN" />". L'adresse "<ph name="INVALIDADDRESS" />" est incomplète.</translation>
 <translation id="5334352251556557839">Impossible de lire les contenus multimédias.</translation>
 <translation id="537648784377940524">La date minimale (<ph name="MIN_DATE_OR_TIME" />) doit être antérieure à la date maximale (<ph name="MAX_DATE_OR_TIME" />).</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Autre...</translation>
 <translation id="6709093583001123835">Veuillez indiquer la valeur <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Mauvaise qualité de lecture</translation>
+<translation id="6719914554879143100">Cochée. Dans le groupe, option <ph name="INDEX" /> sur <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6820355525329141109">Impossible de charger le plug-in.</translation>
 <translation id="6831465880655513317">Sélecteur de couleur avec un curseur en deux dimensions pour sélectionner la saturation et la luminosité</translation>

@@ -348,7 +348,6 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="324366796737464147">Исклучи бучава</translation>
 <translation id="3249513730522716925">Прозорецот <ph name="WINDOW_TITLE" /> се премести од работен простор <ph name="ACTIVE_DESK" /> на работен простор <ph name="TARGET_DESK" /></translation>
-<translation id="3252248118006571685">За да го отклучите вашиот Chromebook, вклучете го Bluetooth на телефонот</translation>
 <translation id="3255483164551725916">Што можеш да направиш?</translation>
 <translation id="3269597722229482060">Десен клик</translation>
 <translation id="3289674678944039601">Се полни преку адаптер</translation>
@@ -407,6 +406,7 @@
 <translation id="3571734092741541777">Постави</translation>
 <translation id="3573179567135747900">Врати назад на „<ph name="FROM_LOCALE" />“ (потребно е рестартирање)</translation>
 <translation id="3576141592585647168">Сменете ја временската зона</translation>
+<translation id="3577473026931028326">Нешто тргна наопаку. Обидете се повторно.</translation>
 <translation id="3580650856351781466">Се преземаат датотеките со говор</translation>
 <translation id="3593039967545720377">Пристапете до историјата на привремената меморија така што ќе притиснете <ph name="SHORTCUT_KEY_NAME" /> + V за да се прикаже привремената меморија. Копирајте ставка за да започнете.</translation>
 <translation id="3593646411856133110">Повлечете нагоре и задржете за да ги видите отворените апликации</translation>
@@ -616,6 +616,7 @@
 <translation id="485634149294284819">Влезете во менито за тастатура</translation>
 <translation id="4860284199500934869">Проверете ја мрежната врска за да се преземе <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Подоцна ќе се изврши обид за преземање. Говорот ќе се испрати во Google за обработка додека да заврши преземањето.</translation>
+<translation id="4864369630010738180">Се најавува…</translation>
 <translation id="4868492592575313542">активиранo</translation>
 <translation id="4872237917498892622">Alt+Search или Shift</translation>
 <translation id="4881695831933465202">Отвори</translation>
@@ -687,7 +688,6 @@
 <translation id="5322611492012084517">Не може да се најде телефонот</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5329548388331921293">Се поврзува…</translation>
-<translation id="5330201449517439522">Допрете или кликнете за да влезете</translation>
 <translation id="5331975486040154427">USB-Ц уред (задна порта од лева страна)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (десна)</translation>
 <translation id="5352250171825660495">Темната тема е вклучена</translation>
@@ -901,7 +901,6 @@
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6801878137098616817">Изменето неодамна</translation>
 <translation id="6803622936009808957">Не можеа да се отсликаат екрани затоа што не се пронајдени поддржани резолуции. Наместо тоа, влеговме во проширен десктоп.</translation>
-<translation id="6811454077060061666">Google Drive за компјутер е недостапна</translation>
 <translation id="6818242057446442178">Назад за еден збор</translation>
 <translation id="6820676911989879663">Направете пауза!</translation>
 <translation id="6827049576281411231">Затворете ја таблата со настани</translation>
@@ -1018,7 +1017,6 @@
 <translation id="7564874036684306347">Преместувањето на прозорците на друга работна површина може да доведе до неочекувано однесување. Следните известувања, прозорци и дијалози може да се поделат помеѓу работните површини.</translation>
 <translation id="7569509451529460200">Брајовото писмо и ChromeVox се овозможени</translation>
 <translation id="7569983096843329377">Црна</translation>
-<translation id="757941033127302446">Најавена</translation>
 <translation id="7579778809502851308">Снимање на екранот</translation>
 <translation id="7590883480672980941">Поставки за внесување</translation>
 <translation id="7593891976182323525">Search или Shift</translation>
@@ -1132,7 +1130,6 @@
 <translation id="826107067893790409">Притиснете Enter за да се отклучи за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8270450402312105425">{0,plural, =1{Променете го уредот на претходната верзија во рок од еден час}one{Променете го уредот на претходната верзија во рок од # час}other{Променете го уредот на претходната верзија во рок од # часа}}</translation>
-<translation id="8281279285293265212">Неуспешно зачувување снимка на екранот</translation>
 <translation id="8284362522226889623">Повлечете налево со четири прста за да се префрлите на претходната работна површина</translation>
 <translation id="828708037801473432">Исклучено</translation>
 <translation id="8297006494302853456">Слаб</translation>

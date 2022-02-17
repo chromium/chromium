@@ -241,6 +241,7 @@
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> နှင့်မျှဝေပါ</translation>
 <translation id="3083975830683400843">Chromebit များ</translation>
 <translation id="3085752524577180175">SOCKS လက်ခံဝန်ဆောင်ပေးသည့်ပရောက်စီ</translation>
+<translation id="3104793765551262433">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /> %၊ သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်၊ အသေးစိတ်</translation>
 <translation id="3113153474486991170">ဤနေရာမှ “<ph name="PATH" />” ကို ဖွင့်၍မရပါ။ ဖွင့်ရန် “ကျွန်ုပ်၏ဖိုင်များ” သို့ မိတ္တူကူးပါ။</translation>
 <translation id="3113592018909187986">သင့်တွင် ကြိုးစားခွင့် 1 ကြိမ် ကျန်သည်။ ပင်နံပါတ်အသစ် မသတ်မှတ်မချင်း ဤကွန်ရက်ကို သုံးနိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="3124404833828281817">စိတ်ကူးယဉ်နေသူ</translation>
@@ -882,6 +883,7 @@
 <translation id="8551494947769799688">လာတ်ဗီယန်း</translation>
 <translation id="8560515948038859357">ကွမ်တုံ</translation>
 <translation id="8561206103590473338">ဆင်</translation>
+<translation id="8566466896628108558">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်၊ အသေးစိတ်</translation>
 <translation id="8569764466147087991">ဖွင့်ရန် ဖိုင်ရွေးပါ</translation>
 <translation id="8577897833047451336">ခရိုအေးရှား</translation>
 <translation id="8578308463707544055">အင်ဒိုနီးရှား</translation>

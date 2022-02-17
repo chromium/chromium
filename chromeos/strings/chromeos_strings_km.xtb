@@ -42,7 +42,9 @@
 <translation id="1413240736185167732">មិនបានសម្រេច - ​តម្រងមានបញ្ហា</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ខ្ញុំមាន​គូសោ</translation>
+<translation id="1442433966118452622">ប្រភព​រូបភាព</translation>
 <translation id="1451536289672181509">ឧបករណ៍គឺជាក្ដារចុច។</translation>
+<translation id="1459693405370120464">អាកាសធាតុ</translation>
 <translation id="1468664791493211953">ការផ្តល់ជូន</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> គ្រប់គ្រង​ឧបករណ៍នេះ ហើយ​ប្រហែលជាអាច​តាមដាន​សកម្មភាព​របស់អ្នកបាន។</translation>
 <translation id="1478594628797167447">ម៉ាស៊ីនស្កេន</translation>
@@ -102,6 +104,7 @@
 <translation id="2212733584906323460">កម្រិតច្បាស់​នៃឈ្មោះ</translation>
 <translation id="2217935453350629363">ល្បឿនបច្ចុប្បន្ន</translation>
 <translation id="2224337661447660594">គ្មាន​អ៊ីនធឺណិតទេ</translation>
+<translation id="2230005943220647148">អង្សាសេ</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">ស្ថានភាពនៃការធ្វើឲ្យសកម្ម</translation>
 <translation id="2287186687001756809">មិនមាន​រូបភាពទេ។ ដើម្បី​បញ្ចូលរូបថត សូមចូល​ទៅកាន់ <ph name="LINK" /></translation>
@@ -131,6 +134,7 @@
 <translation id="2619761439309613843">ការផ្ទុក​ឡើងវិញ​ប្រចាំថ្ងៃ</translation>
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
 <translation id="2695514675076754339">បញ្ចូលកូដ​ដោះសោ 8 តួ</translation>
+<translation id="2712812801627182647">សោផ្ទៀងផ្ទាត់ TLS</translation>
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2751739896257479635">ការផ្ទៀងផ្ទាត់ EAP ដំណាក់កាលទី 2</translation>
 <translation id="2783010256799387990">ជាប់</translation>
@@ -167,6 +171,7 @@
 <translation id="3268178239013324452">មិនបានសម្រេច - ​​​ទ្វារចំហ</translation>
 <translation id="3283504360622356314">{0,plural, =1{កែ​ឯកសារ}other{កែ​ឯកសារ}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">ទិសដៅសោ</translation>
 <translation id="3310640316857623290">កម្រិតពន្យាររបស់ DNS ខ្ពស់ជាងកម្រិតអនុញ្ញាតខ្លាំង</translation>
 <translation id="3328783797891415197">កំពុងដំណើរការតេស្ត</translation>
 <translation id="3340011300870565703">ឧបករណ៍មានថ្មកាសខាងស្ដាំ <ph name="BATTERY_PERCENTAGE" />%។</translation>
@@ -204,6 +209,7 @@
 <translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3865414814144988605">គុណភាពបង្ហាញ</translation>
 <translation id="387301095347517405">ចំនួនដង​ដែលថ្មរបស់អ្នក​បានសាកពេញ</translation>
+<translation id="3923184630988645767">ការប្រើទិន្នន័យ</translation>
 <translation id="3924044641767672375">ការតភ្ជាប់ Wi-Fi​ ត្រូវបានណែនាំ ដើម្បីជួយឱ្យដំណើរការជួសជុលកាន់តែងាយស្រួល។ បណ្ដាញរបស់អ្នកនឹងត្រូវបានរក្សាទុក។</translation>
 <translation id="3932043219784172185">មិនបាន​ភ្ជាប់​ឧបករណ៍​ណាមួយទេ</translation>
 <translation id="3941014780699102620">មិនអាចដោះស្រាយម៉ាស៊ីនបានទេ</translation>
@@ -279,6 +285,7 @@
 <translation id="475869545581454722">បានប្ដូរពាក្យសម្ងាត់ Chrome OS</translation>
 <translation id="4773299976671772492">បានឈប់</translation>
 <translation id="4782311465517282004">ទទួលបាននិយមន័យ ការបកប្រែ ឬការបំប្លែងខ្នាត នៅពេលអ្នកចុចកណ្ដុរខាងស្ដាំ ឬចុចអត្ថបទឱ្យជាប់</translation>
+<translation id="4793756956024303490">ក្បួនបង្ហាប់</translation>
 <translation id="4794140124556169553">ការធ្វើតេស្ត CPU អាច​ប៉ះពាល់ដល់​ប្រតិបត្តិការប្រព័ន្ធរបស់អ្នក</translation>
 <translation id="4808449224298348341">បានបោះបង់​ការងារបោះពុម្ព <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813136279048157860">រូបភាព​របស់ខ្ញុំ</translation>
@@ -291,6 +298,7 @@
 <translation id="484790837831576105">(Android) កម្រិតច្បាស់ DNS</translation>
 <translation id="4848429997038228357">កំពុងដំណើរការ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> អាចព្យាយាមបាន {0} ដងទៀត}other{<ph name="ERROR_MESSAGE" /> អាចព្យាយាមបាន {0} ដងទៀត}}</translation>
+<translation id="4873827928179867585">ក្បួនផ្ទៀងផ្ទាត់</translation>
 <translation id="4880328057631981605">ឈ្មោះចំណុចចូលប្រើ</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">សូមជ្រើសរើស​ពាក្យសម្ងាត់​ថ្មីភ្លាមៗ</translation>
@@ -308,6 +316,7 @@
 <translation id="4999333166442584738">លាក់របាយការណ៍</translation>
 <translation id="500920857929044050">បញ្ឈប់​ការធ្វើតេស្ត</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">បង្ហាញព័ត៌មានអំពី​មេឌៀ ម៉ោង អាកាសធាតុ និងរូបថត នៅពេលអេក្រង់​របស់អ្នកអសកម្ម។</translation>
 <translation id="5039804452771397117">អនុញ្ញាត</translation>
 <translation id="5049856988445523908">បានចាក់​សោស៊ីម (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ឈ្មោះ​ក្រុម</translation>
@@ -369,6 +378,7 @@
 <translation id="5784136236926853061">ការពន្យារ HTTP ខ្ពស់</translation>
 <translation id="5832805196449965646">បន្ថែមបុគ្គល</translation>
 <translation id="583281660410589416">មិនស្គាល់</translation>
+<translation id="5843706793424741864">ហ្វារិនហៃ</translation>
 <translation id="5849570051105887917">លេខកូដអ្នកផ្តល់សេវាកម្មនៅផ្ទះ</translation>
 <translation id="5860033963881614850">បិទ</translation>
 <translation id="5866840822086176774">ខ្លាំងណាស់</translation>
@@ -377,6 +387,7 @@
 <translation id="5916664084637901428">បើក</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ឯកសាររបស់អ្នកត្រូវបានស្កេន និងរក្សាទុកនៅក្នុង <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ដោយជោគជ័យហើយ។}other{ឯកសាររបស់អ្នកត្រូវបានស្កេន និងរក្សាទុកនៅក្នុង <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ដោយជោគជ័យហើយ។}}</translation>
 <translation id="5931523347251946569">រក​មិន​ឃើញ​ឯកសារទេ</translation>
+<translation id="5939518447894949180">កំណត់ឡើងវិញ</translation>
 <translation id="594552776027197022">បង្កើត​គូសោ​ចៃដន្យ</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">ឧបករណ៍​បញ្ចូល​ឯកសារ​របស់ម៉ាស៊ីនស្កេន​គឺទទេ។ សូមបញ្ចូល​ឯកសារ រួចព្យាយាម​ម្ដងទៀត។</translation>
@@ -435,6 +446,7 @@
 <translation id="6618744767048954150">កំពុងដំណើរការ</translation>
 <translation id="6620487321149975369">កិច្ចការបោះពុម្ពនឹងបង្ហាញនៅក្នុងប្រវត្តិ ប្រសិនបើអ្នកមិនលុបវាដោយដៃទេ</translation>
 <translation id="6643016212128521049">ជម្រះ</translation>
+<translation id="6647510110698214773">ក្បួនអ៊ីនគ្រីប</translation>
 <translation id="6657585470893396449">ពាក្យសម្ងាត់</translation>
 <translation id="6692996468359469499">ទទួលបានព័ត៌មានពាក់ព័ន្ធនឹងការជ្រើសរើស​របស់អ្នក</translation>
 <translation id="6704062477274546131">ដំណោះស្រាយ DNS</translation>
