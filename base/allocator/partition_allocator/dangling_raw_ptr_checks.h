@@ -43,8 +43,8 @@ BASE_EXPORT void SetDanglingRawPtrReleasedFn(DanglingRawPtrReleasedFn);
 
 namespace internal {
 
-void DanglingRawPtrDetected(uintptr_t id);
-void DanglingRawPtrReleased(uintptr_t id);
+BASE_EXPORT void DanglingRawPtrDetected(uintptr_t id);
+BASE_EXPORT void DanglingRawPtrReleased(uintptr_t id);
 
 }  // namespace internal
 }  // namespace partition_alloc

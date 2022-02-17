@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 
+#include "base/base_export.h"
 #include "base/check.h"
 #include "base/logging.h"
 
@@ -36,10 +37,10 @@ void SetDanglingRawPtrReleasedFn(DanglingRawPtrReleasedFn fn) {
 
 namespace internal {
 
-void DanglingRawPtrDetected(uintptr_t id) {
+BASE_EXPORT void DanglingRawPtrDetected(uintptr_t id) {
   g_dangling_raw_ptr_detected_fn(id);
 }
-void DanglingRawPtrReleased(uintptr_t id) {
+BASE_EXPORT void DanglingRawPtrReleased(uintptr_t id) {
   g_dangling_raw_ptr_released_fn(id);
 }
 
