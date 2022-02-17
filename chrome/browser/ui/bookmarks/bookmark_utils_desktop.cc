@@ -248,6 +248,82 @@ void OpenAllNow(content::PageNavigator* navigator,
   OpenAllHelper(navigator, std::move(urls), initial_disposition);
 }
 
+// TODO(dljames@): Explore a way to combine OpenAllIfAllowed to support
+// SavedTabGroups and BookmarkNodes.
+void OpenSavedTabGroupHelper(
+    Browser* browser,
+    base::OnceCallback<content::PageNavigator*()> get_navigator,
+    const SavedTabGroup* saved_group,
+    WindowOpenDisposition initial_disposition,
+    chrome::MessageBoxResult result) {
+  if (result != chrome::MESSAGE_BOX_RESULT_YES)
+    return;
+  if (!get_navigator)
+    return;
+  content::PageNavigator* navigator = std::move(get_navigator).Run();
+  if (!navigator)
+    return;
+
+  const auto opened_web_contents = OpenAllHelper(
+      navigator, std::move(saved_group->urls), initial_disposition);
+
+  TabStripModel* model = browser->tab_strip_model();
+
+  // Figure out which tabs we actually opened in this browser that aren't
+  // already in groups.
+  std::vector<int> tab_indices;
+  for (int i = 0; i < model->count(); ++i) {
+    if (base::Contains(opened_web_contents, model->GetWebContentsAt(i)) &&
+        !model->GetTabGroupForTab(i).has_value()) {
+      tab_indices.push_back(i);
+    }
+  }
+
+  if (!tab_indices.empty()) {
+    auto name = saved_group->title;
+    auto color = saved_group->color;
+
+    // TODO(dljames@): Find a way to use the already given group id and add it
+    // to the tabstrip
+    tab_groups::TabGroupId new_group_id = model->AddToNewGroup(tab_indices);
+    TabGroup* group = model->group_model()->GetTabGroup(new_group_id);
+    const tab_groups::TabGroupVisualData* current_visual_data =
+        group->visual_data();
+    tab_groups::TabGroupVisualData new_visual_data(
+        name, color, current_visual_data->is_collapsed());
+    group->SetVisualData(new_visual_data);
+
+    model->OpenTabGroupEditor(new_group_id);
+  }
+}
+
+void OpenSavedTabGroup(
+    Browser* browser,
+    base::OnceCallback<content::PageNavigator*()> get_navigator,
+    const SavedTabGroup* saved_group,
+    WindowOpenDisposition initial_disposition) {
+  // Skip the prompt if there are few bookmarks.
+  size_t child_count = saved_group->urls.size();
+  if (child_count < kNumBookmarkUrlsBeforePrompting) {
+    OpenSavedTabGroupHelper(browser, std::move(get_navigator),
+                            std::move(saved_group), initial_disposition,
+                            chrome::MESSAGE_BOX_RESULT_YES);
+    return;
+  }
+
+  // The callback passed contains the pointer |browser|. This is safe
+  // since if |browser| is closed, the message box will be destroyed
+  // before the user can answer "Yes".
+  ShowQuestionMessageBox(
+      browser->window()->GetNativeWindow(),
+      l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
+      l10n_util::GetStringFUTF16(IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL,
+                                 base::NumberToString16(child_count)),
+      base::BindOnce(&OpenSavedTabGroupHelper, browser,
+                     std::move(get_navigator), std::move(saved_group),
+                     initial_disposition));
+}
+
 int OpenCount(gfx::NativeWindow parent,
               const std::vector<const bookmarks::BookmarkNode*>& nodes,
               content::BrowserContext* incognito_context) {
