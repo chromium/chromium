@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.chips.ChipViewBinder;
@@ -53,7 +52,6 @@ public class FeedOptionsCoordinator {
     FeedOptionsCoordinator(Context context, FeedOptionsView view) {
         mContext = context;
         mView = view;
-        mView.setBackgroundColor(ChromeColors.getSurfaceColor(mContext, R.dimen.card_elevation));
 
         mChipModels = createAndBindChips();
         mModel = new PropertyModel.Builder(FeedOptionsProperties.getAllKeys())

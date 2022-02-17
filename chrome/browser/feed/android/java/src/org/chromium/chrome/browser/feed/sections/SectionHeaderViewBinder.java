@@ -107,5 +107,12 @@ public class SectionHeaderViewBinder
                         i, tabModel.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
             }
         }
+        if (payload == null || payload == SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY) {
+            for (int i = index; i < index + count; i++) {
+                PropertyModel tabModel = headers.get(i);
+                view.updateDrawable(
+                        i, tabModel.get(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY));
+            }
+        }
     }
 }

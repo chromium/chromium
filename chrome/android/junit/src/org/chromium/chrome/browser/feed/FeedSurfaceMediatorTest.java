@@ -604,6 +604,50 @@ public class FeedSurfaceMediatorTest {
         verify(mOptionsCoordinator, never()).toggleVisibility();
     }
 
+    @Test
+    public void testOnHeaderSelected_showAndHideWithOptions() {
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        PropertyModel forYou = SectionHeaderProperties.createSectionHeader("For you");
+        model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).add(forYou);
+        forYou.set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY, ViewVisibility.GONE);
+        forYou.set(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY, false);
+
+        model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                .add(SectionHeaderProperties.createSectionHeader("Following"));
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
+
+        when(mForYouStream.supportsOptions()).thenReturn(true);
+        mFeedSurfaceMediator.setStreamForTesting(
+                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
+        mFeedSurfaceMediator.setStreamForTesting(
+                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mForYouStream);
+
+        OnSectionHeaderSelectedListener listener =
+                mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
+        // Re-selects the header to show the options view.
+        listener.onSectionHeaderReselected(0);
+        verify(mOptionsCoordinator, times(1)).toggleVisibility();
+        assertEquals(true, forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY));
+
+        listener.onSectionHeaderUnselected(0);
+        // Verifies that unselecting header hides the options view and resets the
+        // {@link SectionHeaderProperties.OPTIONS_VIEW_VISIBILITY_KEY}.
+        assertEquals(ViewVisibility.INVISIBLE,
+                forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
+        verify(mOptionsCoordinator, times(1)).ensureGone();
+        assertEquals(false, forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY));
+
+        // Re-selects the header to show the options view.
+        listener.onSectionHeaderReselected(0);
+        verify(mOptionsCoordinator, times(2)).toggleVisibility();
+        assertEquals(true, forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY));
+        listener.onSectionHeaderReselected(0);
+        // Verifies that re-selecting header also hides the options view and resets the
+        // {@link SectionHeaderProperties.OPTIONS_VIEW_VISIBILITY_KEY}.
+        verify(mOptionsCoordinator, times(3)).toggleVisibility();
+        assertEquals(false, forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY));
+    }
+
     private FeedSurfaceMediator createMediator() {
         return createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 SectionHeaderListProperties.create(TOOLBAR_HEIGHT));

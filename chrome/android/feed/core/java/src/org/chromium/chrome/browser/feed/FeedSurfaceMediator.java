@@ -110,6 +110,7 @@ public class FeedSurfaceMediator
             if (mTabToStreamMap.get(index).supportsOptions()) {
                 headerModel.set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
                         ViewVisibility.INVISIBLE);
+                headerModel.set(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY, false);
             }
             mOptionsCoordinator.ensureGone();
         }
@@ -118,6 +119,12 @@ public class FeedSurfaceMediator
         public void onSectionHeaderReselected(int index) {
             Stream stream = mTabToStreamMap.get(index);
             if (!stream.supportsOptions()) return;
+
+            PropertyListModel<PropertyModel, PropertyKey> headerList =
+                    mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY);
+            PropertyModel headerModel = headerList.get(index);
+            headerModel.set(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY,
+                    !headerModel.get(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY));
             // Reselected toggles the visibility of the options view.
             mOptionsCoordinator.toggleVisibility();
         }
@@ -457,6 +464,7 @@ public class FeedSurfaceMediator
         }
         headerModel.set(
                 SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY, indicatorVisibility);
+        headerModel.set(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY, false);
         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).add(headerModel);
 
         // Update UNREAD_CONTENT_KEY and HEADER_ACCESSIBILITY_TEXT_KEY now, and any time
@@ -755,6 +763,8 @@ public class FeedSurfaceMediator
                 currentStreamHeaderModel.set(
                         SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
                         ViewVisibility.INVISIBLE);
+                currentStreamHeaderModel.set(
+                        SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY, false);
             }
             unbindStream();
         }

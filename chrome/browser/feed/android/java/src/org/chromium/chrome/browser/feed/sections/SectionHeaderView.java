@@ -146,6 +146,22 @@ public class SectionHeaderView extends LinearLayout {
         mToolbarHeight = toolbarHeight;
     }
 
+    public void updateDrawable(int index, boolean isVisible) {
+        if (mTabLayout == null || mTabLayout.getTabCount() <= index) return;
+
+        ImageView optionsIndicatorView =
+                mTabLayout.getTabAt(index).view.findViewById(R.id.options_indicator);
+        if (optionsIndicatorView == null) return;
+
+        if (isVisible) {
+            optionsIndicatorView.setImageDrawable(ResourcesCompat.getDrawable(
+                    getResources(), R.drawable.mtrl_ic_arrow_drop_up, getContext().getTheme()));
+        } else {
+            optionsIndicatorView.setImageDrawable(ResourcesCompat.getDrawable(
+                    getResources(), R.drawable.mtrl_ic_arrow_drop_down, getContext().getTheme()));
+        }
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();

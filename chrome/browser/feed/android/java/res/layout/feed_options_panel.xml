@@ -12,7 +12,6 @@
     android:layout_height="wrap_content"
     android:paddingHorizontal="@dimen/ntp_header_lateral_paddings_v2"
     android:paddingVertical="@dimen/feed_options_vertical_margins"
-    android:background="@drawable/new_tab_page_multi_feed_header_background"
     android:layout_marginBottom="@dimen/feed_options_vertical_margins"
     android:orientation="vertical"
     android:visibility="gone">
