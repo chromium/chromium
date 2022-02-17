@@ -645,6 +645,9 @@ BLINK_COMMON_EXPORT extern const base::Feature kDurableClientHintsCache;
 // better control text input. See crbug.com/999184.
 BLINK_COMMON_EXPORT extern const base::Feature kEditContext;
 
+// Enables the WindowPlacement RuntimeEnabledFeature.
+BLINK_COMMON_EXPORT extern const base::Feature kWindowPlacement;
+
 }  // namespace features
 }  // namespace blink
 

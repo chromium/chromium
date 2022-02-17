@@ -418,6 +418,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"UserAgentFull", blink::features::kFullUserAgent},
           {"ClientHintPartitiondCookies",
            blink::features::kClientHintsPartitionedCookies},
+          {"WindowPlacement", blink::features::kWindowPlacement},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

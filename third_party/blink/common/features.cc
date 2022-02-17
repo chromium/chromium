@@ -1255,5 +1255,9 @@ const base::Feature kDurableClientHintsCache{"DurableClientHintsCache",
 const base::Feature kEditContext{"EditContext",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the WindowPlacement RuntimeEnabledFeature.
+const base::Feature kWindowPlacement{"WindowPlacement",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
