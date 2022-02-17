@@ -56,6 +56,7 @@ import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.SyncConsentFirstRunFragment;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -64,6 +65,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -283,6 +285,29 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
+    public void testFragmentWithChildAccountAllowSyncOff() throws IOException {
+        HistogramDelta startPageHistogram =
+                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, true);
+        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
+        fragment.setPageDelegate(mFirstRunPageDelegateMock);
+
+        launchActivityWithFragment(fragment);
+        Assert.assertEquals(1, startPageHistogram.getDelta());
+        // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
+        // Espresso.
+        onView(withId(R.id.positive_button)).check(matches(isDisplayed()));
+        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "sync_consent_fragment_with_regular_child_allow_sync_off");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
     @CommandLineFlags.Remove({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testFragmentWithChildAccountLegacy() throws IOException {
         HistogramDelta startPageHistogram =
@@ -296,6 +321,9 @@ public class SyncConsentFragmentTest {
 
         launchActivityWithFragment(fragment);
         Assert.assertEquals(1, startPageHistogram.getDelta());
+        // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
+        // Espresso.
+        onView(withId(R.id.positive_button)).check(matches(isDisplayed()));
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "sync_consent_fragment_with_regular_child_legacy");
     }

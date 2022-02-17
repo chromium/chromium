@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -269,8 +270,10 @@ public abstract class SyncConsentFragmentBase
         final Drawable endImageViewDrawable;
         if (mIsChild) {
             endImageViewDrawable = SigninView.getCheckmarkDrawable(getContext());
-            mView.getRefuseButton().setVisibility(View.GONE);
-            mView.getAcceptButtonEndPadding().setVisibility(View.INVISIBLE);
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
+                mView.getRefuseButton().setVisibility(View.GONE);
+                mView.getAcceptButtonEndPadding().setVisibility(View.INVISIBLE);
+            }
         } else {
             endImageViewDrawable = SigninView.getExpandArrowDrawable(getContext());
         }
@@ -587,7 +590,8 @@ public abstract class SyncConsentFragmentBase
         }
 
         // Account for forced sign-in flow disappeared before the sign-in was completed.
-        if (mIsChild) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)
+                && mIsChild) {
             onSyncRefused();
             return;
         }

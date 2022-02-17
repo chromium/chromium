@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.signin.SyncConsentFragmentBase;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
@@ -44,7 +45,8 @@ public class SyncConsentFirstRunFragment
 
     @Override
     protected void onSyncRefused() {
-        if (mIsChild) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)
+                && mIsChild) {
             // Somehow the child account disappeared while we were in the FRE.
             // The user would have to go through the FRE again.
             getPageDelegate().abortFirstRunExperience();
