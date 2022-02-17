@@ -31,7 +31,7 @@ def main(argv):
                   default='')
   ap.add_argument('cmdline',
                   nargs=argparse.REMAINDER,
-                  help='Command line to expand. Should be preceeded by \'--\'.')
+                  help='Command line to expand. Should be preceded by \'--\'.')
   args = ap.parse_args(argv[1:])
   if not args.cmdline:
     ap.print_help(sys.stderr)

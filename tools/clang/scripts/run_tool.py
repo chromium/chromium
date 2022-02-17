@@ -234,7 +234,7 @@ def _ExecuteTool(toolname, tool_args, build_directory, compdb_entry):
       del args[i:i+2]
       break
 
-  # shlex.split escapes double qoutes in non-Posix mode, so we need to strip
+  # shlex.split escapes double quotes in non-Posix mode, so we need to strip
   # them back.
   if sys.platform == 'win32':
     args = [a.replace('\\"', '"') for a in args]
