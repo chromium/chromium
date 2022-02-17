@@ -116,12 +116,11 @@ class RowMoveAnimationDelegate : public views::AnimationDelegateViews {
  public:
   RowMoveAnimationDelegate(views::View* view,
                            ui::Layer* layer,
-                           const gfx::Rect& layer_target)
+                           const gfx::Vector2d& offset)
       : views::AnimationDelegateViews(view),
         view_(view),
         layer_(layer),
-        layer_start_(layer ? layer->bounds() : gfx::Rect()),
-        layer_target_(layer_target) {}
+        offset_(offset) {}
 
   RowMoveAnimationDelegate(const RowMoveAnimationDelegate&) = delete;
   RowMoveAnimationDelegate& operator=(const RowMoveAnimationDelegate&) = delete;
@@ -135,8 +134,11 @@ class RowMoveAnimationDelegate : public views::AnimationDelegateViews {
 
     if (layer_) {
       layer_->SetOpacity(1 - animation->GetCurrentValue());
-      layer_->SetBounds(
-          animation->CurrentValueBetween(layer_start_, layer_target_));
+
+      gfx::Transform transform;
+      transform.Translate(animation->CurrentValueBetween(0, offset_.x()),
+                          animation->CurrentValueBetween(0, offset_.y()));
+      layer_->SetTransform(transform);
       layer_->ScheduleDraw();
     }
   }
@@ -154,8 +156,7 @@ class RowMoveAnimationDelegate : public views::AnimationDelegateViews {
   views::View* view_;
 
   std::unique_ptr<ui::Layer> layer_;
-  const gfx::Rect layer_start_;
-  const gfx::Rect layer_target_;
+  const gfx::Vector2d offset_;
 };
 
 bool IsOEMFolderItem(AppListItem* item) {
@@ -1260,11 +1261,6 @@ void AppsGridView::AnimationBetweenRows(AppListItemView* view,
   const int target_page =
       CompareHorizontalPointPositionToRect(target.origin(), GetLocalBounds());
 
-  const int dir = current_page < target_page || (current_page == target_page &&
-                                                 current.y() < target.y())
-                      ? 1
-                      : -1;
-
   std::unique_ptr<ui::Layer> layer;
   if (view->layer()) {
     if (animate_current) {
@@ -1279,8 +1275,10 @@ void AppsGridView::AnimationBetweenRows(AppListItemView* view,
   }
 
   const gfx::Size total_tile_size = GetTotalTileSize(current_page);
-  gfx::Rect current_out(current);
-  current_out.Offset(dir * total_tile_size.width(), 0);
+  int dir = current_page < target_page ||
+                    (current_page == target_page && current.y() < target.y())
+                ? 1
+                : -1;
 
   gfx::Rect target_in(target);
   if (animate_target)
@@ -1289,9 +1287,12 @@ void AppsGridView::AnimationBetweenRows(AppListItemView* view,
   view->SetBoundsRect(target_in);
   bounds_animator_->AnimateViewTo(view, target);
 
+  // Flip the direction for the layer move out animation if rtl mode is used.
+  dir = base::i18n::IsRTL() ? -dir : dir;
   bounds_animator_->SetAnimationDelegate(
-      view, std::make_unique<RowMoveAnimationDelegate>(view, layer.release(),
-                                                       current_out));
+      view, std::make_unique<RowMoveAnimationDelegate>(
+                view, layer.release(),
+                gfx::Vector2d(dir * total_tile_size.width(), 0)));
 }
 
 void AppsGridView::ExtractDragLocation(const gfx::Point& root_location,
