@@ -678,4 +678,30 @@ TEST_F(LoginAuthUserViewAuthFactorsUnittest,
   ExpectModeVisibility(LoginAuthUserView::InputFieldMode::NONE);
 }
 
+// Regression test for b/217385675.
+// LoginAuthFactorsView should only be shown when auth methods are available.
+TEST_F(LoginAuthUserViewAuthFactorsUnittest,
+       AuthFactorsViewNotShownWhenNoAuthFactors) {
+  auto user = CreateUser("user@domain.com");
+  InitializeViewForUser(user);
+  LoginAuthUserView::TestApi auth_test(view_);
+  auto* auth_factors_view = auth_test.auth_factors_view();
+
+  EXPECT_TRUE(auth_factors_view);
+  EXPECT_FALSE(auth_factors_view->GetVisible());
+
+  SetAuthMethods(LoginAuthUserView::AuthMethods::AUTH_SMART_LOCK);
+  EXPECT_TRUE(auth_factors_view->GetVisible());
+
+  SetAuthMethods(LoginAuthUserView::AuthMethods::AUTH_FINGERPRINT);
+  EXPECT_TRUE(auth_factors_view->GetVisible());
+
+  SetAuthMethods(LoginAuthUserView::AuthMethods::AUTH_SMART_LOCK |
+                 LoginAuthUserView::AuthMethods::AUTH_FINGERPRINT);
+  EXPECT_TRUE(auth_factors_view->GetVisible());
+
+  SetAuthMethods(LoginAuthUserView::AUTH_NONE);
+  EXPECT_FALSE(auth_factors_view->GetVisible());
+}
+
 }  // namespace ash

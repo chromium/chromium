@@ -223,31 +223,6 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
   bool auth_factor_is_hiding_password_ = false;
 };
 
-TEST_F(LoginAuthFactorsViewUnittest, NotVisibleIfNoAuthFactors) {
-  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
-  EXPECT_TRUE(view_->GetVisible());
-
-  LoginAuthFactorsView::TestApi test_api(view_);
-  auto& auth_factors = test_api.auth_factors();
-  auth_factors.clear();
-  test_api.UpdateState();
-
-  EXPECT_FALSE(view_->GetVisible());
-}
-
-TEST_F(LoginAuthFactorsViewUnittest, NotVisibleIfAuthFactorsUnavailable) {
-  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
-  EXPECT_TRUE(view_->GetVisible());
-
-  for (auto* factor : auth_factors_) {
-    factor->state_ = AuthFactorState::kUnavailable;
-  }
-  LoginAuthFactorsView::TestApi test_api(view_);
-  test_api.UpdateState();
-
-  EXPECT_FALSE(view_->GetVisible());
-}
-
 TEST_F(LoginAuthFactorsViewUnittest, TapOrClickCalled) {
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   auto* factor = auth_factors_[0];

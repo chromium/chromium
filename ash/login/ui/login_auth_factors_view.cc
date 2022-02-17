@@ -269,17 +269,14 @@ void LoginAuthFactorsView::UpdateState() {
   AuthFactorModel* active_auth_factor =
       GetHighestPriorityAuthFactor(auth_factors_);
   if (!active_auth_factor) {
-    SetVisible(false);
     return;
   }
 
   PrioritizedAuthFactorViewState state =
       GetPrioritizedAuthFactorViewState(*active_auth_factor);
   if (state == PrioritizedAuthFactorViewState::kUnavailable) {
-    SetVisible(false);
     return;
   }
-  SetVisible(true);
 
   if (state != PrioritizedAuthFactorViewState::kErrorForeground) {
     error_timer_.Stop();

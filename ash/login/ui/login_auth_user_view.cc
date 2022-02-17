@@ -947,6 +947,7 @@ struct LoginAuthUserView::UiState {
     has_pinpad = view->ShouldShowPinPad();
     has_toggle = view->ShouldShowToggle();
     has_fingerprint = view->HasAuthMethod(LoginAuthUserView::AUTH_FINGERPRINT);
+    has_smart_lock = view->HasAuthMethod(LoginAuthUserView::AUTH_SMART_LOCK);
     has_challenge_response =
         view->HasAuthMethod(LoginAuthUserView::AUTH_CHALLENGE_RESPONSE);
     auth_disabled = view->HasAuthMethod(LoginAuthUserView::AUTH_DISABLED);
@@ -965,6 +966,7 @@ struct LoginAuthUserView::UiState {
   bool has_pinpad = false;
   bool has_toggle = false;
   bool has_fingerprint = false;
+  bool has_smart_lock = false;
   bool has_challenge_response = false;
   bool auth_disabled = false;
   bool tpm_is_locked = false;
@@ -1384,9 +1386,14 @@ void LoginAuthUserView::SetAuthMethods(
     DCHECK(fingerprint_auth_factor_model_);
     DCHECK(smart_lock_auth_factor_model_);
     DCHECK(auth_factors_view_);
+    // TODO(b/219978360): Should investigate why setting
+    // |fingerprint_auth_factor_model_| availability here is necessary if state
+    // management within LockContentsView is working properly.
     fingerprint_auth_factor_model_->set_available(
         current_state.has_fingerprint);
     auth_factors_view_->SetCanUsePin(HasAuthMethod(AUTH_PIN));
+    auth_factors_view_->SetVisible(current_state.has_fingerprint ||
+                                   current_state.has_smart_lock);
   } else {
     DCHECK(fingerprint_view_);
     fingerprint_view_->SetVisible(current_state.has_fingerprint);
