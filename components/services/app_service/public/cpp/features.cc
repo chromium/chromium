@@ -10,4 +10,7 @@ const base::Feature kAppServiceOnAppTypeInitializedWithoutMojom{
     "AppServiceOnAppTypeInitializedWithoutMojom",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kAppServiceOnAppUpdateWithoutMojom{
+    "AppServiceOnAppUpdateWithoutMojom", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace apps
