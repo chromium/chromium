@@ -640,9 +640,6 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     return;
   }
 
-  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
-  registrar_->NotifyWebAppInstalled(app_id);
-
   install_manager_->NotifyWebAppInstalled(app_id);
 
   const WebApp* web_app = GetWebAppRegistrar().GetAppById(app_id);
@@ -718,9 +715,6 @@ void WebAppInstallFinalizer::OnInstallHooksFinished(
 }
 
 void WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks(AppId app_id) {
-  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
-  registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
-
   install_manager_->NotifyWebAppInstalledWithOsHooks(app_id);
 }
 
@@ -767,9 +761,6 @@ void WebAppInstallFinalizer::OnUpdateHooksFinished(
     AppId app_id,
     std::string old_name,
     web_app::OsHooksErrors os_hooks_errors) {
-  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
-  registrar_->NotifyWebAppManifestUpdated(app_id, old_name);
-
   install_manager_->NotifyWebAppManifestUpdated(app_id, old_name);
 
   std::move(callback).Run(

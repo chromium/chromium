@@ -21,6 +21,8 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -68,6 +70,7 @@ void UninstallImpl(WebAppProvider* provider,
                    gfx::NativeWindow parent_window);
 
 class WebAppPublisherHelper : public AppRegistrarObserver,
+                              public WebAppInstallManagerObserver,
 #if BUILDFLAG(IS_CHROMEOS)
                               public NotificationDisplayService::Observer,
                               public MediaCaptureDevicesDispatcher::Observer,
@@ -261,6 +264,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   apps::AppType app_type() const { return app_type_; }
 
   WebAppRegistrar& registrar() const;
+  WebAppInstallManager& install_manager() const;
 
   bool IsShuttingDown() const;
 
@@ -280,12 +284,15 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   };
 #endif
 
-  // AppRegistrarObserver:
+  // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
+
+  // AppRegistrarObserver:
   void OnAppRegistrarDestroyed() override;
   void OnWebAppFileHandlerApprovalStateChanged(const AppId& app_id) override;
   void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
@@ -385,6 +392,9 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
+
+  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};

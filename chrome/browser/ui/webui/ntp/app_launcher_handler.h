@@ -20,6 +20,8 @@
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/favicon/core/favicon_service.h"
@@ -60,6 +62,7 @@ class AppLauncherHandler
       public ExtensionEnableFlowDelegate,
       public extensions::InstallObserver,
       public web_app::AppRegistrarObserver,
+      public web_app::WebAppInstallManagerObserver,
       public extensions::ExtensionRegistryObserver {
  public:
   AppLauncherHandler(extensions::ExtensionService* extension_service,
@@ -100,12 +103,15 @@ class AppLauncherHandler
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
 
-  // web_app::AppRegistrarObserver:
+  // web_app::OnWebAppInstallManagerObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
-  void OnWebAppInstallTimeChanged(const web_app::AppId& app_id,
-                                  const base::Time& time) override;
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
+
+  // web_app::AppRegistrarObserver:
+  void OnWebAppInstallTimeChanged(const web_app::AppId& app_id,
+                                  const base::Time& time) override;
   void OnAppRegistrarDestroyed() override;
   void OnWebAppRunOnOsLoginModeChanged(
       const web_app::AppId& app_id,
@@ -237,6 +243,10 @@ class AppLauncherHandler
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       web_apps_observation_{this};
+
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   base::ScopedObservation<extensions::InstallTracker,
                           extensions::InstallObserver>

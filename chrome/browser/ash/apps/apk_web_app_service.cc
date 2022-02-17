@@ -98,7 +98,7 @@ ApkWebAppService::ApkWebAppService(Profile* profile)
   provider_ = web_app::WebAppProvider::GetDeprecated(profile);
   DCHECK(provider_);
   if (!web_app::IsWebAppsCrosapiEnabled()) {
-    registrar_observer_.Observe(&provider_->registrar());
+    install_manager_observer_.Observe(&provider_->install_manager());
   }
 }
 
@@ -455,6 +455,10 @@ void ApkWebAppService::OnArcAppListPrefsDestroyed() {
 void ApkWebAppService::OnWebAppWillBeUninstalled(
     const web_app::AppId& web_app_id) {
   MaybeRemoveArcPackageForWebApp(web_app_id);
+}
+
+void ApkWebAppService::OnWebAppInstallManagerDestroyed() {
+  install_manager_observer_.Reset();
 }
 
 void ApkWebAppService::OnAppUpdate(const apps::AppUpdate& update) {

@@ -606,8 +606,14 @@ void AppLauncherHandler::OnWebAppSettingsPolicyChanged() {
   HandleGetApps(nullptr);
 }
 
+void AppLauncherHandler::OnWebAppInstallManagerDestroyed() {
+  web_apps_observation_.Reset();
+  install_manager_observation_.Reset();
+}
+
 void AppLauncherHandler::OnAppRegistrarDestroyed() {
   web_apps_observation_.Reset();
+  install_manager_observation_.Reset();
 }
 
 void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
@@ -727,6 +733,7 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
     install_tracker_observation_.Observe(
         extensions::InstallTracker::Get(profile));
     web_apps_observation_.Observe(&web_app_provider_->registrar());
+    install_manager_observation_.Observe(&web_app_provider_->install_manager());
   }
 
   has_loaded_apps_ = true;
@@ -1250,9 +1257,6 @@ void AppLauncherHandler::OnOsHooksInstalled(
   bool error = os_hooks_errors[web_app::OsHookType::kShortcuts];
   base::UmaHistogramBoolean("Apps.Launcher.InstallLocallyShortcutsCreated",
                             !error);
-
-  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
-  web_app_provider_->registrar().NotifyWebAppInstalledWithOsHooks(app_id);
   web_app_provider_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
 }
 

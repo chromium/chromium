@@ -4298,29 +4298,33 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
 };
 
 // Used to notify when a WPA is installed.
-class AutotestPrivateInstallPWAForCurrentURLFunction::PWARegistrarObserver
-    : public web_app::AppRegistrarObserver {
+class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
+    : public web_app::WebAppInstallManagerObserver {
  public:
-  PWARegistrarObserver(Profile* profile,
-                       base::OnceCallback<void(const web_app::AppId&)> callback)
+  PWAInstallManagerObserver(
+      Profile* profile,
+      base::OnceCallback<void(const web_app::AppId&)> callback)
       : callback_(std::move(callback)) {
     observation_.Observe(
-        &web_app::WebAppProvider::GetForTest(profile)->registrar());
+        &web_app::WebAppProvider::GetForTest(profile)->install_manager());
   }
 
-  PWARegistrarObserver(const PWARegistrarObserver&) = delete;
-  PWARegistrarObserver& operator=(const PWARegistrarObserver&) = delete;
+  PWAInstallManagerObserver(const PWAInstallManagerObserver&) = delete;
+  PWAInstallManagerObserver& operator=(const PWAInstallManagerObserver&) =
+      delete;
 
-  ~PWARegistrarObserver() override {}
+  ~PWAInstallManagerObserver() override {}
 
   void OnWebAppInstalled(const web_app::AppId& app_id) override {
     observation_.Reset();
     std::move(callback_).Run(app_id);
   }
 
+  void OnWebAppInstallManagerDestroyed() override { observation_.Reset(); }
+
  private:
-  base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
       observation_{this};
   base::OnceCallback<void(const web_app::AppId&)> callback_;
 };
@@ -4371,7 +4375,7 @@ void AutotestPrivateInstallPWAForCurrentURLFunction::PWALoaded() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   Browser* browser = GetFirstRegularBrowser();
 
-  registrar_observer_ = std::make_unique<PWARegistrarObserver>(
+  install_mananger_observer_ = std::make_unique<PWAInstallManagerObserver>(
       profile,
       base::BindOnce(
           &AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstalled, this));

@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
     on_hooks_closure = base::BindLambdaForTesting(
         [](const AppId& installed_app_id) { FAIL(); });
 #endif
-    WebAppTestRegistryObserverAdapter app_listener(GetProfile(1));
+    WebAppInstallManagerObserverAdapter app_listener(GetProfile(1));
     app_listener.SetWebAppInstalledDelegate(on_installed_closure);
     app_listener.SetWebAppInstalledWithOsHooksDelegate(on_hooks_closure);
     InstallAppAsUserInitiated(GetProfile(0));

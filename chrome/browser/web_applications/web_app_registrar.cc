@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -91,34 +90,10 @@ void WebAppRegistrar::NotifyWebAppFileHandlerApprovalStateChanged(
     observer.OnWebAppFileHandlerApprovalStateChanged(app_id);
 }
 
-void WebAppRegistrar::NotifyWebAppInstalled(const AppId& app_id) {
-  for (AppRegistrarObserver& observer : observers_)
-    observer.OnWebAppInstalled(app_id);
-  // TODO(alancutter): Call RecordWebAppInstallation here when we get access to
-  // the webapps::WebappInstallSource in this event.
-}
-
-void WebAppRegistrar::NotifyWebAppManifestUpdated(const AppId& app_id,
-                                                  base::StringPiece old_name) {
-  for (AppRegistrarObserver& observer : observers_)
-    observer.OnWebAppManifestUpdated(app_id, old_name);
-}
-
 void WebAppRegistrar::NotifyWebAppsWillBeUpdatedFromSync(
     const std::vector<const WebApp*>& new_apps_state) {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnWebAppsWillBeUpdatedFromSync(new_apps_state);
-}
-
-void WebAppRegistrar::NotifyWebAppUninstalled(const AppId& app_id) {
-  for (AppRegistrarObserver& observer : observers_)
-    observer.OnWebAppUninstalled(app_id);
-}
-
-void WebAppRegistrar::NotifyWebAppWillBeUninstalled(const AppId& app_id) {
-  for (AppRegistrarObserver& observer : observers_)
-    observer.OnWebAppWillBeUninstalled(app_id);
-  RecordWebAppUninstallation(profile()->GetPrefs(), app_id);
 }
 
 void WebAppRegistrar::NotifyWebAppLocallyInstalledStateChanged(
@@ -162,11 +137,6 @@ void WebAppRegistrar::NotifyWebAppInstallTimeChanged(const AppId& app_id,
 void WebAppRegistrar::NotifyWebAppProfileWillBeDeleted(const AppId& app_id) {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnWebAppProfileWillBeDeleted(app_id);
-}
-
-void WebAppRegistrar::NotifyWebAppInstalledWithOsHooks(const AppId& app_id) {
-  for (AppRegistrarObserver& observer : observers_)
-    observer.OnWebAppInstalledWithOsHooks(app_id);
 }
 
 void WebAppRegistrar::NotifyWebAppUserDisplayModeChanged(

@@ -18,32 +18,11 @@ class WebApp;
 
 class AppRegistrarObserver : public base::CheckedObserver {
  public:
-  virtual void OnWebAppInstalled(const AppId& app_id) {}
-
-  // Called when OS hooks installation is finished during Web App installation.
-  virtual void OnWebAppInstalledWithOsHooks(const AppId& app_id) {}
-
-  // Called when any field of a web app's local manifest is updated.
-  // Note that |old_name| will always be the same as the current name as we
-  // don't support name updating yet. See TODO(crbug.com/1088338).
-  virtual void OnWebAppManifestUpdated(const AppId& app_id,
-                                       base::StringPiece old_name) {}
-
   // Called before any field of a web app is updated from the sync server.
   // A call site may compare existing WebApp state from the registry against
   // this new WebApp state with sync changes applied.
   virtual void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state) {}
-
-  // Called before a web app is uninstalled, before the uninstallation process
-  // begins. |app_id| is still registered in the WebAppRegistrar, and OS hooks
-  // have not yet been uninstalled.
-  virtual void OnWebAppWillBeUninstalled(const AppId& app_id) {}
-
-  // Called after a web app is uninstalled. |app_id| is no longer registered in
-  // the WebAppRegistrar, all OS hooks are uninstalled, and icons have been
-  // deleted.
-  virtual void OnWebAppUninstalled(const AppId& app_id) {}
 
   virtual void OnWebAppProfileWillBeDeleted(const AppId& app_id) {}
 

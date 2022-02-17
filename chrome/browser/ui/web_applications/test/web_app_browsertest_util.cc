@@ -376,8 +376,12 @@ void BrowserWaiter::OnBrowserRemoved(Browser* browser) {
   removed_run_loop_.Quit();
 }
 
-UpdateAwaiter::UpdateAwaiter(WebAppRegistrar& registrar) {
-  scoped_observation_.Observe(&registrar);
+UpdateAwaiter::UpdateAwaiter(WebAppInstallManager& install_manager) {
+  scoped_observation_.Observe(&install_manager);
+}
+
+void UpdateAwaiter::OnWebAppInstallManagerDestroyed() {
+  scoped_observation_.Reset();
 }
 
 UpdateAwaiter::~UpdateAwaiter() = default;

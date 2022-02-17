@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -669,9 +670,7 @@ void WebAppInstallManager::NotifyWebAppWillBeUninstalled(const AppId& app_id) {
   for (WebAppInstallManagerObserver& observer : observers_) {
     observer.OnWebAppWillBeUninstalled(app_id);
   }
-  // TODO(crbug/1275945): enable in phase 3 of resolving crbug/1275945 when
-  // NotifyWebAppWillBeUninstalled is removed from WebAppRegistrar.
-  // RecordWebAppUninstallation(profile_->GetPrefs(), app_id);
+  RecordWebAppUninstallation(profile_->GetPrefs(), app_id);
 }
 
 void WebAppInstallManager::NotifyWebAppInstallManagerDestroyed() {

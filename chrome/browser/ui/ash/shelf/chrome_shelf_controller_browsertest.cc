@@ -2640,7 +2640,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
   web_app_prefs.Insert(app_url, app_id,
                        web_app::ExternalInstallSource::kExternalPolicy);
   web_app::WebAppProvider::GetForTest(browser()->profile())
-      ->registrar()
+      ->install_manager()
       .NotifyWebAppInstalledWithOsHooks(app_id);
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->FlushMojoCallsForTesting();

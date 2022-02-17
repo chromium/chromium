@@ -912,8 +912,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   // Check that OnWebAppInstalled and OnWebAppWillBeUninstalled are not called
   // if in-place web app update happens.
-  WebAppTestRegistryObserverAdapter install_observer(
-      &GetProvider().registrar());
+  WebAppInstallManagerObserverAdapter install_observer(
+      &GetProvider().install_manager());
   install_observer.SetWebAppInstalledDelegate(
       base::BindLambdaForTesting([](const AppId& app_id) { NOTREACHED(); }));
   install_observer.SetWebAppUninstalledDelegate(

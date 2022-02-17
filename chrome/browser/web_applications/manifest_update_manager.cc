@@ -26,6 +26,7 @@ ManifestUpdateManager::ManifestUpdateManager() = default;
 ManifestUpdateManager::~ManifestUpdateManager() = default;
 
 void ManifestUpdateManager::SetSubsystems(
+    raw_ptr<WebAppInstallManager> install_manager,
     WebAppRegistrar* registrar,
     WebAppIconManager* icon_manager,
     WebAppUiManager* ui_manager,
@@ -33,6 +34,7 @@ void ManifestUpdateManager::SetSubsystems(
     SystemWebAppManager* system_web_app_manager,
     OsIntegrationManager* os_integration_manager,
     WebAppSyncBridge* sync_bridge) {
+  install_manager_ = install_manager;
   registrar_ = registrar;
   icon_manager_ = icon_manager;
   ui_manager_ = ui_manager;
@@ -43,14 +45,14 @@ void ManifestUpdateManager::SetSubsystems(
 }
 
 void ManifestUpdateManager::Start() {
-  registrar_observation_.Observe(registrar_.get());
+  install_manager_observation_.Observe(install_manager_.get());
 
   DCHECK(!started_);
   started_ = true;
 }
 
 void ManifestUpdateManager::Shutdown() {
-  registrar_observation_.Reset();
+  install_manager_observation_.Reset();
 
   tasks_.clear();
   started_ = false;
@@ -108,7 +110,7 @@ bool ManifestUpdateManager::IsUpdateConsumed(const AppId& app_id) {
   return false;
 }
 
-// AppRegistrarObserver:
+// WebAppInstallManager:
 void ManifestUpdateManager::OnWebAppWillBeUninstalled(const AppId& app_id) {
   DCHECK(started_);
 
@@ -120,6 +122,10 @@ void ManifestUpdateManager::OnWebAppWillBeUninstalled(const AppId& app_id) {
   }
   DCHECK(!tasks_.contains(app_id));
   last_update_check_.erase(app_id);
+}
+
+void ManifestUpdateManager::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 // Throttling updates to at most once per day is consistent with Android.

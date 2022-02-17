@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerOriginTrialBrowserTest, OriginTrial) {
 
   // Open the page again with the token missing.
   {
-    UpdateAwaiter update_awaiter(provider.registrar());
+    UpdateAwaiter update_awaiter(provider.install_manager());
 
     serve_token = false;
     NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));

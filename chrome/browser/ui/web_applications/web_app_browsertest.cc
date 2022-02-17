@@ -1190,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 
   // Wait for OS hooks and installation to complete and the app to launch.
   base::RunLoop run_loop_install;
-  WebAppTestRegistryObserverAdapter observer(profile());
+  WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
   content::WindowedNotificationObserver app_loaded_observer(
@@ -1276,7 +1276,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
 
   // Wait for OS hooks and installation to complete and the app to launch.
   base::RunLoop run_loop_install;
-  WebAppTestRegistryObserverAdapter observer(profile());
+  WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
   content::WindowedNotificationObserver app_loaded_observer(
@@ -1334,7 +1334,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
 
   // Wait for OS hooks and installation to complete and the app to launch.
   base::RunLoop run_loop_install;
-  WebAppTestRegistryObserverAdapter observer(profile());
+  WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
   content::WindowedNotificationObserver app_loaded_observer(
@@ -1936,7 +1936,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
   // Wait for OS hooks and installation to complete.
   chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
   base::RunLoop run_loop_install;
-  WebAppTestRegistryObserverAdapter observer(profile());
+  WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
   const AppId app_id = test::InstallPwaForCurrentUrl(browser());
@@ -2043,7 +2043,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PRE_UninstallIncompleteUninstall) {
 
   // Wait for OS hooks and installation to complete and the app to launch.
   base::RunLoop run_loop_install;
-  WebAppTestRegistryObserverAdapter observer(profile());
+  WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
   const AppId app_id = test::InstallPwaForCurrentUrl(browser());

@@ -1122,7 +1122,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction
 
  private:
   class PWABannerObserver;
-  class PWARegistrarObserver;
+  class PWAInstallManagerObserver;
   ~AutotestPrivateInstallPWAForCurrentURLFunction() override;
   ResponseAction Run() override;
 
@@ -1134,7 +1134,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction
   void PWATimeout();
 
   std::unique_ptr<PWABannerObserver> banner_observer_;
-  std::unique_ptr<PWARegistrarObserver> registrar_observer_;
+  std::unique_ptr<PWAInstallManagerObserver> install_mananger_observer_;
   base::OneShotTimer timeout_timer_;
 };
 

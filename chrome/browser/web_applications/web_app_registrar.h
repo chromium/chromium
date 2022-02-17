@@ -292,15 +292,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   void AddObserver(AppRegistrarObserver* observer);
   void RemoveObserver(AppRegistrarObserver* observer);
 
-  void NotifyWebAppInstalled(const AppId& app_id);
-  void NotifyWebAppManifestUpdated(const AppId& app_id,
-                                   base::StringPiece old_name);
   void NotifyWebAppProtocolSettingsChanged();
   void NotifyWebAppFileHandlerApprovalStateChanged(const AppId& app_id);
   void NotifyWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state);
-  void NotifyWebAppUninstalled(const AppId& app_id);
-  void NotifyWebAppWillBeUninstalled(const AppId& app_id);
   void NotifyWebAppLocallyInstalledStateChanged(const AppId& app_id,
                                                 bool is_locally_installed);
   void NotifyWebAppDisabledStateChanged(const AppId& app_id, bool is_disabled);
@@ -311,9 +306,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
                                          const base::Time& time);
   void NotifyWebAppInstallTimeChanged(const AppId& app_id,
                                       const base::Time& time);
-
-  // Notify when OS hooks installation is finished during Web App installation.
-  void NotifyWebAppInstalledWithOsHooks(const AppId& app_id);
   void NotifyWebAppUserDisplayModeChanged(const AppId& app_id,
                                           DisplayMode user_display_mode);
   void NotifyWebAppRunOnOsLoginModeChanged(

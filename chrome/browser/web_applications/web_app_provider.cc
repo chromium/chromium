@@ -316,9 +316,10 @@ void WebAppProvider::ConnectSubsystems() {
                                   os_integration_manager_.get(),
                                   install_finalizer_.get());
   manifest_update_manager_->SetSubsystems(
-      registrar_.get(), icon_manager_.get(), ui_manager_.get(),
-      install_finalizer_.get(), system_web_app_manager_.get(),
-      os_integration_manager_.get(), sync_bridge_.get());
+      install_manager_.get(), registrar_.get(), icon_manager_.get(),
+      ui_manager_.get(), install_finalizer_.get(),
+      system_web_app_manager_.get(), os_integration_manager_.get(),
+      sync_bridge_.get());
   externally_managed_app_manager_->SetSubsystems(
       registrar_.get(), ui_manager_.get(), install_finalizer_.get(),
       install_manager_.get());

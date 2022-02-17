@@ -56,12 +56,15 @@ ProtocolHandlersHandler::~ProtocolHandlersHandler() = default;
 
 void ProtocolHandlersHandler::OnJavascriptAllowed() {
   registry_observation_.Observe(GetProtocolHandlerRegistry());
-  if (web_app_provider_)
+  if (web_app_provider_) {
     app_observation_.Observe(&web_app_provider_->registrar());
+    install_manager_observation_.Observe(&web_app_provider_->install_manager());
+  }
 }
 
 void ProtocolHandlersHandler::OnJavascriptDisallowed() {
   registry_observation_.Reset();
+  install_manager_observation_.Reset();
   app_observation_.Reset();
 }
 
@@ -120,6 +123,10 @@ void ProtocolHandlersHandler::OnWebAppProtocolSettingsChanged() {
 void ProtocolHandlersHandler::OnWebAppUninstalled(
     const web_app::AppId& app_id) {
   OnWebAppProtocolSettingsChanged();
+}
+
+void ProtocolHandlersHandler::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void ProtocolHandlersHandler::GetHandlersForProtocol(

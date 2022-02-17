@@ -855,7 +855,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   };
   std::vector<Event> event_order;
 
-  WebAppTestRegistryObserverAdapter observer(&registrar());
+  WebAppInstallManagerObserverAdapter observer(&install_manager());
   observer.SetWebAppWillBeUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
         EXPECT_EQ(uninstalled_app_id, app_id);
@@ -985,7 +985,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
 
   bool observer_uninstall_called = false;
-  WebAppTestRegistryObserverAdapter observer(&registrar());
+  WebAppInstallManagerObserverAdapter observer(&install_manager());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
         observer_uninstall_called = true;
@@ -1058,7 +1058,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
   EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
 
-  WebAppTestRegistryObserverAdapter observer(&registrar());
+  WebAppInstallManagerObserverAdapter observer(&install_manager());
 
   bool observer_uninstalled_called = false;
 

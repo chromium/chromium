@@ -1248,6 +1248,10 @@ WebAppRegistrar& WebAppPublisherHelper::registrar() const {
   return provider_->registrar();
 }
 
+WebAppInstallManager& WebAppPublisherHelper::install_manager() const {
+  return provider_->install_manager();
+}
+
 bool WebAppPublisherHelper::IsShuttingDown() const {
   return is_shutting_down_;
 }
@@ -1300,6 +1304,10 @@ void WebAppPublisherHelper::OnWebAppWillBeUninstalled(const AppId& app_id) {
 #endif
 
   delegate_->PublishWebApp(ConvertUninstalledWebApp(web_app));
+}
+
+void WebAppPublisherHelper::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void WebAppPublisherHelper::OnAppRegistrarDestroyed() {
@@ -1521,6 +1529,7 @@ void WebAppPublisherHelper::Init(bool observe_media_requests) {
     return;
   }
 
+  install_manager_observation_.Observe(&install_manager());
   registrar_observation_.Observe(&registrar());
   content_settings_observation_.Observe(
       HostContentSettingsMapFactory::GetForProfile(profile_));

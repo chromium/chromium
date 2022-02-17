@@ -61,9 +61,6 @@ void WebAppUninstallJob::Start(const AppId& app_id,
     DCHECK(app);
     app->SetIsUninstalling(true);
   }
-  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
-  registrar_->NotifyWebAppWillBeUninstalled(app_id);
-
   install_manager_->NotifyWebAppWillBeUninstalled(app_id);
 
   RemoveAppIsolationState(profile_prefs_, app_origin);
@@ -143,9 +140,6 @@ void WebAppUninstallJob::MaybeFinishUninstall() {
       DCHECK_EQ(registrar_->GetAppById(app_id_), nullptr);
       break;
   }
-  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
-  registrar_->NotifyWebAppUninstalled(app_id_);
-
   install_manager_->NotifyWebAppUninstalled(app_id_);
   std::move(callback_).Run(errors_ ? WebAppUninstallJobResult::kError
                                    : WebAppUninstallJobResult::kSuccess);

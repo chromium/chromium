@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -36,7 +38,8 @@ namespace settings {
 class ProtocolHandlersHandler
     : public SettingsPageUIHandler,
       public custom_handlers::ProtocolHandlerRegistry::Observer,
-      public web_app::AppRegistrarObserver {
+      public web_app::AppRegistrarObserver,
+      public web_app::WebAppInstallManagerObserver {
  public:
   explicit ProtocolHandlersHandler(Profile* profile);
 
@@ -53,8 +56,11 @@ class ProtocolHandlersHandler
   // ProtocolHandlerRegistry::Observer:
   void OnProtocolHandlerRegistryChanged() override;
 
-  // web_app::AppRegistrarObserver:
+  // web_app::WebAppInstallManagerObserver:
   void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
+
+  // web_app::AppRegistrarObserver:
   void OnWebAppProtocolSettingsChanged() override;
 
  private:
@@ -139,6 +145,9 @@ class ProtocolHandlersHandler
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       app_observation_{this};
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 };
 
 }  // namespace settings

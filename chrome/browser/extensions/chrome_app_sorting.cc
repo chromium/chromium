@@ -197,6 +197,7 @@ void ChromeAppSorting::InitializePageOrdinalMapFromWebApps() {
   web_app_registrar_ = &web_app_provider->registrar();
   web_app_sync_bridge_ = &web_app_provider->sync_bridge();
   app_registrar_observation_.Observe(&web_app_provider->registrar());
+  install_manager_observation_.Observe(&web_app_provider->install_manager());
   InitializePageOrdinalMap(web_app_registrar_->GetAppIds());
 }
 
@@ -515,6 +516,10 @@ void ChromeAppSorting::OnWebAppInstalled(const web_app::AppId& app_id) {
                       web_app->user_launch_ordinal());
     FixNTPOrdinalCollisions();
   }
+}
+
+void ChromeAppSorting::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void ChromeAppSorting::OnWebAppsWillBeUpdatedFromSync(

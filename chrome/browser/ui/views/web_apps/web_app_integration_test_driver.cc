@@ -1137,7 +1137,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(
                                      profile(), site_mode);
   DCHECK(policy_app);
   base::RunLoop run_loop;
-  WebAppTestRegistryObserverAdapter observer(profile());
+  WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (policy_app->id == app_id) {
@@ -1763,7 +1763,7 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
 
 void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
   base::RunLoop run_loop;
-  WebAppTestRegistryObserverAdapter observer(profile());
+  WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (id == app_id) {

@@ -14,9 +14,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
@@ -41,7 +41,7 @@ namespace ash {
 class ApkWebAppService : public KeyedService,
                          public ApkWebAppInstaller::Owner,
                          public ArcAppListPrefs::Observer,
-                         public web_app::AppRegistrarObserver,
+                         public web_app::WebAppInstallManagerObserver,
                          public apps::AppRegistryCache::Observer {
  public:
   static ApkWebAppService* Get(Profile* profile);
@@ -102,8 +102,10 @@ class ApkWebAppService : public KeyedService,
   void OnPackageListInitialRefreshed() override;
   void OnArcAppListPrefsDestroyed() override;
 
-  // web_app::AppRegistrarObserver overrides.
+  // web_app::WebAppInstallManagerObserver overrides.
   void OnWebAppWillBeUninstalled(const web_app::AppId& web_app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
+
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
@@ -128,9 +130,9 @@ class ApkWebAppService : public KeyedService,
   ArcAppListPrefs* arc_app_list_prefs_;
   web_app::WebAppProvider* provider_;
 
-  base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
-      registrar_observer_{this};
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observer_{this};
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};

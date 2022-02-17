@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PolicyId) {
   web_app_prefs.Insert(install_url, app_id,
                        web_app::ExternalInstallSource::kExternalPolicy);
 
-  provider().registrar().NotifyWebAppInstalledWithOsHooks(app_id);
+  provider().install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
 
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->policy_id,
@@ -814,8 +814,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, DisabledState) {
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardMask |
                 IconEffects::kBlocked);
 
-  provider().registrar().NotifyWebAppManifestUpdated(app_id,
-                                                     base::StringPiece());
+  provider().install_manager().NotifyWebAppManifestUpdated(app_id,
+                                                           base::StringPiece());
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 7U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
