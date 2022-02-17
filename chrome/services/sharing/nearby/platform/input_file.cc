@@ -4,6 +4,8 @@
 
 #include "chrome/services/sharing/nearby/platform/input_file.h"
 
+#include <vector>
+
 #include "base/logging.h"
 
 namespace location {
@@ -34,13 +36,13 @@ ExceptionOr<ByteArray> InputFile::Read(std::int64_t size) {
     return ExceptionOr<ByteArray>(ByteArray());
   }
 
-  char buf[size];
-  int num_bytes_read = file_.ReadAtCurrentPos(buf, size);
+  std::vector<char> buf(size);
+  int num_bytes_read = file_.ReadAtCurrentPos(buf.data(), size);
 
   if (num_bytes_read < 0 || num_bytes_read > GetTotalSize())
     return Exception::kIo;
 
-  return ExceptionOr<ByteArray>(ByteArray(buf, num_bytes_read));
+  return ExceptionOr<ByteArray>(ByteArray(buf.data(), num_bytes_read));
 }
 
 Exception InputFile::Close() {
