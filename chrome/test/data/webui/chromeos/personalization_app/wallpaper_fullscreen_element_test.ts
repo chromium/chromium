@@ -289,4 +289,17 @@ export function WallpaperFullscreenTest() {
 
     await wallpaperProvider.whenCalled('confirmPreviewWallpaper');
   });
+
+  test('sets aria label on cr-button', async () => {
+    wallpaperFullscreenElement = initElement(WallpaperFullscreen);
+    mockFullscreenApis();
+    await waitAfterNextRender(wallpaperFullscreenElement);
+
+    assertEquals(
+        loadTimeData.getString('ariaLabelExitFullscreen'),
+        wallpaperFullscreenElement.shadowRoot
+            ?.querySelector('.fullscreen-button')
+            ?.getAttribute('aria-label'),
+        'exit button aria label is set');
+  });
 }

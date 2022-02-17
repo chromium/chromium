@@ -18,7 +18,7 @@
             class="photo-inner-container photo-loading-failure">
           <div class$="[[getClassForImagesContainer_(item)]]">
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
-              <img src="[[preview.url]]" aria-hidden="true">
+              <img src$="[[preview.url]]" aria-hidden="true">
             </template>
           </div>
           <div class="photo-text-container">
@@ -30,7 +30,8 @@
       </div>
       </template>
       <template is="dom-if" if="[[isEmptyTile_(item)]]">
-        <div tabindex$="[[tabIndex]]" role="button" aria-disabled="[[!isSelectableTile_(item)]]"
+        <div tabindex$="[[tabIndex]]" role="button"
+            aria-disabled$="[[!isSelectableTile_(item)]]"
             class$="[[getClassForEmptyTile_(item)]]" selectable$="[[isSelectableTile_(item)]]"
             on-click="onCollectionSelected_" on-keypress="onCollectionSelected_">
           <div class$="[[getClassForImagesContainer_(item)]]">

@@ -335,4 +335,19 @@ export function PersonalizationBreadcrumbTest() {
     assertBreadcrumbs(
         breadcrumbContainer!, [breadcrumbElement.i18n('screensaverLabel')]);
   });
+
+  test('back button aria label is set', async () => {
+    // Back button is hidden when personalization hub is enabled.
+    loadTimeData.overrideValues({isPersonalizationHubEnabled: false});
+
+    breadcrumbElement = initElement(
+        PersonalizationBreadcrumb, {'path': Paths.CollectionImages});
+    await waitAfterNextRender(breadcrumbElement);
+
+    assertEquals(
+        'Back to Wallpaper',
+        breadcrumbElement.shadowRoot?.getElementById('backButton')
+            ?.getAttribute('aria-label'),
+        'back button aria label is set');
+  });
 }

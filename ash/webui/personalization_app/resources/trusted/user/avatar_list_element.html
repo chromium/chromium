@@ -17,7 +17,7 @@
     </div>
   </template>
   <template is="dom-if" if="[[profileImage_]]">
-    <img id="profileImage" src="[[profileImage_.url]]"
+    <img id="profileImage" src$="[[profileImage_.url]]"
         on-click="onSelectProfileImage_"
         on-keypress="onSelectProfileImage_">
   </template>

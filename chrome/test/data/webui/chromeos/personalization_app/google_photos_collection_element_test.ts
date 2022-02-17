@@ -220,4 +220,15 @@ export function GooglePhotosCollectionTest() {
     assertTrue(!!zeroState);
     assertFalse(zeroState.hidden);
   });
+
+  test('sets google photos aria label', async () => {
+    googlePhotosCollectionElement =
+        initElement(GooglePhotosCollection, {hidden: false});
+    await waitAfterNextRender(googlePhotosCollectionElement);
+
+    assertEquals(
+        loadTimeData.getString('googlePhotosLabel'),
+        googlePhotosCollectionElement.$.main.getAttribute('aria-label'),
+        'google photos main aria label is set');
+  });
 }

@@ -7,6 +7,7 @@ import {IFrameApi} from 'chrome://personalization/trusted/iframe_api.js';
 import {GooglePhotosPhoto} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {WallpaperCollections} from 'chrome://personalization/trusted/wallpaper/wallpaper_collections_element.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -367,4 +368,16 @@ export function WallpaperCollectionsTest() {
             },
             sentData);
       });
+
+  test('sets aria label on collections-iframe', async () => {
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    assertEquals(
+        loadTimeData.getString('wallpaperCollections'),
+        wallpaperCollectionsElement.shadowRoot
+            ?.getElementById('collections-iframe')
+            ?.getAttribute('aria-label'),
+        'aria label equals expected value');
+  });
 }
