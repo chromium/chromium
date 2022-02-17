@@ -93526,6 +93526,8 @@ others/histograms.xml -->
   <int value="22" label="WebAppProviderNotReady"/>
   <int value="23" label="SuccessOfflineOnlyInstall"/>
   <int value="24" label="SuccessOfflineFallbackInstall"/>
+  <int value="25" label="InstallTaskDestroyed"/>
+  <int value="26" label="UpdateTaskFailed"/>
 </enum>
 
 <enum name="WebAppInstallSource">
