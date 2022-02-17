@@ -194,6 +194,7 @@
     overflow: hidden;
     position: relative;
     right: 0;
+    z-index: -1;
   }
 
   #yellowShape {
@@ -314,10 +315,11 @@
 </style>
 <ntp-module-header
     chip-text="[[headerChipText_]]"
-    hide-menu-button="[[showOptInScreen]]"
+    hide-menu-button="[[hideMenuButton]]"
     show-info-button="[[!showOptInScreen]]"
     on-info-button-click="onInfoButtonClick_"
-    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    show-dismiss-button="[[!showSoftOptOutButton]]"
+    on-dismiss-button-click="onDismissButtonClick_"
     dismiss-text="[[i18nRecursive('',
                                   'modulesDismissButtonText',
                                   'modulesPhotosMemoriesHideToday')]]"

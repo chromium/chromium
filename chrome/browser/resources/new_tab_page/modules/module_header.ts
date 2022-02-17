@@ -118,4 +118,10 @@ export class ModuleHeaderElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-module-header': ModuleHeaderElement;
+  }
+}
+
 customElements.define(ModuleHeaderElement.is, ModuleHeaderElement);

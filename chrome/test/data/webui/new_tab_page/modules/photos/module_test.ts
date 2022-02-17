@@ -477,6 +477,162 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
 
         // Assert.
         assertTrue(isVisible($$(module, '#softOptOutButton')));
+        assertTrue(!!$$(module, 'ntp-module-header'));
+        assertFalse($$(module, 'ntp-module-header')!.hideMenuButton);
+        assertFalse($$(module, 'ntp-module-header')!.showDismissButton);
+      });
+
+  test(
+      'menu is not shown in opt-in card when soft opt out is disabled',
+      async () => {
+        // Arrange.
+        const data = {
+          memories: [{
+            title: 'Title 1',
+            id: 'key1',
+            coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
+            itemUrl: {url: '#'}
+          }]
+        };
+        handler.setResultFor('getMemories', Promise.resolve(data));
+        handler.setResultFor(
+            'shouldShowOptInScreen', Promise.resolve({showOptInScreen: true}));
+        handler.setResultFor(
+            'shouldShowSoftOptOutButton',
+            Promise.resolve({showSoftOptOutButton: false}));
+        handler.setResultFor(
+            'getOptInTitleText',
+            Promise.resolve({optInTitleText: 'See your memories here'}));
+
+        const module =
+            await photosDescriptor.initialize(0) as PhotosModuleElement;
+        assertTrue(!!module);
+        document.body.append(module);
+        await handler.whenCalled('getMemories');
+        await handler.whenCalled('shouldShowOptInScreen');
+        await handler.whenCalled('shouldShowSoftOptOutButton');
+        await handler.whenCalled('getOptInTitleText');
+
+        // Assert.
+        assertTrue(!!$$(module, 'ntp-module-header'));
+        assertTrue($$(module, 'ntp-module-header')!.hideMenuButton);
+      });
+
+  test('menu is shown in memories card', async () => {
+    // Arrange.
+    const data = {
+      memories: [{
+        title: 'Title 1',
+        id: 'key1',
+        coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
+        itemUrl: {url: '#'}
+      }]
+    };
+    handler.setResultFor('getMemories', Promise.resolve(data));
+    handler.setResultFor(
+        'shouldShowOptInScreen', Promise.resolve({showOptInScreen: false}));
+    handler.setResultFor(
+        'shouldShowSoftOptOutButton',
+        Promise.resolve({showSoftOptOutButton: false}));
+    handler.setResultFor(
+        'getOptInTitleText',
+        Promise.resolve({optInTitleText: 'See your memories here'}));
+    const module = await photosDescriptor.initialize(0) as PhotosModuleElement;
+    assertTrue(!!module);
+    document.body.append(module);
+    await handler.whenCalled('getMemories');
+    await handler.whenCalled('shouldShowOptInScreen');
+    await handler.whenCalled('shouldShowSoftOptOutButton');
+    await handler.whenCalled('getOptInTitleText');
+    // Assert.
+    assertTrue(!!$$(module, 'ntp-module-header'));
+    assertFalse($$(module, 'ntp-module-header')!.hideMenuButton);
+    assertTrue($$(module, 'ntp-module-header')!.showDismissButton);
+  });
+
+  test(
+      'menu is shown after user opts-in from softOptOut disabled card',
+      async () => {
+        // Arrange.
+        const data = {
+          memories: [{
+            title: 'Title 1',
+            id: 'key1',
+            coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
+            itemUrl: {url: '#'}
+          }]
+        };
+        handler.setResultFor('getMemories', Promise.resolve(data));
+        handler.setResultFor(
+            'shouldShowOptInScreen', Promise.resolve({showOptInScreen: true}));
+        handler.setResultFor(
+            'shouldShowSoftOptOutButton',
+            Promise.resolve({showSoftOptOutButton: false}));
+        handler.setResultFor(
+            'getOptInTitleText',
+            Promise.resolve({optInTitleText: 'See your memories here'}));
+
+        const module =
+            await photosDescriptor.initialize(0) as PhotosModuleElement;
+        assertTrue(!!module);
+        document.body.append(module);
+        await handler.whenCalled('getMemories');
+        await handler.whenCalled('shouldShowOptInScreen');
+        await handler.whenCalled('shouldShowSoftOptOutButton');
+        await handler.whenCalled('getOptInTitleText');
+
+        // Menu is not shown because softOptOut is disabled
+        assertTrue(!!$$(module, 'ntp-module-header'));
+        assertTrue($$(module, 'ntp-module-header')!.hideMenuButton);
+
+        $$<HTMLElement>(module, '#optInButton')!.click();
+
+        // Menu is shown in memories card
+        assertFalse($$(module, 'ntp-module-header')!.hideMenuButton);
+        assertTrue($$(module, 'ntp-module-header')!.showDismissButton);
+      });
+
+  test(
+      'menu with Dismiss module is shown after user opts-in from softOptOut enabled card',
+      async () => {
+        // Arrange.
+        const data = {
+          memories: [{
+            title: 'Title 1',
+            id: 'key1',
+            coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
+            itemUrl: {url: '#'}
+          }]
+        };
+        handler.setResultFor('getMemories', Promise.resolve(data));
+        handler.setResultFor(
+            'shouldShowOptInScreen', Promise.resolve({showOptInScreen: true}));
+        handler.setResultFor(
+            'shouldShowSoftOptOutButton',
+            Promise.resolve({showSoftOptOutButton: true}));
+        handler.setResultFor(
+            'getOptInTitleText',
+            Promise.resolve({optInTitleText: 'See your memories here'}));
+
+        const module =
+            await photosDescriptor.initialize(0) as PhotosModuleElement;
+        assertTrue(!!module);
+        document.body.append(module);
+        await handler.whenCalled('getMemories');
+        await handler.whenCalled('shouldShowOptInScreen');
+        await handler.whenCalled('shouldShowSoftOptOutButton');
+        await handler.whenCalled('getOptInTitleText');
+
+        // Menu is shown because softOptOut is enabled
+        assertTrue(!!$$(module, 'ntp-module-header'));
+        assertFalse($$(module, 'ntp-module-header')!.hideMenuButton);
+        assertFalse($$(module, 'ntp-module-header')!.showDismissButton);
+
+        $$<HTMLElement>(module, '#optInButton')!.click();
+
+        // Menu is shown in memories card
+        assertFalse($$(module, 'ntp-module-header')!.hideMenuButton);
+        assertTrue($$(module, 'ntp-module-header')!.showDismissButton);
       });
 
   test('backend is notified when user soft opt outs', async () => {

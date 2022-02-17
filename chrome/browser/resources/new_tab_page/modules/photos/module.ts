@@ -65,6 +65,7 @@ export class PhotosModuleElement extends I18nMixin
 
       showSoftOptOutButton: Boolean,
       optInTitleText: String,
+      hideMenuButton: Boolean,
 
       showExploreMore_:
           {type: Boolean, computed: 'computeShowExploreMore_(memories)'},
@@ -78,6 +79,7 @@ export class PhotosModuleElement extends I18nMixin
   showOptInScreen: boolean;
   showSoftOptOutButton: boolean;
   optInTitleText: string;
+  hideMenuButton: boolean;
   private showExploreMore_: boolean;
   private headerChipText_: string;
 
@@ -151,6 +153,8 @@ export class PhotosModuleElement extends I18nMixin
     recordOptInStatus(OptInStatus.kOptIn);
     PhotosProxy.getHandler().onUserOptIn(true);
     this.showOptInScreen = false;
+    this.hideMenuButton = false;
+    this.showSoftOptOutButton = false;
   }
 
   private onOptOutClick_() {
@@ -199,6 +203,7 @@ async function createPhotosElement(): Promise<PhotosModuleElement|null> {
   element.showOptInScreen = showOptInScreen;
   element.showSoftOptOutButton = showSoftOptOutButton;
   element.optInTitleText = optInTitleText;
+  element.hideMenuButton = showOptInScreen && !showSoftOptOutButton;
   // We show only the first 3 at most.
   element.memories = memories.slice(0, numMemories);
   return element;
