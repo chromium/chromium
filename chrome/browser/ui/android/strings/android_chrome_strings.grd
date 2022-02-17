@@ -3179,7 +3179,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         To get your Google stuff across devices, sign in
       </message>
       <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_INCOGNITO_TAB" desc="Notification body text educating user about incognito tab in chrome.">
-        To browse without saving activity to your device, try out Incognito
+        To browse privately on this device, try out Incognito
       </message>
       <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_NTP_SUGGESTION_CARD" desc="Notification body text educating user about discovering suggested articles in chrome new tab page.">
         Discover new content on Chrome’s homepage
