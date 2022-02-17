@@ -61,6 +61,12 @@ base::FilePath& GetConfigPathInstance() {
   return *instance;
 }
 
+base::TaskPriority GetTaskPriority() {
+  return FirstPartySetsUtil::GetInstance()->IsFirstPartySetsEnabled()
+             ? base::TaskPriority::USER_BLOCKING
+             : base::TaskPriority::BEST_EFFORT;
+}
+
 // Invokes `on_sets_ready`, if:
 // * First-Party Sets is enabled; and
 // * `on_sets_ready` is not null.
@@ -83,18 +89,12 @@ void SetFirstPartySetsConfig(SetsReadyOnceCallback on_sets_ready) {
   // We use USER_BLOCKING here since First-Party Set initialization blocks
   // network navigations at startup.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      FROM_HERE, {base::MayBlock(), GetTaskPriority()},
       base::BindOnce(&OpenFile, instance_path), std::move(on_sets_ready));
 }
 
 std::string BoolToString(bool b) {
   return b ? "true" : "false";
-}
-
-base::TaskPriority GetTaskPriority() {
-  return FirstPartySetsUtil::GetInstance()->IsFirstPartySetsEnabled()
-             ? base::TaskPriority::USER_BLOCKING
-             : base::TaskPriority::BEST_EFFORT;
 }
 
 }  // namespace
