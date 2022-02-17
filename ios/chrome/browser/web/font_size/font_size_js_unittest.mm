@@ -6,10 +6,15 @@
 #include <stddef.h>
 
 #include "base/ios/ios_util.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#include "testing/platform_test.h"
 #include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,20 +22,31 @@
 #endif
 
 // Test fixture for accessibility.js testing.
-class FontSizeJsTest : public ChromeWebTest {
+class FontSizeJsTest : public PlatformTest {
  public:
-  FontSizeJsTest() {}
+  FontSizeJsTest() : web_client_(std::make_unique<web::FakeWebClient>()) {
+    PlatformTest::SetUp();
+
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+  }
 
   FontSizeJsTest(const FontSizeJsTest&) = delete;
   FontSizeJsTest& operator=(const FontSizeJsTest&) = delete;
 
   // Find DOM element by |element_id| and get computed font size in px.
   float GetElementFontSize(NSString* element_id) {
-    NSNumber* res = ExecuteJavaScript([NSString
-        stringWithFormat:
-            @"parseFloat(getComputedStyle(document.getElementById('%@'))."
-            @"getPropertyValue('font-size'));",
-            element_id]);
+    NSNumber* res = web::test::ExecuteJavaScript(
+        [NSString
+            stringWithFormat:
+                @"parseFloat(getComputedStyle(document.getElementById('%@'))."
+                @"getPropertyValue('font-size'));",
+                element_id],
+        web_state());
     return res.floatValue;
   }
 
@@ -41,27 +57,40 @@ class FontSizeJsTest : public ChromeWebTest {
   // viewport and '-webkit-text-size-adjust=auto'). Setting
   // '-webkit-text-size-adjust=none' also works.
   void LoadHtml(NSString* html) {
-    ChromeWebTest::LoadHtml(
+    web::test::LoadHtml(
         [NSString stringWithFormat:@"<html><style>"
                                    @"html { -webkit-text-size-adjust: none }"
                                    @"</style><meta name='viewport' "
                                    @"content='initial-scale=1.0'>%@</html>",
-                                   html]);
+                                   html],
+        web_state());
 
     // Main web injection should have occurred.
-    ASSERT_NSEQ(@"object", ExecuteJavaScript(@"typeof __gCrWeb"));
-    ExecuteJavaScript(web::test::GetPageScript(@"font_size_js"));
+    ASSERT_NSEQ(@"object",
+                web::test::ExecuteJavaScript(@"typeof __gCrWeb", web_state()));
+    web::test::ExecuteJavaScript(web::test::GetPageScript(@"font_size_js"),
+                                 web_state());
   }
 
   // Executes JavaScript "__gCrWeb.font_size.adjustFontSize(|scale|)" to
   // adjust font size to |scale|% and return if it is executed without
   // exception.
   [[nodiscard]] bool AdjustFontSize(int scale) {
-    id script_result = ExecuteJavaScript([NSString
-        stringWithFormat:@"__gCrWeb.font_size.adjustFontSize(%d); true;",
-                         scale]);
+    id script_result = web::test::ExecuteJavaScript(
+        [NSString
+            stringWithFormat:@"__gCrWeb.font_size.adjustFontSize(%d); true;",
+                             scale],
+        web_state());
     return [script_result isEqual:@YES];
   }
+
+ protected:
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
 };
 
 // Tests that __gCrWeb.font_size.adjustFontSize works for any scale.
