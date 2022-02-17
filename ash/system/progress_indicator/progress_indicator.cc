@@ -416,23 +416,23 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
   if (progress_ == kProgressComplete && !ring_animation)
     return;
 
-  float start, end, opacity;
+  float start, end, outer_ring_opacity;
   if (ring_animation) {
     start = ring_animation->start_position();
     end = ring_animation->end_position();
-    opacity = ring_animation->opacity();
+    outer_ring_opacity = ring_animation->outer_ring_opacity();
   } else {
     start = 0.f;
     end = progress_.value();
-    opacity = 1.f;
+    outer_ring_opacity = 1.f;
   }
 
   DCHECK_GE(start, 0.f);
   DCHECK_LE(start, 1.f);
   DCHECK_GE(end, 0.f);
   DCHECK_LE(end, 1.f);
-  DCHECK_GE(opacity, 0.f);
-  DCHECK_LE(opacity, 1.f);
+  DCHECK_GE(outer_ring_opacity, 0.f);
+  DCHECK_LE(outer_ring_opacity, 1.f);
 
   ui::PaintRecorder recorder(context, layer()->size());
   gfx::Canvas* canvas = recorder.canvas();
@@ -440,6 +440,19 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
   // The `canvas` should be flipped for RTL.
   gfx::ScopedCanvas scoped_canvas(recorder.canvas());
   scoped_canvas.FlipIfRTL(layer()->size().width());
+
+  // Look up the associated `icon_animation` (if one exists).
+  ProgressIconAnimation* icon_animation =
+      animation_registry_
+          ? animation_registry_->GetProgressIconAnimationForKey(animation_key_)
+          : nullptr;
+
+  if (icon_animation) {
+    const float opacity = icon_animation->opacity();
+    DCHECK_GE(opacity, 0.f);
+    DCHECK_LE(opacity, 1.f);
+    canvas->SaveLayerAlpha(SK_AlphaOPAQUE * opacity);
+  }
 
   float outer_ring_stroke_width = GetOuterRingStrokeWidth(layer(), progress_);
   gfx::RectF bounds(gfx::SizeF(layer()->size()));
@@ -458,14 +471,15 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
 
   // Outer ring track.
   if (!features::IsHoldingSpaceInProgressAnimationV2Enabled()) {
-    flags.setColor(
-        SkColorSetA(color, SK_AlphaOPAQUE * kOuterRingTrackOpacity * opacity));
+    flags.setColor(SkColorSetA(
+        color, SK_AlphaOPAQUE * kOuterRingTrackOpacity * outer_ring_opacity));
     canvas->DrawPath(path, flags);
   }
 
   // Outer ring.
   flags.setColor(SkColorSetA(
-      color, SK_AlphaOPAQUE * GetOuterRingOpacity(progress_) * opacity));
+      color,
+      SK_AlphaOPAQUE * GetOuterRingOpacity(progress_) * outer_ring_opacity));
   if (start <= end) {
     // If `start` <= `end`, only a single path segment is necessary.
     canvas->DrawPath(CreatePathSegment(path, start, end), flags);
@@ -486,12 +500,6 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
   if (progress_ == kProgressComplete)
     return;
 
-  // Look up the associated `icon_animation` (if one exists).
-  ProgressIconAnimation* icon_animation =
-      animation_registry_
-          ? animation_registry_->GetProgressIconAnimationForKey(animation_key_)
-          : nullptr;
-
   float inner_ring_stroke_width = GetInnerRingStrokeWidth(layer());
 
   if (icon_animation) {
@@ -499,16 +507,22 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
         icon_animation->inner_ring_stroke_width_scale_factor();
   }
 
-  bounds.Inset(
-      gfx::InsetsF((outer_ring_stroke_width + inner_ring_stroke_width) / 2.f));
-  path = CreateRoundedRectPath(
-      bounds, /*radius=*/std::min(bounds.width(), bounds.height()) / 2.f);
+  const bool inner_ring_visible =
+      !cc::MathUtil::IsWithinEpsilon(inner_ring_stroke_width, 0.f);
 
   // Inner ring.
-  flags.setColor(color);
-  flags.setStrokeWidth(inner_ring_stroke_width);
-  canvas->DrawPath(path, flags);
+  if (inner_ring_visible) {
+    bounds.Inset(gfx::InsetsF(
+        (outer_ring_stroke_width + inner_ring_stroke_width) / 2.f));
+    path = CreateRoundedRectPath(
+        bounds, /*radius=*/std::min(bounds.width(), bounds.height()) / 2.f);
 
+    flags.setColor(color);
+    flags.setStrokeWidth(inner_ring_stroke_width);
+    canvas->DrawPath(path, flags);
+  }
+
+  // Inner icon.
   if (inner_icon_visible_) {
     float inner_icon_size = GetInnerIconSize(layer());
     gfx::RectF inner_icon_bounds(gfx::SizeF(layer()->size()));
@@ -522,7 +536,6 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
               inner_icon_size);
     }
 
-    // Inner icon.
     gfx::Transform transform;
     transform.Translate(inner_icon_bounds.x(), inner_icon_bounds.y());
     canvas->Transform(transform);

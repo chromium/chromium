@@ -29,7 +29,7 @@ std::unique_ptr<ProgressRingAnimation> ProgressRingAnimation::CreateOfType(
 
 void ProgressRingAnimation::UpdateAnimatableProperties(double fraction) {
   UpdateAnimatableProperties(fraction, &start_position_, &end_position_,
-                             &opacity_);
+                             &outer_ring_opacity_);
 }
 
 }  // namespace ash

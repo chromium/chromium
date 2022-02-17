@@ -24,6 +24,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray_icon_preview.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
@@ -949,28 +950,44 @@ TEST_F(HoldingSpaceTrayTest, ShelfAlignmentChangeWithMultipleDisplays) {
 // Base class for tests of the holding space downloads section parameterized by:
 // * the set of holding space item types which are expected to appear there
 // * whether the in-progress animation v2 is enabled
+// * whether the in-progress animation v2 delay is enabled
 // * whether the in-progress downloads integration feature is enabled
 class HoldingSpaceTrayDownloadsSectionTest
     : public HoldingSpaceTrayTest,
       public ::testing::WithParamInterface<
           std::tuple<HoldingSpaceItem::Type,
                      /*in_progress_animation_v2_enabled=*/bool,
+                     /*in_progress_animation_v2_delay_enabled=*/bool,
                      /*in_progress_downloads_integration_enabled=*/bool>> {
  public:
   HoldingSpaceTrayDownloadsSectionTest() {
-    std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features;
 
     // Feature: in-progress animation v2.
-    (IsInProgressAnimationV2Enabled() ? enabled_features : disabled_features)
-        .push_back(features::kHoldingSpaceInProgressAnimationV2);
+    if (IsInProgressAnimationV2Enabled()) {
+      enabled_features.push_back(
+          base::test::ScopedFeatureList::FeatureAndParams(
+              features::kHoldingSpaceInProgressAnimationV2,
+              {{"delay_enabled",
+                IsInProgressAnimationV2DelayEnabled() ? "true" : "false"}}));
+    } else {
+      disabled_features.push_back(features::kHoldingSpaceInProgressAnimationV2);
+    }
 
     // Feature: in-progress downloads integration.
-    (IsInProgressDownloadsIntegrationEnabled() ? enabled_features
-                                               : disabled_features)
-        .push_back(features::kHoldingSpaceInProgressDownloadsIntegration);
+    if (IsInProgressDownloadsIntegrationEnabled()) {
+      enabled_features.push_back(
+          base::test::ScopedFeatureList::FeatureAndParams(
+              features::kHoldingSpaceInProgressDownloadsIntegration, {{}}));
+    } else {
+      disabled_features.push_back(
+          features::kHoldingSpaceInProgressDownloadsIntegration);
+    }
 
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   // Returns the max number of downloads given the test parameterization.
@@ -989,10 +1006,16 @@ class HoldingSpaceTrayDownloadsSectionTest
     return std::get<1>(GetParam());
   }
 
+  // Returns whether in-progress animation v2 delay is enabled given test
+  // parameterization.
+  bool IsInProgressAnimationV2DelayEnabled() const {
+    return IsInProgressAnimationV2Enabled() && std::get<1>(GetParam());
+  }
+
   // Returns whether in-progress downloads integration is enabled given test
   // parameterization.
   bool IsInProgressDownloadsIntegrationEnabled() const {
-    return std::get<2>(GetParam());
+    return std::get<3>(GetParam());
   }
 
  private:
@@ -1011,6 +1034,7 @@ INSTANTIATE_TEST_SUITE_P(
                           HoldingSpaceItem::Type::kPrintedPdf,
                           HoldingSpaceItem::Type::kScan),
         /*in_progress_animation_v2_enabled=*/::testing::Bool(),
+        /*in_progress_animation_v2_delay_enabled=*/::testing::Bool(),
         /*in_progress_downloads_integration_enabled=*/::testing::Bool()));
 
 // Tests how download chips are updated during item addition, removal and
@@ -1365,6 +1389,60 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   // Verify image opacity.
   EXPECT_EQ(image->GetTargetOpacity(), 1.f);
   EXPECT_EQ(image->GetTargetTransform(), gfx::Transform());
+}
+
+// Tests that all expected progress indicator animations have animated when
+// in-progress holding space items are added to the holding space model.
+TEST_P(HoldingSpaceTrayDownloadsSectionTest, HasAnimatedProgressIndicators) {
+  StartSession();
+  EXPECT_TRUE(GetTray()->GetVisible());
+
+  // Cache `prefs`.
+  AccountId account_id = AccountId::FromUserEmail(kTestUser);
+  auto* prefs = GetSessionControllerClient()->GetUserPrefService(account_id);
+  ASSERT_TRUE(prefs);
+
+  // Perform tests with previews shown/hidden.
+  for (const auto& show_previews : {true, false}) {
+    // Set previews enabled/disabled.
+    holding_space_prefs::SetPreviewsEnabled(prefs, show_previews);
+    EXPECT_EQ(holding_space_prefs::IsPreviewsEnabled(prefs), show_previews);
+
+    // Create holding space `items`. Note that more holding space items are
+    // being created than are visible at one time.
+    std::vector<HoldingSpaceItem*> items;
+    for (size_t i = 0; i <= kHoldingSpaceTrayIconMaxVisiblePreviews; ++i) {
+      items.push_back(AddItem(
+          GetType(), base::FilePath("/tmp/fake_" + base::NumberToString(i)),
+          HoldingSpaceProgress(0, 100)));
+    }
+
+    // Update previews immediately.
+    GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+
+    // Confirm expected tray icon visibility.
+    EXPECT_EQ(test_api()->GetDefaultTrayIcon()->GetVisible(), !show_previews);
+    EXPECT_EQ(test_api()->GetPreviewsTrayIcon()->GetVisible(), show_previews);
+
+    // Cache `registry`.
+    auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
+    ASSERT_TRUE(registry);
+
+    // Confirm any expected `icon_animation` for tray has started.
+    auto* controller = HoldingSpaceController::Get();
+    auto* icon_animation = registry->GetProgressIconAnimationForKey(controller);
+    EXPECT_EQ(!!icon_animation, IsInProgressAnimationV2Enabled());
+    if (IsInProgressAnimationV2Enabled())
+      EXPECT_TRUE(icon_animation->HasAnimated());
+
+    // Confirm all expected `icon_animations`'s for `items` have started.
+    for (const auto* item : items) {
+      icon_animation = registry->GetProgressIconAnimationForKey(item);
+      EXPECT_EQ(!!icon_animation, IsInProgressAnimationV2Enabled());
+      if (IsInProgressAnimationV2Enabled())
+        EXPECT_TRUE(icon_animation->HasAnimated());
+    }
+  }
 }
 
 // Tests how screen captures section is updated during item addition, removal

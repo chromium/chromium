@@ -43,6 +43,9 @@ class ASH_EXPORT ProgressIndicatorAnimation : public gfx::AnimationDelegate {
   // Immediately starts this animation.
   void Start();
 
+  // Returns whether this animation has ever run.
+  bool HasAnimated() const;
+
   // Returns whether this animation is currently running.
   bool IsAnimating() const;
 

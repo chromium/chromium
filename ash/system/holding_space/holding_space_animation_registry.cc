@@ -128,10 +128,18 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     if (registry_->GetProgressIconAnimationForKey(key))
       return;
 
-    registry_
-        ->SetProgressIconAnimationForKey(
-            key, std::make_unique<ProgressIconAnimation>())
-        ->Start();
+    auto* animation = registry_->SetProgressIconAnimationForKey(
+        key, std::make_unique<ProgressIconAnimation>());
+
+    // Only `Start()` the `animation` if it is associated with the holding space
+    // `controller_` or if animation delay is disabled. In all other cases, the
+    // `animation` is associated with a holding space item and will be started
+    // after the associated holding space tray item preview has had the
+    // opportunity to animate in.
+    if (key == controller_ ||
+        !features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
+      animation->Start();
+    }
   }
 
   // Ensures that the ring animation for the specified `key` is of the desired

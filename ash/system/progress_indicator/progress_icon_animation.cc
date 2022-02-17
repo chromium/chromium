@@ -25,6 +25,8 @@ void ProgressIconAnimation::UpdateAnimatableProperties(double fraction) {
       gfx::Tween::FloatValueBetween(fraction, /*start=*/-0.5f, /*target=*/0.f);
   inner_ring_stroke_width_scale_factor_ =
       gfx::Tween::FloatValueBetween(fraction, /*start=*/0.f, /*target=*/1.f);
+  opacity_ = gfx::Tween::FloatValueBetween(std::min(fraction * 2.0, 1.0),
+                                           /*start=*/0.f, /*target=*/1.f);
 }
 
 }  // namespace ash

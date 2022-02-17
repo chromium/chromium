@@ -26,7 +26,7 @@ class ProgressRingIndeterminateAnimation : public ProgressRingAnimation {
   void UpdateAnimatableProperties(double fraction,
                                   float* start_value,
                                   float* end_value,
-                                  float* opacity) override;
+                                  float* outer_ring_opacity) override;
 };
 
 }  // namespace ash

@@ -46,7 +46,7 @@ void ProgressRingIndeterminateAnimation::UpdateAnimatableProperties(
     double fraction,
     float* start_position,
     float* end_position,
-    float* opacity) {
+    float* outer_ring_opacity) {
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time();
 
   // Since `elapsed_time` is used rather than the animation `fraction`, it is

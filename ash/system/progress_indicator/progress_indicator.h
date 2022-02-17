@@ -67,6 +67,10 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
     return animation_registry_;
   }
 
+  // Returns the `animation_key_` for which to look up animations in the
+  // underlying `animation_registry_`. NOTE: This may return `nullptr`.
+  const void* animation_key() const { return animation_key_; }
+
   // Returns the underlying `progress_` for which to paint indication.
   // NOTE: If absent, progress is indeterminate.
   // NOTE: If present, progress must be >= `0.f` and <= `1.f`.

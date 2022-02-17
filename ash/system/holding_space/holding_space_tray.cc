@@ -682,6 +682,23 @@ void HoldingSpaceTray::ObservePrefService(PrefService* prefs) {
 void HoldingSpaceTray::UpdatePreviewsState() {
   UpdatePreviewsVisibility();
   SchedulePreviewsIconUpdate();
+
+  if (PreviewsShown() ||
+      !features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
+    return;
+  }
+
+  // When previews are shown, progress icon animations are started on completion
+  // of preview animations. When previews are *not* shown, there is nothing to
+  // wait for so progress icon animations should be started immediately.
+  if (auto* model = HoldingSpaceController::Get()->model(); model) {
+    auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
+    for (const auto& item : model->items()) {
+      auto* animation = registry->GetProgressIconAnimationForKey(item.get());
+      if (animation && !animation->HasAnimated())
+        animation->Start();
+    }
+  }
 }
 
 void HoldingSpaceTray::UpdatePreviewsVisibility() {

@@ -134,6 +134,54 @@ void SetUpAnimation(ui::ScopedLayerAnimationSettings* animation_settings) {
   animation_settings->SetTweenType(gfx::Tween::EASE_OUT);
 }
 
+// OneShotLayerAnimationObserver -----------------------------------------------
+
+// A `ui::LayerAnimationObserver` which invokes a callback on animation
+// completion. The callback will be run whether the animation ends or aborts.
+class CallbackLayerAnimationObserver : public ui::LayerAnimationObserver {
+ public:
+  CallbackLayerAnimationObserver() = default;
+  CallbackLayerAnimationObserver(const CallbackLayerAnimationObserver&) =
+      delete;
+  CallbackLayerAnimationObserver& operator=(
+      const CallbackLayerAnimationObserver&) = delete;
+  ~CallbackLayerAnimationObserver() override = default;
+
+  // Sets the callback to invoke on animation completion. The callback will be
+  // run whether the animation ends or aborts.
+  // NOTE: It is safe to delete `this` from callback.
+  void SetAnimationCompletedCallback(
+      base::OnceClosure animation_completed_callback) {
+    animation_completed_callback_ = std::move(animation_completed_callback);
+  }
+
+ private:
+  // ui::LayerAnimationObserver:
+  bool RequiresNotificationWhenAnimatorDestroyed() const override {
+    // Ensure that `OnLayerAnimationAborted()` is invoked on animator
+    // destruction if an observed animation sequence is in progress.
+    return true;
+  }
+
+  void OnLayerAnimationScheduled(ui::LayerAnimationSequence*) override {}
+
+  void OnLayerAnimationEnded(ui::LayerAnimationSequence*) override {
+    OnLayerAnimationCompleted();
+  }
+
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence*) override {
+    OnLayerAnimationCompleted();
+  }
+
+  void OnLayerAnimationCompleted() {
+    // NOTE: `this` may be deleted by running `animation_completed_callback_`.
+    if (animation_completed_callback_)
+      std::move(animation_completed_callback_).Run();
+  }
+
+  base::OnceClosure animation_completed_callback_;
+};
+
 }  // namespace
 
 // HoldingSpaceTrayIconPreview::ImageLayerOwner --------------------------------
@@ -383,8 +431,18 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
     transform_.Translate(translation);
   }
 
-  if (!NeedsLayer())
+  if (!NeedsLayer()) {
+    // Since the holding space tray icon preview will not be animated, any
+    // associated progress icon animation can `Start()` immediately.
+    if (features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
+      auto* key = progress_indicator_->animation_key();
+      auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
+      auto* animation = registry->GetProgressIconAnimationForKey(key);
+      if (animation && !animation->HasAnimated())
+        animation->Start();
+    }
     return;
+  }
 
   int pre_translate_y = -preview_size.height();
   if (IsHorizontal(shelf_->alignment())) {
@@ -422,6 +480,22 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
           transform_, kBounceAnimationSegmentDuration);
   rebound->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN_3);
   sequence->AddElement(std::move(rebound));
+
+  // Any associated progress icon animation should `Start()` only after
+  // completion of the holding space tray icon preview animation.
+  if (features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
+    auto observer = std::make_unique<CallbackLayerAnimationObserver>();
+    sequence->AddObserver(observer.get());
+    observer->SetAnimationCompletedCallback(base::BindOnce(
+        [](CallbackLayerAnimationObserver* observer, const void* key) {
+          auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
+          auto* animation = registry->GetProgressIconAnimationForKey(key);
+          if (animation && !animation->HasAnimated())
+            animation->Start();
+        },
+        base::Owned(std::move(observer)),
+        progress_indicator_->animation_key()));
+  }
 
   layer()->GetAnimator()->StartAnimation(sequence.release());
 }
