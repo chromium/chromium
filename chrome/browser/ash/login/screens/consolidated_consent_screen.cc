@@ -294,8 +294,6 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
                                          bool enable_backup_restore,
                                          bool enable_location_services,
                                          const std::string& tos_content) {
-  // TODO: Handle usage stats reporting for current user
-
   if (arc::IsArcDemoModeSetupFlow() ||
       !arc::IsArcTermsOfServiceOobeNegotiationNeeded()) {
     for (auto& observer : observer_list_)
@@ -305,6 +303,7 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
     return;
   }
 
+  pref_handler_->EnableMetrics(enable_stats_usage);
   pref_handler_->EnableBackupRestore(enable_backup_restore);
   pref_handler_->EnableLocationService(enable_location_services);
 
@@ -338,4 +337,5 @@ void ConsolidatedConsentScreen::ExitScreenWithAcceptedResult() {
   else
     exit_callback_.Run(Result::ACCEPTED_DEMO_ONLINE);
 }
+
 }  // namespace ash

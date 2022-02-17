@@ -218,7 +218,6 @@ class ConsolidatedConsentScreenTest : public OobeBaseTest {
   bool screen_exited_ = false;
   base::RepeatingClosure screen_exit_callback_;
   ConsolidatedConsentScreen::ScreenExitCallback original_callback_;
-
   base::test::ScopedFeatureList feature_list_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
@@ -634,5 +633,9 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenReadMore, ClickAccept) {
   test::OobeJS().CreateVisibilityWaiter(true, kAcceptButton)->Wait();
   test::OobeJS().ClickOnPath(kAcceptButton);
 }
+
+// TODO(crbug.com/1298249): Add browsertest to ensure that the metrics consent
+// is propagated to the correct preference (ie device/user) depending on the
+// type of user.
 
 }  // namespace ash
