@@ -5,12 +5,9 @@
 #ifndef ASH_SYSTEM_UNIFIED_HPS_NOTIFY_CONTROLLER_H_
 #define ASH_SYSTEM_UNIFIED_HPS_NOTIFY_CONTROLLER_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/system/hps/hps_orientation_controller.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -24,13 +21,10 @@ class PrefRegistrySimple;
 
 namespace ash {
 
-class HpsNotifyNotificationBlocker;
-
 // Pushes status changes to the snooping protection icon and notification
 // blocker based on DBus state, preferences and session type.
 class ASH_EXPORT HpsNotifyController
     : public SessionObserver,
-      public HpsOrientationController::Observer,
       public chromeos::HpsDBusClient::Observer {
  public:
   class Observer : public base::CheckedObserver {
@@ -53,9 +47,6 @@ class ASH_EXPORT HpsNotifyController
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
-  // HpsOrientationObserver:
-  void OnOrientationChanged(bool suitable_for_hps) override;
-
   // chromeos::HpsDBusClient::Observer:
   void OnHpsNotifyChanged(hps::HpsResult state) override;
   void OnRestart() override;
@@ -69,20 +60,18 @@ class ASH_EXPORT HpsNotifyController
   bool SnooperPresent() const;
 
  private:
-  // Updates snooper state as appropriate given the signal, session,
-  // preference and device orientation state. If changed, notifies observers.
+  // Updates snooper state as appropriate given the signal, session and
+  // preference state. If changed, notifies observers.
   void UpdateSnooperStatus(bool session_active,
                            bool hps_state,
-                           bool is_enabled,
-                           bool orientation_suitable);
+                           bool is_enabled);
 
   // Requests the start or stop of the HPS snooping signal, so that the daemon
   // need not be running snooping logic while the user has the feature disabled.
   // Also updates the cached state of HPS availability.
   void ReconfigureHps(bool hps_available,
                       bool session_active,
-                      bool pref_enabled,
-                      bool orientation_suitable);
+                      bool pref_enabled);
 
   // Configures the daemon, polls its initial state and opts into its signals.
   void StartHpsObservation(bool service_is_available);
@@ -95,24 +84,18 @@ class ASH_EXPORT HpsNotifyController
   void UpdatePrefState();
 
   // Used to track whether a signal should actually trigger a visibility change:
-  bool hps_state_ = false;             // The state last reported by the daemon.
-  bool session_active_ = false;        // Whether or not there is an active user
-                                       // session ongoing.
-  bool pref_enabled_ = false;          // Whether or not the user has enabled
-                                       // the feature via preferences.
-  bool hps_available_ = false;         // Whether or not the daemon is available
-                                       // for communication.
-  bool hps_configured_ = false;        // Whether or not the daemon has been
-                                       // successfully configured.
-  bool orientation_suitable_ = false;  // Whether or not the device is in
-                                       // physical orientation where our models
-                                       // are accurate.
+  bool hps_state_ = false;       // The state last reported by the daemon.
+  bool session_active_ = false;  // Whether or not there is an active user
+                                 // session ongoing.
+  bool pref_enabled_ = false;    // Whether or not the user has enabled the
+                                 // feature via preferences.
+  bool hps_available_ = false;   // Whether or not the daemon is available for
+                                 // communication.
+  bool hps_configured_ = false;  // Whether or not the daemon has been
+                                 // successfully configured.
 
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
-  base::ScopedObservation<HpsOrientationController,
-                          HpsOrientationController::Observer>
-      orientation_observation_{this};
   base::ScopedObservation<chromeos::HpsDBusClient,
                           chromeos::HpsDBusClient::Observer>
       hps_dbus_observation_{this};
@@ -123,9 +106,6 @@ class ASH_EXPORT HpsNotifyController
 
   // Clients listening for snooping status changes.
   base::ObserverList<Observer> observers_;
-
-  // Controls popup hiding and our info notification.
-  const std::unique_ptr<HpsNotifyNotificationBlocker> notification_blocker_;
 
   // Must be last.
   base::WeakPtrFactory<HpsNotifyController> weak_ptr_factory_{this};

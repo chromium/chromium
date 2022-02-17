@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/hps/hps_notify_notification_blocker.h"
+#include "ash/system/message_center/hps_notify_notification_blocker.h"
 
 #include <memory>
 #include <string>
