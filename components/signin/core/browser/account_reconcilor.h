@@ -16,6 +16,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -30,6 +32,10 @@
 namespace signin {
 class AccountReconcilorDelegate;
 enum class SetAccountsInCookieResult;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class ConsistencyCookieManagerTest;
+#endif
 }
 
 class SigninClient;
@@ -121,7 +127,7 @@ class AccountReconcilor : public KeyedService,
   void Shutdown() override;
 
   // Determine what the reconcilor is currently doing.
-  signin_metrics::AccountReconcilorState GetState();
+  signin_metrics::AccountReconcilorState GetState() const;
 
   // Adds ands removes observers.
   void AddObserver(Observer* observer);
@@ -141,10 +147,15 @@ class AccountReconcilor : public KeyedService,
 
  private:
   friend class AccountReconcilorTest;
-  friend class DiceBrowserTest;
-  friend class BaseAccountReconcilorTestTable;
-  friend class AccountReconcilorThrottlerTest;
   friend class AccountReconcilorTestForceDiceMigration;
+  friend class AccountReconcilorThrottlerTest;
+  friend class BaseAccountReconcilorTestTable;
+  friend class DiceBrowserTest;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  friend class signin::ConsistencyCookieManagerTest;
+#endif
+
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTestForceDiceMigration,
                            TableRowTestCheckNoOp);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,
@@ -422,8 +433,11 @@ class AccountReconcilor : public KeyedService,
   // not invalidate the primary token while this is happening.
   int synced_data_deletion_in_progress_count_ = 0;
 
+  // Note: when the reconcilor is blocked with `BlockReconcile()` the state is
+  // set to ACCOUNT_RECONCILOR_SCHEDULED rather than ACCOUNT_RECONCILOR_INACTIVE
+  // as this is only used to temporarily suspend the reconcilor.
   signin_metrics::AccountReconcilorState state_ =
-      signin_metrics::ACCOUNT_RECONCILOR_OK;
+      signin_metrics::ACCOUNT_RECONCILOR_INACTIVE;
 
   // Set to true when Shutdown() is called.
   bool was_shut_down_ = false;

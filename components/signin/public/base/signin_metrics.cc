@@ -657,7 +657,7 @@ void LogAuthError(const GoogleServiceAuthError& auth_error) {
 
 void LogAccountReconcilorStateOnGaiaResponse(AccountReconcilorState state) {
   UMA_HISTOGRAM_ENUMERATION("Signin.AccountReconcilorState.OnGaiaResponse",
-                            state, ACCOUNT_RECONCILOR_HISTOGRAM_COUNT);
+                            state);
 }
 
 void LogAccountEquality(AccountEquality equality) {

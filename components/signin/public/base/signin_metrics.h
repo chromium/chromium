@@ -306,8 +306,11 @@ enum AccountReconcilorState {
   ACCOUNT_RECONCILOR_ERROR,
   // The account reconcilor will start running soon.
   ACCOUNT_RECONCILOR_SCHEDULED,
+  // The account reconcilor is inactive, e.g. initializing or disabled.
+  ACCOUNT_RECONCILOR_INACTIVE,
+
   // Always the last enumerated type.
-  ACCOUNT_RECONCILOR_HISTOGRAM_COUNT,
+  kMaxValue = ACCOUNT_RECONCILOR_SCHEDULED,
 };
 
 // Values of histogram comparing account id and email.

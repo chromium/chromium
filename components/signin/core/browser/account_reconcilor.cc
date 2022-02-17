@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -225,7 +224,7 @@ void AccountReconcilor::EnableReconcile() {
 
 void AccountReconcilor::DisableReconcile(bool logout_all_accounts) {
   AbortReconcile();
-  SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_OK);
+  SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_INACTIVE);
   UnregisterWithAllDependencies();
 
   if (logout_all_accounts)
@@ -284,7 +283,7 @@ void AccountReconcilor::UnregisterWithIdentityManager() {
   registered_with_identity_manager_ = false;
 }
 
-AccountReconcilorState AccountReconcilor::GetState() {
+AccountReconcilorState AccountReconcilor::GetState() const {
   return state_;
 }
 
@@ -389,7 +388,7 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
   CHECK(client_);
   if (!delegate_->IsReconcileEnabled() || !client_->AreSigninCookiesAllowed()) {
     VLOG(1) << "AccountReconcilor::StartReconcile: !enabled or no cookies";
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_OK);
+    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_INACTIVE);
     return;
   }
 

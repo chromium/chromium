@@ -82152,6 +82152,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Scheduled">
     The account reconcilor is scheduled for running soon.
   </int>
+  <int value="4" label="Inactive">
+    The account reconcilor is inactive (uninitialized or disabled).
+  </int>
 </enum>
 
 <enum name="SigninAccountType">

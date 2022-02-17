@@ -99,6 +99,8 @@ static_library("browser") {
       "//chromeos/lacros",
     ]
     sources += [
+      "consistency_cookie_manager.cc",
+      "consistency_cookie_manager.h",
       "mirror_landing_account_reconcilor_delegate.cc",
       "mirror_landing_account_reconcilor_delegate.h",
     ]
@@ -166,7 +168,10 @@ source_set("unit_tests") {
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
     ]
-    sources += [ "mirror_landing_account_reconcilor_delegate_unittest.cc" ]
+    sources += [
+      "consistency_cookie_manager_unittest.cc",
+      "mirror_landing_account_reconcilor_delegate_unittest.cc",
+    ]
   }
 
   if (!enable_dice_support) {
