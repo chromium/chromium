@@ -44,14 +44,13 @@ constexpr base::TimeDelta kSaveDelay = base::Seconds(3);
 
 constexpr size_t kMaxLocalFiles = 10u;
 
-// A file needs to have been modified more recently than this to be returned.
-constexpr base::TimeDelta kMaxLastModifiedTime = base::Days(8);
-
 // Given the output of MrfuCache::GetAll, partition files into:
-// - valid files that exist on-disk and have been modified in the last 7 days
+// - valid files that exist on-disk and have been modified in the last
+//   |max_last_modified_time| days
 // - invalid files, otherwise.
 internal::ValidAndInvalidResults ValidateFiles(
-    const std::vector<std::pair<std::string, float>>& ranker_results) {
+    const std::vector<std::pair<std::string, float>>& ranker_results,
+    const base::TimeDelta& max_last_modified_time) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -67,7 +66,7 @@ internal::ValidAndInvalidResults ValidateFiles(
 
     base::File::Info info;
     if (base::PathExists(path) && base::GetFileInfo(path, &info) &&
-        (now - info.last_modified <= kMaxLastModifiedTime)) {
+        (now - info.last_modified <= max_last_modified_time)) {
       valid.emplace_back(path, path_score.second);
     } else {
       invalid.emplace_back(path);
@@ -91,7 +90,12 @@ bool IsDriveDisabled(Profile* profile) {
 }  // namespace
 
 ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
-    : profile_(profile), thumbnail_loader_(profile) {
+    : profile_(profile),
+      thumbnail_loader_(profile),
+      max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          ash::features::kProductivityLauncher,
+          "max_last_modified_time",
+          8))) {
   DCHECK(profile_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
@@ -120,7 +124,8 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
 void ZeroStateFileProvider::OnProtoInitialized(ReadStatus status) {
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
-      base::BindOnce(&ValidateFiles, files_ranker_->GetAll()),
+      base::BindOnce(&ValidateFiles, files_ranker_->GetAll(),
+                     max_last_modified_time_),
       base::BindOnce(&ZeroStateFileProvider::SetSearchResults,
                      weak_factory_.GetWeakPtr()));
 }
@@ -147,7 +152,8 @@ void ZeroStateFileProvider::StartZeroState() {
 
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
-      base::BindOnce(&ValidateFiles, files_ranker_->GetAll()),
+      base::BindOnce(&ValidateFiles, files_ranker_->GetAll(),
+                     max_last_modified_time_),
       base::BindOnce(&ZeroStateFileProvider::SetSearchResults,
                      weak_factory_.GetWeakPtr()));
 }

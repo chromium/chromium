@@ -79,6 +79,10 @@ class ZeroStateFileProvider : public SearchProvider,
 
   base::TimeTicks query_start_time_;
 
+  // A file needs to have been modified more recently than this to be considered
+  // valid.
+  const base::TimeDelta max_last_modified_time_;
+
   base::ScopedObservation<file_manager::file_tasks::FileTasksNotifier,
                           file_manager::file_tasks::FileTasksObserver>
       file_tasks_observer_{this};

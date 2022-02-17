@@ -79,6 +79,9 @@ class ZeroStateDriveProvider : public SearchProvider,
   void OnFilePathsLocated(
       absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
 
+  void SetSearchResults(
+      std::vector<absl::optional<base::FilePath>> filtered_paths);
+
   std::unique_ptr<FileResult> MakeListResult(
       const base::FilePath& filepath,
       const absl::optional<std::string>& prediction_reason,
@@ -134,6 +137,10 @@ class ZeroStateDriveProvider : public SearchProvider,
   // Whether we have sent at least one request to ItemSuggest to warm up the
   // results cache.
   bool have_warmed_up_cache_ = false;
+
+  // A file needs to have been modified more recently than this to be considered
+  // valid.
+  const base::TimeDelta max_last_modified_time_;
 
   base::ScopedObservation<drive::DriveIntegrationService,
                           drive::DriveIntegrationServiceObserver>

@@ -13,16 +13,19 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task/task_runner_util.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/search/files/justifications.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -110,6 +113,30 @@ bool IsDriveDisabled(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }
 
+// Filters out files that exceed the max last modified time. Files that are
+// filtered out are replaced by absl::nullopt, because the length and order of
+// the return vector must remain consistent with |cache_results_|.
+std::vector<absl::optional<base::FilePath>> FilterPathsByTime(
+    std::vector<base::FilePath> paths,
+    const base::TimeDelta& max_last_modified_time) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  std::vector<absl::optional<base::FilePath>> filtered_paths;
+  const base::Time now = base::Time::Now();
+  for (const auto& path : paths) {
+    base::File::Info info;
+    if (base::PathExists(path) && base::GetFileInfo(path, &info) &&
+        (now - info.last_modified <= max_last_modified_time)) {
+      filtered_paths.push_back(path);
+    } else {
+      filtered_paths.push_back(absl::nullopt);
+    }
+  }
+
+  return filtered_paths;
+}
+
 }  // namespace
 
 ZeroStateDriveProvider::ZeroStateDriveProvider(
@@ -127,11 +154,15 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
           base::BindRepeating(&ZeroStateDriveProvider::OnCacheUpdated,
                               base::Unretained(this))),
       suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled() ||
-                               ash::features::IsProductivityLauncherEnabled()) {
+                               ash::features::IsProductivityLauncherEnabled()),
+      max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          ash::features::kProductivityLauncher,
+          "max_last_modified_time",
+          8))) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+      {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   if (drive_service_) {
@@ -263,30 +294,14 @@ void ZeroStateDriveProvider::OnFilePathsLocated(
     return;
   }
 
-  DCHECK(cache_results_);
-  DCHECK_EQ(cache_results_->results.size(), paths->size());
-  const auto& cache_results = cache_results_->results;
-
-  // Assign scores to results by simply using their position in the results
-  // list. The order of results from the ItemSuggest API is significant:
-  // the first is better than the second, etc. Resulting scores are in [0, 1].
-  const double total_items = static_cast<double>(paths->size());
-  int item_index = 0;
   bool all_files_errored = true;
-  SearchProvider::Results provider_results;
-  for (int i = 0; i < static_cast<int>(paths->size()); ++i) {
-    const auto& path_or_error = paths.value()[i];
-    if (path_or_error->is_error()) {
-      continue;
-    } else {
+  std::vector<base::FilePath> filepaths;
+  for (const auto& path_or_error : paths.value()) {
+    if (path_or_error->is_path()) {
       all_files_errored = false;
+      filepaths.push_back(
+          ReparentToDriveMount(path_or_error->get_path(), drive_service_));
     }
-
-    double score = 1.0 - (item_index / total_items);
-    ++item_index;
-
-    provider_results.emplace_back(MakeListResult(
-        path_or_error->get_path(), cache_results[i].prediction_reason, score));
   }
 
   // We expect some files to error sometimes, but we're mainly interested in
@@ -295,6 +310,38 @@ void ZeroStateDriveProvider::OnFilePathsLocated(
   if (all_files_errored) {
     LogStatus(Status::kAllFilesErrored);
     return;
+  }
+
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FilterPathsByTime, filepaths, max_last_modified_time_),
+      base::BindOnce(&ZeroStateDriveProvider::SetSearchResults,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ZeroStateDriveProvider::SetSearchResults(
+    std::vector<absl::optional<base::FilePath>> paths) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(cache_results_);
+  DCHECK_EQ(cache_results_->results.size(), paths.size());
+  const auto& cache_results = cache_results_->results;
+
+  // Assign scores to results by simply using their position in the results
+  // list. The order of results from the ItemSuggest API is significant:
+  // the first is better than the second, etc. Resulting scores are in [0, 1].
+  const double total_items = static_cast<double>(paths.size());
+  int item_index = 0;
+  SearchProvider::Results provider_results;
+  for (int i = 0; i < static_cast<int>(paths.size()); ++i) {
+    const auto& path = paths[i];
+    if (!path)
+      continue;
+
+    double score = 1.0 - (item_index / total_items);
+    ++item_index;
+
+    provider_results.emplace_back(MakeListResult(
+        path.value(), cache_results[i].prediction_reason, score));
   }
 
   cache_results_.reset();
@@ -309,12 +356,14 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const base::FilePath& filepath,
     const absl::optional<std::string>& prediction_reason,
     const float relevance) {
-  const auto reparented_path = ReparentToDriveMount(filepath, drive_service_);
+  absl::optional<std::u16string> details;
+  if (prediction_reason && ash::features::IsProductivityLauncherEnabled())
+    details = base::UTF8ToUTF16(prediction_reason.value());
+
   auto result = std::make_unique<FileResult>(
-      kSchema, reparented_path, absl::nullopt,
-      ash::AppListSearchResultType::kZeroStateDrive, GetDisplayType(),
-      relevance, std::u16string(), FileResult::Type::kFile, profile_);
-  result->SetDetailsToJustificationString();
+      kSchema, filepath, details, ash::AppListSearchResultType::kZeroStateDrive,
+      GetDisplayType(), relevance, std::u16string(), FileResult::Type::kFile,
+      profile_);
   return result;
 }
 
