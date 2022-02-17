@@ -62,23 +62,21 @@ void FollowJavaScriptFeature::HandleResponse(
     const GURL& url,
     base::OnceCallback<void(FollowSiteInfo*)> callback,
     const base::Value* response) {
-  if (!response)
-    return;
-
-  if (!response->is_list())
-    return;
-
-  NSMutableArray* rss_links = [[NSMutableArray alloc] init];
-  for (const auto& link : response->GetListDeprecated()) {
-    if (link.is_string()) {
-      [rss_links addObject:[NSURL URLWithString:base::SysUTF8ToNSString(
-                                                    *link.GetIfString())]];
+  if (response && response->is_list()) {
+    NSMutableArray* rss_links = [[NSMutableArray alloc] init];
+    for (const auto& link : response->GetListDeprecated()) {
+      if (link.is_string()) {
+        [rss_links addObject:[NSURL URLWithString:base::SysUTF8ToNSString(
+                                                      *link.GetIfString())]];
+      }
     }
+    std::move(callback).Run([[FollowSiteInfo alloc]
+        initWithPageURL:net::NSURLWithGURL(url)
+               RSSLinks:rss_links]);
+    return;
   }
 
-  FollowSiteInfo* site_info =
-      [[FollowSiteInfo alloc] initWithPageURL:net::NSURLWithGURL(url)
-                                     RSSLinks:rss_links];
-
-  std::move(callback).Run(site_info);
+  std::move(callback).Run([[FollowSiteInfo alloc]
+      initWithPageURL:net::NSURLWithGURL(url)
+             RSSLinks:nil]);
 }
