@@ -35,6 +35,14 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) FakeU2FClient : public U2FClient {
   void HasLegacyU2FCredentials(
       const u2f::HasCredentialsRequest& request,
       DBusMethodCallback<u2f::HasCredentialsResponse> callback) override;
+  void CountCredentials(
+      const u2f::CountCredentialsInTimeRangeRequest& request,
+      DBusMethodCallback<u2f::CountCredentialsInTimeRangeResponse> callback)
+      override;
+  void DeleteCredentials(
+      const u2f::DeleteCredentialsInTimeRangeRequest& request,
+      DBusMethodCallback<u2f::DeleteCredentialsInTimeRangeResponse> callback)
+      override;
   void CancelWebAuthnFlow(
       const u2f::CancelWebAuthnFlowRequest& request,
       DBusMethodCallback<u2f::CancelWebAuthnFlowResponse> callback) override;

@@ -260,6 +260,8 @@ component("fido") {
     sources += [
       "cros/authenticator.cc",
       "cros/authenticator.h",
+      "cros/credential_store.cc",
+      "cros/credential_store.h",
       "cros/discovery.cc",
       "cros/discovery.h",
     ]

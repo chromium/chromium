@@ -168,6 +168,7 @@
 #include "chromeos/dbus/constants/attestation_constants.h"  // nogncheck
 #include "chromeos/dbus/dbus_thread_manager.h"              // nogncheck
 #include "components/user_manager/user.h"
+#include "device/fido/cros/credential_store.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)
@@ -1344,6 +1345,9 @@ ChromeBrowsingDataRemoverDelegate::MakeCredentialStore() {
       std::make_unique<device::fido::mac::TouchIdCredentialStore>(
           ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
               profile_));
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+      std::make_unique<
+          device::fido::cros::PlatformAuthenticatorCredentialStore>();
 #else
       nullptr;
 #endif

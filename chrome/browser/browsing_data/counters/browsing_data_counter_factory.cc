@@ -45,6 +45,10 @@
 #include "device/fido/mac/credential_store.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "device/fido/cros/credential_store.h"
+#endif
+
 namespace {
 
 history::WebHistoryService* GetUpdatedWebHistoryService(Profile* profile) {
@@ -89,6 +93,9 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
         std::make_unique<::device::fido::mac::TouchIdCredentialStore>(
             ChromeWebAuthenticationDelegate::
                 TouchIdAuthenticatorConfigForProfile(profile));
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+        std::make_unique<
+            ::device::fido::cros::PlatformAuthenticatorCredentialStore>();
 #else
         nullptr;
 #endif
