@@ -12,6 +12,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.device_reauth.BiometricAuthRequester;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /**
  * This class is responsible for managing the Incognito re-authentication flow.
@@ -71,7 +74,11 @@ public class IncognitoReauthManager {
         });
     }
     /**
-     * @return A boolean indicating if the Incognito re-authentication feature is available.
+     * @return A boolean indicating whether the platform version supports reauth and the
+     *         corresponding Chrome feature flag is on;
+     *
+     * For a more complete check, rely on the method {@link
+     * IncognitoReauthManager#isIncognitoReauthEnabled(Profile)} instead.
      */
     public static boolean isIncognitoReauthFeatureAvailable() {
         if (sIsIncognitoReauthFeatureAvailableForTesting != null) {
@@ -84,8 +91,28 @@ public class IncognitoReauthManager {
                         ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID);
     }
 
+    /**
+     * @param profile The {@link Profile} which is used to query the preference value of the
+     *         Incognito lock setting.
+     *
+     * @return A boolean indicating if Incognito re-authentication is possible or not.
+     */
+    public static boolean isIncognitoReauthEnabled(Profile profile) {
+        if (sIsIncognitoReauthFeatureAvailableForTesting != null) {
+            return sIsIncognitoReauthFeatureAvailableForTesting;
+        }
+
+        return isIncognitoReauthFeatureAvailable()
+                && IncognitoReauthSettingUtils.isDeviceScreenLockEnabled()
+                && isIncognitoReauthSettingEnabled(profile);
+    }
+
     @VisibleForTesting
     public static void setIsIncognitoReauthFeatureAvailableForTesting(boolean isAvailable) {
         sIsIncognitoReauthFeatureAvailableForTesting = isAvailable;
+    }
+
+    private static boolean isIncognitoReauthSettingEnabled(Profile profile) {
+        return UserPrefs.get(profile).getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID);
     }
 }

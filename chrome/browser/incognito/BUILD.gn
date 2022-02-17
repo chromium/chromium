@@ -20,6 +20,7 @@ android_library("java") {
     "//chrome/browser/dependency_injection:java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
@@ -29,6 +30,8 @@ android_library("java") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/device_reauth:device_reauth_java_enums",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
     "//third_party/android_deps:dagger_java",
     "//third_party/android_deps:javax_inject_javax_inject_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -90,7 +93,7 @@ android_library("incognito_junit_tests") {
   # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
   bypass_platform_checks = true
 
-  sources = [ "android/javatests/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthManagerTest.java" ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthManagerTest.java" ]
 
   deps = [
     ":java",
