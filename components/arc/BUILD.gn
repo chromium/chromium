@@ -27,11 +27,6 @@ static_library("arc") {
     "//components/arc/common:arc_intent_helper_constants",
     "//components/exo",
     "//components/google/core/common",
-
-    # TODO(crbug.com/853604): After fully migrating the intent picker to query
-    # directly from App Service, we will deprecated the match functionality
-    # in intent_filter and this dependency will be removed.
-    "//components/services/app_service/public/cpp:intents",
     "//components/url_formatter",
   ]
 }
@@ -56,7 +51,6 @@ source_set("unit_tests") {
   sources = [
     "intent_helper/arc_intent_helper_bridge_unittest.cc",
     "intent_helper/custom_tab_unittest.cc",
-    "intent_helper/intent_filter_unittest.cc",
   ]
 
   deps = [

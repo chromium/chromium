@@ -32,8 +32,6 @@ class IntentFilter {
     AuthorityEntry& operator=(const AuthorityEntry&) = delete;
     AuthorityEntry& operator=(AuthorityEntry&& other);
 
-    bool Match(const GURL& url) const;
-
     const std::string& host() const { return host_; }
     int port() const { return port_; }
 
@@ -52,8 +50,6 @@ class IntentFilter {
     PatternMatcher(const PatternMatcher&) = delete;
     PatternMatcher& operator=(const PatternMatcher&) = delete;
     PatternMatcher& operator=(PatternMatcher&& other);
-
-    bool Match(const std::string& match) const;
 
     const std::string& pattern() const { return pattern_; }
     mojom::PatternType match_type() const { return match_type_; }
@@ -98,9 +94,6 @@ class IntentFilter {
   const std::vector<std::string>& mime_types() const { return mime_types_; }
 
  private:
-  bool MatchDataAuthority(const GURL& url) const;
-  bool HasDataPath(const GURL& url) const;
-
   std::string package_name_;
   std::string activity_name_;
   std::string activity_label_;

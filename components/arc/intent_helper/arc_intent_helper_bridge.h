@@ -117,14 +117,6 @@ class ArcIntentHelperBridge : public KeyedService,
   GetResult GetActivityIcons(const std::vector<ActivityName>& activities,
                              OnIconsReadyCallback callback) override;
 
-  // Returns true when |url| can only be handled by Chrome. Otherwise, which is
-  // when there might be one or more ARC apps that can handle |url|, returns
-  // false. This function synchronously checks the |url| without making any IPC
-  // to ARC side. Note that this function only supports http and https. If url's
-  // scheme is neither http nor https, the function immediately returns true
-  // without checking the filters.
-  bool ShouldChromeHandleUrl(const GURL& url);
-
   void SetAdaptiveIconDelegate(AdaptiveIconDelegate* delegate);
 
   void AddObserver(ArcIntentHelperObserver* observer);

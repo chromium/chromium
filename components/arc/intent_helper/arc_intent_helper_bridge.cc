@@ -367,27 +367,6 @@ ArcIntentHelperBridge::GetResult ArcIntentHelperBridge::GetActivityIcons(
   return icon_loader_.GetActivityIcons(activities, std::move(callback));
 }
 
-bool ArcIntentHelperBridge::ShouldChromeHandleUrl(const GURL& url) {
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    // Chrome will handle everything that is not http and https.
-    return true;
-  }
-
-  for (auto& package_filters : intent_filters_) {
-    // The intent helper package is used by ARC to send URLs to Chrome, so it
-    // does not count as a candidate.
-    if (package_filters.first == kArcIntentHelperPackageName)
-      continue;
-    for (auto& filter : package_filters.second) {
-      if (filter.Match(url))
-        return false;
-    }
-  }
-
-  // Didn't find any matches for Android so let Chrome handle it.
-  return true;
-}
-
 void ArcIntentHelperBridge::SetAdaptiveIconDelegate(
     AdaptiveIconDelegate* delegate) {
   icon_loader_.SetAdaptiveIconDelegate(delegate);
