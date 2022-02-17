@@ -22,8 +22,10 @@ class CocoaMouseCaptureDelegate {
 
   // Called when an event has been captured. This may be an event local to the
   // application, or a global event (sent to another application). If it is a
-  // local event, regular event handling will be suppressed.
-  virtual void PostCapturedEvent(NSEvent* event) = 0;
+  // local event and this function returns true, the event will be swallowed
+  // instead of propagated normally. The function return value is ignored for
+  // global events.
+  virtual bool PostCapturedEvent(NSEvent* event) = 0;
 
   // Called once. When another window acquires capture, or when the
   // CocoaMouseCapture is destroyed.

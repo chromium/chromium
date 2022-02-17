@@ -202,6 +202,9 @@ class ScreenshotFlow : public content::WebContentsObserver,
   gfx::Point drag_start_;
   gfx::Point drag_end_;
 
+  // Whether the user is currently dragging on the capture UI.
+  bool is_dragging_ = false;
+
   // Invalidation area; empty for entire region.
   gfx::Rect paint_invalidation_;
 

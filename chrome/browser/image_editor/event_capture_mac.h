@@ -20,6 +20,7 @@ namespace image_editor {
 class EventCaptureMac : public remote_cocoa::CocoaMouseCaptureDelegate {
  public:
   EventCaptureMac(ui::EventHandler* event_handler,
+                  gfx::NativeView web_contents_view,
                   gfx::NativeWindow target_window);
   ~EventCaptureMac() override;
   EventCaptureMac(const EventCaptureMac&) = delete;
@@ -30,11 +31,12 @@ class EventCaptureMac : public remote_cocoa::CocoaMouseCaptureDelegate {
   static void SetCrossCursor();
 
   // remote_cocoa::CocoaMouseCaptureDelegate
-  void PostCapturedEvent(NSEvent* event) override;
+  bool PostCapturedEvent(NSEvent* event) override;
   void OnMouseCaptureLost() override;
   NSWindow* GetWindow() const override;
 
  private:
+  NSView* web_contents_view_;
   NSWindow* window_;
   ui::EventHandler* event_handler_;
   ui::WeakPtrNSObjectFactory<EventCaptureMac> factory_;

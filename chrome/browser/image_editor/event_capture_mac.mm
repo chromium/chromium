@@ -14,27 +14,41 @@
 namespace image_editor {
 
 EventCaptureMac::EventCaptureMac(ui::EventHandler* event_handler,
+                                 gfx::NativeView web_contents_view,
                                  gfx::NativeWindow target_native_window)
     : factory_(this) {
   event_handler_ = event_handler;
+  web_contents_view_ = web_contents_view.GetNativeNSView();
   window_ = target_native_window.GetNativeNSWindow();
   mouse_capture_ = std::make_unique<remote_cocoa::CocoaMouseCapture>(this);
 }
 
 EventCaptureMac::~EventCaptureMac() = default;
 
-void EventCaptureMac::PostCapturedEvent(NSEvent* event) {
+bool EventCaptureMac::PostCapturedEvent(NSEvent* event) {
   std::unique_ptr<ui::Event> ui_event = ui::EventFromNative(event);
   if (!ui_event)
-    return;
+    return false;
+
+  // The window from where the event is sourced. If it is outside of the
+  // browser, this window will not be equal to GetWindow().
+  NSWindow* source = [event window];
+  NSView* contentView = [source contentView];
+  NSView* view = [contentView hitTest:[event locationInWindow]];
 
   ui::EventType type = ui_event->type();
   if (type == ui::ET_MOUSE_MOVED || type == ui::ET_MOUSE_DRAGGED ||
-      type == ui::ET_MOUSE_PRESSED || type == ui::ET_MOUSE_RELEASED) {
+      type == ui::ET_MOUSE_RELEASED) {
+    event_handler_->OnMouseEvent(ui_event->AsMouseEvent());
+  } else if (type == ui::ET_MOUSE_PRESSED && web_contents_view_ == view) {
+    // We do not need to record mouse clicks outside of the web contents.
     event_handler_->OnMouseEvent(ui_event->AsMouseEvent());
   } else if (type == ui::ET_SCROLL) {
     event_handler_->OnScrollEvent(ui_event->AsScrollEvent());
   }
+
+  // If we set the ui event as handled, then we want to swallow the event.
+  return ui_event->handled();
 }
 
 void EventCaptureMac::OnMouseCaptureLost() {
