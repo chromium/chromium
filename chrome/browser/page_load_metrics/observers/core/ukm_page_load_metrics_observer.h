@@ -148,6 +148,7 @@ class UkmPageLoadMetricsObserver
   void RecordSmoothnessMetrics();
 
   void RecordMobileFriendlinessMetrics();
+  void RecordPageLoadTimestampMetrics(ukm::builders::PageLoad& builder);
 
   // Captures the site engagement score for the committed URL and
   // returns the score rounded to the nearest 10.
@@ -292,6 +293,9 @@ class UkmPageLoadMetricsObserver
   // started in the foreground and has not been backgrounded.
   base::TimeTicks last_time_shown_;
   base::TimeDelta total_foreground_duration_;
+
+  // The navigation start timestamp.
+  base::Time navigation_start_time_;
 
   // The connection info for the committed URL.
   absl::optional<net::HttpResponseInfo::ConnectionInfo> connection_info_;

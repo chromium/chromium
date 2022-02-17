@@ -2337,6 +2337,26 @@ TEST_F(UkmPageLoadMetricsObserverTest, DurationSinceLastVisitSeconds) {
       base::Days(30).InSeconds());
 }
 
+TEST_F(UkmPageLoadMetricsObserverTest, NavigationTimestamp) {
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  // Verify UKM records for page load timestamp.
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kHourOfDayName, exploded.hour);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kDayOfWeekName, exploded.day_of_week);
+}
+
 TEST_F(UkmPageLoadMetricsObserverTest,
        DurationSinceLastVisitSecondsHistoryServiceLosesRace) {
   GURL url(kTestUrl1);

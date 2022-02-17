@@ -216,6 +216,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
   downstream_kbps_estimate_ =
       network_quality_tracker_->GetDownstreamThroughputKbps();
   page_transition_ = navigation_handle->GetPageTransition();
+  navigation_start_time_ = base::Time::Now();
   UpdateMainFrameRequestHadCookie(
       navigation_handle->GetWebContents()->GetBrowserContext(),
       navigation_handle->GetURL());
@@ -883,6 +884,7 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
   if (GetDelegate().DidCommit()) {
     builder.SetNavigationEntryOffset(navigation_entry_offset_);
     builder.SetMainDocumentSequenceNumber(main_document_sequence_number_);
+    RecordPageLoadTimestampMetrics(builder);
   }
 
   builder.Record(ukm::UkmRecorder::Get());
@@ -1131,6 +1133,16 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
   builder.SetIsNTPCustomLink(context_annotations.is_ntp_custom_link);
   builder.SetDurationSinceLastVisitSeconds(
       context_annotations.duration_since_last_visit.InSeconds());
+}
+
+void UkmPageLoadMetricsObserver::RecordPageLoadTimestampMetrics(
+    ukm::builders::PageLoad& builder) {
+  DCHECK(!navigation_start_time_.is_null());
+
+  base::Time::Exploded exploded;
+  navigation_start_time_.LocalExplode(&exploded);
+  builder.SetDayOfWeek(exploded.day_of_week);
+  builder.SetHourOfDay(exploded.hour);
 }
 
 void UkmPageLoadMetricsObserver::RecordInputTimingMetrics() {
