@@ -266,7 +266,6 @@ bool IsFocusedField(const ElementExpr& e,
 
 // Unfocuses the currently focused field.
 [[nodiscard]] AssertionResult BlurFocusedField(
-    const ElementExpr& e,
     content::ToRenderFrameHost execution_target) {
   std::string script = R"(
     if (document.activeElement !== null)
@@ -281,7 +280,7 @@ bool IsFocusedField(const ElementExpr& e,
     const ElementExpr& e,
     content::ToRenderFrameHost execution_target) {
   if (IsFocusedField(e, execution_target)) {
-    AssertionResult r = BlurFocusedField(e, execution_target);
+    AssertionResult r = BlurFocusedField(execution_target);
     if (!r)
       return r;
   }
@@ -305,11 +304,17 @@ struct ShowMethod {
   const bool click = false;
 };
 
+// We choose the timeout empirically. 250 ms are not enough; tests become flaky:
+// in ShowAutofillPopup(), the preview triggered by an "arrow down" sometimes
+// only arrives after >250 ms and thus arrives during the DoNothingAndWait(),
+// which causes a crash.
+constexpr base::TimeDelta kAutofillFlowDefaultTimeout = base::Seconds(2);
+
 struct ShowAutofillPopupParams {
   ShowMethod show_method = ShowMethod::ByArrow();
   int num_profile_suggestions = 1;
-  size_t max_tries = 3;
-  base::TimeDelta timeout = base::Milliseconds(250);
+  size_t max_tries = 5;
+  base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
   absl::optional<content::ToRenderFrameHost> execution_target = {};
 };
 
@@ -332,11 +337,12 @@ struct ShowAutofillPopupParams {
     if (base::Contains(exp, ObservedUiEvents::kSuggestionShown)) {
       return test->SendKeyToPageAndWait(kDown, std::move(exp), p.timeout);
     } else {
-      return test->SendKeyToPopupAndWait(kDown, std::move(exp), widget);
+      return test->SendKeyToPopupAndWait(kDown, std::move(exp), widget,
+                                         p.timeout);
     }
   };
   auto Backspace = [&]() {
-    return test->SendKeyToPageAndWait(ui::DomKey::BACKSPACE, {});
+    return test->SendKeyToPageAndWait(ui::DomKey::BACKSPACE, {}, p.timeout);
   };
   auto Char = [&](const std::string& code, std::list<ObservedUiEvents> exp) {
     ui::DomCode dom_code = ui::KeycodeConverter::CodeStringToDomCode(code);
@@ -364,13 +370,24 @@ struct ShowAutofillPopupParams {
   AssertionResult a = AssertionFailure()
                       << __func__ << "(): with " << p.num_profile_suggestions
                       << " profile suggestions";
+  bool field_was_focused_initially = IsFocusedField(e, rfh);
   for (size_t i = 1; i <= p.max_tries; ++i) {
     a = a << "Iteration " << i << "/" << p.max_tries << ". ";
     // The translate bubble may overlap with the Autofill popup. This causes
     // flakiness. See crbug.com/1175735#c10.
     translate::test_utils::CloseCurrentBubble(test->browser());
-    if (i > 1)
-      test->DoNothingAndWait(base::Milliseconds(500));
+    if (i > 1) {
+      test->DoNothingAndWaitAndIgnoreEvents(p.timeout);
+      if (field_was_focused_initially) {
+        // The Autofill popup may have opened due to a severely delayed event on
+        // a slow bot. To reset the popup, we re-focus the field.
+        a << "Trying to re-focus the field. ";
+        if (AssertionResult b = BlurFocusedField(rfh); !b)
+          a = a << b;
+        if (AssertionResult b = FocusField(e, rfh); !b)
+          a = a << b;
+      }
+    }
 
     bool has_preview = 0 < p.num_profile_suggestions;
     if (p.show_method.arrow) {
@@ -420,6 +437,7 @@ struct AutofillSuggestionParams {
   int num_profile_suggestions = 1;
   int current_index = 0;
   int target_index = 0;
+  base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
   absl::optional<content::ToRenderFrameHost> execution_target = {};
 };
 
@@ -439,7 +457,7 @@ struct AutofillSuggestionParams {
 
   auto ArrowDown = [&](std::list<ObservedUiEvents> exp) {
     return test->SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN, std::move(exp),
-                                       widget);
+                                       widget, p.timeout);
   };
 
   for (int i = p.current_index + 1; i <= p.target_index; ++i) {
@@ -473,8 +491,7 @@ struct AutofillSuggestionParams {
   };
 
   bool has_fill = p.target_index < p.num_profile_suggestions;
-  AssertionResult a = SelectAutofillSuggestion(e, test, p);
-  if (!a)
+  if (AssertionResult a = SelectAutofillSuggestion(e, test, p); !a)
     return a;
   if (!(has_fill ? Enter({kFill}) : Enter({}))) {
     return AssertionFailure()
@@ -516,6 +533,7 @@ struct AutofillFlowParams {
   base::RepeatingClosure after_show = {};
   base::RepeatingClosure after_select = {};
   base::RepeatingClosure after_accept = {};
+  base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
   absl::optional<content::ToRenderFrameHost> execution_target = {};
 };
 
@@ -538,6 +556,7 @@ struct AutofillFlowParams {
         ShowAutofillPopup(e, test,
                           {.show_method = p.show_method,
                            .num_profile_suggestions = p.num_profile_suggestions,
+                           .timeout = p.timeout,
                            .execution_target = execution_target});
     if (!a)
       return a;
@@ -551,6 +570,7 @@ struct AutofillFlowParams {
         {.num_profile_suggestions = p.num_profile_suggestions,
          .current_index = p.show_method.selects_first_suggestion() ? 0 : -1,
          .target_index = p.target_index,
+         .timeout = p.timeout,
          .execution_target = execution_target});
     if (!a)
       return a;
@@ -564,6 +584,7 @@ struct AutofillFlowParams {
         {.num_profile_suggestions = p.num_profile_suggestions,
          .current_index = p.target_index,
          .target_index = p.target_index,
+         .timeout = p.timeout,
          .execution_target = execution_target});
     if (!a)
       return a;

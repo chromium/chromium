@@ -27,6 +27,21 @@
 
 namespace autofill {
 
+std::ostream& operator<<(std::ostream& os, ObservedUiEvents event) {
+  switch (event) {
+    case ObservedUiEvents::kPreviewFormData:
+      return os << "kPreviewFormData";
+    case ObservedUiEvents::kFormDataFilled:
+      return os << "kFormDataFilled";
+    case ObservedUiEvents::kSuggestionShown:
+      return os << "kSuggestionShown";
+    case ObservedUiEvents::kNoEvent:
+      return os << "kNoEvent";
+    default:
+      return os << "<OutOfRange>";
+  }
+}
+
 // BrowserAutofillManagerTestDelegateImpl
 // --------------------------------------------
 BrowserAutofillManagerTestDelegateImpl::
@@ -213,8 +228,11 @@ void AutofillUiTest::DoNothingAndWait(base::TimeDelta timeout) {
   ASSERT_FALSE(test_delegate()->Wait());
 }
 
-void AutofillUiTest::DoNothingAndWait(unsigned seconds) {
-  DoNothingAndWait(base::Seconds(seconds));
+void AutofillUiTest::DoNothingAndWaitAndIgnoreEvents(base::TimeDelta timeout) {
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), timeout);
+  run_loop.Run();
 }
 
 void AutofillUiTest::SendKeyToDataListPopup(ui::DomKey key) {

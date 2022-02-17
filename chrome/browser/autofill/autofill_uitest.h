@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <ostream>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -33,6 +34,8 @@ enum class ObservedUiEvents {
   kNoEvent,
   kMaxValue = kNoEvent
 };
+
+std::ostream& operator<<(std::ostream& os, ObservedUiEvents event);
 
 class BrowserAutofillManagerTestDelegateImpl
     : public autofill::BrowserAutofillManagerTestDelegate {
@@ -114,9 +117,11 @@ class AutofillUiTest : public InProcessBrowserTest,
 
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
 
+  // DoNothingAndWait() violates an assertion if during the time an event
+  // happens. Delayed events during DoNothingAndWait() may therefore cause
+  // flakiness. DoNothingAndWaitAndIgnoreEvents() ignores any events.
   void DoNothingAndWait(base::TimeDelta timeout);
-  // Deprecated: use the TimeDelta version.
-  void DoNothingAndWait(unsigned seconds);
+  void DoNothingAndWaitAndIgnoreEvents(base::TimeDelta timeout);
 
   content::WebContents* GetWebContents();
   content::RenderViewHost* GetRenderViewHost();
