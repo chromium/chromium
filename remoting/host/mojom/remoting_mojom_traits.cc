@@ -138,7 +138,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
 
   if (data_view.button() != remoting::mojom::MouseButton::kUndefined) {
     ::remoting::protocol::MouseEvent::MouseButton mouse_button;
-    if (data_view.ReadButton(&mouse_button)) {
+    if (!data_view.ReadButton(&mouse_button)) {
       return false;
     }
     out_event->set_button(mouse_button);
