@@ -12,7 +12,6 @@ final R.java class for all resource packages the APK depends on.
 This will crunch images with aapt2.
 """
 
-import argparse
 import collections
 import contextlib
 import filecmp
@@ -23,9 +22,7 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 import textwrap
-import zipfile
 from xml.etree import ElementTree
 
 from util import build_utils
@@ -835,6 +832,7 @@ def _PackageApk(options, build):
   logging.debug('Created .res.info file')
 
   exit_code = link_proc.wait()
+  assert exit_code == 0, f'aapt2 link cmd failed with {exit_code=}'
   logging.debug('Finished: aapt2 link')
 
   if options.shared_resources:
