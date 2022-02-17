@@ -23,6 +23,7 @@
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -200,7 +201,16 @@ SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
   // background border corner radius. All child views' background should be
   // set transparent so that the rounded corner is not overwritten.
   SetBackground(std::make_unique<SearchResultPageBackground>(
-      AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor()));
+      features::IsProductivityLauncherEnabled()
+          ? ColorProvider::Get()->GetBaseLayerColor(
+                ColorProvider::BaseLayerType::kTransparent80)
+          : AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor()));
+  if (features::IsProductivityLauncherEnabled()) {
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(
+        kExpandedSearchBoxCornerRadiusForProductivityLauncher));
+  }
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // App list bubble search page has its own scroller and result selection
