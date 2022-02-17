@@ -19,6 +19,7 @@
 
 #include "base/base_export.h"
 #include "base/bit_cast.h"
+#include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/checked_range.h"
 #include "base/containers/cxx20_erase_vector.h"
@@ -198,7 +199,7 @@ class ListValue;
 // awkward/inefficient, please reach out to #code-health-rotation on Slack for
 // consultation: it is entirely possible that certain classes of APIs may be
 // missing due to an unrealized need.
-class BASE_EXPORT Value {
+class BASE_EXPORT GSL_OWNER Value {
  public:
   using BlobStorage = std::vector<uint8_t>;
 
@@ -358,7 +359,7 @@ class BASE_EXPORT Value {
   List& GetList();
 
   // Represents a dictionary of string keys to Values.
-  class BASE_EXPORT Dict {
+  class BASE_EXPORT GSL_OWNER Dict {
    public:
     using iterator = detail::dict_iterator;
     using const_iterator = detail::const_dict_iterator;
@@ -527,7 +528,7 @@ class BASE_EXPORT Value {
   };
 
   // Represents a list of Values.
-  class BASE_EXPORT List {
+  class BASE_EXPORT GSL_OWNER List {
    public:
     using iterator = CheckedContiguousIterator<Value>;
     using const_iterator = CheckedContiguousConstIterator<Value>;
@@ -986,6 +987,11 @@ class BASE_EXPORT Value {
   void WriteIntoTrace(perfetto::TracedValue) const;
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
+  template <typename Visitor>
+  auto Visit(Visitor&& visitor) const {
+    return absl::visit(std::forward<Visitor>(visitor), data_);
+  }
+
  protected:
   // Checked convenience accessors for dict and list.
   const LegacyDictStorage& dict() const { return GetDict().storage_; }
@@ -998,6 +1004,9 @@ class BASE_EXPORT Value {
   explicit Value(LegacyDictStorage&& storage) noexcept;
 
  private:
+  // For access to DoubleStorage.
+  friend class ValueView;
+
   // Special case for doubles, which are aligned to 8 bytes on some
   // 32-bit architectures. In this case, a simple declaration as a
   // double member would make the whole union 8 byte-aligned, which
@@ -1012,11 +1021,23 @@ class BASE_EXPORT Value {
     DoubleStorage(const DoubleStorage&) = default;
     DoubleStorage& operator=(const DoubleStorage&) = default;
 
-    double value() const { return bit_cast<double>(v_); }
+    // Provide an implicit conversion to double to simplify the use of visitors
+    // with `Value::Visit()`. Otherwise, visitors would need a branch for
+    // handling `DoubleStorage` like:
+    //
+    //   value.Visit([] (const auto& member) {
+    //     using T = std::decay_t<decltype(member)>;
+    //     if constexpr (std::is_same_v<T, Value::DoubleStorage>) {
+    //       SomeFunction(double{member});
+    //     } else {
+    //       SomeFunction(member);
+    //     }
+    //   });
+    operator double() const { return bit_cast<double>(v_); }
 
    private:
     friend bool operator==(const DoubleStorage& lhs, const DoubleStorage& rhs) {
-      return lhs.value() == rhs.value();
+      return double{lhs} == double{rhs};
     }
 
     friend bool operator!=(const DoubleStorage& lhs, const DoubleStorage& rhs) {
@@ -1024,7 +1045,7 @@ class BASE_EXPORT Value {
     }
 
     friend bool operator<(const DoubleStorage& lhs, const DoubleStorage& rhs) {
-      return lhs.value() < rhs.value();
+      return double{lhs} < double{rhs};
     }
 
     friend bool operator>(const DoubleStorage& lhs, const DoubleStorage& rhs) {
@@ -1242,16 +1263,60 @@ class BASE_EXPORT ListValue : public Value {
   //   ...
 };
 
+// Adapter so `Value::Dict` or `Value::List` can be directly passed to JSON
+// serialization methods without having to clone the contents and transfer
+// ownership of the clone to a `Value` wrapper object.
+//
+// Like `StringPiece` and `span<T>`, this adapter does NOT retain ownership. Any
+// underlying object that is passed by reference (i.e. `std::string`,
+// `Value::BlobStorage`, `Value::Dict`, `Value::List`, or `Value`) MUST remain
+// live as long as there is a `ValueView` referencing it.
+//
+// While it might be nice to just use the `absl::variant` type directly, the
+// need to use `std::reference_wrapper` makes it clunky. `absl::variant` and
+// `std::reference_wrapper` both support implicit construction, but C++ only
+// allows at most one user-defined conversion in an implicit conversion
+// sequence. If this adapter and its implicit constructors did not exist,
+// callers would need to use `std::ref` or `std::cref` to pass `Value::Dict` or
+// `Value::List` to a function with a `ValueView` parameter.
+class BASE_EXPORT GSL_POINTER ValueView {
+ public:
+  ValueView(bool value) : data_view_(value) {}
+  ValueView(int value) : data_view_(value) {}
+  ValueView(double value)
+      : data_view_(absl::in_place_type_t<Value::DoubleStorage>(), value) {}
+  ValueView(const std::string& value) : data_view_(value) {}
+  ValueView(const Value::BlobStorage& value) : data_view_(value) {}
+  ValueView(const Value::Dict& value) : data_view_(value) {}
+  ValueView(const Value::List& value) : data_view_(value) {}
+  ValueView(const Value& value);
+
+  template <typename Visitor>
+  auto Visit(Visitor&& visitor) const {
+    return absl::visit(std::forward<Visitor>(visitor), data_view_);
+  }
+
+ private:
+  using ViewType =
+      absl::variant<absl::monostate,
+                    bool,
+                    int,
+                    Value::DoubleStorage,
+                    std::reference_wrapper<const std::string>,
+                    std::reference_wrapper<const Value::BlobStorage>,
+                    std::reference_wrapper<const Value::Dict>,
+                    std::reference_wrapper<const Value::List>>;
+
+  ViewType data_view_;
+};
+
 // This interface is implemented by classes that know how to serialize
 // Value objects.
 class BASE_EXPORT ValueSerializer {
  public:
   virtual ~ValueSerializer();
 
-  virtual bool Serialize(const Value& root) = 0;
-  // TODO(https://crbug.com/1297359): deduplicate these overloads.
-  virtual bool Serialize(const Value::Dict& root) = 0;
-  virtual bool Serialize(const Value::List& root) = 0;
+  virtual bool Serialize(ValueView root) = 0;
 };
 
 // This interface is implemented by classes that know how to deserialize Value

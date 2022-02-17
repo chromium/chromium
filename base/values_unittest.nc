@@ -11,6 +11,8 @@
 
 namespace base {
 
+void G(ValueView v) {}
+
 #if defined(NCTEST_VALUE_CTOR_PTR_DOES_NOT_CONVERT_TO_BOOL)  // [r"fatal error: call to deleted constructor"]
 
 void F() {
@@ -70,6 +72,41 @@ Value::List F(int64_t value) {
   Value::List list;
   list.Append(value);
   return list;
+}
+
+#elif defined(NCTEST_VALUEVIEW_FROM_STRING_TEMPORARY)  // [r"fatal error: object backing the pointer will be destroyed at the end of the full-expression"]
+
+void F() {
+  ValueView v = std::string();
+  G(v);
+}
+
+#elif defined(NCTEST_VALUEVIEW_FROM_BLOB_TEMPORARY)  // [r"fatal error: object backing the pointer will be destroyed at the end of the full-expression"]
+
+void F() {
+  ValueView v = Value::BlobStorage();
+  G(v);
+}
+
+#elif defined(NCTEST_VALUEVIEW_FROM_DICT_TEMPORARY)  // [r"fatal error: object backing the pointer will be destroyed at the end of the full-expression"]
+
+void F() {
+  ValueView v = Value::Dict();
+  G(v);
+}
+
+#elif defined(NCTEST_VALUEVIEW_FROM_LIST_TEMPORARY)  // [r"fatal error: object backing the pointer will be destroyed at the end of the full-expression"]
+
+void F() {
+  ValueView v = Value::List();
+  G(v);
+}
+
+#elif defined(NCTEST_VALUEVIEW_FROM_VALUE_TEMPORARY)  // [r"fatal error: object backing the pointer will be destroyed at the end of the full-expression"]
+
+void F() {
+  ValueView v = Value();
+  G(v);
 }
 
 #endif

@@ -350,7 +350,7 @@ int Value::GetInt() const {
 
 double Value::GetDouble() const {
   if (is_double())
-    return absl::get<DoubleStorage>(data_).value();
+    return absl::get<DoubleStorage>(data_);
   if (is_int())
     return GetInt();
   CHECK(false);
@@ -1782,6 +1782,10 @@ void ListValue::Swap(ListValue* other) {
   CHECK(other->is_list());
   list().swap(other->list());
 }
+
+ValueView::ValueView(const Value& value)
+    : data_view_(
+          value.Visit([](const auto& member) { return ViewType(member); })) {}
 
 ValueSerializer::~ValueSerializer() = default;
 

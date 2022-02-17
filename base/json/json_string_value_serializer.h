@@ -30,28 +30,17 @@ class BASE_EXPORT JSONStringValueSerializer : public base::ValueSerializer {
   // Attempt to serialize the data structure represented by Value into
   // JSON.  If the return value is true, the result will have been written
   // into the string passed into the constructor.
-  bool Serialize(const base::Value& root) override;
-  // TODO(https://crbug.com/1297359): deduplicate these overloads.
-  bool Serialize(const base::Value::Dict& root) override;
-  bool Serialize(const base::Value::List& root) override;
+  bool Serialize(base::ValueView root) override;
 
   // Equivalent to Serialize(root) except binary values are omitted from the
   // output.
-  bool SerializeAndOmitBinaryValues(const base::Value& root);
-  // TODO(https://crbug.com/1297359): deduplicate these overloads.
-  bool SerializeAndOmitBinaryValues(const base::Value::Dict& root);
-  bool SerializeAndOmitBinaryValues(const base::Value::List& root);
+  bool SerializeAndOmitBinaryValues(base::ValueView root);
 
   void set_pretty_print(bool new_value) { pretty_print_ = new_value; }
   bool pretty_print() { return pretty_print_; }
 
  private:
-  bool SerializeInternal(const base::Value& root, bool omit_binary_values);
-  // TODO(https://crbug.com/1297359): deduplicate these overloads.
-  bool SerializeInternal(const base::Value::Dict& root,
-                         bool omit_binary_values);
-  bool SerializeInternal(const base::Value::List& root,
-                         bool omit_binary_values);
+  bool SerializeInternal(base::ValueView root, bool omit_binary_values);
 
   // Owned by the caller of the constructor.
   raw_ptr<std::string> json_string_;

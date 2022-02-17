@@ -45,33 +45,13 @@ class BASE_EXPORT JSONWriter {
   // TODO(tc): Should we generate json if it would be invalid json (e.g.,
   // |node| is not a dictionary/list Value or if there are inf/-inf float
   // values)? Return true on success and false on failure.
-  static bool Write(const Value& node,
-                    std::string* json,
-                    size_t max_depth = internal::kAbsoluteMaxDepth);
-
-  // TODO(https://crbug.com/1297359): deduplicate these overloads.
-  static bool Write(const Value::Dict& node,
-                    std::string* json,
-                    size_t max_depth = internal::kAbsoluteMaxDepth);
-
-  static bool Write(const Value::List& node,
+  static bool Write(ValueView node,
                     std::string* json,
                     size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Same as above but with |options| which is a bunch of JSONWriter::Options
   // bitwise ORed together. Return true on success and false on failure.
-  static bool WriteWithOptions(const Value& node,
-                               int options,
-                               std::string* json,
-                               size_t max_depth = internal::kAbsoluteMaxDepth);
-
-  // TODO(https://crbug.com/1297359): deduplicate these overloads.
-  static bool WriteWithOptions(const Value::Dict& node,
-                               int options,
-                               std::string* json,
-                               size_t max_depth = internal::kAbsoluteMaxDepth);
-
-  static bool WriteWithOptions(const Value::List& node,
+  static bool WriteWithOptions(ValueView node,
                                int options,
                                std::string* json,
                                size_t max_depth = internal::kAbsoluteMaxDepth);
@@ -83,8 +63,12 @@ class BASE_EXPORT JSONWriter {
 
   // Called recursively to build the JSON string. When completed,
   // |json_string_| will contain the JSON.
-  bool BuildJSONString(const Value& node, size_t depth);
-  // TODO(https://crbug.com/1297359): deduplicate these overloads.
+  bool BuildJSONString(absl::monostate node, size_t depth);
+  bool BuildJSONString(bool node, size_t depth);
+  bool BuildJSONString(int node, size_t depth);
+  bool BuildJSONString(double node, size_t depth);
+  bool BuildJSONString(const std::string& node, size_t depth);
+  bool BuildJSONString(const Value::BlobStorage& node, size_t depth);
   bool BuildJSONString(const Value::Dict& node, size_t depth);
   bool BuildJSONString(const Value::List& node, size_t depth);
 

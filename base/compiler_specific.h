@@ -383,8 +383,10 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #endif
 
 #if defined(__clang__)
+#define GSL_OWNER [[gsl::Owner]]
 #define GSL_POINTER [[gsl::Pointer]]
 #else
+#define GSL_OWNER_
 #define GSL_POINTER
 #endif
 

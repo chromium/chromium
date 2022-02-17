@@ -16,62 +16,16 @@ JSONStringValueSerializer::JSONStringValueSerializer(std::string* json_string)
 
 JSONStringValueSerializer::~JSONStringValueSerializer() = default;
 
-bool JSONStringValueSerializer::Serialize(const Value& root) {
-  return SerializeInternal(root, false);
-}
-
-bool JSONStringValueSerializer::Serialize(const Value::Dict& root) {
-  return SerializeInternal(root, false);
-}
-
-bool JSONStringValueSerializer::Serialize(const Value::List& root) {
+bool JSONStringValueSerializer::Serialize(base::ValueView root) {
   return SerializeInternal(root, false);
 }
 
 bool JSONStringValueSerializer::SerializeAndOmitBinaryValues(
-    const Value& root) {
+    base::ValueView root) {
   return SerializeInternal(root, true);
 }
 
-bool JSONStringValueSerializer::SerializeAndOmitBinaryValues(
-    const Value::Dict& root) {
-  return SerializeInternal(root, true);
-}
-
-bool JSONStringValueSerializer::SerializeAndOmitBinaryValues(
-    const Value::List& root) {
-  return SerializeInternal(root, true);
-}
-
-bool JSONStringValueSerializer::SerializeInternal(const Value& root,
-                                                  bool omit_binary_values) {
-  if (!json_string_)
-    return false;
-
-  int options = 0;
-  if (omit_binary_values)
-    options |= base::JSONWriter::OPTIONS_OMIT_BINARY_VALUES;
-  if (pretty_print_)
-    options |= base::JSONWriter::OPTIONS_PRETTY_PRINT;
-
-  return base::JSONWriter::WriteWithOptions(root, options, json_string_);
-}
-
-bool JSONStringValueSerializer::SerializeInternal(const Value::Dict& root,
-                                                  bool omit_binary_values) {
-  if (!json_string_)
-    return false;
-
-  int options = 0;
-  if (omit_binary_values)
-    options |= base::JSONWriter::OPTIONS_OMIT_BINARY_VALUES;
-  if (pretty_print_)
-    options |= base::JSONWriter::OPTIONS_PRETTY_PRINT;
-
-  return base::JSONWriter::WriteWithOptions(root, options, json_string_);
-}
-
-bool JSONStringValueSerializer::SerializeInternal(const Value::List& root,
+bool JSONStringValueSerializer::SerializeInternal(base::ValueView root,
                                                   bool omit_binary_values) {
   if (!json_string_)
     return false;
