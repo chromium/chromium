@@ -761,16 +761,19 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(
   NavigateBrowser(site_mode);
   absl::optional<AppState> app_state = GetAppBySiteMode(
       before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
   auto app_id = app_state->id;
 
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
+  BrowserAddedWaiter browser_added_waiter;
   CHECK(chrome::ExecuteCommand(browser(), IDC_OPEN_IN_PWA_WINDOW));
+  browser_added_waiter.Wait();
   app_loaded_observer.Wait();
-
-  app_browser_ = BrowserList::GetInstance()->GetLastActive();
+  app_browser_ = browser_added_waiter.browser_added();
   active_app_id_ = app_id;
+
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), active_app_id_));
   ASSERT_EQ(GetBrowserWindowTitle(app_browser()), app_state->name);
   AfterStateChangeAction();
@@ -781,11 +784,12 @@ void WebAppIntegrationTestDriver::LaunchFromShortcut(
   BeforeStateChangeAction();
   absl::optional<AppState> app_state = GetAppBySiteMode(
       before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
   auto app_id = app_state->id;
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  std::vector<Browser*> app_browsers;
+  BrowserAddedWaiter browser_added_waiter;
 
 #if BUILDFLAG(IS_MAC)
   auto* provider = GetProviderForProfile(profile());
@@ -804,13 +808,14 @@ void WebAppIntegrationTestDriver::LaunchFromShortcut(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       {profile(), StartupProfileMode::kBrowserWindow}, {}));
 #endif
+  browser_added_waiter.Wait();
+  app_browser_ = browser_added_waiter.browser_added();
   app_loaded_observer.Wait();
   content::RunAllTasksUntilIdle();
-  app_browsers.push_back(BrowserList::GetInstance()->GetLastActive());
 
-  for (auto* app_browser : app_browsers) {
-    ASSERT_EQ(GetBrowserWindowTitle(app_browser), app_state->name);
-  }
+  ASSERT_EQ(app_browser()->app_controller()->app_id(), app_state->id);
+  ASSERT_EQ(GetBrowserWindowTitle(app_browser()), app_state->name);
+  active_app_id_ = app_id;
   AfterStateChangeAction();
 }
 
