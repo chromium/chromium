@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "components/user_manager/user_manager.h"
 
 namespace drivefs {
 namespace mojom {
@@ -30,14 +31,19 @@ using PendingScreencastChangeCallback =
     base::RepeatingCallback<void(const ash::PendingScreencastSet&)>;
 
 // A class that handles pending screencast events.
-class PendingSreencastManager : public session_manager::SessionManagerObserver,
-                                public drivefs::DriveFsHostObserver {
+class PendingSreencastManager
+    : public drivefs::DriveFsHostObserver,
+      public user_manager::UserManager::UserSessionStateObserver,
+      public session_manager::SessionManagerObserver {
  public:
   explicit PendingSreencastManager(
       PendingScreencastChangeCallback pending_screencast_change_callback);
   PendingSreencastManager(const PendingSreencastManager&) = delete;
   PendingSreencastManager& operator=(const PendingSreencastManager&) = delete;
   ~PendingSreencastManager() override;
+
+  // Test only:
+  bool IsDriveFsObservationObservingSource(drivefs::DriveFsHost* source) const;
 
   // drivefs::DriveFsHostObserver:
   void OnUnmounted() override;
@@ -56,6 +62,12 @@ class PendingSreencastManager : public session_manager::SessionManagerObserver,
   // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override;
 
+  // user_manager::UserManager::UserSessionStateObserver:
+  void ActiveUserChanged(user_manager::User* active_user) override;
+
+  // Maybe reset `drivefs_observation_` and observe the current active profile.
+  void MaybeSwithDriveFsObservation();
+
   // A set that caches current pending screencast.
   ash::PendingScreencastSet pending_screencast_cache_;
 
@@ -67,10 +79,16 @@ class PendingSreencastManager : public session_manager::SessionManagerObserver,
 
   base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHostObserver>
       drivefs_observation_{this};
-
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
+
+  base::ScopedObservation<
+      user_manager::UserManager,
+      user_manager::UserManager::UserSessionStateObserver,
+      &user_manager::UserManager::AddSessionStateObserver,
+      &user_manager::UserManager::RemoveSessionStateObserver>
+      session_state_observation_{this};
 
   base::WeakPtrFactory<PendingSreencastManager> weak_ptr_factory_{this};
 };

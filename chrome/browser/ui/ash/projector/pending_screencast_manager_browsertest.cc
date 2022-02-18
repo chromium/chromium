@@ -6,6 +6,7 @@
 
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,6 +17,9 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -481,6 +485,62 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   EXPECT_EQ(set5, set6);
   EXPECT_EQ(2, set5.size());
   EXPECT_EQ(2, set7.size());
+}
+
+class PendingScreencastMangerMultiProfileTest : public LoginManagerTest {
+ public:
+  PendingScreencastMangerMultiProfileTest() : LoginManagerTest() {
+    login_mixin_.AppendRegularUsers(2);
+    account_id1_ = login_mixin_.users()[0].account_id;
+    account_id2_ = login_mixin_.users()[1].account_id;
+  }
+
+  void SetUpOnMainThread() override {
+    LoginManagerTest::SetUpOnMainThread();
+
+    pending_screencast_manager_ =
+        std::make_unique<PendingSreencastManager>(base::BindLambdaForTesting(
+            [&](const PendingScreencastSet& set) { base::DoNothing(); }));
+  }
+
+  void TearDownOnMainThread() override {
+    pending_screencast_manager_.reset();
+    LoginManagerTest::TearDownOnMainThread();
+  }
+
+ protected:
+  AccountId account_id1_;
+  AccountId account_id2_;
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
+  std::unique_ptr<PendingSreencastManager> pending_screencast_manager_;
+};
+
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerMultiProfileTest,
+                       SwitchActiveUser) {
+  LoginUser(account_id1_);
+
+  // Verify DriveFsHost observation is observing user 1's DriveFsHost.
+  Profile* profile1 = ProfileHelper::Get()->GetProfileByAccountId(account_id1_);
+  drive::DriveIntegrationService* service_for_account1 =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile1);
+  EXPECT_TRUE(pending_screencast_manager_->IsDriveFsObservationObservingSource(
+      service_for_account1->GetDriveFsHost()));
+
+  // Add user 2.
+  ash::UserAddingScreen::Get()->Start();
+  AddUser(account_id2_);
+  // Verify DriveFsHost observation is observing user 2's DriveFsHost.
+  Profile* profile2 = ProfileHelper::Get()->GetProfileByAccountId(account_id2_);
+  drive::DriveIntegrationService* service_for_account2 =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile2);
+  EXPECT_TRUE(pending_screencast_manager_->IsDriveFsObservationObservingSource(
+      service_for_account2->GetDriveFsHost()));
+
+  // Switch back to user1.
+  user_manager::UserManager::Get()->SwitchActiveUser(account_id1_);
+  // Verify DriveFsHost observation is observing user 1's DriveFsHost.
+  EXPECT_TRUE(pending_screencast_manager_->IsDriveFsObservationObservingSource(
+      service_for_account1->GetDriveFsHost()));
 }
 
 }  // namespace ash

@@ -177,9 +177,17 @@ PendingSreencastManager::PendingSreencastManager(
       session_manager::SessionManager::Get();
   if (session_manager)
     session_observation_.Observe(session_manager);
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  if (user_manager)
+    session_state_observation_.Observe(user_manager);
 }
 
 PendingSreencastManager::~PendingSreencastManager() = default;
+
+bool PendingSreencastManager::IsDriveFsObservationObservingSource(
+    drivefs::DriveFsHost* source) const {
+  return drivefs_observation_.IsObservingSource(source);
+}
 
 void PendingSreencastManager::OnUnmounted() {
   if (!pending_screencast_cache_.empty()) {
@@ -247,13 +255,35 @@ void PendingSreencastManager::OnProcessAndGenerateNewScreencastsFinished(
 }
 
 void PendingSreencastManager::OnUserProfileLoaded(const AccountId& account_id) {
+  MaybeSwithDriveFsObservation();
+}
+
+void PendingSreencastManager::ActiveUserChanged(
+    user_manager::User* active_user) {
+  // After user login, the first ActiveUserChanged() might be called before
+  // profile is loaded.
+  if (!active_user->is_profile_created())
+    return;
+
+  MaybeSwithDriveFsObservation();
+}
+
+void PendingSreencastManager::MaybeSwithDriveFsObservation() {
   auto* profile = ProfileManager::GetActiveUserProfile();
+
   if (!IsProjectorAllowedForProfile(profile))
     return;
+
   auto* drivefs_host = GetDriveFsHostForActiveProfile();
-  // DriveFs could be mounted for different profiles.
-  // TODO(b/215199269): Observe ActiveUserChanged for switching between
-  // different profiles.
-  if (drivefs_host && !drivefs_observation_.IsObserving())
-    drivefs_observation_.Observe(drivefs_host);
+  if (!drivefs_host || drivefs_observation_.IsObservingSource(drivefs_host))
+    return;
+
+  if (!pending_screencast_cache_.empty())
+    pending_screencast_cache_.clear();
+
+  // Reset if observing DriveFsHost of other profile.
+  if (drivefs_observation_.IsObserving())
+    drivefs_observation_.Reset();
+
+  drivefs_observation_.Observe(drivefs_host);
 }
