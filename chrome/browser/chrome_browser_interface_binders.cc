@@ -51,6 +51,7 @@
 #include "components/dom_distiller/content/common/mojom/distiller_javascript_service.mojom.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/feed/buildflags.h"
+#include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/live_caption/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
@@ -290,6 +291,10 @@
 
 #if BUILDFLAG(PLATFORM_CFM)
 #include "chrome/browser/ui/webui/chromeos/chromebox_for_meetings/network_settings_dialog.h"
+#endif
+
+#if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
+#include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
 #endif
 
 namespace chrome {
@@ -704,6 +709,12 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<::mojom::UsbInternalsPageHandler,
                                          UsbInternalsUI>(map);
+
+#if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
+  RegisterWebUIControllerInterfaceBinder<
+      history_clusters_internals::mojom::PageHandlerFactory,
+      HistoryClustersInternalsUI>(map);
+#endif
 
   RegisterWebUIControllerInterfaceBinder<
       optimization_guide_internals::mojom::PageHandlerFactory,

@@ -94,4 +94,7 @@ const base::Feature kPersistContextAnnotationsInHistoryDb{
     "JourneysPersistContextAnnotationsInHistoryDb",
     enabled_by_default_desktop_only};
 
+const base::Feature kHistoryClustersInternalsPage{
+    "HistoryClustersInternalsPage", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace history_clusters

@@ -20,6 +20,7 @@
 #include "chrome/browser/accessibility/accessibility_ui.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
+#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -75,6 +76,8 @@
 #include "components/favicon_base/select_favicon_frames.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
+#include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_ui.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
@@ -446,6 +449,17 @@ WebUIController* NewWebUI<OptimizationGuideInternalsUI>(WebUI* web_ui,
                          kChromeUIOptimizationGuideInternalsHost));
 }
 
+template <>
+WebUIController* NewWebUI<HistoryClustersInternalsUI>(WebUI* web_ui,
+                                                      const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  return new HistoryClustersInternalsUI(
+      web_ui, HistoryClustersServiceFactory::GetForBrowserContext(profile),
+      base::BindOnce(
+          &SetUpWebUIDataSource, web_ui,
+          history_clusters_internals::kChromeUIHistoryClustersInternalsHost));
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 template <>
 WebUIController* NewWebUI<chromeos::OobeUI>(WebUI* web_ui, const GURL& url) {
@@ -767,6 +781,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SyncInternalsUI>;
   if (url.host_piece() == chrome::kChromeUITranslateInternalsHost)
     return &NewWebUI<TranslateInternalsUI>;
+  if (url.host_piece() ==
+      history_clusters_internals::kChromeUIHistoryClustersInternalsHost) {
+    return &NewWebUI<HistoryClustersInternalsUI>;
+  }
   if (url.host_piece() == chrome::kChromeUIUsbInternalsHost)
     return &NewWebUI<UsbInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIUserActionsHost)

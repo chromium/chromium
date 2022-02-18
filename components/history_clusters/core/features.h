@@ -100,6 +100,9 @@ extern const base::Feature kUserVisibleDebug;
 // enabled, users will have context annotations persisted into their History DB.
 extern const base::Feature kPersistContextAnnotationsInHistoryDb;
 
+// Enables the history clusters internals page.
+extern const base::Feature kHistoryClustersInternalsPage;
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_FEATURES_H_

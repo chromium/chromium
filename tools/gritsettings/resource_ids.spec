@@ -333,6 +333,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [2300],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/history_clusters/history_clusters_internals/resources/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2310],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/download/resources/download_internals/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [2320],
