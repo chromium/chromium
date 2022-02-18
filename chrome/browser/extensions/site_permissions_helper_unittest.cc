@@ -7,7 +7,11 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/permissions_updater.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -27,11 +31,10 @@ std::unique_ptr<base::ListValue> ToListValue(
 }  // namespace
 
 using SiteAccess = SitePermissionsHelper::SiteAccess;
+using SiteInteraction = SitePermissionsHelper::SiteInteraction;
 
 class SitePermissionsHelperUnitTest : public ExtensionServiceTestWithInstall {
  public:
-  void SetUp() override;
-
   scoped_refptr<const extensions::Extension> InstallExtension(
       const std::string& name);
 
@@ -40,21 +43,28 @@ class SitePermissionsHelperUnitTest : public ExtensionServiceTestWithInstall {
       const std::vector<std::string>& host_permissions,
       const std::vector<std::string>& permissions = {});
 
+  // Adds a new tab with `url` to the tab strip, and returns the WebContents
+  // associated with it.
+  content::WebContents* AddTab(const GURL& url);
+
+  Browser* browser();
+
   SitePermissionsHelper* permissions_helper() {
     return permissions_helper_.get();
   }
 
+  // ExtensionServiceTestBase:
+  void SetUp() override;
+  void TearDown() override;
+
  private:
+  // The browser and accompaying window.
+  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestBrowserWindow> browser_window_;
+
   // Site permissions helper being tested.
   std::unique_ptr<SitePermissionsHelper> permissions_helper_;
 };
-
-void SitePermissionsHelperUnitTest::SetUp() {
-  ExtensionServiceTestBase::SetUp();
-  InitializeEmptyExtensionService();
-
-  permissions_helper_ = std::make_unique<SitePermissionsHelper>(profile());
-}
 
 scoped_refptr<const extensions::Extension>
 SitePermissionsHelperUnitTest::InstallExtension(const std::string& name) {
@@ -78,56 +88,177 @@ SitePermissionsHelperUnitTest::InstallExtensionWithPermissions(
   return extension;
 }
 
-TEST_F(SitePermissionsHelperUnitTest, GetSiteAccess_AllUrls) {
+content::WebContents* SitePermissionsHelperUnitTest::AddTab(const GURL& url) {
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  content::WebContents* raw_contents = web_contents.get();
+
+  browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
+                                                  true);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(raw_contents, url);
+  EXPECT_EQ(url, raw_contents->GetLastCommittedURL());
+
+  return raw_contents;
+}
+
+Browser* SitePermissionsHelperUnitTest::browser() {
+  if (!browser_) {
+    Browser::CreateParams params(profile(), true);
+    browser_window_ = std::make_unique<TestBrowserWindow>();
+    params.window = browser_window_.get();
+    browser_.reset(Browser::Create(params));
+  }
+  return browser_.get();
+}
+
+void SitePermissionsHelperUnitTest::SetUp() {
+  ExtensionServiceTestBase::SetUp();
+  InitializeEmptyExtensionService();
+
+  permissions_helper_ = std::make_unique<SitePermissionsHelper>(profile());
+}
+
+void SitePermissionsHelperUnitTest::TearDown() {
+  // Remove any tabs in the tab strip; else the test crashes.
+  if (browser_) {
+    while (!browser_->tab_strip_model()->empty())
+      browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
+  }
+
+  ExtensionServiceTestBase::TearDown();
+}
+
+TEST_F(SitePermissionsHelperUnitTest, SiteAccessAndInteraction_AllUrls) {
   auto extension =
       InstallExtensionWithPermissions("AllUrls Extension", {"<all_urls>"});
 
-  // Verify any url has "on all sites" site access when the extension has all
-  // urls permission.
-  const GURL url("http://www.example.com");
-  EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, url),
-            SiteAccess::kOnAllSites);
+  {
+    // Verify a non-restricted url has "on all sites" site access and "active"
+    // site interaction when the extension has all urls permission.
+    const GURL non_restricted_url("http://www.non-restricted-url.com");
+    auto* web_contents = AddTab(non_restricted_url);
+    EXPECT_EQ(
+        permissions_helper()->GetSiteAccess(*extension, non_restricted_url),
+        SiteAccess::kOnAllSites);
+    EXPECT_EQ(
+        permissions_helper()->GetSiteInteraction(*extension, web_contents),
+        SiteInteraction::kActive);
+  }
+
+  {
+    // Verify a restricted url has "none" site interaction even when the
+    // extension has all urls permission
+    const GURL restricted_url("chrome://extensions");
+    auto* web_contents = AddTab(restricted_url);
+    EXPECT_EQ(
+        permissions_helper()->GetSiteInteraction(*extension, web_contents),
+        SiteInteraction::kNone);
+  }
 }
 
-TEST_F(SitePermissionsHelperUnitTest, GetSiteAccess_RequestedUrl) {
+TEST_F(SitePermissionsHelperUnitTest, SiteAccessAndInteraction_RequestedUrl) {
   const GURL requested_url("http://www.requested.com");
   auto extension = InstallExtensionWithPermissions("Requested Extension",
                                                    {requested_url.spec()});
 
-  // Verify a url has "on site" site access when the extension requests it.
-  EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, requested_url),
-            SiteAccess::kOnSite);
+  {
+    // Verify a non-restricted url has "on site" site access and "active" site
+    // interaction by default when the extension requests it.
+    auto* web_contents = AddTab(requested_url);
+    EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, requested_url),
+              SiteAccess::kOnSite);
+    EXPECT_EQ(
+        permissions_helper()->GetSiteInteraction(*extension, web_contents),
+        SiteInteraction::kActive);
+  }
+
+  {
+    // Verify a non-restricted url has "none" site interaction when the
+    // extension does not request it.
+    const GURL non_requested_url("http://www.non-requested.com");
+    auto* web_contents = AddTab(non_requested_url);
+    EXPECT_EQ(
+        permissions_helper()->GetSiteInteraction(*extension, web_contents),
+        SiteInteraction::kNone);
+  }
 }
 
-TEST_F(SitePermissionsHelperUnitTest, GetSiteAccess_ActiveTab) {
+TEST_F(SitePermissionsHelperUnitTest, SiteAccessAndInteraction_ActiveTab) {
   auto extension = InstallExtensionWithPermissions(
       "ActiveTab Extension",
       /*host_permissions=*/{}, /*permissions=*/{"activeTab"});
 
-  // Verify any url has "on click" site access when the extension only has
-  // active tab permission.
-  const GURL url("http://www.example.com");
-  EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, url),
-            SiteAccess::kOnClick);
+  {
+    // Verify a non-restricted url has "on click" site access and "pending" site
+    // interaction when the extension only has active tab permission.
+    const GURL non_restricted_url("http://www.non-restricted.com");
+    auto* web_contents = AddTab(non_restricted_url);
+    EXPECT_EQ(
+        permissions_helper()->GetSiteAccess(*extension, non_restricted_url),
+        SiteAccess::kOnClick);
+    EXPECT_EQ(
+        permissions_helper()->GetSiteInteraction(*extension, web_contents),
+        SiteInteraction::kPending);
+  }
+
+  {
+    // Verify a restricted url has "none" site interaction even if the extension
+    // has active tab permission.
+    const GURL restricted_url("chrome://extensions");
+    auto* web_contents = AddTab(restricted_url);
+    EXPECT_EQ(
+        permissions_helper()->GetSiteInteraction(*extension, web_contents),
+        SiteInteraction::kNone);
+  }
 }
 
-TEST_F(SitePermissionsHelperUnitTest, GetSiteAccess_ActiveTabAndRequestedUrl) {
+TEST_F(SitePermissionsHelperUnitTest,
+       SiteAccessAndInteraction_ActiveTabAndRequestedUrl) {
   const GURL requested_url("http://www.requested.com");
   auto extension = InstallExtensionWithPermissions(
       "ActiveTab Extension",
       /*host_permissions=*/{requested_url.spec()},
       /*permissions=*/{"activeTab"});
 
-  // Verify a url has "on site" site access when the extension requests it,
-  // regardless if the extension also has active tab permission.
-  EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, requested_url),
-            SiteAccess::kOnSite);
+  {
+    // Verify a non-restricted url has "on site" site access and "active" site
+    // interaction by default when the extension requests it, regardless if the
+    // extension also has active tab permission.
+    auto* web_contents = AddTab(requested_url);
+    EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, requested_url),
+              SiteAccess::kOnSite);
+    EXPECT_EQ(
+        permissions_helper()->GetSiteInteraction(*extension, web_contents),
+        SiteInteraction::kActive);
+  }
 
-  // Verify a url has "on click" site access when the extension does not request
-  // it but has active tab permission.
-  const GURL non_requested_url("http://www.non-requested.com");
-  EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, non_requested_url),
-            SiteAccess::kOnClick);
+  {
+    // Verify a non-restricted url has "on click" site access and  "pending"
+    // site interaction when the extension does not request it but has active
+    // tab permission.
+    const GURL non_requested_url("http://www.non-requested.com");
+    auto* web_contents = AddTab(non_requested_url);
+    EXPECT_EQ(
+        permissions_helper()->GetSiteAccess(*extension, non_requested_url),
+        SiteAccess::kOnClick);
+    EXPECT_EQ(
+        permissions_helper()->GetSiteInteraction(*extension, web_contents),
+        SiteInteraction::kPending);
+  }
+}
+
+TEST_F(SitePermissionsHelperUnitTest,
+       SiteAccessAndInteraction_NoHostPermissions) {
+  auto extension = InstallExtension("Requested Extension");
+
+  // Verify any url has "none" site interaction when the extension has no host
+  // permissions.
+  const GURL url("http://www.example.com");
+  auto* web_contents = AddTab(url);
+  EXPECT_EQ(permissions_helper()->GetSiteInteraction(*extension, web_contents),
+            SiteInteraction::kNone);
 }
 
 TEST_F(SitePermissionsHelperUnitTest, CanSelectSiteAccess_AllUrls) {
