@@ -154,6 +154,56 @@ INSTANTIATE_TEST_SUITE_P(,
                          ProjectorNavigationThrottleTestParameterized,
                          /*navigate_from_link=*/testing::Bool());
 
+// Verifies that opening a redirect link from an app such as gchat does not
+// leave a blank tab behind. Prevents a regression to b/211788287.
+IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
+                       AppNavigationRedirectNoBlankTab) {
+  // Prior to navigation, there is only one browser available.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  Browser* old_browser = browser();
+
+  // Suppose the user clicks a link like https://projector.apps.chrome in gchat.
+  // The redirect URL actually looks like the below.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL("https://www.google.com/url?q=https://"
+           "projector.apps.chrome&sa=D&source=hangouts&ust=1642759200000000")));
+  // The Google servers would redirect to the URL in the ?q= query parameter.
+  // Simulate this behavior in this test without actually pinging the Google
+  // servers to prevent flakiness.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(kChromeUIUntrustedProjectorPwaUrl),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
+  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+
+  // During the navigation, we closed the previous browser to prevent dangling
+  // blank redirect pages and opened a new app browser for the Projector SWA.
+  // There is still only one browser available.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  // Select the first available browser, which should be the SWA.
+  SelectFirstBrowser();
+  Browser* new_browser = browser();
+  // Check that the new browser is not the same as the previous browser because
+  // we should have closed the previous one.
+  EXPECT_NE(old_browser, new_browser);
+
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile(), web_app::SystemAppType::PROJECTOR);
+  // Projector SWA is now open.
+  ASSERT_TRUE(app_browser);
+  EXPECT_EQ(app_browser, new_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+
+  std::string expected_url = kChromeUITrustedProjectorAppUrl;
+  expected_url += "?timestamp=1642759200000000%20bogo-microseconds";
+  EXPECT_EQ(tab->GetVisibleURL().spec(), expected_url);
+}
+
 // Verifies that navigating to chrome-untrusted://projector does not redirect.
 IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
                        UntrustedNavigationNoRedirect) {

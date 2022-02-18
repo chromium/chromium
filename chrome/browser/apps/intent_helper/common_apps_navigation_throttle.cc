@@ -259,8 +259,13 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
       apps::MakeWindowInfo(display::kDefaultDisplayId));
 
   const GURL& last_committed_url = web_contents->GetLastCommittedURL();
-  if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank())
+  if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||
+      // After clicking a link in various apps (eg gchat), a blank redirect page
+      // is left behind. Remove it to clean up. WasInitiatedByLinkClick()
+      // returns false for links clicked from apps.
+      !handle->WasInitiatedByLinkClick()) {
     web_contents->ClosePage();
+  }
 
   IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
       GetMetricsPlatform(app_type));
