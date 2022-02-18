@@ -12,7 +12,7 @@
       "w3c-css-typed-object-model-level-1",
       "w3c-image-capture"
     ],
-    "strict": false
+    "noUncheckedIndexedAccess": false
   },
   "exclude": [
     "./js/lib"
