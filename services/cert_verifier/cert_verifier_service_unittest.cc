@@ -12,6 +12,7 @@
 #include <tuple>
 
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -231,8 +232,8 @@ class CertVerifierServiceTest : public PlatformTest {
     task_environment_.RunUntilIdle();
 
     if (!sync) {  // For fun, complete the requests in reverse order.
-      for (auto it = request_infos.rbegin(); it != request_infos.rend(); ++it) {
-        RequestInfo& info = *it;
+
+      for (auto& info : base::Reversed(request_infos)) {
         ASSERT_FALSE(info.dummy_cv_request->is_completed);
         dummy_cv()->RespondToRequest(info.request_params);
       }

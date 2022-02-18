@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
 #include "base/task/post_task.h"
@@ -452,8 +453,8 @@ void ProducerClient::BindClientAndHostPipesOnSequence(
   // the MetadataSource first to ensure that it's also ready. Once the
   // Perfetto Observer interface is ready, we can remove this.
   const auto& data_sources = PerfettoTracedProcess::Get()->data_sources();
-  for (auto it = data_sources.crbegin(); it != data_sources.crend(); ++it) {
-    NewDataSourceAdded(*it);
+  for (const auto* data_source : base::Reversed(data_sources)) {
+    NewDataSourceAdded(data_source);
   }
 }
 
