@@ -388,9 +388,8 @@ bool FederatedAuthRequestImpl::HasPendingRequest() const {
 GURL FederatedAuthRequestImpl::ResolveManifestUrl(const std::string& endpoint) {
   if (endpoint.empty())
     return GURL();
-  const url::Origin& idp_origin = url::Origin::Create(provider_);
   GURL manifest_url =
-      idp_origin.GetURL().Resolve(IdpNetworkRequestManager::kManifestFilePath);
+      provider_.Resolve(IdpNetworkRequestManager::kManifestFilePath);
   return manifest_url.Resolve(endpoint);
 }
 
