@@ -50,6 +50,7 @@
 #include "device/bluetooth/bluez/bluetooth_local_gatt_characteristic_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_remote_gatt_characteristic_bluez.h"
 #include "device/bluetooth/floss/floss_features.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -3097,15 +3098,17 @@ void ArcBluetoothBridge::BluetoothSocketConnect(
     BluetoothSocketConnectCallback callback) {
   if (!mojom::IsKnownEnumValue(sock_type)) {
     LOG(ERROR) << "Unsupported sock type " << sock_type;
-    std::move(callback).Run(mojom::BluetoothStatus::UNSUPPORTED,
-                            mojom::BluetoothConnectSocketClientRequest());
+    std::move(callback).Run(
+        mojom::BluetoothStatus::UNSUPPORTED,
+        mojo::PendingReceiver<arc::mojom::BluetoothConnectSocketClient>());
     return;
   }
 
   if (!IsValidPort(sock_type, port)) {
     LOG(ERROR) << "Invalid port number " << port;
-    std::move(callback).Run(mojom::BluetoothStatus::FAIL,
-                            mojom::BluetoothConnectSocketClientRequest());
+    std::move(callback).Run(
+        mojom::BluetoothStatus::FAIL,
+        mojo::PendingReceiver<arc::mojom::BluetoothConnectSocketClient>());
     return;
   }
 
@@ -3113,8 +3116,9 @@ void ArcBluetoothBridge::BluetoothSocketConnect(
   auto sock_wrapper = CreateBluetoothConnectSocket(
       sock_type, optval, std::move(remote_addr), static_cast<uint16_t>(port));
   if (!sock_wrapper) {
-    std::move(callback).Run(mojom::BluetoothStatus::FAIL,
-                            mojom::BluetoothConnectSocketClientRequest());
+    std::move(callback).Run(
+        mojom::BluetoothStatus::FAIL,
+        mojo::PendingReceiver<arc::mojom::BluetoothConnectSocketClient>());
     return;
   }
 

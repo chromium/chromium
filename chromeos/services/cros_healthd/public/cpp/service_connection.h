@@ -16,6 +16,7 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -348,14 +349,14 @@ class ServiceConnection {
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void GetDiagnosticsService(
-      mojom::CrosHealthdDiagnosticsServiceRequest service) = 0;
+      mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service) = 0;
 
   // Binds |service| to an implementation of CrosHealthdProbeService. In
   // production, this implementation is provided by cros_healthd. See
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void GetProbeService(
-      mojom::CrosHealthdProbeServiceRequest service) = 0;
+      mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) = 0;
 
   // Sets a callback to request binding a PendingRemote to the
   // NetworkHealthService. This callback is invoked once when it is set, and

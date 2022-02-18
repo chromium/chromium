@@ -478,14 +478,14 @@ interface BluetoothHost {
                                            BluetoothSocketFlags sock_flags,
                                            int32 port)
       => (BluetoothStatus status, int32 port,
-          BluetoothListenSocketClient&? client);
+          pending_receiver<BluetoothListenSocketClient>? client);
   // Opens a |sock_type| socket with security options in |sock_flags|, and
   // connects to |remote_addr| which is listening on |remote_port|.
   [MinVersion=18] BluetoothSocketConnect@48(BluetoothSocketType sock_type,
                                             BluetoothSocketFlags sock_flags,
                                             BluetoothAddress remote_addr,
                                             int32 remote_port)
-      => (BluetoothStatus status, BluetoothConnectSocketClient&? client);
+      => (BluetoothStatus status, pending_receiver<BluetoothConnectSocketClient>? client);
 };
 
 // Next Method ID: 24

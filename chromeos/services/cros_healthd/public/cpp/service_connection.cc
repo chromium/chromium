@@ -178,8 +178,10 @@ class ServiceConnectionImpl : public ServiceConnection {
                         mojom::CrosHealthdProbeService::ProbeProcessInfoCallback
                             callback) override;
   void GetDiagnosticsService(
-      mojom::CrosHealthdDiagnosticsServiceRequest service) override;
-  void GetProbeService(mojom::CrosHealthdProbeServiceRequest service) override;
+      mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service)
+      override;
+  void GetProbeService(
+      mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) override;
   void SetBindNetworkHealthServiceCallback(
       BindNetworkHealthServiceCallback callback) override;
   void SetBindNetworkDiagnosticsRoutinesCallback(
@@ -635,7 +637,7 @@ void ServiceConnectionImpl::ProbeProcessInfo(
 }
 
 void ServiceConnectionImpl::GetDiagnosticsService(
-    mojom::CrosHealthdDiagnosticsServiceRequest service) {
+    mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureCrosHealthdServiceFactoryIsBound();
   cros_healthd_service_factory_->GetDiagnosticsService(std::move(service));
@@ -723,7 +725,7 @@ void ServiceConnectionImpl::BindAndSendNetworkDiagnosticsRoutines() {
 }
 
 void ServiceConnectionImpl::GetProbeService(
-    mojom::CrosHealthdProbeServiceRequest service) {
+    mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureCrosHealthdServiceFactoryIsBound();
   cros_healthd_service_factory_->GetProbeService(std::move(service));
