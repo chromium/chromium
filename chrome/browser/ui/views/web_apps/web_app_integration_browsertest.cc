@@ -44,6 +44,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, LaunchFromMenuOption) {
   helper_.CheckWindowCreated();
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, OpenInChrome) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.OpenInChrome("SiteA");
+  helper_.CheckTabCreated();
+}
+
 // Automated tests:
 
 // TODO(crbug.com/1279704): Test is consistently failing on Mac and Win7.

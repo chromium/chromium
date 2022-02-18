@@ -967,6 +967,22 @@ void WebAppIntegrationTestDriver::ManifestUpdateScopeSiteAFooTo(
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::OpenInChrome(const std::string& site_mode) {
+  BeforeStateChangeAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  ASSERT_TRUE(IsBrowserOpen(app_browser())) << "No current app browser.";
+  ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_state->id));
+  CHECK(chrome::ExecuteCommand(app_browser_, IDC_OPEN_IN_CHROME));
+  ui_test_utils::WaitForBrowserToClose(app_browser());
+  ASSERT_FALSE(IsBrowserOpen(app_browser())) << "App browser should be closed.";
+  app_browser_ = nullptr;
+  EXPECT_EQ(GetBrowserWindowTitle(browser()), app_state->name);
+  EXPECT_EQ(GetAppStartURL(site_mode), GetCurrentTab(browser())->GetURL());
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::SetOpenInTab(const std::string& site_mode) {
   BeforeStateChangeAction();
   absl::optional<AppState> app_state = GetAppBySiteMode(
