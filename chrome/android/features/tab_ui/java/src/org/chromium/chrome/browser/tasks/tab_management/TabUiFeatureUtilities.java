@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.DoubleCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
@@ -39,6 +40,11 @@ public class TabUiFeatureUtilities {
     public static final StringCachedFieldTrialParameter TAB_GRID_LAYOUT_ANDROID_NEW_TAB_TILE =
             new StringCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                     TAB_GRID_LAYOUT_ANDROID_NEW_TAB_TILE_PARAM, "");
+
+    public static final String THUMBNAIL_ASPECT_RATIO_PARAM = "thumbnail_aspect_ratio";
+    public static final DoubleCachedFieldTrialParameter THUMBNAIL_ASPECT_RATIO =
+            new DoubleCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, THUMBNAIL_ASPECT_RATIO_PARAM, 0.85);
 
     private static final String SEARCH_CHIP_PARAM = "enable_search_term_chip";
     public static final BooleanCachedFieldTrialParameter ENABLE_SEARCH_CHIP =
@@ -167,6 +173,13 @@ public class TabUiFeatureUtilities {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID)
                 && isTabManagementModuleSupported()
                 && !ConditionalTabStripUtils.getOptOutIndicator();
+    }
+
+    /**
+     * @return Whether the thumbnail_aspect_ratio field trail is set.
+     */
+    public static boolean isTabThumbnailAspectRatioNotOne() {
+        return Double.compare(1.0, THUMBNAIL_ASPECT_RATIO.getValue()) != 0;
     }
 
     public static boolean isTabGridLayoutAndroidNewTabTileEnabled() {

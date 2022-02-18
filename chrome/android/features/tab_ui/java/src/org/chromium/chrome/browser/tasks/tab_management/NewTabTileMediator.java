@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.NewTabTileViewProperties.IS_INCOGNITO;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -27,7 +28,10 @@ public class NewTabTileMediator {
         mTabModelSelector = tabModelSelector;
 
         // Deliberately use un-cached value to match with native.
-        float aspectRatio = TabUtils.getTabThumbnailAspectRatio(null);
+        float aspectRatio = (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO_PARAM, 1.0);
+        aspectRatio = MathUtils.clamp(aspectRatio, 0.5f, 2.0f);
         model.set(NewTabTileViewProperties.THUMBNAIL_ASPECT_RATIO, aspectRatio);
         model.set(NewTabTileViewProperties.CARD_HEIGHT_INTERCEPT, 0);
         model.set(NewTabTileViewProperties.ON_CLICK_LISTENER, view -> {
