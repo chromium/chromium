@@ -611,9 +611,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     // NTP is opened. Since the same NTP is being shared across tabs, this
     // ensures that new content is being fetched.
     [self.suggestionsMediator refreshMostVisitedTiles];
-    // TODO(crbug.com/1293518): Once API is available, call
-    // RefreshFeedIfNeeded() to prevent unnecessary refreshes.
-    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
+    ios::GetChromeBrowserProvider()
+        .GetDiscoverFeedProvider()
+        ->RefreshFeedIfNeeded();
   }
 }
 
