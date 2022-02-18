@@ -502,6 +502,9 @@ source_set("unit_tests") {
   if (enable_platform_hevc_decoding) {
     sources += [ "h265_decoder_unittest.cc" ]
   }
+  if (is_linux || is_chromeos) {
+    sources += [ "buffer_validation_unittest.cc" ]
+  }
 
   # TODO(b/219079009): consider running these tests without VA-API or V4L2.
   if (is_chromeos && (use_v4l2_codec || use_vaapi)) {
