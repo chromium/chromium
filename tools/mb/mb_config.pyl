@@ -1135,6 +1135,7 @@
       'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot',
       'mac_upload_clang': 'release_bot',
       'mac_upload_clang_arm': 'release_bot',
+      'mac-builder-next-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
       'mac-rel-orchestrator': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',

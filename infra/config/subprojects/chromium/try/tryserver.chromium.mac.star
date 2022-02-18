@@ -44,6 +44,11 @@ try_.builder(
     os = os.MAC_DEFAULT,
 )
 
+try_.builder(
+    name = "mac-builder-next-rel",
+    os = os.MAC_DEFAULT,
+)
+
 try_.orchestrator_builder(
     name = "mac-rel",
     compilator = "mac-rel-compilator",
