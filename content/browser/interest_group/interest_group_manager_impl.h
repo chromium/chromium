@@ -141,11 +141,11 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
   // that are currently rate-limited for updates. Additionally, this will update
   // the `next_update_after` field such that a subsequent
-  // ClaimInterestGroupsForUpdate() call with the same `owner` won't return
+  // GetInterestGroupsForUpdate() call with the same `owner` won't return
   // anything until after the success rate limit period passes.
   //
   // To be called only by `update_manager_`.
-  void ClaimInterestGroupsForUpdate(
+  void GetInterestGroupsForUpdate(
       const url::Origin& owner,
       base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
 
@@ -157,13 +157,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // To be called only by `update_manager_`.
   void UpdateInterestGroup(blink::InterestGroup group);
 
-  // If `net_disconnected` is false, modifies the update rate limits stored in
-  // the database.
+  // Modifies the update rate limits stored in the database, with a longer delay
+  // for parse failure.
   //
   // To be called only by `update_manager_`.
   void ReportUpdateFailed(const url::Origin& owner,
                           const std::string& name,
-                          bool net_disconnected);
+                          bool parse_failure);
   void NotifyInterestGroupAccessed(
       InterestGroupObserverInterface::AccessType type,
       const std::string& owner_origin,
@@ -181,7 +181,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Manages the logic required to support UpdateInterestGroupsOfOwner().
   //
   // InterestGroupUpdateManager keeps a pointer to this InterestGroupManagerImpl
-  // to make database writes via calls to ClaimInterestGroupsForUpdate(),
+  // to make database writes via calls to GetInterestGroupsForUpdate(),
   // UpdateInterestGroup(), and ReportUpdateFailed().
   //
   // Therefore, `update_manager_` *must* be declared after fields used by those

@@ -592,12 +592,13 @@ bool DoLoadInterestGroup(sql::Database& db,
 
 bool DoStoreInterestGroupUpdate(sql::Database& db,
                                 const blink::InterestGroup& group,
-                                base::Time last_updated) {
+                                base::Time now) {
   // clang-format off
   sql::Statement store_group(
       db.GetCachedStatement(SQL_FROM_HERE,
           "UPDATE interest_groups "
           "SET last_updated=?,"
+            "next_update_after=?,"
             "bidding_url=?,"
             "bidding_wasm_helper_url=?,"
             "update_url=?,"
@@ -612,16 +613,18 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
     return false;
 
   store_group.Reset(true);
-  store_group.BindTime(0, last_updated);
-  store_group.BindString(1, Serialize(group.bidding_url));
-  store_group.BindString(2, Serialize(group.bidding_wasm_helper_url));
-  store_group.BindString(3, Serialize(group.update_url));
-  store_group.BindString(4, Serialize(group.trusted_bidding_signals_url));
-  store_group.BindString(5, Serialize(group.trusted_bidding_signals_keys));
-  store_group.BindString(6, Serialize(group.ads));
-  store_group.BindString(7, Serialize(group.ad_components));
-  store_group.BindString(8, Serialize(group.owner));
-  store_group.BindString(9, group.name);
+  store_group.BindTime(0, now);
+  store_group.BindTime(
+      1, now + InterestGroupStorage::kUpdateSucceededBackoffPeriod);
+  store_group.BindString(2, Serialize(group.bidding_url));
+  store_group.BindString(3, Serialize(group.bidding_wasm_helper_url));
+  store_group.BindString(4, Serialize(group.update_url));
+  store_group.BindString(5, Serialize(group.trusted_bidding_signals_url));
+  store_group.BindString(6, Serialize(group.trusted_bidding_signals_keys));
+  store_group.BindString(7, Serialize(group.ads));
+  store_group.BindString(8, Serialize(group.ad_components));
+  store_group.BindString(9, Serialize(group.owner));
+  store_group.BindString(10, group.name);
 
   return store_group.Run();
 }
@@ -685,7 +688,7 @@ bool DoUpdateInterestGroup(sql::Database& db,
 bool DoReportUpdateFailed(sql::Database& db,
                           const url::Origin& owner,
                           const std::string& name,
-                          bool net_disconnected,
+                          bool parse_failure,
                           base::Time now) {
   sql::Statement update_group(db.GetCachedStatement(SQL_FROM_HERE, R"(
 UPDATE interest_groups SET
@@ -696,8 +699,10 @@ WHERE owner=? AND name=?)"));
     return false;
 
   update_group.Reset(true);
-  if (net_disconnected) {
-    update_group.BindTime(0, now);
+  if (parse_failure) {
+    // Non-network failures delay the same amount of time as successful updates.
+    update_group.BindTime(
+        0, now + InterestGroupStorage::kUpdateSucceededBackoffPeriod);
   } else {
     update_group.BindTime(
         0, now + InterestGroupStorage::kUpdateFailedBackoffPeriod);
@@ -1170,39 +1175,19 @@ absl::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     sql::Database& db,
     const url::Origin& owner,
     base::Time now,
-    bool claim_groups_for_update = false) {
+    bool get_groups_for_update = false) {
   sql::Transaction transaction(&db);
 
   if (!transaction.Begin())
     return absl::nullopt;
 
   base::Time next_update_after =
-      (claim_groups_for_update ? now : base::Time::Max());
+      (get_groups_for_update ? now : base::Time::Max());
   absl::optional<std::vector<std::string>> group_names =
       DoGetInterestGroupNamesForOwner(db, owner, now, next_update_after);
 
   if (!group_names)
     return absl::nullopt;
-
-  if (claim_groups_for_update) {
-    // clang-format off
-    sql::Statement update_group(db.GetCachedStatement(SQL_FROM_HERE,
-      "UPDATE interest_groups SET next_update_after=? "
-      "WHERE owner = ? AND expiration >=? AND ?>= next_update_after"));
-    // clang-format on
-    if (!update_group.is_valid())
-      return absl::nullopt;
-
-    update_group.Reset(true);
-    update_group.BindTime(
-        0, now + InterestGroupStorage::kUpdateSucceededBackoffPeriod);
-    update_group.BindString(1, Serialize(owner));
-    update_group.BindTime(2, now);
-    update_group.BindTime(3, now);
-
-    if (!update_group.Run())
-      return absl::nullopt;
-  }
 
   std::vector<StorageInterestGroup> result;
   for (const std::string& name : *group_names) {
@@ -1636,14 +1621,14 @@ void InterestGroupStorage::UpdateInterestGroup(
 
 void InterestGroupStorage::ReportUpdateFailed(const url::Origin& owner,
                                               const std::string& name,
-                                              bool net_disconnected) {
+                                              bool parse_failure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     NOTREACHED();  // We already fetched interest groups to update...
     return;
   }
 
-  if (!DoReportUpdateFailed(*db_, owner, name, net_disconnected,
+  if (!DoReportUpdateFailed(*db_, owner, name, parse_failure,
                             base::Time::Now())) {
     DLOG(ERROR) << "Couldn't update next_update_after: "
                 << db_->GetErrorMessage();
@@ -1753,14 +1738,14 @@ InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
 }
 
 std::vector<StorageInterestGroup>
-InterestGroupStorage::ClaimInterestGroupsForUpdate(const url::Origin& owner) {
+InterestGroupStorage::GetInterestGroupsForUpdate(const url::Origin& owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return {};
 
   absl::optional<std::vector<StorageInterestGroup>> maybe_result =
       DoGetInterestGroupsForOwner(*db_, owner, base::Time::Now(),
-                                  /*claim_groups_for_update=*/true);
+                                  /*get_groups_for_update=*/true);
   if (!maybe_result)
     return {};
   return std::move(maybe_result.value());

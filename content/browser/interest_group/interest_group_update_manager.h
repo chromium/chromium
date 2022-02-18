@@ -130,9 +130,9 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
   // that are currently rate-limited for updates. Additionally, this will update
   // the `next_update_after` field such that a subsequent
-  // ClaimInterestGroupsForUpdate() call with the same `owner` won't return
+  // GetInterestGroupsForUpdate() call with the same `owner` won't return
   // anything until after the success rate limit period passes.
-  void ClaimInterestGroupsForUpdate(
+  void GetInterestGroupsForUpdate(
       const url::Origin& owner,
       base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
 

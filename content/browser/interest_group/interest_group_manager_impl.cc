@@ -121,10 +121,10 @@ void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
       .Then(std::move(callback));
 }
 
-void InterestGroupManagerImpl::ClaimInterestGroupsForUpdate(
+void InterestGroupManagerImpl::GetInterestGroupsForUpdate(
     const url::Origin& owner,
     base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback) {
-  impl_.AsyncCall(&InterestGroupStorage::ClaimInterestGroupsForUpdate)
+  impl_.AsyncCall(&InterestGroupStorage::GetInterestGroupsForUpdate)
       .WithArgs(owner)
       .Then(std::move(callback));
 }
@@ -138,9 +138,9 @@ void InterestGroupManagerImpl::UpdateInterestGroup(blink::InterestGroup group) {
 
 void InterestGroupManagerImpl::ReportUpdateFailed(const url::Origin& owner,
                                                   const std::string& name,
-                                                  bool net_disconnected) {
+                                                  bool parse_failure) {
   impl_.AsyncCall(&InterestGroupStorage::ReportUpdateFailed)
-      .WithArgs(owner, name, net_disconnected);
+      .WithArgs(owner, name, parse_failure);
 }
 
 void InterestGroupManagerImpl::NotifyInterestGroupAccessed(

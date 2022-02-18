@@ -234,20 +234,20 @@ void InterestGroupUpdateManager::MaybeContinueUpdatingCurrentOwner() {
       waiting_on_db_read_) {
     return;
   }
-  ClaimInterestGroupsForUpdate(
+  GetInterestGroupsForUpdate(
       owners_to_update_.FrontOwner(),
       base::BindOnce(
           &InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad,
           weak_factory_.GetWeakPtr(), owners_to_update_.FrontOwner()));
 }
 
-void InterestGroupUpdateManager::ClaimInterestGroupsForUpdate(
+void InterestGroupUpdateManager::GetInterestGroupsForUpdate(
     const url::Origin& owner,
     base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback) {
   DCHECK_EQ(num_in_flight_updates_, 0);
   DCHECK(!waiting_on_db_read_);
   waiting_on_db_read_ = true;
-  manager_->ClaimInterestGroupsForUpdate(owner, std::move(callback));
+  manager_->GetInterestGroupsForUpdate(owner, std::move(callback));
 }
 
 void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
@@ -359,12 +359,10 @@ void InterestGroupUpdateManager::ReportUpdateFailed(
     const url::Origin& owner,
     const std::string& name,
     UpdateDelayType delay_type) {
-  // TODO(crbug.com/1186444): Instead of the claim system (updating the DB
-  // `next_update_after` SQL field before updates), we should make this next
-  // line write to the database if `delay_type` isn't kNoInternet.
-  if (delay_type != UpdateDelayType::kParseFailure) {
-    manager_->ReportUpdateFailed(owner, name,
-                                 delay_type == UpdateDelayType::kNoInternet);
+  if (delay_type != UpdateDelayType::kNoInternet) {
+    manager_->ReportUpdateFailed(
+        owner, name,
+        /*parse_failure=*/delay_type == UpdateDelayType::kParseFailure);
   }
 
   if (delay_type == UpdateDelayType::kNoInternet) {
