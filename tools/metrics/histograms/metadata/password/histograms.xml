@@ -659,12 +659,44 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.AffiliationFetcher.FetchTime" units="ms"
     expires_after="2022-07-03">
+  <obsolete>
+    Obsolete since M100.
+  </obsolete>
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     The time elapsed between sending a request to AffiliationService and
     receiving a response.
   </summary>
+</histogram>
+
+<histogram name="PasswordManager.AffiliationFetcher.FetchTime.{Status}"
+    units="ms" expires_after="2022-07-03">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time elapsed between sending a request to AffiliationService and
+    receiving a response. Recorded only when request {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Malformed" summary="was malformed"/>
+    <variant name="Success" summary="succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.AffiliationFetcher.ResponseSize.{Status}"
+    units="bytes" expires_after="2022-07-03">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The size of an affiliation service hash lookup response in bytes. Recorded
+    only when request {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="Malformed" summary="was malformed"/>
+    <variant name="Success" summary="succeeded"/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.AffiliationService.GetChangePasswordUsage"

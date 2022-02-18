@@ -503,7 +503,7 @@ TEST_F(HashAffiliationFetcherTest, FailOnNetworkError) {
   WaitForResponse();
 }
 
-TEST_F(HashAffiliationFetcherTest, FetchTimeMetric) {
+TEST_F(HashAffiliationFetcherTest, MetricsWhenSuccess) {
   base::HistogramTester histogram_tester;
   std::vector<FacetURI> requested_uris = {
       FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)};
@@ -519,7 +519,38 @@ TEST_F(HashAffiliationFetcherTest, FetchTimeMetric) {
   WaitForResponse();
 
   histogram_tester.ExpectTotalCount(
-      "PasswordManager.AffiliationFetcher.FetchTime", 1);
+      "PasswordManager.AffiliationFetcher.FetchTime.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.ResponseSize.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.FetchTime.Malformed", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.ResponseSize.Malformed", 0);
+}
+
+TEST_F(HashAffiliationFetcherTest, MetricsWhenFailed) {
+  base::HistogramTester histogram_tester;
+  const char kMalformedResponse[] = "This is not a protocol buffer!";
+
+  std::vector<FacetURI> uris;
+  uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
+
+  SetupSuccessfulResponse(kMalformedResponse);
+  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
+  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnMalformedResponse(&fetcher));
+  fetcher.StartRequest(uris, {});
+  WaitForResponse();
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.FetchTime.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.ResponseSize.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.FetchTime.Malformed", 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.AffiliationFetcher.ResponseSize.Malformed", 1);
 }
 
 }  // namespace password_manager
