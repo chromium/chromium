@@ -1476,7 +1476,8 @@ static bool PrepareOrthogonalWritingModeRootForLayout(LayoutObject& root) {
   DCHECK(To<LayoutBox>(root).IsOrthogonalWritingModeRoot());
   if (!root.NeedsLayout() || root.IsOutOfFlowPositioned() ||
       root.IsColumnSpanAll() || root.StyleRef().LogicalHeight().IsSpecified() ||
-      To<LayoutBox>(root).IsGridItem() || root.IsTablePart())
+      To<LayoutBox>(root).IsGridItem() || root.IsTablePart() ||
+      root.IsLayoutFlowThread())
     return false;
 
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
