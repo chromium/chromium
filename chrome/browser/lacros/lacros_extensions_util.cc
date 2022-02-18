@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/lacros_extension_apps_utility.h"
+#include "chrome/browser/lacros/lacros_extensions_util.h"
 
 #include <utility>
 #include <vector>
@@ -14,18 +14,11 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 
-namespace lacros_extension_apps_utility {
+namespace lacros_extensions_util {
 namespace {
 
 // The delimiter separates the profile basename from the extension id.
 constexpr char kDelimiter[] = "###";
-
-}  // namespace
-
-std::string MuxId(const Profile* profile,
-                  const extensions::Extension* extension) {
-  return profile->GetBaseName().value() + kDelimiter + extension->id();
-}
 
 bool DemuxId(const std::string& muxed_id,
              Profile** output_profile,
@@ -47,7 +40,7 @@ bool DemuxId(const std::string& muxed_id,
   if (!matching_profile)
     return false;
   const extensions::Extension* extension =
-      MaybeGetPackagedV2App(matching_profile, extension_id);
+      MaybeGetExtension(matching_profile, extension_id);
   if (!extension)
     return false;
   *output_profile = matching_profile;
@@ -55,17 +48,33 @@ bool DemuxId(const std::string& muxed_id,
   return true;
 }
 
-const extensions::Extension* MaybeGetPackagedV2App(Profile* profile,
-                                                   const std::string& app_id) {
+}  // namespace
+
+const extensions::Extension* MaybeGetExtension(
+    Profile* profile,
+    const std::string& extension_id) {
   DCHECK(profile);
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
   DCHECK(registry);
-  const extensions::Extension* extension =
-      registry->GetInstalledExtension(app_id);
-  if (!extension || !extension->is_platform_app())
-    return nullptr;
-  return extension;
+  return registry->GetInstalledExtension(extension_id);
 }
 
-}  // namespace lacros_extension_apps_utility
+std::string MuxId(const Profile* profile,
+                  const extensions::Extension* extension) {
+  return profile->GetBaseName().value() + kDelimiter + extension->id();
+}
+
+bool DemuxPlatformAppId(const std::string& muxed_id,
+                        Profile** output_profile,
+                        const extensions::Extension** output_extension) {
+  Profile* profile = nullptr;
+  const extensions::Extension* extension = nullptr;
+  if (!DemuxId(muxed_id, &profile, &extension) || !extension->is_platform_app())
+    return false;
+  *output_profile = profile;
+  *output_extension = extension;
+  return true;
+}
+
+}  // namespace lacros_extensions_util

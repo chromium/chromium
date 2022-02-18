@@ -12,7 +12,7 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
-#include "chrome/browser/lacros/lacros_extension_apps_utility.h"
+#include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
@@ -117,8 +117,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
       const std::string& app_id,
       const base::Time& last_launch_time) override {
     const auto* extension =
-        lacros_extension_apps_utility::MaybeGetPackagedV2App(profile_, app_id);
-    if (!extension)
+        lacros_extensions_util::MaybeGetExtension(profile_, app_id);
+    if (!extension || !extension->is_platform_app())
       return;
 
     Publish(MakeApp(extension, Readiness::kReady));
@@ -197,8 +197,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
 
   // AppWindowRegistry::Observer overrides.
   void OnAppWindowAdded(extensions::AppWindow* app_window) override {
-    std::string muxed_id = lacros_extension_apps_utility::MuxId(
-        profile_, app_window->GetExtension());
+    std::string muxed_id =
+        lacros_extensions_util::MuxId(profile_, app_window->GetExtension());
     std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
         app_window->GetNativeWindow());
     app_window_id_cache_[app_window] = window_id;
@@ -210,8 +210,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     auto it = app_window_id_cache_.find(app_window);
     DCHECK(it != app_window_id_cache_.end());
 
-    std::string muxed_id = lacros_extension_apps_utility::MuxId(
-        profile_, app_window->GetExtension());
+    std::string muxed_id =
+        lacros_extensions_util::MuxId(profile_, app_window->GetExtension());
     std::string window_id = it->second;
 
     publisher_->OnAppWindowRemoved(muxed_id, window_id);
@@ -252,7 +252,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     DCHECK(IsChromeApp(extension));
     auto app = std::make_unique<apps::App>(
         apps::AppType::kStandaloneBrowserChromeApp,
-        lacros_extension_apps_utility::MuxId(profile_, extension));
+        lacros_extensions_util::MuxId(profile_, extension));
     app->readiness = readiness;
     app->name = extension->name();
     app->short_name = extension->short_name();

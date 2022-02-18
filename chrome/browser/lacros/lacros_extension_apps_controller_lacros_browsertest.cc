@@ -16,7 +16,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
-#include "chrome/browser/lacros/lacros_extension_apps_utility.h"
+#include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
@@ -54,8 +54,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, ShowsInShelf) {
   // No item should exist in the shelf before the window is launched.
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
-  std::string app_id =
-      lacros_extension_apps_utility::MuxId(profile(), extension);
+  std::string app_id = lacros_extensions_util::MuxId(profile(), extension);
   browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
 
   // There should be no app windows.
@@ -103,8 +102,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
   // No item should exist in the shelf before the window is launched.
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
-  std::string app_id =
-      lacros_extension_apps_utility::MuxId(profile(), extension);
+  std::string app_id = lacros_extensions_util::MuxId(profile(), extension);
   browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
 
   // Launch the app via LacrosExtensionAppsController.
@@ -185,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, DefaultContextMenu) {
   // No item should exist in the shelf before the window is launched.
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
-  std::string app_id =
-      lacros_extension_apps_utility::MuxId(profile(), extension);
+  std::string app_id = lacros_extensions_util::MuxId(profile(), extension);
   browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
 
   // Launch the app via LacrosExtensionAppsController.

@@ -679,7 +679,7 @@ std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
   std::string transformed_app_id = kLacrosChromeAppPrefix + sync_id;
 
   // If this is an ash extension app, we add a fixed prefix. This is based on
-  // the logic in lacros_extension_apps_utility and is not version-skew stable.
+  // the logic in lacros_extensions_util and is not version-skew stable.
   if (IsAshExtensionApp(sync_id)) {
     return transformed_app_id;
   }
