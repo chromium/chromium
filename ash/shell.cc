@@ -113,6 +113,7 @@
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
+#include "ash/system/hps/hps_orientation_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
@@ -702,6 +703,11 @@ Shell::~Shell() {
   // before destroying |session_controller_|.
   accelerator_controller_->Shutdown();
 
+  // Must be destructed before the tablet mode and message center controllers,
+  // both of which these rely on.
+  hps_notify_controller_.reset();
+  hps_orientation_controller_.reset();
+
   // Shutdown tablet mode controller early on since it has some observers which
   // need to be removed. It will be destroyed later after all windows are closed
   // since it might be accessed during this process.
@@ -923,9 +929,6 @@ Shell::~Shell() {
 
   shell_delegate_.reset();
 
-  // Is observed by `MessageCenterController`, so must be destructed after it.
-  hps_notify_controller_.reset();
-
   chromeos::UsbguardClient::Shutdown();
 
   // Must be shut down after detachable_base_handler_.
@@ -952,10 +955,6 @@ void Shell::Init(
   chromeos::InitializeDBusClient<chromeos::UsbguardClient>(dbus_bus.get());
 
   local_state_ = local_state;
-
-  // Is observed by `MessageCenterController`, so must be constructed before it.
-  if (features::IsSnoopingProtectionEnabled())
-    hps_notify_controller_ = std::make_unique<HpsNotifyController>();
 
   // This creates the MessageCenter object which is used by some other objects
   // initialized here, so it needs to come early.
@@ -989,6 +988,13 @@ void Shell::Init(
           shell_delegate_->GetMediaSessionService());
 
   tablet_mode_controller_ = std::make_unique<TabletModeController>();
+
+  // Observes the tablet mode controller and adds a notification to the message
+  // center, so must be constructed after both.
+  if (features::IsSnoopingProtectionEnabled()) {
+    hps_orientation_controller_ = std::make_unique<HpsOrientationController>();
+    hps_notify_controller_ = std::make_unique<HpsNotifyController>();
+  }
 
   firmware_update_notification_controller_ =
       std::make_unique<FirmwareUpdateNotificationController>(
