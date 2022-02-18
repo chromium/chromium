@@ -361,14 +361,11 @@ void OmniboxViewIOS::OnDidBeginEditing() {
   DCHECK(popup_provider_);
   bool popup_was_open_before_editing_began = popup_provider_->IsPopupOpen();
 
-  // Text attributes (e.g. text color) should not be shown while editing, so
-  // strip them out by calling setText (as opposed to setAttributedText).
-  [field_ setText:field_.text];
-  OnBeforePossibleChange();
-
   // Make sure the omnibox popup's semantic content attribute is set correctly.
   popup_provider_->SetSemanticContentAttribute(
       [field_ bestSemanticContentAttribute]);
+
+  OnBeforePossibleChange();
 
   if (model()) {
     // In the case where the user taps the fakebox on the Google landing page,
