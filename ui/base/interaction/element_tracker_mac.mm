@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
 
@@ -111,6 +112,14 @@ void ElementTrackerMac::NotifyMenuItemHidden(NSMenu* menu,
   const ElementContext context = GetContextForMenu(menu);
   if (context)
     context_to_data_[context]->HideElement(identifier);
+}
+
+NSMenu* ElementTrackerMac::GetRootMenuForContext(ElementContext context) {
+  for (auto [menu, menu_context] : root_menu_to_context_) {
+    if (menu_context == context)
+      return menu;
+  }
+  return nullptr;
 }
 
 ElementTrackerMac::ElementTrackerMac() = default;

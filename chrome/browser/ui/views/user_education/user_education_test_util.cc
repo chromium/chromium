@@ -4,7 +4,26 @@
 
 #include "chrome/browser/ui/views/user_education/user_education_test_util.h"
 
+#include <memory>
+
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/interaction/interaction_test_util_mac.h"
+#endif
+
+std::unique_ptr<ui::test::InteractionTestUtil> CreateInteractionTestUtil() {
+  auto test_util = std::make_unique<ui::test::InteractionTestUtil>();
+  test_util->AddSimulator(
+      std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+#if BUILDFLAG(IS_MAC)
+  test_util->AddSimulator(
+      std::make_unique<ui::test::InteractionTestUtilSimulatorMac>());
+#endif
+  return test_util;
+}
 
 WidgetFocusWaiter::WidgetFocusWaiter(views::Widget* widget) : widget_(widget) {
   views::WidgetFocusManager::GetInstance()->AddFocusChangeListener(this);

@@ -687,12 +687,16 @@ static_library("test_support") {
     "interaction/element_test_util.cc",
     "interaction/element_test_util.h",
     "interaction/expect_call_in_scope.h",
+    "interaction/interaction_test_util.cc",
+    "interaction/interaction_test_util.h",
     "resource/mock_resource_bundle_delegate.cc",
     "resource/mock_resource_bundle_delegate.h",
   ]
 
   if (is_mac) {
     sources += [
+      "interaction/interaction_test_util_mac.h",
+      "interaction/interaction_test_util_mac.mm",
       "test/cocoa_helper.h",
       "test/cocoa_helper.mm",
       "test/menu_test_observer.h",
@@ -885,6 +889,7 @@ test("ui_base_unittests") {
     "interaction/element_tracker_unittest.cc",
     "interaction/framework_specific_implementation_unittest.cc",
     "interaction/interaction_sequence_unittest.cc",
+    "interaction/interaction_test_util_unittest.cc",
     "l10n/l10n_util_unittest.cc",
     "l10n/time_format_unittest.cc",
     "layout_unittest.cc",

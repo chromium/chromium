@@ -5,11 +5,18 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_USER_EDUCATION_TEST_UTIL_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_USER_EDUCATION_TEST_UTIL_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/widget/widget.h"
+
+// Provides an interaction test util prepopulated with the simulators
+// appropriate for a browser on the current platform.
+std::unique_ptr<ui::test::InteractionTestUtil> CreateInteractionTestUtil();
 
 // Performs an action and then waits for the given widget to become focused.
 // Because it is hard to determine if a widget is *already* focused, we instead

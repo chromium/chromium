@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerMac {
   // called.
   void NotifyMenuItemActivated(NSMenu* menu, ElementIdentifier identifier);
 
+  // Returns the root menu for a given context, if any.
+  NSMenu* GetRootMenuForContext(ElementContext context);
+
  protected:
   ElementTrackerMac();
   virtual ~ElementTrackerMac();
