@@ -584,14 +584,17 @@ BorderImageLengthBox CSSToStyleMap::MapNinePieceImageQuad(
 void CSSToStyleMap::MapNinePieceImageRepeat(StyleResolverState&,
                                             const CSSValue& value,
                                             NinePieceImage& image) {
-  const auto* pair = DynamicTo<CSSValuePair>(value);
-  if (!pair)
-    return;
+  CSSValueID first_identifier;
+  CSSValueID second_identifier;
 
-  CSSValueID first_identifier =
-      To<CSSIdentifierValue>(pair->First()).GetValueID();
-  CSSValueID second_identifier =
-      To<CSSIdentifierValue>(pair->Second()).GetValueID();
+  const auto* pair = DynamicTo<CSSValuePair>(value);
+  if (pair != nullptr) {
+    first_identifier = To<CSSIdentifierValue>(pair->First()).GetValueID();
+    second_identifier = To<CSSIdentifierValue>(pair->Second()).GetValueID();
+  } else {
+    first_identifier = second_identifier =
+        To<CSSIdentifierValue>(value).GetValueID();
+  }
 
   ENinePieceImageRule horizontal_rule;
   switch (first_identifier) {
