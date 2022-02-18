@@ -160,6 +160,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       // There currently is none:
       // https://www.w3.org/TR/core-aam-1.2/#details-id-186
       return;
+    case ui::AXEventGenerator::Event::BUSY_CHANGED:
+      mac_notification = ui::NSAccessibilityElementBusyChangedNotification;
+      break;
     case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
@@ -368,7 +371,6 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
-    case ui::AXEventGenerator::Event::BUSY_CHANGED:
     case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
     case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::CHILDREN_CHANGED:

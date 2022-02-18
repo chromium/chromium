@@ -61,6 +61,7 @@ AXEventRecorderMac::AXEventRecorderMac(base::ProcessId pid,
   // Add the notifications we care about to the observer.
   static NSArray* notifications = [@[
     @"AXAutocorrectionOccurred",
+    @"AXElementBusyChanged",
     @"AXExpandedChanged",
     @"AXInvalidStatusChanged",
     @"AXLiveRegionChanged",
