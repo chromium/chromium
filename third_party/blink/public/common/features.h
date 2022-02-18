@@ -570,6 +570,13 @@ BLINK_COMMON_EXPORT extern const base::Feature kCSSCascadeLayers;
 BLINK_COMMON_EXPORT extern const base::Feature kSetTimeoutWithoutClamp;
 BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
 
+BLINK_COMMON_EXPORT extern const base::Feature
+    kMaxUnthrottledTimeoutNestingLevel;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxUnthrottledTimeoutNestingLevelParam;
+BLINK_COMMON_EXPORT bool IsMaxUnthrottledTimeoutNestingLevelEnabled();
+BLINK_COMMON_EXPORT int GetMaxUnthrottledTimeoutNestingLevel();
+
 // If enabled, ContentToVisibleTimeReporter logs
 // Browser.Tabs.TotalSwitchDuration2.* instead of
 // Browser.Tabs.TotalSwitchDuration.*.

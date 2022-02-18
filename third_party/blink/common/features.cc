@@ -1157,6 +1157,21 @@ bool IsSetTimeoutWithoutClampEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kSetTimeoutWithoutClamp);
 }
 
+// If enabled, the setTimeout(..., 0) will clamp to 4ms after a custom `nesting`
+// level.
+// Tracking bug: https://crbug.com/1108877.
+const base::Feature kMaxUnthrottledTimeoutNestingLevel{
+    "MaxUnthrottledTimeoutNestingLevel", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int> kMaxUnthrottledTimeoutNestingLevelParam{
+    &kMaxUnthrottledTimeoutNestingLevel, "nesting", 10};
+bool IsMaxUnthrottledTimeoutNestingLevelEnabled() {
+  return base::FeatureList::IsEnabled(
+      blink::features::kMaxUnthrottledTimeoutNestingLevel);
+}
+int GetMaxUnthrottledTimeoutNestingLevel() {
+  return kMaxUnthrottledTimeoutNestingLevelParam.Get();
+}
+
 const base::Feature kTabSwitchMetrics2{"TabSwitchMetrics2",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
