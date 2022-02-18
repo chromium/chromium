@@ -260,7 +260,7 @@ void ListItemOrdinal::InvalidateAllItemsForOrderedList(
 void ListItemOrdinal::ItemUpdated(const LayoutObject* layout_list_item,
                                   UpdateType type) {
   const Node* item_node = layout_list_item->GetNode();
-  if (item_node->GetDocument().IsSlotAssignmentOrLegacyDistributionDirty())
+  if (item_node->GetDocument().IsSlotAssignmentDirty())
     return;
   if (item_node->GetDocument().IsFlatTreeTraversalForbidden())
     return;

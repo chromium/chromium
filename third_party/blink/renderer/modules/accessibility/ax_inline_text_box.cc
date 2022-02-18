@@ -252,8 +252,7 @@ void AXInlineTextBox::SerializeMarkerAttributes(
 
   if (IsDetached())
     return;
-  if (!GetDocument() ||
-      GetDocument()->IsSlotAssignmentOrLegacyDistributionDirty()) {
+  if (!GetDocument() || GetDocument()->IsSlotAssignmentDirty()) {
     // In order to retrieve the document markers we need access to the flat
     // tree. If the slot assignments in a shadow DOM subtree are dirty,
     // accessing the flat tree will cause them to be updated, which could in

@@ -122,7 +122,7 @@ enum class SelectionMode {
 void LayoutSelection::AssertIsValid() const {
   const Document& document = frame_selection_->GetDocument();
   DCHECK_GE(document.Lifecycle().GetState(), DocumentLifecycle::kLayoutClean);
-  DCHECK(!document.IsSlotAssignmentOrLegacyDistributionDirty());
+  DCHECK(!document.IsSlotAssignmentDirty());
   DCHECK(!has_pending_selection_);
 }
 
@@ -364,7 +364,7 @@ static void VisitSelectedInclusiveDescendantsOfInternal(const Node& node,
 }
 
 static inline bool IsFlatTreeClean(const Node& node) {
-  return !node.GetDocument().IsSlotAssignmentOrLegacyDistributionDirty();
+  return !node.GetDocument().IsSlotAssignmentDirty();
 }
 
 template <typename Visitor>
