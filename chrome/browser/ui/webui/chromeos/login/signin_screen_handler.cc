@@ -304,8 +304,6 @@ void SigninScreenHandler::ShowImpl() {
     show_on_init_ = true;
     return;
   }
-
-  gaia_screen_handler_->OnShowAddUser();
 }
 
 void SigninScreenHandler::UpdateUIState(UIState ui_state) {

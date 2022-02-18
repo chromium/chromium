@@ -616,7 +616,12 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
 
   CHECK(login_display_);
-  GetOobeUI()->ShowSigninScreen(login_display_.get());
+
+  // Legacy calls, will go away soon.
+  GetOobeUI()->signin_screen_handler()->SetDelegate(login_display_.get());
+  GetOobeUI()->signin_screen_handler()->Show();
+
+  ShowGaiaDialogCommon(EmptyAccountId());
 
   OnStartSignInScreenCommon();
 

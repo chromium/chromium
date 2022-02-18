@@ -802,12 +802,6 @@ void OobeUI::ShowOobeUI(bool show) {
     oobe_display_chooser_->TryToPlaceUiOnTouchDisplay();
 }
 
-void OobeUI::ShowSigninScreen(SigninScreenHandlerDelegate* delegate) {
-  signin_screen_handler_->SetDelegate(delegate);
-
-  signin_screen_handler_->Show();
-}
-
 void OobeUI::ForwardAccelerator(std::string accelerator_name) {
   core_handler_->ForwardAccelerator(accelerator_name);
 }

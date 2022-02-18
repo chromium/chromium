@@ -35,7 +35,6 @@ namespace chromeos {
 class NetworkStateInformer;
 class OobeDisplayChooser;
 class SigninScreenHandler;
-class SigninScreenHandlerDelegate;
 
 // A custom WebUI that defines datasource for out-of-box-experience (OOBE) UI:
 // - welcome screen (setup language/keyboard/network).
@@ -91,9 +90,6 @@ class OobeUI : public ui::MojoWebUIController {
 
   // Shows or hides OOBE UI elements.
   void ShowOobeUI(bool show);
-
-  // Shows the signin screen.
-  void ShowSigninScreen(SigninScreenHandlerDelegate* delegate);
 
   // Forwards an accelerator to the webui to be handled.
   void ForwardAccelerator(std::string accelerator_name);

@@ -1229,6 +1229,7 @@ void WizardController::SkipToLoginForTesting() {
   if (current_screen_ && current_screen_->screen_id() == GaiaView::kScreenId)
     return;
   wizard_context_->skip_to_login_for_tests = true;
+  login_screen_started_ = false;
 
   if (!chromeos::features::IsOobeConsolidatedConsentEnabled())
     StartupUtils::MarkEulaAccepted();
