@@ -166,6 +166,21 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PowerBookmarks.SubscriptionValidationResult"
+    enum="CommerceSubscriptionValidationResult" expires_after="2022-08-01">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the result of validation of a user's subscribed products between the
+    bookmarks system and the subscriptions backend. This will tell us if a user
+    has a subscription that isn't backed by bookmark locally and if the client
+    has a bookmark that claims to be tracked but has no subscription on the
+    backend. This metric is recorded when the browser starts and whenever the
+    user enters the bookmark manager (each time validation occurs).
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PriceDrop.AnnotationsEnabled" enum="Boolean"
     expires_after="2022-06-01">
   <owner>ayman@chromium.org</owner>
