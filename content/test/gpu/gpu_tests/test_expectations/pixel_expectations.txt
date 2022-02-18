@@ -302,6 +302,8 @@ crbug.com/1213170 [ mac asan ] Pixel_WebGPUCopyExternalImage* [ Skip ]
 # WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
 crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPU* [ Skip ]
 
+crbug.com/1298943 [ chromeos skia-renderer-gl chromeos-board-amd64-generic ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################
