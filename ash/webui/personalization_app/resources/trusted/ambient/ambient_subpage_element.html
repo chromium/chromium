@@ -1,6 +1,29 @@
-<style></style>
+<style>
+  #container {
+    display: grid;
+    grid-template-areas:
+      '. . toggles . .'
+      '. . preview . .'
+      '. . sources . .'
+      '. . weather . .';
+    grid-template-columns: 1fr 24px minmax(568px, 920px) 24px 1fr;
+    grid-template-rows: auto;
+  }
+  toggle-row {
+    grid-area: toggles;
+  }
+  ambient-preview {
+    grid-area: preview;
+    margin-top: 20px;
+  }
+  topic-source-list {
+    grid-area: sources;
+  }
+  ambient-weather-unit {
+    grid-area: weather;
+  }
+</style>
 <div id="container">
-  <h2>Ambient</h2>
   <toggle-row checked="[[ambientModeEnabled_]]"
       on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
   </toggle-row>

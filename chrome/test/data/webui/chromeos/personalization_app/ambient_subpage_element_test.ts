@@ -37,10 +37,6 @@ export function AmbientSubpageTest() {
 
   test('displays content', async () => {
     ambientSubpageElement = initElement(AmbientSubpage);
-    assertEquals(
-        'Ambient',
-        ambientSubpageElement.shadowRoot!.querySelector('h2')!.innerText);
-
     const toggleRow =
         ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
     assertTrue(!!toggleRow);
