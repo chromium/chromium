@@ -100,6 +100,13 @@ class V4L2Queue {
   uint32_t num_planes() const { return num_planes_; }
   void set_num_planes(uint32_t num_planes) { num_planes_ = num_planes; }
 
+  uint32_t last_queued_buffer_index() const {
+    return last_queued_buffer_index_;
+  }
+  void set_last_queued_buffer_index(uint32_t last_queued_buffer_index) {
+    last_queued_buffer_index_ = last_queued_buffer_index;
+  }
+
   int media_request_fd() const { return media_request_fd_; }
   void set_media_request_fd(int media_request_fd) {
     media_request_fd_ = media_request_fd;
@@ -120,6 +127,8 @@ class V4L2Queue {
   // File descriptor returned by MEDIA_IOC_REQUEST_ALLOC ioctl call
   // to submit requests.
   int media_request_fd_;
+  // Tracks which CAPTURE buffer was queued in the previous frame.
+  uint32_t last_queued_buffer_index_;
 };
 
 // V4L2IoctlShim is a shallow wrapper which wraps V4L2 ioctl requests

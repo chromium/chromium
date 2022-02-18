@@ -327,10 +327,10 @@ bool Vp9Decoder::Initialize() {
   if (!v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_))
     LOG(ERROR) << "QueryAndMmapQueueBuffers for CAPTURE queue failed.";
 
-  for (uint32_t i = 0; i < CAPTURE_queue_->num_buffers(); ++i) {
-    if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, i))
-      LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
-  }
+  // Only 1 CAPTURE buffer is needed for 1st key frame decoding. Remaining
+  // CAPTURE buffers will be queued after that.
+  if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, 0))
+    LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
 
   int media_request_fd;
   if (!v4l2_ioctl_->MediaIocRequestAlloc(&media_request_fd))
@@ -348,8 +348,9 @@ bool Vp9Decoder::Initialize() {
 }
 
 std::set<int> Vp9Decoder::RefreshReferenceSlots(
-    const uint8_t refresh_frame_flags,
-    scoped_refptr<MmapedBuffer> buffer) {
+    uint8_t refresh_frame_flags,
+    scoped_refptr<MmapedBuffer> buffer,
+    uint32_t last_queued_buffer_index) {
   const std::bitset<kVp9NumRefFrames> refresh_frame_slots(refresh_frame_flags);
 
   std::set<int> reusable_buffer_slots;
@@ -375,6 +376,10 @@ std::set<int> Vp9Decoder::RefreshReferenceSlots(
 
     reusable_buffer_slots.erase(buffer->buffer_id());
 
+    // Note that the CAPTURE buffer for previous frame can be used as well,
+    // but it is already queued again at this point.
+    reusable_buffer_slots.erase(last_queued_buffer_index);
+
     // Updates to assign current key frame as a reference frame for all
     // reference frame slots in the reference frames list.
     ref_frames_.fill(buffer);
@@ -382,24 +387,28 @@ std::set<int> Vp9Decoder::RefreshReferenceSlots(
     return reusable_buffer_slots;
   }
 
-  // More than one reference frame slots can be true.
+  // More than one slots in |refresh_frame_flags| can be set.
   uint16_t reusable_candidate_buffer_id;
   for (size_t i = 0; i < kVp9NumRefFrames; i++) {
     if (!refresh_frame_slots[i])
       continue;
+
     // It is not required to check whether existing reference frame slot is
     // already pointing to a reference frame. This is because reference
     // frame slots are empty only after the first key frame decoding.
     reusable_candidate_buffer_id = ref_frames_[i]->buffer_id();
     reusable_buffer_slots.insert(reusable_candidate_buffer_id);
+
     // Checks to make sure |reusable_candidate_buffer_id| is not used in
     // different reference frame slots in the reference frames list.
     for (size_t j = 0; j < kVp9NumRefFrames; j++) {
-      if (refresh_frame_slots[j] == false) {
-        if (ref_frames_[j]->buffer_id() == reusable_candidate_buffer_id) {
-          reusable_buffer_slots.erase(reusable_candidate_buffer_id);
-          break;
-        }
+      const bool is_refresh_slot_not_used = (refresh_frame_slots[j] == false);
+      const bool is_candidate_not_used =
+          (ref_frames_[j]->buffer_id() == reusable_candidate_buffer_id);
+
+      if (is_refresh_slot_not_used && is_candidate_not_used) {
+        reusable_buffer_slots.erase(reusable_candidate_buffer_id);
+        break;
       }
     }
     ref_frames_[i] = buffer;
@@ -620,14 +629,26 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
                    static_cast<char*>(buffer->mmaped_planes()[1].start_addr),
                    size);
 
-  CHECK_LE(kNumberOfBuffersInCaptureQueue, 16u);
-
   const std::set<int> reusable_buffer_slots = RefreshReferenceSlots(
-      frame_hdr.refresh_frame_flags, CAPTURE_queue_->GetBuffer(index));
+      frame_hdr.refresh_frame_flags, CAPTURE_queue_->GetBuffer(index),
+      CAPTURE_queue_->last_queued_buffer_index());
 
   for (const auto reusable_buffer_slot : reusable_buffer_slots) {
     if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_slot))
       LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
+
+    // For inter frames, |refresh_frame_flags| indicates which reference frame
+    // slot (usually 1 slot, but can be more than 1 slots) can be reused. Then,
+    // CAPTURE buffer corresponding to this reference frame slot is queued
+    // again. If we encounter a key frame now, |refresh_frame_flags = 0xFF|
+    // indicates all reference frame slots can be reused. But we already queued
+    // one CAPTURE buffer again after decoding the previous frame. So we want to
+    // avoid queuing this specific CAPTURE buffer again.
+    // This issue only happens at key frames, which comes after inter frames.
+    // Inter frames coming right after key frames doesn't have this issue, so we
+    // don't need to track which buffer was queued for key frames.
+    if (frame_hdr.frame_type == Vp9FrameHeader::INTERFRAME)
+      CAPTURE_queue_->set_last_queued_buffer_index(reusable_buffer_slot);
   }
 
   if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &index))

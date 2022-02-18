@@ -76,8 +76,9 @@ class Vp9Decoder {
   // Refreshes |ref_frames_| slots with the current |buffer| and returns
   // |reusable_buffer_slots| to indicate which CAPTURE buffers can be reused
   // for VIDIOC_QBUF ioctl call.
-  std::set<int> RefreshReferenceSlots(const uint8_t refresh_frame_flags,
-                                      scoped_refptr<MmapedBuffer> buffer);
+  std::set<int> RefreshReferenceSlots(uint8_t refresh_frame_flags,
+                                      scoped_refptr<MmapedBuffer> buffer,
+                                      uint32_t last_queued_buffer_index);
 
   // Parser for the IVF stream to decode.
   const std::unique_ptr<IvfParser> ivf_parser_;
