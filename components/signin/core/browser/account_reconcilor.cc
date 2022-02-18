@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -27,6 +28,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -34,6 +36,10 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/signin/core/browser/consistency_cookie_manager.h"
+#endif
 
 using signin::AccountReconcilorDelegate;
 using signin::ConsentLevel;
@@ -795,6 +801,21 @@ bool AccountReconcilor::IsReconcileBlocked() const {
   DCHECK_GE(account_reconcilor_lock_count_, 0);
   return account_reconcilor_lock_count_ > 0;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+signin::ConsistencyCookieManager*
+AccountReconcilor::GetConsistencyCookieManager() {
+  if (base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles) &&
+      !consistency_cookie_manager_) {
+    // TODO(https://crbug.com/1260291): Instantiate the ConsistencyCookieManager
+    // at creation of the AccountReconcilor, once the cookie can be cleared
+    // correctly.
+    consistency_cookie_manager_ =
+        std::make_unique<signin::ConsistencyCookieManager>(client_, this);
+  }
+  return consistency_cookie_manager_.get();
+}
+#endif
 
 void AccountReconcilor::BlockReconcile() {
   DCHECK(IsReconcileBlocked());

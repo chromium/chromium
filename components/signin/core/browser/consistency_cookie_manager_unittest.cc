@@ -4,9 +4,13 @@
 
 #include "components/signin/core/browser/consistency_cookie_manager.h"
 
+#include <memory>
+
+#include "base/test/scoped_feature_list.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/canonical_cookie.h"
@@ -38,9 +42,20 @@ class ConsistencyCookieManagerTest : public testing::Test {
         std::make_unique<MockCookieManager>();
     cookie_manager_ = mock_cookie_manager.get();
     signin_client_.set_cookie_manager(std::move(mock_cookie_manager));
+    reconcilor_ = std::make_unique<AccountReconcilor>(
+        /*identity_manager=*/nullptr, &signin_client_,
+        std::make_unique<AccountReconcilorDelegate>());
   }
 
-  ~ConsistencyCookieManagerTest() override { reconcilor_.Shutdown(); }
+  ~ConsistencyCookieManagerTest() override {
+    reconcilor_->Shutdown();
+    // `AccountReconcilor` shutdown should not trigger a cookie update.
+    testing::Mock::VerifyAndClearExpectations(cookie_manager());
+  }
+
+  ConsistencyCookieManager* GetConsistencyCookieManager() {
+    return reconcilor_->GetConsistencyCookieManager();
+  }
 
   void ExpectCookieSet(const std::string& value) {
     const std::string expected_domain =
@@ -64,23 +79,26 @@ class ConsistencyCookieManagerTest : public testing::Test {
     account_reconcilor()->SetState(state);
   }
 
-  AccountReconcilor* account_reconcilor() { return &reconcilor_; }
-  SigninClient* signin_client() { return &signin_client_; }
+  AccountReconcilor* account_reconcilor() { return reconcilor_.get(); }
   MockCookieManager* cookie_manager() { return cookie_manager_; }
 
  private:
+  // The kLacrosNonSyncingProfiles flags bundles several features: non-syncing
+  // profiles, signed out profiles, and Mirror Landing. The
+  // `ConsistencyCookieManager` is related to MirrorLanding.
+  base::test::ScopedFeatureList feature_list_{
+      switches::kLacrosNonSyncingProfiles};
+
   TestSigninClient signin_client_{/*prefs=*/nullptr};
   MockCookieManager* cookie_manager_ = nullptr;  // Owned by `signin_client_`.
-  AccountReconcilor reconcilor_{/*identity_manager=*/nullptr, &signin_client_,
-                                std::make_unique<AccountReconcilorDelegate>()};
+  std::unique_ptr<AccountReconcilor> reconcilor_;
 };
 
 TEST_F(ConsistencyCookieManagerTest, ReconcilorState) {
-  // Initial state.
+  // Ensure the cookie manager was created.
+  ASSERT_TRUE(GetConsistencyCookieManager());
   EXPECT_EQ(account_reconcilor()->GetState(),
             signin_metrics::ACCOUNT_RECONCILOR_INACTIVE);
-  ConsistencyCookieManager cookie_consistency_manager(signin_client(),
-                                                      account_reconcilor());
   // Cookie has not been set.
   testing::Mock::VerifyAndClearExpectations(cookie_manager());
 

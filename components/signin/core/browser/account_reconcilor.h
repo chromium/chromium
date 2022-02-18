@@ -34,9 +34,10 @@ class AccountReconcilorDelegate;
 enum class SetAccountsInCookieResult;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+class ConsistencyCookieManager;
 class ConsistencyCookieManagerTest;
 #endif
-}
+}  // namespace signin
 
 class SigninClient;
 
@@ -140,6 +141,12 @@ class AccountReconcilor : public KeyedService,
 
   // Returns true if reconcilor is blocked.
   bool IsReconcileBlocked() const;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Gets the ConsistencyCookieManager, which updates the
+  // "CHROME_ID_CONSISTENCY_STATE" cookie.
+  signin::ConsistencyCookieManager* GetConsistencyCookieManager();
+#endif
 
  protected:
   void OnSetAccountsInCookieCompleted(signin::SetAccountsInCookieResult result);
@@ -441,6 +448,10 @@ class AccountReconcilor : public KeyedService,
 
   // Set to true when Shutdown() is called.
   bool was_shut_down_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<signin::ConsistencyCookieManager> consistency_cookie_manager_;
+#endif
 
   base::WeakPtrFactory<AccountReconcilor> weak_factory_{this};
 };
