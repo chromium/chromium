@@ -294,6 +294,9 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
                                          bool enable_backup_restore,
                                          bool enable_location_services,
                                          const std::string& tos_content) {
+  // Should be called regardless of ARC.
+  pref_handler_->EnableMetrics(enable_stats_usage);
+
   if (arc::IsArcDemoModeSetupFlow() ||
       !arc::IsArcTermsOfServiceOobeNegotiationNeeded()) {
     for (auto& observer : observer_list_)
@@ -303,7 +306,6 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
     return;
   }
 
-  pref_handler_->EnableMetrics(enable_stats_usage);
   pref_handler_->EnableBackupRestore(enable_backup_restore);
   pref_handler_->EnableLocationService(enable_location_services);
 
