@@ -25,6 +25,9 @@ OptimizationGuideInternalsUI::~OptimizationGuideInternalsUI() = default;
 void OptimizationGuideInternalsUI::BindInterface(
     mojo::PendingReceiver<
         optimization_guide_internals::mojom::PageHandlerFactory> receiver) {
+  // TODO(https://crbug.com/1297362): Remove the reset which is needed now since
+  // |this| is reused on internals page reloads.
+  optimization_guide_internals_page_factory_receiver_.reset();
   optimization_guide_internals_page_factory_receiver_.Bind(std::move(receiver));
 }
 

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/circular_deque.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -39,6 +40,22 @@ class OptimizationGuideLogger {
   bool ShouldEnableDebugLogs() const;
 
  private:
+  struct LogMessage {
+    LogMessage(base::Time event_time,
+               const std::string& source_file,
+               int source_line,
+               const std::string& message);
+    base::Time event_time;
+    std::string source_file;
+    int source_line;
+    std::string message;
+  };
+
+  // Contains the most recent log messages. Messages are queued up only when
+  // |kDebugLoggingEnabled| command-line switch is specified. This allows the
+  // messages at startup to be saved and shown in the internals page later.
+  base::circular_deque<LogMessage> recent_log_messages_;
+
   base::ObserverList<OptimizationGuideLogger::Observer> observers_;
 };
 

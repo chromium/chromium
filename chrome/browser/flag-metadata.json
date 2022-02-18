@@ -4544,6 +4544,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "optimization-guide-debug-logs",
+    "owners": [ "rajendrant", "robertogden", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "optimization-guide-model-downloading",
     "owners": [ "mcrouse", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 95

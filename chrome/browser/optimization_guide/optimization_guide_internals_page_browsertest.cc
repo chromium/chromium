@@ -16,6 +16,7 @@
 #include "chrome/test/base/mojo_web_ui_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_ui.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
@@ -104,11 +105,41 @@ class OptimizationGuideInternalsPageBrowserTest : public MojoWebUIBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsPageBrowserTest,
+                       DebugLogEnabledOnInternalsPage) {
+  auto* logger =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+          ->GetOptimizationGuideLogger();
+  EXPECT_FALSE(logger->ShouldEnableDebugLogs());
+  NavigateToInternalsPage();
+  // Once the internals page is open, debug logs should get enabled.
+  EXPECT_TRUE(logger->ShouldEnableDebugLogs());
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsPageBrowserTest,
+                       DebugLogEnabledOnCommandLineSwitch) {
+  auto* logger =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+          ->GetOptimizationGuideLogger();
+  EXPECT_FALSE(logger->ShouldEnableDebugLogs());
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      optimization_guide::switches::kDebugLoggingEnabled);
+  // With the command-line switch, debug logs should get enabled.
+  EXPECT_TRUE(logger->ShouldEnableDebugLogs());
+}
+
 // Verifies log message is added when internals page is open.
 IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsPageBrowserTest,
                        InternalsPageOpen) {
+  auto* logger =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+          ->GetOptimizationGuideLogger();
+  EXPECT_FALSE(logger->ShouldEnableDebugLogs());
+
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDebugLoggingEnabled);
+
+  EXPECT_TRUE(logger->ShouldEnableDebugLogs());
 
   NavigateToInternalsPage();
   content::WebContents* internals_page_web_contents =
