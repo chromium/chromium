@@ -54,7 +54,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   bool Initialize(const Config& config, Client* client) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(const media::Bitrate& bitrate,
+  void RequestEncodingParametersChange(const Bitrate& bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;
   bool IsGpuFrameResizeSupported() override;
