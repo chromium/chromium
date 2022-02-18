@@ -253,17 +253,6 @@ class ExtensionDownloader {
     int oauth2_attempt_count;
   };
 
-  // Parameters for special cases that aren't used for most requests.
-  struct ExtraParams {
-    // Additional data to be passed up in the update request.
-    std::string update_url_data;
-
-    // Indicates whether this extension is being reinstalled due to corruption.
-    bool is_corrupt_reinstall;
-
-    ExtraParams();
-  };
-
   // We limit the number of extensions grouped together in one batch to avoid
   // running into the limits on the length of http GET requests, this represents
   // the key for grouping these extensions.
@@ -296,8 +285,7 @@ class ExtensionDownloader {
   void UpdateURLStats(const GURL& update_url, Manifest::Type extension_type);
 
   // Helper for AddExtension() and AddPendingExtension().
-  bool AddExtensionData(const ExtensionDownloaderTask& task,
-                        const ExtraParams& extra);
+  bool AddExtensionData(const ExtensionDownloaderTask& task);
 
   // Adds all recorded stats taken so far to histogram counts.
   void ReportStats() const;

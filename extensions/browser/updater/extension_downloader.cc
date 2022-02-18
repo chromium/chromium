@@ -228,8 +228,6 @@ bool ExtensionDownloader::FetchDataGroupKey::operator<(
          std::tie(other.request_id, other.update_url, other.is_force_installed);
 }
 
-ExtensionDownloader::ExtraParams::ExtraParams() : is_corrupt_reinstall(false) {}
-
 ExtensionDownloader::ExtensionDownloader(
     ExtensionDownloaderDelegate* delegate,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -300,15 +298,9 @@ ExtensionDownloaderTask& ExtensionDownloaderTask::operator=(
 ExtensionDownloaderTask::~ExtensionDownloaderTask() = default;
 
 bool ExtensionDownloader::AddPendingExtension(ExtensionDownloaderTask task) {
-  ExtraParams extra;
-  if (task.is_corrupt_reinstall)
-    extra.is_corrupt_reinstall = true;
-  if (!task.update_url_data.empty())
-    extra.update_url_data = task.update_url_data;
-
   delegate_->OnExtensionDownloadStageChanged(
       task.id, ExtensionDownloaderDelegate::Stage::PENDING);
-  return AddExtensionData(task, extra);
+  return AddExtensionData(task);
 }
 
 void ExtensionDownloader::StartAllPending(ExtensionCache* cache) {
@@ -383,8 +375,8 @@ void ExtensionDownloader::UpdateURLStats(const GURL& update_url,
   }
 }
 
-bool ExtensionDownloader::AddExtensionData(const ExtensionDownloaderTask& task,
-                                           const ExtraParams& extra) {
+bool ExtensionDownloader::AddExtensionData(
+    const ExtensionDownloaderTask& task) {
   GURL update_url(task.update_url);
   // Skip extensions with non-empty invalid update URLs.
   if (!update_url.is_empty() && !update_url.is_valid()) {
@@ -420,7 +412,7 @@ bool ExtensionDownloader::AddExtensionData(const ExtensionDownloaderTask& task,
   std::string install_source = extension_urls::IsWebstoreUpdateUrl(update_url)
                                    ? kDefaultInstallSource
                                    : kNotFromWebstoreInstallSource;
-  if (extra.is_corrupt_reinstall)
+  if (task.is_corrupt_reinstall)
     install_source = kReinstallInstallSource;
 
   ManifestFetchData::PingData ping_data;
@@ -440,7 +432,7 @@ bool ExtensionDownloader::AddExtensionData(const ExtensionDownloaderTask& task,
     // Try to add to the ManifestFetchData at the end of the list.
     ManifestFetchData* existing_fetch = existing_iter->second.back().get();
     if (existing_fetch->AddExtension(task.id, task.version.GetString(),
-                                     optional_ping_data, extra.update_url_data,
+                                     optional_ping_data, task.update_url_data,
                                      install_source, task.install_location,
                                      task.fetch_priority)) {
       added = true;
@@ -456,7 +448,7 @@ bool ExtensionDownloader::AddExtensionData(const ExtensionDownloaderTask& task,
       fetch_ptr->set_is_all_external_policy_download();
     fetches_preparing_[key].push_back(std::move(fetch));
     added = fetch_ptr->AddExtension(task.id, task.version.GetString(),
-                                    optional_ping_data, extra.update_url_data,
+                                    optional_ping_data, task.update_url_data,
                                     install_source, task.install_location,
                                     task.fetch_priority);
     DCHECK(added);
