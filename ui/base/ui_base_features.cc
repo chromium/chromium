@@ -89,6 +89,14 @@ bool IsShortcutCustomizationAppEnabled() {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Share the resource file with ash-chrome. This feature reduces the memory
+// consumption while the disk usage slightly increases.
+// https://crbug.com/1253280.
+const base::Feature kLacrosResourcesFileSharing = {
+    "LacrosResourcesFileSharing", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 // Update of the virtual keyboard settings UI as described in
 // https://crbug.com/876901.
 const base::Feature kInputMethodSettingsUiUpdate = {

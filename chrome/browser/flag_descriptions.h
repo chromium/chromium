@@ -3143,6 +3143,9 @@ extern const char kDesktopCaptureLacrosV2Description[];
 
 extern const char kLacrosNonSyncingProfilesName[];
 extern const char kLacrosNonSyncingProfilesDescription[];
+
+extern const char kLacrosResourcesFileSharingName[];
+extern const char kLacrosResourcesFileSharingDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

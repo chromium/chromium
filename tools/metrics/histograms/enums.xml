@@ -52103,6 +52103,7 @@ from previous Chrome versions.
   <int value="-1591974904"
       label="SafeBrowsingSeparateNetworkContexts:disabled"/>
   <int value="-1591450227" label="enable-microphone-mute-switch-device"/>
+  <int value="-1590882897" label="LacrosResourcesFileSharing:enabled"/>
   <int value="-1589720671"
       label="DebugHistoryInterventionNoUserActivation:disabled"/>
   <int value="-1588702520" label="WebOTPCrossDevice:disabled"/>
@@ -54921,6 +54922,7 @@ from previous Chrome versions.
   <int value="379428799" label="security-chip-animation"/>
   <int value="380372760" label="V8Orinoco:disabled"/>
   <int value="380378407" label="LacrosProfileMigrationForceOff:enabled"/>
+  <int value="381195146" label="LacrosResourcesFileSharing:disabled"/>
   <int value="382478170" label="SemanticColorDebugOverride:disabled"/>
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
   <int value="385969127" label="disable-win32k-lockdown"/>

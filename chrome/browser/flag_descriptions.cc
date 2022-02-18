@@ -5459,6 +5459,15 @@ const char kLacrosNonSyncingProfilesName[] =
     "Enable non-syncing profiles on lacros";
 const char kLacrosNonSyncingProfilesDescription[] =
     "Enables further types of profiles: (1) local, (2) signed-in non-syncing.";
+
+const char kLacrosResourcesFileSharingName[] =
+    "Share resources file with ash-chrome";
+const char kLacrosResourcesFileSharingDescription[] =
+    "Map lacros-chrome resource ids to ash-chrome resources and remove "
+    "duplicated resources to reduce the memory consumption. This feature "
+    "generate two additional paks for resources.pak, chrome_100_percent.pak "
+    "and chrome_200_percent.pak. Additional paks are mapping table and "
+    "fallback resources.";
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
