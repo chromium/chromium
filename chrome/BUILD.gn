@@ -839,13 +839,16 @@ if (is_win) {
     sources = [
       "$root_out_dir/app_mode_loader",
       "$root_out_dir/chrome_crashpad_handler",
-      "$root_out_dir/developer_id_certificate_reauthorize",
     ]
+
+    if (is_chrome_branded) {
+      sources +=
+          [ "installer/mac/internal/developer_id_certificate_reauthorize" ]
+    }
 
     outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
 
     public_deps = [
-      "browser:developer_id_certificate_reauthorize",
       "//chrome/app_shim:app_mode_loader",
       "//components/crash/core/app:chrome_crashpad_handler",
     ]
@@ -1250,7 +1253,6 @@ if (is_win) {
     _chrome_symbols_sources = [
       "$root_out_dir/$chrome_product_full_name.app/Contents/MacOS/$chrome_product_full_name",
       "$root_out_dir/chrome_crashpad_handler",
-      "$root_out_dir/developer_id_certificate_reauthorize",
       "$root_out_dir/libEGL.dylib",
       "$root_out_dir/libGLESv2.dylib",
       "$root_out_dir/libswiftshader_libEGL.dylib",
@@ -1288,7 +1290,6 @@ if (is_win) {
       deps = [
         ":chrome_app",
         ":chrome_framework",
-        "browser:developer_id_certificate_reauthorize",
         "//components/crash/core/app:chrome_crashpad_handler",
         "//third_party/angle:libEGL",
         "//third_party/angle:libGLESv2",
@@ -1317,7 +1318,6 @@ if (is_win) {
         "$root_out_dir/$chrome_framework_name.dSYM",
         "$root_out_dir/$chrome_product_full_name.dSYM",
         "$root_out_dir/chrome_crashpad_handler.dSYM",
-        "$root_out_dir/developer_id_certificate_reauthorize.dSYM",
         "$root_out_dir/libEGL.dylib.dSYM",
         "$root_out_dir/libGLESv2.dylib.dSYM",
         "$root_out_dir/libswiftshader_libEGL.dylib.dSYM",
@@ -1331,7 +1331,6 @@ if (is_win) {
       deps = [
         ":chrome_app",
         ":chrome_framework",
-        "browser:developer_id_certificate_reauthorize",
         "//components/crash/core/app:chrome_crashpad_handler",
         "//third_party/angle:libEGL",
         "//third_party/angle:libGLESv2",
