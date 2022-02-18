@@ -85,6 +85,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkShoppingItemRowRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkShoppingItemRowTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkTagChipListTest.java",
+  "javatests/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkUtilsTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/bottomsheet/BookmarkBottomSheetTest.java",
   "javatests/src/org/chromium/chrome/browser/browserservices/ManageTrustedWebActivityDataActivityTest.java",
   "javatests/src/org/chromium/chrome/browser/browserservices/QualityEnforcerTest.java",
