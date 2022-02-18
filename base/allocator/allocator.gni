@@ -87,7 +87,9 @@ declare_args() {
   # Set use_backup_ref_ptr true to use BackupRefPtr (BRP) as the implementation
   # of raw_ptr<T>, and enable PartitionAlloc support for it.
   use_backup_ref_ptr = _is_brp_supported
+}
 
+declare_args() {
   # If BRP is enabled, additional options are available:
   # - put_ref_count_in_previous_slot: place the ref-count at the end of the
   #   previous slot (or in metadata if a slot starts on the page boundary), as
@@ -98,8 +100,8 @@ declare_args() {
   #   are too expensive to have on by default.
   # - enable_dangling_raw_ptr_checks: enable checking raw_ptr do not become
   #   dangling during their lifetime.
-  put_ref_count_in_previous_slot = _is_brp_supported
-  never_remove_from_brp_pool_blocklist = _is_brp_supported
+  put_ref_count_in_previous_slot = use_backup_ref_ptr
+  never_remove_from_brp_pool_blocklist = use_backup_ref_ptr
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
 
