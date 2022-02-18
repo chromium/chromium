@@ -394,6 +394,11 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       playback_rect, transform.translation(), recording_to_raster_scale,
       raster_source->requires_clear(),
       const_cast<RasterSource*>(raster_source)->max_op_size_hint());
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Gpu.Rasterization.Raster.NumPaintOps",
+      raster_source->GetDisplayItemList()->num_paint_ops());
+  UMA_HISTOGRAM_COUNTS_100("Gpu.Rasterization.Raster.NumSlowPaths",
+                           raster_source->GetDisplayItemList()->NumSlowPaths());
   ri->EndRasterCHROMIUM();
 
   // TODO(ericrk): Handle unpremultiply+dither for 4444 cases.

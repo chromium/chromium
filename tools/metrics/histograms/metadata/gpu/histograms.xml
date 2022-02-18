@@ -1296,6 +1296,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gpu.Rasterization.Raster.NumPaintOps" units="count"
+    expires_after="M106">
+  <owner>penghuang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>Number of paint ops in a raster task.</summary>
+</histogram>
+
+<histogram name="Gpu.Rasterization.Raster.NumSlowPaths" units="count"
+    expires_after="M106">
+  <owner>penghuang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>Number of slow paths in a raster task.</summary>
+</histogram>
+
 <histogram name="GPU.RenderableFormat.{FORMAT_TYPE}" enum="Boolean"
     expires_after="2021-09-15">
   <owner>zmo@chromium.org</owner>
