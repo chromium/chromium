@@ -21,8 +21,8 @@ js_library("os_powerwash_dialog") {
   deps = [
     ":os_powerwash_dialog_esim_item",
     ":os_reset_browser_proxy",
-    "..:metrics_recorder.m",
-    "..:os_route.m",
+    "..:metrics_recorder",
+    "..:os_route",
     "../..:lifetime_browser_proxy",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
@@ -48,8 +48,8 @@ js_library("os_reset_browser_proxy") {
 
 js_library("os_reset_page") {
   deps = [
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

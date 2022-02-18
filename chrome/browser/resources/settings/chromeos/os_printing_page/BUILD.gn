@@ -104,8 +104,8 @@ js_library("cups_printers") {
     ":cups_printer_types",
     ":cups_printers_browser_proxy",
     ":cups_settings_add_printer_dialog",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
@@ -154,9 +154,9 @@ js_library("cups_saved_printers") {
 js_library("os_printing_page") {
   deps = [
     ":cups_printers_browser_proxy",
-    "..:deep_linking_behavior.m",
-    "..:metrics_recorder.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:metrics_recorder",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

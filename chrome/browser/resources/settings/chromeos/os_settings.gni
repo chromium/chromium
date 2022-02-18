@@ -542,6 +542,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/controls/settings_slider.html",
                                  "chrome/browser/resources/settings/controls/settings_textarea.html",
                                  "chrome/browser/resources/settings/controls/settings_toggle_button.html",
+                                 "chrome/browser/resources/settings/deep_linking_behavior.html",
                                  "chrome/browser/resources/settings/ensure_lazy_loaded.html",
                                  "chrome/browser/resources/settings/extension_control_browser_proxy.html",
                                  "chrome/browser/resources/settings/chromeos/global_scroll_target_behavior.html",

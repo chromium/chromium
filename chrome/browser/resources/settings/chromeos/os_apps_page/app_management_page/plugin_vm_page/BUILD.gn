@@ -24,7 +24,7 @@ js_library("plugin_vm_detail_view") {
     ":plugin_vm_browser_proxy",
     "../:store_client",
     "../:util",
-    "../../..:os_route.m",
+    "../../..:os_route",
     "../../../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",

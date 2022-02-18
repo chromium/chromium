@@ -34,8 +34,8 @@ js_library("ambient_mode_page") {
   deps = [
     ":ambient_mode_browser_proxy",
     ":constants",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
@@ -49,7 +49,7 @@ js_library("ambient_mode_photos_page") {
   deps = [
     ":ambient_mode_browser_proxy",
     ":constants",
-    "..:os_route.m",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -93,7 +93,7 @@ js_library("album_list") {
   deps = [
     ":constants",
     "..:global_scroll_target_behavior",
-    "..:os_route.m",
+    "..:os_route",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

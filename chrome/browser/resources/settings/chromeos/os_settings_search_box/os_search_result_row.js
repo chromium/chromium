@@ -20,7 +20,7 @@ import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
-import {getSearchHandler, setSearchHandlerForTesting} from '../search_handler.m.js';
+import {getSearchHandler, setSearchHandlerForTesting} from '../search_handler.js';
 
 /**
  * This solution uses DP and has the complexity of O(M*N), where M and N are

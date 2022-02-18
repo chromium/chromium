@@ -17,7 +17,7 @@ js_library("borealis_detail_view") {
     "../:pin_to_shelf_item",
     "../:store_client",
     "../:util",
-    "../../..:os_route.m",
+    "../../..:os_route",
     "../../../..:router",
   ]
 }

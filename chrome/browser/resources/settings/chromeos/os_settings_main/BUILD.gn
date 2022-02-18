@@ -14,8 +14,8 @@ js_type_check("closure_compile_module") {
 
 js_library("os_settings_main") {
   deps = [
-    "..:os_page_visibility.m",
-    "..:os_route.m",
+    "..:os_page_visibility",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "../os_settings_page:os_settings_page",

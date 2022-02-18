@@ -144,7 +144,7 @@ export {AppState, reduceAction} from './os_apps_page/app_management_page/reducer
 export {AppManagementStore} from './os_apps_page/app_management_page/store.js';
 export {AppManagementStoreClientImpl} from './os_apps_page/app_management_page/store_client.js';
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';
-export {osPageVisibility} from './os_page_visibility.m.js';
+export {osPageVisibility} from './os_page_visibility.js';
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
 export {FingerprintBrowserProxyImpl, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.js';
 export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.m.js';
@@ -158,4 +158,4 @@ export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './
 export {ChangePictureBrowserProxy, ChangePictureBrowserProxyImpl} from './personalization_page/change_picture_browser_proxy.js';
 export {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_page/personalization_hub_browser_proxy.js';
 export {WallpaperBrowserProxyImpl} from './personalization_page/wallpaper_browser_proxy.js';
-export {getSearchHandler, setSearchHandlerForTesting} from './search_handler.m.js';
+export {getSearchHandler, setSearchHandlerForTesting} from './search_handler.js';

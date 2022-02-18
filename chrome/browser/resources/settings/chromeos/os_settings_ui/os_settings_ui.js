@@ -34,9 +34,9 @@ import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
 import {GlobalScrollTargetBehavior, setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
-import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.m.js';
+import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.m.js';
-import {PrefToSettingMetricConverter} from '../pref_to_setting_metric_converter.m.js';
+import {PrefToSettingMetricConverter} from '../pref_to_setting_metric_converter.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 /** Global defined when the main Settings script runs. */

@@ -31,9 +31,9 @@ js_library("bluetooth_device_list_item") {
 js_library("bluetooth_page") {
   deps = [
     ":bluetooth_subpage",
-    "..:deep_linking_behavior.m",
-    "..:metrics_recorder.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:metrics_recorder",
+    "..:os_route",
     "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
@@ -49,9 +49,9 @@ js_library("bluetooth_page") {
 
 js_library("bluetooth_subpage") {
   deps = [
-    "..:deep_linking_behavior.m",
-    "..:metrics_recorder.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:metrics_recorder",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "//services/device/public/mojom:mojom_js_library_for_compile",

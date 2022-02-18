@@ -41,7 +41,7 @@ import {ProfileInfoBrowserProxyImpl} from '../../people_page/profile_info_browse
 import {StatusAction, SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
-import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.m.js';
+import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 

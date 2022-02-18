@@ -49,7 +49,7 @@ js_library("internet_config") {
   deps = [
     ":internet_shared_css",
     "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
+    "//chrome/browser/resources/settings/chromeos:metrics_recorder",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -65,7 +65,7 @@ js_library("internet_config") {
 js_library("internet_detail_menu") {
   deps = [
     "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_listener_behavior.m",
@@ -86,8 +86,8 @@ js_library("internet_detail_page") {
     ":settings_traffic_counters",
     ":tether_connection_dialog",
     "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
-    "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
+    "//chrome/browser/resources/settings/chromeos:metrics_recorder",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos/os_people_page:os_sync_browser_proxy.m",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
@@ -125,9 +125,9 @@ js_library("internet_known_networks_page") {
   deps = [
     ":internet_shared_css",
     "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
-    "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
-    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
+    "//chrome/browser/resources/settings/chromeos:metrics_recorder",
+    "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
@@ -153,9 +153,9 @@ js_library("internet_page") {
     ":internet_subpage",
     ":network_summary",
     "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
-    "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
-    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
+    "//chrome/browser/resources/settings/chromeos:metrics_recorder",
+    "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -194,11 +194,11 @@ js_library("internet_subpage") {
     ":internet_page_browser_proxy",
     ":network_always_on_vpn",
     "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
-    "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
-    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
+    "//chrome/browser/resources/settings/chromeos:metrics_recorder",
+    "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos:route_origin_behavior.m",
+    "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -230,7 +230,7 @@ js_library("network_proxy_section") {
   deps = [
     ":internet_shared_css",
     "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
@@ -275,7 +275,7 @@ js_library("network_summary_item") {
 
 js_library("tether_connection_dialog") {
   deps = [
-    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/chromeos:os_route",
     "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
@@ -310,7 +310,7 @@ js_library("cellular_networks_list") {
 js_library("cellular_roaming_toggle_button") {
   deps = [
     ":internet_shared_css",
-    "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
+    "//chrome/browser/resources/settings/chromeos:metrics_recorder",
     "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -346,7 +346,7 @@ js_library("esim_rename_dialog") {
 js_library("esim_remove_profile_dialog") {
   deps = [
     "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",

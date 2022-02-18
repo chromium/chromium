@@ -40,8 +40,8 @@ js_library("os_bluetooth_devices_subpage") {
     ":os_bluetooth_devices_subpage_browser_proxy",
     ":os_paired_bluetooth_list",
     ":settings_fast_pair_toggle",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -59,9 +59,9 @@ js_library("os_bluetooth_devices_subpage_browser_proxy") {
 
 js_library("os_bluetooth_summary") {
   deps = [
-    "..:os_route.m",
+    "..:os_route",
     "..:route_observer_behavior",
-    "..:route_origin_behavior.m",
+    "..:route_origin_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
@@ -81,7 +81,7 @@ js_library("os_paired_bluetooth_list") {
 
 js_library("os_paired_bluetooth_list_item") {
   deps = [
-    "..:os_route.m",
+    "..:os_route",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_device_battery_info",
@@ -103,9 +103,9 @@ js_library("os_bluetooth_device_detail_subpage") {
   deps = [
     ":os_bluetooth_change_device_name_dialog",
     ":os_bluetooth_true_wireless_images",
-    "..:os_route.m",
+    "..:os_route",
     "..:route_observer_behavior",
-    "..:route_origin_behavior.m",
+    "..:route_origin_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_device_battery_info",

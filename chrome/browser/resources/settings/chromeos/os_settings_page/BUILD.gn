@@ -20,8 +20,8 @@ js_library("os_settings_page") {
   deps = [
     ":main_page_behavior",
     ":settings_idle_load",
-    "..:os_page_visibility.m",
-    "..:os_route.m",
+    "..:os_page_visibility",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "../bluetooth_page:bluetooth_page",

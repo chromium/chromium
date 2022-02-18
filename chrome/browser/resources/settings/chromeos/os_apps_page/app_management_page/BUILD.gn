@@ -61,7 +61,7 @@ js_library("app_detail_view") {
     ":actions",
     ":dom_switch",
     ":store_client",
-    "../..:os_route.m",
+    "../..:os_route",
     "../..:route_observer_behavior",
     "../../..:router",
     "./borealis_page:borealis_detail_view",
@@ -153,7 +153,7 @@ js_library("main_view") {
     ":browser_proxy",
     ":store_client",
     ":util",
-    "../..:os_route.m",
+    "../..:os_route",
     "../..:route_observer_behavior",
     "../../..:router",
     "//ui/webui/resources/js:assert.m",
@@ -165,7 +165,7 @@ js_library("pin_to_shelf_item") {
   deps = [
     ":browser_proxy",
     ":util",
-    "../..:metrics_recorder.m",
+    "../..:metrics_recorder",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -248,7 +248,7 @@ js_library("supported_links_item") {
     ":supported_links_dialog",
     ":supported_links_overlapping_apps_dialog",
     ":util",
-    "../..:metrics_recorder.m",
+    "../..:metrics_recorder",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
@@ -258,7 +258,7 @@ js_library("supported_links_item") {
 
 js_library("util") {
   deps = [
-    "../..:os_route.m",
+    "../..:os_route",
     "../../..:router",
   ]
 }

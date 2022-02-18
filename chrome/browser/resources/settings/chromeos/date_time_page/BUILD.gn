@@ -20,8 +20,8 @@ js_type_check("closure_compile_module") {
 
 js_library("date_time_page") {
   deps = [
-    "..:deep_linking_behavior.m",
-    "..:os_settings_routes.m",
+    "..:deep_linking_behavior",
+    "..:os_settings_routes",
     "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
@@ -61,8 +61,8 @@ js_library("timezone_subpage") {
   deps = [
     ":date_time_types",
     ":timezone_browser_proxy",
-    "..:deep_linking_behavior.m",
-    "..:os_settings_routes.m",
+    "..:deep_linking_behavior",
+    "..:os_settings_routes",
     "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",

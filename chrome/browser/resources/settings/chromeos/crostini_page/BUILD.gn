@@ -30,9 +30,9 @@ js_type_check("closure_compile_module") {
 js_library("crostini_arc_adb") {
   deps = [
     ":crostini_browser_proxy",
-    "..:deep_linking_behavior.m",
-    "..:metrics_recorder.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:metrics_recorder",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
@@ -49,7 +49,7 @@ js_library("crostini_arc_adb") {
 js_library("crostini_arc_adb_confirmation_dialog") {
   deps = [
     ":crostini_browser_proxy",
-    "..:metrics_recorder.m",
+    "..:metrics_recorder",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -100,8 +100,8 @@ js_library("crostini_export_import") {
   deps = [
     ":crostini_browser_proxy",
     ":crostini_import_confirmation_dialog",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
@@ -128,8 +128,8 @@ js_library("crostini_page") {
     ":crostini_extra_containers",
     ":crostini_port_forwarding",
     ":crostini_subpage",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
@@ -148,7 +148,7 @@ js_library("crostini_port_forwarding") {
   deps = [
     ":crostini_browser_proxy",
     ":crostini_port_forwarding_add_port_dialog",
-    "..:metrics_recorder.m",
+    "..:metrics_recorder",
     "..:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
@@ -164,7 +164,7 @@ js_library("crostini_port_forwarding") {
 js_library("crostini_port_forwarding_add_port_dialog") {
   deps = [
     ":crostini_browser_proxy",
-    "..:metrics_recorder.m",
+    "..:metrics_recorder",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
@@ -178,7 +178,7 @@ js_library("crostini_extra_containers") {
   deps = [
     ":crostini_browser_proxy",
     ":crostini_extra_containers_create_dialog",
-    "..:metrics_recorder.m",
+    "..:metrics_recorder",
     "..:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
@@ -194,7 +194,7 @@ js_library("crostini_extra_containers") {
 js_library("crostini_extra_containers_create_dialog") {
   deps = [
     ":crostini_browser_proxy",
-    "..:metrics_recorder.m",
+    "..:metrics_recorder",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -209,12 +209,12 @@ js_library("crostini_subpage") {
     ":crostini_disk_resize_dialog",
     ":crostini_extra_containers",
     ":crostini_port_forwarding",
-    "..:deep_linking_behavior.m",
-    "..:metrics_recorder.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:metrics_recorder",
+    "..:os_route",
     "..:prefs_behavior",
     "..:route_observer_behavior",
-    "..:route_origin_behavior.m",
+    "..:route_origin_behavior",
     "../..:router",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",

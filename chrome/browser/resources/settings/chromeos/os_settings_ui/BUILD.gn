@@ -14,10 +14,10 @@ js_type_check("closure_compile_module") {
 
 js_library("os_settings_ui") {
   deps = [
-    "..:metrics_recorder.m",
-    "..:os_page_visibility.m",
-    "..:os_route.m",
-    "..:pref_to_setting_metric_converter.m",
+    "..:metrics_recorder",
+    "..:os_page_visibility",
+    "..:os_route",
+    "..:pref_to_setting_metric_converter",
     "../..:router",
     "../os_settings_main:os_settings_main",
     "../os_toolbar:os_toolbar",
