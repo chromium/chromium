@@ -15,10 +15,9 @@
 #include "content/public/browser/web_contents.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-class SkBitmap;
 
 namespace net {
 enum class ReferrerPolicy;
@@ -107,18 +106,14 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   static constexpr char kManifestFilePath[] = "fedcm.json";
 
   using AccountList = std::vector<content::IdentityRequestAccount>;
-  using BrandIconDownloader =
-      base::OnceCallback<void(const GURL& /*icon_url*/,
-                              int /*ideal_icon_size*/,
-                              WebContents::ImageDownloadCallback)>;
-  using FetchManifestCallback =
-      base::OnceCallback<void(FetchStatus, Endpoints)>;
+  using FetchManifestCallback = base::OnceCallback<
+      void(FetchStatus, Endpoints, IdentityProviderMetadata)>;
   using FetchClientMetadataCallback =
       base::OnceCallback<void(FetchStatus, ClientMetadata)>;
   using SigninRequestCallback =
       base::OnceCallback<void(SigninResponse, const std::string&)>;
-  using AccountsRequestCallback = base::OnceCallback<
-      void(FetchStatus, AccountList, IdentityProviderMetadata)>;
+  using AccountsRequestCallback =
+      base::OnceCallback<void(FetchStatus, AccountList)>;
   using TokenRequestCallback =
       base::OnceCallback<void(FetchStatus, const std::string&)>;
   using RevokeCallback = base::OnceCallback<void(RevokeResponse)>;
@@ -139,7 +134,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   IdpNetworkRequestManager& operator=(const IdpNetworkRequestManager&) = delete;
 
   // Attempt to fetch the IDP's FedCM parameters from the fedcm.json manifest.
-  virtual void FetchManifest(FetchManifestCallback);
+  virtual void FetchManifest(absl::optional<int> idp_brand_icon_ideal_size,
+                             absl::optional<int> idp_brand_icon_minimum_size,
+                             FetchManifestCallback);
 
   virtual void FetchClientMetadata(const GURL& endpoint,
                                    const std::string& client_id,
@@ -152,9 +149,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   // Fetch accounts list for this user from the IDP.
   virtual void SendAccountsRequest(const GURL& accounts_url,
-                                   int idp_brand_icon_ideal_size,
-                                   int idp_brand_icon_minimum_size,
-                                   BrandIconDownloader icon_downloader,
                                    const std::string& client_id,
                                    AccountsRequestCallback callback);
 
@@ -174,40 +168,22 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
 
  private:
-  struct AccountRequestInfo {
-    AccountRequestInfo(AccountsRequestCallback callback,
-                       int idp_brand_icon_ideal_size,
-                       int idp_brand_icon_minimum_size,
-                       BrandIconDownloader idp_brand_icon_downloader,
-                       const std::string& client_id);
-    ~AccountRequestInfo();
-    AccountRequestInfo(AccountRequestInfo&&);
-
-    AccountsRequestCallback callback;
-    int idp_brand_icon_ideal_size;
-    int idp_brand_icon_minimum_size;
-    BrandIconDownloader idp_brand_icon_downloader;
-    std::string client_id;
-  };
-
-  void OnManifestLoaded(std::unique_ptr<std::string> response_body);
-  void OnManifestParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnManifestLoaded(absl::optional<int> idp_brand_icon_ideal_size,
+                        absl::optional<int> idp_brand_icon_minimum_size,
+                        std::unique_ptr<std::string> response_body);
+  void OnManifestParsed(absl::optional<int> idp_brand_icon_ideal_size,
+                        absl::optional<int> idp_brand_icon_minimum_size,
+                        data_decoder::DataDecoder::ValueOrError result);
   void OnClientMetadataLoaded(std::unique_ptr<std::string> response_body);
   void OnClientMetadataParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnSigninRequestResponse(std::unique_ptr<std::string> response_body);
   void OnSigninRequestParsed(data_decoder::DataDecoder::ValueOrError result);
-  void OnAccountsRequestResponse(AccountRequestInfo request_info,
+  void OnAccountsRequestResponse(AccountsRequestCallback callback,
+                                 std::string client_id,
                                  std::unique_ptr<std::string> response_body);
-  void OnAccountsRequestParsed(AccountRequestInfo request_info,
+  void OnAccountsRequestParsed(AccountsRequestCallback callback,
+                               std::string client_id,
                                data_decoder::DataDecoder::ValueOrError result);
-  void OnIdentityProviderBrandIconFetched(AccountRequestInfo request_info,
-                                          AccountList account_list,
-                                          IdentityProviderMetadata idp_metadata,
-                                          int id,
-                                          int http_status_code,
-                                          const GURL& image_url,
-                                          const std::vector<SkBitmap>& bitmaps,
-                                          const std::vector<gfx::Size>& sizes);
   void OnTokenRequestResponse(std::unique_ptr<std::string> response_body);
   void OnTokenRequestParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnRevokeResponse(std::unique_ptr<std::string> response_body);

@@ -75,9 +75,19 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   // Checks validity of the passed-in endpoint URL origin.
   bool IsEndpointUrlValid(const GURL& endpoint_url);
 
+  void FetchManifest(IdpNetworkRequestManager::FetchManifestCallback callback);
   void OnManifestFetched(IdpNetworkRequestManager::FetchStatus status,
-                         IdpNetworkRequestManager::Endpoints);
+                         IdpNetworkRequestManager::Endpoints,
+                         IdentityProviderMetadata idp_metadata);
+  void OnBrandIconDownloaded(int icon_minimum_size,
+                             IdentityProviderMetadata idp_metadata,
+                             int id,
+                             int http_status_code,
+                             const GURL& image_url,
+                             const std::vector<SkBitmap>& bitmaps,
+                             const std::vector<gfx::Size>& sizes);
   void OnClientMetadataResponseReceived(
+      IdentityProviderMetadata idp_metadata,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::ClientMetadata data);
 
@@ -93,9 +103,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
                       int ideal_icon_size,
                       WebContents::ImageDownloadCallback callback);
   void OnAccountsResponseReceived(
+      IdentityProviderMetadata idp_metadata,
       IdpNetworkRequestManager::FetchStatus status,
-      IdpNetworkRequestManager::AccountList accounts,
-      IdentityProviderMetadata idp_metadata);
+      IdpNetworkRequestManager::AccountList accounts);
   void OnAccountSelected(const std::string& account_id, bool is_sign_in);
   void CompleteIdTokenRequest(IdpNetworkRequestManager::FetchStatus status,
                               const std::string& id_token);
@@ -108,7 +118,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
                        const std::string& id_token);
   void CompleteLogoutRequest(blink::mojom::LogoutRpsStatus);
   void OnManifestFetchedForRevoke(IdpNetworkRequestManager::FetchStatus status,
-                                  IdpNetworkRequestManager::Endpoints);
+                                  IdpNetworkRequestManager::Endpoints,
+                                  IdentityProviderMetadata idp_metadata);
   void OnRevokeResponse(IdpNetworkRequestManager::RevokeResponse response);
   void CompleteRevokeRequest(blink::mojom::RevokeStatus status);
 

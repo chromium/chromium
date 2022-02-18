@@ -616,17 +616,14 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                                    std::string token,
                                    bool prefer_auto_sign_in) {
     if (conf.accounts_response) {
-      EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _, _, _, _, _))
+      EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _, _))
           .WillOnce(Invoke(
-              [&](const GURL&, int, int,
-                  IdpNetworkRequestManager::BrandIconDownloader,
-                  const std::string&,
+              [&](const GURL&, const std::string&,
                   IdpNetworkRequestManager::AccountsRequestCallback callback) {
-                std::move(callback).Run(*conf.accounts_response, conf.accounts,
-                                        IdentityProviderMetadata());
+                std::move(callback).Run(*conf.accounts_response, conf.accounts);
               }));
     } else {
-      EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _, _, _, _, _))
+      EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _, _))
           .Times(0);
     }
 
@@ -694,9 +691,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     }
 
     if (test_case.config.manifest_fetch_status) {
-      EXPECT_CALL(*mock_request_manager_, FetchManifest(_))
+      EXPECT_CALL(*mock_request_manager_, FetchManifest(_, _, _))
           .WillOnce(Invoke(
-              [&](IdpNetworkRequestManager::FetchManifestCallback callback) {
+              [&](absl::optional<int>, absl::optional<int>,
+                  IdpNetworkRequestManager::FetchManifestCallback callback) {
                 IdpNetworkRequestManager::Endpoints endpoints;
                 endpoints.idp = test_case.config.idp_endpoint;
                 endpoints.accounts = test_case.config.accounts_endpoint;
@@ -704,10 +702,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                 endpoints.client_metadata =
                     test_case.config.client_metadata_endpoint;
                 std::move(callback).Run(*test_case.config.manifest_fetch_status,
-                                        endpoints);
+                                        endpoints, IdentityProviderMetadata());
               }));
     } else {
-      EXPECT_CALL(*mock_request_manager_, FetchManifest(_)).Times(0);
+      EXPECT_CALL(*mock_request_manager_, FetchManifest(_, _, _)).Times(0);
     }
 
     if (test_case.config.client_metadata) {
@@ -1282,12 +1280,14 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
       *mock_request_permission_delegate_,
       RevokeRequestPermission(_, url::Origin::Create(GURL(kIdpTestOrigin))));
 
-  EXPECT_CALL(*mock_request_manager_, FetchManifest(_))
+  EXPECT_CALL(*mock_request_manager_, FetchManifest(_, _, _))
       .WillOnce(
-          Invoke([&](IdpNetworkRequestManager::FetchManifestCallback callback) {
+          Invoke([&](absl::optional<int>, absl::optional<int>,
+                     IdpNetworkRequestManager::FetchManifestCallback callback) {
             IdpNetworkRequestManager::Endpoints endpoints;
             endpoints.revoke = kRevokeEndpoint;
-            std::move(callback).Run(FetchStatus::kSuccess, endpoints);
+            std::move(callback).Run(FetchStatus::kSuccess, endpoints,
+                                    IdentityProviderMetadata());
           }));
   EXPECT_CALL(*mock_request_manager_, SendRevokeRequest(_, _, _, _))
       .WillOnce(Invoke([&](const GURL& revoke_url, const std::string& client_id,

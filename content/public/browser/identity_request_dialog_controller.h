@@ -83,6 +83,7 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   absl::optional<SkColor> brand_text_color;
   absl::optional<SkColor> brand_background_color;
   SkBitmap brand_icon;
+  GURL brand_icon_url;
 };
 
 // IdentityRequestDialogController is in interface for control of the UI
