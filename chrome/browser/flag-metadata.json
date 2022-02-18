@@ -2255,7 +2255,7 @@
   {
     "name": "enable-instant-start",
     "owners": [ "hanxi", "wychen" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 115
   },
   {
     "name": "enable-isolated-sandboxed-iframes",
@@ -2743,7 +2743,7 @@
   {
     "name": "enable-start-surface",
     "owners": [ "hanxi", "wychen" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 115
   },
   {
     "name": "enable-storage-pressure-event",
@@ -2843,7 +2843,7 @@
   {
     "name": "enable-tab-switcher-on-return",
     "owners": [ "memex-team@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 115
   },
   {
     "name": "enable-tab-to-gts-animation",
