@@ -327,7 +327,6 @@ class TabStrip : public views::View,
 
   // views::View:
   void Layout() override;
-  void PaintChildren(const views::PaintInfo& paint_info) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize() const override;
   bool CanDrop(const OSExchangeData& data) override;

@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/tab_group_header.h"
+#include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
+#include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -13,6 +16,95 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_utils.h"
+
+namespace {
+
+// A class that calculates a z-value for a TabContainer child view (one of a
+// tab, a tab group header, a tab group underline, or a tab group highlight).
+// Can be compared with other ZOrderableTabContainerElements to determine paint
+// order of their associated views.
+class ZOrderableTabContainerElement {
+ public:
+  ZOrderableTabContainerElement(views::View* const child,
+                                absl::optional<const TabGroupUnderline* const>
+                                    dragging_tabs_current_group_underline)
+      : child_(child),
+        z_value_(
+            CalculateZValue(child, dragging_tabs_current_group_underline)) {}
+
+  bool operator<(const ZOrderableTabContainerElement& rhs) const {
+    return z_value_ < rhs.z_value_;
+  }
+
+  views::View* view() const { return child_; }
+
+ private:
+  // Determines the 'height' of |child|, which should be used to determine the
+  // paint order of TabContainer's children.  Larger z-values should be painted
+  // on top of smaller ones.
+  static float CalculateZValue(views::View* child,
+                               absl::optional<const TabGroupUnderline* const>
+                                   dragging_tabs_current_group_underline) {
+    Tab* tab = views::AsViewClass<Tab>(child);
+    TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(child);
+    TabGroupUnderline* underline = views::AsViewClass<TabGroupUnderline>(child);
+    TabGroupHighlight* highlight = views::AsViewClass<TabGroupHighlight>(child);
+    DCHECK_EQ(1, !!tab + !!header + !!underline + !!highlight);
+
+    // Construct a bitfield that encodes |child|'s z-value. Higher-order bits
+    // encode more important properties - see usage below for details on each.
+    // The lowest-order |num_bits_reserved_for_tab_style_z_value| bits are
+    // reserved for the factors considered by TabStyle, e.g. selection and hover
+    // state.
+    constexpr int num_bits_reserved_for_tab_style_z_value =
+        base::bits::Log2Ceiling(static_cast<int>(TabStyle::kMaximumZValue) + 1);
+    enum ZValue {
+      kActiveTab = (1u << (num_bits_reserved_for_tab_style_z_value + 4)),
+      kDraggedHeader = (1u << (num_bits_reserved_for_tab_style_z_value + 3)),
+      kDragRelevantUnderline =
+          (1u << (num_bits_reserved_for_tab_style_z_value + 2)),
+      kDraggedTab = (1u << (num_bits_reserved_for_tab_style_z_value + 1)),
+      kGroupView = (1u << num_bits_reserved_for_tab_style_z_value)
+    };
+
+    unsigned int z_value = 0;
+
+    // The active tab is always on top.
+    if (tab && tab->IsActive())
+      z_value |= kActiveTab;
+
+    // If we're dragging a header, that is painted above non-active tabs.
+    if (header && header->dragging())
+      z_value |= kDraggedHeader;
+
+    // If we're dragging tabs into a group, or are dragging a group, the
+    // underline for that group is painted above non-active dragged tabs.
+    if (underline && dragging_tabs_current_group_underline.has_value() &&
+        underline == dragging_tabs_current_group_underline.value())
+      z_value |= kDragRelevantUnderline;
+
+    // Dragged tabs are painted above anything that isn't part of the drag.
+    if (tab && tab->dragging())
+      z_value |= kDraggedTab;
+
+    // Group headers, highlights and underlines are painted above non-active,
+    // non-dragged tabs. Note that a group highlight is only visible when the
+    // associated group is being dragged in a header drag.
+    if (header || underline || highlight)
+      z_value |= kGroupView;
+
+    // The remaining (non-active, non-dragged) tabs are painted last. They are
+    // ordered by their selected or hovered state, which is animated and thus
+    // real-valued.
+    const float tab_style_z_value = tab ? tab->tab_style()->GetZValue() : 0.0f;
+    return z_value + tab_style_z_value;
+  }
+
+  views::View* child_;
+  float z_value_;
+};  // ZOrderableTabStripElement
+
+}  // namespace
 
 TabContainer::TabContainer(TabStripController* controller)
     : controller_(controller),
@@ -164,6 +256,40 @@ bool TabContainer::IsRectInWindowCaption(const gfx::Rect& rect) {
   // |v| is some other view (e.g. a close button in a tab) and therefore |rect|
   // is in client area.
   return false;
+}
+
+void TabContainer::PaintChildren(const views::PaintInfo& paint_info) {
+  // Groups that are being dragged by their header, or that contain the dragged
+  // tabs, need an adjusted z-value. Find that group, if it exists.
+  absl::optional<tab_groups::TabGroupId> dragging_tabs_current_group =
+      absl::nullopt;
+
+  for (const Tab* tab : layout_helper()->GetTabs()) {
+    if (tab->dragging()) {
+      dragging_tabs_current_group = tab->group();
+      break;
+    }
+  }
+
+  absl::optional<const TabGroupUnderline*>
+      dragging_tabs_current_group_underline =
+          dragging_tabs_current_group.has_value()
+              ? absl::optional<const TabGroupUnderline*>(
+                    group_views_[dragging_tabs_current_group.value()]
+                        ->underline())
+              : absl::nullopt;
+
+  std::vector<ZOrderableTabContainerElement> orderable_children;
+  for (views::View* child : children())
+    orderable_children.emplace_back(child,
+                                    dragging_tabs_current_group_underline);
+
+  // Sort in non-descending order. Stable sort breaks z-value ties by index (for
+  // tabs).
+  std::stable_sort(orderable_children.begin(), orderable_children.end());
+
+  for (const ZOrderableTabContainerElement& child : orderable_children)
+    child.view()->Paint(paint_info);
 }
 
 gfx::Size TabContainer::GetMinimumSize() const {

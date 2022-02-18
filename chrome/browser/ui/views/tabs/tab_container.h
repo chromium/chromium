@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/paint_info.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 
@@ -71,6 +72,7 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   TabStripLayoutHelper* layout_helper() const { return layout_helper_.get(); }
 
   // views::View
+  void PaintChildren(const views::PaintInfo& paint_info) override;
   gfx::Size GetMinimumSize() const override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
