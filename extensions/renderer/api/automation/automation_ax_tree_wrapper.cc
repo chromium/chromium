@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/renderer/api/automation/automation_ax_tree_wrapper.h"
+
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/no_destructor.h"
@@ -16,22 +18,26 @@
 namespace extensions {
 
 // Multiroot tree lookup.
+// Represents an app node.
+struct AppNodeInfo {
+  ui::AXTreeID tree_id;
+  int32_t node_id;
+};
+
 // These maps support moving from a node to a descendant tree node via an app id
 // (and vice versa).
-std::map<std::string, std::pair<ui::AXTreeID, int32_t>>&
-GetAppIDToChildTreeNodeMap() {
-  static base::NoDestructor<
-      std::map<std::string, std::pair<ui::AXTreeID, int32_t>>>
-      app_id_to_child_tree_node_map;
-  return *app_id_to_child_tree_node_map;
-}
-
 std::map<std::string, std::pair<ui::AXTreeID, int32_t>>&
 GetAppIDToParentTreeNodeMap() {
   static base::NoDestructor<
       std::map<std::string, std::pair<ui::AXTreeID, int32_t>>>
-      app_id_to_parent_tree_node_map;
-  return *app_id_to_parent_tree_node_map;
+      app_id_to_tree_node_map;
+  return *app_id_to_tree_node_map;
+}
+
+std::map<std::string, std::vector<AppNodeInfo>>& GetAppIDToTreeNodeMap() {
+  static base::NoDestructor<std::map<std::string, std::vector<AppNodeInfo>>>
+      app_id_to_tree_node_map;
+  return *app_id_to_tree_node_map;
 }
 
 AutomationAXTreeWrapper::AutomationAXTreeWrapper(
@@ -298,7 +304,7 @@ AutomationAXTreeWrapper::GetTreeWrapperWithUnignoredRoot() {
 }
 
 AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentTreeFromAnyAppID() {
-  for (const std::string& app_id : all_parent_tree_node_app_ids_) {
+  for (const std::string& app_id : all_tree_node_app_ids_) {
     auto* wrapper = GetParentTreeWrapperForAppID(app_id, owner_);
     if (wrapper)
       return wrapper;
@@ -343,7 +349,7 @@ AutomationAXTreeWrapper::GetChildTreeIDReverseMap() {
 ui::AXNode* AutomationAXTreeWrapper::GetParentTreeNodeForAppID(
     const std::string& app_id,
     const AutomationInternalCustomBindings* owner) {
-  auto& map = GetAppIDToChildTreeNodeMap();
+  auto& map = GetAppIDToParentTreeNodeMap();
   auto it = map.find(app_id);
   if (it == map.end())
     return nullptr;
@@ -360,7 +366,7 @@ ui::AXNode* AutomationAXTreeWrapper::GetParentTreeNodeForAppID(
 AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentTreeWrapperForAppID(
     const std::string& app_id,
     const AutomationInternalCustomBindings* owner) {
-  auto& map = GetAppIDToChildTreeNodeMap();
+  auto& map = GetAppIDToParentTreeNodeMap();
   auto it = map.find(app_id);
   if (it == map.end())
     return nullptr;
@@ -369,20 +375,25 @@ AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentTreeWrapperForAppID(
 }
 
 // static
-ui::AXNode* AutomationAXTreeWrapper::GetChildTreeNodeForAppID(
+std::vector<ui::AXNode*> AutomationAXTreeWrapper::GetChildTreeNodesForAppID(
     const std::string& app_id,
     const AutomationInternalCustomBindings* owner) {
-  auto& map = GetAppIDToParentTreeNodeMap();
+  auto& map = GetAppIDToTreeNodeMap();
   auto it = map.find(app_id);
   if (it == map.end())
-    return nullptr;
+    return std::vector<ui::AXNode*>();
 
-  AutomationAXTreeWrapper* wrapper =
-      owner->GetAutomationAXTreeWrapperFromTreeID(it->second.first);
-  if (!wrapper)
-    return nullptr;
+  std::vector<ui::AXNode*> nodes;
+  for (const AppNodeInfo& app_node_info : it->second) {
+    AutomationAXTreeWrapper* wrapper =
+        owner->GetAutomationAXTreeWrapperFromTreeID(app_node_info.tree_id);
+    if (!wrapper)
+      continue;
 
-  return wrapper->tree()->GetFromId(it->second.second);
+    nodes.push_back(wrapper->tree()->GetFromId(app_node_info.node_id));
+  }
+
+  return nodes;
 }
 
 void AutomationAXTreeWrapper::OnNodeDataChanged(
@@ -402,21 +413,29 @@ void AutomationAXTreeWrapper::OnStringAttributeChanged(
     const std::string& new_value) {
   if (attr == ax::mojom::StringAttribute::kChildTreeNodeAppId) {
     if (new_value.empty()) {
-      GetAppIDToChildTreeNodeMap().erase(old_value);
+      GetAppIDToParentTreeNodeMap().erase(old_value);
     } else {
-      GetAppIDToChildTreeNodeMap()[new_value] = {tree->GetAXTreeID(),
-                                                 node->data().id};
+      GetAppIDToParentTreeNodeMap()[new_value] = {tree->GetAXTreeID(),
+                                                  node->data().id};
     }
   }
 
   if (attr == ax::mojom::StringAttribute::kAppId) {
     if (new_value.empty()) {
-      GetAppIDToParentTreeNodeMap().erase(old_value);
-      all_parent_tree_node_app_ids_.erase(old_value);
+      auto it = GetAppIDToTreeNodeMap().find(old_value);
+      if (it != GetAppIDToTreeNodeMap().end()) {
+        base::EraseIf(it->second, [node](const AppNodeInfo& app_node_info) {
+          return app_node_info.node_id == node->id();
+        });
+        if (it->second.empty()) {
+          GetAppIDToTreeNodeMap().erase(old_value);
+          all_tree_node_app_ids_.erase(old_value);
+        }
+      }
     } else {
-      GetAppIDToParentTreeNodeMap()[new_value] = {tree->GetAXTreeID(),
-                                                  node->data().id};
-      all_parent_tree_node_app_ids_.insert(new_value);
+      GetAppIDToTreeNodeMap()[new_value].push_back(
+          {tree->GetAXTreeID(), node->data().id});
+      all_tree_node_app_ids_.insert(new_value);
     }
   }
 }
@@ -430,15 +449,24 @@ void AutomationAXTreeWrapper::OnNodeWillBeDeleted(ui::AXTree* tree,
 
   if (node->HasStringAttribute(
           ax::mojom::StringAttribute::kChildTreeNodeAppId)) {
-    GetAppIDToChildTreeNodeMap().erase(node->GetStringAttribute(
+    GetAppIDToParentTreeNodeMap().erase(node->GetStringAttribute(
         ax::mojom::StringAttribute::kChildTreeNodeAppId));
   }
 
   if (node->HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
     const std::string& app_id =
         node->GetStringAttribute(ax::mojom::StringAttribute::kAppId);
-    GetAppIDToParentTreeNodeMap().erase(app_id);
-    all_parent_tree_node_app_ids_.erase(app_id);
+    auto it = GetAppIDToTreeNodeMap().find(app_id);
+    if (it != GetAppIDToTreeNodeMap().end()) {
+      base::EraseIf(it->second, [node](const AppNodeInfo& app_node_info) {
+        return app_node_info.node_id == node->id();
+      });
+
+      if (it->second.empty()) {
+        GetAppIDToTreeNodeMap().erase(app_id);
+        all_tree_node_app_ids_.erase(app_id);
+      }
+    }
   }
 }
 
@@ -446,7 +474,7 @@ void AutomationAXTreeWrapper::OnNodeCreated(ui::AXTree* tree,
                                             ui::AXNode* node) {
   if (node->HasStringAttribute(
           ax::mojom::StringAttribute::kChildTreeNodeAppId)) {
-    GetAppIDToChildTreeNodeMap()[node->GetStringAttribute(
+    GetAppIDToParentTreeNodeMap()[node->GetStringAttribute(
         ax::mojom::StringAttribute::kChildTreeNodeAppId)] = {
         node->tree()->GetAXTreeID(), node->id()};
   }
@@ -454,9 +482,9 @@ void AutomationAXTreeWrapper::OnNodeCreated(ui::AXTree* tree,
   if (node->HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
     const std::string& app_id =
         node->GetStringAttribute(ax::mojom::StringAttribute::kAppId);
-    GetAppIDToParentTreeNodeMap()[app_id] = {node->tree()->GetAXTreeID(),
-                                             node->id()};
-    all_parent_tree_node_app_ids_.insert(app_id);
+    GetAppIDToTreeNodeMap()[app_id].push_back(
+        {node->tree()->GetAXTreeID(), node->id()});
+    all_tree_node_app_ids_.insert(app_id);
   }
 }
 

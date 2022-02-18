@@ -44,7 +44,7 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
   static AutomationAXTreeWrapper* GetParentTreeWrapperForAppID(
       const std::string& app_id,
       const AutomationInternalCustomBindings* owner);
-  static ui::AXNode* GetChildTreeNodeForAppID(
+  static std::vector<ui::AXNode*> GetChildTreeNodesForAppID(
       const std::string& app_id,
       const AutomationInternalCustomBindings* owner);
 
@@ -150,9 +150,9 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
   // Maps a node to a set containing events for which the node has listeners.
   std::map<int32_t, std::set<api::automation::EventType>> node_id_to_events_;
 
-  // A collection of all app ids in this tree nodes'
-  // ax::mojom::StringAttribute::kParentTreeNodeAppId.
-  std::set<std::string> all_parent_tree_node_app_ids_;
+  // A collection of all nodes with
+  // ax::mojom::StringAttribute::kAppId set.
+  std::set<std::string> all_tree_node_app_ids_;
 };
 
 }  // namespace extensions

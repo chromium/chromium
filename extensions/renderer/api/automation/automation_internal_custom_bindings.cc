@@ -836,10 +836,11 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
         size_t child_count;
-        if (GetRootOfChildTree(&node, &tree_wrapper))
-          child_count = 1;
-        else
+        std::vector<ui::AXNode*> child_roots = GetRootsOfChildTree(node);
+        if (child_roots.empty())
           child_count = node->GetUnignoredChildCount();
+        else
+          child_count = child_roots.size();
 
         result.Set(
             v8::Integer::New(isolate, static_cast<int32_t>(child_count)));
@@ -898,16 +899,22 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
         std::vector<int> child_ids;
-        if (GetRootOfChildTree(&node, &tree_wrapper)) {
-          child_ids.push_back(node->id());
+        ui::AXTreeID tree_id;
+        std::vector child_roots = GetRootsOfChildTree(node);
+        if (!child_roots.empty()) {
+          tree_id = child_roots[0]->tree()->GetAXTreeID();
+          for (ui::AXNode* child_root : child_roots)
+            child_ids.push_back(child_root->id());
         } else {
           for (auto iter = node->UnignoredChildrenBegin();
-               iter != node->UnignoredChildrenEnd(); ++iter)
+               iter != node->UnignoredChildrenEnd(); ++iter) {
             child_ids.push_back(iter->id());
+            tree_id = iter->tree()->GetAXTreeID();
+          }
         }
 
         gin::DataObjectBuilder response(isolate);
-        response.Set("treeId", tree_wrapper->GetTreeID().ToString());
+        response.Set("treeId", tree_id.ToString());
         response.Set("nodeIds", child_ids);
         result.Set(response.Build());
       });
@@ -1225,9 +1232,12 @@ void AutomationInternalCustomBindings::AddRoutes() {
     const char* name = nullptr;
     if (node->GetRole() == ax::mojom::Role::kPortal &&
         node->data().GetNameFrom() == ax::mojom::NameFrom::kNone) {
-      if (GetRootOfChildTree(&node, &tree_wrapper)) {
-        name =
-            node->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str();
+      // Portals are not expected to have multiple child roots.
+      if (const auto& child_roots = GetRootsOfChildTree(node);
+          !child_roots.empty()) {
+        name = child_roots[0]
+                   ->GetStringAttribute(ax::mojom::StringAttribute::kName)
+                   .c_str();
       }
     }
 
@@ -1903,10 +1913,12 @@ bool AutomationInternalCustomBindings::GetFocusInternal(
     AutomationAXTreeWrapper* child_tree_wrapper = nullptr;
 
     if (!child_tree_node_app_id_str.empty()) {
-      const ui::AXNode* child_app_node =
-          AutomationAXTreeWrapper::GetChildTreeNodeForAppID(
+      std::vector<ui::AXNode*> child_app_nodes =
+          AutomationAXTreeWrapper::GetChildTreeNodesForAppID(
               child_tree_node_app_id_str, this);
-      if (child_app_node) {
+      if (!child_app_nodes.empty()) {
+        // It doesn't matter which app node we use to move to the parent tree.
+        ui::AXNode* child_app_node = child_app_nodes[0];
         auto* wrapper = GetAutomationAXTreeWrapperFromTreeID(
             child_app_node->tree()->GetAXTreeID());
 
@@ -2206,9 +2218,8 @@ ui::AXNode* AutomationInternalCustomBindings::GetHostInParentTree(
   return nullptr;
 }
 
-bool AutomationInternalCustomBindings::GetRootOfChildTree(
-    ui::AXNode** in_out_node,
-    AutomationAXTreeWrapper** in_out_tree_wrapper) const {
+std::vector<ui::AXNode*> AutomationInternalCustomBindings::GetRootsOfChildTree(
+    ui::AXNode* node) const {
   // Account for two types of links to child trees.
   // An explicit tree id to a child tree.
   std::string child_tree_id_str;
@@ -2216,36 +2227,28 @@ bool AutomationInternalCustomBindings::GetRootOfChildTree(
   // A node attribute pointing to a node in a descendant tree.
   std::string child_tree_node_app_id_str;
 
-  if (!(*in_out_node)
-           ->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
+  if (!node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
                                 &child_tree_id_str) &&
-      !(*in_out_node)
-           ->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId,
+      !node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId,
                                 &child_tree_node_app_id_str)) {
-    return false;
+    return std::vector<ui::AXNode*>();
   }
 
   if (!child_tree_node_app_id_str.empty()) {
-    ui::AXNode* child_app_node =
-        AutomationAXTreeWrapper::GetChildTreeNodeForAppID(
+    std::vector<ui::AXNode*> child_app_nodes =
+        AutomationAXTreeWrapper::GetChildTreeNodesForAppID(
             child_tree_node_app_id_str, this);
-    if (child_app_node) {
-      *in_out_node = child_app_node;
-      *in_out_tree_wrapper = GetAutomationAXTreeWrapperFromTreeID(
-          child_app_node->tree()->GetAXTreeID());
-      return true;
-    }
+    if (!child_app_nodes.empty())
+      return child_app_nodes;
   }
 
   AutomationAXTreeWrapper* child_tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(
           ui::AXTreeID::FromString(child_tree_id_str));
   if (!child_tree_wrapper || !child_tree_wrapper->tree()->root())
-    return false;
+    return std::vector<ui::AXNode*>();
 
-  *in_out_tree_wrapper = child_tree_wrapper;
-  *in_out_node = child_tree_wrapper->tree()->root();
-  return true;
+  return {child_tree_wrapper->tree()->root()};
 }
 
 ui::AXNode* AutomationInternalCustomBindings::GetNextInTreeOrder(
@@ -2258,8 +2261,9 @@ ui::AXNode* AutomationInternalCustomBindings::GetNextInTreeOrder(
   ui::AXNode* walker = start;
 
   // We also have to check child tree id.
-  if (GetRootOfChildTree(&walker, in_out_tree_wrapper))
-    return walker;
+  std::vector<ui::AXNode*> child_roots = GetRootsOfChildTree(walker);
+  if (!child_roots.empty())
+    return child_roots[0];
 
   // Find the next branch forward.
   ui::AXNode* parent;
@@ -2300,7 +2304,7 @@ ui::AXNode* AutomationInternalCustomBindings::GetPreviousInTreeOrder(
     if (iter != walker->UnignoredChildrenEnd() &&
         --iter != walker->UnignoredChildrenEnd()) {
       walker = &(*iter);
-    } else if (!GetRootOfChildTree(&walker, in_out_tree_wrapper)) {
+    } else if (GetRootsOfChildTree(walker).empty()) {
       break;
     }
   }
@@ -2386,21 +2390,27 @@ void AutomationInternalCustomBindings::GetChildIDAtIndex(
     return;
 
   int index = args[2]->Int32Value(context()->v8_context()).FromMaybe(0);
-  int child_id;
 
-  // Check for a child tree, which is guaranteed to always be the only child.
-  if (index == 0 && GetRootOfChildTree(&node, &tree_wrapper)) {
-    child_id = node->id();
-  } else if (index < 0 ||
-             static_cast<size_t>(index) >= node->GetUnignoredChildCount()) {
+  // Check for child roots.
+  std::vector<ui::AXNode*> child_roots = GetRootsOfChildTree(node);
+
+  if (index < 0)
+    return;
+
+  ui::AXNode* child_node = nullptr;
+  if (!child_roots.empty() && static_cast<size_t>(index) < child_roots.size()) {
+    child_node = child_roots[index];
+  } else if (static_cast<size_t>(index) >= node->GetUnignoredChildCount()) {
     return;
   } else {
-    child_id = node->GetUnignoredChildAtIndex(static_cast<size_t>(index))->id();
+    child_node = node->GetUnignoredChildAtIndex(static_cast<size_t>(index));
   }
 
+  DCHECK(child_node);
+
   gin::DataObjectBuilder response(GetIsolate());
-  response.Set("treeId", tree_wrapper->GetTreeID().ToString());
-  response.Set("nodeId", child_id);
+  response.Set("treeId", child_node->tree()->GetAXTreeID().ToString());
+  response.Set("nodeId", child_node->id());
   args.GetReturnValue().Set(response.Build());
 }
 

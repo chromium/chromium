@@ -78,6 +78,10 @@ class AutomationInternalCustomBindingsTest
                                                                   node);
   }
 
+  std::vector<ui::AXNode*> CallGetRootsOfChildTree(ui::AXNode* node) {
+    return automation_internal_bindings_->GetRootsOfChildTree(node);
+  }
+
  private:
   AutomationInternalCustomBindings* automation_internal_bindings_ = nullptr;
 };
@@ -561,6 +565,77 @@ TEST_F(AutomationInternalCustomBindingsTest, IgnoredAncestorTrees) {
   EXPECT_FALSE(wrapper_0->IsTreeIgnored());
   EXPECT_FALSE(wrapper_1->IsTreeIgnored());
   EXPECT_FALSE(wrapper_2->IsTreeIgnored());
+}
+
+TEST_F(AutomationInternalCustomBindingsTest,
+       GetMultipleChildRootsAppIdConstruction) {
+  // Two trees each with a button and a client node.
+  std::vector<ExtensionMsg_AccessibilityEventBundleParams> bundles;
+  for (int i = 0; i < 2; i++) {
+    bundles.emplace_back();
+    auto& bundle = bundles.back();
+    bundle.updates.emplace_back();
+    auto& tree_update = bundle.updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+    tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    bundle.tree_id = tree_data.tree_id;
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role =
+        i == 0 ? ax::mojom::Role::kDesktop : ax::mojom::Role::kRootWebArea;
+    node_data1.child_ids.push_back(2);
+    node_data1.child_ids.push_back(3);
+    node_data1.relative_bounds.bounds = gfx::RectF(100, 100, 100, 100);
+    tree_update.nodes.emplace_back();
+    auto& node_data2 = tree_update.nodes.back();
+    node_data2.id = 2;
+    node_data2.role = ax::mojom::Role::kButton;
+    node_data2.relative_bounds.bounds = gfx::RectF(0, 0, 200, 200);
+    tree_update.nodes.emplace_back();
+    auto& node_data3 = tree_update.nodes.back();
+    node_data3.id = 3;
+    node_data3.role = ax::mojom::Role::kClient;
+    node_data3.relative_bounds.bounds = gfx::RectF(0, 0, 200, 200);
+  }
+
+  // Link up the trees by using one app id. Tree 0's client has two children
+  // from tree 1.
+  ui::AXTreeID tree_0_id = bundles[0].updates[0].tree_data.tree_id;
+  ui::AXTreeID tree_1_id = bundles[1].updates[0].tree_data.tree_id;
+  auto& wrapper0_client_data = bundles[0].updates[0].nodes[2];
+  auto& wrapper1_button_data = bundles[1].updates[0].nodes[1];
+  auto& wrapper1_client_data = bundles[1].updates[0].nodes[2];
+
+  // This construction requires the hosting and client nodes annotate with the
+  // same app id.
+  wrapper0_client_data.AddStringAttribute(
+      ax::mojom::StringAttribute::kChildTreeNodeAppId, "app1");
+  wrapper1_button_data.AddStringAttribute(ax::mojom::StringAttribute::kAppId,
+                                          "app1");
+  wrapper1_client_data.AddStringAttribute(ax::mojom::StringAttribute::kAppId,
+                                          "app1");
+
+  for (auto& bundle : bundles)
+    SendOnAccessibilityEvents(bundle, true /* active profile */);
+
+  ASSERT_EQ(2U, GetTreeIDToTreeMap().size());
+
+  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
+  ASSERT_TRUE(wrapper_0);
+
+  ui::AXNode* wrapper0_client = wrapper_0->tree()->GetFromId(3);
+  ASSERT_TRUE(wrapper0_client);
+
+  std::vector<ui::AXNode*> child_roots =
+      CallGetRootsOfChildTree(wrapper0_client);
+  EXPECT_EQ(2U, child_roots.size());
+  EXPECT_EQ(tree_1_id, child_roots[0]->tree()->GetAXTreeID());
+  EXPECT_EQ(tree_1_id, child_roots[1]->tree()->GetAXTreeID());
+  EXPECT_EQ(2, child_roots[0]->id());
+  EXPECT_EQ(3, child_roots[1]->id());
 }
 
 }  // namespace extensions

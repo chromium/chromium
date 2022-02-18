@@ -71,10 +71,9 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   ui::AXNode* GetHostInParentTree(
       AutomationAXTreeWrapper** in_out_tree_wrapper) const;
 
-  // Gets the root of a node's child tree and adjusts incoming arguments
-  // accordingly. Returns false if no adjustments were made.
-  bool GetRootOfChildTree(ui::AXNode** in_out_node,
-                          AutomationAXTreeWrapper** in_out_tree_wrapper) const;
+  // Gets the root(s) of a node's child tree. Multiple roots can occur when the
+  // child tree uses ax::mojom::StringAttribute::kAppId.
+  std::vector<ui::AXNode*> GetRootsOfChildTree(ui::AXNode* node) const;
 
   ui::AXNode* GetNextInTreeOrder(
       ui::AXNode* start,
