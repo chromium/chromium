@@ -168,6 +168,7 @@
 </style>
 <div id="container" role="treeitem" aria-expanded="[[getAriaExpanded_(open_)]]">
   <button id="folder" class="row"
+      title="[[folder.title]]"
       draggable="true"
       data-bookmark="[[folder]]"
       empty$="[[!folder.children.length]]"
@@ -199,6 +200,7 @@
         <template is="dom-if" if="[[item.url]]" restamp>
           <button
               id="bookmark-[[item.id]]" role="treeitem" class="bookmark row"
+              title="[[item.title]]"
               draggable="true" data-bookmark="[[item]]"
               on-click="onBookmarkClick_"
               on-auxclick="onBookmarkAuxClick_"
