@@ -19,12 +19,6 @@
 - (void)dismissReadingListListViewController:
     (UIViewController*)readingListCollectionViewController;
 
-// Displays the context menu for the |item|. |menuLocation| is used as the
-// anchor of the context menu in the |viewController.view|'s coordinates.
-- (void)readingListListViewController:(UIViewController*)viewController
-            displayContextMenuForItem:(id<ReadingListListItem>)item
-                              atPoint:(CGPoint)menuLocation;
-
 // Opens |item.entryURL|.
 - (void)readingListListViewController:(UIViewController*)viewController
                              openItem:(id<ReadingListListItem>)item;

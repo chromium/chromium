@@ -1136,32 +1136,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self.audience readingListHasItems:NO];
 }
 
-#pragma mark - Gesture Helpers
-
-// Shows the context menu for a long press from |recognizer|.
-- (void)handleLongPress:(UILongPressGestureRecognizer*)recognizer {
-  if (self.editing || recognizer.state != UIGestureRecognizerStateBegan)
-    return;
-
-  CGPoint location = [recognizer locationOfTouch:0 inView:self.tableView];
-  NSIndexPath* indexPath = [self.tableView indexPathForRowAtPoint:location];
-  if (!indexPath)
-    return;
-
-  if (![self.tableViewModel hasItemAtIndexPath:indexPath])
-    return;
-
-  TableViewItem<ReadingListListItem>* item =
-      [self.tableViewModel itemAtIndexPath:indexPath];
-  if (item.type != ItemTypeItem) {
-    return;
-  }
-
-  [self.delegate readingListListViewController:self
-                     displayContextMenuForItem:item
-                                       atPoint:location];
-}
-
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
