@@ -59,6 +59,9 @@ bool LoadString(int id, std::wstring* s);
 // Gets the text corresponding to a control in a dialog box.
 bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text);
 
+// Returns true if the system is in high contrast mode.
+bool IsHighContrastOn();
+
 }  // namespace ui
 }  // namespace updater
 

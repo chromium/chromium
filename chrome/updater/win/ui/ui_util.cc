@@ -142,5 +142,14 @@ bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text) {
   return true;
 }
 
+bool IsHighContrastOn() {
+  HIGHCONTRAST hc = {0};
+  hc.cbSize = sizeof(HIGHCONTRAST);
+  if (!::SystemParametersInfo(SPI_GETHIGHCONTRAST, 0, &hc, 0)) {
+    return false;
+  }
+  return hc.dwFlags & HCF_HIGHCONTRASTON;
+}
+
 }  // namespace ui
 }  // namespace updater
