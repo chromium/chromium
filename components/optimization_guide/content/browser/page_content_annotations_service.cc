@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -163,6 +164,7 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
       false);
   if (visits_to_annotate_.size() >= features::AnnotateVisitBatchSize()) {
     if (current_visit_annotation_batch_.empty()) {
+      // Used for testing.
       LOCAL_HISTOGRAM_BOOLEAN(
           "PageContentAnnotations.AnnotateVisit.BatchAnnotationStarted", true);
       current_visit_annotation_batch_ = std::move(visits_to_annotate_);
@@ -172,9 +174,11 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
     // The queue is full and an batch annotation is actively being done so
     // we will remove the "oldest" visit.
     visits_to_annotate_.erase(visits_to_annotate_.begin());
+    // Used for testing.
     LOCAL_HISTOGRAM_BOOLEAN(
         "PageContentAnnotations.AnnotateVisit.QueueFullVisitDropped", true);
   }
+  // Used for testing.
   LOCAL_HISTOGRAM_BOOLEAN(
       "PageContentAnnotations.AnnotateVisit.AnnotationRequestQueued", true);
 #endif
@@ -184,8 +188,11 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
 void PageContentAnnotationsService::AnnotateVisitBatch() {
   DCHECK(!current_visit_annotation_batch_.empty());
 
-  // if (pause_execution_for_testing_)
-  // return;
+  if (switches::StopHistoryVisitBatchAnnotateForTesting()) {
+    // Code beyond this is tested in multiple places. This just ensures the
+    // calls up to this point can be more easily configured.
+    return;
+  }
 
   if (current_visit_annotation_batch_.empty()) {
     return;
