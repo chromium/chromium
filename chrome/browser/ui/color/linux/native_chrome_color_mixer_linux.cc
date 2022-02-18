@@ -44,4 +44,8 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageBackground] = {ui::kColorTextfieldBackground};
   mixer[kColorNewTabPageHeader] = {ui::kColorNativeButtonBorder};
   mixer[kColorNewTabPageText] = {ui::kColorTextfieldForeground};
+  mixer[kColorToolbarButtonIcon] = {kColorToolbarText};
+  mixer[kColorToolbarContentAreaSeparator] = {kColorToolbarSeparator};
+  mixer[kColorToolbarSeparator] = {ui::kColorNativeButtonBorder};
+  mixer[kColorToolbarText] = {ui::kColorNativeLabelForeground};
 }

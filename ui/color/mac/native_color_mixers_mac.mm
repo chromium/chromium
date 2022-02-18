@@ -88,6 +88,8 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   if (!high_contrast)
     return;
 
+  mixer[kColorFrameActive] = {SK_ColorDKGRAY};
+  mixer[kColorFrameInactive] = {SK_ColorGRAY};
   mixer[kColorMenuItemBackgroundSelected] = {dark_mode ? SK_ColorLTGRAY
                                                        : SK_ColorDKGRAY};
   mixer[kColorMenuItemForegroundSelected] = {dark_mode ? SK_ColorBLACK

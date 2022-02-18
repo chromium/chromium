@@ -105,7 +105,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorNativeMenuRadio] = {GetFgColor(
       base::StrCat({GtkCssMenu(), " ", GtkCssMenuItem(),
                     GtkCheckVersion(3, 20) ? " #radio" : ".radio"}))};
-  mixer[ui::kColorMenuSeparator] = {GetSeparatorColor(
+  mixer[ui::kColorNativeMenuSeparator] = {GetSeparatorColor(
       GtkCheckVersion(3, 20)
           ? base::StrCat({GtkCssMenu(), " GtkSeparator#separator.horizontal"})
           : base::StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), ".separator"}))};

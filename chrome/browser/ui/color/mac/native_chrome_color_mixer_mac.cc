@@ -20,5 +20,11 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   ui::ColorMixer& mixer = provider->AddMixer();
   const bool dark_mode =
       key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
-  mixer[kColorLocationBarBorder] = {dark_mode ? SK_ColorWHITE : SK_ColorBLACK};
+  const SkColor foreground = dark_mode ? SK_ColorWHITE : SK_ColorBLACK;
+  mixer[kColorLocationBarBorder] = {foreground};
+  mixer[kColorTabForegroundInactiveFrameActive] = {SK_ColorWHITE};
+  mixer[kColorTabForegroundInactiveFrameInactive] = {SK_ColorBLACK};
+  mixer[kColorToolbar] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
+  mixer[kColorToolbarContentAreaSeparator] = {foreground};
+  mixer[kColorToolbarText] = {foreground};
 }

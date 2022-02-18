@@ -48,6 +48,7 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
       break;
 
     // Window Text
+    case ThemeProperties::COLOR_BOOKMARK_SEPARATOR:
     case ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR:
     case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR:
     case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_INACTIVE:
@@ -63,7 +64,9 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
       break;
 
     // Button Text Foreground
+    case ThemeProperties::COLOR_BOOKMARK_BUTTON_ICON:
     case ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON:
+    case ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
     case ThemeProperties::COLOR_TOOLBAR_TEXT:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO:

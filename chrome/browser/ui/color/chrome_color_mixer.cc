@@ -94,7 +94,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
                                     : SK_ColorWHITE};
   mixer[kColorToolbarButtonIcon] = ui::HSLShift(
       {gfx::kChromeIconGrey}, GetThemeTint(ThemeProperties::TINT_BUTTONS, key));
-  mixer[kColorToolbarContentAreaSeparator] = {ui::kColorSeparator};
+  mixer[kColorToolbarContentAreaSeparator] =
+      ui::SetAlpha({kColorToolbarButtonIcon}, 0x3A);
   mixer[kColorToolbarSeparator] = ui::SetAlpha({kColorToolbarButtonIcon}, 0x4D);
   mixer[kColorToolbarText] = {dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
 }
