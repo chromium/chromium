@@ -4260,7 +4260,7 @@
   {
     "name": "ntp-modules",
     "owners": [ "mahmadi", "tiborg" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "ntp-modules-drag-and-drop",
@@ -4280,7 +4280,7 @@
   {
     "name": "ntp-photos-module",
     "owners": [ "jerem", "tiborg" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "ntp-photos-opt-in-art-work",
