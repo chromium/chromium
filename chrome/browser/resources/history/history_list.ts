@@ -46,6 +46,7 @@ export interface HistoryListElement {
     'infinite-list': IronListElement,
     'scroll-threshold': IronScrollThresholdElement,
     'dialog': CrLazyRenderElement<CrDialogElement>,
+    'no-results': HTMLElement,
     'sharedMenu': CrLazyRenderElement<CrActionMenuElement>,
   };
 }
@@ -307,6 +308,10 @@ export class HistoryListElement extends HistoryListElementBase {
         this.fire_('query-history', false);
       }
     });
+  }
+
+  removeItemsForTest(indices: number[]) {
+    this.removeItemsByIndex_(indices);
   }
 
   /**

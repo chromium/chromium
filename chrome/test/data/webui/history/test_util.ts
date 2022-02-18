@@ -82,7 +82,7 @@ export function polymerSelectAll(element: Element, selector: string): NodeList {
  * and |predicate| is true.
  */
 export function waitForEvent(
-    element: HTMLElement, eventName: string,
+    element: HTMLElement|Window, eventName: string,
     predicate?: (e: Event) => boolean): Promise<void> {
   if (!predicate) {
     predicate = () => true;

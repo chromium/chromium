@@ -2,54 +2,58 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
+import {BrowserServiceImpl, CrDialogElement, ensureLazyLoaded, HistoryAppElement, HistoryEntry, HistoryItemElement, HistoryListElement, HistoryToolbarElement} from 'chrome://history/history.js';
 import {isMac, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
-import {createHistoryEntry, createHistoryInfo, polymerSelectAll, shiftClick, waitForEvent} from './test_util.js';
+import {createHistoryEntry, createHistoryInfo, shiftClick, waitForEvent} from './test_util.js';
 
-window.history_list_test = {};
-history_list_test.suiteName = 'HistoryListTest';
-
-/** @enum {string} */
-history_list_test.TestNames = {
-  DeletingSingleItem: 'deleting single item',
-  CancellingSelectionOfMultipleItems: 'cancelling selection of multiple items',
-  SelectionOfMultipleItemsUsingShiftClick:
-      'selection of multiple items using shift click',
-  DisablingCtrlAOnSyncedTabsPage:
-      'disabling ctrl + a command on syncedTabs page',
-  SettingFirstAndLastItems: 'setting first and last items',
-  UpdatingHistoryResults: 'updating history results',
-  DeletingMultipleItemsFromView: 'deleting multiple items from view',
-  SearchResultsDisplayWithCorrectItemTitle:
-      'search results display with correct item title',
-  CorrectDisplayMessageWhenNoHistoryAvailable:
-      'correct display message when no history available',
-  MoreFromThisSiteSendsAndSetsCorrectData:
-      'more from this site sends and sets correct data',
-  ScrollingHistoryListCausesToolbarShadowToAppear:
-      'scrolling history list causes toolbar shadow to appear',
-  ChangingSearchDeselectsItems: 'changing search deselects items',
-  DeleteItemsEndToEnd: 'delete items end to end',
-  DeleteViaMenuButton: 'delete via menu button',
-  DeleteDisabledWhilePending: 'delete disabled while pending',
-  DeletingItemsUsingShortcuts: 'deleting items using shortcuts',
-  DeleteDialogClosedOnBackNavigation: 'delete dialog closed on back navigation',
-  ClickingFileUrlSendsMessageToChrome:
-      'clicking file:// url sends message to chrome',
-  DeleteHistoryResultsInQueryHistoryEvent:
-      'deleteHistory results in query-history event',
+const history_list_test = {
+  suiteName: 'HistoryListTest',
+  TestNames: {
+    DeletingSingleItem: 'deleting single item',
+    CancellingSelectionOfMultipleItems:
+        'cancelling selection of multiple items',
+    SelectionOfMultipleItemsUsingShiftClick:
+        'selection of multiple items using shift click',
+    DisablingCtrlAOnSyncedTabsPage:
+        'disabling ctrl + a command on syncedTabs page',
+    SettingFirstAndLastItems: 'setting first and last items',
+    UpdatingHistoryResults: 'updating history results',
+    DeletingMultipleItemsFromView: 'deleting multiple items from view',
+    SearchResultsDisplayWithCorrectItemTitle:
+        'search results display with correct item title',
+    CorrectDisplayMessageWhenNoHistoryAvailable:
+        'correct display message when no history available',
+    MoreFromThisSiteSendsAndSetsCorrectData:
+        'more from this site sends and sets correct data',
+    ScrollingHistoryListCausesToolbarShadowToAppear:
+        'scrolling history list causes toolbar shadow to appear',
+    ChangingSearchDeselectsItems: 'changing search deselects items',
+    DeleteItemsEndToEnd: 'delete items end to end',
+    DeleteViaMenuButton: 'delete via menu button',
+    DeleteDisabledWhilePending: 'delete disabled while pending',
+    DeletingItemsUsingShortcuts: 'deleting items using shortcuts',
+    DeleteDialogClosedOnBackNavigation:
+        'delete dialog closed on back navigation',
+    ClickingFileUrlSendsMessageToChrome:
+        'clicking file:// url sends message to chrome',
+    DeleteHistoryResultsInQueryHistoryEvent:
+        'deleteHistory results in query-history event',
+  },
 };
 
+Object.assign(window, {history_list_test});
+
 suite(history_list_test.suiteName, function() {
-  let app;
-  let element;
-  let toolbar;
-  let testService;
+  let app: HistoryAppElement;
+  let element: HistoryListElement;
+  let toolbar: HistoryToolbarElement;
+  let testService: TestBrowserService;
 
   const TEST_HISTORY_RESULTS = [
     createHistoryEntry('2016-03-15', 'https://www.google.com'),
@@ -57,7 +61,7 @@ suite(history_list_test.suiteName, function() {
     createHistoryEntry('2016-03-14 9:00', 'https://www.google.com'),
     createHistoryEntry('2016-03-13', 'https://en.wikipedia.org')
   ];
-  TEST_HISTORY_RESULTS[2].starred = true;
+  TEST_HISTORY_RESULTS[2]!.starred = true;
 
   const ADDITIONAL_RESULTS = [
     createHistoryEntry('2016-03-13 10:00', 'https://en.wikipedia.org'),
@@ -76,28 +80,30 @@ suite(history_list_test.suiteName, function() {
   });
 
   /**
-   * @param {!Array<!HistoryEntry>} queryResults The query results to initialize
+   * @param queryResults The query results to initialize
    *     the page with.
-   * @param {string=} query The query to use in the QueryInfo.
-   * @return {!Promise} Promise that resolves when initialization is complete
+   * @param query The query to use in the QueryInfo.
+   * @return Promise that resolves when initialization is complete
    *     and the lazy loaded module has been loaded.
    */
-  function finishSetup(queryResults, query) {
+  function finishSetup(
+      queryResults: HistoryEntry[], query?: string): Promise<any> {
     testService.setQueryResult(
         {info: createHistoryInfo(query), value: queryResults});
     document.body.appendChild(app);
 
     element = app.$.history;
     toolbar = app.$.toolbar;
-    app.queryState_.incremental = true;
+    app.shadowRoot!.querySelector(
+                       'history-query-manager')!.queryState.incremental = true;
     return Promise.all([
       testService.whenCalled('queryHistory'),
       ensureLazyLoaded(),
     ]);
   }
 
-  function getHistoryData() {
-    return element.$['infinite-list'].items;
+  function getHistoryData(): HistoryEntry[] {
+    return element.$['infinite-list'].items! as HistoryEntry[];
   }
 
   test(history_list_test.TestNames.DeletingSingleItem, function() {
@@ -106,10 +112,10 @@ suite(history_list_test.suiteName, function() {
         .then(function() {
           assertEquals(getHistoryData().length, 1);
           flush();
-          const items = polymerSelectAll(element, 'history-item');
+          const items = element.shadowRoot!.querySelectorAll('history-item');
 
           assertEquals(1, items.length);
-          items[0].$.checkbox.click();
+          items[0]!.$.checkbox.click();
           assertDeepEquals([true], getHistoryData().map(i => i.selected));
           return flushTasks();
         })
@@ -121,7 +127,8 @@ suite(history_list_test.suiteName, function() {
           const dialog = element.$.dialog.get();
           assertTrue(dialog.open);
           testService.resetResolver('queryHistory');
-          element.shadowRoot.querySelector('.action-button').click();
+          element.shadowRoot!.querySelector<HTMLElement>(
+                                 '.action-button')!.click();
           return testService.whenCalled('removeVisits');
         })
         .then(function(visits) {
@@ -142,15 +149,17 @@ suite(history_list_test.suiteName, function() {
         return finishSetup(TEST_HISTORY_RESULTS)
             .then(flushTasks)
             .then(function() {
-              element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+              element.shadowRoot!.querySelector('iron-list')!.fire(
+                  'iron-resize');
               return waitAfterNextRender(element);
             })
             .then(function() {
               flush();
-              const items = polymerSelectAll(element, 'history-item');
+              const items =
+                  element.shadowRoot!.querySelectorAll('history-item');
 
-              items[2].$.checkbox.click();
-              items[3].$.checkbox.click();
+              items[2]!.$.checkbox.click();
+              items[3]!.$.checkbox.click();
 
               // Make sure that the array of data that determines whether or not
               // an item is selected is what we expect after selecting the two
@@ -167,8 +176,8 @@ suite(history_list_test.suiteName, function() {
                   [false, false, false, false],
                   getHistoryData().map(i => i.selected));
 
-              assertFalse(items[2].selected);
-              assertFalse(items[3].selected);
+              assertFalse(items[2]!.selected);
+              assertFalse(items[3]!.selected);
             });
       });
 
@@ -178,21 +187,23 @@ suite(history_list_test.suiteName, function() {
         return finishSetup(TEST_HISTORY_RESULTS)
             .then(flushTasks)
             .then(function() {
-              element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+              element.shadowRoot!.querySelector('iron-list')!.fire(
+                  'iron-resize');
               return waitAfterNextRender(element);
             })
             .then(function() {
               flush();
-              const items = polymerSelectAll(element, 'history-item');
+              const items =
+                  element.shadowRoot!.querySelectorAll('history-item');
 
-              items[1].$.checkbox.click();
+              items[1]!.$.checkbox.click();
               assertDeepEquals(
                   [false, true, false, false],
                   getHistoryData().map(i => i.selected));
               assertDeepEquals([1], Array.from(element.selectedItems).sort());
 
               // Shift-select to the last item.
-              shiftClick(items[3].$.checkbox);
+              shiftClick(items[3]!.$.checkbox);
               assertDeepEquals(
                   [false, true, true, true],
                   getHistoryData().map(i => i.selected));
@@ -200,7 +211,7 @@ suite(history_list_test.suiteName, function() {
                   [1, 2, 3], Array.from(element.selectedItems).sort());
 
               // Shift-select back to the first item.
-              shiftClick(items[0].$.checkbox);
+              shiftClick(items[0]!.$.checkbox);
               assertDeepEquals(
                   [true, true, true, true],
                   getHistoryData().map(i => i.selected));
@@ -208,14 +219,14 @@ suite(history_list_test.suiteName, function() {
                   [0, 1, 2, 3], Array.from(element.selectedItems).sort());
 
               // Shift-deselect to the third item.
-              shiftClick(items[2].$.checkbox);
+              shiftClick(items[2]!.$.checkbox);
               assertDeepEquals(
                   [false, false, false, true],
                   getHistoryData().map(i => i.selected));
               assertDeepEquals([3], Array.from(element.selectedItems).sort());
 
               // Select the second item.
-              items[1].$.checkbox.click();
+              items[1]!.$.checkbox.click();
               assertDeepEquals(
                   [false, true, false, true],
                   getHistoryData().map(i => i.selected));
@@ -223,14 +234,14 @@ suite(history_list_test.suiteName, function() {
                   [1, 3], Array.from(element.selectedItems).sort());
 
               // Shift-deselect to the last item.
-              shiftClick(items[3].$.checkbox);
+              shiftClick(items[3]!.$.checkbox);
               assertDeepEquals(
                   [false, false, false, false],
                   getHistoryData().map(i => i.selected));
               assertDeepEquals([], Array.from(element.selectedItems).sort());
 
               // Shift-select back to the third item.
-              shiftClick(items[2].$.checkbox);
+              shiftClick(items[2]!.$.checkbox);
               assertDeepEquals(
                   [false, false, true, true],
                   getHistoryData().map(i => i.selected));
@@ -238,7 +249,7 @@ suite(history_list_test.suiteName, function() {
                   [2, 3], Array.from(element.selectedItems).sort());
 
               // Remove selected items.
-              element.removeItemsByIndex_(Array.from(element.selectedItems));
+              element.removeItemsForTest(Array.from(element.selectedItems));
               assertDeepEquals(
                   ['https://www.google.com', 'https://www.example.com'],
                   getHistoryData().map(i => i.title));
@@ -249,7 +260,8 @@ suite(history_list_test.suiteName, function() {
   test(history_list_test.TestNames.DisablingCtrlAOnSyncedTabsPage, function() {
     return finishSetup(TEST_HISTORY_RESULTS)
         .then(function() {
-          app.selectedPage_ = 'syncedTabs';
+          app.shadowRoot!.querySelector('history-router')!.selectedPage =
+              'syncedTabs';
           return flushTasks();
         })
         .then(function() {
@@ -270,19 +282,19 @@ suite(history_list_test.suiteName, function() {
     return finishSetup(TEST_HISTORY_RESULTS)
         .then(flushTasks)
         .then(function() {
-          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+          element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
           return waitAfterNextRender(element);
         })
         .then(function() {
           flush();
-          const items = polymerSelectAll(element, 'history-item');
-          assertTrue(items[0].isCardStart);
-          assertTrue(items[0].isCardEnd);
-          assertFalse(items[1].isCardEnd);
-          assertFalse(items[2].isCardStart);
-          assertTrue(items[2].isCardEnd);
-          assertTrue(items[3].isCardStart);
-          assertTrue(items[3].isCardEnd);
+          const items = element.shadowRoot!.querySelectorAll('history-item');
+          assertTrue(items[0]!.isCardStart);
+          assertTrue(items[0]!.isCardEnd);
+          assertFalse(items[1]!.isCardEnd);
+          assertFalse(items[2]!.isCardStart);
+          assertTrue(items[2]!.isCardEnd);
+          assertTrue(items[3]!.isCardStart);
+          assertTrue(items[3]!.isCardEnd);
         });
   });
 
@@ -302,48 +314,48 @@ suite(history_list_test.suiteName, function() {
   test(history_list_test.TestNames.UpdatingHistoryResults, function() {
     return loadWithAdditionalResults()
         .then(function() {
-          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+          element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
           return waitAfterNextRender(element);
         })
         .then(function() {
           flush();
-          const items = polymerSelectAll(element, 'history-item');
-          assertTrue(items[3].isCardStart);
-          assertTrue(items[5].isCardEnd);
+          const items = element.shadowRoot!.querySelectorAll('history-item');
+          assertTrue(items[3]!.isCardStart);
+          assertTrue(items[5]!.isCardEnd);
 
-          assertTrue(items[6].isCardStart);
-          assertTrue(items[6].isCardEnd);
+          assertTrue(items[6]!.isCardStart);
+          assertTrue(items[6]!.isCardEnd);
 
-          assertTrue(items[7].isCardStart);
-          assertTrue(items[7].isCardEnd);
+          assertTrue(items[7]!.isCardStart);
+          assertTrue(items[7]!.isCardEnd);
         });
   });
 
   test(history_list_test.TestNames.DeletingMultipleItemsFromView, function() {
     return loadWithAdditionalResults()
         .then(function() {
-          element.removeItemsByIndex_([2, 5, 7]);
+          element.removeItemsForTest([2, 5, 7]);
           return flushTasks();
         })
         .then(function() {
-          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+          element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
           return waitAfterNextRender(element);
         })
         .then(function() {
           flush();
-          const items = polymerSelectAll(element, 'history-item');
+          const items = element.shadowRoot!.querySelectorAll('history-item');
 
           const historyData = getHistoryData();
           assertEquals(historyData.length, 5);
-          assertEquals(historyData[0].dateRelativeDay, '2016-03-15');
-          assertEquals(historyData[2].dateRelativeDay, '2016-03-13');
-          assertEquals(historyData[4].dateRelativeDay, '2016-03-11');
+          assertEquals(historyData[0]!.dateRelativeDay, '2016-03-15');
+          assertEquals(historyData[2]!.dateRelativeDay, '2016-03-13');
+          assertEquals(historyData[4]!.dateRelativeDay, '2016-03-11');
 
           // Checks that the first and last items have been reset correctly.
-          assertTrue(items[2].isCardStart);
-          assertTrue(items[3].isCardEnd);
-          assertTrue(items[4].isCardStart);
-          assertTrue(items[4].isCardEnd);
+          assertTrue(items[2]!.isCardStart);
+          assertTrue(items[3]!.isCardEnd);
+          assertTrue(items[4]!.isCardStart);
+          assertTrue(items[4]!.isCardEnd);
         });
   });
 
@@ -358,9 +370,11 @@ suite(history_list_test.suiteName, function() {
             })
             .then(function() {
               flush();
-              const item = element.shadowRoot.querySelector('history-item');
+              const item = element.shadowRoot!.querySelector('history-item')!;
               assertTrue(item.isCardStart);
-              const heading = item.$$('#date-accessed').textContent;
+              const heading =
+                  item.shadowRoot!.querySelector<HTMLElement>(
+                                      '#date-accessed')!.textContent!;
               const title = item.$.link;
 
               // Check that the card title displays the search term somewhere.
@@ -370,7 +384,7 @@ suite(history_list_test.suiteName, function() {
               // Check that the search term is bolded correctly in the
               // history-item.
               assertGT(
-                  title.children[1].innerHTML.indexOf('<b>google</b>'), -1);
+                  title.children[1]!.innerHTML!.indexOf('<b>google</b>'), -1);
             });
       });
 
@@ -381,7 +395,7 @@ suite(history_list_test.suiteName, function() {
             .then(flushTasks)
             .then(function() {
               assertFalse(element.$['no-results'].hidden);
-              assertNotEquals('', element.$['no-results'].textContent.trim());
+              assertNotEquals('', element.$['no-results'].textContent!.trim());
               assertTrue(element.$['infinite-list'].hidden);
 
               testService.setQueryResult(
@@ -401,11 +415,13 @@ suite(history_list_test.suiteName, function() {
   test(
       history_list_test.TestNames.MoreFromThisSiteSendsAndSetsCorrectData,
       function() {
-        let items;
+        let items: NodeListOf<HistoryItemElement>;
         return finishSetup(TEST_HISTORY_RESULTS)
             .then(flushTasks)
             .then(function() {
-              element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+              element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
+                  new CustomEvent(
+                      'iron-resize', {bubbles: true, composed: true}));
               return waitAfterNextRender(element);
             })
             .then(function() {
@@ -415,10 +431,11 @@ suite(history_list_test.suiteName, function() {
                 info: createHistoryInfo('www.google.com'),
                 value: TEST_HISTORY_RESULTS,
               });
-              items = polymerSelectAll(element, 'history-item');
-              items[0].$['menu-button'].click();
+              items = element.shadowRoot!.querySelectorAll('history-item');
+              items[0]!.$['menu-button'].click();
               element.$.sharedMenu.get();
-              element.shadowRoot.querySelector('#menuMoreButton').click();
+              element.shadowRoot!.querySelector<HTMLElement>(
+                                     '#menuMoreButton')!.click();
               return testService.whenCalled('queryHistory');
             })
             .then(function(query) {
@@ -431,14 +448,16 @@ suite(history_list_test.suiteName, function() {
                   toolbar.$.mainToolbar.getSearchField().getValue());
 
               element.$.sharedMenu.get().close();
-              items[0].$['menu-button'].click();
+              items[0]!.$['menu-button'].click();
               assertTrue(
-                  element.shadowRoot.querySelector('#menuMoreButton').hidden);
+                  element.shadowRoot!
+                      .querySelector<HTMLElement>('#menuMoreButton')!.hidden);
 
               element.$.sharedMenu.get().close();
-              items[1].$['menu-button'].click();
+              items[1]!.$['menu-button'].click();
               assertFalse(
-                  element.shadowRoot.querySelector('#menuMoreButton').hidden);
+                  element.shadowRoot!
+                      .querySelector<HTMLElement>('#menuMoreButton')!.hidden);
             });
       });
 
@@ -448,36 +467,40 @@ suite(history_list_test.suiteName, function() {
       history_list_test.TestNames
           .ScrollingHistoryListCausesToolbarShadowToAppear,
       () => {
-        const loadMoreResults = function(numReloads) {
+        function loadMoreResults(numReloads: number): Promise<any> {
           testService.resetResolver('queryHistory');
           testService.setQueryResult(
               {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS});
           element.dispatchEvent(new CustomEvent(
               'query-history', {bubbles: true, composed: true, detail: true}));
           const promise = testService.whenCalled('queryHistoryContinuation');
-          return numReloads === 1 ?
-              promise :
-              promise.then(loadMoreResults(numReloads - 1));
-        };
+          return numReloads === 1 ? promise : promise.then(() => {
+            return loadMoreResults(numReloads - 1);
+          });
+        }
         return finishSetup(TEST_HISTORY_RESULTS)
-            .then(loadMoreResults(9))
+            .then(() => {
+              return loadMoreResults(9);
+            })
             .then(flushTasks)
             .then(function() {
-              element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+              element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
+                  new CustomEvent(
+                      'iron-resize', {bubbles: true, composed: true}));
               return waitAfterNextRender(element);
             })
             .then(() => {
-              assertFalse(app.toolbarShadow_);
+              assertFalse(app.hasAttribute('toolbar-shadow_'));
               element.$['infinite-list'].scrollToIndex(20);
               return waitForEvent(app, 'toolbar-shadow_-changed');
             })
             .then(() => {
-              assertTrue(app.toolbarShadow_);
+              assertTrue(app.hasAttribute('toolbar-shadow_'));
               element.$['infinite-list'].scrollToIndex(0);
               return waitForEvent(app, 'toolbar-shadow_-changed');
             })
             .then(() => {
-              assertFalse(app.toolbarShadow_);
+              assertFalse(app.hasAttribute('toolbar-shadow_'));
             });
       });
 
@@ -485,14 +508,18 @@ suite(history_list_test.suiteName, function() {
     return finishSetup(
                [createHistoryEntry('2016-06-9', 'https://www.example.com')],
                'ex')
-        .then(flushTasks(20))
-        .then(function() {
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
           flush();
-          const item = element.shadowRoot.querySelector('history-item');
+          const item = element.shadowRoot!.querySelector('history-item')!;
           item.$.checkbox.click();
 
           assertEquals(1, toolbar.count);
-          app.queryState_.incremental = false;
+          app.shadowRoot!.querySelector(
+                             'history-query-manager')!.queryState.incremental =
+              false;
 
           testService.resetResolver('queryHistory');
           testService.setQueryResult({
@@ -509,10 +536,11 @@ suite(history_list_test.suiteName, function() {
   });
 
   test(history_list_test.TestNames.DeleteItemsEndToEnd, function() {
-    let dialog;
+    let dialog: CrDialogElement;
     return loadWithAdditionalResults()
         .then(function() {
-          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+          element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
+              new CustomEvent('iron-resize', {bubbles: true, composed: true}));
           return waitAfterNextRender(element);
         })
         .then(function() {
@@ -521,11 +549,11 @@ suite(history_list_test.suiteName, function() {
         })
         .then(function() {
           flush();
-          const items = polymerSelectAll(element, 'history-item');
+          const items = element.shadowRoot!.querySelectorAll('history-item');
 
-          items[2].$.checkbox.click();
-          items[5].$.checkbox.click();
-          items[7].$.checkbox.click();
+          items[2]!.$.checkbox.click();
+          items[5]!.$.checkbox.click();
+          items[7]!.$.checkbox.click();
 
           return flushTasks();
         })
@@ -537,68 +565,73 @@ suite(history_list_test.suiteName, function() {
           testService.resetResolver('removeVisits');
           // Confirmation dialog should appear.
           assertTrue(dialog.open);
-          element.shadowRoot.querySelector('.action-button').click();
+          element.shadowRoot!.querySelector<HTMLElement>(
+                                 '.action-button')!.click();
           return testService.whenCalled('removeVisits');
         })
         .then(function(visits) {
           assertEquals(3, visits.length);
-          assertEquals(TEST_HISTORY_RESULTS[2].url, visits[0].url);
+          assertEquals(TEST_HISTORY_RESULTS[2]!.url, visits[0]!.url);
           assertEquals(
-              TEST_HISTORY_RESULTS[2].allTimestamps[0],
-              visits[0].timestamps[0]);
-          assertEquals(ADDITIONAL_RESULTS[1].url, visits[1].url);
+              TEST_HISTORY_RESULTS[2]!.allTimestamps[0],
+              visits[0]!.timestamps[0]);
+          assertEquals(ADDITIONAL_RESULTS[1]!.url, visits[1]!.url);
           assertEquals(
-              ADDITIONAL_RESULTS[1].allTimestamps[0], visits[1].timestamps[0]);
-          assertEquals(ADDITIONAL_RESULTS[3].url, visits[2].url);
+              ADDITIONAL_RESULTS[1]!.allTimestamps[0],
+              visits[1]!.timestamps[0]);
+          assertEquals(ADDITIONAL_RESULTS[3]!.url, visits[2]!.url);
           assertEquals(
-              ADDITIONAL_RESULTS[3].allTimestamps[0], visits[2].timestamps[0]);
+              ADDITIONAL_RESULTS[3]!.allTimestamps[0],
+              visits[2]!.timestamps[0]);
           return flushTasks();
         })
         .then(flushTasks)
         .then(function() {
           const historyData = getHistoryData();
           assertEquals(5, historyData.length);
-          assertEquals(historyData[0].dateRelativeDay, '2016-03-15');
-          assertEquals(historyData[2].dateRelativeDay, '2016-03-13');
-          assertEquals(historyData[4].dateRelativeDay, '2016-03-11');
+          assertEquals(historyData[0]!.dateRelativeDay, '2016-03-15');
+          assertEquals(historyData[2]!.dateRelativeDay, '2016-03-13');
+          assertEquals(historyData[4]!.dateRelativeDay, '2016-03-11');
           assertFalse(dialog.open);
 
           flush();
           // Ensure the UI is correctly updated.
-          const items = polymerSelectAll(element, 'history-item');
+          const items = element.shadowRoot!.querySelectorAll('history-item');
 
-          assertEquals('https://www.google.com', items[0].item.title);
-          assertEquals('https://www.example.com', items[1].item.title);
-          assertEquals('https://en.wikipedia.org', items[2].item.title);
-          assertEquals('https://en.wikipedia.org', items[3].item.title);
-          assertEquals('https://www.google.com', items[4].item.title);
+          assertEquals('https://www.google.com', items[0]!.item.title);
+          assertEquals('https://www.example.com', items[1]!.item.title);
+          assertEquals('https://en.wikipedia.org', items[2]!.item.title);
+          assertEquals('https://en.wikipedia.org', items[3]!.item.title);
+          assertEquals('https://www.google.com', items[4]!.item.title);
         });
   });
 
   test(history_list_test.TestNames.DeleteViaMenuButton, function() {
-    let items;
+    let items: NodeListOf<HistoryItemElement>;
     return finishSetup(TEST_HISTORY_RESULTS)
         .then(flushTasks)
         .then(function() {
-          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+          element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
+              new CustomEvent('iron-resize', {bubbles: true, composed: true}));
           return waitAfterNextRender(element);
         })
         .then(function() {
           flush();
-          items = polymerSelectAll(element, 'history-item');
-          items[1].$.checkbox.click();
-          items[3].$.checkbox.click();
-          items[1].$['menu-button'].click();
+          items = element.shadowRoot!.querySelectorAll('history-item');
+          items[1]!.$.checkbox.click();
+          items[3]!.$.checkbox.click();
+          items[1]!.$['menu-button'].click();
           element.$.sharedMenu.get();
-          element.shadowRoot.querySelector('#menuRemoveButton').click();
+          element.shadowRoot!.querySelector<HTMLElement>(
+                                 '#menuRemoveButton')!.click();
           return testService.whenCalled('removeVisits');
         })
         .then(function(visits) {
           assertEquals(1, visits.length);
-          assertEquals(TEST_HISTORY_RESULTS[1].url, visits[0].url);
+          assertEquals(TEST_HISTORY_RESULTS[1]!.url, visits[0]!.url);
           assertEquals(
-              TEST_HISTORY_RESULTS[1].allTimestamps[0],
-              visits[0].timestamps[0]);
+              TEST_HISTORY_RESULTS[1]!.allTimestamps[0],
+              visits[0]!.timestamps[0]);
           return flushTasks();
         })
         .then(flushTasks)
@@ -619,40 +652,43 @@ suite(history_list_test.suiteName, function() {
   });
 
   test(history_list_test.TestNames.DeleteDisabledWhilePending, function() {
-    let items;
+    let items: NodeListOf<HistoryItemElement>;
     return finishSetup(TEST_HISTORY_RESULTS)
         .then(function() {
           testService.delayDelete();
           return flushTasks();
         })
         .then(function() {
-          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+          element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
+              new CustomEvent('iron-resize', {bubbles: true, composed: true}));
           return waitAfterNextRender(element);
         })
         .then(function() {
           flush();
-          items = polymerSelectAll(element, 'history-item');
-          items[1].$.checkbox.click();
-          items[2].$.checkbox.click();
-          items[1].$['menu-button'].click();
+          items = element.shadowRoot!.querySelectorAll('history-item');
+          items[1]!.$.checkbox.click();
+          items[2]!.$.checkbox.click();
+          items[1]!.$['menu-button'].click();
           element.$.sharedMenu.get();
-          element.shadowRoot.querySelector('#menuRemoveButton').click();
+          element.shadowRoot!.querySelector<HTMLElement>(
+                                 '#menuRemoveButton')!.click();
           return testService.whenCalled('removeVisits');
         })
         .then(function(visits) {
           assertEquals(1, visits.length);
-          assertEquals(TEST_HISTORY_RESULTS[1].url, visits[0].url);
+          assertEquals(TEST_HISTORY_RESULTS[1]!.url, visits[0]!.url);
           assertEquals(
-              TEST_HISTORY_RESULTS[1].allTimestamps[0],
-              visits[0].timestamps[0]);
+              TEST_HISTORY_RESULTS[1]!.allTimestamps[0],
+              visits[0]!.timestamps[0]);
 
           // Deletion is still happening. Verify that menu button and toolbar
           // are disabled.
-          assertTrue(
-              element.shadowRoot.querySelector('#menuRemoveButton').disabled);
+          assertTrue(element.shadowRoot!
+                         .querySelector<HTMLButtonElement>(
+                             '#menuRemoveButton')!.disabled);
           assertEquals(2, toolbar.count);
           assertTrue(
-              toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')
+              toolbar.shadowRoot!.querySelector('cr-toolbar-selection-overlay')!
                   .deleteDisabled);
 
           // Key event should be ignored.
@@ -669,39 +705,41 @@ suite(history_list_test.suiteName, function() {
         .then(flushTasks)
         .then(function() {
           // Reselect some items.
-          items = polymerSelectAll(element, 'history-item');
-          items[1].$.checkbox.click();
-          items[2].$.checkbox.click();
+          items = element.shadowRoot!.querySelectorAll('history-item');
+          items[1]!.$.checkbox.click();
+          items[2]!.$.checkbox.click();
 
           // Check that delete option is re-enabled.
           assertEquals(2, toolbar.count);
           assertFalse(
-              toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')
+              toolbar.shadowRoot!.querySelector('cr-toolbar-selection-overlay')!
                   .deleteDisabled);
 
           // Menu button should also be re-enabled.
-          items[1].$['menu-button'].click();
+          items[1]!.$['menu-button'].click();
           element.$.sharedMenu.get();
-          assertFalse(
-              element.shadowRoot.querySelector('#menuRemoveButton').disabled);
+          assertFalse(element.shadowRoot!
+                          .querySelector<HTMLButtonElement>(
+                              '#menuRemoveButton')!.disabled);
         });
   });
 
   test(history_list_test.TestNames.DeletingItemsUsingShortcuts, function() {
-    let dialog;
-    let items;
+    let dialog: CrDialogElement;
+    let items: NodeListOf<HistoryItemElement>;
     return finishSetup(TEST_HISTORY_RESULTS)
         .then(function() {
           dialog = element.$.dialog.get();
           flushTasks();
         })
         .then(function() {
-          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+          element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
+              new CustomEvent('iron-resize', {bubbles: true, composed: true}));
           return waitAfterNextRender(element);
         })
         .then(function() {
           flush();
-          items = polymerSelectAll(element, 'history-item');
+          items = element.shadowRoot!.querySelectorAll('history-item');
 
           // Dialog should not appear when there is no item selected.
           pressAndReleaseKeyOn(document.body, 46, '', 'Delete');
@@ -710,8 +748,8 @@ suite(history_list_test.suiteName, function() {
         .then(function() {
           assertFalse(dialog.open);
 
-          items[1].$.checkbox.click();
-          items[2].$.checkbox.click();
+          items[1]!.$.checkbox.click();
+          items[2]!.$.checkbox.click();
 
           assertEquals(2, toolbar.count);
 
@@ -720,7 +758,8 @@ suite(history_list_test.suiteName, function() {
         })
         .then(function() {
           assertTrue(dialog.open);
-          element.shadowRoot.querySelector('.cancel-button').click();
+          element.shadowRoot!.querySelector<HTMLElement>(
+                                 '.cancel-button')!.click();
           assertFalse(dialog.open);
 
           pressAndReleaseKeyOn(document.body, 8, '', 'Backspace');
@@ -728,7 +767,8 @@ suite(history_list_test.suiteName, function() {
         })
         .then(function() {
           assertTrue(dialog.open);
-          element.shadowRoot.querySelector('.action-button').click();
+          element.shadowRoot!.querySelector<HTMLElement>(
+                                 '.action-button')!.click();
           return testService.whenCalled('removeVisits');
         })
         .then(function(toRemove) {
@@ -748,9 +788,8 @@ suite(history_list_test.suiteName, function() {
         return finishSetup([])
             .then(function() {
               testService.resetResolver('queryHistory');
-              app.$$('history-router')
-                  .shadowRoot.querySelector('iron-location')
-                  .dwellTime = 0;
+              app.shadowRoot!.querySelector('history-router')!.shadowRoot!
+                  .querySelector('iron-location')!.dwellTime = 0;
 
               testService.setQueryResult({
                 info: createHistoryInfo('something else'),
@@ -759,7 +798,11 @@ suite(history_list_test.suiteName, function() {
 
               // Navigate from chrome://history/ to
               // chrome://history/?q=something else.
-              app.fire('change-query', {search: 'something else'});
+              app.dispatchEvent(new CustomEvent('change-query', {
+                bubbles: true,
+                composed: true,
+                detail: {search: 'something else'}
+              }));
               return testService.whenCalled('queryHistory');
             })
             .then(function() {
@@ -776,9 +819,10 @@ suite(history_list_test.suiteName, function() {
             .then(flushTasks)
             .then(function() {
               flush();
-              const items = polymerSelectAll(element, 'history-item');
+              const items =
+                  element.shadowRoot!.querySelectorAll('history-item');
 
-              items[2].$.checkbox.click();
+              items[2]!.$.checkbox.click();
               return flushTasks();
             })
             .then(function() {
@@ -787,7 +831,7 @@ suite(history_list_test.suiteName, function() {
             })
             .then(function() {
               // Confirmation dialog should appear.
-              assertTrue(element.$.dialog.getIfExists().open);
+              assertTrue(element.$.dialog.getIfExists()!.open);
               // Navigate back to chrome://history.
               window.history.back();
 
@@ -795,7 +839,7 @@ suite(history_list_test.suiteName, function() {
             })
             .then(flushTasks)
             .then(function() {
-              assertFalse(element.$.dialog.getIfExists().open);
+              assertFalse(element.$.dialog.getIfExists()!.open);
             });
       });
 
@@ -807,8 +851,9 @@ suite(history_list_test.suiteName, function() {
             .then(flushTasks)
             .then(function() {
               flush();
-              const items = polymerSelectAll(element, 'history-item');
-              items[0].$.link.click();
+              const items =
+                  element.shadowRoot!.querySelectorAll('history-item');
+              items[0]!.$.link.click();
               return testService.whenCalled('navigateToUrl');
             })
             .then(function(url) {
@@ -826,15 +871,18 @@ suite(history_list_test.suiteName, function() {
             })
             .then(flushTasks)
             .then(function() {
-              element.shadowRoot.querySelector('iron-list').fire('iron-resize');
+              element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
+                  new CustomEvent(
+                      'iron-resize', {bubbles: true, composed: true}));
               return waitAfterNextRender(element);
             })
             .then(function() {
               flush();
-              const items = polymerSelectAll(element, 'history-item');
+              const items =
+                  element.shadowRoot!.querySelectorAll('history-item');
 
-              items[2].$.checkbox.click();
-              items[3].$.checkbox.click();
+              items[2]!.$.checkbox.click();
+              items[3]!.$.checkbox.click();
 
               testService.resetResolver('queryHistory');
               webUIListenerCallback('history-deleted');
@@ -844,6 +892,7 @@ suite(history_list_test.suiteName, function() {
       });
 
   teardown(function() {
-    app.fire('change-query', {search: ''});
+    app.dispatchEvent(new CustomEvent(
+        'change-query', {bubbles: true, composed: true, detail: {search: ''}}));
   });
 });

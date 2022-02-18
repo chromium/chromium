@@ -121,6 +121,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
   isCardStart: boolean;
   isCardEnd: boolean;
   numberOfItems: number;
+  selected: boolean;
 
   /** @override */
   connectedCallback() {
