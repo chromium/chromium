@@ -9,6 +9,50 @@ import "remoting/host/mojom/webrtc_types.mojom";
 import "remoting/host/mojom/wrapped_primitives.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// Contains captured audio data.
+// This struct mirrors the remoting::protocol::AudioPacket protobuf as well as
+// the enums and values.
+struct AudioPacket {
+  // The timestamp at which the data was captured.
+  int32 timestamp;
+
+  // The audio packet data.
+  array<mojo_base.mojom.ByteString> data;
+
+  enum Encoding {
+    kInvalid = -1,
+    kRaw = 0,
+    kOpus = 1,
+  };
+  Encoding encoding = Encoding.kInvalid;
+
+  enum SamplingRate {
+    kInvalid = -1,
+    kRate_44100 = 44100,
+    kRate_48000 = 48000,
+  };
+  SamplingRate sampling_rate = SamplingRate.kInvalid;
+
+  enum BytesPerSample {
+    kInvalid = -1,
+    kBytesPerSample_2 = 2,
+  };
+  BytesPerSample bytes_per_sample = BytesPerSample.kInvalid;
+
+  enum Channels {
+    kInvalid = -1,
+    kMono = 1,
+    kStereo = 2,
+    kSurround = 3,
+    kChannel_4_0 = 4,
+    kChannel_4_1 = 5,
+    kChannel_5_1 = 6,
+    kChannel_6_1 = 7,
+    kChannel_7_1 = 8,
+  };
+  Channels channels = Channels.kInvalid;
+};
+
 // Contains clipboard event data.
 // This struct mirrors the remoting::protocol::ClipboardEvents protobuf struct.
 struct ClipboardEvent {
@@ -306,6 +350,9 @@ interface DesktopSessionEventHandler {
   // starts to provide the initial state, then it will be called to report state
   // changes caused by calling DesktopSessionControl::SetUpUrlForwarder().
   OnUrlForwarderStateChange(UrlForwarderState state);
+
+  // Forwards an audio packet captured from the desktop session to the client.
+  OnAudioPacket(AudioPacket audio_packet);
 };
 
 // This enum mirrors the remoting::protocol::ErrorCode enum.

@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/byte_string_mojom_traits.h"
+#include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_protobuf.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -20,6 +21,7 @@
 #include "remoting/host/mojom/remoting_host.mojom-shared.h"
 #include "remoting/host/mojom/webrtc_types.mojom-shared.h"
 #include "remoting/host/mojom/wrapped_primitives.mojom-shared.h"
+#include "remoting/proto/audio.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/transport.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
@@ -240,6 +242,217 @@ struct EnumTraits<remoting::mojom::MouseButton,
     NOTREACHED();
     return false;
   }
+};
+
+template <>
+struct EnumTraits<remoting::mojom::AudioPacket_BytesPerSample,
+                  ::remoting::AudioPacket::BytesPerSample> {
+  static remoting::mojom::AudioPacket_BytesPerSample ToMojom(
+      ::remoting::AudioPacket::BytesPerSample input) {
+    switch (input) {
+      case ::remoting::AudioPacket::BYTES_PER_SAMPLE_INVALID:
+        return remoting::mojom::AudioPacket_BytesPerSample::kInvalid;
+      case ::remoting::AudioPacket::BYTES_PER_SAMPLE_2:
+        return remoting::mojom::AudioPacket_BytesPerSample::kBytesPerSample_2;
+    }
+
+    NOTREACHED();
+    return remoting::mojom::AudioPacket_BytesPerSample::kInvalid;
+  }
+
+  static bool FromMojom(remoting::mojom::AudioPacket_BytesPerSample input,
+                        ::remoting::AudioPacket::BytesPerSample* out) {
+    switch (input) {
+      case remoting::mojom::AudioPacket_BytesPerSample::kInvalid:
+        *out = ::remoting::AudioPacket::BYTES_PER_SAMPLE_INVALID;
+        return true;
+      case remoting::mojom::AudioPacket_BytesPerSample::kBytesPerSample_2:
+        *out = ::remoting::AudioPacket::BYTES_PER_SAMPLE_2;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
+struct EnumTraits<remoting::mojom::AudioPacket_Channels,
+                  ::remoting::AudioPacket::Channels> {
+  static remoting::mojom::AudioPacket_Channels ToMojom(
+      ::remoting::AudioPacket::Channels input) {
+    switch (input) {
+      case ::remoting::AudioPacket::CHANNELS_INVALID:
+        return remoting::mojom::AudioPacket_Channels::kInvalid;
+      case ::remoting::AudioPacket::CHANNELS_MONO:
+        return remoting::mojom::AudioPacket_Channels::kMono;
+      case ::remoting::AudioPacket::CHANNELS_STEREO:
+        return remoting::mojom::AudioPacket_Channels::kStereo;
+      case ::remoting::AudioPacket::CHANNELS_SURROUND:
+        return remoting::mojom::AudioPacket_Channels::kSurround;
+      case ::remoting::AudioPacket::CHANNELS_4_0:
+        return remoting::mojom::AudioPacket_Channels::kChannel_4_0;
+      case ::remoting::AudioPacket::CHANNELS_4_1:
+        return remoting::mojom::AudioPacket_Channels::kChannel_4_1;
+      case ::remoting::AudioPacket::CHANNELS_5_1:
+        return remoting::mojom::AudioPacket_Channels::kChannel_5_1;
+      case ::remoting::AudioPacket::CHANNELS_6_1:
+        return remoting::mojom::AudioPacket_Channels::kChannel_6_1;
+      case ::remoting::AudioPacket::CHANNELS_7_1:
+        return remoting::mojom::AudioPacket_Channels::kChannel_7_1;
+    }
+
+    NOTREACHED();
+    return remoting::mojom::AudioPacket_Channels::kInvalid;
+  }
+
+  static bool FromMojom(remoting::mojom::AudioPacket_Channels input,
+                        ::remoting::AudioPacket::Channels* out) {
+    switch (input) {
+      case remoting::mojom::AudioPacket_Channels::kInvalid:
+        *out = ::remoting::AudioPacket::CHANNELS_INVALID;
+        return true;
+      case remoting::mojom::AudioPacket_Channels::kMono:
+        *out = ::remoting::AudioPacket::CHANNELS_MONO;
+        return true;
+      case remoting::mojom::AudioPacket_Channels::kStereo:
+        *out = ::remoting::AudioPacket::CHANNELS_STEREO;
+        return true;
+      case remoting::mojom::AudioPacket_Channels::kSurround:
+        *out = ::remoting::AudioPacket::CHANNELS_SURROUND;
+        return true;
+      case remoting::mojom::AudioPacket_Channels::kChannel_4_0:
+        *out = ::remoting::AudioPacket::CHANNELS_4_0;
+        return true;
+      case remoting::mojom::AudioPacket_Channels::kChannel_4_1:
+        *out = ::remoting::AudioPacket::CHANNELS_4_1;
+        return true;
+      case remoting::mojom::AudioPacket_Channels::kChannel_5_1:
+        *out = ::remoting::AudioPacket::CHANNELS_5_1;
+        return true;
+      case remoting::mojom::AudioPacket_Channels::kChannel_6_1:
+        *out = ::remoting::AudioPacket::CHANNELS_6_1;
+        return true;
+      case remoting::mojom::AudioPacket_Channels::kChannel_7_1:
+        *out = ::remoting::AudioPacket::CHANNELS_7_1;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
+struct EnumTraits<remoting::mojom::AudioPacket_Encoding,
+                  ::remoting::AudioPacket::Encoding> {
+  static remoting::mojom::AudioPacket_Encoding ToMojom(
+      ::remoting::AudioPacket::Encoding input) {
+    switch (input) {
+      case ::remoting::AudioPacket::ENCODING_INVALID:
+        return remoting::mojom::AudioPacket_Encoding::kInvalid;
+      case ::remoting::AudioPacket::ENCODING_RAW:
+        return remoting::mojom::AudioPacket_Encoding::kRaw;
+      case ::remoting::AudioPacket::ENCODING_OPUS:
+        return remoting::mojom::AudioPacket_Encoding::kOpus;
+    }
+
+    NOTREACHED();
+    return remoting::mojom::AudioPacket_Encoding::kInvalid;
+  }
+
+  static bool FromMojom(remoting::mojom::AudioPacket_Encoding input,
+                        ::remoting::AudioPacket::Encoding* out) {
+    switch (input) {
+      case remoting::mojom::AudioPacket_Encoding::kInvalid:
+        *out = ::remoting::AudioPacket::ENCODING_INVALID;
+        return true;
+      case remoting::mojom::AudioPacket_Encoding::kRaw:
+        *out = ::remoting::AudioPacket::ENCODING_RAW;
+        return true;
+      case remoting::mojom::AudioPacket_Encoding::kOpus:
+        *out = ::remoting::AudioPacket::ENCODING_OPUS;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
+struct EnumTraits<remoting::mojom::AudioPacket_SamplingRate,
+                  ::remoting::AudioPacket::SamplingRate> {
+  static remoting::mojom::AudioPacket_SamplingRate ToMojom(
+      ::remoting::AudioPacket::SamplingRate input) {
+    switch (input) {
+      case ::remoting::AudioPacket::SAMPLING_RATE_INVALID:
+        return remoting::mojom::AudioPacket_SamplingRate::kInvalid;
+      case ::remoting::AudioPacket::SAMPLING_RATE_44100:
+        return remoting::mojom::AudioPacket_SamplingRate::kRate_44100;
+      case ::remoting::AudioPacket::SAMPLING_RATE_48000:
+        return remoting::mojom::AudioPacket_SamplingRate::kRate_48000;
+    }
+
+    NOTREACHED();
+    return remoting::mojom::AudioPacket_SamplingRate::kInvalid;
+  }
+
+  static bool FromMojom(remoting::mojom::AudioPacket_SamplingRate input,
+                        ::remoting::AudioPacket::SamplingRate* out) {
+    switch (input) {
+      case remoting::mojom::AudioPacket_SamplingRate::kInvalid:
+        *out = ::remoting::AudioPacket::SAMPLING_RATE_INVALID;
+        return true;
+      case remoting::mojom::AudioPacket_SamplingRate::kRate_44100:
+        *out = ::remoting::AudioPacket::SAMPLING_RATE_44100;
+        return true;
+      case remoting::mojom::AudioPacket_SamplingRate::kRate_48000:
+        *out = ::remoting::AudioPacket::SAMPLING_RATE_48000;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
+class mojo::StructTraits<remoting::mojom::AudioPacketDataView,
+                         ::std::unique_ptr<::remoting::AudioPacket>> {
+ public:
+  static int32_t timestamp(
+      const ::std::unique_ptr<::remoting::AudioPacket>& packet) {
+    return packet->timestamp();
+  }
+
+  static const ::google::protobuf::RepeatedPtrField<std::string>& data(
+      const ::std::unique_ptr<::remoting::AudioPacket>& packet) {
+    return packet->data();
+  }
+
+  static ::remoting::AudioPacket::Encoding encoding(
+      const ::std::unique_ptr<::remoting::AudioPacket>& packet) {
+    return packet->encoding();
+  }
+
+  static ::remoting::AudioPacket::SamplingRate sampling_rate(
+      const ::std::unique_ptr<::remoting::AudioPacket>& packet) {
+    return packet->sampling_rate();
+  }
+
+  static ::remoting::AudioPacket::BytesPerSample bytes_per_sample(
+      const ::std::unique_ptr<::remoting::AudioPacket>& packet) {
+    return packet->bytes_per_sample();
+  }
+
+  static ::remoting::AudioPacket::Channels channels(
+      const ::std::unique_ptr<::remoting::AudioPacket>& packet) {
+    return packet->channels();
+  }
+
+  static bool Read(remoting::mojom::AudioPacketDataView data_view,
+                   ::std::unique_ptr<::remoting::AudioPacket>* out_packet);
 };
 
 template <>
@@ -502,7 +715,7 @@ class mojo::StructTraits<remoting::mojom::TouchEventDataView,
   }
 
   static const ::google::protobuf::RepeatedPtrField<
-      ::remoting::protocol::TouchEventPoint>
+      ::remoting::protocol::TouchEventPoint>&
   touch_points(const ::remoting::protocol::TouchEvent& event) {
     return event.touch_points();
   }

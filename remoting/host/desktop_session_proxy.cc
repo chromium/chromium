@@ -232,8 +232,6 @@ bool DesktopSessionProxy::OnMessageReceived(const IPC::Message& message) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(DesktopSessionProxy, message)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_AudioPacket,
-                        OnAudioPacket)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_CaptureResult,
                         OnCaptureResult)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_DisplayChanged,
@@ -675,21 +673,14 @@ DesktopSessionProxy::GetSharedBufferCore(int id) {
   }
 }
 
-void DesktopSessionProxy::OnAudioPacket(const std::string& serialized_packet) {
+void DesktopSessionProxy::OnAudioPacket(
+    std::unique_ptr<AudioPacket> audio_packet) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  // Parse a serialized audio packet. No further validation is done since
-  // the message was sent by more privileged process.
-  std::unique_ptr<AudioPacket> packet(new AudioPacket());
-  if (!packet->ParseFromString(serialized_packet)) {
-    LOG(ERROR) << "Failed to parse AudioPacket.";
-    return;
-  }
-
-  // Pass a captured audio packet to |audio_capturer_|.
+  // Pass the captured audio packet to |audio_capturer_|.
   audio_capture_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&IpcAudioCapturer::OnAudioPacket,
-                                audio_capturer_, std::move(packet)));
+                                audio_capturer_, std::move(audio_packet)));
 }
 
 void DesktopSessionProxy::OnCreateSharedBuffer(

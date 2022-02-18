@@ -29,6 +29,27 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "remoting.mojom.AudioPacket"
+          cpp = "::std::unique_ptr<::remoting::AudioPacket>"
+          move_only = true
+        },
+        {
+          mojom = "remoting.mojom.AudioPacket.BytesPerSample"
+          cpp = "::remoting::AudioPacket::BytesPerSample"
+        },
+        {
+          mojom = "remoting.mojom.AudioPacket.Channels"
+          cpp = "::remoting::AudioPacket::Channels"
+        },
+        {
+          mojom = "remoting.mojom.AudioPacket.Encoding"
+          cpp = "::remoting::AudioPacket::Encoding"
+        },
+        {
+          mojom = "remoting.mojom.AudioPacket.SamplingRate"
+          cpp = "::remoting::AudioPacket::SamplingRate"
+        },
+        {
           mojom = "remoting.mojom.ClipboardEvent"
           cpp = "::remoting::protocol::ClipboardEvent"
         },

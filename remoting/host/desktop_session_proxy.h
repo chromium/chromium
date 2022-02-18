@@ -181,6 +181,7 @@ class DesktopSessionProxy
   // mojom::DesktopSessionEventHandler implementation.
   void OnClipboardEvent(const protocol::ClipboardEvent& event) override;
   void OnUrlForwarderStateChange(mojom::UrlForwarderState state) override;
+  void OnAudioPacket(std::unique_ptr<AudioPacket> audio_packet) override;
 
   // mojom::DesktopSessionStateHandler implementation.
   void DisconnectSession(protocol::ErrorCode error) override;
@@ -211,9 +212,6 @@ class DesktopSessionProxy
   void OnDesktopSessionAgentStarted(
       mojo::PendingAssociatedRemote<mojom::DesktopSessionControl>
           pending_remote);
-
-  // Handles AudioPacket notification from the desktop session agent.
-  void OnAudioPacket(const std::string& serialized_packet);
 
   // Registers a new shared buffer created by the desktop process.
   void OnCreateSharedBuffer(int id,

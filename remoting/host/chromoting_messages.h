@@ -98,11 +98,6 @@ IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_MouseCursor,
 IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_KeyboardChanged,
                     remoting::protocol::KeyboardLayout /* layout */)
 
-// Carries an audio packet from the desktop session agent to the client.
-// |serialized_packet| is a serialized AudioPacket.
-IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_AudioPacket,
-                    std::string /* serialized_packet */)
-
 // Informs the network process of the result of a file operation on the file
 // identified by |file_id|. If |result| is an error, the file ID is no longer
 // valid.

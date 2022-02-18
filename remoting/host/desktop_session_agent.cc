@@ -516,16 +516,19 @@ void DesktopSessionAgent::OnClipboardEvent(
 
 void DesktopSessionAgent::ProcessAudioPacket(
     std::unique_ptr<AudioPacket> packet) {
-  DCHECK(audio_capture_task_runner_->BelongsToCurrentThread());
-
-  std::string serialized_packet;
-  if (!packet->SerializeToString(&serialized_packet)) {
-    LOG(ERROR) << "Failed to serialize AudioPacket.";
+  // AudioPackets are received on the audio_capture task runner but must be sent
+  // over IPC on the same task_runner the mojo remote was bound on.
+  if (!caller_task_runner_->BelongsToCurrentThread()) {
+    DCHECK(audio_capture_task_runner_->BelongsToCurrentThread());
+    caller_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DesktopSessionAgent::ProcessAudioPacket,
+                                  this, std::move(packet)));
     return;
   }
 
-  SendToNetwork(std::make_unique<ChromotingDesktopNetworkMsg_AudioPacket>(
-      serialized_packet));
+  if (desktop_session_event_handler_) {
+    desktop_session_event_handler_->OnAudioPacket(std::move(packet));
+  }
 }
 
 void DesktopSessionAgent::OnResult(uint64_t file_id,
