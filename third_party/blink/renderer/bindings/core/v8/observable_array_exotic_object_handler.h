@@ -309,7 +309,8 @@ class ObservableArrayExoticObjectHandler {
     // 5. While i < length :
     // 5.1. Append !ToString(i) to keys.
     // 5.2. Set i to i + 1.
-    Vector<String> keys_vector(backing_list.size());
+    Vector<String> keys_vector;
+    keys_vector.ReserveInitialCapacity(backing_list.size());
     for (uint32_t index = 0; index < backing_list.size(); ++index)
       keys_vector.push_back(String::Number(index));
     v8::Local<v8::Value> own_keys_as_value;
@@ -323,8 +324,7 @@ class ObservableArrayExoticObjectHandler {
     // 6. Extend keys with ! O.[[OwnPropertyKeys]]().
     uint32_t own_keys_index = backing_list.size();
     v8::Local<v8::Array> own_props;
-    if (!v8_target.As<v8::Object>()
-             ->GetOwnPropertyNames(current_context)
+    if (!v8_target->GetOwnPropertyNames(current_context, v8::ALL_PROPERTIES)
              .ToLocal(&own_props)) {
       return;
     }
