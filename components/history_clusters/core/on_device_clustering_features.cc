@@ -22,7 +22,7 @@ const base::Feature kUseEngagementScoreCache{"JourneysUseEngagementScoreCache",
 
 const base::Feature kSplitClusteringTasksToSmallerBatches{
     "JourneysSplitClusteringTasksToSmallerBatches",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 base::TimeDelta ClusterNavigationTimeCutoff() {
   return base::Minutes(GetFieldTrialParamByFeatureAsInt(
