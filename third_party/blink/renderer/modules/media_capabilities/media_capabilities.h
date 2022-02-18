@@ -9,7 +9,6 @@
 #include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-blink.h"
-#include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_configuration.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -88,10 +87,6 @@ class MODULES_EXPORT MediaCapabilities final
   // successful. Returns true if it was already bound.
   bool EnsurePerfHistoryService(ExecutionContext*);
 
-  // Lazily binds to the WebrtcVideoPerfHistory service. Returns whether it was
-  // successful. Returns true if it was already bound.
-  bool EnsureWebrtcPerfHistoryService(ExecutionContext* execution_context);
-
   ScriptPromise GetEmeSupport(ScriptState*,
                               media::VideoCodec,
                               media::VideoCodecProfile,
@@ -148,14 +143,16 @@ class MODULES_EXPORT MediaCapabilities final
   // |pending_callback_map_|.
   void ResolveCallbackIfReady(int callback_id);
 
-  void OnWebrtcSupportInfo(
-      int callback_id,
-      media::mojom::blink::WebrtcPredictionFeaturesPtr features,
-      float frames_per_second,
-      bool is_supported,
-      bool is_power_efficient);
+  void OnWebrtcDecodingInfoSupport(int callback_id,
+                                   bool is_supported,
+                                   bool is_power_efficient);
 
-  void OnWebrtcPerfHistoryInfo(int callback_id, bool is_smooth);
+  void OnWebrtcEncodingInfoSupport(int callback_id,
+                                   bool is_supported,
+                                   bool is_power_efficient);
+
+  void ResolveWebrtcDecodingCallbackIfReady(int callback_id);
+  void ResolveWebrtcEncodingCallbackIfReady(int callback_id);
 
   // Creates a new (incremented) callback ID from |last_callback_id_| for
   // mapping in |pending_cb_map_|.
@@ -175,9 +172,6 @@ class MODULES_EXPORT MediaCapabilities final
   // media::SmoothnessHelper.
   HeapMojoRemote<media::learning::mojom::blink::LearningTaskController>
       nnr_predictor_;
-
-  HeapMojoRemote<media::mojom::blink::WebrtcVideoPerfHistory>
-      webrtc_history_service_;
 
   // Holds the last key for callbacks in the map below. Incremented for each
   // usage.

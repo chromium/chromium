@@ -74,11 +74,8 @@
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_encoding_info_handler.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/webrtc/api/audio_codecs/audio_format.h"
-#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -740,14 +737,12 @@ MediaCapabilities::MediaCapabilities(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       decode_history_service_(navigator.GetExecutionContext()),
       bad_window_predictor_(navigator.GetExecutionContext()),
-      nnr_predictor_(navigator.GetExecutionContext()),
-      webrtc_history_service_(navigator.GetExecutionContext()) {}
+      nnr_predictor_(navigator.GetExecutionContext()) {}
 
 void MediaCapabilities::Trace(blink::Visitor* visitor) const {
   visitor->Trace(decode_history_service_);
   visitor->Trace(bad_window_predictor_);
   visitor->Trace(nnr_predictor_);
-  visitor->Trace(webrtc_history_service_);
   visitor->Trace(pending_cb_map_);
   ScriptWrappable::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
@@ -816,39 +811,18 @@ ScriptPromise MediaCapabilities::decodingInfo(
           config->hasAudio()
               ? absl::make_optional(ToSdpAudioFormat(config->audio()))
               : absl::nullopt;
-
-      absl::optional<webrtc::SdpVideoFormat> sdp_video_format;
-      absl::optional<String> scalability_mode;
-      media::VideoCodecProfile codec_profile =
-          media::VIDEO_CODEC_PROFILE_UNKNOWN;
-      int video_pixels = 0;
-      int frames_per_second = 0;
-      if (config->hasVideo()) {
-        sdp_video_format =
-            absl::make_optional(ToSdpVideoFormat(config->video()));
-        scalability_mode =
-            config->video()->hasScalabilityMode()
-                ? absl::make_optional(config->video()->scalabilityMode())
-                : absl::nullopt;
-
-        // Additional information needed for lookup in WebrtcVideoPerfHistory.
-        codec_profile =
-            WebRtcVideoFormatToMediaVideoCodecProfile(*sdp_video_format);
-        video_pixels = config->video()->width() * config->video()->height();
-        frames_per_second = static_cast<int>(config->video()->framerate());
-      }
-      media::mojom::blink::WebrtcPredictionFeaturesPtr features =
-          media::mojom::blink::WebrtcPredictionFeatures::New(
-              /*is_decode_stats=*/true,
-              static_cast<media::mojom::blink::VideoCodecProfile>(
-                  codec_profile),
-              video_pixels, /*hardware_accelerated=*/false);
-
-      handler->DecodingInfo(sdp_audio_format, sdp_video_format,
-                            scalability_mode,
-                            WTF::Bind(&MediaCapabilities::OnWebrtcSupportInfo,
-                                      WrapPersistent(this), callback_id,
-                                      std::move(features), frames_per_second));
+      absl::optional<webrtc::SdpVideoFormat> sdp_video_format =
+          config->hasVideo()
+              ? absl::make_optional(ToSdpVideoFormat(config->video()))
+              : absl::nullopt;
+      absl::optional<String> scalability_mode =
+          config->hasVideo() && config->video()->hasScalabilityMode()
+              ? absl::make_optional(config->video()->scalabilityMode())
+              : absl::nullopt;
+      handler->DecodingInfo(
+          sdp_audio_format, sdp_video_format, scalability_mode,
+          WTF::Bind(&MediaCapabilities::OnWebrtcDecodingInfoSupport,
+                    WrapPersistent(this), callback_id));
 
       return promise;
     }
@@ -1005,39 +979,18 @@ ScriptPromise MediaCapabilities::encodingInfo(
           config->hasAudio()
               ? absl::make_optional(ToSdpAudioFormat(config->audio()))
               : absl::nullopt;
-
-      absl::optional<webrtc::SdpVideoFormat> sdp_video_format;
-      absl::optional<String> scalability_mode;
-      media::VideoCodecProfile codec_profile =
-          media::VIDEO_CODEC_PROFILE_UNKNOWN;
-      int video_pixels = 0;
-      int frames_per_second = 0;
-      if (config->hasVideo()) {
-        sdp_video_format =
-            absl::make_optional(ToSdpVideoFormat(config->video()));
-        scalability_mode =
-            config->video()->hasScalabilityMode()
-                ? absl::make_optional(config->video()->scalabilityMode())
-                : absl::nullopt;
-
-        // Additional information needed for lookup in WebrtcVideoPerfHistory.
-        codec_profile =
-            WebRtcVideoFormatToMediaVideoCodecProfile(*sdp_video_format);
-        video_pixels = config->video()->width() * config->video()->height();
-        frames_per_second = static_cast<int>(config->video()->framerate());
-      }
-      media::mojom::blink::WebrtcPredictionFeaturesPtr features =
-          media::mojom::blink::WebrtcPredictionFeatures::New(
-              /*is_decode_stats=*/false,
-              static_cast<media::mojom::blink::VideoCodecProfile>(
-                  codec_profile),
-              video_pixels, /*hardware_accelerated=*/false);
-
-      handler->EncodingInfo(sdp_audio_format, sdp_video_format,
-                            scalability_mode,
-                            WTF::Bind(&MediaCapabilities::OnWebrtcSupportInfo,
-                                      WrapPersistent(this), callback_id,
-                                      std::move(features), frames_per_second));
+      absl::optional<webrtc::SdpVideoFormat> sdp_video_format =
+          config->hasVideo()
+              ? absl::make_optional(ToSdpVideoFormat(config->video()))
+              : absl::nullopt;
+      absl::optional<String> scalability_mode =
+          config->hasVideo() && config->video()->hasScalabilityMode()
+              ? absl::make_optional(config->video()->scalabilityMode())
+              : absl::nullopt;
+      handler->EncodingInfo(
+          sdp_audio_format, sdp_video_format, scalability_mode,
+          WTF::Bind(&MediaCapabilities::OnWebrtcEncodingInfoSupport,
+                    WrapPersistent(this), callback_id));
 
       return promise;
     }
@@ -1133,22 +1086,6 @@ bool MediaCapabilities::EnsurePerfHistoryService(
 
   execution_context->GetBrowserInterfaceBroker().GetInterface(
       decode_history_service_.BindNewPipeAndPassReceiver(task_runner));
-  return true;
-}
-
-bool MediaCapabilities::EnsureWebrtcPerfHistoryService(
-    ExecutionContext* execution_context) {
-  if (webrtc_history_service_.is_bound())
-    return true;
-
-  if (!execution_context)
-    return false;
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      execution_context->GetTaskRunner(TaskType::kMediaElementEvent);
-
-  execution_context->GetBrowserInterfaceBroker().GetInterface(
-      webrtc_history_service_.BindNewPipeAndPassReceiver(task_runner));
   return true;
 }
 
@@ -1547,6 +1484,85 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
   pending_cb_map_.erase(callback_id);
 }
 
+void MediaCapabilities::ResolveWebrtcDecodingCallbackIfReady(int callback_id) {
+  DCHECK(pending_cb_map_.Contains(callback_id));
+  PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
+
+  // Resolve the promise if we have gathered both supported and power efficient
+  // as well as smooth. Smooth is temporarily set to the same as supported but
+  // will eventually be queried from a local database with historical
+  // performance data.
+  if (!pending_cb->is_supported.has_value())
+    return;
+
+  // supported and gpu factories supported are set simultaneously.
+  DCHECK(pending_cb->is_gpu_factories_supported.has_value());
+
+  if (!pending_cb->db_is_smooth.has_value())
+    return;
+
+  if (!pending_cb->resolver->GetExecutionContext() ||
+      pending_cb->resolver->GetExecutionContext()->IsContextDestroyed()) {
+    // We're too late! Now that all the callbacks have provided state, its safe
+    // to erase the entry in the map.
+    pending_cb_map_.erase(callback_id);
+    return;
+  }
+
+  Persistent<MediaCapabilitiesDecodingInfo> info(
+      MediaCapabilitiesDecodingInfo::Create());
+  info->setSupported(*pending_cb->is_supported);
+  info->setPowerEfficient(*pending_cb->is_gpu_factories_supported);
+  info->setSmooth(*pending_cb->db_is_smooth);
+
+  const base::TimeDelta process_time =
+      base::TimeTicks::Now() - pending_cb->request_time;
+  UMA_HISTOGRAM_TIMES("Media.Capabilities.DecodingInfo.Time.Webrtc",
+                      process_time);
+
+  pending_cb->resolver->Resolve(std::move(info));
+  pending_cb_map_.erase(callback_id);
+}
+
+void MediaCapabilities::ResolveWebrtcEncodingCallbackIfReady(int callback_id) {
+  DCHECK(pending_cb_map_.Contains(callback_id));
+  PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
+
+  // Resolve the promise if we have gathered both supported and power efficient
+  // as well as smooth. Smooth is temporarily set to the same as supported but
+  // will eventually be queried from a local database with historical
+  // performance data.
+  if (!pending_cb->is_supported.has_value())
+    return;
+
+  // supported and gpu factories supported are set simultaneously.
+  DCHECK(pending_cb->is_gpu_factories_supported.has_value());
+
+  if (!pending_cb->db_is_smooth.has_value())
+    return;
+
+  if (!pending_cb->resolver->GetExecutionContext() ||
+      pending_cb->resolver->GetExecutionContext()->IsContextDestroyed()) {
+    // We're too late! Now that all the callbacks have provided state, its safe
+    // to erase the entry in the map.
+    pending_cb_map_.erase(callback_id);
+    return;
+  }
+
+  Persistent<MediaCapabilitiesInfo> info(MediaCapabilitiesInfo::Create());
+  info->setSupported(*pending_cb->is_supported);
+  info->setPowerEfficient(*pending_cb->is_gpu_factories_supported);
+  info->setSmooth(*pending_cb->db_is_smooth);
+
+  const base::TimeDelta process_time =
+      base::TimeTicks::Now() - pending_cb->request_time;
+  UMA_HISTOGRAM_TIMES("Media.Capabilities.EncodingInfo.Time.Webrtc",
+                      process_time);
+
+  pending_cb->resolver->Resolve(std::move(info));
+  pending_cb_map_.erase(callback_id);
+}
+
 void MediaCapabilities::OnBadWindowPrediction(
     int callback_id,
     const absl::optional<::media::learning::TargetHistogram>& histogram) {
@@ -1618,72 +1634,36 @@ void MediaCapabilities::OnGpuFactoriesSupport(int callback_id,
   ResolveCallbackIfReady(callback_id);
 }
 
-void MediaCapabilities::OnWebrtcSupportInfo(
-    int callback_id,
-    media::mojom::blink::WebrtcPredictionFeaturesPtr features,
-    float frames_per_second,
-    bool is_supported,
-    bool is_power_efficient) {
+void MediaCapabilities::OnWebrtcDecodingInfoSupport(int callback_id,
+                                                    bool is_supported,
+                                                    bool is_power_efficient) {
   DCHECK(pending_cb_map_.Contains(callback_id));
   PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
-
-  // Special treatment if the config is not supported, or if only audio was
-  // specified which is indicated by the fact that `video_pixels` equals 0,
-  // or if we fail to access the WebrtcPerfHistoryService.
-  if (!is_supported || features->video_pixels == 0 ||
-      !EnsureWebrtcPerfHistoryService(
-          pending_cb->resolver->GetExecutionContext())) {
-    MediaCapabilitiesDecodingInfo* info =
-        MediaCapabilitiesDecodingInfo::Create();
-    info->setSupported(is_supported);
-    info->setSmooth(is_supported);
-    info->setPowerEfficient(is_power_efficient);
-    pending_cb->resolver->Resolve(WrapPersistent(info));
-    pending_cb_map_.erase(callback_id);
-    return;
-  }
 
   pending_cb->is_supported = is_supported;
   pending_cb->is_gpu_factories_supported = is_power_efficient;
 
-  features->hardware_accelerated = is_power_efficient;
+  // TODO(crbug.com/1187565): Add call in decodingInfo() to get smoothness score
+  // from database and remove this default assignment.
+  pending_cb->db_is_smooth = is_supported;
 
-  webrtc_history_service_->GetPerfInfo(
-      std::move(features), frames_per_second,
-      WTF::Bind(&MediaCapabilities::OnWebrtcPerfHistoryInfo,
-                WrapPersistent(this), callback_id));
+  ResolveWebrtcDecodingCallbackIfReady(callback_id);
 }
 
-void MediaCapabilities::OnWebrtcPerfHistoryInfo(int callback_id,
-                                                bool is_smooth) {
+void MediaCapabilities::OnWebrtcEncodingInfoSupport(int callback_id,
+                                                    bool is_supported,
+                                                    bool is_power_efficient) {
   DCHECK(pending_cb_map_.Contains(callback_id));
   PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
 
-  // supported and gpu factories supported are set simultaneously.
-  DCHECK(pending_cb->is_supported.has_value());
-  DCHECK(pending_cb->is_gpu_factories_supported.has_value());
+  pending_cb->is_supported = is_supported;
+  pending_cb->is_gpu_factories_supported = is_power_efficient;
 
-  if (!pending_cb->resolver->GetExecutionContext() ||
-      pending_cb->resolver->GetExecutionContext()->IsContextDestroyed()) {
-    // We're too late! Now that all the callbacks have provided state, its safe
-    // to erase the entry in the map.
-    pending_cb_map_.erase(callback_id);
-    return;
-  }
+  // TODO(crbug.com/1187565): Add call in encodingInfo() to get smoothness score
+  // from database and remove this default assignment.
+  pending_cb->db_is_smooth = is_supported;
 
-  Persistent<MediaCapabilitiesDecodingInfo> info(
-      MediaCapabilitiesDecodingInfo::Create());
-  info->setSupported(*pending_cb->is_supported);
-  info->setPowerEfficient(*pending_cb->is_gpu_factories_supported);
-  info->setSmooth(is_smooth);
-
-  const base::TimeDelta process_time =
-      base::TimeTicks::Now() - pending_cb->request_time;
-  UMA_HISTOGRAM_TIMES("Media.Capabilities.DecodingInfo.Time.Webrtc",
-                      process_time);
-
-  pending_cb->resolver->Resolve(std::move(info));
-  pending_cb_map_.erase(callback_id);
+  ResolveWebrtcEncodingCallbackIfReady(callback_id);
 }
 
 int MediaCapabilities::CreateCallbackId() {
