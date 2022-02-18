@@ -519,7 +519,9 @@ void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
               }
             },
             weak_factory_.GetWeakPtr(), collapsed_summary_view_),
-        0, kCollapsedSummaryViewAnimationDurationMs);
+        0, kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
+        "Ash.NotificationView.CollapsedSummaryView.FadeOut."
+        "AnimationSmoothness");
     message_center_utils::FadeInView(
         main_view_, kCollapsedSummaryViewAnimationDurationMs,
         kChildMainViewFadeInAnimationDurationMs, gfx::Tween::LINEAR,
@@ -538,7 +540,8 @@ void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
             }
           },
           weak_factory_.GetWeakPtr(), main_view_),
-      0, kChildMainViewFadeOutAnimationDurationMs);
+      0, kChildMainViewFadeOutAnimationDurationMs, gfx::Tween::LINEAR,
+      "Ash.NotificationView.MainView.FadeOut.AnimationSmoothness");
   message_center_utils::FadeInView(
       collapsed_summary_view_, kChildMainViewFadeOutAnimationDurationMs,
       kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
@@ -560,7 +563,9 @@ void AshNotificationView::ToggleExpand() {
               }
             },
             weak_factory_.GetWeakPtr(), inline_reply()),
-        /*delay_in_ms=*/0, kInlineReplyFadeOutAnimationDurationMs);
+        /*delay_in_ms=*/0, kInlineReplyFadeOutAnimationDurationMs,
+        gfx::Tween::LINEAR,
+        "Ash.NotificationView.InlineReply.FadeOut.AnimationSmoothness");
   }
 
   SetExpanded(!IsExpanded());
@@ -984,7 +989,9 @@ void AshNotificationView::ActionButtonPressed(size_t index,
               }
             },
             weak_factory_.GetWeakPtr(), action_buttons_row()),
-        /*delay_in_ms=*/0, kActionButtonsFadeOutAnimationDurationMs);
+        /*delay_in_ms=*/0, kActionButtonsFadeOutAnimationDurationMs,
+        gfx::Tween::LINEAR,
+        "Ash.NotificationView.ActionButtonsRow.FadeOut.AnimationSmoothness");
 
     // Delay for the action buttons to fade out, then fade in inline reply.
     message_center_utils::InitLayerForAnimations(inline_reply());
@@ -1299,7 +1306,8 @@ void AshNotificationView::PerformLargeImageAnimation() {
           },
           weak_factory_.GetWeakPtr(), image_container_view()),
       kLargeImageFadeOutAnimationDelayMs, kLargeImageFadeOutAnimationDurationMs,
-      gfx::Tween::ACCEL_20_DECEL_100);
+      gfx::Tween::ACCEL_20_DECEL_100,
+      "Ash.NotificationView.ImageContainerView.FadeOut.AnimationSmoothness");
 
   gfx::Transform transform;
   // Translate y further down so that it would not interfere with the currently
@@ -1311,6 +1319,15 @@ void AshNotificationView::PerformLargeImageAnimation() {
                       image_container_view()->width(),
                   static_cast<double>(icon_view()->height()) /
                       image_container_view()->height());
+
+  ui::AnimationThroughputReporter reporter(
+      image_container_view()->layer()->GetAnimator(),
+      ash::metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        base::UmaHistogramPercentage(
+            "Ash.NotificationView.ImageContainerView.ScaleDown."
+            "AnimationSmoothness",
+            smoothness);
+      })));
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -1349,7 +1366,9 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
                 }
               },
               weak_factory_.GetWeakPtr(), left_content()),
-          /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
+          /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
+          gfx::Tween::LINEAR,
+          "Ash.NotificationView.LeftContent.FadeOut.AnimationSmoothness");
     }
     message_center_utils::FadeOutView(
         expand_button_,
@@ -1362,7 +1381,9 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
               }
             },
             weak_factory_.GetWeakPtr(), expand_button_),
-        /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
+        /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
+        gfx::Tween::LINEAR,
+        "Ash.NotificationView.ExpandButton.FadeOut.AnimationSmoothness");
 
     // Fade out icon_view() if it exists.
     if (icon_view()) {
@@ -1378,7 +1399,9 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
                 }
               },
               weak_factory_.GetWeakPtr(), icon_view()),
-          /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
+          /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
+          gfx::Tween::LINEAR,
+          "Ash.NotificationView.IconView.FadeOut.AnimationSmoothness");
     }
   } else {
     message_center_utils::FadeOutView(
@@ -1392,7 +1415,9 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
               }
             },
             weak_factory_.GetWeakPtr(), inline_settings_row()),
-        /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
+        /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
+        gfx::Tween::LINEAR,
+        "Ash.NotificationView.InlineSettingsRow.FadeOut.AnimationSmoothness");
   }
 
   // Fade in views.

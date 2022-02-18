@@ -112,9 +112,25 @@ void FadeOutView(views::View* view,
                  base::OnceClosure on_animation_ended,
                  int delay_in_ms,
                  int duration_in_ms,
-                 gfx::Tween::Type tween_type) {
+                 gfx::Tween::Type tween_type,
+                 const std::string& animation_histogram_name) {
+  // If we are in testing with animation (non zero duration), we shouldn't have
+  // delays so that we can properly track when animation is completed in test.
+  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
+    delay_in_ms = 0;
+  }
+
   std::pair<base::OnceClosure, base::OnceClosure> split =
       base::SplitOnceCallback(std::move(on_animation_ended));
+
+  // The view must have a layer to perform animation.
+  DCHECK(view->layer());
+
+  ui::AnimationThroughputReporter reporter(
+      view->layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating(
+          &ReportAnimationSmoothness, animation_histogram_name)));
 
   view->SetVisible(true);
   views::AnimationBuilder()

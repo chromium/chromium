@@ -166,7 +166,8 @@ void AshNotificationExpandButton::PerformExpandCollapseAnimation() {
               }
             },
             weak_factory_.GetWeakPtr(), label_),
-        0, kExpandButtonFadeOutLabelDurationMs);
+        0, kExpandButtonFadeOutLabelDurationMs, gfx::Tween::LINEAR,
+        "Ash.NotificationView.ExpandButtonLabel.FadeOut.AnimationSmoothness");
 
     bounds_animation_duration = kExpandButtonHideLabelBoundsChangeDurationMs;
     bounds_animation_tween_type = gfx::Tween::ACCEL_20_DECEL_100;
