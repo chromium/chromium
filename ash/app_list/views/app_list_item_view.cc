@@ -359,9 +359,10 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   title_ = AddChildView(std::move(title));
 
-  new_install_dot_ = AddChildView(std::make_unique<DotView>());
-  if (features::IsProductivityLauncherEnabled())
+  if (features::IsProductivityLauncherEnabled()) {
+    new_install_dot_ = AddChildView(std::make_unique<DotView>());
     new_install_dot_->SetVisible(item_weak_->is_new_install());
+  }
 
   SetIcon(item_weak_->GetIcon(app_list_config_->type()));
   SetItemName(base::UTF8ToUTF16(item->GetDisplayName()),
@@ -861,14 +862,16 @@ void AppListItemView::Layout() {
       app_list_config_, rect, title_->GetPreferredSize(), icon_scale_);
   // Reserve space for the new install dot if it is visible. Otherwise it
   // extends outside the app grid tile bounds and gets clipped.
-  if (new_install_dot_->GetVisible())
+  if (new_install_dot_ && new_install_dot_->GetVisible())
     title_bounds.Inset(kNewInstallDotSize, 0, 0, 0);
   title_->SetBoundsRect(title_bounds);
 
-  new_install_dot_->SetBounds(
-      title_bounds.x() - kNewInstallDotSize - kNewInstallDotPadding,
-      title_bounds.y() + title_bounds.height() / 2 - kNewInstallDotSize / 2,
-      kNewInstallDotSize, kNewInstallDotSize);
+  if (new_install_dot_) {
+    new_install_dot_->SetBounds(
+        title_bounds.x() - kNewInstallDotSize - kNewInstallDotPadding,
+        title_bounds.y() + title_bounds.height() / 2 - kNewInstallDotSize / 2,
+        kNewInstallDotSize, kNewInstallDotSize);
+  }
 
   if (notification_indicator_)
     notification_indicator_->SetBoundsRect(icon_bounds);
@@ -1024,7 +1027,7 @@ std::u16string AppListItemView::GetTooltipText(const gfx::Point& p) const {
   title_->SetTooltipText(tooltip_text_);
   std::u16string tooltip = title_->GetTooltipText(p);
   title_->SetHandlesTooltips(false);
-  if (item_weak_ && item_weak_->is_new_install()) {
+  if (new_install_dot_ && new_install_dot_->GetVisible()) {
     // Tooltip becomes two lines: "App Name" + "New install".
     tooltip = l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, tooltip);
   }
@@ -1233,7 +1236,7 @@ void AppListItemView::ItemBadgeColorChanged() {
 
 void AppListItemView::ItemIsNewInstallChanged() {
   DCHECK(item_weak_);
-  if (features::IsProductivityLauncherEnabled())
+  if (new_install_dot_)
     new_install_dot_->SetVisible(item_weak_->is_new_install());
 }
 
