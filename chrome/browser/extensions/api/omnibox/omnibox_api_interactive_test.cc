@@ -37,10 +37,11 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/window_open_disposition.h"
 
+namespace extensions {
+
 namespace {
 
 using base::ASCIIToUTF16;
-using extensions::ResultCatcher;
 using metrics::OmniboxEventProto;
 using ui_test_utils::WaitForAutocompleteDone;
 
@@ -111,7 +112,7 @@ void VerifyMatchComponents(const ExpectedMatchComponents& expected,
   }
 }
 
-using OmniboxApiTest = extensions::ExtensionApiTest;
+using OmniboxApiTest = ExtensionApiTest;
 
 }  // namespace
 
@@ -376,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
   // Quickly type another query and accept it before getting suggestions back
   // for the query. The popup will close after accepting input - ensure that it
   // does not reopen when the extension returns its suggestions.
-  extensions::ResultCatcher catcher;
+  ResultCatcher catcher;
 
   // TODO: Rather than send this second request by talking to the controller
   // directly, figure out how to send it via the proper calls to
@@ -549,13 +550,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
   }
 }
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = ExtensionBrowserTest::ContextType;
 
 class OmniboxApiTestWithContextType
-    : public extensions::ExtensionApiTest,
+    : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  OmniboxApiTestWithContextType() : extensions::ExtensionApiTest(GetParam()) {}
+  OmniboxApiTestWithContextType() : ExtensionApiTest(GetParam()) {}
   ~OmniboxApiTestWithContextType() override = default;
 };
 
@@ -616,7 +617,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType,
              chrome.test.succeed();
            }
          ]);)";
-  extensions::TestExtensionDir test_dir;
+  TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
@@ -641,7 +642,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType, SetDefaultSuggestion) {
                  });
            }
          ]);)";
-  extensions::TestExtensionDir test_dir;
+  TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
@@ -701,3 +702,5 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          OmniboxApiTestWithContextType,
                          testing::Values(ContextType::kPersistentBackground));
+
+}  // namespace extensions
