@@ -103,7 +103,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
       device_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&FrameSinkVideoCaptureDevice::OnTargetChanged, device_,
-                         target_));
+                         target_, /*crop_version=*/0));
       // Note: The MouseCursorOverlayController runs on the UI thread. It's also
       // important that SetTargetView() be called in the current stack while
       // |target_window_| is known to be a valid pointer.
@@ -153,7 +153,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
       device_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&FrameSinkVideoCaptureDevice::OnTargetChanged, device_,
-                         target_.value()));
+                         target_.value(), /*crop_version=*/0));
     }
   }
 #endif

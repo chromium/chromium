@@ -88,6 +88,8 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
                                 bool use_fixed_aspect_ratio);
   void SetAutoThrottlingEnabled(bool enabled);
   void ChangeTarget(const absl::optional<VideoCaptureTarget>& target);
+  void ChangeTarget(const absl::optional<VideoCaptureTarget>& target,
+                    uint32_t crop_version);
   void Stop();
   void RequestRefreshFrame();
 
@@ -150,6 +152,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   absl::optional<ResolutionConstraints> resolution_constraints_;
   absl::optional<bool> auto_throttling_enabled_;
   absl::optional<VideoCaptureTarget> target_;
+  uint32_t crop_version_ = 0;
   // Overlays are owned by the callers of CreateOverlay().
   std::vector<Overlay*> overlays_;
   bool is_started_ = false;

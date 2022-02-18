@@ -104,7 +104,8 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   // permanently lost. NOTE: a target can be temporarily absl::nullopt without
   // being permanently lost.
   virtual void OnTargetChanged(
-      const absl::optional<viz::VideoCaptureTarget>& target);
+      const absl::optional<viz::VideoCaptureTarget>& target,
+      uint32_t crop_version);
   virtual void OnTargetPermanentlyLost();
 
  protected:
@@ -190,6 +191,15 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
                         BrowserThread::DeleteOnUIThread>
       cursor_controller_;
 #endif
+
+  // Whenever the crop-target of a stream changes, the associated crop-version
+  // is incremented. This value is used in frames' metadata so as to allow
+  // other modules (mostly Blink) to see which frames are cropped to the
+  // old/new specified crop-target.
+  // The value 0 is used before any crop-target is assigned. (Note that by
+  // cropping and then uncropping, values other than 0 can also be associated
+  // with an uncropped track.)
+  uint32_t crop_version_ = 0;
 
   // Prevent display sleeping while content capture is in progress.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
