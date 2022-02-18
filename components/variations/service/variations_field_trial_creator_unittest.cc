@@ -317,6 +317,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         metrics_state_manager);
   }
 
+#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
   // We override this method so that a mock testing config is used instead of
   // the one defined in fieldtrial_testing_config.json.
   void ApplyFieldTrialTestingConfig(base::FeatureList* feature_list) override {
@@ -326,6 +327,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
                             base::Unretained(this)),
         GetPlatform(), GetCurrentFormFactor(), feature_list);
   }
+#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 
  private:
   VariationsSeedStore* GetSeedStore() override { return &seed_store_; }

@@ -147,6 +147,7 @@ Study::CpuArchitecture GetCurrentCpuArchitecture() {
   return Study::X86_64;
 }
 
+#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 // Determines whether the field trial testing config defined in
 // testing/variations/fieldtrial_testing_config.json should be applied. If the
 // "disable_fieldtrial_testing_config" GN flag is set to true, then the testing
@@ -159,7 +160,6 @@ Study::CpuArchitecture GetCurrentCpuArchitecture() {
 // apply the testing config as well as specify additional field trials (using
 // "--force-fieldtrials") by using the "--enable-field-trial-config" switch.
 bool ShouldUseFieldTrialTestingConfig(const base::CommandLine* command_line) {
-#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return command_line->HasSwitch(switches::kEnableFieldTrialTestingConfig);
 #else
@@ -168,10 +168,8 @@ bool ShouldUseFieldTrialTestingConfig(const base::CommandLine* command_line) {
           !command_line->HasSwitch(::switches::kForceFieldTrials) &&
           !command_line->HasSwitch(switches::kVariationsServerURL));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#else
-  return false;
-#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 }
+#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 
 }  // namespace
 
@@ -274,11 +272,19 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   feature_list->RegisterExtraFeatureOverrides(extra_overrides);
 
   bool used_testing_config = false;
+#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
   if (ShouldUseFieldTrialTestingConfig(command_line)) {
     ApplyFieldTrialTestingConfig(feature_list.get());
     used_testing_config = true;
   }
-
+#else
+  if (command_line->HasSwitch(switches::kEnableFieldTrialTestingConfig)) {
+    ExitWithMessage(
+        base::StringPrintf("--%s was passed, but the field trial testing "
+                           "config was excluded from the build.",
+                           switches::kEnableFieldTrialTestingConfig));
+  }
+#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
   bool used_seed = false;
   if (!used_testing_config) {
     used_seed = CreateTrialsFromSeed(low_entropy_provider.get(),
@@ -515,6 +521,7 @@ Study::FormFactor VariationsFieldTrialCreator::GetCurrentFormFactor() {
   return client_->GetCurrentFormFactor();
 }
 
+#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 void VariationsFieldTrialCreator::ApplyFieldTrialTestingConfig(
     base::FeatureList* feature_list) {
   // Note that passing base::Unretained(this) below is safe because the callback
@@ -524,6 +531,7 @@ void VariationsFieldTrialCreator::ApplyFieldTrialTestingConfig(
                           base::Unretained(this)),
       GetPlatform(), GetCurrentFormFactor(), feature_list);
 }
+#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 
 bool VariationsFieldTrialCreator::HasSeedExpired(bool is_safe_seed) {
   const base::Time fetch_time = is_safe_seed

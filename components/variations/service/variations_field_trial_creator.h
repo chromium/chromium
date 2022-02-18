@@ -19,6 +19,7 @@
 #include "components/variations/metrics.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/seed_response.h"
+#include "components/variations/service/buildflags.h"
 #include "components/variations/service/ui_string_overrider.h"
 #include "components/variations/variations_seed_store.h"
 
@@ -193,10 +194,12 @@ class VariationsFieldTrialCreator {
   // Get the client's current form factor. Protected for testing.
   Study::FormFactor GetCurrentFormFactor();
 
+#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
   // Applies the field trial testing config defined in
   // testing/variations/fieldtrial_testing_config.json to the current session.
   // Protected and virtual for testing.
   virtual void ApplyFieldTrialTestingConfig(base::FeatureList* feature_list);
+#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 
  private:
   // Returns true if the loaded VariationsSeed has expired. An expired seed is

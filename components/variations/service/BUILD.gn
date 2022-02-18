@@ -8,10 +8,14 @@ import("//build/config/chrome_build.gni")
 declare_args() {
   # Set to true make a build that disables activation of field trial tests
   # specified in testing/variations/fieldtrial_testing_config.json.
+  # Note: For Chrome-branded Android builds, this is always considered as set to
+  # true (see below). This is done to avoid the binary size impact (~40 KiB) on
+  # Android.
   disable_fieldtrial_testing_config = false
 }
 
-fieldtrial_testing_enabled = !disable_fieldtrial_testing_config
+fieldtrial_testing_enabled =
+    !disable_fieldtrial_testing_config && !(is_android && is_chrome_branded)
 
 buildflag_header("buildflags") {
   header = "buildflags.h"

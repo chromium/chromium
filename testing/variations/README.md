@@ -12,6 +12,8 @@ sync_integration_tests). It is not used by unit test targets.
 > Note: This configuration applies specifically to Chromium developer builds.
 > Chrome branded / official builds do not use these definitions by default.
 > They can, however, be enabled with the `--enable-field-trial-config` switch.
+> For Chrome branded Android builds, due to binary size constraints, the
+> configuration cannot be applied by this switch.
 
 > Note: Non-developer builds of Chromium (for example, non-Chrome browsers,
 > or Chromium builds provided by Linux distros) should disable the testing
