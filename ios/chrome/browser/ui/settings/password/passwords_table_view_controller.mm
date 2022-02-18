@@ -839,6 +839,8 @@ void RemoveFormsToBeDeleted(
   item.detailText = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_OPT_IN);
   item.enabled = NO;
+  item.accessibilityIdentifier = kOnDeviceEncryptionOptInId;
+  item.accessibilityTraits |= UIAccessibilityTraitLink;
   return item;
 }
 
@@ -850,6 +852,7 @@ void RemoveFormsToBeDeleted(
   item.detailText = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_LEARN_MORE);
   item.enabled = NO;
+  item.accessibilityIdentifier = kOnDeviceEncryptionOptedInTextId;
   return item;
 }
 
@@ -860,6 +863,7 @@ void RemoveFormsToBeDeleted(
       IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_OPTED_IN_LEARN_MORE);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
+  item.accessibilityIdentifier = kOnDeviceEncryptionLearnMoreId;
   return item;
 }
 
@@ -870,6 +874,8 @@ void RemoveFormsToBeDeleted(
       IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_SET_UP);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
+  item.accessibilityIdentifier = kOnDeviceEncryptionSetUpId;
+  item.accessibilityTraits |= UIAccessibilityTraitLink;
   return item;
 }
 

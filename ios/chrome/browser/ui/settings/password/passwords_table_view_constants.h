@@ -13,6 +13,12 @@ extern NSString* const kPasswordsExportConfirmViewId;
 extern NSString* const kPasswordsSearchBarId;
 extern NSString* const kPasswordsScrimViewId;
 
+// The accessibility identifier of on device encryption.
+extern NSString* const kOnDeviceEncryptionOptInId;
+extern NSString* const kOnDeviceEncryptionLearnMoreId;
+extern NSString* const kOnDeviceEncryptionOptedInTextId;
+extern NSString* const kOnDeviceEncryptionSetUpId;
+
 // The accessibility identifier of the password details table view.
 extern NSString* const kPasswordDetailsTableViewId;
 extern NSString* const kPasswordDetailsDeletionAlertViewId;

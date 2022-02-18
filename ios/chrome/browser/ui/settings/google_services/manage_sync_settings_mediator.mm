@@ -136,6 +136,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
     SyncSwitchItem* button =
         [[SyncSwitchItem alloc] initWithType:SyncEverythingItemType];
     button.text = GetNSString(IDS_IOS_SYNC_EVERYTHING_TITLE);
+    button.accessibilityIdentifier = kSyncEverythingItemAccessibilityIdentifier;
     self.syncEverythingItem = button;
     [self updateSyncEverythingItemNotifyConsumer:NO];
   } else {
@@ -143,6 +144,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
         [[TableViewInfoButtonItem alloc] initWithType:SyncEverythingItemType];
     button.text = GetNSString(IDS_IOS_SYNC_EVERYTHING_TITLE);
     button.statusText = GetNSString(IDS_IOS_SETTING_OFF);
+    button.accessibilityIdentifier = kSyncEverythingItemAccessibilityIdentifier;
     self.syncEverythingItem = button;
   }
   self.syncEverythingItem.accessibilityIdentifier =
