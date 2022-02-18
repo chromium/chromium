@@ -20,7 +20,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
@@ -38,6 +37,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -242,7 +242,7 @@ public class ContextualSearchTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // It only makes sense to send dummy data here because we can't easily control
             // what's in the native context.
-            mContextualSearchClient.selectAroundCaretAck(null);
+            mContextualSearchClient.selectAroundCaretAck(new SelectAroundCaretResult(0, 0, 0, 0));
         });
     }
 
@@ -306,7 +306,6 @@ public class ContextualSearchTest {
     @Feature({"ContextualSearch"})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Features.DisableFeatures(ChromeFeatureList.SNOOZABLE_IPH)
-    @DisabledTest(message = "https://crbug.com/1279770")
     public void testTextTapFollowedByNonTextTap() {
         Assert.assertEquals(0, mPanelManager.getRequestPanelShowCount());
 
