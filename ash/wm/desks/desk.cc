@@ -97,17 +97,6 @@ bool CanMoveWindowOutOfDeskContainer(aura::Window* window) {
          static_cast<int>(AppType::NON_APP);
 }
 
-// Returns true if `window` is supported by Desks Templates and has an app id.
-bool IsSupportedByDesksTemplatesAndHasAppId(aura::Window* window) {
-  auto* delegate = Shell::Get()->desks_templates_delegate();
-  return delegate && delegate->IsWindowSupportedForDeskTemplate(window) &&
-         !wm::GetTransientParent(window) &&
-         (Shell::Get()
-              ->desks_controller()
-              ->disable_app_id_check_for_desk_templates() ||
-          !full_restore::GetAppId(window).empty());
-}
-
 // Adjusts the z-order stacking of |window_to_fix| in its parent to match its
 // order in the MRU window list. This is done after the window is moved from one
 // desk container to another by means of calling AddChild() which adds it as the
@@ -297,11 +286,6 @@ void Desk::OnRootWindowClosing(aura::Window* root) {
 void Desk::AddWindowToDesk(aura::Window* window) {
   DCHECK(!base::Contains(windows_, window));
 
-  // Increment `num_supported_windows_` if the window is supported and has a
-  // Full Restore app id.
-  if (IsSupportedByDesksTemplatesAndHasAppId(window))
-    num_supported_windows_++;
-
   windows_.push_back(window);
   // No need to refresh the mini_views if the destroyed window doesn't show up
   // there in the first place. Also don't refresh for visible on all desks
@@ -324,10 +308,6 @@ void Desk::AddWindowToDesk(aura::Window* window) {
 
 void Desk::RemoveWindowFromDesk(aura::Window* window) {
   DCHECK(base::Contains(windows_, window));
-
-  // Decrement `num_supported_windows_` if the window was supported.
-  if (IsSupportedByDesksTemplatesAndHasAppId(window))
-    num_supported_windows_--;
 
   base::Erase(windows_, window);
   // No need to refresh the mini_views if the destroyed window doesn't show up

@@ -764,10 +764,13 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonAligned) {
 }
 
 // Tests that the save desk as template button is enabled and disabled as
-// expected.
-TEST_F(DesksTemplatesTest, SaveTemplateButtonEnabledDisabled) {
-  // Create a test window so that overview grid is not null.
-  auto test_window = CreateAppWindow();
+// expected based on the number of templates.
+TEST_F(DesksTemplatesTest, SaveTemplateEnabledDisabled) {
+  // Create an app window which should be supported.
+  auto no_app_id_window = CreateAppWindow();
+  auto* delegate = Shell::Get()->desks_templates_delegate();
+  ASSERT_TRUE(
+      delegate->IsWindowSupportedForDeskTemplate(no_app_id_window.get()));
 
   // Create 6 entries to max out the grid.
   for (const std::string& name : {"A", "B", "C", "D", "E", "F"})
@@ -778,6 +781,8 @@ TEST_F(DesksTemplatesTest, SaveTemplateButtonEnabledDisabled) {
   auto* overview_controller = Shell::Get()->overview_controller();
   ASSERT_TRUE(overview_controller->InOverviewSession());
   WaitForDesksTemplatesUI();
+  EXPECT_EQ(0, GetOverviewGridList()[0]->num_incognito_windows());
+  EXPECT_EQ(0, GetOverviewGridList()[0]->num_unsupported_windows());
 
   aura::Window* root = Shell::GetPrimaryRootWindow();
   auto* button = static_cast<PillButton*>(
@@ -803,35 +808,6 @@ TEST_F(DesksTemplatesTest, SaveTemplateButtonEnabledDisabled) {
   button = static_cast<PillButton*>(
       GetSaveDeskAsTemplateButtonForRoot(root)->GetContentsView());
   EXPECT_EQ(views::Button::STATE_NORMAL, button->GetState());
-}
-
-// Tests that the save desk as template button is disabled when the maximum
-// number of templates has been reached.
-TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonDisabled) {
-  // Create a test window in the current desk.
-  auto test_window = CreateAppWindow();
-
-  aura::Window* root = Shell::GetPrimaryRootWindow();
-  // Open overview and save a template.
-  OpenOverviewAndSaveTemplate(root);
-  // The desks templates grid is now visible and `save_template` is no longer
-  // visible, so exit overview to be able to click on it again.
-  ToggleOverview();
-  // Verify that the entry has been added.
-  ASSERT_EQ(1ul, GetAllEntries().size());
-
-  // Verify that the button is disabled after the maximum number of templates
-  // have been added.
-  AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "template3", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "template4", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "template5", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "template6", base::Time::Now());
-  ToggleOverview();
-  ASSERT_EQ(6ul, GetAllEntries().size());
-  auto* button = static_cast<PillButton*>(
-      GetSaveDeskAsTemplateButtonForRoot(root)->GetContentsView());
-  EXPECT_EQ(views::Button::STATE_DISABLED, button->GetState());
 }
 
 // Tests that clicking the save desk as template button shows the templates
@@ -1445,46 +1421,24 @@ TEST_F(DesksTemplatesTest, AllUnsupportedAppsDisablesSaveTemplates) {
   // creates a supported window.
   auto test_window = CreateTestWindow();
 
-  // Also create an app window which should be supported and not have an app id.
+  // Also create an app window which should not have an app id, making it
+  // "unsupported".
   auto no_app_id_window = CreateAppWindow();
   auto* delegate = Shell::Get()->desks_templates_delegate();
   ASSERT_TRUE(
       delegate->IsWindowSupportedForDeskTemplate(no_app_id_window.get()));
   ASSERT_TRUE(full_restore::GetAppId(no_app_id_window.get()).empty());
 
-  EXPECT_EQ(0, DesksController::Get()->active_desk()->num_supported_windows());
-
+  // Open overview.
   ToggleOverview();
+
+  EXPECT_EQ(0, GetOverviewGridList()[0]->num_incognito_windows());
+  EXPECT_EQ(2, GetOverviewGridList()[0]->num_unsupported_windows());
 
   auto* save_template = static_cast<PillButton*>(
       GetSaveDeskAsTemplateButtonForRoot(Shell::Get()->GetPrimaryRootWindow())
           ->GetContentsView());
   EXPECT_EQ(views::Button::STATE_DISABLED, save_template->GetState());
-}
-
-TEST_F(DesksTemplatesTest, AddRemoveSupportedWindows) {
-  auto* controller = DesksController::Get();
-
-  // Create a desk other than the default initial desk.
-  NewDesk();
-
-  Desk* desk_1 = controller->desks()[0].get();
-
-  // Create 3 supported windows on desk_1.
-  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
-  auto win2 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
-
-  // Expect `num_supported_windows_` to be 3.
-  EXPECT_EQ(3, desk_1->num_supported_windows());
-
-  // Close the supported windows.
-  win0.reset();
-  win1.reset();
-  win2.reset();
-
-  // Expect `num_supported_windows_` to be 0.
-  EXPECT_EQ(0, desk_1->num_supported_windows());
 }
 
 // Tests that adding and removing unsupported windows is counted correctly.
