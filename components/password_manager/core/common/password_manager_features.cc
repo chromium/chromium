@@ -90,6 +90,10 @@ const base::Feature kMuteCompromisedPasswords{
 const base::Feature kPasswordNotes{"PasswordNotes",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables sending credentials from the settings UI.
+const base::Feature kSendPasswords{"SendPasswords",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables password leak detection for unauthenticated users.
 const base::Feature kLeakDetectionUnauthenticated = {
     "LeakDetectionUnauthenticated", base::FEATURE_DISABLED_BY_DEFAULT};
