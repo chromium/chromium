@@ -109,7 +109,10 @@
 }
 
 - (void)webViewDidClose:(WKWebView*)webView {
-  if (self.webStateImpl && self.webStateImpl->HasOpener()) {
+  // This is triggered by a JavaScript |close()| method call, only if the tab
+  // was opened using |window.open|. WebKit is checking that this is the case,
+  // so we can close the tab unconditionally here.
+  if (self.webStateImpl) {
     __weak __typeof(self) weakSelf = self;
     // -webViewDidClose will typically trigger another webState to activate,
     // which may in turn also close. To prevent reentrant modificationre in
