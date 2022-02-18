@@ -1055,9 +1055,9 @@ TEST_F(ScrollableAppsGridViewWithNudgeTest, VerifyVisibleRangeByDefault) {
   ASSERT_EQ(5, cols);
 
   // With the app list reorder nudge is showing, there's enough space to fit
-  // only 3 rows of apps in the visible portion of the app list.
+  // only 4 rows of apps in the visible portion of the app list.
   EXPECT_TRUE(
-      IsIndexRangeExpected(/*first_index=*/0, /*last_index=*/3 * cols - 1));
+      IsIndexRangeExpected(/*first_index=*/0, /*last_index=*/4 * cols - 1));
 }
 
 }  // namespace ash

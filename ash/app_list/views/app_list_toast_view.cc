@@ -28,7 +28,7 @@ namespace ash {
 constexpr int kCornerRadius = 16;
 constexpr gfx::Insets kInteriorMarginClamshell(8, 8, 8, 20);
 constexpr gfx::Insets kInteriorMarginTablet(8, 8, 8, 16);
-constexpr gfx::Insets kTitleContainerMargin(0, 8, 0, 24);
+constexpr gfx::Insets kTitleContainerMargin(0, 16, 0, 24);
 constexpr gfx::Insets kIconMargins(0, 8);
 
 constexpr int kToastHeight = 32;
@@ -117,7 +117,6 @@ AppListToastView::AppListToastView(const std::u16string title) {
       views::BoxLayout::Orientation::kHorizontal, kInteriorMarginClamshell));
   layout_manager_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  layout_manager_->SetCollapseMarginsSpacing(true);
 
   label_container_ = AddChildView(std::make_unique<views::View>());
   label_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -149,7 +148,8 @@ void AppListToastView::StyleForTabletMode() {
 void AppListToastView::OnThemeChanged() {
   views::View::OnThemeChanged();
   if (title_label_)
-    bubble_utils::ApplyStyle(title_label_, bubble_utils::LabelStyle::kBody);
+    bubble_utils::ApplyStyle(title_label_,
+                             bubble_utils::LabelStyle::kChipTitle);
   if (subtitle_label_)
     bubble_utils::ApplyStyle(subtitle_label_,
                              bubble_utils::LabelStyle::kSubtitle);
