@@ -11,9 +11,11 @@
     </div>
   </div>
   <div slot="right-pane">
-    <img src="[[getImgSrc_(status_)]]" hidden$="[[shouldShowSpinner_]]">
-    <paper-spinner-lite class="large-spinner" hidden$="[[!shouldShowSpinner_]]"
-        active>
-    </paper-spinner-lite>
+    <div class="illustration-wrapper">
+      <img class="illustration" src="[[getImgSrc_(status_)]]" hidden$="[[shouldShowSpinner_]]">
+      <paper-spinner-lite class="large-spinner" hidden$="[[!shouldShowSpinner_]]"
+          active>
+      </paper-spinner-lite>
+    </div>
   </div>
 </base-page>

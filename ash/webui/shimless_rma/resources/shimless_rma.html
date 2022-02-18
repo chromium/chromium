@@ -24,9 +24,13 @@
     text-align: end;
   }
 
+  .shimless-header {
+    height: 80px;
+  }
+
   #back {
     border: 0;
-    height: 80px;
+    height: 100%;
   }
 
   #next {
@@ -91,7 +95,7 @@
   <div id="contentContainer"></div>
   <div class="shimless-footer">
     <cr-button
-      id="cancel" on-click="onCancelButtonClicked_"
+      id="cancel" class="pill" on-click="onCancelButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonCancel, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonCancel)]]">
       <span id="cancelButtonLabel">
