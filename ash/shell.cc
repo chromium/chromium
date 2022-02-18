@@ -545,11 +545,6 @@ void Shell::NotifyShelfAlignmentChanged(aura::Window* root_window,
     observer.OnShelfAlignmentChanged(root_window, old_alignment);
 }
 
-void Shell::NotifyShelfAutoHideBehaviorChanged(aura::Window* root_window) {
-  for (auto& observer : shell_observers_)
-    observer.OnShelfAutoHideBehaviorChanged(root_window);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Shell, private:
 

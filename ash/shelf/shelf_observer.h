@@ -25,6 +25,9 @@ class ASH_EXPORT ShelfObserver {
   // Invoked when Shelf's auto hide state is changed to |new_state|.
   virtual void OnAutoHideStateChanged(ShelfAutoHideState new_state) {}
 
+  // Invoked when the shelf auto-hide behavior is changed.
+  virtual void OnShelfAutoHideBehaviorChanged() {}
+
   // Invoked when the positions of Shelf Icons are changed.
   virtual void OnShelfIconPositionsChanged() {}
 

@@ -390,6 +390,7 @@ ShelfView::ShelfView(ShelfModel* model,
   DCHECK(shelf_);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->AddShellObserver(this);
+  shelf_->AddObserver(this);
   bounds_animator_->AddObserver(this);
   bounds_animator_->SetAnimationDuration(
       ShelfConfig::Get()->shelf_animation_duration());
@@ -404,6 +405,7 @@ ShelfView::~ShelfView() {
   // Shell destroys the TabletModeController before destroying all root windows.
   if (Shell::Get()->tablet_mode_controller())
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
+  shelf_->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
   bounds_animator_->RemoveObserver(this);
   model_->RemoveObserver(this);
@@ -2328,7 +2330,7 @@ void ShelfView::OnShelfAlignmentChanged(aura::Window* root_window,
   AnnounceShelfAlignment();
 }
 
-void ShelfView::OnShelfAutoHideBehaviorChanged(aura::Window* root_window) {
+void ShelfView::OnShelfAutoHideBehaviorChanged() {
   AnnounceShelfAutohideBehavior();
 }
 

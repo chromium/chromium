@@ -676,10 +676,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   void NotifyShelfAlignmentChanged(aura::Window* root_window,
                                    ShelfAlignment old_alignment);
 
-  // Notifies observers that |root_window|'s shelf changed auto-hide behavior.
-  // TODO(jamescook): Move to Shelf.
-  void NotifyShelfAutoHideBehaviorChanged(aura::Window* root_window);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtendedDesktopTest, TestCursor);
   FRIEND_TEST_ALL_PREFIXES(WindowManagerTest, MouseEventCursors);

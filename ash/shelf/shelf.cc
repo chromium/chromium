@@ -507,8 +507,9 @@ void Shelf::SetAutoHideBehavior(ShelfAutoHideBehavior auto_hide_behavior) {
     return;
 
   auto_hide_behavior_ = auto_hide_behavior;
-  Shell::Get()->NotifyShelfAutoHideBehaviorChanged(
-      GetWindow()->GetRootWindow());
+
+  for (auto& observer : observers_)
+    observer.OnShelfAutoHideBehaviorChanged();
 }
 
 ShelfAutoHideState Shelf::GetAutoHideState() const {

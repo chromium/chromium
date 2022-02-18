@@ -20,6 +20,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_button_pressed_metric_tracker.h"
+#include "ash/shelf/shelf_observer.h"
 #include "ash/shelf/shelf_tooltip_delegate.h"
 #include "ash/shell_observer.h"
 #include "base/cancelable_callback.h"
@@ -72,11 +73,11 @@ enum ShelfAlignmentUmaEnumValue {
 
 // ShelfView contains the shelf items visible within an active user session.
 // ShelfView and LoginShelfView should never be shown together.
-
 class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                              public ShelfButtonDelegate,
                              public ShelfModelObserver,
                              public ShellObserver,
+                             public ShelfObserver,
                              public views::ContextMenuController,
                              public views::BoundsAnimatorObserver,
                              public ApplicationDragAndDropHost,
@@ -476,7 +477,9 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Overridden from ShellObserver:
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
-  void OnShelfAutoHideBehaviorChanged(aura::Window* root_window) override;
+
+  // ShelfObserver:
+  void OnShelfAutoHideBehaviorChanged() override;
 
   // Shows a shelf context menu with the given |model|, or a default menu.
   void ShowShelfContextMenu(const ShelfID& shelf_id,

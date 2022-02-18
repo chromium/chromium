@@ -398,6 +398,7 @@ ShelfLayoutManager::~ShelfLayoutManager() {
 }
 
 void ShelfLayoutManager::InitObservers() {
+  shelf_->AddObserver(this);
   auto* shell = Shell::Get();
   shell->AddShellObserver(this);
   SplitViewController::Get(shelf_widget_->GetNativeWindow())->AddObserver(this);
@@ -434,6 +435,7 @@ void ShelfLayoutManager::PrepareForShutdown() {
 
   SplitViewController::Get(shelf_widget_->GetNativeWindow())
       ->RemoveObserver(this);
+  shelf_->RemoveObserver(this);
 }
 
 bool ShelfLayoutManager::IsVisible() const {
@@ -999,8 +1001,7 @@ void ShelfLayoutManager::SetChildBounds(aura::Window* child,
   }
 }
 
-void ShelfLayoutManager::OnShelfAutoHideBehaviorChanged(
-    aura::Window* root_window) {
+void ShelfLayoutManager::OnShelfAutoHideBehaviorChanged() {
   UpdateVisibilityState();
 }
 
