@@ -536,10 +536,15 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
             char* baseAddress = 0;
             size_t length = 0;
-            media::ExtractBaseAddressAndLength(&baseAddress, &length,
-                                               sampleBuffer);
-            _frameReceiver->OnPhotoTaken(
-                reinterpret_cast<uint8_t*>(baseAddress), length, "image/jpeg");
+            const bool sample_buffer_addressable =
+                media::ExtractBaseAddressAndLength(&baseAddress, &length,
+                                                   sampleBuffer);
+            DCHECK(sample_buffer_addressable);
+            if (sample_buffer_addressable) {
+              _frameReceiver->OnPhotoTaken(
+                  reinterpret_cast<uint8_t*>(baseAddress), length,
+                  "image/jpeg");
+            }
           }
         }
       }
@@ -623,11 +628,22 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // Trust |_frameReceiver| to do decompression.
   char* baseAddress = 0;
   size_t frameSize = 0;
-  media::ExtractBaseAddressAndLength(&baseAddress, &frameSize, sampleBuffer);
   _lock.AssertAcquired();
-  _frameReceiver->ReceiveFrame(reinterpret_cast<const uint8_t*>(baseAddress),
-                               frameSize, captureFormat, colorSpace, 0, 0,
-                               timestamp);
+  const bool sample_buffer_addressable = media::ExtractBaseAddressAndLength(
+      &baseAddress, &frameSize, sampleBuffer);
+  DCHECK(sample_buffer_addressable);
+  if (sample_buffer_addressable) {
+    const bool safe_to_forward =
+        captureFormat.pixel_format == media::PIXEL_FORMAT_MJPEG ||
+        media::VideoFrame::AllocationSize(
+            captureFormat.pixel_format, captureFormat.frame_size) <= frameSize;
+    DCHECK(safe_to_forward);
+    if (safe_to_forward) {
+      _frameReceiver->ReceiveFrame(
+          reinterpret_cast<const uint8_t*>(baseAddress), frameSize,
+          captureFormat, colorSpace, 0, 0, timestamp);
+    }
+  }
 }
 
 - (BOOL)processPixelBufferPlanes:(CVImageBufferRef)pixelBuffer
