@@ -4,7 +4,7 @@
 
 #include "cc/test/fake_tile_manager_client.h"
 
-#include "cc/tiles/occluded_tile_iterator.h"
+#include "cc/tiles/tiles_with_resource_iterator.h"
 
 namespace cc {
 
@@ -23,8 +23,8 @@ FakeTileManagerClient::BuildEvictionQueue(TreePriority tree_priority) {
   return nullptr;
 }
 
-std::unique_ptr<OccludedTileIterator>
-FakeTileManagerClient::CreateOccludedTileIterator() {
+std::unique_ptr<TilesWithResourceIterator>
+FakeTileManagerClient::CreateTilesWithResourceIterator() {
   return nullptr;
 }
 

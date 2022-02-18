@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/tiles/occluded_tile_iterator.h"
+#include "cc/tiles/tiles_with_resource_iterator.h"
 
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 
 namespace cc {
 
-OccludedTileIterator::OccludedTileIterator(
+TilesWithResourceIterator::TilesWithResourceIterator(
     const std::vector<PictureLayerImpl*>* picture_layers,
     const std::vector<PictureLayerImpl*>* secondary_picture_layers)
     : picture_layers_(picture_layers),
@@ -18,19 +18,38 @@ OccludedTileIterator::OccludedTileIterator(
   FindNextInPictureLayers();
 }
 
-OccludedTileIterator::~OccludedTileIterator() = default;
+TilesWithResourceIterator::~TilesWithResourceIterator() = default;
 
-bool OccludedTileIterator::AtEnd() const {
+bool TilesWithResourceIterator::AtEnd() const {
   return !tile_iterator_.has_value();
 }
 
-Tile* OccludedTileIterator::GetCurrent() {
+Tile* TilesWithResourceIterator::GetCurrent() {
   return AtEnd() ? nullptr : tile_iterator_->GetCurrent();
 }
 
-void OccludedTileIterator::Next() {
+PrioritizedTile* TilesWithResourceIterator::GetCurrentAsPrioritizedTile() {
+  if (prioritized_tile_)
+    return &*prioritized_tile_;
+  Tile* tile = GetCurrent();
+  if (!tile)
+    return nullptr;
+  PictureLayerTiling* tiling = CurrentPictureLayerTiling();
+  prioritized_tile_ = tiling->MakePrioritizedTile(
+      tile, tiling->ComputePriorityRectTypeForTile(tile),
+      tiling->IsTileOccluded(tile));
+  return &*prioritized_tile_;
+}
+
+bool TilesWithResourceIterator::IsCurrentTileOccluded() {
+  Tile* tile = GetCurrent();
+  return tile && tile->tiling()->IsTileOccluded(tile);
+}
+
+void TilesWithResourceIterator::Next() {
   if (AtEnd())
     return;
+  prioritized_tile_.reset();
   DCHECK(tile_iterator_);
   tile_iterator_->Next();
   if (FindNextInTileIterator())
@@ -45,7 +64,7 @@ void OccludedTileIterator::Next() {
   DCHECK(AtEnd());
 }
 
-bool OccludedTileIterator::FindNextInPictureLayers() {
+bool TilesWithResourceIterator::FindNextInPictureLayers() {
   if (FindNextInActiveLayers())
     return true;
   DCHECK(AtEnd());
@@ -61,7 +80,7 @@ bool OccludedTileIterator::FindNextInPictureLayers() {
   return FindNextInActiveLayers();
 }
 
-bool OccludedTileIterator::FindNextInActiveLayers() {
+bool TilesWithResourceIterator::FindNextInActiveLayers() {
   for (; current_picture_layer_index_ < active_layers_->size();
        ++current_picture_layer_index_) {
     current_picture_layer_tiling_index_ = 0u;
@@ -74,7 +93,7 @@ bool OccludedTileIterator::FindNextInActiveLayers() {
   return false;
 }
 
-bool OccludedTileIterator::FindNextInPictureLayerTilingSet() {
+bool TilesWithResourceIterator::FindNextInPictureLayerTilingSet() {
   PictureLayerTilingSet* tiling_set = CurrentPictureLayerTilingSet();
   for (; current_picture_layer_tiling_index_ < tiling_set->num_tilings();
        ++current_picture_layer_tiling_index_) {
@@ -86,24 +105,22 @@ bool OccludedTileIterator::FindNextInPictureLayerTilingSet() {
   return false;
 }
 
-bool OccludedTileIterator::FindNextInTileIterator() {
-  PictureLayerTiling* tiling = CurrentPictureLayerTiling();
+bool TilesWithResourceIterator::FindNextInTileIterator() {
   for (; !tile_iterator_->AtEnd(); tile_iterator_->Next()) {
     Tile* tile = tile_iterator_->GetCurrent();
-    if (visited_.insert(tile).second && tile->draw_info().has_resource() &&
-        tiling->IsTileOccluded(tile_iterator_->GetCurrent())) {
+    if (visited_.insert(tile).second && tile->draw_info().has_resource())
       return true;
-    }
   }
   return false;
 }
 
-PictureLayerTilingSet* OccludedTileIterator::CurrentPictureLayerTilingSet() {
+PictureLayerTilingSet*
+TilesWithResourceIterator::CurrentPictureLayerTilingSet() {
   return (*active_layers_)[current_picture_layer_index_]
       ->picture_layer_tiling_set();
 }
 
-PictureLayerTiling* OccludedTileIterator::CurrentPictureLayerTiling() {
+PictureLayerTiling* TilesWithResourceIterator::CurrentPictureLayerTiling() {
   return CurrentPictureLayerTilingSet()->tiling_at(
       current_picture_layer_tiling_index_);
 }

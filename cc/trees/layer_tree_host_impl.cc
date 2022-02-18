@@ -72,10 +72,10 @@
 #include "cc/tiles/eviction_tile_priority_queue.h"
 #include "cc/tiles/frame_viewer_instrumentation.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
-#include "cc/tiles/occluded_tile_iterator.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/tiles/raster_tile_priority_queue.h"
 #include "cc/tiles/software_image_decode_cache.h"
+#include "cc/tiles/tiles_with_resource_iterator.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/damage_tracker.h"
 #include "cc/trees/debug_rect_history.h"
@@ -637,6 +637,13 @@ void LayerTreeHostImpl::PullLayerTreeHostPropertiesFrom(
   set_viewport_mobile_optimized(commit_state.is_viewport_mobile_optimized);
   SetPrefersReducedMotion(commit_state.prefers_reduced_motion);
   SetMayThrottleIfUndrawnFrames(commit_state.may_throttle_if_undrawn_frames);
+  if (!was_set_memory_policy_called_ &&
+      commit_state.priority_cutoff !=
+          cached_managed_memory_policy_.priority_cutoff_when_visible) {
+    cached_managed_memory_policy_.priority_cutoff_when_visible =
+        commit_state.priority_cutoff;
+    UpdateTileManagerMemoryPolicy(ActualManagedMemoryPolicy());
+  }
 }
 
 void LayerTreeHostImpl::RecordGpuRasterizationHistogram() {
@@ -1863,9 +1870,9 @@ LayerTreeHostImpl::BuildEvictionQueue(TreePriority tree_priority) {
   return queue;
 }
 
-std::unique_ptr<OccludedTileIterator>
-LayerTreeHostImpl::CreateOccludedTileIterator() {
-  return std::make_unique<OccludedTileIterator>(
+std::unique_ptr<TilesWithResourceIterator>
+LayerTreeHostImpl::CreateTilesWithResourceIterator() {
+  return std::make_unique<TilesWithResourceIterator>(
       &active_tree_->picture_layers(),
       pending_tree_ ? &pending_tree_->picture_layers() : nullptr);
 }
@@ -2044,7 +2051,9 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
 void LayerTreeHostImpl::SetMemoryPolicy(const ManagedMemoryPolicy& policy) {
   DCHECK(task_runner_provider_->IsImplThread());
 
-  SetManagedMemoryPolicy(policy);
+  was_set_memory_policy_called_ = true;
+
+  SetMemoryPolicyImpl(policy);
 
   // This is short term solution to synchronously drop tile resources when
   // using synchronous compositing to avoid memory usage regression.
@@ -2070,8 +2079,7 @@ void LayerTreeHostImpl::SetTreeActivationCallback(
   tree_activation_callback_ = std::move(callback);
 }
 
-void LayerTreeHostImpl::SetManagedMemoryPolicy(
-    const ManagedMemoryPolicy& policy) {
+void LayerTreeHostImpl::SetMemoryPolicyImpl(const ManagedMemoryPolicy& policy) {
   if (cached_managed_memory_policy_ == policy)
     return;
 

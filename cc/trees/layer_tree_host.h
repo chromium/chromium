@@ -63,6 +63,7 @@
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/overlay_transform.h"
@@ -593,6 +594,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   const MutatorHost* mutator_host() const {
     return thread_unsafe_commit_state().mutator_host;
   }
+
+  // Overrides the value specified in LayerTreeSettings. Providing an empty
+  // value results in using the value from LayerTreeSettings.
+  void SetPriorityCutoffOverride(
+      absl::optional<gpu::MemoryAllocation::PriorityCutoff> priority_cutoff);
 
   void SetPropertyTreesForTesting(const PropertyTrees* property_trees);
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_TILES_OCCLUDED_TILE_ITERATOR_H_
-#define CC_TILES_OCCLUDED_TILE_ITERATOR_H_
+#ifndef CC_TILES_TILES_WITH_RESOURCE_ITERATOR_H_
+#define CC_TILES_TILES_WITH_RESOURCE_ITERATOR_H_
 
 #include <set>
 #include <vector>
@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling.h"
+#include "cc/tiles/prioritized_tile.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
@@ -18,20 +19,27 @@ namespace cc {
 class PictureLayerImpl;
 class PictureLayerTilingSet;
 
-// Used to iterate over occluded tiles with resources. The order of iteration
-// is not defined.
-class CC_EXPORT OccludedTileIterator {
+// Iterates over all tiles that have a resource. The order of iteration is not
+// defined.
+class CC_EXPORT TilesWithResourceIterator {
  public:
-  OccludedTileIterator(
+  TilesWithResourceIterator(
       const std::vector<PictureLayerImpl*>* picture_layers,
       const std::vector<PictureLayerImpl*>* secondary_picture_layers);
-  OccludedTileIterator(const OccludedTileIterator&) = delete;
-  OccludedTileIterator& operator=(const OccludedTileIterator&) = delete;
-  ~OccludedTileIterator();
+  TilesWithResourceIterator(const TilesWithResourceIterator&) = delete;
+  TilesWithResourceIterator& operator=(const TilesWithResourceIterator&) =
+      delete;
+  ~TilesWithResourceIterator();
 
   bool AtEnd() const;
   void Next();
   Tile* GetCurrent();
+
+  // Returns the PrioritizedTile for the current tile, null if at the end.
+  PrioritizedTile* GetCurrentAsPrioritizedTile();
+
+  // Returns true if the current tile is occluded, false if at the end.
+  bool IsCurrentTileOccluded();
 
  private:
   // The following functions start iterating at the *current* location.
@@ -70,8 +78,11 @@ class CC_EXPORT OccludedTileIterator {
   // Set of tiles that have been visited. Used to ensure the same tile isn't
   // visited more than once.
   std::set<Tile*> visited_;
+
+  // Created when GetCurrentAsPrioritizedTile() is called.
+  absl::optional<PrioritizedTile> prioritized_tile_;
 };
 
 }  // namespace cc
 
-#endif  // CC_TILES_OCCLUDED_TILE_ITERATOR_H_
+#endif  // CC_TILES_TILES_WITH_RESOURCE_ITERATOR_H_

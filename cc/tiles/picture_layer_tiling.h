@@ -328,12 +328,12 @@ class CC_EXPORT PictureLayerTiling {
 
  protected:
   friend class CoverageIterator;
-  friend class OccludedTileIterator;
   friend class PrioritizedTile;
   friend class TileIterator;
   friend class TilingSetRasterQueueAll;
   friend class TilingSetRasterQueueRequired;
   friend class TilingSetEvictionQueue;
+  friend class TilesWithResourceIterator;
 
   // PENDING VISIBLE RECT refers to the visible rect that will become current
   // upon activation (ie, the pending tree's visible rect). Tiles in this

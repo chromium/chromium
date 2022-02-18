@@ -28,8 +28,8 @@
 #include "cc/raster/raster_buffer.h"
 #include "cc/raster/task_category.h"
 #include "cc/tiles/frame_viewer_instrumentation.h"
-#include "cc/tiles/occluded_tile_iterator.h"
 #include "cc/tiles/tile.h"
+#include "cc/tiles/tiles_with_resource_iterator.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -560,6 +560,10 @@ bool TileManager::PrepareTiles(
     return false;
   }
 
+  const bool did_memory_policy_become_more_restrictive =
+      IsTileMemoryLimitPolicyMoreRestictive(state.memory_limit_policy,
+                                            global_state_.memory_limit_policy);
+
   signals_ = Signals();
   global_state_ = state;
 
@@ -578,6 +582,9 @@ bool TileManager::PrepareTiles(
 
   if (!ShouldRasterOccludedTiles())
     FreeResourcesForOccludedTiles();
+
+  if (did_memory_policy_become_more_restrictive)
+    FreeResourcesForTilesThatViolateMemoryPolicy();
 
   PrioritizedWorkToSchedule prioritized_work = AssignGpuMemoryToTiles();
 
@@ -918,10 +925,25 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
 }
 
 void TileManager::FreeResourcesForOccludedTiles() {
-  std::unique_ptr<OccludedTileIterator> iterator =
-      client_->CreateOccludedTileIterator();
-  for (; !iterator->AtEnd(); iterator->Next())
-    FreeResourcesForTile(iterator->GetCurrent());
+  std::unique_ptr<TilesWithResourceIterator> iterator =
+      client_->CreateTilesWithResourceIterator();
+  for (; !iterator->AtEnd(); iterator->Next()) {
+    if (iterator->IsCurrentTileOccluded())
+      FreeResourcesForTile(iterator->GetCurrent());
+  }
+}
+
+void TileManager::FreeResourcesForTilesThatViolateMemoryPolicy() {
+  std::unique_ptr<TilesWithResourceIterator> iterator =
+      client_->CreateTilesWithResourceIterator();
+  for (; !iterator->AtEnd(); iterator->Next()) {
+    const PrioritizedTile* prioritized_tile =
+        iterator->GetCurrentAsPrioritizedTile();
+    DCHECK(prioritized_tile);
+    Tile* tile = prioritized_tile->tile();
+    if (TilePriorityViolatesMemoryPolicy(prioritized_tile->priority()))
+      FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(tile);
+  }
 }
 
 void TileManager::FreeResourcesForTile(Tile* tile) {

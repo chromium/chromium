@@ -10146,6 +10146,87 @@ class LayerTreeHostTestOccludedTileReleased
 
 SINGLE_THREAD_TEST_F(LayerTreeHostTestOccludedTileReleased);
 
+class LayerTreeHostTestPriorityCutoffOverride
+    : public LayerTreeHostTestWithHelper {
+ public:
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    settings->use_occlusion_for_tile_prioritization = true;
+    settings->minimum_occlusion_tracking_size = gfx::Size(60, 60);
+    settings->default_tile_size = gfx::Size(128, 128);
+  }
+
+  void BeginTest() override {
+    layer_tree_host()->SetViewportRectAndScale(gfx::Rect(100, 100), 1.f,
+                                               viz::LocalSurfaceId());
+    layer_tree_host()->root_layer()->SetBounds(gfx::Size(100, 100));
+    picture_layer_ = CreateAndAddFakePictureLayer(gfx::Size(128, 1280));
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
+                                      const Tile* tile) override {
+    const int tile_with_resource_count =
+        GetPictureLayerImpl(host_impl)->GetNumberOfTilesWithResources();
+    switch (phase_) {
+      case Phase::kWaitingForInitialState:
+        if (tile_with_resource_count > 1) {
+          phase_ = Phase::kRequiredOnly;
+          ScheduleChangePriorityCutoff();
+        }
+        break;
+      case Phase::kRequiredOnly:
+        if (tile_with_resource_count == 1) {
+          phase_ = Phase::kBackToAllowEverything;
+          ScheduleChangePriorityCutoff();
+        }
+        break;
+      case Phase::kBackToAllowEverything:
+        if (tile_with_resource_count > 1)
+          EndTest();
+    }
+  }
+
+ private:
+  void ScheduleChangePriorityCutoff() {
+    MainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LayerTreeHostTestPriorityCutoffOverride::ChangePriorityCutoff,
+            base::Unretained(this)));
+  }
+
+  void ChangePriorityCutoff() {
+    layer_tree_host()->SetPriorityCutoffOverride(
+        phase_ == Phase::kRequiredOnly
+            ? gpu::MemoryAllocation::CUTOFF_ALLOW_REQUIRED_ONLY
+            : gpu::MemoryAllocation::CUTOFF_ALLOW_EVERYTHING);
+  }
+
+  // Phases (in order) the test transitions through.
+  enum class Phase {
+    // Waits for more than one tile with a resource.
+    kWaitingForInitialState,
+
+    // Changes the cutoff to CUTOFF_ALLOW_REQUIRED_ONLY, which should trigger
+    // going back to only one tile having a resource.
+    kRequiredOnly,
+
+    // Changes the cutoff back to CUTOFF_ALLOW_EVERYTHING, which should trigger
+    // going back to more than one tile with a resource.
+    kBackToAllowEverything,
+  };
+
+  FakePictureLayerImpl* GetPictureLayerImpl(LayerTreeHostImpl* host_impl) {
+    return static_cast<FakePictureLayerImpl*>(
+        host_impl->sync_tree()->LayerById(picture_layer_->id()));
+  }
+
+  scoped_refptr<FakePictureLayer> picture_layer_;
+  Phase phase_ = Phase::kWaitingForInitialState;
+};
+
+SINGLE_THREAD_TEST_F(LayerTreeHostTestPriorityCutoffOverride);
+
 class LayerTreeHostTestNoCommitDeadlock : public LayerTreeHostTest {
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
   void WillCommit(const CommitState& commit_state) override {

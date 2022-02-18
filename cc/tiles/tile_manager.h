@@ -46,7 +46,7 @@ class TracedValue;
 
 namespace cc {
 class ImageDecodeCache;
-class OccludedTileIterator;
+class TilesWithResourceIterator;
 
 class CC_EXPORT TileManagerClient {
  public:
@@ -80,9 +80,9 @@ class CC_EXPORT TileManagerClient {
   virtual std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue(
       TreePriority tree_priority) = 0;
 
-  // Returns an iterator of the occluded tiles.
-  virtual std::unique_ptr<OccludedTileIterator>
-  CreateOccludedTileIterator() = 0;
+  // Returns an iterator over all the tiles that have a resource.
+  virtual std::unique_ptr<TilesWithResourceIterator>
+  CreateTilesWithResourceIterator() = 0;
 
   // Informs the client that due to the currently rasterizing (or scheduled to
   // be rasterized) tiles, we will be in a position that will likely require a
@@ -379,6 +379,10 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
 
   // Frees the resources of all occluded tiles.
   void FreeResourcesForOccludedTiles();
+
+  // Frees the resources of tiles that violate the memory policy.
+  void FreeResourcesForTilesThatViolateMemoryPolicy();
+
   void FreeResourcesForTile(Tile* tile);
   void FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(Tile* tile);
   scoped_refptr<TileTask> CreateRasterTask(

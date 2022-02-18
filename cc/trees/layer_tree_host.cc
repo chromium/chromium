@@ -158,6 +158,8 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
       (mode == CompositorMode::THREADED);
   pending_commit_state_->needs_full_tree_sync = true;
   pending_commit_state_->debug_state = settings_.initial_debug_state;
+  pending_commit_state_->priority_cutoff =
+      settings_.memory_policy.priority_cutoff_when_visible;
 
   rendering_stats_instrumentation_->set_record_rendering_stats(
       pending_commit_state_->debug_state.RecordRenderingStats());
@@ -1650,6 +1652,18 @@ void LayerTreeHost::SetNeedsFullTreeSync() {
 
 void LayerTreeHost::ResetNeedsFullTreeSyncForTesting() {
   pending_commit_state()->needs_full_tree_sync = false;
+}
+
+void LayerTreeHost::SetPriorityCutoffOverride(
+    absl::optional<gpu::MemoryAllocation::PriorityCutoff> priority_cutoff) {
+  const gpu::MemoryAllocation::PriorityCutoff actual_value =
+      priority_cutoff.has_value()
+          ? *priority_cutoff
+          : settings_.memory_policy.priority_cutoff_when_visible;
+  if (pending_commit_state()->priority_cutoff == actual_value)
+    return;
+  pending_commit_state()->priority_cutoff = actual_value;
+  SetNeedsCommit();
 }
 
 void LayerTreeHost::SetPropertyTreesNeedRebuild() {

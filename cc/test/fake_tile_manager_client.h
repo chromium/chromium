@@ -27,7 +27,8 @@ class FakeTileManagerClient : public TileManagerClient {
       RasterTilePriorityQueue::Type type) override;
   std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue(
       TreePriority tree_priority) override;
-  std::unique_ptr<OccludedTileIterator> CreateOccludedTileIterator() override;
+  std::unique_ptr<TilesWithResourceIterator> CreateTilesWithResourceIterator()
+      override;
   void SetIsLikelyToRequireADraw(bool is_likely_to_require_a_draw) override {}
   TargetColorParams GetTargetColorParams(
       gfx::ContentColorUsage content_color_usage) const override;

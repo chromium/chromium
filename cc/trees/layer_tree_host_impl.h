@@ -517,7 +517,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue(
       TreePriority tree_priority) override;
   void SetIsLikelyToRequireADraw(bool is_likely_to_require_a_draw) override;
-  std::unique_ptr<OccludedTileIterator> CreateOccludedTileIterator() override;
+  std::unique_ptr<TilesWithResourceIterator> CreateTilesWithResourceIterator()
+      override;
   TargetColorParams GetTargetColorParams(
       gfx::ContentColorUsage content_color_usage) const override;
   void RequestImplSideInvalidationForCheckerImagedTiles() override;
@@ -965,7 +966,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   DrawResult CalculateRenderPasses(FrameData* frame);
 
   void StartScrollbarFadeRecursive(LayerImpl* layer);
-  void SetManagedMemoryPolicy(const ManagedMemoryPolicy& policy);
 
   // Once a resource is uploaded or deleted, it is no longer an evicted id, this
   // removes it from the evicted set, and updates if we're able to draw now that
@@ -987,6 +987,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void NotifyLatencyInfoSwapPromiseMonitors();
 
  private:
+  void SetMemoryPolicyImpl(const ManagedMemoryPolicy& policy);
   void SetContextVisibility(bool is_visible);
 
   void ShowScrollbarsForImplScroll(ElementId element_id);
@@ -1289,6 +1290,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   ThrottleDecider throttle_decider_;
 
   std::vector<uint32_t> finished_transition_request_sequence_ids_;
+
+  bool was_set_memory_policy_called_ = false;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.
