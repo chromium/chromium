@@ -45,6 +45,7 @@ class PhotosService : public KeyedService,
     kOptInRHTitle = 0,
     kOptInFavoritesTitle = 1,
     kOptInpersonalizedTitle = 2,
+    kOptInTripsTitle = 3,
   };
 
   static const char kLastDismissedTimePrefName[];
