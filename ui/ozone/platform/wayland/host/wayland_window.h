@@ -230,7 +230,8 @@ class WaylandWindow : public PlatformWindow,
   // Handles close requests.
   virtual void OnCloseRequest();
 
-  // Notifies about drag/drop session events.
+  // Notifies about drag/drop session events. |point| is in DIP as wayland
+  // sends coordinates in "surface-local" coordinates.
   virtual void OnDragEnter(const gfx::PointF& point,
                            std::unique_ptr<OSExchangeData> data,
                            int operation);
@@ -356,7 +357,15 @@ class WaylandWindow : public PlatformWindow,
 
   void UpdateCursorPositionFromEvent(std::unique_ptr<Event> event);
 
+  // Adjusts the |location| to account for the offset of a popup window. If this
+  // is the root window, the location is unchanged.
   gfx::PointF TranslateLocationToRootWindow(const gfx::PointF& location);
+
+  // Returns |location| in the local coordinate space, Window local pixels.
+  // |location| is assumed to be in Wayland coordinate which are DP unless
+  // surface_submission_in_pixel_coordinates is active. Also adjusts for popup
+  // offset if necessary.
+  gfx::PointF ToRootWindowPixel(const gfx::PointF& location);
 
   uint32_t DispatchEventToDelegate(const PlatformEvent& native_event);
 
