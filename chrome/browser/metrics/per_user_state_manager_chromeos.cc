@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/guid.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -29,6 +30,18 @@ absl::optional<bool> g_is_managed_for_testing;
 
 std::string GenerateUserId() {
   return base::GenerateGUID();
+}
+
+// Keep in sync with PerUserIdType enum.
+enum IdResetType {
+  kClientId = 0,
+  kUserId = 1,
+  kMaxValue = kUserId,
+};
+
+// Keep in sync with enum PerUserIdType.
+void RecordIdReset(IdResetType id_type) {
+  base::UmaHistogramEnumeration("UMA.CrosPerUser.IdReset", id_type);
 }
 
 }  // namespace
@@ -311,10 +324,12 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState() {
   // current user has one. Otherwise, clear the pref to reflect that current
   // user does not have a user id.
   auto user_id = GetCurrentUserId();
-  if (user_id.has_value())
+  if (user_id.has_value()) {
     local_state_->SetString(prefs::kMetricsCurrentUserId, user_id.value());
-  else
+  } else {
+    RecordIdReset(kUserId);
     local_state_->ClearPref(prefs::kMetricsCurrentUserId);
+  }
 
   // Only initialize metrics consent to user metrics consent if user is
   // allowed to change the metrics consent.
@@ -417,6 +432,7 @@ void PerUserStateManagerChromeOS::UpdateLocalStatePrefs(bool metrics_enabled) {
   // to on, this will cause the client ID to be reset each time, which is not
   // necessary. Look for a way to allow resetting client id less eager.
   if (user_prefs->GetBoolean(prefs::kMetricsRequiresClientIdResetOnConsent)) {
+    RecordIdReset(kClientId);
     ForceClientIdReset();
   } else {
     user_prefs->SetBoolean(prefs::kMetricsRequiresClientIdResetOnConsent, true);

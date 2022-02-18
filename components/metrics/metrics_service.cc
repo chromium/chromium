@@ -203,6 +203,20 @@ const int kInitializationDelaySeconds = 30;
 // The browser last live timestamp is updated every 15 minutes.
 const int kUpdateAliveTimestampSeconds = 15 * 60;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+enum UserLogStoreState {
+  kSetPostSendLogsState = 0,
+  kSetPreSendLogsState = 1,
+  kUnsetPostSendLogsState = 2,
+  kUnsetPreSendLogsState = 3,
+  kMaxValue = kUnsetPreSendLogsState,
+};
+
+void RecordUserLogStoreState(UserLogStoreState state) {
+  base::UmaHistogramEnumeration("UMA.CrosPerUser.UserLogStoreState", state);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 // static
@@ -487,6 +501,7 @@ void MetricsService::SetUserLogStore(
     PushPendingLogsToPersistentStorage();
     log_store()->SetAlternateOngoingLogStore(std::move(user_log_store));
     OpenNewLog();
+    RecordUserLogStoreState(kSetPostSendLogsState);
   } else {
     // Initial log has not yet been created and flushing now would result in
     // incomplete information in the current log.
@@ -496,9 +511,8 @@ void MetricsService::SetUserLogStore(
     //
     // TODO(crbug/1264627): Look for a way to "pause" pre-login logs and flush
     // when INIT_TASK is done.
-    // TODO(crbug/1264625): Add histogram before launch to monitor how
-    // frequently this happens.
     log_store()->SetAlternateOngoingLogStore(std::move(user_log_store));
+    RecordUserLogStoreState(kSetPreSendLogsState);
   }
 }
 
@@ -510,17 +524,16 @@ void MetricsService::UnsetUserLogStore() {
     PushPendingLogsToPersistentStorage();
     log_store()->UnsetAlternateOngoingLogStore();
     OpenNewLog();
+    RecordUserLogStoreState(kUnsetPostSendLogsState);
   } else {
     // Fast startup and logout case. A call to |RecordCurrentHistograms()| is
     // made to flush all histograms into the current log and the log is
     // discarded. This is to prevent histograms captured during the user session
     // from leaking into local state logs.
-    //
-    // TODO(crbug/1264625): Add histogram before launch to monitor how
-    // frequently this happens.
     RecordCurrentHistograms();
     log_manager_.DiscardCurrentLog();
     log_store()->UnsetAlternateOngoingLogStore();
+    RecordUserLogStoreState(kUnsetPreSendLogsState);
   }
 }
 
@@ -548,9 +561,6 @@ void MetricsService::UpdateCurrentUserMetricsConsent(
 void MetricsService::ResetClientId() {
   // Pref must be cleared in order for ForceClientIdCreation to generate a new
   // client ID.
-  //
-  // TODO(crbug/1264625): Add histogram to monitor how frequently this is called
-  // before launching per-user collection.
   local_state_->ClearPref(prefs::kMetricsClientID);
   state_manager_->ForceClientIdCreation();
   client_->SetMetricsClientId(state_manager_->client_id());

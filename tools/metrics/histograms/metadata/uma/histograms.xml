@@ -180,6 +180,29 @@ chromium-metrics-reviews@google.com.
   <summary>The source of the client id when its creation is forced.</summary>
 </histogram>
 
+<histogram name="UMA.CrosPerUser.IdReset" enum="PerUserIdType"
+    expires_after="2022-10-01">
+  <owner>jongahn@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    Counts the number of times an ID was reset. The client ID is reset when a
+    known user who has sent metrics before re-enables metrics collection. This
+    is to preserve pseudo-anonymity of the (client_id, user_id) pair. The user
+    ID is reset whenever per-user eligible user turns off metrics collection.
+  </summary>
+</histogram>
+
+<histogram name="UMA.CrosPerUser.UserLogStoreState" enum="PerUserLogStoreState"
+    expires_after="2022-10-01">
+  <owner>jongahn@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    Records the state that metrics service is in when user log store was set or
+    unset. This should be recorded once when a valid user that can use per-user
+    logs in and unsetting should be recorded once when a user logs out.
+  </summary>
+</histogram>
+
 <histogram name="UMA.DataValidation.LogNormal" units="random values"
     expires_after="never">
 <!-- expires-never: needed for ensuring correct UMA operation -->

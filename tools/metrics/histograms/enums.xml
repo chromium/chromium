@@ -71110,6 +71110,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Serialization error"/>
 </enum>
 
+<enum name="PerUserIdType">
+  <int value="0" label="Client ID"/>
+  <int value="1" label="User ID"/>
+</enum>
+
+<enum name="PerUserLogStoreState">
+  <int value="0" label="Set post-sending logs state"/>
+  <int value="1" label="Set pre-sending logs state"/>
+  <int value="2" label="Unset post-sending logs state"/>
+  <int value="3" label="Unset pre-sending logs state"/>
+</enum>
+
 <enum name="PhoneCollectionState">
   <int value="0" label="Phone Not Collected, WebOTP Not Used, OTC Not Used"/>
   <int value="1" label="Phone Not Collected, WebOTP Not Used, OTC Used"/>
