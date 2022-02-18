@@ -28,6 +28,8 @@ class FakeCdmFactoryDaemonClient : public CdmFactoryDaemonClient {
   void BootstrapMojoConnection(
       base::ScopedFD fd,
       base::OnceCallback<void(bool success)> callback) override;
+  void WaitForServiceToBeAvailable(
+      WaitForServiceToBeAvailableCallback callback) override;
 };
 
 }  // namespace chromeos

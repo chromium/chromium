@@ -22,4 +22,9 @@ void FakeCdmFactoryDaemonClient::BootstrapMojoConnection(
   std::move(callback).Run(success);
 }
 
+void FakeCdmFactoryDaemonClient::WaitForServiceToBeAvailable(
+    WaitForServiceToBeAvailableCallback callback) {
+  std::move(callback).Run(true);
+}
+
 }  // namespace chromeos

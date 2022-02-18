@@ -9,6 +9,7 @@ component("cdm_factory_daemon") {
 
   deps = [
     "//base",
+    "//chromeos/dbus:common",
     "//dbus",
   ]
 

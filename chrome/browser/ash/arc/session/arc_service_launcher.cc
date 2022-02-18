@@ -100,6 +100,18 @@
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+
+// Delay for repeatedly checking if the TPM is owned or not.
+constexpr base::TimeDelta kTpmOwnershipCheckDelay = base::Seconds(5);
+// Timeout for waiting for the daemon to become available after we have owned
+// the TPM.
+constexpr base::TimeDelta kDaemonWaitTimeoutSec = base::Seconds(30);
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 namespace arc {
 namespace {
 
@@ -150,7 +162,22 @@ ArcServiceLauncher* ArcServiceLauncher::Get() {
 }
 
 void ArcServiceLauncher::Initialize() {
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+  // If we have ARC HWDRM then we need to wait for the CdmFactoryDaemon service
+  // to advertise avalability so that arc-prepare-host-generated-dir can query
+  // it via D-Bus for the CDM client information.
+  chromeos::CdmFactoryDaemonClient::Get()->WaitForServiceToBeAvailable(
+      base::BindOnce(&ArcServiceLauncher::OnCdmFactoryDaemonAvailable,
+                     weak_factory_.GetWeakPtr(), /*from_timeout=*/false));
+
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ArcServiceLauncher::OnCheckTpmStatus,
+                     weak_factory_.GetWeakPtr()),
+      kTpmOwnershipCheckDelay);
+#else
   arc_session_manager_->ExpandPropertyFilesAndReadSalt();
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 }
 
 void ArcServiceLauncher::MaybeSetProfile(Profile* profile) {
@@ -306,5 +333,55 @@ void ArcServiceLauncher::ResetForTesting() {
       arc_service_manager_->arc_bridge_service(), chrome::GetChannel(),
       scheduler_configuration_manager_);
 }
+
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+void ArcServiceLauncher::OnCdmFactoryDaemonAvailable(
+    bool from_timeout,
+    bool is_service_available) {
+  if (is_service_available && !expanded_property_files_) {
+    if (from_timeout) {
+      LOG(ERROR)
+          << "Timed out waiting for CdmFactoryDaemon service in ARC startup";
+    }
+    expanded_property_files_ = true;
+    arc_session_manager_->ExpandPropertyFilesAndReadSalt();
+    weak_factory_.InvalidateWeakPtrs();
+  }
+}
+
+void ArcServiceLauncher::OnCheckTpmStatus() {
+  chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
+      ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
+      base::BindOnce(&ArcServiceLauncher::OnGetTpmStatus,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ArcServiceLauncher::OnGetTpmStatus(
+    const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply) {
+  if (expanded_property_files_)
+    return;
+
+  if (reply.status() == ::tpm_manager::TpmManagerStatus::STATUS_SUCCESS &&
+      reply.is_owned()) {
+    // The TPM is owned, so we should invoke OnCdmFactoryDaemonAvailable() after
+    // our timeout so that the property files get expanded even if the daemon
+    // doesn't come online.
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ArcServiceLauncher::OnCdmFactoryDaemonAvailable,
+                       weak_factory_.GetWeakPtr(),
+                       /*from_timeout=*/true,
+                       /*is_service_available=*/true),
+        kDaemonWaitTimeoutSec);
+    return;
+  }
+
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ArcServiceLauncher::OnCheckTpmStatus,
+                     weak_factory_.GetWeakPtr()),
+      kTpmOwnershipCheckDelay);
+}
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
 }  // namespace arc
