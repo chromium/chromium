@@ -73,6 +73,8 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
     case ThemeProperties::COLOR_OMNIBOX_TEXT:
     case ThemeProperties::COLOR_OMNIBOX_SELECTED_KEYWORD:
     case ThemeProperties::COLOR_OMNIBOX_BUBBLE_OUTLINE:
+    case ThemeProperties::
+        COLOR_OMNIBOX_BUBBLE_OUTLINE_EXPERIMENTAL_KEYWORD_MODE:
     case ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED:
     case ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON:
     case ThemeProperties::COLOR_OMNIBOX_RESULTS_URL:

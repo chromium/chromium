@@ -250,11 +250,6 @@ SkColor ThemeHelper::GetColor(int id,
                               const CustomThemeSupplier* theme_supplier) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const absl::optional<SkColor> omnibox_color =
-      GetOmniboxColor(id, incognito, theme_supplier);
-  if (omnibox_color.has_value())
-    return omnibox_color.value();
-
   if (theme_supplier && !incognito) {
     SkColor color;
     if (theme_supplier->GetColor(id, &color))
@@ -313,6 +308,11 @@ SkColor ThemeHelper::GetDefaultColor(
   if (TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREY <= id &&
       id <= TP::MAX_COLOR_BOOKMARK_BAR)
     return GetTabGroupColor(id, incognito, theme_supplier);
+
+  const absl::optional<SkColor> omnibox_color =
+      GetOmniboxColor(id, incognito, theme_supplier);
+  if (omnibox_color.has_value())
+    return omnibox_color.value();
 
   // For backward compat with older themes, some newer colors are generated from
   // older ones if they are missing.
@@ -539,29 +539,18 @@ absl::optional<SkColor> ThemeHelper::GetOmniboxColor(
     int id,
     bool incognito,
     const CustomThemeSupplier* theme_supplier) const {
-  // Avoid infinite loop caused by GetColor(TP::COLOR_TOOLBAR) call in
-  // GetOmniboxColorImpl().
-  if (id == TP::COLOR_TOOLBAR)
+  // The base colors are not computed; avoid infinite recursion.  COLOR_TOOLBAR
+  // must also be excluded since it's used in the base definition of
+  // COLOR_OMNIBOX_BACKGROUND.
+  if (id == TP::COLOR_OMNIBOX_BACKGROUND || id == TP::COLOR_OMNIBOX_TEXT ||
+      id == TP::COLOR_TOOLBAR) {
     return absl::nullopt;
-
-  const auto get_base_color = [&](int id) {
-    SkColor color;
-    if (theme_supplier && theme_supplier->GetColor(id, &color))
-      return color;
-    return GetDefaultColor(id, incognito, theme_supplier);
-  };
+  }
 
   // Compute the two base colors, |bg| and |fg|.
-  SkColor bg = color_utils::GetResultingPaintColor(
-      get_base_color(TP::COLOR_OMNIBOX_BACKGROUND),
-      GetColor(TP::COLOR_TOOLBAR, incognito, nullptr));
-  // Returning early here avoids an infinite loop in computing |fg|, caused by
-  // the default color for COLOR_OMNIBOX_TEXT being based on
-  // COLOR_OMNIBOX_BACKGROUND.
-  if (id == TP::COLOR_OMNIBOX_BACKGROUND)
-    return bg;
-  SkColor fg = color_utils::GetResultingPaintColor(
-      get_base_color(TP::COLOR_OMNIBOX_TEXT), bg);
+  SkColor bg =
+      GetColor(TP::COLOR_OMNIBOX_BACKGROUND, incognito, theme_supplier);
+  SkColor fg = GetColor(TP::COLOR_OMNIBOX_TEXT, incognito, theme_supplier);
 
   // Certain output cases are based on inverted bg/fg.
   const bool high_contrast =
@@ -619,7 +608,6 @@ absl::optional<SkColor> ThemeHelper::GetOmniboxColor(
     return blend_for_min_contrast(fg, fg, blend_for_min_contrast(bg, bg));
   };
   switch (id) {
-    case TP::COLOR_OMNIBOX_TEXT:
     case TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED:
       return fg;
     case TP::COLOR_OMNIBOX_BACKGROUND_HOVERED:

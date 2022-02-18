@@ -97,7 +97,7 @@ constexpr int kTallestFrameHeight = kTallestTabHeight + 19;
 // changed default theme assets, if you need themes to recreate their generated
 // images (which are cached), if you changed how missing values are
 // generated, or if you changed any constants.
-const int kThemePackVersion = 84;
+const int kThemePackVersion = 85;
 
 // IDs that are in the DataPack won't clash with the positive integer
 // uint16_t. kHeaderID should always have the maximum value because we want the
@@ -1125,10 +1125,6 @@ void BrowserThemePack::AddColorMixers(
 void BrowserThemePack::AdjustThemePack() {
   CropImages(&images_);
 
-  // Set frame and toolbar related elements' colors (e.g. status bubble,
-  // info bar, download shelf) to frame or toolbar color.
-  SetFrameAndToolbarRelatedColors();
-
   // Create toolbar image, and generate toolbar color from image where relevant.
   // This must be done after reading colors from JSON (so they can be used for
   // compositing the image).
@@ -1143,6 +1139,10 @@ void BrowserThemePack::AdjustThemePack() {
   // generating colors from the frame images, so only colors with no matching
   // images are generated.
   GenerateFrameColorsFromTints();
+
+  // Set frame and toolbar related elements' colors (e.g. status bubble,
+  // info bar, download shelf) to frame or toolbar color.
+  SetFrameAndToolbarRelatedColors();
 
   // Generate background color information for window control buttons.  This
   // must be done after frame colors are set, since they are used when
@@ -1559,6 +1559,8 @@ void BrowserThemePack::SetFrameAndToolbarRelatedColors() {
         color_utils::BlendForMinContrast(toolbar_text_color, toolbar_color)
             .color;
     SetColorIfUnspecified(TP::COLOR_TOOLBAR_TEXT, toolbar_text_color);
+  } else {
+    toolbar_color = TP::GetDefaultColor(TP::COLOR_TOOLBAR, false);
   }
   SkColor toolbar_button_icon_color;
   color_utils::HSL button_tint;
@@ -1587,6 +1589,21 @@ void BrowserThemePack::SetFrameAndToolbarRelatedColors() {
                &tab_foreground_color)) {
     SetColor(TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE,
              tab_foreground_color);
+  }
+  SkColor omnibox_background_color;
+  if (GetColor(TP::COLOR_OMNIBOX_BACKGROUND, &omnibox_background_color)) {
+    SetColor(TP::COLOR_OMNIBOX_BACKGROUND,
+             color_utils::GetResultingPaintColor(omnibox_background_color,
+                                                 toolbar_color));
+  } else {
+    omnibox_background_color =
+        TP::GetDefaultColor(TP::COLOR_OMNIBOX_BACKGROUND, false);
+  }
+  SkColor omnibox_text_color;
+  if (GetColor(TP::COLOR_OMNIBOX_TEXT, &omnibox_text_color)) {
+    SetColor(TP::COLOR_OMNIBOX_TEXT,
+             color_utils::GetResultingPaintColor(omnibox_text_color,
+                                                 omnibox_background_color));
   }
 }
 
