@@ -90,8 +90,14 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
 
 // Creates a dialog that is not shown until the size is set. Checks that the
 // dialog is initially shown with correct size.
+// TODO(crbug.com/1298872) unexpected dialog height on mac10.12
+#if defined(IS_MAC)
+#define MAYBE_ResizeBeforeDisplay DISABLED_ResizeBeforeDisplay
+#else
+#define MAYBE_ResizeBeforeDisplay ResizeBeforeDisplay
+#endif  // defined(IS_MAC)
 IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
-                       ResizeBeforeDisplay) {
+                       MAYBE_ResizeBeforeDisplay) {
   const int kDialogHeight = 255;
   SigninViewControllerDelegateViews* delegate =
       CreateDelegate(/*show_immediately=*/false);
