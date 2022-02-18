@@ -116,15 +116,40 @@ using OmniboxApiTest = ExtensionApiTest;
 
 }  // namespace
 
-// http://crbug.com/167158
-IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_Basic) {
-  ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
-
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SendSuggestions) {
   // The results depend on the TemplateURLService being loaded. Make sure it is
   // loaded so that the autocomplete results are consistent.
   Profile* profile = browser()->profile();
   search_test_utils::WaitForTemplateURLServiceToLoad(
       TemplateURLServiceFactory::GetForProfile(profile));
+
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true }
+         })";
+  constexpr char kBackground[] =
+      R"(chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           let richDescription =
+               'Description with style: <match>&lt;match&gt;</match>, ' +
+               '<dim>[dim]</dim>, <url>(url)</url>';
+           let simpleDescription = 'simple description';
+           suggest([
+             {content: text + ' first', description: richDescription},
+             {content: text + ' second', description: simpleDescription},
+             {content: text + ' third', description: simpleDescription},
+           ]);
+         });)";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
 
   AutocompleteController* autocomplete_controller =
       GetAutocompleteController(browser());
@@ -132,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_Basic) {
   // Test that our extension's keyword is suggested to us when we partially type
   // it.
   {
-    AutocompleteInput input(u"keywor", metrics::OmniboxEventProto::NTP,
+    AutocompleteInput input(u"alph", metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile));
     autocomplete_controller->Start(input);
     WaitForAutocompleteDone(browser());
@@ -148,99 +173,80 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_Basic) {
     EXPECT_FALSE(match.deletable);
 
     match = result.match_at(1);
-    EXPECT_EQ(u"kw", match.keyword);
+    EXPECT_EQ(u"alpha", match.keyword);
   }
 
   // Test that our extension can send suggestions back to us.
+  AutocompleteInput input(u"alpha input", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile));
+  autocomplete_controller->Start(input);
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  // Now, peek into the controller to see if it has the results we expect.
+  // First result should be to invoke the keyword with what we typed, 2-4
+  // should be to invoke with suggestions from the extension, and the last
+  // should be to search for what we typed.
+  const AutocompleteResult& result = autocomplete_controller->result();
+  ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
+
+  // Invoke the keyword with what we typed.
+  EXPECT_EQ(u"alpha", result.match_at(0).keyword);
+  EXPECT_EQ(u"alpha input", result.match_at(0).fill_into_edit);
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_OTHER_ENGINE,
+            result.match_at(0).type);
+  EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+            result.match_at(0).provider->type());
+
+  // First suggestion, complete with rich description.
   {
-    AutocompleteInput input(u"kw suggestio", metrics::OmniboxEventProto::NTP,
-                            ChromeAutocompleteSchemeClassifier(profile));
-    autocomplete_controller->Start(input);
-    WaitForAutocompleteDone(browser());
-    EXPECT_TRUE(autocomplete_controller->done());
-
-    // Now, peek into the controller to see if it has the results we expect.
-    // First result should be to invoke the keyword with what we typed, 2-4
-    // should be to invoke with suggestions from the extension, and the last
-    // should be to search for what we typed.
-    const AutocompleteResult& result = autocomplete_controller->result();
-    ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
-
-    EXPECT_EQ(u"kw", result.match_at(0).keyword);
-    EXPECT_EQ(u"kw suggestio", result.match_at(0).fill_into_edit);
-    EXPECT_EQ(AutocompleteMatchType::SEARCH_OTHER_ENGINE,
-              result.match_at(0).type);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
-              result.match_at(0).provider->type());
-    EXPECT_EQ(u"kw", result.match_at(1).keyword);
-    EXPECT_EQ(u"kw suggestion1", result.match_at(1).fill_into_edit);
+    EXPECT_EQ(u"alpha", result.match_at(1).keyword);
+    EXPECT_EQ(u"alpha input first", result.match_at(1).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(1).provider->type());
-    EXPECT_EQ(u"kw", result.match_at(2).keyword);
-    EXPECT_EQ(u"kw suggestion2", result.match_at(2).fill_into_edit);
+
+    std::u16string rich_description =
+        u"Description with style: <match>, [dim], (url)";
+    EXPECT_EQ(rich_description, result.match_at(1).contents);
+    const ExpectedMatchComponents expected_components = {
+        {u"Description with style: ", ACMatchClassification::NONE},
+        {u"<match>", ACMatchClassification::MATCH},
+        {u", ", ACMatchClassification::NONE},
+        {u"[dim]", ACMatchClassification::DIM},
+        {u", ", ACMatchClassification::NONE},
+        {u"(url)", ACMatchClassification::URL},
+    };
+    VerifyMatchComponents(expected_components, result.match_at(1));
+  }
+
+  // Second and third suggestions, with simple descriptions.
+  {
+    std::u16string simple_description = u"simple description";
+    const ExpectedMatchComponents expected_components = {
+        {simple_description, ACMatchClassification::NONE},
+    };
+
+    EXPECT_EQ(u"alpha", result.match_at(2).keyword);
+    EXPECT_EQ(u"alpha input second", result.match_at(2).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(2).provider->type());
-    EXPECT_EQ(u"kw", result.match_at(3).keyword);
-    EXPECT_EQ(u"kw suggestion3", result.match_at(3).fill_into_edit);
+    EXPECT_EQ(simple_description, result.match_at(2).contents);
+    VerifyMatchComponents(expected_components, result.match_at(2));
+
+    EXPECT_EQ(u"alpha", result.match_at(3).keyword);
+    EXPECT_EQ(u"alpha input third", result.match_at(3).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(3).provider->type());
-
-    std::u16string description =
-        u"Description with style: <match>, [dim], (url till end)";
-    EXPECT_EQ(description, result.match_at(1).contents);
-    ASSERT_EQ(6u, result.match_at(1).contents_class.size());
-
-    EXPECT_EQ(0u, result.match_at(1).contents_class[0].offset);
-    EXPECT_EQ(ACMatchClassification::NONE,
-              result.match_at(1).contents_class[0].style);
-
-    EXPECT_EQ(description.find('<'),
-              result.match_at(1).contents_class[1].offset);
-    EXPECT_EQ(ACMatchClassification::MATCH,
-              result.match_at(1).contents_class[1].style);
-
-    EXPECT_EQ(description.find('>') + 1u,
-              result.match_at(1).contents_class[2].offset);
-    EXPECT_EQ(ACMatchClassification::NONE,
-              result.match_at(1).contents_class[2].style);
-
-    EXPECT_EQ(description.find('['),
-              result.match_at(1).contents_class[3].offset);
-    EXPECT_EQ(ACMatchClassification::DIM,
-              result.match_at(1).contents_class[3].style);
-
-    EXPECT_EQ(description.find(']') + 1u,
-              result.match_at(1).contents_class[4].offset);
-    EXPECT_EQ(ACMatchClassification::NONE,
-              result.match_at(1).contents_class[4].style);
-
-    EXPECT_EQ(description.find('('),
-              result.match_at(1).contents_class[5].offset);
-    EXPECT_EQ(ACMatchClassification::URL,
-              result.match_at(1).contents_class[5].style);
-
-    AutocompleteMatch match = result.match_at(4);
-    EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
-    EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
-              result.match_at(4).provider->type());
-    EXPECT_FALSE(match.deletable);
+    EXPECT_EQ(simple_description, result.match_at(3).contents);
+    VerifyMatchComponents(expected_components, result.match_at(3));
   }
 
-  // Flaky, see http://crbug.com/167158
-  /*
-  {
-    LocationBar* location_bar = GetLocationBar(browser());
-    ResultCatcher catcher;
-    OmniboxView* omnibox_view = location_bar->GetOmniboxView();
-    omnibox_view->OnBeforePossibleChange();
-    omnibox_view->SetUserText(u"kw command");
-    omnibox_view->OnAfterPossibleChange(true);
-    location_bar->AcceptInput();
-    // This checks that the keyword provider (via javascript)
-    // gets told to navigate to the string "command".
-    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-  }
-  */
+  // Final option, search what you typed.
+  AutocompleteMatch match = result.match_at(4);
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
+  EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
+            result.match_at(4).provider->type());
+  EXPECT_FALSE(match.deletable);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
