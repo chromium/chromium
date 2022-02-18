@@ -5,6 +5,7 @@
 #include "chrome/updater/app/app_install.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -54,7 +55,8 @@ class AppInstallControllerImpl : public AppInstallController {
   explicit AppInstallControllerImpl(
       scoped_refptr<UpdateService> /*update_service*/) {}
   // Override for AppInstallController.
-  void InstallApp(const std::string& app_id,
+  void InstallApp(const std::string& /*app_id*/,
+                  const std::string& /*app_name*/,
                   base::OnceCallback<void(int)> callback) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), 0));
@@ -68,9 +70,10 @@ class AppInstallControllerImpl : public AppInstallController {
 
 scoped_refptr<App> MakeAppInstall() {
   return base::MakeRefCounted<AppInstall>(
-      base::BindRepeating([]() -> std::unique_ptr<SplashScreen> {
-        return std::make_unique<SplashScreenImpl>();
-      }),
+      base::BindRepeating(
+          [](const std::string& /*app_name*/) -> std::unique_ptr<SplashScreen> {
+            return std::make_unique<SplashScreenImpl>();
+          }),
       base::BindRepeating([](scoped_refptr<UpdateService> update_service)
                               -> scoped_refptr<AppInstallController> {
         return base::MakeRefCounted<AppInstallControllerImpl>(update_service);
@@ -102,7 +105,28 @@ void AppInstall::FirstTaskRun() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::ThreadTaskRunnerHandle::IsSet());
 
-  splash_screen_ = splash_screen_maker_.Run();
+  const TagParsingResult tag_parsing_result = GetTagArgs();
+
+  // A tag parsing error is handled as an fatal error.
+  if (tag_parsing_result.error != tagging::ErrorCode::kSuccess) {
+    Shutdown(kErrorTagParsing);
+    return;
+  }
+  const tagging::TagArgs tag_args =
+      tag_parsing_result.tag_args.value_or(tagging::TagArgs());
+  if (!tag_args.apps.empty()) {
+    // TODO(crbug.com/1128631): support bundles. For now, assume one app.
+    DCHECK_EQ(tag_args.apps.size(), size_t{1});
+    const tagging::AppArgs& app_args = tag_args.apps.front();
+    app_id_ = app_args.app_id;
+    app_name_ = app_args.app_name;
+  } else {
+    // If no apps are present, try to use --app-id, if present.
+    app_id_ = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+        kAppIdSwitch);
+  }
+
+  splash_screen_ = splash_screen_maker_.Run(app_name_);
   splash_screen_->Show();
 
   // Creating instances of `UpdateServiceProxy` is possible only after task
@@ -205,28 +229,13 @@ void AppInstall::RegisterUpdater() {
 
 void AppInstall::MaybeInstallApp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const std::string app_id = []() {
-    absl::optional<tagging::TagArgs> tag_args = GetTagArgs();
-    if (tag_args && !tag_args->apps.empty()) {
-      // TODO(crbug.com/1128631): support bundles. For now, assume one app.
-      DCHECK_EQ(tag_args->apps.size(), size_t{1});
-      const std::string& app_id = tag_args->apps.front().app_id;
-      if (!app_id.empty()) {
-        return app_id;
-      }
-    }
-    return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-        kAppIdSwitch);
-  }();
-
-  if (app_id.empty()) {
+  if (app_id_.empty()) {
     Shutdown(kErrorOk);
     return;
   }
   app_install_controller_ = app_install_controller_maker_.Run(update_service_);
   app_install_controller_->InstallApp(
-      app_id, base::BindOnce(&AppInstall::Shutdown, this));
+      app_id_, app_name_, base::BindOnce(&AppInstall::Shutdown, this));
 }
 
 }  // namespace updater

@@ -48,10 +48,6 @@
 namespace updater {
 namespace {
 
-// TODO(sorin): remove the hardcoding of the application name.
-// https://crbug.com/1296931
-constexpr char16_t kAppNameChrome[] = u"Google Chrome";
-
 // Implements a simple inter-thread communication protocol based on Windows
 // messages exchanged between the application installer and its UI.
 //
@@ -380,6 +376,7 @@ class AppInstallControllerImpl : public AppInstallController,
 
   // Override for AppInstallController.
   void InstallApp(const std::string& app_id,
+                  const std::string& app_name,
                   base::OnceCallback<void(int)> callback) override;
 
  private:
@@ -429,9 +426,9 @@ class AppInstallControllerImpl : public AppInstallController,
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   // The application ID and the associated application name. The application
-  // name is displayed by the UI and it must be i18n.
+  // name is displayed by the UI and it must be localized.
   std::string app_id_;
-  const std::u16string app_name_;
+  std::u16string app_name_;
 
   // The out-of-process service used for making RPC calls to install the app.
   scoped_refptr<UpdateService> update_service_;
@@ -459,17 +456,18 @@ AppInstallControllerImpl::AppInstallControllerImpl(
           {base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
-      app_name_(kAppNameChrome),
       update_service_(update_service) {}
 AppInstallControllerImpl::~AppInstallControllerImpl() = default;
 
 void AppInstallControllerImpl::InstallApp(
     const std::string& app_id,
+    const std::string& app_name,
     base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::ThreadTaskRunnerHandle::IsSet());
 
   app_id_ = app_id;
+  app_name_ = base::UTF8ToUTF16(app_name);
   callback_ = std::move(callback);
 
   ui_task_runner_->PostTaskAndReply(
@@ -684,9 +682,11 @@ bool AppInstallControllerImpl::DoReboot() {
 
 scoped_refptr<App> MakeAppInstall() {
   return base::MakeRefCounted<AppInstall>(
-      base::BindRepeating([]() -> std::unique_ptr<SplashScreen> {
-        return std::make_unique<ui::SplashScreen>(kAppNameChrome);
-      }),
+      base::BindRepeating(
+          [](const std::string& app_name) -> std::unique_ptr<SplashScreen> {
+            return std::make_unique<ui::SplashScreen>(
+                base::UTF8ToUTF16(app_name));
+          }),
       base::BindRepeating([](scoped_refptr<UpdateService> update_service)
                               -> scoped_refptr<AppInstallController> {
         return base::MakeRefCounted<AppInstallControllerImpl>(update_service);

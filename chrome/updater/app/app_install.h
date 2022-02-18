@@ -32,6 +32,7 @@ class AppInstallController
   using Maker = base::RepeatingCallback<scoped_refptr<AppInstallController>(
       scoped_refptr<UpdateService> update_service)>;
   virtual void InstallApp(const std::string& app_id,
+                          const std::string& app_name,
                           base::OnceCallback<void(int)> callback) = 0;
 
  protected:
@@ -73,6 +74,11 @@ class AppInstall : public App {
 
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // The `app_id_` is parsed from the tag, if the the tag is present, or from
+  // the command line argument --app-id.
+  std::string app_id_;
+  std::string app_name_;
 
   // Creates instances of |SplashScreen|.
   SplashScreen::Maker splash_screen_maker_;

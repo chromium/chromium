@@ -99,8 +99,19 @@ base::FilePath GetExecutableRelativePath();
 
 // Returns the parsed values from --tag command line argument. The function
 // implementation uses lazy initialization and caching to avoid reparsing
-// the tag.
-absl::optional<tagging::TagArgs> GetTagArgs();
+// the tag. The function returns {} if there was no tag at all. An error is
+// set if the tag fails to parse.
+struct TagParsingResult {
+  TagParsingResult();
+  TagParsingResult(absl::optional<tagging::TagArgs> tag_args,
+                   tagging::ErrorCode error);
+  ~TagParsingResult();
+  TagParsingResult(const TagParsingResult&);
+  TagParsingResult& operator=(const TagParsingResult&);
+  absl::optional<tagging::TagArgs> tag_args;
+  tagging::ErrorCode error = tagging::ErrorCode::kSuccess;
+};
+TagParsingResult GetTagArgs();
 
 // Returns the arguments corresponding to `app_id` from the command line tag.
 absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id);

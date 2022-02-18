@@ -160,9 +160,17 @@ absl::optional<base::FilePath> GetVersionedUpdaterFolderPath(
       scope, base::Version(kUpdaterVersion));
 }
 
-absl::optional<tagging::TagArgs> GetTagArgs() {
-  static const absl::optional<tagging::TagArgs> tag_args =
-      []() -> absl::optional<tagging::TagArgs> {
+TagParsingResult::TagParsingResult() = default;
+TagParsingResult::TagParsingResult(absl::optional<tagging::TagArgs> tag_args,
+                                   tagging::ErrorCode error)
+    : tag_args(tag_args), error(error) {}
+TagParsingResult::~TagParsingResult() = default;
+TagParsingResult::TagParsingResult(const TagParsingResult&) = default;
+TagParsingResult& TagParsingResult::operator=(const TagParsingResult&) =
+    default;
+
+TagParsingResult GetTagArgs() {
+  static const TagParsingResult tag_args = []() -> TagParsingResult {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     std::string tag = command_line->HasSwitch(kTagSwitch)
                           ? command_line->GetSwitchValueASCII(kTagSwitch)
@@ -173,21 +181,20 @@ absl::optional<tagging::TagArgs> GetTagArgs() {
                                          base::ASCIIToWide(kHandoffSwitch));
 #endif
     if (tag.empty())
-      return absl::nullopt;
+      return {};
     tagging::TagArgs tag_args;
     const tagging::ErrorCode error =
         tagging::Parse(tag, absl::nullopt, &tag_args);
     VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
         << "Tag parsing returned " << error << ".";
-    return error == tagging::ErrorCode::kSuccess ? absl::make_optional(tag_args)
-                                                 : absl::nullopt;
+    return {tag_args, error};
   }();
 
   return tag_args;
 }
 
 absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {
-  const absl::optional<tagging::TagArgs> tag_args = GetTagArgs();
+  const absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   if (!tag_args || tag_args->apps.empty())
     return absl::nullopt;
 

@@ -32,7 +32,7 @@ UpdaterScope GetUpdaterScope() {
   }
 
   // TODO(crbug.com/1128631): support bundles. For now, assume one app.
-  const absl::optional<tagging::TagArgs> tag_args = GetTagArgs();
+  const absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   if (tag_args && !tag_args->apps.empty() &&
       tag_args->apps.front().needs_admin) {
     DCHECK_EQ(tag_args->apps.size(), size_t{1});

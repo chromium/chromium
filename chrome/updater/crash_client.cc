@@ -121,7 +121,7 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
     LOG(ERROR) << "Failed to fetch pending crash reports: " << status_pending;
   }
 
-  absl::optional<tagging::TagArgs> tag_args = GetTagArgs();
+  absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   if (tag_args && tag_args->usage_stats_enable &&
       *tag_args->usage_stats_enable) {
     crashpad::Settings* crashpad_settings = database_->GetSettings();
