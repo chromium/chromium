@@ -41,8 +41,6 @@ class WebEngineMediaResourceProviderImpl final
   void ShouldUseAudioConsumer(ShouldUseAudioConsumerCallback callback) override;
   void CreateAudioConsumer(
       fidl::InterfaceRequest<fuchsia::media::AudioConsumer> request) override;
-  void CreateAudioCapturer(
-      fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request) override;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_MEDIA_RESOURCE_PROVIDER_IMPL_H_

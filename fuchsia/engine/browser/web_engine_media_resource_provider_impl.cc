@@ -64,31 +64,3 @@ void WebEngineMediaResourceProviderImpl::CreateAudioConsumer(
   factory->CreateAudioConsumer(frame_impl->media_session_id().value(),
                                std::move(request));
 }
-
-void WebEngineMediaResourceProviderImpl::CreateAudioCapturer(
-    fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableAudioInput)) {
-    LOG(WARNING)
-        << "Could not create AudioCapturer because audio input feature flag "
-           "was not enabled.";
-    return;
-  }
-
-  if (render_frame_host()
-          ->GetBrowserContext()
-          ->GetPermissionController()
-          ->GetPermissionStatusForFrame(
-              content::PermissionType::AUDIO_CAPTURE, render_frame_host(),
-              origin().GetURL()) != blink::mojom::PermissionStatus::GRANTED) {
-    DLOG(WARNING)
-        << "Received CreateAudioCapturer request from an origin that doesn't "
-           "have AUDIO_CAPTURE permission.";
-    return;
-  }
-
-  auto factory = base::ComponentContextForProcess()
-                     ->svc()
-                     ->Connect<fuchsia::media::Audio>();
-  factory->CreateAudioCapturer(std::move(request), /*loopback=*/false);
-}

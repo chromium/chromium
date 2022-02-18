@@ -10,7 +10,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "fuchsia/engine/mojom/web_engine_media_resource_provider.mojom.h"
 #include "media/base/audio_renderer_sink.h"
-#include "media/fuchsia/audio/fuchsia_audio_capturer_source.h"
 #include "media/fuchsia/audio/fuchsia_audio_output_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -116,26 +115,6 @@ scoped_refptr<media::AudioCapturerSource>
 WebEngineAudioDeviceFactory::CreateAudioCapturerSource(
     const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& params) {
-  auto* render_frame = GetRenderFrameForToken(frame_token);
-  if (!render_frame)
-    return nullptr;
-
-  // Connect WebEngineMediaResourceProvider.
-  mojo::Remote<mojom::WebEngineMediaResourceProvider> media_resource_provider;
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
-      media_resource_provider.BindNewPipeAndPassReceiver());
-
-  // Connect AudioCapturer.
-  fidl::InterfaceHandle<fuchsia::media::AudioCapturer> capturer;
-  media_resource_provider->CreateAudioCapturer(capturer.NewRequest());
-
-  if (!audio_capturer_thread_.IsRunning()) {
-    base::Thread::Options options;
-    options.message_pump_type = base::MessagePumpType::IO;
-    options.priority = base::ThreadPriority::REALTIME_AUDIO;
-    audio_capturer_thread_.StartWithOptions(std::move(options));
-  }
-
-  return base::MakeRefCounted<media::FuchsiaAudioCapturerSource>(
-      std::move(capturer), audio_capturer_thread_.task_runner());
+  // Return nullptr to fallback to the default capturer implementation.
+  return nullptr;
 }

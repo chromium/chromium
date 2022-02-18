@@ -18,13 +18,6 @@ struct StructTraits<mojom::AudioConsumerRequestDataView,
           mojom::AudioConsumerRequestDataView,
           fuchsia::media::AudioConsumer> {};
 
-template <>
-struct StructTraits<mojom::AudioCapturerRequestDataView,
-                    fidl::InterfaceRequest<fuchsia::media::AudioCapturer>>
-    : public FidlInterfaceRequestStructTraits<
-          mojom::AudioCapturerRequestDataView,
-          fuchsia::media::AudioCapturer> {};
-
 }  // namespace mojo
 
 #endif  // FUCHSIA_ENGINE_MOJOM_WEB_ENGINE_MEDIA_RESOURCE_PROVIDER_MOJOM_TRAITS_H_

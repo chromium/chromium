@@ -18,11 +18,6 @@ mojom("mojom") {
         cpp = "::fidl::InterfaceRequest<::fuchsia::media::AudioConsumer>"
         move_only = true
       },
-      {
-        mojom = "mojom.AudioCapturerRequest"
-        cpp = "::fidl::InterfaceRequest<::fuchsia::media::AudioCapturer>"
-        move_only = true
-      },
     ]
     traits_headers = [ "web_engine_media_resource_provider_mojom_traits.h" ]
     traits_public_deps = [

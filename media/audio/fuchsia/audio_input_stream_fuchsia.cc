@@ -68,6 +68,7 @@ void AudioInputStreamFuchsia::Start(AudioInputCallback* callback) {
       std::move(capturer), manager_->GetTaskRunner());
   callback_adapter_ = std::make_unique<CaptureCallbackAdapter>(callback);
   capturer_source_->Initialize(parameters_, callback_adapter_.get());
+  capturer_source_->SetAutomaticGainControl(automatic_gain_control_);
   capturer_source_->Start();
 }
 
@@ -97,8 +98,9 @@ double AudioInputStreamFuchsia::GetVolume() {
 }
 
 bool AudioInputStreamFuchsia::SetAutomaticGainControl(bool enabled) {
-  capturer_source_->SetAutomaticGainControl(enabled);
   automatic_gain_control_ = enabled;
+  if (capturer_source_)
+    capturer_source_->SetAutomaticGainControl(automatic_gain_control_);
   return true;
 }
 
