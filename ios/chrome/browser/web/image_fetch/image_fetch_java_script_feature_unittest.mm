@@ -9,14 +9,18 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#include "testing/platform_test.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -75,17 +79,25 @@ const int kCallJavaScriptId = 66666;
 }
 
 class ImageFetchJavaScriptFeatureTest
-    : public ChromeWebTest,
+    : public PlatformTest,
       public ImageFetchJavaScriptFeature::Handler {
  protected:
   ImageFetchJavaScriptFeatureTest()
-      : ChromeWebTest(std::make_unique<web::FakeWebClient>()),
+      : web_client_(std::make_unique<web::FakeWebClient>()),
         feature_(base::BindRepeating(
             &ImageFetchJavaScriptFeatureTest::GetHandlerFromTestFixture,
             base::Unretained(this))) {}
 
   void SetUp() override {
-    ChromeWebTest::SetUp();
+    PlatformTest::SetUp();
+
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+
     GetWebClient()->SetJavaScriptFeatures({&feature_});
 
     server_.RegisterDefaultHandler(base::BindRepeating(HandleRequest));
@@ -97,8 +109,8 @@ class ImageFetchJavaScriptFeatureTest
     return this;
   }
 
-  web::FakeWebClient* GetWebClient() override {
-    return static_cast<web::FakeWebClient*>(ChromeWebTest::GetWebClient());
+  web::FakeWebClient* GetWebClient() {
+    return static_cast<web::FakeWebClient*>(web_client_.Get());
   }
 
   void HandleJsSuccess(int call_id,
@@ -123,6 +135,13 @@ class ImageFetchJavaScriptFeatureTest
     }));
   }
 
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
+
   ImageFetchJavaScriptFeature feature_;
   net::EmbeddedTestServer server_;
   bool message_received_ = false;
@@ -136,9 +155,9 @@ class ImageFetchJavaScriptFeatureTest
 TEST_F(ImageFetchJavaScriptFeatureTest, TestGetSameDomainImageData) {
   const GURL image_url = server_.GetURL("/image");
   const GURL page_url = server_.GetURL("/");
-  LoadHtml([NSString stringWithFormat:@"<html><img src='%s'></html>",
-                                      image_url.spec().c_str()],
-           page_url);
+  web::test::LoadHtml([NSString stringWithFormat:@"<html><img src='%s'></html>",
+                                                 image_url.spec().c_str()],
+                      page_url, web_state());
 
   feature_.GetImageData(web_state(), kCallJavaScriptId, image_url);
   WaitForResult();
@@ -159,13 +178,13 @@ TEST_F(ImageFetchJavaScriptFeatureTest, TestGetSameDomainImageData) {
 // cross-domain.
 TEST_F(ImageFetchJavaScriptFeatureTest, TestGetCrossDomainImageData) {
   const GURL image_url = server_.GetURL("/image");
-  // ChromeWebTest::LoadHtml uses an HTTPS url for webpage as default. Use
+  // web::test::LoadHtml uses an HTTPS url for webpage as default. Use
   // an HTTP url instead, because XMLHttpRequest with HTTP url sent from HTTPS
   // website is forbidden due to the CORS policy.
   const GURL page_url("http://chrooooome.com");
-  LoadHtml([NSString stringWithFormat:@"<html><img src='%s'></html>",
-                                      image_url.spec().c_str()],
-           page_url);
+  web::test::LoadHtml([NSString stringWithFormat:@"<html><img src='%s'></html>",
+                                                 image_url.spec().c_str()],
+                      page_url, web_state());
 
   feature_.GetImageData(web_state(), kCallJavaScriptId, image_url);
   WaitForResult();
@@ -185,9 +204,9 @@ TEST_F(ImageFetchJavaScriptFeatureTest, TestGetCrossDomainImageData) {
 TEST_F(ImageFetchJavaScriptFeatureTest, TestGetDelayedImageData) {
   const GURL image_url = server_.GetURL("/image_delayed");
   const GURL page_url("http://chrooooome.com");
-  LoadHtml([NSString stringWithFormat:@"<html><img src='%s'></html>",
-                                      image_url.spec().c_str()],
-           page_url);
+  web::test::LoadHtml([NSString stringWithFormat:@"<html><img src='%s'></html>",
+                                                 image_url.spec().c_str()],
+                      page_url, web_state());
 
   feature_.GetImageData(web_state(), kCallJavaScriptId, image_url);
   WaitForResult();
