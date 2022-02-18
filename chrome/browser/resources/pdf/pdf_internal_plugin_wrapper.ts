@@ -174,8 +174,9 @@ document.addEventListener('keydown', e => {
       // Prevent PageDown/PageUp when there are no modifier keys.
       if (!hasKeyModifiers(e)) {
         e.preventDefault();
+        break;
       }
-      break;
+      return;
 
     case 'ArrowDown':
     case 'ArrowLeft':
@@ -184,8 +185,9 @@ document.addEventListener('keydown', e => {
       // Don't prevent arrow navigation in form fields, or if modified.
       if (!isFormFieldFocused && !hasKeyModifiers(e)) {
         e.preventDefault();
+        break;
       }
-      break;
+      return;
 
     case 'Escape':
     case 'Tab':
