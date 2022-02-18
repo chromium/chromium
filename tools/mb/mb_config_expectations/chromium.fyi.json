@@ -833,8 +833,8 @@
   },
   "linux-blink-heap-verification": {
     "gn_args": {
+      "cppgc_enable_verify_heap": true,
       "dcheck_always_on": true,
-      "enable_blink_heap_verification": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,

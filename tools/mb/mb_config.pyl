@@ -3498,7 +3498,7 @@
     },
 
     'enable_blink_heap_verification': {
-      'gn_args': 'enable_blink_heap_verification=true',
+      'gn_args': 'cppgc_enable_verify_heap=true',
     },
 
     # This config enable compression on main waterfall win builder to reduce the
