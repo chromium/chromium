@@ -75,7 +75,7 @@ GURL GetSysInfoForUrlAsync(GURL url,
   url = net::AppendQueryParameter(url, kPlatformVersionKey,
                                   base::SysInfo::OperatingSystemVersion());
 
-  borealis::ProtonVersionInfo version_info = {};
+  borealis::ProtonVersionInfo version_info;
   std::string output;
   if (borealis::GetProtonVersionInfo(owner_id, &output)) {
     version_info = borealis::ParseProtonVersionInfo(game_id, output);
@@ -83,13 +83,8 @@ GURL GetSysInfoForUrlAsync(GURL url,
     LOG(WARNING) << "Failed to run get_proton_version.py:";
     LOG(WARNING) << output;
   }
-  if (!version_info.proton.empty()) {
-    url =
-        net::AppendQueryParameter(url, kProtonVersionKey, version_info.proton);
-  }
-  if (!version_info.slr.empty()) {
-    url = net::AppendQueryParameter(url, kSlrVersionKey, version_info.slr);
-  }
+  url = net::AppendQueryParameter(url, kProtonVersionKey, version_info.proton);
+  url = net::AppendQueryParameter(url, kSlrVersionKey, version_info.slr);
 
   return url;
 }

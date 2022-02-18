@@ -40,8 +40,8 @@ extern const base::StringPiece kURLAllowlist[];
 extern const char kProtonVersionGameMismatch[];
 
 struct ProtonVersionInfo {
-  std::string proton = "";
-  std::string slr = "";
+  std::string proton = "Not applicable";
+  std::string slr = "Not applicable";
 };
 
 // Shows the Borealis installer (borealis_installer_view).

@@ -94,7 +94,7 @@ TEST_F(BorealisUtilTest, FeedbackFormUrlIsPrefilled) {
     it.Advance();
   }
 
-  EXPECT_EQ(entries, 4);  // we currently prefill this many form fields
+  EXPECT_EQ(entries, 6);  // we currently prefill this many form fields
 }
 
 TEST_F(BorealisUtilTest, ProtonVersionProtonTitle) {
@@ -149,8 +149,8 @@ TEST_F(BorealisUtilTest, ProtonVersionLinuxTitle) {
       "INFO: Found a session for a Linux game at timestamp 2021-01-01 00:00:00";
   borealis::ProtonVersionInfo info =
       borealis::ParseProtonVersionInfo(game_id, output);
-  EXPECT_THAT(info.proton, testing::IsEmpty());
-  EXPECT_THAT(info.slr, testing::IsEmpty());
+  EXPECT_EQ(info.proton, "Not applicable");
+  EXPECT_EQ(info.slr, "Not applicable");
 }
 
 TEST_F(BorealisUtilTest, ProtonVersionLinuxTitleWithGameId) {
@@ -159,8 +159,8 @@ TEST_F(BorealisUtilTest, ProtonVersionLinuxTitleWithGameId) {
       "INFO: Found a session for a Linux game at timestamp 2021-01-01 00:00:00";
   borealis::ProtonVersionInfo info =
       borealis::ParseProtonVersionInfo(game_id, output);
-  EXPECT_THAT(info.proton, testing::IsEmpty());
-  EXPECT_THAT(info.slr, testing::IsEmpty());
+  EXPECT_EQ(info.proton, "Not applicable");
+  EXPECT_EQ(info.slr, "Not applicable");
 }
 
 }  // namespace
