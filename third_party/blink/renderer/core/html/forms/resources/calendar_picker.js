@@ -194,251 +194,260 @@ var MillisecondsPerWeek = DaysPerWeek * MillisecondsPerDay;
 function DateType() {
 }
 
-/**
- * @constructor
- * @extends DateType
- * @param {!number} year
- * @param {!number} month
- * @param {!number} date
- */
-function Day(year, month, date) {
-  var dateObject = createUTCDate(year, month, date);
-  if (isNaN(dateObject.valueOf()))
-    throw 'Invalid date';
+// ----------------------------------------------------------------
+
+class Day extends DateType {
   /**
-   * @type {number}
-   * @const
+   * @param {!number} year
+   * @param {!number} month
+   * @param {!number} date
    */
-  this.year = dateObject.getUTCFullYear();
-  /**
-   * @type {number}
-   * @const
-   */
-  this.month = dateObject.getUTCMonth();
-  /**
-   * @type {number}
-   * @const
-   */
-  this.date = dateObject.getUTCDate();
-};
-
-Day.prototype = Object.create(DateType.prototype);
-
-Day.ISOStringRegExp = /^(\d+)-(\d+)-(\d+)/;
-
-/**
- * @param {!string} str
- * @return {?Day}
- */
-Day.parse = function(str) {
-  var match = Day.ISOStringRegExp.exec(str);
-  if (!match)
-    return null;
-  var year = parseInt(match[1], 10);
-  var month = parseInt(match[2], 10) - 1;
-  var date = parseInt(match[3], 10);
-  return new Day(year, month, date);
-};
-
-/**
- * @param {!number} value
- * @return {!Day}
- */
-Day.createFromValue = function(millisecondsSinceEpoch) {
-  return Day.createFromDate(new Date(millisecondsSinceEpoch))
-};
-
-/**
- * @param {!Date} date
- * @return {!Day}
- */
-Day.createFromDate = function(date) {
-  if (isNaN(date.valueOf()))
-    throw 'Invalid date';
-  return new Day(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-};
-
-/**
- * @param {!Day} day
- * @return {!Day}
- */
-Day.createFromDay = function(day) {
-  return day;
-};
-
-/**
- * @return {!Day}
- */
-Day.createFromToday = function() {
-  var now = new Date();
-  return new Day(now.getFullYear(), now.getMonth(), now.getDate());
-};
-
-/**
- * @param {!DateType} other
- * @return {!boolean}
- */
-Day.prototype.equals = function(other) {
-  return other instanceof Day && this.year === other.year &&
-      this.month === other.month && this.date === other.date;
-};
-
-/**
- * @param {!number=} offset
- * @return {!Day}
- */
-Day.prototype.previous = function(offset) {
-  if (typeof offset === 'undefined')
-    offset = 1;
-  return new Day(this.year, this.month, this.date - offset);
-};
-
-/**
- * @param {!number=} offset
- * @return {!Day}
- */
-Day.prototype.next = function(offset) {
-  if (typeof offset === 'undefined')
-    offset = 1;
-  return new Day(this.year, this.month, this.date + offset);
-};
-
-/**
- * @return {!Day}
- */
-Day.prototype.nextHome = function() {
-  if (this.date !== 1)
-    return new Day(this.year, this.month, 1);
-  return new Day(this.year, this.month - 1, 1);
-};
-
-/**
- * @return {!Day}
- */
-Day.prototype.nextEnd = function() {
-  let tomorrow = this.next();
-  if (tomorrow.month === this.month)
-    return new Day(this.year, this.month + 1, 1).previous();
-  return new Day(tomorrow.year, tomorrow.month + 1, 1).previous();
-};
-
-/**
- * Given that 'this' is the Nth day of the month, returns the Nth
- * day of the month that is specified by the parameter.
- * Clips the date if necessary, e.g. if 'this' Day is October 31st and
- * the parameter is a November, returns November 30th.
- * @param {!Month} month
- * @return {!Day}
- */
-Day.prototype.thisRangeInMonth = function(month) {
-  var newDate = month.startDate();
-  var originalMonthInt = newDate.getUTCMonth();
-  newDate.setUTCDate(this.date);
-  if (newDate.getUTCMonth() != originalMonthInt) {
-    newDate.setUTCDate(0);
+  constructor(year, month, date) {
+    super();
+    var dateObject = createUTCDate(year, month, date);
+    if (isNaN(dateObject.valueOf()))
+      throw 'Invalid date';
+    /**
+     * @type {number}
+     * @const
+     */
+    this.year = dateObject.getUTCFullYear();
+    /**
+     * @type {number}
+     * @const
+     */
+    this.month = dateObject.getUTCMonth();
+    /**
+     * @type {number}
+     * @const
+     */
+    this.date = dateObject.getUTCDate();
   }
-  return Day.createFromDate(newDate);
-};
 
-/**
- * @param {!Month} month
- * @return {!boolean}
- */
-Day.prototype.overlapsMonth = function(month) {
-  return (month.firstDay() <= this && month.lastDay() >= this);
-};
+  /** @const */
+  static ISOStringRegExp = /^(\d+)-(\d+)-(\d+)/;
 
-/**
- * @param {!Month} month
- * @return {!boolean}
- */
-Day.prototype.isFullyContainedInMonth = function(month) {
-  return (month.firstDay() <= this && month.lastDay() >= this);
-};
-
-/**
- * @return {!Date}
- */
-Day.prototype.startDate = function() {
-  return createUTCDate(this.year, this.month, this.date);
-};
-
-/**
- * @return {!Date}
- */
-Day.prototype.endDate = function() {
-  return createUTCDate(this.year, this.month, this.date + 1);
-};
-
-/**
- * @return {!Day}
- */
-Day.prototype.firstDay = function() {
-  return this;
-};
-
-/**
- * @return {!Day}
- */
-Day.prototype.middleDay = function() {
-  return this;
-};
-
-/**
- * @return {!Day}
- */
-Day.prototype.lastDay = function() {
-  return this;
-};
-
-/**
- * @return {!number}
- */
-Day.prototype.valueOf = function() {
-  return createUTCDate(this.year, this.month, this.date).getTime();
-};
-
-/**
- * @return {!WeekDay}
- */
-Day.prototype.weekDay = function() {
-  return createUTCDate(this.year, this.month, this.date).getUTCDay();
-};
-
-/**
- * @return {!string}
- */
-Day.prototype.toString = function() {
-  var yearString = String(this.year);
-  if (yearString.length < 4)
-    yearString = ('000' + yearString).substr(-4, 4);
-  return yearString + '-' + ('0' + (this.month + 1)).substr(-2, 2) + '-' +
-      ('0' + this.date).substr(-2, 2);
-};
-
-/**
- * @return {!string}
- */
-Day.prototype.format = function() {
-  if (!Day.formatter) {
-    Day.formatter = new Intl.DateTimeFormat(getLocale(), {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      timeZone: 'UTC'
-    });
+  /**
+   * @param {!string} str
+   * @return {?Day}
+   */
+  static parse(str) {
+    var match = Day.ISOStringRegExp.exec(str);
+    if (!match)
+      return null;
+    var year = parseInt(match[1], 10);
+    var month = parseInt(match[2], 10) - 1;
+    var date = parseInt(match[3], 10);
+    return new Day(year, month, date);
   }
-  return Day.formatter.format(this.startDate());
-};
 
-// See platform/text/date_components.h.
-Day.Minimum = Day.createFromValue(-62135596800000.0);
-Day.Maximum = Day.createFromValue(8640000000000000.0);
+  /**
+   * @param {!number} value
+   * @return {!Day}
+   */
+  static createFromValue(millisecondsSinceEpoch) {
+    return Day.createFromDate(new Date(millisecondsSinceEpoch))
+  }
 
-// See core/html/forms/date_input_type.cc.
-Day.DefaultStep = 86400000;
-Day.DefaultStepBase = 0;
+  /**
+   * @param {!Date} date
+   * @return {!Day}
+   */
+  static createFromDate(date) {
+    if (isNaN(date.valueOf()))
+      throw 'Invalid date';
+    return new Day(
+        date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+  }
+
+  /**
+   * @param {!Day} day
+   * @return {!Day}
+   */
+  static createFromDay(day) {
+    return day;
+  }
+
+  /**
+   * @return {!Day}
+   */
+  static createFromToday() {
+    var now = new Date();
+    return new Day(now.getFullYear(), now.getMonth(), now.getDate());
+  }
+
+  /**
+   * @param {!DateType} other
+   * @return {!boolean}
+   */
+  equals(other) {
+    return other instanceof Day && this.year === other.year &&
+        this.month === other.month && this.date === other.date;
+  }
+
+  /**
+   * @param {!number=} offset
+   * @return {!Day}
+   */
+  previous(offset) {
+    if (typeof offset === 'undefined')
+      offset = 1;
+    return new Day(this.year, this.month, this.date - offset);
+  }
+
+  /**
+   * @param {!number=} offset
+   * @return {!Day}
+   */
+  next(offset) {
+    if (typeof offset === 'undefined')
+      offset = 1;
+    return new Day(this.year, this.month, this.date + offset);
+  }
+
+  /**
+   * @return {!Day}
+   */
+  nextHome() {
+    if (this.date !== 1)
+      return new Day(this.year, this.month, 1);
+    return new Day(this.year, this.month - 1, 1);
+  }
+
+  /**
+   * @return {!Day}
+   */
+  nextEnd() {
+    let tomorrow = this.next();
+    if (tomorrow.month === this.month)
+      return new Day(this.year, this.month + 1, 1).previous();
+    return new Day(tomorrow.year, tomorrow.month + 1, 1).previous();
+  }
+
+  /**
+   * Given that 'this' is the Nth day of the month, returns the Nth
+   * day of the month that is specified by the parameter.
+   * Clips the date if necessary, e.g. if 'this' Day is October 31st and
+   * the parameter is a November, returns November 30th.
+   * @param {!Month} month
+   * @return {!Day}
+   */
+  thisRangeInMonth(month) {
+    var newDate = month.startDate();
+    var originalMonthInt = newDate.getUTCMonth();
+    newDate.setUTCDate(this.date);
+    if (newDate.getUTCMonth() != originalMonthInt) {
+      newDate.setUTCDate(0);
+    }
+    return Day.createFromDate(newDate);
+  }
+
+  /**
+   * @param {!Month} month
+   * @return {!boolean}
+   */
+  overlapsMonth(month) {
+    return (month.firstDay() <= this && month.lastDay() >= this);
+  }
+
+  /**
+   * @param {!Month} month
+   * @return {!boolean}
+   */
+  isFullyContainedInMonth(month) {
+    return (month.firstDay() <= this && month.lastDay() >= this);
+  }
+
+  /**
+   * @return {!Date}
+   */
+  startDate() {
+    return createUTCDate(this.year, this.month, this.date);
+  }
+
+  /**
+   * @return {!Date}
+   */
+  endDate() {
+    return createUTCDate(this.year, this.month, this.date + 1);
+  }
+
+  /**
+   * @return {!Day}
+   */
+  firstDay() {
+    return this;
+  }
+
+  /**
+   * @return {!Day}
+   */
+  middleDay() {
+    return this;
+  }
+
+  /**
+   * @return {!Day}
+   */
+  lastDay() {
+    return this;
+  }
+
+  /**
+   * @return {!number}
+   */
+  valueOf() {
+    return createUTCDate(this.year, this.month, this.date).getTime();
+  }
+
+  /**
+   * @return {!WeekDay}
+   */
+  weekDay() {
+    return createUTCDate(this.year, this.month, this.date).getUTCDay();
+  }
+
+  /**
+   * @return {!string}
+   */
+  toString() {
+    var yearString = String(this.year);
+    if (yearString.length < 4)
+      yearString = ('000' + yearString).substr(-4, 4);
+    return yearString + '-' + ('0' + (this.month + 1)).substr(-2, 2) + '-' +
+        ('0' + this.date).substr(-2, 2);
+  }
+
+  /**
+   * @return {!string}
+   */
+  format() {
+    if (!Day.formatter) {
+      Day.formatter = new Intl.DateTimeFormat(getLocale(), {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        timeZone: 'UTC'
+      });
+    }
+    return Day.formatter.format(this.startDate());
+  }
+
+  // See platform/text/date_components.h.
+  /** @const */
+  static Minimum = Day.createFromValue(-62135596800000.0);
+  /** @const */
+  static Maximum = Day.createFromValue(8640000000000000.0);
+
+  // See core/html/forms/date_input_type.cc.
+  /** @const */
+  static DefaultStep = 86400000;
+  /** @const */
+  static DefaultStepBase = 0;
+}
+
+// ----------------------------------------------------------------
 
 /**
  * @constructor
@@ -4948,3 +4957,6 @@ if (window.dialogArguments) {
 } else {
   window.addEventListener('message', handleMessage, false);
 }
+
+// Necessary for some web tests.
+window.Day = Day;
