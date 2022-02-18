@@ -179,3 +179,14 @@ var StaticTypesTest = class extends WebUIResourceModuleAsyncTest {
 TEST_F('StaticTypesTest', 'All', function() {
   mocha.run();
 });
+
+var EventTargetModuleTest = class extends WebUIResourceModuleAsyncTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=js/cr/event_target_test.js&host=webui-test';
+  }
+};
+
+TEST_F('EventTargetModuleTest', 'All', function() {
+  mocha.run();
+});

@@ -39,6 +39,8 @@ ts_library("build_ts") {
 
     "util_test.ts",
     "web_ui_listener_mixin_test.ts",
+
+    "cr/event_target_test.ts",
   ]
 
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
