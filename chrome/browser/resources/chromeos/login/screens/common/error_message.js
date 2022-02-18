@@ -414,11 +414,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
    * @private
    */
   launchGuestSession_() {
-    if (Oobe.getInstance().isOobeUI()) {
-      this.userActed(USER_ACTION_LAUNCH_OOBE_GUEST);
-    } else {
-      chrome.send('launchIncognito');
-    }
+    this.userActed(USER_ACTION_LAUNCH_OOBE_GUEST);
   }
 
   /**
