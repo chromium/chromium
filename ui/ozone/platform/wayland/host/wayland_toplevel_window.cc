@@ -373,6 +373,11 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width_dip,
                                 1.0 / window_scale()));
   }
 
+  pending_bounds_dip_ = gfx::ScaleToRoundedRect(
+      AdjustBoundsToConstraintsPx(
+          gfx::ScaleToRoundedRect(pending_bounds_dip_, window_scale())),
+      1 / window_scale());
+
   // Store the restored bounds if current state differs from the normal state.
   // It can be client or compositor side change from normal to something else.
   // Thus, we must store previous bounds to restore later.
