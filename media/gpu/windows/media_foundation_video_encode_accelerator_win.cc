@@ -201,8 +201,12 @@ struct MediaFoundationVideoEncodeAccelerator::BitstreamBufferRef {
 // attributes are not supported by Windows 7, setting them will return errors.
 // See bug: http://crbug.com/777659.
 MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
-    bool compatible_with_win7)
-    : compatible_with_win7_(compatible_with_win7),
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
+    : compatible_with_win7_(
+          gpu_preferences.enable_media_foundation_vea_on_windows7),
+      disable_dynamic_framerate_update_(
+          gpu_workarounds.disable_dynamic_video_encode_framerate_update),
       frame_rate_(kMaxFrameRateNumerator / kMaxFrameRateDenominator),
       bitrate_(Bitrate::ConstantBitrate(kDefaultTargetBitrate)),
       input_required_(false),
@@ -1415,6 +1419,11 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
   framerate = base::clamp(framerate, 1u, uint32_t{kMaxFrameRateNumerator});
 
   if (frame_rate_ != framerate) {
+    // When dynamic framerate update is disabled, fallback from current encoder.
+    if (disable_dynamic_framerate_update_) {
+      DLOG(ERROR) << "Dynamic encode framerate update disabled.";
+      NotifyError(kPlatformFailureError);
+    }
     HRESULT hr = MFSetAttributeRatio(imf_output_media_type_.Get(),
                                      MF_MT_FRAME_RATE, framerate, 1);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set frame rate for output type", );

@@ -18,6 +18,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_preferences.h"
 #include "media/base/bitrate.h"
 #include "media/base/video_codecs.h"
 #include "media/base/win/dxgi_device_manager.h"
@@ -36,10 +38,9 @@ namespace media {
 class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     : public VideoEncodeAccelerator {
  public:
-  // If |compatible_with_win7| is true, MediaFoundationVideoEncoderAccelerator
-  // works on Windows 7. Some attributes of the encoder are not supported on old
-  // systems, which may impact the performance or quality of the output.
-  explicit MediaFoundationVideoEncodeAccelerator(bool compatible_with_win7);
+  explicit MediaFoundationVideoEncodeAccelerator(
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
   MediaFoundationVideoEncodeAccelerator(
       const MediaFoundationVideoEncodeAccelerator&) = delete;
@@ -154,6 +155,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   HRESULT PerformD3DScaling(ID3D11Texture2D* input_texture);
 
   const bool compatible_with_win7_;
+  const bool disable_dynamic_framerate_update_;
 
   // Bitstream buffers ready to be used to return encoded output as a FIFO.
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>
