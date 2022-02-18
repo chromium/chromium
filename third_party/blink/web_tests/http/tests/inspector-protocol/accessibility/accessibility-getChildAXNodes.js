@@ -85,7 +85,7 @@
   const iframeDescribeResp = await dp.DOM.describeNode({backendNodeId: iframeNode.backendDOMNodeId});
   const frameId = iframeDescribeResp.result.node.frameId;
   // We retrieve the root node of the child frame using `getFullAXTree` with depth = 0 to omit its children.
-  const iframeResult = await dp.Accessibility.getFullAXTree({max_depth: 0, frameId});
+  const iframeResult = await dp.Accessibility.getFullAXTree({depth: 0, frameId});
   const rootWebArea = iframeResult.result.nodes;
   // To test that frameIds are handled correctly, we can now fetch the children of the iframe root using
   // `getChildAXNodes` with the frameId of the iframe.

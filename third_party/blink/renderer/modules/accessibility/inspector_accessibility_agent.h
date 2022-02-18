@@ -49,7 +49,6 @@ class MODULES_EXPORT InspectorAccessibilityAgent
       override;
   protocol::Response getFullAXTree(
       protocol::Maybe<int> depth,
-      protocol::Maybe<int> max_depth,
       protocol::Maybe<String> frame_id,
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*)
       override;
