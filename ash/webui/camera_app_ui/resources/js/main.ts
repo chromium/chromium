@@ -72,13 +72,16 @@ export class App {
         state.State.SHOULD_HANDLE_INTENT_RESULT, shouldHandleIntentResult);
 
     const modeConstraints = shouldHandleIntentResult ?
-        {exact: defaultMode} :
+        {exact: defaultMode ?? undefined} :
         {default: defaultMode ?? Mode.PHOTO};
     this.cameraManager =
         new CameraManager(this.perfLogger, facing, modeConstraints);
 
     this.cameraView = (() => {
       if (shouldHandleIntentResult) {
+        // If shouldHandleIntentResult is true, then this.intent is definitely
+        // not null.
+        assert(this.intent !== null);
         return new CameraIntent(
             this.intent, this.cameraManager, this.perfLogger);
       } else {
