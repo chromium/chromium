@@ -587,8 +587,8 @@
   'CROS_ATLAS_LKGM': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '100.0.4888.0',
-      'cros_img': 'atlas-release/R100-14522.0.0',
+      'cros_chrome_version': '100.0.4892.0',
+      'cros_img': 'atlas-release/R100-14526.0.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_LKGM',
@@ -614,8 +614,8 @@
   'CROS_ATLAS_STABLE': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '98.0.4758.91',
-      'cros_img': 'atlas-release/R98-14388.52.0',
+      'cros_chrome_version': '98.0.4758.107',
+      'cros_img': 'atlas-release/R98-14388.61.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_STABLE',
@@ -623,8 +623,8 @@
   'CROS_EVE_LKGM': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '100.0.4888.0',
-      'cros_img': 'eve-release/R100-14522.0.0',
+      'cros_chrome_version': '100.0.4892.0',
+      'cros_img': 'eve-release/R100-14526.0.0',
     },
     'enabled': True,
     'identifier': 'EVE_LKGM',
@@ -650,8 +650,8 @@
   'CROS_EVE_STABLE': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '98.0.4758.91',
-      'cros_img': 'eve-release/R98-14388.52.0',
+      'cros_chrome_version': '98.0.4758.107',
+      'cros_img': 'eve-release/R98-14388.61.0',
     },
     'enabled': True,
     'identifier': 'EVE_STABLE',
@@ -659,8 +659,8 @@
   'CROS_KEVIN_LKGM': {
     'skylab': {
       'cros_board': 'kevin',
-      'cros_chrome_version': '100.0.4888.0',
-      'cros_img': 'kevin-release/R100-14522.0.0',
+      'cros_chrome_version': '100.0.4892.0',
+      'cros_img': 'kevin-release/R100-14526.0.0',
     },
     'enabled': True,
     'identifier': 'KEVIN_LKGM',
@@ -668,8 +668,8 @@
   'CROS_HANA_LKGM': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '100.0.4888.0',
-      'cros_img': 'hana-release/R100-14522.0.0',
+      'cros_chrome_version': '100.0.4892.0',
+      'cros_img': 'hana-release/R100-14526.0.0',
     },
     'enabled': True,
     'identifier': 'HANA_LKGM',
@@ -677,8 +677,8 @@
   'CROS_OCTOPUS_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '100.0.4888.0',
-      'cros_img': 'octopus-release/R100-14522.0.0',
+      'cros_chrome_version': '100.0.4892.0',
+      'cros_img': 'octopus-release/R100-14526.0.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_LKGM',
@@ -704,8 +704,8 @@
   'CROS_OCTOPUS_STABLE': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '98.0.4758.91',
-      'cros_img': 'octopus-release/R98-14388.52.0',
+      'cros_chrome_version': '98.0.4758.107',
+      'cros_img': 'octopus-release/R98-14388.61.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_STABLE',
