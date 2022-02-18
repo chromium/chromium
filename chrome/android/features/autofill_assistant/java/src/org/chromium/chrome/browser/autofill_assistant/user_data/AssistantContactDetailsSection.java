@@ -31,7 +31,6 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
     private boolean mIgnoreProfileChangeNotifications;
     private AssistantCollectUserDataModel.ContactDescriptionOptions mSummaryOptions;
     private AssistantCollectUserDataModel.ContactDescriptionOptions mFullOptions;
-    private boolean mRequestReloadOnChange;
 
     AssistantContactDetailsSection(Context context, ViewGroup parent) {
         super(context, parent, R.layout.autofill_assistant_contact_summary,
@@ -53,10 +52,6 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
         }
     }
 
-    public void setRequestReloadOnChange(boolean requestReloadOnChange) {
-        mRequestReloadOnChange = requestReloadOnChange;
-    }
-
     @Override
     protected void createOrEditItem(@Nullable ContactModel oldItem) {
         if (mEditor == null) {
@@ -64,7 +59,7 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
         }
 
         Callback<ContactModel> doneCallback = editedItem -> {
-            if (mRequestReloadOnChange) {
+            if (shouldReloadOnChange()) {
                 notifyDataChanged(editedItem,
                         oldItem == null ? AssistantUserDataEventType.ENTRY_CREATED
                                         : AssistantUserDataEventType.ENTRY_EDITED);

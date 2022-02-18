@@ -575,6 +575,7 @@ class AssistantCollectUserDataBinder
         WebContents webContents = model.get(AssistantCollectUserDataModel.WEB_CONTENTS);
         if (webContents == null) {
             view.mContactDetailsSection.setEditor(null);
+            view.mPhoneNumberSection.setEditor(null);
             view.mPaymentMethodSection.setEditor(null);
             view.mShippingAddressSection.setEditor(null);
             return true;
@@ -584,7 +585,8 @@ class AssistantCollectUserDataBinder
                 model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES);
 
         if (shouldShowContactDetails(model)) {
-            updateContactEditors(model, view, webContents, shouldStoreChanges);
+            updateContactEditor(model, view, webContents, shouldStoreChanges);
+            updatePhoneNumberEditor(model, view, webContents, shouldStoreChanges);
         }
 
         view.mShippingAddressSection.setEditor(view.mEditorFactory.createAddressEditor(
@@ -598,21 +600,38 @@ class AssistantCollectUserDataBinder
         return true;
     }
 
-    private void updateContactEditors(AssistantCollectUserDataModel model, ViewHolder view,
+    private void updateContactEditor(AssistantCollectUserDataModel model, ViewHolder view,
             WebContents webContents, boolean shouldStoreChanges) {
-        view.mContactDetailsSection.setRequestReloadOnChange(
-                model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS));
         if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+            view.mContactDetailsSection.setRequestReloadOnChange(true);
             view.mContactDetailsSection.setEditor(
                     view.mEditorFactory.createAccountEditor(view.mActivity, view.mWindowAndroid,
                             model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
-                            model.get(AssistantCollectUserDataModel.REQUEST_EMAIL)));
+                            model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
+                            /* requestPhone= */ false));
         } else {
+            view.mContactDetailsSection.setRequestReloadOnChange(false);
             view.mContactDetailsSection.setEditor(view.mEditorFactory.createContactEditor(
                     webContents, view.mActivity,
                     model.get(AssistantCollectUserDataModel.REQUEST_NAME),
                     model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
                     model.get(AssistantCollectUserDataModel.REQUEST_EMAIL), shouldStoreChanges));
+        }
+    }
+
+    private void updatePhoneNumberEditor(AssistantCollectUserDataModel model, ViewHolder view,
+            WebContents webContents, boolean shouldStoreChanges) {
+        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+            view.mPhoneNumberSection.setRequestReloadOnChange(true);
+            view.mPhoneNumberSection.setEditor(
+                    view.mEditorFactory.createAccountEditor(view.mActivity, view.mWindowAndroid,
+                            model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
+                            /* requestEmail= */ false, /* requestPhone= */ true));
+        } else {
+            view.mPhoneNumberSection.setRequestReloadOnChange(false);
+            // Separate phone number section is only supposed to be used with backend data, we
+            // do not offer an Autofill editor in this case.
+            view.mPhoneNumberSection.setEditor(null);
         }
     }
 }

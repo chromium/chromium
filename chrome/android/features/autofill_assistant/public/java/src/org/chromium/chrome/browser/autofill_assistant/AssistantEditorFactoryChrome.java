@@ -28,9 +28,10 @@ public class AssistantEditorFactoryChrome implements AssistantEditorFactory {
 
     @Override
     public AssistantContactEditor createAccountEditor(Activity activity,
-            WindowAndroid windowAndroid, String accountEmail, boolean requestEmail) {
+            WindowAndroid windowAndroid, String accountEmail, boolean requestEmail,
+            boolean requestPhone) {
         return new AssistantContactEditorAccount(
-                activity, windowAndroid, accountEmail, requestEmail);
+                activity, windowAndroid, accountEmail, requestEmail, requestPhone);
     }
 
     @Override

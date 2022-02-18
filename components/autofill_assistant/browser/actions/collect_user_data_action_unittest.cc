@@ -2541,14 +2541,12 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
                     Not(IsEmpty()));
         auto mappings = field_formatter::CreateAutofillMappings(
             *user_data_.available_contacts_[0]->profile, "en-US");
-        EXPECT_THAT(
-            mappings,
-            IsSupersetOf({Pair(field_formatter::Key(3), "John"),
-                          Pair(field_formatter::Key(5), "Doe"),
-                          Pair(field_formatter::Key(7), "John Doe"),
-                          Pair(field_formatter::Key(10), "1234567890"),
-                          Pair(field_formatter::Key(12), "1"),
-                          Pair(field_formatter::Key(14), "+11234567890")}));
+        EXPECT_THAT(mappings,
+                    IsSupersetOf(
+                        {Pair(field_formatter::Key(3), "John"),
+                         Pair(field_formatter::Key(5), "Doe"),
+                         Pair(field_formatter::Key(7), "John Doe"),
+                         Pair(field_formatter::Key(9), "johndoe@google.com")}));
 
         std::move(collect_user_data_options->confirm_callback)
             .Run(&user_data_, &user_model_);
@@ -2558,18 +2556,18 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
   auto* collect_user_data = action_proto.mutable_collect_user_data();
   collect_user_data->set_request_terms_and_conditions(false);
   collect_user_data->mutable_contact_details()->set_request_payer_name(true);
+  collect_user_data->mutable_contact_details()->set_request_payer_email(true);
   *collect_user_data->mutable_contact_details()->add_required_data_piece() =
       MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FULL);
-  collect_user_data->mutable_contact_details()->set_request_payer_phone(true);
   *collect_user_data->mutable_contact_details()->add_required_data_piece() =
-      MakeRequiredDataPiece(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER);
+      MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS);
   collect_user_data->mutable_contact_details()->set_contact_details_name(
       kMemoryLocation);
   collect_user_data->mutable_user_data()->set_locale("en-US");
   auto* profile =
       collect_user_data->mutable_user_data()->add_available_contacts();
   (*profile->mutable_values())[7] = MakeAutofillEntry("John Doe");
-  (*profile->mutable_values())[14] = MakeAutofillEntry("+1 123-456-7890");
+  (*profile->mutable_values())[9] = MakeAutofillEntry("johndoe@google.com");
   auto* incomplete =
       collect_user_data->mutable_user_data()->add_available_contacts();
   (*incomplete->mutable_values())[7] = MakeAutofillEntry("Jane Doe");
@@ -2588,21 +2586,32 @@ TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
         EXPECT_FALSE(collect_user_data_options->can_edit_contacts);
+
         ASSERT_EQ(user_data_.available_contacts_.size(), 1u);
         EXPECT_THAT(user_data_.available_contacts_[0]->profile->guid(),
                     Not(IsEmpty()));
-        auto mappings = field_formatter::CreateAutofillMappings(
+        auto contact_mappings = field_formatter::CreateAutofillMappings(
             *user_data_.available_contacts_[0]->profile, "en-US");
         // Initially the contact contains the backend data.
         EXPECT_THAT(
-            mappings,
+            contact_mappings,
             IsSupersetOf({Pair(field_formatter::Key(3), "John"),
                           Pair(field_formatter::Key(5), "Doe"),
                           Pair(field_formatter::Key(7), "John Doe"),
                           Pair(field_formatter::Key(10), "1234567890"),
                           Pair(field_formatter::Key(12), "1"),
                           Pair(field_formatter::Key(14), "+11234567890")}));
-        ASSERT_EQ(user_data_.available_contacts_.size(), 1u);
+
+        ASSERT_EQ(user_data_.available_phone_numbers_.size(), 1u);
+        EXPECT_THAT(user_data_.available_phone_numbers_[0]->profile->guid(),
+                    Not(IsEmpty()));
+        auto phone_number_mappings = field_formatter::CreateAutofillMappings(
+            *user_data_.available_phone_numbers_[0]->profile, "en-US");
+        EXPECT_THAT(
+            phone_number_mappings,
+            IsSupersetOf({Pair(field_formatter::Key(10), "1876543210"),
+                          Pair(field_formatter::Key(12), "1"),
+                          Pair(field_formatter::Key(14), "+11876543210")}));
 
         std::move(collect_user_data_options->confirm_callback)
             .Run(&user_data_, &user_model_);
@@ -2627,8 +2636,7 @@ TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
   (*profile->mutable_values())[14] = MakeAutofillEntry("+1 123-456-7890");
   *collect_user_data->mutable_user_data()
        ->add_available_phone_numbers()
-       ->mutable_value() =
-      MakeAutofillEntry("+1 187-654-3210", /* raw= */ false);
+       ->mutable_value() = MakeAutofillEntry("+1 187-654-3210");
 
   EXPECT_CALL(mock_personal_data_manager_, RecordUseOf).Times(0);
   EXPECT_CALL(
@@ -2647,7 +2655,7 @@ TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
                             Pair(field_formatter::Key(10), "1876543210"),
                             Pair(field_formatter::Key(12), "1"),
                             Pair(field_formatter::Key(14), "+11876543210")}));
-  ASSERT_EQ(user_data_.available_contacts_.size(), 1u);
+  EXPECT_EQ(user_data_.available_contacts_.size(), 1u);
 }
 
 TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
@@ -2798,7 +2806,6 @@ TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
   auto* collect_user_data = action_proto.mutable_collect_user_data();
   collect_user_data->set_request_terms_and_conditions(false);
   collect_user_data->mutable_contact_details()->set_request_payer_name(true);
-  collect_user_data->mutable_contact_details()->set_request_payer_phone(true);
   collect_user_data->mutable_contact_details()->set_contact_details_name(
       kMemoryLocation);
   collect_user_data->mutable_user_data()->set_locale("en-US");

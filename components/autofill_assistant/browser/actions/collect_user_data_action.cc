@@ -791,8 +791,14 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
         contact_details.request_payer_email();
     collect_user_data_options_->request_payer_name =
         contact_details.request_payer_name();
-    collect_user_data_options_->request_payer_phone =
-        contact_details.request_payer_phone();
+    if (contact_details.request_payer_phone()) {
+      if (collect_user_data.has_user_data()) {
+        VLOG(1)
+            << "Phone number must be requested separately with backend data.";
+        return false;
+      }
+      collect_user_data_options_->request_payer_phone = true;
+    }
     collect_user_data_options_->required_contact_data_pieces =
         std::vector<RequiredDataPiece>(
             contact_details.required_data_piece().begin(),

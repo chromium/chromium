@@ -61,6 +61,8 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
     private int mTopPadding;
     private int mBottomPadding;
 
+    private boolean mRequestReloadOnChange;
+
     /**
      *
      * @param context The context to use.
@@ -241,6 +243,14 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
         mTopPadding = topPadding;
         mBottomPadding = bottomPadding;
         updatePaddings();
+    }
+
+    void setRequestReloadOnChange(boolean requestReloadOnChange) {
+        mRequestReloadOnChange = requestReloadOnChange;
+    }
+
+    boolean shouldReloadOnChange() {
+        return mRequestReloadOnChange;
     }
 
     private AssistantChoiceList createChoiceList(@Nullable String addButtonText) {

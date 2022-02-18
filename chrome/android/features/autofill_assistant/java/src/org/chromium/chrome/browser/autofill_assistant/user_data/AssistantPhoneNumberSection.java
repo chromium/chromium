@@ -13,7 +13,9 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantEditor;
 import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.ContactModel;
 
 import java.util.List;
@@ -22,6 +24,8 @@ import java.util.List;
  * The phone number section of the Autofill Assistant payment request.
  */
 public class AssistantPhoneNumberSection extends AssistantCollectUserDataSection<ContactModel> {
+    @Nullable
+    private AssistantEditor.AssistantContactEditor mEditor;
     private boolean mIgnoreProfileChangeNotifications;
 
     AssistantPhoneNumberSection(Context context, ViewGroup parent) {
@@ -33,8 +37,34 @@ public class AssistantPhoneNumberSection extends AssistantCollectUserDataSection
                 context.getString(R.string.payments_add_phone_number));
     }
 
+    public void setEditor(@Nullable AssistantEditor.AssistantContactEditor editor) {
+        mEditor = editor;
+    }
+
     @Override
-    protected void createOrEditItem(@Nullable ContactModel oldItem) {}
+    protected void createOrEditItem(@Nullable ContactModel oldItem) {
+        if (mEditor == null) {
+            return;
+        }
+
+        Callback<ContactModel> doneCallback = editedItem -> {
+            if (shouldReloadOnChange()) {
+                notifyDataChanged(editedItem,
+                        oldItem == null ? AssistantUserDataEventType.ENTRY_CREATED
+                                        : AssistantUserDataEventType.ENTRY_EDITED);
+                return;
+            }
+
+            mIgnoreProfileChangeNotifications = true;
+            addOrUpdateItem(editedItem,
+                    /* select= */ true, /* notify= */ true);
+            mIgnoreProfileChangeNotifications = false;
+        };
+
+        Callback<ContactModel> cancelCallback = ignoredItem -> {};
+
+        mEditor.createOrEditItem(oldItem, doneCallback, cancelCallback);
+    }
 
     @Override
     protected void updateFullView(View fullView, @Nullable ContactModel model) {

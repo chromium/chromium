@@ -24,7 +24,7 @@ public interface AssistantEditorFactory {
             boolean shouldStoreChanges);
 
     AssistantContactEditor createAccountEditor(Activity activity, WindowAndroid windowAndroid,
-            String accountEmail, boolean requestEmail);
+            String accountEmail, boolean requestEmail, boolean requestPhone);
 
     AssistantAddressEditor createAddressEditor(
             WebContents webContents, Activity activity, boolean shouldStoreChanges);
