@@ -5,6 +5,7 @@
 static_library("mojo_ipc") {
   sources = [
     "ipc_server.h",
+    "mojo_caller_security_checker.h",
     "mojo_ipc_server.cc",
     "mojo_ipc_server.h",
     "mojo_ipc_util.cc",
@@ -13,6 +14,7 @@ static_library("mojo_ipc") {
   ]
   if (is_linux) {
     sources += [
+      "mojo_caller_security_checker_linux.cc",
       "mojo_server_endpoint_connector_linux.cc",
       "mojo_server_endpoint_connector_linux.h",
     ]
@@ -23,6 +25,9 @@ static_library("mojo_ipc") {
     ]
   } else {
     sources += [ "mojo_server_endpoint_connector_unsupported.cc" ]
+  }
+  if (!is_linux) {
+    sources += [ "bypass_mojo_caller_security_checker.cc" ]
   }
   deps = [
     "//base",

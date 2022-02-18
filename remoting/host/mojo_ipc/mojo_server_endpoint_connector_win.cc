@@ -97,7 +97,6 @@ void MojoServerEndpointConnectorWin::OnReady() {
     OnError();
     return;
   }
-  // TODO(yuweih): Validate process image path here.
   mojo::PlatformChannelEndpoint endpoint(
       mojo::PlatformHandle(std::move(pending_named_pipe_handle_)));
   if (!endpoint.is_valid()) {

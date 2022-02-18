@@ -67,9 +67,6 @@ void MojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking(int fd) {
     return;
   }
 
-  // TODO(yuweih): Validate process image path here. Don't check the command
-  // line as it's spoofable; check /proc/id/exe instead.
-
   mojo::PlatformChannelEndpoint endpoint(
       mojo::PlatformHandle(std::move(socket)));
   if (!endpoint.is_valid()) {
