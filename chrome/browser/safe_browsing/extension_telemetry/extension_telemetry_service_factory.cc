@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/network_context_service.h"
@@ -45,6 +46,7 @@ ExtensionTelemetryServiceFactory::ExtensionTelemetryServiceFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
+  DependsOn(extensions::ExtensionManagementFactory::GetInstance());
 }
 
 KeyedService* ExtensionTelemetryServiceFactory::BuildServiceInstanceFor(

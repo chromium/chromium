@@ -15,6 +15,8 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -24,6 +26,15 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using extensions::Extension;
+using extensions::ExtensionBuilder;
+using extensions::ExtensionId;
+using extensions::mojom::ManifestLocation;
+
+using ExtensionInfo =
+    safe_browsing::ExtensionTelemetryReportRequest_ExtensionInfo;
+using TelemetryReport = safe_browsing::ExtensionTelemetryReportRequest;
 
 namespace safe_browsing {
 
@@ -43,13 +54,11 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   ExtensionTelemetryServiceTest();
   void SetUp() override { ASSERT_NE(telemetry_service_, nullptr); }
 
-  void RegisterExtensionWithExtensionService(
-      const extensions::ExtensionId& extension_id,
-      const std::string& extension_name,
-      const base::Time& install_time,
-      const std::string& version);
-  void UnregisterExtensionWithExtensionService(
-      const extensions::ExtensionId& extension_id);
+  void RegisterExtensionWithExtensionService(const ExtensionId& extension_id,
+                                             const std::string& extension_name,
+                                             const base::Time& install_time,
+                                             const std::string& version);
+  void UnregisterExtensionWithExtensionService(const ExtensionId& extension_id);
   void PrimeTelemetryServiceWithSignal();
 
   bool IsTelemetryServiceEnabled() {
@@ -62,18 +71,20 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
     return telemetry_service_->extension_store_.empty();
   }
 
-  using ExtensionInfo = ExtensionTelemetryReportRequest_ExtensionInfo;
   const ExtensionInfo* GetExtensionInfoFromExtensionStore(
-      const extensions::ExtensionId& extension_id) {
+      const ExtensionId& extension_id) {
     auto iter = telemetry_service_->extension_store_.find(extension_id);
     if (iter == telemetry_service_->extension_store_.end())
       return nullptr;
     return iter->second.get();
   }
 
-  using TelemetryReport = ExtensionTelemetryReportRequest;
   std::unique_ptr<TelemetryReport> GetTelemetryReport() {
     return telemetry_service_->CreateReport();
+  }
+
+  std::unique_ptr<ExtensionInfo> GetExtensionInfo(const Extension& extension) {
+    return telemetry_service_->GetExtensionInfoForReport(extension);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -113,12 +124,12 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
 }
 
 void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
-    const extensions::ExtensionId& extension_id,
+    const ExtensionId& extension_id,
     const std::string& extension_name,
     const base::Time& install_time,
     const std::string& version) {
   scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder()
+      ExtensionBuilder()
           .SetID(extension_id)
           .SetManifest(extensions::DictionaryBuilder()
                            .Set("name", extension_name)
@@ -137,7 +148,7 @@ void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
 }
 
 void ExtensionTelemetryServiceTest::UnregisterExtensionWithExtensionService(
-    const extensions::ExtensionId& extension_id) {
+    const ExtensionId& extension_id) {
   extension_service_->UnloadExtension(
       extension_id, extensions::UnloadedExtensionReason::UNINSTALL);
   extension_prefs_->DeleteExtensionPrefs(extension_id);
@@ -284,6 +295,129 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReportWithSignal) {
   // Verify that extension store has been cleared after creating a telemetry
   // report.
   EXPECT_TRUE(IsExtensionStoreEmpty());
+}
+
+TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
+  // Clear out registered extensions first.
+  UnregisterExtensionWithExtensionService(kExtensionId[0]);
+  UnregisterExtensionWithExtensionService(kExtensionId[1]);
+
+  auto add_extension = [this](const Extension* extension) {
+    extension_prefs_->OnExtensionInstalled(
+        extension, Extension::ENABLED, syncer::StringOrdinal(), std::string());
+  };
+
+  // Test basic prototype construction. All fields should be present, except
+  // disable reasons (which should be empty).
+  {
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("test")
+            .SetLocation(ManifestLocation::kInternal)
+            .Build();
+    add_extension(extension.get());
+    std::unique_ptr<ExtensionInfo> extension_pb = GetExtensionInfo(*extension);
+    EXPECT_TRUE(extension_pb->has_type());
+    EXPECT_EQ(extension_pb->type(), ExtensionInfo::EXTENSION);
+
+    EXPECT_TRUE(extension_pb->has_install_location());
+    EXPECT_EQ(extension_pb->install_location(), ExtensionInfo::INTERNAL);
+
+    EXPECT_TRUE(extension_pb->has_is_converted_from_user_script());
+    EXPECT_FALSE(extension_pb->is_converted_from_user_script());
+
+    EXPECT_TRUE(extension_pb->has_is_default_installed());
+    EXPECT_FALSE(extension_pb->is_default_installed());
+
+    EXPECT_TRUE(extension_pb->has_is_oem_installed());
+    EXPECT_FALSE(extension_pb->is_oem_installed());
+
+    EXPECT_TRUE(extension_pb->has_is_from_store());
+    EXPECT_FALSE(extension_pb->is_from_store());
+
+    EXPECT_TRUE(extension_pb->has_updates_from_store());
+    EXPECT_FALSE(extension_pb->updates_from_store());
+
+    EXPECT_TRUE(extension_pb->has_blocklist_state());
+    EXPECT_EQ(extension_pb->blocklist_state(), ExtensionInfo::NOT_BLOCKLISTED);
+
+    EXPECT_TRUE(extension_pb->has_disable_reasons());
+    EXPECT_EQ(extension_pb->disable_reasons(), static_cast<uint32_t>(0));
+  }
+
+  // It's not helpful to exhaustively test each possible variation of each
+  // field in the ExtensionInfo proto (since in many cases the test code would
+  // then be re-writing the original code), but we test a few of the more
+  // interesting cases.
+  {
+    // Test the type field; extensions of different types should be reported
+    // as such.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("app", ExtensionBuilder::Type::PLATFORM_APP)
+            .SetLocation(ManifestLocation::kInternal)
+            .Build();
+    add_extension(extension.get());
+    std::unique_ptr<ExtensionInfo> extension_pb = GetExtensionInfo(*extension);
+    EXPECT_EQ(extension_pb->type(), ExtensionInfo::PLATFORM_APP);
+  }
+
+  {
+    // Test the install location.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("unpacked")
+            .SetLocation(ManifestLocation::kUnpacked)
+            .Build();
+    add_extension(extension.get());
+    std::unique_ptr<ExtensionInfo> extension_pb = GetExtensionInfo(*extension);
+    EXPECT_EQ(extension_pb->install_location(), ExtensionInfo::UNPACKED);
+  }
+
+  {
+    // Test the disable reasons field.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("disable_reasons")
+            .SetLocation(ManifestLocation::kInternal)
+            .Build();
+    add_extension(extension.get());
+    extension_prefs_->SetExtensionDisabled(
+        extension->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+    {
+      std::unique_ptr<ExtensionInfo> extension_pb =
+          GetExtensionInfo(*extension);
+      EXPECT_TRUE(extension_pb->has_disable_reasons());
+      EXPECT_EQ(extension_pb->disable_reasons(),
+                static_cast<uint32_t>(
+                    extensions::disable_reason::DISABLE_USER_ACTION));
+    }
+    // Adding additional disable reasons should result in all reasons being
+    // reported.
+    extension_prefs_->AddDisableReason(
+        extension->id(), extensions::disable_reason::DISABLE_CORRUPTED);
+    {
+      std::unique_ptr<ExtensionInfo> extension_pb =
+          GetExtensionInfo(*extension);
+      EXPECT_TRUE(extension_pb->has_disable_reasons());
+      EXPECT_EQ(extension_pb->disable_reasons(),
+                static_cast<uint32_t>(
+                    extensions::disable_reason::DISABLE_USER_ACTION |
+                    extensions::disable_reason::DISABLE_CORRUPTED));
+    }
+  }
+
+  {
+    // Test changing the blocklist state.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("blocklist")
+            .SetLocation(ManifestLocation::kInternal)
+            .Build();
+    add_extension(extension.get());
+    extensions::blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension->id(),
+        extensions::BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY,
+        extension_prefs_);
+    std::unique_ptr<ExtensionInfo> extension_pb = GetExtensionInfo(*extension);
+    EXPECT_EQ(extension_pb->blocklist_state(),
+              ExtensionInfo::BLOCKLISTED_SECURITY_VULNERABILITY);
+  }
 }
 
 }  // namespace safe_browsing

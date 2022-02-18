@@ -1609,11 +1609,91 @@ message ExtensionWebStoreInstallRequest {
 message ExtensionTelemetryReportRequest {
   // Information about the Chrome extension.
   message ExtensionInfo {
+    enum Type {
+      UNKNOWN_TYPE = 0;            // Unknown (hopefully never used)
+      EXTENSION = 1;               // A browser extension
+      THEME = 2;                   // A browser theme
+      USER_SCRIPT = 3;             // An extension converted from a user script
+      HOSTED_APP = 4;              // A hosted app
+      LEGACY_PACKAGED_APP = 5;     // A (deprecated) v1 packaged app
+      PLATFORM_APP = 6;            // A platform app
+      SHARED_MODULE = 7;           // A shared module
+      LOGIN_SCREEN_EXTENSION = 8;  // An extension running on the login screen
+    }
+
+    enum InstallLocation {
+      UNKNOWN_LOCATION = 0;  // Unknown (hopefully never used)
+      INTERNAL = 1;  // A crx file from the internal Extensions directory; most
+                     // webstore-installed extensions fall into this category.
+      EXTERNAL_PREF = 2;  // A crx file from an external directory (via prefs).
+      EXTERNAL_REGISTRY = 3;  // A crx file from an external directory (via the
+                              // Windows registry)
+      UNPACKED = 4;   // An unpacked extension loaded from chrome://extensions.
+      COMPONENT = 5;  // An internal component extension.
+      EXTERNAL_PREF_DOWNLOAD = 6;    // A crx file from an external directory
+                                     // (via prefs), downloaded from an update
+                                     // URL.
+      EXTERNAL_POLICY_DOWNLOAD = 7;  // A crx file from an external directory
+                                     // (via admin policies), downloaded from an
+                                     // update URL.
+      COMMAND_LINE = 8;  // Loaded from the commandline (e.g. --load-extension).
+      EXTERNAL_POLICY = 9;  // A crx file from an external directory (via admin
+                            // policies), cached locally and installed from the
+                            // cache.
+      EXTERNAL_COMPONENT = 10;  // A component extension that was downloaded
+                                // externally via an update url.
+    }
+
+    // The state of the extension as determined by SB blocklist.
+    enum BlocklistState {
+      // The extension is not in the blocklist.
+      NOT_BLOCKLISTED = 0;
+      // The extension is malware.
+      BLOCKLISTED_MALWARE = 1;
+      // The extension has a serious security vulnerability.
+      BLOCKLISTED_SECURITY_VULNERABILITY = 2;
+      // The extension violated CWS policy.
+      BLOCKLISTED_CWS_POLICY_VIOLATION = 3;
+      // The extension is considered potentially unwanted.
+      BLOCKLISTED_POTENTIALLY_UNWANTED = 4;
+      // Used when we couldn't connect to server, e.g. when offline.
+      BLOCKLISTED_UNKNOWN = 5;
+    }
+
     optional string id = 1;
     optional string version = 2;
     optional string name = 3;
     // Version install time.
     optional int64 install_timestamp_msec = 4;
+    // If the extension was installed by default when the profile was created.
+    // These extensions are specified by Chrome.
+    optional bool is_default_installed = 5;
+    // If the extension was installed by an OEM. This differs from
+    // "is_default_installed", since these extensions are specified by the OEM
+    // rather than by Chrome. These are specified in a file that is created as
+    // part of the creation of the Chrome image, and can be specific to
+    // different OEMs.
+    optional bool is_oem_installed = 6;
+    // If the extension originated from the Chrome Web Store according to the
+    // prefs. This differs from install_location, which specifies the location
+    // on the user’s machine from where the install originated, but not
+    // whether the extension is hosted in the store. For instance, sideloaded
+    // extensions that are specified via ID in the registry are downloaded from
+    // the store.
+    optional bool is_from_store = 7;
+    // If the extension automatically updates from the Chrome Web Store.
+    optional bool updates_from_store = 8;
+    // If the extension was created from a user script. This is distinct from
+    // install_location, which specifies from where on the user’s machine
+    // the install originated.
+    optional bool is_converted_from_user_script = 9;
+    optional Type type = 10;
+    optional InstallLocation install_location = 11;
+    optional BlocklistState blocklist_state = 12;
+    // Bitmask of reason(s) the Chrome extension is disabled.
+    // Bit positions are defined in extensions::disable_reason::DisableReason
+    // (located in //extensions/browser/disable_reason.h)
+    optional uint32 disable_reasons = 13;
   }
 
   // Information about the various telemetry signals.
