@@ -5049,7 +5049,7 @@
   {
     "name": "reduce-user-agent",
     "owners": [ "aarontag", "miketaylr"],
-    "expiry_milestone": 100
+    "expiry_milestone": 113
   },
   {
     "name": "reengagement-notification",
