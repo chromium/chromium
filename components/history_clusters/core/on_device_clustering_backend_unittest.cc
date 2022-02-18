@@ -636,7 +636,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.NumKeywordsPerCluster.Max", 2, 1);
   histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.BatchEntityLookupLatency", 1);
+      "History.Clusters.Backend.BatchEntityLookupLatency2", 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.BatchEntityLookupSize", 2, 1);
 }
@@ -785,11 +785,14 @@ TEST_P(BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest,
   }
 
   histogram_tester.ExpectTotalCount(
-      "Journeys.PartialOnBatchEntityMetadataRetrieved.BatchSize",
+      "History.Clusters.Backend.ProcessBatchOfVisits.BatchSize",
       expected_number_of_batches);
   histogram_tester.ExpectUniqueSample(
-      "Journeys.PartialOnBatchEntityMetadataRetrieved.BatchSize",
+      "History.Clusters.Backend.ProcessBatchOfVisits.BatchSize",
       expected_size_of_batches, expected_number_of_batches);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.NumBatchesProcessedForVisits",
+      expected_number_of_batches, 1);
 }
 
 const bool kDirectExecutorEnabled[]{true, false};

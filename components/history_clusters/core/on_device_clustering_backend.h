@@ -62,6 +62,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   // ProcessBatchOfVisits is called repeatedly to process the visits in batches.
   void ProcessBatchOfVisits(
       ClusteringRequestSource clustering_request_source,
+      size_t num_batches_processed_so_far,
       size_t index_to_process,
       std::vector<history::ClusterVisit> cluster_visits,
       optimization_guide::BatchEntityMetadataTask* completed_task,
@@ -74,6 +75,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   // Called when all visits have been processed.
   void OnAllVisitsFinishedProcessing(
       ClusteringRequestSource clustering_request_source,
+      size_t num_batches_processed,
       optimization_guide::BatchEntityMetadataTask* completed_task,
       const std::vector<history::ClusterVisit>& cluster_visits,
       ClustersCallback callback);
