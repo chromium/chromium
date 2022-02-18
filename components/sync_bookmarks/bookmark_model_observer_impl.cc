@@ -15,6 +15,7 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 
 namespace sync_bookmarks {
 
@@ -55,7 +56,7 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
   if (!model->client()->CanSyncNode(node)) {
     return;
   }
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker_->GetEntityForBookmarkNode(node);
   DCHECK(entity);
 
@@ -84,7 +85,7 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
     return;
   }
 
-  const SyncedBookmarkTracker::Entity* parent_entity =
+  const SyncedBookmarkTrackerEntity* parent_entity =
       bookmark_tracker_->GetEntityForBookmarkNode(parent);
   // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
   // Should be removed after figuring out the reason for the crash.
@@ -99,7 +100,7 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
   // It is possible that a created bookmark was restored after deletion and
   // the tombstone was not committed yet. In that case the existing entity
   // should be updated.
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker_->GetEntityForGUID(node->guid());
   const base::Time creation_time = base::Time::Now();
   if (entity) {
@@ -175,7 +176,7 @@ void BookmarkModelObserverImpl::BookmarkNodeChanged(
   // We shouldn't see changes to the top-level nodes.
   DCHECK(!model->is_permanent_node(node));
 
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker_->GetEntityForBookmarkNode(node);
   if (!entity) {
     // If the node hasn't been added to the tracker yet, we do nothing. It will
@@ -224,7 +225,7 @@ void BookmarkModelObserverImpl::BookmarkNodeFaviconChanged(
     return;
   }
 
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker_->GetEntityForBookmarkNode(node);
   if (!entity) {
     // This should be practically unreachable but in theory it's possible that a
@@ -274,7 +275,7 @@ void BookmarkModelObserverImpl::BookmarkNodeChildrenReordered(
 
   syncer::UniquePosition position;
   for (const auto& child : node->children()) {
-    const SyncedBookmarkTracker::Entity* entity =
+    const SyncedBookmarkTrackerEntity* entity =
         bookmark_tracker_->GetEntityForBookmarkNode(child.get());
     DCHECK(entity);
 
@@ -305,8 +306,8 @@ syncer::UniquePosition BookmarkModelObserverImpl::ComputePosition(
   const std::string& suffix = syncer::GenerateSyncableBookmarkHash(
       bookmark_tracker_->model_type_state().cache_guid(), sync_id);
   DCHECK(!parent.children().empty());
-  const SyncedBookmarkTracker::Entity* predecessor_entity = nullptr;
-  const SyncedBookmarkTracker::Entity* successor_entity = nullptr;
+  const SyncedBookmarkTrackerEntity* predecessor_entity = nullptr;
+  const SyncedBookmarkTrackerEntity* successor_entity = nullptr;
 
   // Look for the first tracked predecessor.
   for (auto i = parent.children().crend() - index;
@@ -361,7 +362,7 @@ syncer::UniquePosition BookmarkModelObserverImpl::ComputePosition(
 }
 
 void BookmarkModelObserverImpl::ProcessUpdate(
-    const SyncedBookmarkTracker::Entity* entity,
+    const SyncedBookmarkTrackerEntity* entity,
     const sync_pb::EntitySpecifics& specifics) {
   DCHECK(entity);
 
@@ -394,7 +395,7 @@ void BookmarkModelObserverImpl::ProcessDelete(
   for (const auto& child : node->children())
     ProcessDelete(node, child.get());
   // Process the current node.
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker_->GetEntityForBookmarkNode(node);
   // Shouldn't try to delete untracked entities.
   DCHECK(entity);

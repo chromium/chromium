@@ -24,6 +24,7 @@
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +51,7 @@ const char kOtherBookmarksTag[] = "other_bookmarks";
 const char kMobileBookmarksId[] = "synced_bookmarks_id";
 const char kMobileBookmarksTag[] = "synced_bookmarks";
 
-// Matches |arg| of type SyncedBookmarkTracker::Entity*.
+// Matches |arg| of type SyncedBookmarkTrackerEntity*.
 MATCHER_P(HasBookmarkNode, node, "") {
   return arg->bookmark_node() == node;
 }
@@ -99,7 +100,7 @@ class BookmarkModelObserverImplTest : public testing::Test {
   }
 
   void SimulateCommitResponseForAllLocalChanges() {
-    for (const SyncedBookmarkTracker::Entity* entity :
+    for (const SyncedBookmarkTrackerEntity* entity :
          bookmark_tracker()->GetEntitiesWithLocalChanges()) {
       const std::string id = entity->metadata()->server_id();
       // Don't simulate change in id for simplicity.
@@ -112,7 +113,7 @@ class BookmarkModelObserverImplTest : public testing::Test {
 
   syncer::UniquePosition PositionOf(
       const bookmarks::BookmarkNode* bookmark_node) {
-    const SyncedBookmarkTracker::Entity* entity =
+    const SyncedBookmarkTrackerEntity* entity =
         bookmark_tracker()->GetEntityForBookmarkNode(bookmark_node);
     return syncer::UniquePosition::FromProto(
         entity->metadata()->unique_position());
@@ -151,7 +152,7 @@ TEST_F(BookmarkModelObserverImplTest,
 
   EXPECT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 4U);
 
-  std::vector<const SyncedBookmarkTracker::Entity*> local_changes =
+  std::vector<const SyncedBookmarkTrackerEntity*> local_changes =
       bookmark_tracker()->GetEntitiesWithLocalChanges();
   ASSERT_THAT(local_changes.size(), 1U);
   EXPECT_THAT(local_changes[0]->bookmark_node(), Eq(bookmark_node));
@@ -327,11 +328,11 @@ TEST_F(BookmarkModelObserverImplTest,
   // There should be no local changes now.
   ASSERT_TRUE(bookmark_tracker()->GetEntitiesWithLocalChanges().empty());
 
-  const SyncedBookmarkTracker::Entity* folder2_entity =
+  const SyncedBookmarkTrackerEntity* folder2_entity =
       bookmark_tracker()->GetEntityForBookmarkNode(folder2_node);
-  const SyncedBookmarkTracker::Entity* bookmark2_entity =
+  const SyncedBookmarkTrackerEntity* bookmark2_entity =
       bookmark_tracker()->GetEntityForBookmarkNode(bookmark2_node);
-  const SyncedBookmarkTracker::Entity* bookmark3_entity =
+  const SyncedBookmarkTrackerEntity* bookmark3_entity =
       bookmark_tracker()->GetEntityForBookmarkNode(bookmark3_node);
 
   ASSERT_FALSE(folder2_entity->metadata()->is_deleted());
@@ -385,7 +386,7 @@ TEST_F(BookmarkModelObserverImplTest,
 
   // Node should be tracked now.
   ASSERT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 4U);
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker()->GetEntityForBookmarkNode(folder_node);
   const std::string id = entity->metadata()->server_id();
   ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 1U);
@@ -629,7 +630,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldNotIssueCommitUponFaviconLoad) {
   SimulateCommitResponseForAllLocalChanges();
   ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(), IsEmpty());
 
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker()->GetEntityForBookmarkNode(bookmark_node);
   ASSERT_THAT(entity, NotNull());
   ASSERT_TRUE(entity->metadata()->has_bookmark_favicon_hash());
@@ -673,7 +674,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldCommitLocalFaviconChange) {
   SimulateCommitResponseForAllLocalChanges();
   ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(), IsEmpty());
 
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker()->GetEntityForBookmarkNode(bookmark_node);
   ASSERT_THAT(entity, NotNull());
   ASSERT_TRUE(entity->metadata()->has_bookmark_favicon_hash());
@@ -732,7 +733,7 @@ TEST_F(BookmarkModelObserverImplTest,
           syncer::UniquePosition::RandomSuffix())
           .ToProto();
 
-  const SyncedBookmarkTracker::Entity* entity = bookmark_tracker()->Add(
+  const SyncedBookmarkTrackerEntity* entity = bookmark_tracker()->Add(
       bookmark_node, "id", /*server_version=*/1, base::Time::Now(), specifics);
   bookmark_tracker()->IncrementSequenceNumber(entity);
 
@@ -758,7 +759,7 @@ TEST_F(BookmarkModelObserverImplTest,
   const syncer::ClientTagHash folder_client_tag_hash =
       SyncedBookmarkTracker::GetClientTagHashFromGUID(folder->guid());
   // Check that the bookmark was added by observer.
-  const SyncedBookmarkTracker::Entity* folder_entity =
+  const SyncedBookmarkTrackerEntity* folder_entity =
       bookmark_tracker()->GetEntityForBookmarkNode(folder);
   ASSERT_THAT(folder_entity, NotNull());
   ASSERT_TRUE(folder_entity->IsUnsynced());
@@ -775,7 +776,7 @@ TEST_F(BookmarkModelObserverImplTest,
   ASSERT_THAT(bookmark_tracker()->GetEntityForBookmarkNode(folder), IsNull());
 
   // Check that the entity is a tombstone now.
-  const std::vector<const SyncedBookmarkTracker::Entity*> local_changes =
+  const std::vector<const SyncedBookmarkTrackerEntity*> local_changes =
       bookmark_tracker()->GetEntitiesWithLocalChanges();
   ASSERT_THAT(local_changes, ElementsAre(folder_entity));
   ASSERT_TRUE(folder_entity->metadata()->is_deleted());
@@ -812,7 +813,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldCommitOnDeleteFavicon) {
   ASSERT_TRUE(bookmark_client()->SimulateFaviconLoaded(
       kBookmarkUrl, kIconUrl, CreateTestImage(SK_ColorRED)));
 
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker()->GetEntityForBookmarkNode(bookmark_node);
   ASSERT_THAT(entity, NotNull());
   ASSERT_TRUE(entity->IsUnsynced());

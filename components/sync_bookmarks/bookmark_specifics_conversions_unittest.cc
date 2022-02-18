@@ -24,6 +24,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -927,7 +928,7 @@ TEST(BookmarkSpecificsConversionsTest, ShouldFixGuidInSpecificsDueToPastBug) {
       RandomUniquePosition();
 
   bookmarks::BookmarkNode node(/*id=*/1, kGuid, GURL());
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       tracker->Add(&node, kSyncId, /*server_version=*/0,
                    /*creation_time=*/base::Time(), specifics);
   ASSERT_THAT(entity, NotNull());

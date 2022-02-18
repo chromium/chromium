@@ -21,6 +21,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_bookmarks/switches.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -130,7 +131,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldAddEntity) {
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
 
   bookmarks::BookmarkNode node(kId, kGuid, kUrl);
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       tracker->Add(&node, kSyncId, kServerVersion, kCreationTime, specifics);
   ASSERT_THAT(entity, NotNull());
   EXPECT_THAT(entity->bookmark_node(), Eq(&node));
@@ -171,7 +172,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldRemoveEntity) {
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, kGuid, GURL());
-  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+  const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
   ASSERT_THAT(entity, NotNull());
   ASSERT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
@@ -228,7 +229,7 @@ TEST(SyncedBookmarkTrackerTest,
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), GURL());
-  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+  const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
   EXPECT_THAT(tracker->HasLocalChanges(), Eq(false));
@@ -249,7 +250,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldAckSequenceNumber) {
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), GURL());
-  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+  const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
   // Test simple scenario of ack'ing an incrememented sequence number.
@@ -282,7 +283,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldUpdateUponCommitResponseWithNewId) {
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), GURL());
-  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+  const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
   ASSERT_THAT(entity, NotNull());
 
@@ -316,7 +317,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldUpdateId) {
   bookmarks::BookmarkNode node(/*id=*/1, base::GUID::GenerateRandomV4(),
                                GURL());
   // Track a sync entity.
-  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+  const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
   ASSERT_THAT(entity, NotNull());
@@ -474,7 +475,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldMarkDeleted) {
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, kGuid, GURL());
-  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+  const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
   ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(0U));
@@ -513,7 +514,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, kGuid, GURL());
-  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+  const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
   ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(0U));
@@ -595,7 +596,7 @@ TEST(SyncedBookmarkTrackerTest,
   tracker->IncrementSequenceNumber(tracker->GetEntityForSyncId(kId2));
   tracker->IncrementSequenceNumber(tracker->GetEntityForSyncId(kId0));
 
-  std::vector<const SyncedBookmarkTracker::Entity*> entities_with_local_change =
+  std::vector<const SyncedBookmarkTrackerEntity*> entities_with_local_change =
       tracker->GetEntitiesWithLocalChanges();
 
   ASSERT_THAT(entities_with_local_change.size(), Eq(4U));
@@ -965,7 +966,7 @@ TEST(SyncedBookmarkTrackerTest,
   specifics.mutable_bookmark()->set_favicon(kFaviconPngBytes);
 
   bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), kUrl);
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       tracker->Add(&node, kSyncId, kServerVersion, kCreationTime, specifics);
 
   EXPECT_TRUE(entity->metadata()->has_bookmark_favicon_hash());
@@ -1000,7 +1001,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldPopulateFaviconHashUponUpdate) {
           model.get(), std::move(model_metadata));
   ASSERT_THAT(tracker, NotNull());
 
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       tracker->GetEntityForSyncId(kSyncId);
   ASSERT_THAT(entity, NotNull());
   ASSERT_FALSE(entity->metadata()->has_bookmark_favicon_hash());
@@ -1039,7 +1040,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldPopulateFaviconHashExplicitly) {
           model.get(), std::move(model_metadata));
   ASSERT_THAT(tracker, NotNull());
 
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       tracker->GetEntityForSyncId(kSyncId);
   ASSERT_THAT(entity, NotNull());
   ASSERT_FALSE(entity->metadata()->has_bookmark_favicon_hash());

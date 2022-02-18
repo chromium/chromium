@@ -25,6 +25,8 @@ static_library("sync_bookmarks") {
     "switches.h",
     "synced_bookmark_tracker.cc",
     "synced_bookmark_tracker.h",
+    "synced_bookmark_tracker_entity.cc",
+    "synced_bookmark_tracker_entity.h",
   ]
 
   deps = [

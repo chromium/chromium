@@ -15,6 +15,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 
 namespace sync_bookmarks {
 
@@ -53,7 +54,7 @@ base::GUID TryGetParentGuidFromTracker(
   DCHECK(update.entity.server_defined_unique_tag.empty());
   DCHECK(!update.entity.specifics.bookmark().has_parent_guid());
 
-  const SyncedBookmarkTracker::Entity* const tracked_parent =
+  const SyncedBookmarkTrackerEntity* const tracked_parent =
       tracker->GetEntityForSyncId(update.entity.legacy_parent_id);
   if (!tracked_parent) {
     // Parent not known by tracker.

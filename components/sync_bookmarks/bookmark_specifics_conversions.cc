@@ -28,6 +28,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
 
@@ -577,7 +578,7 @@ void MaybeFixGuidInSpecificsDueToPastBug(const SyncedBookmarkTracker& tracker,
     return;
   }
 
-  const SyncedBookmarkTracker::Entity* const tracked_entity =
+  const SyncedBookmarkTrackerEntity* const tracked_entity =
       tracker.GetEntityForSyncId(update_entity->id);
   if (!tracked_entity || !tracked_entity->bookmark_node()) {
     // The entity is not tracked locally or it has been deleted, so the GUID is

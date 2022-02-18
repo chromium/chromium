@@ -17,6 +17,7 @@
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 
 namespace sync_bookmarks {
 
@@ -32,12 +33,12 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
     size_t max_entries) const {
   DCHECK(bookmark_tracker_);
 
-  const std::vector<const SyncedBookmarkTracker::Entity*>
+  const std::vector<const SyncedBookmarkTrackerEntity*>
       entities_with_local_changes =
           bookmark_tracker_->GetEntitiesWithLocalChanges();
 
   syncer::CommitRequestDataList commit_requests;
-  for (const SyncedBookmarkTracker::Entity* entity :
+  for (const SyncedBookmarkTrackerEntity* entity :
        entities_with_local_changes) {
     if (commit_requests.size() >= max_entries) {
       break;
@@ -83,7 +84,7 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
                 syncer::ClientTagHash::FromHashed(metadata->client_tag_hash()));
 
       const bookmarks::BookmarkNode* parent = node->parent();
-      const SyncedBookmarkTracker::Entity* parent_entity =
+      const SyncedBookmarkTrackerEntity* parent_entity =
           bookmark_tracker_->GetEntityForBookmarkNode(parent);
       DCHECK(parent_entity);
       data->legacy_parent_id = parent_entity->metadata()->server_id();
