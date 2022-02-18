@@ -212,7 +212,6 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   Selection GetUnignoredSelection() const override;
 
   bool GetTreeUpdateInProgressState() const override;
-  void SetTreeUpdateInProgressState(bool set_tree_update_value);
 
   // AXNode::OwnerTree override.
   // Returns true if the tree represents a paginated document
@@ -234,6 +233,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   void NotifyTreeManagerWillBeRemoved(AXTreeID previous_tree_id);
 
  private:
+  friend class ScopedTreeUpdateInProgressStateSetter;
   friend class AXTableInfoTest;
 
   // Indicates if the node with the focus should never be ignored, (see
@@ -324,6 +324,11 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
       const AXNodeData& new_data);
 
   void UpdateReverseRelations(AXNode* node, const AXNodeData& new_data);
+
+  // Sets a flag indicating whether the tree is currently being updated or not.
+  // If the tree is being updated, then its internal pointers might be invalid
+  // and the tree should not be traversed.
+  void SetTreeUpdateInProgressState(bool set_tree_update_value);
 
   // Returns true if all pending changes in the |update_state| have been
   // handled. If this returns false, the |error_| message will be populated.
@@ -463,6 +468,32 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   bool has_pagination_support_ = false;
 
   std::unique_ptr<AXEvent> event_data_;
+};
+
+// Sets the flag that indicates whether the accessibility tree is currently
+// being updated, and ensures that it is reset to its previous value when the
+// instance is destructed. An accessibility tree that is being updated is
+// unstable and should not be traversed.
+class AX_EXPORT ScopedTreeUpdateInProgressStateSetter {
+ public:
+  explicit ScopedTreeUpdateInProgressStateSetter(AXTree& tree)
+      : tree_(&tree),
+        last_tree_update_in_progress_(tree.GetTreeUpdateInProgressState()) {
+    tree_->SetTreeUpdateInProgressState(true);
+  }
+
+  ~ScopedTreeUpdateInProgressStateSetter() {
+    tree_->SetTreeUpdateInProgressState(last_tree_update_in_progress_);
+  }
+
+  ScopedTreeUpdateInProgressStateSetter(
+      const ScopedTreeUpdateInProgressStateSetter&) = delete;
+  ScopedTreeUpdateInProgressStateSetter& operator=(
+      const ScopedTreeUpdateInProgressStateSetter&) = delete;
+
+ private:
+  AXTree* const tree_;
+  bool last_tree_update_in_progress_;
 };
 
 }  // namespace ui

@@ -4326,13 +4326,14 @@ TEST(AXTreeTest, SetSizePosInSetSubtreeDeleted) {
 
   // These values are lazily created, so to test that they fail when
   // called in the middle of a tree update, fake the update state.
-  tree.SetTreeUpdateInProgressState(true);
-  ASSERT_FALSE(tree_node->GetPosInSet());
-  ASSERT_FALSE(tree_node->GetSetSize());
+  {
+    ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(tree);
+    ASSERT_FALSE(tree_node->GetPosInSet());
+    ASSERT_FALSE(tree_node->GetSetSize());
 
-  // Then reset the state to make sure we have the expected values
-  // after |Unserialize|.
-  tree.SetTreeUpdateInProgressState(false);
+    // Then reset the state to make sure we have the expected values after
+    // |Unserialize|.
+  }  // tree_update_in_progress.
   ASSERT_FALSE(tree_node->GetPosInSet());
   EXPECT_OPTIONAL_EQ(1, tree_node->GetSetSize());
 }
