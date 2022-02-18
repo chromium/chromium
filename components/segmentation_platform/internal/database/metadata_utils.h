@@ -96,8 +96,11 @@ std::string SegmetationModelMetadataToString(
     const proto::SegmentationModelMetadata& model_metadata);
 
 // Helper method to get all UMAFeatures from a segmentation model's metadata.
+// When |include_outputs| is true, the UMA features for training outputs will be
+// included. Otherwise only input UMA features are included.
 std::vector<proto::UMAFeature> GetAllUmaFeatures(
-    const proto::SegmentationModelMetadata& model_metadata);
+    const proto::SegmentationModelMetadata& model_metadata,
+    bool include_outputs);
 
 }  // namespace metadata_utils
 }  // namespace segmentation_platform

@@ -39,7 +39,8 @@ void SignalFilterProcessor::FilterSignals(
   for (const auto& pair : *segment_infos) {
     const proto::SegmentInfo& segment_info = pair.second;
     const auto& metadata = segment_info.model_metadata();
-    auto features = metadata_utils::GetAllUmaFeatures(metadata);
+    auto features =
+        metadata_utils::GetAllUmaFeatures(metadata, /*include_outputs=*/true);
     for (auto const& feature : features) {
       if (feature.type() == proto::SignalType::USER_ACTION &&
           feature.name_hash() != 0) {

@@ -633,8 +633,8 @@ TEST_F(MetadataUtilsTest, GetAllUmaFeatures) {
   feature2.set_name("feature2");
   *model_metadata.add_features() = feature2;
 
-  std::vector<proto::UMAFeature> expected =
-      metadata_utils::GetAllUmaFeatures(model_metadata);
+  std::vector<proto::UMAFeature> expected = metadata_utils::GetAllUmaFeatures(
+      model_metadata, /*include_outputs=*/false);
 
   ASSERT_EQ(model_metadata.features_size(), (int)expected.size());
 
@@ -646,6 +646,7 @@ TEST_F(MetadataUtilsTest, GetAllUmaFeatures) {
 TEST_F(MetadataUtilsTest, GetAllUmaFeaturesWithInputFeatures) {
   proto::SegmentationModelMetadata model_metadata;
 
+  // Adds two inputs.
   auto* input1 = model_metadata.add_input_features();
   proto::UMAFeature* feature1 = input1->mutable_uma_feature();
   feature1->set_name("feature1");
@@ -654,17 +655,38 @@ TEST_F(MetadataUtilsTest, GetAllUmaFeaturesWithInputFeatures) {
   proto::UMAFeature* feature2 = input2->mutable_uma_feature();
   feature2->set_name("feature2");
 
-  std::vector<proto::UMAFeature> expected =
-      metadata_utils::GetAllUmaFeatures(model_metadata);
+  // Adds one output.
+  auto* output = model_metadata.mutable_training_outputs()
+                     ->add_outputs()
+                     ->mutable_uma_output()
+                     ->mutable_uma_feature();
+  output->set_name("output");
 
+  std::vector<proto::UMAFeature> expected = metadata_utils::GetAllUmaFeatures(
+      model_metadata, /*include_outputs=*/false);
+
+  // Verifies that only all the inputs are included.
   ASSERT_EQ(model_metadata.input_features_size(), (int)expected.size());
-
   for (int i = 0; i < model_metadata.input_features_size(); ++i) {
     if (model_metadata.input_features(i).has_uma_feature()) {
       ASSERT_EQ(model_metadata.input_features(i).uma_feature().name(),
                 expected[i].name());
     }
   }
+}
+
+TEST_F(MetadataUtilsTest, GetAllUmaFeaturesWithUMAOutput) {
+  proto::SegmentationModelMetadata model_metadata;
+  auto* uma_feature = model_metadata.mutable_training_outputs()
+                          ->add_outputs()
+                          ->mutable_uma_output()
+                          ->mutable_uma_feature();
+  uma_feature->set_name("output");
+
+  std::vector<proto::UMAFeature> expected = metadata_utils::GetAllUmaFeatures(
+      model_metadata, /*include_outputs=*/true);
+  EXPECT_EQ(1u, expected.size());
+  EXPECT_EQ("output", expected[0].name());
 }
 
 }  // namespace segmentation_platform

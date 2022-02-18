@@ -17,6 +17,7 @@
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/public/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -335,16 +336,27 @@ std::string SegmetationModelMetadataToString(
 }
 
 std::vector<proto::UMAFeature> GetAllUmaFeatures(
-    const proto::SegmentationModelMetadata& model_metadata) {
+    const proto::SegmentationModelMetadata& model_metadata,
+    bool include_outputs) {
   std::vector<proto::UMAFeature> features;
   for (int i = 0; i < model_metadata.features_size(); ++i) {
     features.push_back(model_metadata.features(i));
   }
 
+  // Add training/inference inputs.
   for (int i = 0; i < model_metadata.input_features_size(); ++i) {
     auto feature = model_metadata.input_features(i);
     if (feature.has_uma_feature()) {
       features.push_back(feature.uma_feature());
+    }
+  }
+
+  // Add training/inference outputs.
+  if (include_outputs) {
+    for (const auto& output : model_metadata.training_outputs().outputs()) {
+      DCHECK(output.has_uma_output()) << "Currently only support UMA output.";
+      if (output.has_uma_output())
+        features.push_back(output.uma_output().uma_feature());
     }
   }
 
