@@ -43,8 +43,11 @@ void CookieJar::SetCookie(const String& value) {
 
   base::ElapsedTimer timer;
   bool requested = RequestRestrictedCookieManagerIfNeeded();
-  backend_->SetCookieFromString(cookie_url, document_->SiteForCookies(),
-                                document_->TopFrameOrigin(), value);
+  backend_->SetCookieFromString(
+      cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
+      value,
+      RuntimeEnabledFeatures::PartitionedCookiesEnabled(
+          document_->GetExecutionContext()));
   LogCookieHistogram("Blink.SetCookieTime.", requested, timer.Elapsed());
 }
 
@@ -57,7 +60,10 @@ String CookieJar::Cookies() {
   bool requested = RequestRestrictedCookieManagerIfNeeded();
   String value;
   backend_->GetCookiesString(cookie_url, document_->SiteForCookies(),
-                             document_->TopFrameOrigin(), &value);
+                             document_->TopFrameOrigin(),
+                             RuntimeEnabledFeatures::PartitionedCookiesEnabled(
+                                 document_->GetExecutionContext()),
+                             &value);
   LogCookieHistogram("Blink.CookiesTime.", requested, timer.Elapsed());
   return value;
 }
