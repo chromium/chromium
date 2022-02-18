@@ -5635,6 +5635,15 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"allow-dsp-based-aec", flag_descriptions::kCrOSDspBasedAecAllowedName,
+     flag_descriptions::kCrOSDspBasedAecAllowedDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kCrOSDspBasedAecAllowed)},
+    {"allow-dsp-based-ns", flag_descriptions::kCrOSDspBasedNsAllowedName,
+     flag_descriptions::kCrOSDspBasedNsAllowedDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kCrOSDspBasedNsAllowed)},
+    {"allow-dsp-based-agc", flag_descriptions::kCrOSDspBasedAgcAllowedName,
+     flag_descriptions::kCrOSDspBasedAgcAllowedDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kCrOSDspBasedAgcAllowed)},
     {"enforce-system-aec", flag_descriptions::kCrOSEnforceSystemAecName,
      flag_descriptions::kCrOSEnforceSystemAecDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAec)},

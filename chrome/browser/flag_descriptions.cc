@@ -4499,6 +4499,21 @@ const char kDriveFsBidirectionalNativeMessagingName[] =
 const char kDriveFsBidirectionalNativeMessagingDescription[] =
     "Enable enhanced native messaging host to communicate with DriveFS.";
 
+const char kCrOSDspBasedAecAllowedName[] =
+    "Allow CRAS to use a DSP-based AEC if available";
+const char kCrOSDspBasedAecAllowedDescription[] =
+    "Allows the system variant of the AEC in CRAS to be run on DSP ";
+
+const char kCrOSDspBasedNsAllowedName[] =
+    "Allow CRAS to use a DSP-based NS if available";
+const char kCrOSDspBasedNsAllowedDescription[] =
+    "Allows the system variant of the NS in CRAS to be run on DSP ";
+
+const char kCrOSDspBasedAgcAllowedName[] =
+    "Allow CRAS to use a DSP-based AGC if available";
+const char kCrOSDspBasedAgcAllowedDescription[] =
+    "Allows the system variant of the AGC in CRAS to be run on DSP ";
+
 const char kCrOSEnforceSystemAecName[] = "Enforce using the system AEC in CrAS";
 const char kCrOSEnforceSystemAecDescription[] =
     "Enforces using the system variant in CrAS of the AEC";

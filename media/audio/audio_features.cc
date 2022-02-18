@@ -52,6 +52,20 @@ const base::Feature kCrOSEnforceSystemAecAgc{"CrOSEnforceSystemAecAgc",
 const base::Feature kCrOSEnforceSystemAec{"CrOSEnforceSystemAec",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCrOSDspBasedAecDeactivatedGroups{
+    "CrOSDspBasedAecDeactivatedGroups", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kCrOSDspBasedNsDeactivatedGroups{
+    "CrOSDspBasedNsDeactivatedGroups", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kCrOSDspBasedAgcDeactivatedGroups{
+    "CrOSDspBasedAgcDeactivatedGroups", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kCrOSDspBasedAecAllowed{"CrOSDspBasedAecAllowed",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kCrOSDspBasedNsAllowed{"CrOSDspBasedNsAllowed",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kCrOSDspBasedAgcAllowed{"CrOSDspBasedAgcAllowed",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
+
 #endif
 
 #if BUILDFLAG(IS_WIN)
