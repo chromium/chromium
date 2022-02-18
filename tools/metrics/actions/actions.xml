@@ -23421,6 +23421,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PageInfo.AdPersonalization.OpenedWithFledgeAndTopics">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Page Info Ads personalization subpage opened with FLEDGE and Topics present.
+  </description>
+</action>
+
+<action name="PageInfo.AdPersonalization.OpenedWithTopics">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    Page Info Ads personalization subpage opened with only Topics present.
+  </description>
+</action>
+
 <action name="PageInfo.OpenedWithAdsPersonalization">
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>

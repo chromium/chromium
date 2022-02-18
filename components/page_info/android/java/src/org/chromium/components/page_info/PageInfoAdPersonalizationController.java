@@ -67,7 +67,11 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
         PageInfoAdPersonalizationPreference.Params params =
                 new PageInfoAdPersonalizationPreference.Params();
         params.topicInfo = mInfo;
-        params.onManageInterestsButtonClicked = getDelegate()::showAdPersonalizationSettings;
+        params.onManageInterestsButtonClicked = () -> {
+            mMainController.recordAction(
+                    PageInfoAction.PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
+            getDelegate().showAdPersonalizationSettings();
+        };
         mSubPage.setParams(params);
         return addSubpageFragment(mSubPage);
     }

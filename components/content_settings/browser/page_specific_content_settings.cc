@@ -921,6 +921,11 @@ bool PageSpecificContentSettings::HasContentSettingChangedViaPageInfo(
          content_settings_changed_via_page_info_.end();
 }
 
+bool PageSpecificContentSettings::HasAccessedTopics() const {
+  // TODO(crbug.com/1286276): Implement Topics access checks.
+  return false;
+}
+
 bool PageSpecificContentSettings::HasJoinedUserToInterestGroup() const {
   return !allowed_interest_group_api_.empty();
 }

@@ -406,6 +406,9 @@ class PageSpecificContentSettings
   // is the joining origin.
   bool HasJoinedUserToInterestGroup() const;
 
+  // Returns true if the page has accessed the Topics API.
+  bool HasAccessedTopics() const;
+
  private:
   friend class content::PageUserData<PageSpecificContentSettings>;
 

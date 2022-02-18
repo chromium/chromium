@@ -446,23 +446,26 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
   if (!settings)
     return;
 
+  bool has_topic = settings->HasAccessedTopics();
+  bool has_fledge = settings->HasJoinedUserToInterestGroup();
   switch (action) {
     case PageInfoAction::PAGE_INFO_OPENED:
-#if !BUILDFLAG(IS_ANDROID)
-      // TODO(crbug.com/1286276): Handle Topics metrics.
-      if (settings->HasJoinedUserToInterestGroup()) {
+      if (has_fledge || has_topic) {
         base::RecordAction(
             base::UserMetricsAction("PageInfo.OpenedWithAdsPersonalization"));
       }
-#endif
       break;
     case PageInfoAction::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED:
-#if !BUILDFLAG(IS_ANDROID)
-      if (settings->HasJoinedUserToInterestGroup()) {
+      if (has_fledge && has_topic) {
+        base::RecordAction(base::UserMetricsAction(
+            "PageInfo.AdPersonalization.OpenedWithFledgeAndTopics"));
+      } else if (has_fledge) {
         base::RecordAction(base::UserMetricsAction(
             "PageInfo.AdPersonalization.OpenedWithFledge"));
+      } else if (has_topic) {
+        base::RecordAction(base::UserMetricsAction(
+            "PageInfo.AdPersonalization.OpenedWithTopics"));
       }
-#endif
       break;
     case PageInfoAction::PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED:
       base::RecordAction(base::UserMetricsAction(
