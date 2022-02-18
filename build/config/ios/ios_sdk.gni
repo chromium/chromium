@@ -196,3 +196,8 @@ if (target_environment == "device" && ios_enable_code_signing) {
                                             "trim string")
   }
 }
+
+if (ios_use_shared_bundle_id_for_test_apps) {
+  shared_bundle_id_for_test_apps =
+      "$ios_app_bundle_id_prefix.chrome.unittests.dev"
+}
