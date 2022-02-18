@@ -20,16 +20,24 @@ SitePermissionsHelper::SitePermissionsHelper(Profile* profile)
 
 SitePermissionsHelper::~SitePermissionsHelper() = default;
 
-SitePermissionsHelper::SiteAccess SitePermissionsHelper::GetCurrentSiteAccess(
+SitePermissionsHelper::SiteAccess SitePermissionsHelper::GetSiteAccess(
     const Extension& extension,
-    content::WebContents* web_contents) const {
-  DCHECK(web_contents);
+    const GURL& gurl) const {
+  DCHECK(
+      !extension.permissions_data()->IsRestrictedUrl(gurl, /*error=*/nullptr));
+
   ScriptingPermissionsModifier modifier(profile_,
                                         base::WrapRefCounted(&extension));
-  DCHECK(modifier.CanAffectExtension());
 
+  // Extension with no host permissions but with active tab permission has "on
+  // click" access.
+  if (!modifier.CanAffectExtension() &&
+      HasActiveTabAndCanAccess(extension, gurl))
+    return SiteAccess::kOnClick;
+
+  DCHECK(modifier.CanAffectExtension());
   ScriptingPermissionsModifier::SiteAccess site_access =
-      modifier.GetSiteAccess(web_contents->GetLastCommittedURL());
+      modifier.GetSiteAccess(gurl);
   if (site_access.has_all_sites_access)
     return SiteAccess::kOnAllSites;
   if (site_access.has_site_access)
@@ -81,7 +89,8 @@ void SitePermissionsHelper::UpdateSiteAccess(
   if (!runner)
     return;
 
-  auto current_access = GetCurrentSiteAccess(extension, web_contents);
+  auto current_access =
+      GetSiteAccess(extension, web_contents->GetLastCommittedURL());
   if (new_access == current_access)
     return;
 

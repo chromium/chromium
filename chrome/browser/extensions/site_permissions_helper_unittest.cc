@@ -78,6 +78,58 @@ SitePermissionsHelperUnitTest::InstallExtensionWithPermissions(
   return extension;
 }
 
+TEST_F(SitePermissionsHelperUnitTest, GetSiteAccess_AllUrls) {
+  auto extension =
+      InstallExtensionWithPermissions("AllUrls Extension", {"<all_urls>"});
+
+  // Verify any url has "on all sites" site access when the extension has all
+  // urls permission.
+  const GURL url("http://www.example.com");
+  EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, url),
+            SiteAccess::kOnAllSites);
+}
+
+TEST_F(SitePermissionsHelperUnitTest, GetSiteAccess_RequestedUrl) {
+  const GURL requested_url("http://www.requested.com");
+  auto extension = InstallExtensionWithPermissions("Requested Extension",
+                                                   {requested_url.spec()});
+
+  // Verify a url has "on site" site access when the extension requests it.
+  EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, requested_url),
+            SiteAccess::kOnSite);
+}
+
+TEST_F(SitePermissionsHelperUnitTest, GetSiteAccess_ActiveTab) {
+  auto extension = InstallExtensionWithPermissions(
+      "ActiveTab Extension",
+      /*host_permissions=*/{}, /*permissions=*/{"activeTab"});
+
+  // Verify any url has "on click" site access when the extension only has
+  // active tab permission.
+  const GURL url("http://www.example.com");
+  EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, url),
+            SiteAccess::kOnClick);
+}
+
+TEST_F(SitePermissionsHelperUnitTest, GetSiteAccess_ActiveTabAndRequestedUrl) {
+  const GURL requested_url("http://www.requested.com");
+  auto extension = InstallExtensionWithPermissions(
+      "ActiveTab Extension",
+      /*host_permissions=*/{requested_url.spec()},
+      /*permissions=*/{"activeTab"});
+
+  // Verify a url has "on site" site access when the extension requests it,
+  // regardless if the extension also has active tab permission.
+  EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, requested_url),
+            SiteAccess::kOnSite);
+
+  // Verify a url has "on click" site access when the extension does not request
+  // it but has active tab permission.
+  const GURL non_requested_url("http://www.non-requested.com");
+  EXPECT_EQ(permissions_helper()->GetSiteAccess(*extension, non_requested_url),
+            SiteAccess::kOnClick);
+}
+
 TEST_F(SitePermissionsHelperUnitTest, CanSelectSiteAccess_AllUrls) {
   auto extension =
       InstallExtensionWithPermissions("AllUrls Extension", {"<all_urls>"});

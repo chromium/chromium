@@ -49,7 +49,7 @@ int ExtensionSiteAccessComboboxModel::GetCurrentSiteAccessIndex() const {
 
   extensions::SitePermissionsHelper::SiteAccess current_access =
       extensions::SitePermissionsHelper(browser_->profile())
-          .GetCurrentSiteAccess(*extension_, web_contents);
+          .GetSiteAccess(*extension_, web_contents->GetLastCommittedURL());
   auto item_it = std::find(items_.begin(), items_.end(), current_access);
   DCHECK(item_it != items_.end());
 

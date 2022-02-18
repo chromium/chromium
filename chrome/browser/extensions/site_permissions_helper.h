@@ -44,12 +44,11 @@ class SitePermissionsHelper {
   const SitePermissionsHelper& operator=(const SitePermissionsHelper&) = delete;
   ~SitePermissionsHelper();
 
-  // Returns the site access for `extension` in the current site pointed
-  // by `web_contents`. Moreover, this can only be called if the user can
-  // configure site access for the extension (which excludes things like policy
-  // extensions). Otherwie, it DCHECK's.
-  SiteAccess GetCurrentSiteAccess(const Extension& extension,
-                                  content::WebContents* web_contents) const;
+  // Returns the site access for `extension` in `gurl`. This can only be called
+  // if the url is not restricted, and if the user can configure site access for
+  // the extension (which excludes things like policy extensions) or if the
+  // extension has active tab permission.
+  SiteAccess GetSiteAccess(const Extension& extension, const GURL& gurl) const;
 
   // Returns the site interaction for `extension` in the current site pointed by
   // `web_contents`.

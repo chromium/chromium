@@ -109,8 +109,7 @@ int GetVisibilityStringId(
 
 // Returns true if the given |extension| is required to remain installed by
 // policy.
-bool IsExtensionRequiredByPolicy(const Extension* extension,
-                                 Profile* profile) {
+bool IsExtensionRequiredByPolicy(const Extension* extension, Profile* profile) {
   ManagementPolicy* policy = ExtensionSystem::Get(profile)->management_policy();
   return !policy->UserMayModifySettings(extension, nullptr) ||
          policy->MustRemainInstalled(extension, nullptr);
@@ -240,7 +239,8 @@ bool ExtensionContextMenuModel::IsCommandIdChecked(int command_id) const {
 
     SitePermissionsHelper permissions(profile_);
     SitePermissionsHelper::SiteAccess current_access =
-        permissions.GetCurrentSiteAccess(*extension, web_contents);
+        permissions.GetSiteAccess(*extension,
+                                  web_contents->GetLastCommittedURL());
     return current_access == CommandIdToSiteAccess(command_id);
   }
 
@@ -364,8 +364,8 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       HandlePageAccessCommand(command_id, extension);
       break;
     default:
-     NOTREACHED() << "Unknown option";
-     break;
+      NOTREACHED() << "Unknown option";
+      break;
   }
 }
 
@@ -413,8 +413,8 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
   if (!is_component_) {
     bool is_required_by_policy =
         IsExtensionRequiredByPolicy(extension, profile_);
-    int message_id = is_required_by_policy ?
-        IDS_EXTENSIONS_INSTALLED_BY_ADMIN : IDS_EXTENSIONS_UNINSTALL;
+    int message_id = is_required_by_policy ? IDS_EXTENSIONS_INSTALLED_BY_ADMIN
+                                           : IDS_EXTENSIONS_UNINSTALL;
     AddItem(UNINSTALL, l10n_util::GetStringUTF16(message_id));
     if (is_required_by_policy) {
       int uninstall_index = GetIndexOfCommandId(UNINSTALL);
