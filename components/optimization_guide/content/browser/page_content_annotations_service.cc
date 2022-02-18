@@ -158,6 +158,11 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
         true);
     return;
   }
+  if (switches::ShouldLogPageContentAnnotationsInput()) {
+    LOG(ERROR) << "Adding annotation job: \n"
+               << "URL: " << visit.url << "\n"
+               << "Text: " << visit.text_to_annotate.value_or(std::string());
+  }
   visits_to_annotate_.emplace_back(visit);
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
