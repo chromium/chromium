@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8751170527BEBAE100847C8B /* popup_match_row_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8751170427BEBAE100847C8B /* popup_match_row_view.swift */; };
+		59C4A9BF27BFF04F0080C045 /* omnibox_pedal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4A9BA27BFF04F0080C045 /* omnibox_pedal.swift */; };
+		59C4A9C027BFF04F0080C045 /* popup_match_row_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4A9BB27BFF04F0080C045 /* popup_match_row_view.swift */; };
+		59C4A9C127BFF04F0080C045 /* popup_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4A9BC27BFF04F0080C045 /* popup_view.swift */; };
+		59C4A9C227BFF04F0080C045 /* popup_match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4A9BD27BFF04F0080C045 /* popup_match.swift */; };
+		59C4A9C327BFF04F0080C045 /* popup_model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4A9BE27BFF04F0080C045 /* popup_model.swift */; };
 		93B3BBB627B1C3900034ADF1 /* app_delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBB527B1C3900034ADF1 /* app_delegate.swift */; };
 		93B3BBB827B1C3900034ADF1 /* scene_delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBB727B1C3900034ADF1 /* scene_delegate.swift */; };
 		93B3BBBA27B1C3900034ADF1 /* view_controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBB927B1C3900034ADF1 /* view_controller.swift */; };
@@ -15,15 +19,15 @@
 		93B3BBBF27B1C3930034ADF1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 93B3BBBE27B1C3930034ADF1 /* Assets.xcassets */; };
 		93B3BBC227B1C3930034ADF1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 93B3BBC027B1C3930034ADF1 /* LaunchScreen.storyboard */; };
 		93B3BBC827B1C8460034ADF1 /* popup_coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBC727B1C8460034ADF1 /* popup_coordinator.swift */; };
-		93B3BBCF27B1C8C40034ADF1 /* popup_model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBCA27B1C8C40034ADF1 /* popup_model.swift */; };
-		93B3BBD027B1C8C40034ADF1 /* omnibox_pedal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBCB27B1C8C40034ADF1 /* omnibox_pedal.swift */; };
-		93B3BBD127B1C8C40034ADF1 /* popup_match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBCC27B1C8C40034ADF1 /* popup_match.swift */; };
-		93B3BBD227B1C8C40034ADF1 /* popup_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBCE27B1C8C40034ADF1 /* popup_view.swift */; };
 		93B3BBD627B1C8D20034ADF1 /* popup_mediator.m in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBD527B1C8D20034ADF1 /* popup_mediator.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		8751170427BEBAE100847C8B /* popup_match_row_view.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = popup_match_row_view.swift; sourceTree = "<group>"; };
+		59C4A9BA27BFF04F0080C045 /* omnibox_pedal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = omnibox_pedal.swift; path = ../../shared/omnibox_pedal.swift; sourceTree = "<group>"; };
+		59C4A9BB27BFF04F0080C045 /* popup_match_row_view.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_match_row_view.swift; path = ../../shared/popup_match_row_view.swift; sourceTree = "<group>"; };
+		59C4A9BC27BFF04F0080C045 /* popup_view.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_view.swift; path = ../../shared/popup_view.swift; sourceTree = "<group>"; };
+		59C4A9BD27BFF04F0080C045 /* popup_match.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_match.swift; path = ../../shared/popup_match.swift; sourceTree = "<group>"; };
+		59C4A9BE27BFF04F0080C045 /* popup_model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_model.swift; path = ../../shared/popup_model.swift; sourceTree = "<group>"; };
 		93B3BBB327B1C3900034ADF1 /* omnibox_popup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = omnibox_popup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93B3BBB527B1C3900034ADF1 /* app_delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = app_delegate.swift; sourceTree = "<group>"; };
 		93B3BBB727B1C3900034ADF1 /* scene_delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = scene_delegate.swift; sourceTree = "<group>"; };
@@ -33,10 +37,6 @@
 		93B3BBC127B1C3930034ADF1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		93B3BBC327B1C3930034ADF1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		93B3BBC727B1C8460034ADF1 /* popup_coordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = popup_coordinator.swift; sourceTree = "<group>"; };
-		93B3BBCA27B1C8C40034ADF1 /* popup_model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = popup_model.swift; sourceTree = "<group>"; };
-		93B3BBCB27B1C8C40034ADF1 /* omnibox_pedal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = omnibox_pedal.swift; sourceTree = "<group>"; };
-		93B3BBCC27B1C8C40034ADF1 /* popup_match.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = popup_match.swift; sourceTree = "<group>"; };
-		93B3BBCE27B1C8C40034ADF1 /* popup_view.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = popup_view.swift; sourceTree = "<group>"; };
 		93B3BBD327B1C8D20034ADF1 /* omnibox_popup-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "omnibox_popup-Bridging-Header.h"; sourceTree = "<group>"; };
 		93B3BBD427B1C8D20034ADF1 /* popup_mediator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = popup_mediator.h; sourceTree = "<group>"; };
 		93B3BBD527B1C8D20034ADF1 /* popup_mediator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = popup_mediator.m; sourceTree = "<group>"; };
@@ -53,6 +53,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		59C4A9B927BFF0450080C045 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				59C4A9BA27BFF04F0080C045 /* omnibox_pedal.swift */,
+				59C4A9BB27BFF04F0080C045 /* popup_match_row_view.swift */,
+				59C4A9BD27BFF04F0080C045 /* popup_match.swift */,
+				59C4A9BE27BFF04F0080C045 /* popup_model.swift */,
+				59C4A9BC27BFF04F0080C045 /* popup_view.swift */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
 		93A6BC3927AB0F6A00DCF792 = {
 			isa = PBXGroup;
 			children = (
@@ -72,10 +84,9 @@
 		93B3BBB427B1C3900034ADF1 /* omnibox_popup */ = {
 			isa = PBXGroup;
 			children = (
+				59C4A9B927BFF0450080C045 /* shared */,
 				93B3BBD427B1C8D20034ADF1 /* popup_mediator.h */,
 				93B3BBD527B1C8D20034ADF1 /* popup_mediator.m */,
-				93B3BBC927B1C8C40034ADF1 /* model */,
-				93B3BBCD27B1C8C40034ADF1 /* swiftui */,
 				93B3BBC727B1C8460034ADF1 /* popup_coordinator.swift */,
 				93B3BBB527B1C3900034ADF1 /* app_delegate.swift */,
 				93B3BBB727B1C3900034ADF1 /* scene_delegate.swift */,
@@ -87,25 +98,6 @@
 				93B3BBD327B1C8D20034ADF1 /* omnibox_popup-Bridging-Header.h */,
 			);
 			path = omnibox_popup;
-			sourceTree = "<group>";
-		};
-		93B3BBC927B1C8C40034ADF1 /* model */ = {
-			isa = PBXGroup;
-			children = (
-				93B3BBCA27B1C8C40034ADF1 /* popup_model.swift */,
-				93B3BBCB27B1C8C40034ADF1 /* omnibox_pedal.swift */,
-				93B3BBCC27B1C8C40034ADF1 /* popup_match.swift */,
-			);
-			path = model;
-			sourceTree = "<group>";
-		};
-		93B3BBCD27B1C8C40034ADF1 /* swiftui */ = {
-			isa = PBXGroup;
-			children = (
-				8751170427BEBAE100847C8B /* popup_match_row_view.swift */,
-				93B3BBCE27B1C8C40034ADF1 /* popup_view.swift */,
-			);
-			path = swiftui;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -180,16 +172,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8751170527BEBAE100847C8B /* popup_match_row_view.swift in Sources */,
 				93B3BBBA27B1C3900034ADF1 /* view_controller.swift in Sources */,
-				93B3BBD227B1C8C40034ADF1 /* popup_view.swift in Sources */,
-				93B3BBD127B1C8C40034ADF1 /* popup_match.swift in Sources */,
+				59C4A9C227BFF04F0080C045 /* popup_match.swift in Sources */,
+				59C4A9C127BFF04F0080C045 /* popup_view.swift in Sources */,
 				93B3BBC827B1C8460034ADF1 /* popup_coordinator.swift in Sources */,
+				59C4A9C327BFF04F0080C045 /* popup_model.swift in Sources */,
 				93B3BBD627B1C8D20034ADF1 /* popup_mediator.m in Sources */,
+				59C4A9BF27BFF04F0080C045 /* omnibox_pedal.swift in Sources */,
 				93B3BBB627B1C3900034ADF1 /* app_delegate.swift in Sources */,
-				93B3BBD027B1C8C40034ADF1 /* omnibox_pedal.swift in Sources */,
 				93B3BBB827B1C3900034ADF1 /* scene_delegate.swift in Sources */,
-				93B3BBCF27B1C8C40034ADF1 /* popup_model.swift in Sources */,
+				59C4A9C027BFF04F0080C045 /* popup_match_row_view.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

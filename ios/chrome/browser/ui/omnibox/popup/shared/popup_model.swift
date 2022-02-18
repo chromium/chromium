@@ -4,11 +4,11 @@
 
 import Foundation
 
-@objcMembers class PopupModel: NSObject, ObservableObject {
+@objcMembers public class PopupModel: NSObject, ObservableObject {
   @Published var matches: [PopupMatch]
   var buttonHandler: () -> Void
 
-  init(
+  public init(
     matches: [PopupMatch], buttonHandler: @escaping () -> Void
   ) {
     self.matches = matches

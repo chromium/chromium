@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
 #include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_ios.h"
+#import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -34,7 +35,7 @@
   std::unique_ptr<OmniboxPopupViewIOS> _popupView;
 }
 
-@property(nonatomic, strong) OmniboxPopupViewController* popupViewController;
+@property(nonatomic, strong) UIViewController* popupViewController;
 @property(nonatomic, strong) OmniboxPopupMediator* mediator;
 
 @end
@@ -80,13 +81,40 @@
       templateURLService->GetDefaultSearchProvider()->GetEngineType(
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
 
-  self.popupViewController = [[OmniboxPopupViewController alloc] init];
-  self.popupViewController.incognito =
-      self.browser->GetBrowserState()->IsOffTheRecord();
+  if (base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
+    PopupMatch* match = [[PopupMatch alloc] initWithTitle:@"Hello SwiftUI"
+                                                 subtitle:@"test match"
+                                                      url:nil
+                                             isAppendable:YES
+                                               isTabMatch:NO
+                                         supportsDeletion:YES
+                                                    pedal:nil];
+    PopupModel* model = [[PopupModel alloc] initWithMatches:@[ match ]
+                                              buttonHandler:^{
+                                              }];
+    self.popupViewController =
+        [OmniboxPopupViewProvider makeViewControllerWithModel:model];
+  } else {
+    OmniboxPopupViewController* popupViewController =
+        [[OmniboxPopupViewController alloc] init];
+    popupViewController.imageRetriever = self.mediator;
+    popupViewController.faviconRetriever = self.mediator;
+    popupViewController.delegate = self.mediator;
+    popupViewController.incognito =
+        self.browser->GetBrowserState()->IsOffTheRecord();
+    [self.browser->GetCommandDispatcher()
+        startDispatchingToTarget:popupViewController
+                     forProtocol:@protocol(OmniboxSuggestionCommands)];
+
+    self.popupViewController = popupViewController;
+  }
 
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
   self.mediator.incognito = isIncognito;
-  self.mediator.consumer = self.popupViewController;
+  if (!base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
+    self.mediator.consumer =
+        (id<AutocompleteResultConsumer>)self.popupViewController;
+  }
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
   self.mediator.promoScheduler =
@@ -95,12 +123,6 @@
       initWithPopupPresenterDelegate:self.presenterDelegate
                  popupViewController:self.popupViewController
                            incognito:isIncognito];
-  self.popupViewController.imageRetriever = self.mediator;
-  self.popupViewController.faviconRetriever = self.mediator;
-  self.popupViewController.delegate = self.mediator;
-  [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:self.popupViewController
-                   forProtocol:@protocol(OmniboxSuggestionCommands)];
 
   _popupView->SetMediator(self.mediator);
 }

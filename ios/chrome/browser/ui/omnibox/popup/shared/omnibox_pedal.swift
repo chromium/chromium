@@ -4,10 +4,10 @@
 
 import Foundation
 
-@objcMembers class Pedal: NSObject {
+@objcMembers public class Pedal: NSObject {
   let title: String
 
-  init(title: String) {
+  public init(title: String) {
     self.title = title
   }
 }

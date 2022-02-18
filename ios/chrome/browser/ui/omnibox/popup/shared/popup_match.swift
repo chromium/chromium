@@ -4,7 +4,7 @@
 
 import Foundation
 
-@objcMembers class PopupMatch: NSObject, Identifiable {
+@objcMembers public class PopupMatch: NSObject, Identifiable {
   let title: String
   let subtitle: String?
   let url: URL?
@@ -20,7 +20,7 @@ import Foundation
 
   let pedal: Pedal?
 
-  init(
+  public init(
     title: String, subtitle: String?, url: URL?, isAppendable: Bool, isTabMatch: Bool,
     supportsDeletion: Bool, pedal: Pedal?
   ) {

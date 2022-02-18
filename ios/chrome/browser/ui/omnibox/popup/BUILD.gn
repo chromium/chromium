@@ -2,6 +2,30 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/swift_source_set.gni")
+
+swift_source_set("popup_swift") {
+  sources = [
+    "omnibox_popup_view_provider.swift",
+    "shared/omnibox_pedal.swift",
+    "shared/popup_match.swift",
+    "shared/popup_match_row_view.swift",
+    "shared/popup_model.swift",
+    "shared/popup_view.swift",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/common/ui/colors:swift",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "SwiftUI.framework",
+  ]
+}
+
 source_set("popup") {
   sources = [
     "omnibox_popup_coordinator.h",
@@ -17,6 +41,7 @@ source_set("popup") {
   ]
   deps = [
     ":popup_internal",
+    ":popup_swift",
     ":popup_ui",
     "//base",
     "//components/image_fetcher/core",
