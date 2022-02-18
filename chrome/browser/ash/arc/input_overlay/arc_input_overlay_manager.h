@@ -77,9 +77,6 @@ class ArcInputOverlayManager : public KeyedService,
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
-  base::ScopedObservation<aura::client::FocusClient,
-                          aura::client::FocusChangeObserver>
-      focus_observation_{this};
   base::flat_map<aura::Window*, std::unique_ptr<input_overlay::TouchInjector>>
       input_overlay_enabled_windows_;
   bool is_text_input_active_ = false;

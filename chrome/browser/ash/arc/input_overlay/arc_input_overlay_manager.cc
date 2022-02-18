@@ -80,8 +80,8 @@ ArcInputOverlayManager::ArcInputOverlayManager(
   if (aura::Env::HasInstance())
     env_observation_.Observe(aura::Env::GetInstance());
   if (ash::Shell::HasInstance() && ash::Shell::GetPrimaryRootWindow()) {
-    focus_observation_.Observe(
-        aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow()));
+    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+        ->AddObserver(this);
   }
 }
 
@@ -251,6 +251,12 @@ void ArcInputOverlayManager::OnWindowBoundsChanged(
 
 void ArcInputOverlayManager::Shutdown() {
   UnRegisterWindow(registered_top_level_window_);
+  window_observations_.RemoveAllObservations();
+  env_observation_.Reset();
+  if (ash::Shell::HasInstance() && ash::Shell::GetPrimaryRootWindow()) {
+    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+        ->RemoveObserver(this);
+  }
 }
 
 void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
