@@ -98,6 +98,8 @@ static_library("test_support") {
     "fake_eche_message_receiver.h",
     "fake_feature_status_provider.cc",
     "fake_feature_status_provider.h",
+    "fake_launch_app_helper.cc",
+    "fake_launch_app_helper.h",
   ]
 
   public_deps = [ ":eche_app_ui" ]
