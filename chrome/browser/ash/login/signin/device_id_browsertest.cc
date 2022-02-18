@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
@@ -67,7 +68,8 @@ class DeviceIDTest : public OobeBaseTest,
   }
 
   std::string GetDeviceId(const AccountId& account_id) {
-    return user_manager::known_user::GetDeviceId(account_id);
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    return known_user.GetDeviceId(account_id);
   }
 
   std::string GetDeviceIdFromProfile(const AccountId& account_id) {
@@ -259,7 +261,8 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_Migration) {
 
   // Can't use SetKnownUserDeviceId here, because it forbids changing a device
   // ID.
-  user_manager::known_user::SetStringPref(
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetStringPref(
       AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail), "device_id",
       std::string());
 }
@@ -290,7 +293,8 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_LegacyUsers) {
 
   // Can't use SetKnownUserDeviceId here, because it forbids changing a device
   // ID.
-  user_manager::known_user::SetStringPref(
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetStringPref(
       AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail), "device_id",
       std::string());
 }

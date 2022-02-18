@@ -1669,8 +1669,8 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
 void ExistingUserController::DoCompleteLogin(
     const UserContext& user_context_wo_device_id) {
   UserContext user_context = user_context_wo_device_id;
-  std::string device_id =
-      user_manager::known_user::GetDeviceId(user_context.GetAccountId());
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  std::string device_id = known_user.GetDeviceId(user_context.GetAccountId());
   if (device_id.empty()) {
     bool is_ephemeral = ChromeUserManager::Get()->AreEphemeralUsersEnabled() &&
                         user_context.GetAccountId() !=
@@ -1679,7 +1679,6 @@ void ExistingUserController::DoCompleteLogin(
   }
   user_context.SetDeviceId(device_id);
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
   const std::string& gaps_cookie = user_context.GetGAPSCookie();
   if (!gaps_cookie.empty()) {
     known_user.SetGAPSCookie(user_context.GetAccountId(), gaps_cookie);

@@ -664,7 +664,8 @@ bool ArcSupportHost::Initialize() {
   message.SetStringKey(kAction, kActionInitialize);
   message.SetKey(kData, std::move(loadtime_data));
 
-  const std::string device_id = user_manager::known_user::GetDeviceId(
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const std::string device_id = known_user.GetDeviceId(
       multi_user_util::GetAccountIdFromProfile(profile_));
   message.SetStringKey(kDeviceId, device_id);
 

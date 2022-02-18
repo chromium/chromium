@@ -917,21 +917,5 @@ void UpdateId(const AccountId& account_id) {
   return KnownUser(local_state).UpdateId(account_id);
 }
 
-void SetDeviceId(const AccountId& account_id, const std::string& device_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).SetDeviceId(account_id, device_id);
-}
-
-std::string GetDeviceId(const AccountId& account_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return std::string();
-  return KnownUser(local_state).GetDeviceId(account_id);
-}
-
 }  // namespace known_user
 }  // namespace user_manager

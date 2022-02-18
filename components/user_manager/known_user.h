@@ -336,16 +336,6 @@ AccountId USER_MANAGER_EXPORT GetAccountId(const std::string& user_email,
 // TODO(https://crbug.com/1150434): Deprecated, use KnownUser::UpdateId instead.
 void USER_MANAGER_EXPORT UpdateId(const AccountId& account_id);
 
-// Setter and getter for DeviceId known user string preference.
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::SetDeviceId
-// instead.
-void USER_MANAGER_EXPORT SetDeviceId(const AccountId& account_id,
-                                     const std::string& device_id);
-
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::GetDeviceId
-// instead.
-std::string USER_MANAGER_EXPORT GetDeviceId(const AccountId& account_id);
-
 }  // namespace known_user
 }  // namespace user_manager
 
