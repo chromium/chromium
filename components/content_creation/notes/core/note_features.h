@@ -20,6 +20,9 @@ extern const base::FeatureParam<bool> kRandomizeOrderParam;
 // Feature for publishing Web Notes to the server.
 extern const base::Feature kWebNotesPublish;
 
+// Feature for enabling dynamic templates.
+extern const base::Feature kWebNotesDynamicTemplates;
+
 // Returns true if the Web Notes Stylize feature is enabled.
 bool IsStylizeEnabled();
 
@@ -29,6 +32,9 @@ bool IsRandomizeOrderEnabled();
 
 // Returns whether the Web Notes Publish feature is enabled.
 bool IsPublishEnabled();
+
+// Returns whether the Dynamic Templates feature is enabled.
+bool IsDynamicTemplatesEnabled();
 
 }  // namespace content_creation
 

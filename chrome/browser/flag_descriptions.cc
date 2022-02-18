@@ -3690,6 +3690,10 @@ const char kWebNotesPublishName[] = "WebNotes Publish";
 const char kWebNotesPublishDescription[] =
     "Allows users to save their created notes.";
 
+const char kWebNotesDynamicTemplatesName[] = "Dynamic Templates";
+const char kWebNotesDynamicTemplatesDescription[] =
+    "Allows templates to be modified remotely on short notice.";
+
 const char kOmniboxPedalsAndroidBatch1Name[] = "Omnibox Pedals Android batch 1";
 const char kOmniboxPedalsAndroidBatch1Description[] =
     "Enable the first batch of Omnibox Pedals on Android.";
