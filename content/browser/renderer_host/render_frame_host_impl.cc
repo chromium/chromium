@@ -214,6 +214,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
@@ -3428,6 +3429,16 @@ void RenderFrameHostImpl::CreateChildFrame(
       (frame_policy.sandbox_flags | active_sandbox_flags())) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS);
+    return;
+  }
+
+  // Cannot create a fenced frame in a sandbox iframe which doesn't allow
+  // features that need to be allowed in the fenced frame. This is for Shadow
+  // DOM Fenced Frame.
+  if (IsSandboxed(blink::kFencedFrameMandatoryUnsandboxedFlags) &&
+      frame_policy.is_fenced) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_CREATE_FENCED_FRAME_IN_SANDBOXED_FRAME);
     return;
   }
 
@@ -6997,6 +7008,20 @@ void RenderFrameHostImpl::CreateFencedFrame(
       !blink::features::IsFencedFramesMPArchBased()) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_FENCED_FRAME_MOJO_WHEN_DISABLED);
+    std::move(callback).Run(0, blink::mojom::FrameReplicationState::New(),
+                            blink::RemoteFrameToken(),
+                            base::UnguessableToken::Create());
+    return;
+  }
+  // Cannot create a fenced frame in a sandbox iframe which doesn't allow
+  // features that need to be allowed in the fenced frame. This check is for
+  // MPArch Fenced Frame.
+  if (IsSandboxed(blink::kFencedFrameMandatoryUnsandboxedFlags)) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_CREATE_FENCED_FRAME_IN_SANDBOXED_FRAME);
+    std::move(callback).Run(0, blink::mojom::FrameReplicationState::New(),
+                            blink::RemoteFrameToken(),
+                            base::UnguessableToken::Create());
     return;
   }
   fenced_frames_.push_back(

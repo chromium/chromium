@@ -138,6 +138,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
@@ -1439,6 +1440,11 @@ NavigationRequest::NavigationRequest(
   if (frame_tree_node_->IsMainFrame()) {
     loading_mem_tracker_ =
         PeakGpuMemoryTracker::Create(PeakGpuMemoryTracker::Usage::PAGE_LOAD);
+  }
+
+  if (frame_tree_node_->IsInFencedFrameTree()) {
+    commit_params_->frame_policy.sandbox_flags |=
+        blink::kFencedFrameForcedSandboxFlags;
   }
 
   if (from_begin_navigation_) {

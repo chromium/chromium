@@ -152,8 +152,12 @@ ScriptPromise ScreenOrientation::lock(ScriptState* state,
   if (GetExecutionContext()->IsSandboxed(
           network::mojom::blink::WebSandboxFlags::kOrientationLock)) {
     exception_state.ThrowSecurityError(
-        "The window is sandboxed and lacks the "
-        "'allow-orientation-lock' flag.");
+        To<LocalDOMWindow>(GetExecutionContext())
+                ->GetFrame()
+                ->IsInFencedFrameTree()
+            ? "The window is in a fenced frame tree."
+            : "The window is sandboxed and lacks the 'allow-orientation-lock' "
+              "flag.");
     return ScriptPromise();
   }
 

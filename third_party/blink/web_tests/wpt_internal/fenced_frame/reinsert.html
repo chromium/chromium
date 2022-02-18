@@ -13,6 +13,19 @@ promise_test(async () => {
   document.body.append(frame);
 
 }, "Fenced frames should not crash and burn when re-inserting a fenced frame");
+
+promise_test(async () => {
+  const frame = document.createElement("iframe");
+  frame.sandbox = "allow-scripts allow-same-origin";
+  document.body.appendChild(frame);
+  const fenced_frame = frame.contentDocument.createElement("fencedframe");
+  fenced_frame.src = "resources/dummy.html";
+  frame.contentDocument.body.appendChild(fenced_frame);
+  frame.contentDocument.body.removeChild(fenced_frame);
+  frame.contentDocument.body.append(fenced_frame);
+}, "Fenced frames should not crash and burn when re-inserting a fenced frame" +
+   "in a sandboxed iframe which doesn't support child fenced frames.");
+
 </script>
 
 </body>

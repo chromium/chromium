@@ -251,8 +251,11 @@ bool ChromeClient::Print(LocalFrame* frame) {
     frame->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "Ignored call to 'print()'. The document is sandboxed, and the "
-        "'allow-modals' keyword is not set."));
+        frame->IsInFencedFrameTree()
+            ? "Ignored call to 'print()'. The document is in a fenced frame "
+              "tree."
+            : "Ignored call to 'print()'. The document is sandboxed, and the "
+              "'allow-modals' keyword is not set."));
     return false;
   }
 
@@ -263,14 +266,6 @@ bool ChromeClient::Print(LocalFrame* frame) {
         mojom::blink::ConsoleMessageSource::kJavaScript,
         mojom::blink::ConsoleMessageLevel::kError,
         "Ignored call to 'print()' during prerendering."));
-    return false;
-  }
-
-  if (frame->IsInFencedFrameTree()) {
-    frame->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "Ignored call to 'print()'. The document is in a fenced frame."));
     return false;
   }
 

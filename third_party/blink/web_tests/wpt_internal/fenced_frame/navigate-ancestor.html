@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>Test navigating an ancestor frame</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
@@ -52,28 +53,28 @@
 }
 
 promise_test(async t => {
-  await runTest("top-level fenced frame", "_parent");
+  await runTest("top-level fenced frame", "parent");
 }, "Top-level fenced frames that navigate _parent end up navigating themselves");
 
 promise_test(async t => {
-  await runTest("top-level fenced frame", "_top");
+  await runTest("top-level fenced frame", "top");
 }, "Top-level fenced frames that navigate _top end up navigating themselves");
 
 promise_test(async t => {
-  await runTest("nested fenced frame", "_parent");
+  await runTest("nested fenced frame", "parent");
 }, "Nested fenced frames that navigate _parent end up navigating themselves");
 
 promise_test(async t => {
-  await runTest("nested fenced frame", "_top");
+  await runTest("nested fenced frame", "top");
 }, "Nested fenced frames that navigate _top end up navigating themselves");
 
 promise_test(async t => {
-  await runTest("nested iframe", "_parent");
+  await runTest("nested iframe", "parent");
 }, "Iframes nested in fenced frames that navigate _parent end up navigating " +
    "the fenced frame");
 
 promise_test(async t => {
-  await runTest("nested iframe", "_top");
+  await runTest("nested iframe", "top");
 }, "Iframes nested in fenced frames that navigate _top end up navigating the " +
    "fenced frame");
 
