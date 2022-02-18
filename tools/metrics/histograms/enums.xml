@@ -14601,6 +14601,11 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="4" label="Invalid score"/>
 </enum>
 
+<enum name="ClientSidePhishingUpdateStatus">
+  <int value="0" label="Not updated"/>
+  <int value="1" label="Updated"/>
+</enum>
+
 <enum name="ClientTagBasedModelTypeProcessorErrors">
   <int value="0" label="Incomplete storage keys from loading metadata"/>
   <int value="1" label="Incomplete storage keys from full update"/>

@@ -428,6 +428,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.ComponentUpdateEvent"
+    enum="ClientSidePhishingUpdateStatus" expires_after="2023-02-10">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether or not the Client Side Detection model was updated or not.
+    This is logged each time the component updater checks for an update
+    (approximately every 6 hours or on startup).
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.DOMFeatureChunkTime" units="ms"
     expires_after="M77">
   <owner>gab@chromium.org</owner>

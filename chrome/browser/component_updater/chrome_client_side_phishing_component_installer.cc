@@ -68,7 +68,7 @@ update_client::InstallerAttributes GetInstallerAttributes() {
 void RegisterClientSidePhishingComponent(ComponentUpdateService* cus) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<ClientSidePhishingComponentInstallerPolicy>(
-          base::BindRepeating(&PopulateModelFromFiles),
+          cus, base::BindRepeating(&PopulateModelFromFiles),
           base::BindRepeating(&GetInstallerAttributes)));
   installer->Register(cus, base::OnceClosure());
 }

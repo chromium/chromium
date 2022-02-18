@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "components/component_updater/component_installer.h"
+#include "components/component_updater/component_updater_service.h"
 
 namespace base {
 class FilePath;
@@ -25,7 +26,8 @@ extern const base::FilePath::CharType kClientModelBinaryPbFileName[];
 extern const base::FilePath::CharType kVisualTfLiteModelFileName[];
 
 class ClientSidePhishingComponentInstallerPolicy
-    : public ComponentInstallerPolicy {
+    : public ComponentInstallerPolicy,
+      public component_updater::ComponentUpdateService::Observer {
  public:
   // A callback to read model files from the given install path and populate the
   // model appropriately, used to customize the behaviour of `ComponentReady`.
@@ -37,6 +39,7 @@ class ClientSidePhishingComponentInstallerPolicy
       base::RepeatingCallback<update_client::InstallerAttributes()>;
 
   ClientSidePhishingComponentInstallerPolicy(
+      ComponentUpdateService* cus,
       const ReadFilesCallback& read_files_callback,
       const InstallerAttributesCallback& installer_attributes_callback);
   ClientSidePhishingComponentInstallerPolicy(
@@ -46,6 +49,11 @@ class ClientSidePhishingComponentInstallerPolicy
   ~ClientSidePhishingComponentInstallerPolicy() override;
 
   static void GetPublicHash(std::vector<uint8_t>* hash);
+
+  // ComponentUpdateService::Observer implementation.
+  void OnEvent(
+      component_updater::ComponentUpdateService::Observer::Events event,
+      const std::string& id) override;
 
  private:
   // The following methods override ComponentInstallerPolicy.
@@ -67,6 +75,7 @@ class ClientSidePhishingComponentInstallerPolicy
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
 
+  component_updater::ComponentUpdateService* cus_;
   ReadFilesCallback read_files_callback_;
   InstallerAttributesCallback installer_attributes_callback_;
 };
