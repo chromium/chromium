@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8751170527BEBAE100847C8B /* popup_match_row_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8751170427BEBAE100847C8B /* popup_match_row_view.swift */; };
 		93B3BBB627B1C3900034ADF1 /* app_delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBB527B1C3900034ADF1 /* app_delegate.swift */; };
 		93B3BBB827B1C3900034ADF1 /* scene_delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBB727B1C3900034ADF1 /* scene_delegate.swift */; };
 		93B3BBBA27B1C3900034ADF1 /* view_controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBB927B1C3900034ADF1 /* view_controller.swift */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8751170427BEBAE100847C8B /* popup_match_row_view.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = popup_match_row_view.swift; sourceTree = "<group>"; };
 		93B3BBB327B1C3900034ADF1 /* omnibox_popup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = omnibox_popup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93B3BBB527B1C3900034ADF1 /* app_delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = app_delegate.swift; sourceTree = "<group>"; };
 		93B3BBB727B1C3900034ADF1 /* scene_delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = scene_delegate.swift; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 		93B3BBCD27B1C8C40034ADF1 /* swiftui */ = {
 			isa = PBXGroup;
 			children = (
+				8751170427BEBAE100847C8B /* popup_match_row_view.swift */,
 				93B3BBCE27B1C8C40034ADF1 /* popup_view.swift */,
 			);
 			path = swiftui;
@@ -177,6 +180,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8751170527BEBAE100847C8B /* popup_match_row_view.swift in Sources */,
 				93B3BBBA27B1C3900034ADF1 /* view_controller.swift in Sources */,
 				93B3BBD227B1C8C40034ADF1 /* popup_view.swift in Sources */,
 				93B3BBD127B1C8C40034ADF1 /* popup_match.swift in Sources */,
