@@ -972,11 +972,21 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       [](RenderFrameHostImpl* host,
          mojo::PendingReceiver<media::mojom::WebrtcVideoPerfRecorder>
              receiver) {
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
         media::WebrtcVideoPerfRecorder::Create(
-            BrowserContextImpl::From(
-                host->GetSiteInstance()->GetBrowserContext())
+            BrowserContextImpl::From(host->GetBrowserContext())
                 ->GetWebrtcVideoPerfHistory(),
             std::move(receiver));
+      },
+      base::Unretained(host)));
+
+  map->Add<media::mojom::WebrtcVideoPerfHistory>(base::BindRepeating(
+      [](RenderFrameHostImpl* host,
+         mojo::PendingReceiver<media::mojom::WebrtcVideoPerfHistory> receiver) {
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
+        BrowserContextImpl::From(host->GetBrowserContext())
+            ->GetWebrtcVideoPerfHistory()
+            ->BindReceiver(std::move(receiver));
       },
       base::Unretained(host)));
 
@@ -1230,6 +1240,8 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
       &RenderProcessHostImpl::BindVideoDecodePerfHistory, host));
+  map->Add<media::mojom::WebrtcVideoPerfHistory>(BindWorkerReceiver(
+      &RenderProcessHostImpl::BindWebrtcVideoPerfHistory, host));
 
   // RenderProcessHost binders taking a StorageKey
   map->Add<blink::mojom::FileSystemAccessManager>(
@@ -1319,6 +1331,8 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
       &RenderProcessHostImpl::BindVideoDecodePerfHistory, host));
+  map->Add<media::mojom::WebrtcVideoPerfHistory>(BindWorkerReceiver(
+      &RenderProcessHostImpl::BindWebrtcVideoPerfHistory, host));
 
   // RenderProcessHost binders taking a StorageKey
   map->Add<blink::mojom::FileSystemAccessManager>(
@@ -1408,6 +1422,8 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindServiceWorkerReceiver(
       &RenderProcessHostImpl::BindVideoDecodePerfHistory, host));
+  map->Add<media::mojom::WebrtcVideoPerfHistory>(BindServiceWorkerReceiver(
+      &RenderProcessHostImpl::BindWebrtcVideoPerfHistory, host));
   map->Add<blink::mojom::PushMessaging>(BindServiceWorkerReceiver(
       &RenderProcessHostImpl::BindPushMessaging, host));
 }
