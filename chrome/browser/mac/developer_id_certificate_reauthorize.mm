@@ -236,7 +236,7 @@ void DeveloperIDCertificateReauthorizeInApp() {
   // with the old certificate and the new designated requirement, and which will
   // not be re-signed even when the application's code signing certificate
   // changes.
-  constexpr bool kReauthorizeInApp = true;
+  constexpr bool kReauthorizeInApp = false;
 
   if constexpr (kReauthorizeInApp) {
     bool success = KeychainReauthorize();
