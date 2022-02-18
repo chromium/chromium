@@ -184,6 +184,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      */
     public CustomTabToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        mTint = ChromeColors.getPrimaryIconTint(getContext(), false);
     }
 
     @Override
