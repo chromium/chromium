@@ -7630,3 +7630,6 @@ crbug.com/1296179 [ Mac Release ] external/wpt/fetch/private-network-access/serv
 crbug.com/1296179 [ Linux Release ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
 crbug.com/1296179 [ Mac Release ] virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
 crbug.com/1296179 [ Linux Release ] virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
+
+# Flaky due to https://crrev.com/c/3453430
+crbug.com/1298944 virtual/partitioned-cookies/external/wpt/cookies/partitioned-cookies/partitioned-cookies.tentative.https.html [ Failure Pass ]
