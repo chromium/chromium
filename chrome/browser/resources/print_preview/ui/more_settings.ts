@@ -9,9 +9,11 @@ import '../strings.m.js';
 
 import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
+
+import {getTemplate} from './more_settings.html.js';
 
 interface PrintPreviewMoreSettingsElement {
   $: {
@@ -26,7 +28,7 @@ class PrintPreviewMoreSettingsElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

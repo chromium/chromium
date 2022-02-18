@@ -8,10 +8,11 @@ import './print_preview_shared_css.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CopiesCapability} from '../data/cdd.js';
 
+import {getTemplate} from './copies_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 /**
@@ -35,7 +36,7 @@ export class PrintPreviewCopiesSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

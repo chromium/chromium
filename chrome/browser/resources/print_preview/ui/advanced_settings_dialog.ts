@@ -14,11 +14,12 @@ import '../strings.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
+import {getTemplate} from './advanced_settings_dialog.html.js';
 import {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -39,7 +40,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

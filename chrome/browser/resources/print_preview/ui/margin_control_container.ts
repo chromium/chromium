@@ -6,7 +6,7 @@ import './margin_control.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from '../data/coordinate2d.js';
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from '../data/margins.js';
@@ -15,6 +15,7 @@ import {Size} from '../data/size.js';
 import {State} from '../data/state.js';
 
 import {PrintPreviewMarginControlElement} from './margin_control.js';
+import {getTemplate} from './margin_control_container.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 export const MARGIN_KEY_MAP: Map<CustomMarginsOrientation, string> = new Map([
@@ -41,7 +42,7 @@ export class PrintPreviewMarginControlContainerElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

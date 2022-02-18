@@ -6,10 +6,11 @@ import './print_preview_shared_css.js';
 import './settings_section.js';
 import './settings_select.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MediaSizeCapability} from '../data/cdd.js';
 
+import {getTemplate} from './media_size_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 const PrintPreviewMediaSizeSettingsElementBase = SettingsMixin(PolymerElement);
@@ -21,7 +22,7 @@ export class PrintPreviewMediaSizeSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

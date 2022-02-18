@@ -21,11 +21,12 @@ import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, GooglePromotedDestinationId, PDF_DESTINATION_KEY} from '../data/destination.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
+import {getTemplate} from './destination_select.html.js';
 import {SelectMixin} from './select_mixin.js';
 
 const PrintPreviewDestinationSelectElementBase =
@@ -38,7 +39,7 @@ export class PrintPreviewDestinationSelectElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

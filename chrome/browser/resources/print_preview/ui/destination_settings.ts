@@ -29,7 +29,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
 import {createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, RecentDestination} from '../data/destination.js';
@@ -52,6 +52,7 @@ import {PrintPreviewDestinationSelectElement} from './destination_select.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {PrintPreviewDestinationSelectCrosElement} from './destination_select_cros.js';
 // </if>
+import {getTemplate} from './destination_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 export enum DestinationState {
@@ -101,7 +102,7 @@ export class PrintPreviewDestinationSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

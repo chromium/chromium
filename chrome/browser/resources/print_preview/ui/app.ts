@@ -15,7 +15,7 @@ import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_man
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from '../cloud_print_interface.js';
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
@@ -35,9 +35,9 @@ import {MetricsContext, PrintPreviewInitializationEvents} from '../metrics.js';
 import {NativeInitialSettings, NativeLayer, NativeLayerImpl} from '../native_layer.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {NativeLayerCros, NativeLayerCrosImpl} from '../native_layer_cros.js';
-
 // </if>
 
+import {getTemplate} from './app.html.js';
 import {DestinationState} from './destination_settings.js';
 import {PreviewAreaState, PrintPreviewPreviewAreaElement} from './preview_area.js';
 import {SettingsMixin} from './settings_mixin.js';
@@ -62,7 +62,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

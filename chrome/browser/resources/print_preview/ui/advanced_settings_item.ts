@@ -12,11 +12,12 @@ import './print_preview_shared_css.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {VendorCapability, VendorCapabilitySelectOption} from '../data/cdd.js';
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
+import {getTemplate} from './advanced_settings_item.html.js';
 import {updateHighlights} from './highlight_utils.js';
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -30,7 +31,7 @@ export class PrintPreviewAdvancedSettingsItemElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

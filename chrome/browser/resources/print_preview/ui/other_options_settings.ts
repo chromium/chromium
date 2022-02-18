@@ -10,7 +10,8 @@ import '../strings.m.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './other_options_settings.html.js';
 
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -32,7 +33,7 @@ export class PrintPreviewOtherOptionsSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

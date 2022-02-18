@@ -6,13 +6,14 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import './print_preview_shared_css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CapabilityWithReset, SelectOption} from '../data/cdd.js';
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
+import {getTemplate} from './settings_select.html.js';
 
 const PrintPreviewSettingsSelectElementBase =
     SettingsMixin(SelectMixin(PolymerElement));
@@ -24,7 +25,7 @@ export class PrintPreviewSettingsSelectElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

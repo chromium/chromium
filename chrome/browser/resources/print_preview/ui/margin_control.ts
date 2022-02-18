@@ -9,7 +9,7 @@ import '../strings.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from '../data/coordinate2d.js';
 import {CustomMarginsOrientation} from '../data/margins.js';
@@ -18,6 +18,7 @@ import {Size} from '../data/size.js';
 import {observerDepsDefined} from '../print_preview_utils.js';
 
 import {InputMixin} from './input_mixin.js';
+import {getTemplate} from './margin_control.html.js';
 
 /**
  * Radius of the margin control in pixels. Padding of control + 1 for border.
@@ -41,7 +42,7 @@ export class PrintPreviewMarginControlElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
