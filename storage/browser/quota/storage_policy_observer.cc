@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/task/post_task.h"
+#include "storage/browser/quota/quota_features.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -69,25 +71,23 @@ StoragePolicyObserver::~StoragePolicyObserver() {
 
 void StoragePolicyObserver::StartTrackingOrigin(const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // If the origin exists, emplace fails, and its state is unchanged.
-  const GURL origin_url = GURL(origin.Serialize());
-  origin_state_.emplace(origin_url, OriginState());
-
-  OnPolicyChanged();
+  StartTrackingOrigins({origin});
 }
 
 void StoragePolicyObserver::StartTrackingOrigins(
     const std::vector<url::Origin>& origins) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  std::vector<std::pair<const GURL, OriginState>*> updates;
   for (const auto& origin : origins) {
     // If the origin exists, emplace fails, and its state is unchanged.
     GURL origin_url = GURL(origin.Serialize());
-    origin_state_.emplace(std::move(origin_url), OriginState());
+    auto& entry =
+        *origin_state_.emplace(std::move(origin_url), OriginState()).first;
+    updates.push_back(&entry);
   }
 
-  OnPolicyChanged();
+  OnPolicyChangedForOrigins(updates);
 }
 
 void StoragePolicyObserver::StopTrackingOrigin(const url::Origin& origin) {
@@ -100,17 +100,8 @@ void StoragePolicyObserver::OnPolicyChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
-  for (auto& entry : origin_state_) {
-    const GURL& origin = entry.first;
-    OriginState& state = entry.second;
-    state.should_purge_on_shutdown = ShouldPurgeOnShutdown(origin);
-
-    if (state.should_purge_on_shutdown != state.will_purge_on_shutdown) {
-      state.will_purge_on_shutdown = state.should_purge_on_shutdown;
-      policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
-          url::Origin::Create(origin), state.should_purge_on_shutdown));
-    }
-  }
+  for (auto& entry : origin_state_)
+    AddPolicyUpdate(&entry, &policy_updates);
   if (policy_updates.empty())
     return;
   callback_.Run(std::move(policy_updates));
@@ -131,6 +122,36 @@ bool StoragePolicyObserver::ShouldPurgeOnShutdown(const GURL& origin) {
   if (storage_policy_->IsStorageProtected(origin))
     return false;
   return true;
+}
+
+void StoragePolicyObserver::OnPolicyChangedForOrigins(
+    const std::vector<std::pair<const GURL, OriginState>*>& updated_origins) {
+  if (!base::FeatureList::IsEnabled(
+          features::kOnlySendStoragePolicyUpdatesForModifiedOrigins)) {
+    OnPolicyChanged();
+    return;
+  }
+
+  std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
+  for (auto* entry : updated_origins)
+    AddPolicyUpdate(entry, &policy_updates);
+  if (policy_updates.empty())
+    return;
+  callback_.Run(std::move(policy_updates));
+}
+
+void StoragePolicyObserver::AddPolicyUpdate(
+    std::pair<const GURL, OriginState>* entry,
+    std::vector<storage::mojom::StoragePolicyUpdatePtr>* policy_updates) {
+  const GURL& origin = entry->first;
+  OriginState& state = entry->second;
+  state.should_purge_on_shutdown = ShouldPurgeOnShutdown(origin);
+
+  if (state.should_purge_on_shutdown != state.will_purge_on_shutdown) {
+    state.will_purge_on_shutdown = state.should_purge_on_shutdown;
+    policy_updates->emplace_back(storage::mojom::StoragePolicyUpdate::New(
+        url::Origin::Create(origin), state.should_purge_on_shutdown));
+  }
 }
 
 }  // namespace storage

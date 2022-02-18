@@ -33,6 +33,7 @@ class MockSpecialStoragePolicy : public SpecialStoragePolicy {
   void RemoveUnlimited(const GURL& origin) { unlimited_.erase(origin); }
 
   void AddSessionOnly(const GURL& origin) { session_only_.insert(origin); }
+  void RemoveSessionOnly(const GURL& origin) { session_only_.erase(origin); }
 
   void AddIsolated(const GURL& origin) { isolated_.insert(origin); }
 
