@@ -158,8 +158,19 @@ class PrintBackendServiceManager {
   using RemoteSavedDocumentDoneCallbacks =
       RemoteSavedCallbacks<mojom::ResultCode>;
 
-  using RemotesMap =
-      base::flat_map<std::string, mojo::Remote<mojom::PrintBackendService>>;
+  // Bundle of the `PrintBackendService` and its sandboxed/unsandboxed host
+  // remotes.
+  template <class T>
+  struct RemotesBundle {
+    RemotesBundle() = default;
+    ~RemotesBundle() = default;
+    mojo::Remote<mojom::PrintBackendService> service;
+    mojo::Remote<T> host;
+  };
+
+  template <class T>
+  using RemotesBundleMap =
+      base::flat_map<std::string, std::unique_ptr<RemotesBundle<T>>>;
 
   // PrintBackendServiceManager needs to be able to run a callback either after
   // a successful return from the service or after the remote was disconnected.
@@ -189,6 +200,13 @@ class PrintBackendServiceManager {
   const mojo::Remote<mojom::PrintBackendService>& GetService(
       const std::string& printer_name,
       bool* is_sandboxed);
+
+  // Helper to `GetService` for a particular remotes bundle type.
+  template <class T>
+  mojo::Remote<mojom::PrintBackendService>& GetServiceFromBundle(
+      const std::string& remote_id,
+      bool sandboxed,
+      RemotesBundleMap<T>& bundle_map);
 
   // Help function to reset idle timeout duration to a short value.
   void UpdateServiceToShortIdleTimeout(
@@ -285,13 +303,12 @@ class PrintBackendServiceManager {
                                const std::string& remote_id,
                                T result);
 
-  // Keep separate mapping of remotes for sandboxed vs. unsandboxed services.
-  RemotesMap sandboxed_remotes_;
-  RemotesMap unsandboxed_remotes_;
-
-  // Keeps remotes for wrapping service hosts alive until they disconnect.
-  mojo::RemoteSet<mojom::SandboxedPrintBackendHost> sandboxed_hosts_;
-  mojo::RemoteSet<mojom::UnsandboxedPrintBackendHost> unsandboxed_hosts_;
+  // Bundles of remotes for the Print Backend Service and their corresponding
+  // wrapping hosts, to manage these sets until they disconnect.  The sandboxed
+  // and unsandboxed services are kept separate.
+  RemotesBundleMap<mojom::SandboxedPrintBackendHost> sandboxed_remotes_bundles_;
+  RemotesBundleMap<mojom::UnsandboxedPrintBackendHost>
+      unsandboxed_remotes_bundles_;
 
   // Set of IDs for clients actively engaged in printing.  This could include
   // tabs in print preview as well as an active system print.  Retention of a

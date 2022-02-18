@@ -108,8 +108,8 @@ uint32_t PrintBackendServiceManager::RegisterClient() {
   // start for the blank `printer_name` which would cover queries like getting
   // the default printer and enumerating the list of printers.
   std::string remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
-  auto iter = sandboxed_remotes_.find(remote_id);
-  if (iter == sandboxed_remotes_.end()) {
+  auto iter = sandboxed_remotes_bundles_.find(remote_id);
+  if (iter == sandboxed_remotes_bundles_.end()) {
     // Service not already available, so launch it now so that it will be
     // ready by the time the client gets to point of invoking a Mojo call.
     bool is_sandboxed;
@@ -123,7 +123,7 @@ uint32_t PrintBackendServiceManager::RegisterClient() {
     // which never goes away.
     DVLOG(1) << "Updating to long idle timeout for print backend service id `"
              << remote_id << "`";
-    mojo::Remote<mojom::PrintBackendService>& service = iter->second;
+    mojo::Remote<mojom::PrintBackendService>& service = iter->second->service;
     service.set_idle_handler(
         kClientsRegisteredResetOnIdleTimeout,
         base::BindRepeating(&PrintBackendServiceManager::OnIdleTimeout,
@@ -154,15 +154,15 @@ void PrintBackendServiceManager::UnregisterClient(uint32_t id) {
   // reclaim resources by letting service processes terminate.  Register a
   // short idle timeout with services.  This is preferred to just resetting
   // them immediately here, in case a user immediately reopens a Print Preview.
-  for (auto& iter : sandboxed_remotes_) {
+  for (auto& iter : sandboxed_remotes_bundles_) {
     const std::string& remote_id = iter.first;
-    mojo::Remote<mojom::PrintBackendService>& service = iter.second;
-    UpdateServiceToShortIdleTimeout(service, /*sandboxed=*/true, remote_id);
+    UpdateServiceToShortIdleTimeout(iter.second->service, /*sandboxed=*/true,
+                                    remote_id);
   }
-  for (auto& iter : unsandboxed_remotes_) {
+  for (auto& iter : unsandboxed_remotes_bundles_) {
     const std::string& remote_id = iter.first;
-    mojo::Remote<mojom::PrintBackendService>& service = iter.second;
-    UpdateServiceToShortIdleTimeout(service, /*sandboxed=*/false, remote_id);
+    UpdateServiceToShortIdleTimeout(iter.second->service, /*sandboxed=*/false,
+                                    remote_id);
   }
 }
 
@@ -436,9 +436,6 @@ PrintBackendServiceManager::GetService(const std::string& printer_name,
   // be needed by client callers.
   DCHECK(!clients_.empty());
 
-  RemotesMap& remote =
-      should_sandbox ? sandboxed_remotes_ : unsandboxed_remotes_;
-
   // On the first print make note that so far no drivers have required fallback.
   static bool first_print = true;
   if (first_print) {
@@ -449,38 +446,42 @@ PrintBackendServiceManager::GetService(const std::string& printer_name,
   }
 
   std::string remote_id = GetRemoteIdForPrinterName(printer_name);
-  auto iter = remote.find(remote_id);
-  if (iter == remote.end()) {
+  if (should_sandbox) {
+    return GetServiceFromBundle(remote_id, /*sandboxed=*/true,
+                                sandboxed_remotes_bundles_);
+  }
+  return GetServiceFromBundle(remote_id, /*sandboxed=*/false,
+                              unsandboxed_remotes_bundles_);
+}
+
+template <class T>
+mojo::Remote<mojom::PrintBackendService>&
+PrintBackendServiceManager::GetServiceFromBundle(
+    const std::string& remote_id,
+    bool sandboxed,
+    RemotesBundleMap<T>& bundle_map) {
+  auto iter = bundle_map.find(remote_id);
+  if (iter == bundle_map.end()) {
     // First time for this `remote_id`.
-    auto result = remote.emplace(printer_name,
-                                 mojo::Remote<mojom::PrintBackendService>());
+    auto result =
+        bundle_map.emplace(remote_id, std::make_unique<RemotesBundle<T>>());
     iter = result.first;
   }
 
-  mojo::Remote<mojom::PrintBackendService>& service = iter->second;
+  RemotesBundle<T>* bundle = iter->second.get();
+  mojo::Remote<mojom::PrintBackendService>& service = bundle->service;
   if (!service) {
     VLOG(1) << "Launching print backend "
-            << (should_sandbox ? "sandboxed" : "unsandboxed") << " for '"
+            << (sandboxed ? "sandboxed" : "unsandboxed") << " for '"
             << remote_id << "'";
-    if (should_sandbox) {
-      mojo::Remote<mojom::SandboxedPrintBackendHost> sandboxed;
-      content::ServiceProcessHost::Launch(
-          sandboxed.BindNewPipeAndPassReceiver(),
-          content::ServiceProcessHost::Options()
-              .WithDisplayName(IDS_UTILITY_PROCESS_PRINT_BACKEND_SERVICE_NAME)
-              .Pass());
-      sandboxed->BindBackend(service.BindNewPipeAndPassReceiver());
-      sandboxed_hosts_.Add(std::move(sandboxed));
-    } else {
-      mojo::Remote<mojom::UnsandboxedPrintBackendHost> unsandboxed;
-      content::ServiceProcessHost::Launch(
-          unsandboxed.BindNewPipeAndPassReceiver(),
-          content::ServiceProcessHost::Options()
-              .WithDisplayName(IDS_UTILITY_PROCESS_PRINT_BACKEND_SERVICE_NAME)
-              .Pass());
-      unsandboxed->BindBackend(service.BindNewPipeAndPassReceiver());
-      unsandboxed_hosts_.Add(std::move(unsandboxed));
-    }
+
+    mojo::Remote<T>& host = bundle->host;
+    content::ServiceProcessHost::Launch(
+        host.BindNewPipeAndPassReceiver(),
+        content::ServiceProcessHost::Options()
+            .WithDisplayName(IDS_UTILITY_PROCESS_PRINT_BACKEND_SERVICE_NAME)
+            .Pass());
+    host->BindBackend(service.BindNewPipeAndPassReceiver());
 
     // Ensure that if the interface is ever disconnected (e.g. the service
     // process crashes) then we will drop our handle to the remote.
@@ -488,7 +489,7 @@ PrintBackendServiceManager::GetService(const std::string& printer_name,
     // which never goes away.
     service.set_disconnect_handler(
         base::BindOnce(&PrintBackendServiceManager::OnRemoteDisconnected,
-                       base::Unretained(this), should_sandbox, remote_id));
+                       base::Unretained(this), sandboxed, remote_id));
 
     // Beware of case where a user leaves a tab with a Print Preview open
     // indefinitely.  Use a long timeout against idleness to reclaim the unused
@@ -500,7 +501,7 @@ PrintBackendServiceManager::GetService(const std::string& printer_name,
     service.set_idle_handler(
         kClientsRegisteredResetOnIdleTimeout,
         base::BindRepeating(&PrintBackendServiceManager::OnIdleTimeout,
-                            base::Unretained(this), should_sandbox, remote_id));
+                            base::Unretained(this), sandboxed, remote_id));
 
     // Initialize the new service for the desired locale.
     service->Init(g_browser_process->GetApplicationLocale());
@@ -533,9 +534,9 @@ void PrintBackendServiceManager::OnIdleTimeout(bool sandboxed,
            << (sandboxed ? "sandboxed" : "unsandboxed") << " remote id "
            << remote_id;
   if (sandboxed) {
-    sandboxed_remotes_.erase(remote_id);
+    sandboxed_remotes_bundles_.erase(remote_id);
   } else {
-    unsandboxed_remotes_.erase(remote_id);
+    unsandboxed_remotes_bundles_.erase(remote_id);
   }
 }
 
@@ -546,9 +547,9 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
            << (sandboxed ? "sandboxed" : "unsandboxed") << " remote id "
            << remote_id;
   if (sandboxed) {
-    sandboxed_remotes_.erase(remote_id);
+    sandboxed_remotes_bundles_.erase(remote_id);
   } else {
-    unsandboxed_remotes_.erase(remote_id);
+    unsandboxed_remotes_bundles_.erase(remote_id);
   }
   RunSavedCallbacksStructResult(
       GetRemoteSavedEnumeratePrintersCallbacks(sandboxed), remote_id,
