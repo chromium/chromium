@@ -9,6 +9,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_resource_metadata.h"
+#include "cc/paint/skottie_text_property_value.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "cc/test/lottie_test_data.h"
 #include "cc/test/skia_common.h"
@@ -30,6 +31,8 @@ class SkottieSerializationHistoryTest : public ::testing::Test {
   SkottieSerializationHistoryTest() : history_(kTestPurgePeriod) {}
 
   SkottieSerializationHistory history_;
+  SkottieFrameDataMap empty_images;
+  SkottieTextPropertyValueMap empty_text_map;
 };
 
 TEST_F(SkottieSerializationHistoryTest, FilterNewSkottieFrameImages) {
@@ -46,7 +49,7 @@ TEST_F(SkottieSerializationHistoryTest, FilterNewSkottieFrameImages) {
       {HashSkottieResourceId("asset_b"),
        {image_2, PaintFlags::FilterQuality::kMedium}},
   };
-  history_.FilterNewSkottieFrameImages(*skottie, images);
+  history_.FilterNewSkottieFrameState(*skottie, images, empty_text_map);
   EXPECT_THAT(
       images,
       UnorderedElementsAre(
@@ -62,7 +65,7 @@ TEST_F(SkottieSerializationHistoryTest, FilterNewSkottieFrameImages) {
       {HashSkottieResourceId("asset_b"),
        {image_2, PaintFlags::FilterQuality::kMedium}},
   };
-  history_.FilterNewSkottieFrameImages(*skottie, images);
+  history_.FilterNewSkottieFrameState(*skottie, images, empty_text_map);
   EXPECT_THAT(
       images,
       UnorderedElementsAre(Pair(
@@ -75,15 +78,51 @@ TEST_F(SkottieSerializationHistoryTest, FilterNewSkottieFrameImages) {
       {HashSkottieResourceId("asset_b"),
        {image_4, PaintFlags::FilterQuality::kMedium}},
   };
-  history_.FilterNewSkottieFrameImages(*skottie, images);
+  history_.FilterNewSkottieFrameState(*skottie, images, empty_text_map);
   EXPECT_THAT(
       images,
       UnorderedElementsAre(Pair(
           HashSkottieResourceId("asset_b"),
           SkottieFrameData({image_4, PaintFlags::FilterQuality::kMedium}))));
 
-  history_.FilterNewSkottieFrameImages(*skottie, images);
+  history_.FilterNewSkottieFrameState(*skottie, images, empty_text_map);
   EXPECT_THAT(images, IsEmpty());
+}
+
+TEST_F(SkottieSerializationHistoryTest, FilterNewSkottieFrameText) {
+  auto skottie = CreateSkottie(gfx::Size(10, 10), 1);
+
+  SkottieTextPropertyValueMap text_map = {
+      {HashSkottieResourceId("node_a"), SkottieTextPropertyValue("test_1a")},
+      {HashSkottieResourceId("node_b"), SkottieTextPropertyValue("test_1b")},
+  };
+  history_.FilterNewSkottieFrameState(*skottie, empty_images, text_map);
+  EXPECT_THAT(text_map,
+              UnorderedElementsAre(Pair(HashSkottieResourceId("node_a"),
+                                        SkottieTextPropertyValue("test_1a")),
+                                   Pair(HashSkottieResourceId("node_b"),
+                                        SkottieTextPropertyValue("test_1b"))));
+
+  text_map = {
+      {HashSkottieResourceId("node_a"), SkottieTextPropertyValue("test_2a")},
+      {HashSkottieResourceId("node_b"), SkottieTextPropertyValue("test_1b")},
+  };
+  history_.FilterNewSkottieFrameState(*skottie, empty_images, text_map);
+  EXPECT_THAT(text_map,
+              UnorderedElementsAre(Pair(HashSkottieResourceId("node_a"),
+                                        SkottieTextPropertyValue("test_2a"))));
+
+  text_map = {
+      {HashSkottieResourceId("node_a"), SkottieTextPropertyValue("test_2a")},
+      {HashSkottieResourceId("node_b"), SkottieTextPropertyValue("test_2b")},
+  };
+  history_.FilterNewSkottieFrameState(*skottie, empty_images, text_map);
+  EXPECT_THAT(text_map,
+              UnorderedElementsAre(Pair(HashSkottieResourceId("node_b"),
+                                        SkottieTextPropertyValue("test_2b"))));
+
+  history_.FilterNewSkottieFrameState(*skottie, empty_images, text_map);
+  EXPECT_THAT(text_map, IsEmpty());
 }
 
 TEST_F(SkottieSerializationHistoryTest,
@@ -99,7 +138,7 @@ TEST_F(SkottieSerializationHistoryTest,
       {HashSkottieResourceId("asset_b"),
        {image_2, PaintFlags::FilterQuality::kMedium}},
   };
-  history_.FilterNewSkottieFrameImages(*skottie, images);
+  history_.FilterNewSkottieFrameState(*skottie, images, empty_text_map);
 
   images = {
       {HashSkottieResourceId("asset_a"),
@@ -107,7 +146,7 @@ TEST_F(SkottieSerializationHistoryTest,
       {HashSkottieResourceId("asset_b"),
        {image_2, PaintFlags::FilterQuality::kMedium}},
   };
-  history_.FilterNewSkottieFrameImages(*skottie, images);
+  history_.FilterNewSkottieFrameState(*skottie, images, empty_text_map);
   EXPECT_THAT(
       images,
       UnorderedElementsAre(
@@ -116,7 +155,7 @@ TEST_F(SkottieSerializationHistoryTest,
 }
 
 TEST_F(SkottieSerializationHistoryTest,
-       FilterNewSkottieFrameImagesMultipleAnimations) {
+       FilterNewSkottieFrameStateMultipleAnimations) {
   auto skottie_1 = CreateSkottieFromString(
       CreateCustomLottieDataWith2Assets("asset_1a", "asset_1b"));
   auto skottie_2 = CreateSkottieFromString(
@@ -138,8 +177,8 @@ TEST_F(SkottieSerializationHistoryTest,
       {HashSkottieResourceId("asset_2b"),
        {image_2, PaintFlags::FilterQuality::kMedium}},
   };
-  history_.FilterNewSkottieFrameImages(*skottie_1, images_1);
-  history_.FilterNewSkottieFrameImages(*skottie_2, images_2);
+  history_.FilterNewSkottieFrameState(*skottie_1, images_1, empty_text_map);
+  history_.FilterNewSkottieFrameState(*skottie_2, images_2, empty_text_map);
   EXPECT_THAT(
       images_2,
       UnorderedElementsAre(
@@ -161,8 +200,8 @@ TEST_F(SkottieSerializationHistoryTest,
       {HashSkottieResourceId("asset_2b"),
        {image_2, PaintFlags::FilterQuality::kMedium}},
   };
-  history_.FilterNewSkottieFrameImages(*skottie_1, images_1);
-  history_.FilterNewSkottieFrameImages(*skottie_2, images_2);
+  history_.FilterNewSkottieFrameState(*skottie_1, images_1, empty_text_map);
+  history_.FilterNewSkottieFrameState(*skottie_2, images_2, empty_text_map);
   EXPECT_THAT(
       images_2,
       UnorderedElementsAre(Pair(
@@ -190,18 +229,18 @@ TEST_F(SkottieSerializationHistoryTest, RequestInactiveAnimationsPurge) {
       {HashSkottieResourceId("asset_2b"),
        {image_2, PaintFlags::FilterQuality::kMedium}},
   };
-  history_.FilterNewSkottieFrameImages(*skottie_1, images_1);
-  history_.FilterNewSkottieFrameImages(*skottie_2, images_2);
+  history_.FilterNewSkottieFrameState(*skottie_1, images_1, empty_text_map);
+  history_.FilterNewSkottieFrameState(*skottie_2, images_2, empty_text_map);
 
   history_.RequestInactiveAnimationsPurge();
-  history_.FilterNewSkottieFrameImages(*skottie_1, images_1);
+  history_.FilterNewSkottieFrameState(*skottie_1, images_1, empty_text_map);
 
   // Only |skottie_2| should be purged here since |skottie_1| was updated after
   // the first purge.
   history_.RequestInactiveAnimationsPurge();
 
-  history_.FilterNewSkottieFrameImages(*skottie_1, images_1);
-  history_.FilterNewSkottieFrameImages(*skottie_2, images_2);
+  history_.FilterNewSkottieFrameState(*skottie_1, images_1, empty_text_map);
+  history_.FilterNewSkottieFrameState(*skottie_2, images_2, empty_text_map);
   EXPECT_THAT(images_1, IsEmpty());
   // History for |skottie_2| should start again.
   EXPECT_THAT(

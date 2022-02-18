@@ -32,7 +32,9 @@ bool SkottieSerializationHistory::SkottieFrameDataId::operator!=(
 }
 
 SkottieSerializationHistory::SkottieWrapperHistory::SkottieWrapperHistory(
-    const SkottieFrameDataMap& initial_images) {
+    const SkottieFrameDataMap& initial_images,
+    const SkottieTextPropertyValueMap& initial_text_map)
+    : accumulated_text_map_(initial_text_map) {
   for (const auto& image_asset_pair : initial_images) {
     DVLOG(1) << "Received initial image for asset " << image_asset_pair.first;
     last_frame_data_per_asset_.emplace(
@@ -51,9 +53,16 @@ SkottieSerializationHistory::SkottieWrapperHistory::operator=(
 SkottieSerializationHistory::SkottieWrapperHistory::~SkottieWrapperHistory() =
     default;
 
+void SkottieSerializationHistory::SkottieWrapperHistory::FilterNewState(
+    SkottieFrameDataMap& images,
+    SkottieTextPropertyValueMap& text_map) {
+  ++current_sequence_id_;
+  FilterNewFrameImages(images);
+  FilterNewTextPropertyValues(text_map);
+}
+
 void SkottieSerializationHistory::SkottieWrapperHistory::FilterNewFrameImages(
     SkottieFrameDataMap& images) {
-  ++current_sequence_id_;
   auto images_iter = images.begin();
   while (images_iter != images.end()) {
     const SkottieResourceIdHash& asset_id = images_iter->first;
@@ -76,24 +85,46 @@ void SkottieSerializationHistory::SkottieWrapperHistory::FilterNewFrameImages(
   }
 }
 
+void SkottieSerializationHistory::SkottieWrapperHistory::
+    FilterNewTextPropertyValues(SkottieTextPropertyValueMap& text_map_in) {
+  auto text_map_in_iter = text_map_in.begin();
+  while (text_map_in_iter != text_map_in.end()) {
+    const SkottieResourceIdHash& node = text_map_in_iter->first;
+    const SkottieTextPropertyValue& new_text_property_val =
+        text_map_in_iter->second;
+    auto [accumulated_iter, is_new_insertion] =
+        accumulated_text_map_.insert(*text_map_in_iter);
+    SkottieTextPropertyValue& old_text_property_val = accumulated_iter->second;
+    if (!is_new_insertion && old_text_property_val == new_text_property_val) {
+      DVLOG(4) << "No update to text property value for node" << node;
+      text_map_in_iter = text_map_in.erase(text_map_in_iter);
+    } else {
+      DVLOG(1) << "New text available for node " << node;
+      old_text_property_val = new_text_property_val;
+      ++text_map_in_iter;
+    }
+  }
+}
+
 SkottieSerializationHistory::SkottieSerializationHistory(int purge_period)
     : purge_period_(purge_period) {}
 
 SkottieSerializationHistory::~SkottieSerializationHistory() = default;
 
-void SkottieSerializationHistory::FilterNewSkottieFrameImages(
+void SkottieSerializationHistory::FilterNewSkottieFrameState(
     const SkottieWrapper& skottie,
-    SkottieFrameDataMap& images) {
+    SkottieFrameDataMap& images,
+    SkottieTextPropertyValueMap& text_map) {
   DCHECK(skottie.is_valid());
   base::AutoLock lock(mutex_);
   auto [result_iterator, is_new_insertion] =
-      history_per_animation_.try_emplace(skottie.id(), images);
+      history_per_animation_.try_emplace(skottie.id(), images, text_map);
   if (is_new_insertion) {
     DVLOG(1) << "Encountered new SkottieWrapper with id " << skottie.id()
              << " and " << images.size() << " images";
   } else {
     SkottieWrapperHistory& skottie_history_found = result_iterator->second;
-    skottie_history_found.FilterNewFrameImages(images);
+    skottie_history_found.FilterNewState(images, text_map);
   }
 }
 

@@ -30,6 +30,7 @@
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_resource_metadata.h"
+#include "cc/paint/skottie_text_property_value.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -841,6 +842,7 @@ class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {
   SkottieFrameDataMap images;
   // Node name hashes and corresponding colors to use for dynamic coloration.
   SkottieColorMap color_map;
+  SkottieTextPropertyValueMap text_map;
 
  private:
   SkottieWrapper::FrameDataFetchResult GetImageAssetForRaster(

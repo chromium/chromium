@@ -13,6 +13,7 @@
 #include "cc/paint/paint_image.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_resource_metadata.h"
+#include "cc/paint/skottie_text_property_value.h"
 
 namespace cc {
 
@@ -46,12 +47,13 @@ class CC_PAINT_EXPORT SkottieSerializationHistory {
       delete;
   ~SkottieSerializationHistory();
 
-  // Given the set of |images| in the |skottie| animation's new frame, filter
-  // out the image assets that whose contents have not changed since the last
-  // frame they appeared in. If an image asset *has* changed, it is kept in the
-  // |images| map and the history is updated internally.
-  void FilterNewSkottieFrameImages(const SkottieWrapper& skottie,
-                                   SkottieFrameDataMap& images);
+  // Given the set of |images| and the |text_map| in the |skottie| animation's
+  // new frame, filter out the entries whose contents have not changed since the
+  // last frame. If an entry *has* changed, it is kept in its corresponding
+  // output argument and the history is updated internally.
+  void FilterNewSkottieFrameState(const SkottieWrapper& skottie,
+                                  SkottieFrameDataMap& images,
+                                  SkottieTextPropertyValueMap& text_map);
 
   // Purges the history of any Skottie animations that have been inactive for
   // a while. Although an animation's history is rather light-weight, this is
@@ -85,12 +87,14 @@ class CC_PAINT_EXPORT SkottieSerializationHistory {
    public:
     static constexpr int kInitialSequenceId = 1;
 
-    explicit SkottieWrapperHistory(const SkottieFrameDataMap& initial_images);
+    SkottieWrapperHistory(const SkottieFrameDataMap& initial_images,
+                          const SkottieTextPropertyValueMap& initial_text_map);
     SkottieWrapperHistory(const SkottieWrapperHistory& other);
     SkottieWrapperHistory& operator=(const SkottieWrapperHistory& other);
     ~SkottieWrapperHistory();
 
-    void FilterNewFrameImages(SkottieFrameDataMap& images);
+    void FilterNewState(SkottieFrameDataMap& images,
+                        SkottieTextPropertyValueMap& text_map);
 
     // The "sequence_id" is incremented each time the caller tries to update an
     // animation's history, regardless of whether its history is ultimately
@@ -105,10 +109,14 @@ class CC_PAINT_EXPORT SkottieSerializationHistory {
     }
 
    private:
+    void FilterNewFrameImages(SkottieFrameDataMap& images);
+    void FilterNewTextPropertyValues(SkottieTextPropertyValueMap& text_map);
+
     int current_sequence_id_ = kInitialSequenceId;
     int sequence_id_at_last_purge_check_ = kInitialSequenceId;
     base::flat_map<SkottieResourceIdHash, SkottieFrameDataId>
         last_frame_data_per_asset_;
+    SkottieTextPropertyValueMap accumulated_text_map_;
   };
 
   base::Lock mutex_;

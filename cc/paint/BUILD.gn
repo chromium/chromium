@@ -90,6 +90,8 @@ cc_component("paint") {
     "skottie_resource_metadata.h",
     "skottie_serialization_history.cc",
     "skottie_serialization_history.h",
+    "skottie_text_property_value.cc",
+    "skottie_text_property_value.h",
     "skottie_transfer_cache_entry.cc",
     "skottie_transfer_cache_entry.h",
     "skottie_wrapper.cc",

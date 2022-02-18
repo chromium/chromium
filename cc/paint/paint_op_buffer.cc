@@ -705,9 +705,12 @@ size_t DrawSkottieOp::Serialize(const PaintOp* base_op,
   helper.Write(op->skottie);
 
   SkottieFrameDataMap images_to_serialize = op->images;
+  // TODO(esum): Serialize/deserialize the |text_map| and use it in
+  // DrawSkottieOp::Raster().
+  SkottieTextPropertyValueMap text_map_to_serialize = op->text_map;
   if (options.skottie_serialization_history) {
-    options.skottie_serialization_history->FilterNewSkottieFrameImages(
-        *op->skottie, images_to_serialize);
+    options.skottie_serialization_history->FilterNewSkottieFrameState(
+        *op->skottie, images_to_serialize, text_map_to_serialize);
   }
 
   // Write number of images in the map first so that we know how many images to

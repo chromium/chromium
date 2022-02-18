@@ -846,6 +846,7 @@ cc_test("cc_unittests") {
       "paint/skottie_mru_resource_provider_unittest.cc",
       "paint/skottie_resource_metadata_unittest.cc",
       "paint/skottie_serialization_history_unittest.cc",
+      "paint/skottie_text_property_value_unittest.cc",
       "paint/skottie_transfer_cache_entry_unittest.cc",
       "paint/skottie_wrapper_unittest.cc",
     ]
