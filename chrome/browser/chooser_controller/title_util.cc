@@ -22,6 +22,8 @@ std::u16string CreateExtensionAwareChooserTitle(
     int title_string_id_extension) {
   if (!render_frame_host)
     return u"";
+  // Ensure the permission request is attributed to the main frame.
+  render_frame_host = render_frame_host->GetMainFrame();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   url::Origin origin = render_frame_host->GetLastCommittedOrigin();

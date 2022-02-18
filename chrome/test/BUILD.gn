@@ -4520,6 +4520,7 @@ test("unit_tests") {
     "../browser/browsing_data/counters/site_data_counting_helper_unittest.cc",
     "../browser/browsing_data/counters/site_settings_counter_unittest.cc",
     "../browser/browsing_data/site_data_size_collector_unittest.cc",
+    "../browser/chooser_controller/title_util_unittest.cc",
     "../browser/chrome_content_browser_client_unittest.cc",
     "../browser/command_updater_impl_unittest.cc",
     "../browser/complex_tasks/task_tab_helper_unittest.cc",
