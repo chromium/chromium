@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">Бағаны бақылау параметрлері</translation>
 <translation id="1378979118429748177">Баға төмендеген кезде хабарландыру алыңыз.</translation>
 <translation id="1403228085774130835">Жабылған қойындыларды Chrome бас мәзіріндегі "Соңғы қойындылар" бөлімінен таба аласыз.</translation>
+<translation id="1455506303394048917">Инкогнито қойындыларындағы әрекеттеріңіз бұл құрылғыдан жойылады.</translation>
+<translation id="1499635324672558517">Барлық инкогнито қойындысы жабылсын ба?</translation>
 <translation id="1657719826150349398">Қойындыны төмен жылжыту</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойынды}other{<ph name="TABS_COUNT_MANY" /> қойынды}}</translation>
 <translation id="2118649612461486615">Дүкен туралы ақпарат</translation>
