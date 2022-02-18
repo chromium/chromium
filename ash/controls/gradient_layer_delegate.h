@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SHELF_GRADIENT_LAYER_DELEGATE_H_
-#define ASH_SHELF_GRADIENT_LAYER_DELEGATE_H_
+#ifndef ASH_CONTROLS_GRADIENT_LAYER_DELEGATE_H_
+#define ASH_CONTROLS_GRADIENT_LAYER_DELEGATE_H_
 
 #include <memory>
 
@@ -22,8 +22,6 @@ namespace ash {
 
 // A layer delegate that paints optional fade-in/out gradient zones at the ends
 // of its layer.
-// TODO(jamescook): Move into //ash/controls. This class is used outside of the
-// shelf (e.g. app list, desks).
 class ASH_EXPORT GradientLayerDelegate : public ui::LayerDelegate,
                                          public gfx::AnimationDelegate {
  public:
@@ -80,4 +78,4 @@ class ASH_EXPORT GradientLayerDelegate : public ui::LayerDelegate,
 
 }  // namespace ash
 
-#endif  // ASH_SHELF_GRADIENT_LAYER_DELEGATE_H_
+#endif  // ASH_CONTROLS_GRADIENT_LAYER_DELEGATE_H_

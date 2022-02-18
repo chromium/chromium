@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/shelf/gradient_layer_delegate.h"
+#include "ash/controls/gradient_layer_delegate.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
