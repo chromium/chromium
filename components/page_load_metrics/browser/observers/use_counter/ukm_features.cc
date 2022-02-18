@@ -191,7 +191,6 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kAVIFImage,
           WebFeature::kGetDisplayMedia,
           WebFeature::kLaxAllowingUnsafeCookies,
-          WebFeature::kOpenWebDatabaseThirdPartyContext,
           WebFeature::kOversrollBehaviorOnViewportBreaks,
           WebFeature::kPaymentRequestCSPViolation,
           WebFeature::kRequestedFileSystemPersistentThirdPartyContext,
@@ -210,7 +209,6 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::
               kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory,
           WebFeature::kBlobStoreAccessAcrossAgentClustersInResolveForNavigation,
-          WebFeature::kReadOrWriteWebDatabaseThirdPartyContext,
           WebFeature::kSearchEventFired,
           WebFeature::kReadOrWriteWebDatabase,
           WebFeature::kExternalProtocolBlockedBySandbox,

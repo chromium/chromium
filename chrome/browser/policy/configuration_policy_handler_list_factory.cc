@@ -1574,9 +1574,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif
 
-  { key::kWebSQLInThirdPartyContextEnabled,
-    policy_prefs::kWebSQLInThirdPartyContextEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kCORSNonWildcardRequestHeadersSupport,
     prefs::kCorsNonWildcardRequestHeadersSupport,
     base::Value::Type::BOOLEAN },

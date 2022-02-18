@@ -72,10 +72,6 @@ const char kTargetBlankImpliesNoOpener[] =
 const char kBackForwardCacheEnabled[] = "policy.back_forward_cache_enabled";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Boolean policy to force enable WebSQL in third-party contexts.
-const char kWebSQLInThirdPartyContextEnabled[] =
-    "policy.web_sql_in_third_party_context_enabled";
-
 // Boolean policy preference to disable the User-Agent Client Hints
 // updated GREASE algorithm feature.
 const char kUserAgentClientHintsGREASEUpdateEnabled[] =

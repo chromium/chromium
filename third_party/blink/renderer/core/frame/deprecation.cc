@@ -642,12 +642,6 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "\"Authorization\" will not be covered by the wildcard symbol (*)in "
           "CORS \"Access-Control-Allow-Headers\" handling.");
 
-    case WebFeature::kOpenWebDatabaseThirdPartyContext:
-      return DeprecationInfo::WithFeatureAndReplacementAndChromeStatusID(
-          "OpenWebDatabaseThirdPartyContext", kM97,
-          "WebSQL in third-party contexts (i.e. cross-site iframes)",
-          "Web Storage or Indexed Database", "5684870116278272");
-
     case WebFeature::kRTCConstraintEnableDtlsSrtpTrue:
       return DeprecationInfo::WithDetails(
           "RTCConstraintEnableDtlsSrtpTrue", kM97,

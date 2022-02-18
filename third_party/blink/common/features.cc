@@ -1125,10 +1125,6 @@ const base::Feature kClientHintsResourceWidth{"ClientHintsResourceWidth",
 const base::Feature kClientHintsViewportWidth{"ClientHintsViewportWidth",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Allows third party use of WebSQL (`DOMWindowWebDatabase::openDatabase`).
-const base::Feature kWebSQLInThirdPartyContextEnabled{
-    "WebSQLInThirdPartyContextEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable legacy `device-memory` client hint.
 const base::Feature kClientHintsDeviceMemory_DEPRECATED{
     "ClientHintsDeviceMemory_DEPRECATED", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1179,11 +1175,6 @@ const base::Feature kTabSwitchMetrics2{"TabSwitchMetrics2",
 // of an animated image was painted.
 const base::Feature kLCPAnimatedImagesReporting{
     "LCPAnimatedImagesReporting", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Throws when `kWebSQLInThirdPartyContextEnabled` is disabled.
-const base::Feature kWebSQLInThirdPartyContextThrowsWhenDisabled{
-    "WebSQLInThirdPartyContextThrowsWhenDisabled",
-    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // https://blog.whatwg.org/newline-normalizations-in-form-submission
 const base::Feature kLateFormNewlineNormalization{

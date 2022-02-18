@@ -555,8 +555,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kClientHintsDPR;
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsResourceWidth;
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsViewportWidth;
 BLINK_COMMON_EXPORT extern const base::Feature
-    kWebSQLInThirdPartyContextEnabled;
-BLINK_COMMON_EXPORT extern const base::Feature
     kClientHintsDeviceMemory_DEPRECATED;
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsDPR_DEPRECATED;
 BLINK_COMMON_EXPORT extern const base::Feature
@@ -583,9 +581,6 @@ BLINK_COMMON_EXPORT int GetMaxUnthrottledTimeoutNestingLevel();
 BLINK_COMMON_EXPORT extern const base::Feature kTabSwitchMetrics2;
 
 BLINK_COMMON_EXPORT extern const base::Feature kLCPAnimatedImagesReporting;
-
-BLINK_COMMON_EXPORT extern const base::Feature
-    kWebSQLInThirdPartyContextThrowsWhenDisabled;
 
 // https://blog.whatwg.org/newline-normalizations-in-form-submission
 BLINK_COMMON_EXPORT extern const base::Feature kLateFormNewlineNormalization;

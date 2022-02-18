@@ -720,6 +720,8 @@ const char kMediaRouterCloudServicesPrefSet[] =
 const char kMediaRouterEnableCloudServices[] =
     "media_router.cloudservices.enabled";
 #endif
+const char kWebSQLInThirdPartyContextEnabled[] =
+    "policy.web_sql_in_third_party_context_enabled";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 02/2022
@@ -755,7 +757,10 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kStabilityRendererHangCount, 0);
   registry->RegisterIntegerPref(kStabilityIncompleteSessionEndCount, 0);
   registry->RegisterBooleanPref(kStabilitySessionEndCompleted, true);
+
+  // Deprecated 02/2022.
   registry->RegisterIntegerPref(kStabilityChildProcessCrashCount, 0);
+  registry->RegisterBooleanPref(kWebSQLInThirdPartyContextEnabled, false);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1010,8 +1015,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       policy::policy_prefs::kIntensiveWakeUpThrottlingEnabled, false);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kTargetBlankImpliesNoOpener, true);
-  registry->RegisterBooleanPref(
-      policy::policy_prefs::kWebSQLInThirdPartyContextEnabled, false);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled, true);
 #if BUILDFLAG(IS_ANDROID)
@@ -1579,6 +1582,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 01/2022.
   invalidation::InvalidatorRegistrarWithMemory::
       ClearTopicsWithObsoleteOwnerNames(local_state);
+
+  // Added 02/2022.
+  local_state->ClearPref(kWebSQLInThirdPartyContextEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

@@ -2260,14 +2260,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                                                               process, profile);
     }
 
-    // This passes the preference set by an enterprise policy on to a blink
-    // switch so that we know whether to allow third-party context WebSQL.
-    if (g_browser_process->local_state()->GetBoolean(
-            policy::policy_prefs::kWebSQLInThirdPartyContextEnabled)) {
-      command_line->AppendSwitch(
-          blink::switches::kWebSQLInThirdPartyContextEnabled);
-    }
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     const std::string& login_profile =
         browser_command_line.GetSwitchValueASCII(ash::switches::kLoginProfile);

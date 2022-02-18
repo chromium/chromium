@@ -198,7 +198,6 @@ class Database final : public ScriptWrappable {
 
   // Gates UKM counters to execute once per database instance.
   bool did_try_to_count_transaction_;
-  bool did_try_to_count_third_party_transaction_;
 
   // Disable BackForwardCache when using WebDatabase feature, because we do not
   // handle the state inside the portal after putting the page in cache.

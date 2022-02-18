@@ -36966,7 +36966,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3862" label="XRImageTracking"/>
   <int value="3863" label="XRSessionGetTrackedImageScores"/>
   <int value="3864" label="XRFrameGetImageTrackingResults"/>
-  <int value="3865" label="OpenWebDatabaseThirdPartyContext"/>
+  <int value="3865" label="OBSOLETE_OpenWebDatabaseThirdPartyContext"/>
   <int value="3866" label="PointerId"/>
   <int value="3867" label="Transform3dScene"/>
   <int value="3868" label="PrefersColorSchemeMediaFeature"/>
@@ -37092,7 +37092,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3982" label="UserDataFieldFilledPreviously"/>
   <int value="3983" label="TableCollapsedBorderDifferentToVisual"/>
   <int value="3984" label="HighlightAPIRegisterHighlight"/>
-  <int value="3985" label="ReadOrWriteWebDatabaseThirdPartyContext"/>
+  <int value="3985" label="OBSOLETE_ReadOrWriteWebDatabaseThirdPartyContext"/>
   <int value="3986"
       label="OBSOLETE_FontSelectorCSSFontFamilyWebKitPrefixPictograph"/>
   <int value="3987"
