@@ -142,7 +142,7 @@ export abstract class ModeFactory {
    */
   constructor(
       protected readonly constraints: StreamConstraints,
-      protected readonly captureResolution: Resolution) {}
+      protected readonly captureResolution: Resolution|null) {}
 
   setFacing(facing: Facing): void {
     this.facing = facing;

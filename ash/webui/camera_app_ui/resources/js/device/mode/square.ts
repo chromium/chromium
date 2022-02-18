@@ -73,7 +73,7 @@ export class Square extends Photo {
   constructor(
       video: PreviewVideo,
       facing: Facing,
-      captureResolution: Resolution,
+      captureResolution: Resolution|null,
       handler: PhotoHandler,
   ) {
     super(video, facing, captureResolution, new SquarePhotoHandler(handler));

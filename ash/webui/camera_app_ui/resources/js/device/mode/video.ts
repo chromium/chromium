@@ -205,8 +205,8 @@ export class Video extends ModeBase {
   constructor(
       video: PreviewVideo,
       private readonly captureConstraints: StreamConstraints|null,
-      captureResolution: Resolution,
-      private readonly snapshotResolution: Resolution,
+      captureResolution: Resolution|null,
+      private readonly snapshotResolution: Resolution|null,
       facing: Facing,
       private readonly handler: VideoHandler,
   ) {
@@ -269,6 +269,7 @@ export class Video extends ModeBase {
         let blob: Blob;
         let metadata: Metadata|null = null;
         if (await this.isBlobVideoSnapshotEnabled()) {
+          assert(this.snapshotResolution !== null);
           const photoSettings: PhotoSettings = {
             imageWidth: this.snapshotResolution.width,
             imageHeight: this.snapshotResolution.height,
@@ -620,8 +621,8 @@ export class VideoFactory extends ModeFactory {
    */
   constructor(
       constraints: StreamConstraints,
-      captureResolution: Resolution,
-      private readonly snapshotResolution: Resolution,
+      captureResolution: Resolution|null,
+      private readonly snapshotResolution: Resolution|null,
       private readonly handler: VideoHandler,
   ) {
     super(constraints, captureResolution);

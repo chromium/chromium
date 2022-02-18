@@ -39,7 +39,7 @@ export class Portrait extends Photo {
   constructor(
       video: PreviewVideo,
       facing: Facing,
-      captureResolution: Resolution,
+      captureResolution: Resolution|null,
       private readonly portraitHandler: PortraitHandler,
   ) {
     super(video, facing, captureResolution, portraitHandler);
@@ -110,7 +110,7 @@ export class PortraitFactory extends PhotoFactory {
    */
   constructor(
       constraints: StreamConstraints,
-      captureResolution: Resolution,
+      captureResolution: Resolution|null,
       protected readonly portraitHandler: PortraitHandler,
   ) {
     super(constraints, captureResolution, portraitHandler);

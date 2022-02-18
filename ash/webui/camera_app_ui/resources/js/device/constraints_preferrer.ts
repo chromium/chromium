@@ -21,7 +21,7 @@ import {StreamConstraints} from './stream_constraints.js';
  * corresponding preview stream.
  */
 export interface CaptureCandidate {
-  resolution: Resolution;
+  resolution: Resolution|null;
   previewCandidates: StreamConstraints[];
 }
 
@@ -177,6 +177,9 @@ export abstract class ConstraintsPreferrer {
   protected getPreferResolutionSort(prefR: Resolution):
       (c0: CaptureCandidate, c1: CaptureCandidate) => number {
     return ({resolution: r1}, {resolution: r2}) => {
+      if (r1 === null || r2 === null) {
+        return (r1 === null ? 1 : 0) - (r2 === null ? 1 : 0);
+      }
       if (r1.equals(r2)) {
         return 0;
       }

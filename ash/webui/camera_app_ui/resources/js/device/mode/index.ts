@@ -4,6 +4,7 @@
 
 import {
   assert,
+  assertExists,
   assertInstanceof,
 } from '../../assert.js';
 import {DeviceOperator} from '../../mojo/device_operator.js';
@@ -67,8 +68,8 @@ export type CaptureHandler =
 interface CaptureParams {
   mode: Mode;
   constraints: StreamConstraints;
-  captureResolution: Resolution;
-  videoSnapshotResolution: Resolution;
+  captureResolution: Resolution|null;
+  videoSnapshotResolution: Resolution|null;
 }
 
 /**
@@ -207,7 +208,8 @@ export class Modes {
               deviceId, CaptureIntent.VIDEO_RECORD);
           if (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId)) {
             await deviceOperator.setStillCaptureResolution(
-                deviceId, this.getCaptureParams().videoSnapshotResolution);
+                deviceId,
+                assertExists(this.getCaptureParams().videoSnapshotResolution));
           }
 
           let minFrameRate = 0;
@@ -386,8 +388,9 @@ export class Modes {
    * @param constraints Constraints for preview stream.
    */
   setCaptureParams(
-      mode: Mode, constraints: StreamConstraints, captureResolution: Resolution,
-      videoSnapshotResolution: Resolution): void {
+      mode: Mode, constraints: StreamConstraints,
+      captureResolution: Resolution|null,
+      videoSnapshotResolution: Resolution|null): void {
     this.captureParams =
         {mode, constraints, captureResolution, videoSnapshotResolution};
   }
@@ -431,7 +434,7 @@ export class Modes {
     }
     const {mode, captureResolution} = this.getCaptureParams();
     this.current = factory.produce();
-    if (deviceId && captureResolution) {
+    if (deviceId !== null && captureResolution !== null) {
       this.allModes[mode].constraintsPreferrer.updateValues(
           deviceId, stream, facing, captureResolution);
     }

@@ -67,7 +67,7 @@ class DocumentPhotoHandler implements PhotoHandler {
  */
 export class Scan extends Photo {
   constructor(
-      video: PreviewVideo, facing: Facing, captureResolution: Resolution,
+      video: PreviewVideo, facing: Facing, captureResolution: Resolution|null,
       scanHandler: ScanHandler) {
     super(
         video, facing, captureResolution,
@@ -83,7 +83,7 @@ export class ScanFactory extends ModeFactory {
    * @param constraints Constraints for preview stream.
    */
   constructor(
-      constraints: StreamConstraints, captureResolution: Resolution,
+      constraints: StreamConstraints, captureResolution: Resolution|null,
       protected readonly handler: ScanHandler) {
     super(constraints, captureResolution);
   }

@@ -55,7 +55,7 @@ export class Photo extends ModeBase {
    */
   constructor(
       video: PreviewVideo, facing: Facing,
-      protected readonly captureResolution: Resolution,
+      protected readonly captureResolution: Resolution|null,
       protected readonly handler: PhotoHandler) {
     super(video, facing);
   }
@@ -155,7 +155,7 @@ export class PhotoFactory extends ModeFactory {
    * @param constraints Constraints for preview stream.
    */
   constructor(
-      constraints: StreamConstraints, captureResolution: Resolution,
+      constraints: StreamConstraints, captureResolution: Resolution|null,
       protected readonly handler: PhotoHandler) {
     super(constraints, captureResolution);
   }

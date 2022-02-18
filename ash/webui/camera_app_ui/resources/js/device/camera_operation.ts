@@ -41,9 +41,9 @@ import {
 interface ConfigureCandidate {
   deviceId: string;
   mode: Mode;
-  captureResolution: Resolution;
+  captureResolution: Resolution|null;
   constraints: StreamConstraints;
-  videoSnapshotResolution: Resolution;
+  videoSnapshotResolution: Resolution|null;
 }
 
 export interface EventListener {
@@ -144,8 +144,9 @@ class Reconfigurer {
               this.modes.getFakeResolutionCandidates(mode, deviceId);
           photoRs = resolCandidates.map((c) => c.resolution);
         }
-        const maxResolution =
-            photoRs.reduce((maxR, r) => r.area > maxR.area ? r : maxR);
+        const maxResolution = photoRs.reduce(
+            (maxR, r) =>
+                r !== null && (maxR === null || r.area > maxR.area) ? r : maxR);
         for (const {
                resolution: captureResolution,
                previewCandidates,
@@ -177,11 +178,12 @@ class Reconfigurer {
         return false;
       }
       const modeSupport = state.get(state.State.USE_FAKE_CAMERA) ||
-          this.modes.isSupportPTZ(
-              c.mode,
-              c.captureResolution,
-              this.preview.getResolution(),
-          );
+          (c.captureResolution !== null &&
+           this.modes.isSupportPTZ(
+               c.mode,
+               c.captureResolution,
+               this.preview.getResolution(),
+               ));
       if (!modeSupport) {
         await this.preview.resetPTZ();
         return false;
