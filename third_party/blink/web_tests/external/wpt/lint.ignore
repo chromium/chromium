@@ -138,6 +138,7 @@ PARSE-FAILED: custom-elements/xhtml-crash.xhtml
 SET TIMEOUT: *-manual.*
 SET TIMEOUT: annotation-model/scripts/ajv.min.js
 SET TIMEOUT: apng/animated-png-timeout.html
+SET TIMEOUT: app-history/app-history-entry/entries-after-bfcache-in-iframe.html
 SET TIMEOUT: cookies/resources/testharness-helpers.js
 SET TIMEOUT: common/reftest-wait.js
 SET TIMEOUT: conformance-checkers/*

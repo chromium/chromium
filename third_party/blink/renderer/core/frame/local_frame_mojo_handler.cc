@@ -23,6 +23,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -1146,6 +1147,12 @@ void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
   base::UmaHistogramMicrosecondsTimes("Blink.Frame.GetCanonicalUrlRendererTime",
                                       base::TimeTicks::Now() - start_time);
 #endif
+}
+
+void LocalFrameMojoHandler::SetAppHistoryEntriesForRestore(
+    mojom::blink::AppHistoryEntryArraysPtr entry_arrays) {
+  if (AppHistory* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+    app_history->SetEntriesForRestore(entry_arrays);
 }
 
 void LocalFrameMojoHandler::AnimateDoubleTapZoom(const gfx::Point& point,

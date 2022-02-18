@@ -53,6 +53,7 @@ import "third_party/blink/public/mojom/frame/user_activation_update_types.mojom"
 import "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom";
 import "third_party/blink/public/mojom/input/focus_type.mojom";
 import "third_party/blink/public/mojom/input/scroll_direction.mojom";
+import "third_party/blink/public/mojom/navigation/app_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
@@ -835,6 +836,13 @@ interface LocalFrame {
   // Requests the link-rel calnonical URL. The canonical url could be null if
   // the document of this frame doesn't have the HTMLLinkElement.
   GetCanonicalUrlForSharing() => (url.mojom.Url? canonical_url);
+
+  // Updates appHistory.entries() when restoring from bfcache.
+  // appHistory.entries() represents a subset of the back/forward list visible
+  // to this frame, and that subset may have changed while the page was in
+  // bfcache.
+  SetAppHistoryEntriesForRestore(
+      AppHistoryEntryArrays app_history_entry_arrays);
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

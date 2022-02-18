@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/app_history_entry_arrays.mojom.h"
 
 namespace gfx {
 class Point;
@@ -139,6 +140,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void HandleRendererDebugURL(const GURL& url) override;
   void GetCanonicalUrlForSharing(
       base::OnceCallback<void(const absl::optional<GURL>&)> callback) override;
+  void SetAppHistoryEntriesForRestore(
+      blink::mojom::AppHistoryEntryArraysPtr entry_arrays) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

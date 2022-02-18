@@ -192,6 +192,9 @@ class LocalFrameMojoHandler
   void GetCanonicalUrlForSharing(
       GetCanonicalUrlForSharingCallback callback) final;
 
+  void SetAppHistoryEntriesForRestore(
+      mojom::blink::AppHistoryEntryArraysPtr) final;
+
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,
                             const gfx::Rect& rect) override;

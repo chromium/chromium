@@ -390,11 +390,15 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       BrowserContext* browser_context,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory);
 
-  // Called just before sending the commit to the renderer. Walks the
-  // session history entries for the committing FrameTreeNode, forward and
-  // backward from the pending entry. All contiguous and same-origin
-  // FrameNavigationEntries are serialized and returned.
+  // Called just before sending the commit to the renderer, or when restoring
+  // from back/forward cache. Walks the session history entries for the relevant
+  // FrameTreeNode, forward and backward from the pending entry. All contiguous
+  // and same-origin FrameNavigationEntries are serialized and returned.
+  // |request| may be nullptr when getting entries for an iframe that is being
+  // restored for back/forward cache (in that case, the iframe itself is not
+  // navigated, so there is no NavigationRequest).
   blink::mojom::AppHistoryEntryArraysPtr GetAppHistoryEntryVectors(
+      FrameTreeNode* node,
       NavigationRequest* request);
 
   // The appHistory API exposes the urls of some non-current same-origin

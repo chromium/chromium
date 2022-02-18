@@ -2017,3 +2017,11 @@ crbug.com/626703 [ Mac11 ] virtual/fsa-incognito/external/wpt/file-system-access
 # no-forced-frame-updates virtual test suite.
 external/wpt/html/dom/render-blocking/* [ Skip ]
 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/* [ Pass ]
+
+# The following tests only work if bfcache is enabled for same-origin urls.
+external/wpt/app-history/app-history-entry/entries-after-bfcache.html [ Skip ]
+external/wpt/app-history/app-history-entry/entries-after-bfcache-in-iframe.html [ Skip ]
+external/wpt/app-history/per-entry-events/dispose-after-bfcache.html [ Skip ]
+virtual/bfcache-same-site/external/wpt/app-history/app-history-entry/entries-after-bfcache.html [ Pass ]
+virtual/bfcache-same-site/external/wpt/app-history/app-history-entry/entries-after-bfcache-in-iframe.html [ Pass ]
+virtual/bfcache-same-site/external/wpt/app-history/per-entry-events/dispose-after-bfcache.html [ Pass ]

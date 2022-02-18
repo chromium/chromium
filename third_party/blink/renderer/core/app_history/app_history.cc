@@ -260,6 +260,7 @@ void AppHistory::CloneFromPrevious(AppHistory& previous) {
     // It's possible that |old_item| is indirectly holding a reference to
     // the old Document. Also, it has a bunch of state we don't need for a
     // non-current entry. Clone a subset of its state to a |new_item|.
+    // NOTE: values copied here should also be copied in GetEntryForRestore().
     HistoryItem* old_item = previous.entries_[i]->GetItem();
     HistoryItem* new_item = MakeGarbageCollected<HistoryItem>();
     new_item->SetItemSequenceNumber(old_item->ItemSequenceNumber());
@@ -331,6 +332,73 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
   for (const auto& disposed_entry : disposed_entries) {
     disposed_entry->DispatchEvent(*Event::Create(event_type_names::kDispose));
   }
+}
+
+AppHistoryEntry* AppHistory::GetEntryForRestore(
+    const mojom::blink::AppHistoryEntryPtr& entry) {
+  const auto& it = keys_to_indices_.find(entry->key);
+  if (it != keys_to_indices_.end()) {
+    AppHistoryEntry* existing_entry = entries_[it->value];
+    if (existing_entry->id() == entry->id)
+      return existing_entry;
+  }
+  // NOTE: values copied here should also be copied in CloneFromPrevious().
+  // TODO(japhet): Figure out if there's a way to better share logic with
+  // CloneFromPrevious().
+  HistoryItem* item = MakeGarbageCollected<HistoryItem>();
+  item->SetItemSequenceNumber(entry->item_sequence_number);
+  item->SetDocumentSequenceNumber(entry->document_sequence_number);
+  item->SetURLString(entry->url);
+  item->SetAppHistoryKey(entry->key);
+  item->SetAppHistoryId(entry->id);
+  item->SetAppHistoryState(SerializedScriptValue::Create(entry->state));
+  return MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), item);
+}
+
+// static
+void FireDisposeEventsAsync(
+    HeapVector<Member<AppHistoryEntry>>* disposed_entries) {
+  for (const auto& entry : *disposed_entries) {
+    entry->DispatchEvent(*Event::Create(event_type_names::kDispose));
+  }
+}
+
+void AppHistory::SetEntriesForRestore(
+    const mojom::blink::AppHistoryEntryArraysPtr& entry_arrays) {
+  // If this window HasEntriesAndEventsDisabled(), we shouldn't attempt to
+  // restore anything.
+  if (HasEntriesAndEventsDisabled())
+    return;
+
+  HeapVector<Member<AppHistoryEntry>> new_entries;
+  new_entries.ReserveCapacity(
+      base::checked_cast<wtf_size_t>(entry_arrays->back_entries.size() +
+                                     entry_arrays->forward_entries.size() + 1));
+  for (const auto& item : entry_arrays->back_entries)
+    new_entries.emplace_back(GetEntryForRestore(item));
+  new_entries.emplace_back(current());
+  for (const auto& item : entry_arrays->forward_entries)
+    new_entries.emplace_back(GetEntryForRestore(item));
+
+  new_entries.swap(entries_);
+  current_index_ =
+      base::checked_cast<wtf_size_t>(entry_arrays->back_entries.size());
+  keys_to_indices_.clear();
+  PopulateKeySet();
+
+  // |new_entries| now contains the previous entries_. Find the ones that are no
+  // longer in entries_ so they can be disposed.
+  HeapVector<Member<AppHistoryEntry>>* disposed_entries =
+      MakeGarbageCollected<HeapVector<Member<AppHistoryEntry>>>();
+  for (const auto& entry : new_entries) {
+    const auto& it = keys_to_indices_.find(entry->key());
+    if (it == keys_to_indices_.end() || entries_[it->value] != entry)
+      disposed_entries->push_back(entry);
+  }
+  GetSupplementable()
+      ->GetTaskRunner(TaskType::kInternalDefault)
+      ->PostTask(FROM_HERE, WTF::Bind(&FireDisposeEventsAsync,
+                                      WrapPersistent(disposed_entries)));
 }
 
 AppHistoryEntry* AppHistory::current() const {

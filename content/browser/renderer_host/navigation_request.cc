@@ -4502,7 +4502,8 @@ void NavigationRequest::CommitNavigation() {
 
   if (!IsSameDocument()) {
     commit_params_->app_history_entry_arrays =
-        GetNavigationController()->GetAppHistoryEntryVectors(this);
+        GetNavigationController()->GetAppHistoryEntryVectors(frame_tree_node_,
+                                                             this);
   }
 
   if (early_hints_manager_) {
@@ -4570,6 +4571,29 @@ void NavigationRequest::CommitPageActivation() {
     DCHECK(activated_entry || restarting_back_forward_cached_navigation_);
     if (!activated_entry)
       return;
+
+    // Restore appHistory entries, since they will probably have changed since
+    // the page entered bfcache. We must update all frames, not just the top
+    // frame, because it is possible (though unlikely) that an iframe's entries
+    // have changed, too.
+    activated_entry->render_frame_host()->ForEachRenderFrameHost(
+        base::BindRepeating(
+            [](content::RenderFrameHost* navigating_rfh,
+               NavigationRequest* request, content::RenderFrameHost* rfh) {
+              RenderFrameHostImpl* rfhi =
+                  static_cast<RenderFrameHostImpl*>(rfh);
+              // |request| is given as a parameter to
+              // GetAppHistoryEntryVectors() only for the frame being committed
+              // (i.e., the top frame).
+              auto entry_arrays =
+                  rfhi->frame_tree()->controller().GetAppHistoryEntryVectors(
+                      rfhi->frame_tree_node(),
+                      navigating_rfh == rfh ? request : nullptr);
+              rfhi->GetAssociatedLocalFrame()->SetAppHistoryEntriesForRestore(
+                  std::move(entry_arrays));
+              return content::RenderFrameHost::FrameIterationAction::kContinue;
+            },
+            activated_entry->render_frame_host(), this));
 
     base::WeakPtr<NavigationRequest> weak_self(weak_factory_.GetWeakPtr());
     ReadyToCommitNavigation(false /* is_error */);

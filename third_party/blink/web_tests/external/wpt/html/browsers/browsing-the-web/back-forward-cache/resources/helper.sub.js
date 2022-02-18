@@ -153,6 +153,10 @@ function runBfcacheTest(params, description) {
     const urlA = executorPath + pageA.context_id;
     const urlB = params.targetOrigin + executorPath + pageB.context_id;
 
+    // So that tests can refer to these URLs for assertions if necessary.
+    pageA.url = originSameOrigin + urlA;
+    pageB.url = urlB;
+
     params.openFunc(urlA);
 
     await pageA.execute_script(waitForPageShow);

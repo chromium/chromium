@@ -4369,15 +4369,16 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
 
 blink::mojom::AppHistoryEntryArraysPtr
 NavigationControllerImpl::GetAppHistoryEntryVectors(
+    FrameTreeNode* node,
     NavigationRequest* request) {
   url::Origin pending_origin =
-      request->commit_params().origin_to_commit
-          ? *request->commit_params().origin_to_commit
-          : url::Origin::Create(request->common_params().url);
+      request ? request->commit_params().origin_to_commit
+                    ? *request->commit_params().origin_to_commit
+                    : url::Origin::Create(request->common_params().url)
+              : url::Origin::Create(node->current_url());
 
-  FrameTreeNode* node = request->frame_tree_node();
   scoped_refptr<SiteInstance> site_instance =
-      request->GetRenderFrameHost()->GetSiteInstance();
+      node->current_frame_host()->GetSiteInstance();
 
   // NOTE: |entry_index| is an estimate of the index where this entry will
   // commit, but it may be wrong in corner cases (e.g., if we are at the max
@@ -4386,7 +4387,8 @@ NavigationControllerImpl::GetAppHistoryEntryVectors(
   // now, and it isn't saved for anything post-commit.
   int entry_index = GetPendingEntryIndex();
   bool will_create_new_entry = false;
-  if (NavigationTypeUtils::IsReload(request->common_params().navigation_type) ||
+  if (!request ||
+      NavigationTypeUtils::IsReload(request->common_params().navigation_type) ||
       request->common_params().should_replace_current_entry) {
     entry_index = GetLastCommittedEntryIndex();
   } else if (entry_index == -1) {
