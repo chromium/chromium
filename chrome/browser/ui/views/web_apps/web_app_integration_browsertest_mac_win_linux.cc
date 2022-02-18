@@ -30,7 +30,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
   helper_.CheckPlatformShortcutNotExists("SiteA");
 }
 
-// Disabled due to flakiness. crbug.com/1294464
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
                        CheckRunOnOsLoginModeOnPolicyAppWorks) {
   helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
