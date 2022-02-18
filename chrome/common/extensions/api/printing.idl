@@ -153,24 +153,27 @@ namespace printing {
     // Submits the job for print.
     // If the extension is not listed in PrintingAPIExtensionsAllowlist policy,
     // the user will be prompted to accept the print job.
-    static void submitJob(SubmitJobRequest request, SubmitJobCallback callback);
+    [supportsPromises] static void submitJob(SubmitJobRequest request,
+                                             SubmitJobCallback callback);
 
     // Cancels previously submitted job.
     // |jobId|: The id of the print job to cancel. This should be the same id
     // received in a $(ref:SubmitJobResponse).
-    static void cancelJob(DOMString jobId, CancelJobCallback callback);
+    [supportsPromises] static void cancelJob(DOMString jobId,
+                                             CancelJobCallback callback);
 
     // Returns the list of available printers on the device. This includes
     // manually added, enterprise and discovered printers.
-    static void getPrinters(GetPrintersCallback callback);
+    [supportsPromises] static void getPrinters(GetPrintersCallback callback);
 
     // Returns the status and capabilities of the printer in
     // <a href="https://developers.google.com/cloud-print/docs/cdd#cdd">
     // CDD format</a>.
     // This call will fail with a runtime error if no printers with given id are
     // installed.
-    static void getPrinterInfo(DOMString printerId,
-                               GetPrinterInfoCallback callback);
+    [supportsPromises] static void getPrinterInfo(
+        DOMString printerId,
+        GetPrinterInfoCallback callback);
   };
 
   interface Properties {

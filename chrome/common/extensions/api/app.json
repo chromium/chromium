@@ -47,18 +47,16 @@
         "name": "installState",
         "description": "TODO",
         "type": "function",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "$ref": "InstallState",
-                "name": "state"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "$ref": "InstallState",
+              "name": "state"
+            }
+          ]
+        }
       },
       {
         "name": "runningState",
