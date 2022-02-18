@@ -17,9 +17,9 @@
 
             <path
                 android:name="arrow_grey"
-                android:fillColor="@color/google_blue_50"
+                android:fillColor="@color/icon_animated_faded_color"
                 android:pathData="M30,15 L42,15 L42,30 L52,30 L36,46 L20,30 L30,30 Z"
-                android:strokeColor="#00000000"/>
+                android:strokeColor="@android:color/transparent"/>
 
             <group>
                 <clip-path
@@ -28,21 +28,21 @@
 
                 <path
                     android:name="arrow_blue"
-                    android:fillColor="@color/default_icon_color_accent1_baseline"
+                    android:fillColor="@macro/default_icon_color_accent1"
                     android:pathData="M30,15 L42,15 L42,30 L52,30 L36,46 L20,30 L30,30 Z"
-                    android:strokeColor="#00000000"/>
+                    android:strokeColor="@android:color/transparent"/>
             </group>
 
             <path
                 android:name="bar_grey"
                 android:pathData="M12,54 L60,54"
-                android:strokeColor="@color/google_blue_50"
+                android:strokeColor="@color/icon_animated_faded_color"
                 android:strokeWidth="6"/>
 
             <path
                 android:name="bar"
                 android:pathData="M12,54 L60,54"
-                android:strokeColor="@color/default_icon_color_accent1_baseline"
+                android:strokeColor="@macro/default_icon_color_accent1"
                 android:strokeWidth="6"/>
 
         </vector>
@@ -67,15 +67,15 @@
                     android:duration="0"
                     android:interpolator="@android:interpolator/linear"
                     android:propertyName="fillColor"
-                    android:valueFrom="@color/default_icon_color_accent1_baseline"
-                    android:valueTo="@color/default_icon_color_accent1_baseline"/>
+                    android:valueFrom="@macro/default_icon_color_accent1"
+                    android:valueTo="@macro/default_icon_color_accent1"/>
                 <objectAnimator
                     android:duration="@integer/download_infobar_fill_out_delay"
                     android:startOffset="@integer/download_infobar_fill_in_delay"
                     android:interpolator="@android:interpolator/linear"
                     android:propertyName="fillColor"
-                    android:valueFrom="@color/default_icon_color_accent1_baseline"
-                    android:valueTo="@color/google_blue_50"/>
+                    android:valueFrom="@macro/default_icon_color_accent1"
+                    android:valueTo="@android:color/transparent"/>
             </set>
         </aapt:attr>
     </target>
