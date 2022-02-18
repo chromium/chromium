@@ -1326,6 +1326,7 @@
       // https://drafts.csswg.org/css-grid-1/#pagination
       name: "LayoutNGGridFragmentation",
       depends_on: ["LayoutNG"],
+      status: "test",
     },
     {
       name: "LayoutNGPrinting",

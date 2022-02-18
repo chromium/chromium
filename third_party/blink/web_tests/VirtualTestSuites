@@ -271,11 +271,6 @@
     "args": ["--enable-blink-features=LayoutNGFlexFragmentation"]
   },
   {
-    "prefix": "layout_ng_grid_frag",
-    "bases": ["external/wpt/css/css-break/grid"],
-    "args": ["--enable-blink-features=LayoutNGGridFragmentation"]
-  },
-  {
     "prefix": "layout_ng_table_frag",
     "bases": ["external/wpt/css/css-break/table",
               "external/wpt/css/css-multicol/table"],
