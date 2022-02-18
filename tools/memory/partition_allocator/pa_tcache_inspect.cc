@@ -153,6 +153,8 @@ class PartitionRootInspector {
     size_t slot_size = 0;
     size_t allocated_slots = 0;
     size_t freelist_size = 0;
+
+    base::internal::PartitionBucket<base::internal::ThreadSafe> bucket;
     std::vector<size_t> freelist_sizes;
     // Flattened versions of the lists.
     std::vector<SlotSpanMetadata<ThreadSafe>> active_slot_spans;
@@ -287,6 +289,7 @@ bool PartitionRootInspector::GatherStatistics() {
   for (auto& bucket : root_.get()->buckets) {
     BucketStats stats;
     stats.slot_size = bucket.slot_size;
+    stats.bucket = bucket;
 
     // Only look at the small buckets.
     if (bucket.slot_size > 4096)
@@ -329,6 +332,9 @@ bool PartitionRootInspector::GatherStatistics() {
       stats.freelist_sizes.push_back(freelist_size);
     }
 
+    // Full slot spans are not in any list.
+    stats.allocated_slots +=
+        bucket.num_full_slot_spans * bucket.get_slots_per_span();
     bucket_stats_.push_back(stats);
   }
 
@@ -492,6 +498,10 @@ base::Value Dump(PartitionRootInspector& root_inspector) {
     auto result = base::Value(base::Value::Type::DICTIONARY);
 
     result.SetKey("slot_size", base::Value{static_cast<int>(stats.slot_size)});
+    result.SetKey("num_system_pages_per_slot_span",
+                  base::Value{stats.bucket.num_system_pages_per_slot_span});
+    result.SetKey("num_full_slot_spans",
+                  base::Value{stats.bucket.num_full_slot_spans});
     result.SetKey("allocated_slots",
                   base::Value{static_cast<int>(stats.allocated_slots)});
     result.SetKey("freelist_size",
