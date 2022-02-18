@@ -21,10 +21,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace syncer {
-class ModelTypeControllerDelegate;
-}  // namespace syncer
-
 namespace password_manager {
 
 class PasswordSyncControllerDelegateAndroid;
@@ -40,11 +36,13 @@ class PasswordStoreAndroidBackend
     : public PasswordStoreBackend,
       public PasswordStoreAndroidBackendBridge::Consumer {
  public:
-  PasswordStoreAndroidBackend();
+  explicit PasswordStoreAndroidBackend(
+      std::unique_ptr<SyncDelegate> sync_delegate);
   PasswordStoreAndroidBackend(
       base::PassKey<class PasswordStoreAndroidBackendTest>,
       std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge,
-      std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper);
+      std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
+      std::unique_ptr<SyncDelegate> sync_delegate);
   ~PasswordStoreAndroidBackend() override;
 
  private:
@@ -171,9 +169,6 @@ class PasswordStoreAndroidBackend
       absl::optional<PasswordStoreChangeList> changes) override;
   void OnError(PasswordStoreAndroidBackendBridge::JobId job_id,
                AndroidBackendError error) override;
-
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetSyncControllerDelegate();
 
   void QueueNewJob(JobId job_id, JobReturnHandler return_handler);
   JobReturnHandler GetAndEraseJob(JobId job_id);

@@ -42,14 +42,14 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
     backend_migration_decorator_ =
         std::make_unique<PasswordStoreBackendMigrationDecorator>(
             CreateBuiltInBackend(), CreateAndroidBackend(), &prefs_,
-            CreateSyncDelegate());
+            &sync_delegate_);
   }
 
   ~PasswordStoreBackendMigrationDecoratorTest() override {
     backend_migration_decorator()->Shutdown(base::DoNothing());
   }
 
-  MockPasswordBackendSyncDelegate* sync_delegate() { return sync_delegate_; }
+  MockPasswordBackendSyncDelegate& sync_delegate() { return sync_delegate_; }
   PasswordStoreBackend* backend_migration_decorator() {
     return backend_migration_decorator_.get();
   }
@@ -73,16 +73,10 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
     return unique_backend;
   }
 
-  std::unique_ptr<MockPasswordBackendSyncDelegate> CreateSyncDelegate() {
-    auto unique_delegate = std::make_unique<MockPasswordBackendSyncDelegate>();
-    sync_delegate_ = unique_delegate.get();
-    return unique_delegate;
-  }
-
   base::test::SingleThreadTaskEnvironment task_env_;
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
-  raw_ptr<MockPasswordBackendSyncDelegate> sync_delegate_;
+  MockPasswordBackendSyncDelegate sync_delegate_;
   raw_ptr<MockPasswordStoreBackend> built_in_backend_;
   raw_ptr<MockPasswordStoreBackend> android_backend_;
 
@@ -121,7 +115,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 
   // Invoke sync callback to simulate a change in sync status. Set expectation
   // for sync to be turned off.
-  EXPECT_CALL(*sync_delegate(), IsSyncingPasswordsEnabled)
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillOnce(Return(false));
   sync_status_changed_closure.Run();
 
@@ -160,7 +154,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 
   // Invoke sync callback to simulate a change in sync status. Set expectation
   // for sync to be turned off.
-  EXPECT_CALL(*sync_delegate(), IsSyncingPasswordsEnabled)
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillOnce(Return(true));
   EXPECT_CALL(*android_backend(), ClearAllLocalPasswords);
   sync_status_changed_closure.Run();

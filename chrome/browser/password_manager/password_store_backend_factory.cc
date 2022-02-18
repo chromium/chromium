@@ -31,13 +31,15 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
   if (PasswordStoreAndroidBackendBridge::CanCreateBackend()) {
     if (base::FeatureList::IsEnabled(
             password_manager::features::kUnifiedPasswordManagerAndroid)) {
-      return std::make_unique<PasswordStoreAndroidBackend>();
+      return std::make_unique<PasswordStoreAndroidBackend>(
+          std::move(sync_delegate));
     }
+    raw_ptr<SyncDelegate> raw_sync_delegate = sync_delegate.get();
     return std::make_unique<PasswordStoreBackendMigrationDecorator>(
         std::make_unique<PasswordStoreBuiltInBackend>(
             CreateLoginDatabaseForProfileStorage(login_db_path)),
-        std::make_unique<PasswordStoreAndroidBackend>(), prefs,
-        std::move(sync_delegate));
+        std::make_unique<PasswordStoreAndroidBackend>(std::move(sync_delegate)),
+        prefs, raw_sync_delegate.get());
   }
   return std::make_unique<PasswordStoreBuiltInBackend>(
       CreateLoginDatabaseForProfileStorage(login_db_path));

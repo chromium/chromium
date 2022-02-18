@@ -246,11 +246,13 @@ void PasswordStoreAndroidBackend::JobReturnHandler::RecordMetrics(
   metrics_recorder_.RecordMetrics(!error.has_value(), std::move(error));
 }
 
-PasswordStoreAndroidBackend::PasswordStoreAndroidBackend()
+PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
+    std::unique_ptr<SyncDelegate> sync_delegate)
     : lifecycle_helper_(std::make_unique<PasswordManagerLifecycleHelperImpl>()),
       bridge_(PasswordStoreAndroidBackendBridge::Create()),
       sync_controller_delegate_(
-          std::make_unique<PasswordSyncControllerDelegateAndroid>()) {
+          std::make_unique<PasswordSyncControllerDelegateAndroid>(
+              std::move(sync_delegate))) {
   DCHECK(bridge_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
@@ -258,11 +260,13 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend()
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     base::PassKey<class PasswordStoreAndroidBackendTest>,
     std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge,
-    std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper)
+    std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
+    std::unique_ptr<SyncDelegate> sync_delegate)
     : lifecycle_helper_(std::move(lifecycle_helper)),
       bridge_(std::move(bridge)),
       sync_controller_delegate_(
-          std::make_unique<PasswordSyncControllerDelegateAndroid>()) {
+          std::make_unique<PasswordSyncControllerDelegateAndroid>(
+              std::move(sync_delegate))) {
   DCHECK(bridge_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
@@ -485,11 +489,7 @@ FieldInfoStore* PasswordStoreAndroidBackend::GetFieldInfoStore() {
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreAndroidBackend::CreateSyncControllerDelegate() {
-  return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
-      base::SequencedTaskRunnerHandle::Get(),
-      base::BindRepeating(
-          &PasswordStoreAndroidBackend::GetSyncControllerDelegate,
-          base::Unretained(this)));
+  return sync_controller_delegate_->CreateProxyModelControllerDelegate();
 }
 
 void PasswordStoreAndroidBackend::ClearAllLocalPasswords() {
@@ -581,11 +581,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         base::BindOnce(std::move(reply).Get<PasswordStoreChangeListReply>(),
                        PasswordStoreChangeList()));
   }
-}
-
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
-PasswordStoreAndroidBackend::GetSyncControllerDelegate() {
-  return sync_controller_delegate_->GetWeakPtr();
 }
 
 void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,

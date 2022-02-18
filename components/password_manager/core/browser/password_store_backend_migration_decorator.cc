@@ -28,11 +28,11 @@ PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
     std::unique_ptr<PasswordStoreBackend> android_backend,
     PrefService* prefs,
-    std::unique_ptr<SyncDelegate> sync_delegate)
+    SyncDelegate* sync_delegate)
     : built_in_backend_(std::move(built_in_backend)),
       android_backend_(std::move(android_backend)),
       prefs_(prefs),
-      sync_delegate_(std::move(sync_delegate)) {
+      sync_delegate_(sync_delegate) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(

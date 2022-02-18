@@ -125,7 +125,8 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   PasswordStoreAndroidBackendTest() {
     backend_ = std::make_unique<PasswordStoreAndroidBackend>(
         base::PassKey<class PasswordStoreAndroidBackendTest>(),
-        CreateMockBridge(), CreateFakeLifecycleHelper());
+        CreateMockBridge(), CreateFakeLifecycleHelper(),
+        /*sync_delegate=*/nullptr);
   }
 
   ~PasswordStoreAndroidBackendTest() override {
