@@ -74,10 +74,11 @@ enum PseudoId : uint8_t {
   kPseudoIdSpellingError,
   kPseudoIdGrammarError,
   // The following IDs are public but not tracked.
-  kPseudoIdTransition,
-  kPseudoIdTransitionContainer,
-  kPseudoIdTransitionOldContent,
-  kPseudoIdTransitionNewContent,
+  kPseudoIdPageTransition,
+  kPseudoIdPageTransitionContainer,
+  kPseudoIdPageTransitionImageWrapper,
+  kPseudoIdPageTransitionOutgoingImage,
+  kPseudoIdPageTransitionIncomingImage,
   // Internal IDs follow:
   kPseudoIdFirstLineInherited,
   kPseudoIdScrollbarThumb,
@@ -109,10 +110,11 @@ inline bool IsHighlightPseudoElement(PseudoId pseudo_id) {
 
 inline bool IsTransitionPseudoElement(PseudoId pseudo_id) {
   switch (pseudo_id) {
-    case kPseudoIdTransition:
-    case kPseudoIdTransitionContainer:
-    case kPseudoIdTransitionOldContent:
-    case kPseudoIdTransitionNewContent:
+    case kPseudoIdPageTransition:
+    case kPseudoIdPageTransitionContainer:
+    case kPseudoIdPageTransitionImageWrapper:
+    case kPseudoIdPageTransitionOutgoingImage:
+    case kPseudoIdPageTransitionIncomingImage:
       return true;
     default:
       return false;

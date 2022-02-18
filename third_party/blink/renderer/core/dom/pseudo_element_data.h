@@ -92,18 +92,14 @@ inline void PseudoElementData::SetPseudoElement(
       previous_element = generated_first_letter_;
       generated_first_letter_ = element;
       break;
-    case kPseudoIdTransition:
-    case kPseudoIdTransitionOldContent:
-    case kPseudoIdTransitionNewContent:
-    case kPseudoIdTransitionContainer:
-      if (element) {
-        if (!transition_data_) {
-          transition_data_ =
-              MakeGarbageCollected<TransitionPseudoElementData>();
-        }
-        transition_data_->SetPseudoElement(pseudo_id, element,
-                                           document_transition_tag);
-      } else {
+    case kPseudoIdPageTransition:
+    case kPseudoIdPageTransitionContainer:
+    case kPseudoIdPageTransitionImageWrapper:
+    case kPseudoIdPageTransitionIncomingImage:
+    case kPseudoIdPageTransitionOutgoingImage:
+      if (element && !transition_data_)
+        transition_data_ = MakeGarbageCollected<TransitionPseudoElementData>();
+      if (transition_data_) {
         transition_data_->SetPseudoElement(pseudo_id, element,
                                            document_transition_tag);
         if (!transition_data_->HasPseudoElements())

@@ -210,14 +210,16 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::Resizer;
     case kPseudoIdInputListButton:
       return protocol::DOM::PseudoTypeEnum::InputListButton;
-    case kPseudoIdTransition:
-      return protocol::DOM::PseudoTypeEnum::Transition;
-    case kPseudoIdTransitionContainer:
-      return protocol::DOM::PseudoTypeEnum::TransitionContainer;
-    case kPseudoIdTransitionNewContent:
-      return protocol::DOM::PseudoTypeEnum::TransitionNewContent;
-    case kPseudoIdTransitionOldContent:
-      return protocol::DOM::PseudoTypeEnum::TransitionOldContent;
+    case kPseudoIdPageTransition:
+      return protocol::DOM::PseudoTypeEnum::PageTransition;
+    case kPseudoIdPageTransitionContainer:
+      return protocol::DOM::PseudoTypeEnum::PageTransitionContainer;
+    case kPseudoIdPageTransitionImageWrapper:
+      return protocol::DOM::PseudoTypeEnum::PageTransitionImageWrapper;
+    case kPseudoIdPageTransitionIncomingImage:
+      return protocol::DOM::PseudoTypeEnum::PageTransitionIncomingImage;
+    case kPseudoIdPageTransitionOutgoingImage:
+      return protocol::DOM::PseudoTypeEnum::PageTransitionOutgoingImage;
     case kAfterLastInternalPseudoId:
     case kPseudoIdNone:
       CHECK(false);

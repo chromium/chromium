@@ -92,29 +92,36 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
                           (g_null_atom, "::marker", g_null_atom));
       return marker;
     }
-    case kPseudoIdTransition: {
+    case kPseudoIdPageTransition: {
       DEFINE_STATIC_LOCAL(QualifiedName, transition,
-                          (g_null_atom, "::transition", g_null_atom));
+                          (g_null_atom, "::page-transition", g_null_atom));
       return transition;
     }
-    case kPseudoIdTransitionContainer: {
+    case kPseudoIdPageTransitionContainer: {
       // TODO(khushalsagar) : Update these tag names to include the additional
       // ID.
-      DEFINE_STATIC_LOCAL(QualifiedName, transition_container,
-                          (g_null_atom, "::transition-container", g_null_atom));
+      DEFINE_STATIC_LOCAL(
+          QualifiedName, transition_container,
+          (g_null_atom, "::page-transition-container", g_null_atom));
       return transition_container;
     }
-    case kPseudoIdTransitionNewContent: {
+    case kPseudoIdPageTransitionImageWrapper: {
       DEFINE_STATIC_LOCAL(
-          QualifiedName, transition_new_content,
-          (g_null_atom, "::transition-new-content", g_null_atom));
-      return transition_new_content;
+          QualifiedName, transition_image_wrapper,
+          (g_null_atom, "::page-transition-image-wrapper", g_null_atom));
+      return transition_image_wrapper;
     }
-    case kPseudoIdTransitionOldContent: {
+    case kPseudoIdPageTransitionIncomingImage: {
       DEFINE_STATIC_LOCAL(
-          QualifiedName, transition_old_content,
-          (g_null_atom, "::transition-old-content", g_null_atom));
-      return transition_old_content;
+          QualifiedName, transition_incoming_image,
+          (g_null_atom, "::page-transition-incoming-image", g_null_atom));
+      return transition_incoming_image;
+    }
+    case kPseudoIdPageTransitionOutgoingImage: {
+      DEFINE_STATIC_LOCAL(
+          QualifiedName, transition_outgoing_image,
+          (g_null_atom, "::page-transition-outgoing-image", g_null_atom));
+      return transition_outgoing_image;
     }
     default:
       NOTREACHED();
@@ -138,10 +145,11 @@ bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
       if (parent && parent->IsPseudoElement())
         return RuntimeEnabledFeatures::CSSMarkerNestedPseudoElementEnabled();
       return true;
-    case kPseudoIdTransition:
-    case kPseudoIdTransitionContainer:
-    case kPseudoIdTransitionNewContent:
-    case kPseudoIdTransitionOldContent:
+    case kPseudoIdPageTransition:
+    case kPseudoIdPageTransitionContainer:
+    case kPseudoIdPageTransitionImageWrapper:
+    case kPseudoIdPageTransitionIncomingImage:
+    case kPseudoIdPageTransitionOutgoingImage:
       return RuntimeEnabledFeatures::DocumentTransitionEnabled();
     default:
       return true;
@@ -325,10 +333,11 @@ bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
   switch (pseudo_style->StyleType()) {
     case kPseudoIdFirstLetter:
     case kPseudoIdBackdrop:
-    case kPseudoIdTransition:
-    case kPseudoIdTransitionContainer:
-    case kPseudoIdTransitionNewContent:
-    case kPseudoIdTransitionOldContent:
+    case kPseudoIdPageTransition:
+    case kPseudoIdPageTransitionContainer:
+    case kPseudoIdPageTransitionImageWrapper:
+    case kPseudoIdPageTransitionIncomingImage:
+    case kPseudoIdPageTransitionOutgoingImage:
       return true;
     case kPseudoIdBefore:
     case kPseudoIdAfter:

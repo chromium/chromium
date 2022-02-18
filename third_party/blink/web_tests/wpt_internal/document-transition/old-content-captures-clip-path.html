@@ -23,12 +23,12 @@
 
 div.dst { background: lightgreen; }
 /* We're verifying what we capture, so just display the old contents for 5 minutes.  */
-html::transition-container(*) { animation-duration: 300s; }
-html::transition-new-content(*) { animation-duration: 0s; opacity: 0; }
-html::transition-old-content(*) { animation-duration: 0s; opacity: 1; }
+html::page-transition-container(*) { animation-duration: 300s; }
+html::page-transition-incoming-image(*) { animation-duration: 0s; opacity: 0; }
+html::page-transition-outgoing-image(*) { animation-duration: 0s; opacity: 1; }
 /* hide the root so we show transition background to ensure we're in a transition */
-html::transition-container(root) { animation-duration: 0s; opacity: 0; }
-html::transition { background: lightpink; }
+html::page-transition-container(root) { animation-duration: 0s; opacity: 0; }
+html::page-transition { background: lightpink; }
 </style>
 <div id=e1 class=box></div>
 <script>

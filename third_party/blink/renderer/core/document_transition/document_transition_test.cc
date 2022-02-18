@@ -123,9 +123,9 @@ class DocumentTransitionTest : public testing::Test,
 
   void ValidatePseudoElementTree(
       const Vector<WTF::AtomicString>& document_transition_tags,
-      bool has_new_content) {
-    auto* transition_pseudo =
-        GetDocument().documentElement()->GetPseudoElement(kPseudoIdTransition);
+      bool has_incoming_image) {
+    auto* transition_pseudo = GetDocument().documentElement()->GetPseudoElement(
+        kPseudoIdPageTransition);
     ASSERT_TRUE(transition_pseudo);
     EXPECT_TRUE(transition_pseudo->GetComputedStyle());
     EXPECT_TRUE(transition_pseudo->GetLayoutObject());
@@ -133,7 +133,7 @@ class DocumentTransitionTest : public testing::Test,
     PseudoElement* previous_container = nullptr;
     for (const auto& document_transition_tag : document_transition_tags) {
       auto* container_pseudo = transition_pseudo->GetPseudoElement(
-          kPseudoIdTransitionContainer, document_transition_tag);
+          kPseudoIdPageTransitionContainer, document_transition_tag);
       ASSERT_TRUE(container_pseudo);
       EXPECT_TRUE(container_pseudo->GetComputedStyle());
       EXPECT_TRUE(container_pseudo->GetLayoutObject());
@@ -144,23 +144,26 @@ class DocumentTransitionTest : public testing::Test,
       }
       previous_container = container_pseudo;
 
-      auto* old_content = container_pseudo->GetPseudoElement(
-          kPseudoIdTransitionOldContent, document_transition_tag);
-      ASSERT_TRUE(old_content);
-      EXPECT_TRUE(old_content->GetComputedStyle());
-      EXPECT_TRUE(old_content->GetLayoutObject());
+      auto* image_wrapper_pseudo = container_pseudo->GetPseudoElement(
+          kPseudoIdPageTransitionImageWrapper, document_transition_tag);
 
-      auto* new_content = container_pseudo->GetPseudoElement(
-          kPseudoIdTransitionNewContent, document_transition_tag);
+      auto* outgoing_image = image_wrapper_pseudo->GetPseudoElement(
+          kPseudoIdPageTransitionOutgoingImage, document_transition_tag);
+      ASSERT_TRUE(outgoing_image);
+      EXPECT_TRUE(outgoing_image->GetComputedStyle());
+      EXPECT_TRUE(outgoing_image->GetLayoutObject());
 
-      if (!has_new_content) {
-        ASSERT_FALSE(new_content);
+      auto* incoming_image = image_wrapper_pseudo->GetPseudoElement(
+          kPseudoIdPageTransitionIncomingImage, document_transition_tag);
+
+      if (!has_incoming_image) {
+        ASSERT_FALSE(incoming_image);
         continue;
       }
 
-      ASSERT_TRUE(new_content);
-      EXPECT_TRUE(new_content->GetComputedStyle());
-      EXPECT_TRUE(new_content->GetLayoutObject());
+      ASSERT_TRUE(incoming_image);
+      EXPECT_TRUE(incoming_image->GetComputedStyle());
+      EXPECT_TRUE(incoming_image->GetLayoutObject());
     }
   }
 
@@ -677,8 +680,8 @@ TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
   // Finish the animations which should remove the pseudo element tree.
   FinishTransition();
   UpdateAllLifecyclePhasesAndFinishDirectives();
-  EXPECT_FALSE(
-      GetDocument().documentElement()->GetPseudoElement(kPseudoIdTransition));
+  EXPECT_FALSE(GetDocument().documentElement()->GetPseudoElement(
+      kPseudoIdPageTransition));
 }
 
 }  // namespace blink

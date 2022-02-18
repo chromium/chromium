@@ -12,19 +12,21 @@ DocumentTransitionPseudoElementBase::DocumentTransitionPseudoElementBase(
     const AtomicString& document_transition_tag)
     : PseudoElement(parent, pseudo_id, document_transition_tag) {
   DCHECK(IsTransitionPseudoElement(pseudo_id));
-  DCHECK(pseudo_id == kPseudoIdTransition || document_transition_tag);
+  DCHECK(pseudo_id == kPseudoIdPageTransition || document_transition_tag);
 }
 
 bool DocumentTransitionPseudoElementBase::CanGeneratePseudoElement(
     PseudoId pseudo_id) const {
   switch (GetPseudoId()) {
-    case kPseudoIdTransition:
-      return pseudo_id == kPseudoIdTransitionContainer;
-    case kPseudoIdTransitionContainer:
-      return pseudo_id == kPseudoIdTransitionOldContent ||
-             pseudo_id == kPseudoIdTransitionNewContent;
-    case kPseudoIdTransitionOldContent:
-    case kPseudoIdTransitionNewContent:
+    case kPseudoIdPageTransition:
+      return pseudo_id == kPseudoIdPageTransitionContainer;
+    case kPseudoIdPageTransitionContainer:
+      return pseudo_id == kPseudoIdPageTransitionImageWrapper;
+    case kPseudoIdPageTransitionImageWrapper:
+      return pseudo_id == kPseudoIdPageTransitionOutgoingImage ||
+             pseudo_id == kPseudoIdPageTransitionIncomingImage;
+    case kPseudoIdPageTransitionOutgoingImage:
+    case kPseudoIdPageTransitionIncomingImage:
       return false;
     default:
       NOTREACHED();

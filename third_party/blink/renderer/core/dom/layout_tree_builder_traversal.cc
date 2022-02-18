@@ -102,9 +102,9 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       [[fallthrough]];
     case kPseudoIdAfter:
       return nullptr;
-    case kPseudoIdTransition:
+    case kPseudoIdPageTransition:
       return nullptr;
-    case kPseudoIdTransitionContainer: {
+    case kPseudoIdPageTransitionContainer: {
       auto* pseudo_element = DynamicTo<PseudoElement>(node);
       DCHECK(pseudo_element);
 
@@ -123,14 +123,15 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
         }
 
         if (auto* sibling = parent_element->GetPseudoElement(
-                kPseudoIdTransitionContainer, document_transition_tag)) {
+                kPseudoIdPageTransitionContainer, document_transition_tag)) {
           return sibling;
         }
       }
       return nullptr;
     }
-    case kPseudoIdTransitionOldContent:
-    case kPseudoIdTransitionNewContent:
+    case kPseudoIdPageTransitionImageWrapper:
+    case kPseudoIdPageTransitionOutgoingImage:
+    case kPseudoIdPageTransitionIncomingImage:
       return nullptr;
     default:
       NOTREACHED();

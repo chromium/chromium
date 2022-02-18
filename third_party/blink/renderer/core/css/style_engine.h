@@ -873,7 +873,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // re-attachment after the removal.
   Member<LayoutObject> parent_for_detached_subtree_;
 
-  // The set of IDs for which ::transition-container pseudo elements are
+  // The set of IDs for which ::page-transition-container pseudo elements are
   // generated during a DocumentTransition.
   Vector<AtomicString> document_transition_tags_;
 };

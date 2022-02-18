@@ -1301,7 +1301,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       // into one of the transition contexts. We also want that capture to be
       // without any additional effects, such as overscroll elasticity effects.
       if (object_.GetNode() &&
-          object_.GetNode()->GetPseudoId() == kPseudoIdTransition) {
+          object_.GetNode()->GetPseudoId() == kPseudoIdPageTransition) {
         parent_effect = context_.current_effect->Parent();
       }
       DCHECK(parent_effect);

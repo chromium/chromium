@@ -15,7 +15,7 @@
   }
 }
 
-html::transition-new-content(*) {
+html::page-transition-incoming-image(*) {
   animation: fade-in 0.25s;
 }
 
@@ -25,6 +25,6 @@ html::transition-new-content(*) {
   }
 }
 
-html::transition-old-content(*) {
+html::page-transition-outgoing-image(*) {
   animation: fade-out 0.25s;
 }

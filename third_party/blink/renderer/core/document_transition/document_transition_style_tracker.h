@@ -100,7 +100,7 @@ class DocumentTransitionStyleTracker
   EffectPaintPropertyNode* GetRootEffect() const;
 
  private:
-  class ContainerPseudoElement;
+  class ImageWrapperPseudoElement;
 
   // These state transitions are executed in a serial order unless the
   // transition is aborted.

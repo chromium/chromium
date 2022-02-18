@@ -5851,7 +5851,7 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
 
   if (pseudo_id == kPseudoIdBackdrop)
     GetDocument().AddToTopLayer(pseudo_element, this);
-  else if (pseudo_id == kPseudoIdTransition)
+  else if (pseudo_id == kPseudoIdPageTransition)
     GetDocument().AddToTopLayer(pseudo_element);
 
   pseudo_element->SetComputedStyle(pseudo_style);
@@ -5894,24 +5894,25 @@ PseudoElement* Element::GetNestedPseudoElement(
     return GetPseudoElement(pseudo_id, document_transition_tag);
 
   // This traverses the pseudo element hierarchy generated in
-  // RecalcTransitionPseudoTreeStyle to query nested ::transition-container and
-  // ::transition-*-content pseudo elements.
+  // RecalcTransitionPseudoTreeStyle to query nested ::page-transition-container
+  // ::page-transition-image-wrapper and
+  // ::page-transition-{incoming,outgoing}-image pseudo elements.
   DCHECK_EQ(this, GetDocument().documentElement());
-  auto* transition_pseudo = GetPseudoElement(kPseudoIdTransition);
-  if (pseudo_id == kPseudoIdTransition)
+  auto* transition_pseudo = GetPseudoElement(kPseudoIdPageTransition);
+  if (!transition_pseudo || pseudo_id == kPseudoIdPageTransition)
     return transition_pseudo;
 
-  auto* container_pseudo =
-      transition_pseudo
-          ? transition_pseudo->GetPseudoElement(kPseudoIdTransitionContainer,
-                                                document_transition_tag)
-          : nullptr;
-  if (pseudo_id == kPseudoIdTransitionContainer)
+  auto* container_pseudo = transition_pseudo->GetPseudoElement(
+      kPseudoIdPageTransitionContainer, document_transition_tag);
+  if (!container_pseudo || pseudo_id == kPseudoIdPageTransitionContainer)
     return container_pseudo;
 
-  return container_pseudo ? container_pseudo->GetPseudoElement(
-                                pseudo_id, document_transition_tag)
-                          : nullptr;
+  auto* wrapper_pseudo = container_pseudo->GetPseudoElement(
+      kPseudoIdPageTransitionImageWrapper, document_transition_tag);
+  if (!wrapper_pseudo || pseudo_id == kPseudoIdPageTransitionImageWrapper)
+    return wrapper_pseudo;
+
+  return wrapper_pseudo->GetPseudoElement(pseudo_id, document_transition_tag);
 }
 
 LayoutObject* Element::PseudoElementLayoutObject(PseudoId pseudo_id) const {
@@ -6042,7 +6043,7 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
 }
 
 bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
-  if (pseudo_id == kPseudoIdTransition) {
+  if (pseudo_id == kPseudoIdPageTransition) {
     DCHECK_EQ(this, GetDocument().documentElement());
     return !GetDocument().GetStyleEngine().DocumentTransitionTags().IsEmpty();
   }
@@ -7151,7 +7152,7 @@ void Element::RecalcTransitionPseudoTreeStyle(
     const Vector<AtomicString>& document_transition_tags) {
   DCHECK_EQ(this, GetDocument().documentElement());
 
-  auto* old_transition_pseudo = GetPseudoElement(kPseudoIdTransition);
+  auto* old_transition_pseudo = GetPseudoElement(kPseudoIdPageTransition);
   if (document_transition_tags.IsEmpty() && !old_transition_pseudo)
     return;
 
@@ -7161,25 +7162,33 @@ void Element::RecalcTransitionPseudoTreeStyle(
           *GetDocument().documentElement());
 
   auto* transition_pseudo =
-      UpdatePseudoElement(kPseudoIdTransition, style_recalc_change,
+      UpdatePseudoElement(kPseudoIdPageTransition, style_recalc_change,
                           style_recalc_context, g_null_atom);
   if (!transition_pseudo)
     return;
 
   for (const auto& document_transition_tag : document_transition_tags) {
     auto* container_pseudo = transition_pseudo->UpdatePseudoElement(
-        kPseudoIdTransitionContainer, style_recalc_change, style_recalc_context,
-        document_transition_tag);
+        kPseudoIdPageTransitionContainer, style_recalc_change,
+        style_recalc_context, document_transition_tag);
     if (!container_pseudo)
       continue;
 
-    container_pseudo->UpdatePseudoElement(
-        kPseudoIdTransitionOldContent, style_recalc_change,
+    auto* wrapper_pseudo = container_pseudo->UpdatePseudoElement(
+        kPseudoIdPageTransitionImageWrapper, style_recalc_change,
         style_recalc_context, document_transition_tag);
-    container_pseudo->UpdatePseudoElement(
-        kPseudoIdTransitionNewContent, style_recalc_change,
+    if (!wrapper_pseudo)
+      continue;
+
+    wrapper_pseudo->UpdatePseudoElement(
+        kPseudoIdPageTransitionOutgoingImage, style_recalc_change,
         style_recalc_context, document_transition_tag);
+    wrapper_pseudo->UpdatePseudoElement(
+        kPseudoIdPageTransitionIncomingImage, style_recalc_change,
+        style_recalc_context, document_transition_tag);
+
     container_pseudo->ClearChildNeedsStyleRecalc();
+    wrapper_pseudo->ClearChildNeedsStyleRecalc();
   }
 
   // Regular pseudo update doesn't clear child style, since there are
@@ -7193,7 +7202,7 @@ void Element::RebuildTransitionPseudoLayoutTree(
   DCHECK_EQ(this, GetDocument().documentElement());
 
   if (document_transition_tags.IsEmpty()) {
-    DCHECK(!GetPseudoElement(kPseudoIdTransition));
+    DCHECK(!GetPseudoElement(kPseudoIdPageTransition));
     return;
   }
 

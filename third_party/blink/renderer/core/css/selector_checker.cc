@@ -1412,9 +1412,10 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       }
       return false;
     }
-    case CSSSelector::kPseudoTransitionContainer:
-    case CSSSelector::kPseudoTransitionOldContent:
-    case CSSSelector::kPseudoTransitionNewContent: {
+    case CSSSelector::kPseudoPageTransitionContainer:
+    case CSSSelector::kPseudoPageTransitionImageWrapper:
+    case CSSSelector::kPseudoPageTransitionOutgoingImage:
+    case CSSSelector::kPseudoPageTransitionIncomingImage: {
       if (CSSSelector::GetPseudoId(selector.GetPseudoType()) !=
           context.pseudo_id) {
         return false;

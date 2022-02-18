@@ -53,19 +53,19 @@ AtomicString IdFromIndex(wtf_size_t index) {
 
 }  // namespace
 
-class DocumentTransitionStyleTracker::ContainerPseudoElement
+class DocumentTransitionStyleTracker::ImageWrapperPseudoElement
     : public DocumentTransitionPseudoElementBase {
  public:
-  ContainerPseudoElement(Element* parent,
-                         PseudoId pseudo_id,
-                         const AtomicString& document_transition_tag,
-                         const DocumentTransitionStyleTracker* style_tracker)
+  ImageWrapperPseudoElement(Element* parent,
+                            PseudoId pseudo_id,
+                            const AtomicString& document_transition_tag,
+                            const DocumentTransitionStyleTracker* style_tracker)
       : DocumentTransitionPseudoElementBase(parent,
                                             pseudo_id,
                                             document_transition_tag),
         style_tracker_(style_tracker) {}
 
-  ~ContainerPseudoElement() override = default;
+  ~ImageWrapperPseudoElement() override = default;
 
   void Trace(Visitor* visitor) const override {
     PseudoElement::Trace(visitor);
@@ -81,14 +81,14 @@ class DocumentTransitionStyleTracker::ContainerPseudoElement
 
     viz::SharedElementResourceId snapshot_id;
     if (document_transition_tag() == RootTag()) {
-      snapshot_id = pseudo_id == kPseudoIdTransitionOldContent
+      snapshot_id = pseudo_id == kPseudoIdPageTransitionOutgoingImage
                         ? style_tracker_->old_root_snapshot_id_
                         : style_tracker_->new_root_snapshot_id_;
     } else {
       auto& element_data =
           style_tracker_->element_data_map_.find(document_transition_tag())
               ->value;
-      snapshot_id = pseudo_id == kPseudoIdTransitionOldContent
+      snapshot_id = pseudo_id == kPseudoIdPageTransitionOutgoingImage
                         ? element_data->old_snapshot_id
                         : element_data->new_snapshot_id;
     }
@@ -222,7 +222,7 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
     PseudoId pseudo_id,
     const AtomicString& document_transition_tag) {
   DCHECK(IsTransitionPseudoElement(pseudo_id));
-  DCHECK(pseudo_id == kPseudoIdTransition || document_transition_tag);
+  DCHECK(pseudo_id == kPseudoIdPageTransition || document_transition_tag);
 
   const auto& element_data =
       (document_transition_tag && document_transition_tag != RootTag())
@@ -230,13 +230,14 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
           : nullptr;
 
   switch (pseudo_id) {
-    case kPseudoIdTransition:
+    case kPseudoIdPageTransition:
+    case kPseudoIdPageTransitionContainer:
       return MakeGarbageCollected<DocumentTransitionPseudoElementBase>(
           parent, pseudo_id, document_transition_tag);
-    case kPseudoIdTransitionContainer:
-      return MakeGarbageCollected<ContainerPseudoElement>(
+    case kPseudoIdPageTransitionImageWrapper:
+      return MakeGarbageCollected<ImageWrapperPseudoElement>(
           parent, pseudo_id, document_transition_tag, this);
-    case kPseudoIdTransitionOldContent: {
+    case kPseudoIdPageTransitionOutgoingImage: {
       LayoutSize size;
       viz::SharedElementResourceId snapshot_id;
       if (document_transition_tag == RootTag()) {
@@ -259,7 +260,7 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
       pseudo_element->SetIntrinsicSize(size);
       return pseudo_element;
     }
-    case kPseudoIdTransitionNewContent: {
+    case kPseudoIdPageTransitionIncomingImage: {
       LayoutSize size;
       viz::SharedElementResourceId snapshot_id;
       if (document_transition_tag == RootTag()) {
@@ -331,8 +332,8 @@ void DocumentTransitionStyleTracker::RunPostLayoutSteps() {
     element_data->border_box_size = border_box_size;
 
     PseudoId live_content_element = HasLiveNewContent()
-                                        ? kPseudoIdTransitionNewContent
-                                        : kPseudoIdTransitionOldContent;
+                                        ? kPseudoIdPageTransitionIncomingImage
+                                        : kPseudoIdPageTransitionOutgoingImage;
     if (auto* pseudo_element =
             document_->documentElement()->GetNestedPseudoElement(
                 live_content_element, entry.key)) {
@@ -477,13 +478,14 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
     auto document_transition_tag = entry.key.GetString().Utf8();
     auto& element_data = entry.value;
 
-    // ::transition-container styles using computed properties for each element.
+    // ::page-transition-container styles using computed properties for each
+    // element.
     builder.AppendFormat(
         R"CSS(
-        html::transition-container(%s) {
+        html::page-transition-container(%s) {
           width: %dpx;
           height: %dpx;
-          transform:%s;
+          transform: %s;
         }
         )CSS",
         document_transition_tag.c_str(),
@@ -501,11 +503,11 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
         element_data->new_snapshot_id.IsValid()) {
       builder.AppendFormat(
           R"CSS(
-          @keyframes transition-container-anim-%s {
+          @keyframes page-transition-container-anim-%s {
             from {
-             transform:%s;
-             width:%dpx;
-             height:%dpx;
+             transform: %s;
+             width: %dpx;
+             height: %dpx;
             }
            }
            )CSS",
@@ -522,8 +524,8 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
       // to be the duration from TransitionConfig. See crbug.com/1275727.
       builder.AppendFormat(
           R"CSS(
-          html::transition-container(%s) {
-            animation: transition-container-anim-%s 0.25s
+          html::page-transition-container(%s) {
+            animation: page-transition-container-anim-%s 0.25s
           }
           )CSS",
           document_transition_tag.c_str(), document_transition_tag.c_str());

@@ -233,10 +233,11 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
   reasons |= BackfaceInvisibility3DAncestorReason(*layer);
 
   switch (style.StyleType()) {
-    case kPseudoIdTransition:
-    case kPseudoIdTransitionContainer:
-    case kPseudoIdTransitionOldContent:
-    case kPseudoIdTransitionNewContent:
+    case kPseudoIdPageTransition:
+    case kPseudoIdPageTransitionContainer:
+    case kPseudoIdPageTransitionImageWrapper:
+    case kPseudoIdPageTransitionIncomingImage:
+    case kPseudoIdPageTransitionOutgoingImage:
       reasons |= CompositingReason::kDocumentTransitionPseudoElement;
       break;
     default:

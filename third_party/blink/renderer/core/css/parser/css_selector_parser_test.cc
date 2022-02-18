@@ -228,25 +228,28 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
   };
 
   TestCase test_cases[] = {
-      {"html::transition-container(*)", true, nullptr,
-       CSSSelector::kPseudoTransitionContainer},
-      {"html::transition-container(foo)", true, "foo",
-       CSSSelector::kPseudoTransitionContainer},
-      {"html::transition-old-content(foo)", true, "foo",
-       CSSSelector::kPseudoTransitionOldContent},
-      {"html::transition-new-content(foo)", true, "foo",
-       CSSSelector::kPseudoTransitionNewContent},
-      {"::transition-container(foo)", true, "foo",
-       CSSSelector::kPseudoTransitionContainer},
-      {"div::transition-container(*)", true, nullptr,
-       CSSSelector::kPseudoTransitionContainer},
-      {"::transition-container(*)::before", false, nullptr,
+      {"html::page-transition-container(*)", true, nullptr,
+       CSSSelector::kPseudoPageTransitionContainer},
+      {"html::page-transition-container(foo)", true, "foo",
+       CSSSelector::kPseudoPageTransitionContainer},
+      {"html::page-transition-image-wrapper(foo)", true, "foo",
+       CSSSelector::kPseudoPageTransitionImageWrapper},
+      {"html::page-transition-outgoing-image(foo)", true, "foo",
+       CSSSelector::kPseudoPageTransitionOutgoingImage},
+      {"html::page-transition-incoming-image(foo)", true, "foo",
+       CSSSelector::kPseudoPageTransitionIncomingImage},
+      {"::page-transition-container(foo)", true, "foo",
+       CSSSelector::kPseudoPageTransitionContainer},
+      {"div::page-transition-container(*)", true, nullptr,
+       CSSSelector::kPseudoPageTransitionContainer},
+      {"::page-transition-container(*)::before", false, nullptr,
        CSSSelector::kPseudoUnknown},
-      {"::transition-container(*):hover", false, nullptr,
+      {"::page-transition-container(*):hover", false, nullptr,
        CSSSelector::kPseudoUnknown},
   };
 
   for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.selector);
     CSSTokenizer tokenizer(test_case.selector);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
@@ -259,7 +262,7 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
     if (!test_case.valid)
       continue;
 
-    EXPECT_TRUE(list.HasOneSelector());
+    ASSERT_TRUE(list.HasOneSelector());
 
     auto* selector = list.First();
     while (selector->TagHistory())

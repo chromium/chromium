@@ -17,7 +17,7 @@ class CORE_EXPORT DocumentTransitionUtils {
   template <typename Functor>
   static void ForEachTransitionPseudo(Document& document, Functor& func) {
     auto* transition_pseudo =
-        document.documentElement()->GetPseudoElement(kPseudoIdTransition);
+        document.documentElement()->GetPseudoElement(kPseudoIdPageTransition);
     if (!transition_pseudo)
       return;
 
@@ -26,19 +26,28 @@ class CORE_EXPORT DocumentTransitionUtils {
     for (const auto& document_transition_tag :
          document.GetStyleEngine().DocumentTransitionTags()) {
       auto* container_pseudo = transition_pseudo->GetPseudoElement(
-          kPseudoIdTransitionContainer, document_transition_tag);
+          kPseudoIdPageTransitionContainer, document_transition_tag);
       if (!container_pseudo)
         continue;
 
       func(container_pseudo);
 
-      if (auto* content = container_pseudo->GetPseudoElement(
-              kPseudoIdTransitionOldContent, document_transition_tag))
-        func(content);
+      auto* wrapper_pseudo = container_pseudo->GetPseudoElement(
+          kPseudoIdPageTransitionImageWrapper, document_transition_tag);
+      if (!wrapper_pseudo)
+        continue;
 
-      if (auto* content = container_pseudo->GetPseudoElement(
-              kPseudoIdTransitionNewContent, document_transition_tag))
+      func(wrapper_pseudo);
+
+      if (auto* content = wrapper_pseudo->GetPseudoElement(
+              kPseudoIdPageTransitionOutgoingImage, document_transition_tag)) {
         func(content);
+      }
+
+      if (auto* content = wrapper_pseudo->GetPseudoElement(
+              kPseudoIdPageTransitionIncomingImage, document_transition_tag)) {
+        func(content);
+      }
     }
   }
 };

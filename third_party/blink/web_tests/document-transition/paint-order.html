@@ -9,11 +9,12 @@ div {
   background-color: blue;
   contain: paint;
 }
-html::transition-container(shared-0) { isolation: isolate; }
-html::transition-old-content(shared-0) {
+html::page-transition-container(shared-0) { isolation: isolate; }
+html::page-transition-outgoing-image(shared-0) {
   opacity: 1;
+  mix-blend-mode: normal;
 }
-html::transition-new-content(shared-0) {
+html::page-transition-incoming-image(shared-0) {
   opacity: 1;
   mix-blend-mode: multiply;
 }
