@@ -25,6 +25,8 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 // <if expr="chromeos_ash or chromeos_lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
@@ -192,7 +194,16 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         computed:
             'computeIsSaveButtonDisabled_(websiteUrls_, websiteInputInvalid_, ' +
             'usernameInputInvalid_, password_)'
-      }
+      },
+      /**
+       * Whether the flag notes feature for passwords is enabled.
+       */
+      isPasswordNotesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordNotes');
+        }
+      },
     };
   }
 
@@ -216,6 +227,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   private usernameInputInvalid_: boolean;
   private password_: string;
   private isSaveButtonDisabled_: boolean;
+  private isPasswordNotesEnabled_: boolean;
 
   connectedCallback() {
     super.connectedCallback();
@@ -622,6 +634,11 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       usernamesByOrigin.get(origin).add(entry.username);
       return usernamesByOrigin;
     }, new Map());
+  }
+
+  private onNoteChanged_(): void {
+    // TODO(crbug.com/1297513): Implement the logic and resize the textfield
+    // with the input.
   }
 }
 
