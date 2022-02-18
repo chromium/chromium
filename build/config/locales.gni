@@ -43,90 +43,96 @@ ios_unsupported_locales = [
 # being unused.
 not_needed([ "ios_unsupported_locales" ])
 
-# Superset of all locales used in Chrome with platform specific changes noted.
-all_chrome_locales = [
-  "af",
-  "am",
-  "ar",
-  "as",
-  "az",
-  "be",
-  "bg",
-  "bn",
-  "bs",
-  "ca",
-  "cs",
-  "da",
-  "de",
-  "el",
-  "en-GB",
-  "en-US",
-  "es",
-  "es-419",  # "es-MX" in iOS (Mexico vs Latin America) "es-US" on Android
-  "et",
-  "eu",
-  "fa",
-  "fi",
-  "fil",  # "tl" in .xml but "fil" in TC and .pak
-  "fr",
-  "fr-CA",
-  "gl",
-  "gu",
-  "he",  # "iw" in .xml and TC but "he" in .pak
-  "hi",
-  "hr",
-  "hu",
-  "hy",
-  "id",  # "in" in .xml but "id" in TC and .pak
-  "is",
-  "it",
-  "ja",
-  "ka",
-  "kk",
-  "km",
-  "kn",
-  "ko",
-  "ky",
-  "lo",
-  "lt",
-  "lv",
-  "mk",
-  "ml",
-  "mn",
-  "mr",
-  "ms",
-  "my",
-  "nb",  # "no" in TC but "nb" in .xml and .pak
-  "ne",
-  "nl",
-  "or",
-  "pa",
-  "pl",
-  "pt-BR",  # just "pt" in iOS
-  "pt-PT",
-  "ro",
-  "ru",
-  "si",
-  "sk",
-  "sl",
-  "sq",
-  "sr",
-  "sr-Latn",  # -b+sr+Latn in .xml
-  "sv",
-  "sw",
-  "ta",
-  "te",
-  "th",
-  "tr",
-  "uk",
-  "ur",
-  "uz",
-  "vi",
-  "zh-CN",
-  "zh-HK",
-  "zh-TW",
-  "zu",
+pseudolocales = [
+  "ar-XB",
+  "en-XA",
 ]
+
+# Superset of all locales used in Chrome with platform specific changes noted.
+all_chrome_locales =
+    [
+      "af",
+      "am",
+      "ar",
+      "as",
+      "az",
+      "be",
+      "bg",
+      "bn",
+      "bs",
+      "ca",
+      "cs",
+      "da",
+      "de",
+      "el",
+      "en-GB",
+      "en-US",
+      "es",
+      "es-419",  # "es-MX" in iOS (Mexico vs Latin America) "es-US" on Android
+      "et",
+      "eu",
+      "fa",
+      "fi",
+      "fil",  # "tl" in .xml but "fil" in TC and .pak
+      "fr",
+      "fr-CA",
+      "gl",
+      "gu",
+      "he",  # "iw" in .xml and TC but "he" in .pak
+      "hi",
+      "hr",
+      "hu",
+      "hy",
+      "id",  # "in" in .xml but "id" in TC and .pak
+      "is",
+      "it",
+      "ja",
+      "ka",
+      "kk",
+      "km",
+      "kn",
+      "ko",
+      "ky",
+      "lo",
+      "lt",
+      "lv",
+      "mk",
+      "ml",
+      "mn",
+      "mr",
+      "ms",
+      "my",
+      "nb",  # "no" in TC but "nb" in .xml and .pak
+      "ne",
+      "nl",
+      "or",
+      "pa",
+      "pl",
+      "pt-BR",  # just "pt" in iOS
+      "pt-PT",
+      "ro",
+      "ru",
+      "si",
+      "sk",
+      "sl",
+      "sq",
+      "sr",
+      "sr-Latn",  # -b+sr+Latn in .xml
+      "sv",
+      "sw",
+      "ta",
+      "te",
+      "th",
+      "tr",
+      "uk",
+      "ur",
+      "uz",
+      "vi",
+      "zh-CN",
+      "zh-HK",
+      "zh-TW",
+      "zu",
+    ] + pseudolocales
 
 # New locales added to Chrome Android bundle builds.
 android_bundle_only_locales = [
@@ -219,21 +225,17 @@ if (is_ios) {
   ]
 }
 
-pseudolocales = [
-  "ar-XB",
-  "en-XA",
-]
-locales_without_pseudolocales = platform_pak_locales
-locales_with_pseudolocales = platform_pak_locales + pseudolocales
+locales_without_pseudolocales = platform_pak_locales - pseudolocales
+locales_with_pseudolocales = platform_pak_locales
 
 declare_args() {
   # We want to give pseudolocales to everyone except end-users (devs & QA).
+  # Note that this only packages the locales in, and doesn't add the ui to enable them.
   enable_pseudolocales = !is_official_build
 }
 
-if (enable_pseudolocales) {
-  # Note that this only packages the locales in, and doesn't add the ui to enable them.
-  platform_pak_locales += pseudolocales
+if (!enable_pseudolocales) {
+  platform_pak_locales -= pseudolocales
 }
 
 # Same as the locales list but in the format Mac expects for output files:

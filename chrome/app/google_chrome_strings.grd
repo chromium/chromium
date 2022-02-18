@@ -184,6 +184,9 @@ chromium_strings.grd. -->
       <output filename="java/res/values-zh-rHK/google_chrome_strings.xml" lang="zh-HK" type="android" context="android_java" />
       <output filename="java/res/values-zh-rTW/google_chrome_strings.xml" lang="zh-TW" type="android" context="android_java" />
       <output filename="java/res/values-zu/google_chrome_strings.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/google_chrome_strings.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/google_chrome_strings.xml" lang="en-XA" type="android" context="android_java" />
     </if>
 
     <!-- Pseudolocales -->

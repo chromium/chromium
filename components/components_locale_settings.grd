@@ -191,8 +191,10 @@
       <output filename="java/res/values-zh-rHK/components_locale_settings.xml" lang="zh-HK" type="android" context="android_java" />
       <output filename="java/res/values-zh-rTW/components_locale_settings.xml" lang="zh-TW" type="android" context="android_java" />
       <output filename="java/res/values-zu/components_locale_settings.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/components_locale_settings.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/components_locale_settings.xml" lang="en-XA" type="android" context="android_java" />
     </if>
-
 
     <!-- Pseudolocales -->
     <output filename="components_locale_settings_ar-XB.pak" type="data_package" lang="ar-XB" />

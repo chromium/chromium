@@ -188,6 +188,9 @@ are declared in tools/grit/grit_rule.gni.
       <output filename="java/res/values-zh-rHK/generated_resources.xml" lang="zh-HK" type="android" context="android_java" />
       <output filename="java/res/values-zh-rTW/generated_resources.xml" lang="zh-TW" type="android" context="android_java" />
       <output filename="java/res/values-zu/generated_resources.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/generated_resources.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/generated_resources.xml" lang="en-XA" type="android" context="android_java" />
     </if>
 
     <!-- Pseudolocales -->

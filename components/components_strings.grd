@@ -193,8 +193,10 @@
       <output filename="java/res/values-zh-rHK/components_strings.xml" lang="zh-HK" type="android" context="android_java" />
       <output filename="java/res/values-zh-rTW/components_strings.xml" lang="zh-TW" type="android" context="android_java" />
       <output filename="java/res/values-zu/components_strings.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/components_strings.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/components_strings.xml" lang="en-XA" type="android" context="android_java" />
     </if>
-
 
     <!-- Pseudolocales -->
     <output filename="components_strings_ar-XB.pak" type="data_package" lang="ar-XB" />

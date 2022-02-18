@@ -182,6 +182,9 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <output filename="java/res/values-zh-rHK/chromium_strings.xml" lang="zh-HK" type="android" context="android_java" />
       <output filename="java/res/values-zh-rTW/chromium_strings.xml" lang="zh-TW" type="android" context="android_java" />
       <output filename="java/res/values-zu/chromium_strings.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/chromium_strings.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/chromium_strings.xml" lang="en-XA" type="android" context="android_java" />
     </if>
 
     <!-- Pseudolocales -->

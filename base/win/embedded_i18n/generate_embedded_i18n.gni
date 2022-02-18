@@ -59,7 +59,7 @@ default_embedded_i18_locales = all_chrome_locales - [
                                [
                                  "iw",
                                  "no",
-                               ]
+                               ] - pseudolocales
 
 template("generate_embedded_i18n") {
   assert(defined(invoker.grd_files_info),
