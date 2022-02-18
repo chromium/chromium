@@ -1,0 +1,16 @@
+{
+  "name": "Platform App Test: <webview> permissions",
+  "manifest_version": 3,
+  "description": "Loads a guest which requests permissions",
+  "version": "1",
+  "permissions": [
+    "webview"
+  ],
+  "app": {
+    "background": {
+      "scripts": [
+        "test.js"
+      ]
+    }
+  }
+}

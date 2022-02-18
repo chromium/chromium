@@ -548,14 +548,9 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
 
   void SetUpOnMainThread() override {
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
-    const testing::TestInfo* const test_info =
-        testing::UnitTest::GetInstance()->current_test_info();
-    // Mock out geolocation for geolocation specific tests.
-    if (!strncmp(test_info->name(), "GeolocationAPI",
-            strlen("GeolocationAPI"))) {
-      geolocation_overrider_ =
-          std::make_unique<device::ScopedGeolocationOverrider>(10, 20);
-    }
+
+    geolocation_overrider_ =
+        std::make_unique<device::ScopedGeolocationOverrider>(10, 20);
 
     host_resolver()->AddRule("*", "127.0.0.1");
     identifiability_metrics_test_helper_.SetUpOnMainThread();
@@ -2932,10 +2927,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, GeolocationAPIEmbedderHasNoAccessDeny) {
 // In following GeolocationAPIEmbedderHasAccess* tests, embedder (i.e. the
 // platform app) has geolocation permission
 //
-// Note that these test names must be "GeolocationAPI" prefixed (b/c we mock out
-// geolocation in this case).
-//
-// Also note that these are run separately because OverrideGeolocation() doesn't
+// Note that these are run separately because OverrideGeolocation() doesn't
 // mock out geolocation for multiple navigator.geolocation calls properly and
 // the tests become flaky.
 //
@@ -2958,7 +2950,115 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, GeolocationAPIEmbedderHasAccessDeny) {
 IN_PROC_BROWSER_TEST_F(WebViewTest,
                        GeolocationAPIEmbedderHasAccessMultipleBridgeIdAllow) {
   TestHelper("testMultipleBridgeIdAllow",
-             "web_view/geolocation/embedder_has_permission",
+             "web_view/geolocation/embedder_has_permission", NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasAccessAllowGeolocation) {
+  TestHelper("testAllowGeolocation",
+             "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasAccessDenyGeolocation) {
+  TestHelper("testDenyGeolocation",
+             "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasAccessAllowCamera) {
+  TestHelper("testAllowCamera",
+             "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, PermissionsAPIEmbedderHasAccessDenyCamera) {
+  TestHelper("testDenyCamera",
+             "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasAccessAllowMicrophone) {
+  TestHelper("testAllowMicrophone",
+             "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasAccessDenyMicrophone) {
+  TestHelper("testDenyMicrophone",
+             "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, PermissionsAPIEmbedderHasAccessAllowMedia) {
+  TestHelper("testAllowMedia",
+             "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, PermissionsAPIEmbedderHasAccessDenyMedia) {
+  TestHelper("testDenyMedia",
+             "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasNoAccessAllowGeolocation) {
+  TestHelper("testAllowGeolocation",
+             "web_view/permissions_test/embedder_has_no_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasNoAccessDenyGeolocation) {
+  TestHelper("testDenyGeolocation",
+             "web_view/permissions_test/embedder_has_no_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasNoAccessAllowCamera) {
+  TestHelper("testAllowCamera",
+             "web_view/permissions_test/embedder_has_no_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasNoAccessDenyCamera) {
+  TestHelper("testDenyCamera",
+             "web_view/permissions_test/embedder_has_no_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasNoAccessAllowMicrophone) {
+  TestHelper("testAllowMicrophone",
+             "web_view/permissions_test/embedder_has_no_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasNoAccessDenyMicrophone) {
+  TestHelper("testDenyMicrophone",
+             "web_view/permissions_test/embedder_has_no_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasNoAccessAllowMedia) {
+  TestHelper("testAllowMedia",
+             "web_view/permissions_test/embedder_has_no_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       PermissionsAPIEmbedderHasNoAccessDenyMedia) {
+  TestHelper("testDenyMedia",
+             "web_view/permissions_test/embedder_has_no_permission",
              NEEDS_TEST_SERVER);
 }
 
