@@ -218,12 +218,8 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
   LayoutReplaced::StyleDidChange(diff, old_style);
   const ComputedStyle& new_style = StyleRef();
 
-  bool was_inert = old_style && old_style->IsInert();
-  bool is_inert = new_style.IsInert();
-  if (was_inert != is_inert) {
-    if (Frame* frame = GetFrameOwnerElement()->ContentFrame())
-      frame->SetIsInert(is_inert);
-  }
+  if (Frame* frame = GetFrameOwnerElement()->ContentFrame())
+    frame->UpdateInertIfPossible();
 
   if (EmbeddedContentView* embedded_content_view = GetEmbeddedContentView()) {
     if (new_style.Visibility() != EVisibility::kVisible) {

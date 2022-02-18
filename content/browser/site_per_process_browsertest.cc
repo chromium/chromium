@@ -8095,8 +8095,8 @@ IN_PROC_BROWSER_TEST_P(
 #else
 #define MAYBE_CrossProcessInertSubframe CrossProcessInertSubframe
 #endif
-// Tests that when a frame contains a modal <dialog> element, out-of-process
-// iframe children cannot take focus, because they are inert.
+// Tests that when an out-of-process iframe becomes inert due to a modal
+// <dialog> element, the contents of the iframe can still take focus.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        MAYBE_CrossProcessInertSubframe) {
   // This uses a(b,b) instead of a(b) to preserve the b.com process even when
@@ -8137,11 +8137,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   std::string focused_element;
 
-  // Attempt to change focus in the inert subframe. This should fail.
+  // Attempt to change focus in the inert subframe. This should work.
   // The setTimeout ensures that the inert bit can propagate before the
   // test JS code runs.
   EXPECT_EQ(
-      "",
+      "text2",
       EvalJs(iframe_node,
              "window.setTimeout(() => {text2.focus();"
              "domAutomationController.send(document.activeElement.id);}, 0)",
@@ -8163,15 +8163,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "document.body.innerHTML = '<input id=\"text1\"> <input id=\"text2\">';"
       "text1.focus();"));
 
-  // Verify that inertness was preserved across the navigation.
-  EXPECT_EQ("",
+  // Verify we can still set focus after the navigation.
+  EXPECT_EQ("text2",
             EvalJs(iframe_node,
                    "text2.focus();"
                    "domAutomationController.send(document.activeElement.id);",
                    EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Navigate the subframe back into its parent process to verify that the
-  // new local frame remains inert.
+  // new local frame remains non-inert.
   GURL same_site_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(iframe_node, same_site_url));
 
@@ -8181,12 +8181,101 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "document.body.innerHTML = '<input id=\"text1\"> <input id=\"text2\">';"
       "text1.focus();"));
 
-  // Verify that inertness was preserved across the navigation.
-  EXPECT_EQ("",
+  // Verify we can still set focus after the navigation.
+  EXPECT_EQ("text2",
             EvalJs(iframe_node,
                    "text2.focus();"
                    "domAutomationController.send(document.activeElement.id);",
                    EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+}
+
+// Tests that IsInert frame flag is correctly updated and propagated.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       CrossProcessIsInertPropagation) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "InertAttribute");
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* frame_a =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  ASSERT_EQ(1U, frame_a->child_count());
+  FrameTreeNode* frame_b = frame_a->child_at(0);
+  ASSERT_EQ(1U, frame_b->child_count());
+  FrameTreeNode* frame_c = frame_b->child_at(0);
+  RenderFrameProxyHost* proxy_b = frame_b->render_manager()->GetProxyToParent();
+  RenderFrameProxyHost* proxy_c = frame_c->render_manager()->GetProxyToParent();
+
+  auto waitForInertPropagated = [&]() {
+    // Force layout. This recomputes the element styles so that the <iframe>
+    // gets the updated ComputedStyle::IsInert() flag. This triggers an update
+    // of the associated RenderFrameProxyHost::IsInertForTesting().
+    for (FrameTreeNode* frame : {frame_a, frame_b, frame_c})
+      ExecuteScriptAsync(frame, "document.body.offsetLeft");
+
+    // Propagating the inert flag requires sending messages in between the
+    // browser and the renderers. Since they are using the same mojo interfaces
+    // as ExecJs, waiting for an browser<->renderer roundtrip using ExecJs
+    // should be enough to guarantee it has been propagate.
+    for (FrameTreeNode* frame : {frame_a, frame_b, frame_c})
+      EXPECT_TRUE(ExecJs(frame, "'Done'"));
+  };
+
+  waitForInertPropagated();
+  EXPECT_FALSE(proxy_b->IsInertForTesting());
+  EXPECT_FALSE(proxy_c->IsInertForTesting());
+
+  // Make b inert, this should also make c inert.
+  EXPECT_TRUE(ExecJs(frame_a, "document.body.inert = true;"));
+  waitForInertPropagated();
+  EXPECT_TRUE(proxy_b->IsInertForTesting());
+  EXPECT_TRUE(proxy_c->IsInertForTesting());
+
+  // Make b non-inert, this should also make c non-inert.
+  EXPECT_TRUE(ExecJs(frame_a, "document.body.inert = false;"));
+  waitForInertPropagated();
+  EXPECT_FALSE(proxy_b->IsInertForTesting());
+  EXPECT_FALSE(proxy_c->IsInertForTesting());
+
+  // Make c inert.
+  EXPECT_TRUE(ExecJs(frame_b, "document.body.inert = true;"));
+  waitForInertPropagated();
+  EXPECT_FALSE(proxy_b->IsInertForTesting());
+  EXPECT_TRUE(proxy_c->IsInertForTesting());
+
+  // Make b inert, c should continue being inert.
+  EXPECT_TRUE(ExecJs(frame_a, "document.body.inert = true;"));
+  waitForInertPropagated();
+  EXPECT_TRUE(proxy_b->IsInertForTesting());
+  EXPECT_TRUE(proxy_c->IsInertForTesting());
+
+  // Try to make c non-inert, it should still be inert due to b.
+  EXPECT_TRUE(ExecJs(frame_b, "document.body.inert = false;"));
+  waitForInertPropagated();
+  EXPECT_TRUE(proxy_b->IsInertForTesting());
+  EXPECT_TRUE(proxy_c->IsInertForTesting());
+
+  // Make b non-inert, this should also make c non-inert.
+  EXPECT_TRUE(ExecJs(frame_a, "document.body.inert = false;"));
+  waitForInertPropagated();
+  EXPECT_FALSE(proxy_b->IsInertForTesting());
+  EXPECT_FALSE(proxy_c->IsInertForTesting());
+
+  // Make b anc inert.
+  EXPECT_TRUE(ExecJs(frame_a, "document.body.inert = true;"));
+  EXPECT_TRUE(ExecJs(frame_b, "document.body.inert = true;"));
+  waitForInertPropagated();
+  EXPECT_TRUE(proxy_b->IsInertForTesting());
+  EXPECT_TRUE(proxy_c->IsInertForTesting());
+
+  // Make b non-inert, c should continue being inert.
+  EXPECT_TRUE(ExecJs(frame_a, "document.body.inert = false;"));
+  waitForInertPropagated();
+  EXPECT_FALSE(proxy_b->IsInertForTesting());
+  EXPECT_TRUE(proxy_c->IsInertForTesting());
 }
 
 // Check that main frames for the same site rendering in unrelated tabs start

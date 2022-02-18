@@ -2592,6 +2592,14 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
       return true;
     } else if (IsBlockedByAriaModalDialog(ignored_reasons)) {
       return true;
+    } else if (const LocalFrame* frame = GetNode()->GetDocument().GetFrame()) {
+      // Inert frames don't expose the inertness to the style of their contents,
+      // but accessibility should consider them inert anyways.
+      if (frame->IsInert()) {
+        if (ignored_reasons)
+          ignored_reasons->push_back(IgnoredReason(kAXInertSubtree));
+        return true;
+      }
     }
   } else {
     // Either GetNode() is null, or it's locked by content-visibility, or we

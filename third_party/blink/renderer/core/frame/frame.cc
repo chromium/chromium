@@ -370,7 +370,8 @@ void Frame::UpdateInertIfPossible() {
   if (auto* frame_owner_element =
           DynamicTo<HTMLFrameOwnerElement>(owner_.Get())) {
     const ComputedStyle* style = frame_owner_element->GetComputedStyle();
-    SetIsInert(style && style->IsInert());
+    const LocalFrame* parent = DynamicTo<LocalFrame>(Parent());
+    SetIsInert((style && style->IsInert()) || (parent && parent->IsInert()));
   }
 }
 

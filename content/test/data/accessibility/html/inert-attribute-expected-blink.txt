@@ -53,32 +53,32 @@ rootWebArea focusable htmlTag='#document'
 ++++++++++++++++staticText name='Normal frame'
 ++++++++++++++++++inlineTextBox name='Normal frame'
 ++++++++++++++iframe ignored invisible htmlTag='iframe' notUserSelectableStyle=true
-++++++++++++++++rootWebArea focusable invisible htmlTag='#document' notUserSelectableStyle=true
-++++++++++++++++++genericContainer ignored invisible htmlTag='html' notUserSelectableStyle=true
-++++++++++++++++++++genericContainer ignored invisible htmlTag='body' notUserSelectableStyle=true
-++++++++++++++++++++++genericContainer ignored invisible htmlTag='div' notUserSelectableStyle=true
-++++++++++++++++++++++++staticText ignored invisible name='Inert frame nested in normal frame' notUserSelectableStyle=true
+++++++++++++++++rootWebArea focusable invisible htmlTag='#document'
+++++++++++++++++++genericContainer ignored invisible htmlTag='html'
+++++++++++++++++++++genericContainer ignored invisible htmlTag='body'
+++++++++++++++++++++++genericContainer ignored invisible htmlTag='div'
+++++++++++++++++++++++++staticText ignored invisible name='Inert frame nested in normal frame'
 ++++++iframe ignored invisible htmlTag='iframe' notUserSelectableStyle=true
-++++++++rootWebArea focusable invisible htmlTag='#document' notUserSelectableStyle=true
-++++++++++genericContainer ignored invisible htmlTag='html' notUserSelectableStyle=true
-++++++++++++genericContainer ignored invisible htmlTag='body' notUserSelectableStyle=true
-++++++++++++++genericContainer ignored invisible htmlTag='div' notUserSelectableStyle=true
-++++++++++++++++staticText ignored invisible name='Inert frame' notUserSelectableStyle=true
-++++++++++++++iframe ignored invisible htmlTag='iframe' notUserSelectableStyle=true
-++++++++++++++++rootWebArea focusable invisible htmlTag='#document' notUserSelectableStyle=true
-++++++++++++++++++genericContainer ignored invisible htmlTag='html' notUserSelectableStyle=true
-++++++++++++++++++++genericContainer ignored invisible htmlTag='body' notUserSelectableStyle=true
-++++++++++++++++++++++genericContainer ignored invisible htmlTag='div' notUserSelectableStyle=true
-++++++++++++++++++++++++staticText ignored invisible name='Normal frame nested in inert frame' notUserSelectableStyle=true
+++++++++rootWebArea focusable invisible htmlTag='#document'
+++++++++++genericContainer ignored invisible htmlTag='html'
+++++++++++++genericContainer ignored invisible htmlTag='body'
+++++++++++++++genericContainer ignored invisible htmlTag='div'
+++++++++++++++++staticText ignored invisible name='Inert frame'
+++++++++++++++iframe ignored invisible htmlTag='iframe'
+++++++++++++++++rootWebArea focusable invisible htmlTag='#document'
+++++++++++++++++++genericContainer ignored invisible htmlTag='html'
+++++++++++++++++++++genericContainer ignored invisible htmlTag='body'
+++++++++++++++++++++++genericContainer ignored invisible htmlTag='div'
+++++++++++++++++++++++++staticText ignored invisible name='Normal frame nested in inert frame'
 ++++++iframe ignored invisible htmlTag='iframe' notUserSelectableStyle=true
-++++++++rootWebArea focusable invisible htmlTag='#document' notUserSelectableStyle=true
-++++++++++genericContainer ignored invisible htmlTag='html' notUserSelectableStyle=true
-++++++++++++genericContainer ignored invisible htmlTag='body' notUserSelectableStyle=true
-++++++++++++++genericContainer ignored invisible htmlTag='div' notUserSelectableStyle=true
-++++++++++++++++staticText ignored invisible name='Sandboxed inert frame' notUserSelectableStyle=true
-++++++++++++++iframe ignored invisible htmlTag='iframe' notUserSelectableStyle=true
-++++++++++++++++rootWebArea focusable invisible htmlTag='#document' notUserSelectableStyle=true
-++++++++++++++++++genericContainer ignored invisible htmlTag='html' notUserSelectableStyle=true
-++++++++++++++++++++genericContainer ignored invisible htmlTag='body' notUserSelectableStyle=true
-++++++++++++++++++++++genericContainer ignored invisible htmlTag='div' notUserSelectableStyle=true
-++++++++++++++++++++++++staticText ignored invisible name='Sandboxed frame nested in sandboxed inert frame' notUserSelectableStyle=true
+++++++++rootWebArea focusable invisible htmlTag='#document'
+++++++++++genericContainer ignored invisible htmlTag='html'
+++++++++++++genericContainer ignored invisible htmlTag='body'
+++++++++++++++genericContainer ignored invisible htmlTag='div'
+++++++++++++++++staticText ignored invisible name='Sandboxed inert frame'
+++++++++++++++iframe ignored invisible htmlTag='iframe'
+++++++++++++++++rootWebArea focusable invisible htmlTag='#document'
+++++++++++++++++++genericContainer ignored invisible htmlTag='html'
+++++++++++++++++++++genericContainer ignored invisible htmlTag='body'
+++++++++++++++++++++++genericContainer ignored invisible htmlTag='div'
+++++++++++++++++++++++++staticText ignored invisible name='Sandboxed frame nested in sandboxed inert frame'

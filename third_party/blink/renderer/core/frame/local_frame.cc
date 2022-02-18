@@ -916,18 +916,19 @@ void LocalFrame::SetIsInert(bool inert) {
   if (is_inert_ == inert)
     return;
   is_inert_ = inert;
-  if (Document* document = GetDocument()) {
-    if (Element* root = document->documentElement()) {
-      root->SetNeedsStyleRecalc(
-          kLocalStyleChange,
-          StyleChangeReasonForTracing::Create(style_change_reason::kFrame));
-    }
-    // Nodes all over the accessibility tree can change inertness which means
-    // they must be added or removed from the tree. The most foolproof way is to
-    // clear the entire tree and rebuild it, though a more clever way is
-    // probably possible.
-    document->ClearAXObjectCache();
+
+  // Propagate inert to child frames
+  for (Frame* child = Tree().FirstChild(); child;
+       child = child->Tree().NextSibling()) {
+    child->UpdateInertIfPossible();
   }
+
+  // Nodes all over the accessibility tree can change inertness which means they
+  // must be added or removed from the tree. The most foolproof way is to clear
+  // the entire tree and rebuild it, though a more clever way is probably
+  // possible.
+  if (Document* document = GetDocument())
+    document->ClearAXObjectCache();
 }
 
 void LocalFrame::SetInheritedEffectiveTouchAction(TouchAction touch_action) {
