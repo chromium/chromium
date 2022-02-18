@@ -329,8 +329,7 @@ def version():
   ]
   LOGGER.debug('Checking XCode version with command: %s' % cmd)
 
-  output = subprocess.check_output(
-      cmd, stderr=subprocess.STDOUT).decode('utf-8')
+  output = subprocess.check_output(cmd).decode('utf-8')
   output = output.splitlines()
   # output sample:
   # Xcode 12.0
