@@ -13,7 +13,8 @@
 
 namespace base {
 
-// Native unwinder implementation for Mac, using libunwind.
+// Native unwinder implementation for Mac, using libunwind. Only used by
+// macOS < 10.14; newer versions use NativeUnwinderApple.
 class NativeUnwinderMac : public Unwinder {
  public:
   NativeUnwinderMac(ModuleCache* module_cache);
