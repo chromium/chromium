@@ -4,6 +4,7 @@
 import 'chrome://resources/cr_elements/cr_page_host_style_css.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './icons.js';
 import '../lazy_load.js';
 import '../settings.js';
@@ -25,6 +26,7 @@ export enum PrivacySandboxSettingsView {
   MAIN = 'main',
   LEARN_MORE_DIALOG = 'learnMoreDialog',
   AD_PERSONALIZATION_DIALOG = 'adPersonalizationDialog',
+  AD_PERSONALIZATION_REMOVED_DIALOG = 'adPersonalizationRemovedDialog',
   AD_MEASUREMENT_DIALOG = 'adMeasurementDialog',
   SPAM_AND_FRAUD_DIALOG = 'spamAndFraudDialog',
 }
@@ -49,9 +51,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
         value: () => loadTimeData.getBoolean('privacySandboxSettings3Enabled'),
       },
 
-      /**
-       * Valid privacy sandbox settings view states.
-       */
+      /** Valid privacy sandbox settings view states. */
       privacySandboxSettingsViewEnum_: {
         type: Object,
         value: PrivacySandboxSettingsView,
@@ -154,6 +154,11 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private onAdPersonalizationRowClick_() {
     this.privacySandboxSettingsView_ =
         PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG;
+  }
+
+  private onAdPersonalizationRemovedRowClick_() {
+    this.privacySandboxSettingsView_ =
+        PrivacySandboxSettingsView.AD_PERSONALIZATION_REMOVED_DIALOG;
   }
 
   private onAdMeasurementRowClick_() {

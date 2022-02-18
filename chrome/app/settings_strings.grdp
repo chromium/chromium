@@ -1433,10 +1433,10 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TITLE" translateable="false" desc="Title of the dialog to learn more about ad personalization.">
     About Browser-based ad personalization
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_BROWSER_INTERESTS" translateable="false" desc="Title of the browser-based interests section of the dialog to learn more about ad personalization.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TOPICS_TITLE" translateable="false" desc="Title of the browser-based interests section of the dialog to learn more about ad personalization.">
     Your interests as estimated by your browser
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_WEBSITE_INTERESTS" translateable="false" desc="Title of the website-based interests section of the dialog to learn more about ad personalization.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_FLEDGE_TITLE" translateable="false" desc="Title of the website-based interests section of the dialog to learn more about ad personalization.">
     Your interests as defined by sites you visit
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_TYPES" translateable="false" desc="Title of the data types subsection of the dialog to learn more about ad personalization.">
@@ -1451,20 +1451,32 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TITLE" translateable="false" desc="Title of the 'ad personalization' dialog.">
     Browser-based ad personalization
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_DESCRIPTION" translateable="false" desc="Description of the 'ad personalization' dialog.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_DESCRIPTION" translateable="false" desc="Description of the main page of the 'ad personalization' dialog.">
     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_BROWSER_INTERESTS" translateable="false" desc="Title of the browser-based interests section of the 'ad personalization' dialog.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_DESCRIPTION" translateable="false" desc="Description of the removed interests page of the 'ad personalization' dialog.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TOPICS_TITLE" translateable="false" desc="Title of the browser-based interests section of the 'ad personalization' dialog.">
     Your interests as estimated by your browser
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_BROWSER_INTERESTS_EMPTY" translateable="false" desc="Description of the empty state of the browser-based interests section of the 'ad personalization' dialog.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TOPICS_EMPTY" translateable="false" desc="Description of the empty state of the browser-based interests section of the 'ad personalization' dialog.">
     A list of interests will appear here as you browse the web
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_WEBSITE_INTERESTS" translateable="false" desc="Title of the website-based interests section of the 'ad personalization' dialog.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_TOPICS_EMPTY" translateable="false" desc="Description of the empty state of the removed browser-based interests section of the 'ad personalization' dialog.">
+    You haven’t removed any interests
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_INTERESTS_LABEL" translateable="false" desc="Label of the row to go to the removed browser-based interests section of the 'ad personalization' dialog.">
+    Interests you removed
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_TITLE" translateable="false" desc="Title of the website-based interests section of the 'ad personalization' dialog.">
     Sites you visit that define your interests
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_WEBSITE_INTERESTS_EMPTY" translateable="false" desc="Description of the empty state of the website-based interests section of the 'ad personalization' dialog.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_EMPTY" translateable="false" desc="Description of the empty state of the website-based interests section of the 'ad personalization' dialog.">
     A list of sites you've visited will appear here as you browse the web
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_FLEDGE_EMPTY" translateable="false" desc="Description of the empty state of the removed website-based interests section of the 'ad personalization' dialog.">
+    You haven’t removed any sites
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_TITLE" translateable="false" desc="Title of the 'ad measurement' dialog.">
     Ad measurement

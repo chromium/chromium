@@ -1,4 +1,4 @@
-<style include="cr-shared-style settings-shared cr-page-host-style">
+<style include="cr-shared-style settings-shared cr-page-host-style iron-flex">
   .banner {
     display: block;
     margin: var(--cr-section-vertical-margin) auto;
@@ -106,13 +106,38 @@
     color: var(--cr-primary-text-color);
   }
 
+  .ad-personalization-title {
+    align-items: center;
+    column-gap: 20px;
+    display: flex;
+    justify-content: space-between;
+    min-height: 36px;
+    padding-bottom: 8px;
+  }
+
   .ad-personalization-section-title {
     font-weight: 500;
     padding: 8px 0;
   }
 
   .ad-personalization-section {
-    padding: 0 0 16px 16px;
+    padding: 0 0 8px 16px;
+  }
+
+  #trialsCardSettings3 > *:not(:last-child) {
+    border-bottom: var(--cr-separator-line);
+  }
+
+  #adPersonalizationBackButton {
+    --cr-icon-button-icon-size: 24px;
+    margin-inline-start: 0;
+  }
+
+  #adPersonalizationRemovedRow {
+    border-top: var(--cr-separator-line);
+    color: var(--cr-primary-text-color);
+    margin-top: 8px;
+    padding-inline-start: 0;
   }
 </style>
 
@@ -167,7 +192,7 @@
           <div slot="title">$i18n{privacySandboxLearnMoreDialogTitle}</div>
           <div slot="body">
             <div class="learn-more-section-title">
-              $i18n{privacySandboxLearnMoreDialogBrowserInterests}
+              $i18n{privacySandboxLearnMoreDialogTopicsTitle}
             </div>
             <div class="cr-secondary-text">
               <ul>
@@ -195,7 +220,7 @@
               </ul>
             </div>
             <div class="learn-more-section-title">
-              $i18n{privacySandboxLearnMoreDialogWebsiteInterests}
+              $i18n{privacySandboxLearnMoreDialogFledgeTitle}
             </div>
             <div class="cr-secondary-text">
               <ul>
@@ -228,7 +253,7 @@
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.AD_PERSONALIZATION_DIALOG,
                     privacySandboxSettingsView_)]]">
-          <div slot="title">
+          <div class="ad-personalization-title" slot="title">
             $i18n{privacySandboxAdPersonalizationDialogTitle}
           </div>
           <div slot="body">
@@ -236,16 +261,51 @@
               $i18n{privacySandboxAdPersonalizationDialogDescription}
             </div>
             <div class="ad-personalization-section-title">
-              $i18n{privacySandboxAdPersonalizationDialogBrowserInterests}
+              $i18n{privacySandboxAdPersonalizationDialogTopicsTitle}
             </div>
             <div class="ad-personalization-section">
-              $i18n{privacySandboxAdPersonalizationDialogBrowserInterestsEmpty}
+              $i18n{privacySandboxAdPersonalizationDialogTopicsEmpty}
+              <cr-link-row id="adPersonalizationRemovedRow"
+                  label="$i18n{privacySandboxAdPersonalizationDialogRemovedInterestsLabel}"
+                  on-click="onAdPersonalizationRemovedRowClick_">
+              </cr-link-row>
             </div>
             <div class="ad-personalization-section-title">
-              $i18n{privacySandboxAdPersonalizationDialogWebsiteInterests}
+              $i18n{privacySandboxAdPersonalizationDialogFledgeTitle}
             </div>
             <div class="ad-personalization-section">
-              $i18n{privacySandboxAdPersonalizationDialogWebsiteInterestsEmpty}
+              $i18n{privacySandboxAdPersonalizationDialogFledgeEmpty}
+            </div>
+          </div>
+        </template>
+        <template id="adPersonalizationRemovedDialog" is="dom-if"
+            if="[[showFragment_(
+                    privacySandboxSettingsViewEnum_.AD_PERSONALIZATION_REMOVED_DIALOG,
+                    privacySandboxSettingsView_)]]">
+          <div class="ad-personalization-title" slot="title">
+            <cr-icon-button id="adPersonalizationBackButton"
+                class="icon-arrow-back"
+                on-click="onAdPersonalizationRowClick_">
+            </cr-icon-button>
+            <span class="flex">
+              $i18n{privacySandboxAdPersonalizationDialogTitle}
+            </span>
+          </div>
+          <div slot="body">
+            <div class="dialog-description">
+              $i18n{privacySandboxAdPersonalizationDialogRemovedDescription}
+            </div>
+            <div class="ad-personalization-section-title">
+              $i18n{privacySandboxAdPersonalizationDialogTopicsTitle}
+            </div>
+            <div class="ad-personalization-section">
+              $i18n{privacySandboxAdPersonalizationDialogRemovedTopicsEmpty}
+            </div>
+            <div class="ad-personalization-section-title">
+              $i18n{privacySandboxAdPersonalizationDialogFledgeTitle}
+            </div>
+            <div class="ad-personalization-section">
+              $i18n{privacySandboxAdPersonalizationDialogRemovedFledgeEmpty}
             </div>
           </div>
         </template>

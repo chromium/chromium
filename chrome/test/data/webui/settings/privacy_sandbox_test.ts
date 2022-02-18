@@ -13,7 +13,7 @@ import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, Me
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -289,6 +289,33 @@ suite('PrivacySandboxSettings3', function() {
             .querySelector<DomIf>(
                 '#' +
                 PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG)!.if !);
+    const removedRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#adPersonalizationRemovedRow')!;
+    assertTrue(isVisible(removedRow));
+    const backButton = page.shadowRoot!.querySelector<HTMLElement>(
+        '#adPersonalizationBackButton')!;
+    assertFalse(isVisible(backButton));
+  }
+
+  function assertAdPersonalizationRemovedDialogVisible() {
+    assertEquals(
+        page.privacySandboxSettingsView_,
+        PrivacySandboxSettingsView.AD_PERSONALIZATION_REMOVED_DIALOG);
+    const dialogWrapper =
+        page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
+    assertTrue(!!dialogWrapper);
+    assertTrue(dialogWrapper.open);
+    assertTrue(page.shadowRoot!
+                   .querySelector<DomIf>(
+                       '#' +
+                       PrivacySandboxSettingsView
+                           .AD_PERSONALIZATION_REMOVED_DIALOG)!.if !);
+    const removedRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#adPersonalizationRemovedRow')!;
+    assertFalse(isVisible(removedRow));
+    const backButton = page.shadowRoot!.querySelector<HTMLElement>(
+        '#adPersonalizationBackButton')!;
+    assertTrue(isVisible(backButton));
   }
 
   function assertAdMeasurementDialogVisible() {
@@ -373,6 +400,35 @@ suite('PrivacySandboxSettings3', function() {
     // Clicking on the ad personalization row should open the dialog.
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#adPersonalizationRow')!.click();
+    await flushTasks();
+    assertAdPersonalizationDialogVisible();
+
+    // Clicking on the close button of the dialog should close it.
+    page.shadowRoot!.querySelector<HTMLElement>('#dialogCloseButton')!.click();
+    await flushTasks();
+    assertMainViewVisible();
+  });
+
+  test('testAdPersonalizationDialogRemovedPage', async function() {
+    assertMainViewVisible();
+
+    // Clicking on the ad personalization row should open the dialog.
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#adPersonalizationRow')!.click();
+    await flushTasks();
+    assertAdPersonalizationDialogVisible();
+
+    // Clicking on the link row for removed interests should take you to the
+    // removed interests page.
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#adPersonalizationRemovedRow')!.click();
+    await flushTasks();
+    assertAdPersonalizationRemovedDialogVisible();
+
+    // Clicking on the back button should take you back to the main ad
+    // personalization dialog.
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#adPersonalizationBackButton')!.click();
     await flushTasks();
     assertAdPersonalizationDialogVisible();
 
