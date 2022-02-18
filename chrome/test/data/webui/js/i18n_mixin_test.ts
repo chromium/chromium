@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 const TestElementBase = I18nMixin(PolymerElement);
 class TestElement extends TestElementBase {}
@@ -14,10 +16,10 @@ suite('I18nMixinTest', function() {
   const text = 'I\'m just text, nobody should have a problem with me!';
   const nonBreakingSpace = 'A\u00a0B\u00a0C';  // \u00a0 is a unicode nbsp.
 
-  let testElement;
+  let testElement: TestElement;
 
   suiteSetup(function() {
-    window.loadTimeData.data = {
+    loadTimeData.data = {
       'allowedByDefault': allowedByDefault,
       'customAttr': '<a is="action-link">Take action!</a>',
       'optionalTag': '<img>',
@@ -31,7 +33,7 @@ suite('I18nMixinTest', function() {
 
   setup(function() {
     document.body.innerHTML = '';
-    testElement = document.createElement('test-element');
+    testElement = document.createElement('test-element') as TestElement;
     document.body.appendChild(testElement);
   });
 

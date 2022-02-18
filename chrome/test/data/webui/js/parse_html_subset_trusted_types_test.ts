@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
-import {assertNotReached} from '../chai_assert.js';
+import {assertNotReached} from 'chrome://webui-test/chai_assert.js';
 
 suite('ParseHtmlSubsetTrustedTypesTest', function() {
   test('parseHtmlSubset won\'t cause Trusted Types violation', () => {

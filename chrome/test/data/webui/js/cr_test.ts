@@ -2,35 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, addWebUIListener, removeWebUIListener, sendWithPromise, webUIListenerCallback, webUIResponse} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter, addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener, webUIListenerCallback, webUIResponse} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-/** @type {string} Name of the chrome.send() message to be used in tests. */
-const CHROME_SEND_NAME = 'echoMessage';
+/** Name of the chrome.send() message to be used in tests. */
+const CHROME_SEND_NAME: string = 'echoMessage';
 
 suite('CrModuleSendWithPromiseTest', function() {
   const originalChromeSend = chrome.send;
   let rejectPromises = false;
 
-  function whenChromeSendCalled(name) {
+  function whenChromeSendCalled(_name: string): Promise<any[]> {
     assertEquals(originalChromeSend, chrome.send);
-    return new Promise(function(resolve, reject) {
-      chrome.send = (_, args) => resolve(args);
+    return new Promise(function(resolve) {
+      chrome.send = (_msg: string, args?: Array<any>) => {
+        resolve(args!);
+      };
     });
   }
 
-  /** @override */
   setup(function() {
     // Simulate a WebUI handler that echoes back all parameters passed to it.
     // Rejects the promise depending on |rejectPromises|.
-    whenChromeSendCalled(CHROME_SEND_NAME).then(function(args) {
+    whenChromeSendCalled(CHROME_SEND_NAME).then(function(args: any[]) {
       const callbackId = args[0];
-      webUIResponse.apply(
-          null, [callbackId, !rejectPromises].concat(args.slice(1)));
+      const response = args[1];
+      webUIResponse(callbackId, !rejectPromises, response);
     });
   });
 
-  /** @override */
   teardown(function() {
     rejectPromises = false;
 
@@ -87,22 +88,26 @@ suite('CrModuleSendWithPromiseTest', function() {
 
 suite('CrModuleAddSingletonGetterTest', function() {
   test('addSingletonGetter', function() {
-    function Foo() {}
+    class Foo {}
     addSingletonGetter(Foo);
 
-    assertEquals(
-        'function', typeof Foo.getInstance, 'Should add get instance function');
+    type FooWithGetInstance =
+        typeof Foo&{getInstance: () => Foo, instance_?: Foo | null};
 
-    const x = Foo.getInstance();
+    assertEquals(
+        'function', typeof (Foo as FooWithGetInstance).getInstance,
+        'Should add get instance function');
+
+    const x = (Foo as FooWithGetInstance).getInstance();
     assertEquals('object', typeof x, 'Should successfully create an object');
     assertNotEquals(null, x, 'Created object should not be null');
 
-    const y = Foo.getInstance();
+    const y = (Foo as FooWithGetInstance).getInstance();
     assertEquals(x, y, 'Should return the same object');
 
-    delete Foo.instance_;
+    delete (Foo as FooWithGetInstance).instance_;
 
-    const z = Foo.getInstance();
+    const z = (Foo as FooWithGetInstance).getInstance();
     assertEquals('object', typeof z, 'Should work after clearing for testing');
     assertNotEquals(null, z, 'Created object should not be null');
 
@@ -112,11 +117,10 @@ suite('CrModuleAddSingletonGetterTest', function() {
 });
 
 suite('CrModuleWebUIListenersTest', function() {
-  let listener1 = null;
-  let listener2 = null;
+  let listener1: WebUIListener|null = null;
+  let listener2: WebUIListener|null = null;
 
-  /** @const {string} */
-  const EVENT_NAME = 'my-foo-event';
+  const EVENT_NAME: string = 'my-foo-event';
 
   teardown(function() {
     if (listener1) {
@@ -143,14 +147,15 @@ suite('CrModuleWebUIListenersTest', function() {
     const expectedArray = [1, 2];
     const expectedObject = {};
 
-    return new Promise(function(resolve, reject) {
-      listener1 = addWebUIListener(EVENT_NAME, function(s, n, a, o) {
-        assertEquals(expectedString, s);
-        assertEquals(expectedNumber, n);
-        assertEquals(expectedArray, a);
-        assertEquals(expectedObject, o);
-        resolve();
-      });
+    return new Promise<void>(function(resolve) {
+      listener1 = addWebUIListener(
+          EVENT_NAME, function(s: string, n: number, a: number[], o: object) {
+            assertEquals(expectedString, s);
+            assertEquals(expectedNumber, n);
+            assertEquals(expectedArray, a);
+            assertEquals(expectedObject, o);
+            resolve();
+          });
       webUIListenerCallback(
           EVENT_NAME, expectedString, expectedNumber, expectedArray,
           expectedObject);
@@ -158,7 +163,7 @@ suite('CrModuleWebUIListenersTest', function() {
   });
 
   test('addWebUIListener_NoResponseParams', function() {
-    return new Promise(function(resolve, reject) {
+    return new Promise<void>(function(resolve) {
       listener1 = addWebUIListener(EVENT_NAME, function() {
         assertEquals(0, arguments.length);
         resolve();

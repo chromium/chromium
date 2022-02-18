@@ -4,12 +4,13 @@
 
 import {isChromeOS, isLacros, isLinux, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {getFavicon, getFaviconForPageURL, getFileIconUrl} from 'chrome://resources/js/icon.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('IconModuleTest', function() {
   test('GetFaviconForPageURL', function() {
     const url = 'http://foo.com';
 
-    function getExpectedImageSet(size) {
+    function getExpectedImageSet(size: number): string {
       const expectedDesktop = '-webkit-image-set(' +
           `url("chrome://favicon2/?size=${size}&scale_factor=1x&page_url=` +
           encodeURIComponent(url) + '&allow_google_server_fallback=0") 1x, ' +
@@ -24,7 +25,7 @@ suite('IconModuleTest', function() {
       return isDesktop ? expectedDesktop : expectedOther;
     }
 
-    assertEquals(getExpectedImageSet(16), getFaviconForPageURL(url));
+    assertEquals(getExpectedImageSet(16), getFaviconForPageURL(url, false));
     assertEquals(
         getExpectedImageSet(24), getFaviconForPageURL(url, false, '', 24));
   });

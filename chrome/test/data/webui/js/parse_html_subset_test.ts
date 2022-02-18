@@ -3,12 +3,19 @@
 // found in the LICENSE file.
 
 import {parseHtmlSubset, sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
+import {assertEquals, assertFalse, assertThrows} from 'chrome://webui-test/chai_assert.js';
+
+declare global {
+  interface Window {
+    called: boolean;
+  }
+}
 
 suite('ParseHtmlSubsetModuleTest', function() {
-  function parseAndAssertThrows() {
-    const args = arguments;
+  function parseAndAssertThrows(
+      s: string, extraTags?: Array<string>, extraAttrs?: Array<string>) {
     assertThrows(function() {
-      parseHtmlSubset.apply(null, args);
+      parseHtmlSubset(s, extraTags, extraAttrs);
     });
   }
 
@@ -69,7 +76,7 @@ suite('ParseHtmlSubsetModuleTest', function() {
   test('anchor target', function() {
     const df = parseHtmlSubset(
         '<a href="https://google.com" target="_blank">Google</a>');
-    assertEquals('_blank', df.firstChild.target);
+    assertEquals('_blank', (df.firstChild as HTMLAnchorElement).target);
   });
 
   test('invalid target', function() {
@@ -91,11 +98,15 @@ suite('ParseHtmlSubsetModuleTest', function() {
   });
 
   test('supported optional attributes', function() {
-    let result = parseHtmlSubset('<a role="link">link</a>', null, ['role']);
-    assertEquals('link', result.firstChild.getAttribute('role'));
+    let result =
+        parseHtmlSubset('<a role="link">link</a>', undefined, ['role']);
+    assertEquals(
+        'link', (result.firstChild as HTMLAnchorElement).getAttribute('role'));
     result =
         parseHtmlSubset('<img src="chrome://favicon2/">', ['img'], ['src']);
-    assertEquals('chrome://favicon2/', result.firstChild.getAttribute('src'));
+    assertEquals(
+        'chrome://favicon2/',
+        (result.firstChild as HTMLAnchorElement).getAttribute('src'));
   });
 
   test('supported optional attributes without the argument', function() {
@@ -104,12 +115,13 @@ suite('ParseHtmlSubsetModuleTest', function() {
   });
 
   test('invalid optional attributes', function() {
-    parseAndAssertThrows('<a test="fancy">I\'m fancy!</a>', null, ['test']);
+    parseAndAssertThrows(
+        '<a test="fancy">I\'m fancy!</a>', undefined, ['test']);
     parseAndAssertThrows('<a name="fancy">I\'m fancy!</a>');
   });
 
   test('invalid optional attribute\'s value', function() {
-    parseAndAssertThrows('<a is="xss-link">link</a>', null, ['is']);
+    parseAndAssertThrows('<a is="xss-link">link</a>', undefined, ['is']);
   });
 
   test('sanitizeInnerHtml', function() {

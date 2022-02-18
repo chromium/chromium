@@ -4,7 +4,7 @@
 
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 
-import {assertDeepEquals, assertEquals} from '../chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('ColorUtilsModuleTest', () => {
   test('Can convert simple SkColors to rgba strings', () => {

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$, findAncestor, quoteString} from 'chrome://resources/js/util.m.js';
+import {findAncestor, quoteString} from 'chrome://resources/js/util.m.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('UtilModuleTest', function() {
   test('quote string', function() {
@@ -16,6 +17,7 @@ suite('UtilModuleTest', function() {
     // Using the output as a regex.
     let re = new RegExp(quoteString('"hello"'), 'gim');
     let match = re.exec('She said "Hello" loudly');
+    assertTrue(!!match);
     assertEquals(9, match.index);
 
     re = new RegExp(quoteString('Hello, .*'), 'gim');

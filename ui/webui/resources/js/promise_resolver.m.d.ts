@@ -7,16 +7,9 @@
 // "var PromiseResolver = class {...}".
 
 export class PromiseResolver<T> {
-  private isFulfilled_;
-  private promise_;
-  resolve_: (resolution?: T|undefined) => void;
-  reject_: (reason?: any|undefined) => void;
-  set isFulfilled(arg: boolean);
-  get isFulfilled(): boolean;
-  set promise(arg: Promise<T>);
-  get promise(): Promise<T>;
-  set resolve(arg: (arg0?: T|undefined) => void);
-  get resolve(): (arg0?: T|undefined) => void;
-  set reject(arg: () => void);
-  get reject(): () => void;
+  readonly isFulfilled: boolean;
+  readonly promise: Promise<T>;
+
+  resolve(arg: T): void;
+  reject(error?: any): void;
 }

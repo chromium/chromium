@@ -198,7 +198,6 @@ suite(extension_error_page_tests.suiteName, function() {
     assertEquals('source.html', args.pathSuffix);
     assertTrue(ironCollapses[0]!.opened);
     assertFalse(ironCollapses[1]!.opened);
-    mockDelegate.requestFileSourceResolver.resolve(undefined);
 
     mockDelegate.requestFileSourceResolver = new PromiseResolver();
     mockDelegate.requestFileSourceArgs = undefined;

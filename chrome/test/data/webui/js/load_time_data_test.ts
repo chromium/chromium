@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('LoadTimeDataModuleTest', function() {
-  const loadTimeData = window.loadTimeData;
-
-  /** @override */
   setup(function() {
     loadTimeData.resetForTesting();
   });
 
   test('getStringPieces', function() {
-    const assertSubstitutedPieces = function(expected, ...var_args) {
+    function assertSubstitutedPieces(
+        expected: {value: string, arg: (null|string)}[], label: string,
+        ...var_args: (string|number)[]) {
       const pieces =
-          loadTimeData.getSubstitutedStringPieces.apply(loadTimeData, var_args);
+          loadTimeData.getSubstitutedStringPieces(label, ...var_args);
       assertDeepEquals(expected, pieces);
 
       // Ensure output matches getStringF.
       assertEquals(
-          loadTimeData.substituteString.apply(loadTimeData, var_args),
+          loadTimeData.substituteString(label, ...var_args),
           pieces.map(p => p.value).join(''));
-    };
+    }
 
     assertSubstitutedPieces([{value: 'paper', arg: null}], 'paper');
     assertSubstitutedPieces([{value: 'paper', arg: '$1'}], '$1', 'paper');
@@ -76,8 +76,8 @@ suite('LoadTimeDataModuleTest', function() {
   test('unescapedDollarSign', function() {
     const error = 'Unexpected condition on ' + window.location.href +
         ': Unescaped $ found in localized string.';
-    /** @param {string} label */
-    const assertSubstitutionThrows = function(label) {
+
+    function assertSubstitutionThrows(label: string) {
       assertThrows(() => {
         loadTimeData.getSubstitutedStringPieces(label);
       }, error);
@@ -85,7 +85,7 @@ suite('LoadTimeDataModuleTest', function() {
       assertThrows(() => {
         loadTimeData.substituteString(label);
       }, error);
-    };
+    }
 
     assertSubstitutionThrows('$');
     assertSubstitutionThrows('$1$$$a2');
