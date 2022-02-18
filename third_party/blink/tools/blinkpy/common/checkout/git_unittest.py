@@ -24,7 +24,11 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         # Set up fresh git repository with one commit.
         self.untracking_checkout_path = self._mkdtemp(
             suffix='-git_unittest_untracking')
-        self._run(['git', 'init', self.untracking_checkout_path])
+        try:
+            self._run(['git', 'init', self.untracking_checkout_path])
+        except ScriptError:
+            # Skip the test if git is not installed on the system
+            raise self.skipTest("git init failed. Skipping the test")
 
         self._chdir(self.untracking_checkout_path)
         # Explicitly create the default branch instead of relying on
