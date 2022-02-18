@@ -209,7 +209,8 @@ TEST_F(SyncExplicitPassphraseClientAshTest,
                                    std::move(mojo_nigori_key));
 }
 
-TEST_F(SyncExplicitPassphraseClientAshTest, ShouldNotifyObserver) {
+TEST_F(SyncExplicitPassphraseClientAshTest,
+       ShouldNotifyObserverAboutPassphraseRequired) {
   TestSyncExplicitPassphraseClientObserver observer;
   observer.Observe(client());
 
@@ -223,14 +224,25 @@ TEST_F(SyncExplicitPassphraseClientAshTest, ShouldNotifyObserver) {
   client()->FlushMojoForTesting();
   EXPECT_THAT(observer.GetNumOnPassphraseAvailableCalls(), Eq(0));
   EXPECT_THAT(observer.GetNumOnPassphraseRequiredCalls(), Eq(1));
+}
+
+TEST_F(SyncExplicitPassphraseClientAshTest,
+       ShouldNotifyObserverAboutPassphraseAvailable) {
+  TestSyncExplicitPassphraseClientObserver observer;
+  observer.Observe(client());
+
+  ASSERT_THAT(observer.GetNumOnPassphraseAvailableCalls(), Eq(0));
+  ASSERT_THAT(observer.GetNumOnPassphraseRequiredCalls(), Eq(0));
 
   // Mimic passphrase being entered by the user.
+  ON_CALL(*sync_user_settings(), IsUsingExplicitPassphrase())
+      .WillByDefault(Return(true));
   ON_CALL(*sync_user_settings(), IsPassphraseRequired())
       .WillByDefault(Return(false));
   client()->OnStateChanged(sync_service());
   client()->FlushMojoForTesting();
   EXPECT_THAT(observer.GetNumOnPassphraseAvailableCalls(), Eq(1));
-  EXPECT_THAT(observer.GetNumOnPassphraseRequiredCalls(), Eq(1));
+  EXPECT_THAT(observer.GetNumOnPassphraseRequiredCalls(), Eq(0));
 }
 
 TEST_F(SyncExplicitPassphraseClientAshTest,
@@ -252,10 +264,10 @@ TEST_F(SyncExplicitPassphraseClientAshTest,
 TEST_F(SyncExplicitPassphraseClientAshTest,
        ShouldNotifyNewObserverAboutPassphraseAvailable) {
   // Mimic passphrase being entered by the user.
+  ON_CALL(*sync_user_settings(), IsUsingExplicitPassphrase())
+      .WillByDefault(Return(true));
   ON_CALL(*sync_user_settings(), IsPassphraseRequired())
       .WillByDefault(Return(false));
-  ON_CALL(*sync_user_settings(), GetDecryptionNigoriKey())
-      .WillByDefault(MakeTestNigoriKey);
   client()->OnStateChanged(sync_service());
   client()->FlushMojoForTesting();
 

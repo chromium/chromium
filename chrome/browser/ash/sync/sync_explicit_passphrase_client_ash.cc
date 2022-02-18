@@ -43,6 +43,11 @@ std::unique_ptr<syncer::Nigori> NigoriFromMojo(
       /*user_key=*/std::string(), encryption_key, mac_key);
 }
 
+bool IsPassphraseAvailable(const syncer::SyncService& sync_service) {
+  return sync_service.GetUserSettings()->IsUsingExplicitPassphrase() &&
+         !sync_service.GetUserSettings()->IsPassphraseRequired();
+}
+
 }  // namespace
 
 crosapi::mojom::NigoriKeyPtr NigoriToMojoForTesting(  // IN-TEST
@@ -53,8 +58,9 @@ crosapi::mojom::NigoriKeyPtr NigoriToMojoForTesting(  // IN-TEST
 SyncExplicitPassphraseClientAsh::SyncExplicitPassphraseClientAsh(
     syncer::SyncService* sync_service)
     : sync_service_(sync_service),
-      previous_passphrase_required_state_(
-          sync_service_->GetUserSettings()->IsPassphraseRequired()) {
+      is_passphrase_required_(
+          sync_service_->GetUserSettings()->IsPassphraseRequired()),
+      is_passphrase_available_(IsPassphraseAvailable(*sync_service_)) {
   sync_service_->AddObserver(this);
 }
 
@@ -73,9 +79,12 @@ void SyncExplicitPassphraseClientAsh::AddObserver(
         observer) {
   auto observer_id = observers_.Add(std::move(observer));
   // Immediately notify observer if passphrase is required or available.
-  if (previous_passphrase_required_state_) {
+  // |is_passphrase_required_| and |is_passphrase_available_| are mutually
+  // exclusive.
+  DCHECK(!is_passphrase_required_ || !is_passphrase_available_);
+  if (is_passphrase_required_) {
     observers_.Get(observer_id)->OnPassphraseRequired();
-  } else if (sync_service_->GetUserSettings()->GetDecryptionNigoriKey()) {
+  } else if (is_passphrase_available_) {
     observers_.Get(observer_id)->OnPassphraseAvailable();
   }
 }
@@ -117,27 +126,22 @@ void SyncExplicitPassphraseClientAsh::SetDecryptionNigoriKey(
 
 void SyncExplicitPassphraseClientAsh::OnStateChanged(
     syncer::SyncService* sync_service) {
-  bool new_passphrase_required_state =
+  bool new_is_passphrase_required =
       sync_service->GetUserSettings()->IsPassphraseRequired();
-  if (new_passphrase_required_state == previous_passphrase_required_state_) {
-    // State change is not relevant for this class.
-    return;
-  }
-
-  if (new_passphrase_required_state) {
+  if (new_is_passphrase_required && !is_passphrase_required_) {
     for (auto& observer : observers_) {
       observer->OnPassphraseRequired();
     }
-  } else {
-    // Passphrase required state was resolved, that means that new passphrase is
-    // likely available (modulo some corner cases, like sync reset, but this
-    // should be safe to issue redundant OnPassphraseAvailable() call).
+  }
+  is_passphrase_required_ = new_is_passphrase_required;
+
+  bool new_is_passphrase_available = IsPassphraseAvailable(*sync_service);
+  if (new_is_passphrase_available && !is_passphrase_available_) {
     for (auto& observer : observers_) {
       observer->OnPassphraseAvailable();
     }
   }
-
-  previous_passphrase_required_state_ = new_passphrase_required_state;
+  is_passphrase_available_ = new_is_passphrase_available;
 }
 
 void SyncExplicitPassphraseClientAsh::FlushMojoForTesting() {
