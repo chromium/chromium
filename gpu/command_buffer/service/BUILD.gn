@@ -366,7 +366,8 @@ target(link_target_type, "gles2_sources") {
       "shared_image_backing_factory_angle_vulkan.h",
     ]
 
-    if (is_linux || is_chromeos || is_fuchsia || is_android || is_win) {
+    if (is_linux || is_chromeos || is_fuchsia || is_android || is_win ||
+        is_apple) {
       sources += [
         "external_semaphore.cc",
         "external_semaphore.h",

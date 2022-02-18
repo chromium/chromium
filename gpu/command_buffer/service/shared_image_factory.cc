@@ -137,7 +137,8 @@ SharedImageFactory::SharedImageFactory(
 #if BUILDFLAG(IS_MAC)
   // OSX
   DCHECK(gr_context_type_ == GrContextType::kGL ||
-         gr_context_type_ == GrContextType::kMetal);
+         gr_context_type_ == GrContextType::kMetal ||
+         gr_context_type_ == GrContextType::kVulkan);
 #endif
 
   auto shared_memory_backing_factory =

@@ -35,6 +35,9 @@ component("init") {
   if (is_win) {
     deps += [ "//gpu/vulkan/win32" ]
   }
+  if (is_apple) {
+    deps += [ "//gpu/vulkan/mac" ]
+  }
 }
 
 component("skia") {

@@ -154,6 +154,10 @@ if (enable_vulkan) {
         data_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan_layers:VkLayer_khronos_validation" ]
       }
     }
+
+    if (is_apple) {
+      sources += [ "vulkan_image_mac.cc" ]
+    }
   }
 
   static_library("test_support") {

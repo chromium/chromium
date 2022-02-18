@@ -198,13 +198,16 @@ GrContextType ParseGrContextType() {
   if (base::FeatureList::IsEnabled(features::kSkiaDawn))
     return GrContextType::kDawn;
 #endif
+
 #if BUILDFLAG(IS_MAC)
-  return base::FeatureList::IsEnabled(features::kMetal) ? GrContextType::kMetal
-                                                        : GrContextType::kGL;
-#else
-  return features::IsUsingVulkan() ? GrContextType::kVulkan
-                                   : GrContextType::kGL;
+  if (base::FeatureList::IsEnabled(features::kMetal))
+    return GrContextType::kMetal;
 #endif
+
+  if (features::IsUsingVulkan())
+    return GrContextType::kVulkan;
+
+  return GrContextType::kGL;
 }
 
 VulkanImplementationName ParseVulkanImplementationName(

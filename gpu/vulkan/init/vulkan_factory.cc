@@ -20,6 +20,10 @@
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
+#if BUILDFLAG(IS_APPLE)
+#include "gpu/vulkan/mac/vulkan_implementation_mac.h"
+#endif
+
 namespace gpu {
 
 std::unique_ptr<VulkanImplementation> CreateVulkanImplementation(
@@ -47,6 +51,8 @@ std::unique_ptr<VulkanImplementation> CreateVulkanImplementation(
   return std::make_unique<VulkanImplementationAndroid>();
 #elif BUILDFLAG(IS_WIN)
   return std::make_unique<VulkanImplementationWin32>(use_swiftshader);
+#elif BUILDFLAG(IS_APPLE)
+  return std::make_unique<VulkanImplementationMac>(use_swiftshader);
 #else
   NOTREACHED();
   return {};
