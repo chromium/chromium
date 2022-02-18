@@ -435,8 +435,10 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
       GetUpdateResponse(
           kUpdaterAppId, test_server->base_url().spec(),
           base::Version(kUpdaterVersion), crx_path, kSelfUpdateCRXRun,
-          base::StrCat({"--update",
-                        scope == UpdaterScope::kSystem ? " --system" : ""})));
+          base::StrCat(
+              {"--update", scope == UpdaterScope::kSystem ? " --system" : "",
+               " --", kEnableLoggingSwitch, " --", kLoggingModuleSwitch, "=",
+               kLoggingModuleSwitchValue})));
 
   // Second request: update download.
   std::string crx_bytes;
