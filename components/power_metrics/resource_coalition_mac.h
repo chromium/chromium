@@ -30,7 +30,8 @@ struct EnergyImpactCoefficients;
 absl::optional<uint64_t> GetProcessCoalitionId(base::ProcessId pid);
 
 // Returns resource usage data for the coalition identified by |coalition_id|,
-// or nullptr if not available.
+// or nullptr if not available (e.g. if `coalition_id` is invalid or if the
+// kernel can't allocate memory).
 std::unique_ptr<coalition_resource_usage> GetCoalitionResourceUsage(
     int64_t coalition_id);
 

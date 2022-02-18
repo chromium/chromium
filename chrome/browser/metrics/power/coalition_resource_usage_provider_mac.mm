@@ -114,28 +114,28 @@ void CoalitionResourceUsageProvider::EndIntervals(
   std::unique_ptr<coalition_resource_usage> sample =
       GetCoalitionResourceUsage(coalition_id_.value());
 
-  // `coalition_id_` being non-nullptr (see above) indicates that
-  // GetCoalitionResourceUsage() succeeded from Init(). It should succeed again
-  // unless this is a test.
-  DCHECK(sample || ignore_not_alone_for_testing_);
+  // `sample`, `short_interval_begin_sample_` or `long_interval_begin_sample_`
+  // can be nullptr if the kernel couldn't allocate memory.
 
   if (sample) {
     DCHECK(!short_interval_begin_time_.is_null());
-    DCHECK(short_interval_begin_sample_);
     DCHECK(!long_interval_begin_time_.is_null());
-    DCHECK(long_interval_begin_sample_);
 
-    *short_interval_resource_usage_rate =
-        power_metrics::GetCoalitionResourceUsageRate(
-            *short_interval_begin_sample_, *sample,
-            now - short_interval_begin_time_, timebase_,
-            energy_impact_coefficients_);
+    if (short_interval_begin_sample_) {
+      *short_interval_resource_usage_rate =
+          power_metrics::GetCoalitionResourceUsageRate(
+              *short_interval_begin_sample_, *sample,
+              now - short_interval_begin_time_, timebase_,
+              energy_impact_coefficients_);
+    }
 
-    *long_interval_resource_usage_rate =
-        power_metrics::GetCoalitionResourceUsageRate(
-            *long_interval_begin_sample_, *sample,
-            now - long_interval_begin_time_, timebase_,
-            energy_impact_coefficients_);
+    if (long_interval_begin_sample_) {
+      *long_interval_resource_usage_rate =
+          power_metrics::GetCoalitionResourceUsageRate(
+              *long_interval_begin_sample_, *sample,
+              now - long_interval_begin_time_, timebase_,
+              energy_impact_coefficients_);
+    }
   }
 
   short_interval_begin_sample_.reset();
