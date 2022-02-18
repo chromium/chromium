@@ -197,7 +197,10 @@ void ModelExecutionManagerImpl::ExecuteModel(
     std::stringstream log_input;
     for (unsigned i = 0; i < state->input_tensor.size(); ++i)
       log_input << " feature " << i << ": " << state->input_tensor[i];
-    VLOG(1) << "Segmentation model input: " << log_input.str();
+    VLOG(1) << "Segmentation model input: " << log_input.str()
+            << " for segment "
+            << optimization_guide::proto::OptimizationTarget_Name(
+                   state->segment_id);
   }
   const std::vector<float>& const_input_tensor = std::move(state->input_tensor);
   stats::RecordModelExecutionZeroValuePercent(state->segment_id,
@@ -218,7 +221,9 @@ void ModelExecutionManagerImpl::OnModelExecutionComplete(
       state->segment_id, result.has_value(),
       clock_->Now() - state->model_execution_start_time);
   if (result.has_value()) {
-    VLOG(1) << "Segmentation model result: " << *result;
+    VLOG(1) << "Segmentation model result: " << *result << " for segment "
+            << optimization_guide::proto::OptimizationTarget_Name(
+                   state->segment_id);
     stats::RecordModelExecutionResult(state->segment_id, result.value());
     if (state->model_handler->GetModelInfo()) {
       SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
@@ -228,7 +233,9 @@ void ModelExecutionManagerImpl::OnModelExecutionComplete(
     RunModelExecutionCallback(std::move(state), *result,
                               ModelExecutionStatus::kSuccess);
   } else {
-    VLOG(1) << "Segmentation model returned no result.";
+    VLOG(1) << "Segmentation model returned no result for segment "
+            << optimization_guide::proto::OptimizationTarget_Name(
+                   state->segment_id);
     RunModelExecutionCallback(std::move(state), 0,
                               ModelExecutionStatus::kExecutionError);
   }
