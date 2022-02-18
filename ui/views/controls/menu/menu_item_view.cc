@@ -1389,9 +1389,9 @@ int MenuItemView::GetLabelStartForThisItem() const {
   if ((config.icons_in_label || type_ == Type::kCheckbox ||
        type_ == Type::kRadio) &&
       icon_view_) {
-    label_start +=
-        icon_view_->size().width() + LayoutProvider::Get()->GetDistanceMetric(
-                                         DISTANCE_RELATED_LABEL_HORIZONTAL);
+    label_start += icon_view_->GetPreferredSize().width() +
+                   LayoutProvider::Get()->GetDistanceMetric(
+                       DISTANCE_RELATED_LABEL_HORIZONTAL);
   }
 
   return label_start;
