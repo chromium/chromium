@@ -31,13 +31,24 @@ struct YUVInput {
 
 }  // namespace
 
+bool IsHLGOrPQ(const gfx::ColorSpace& color_space) {
+  switch (color_space.GetTransferID()) {
+    case gfx::ColorSpace::TransferID::HLG:
+    case gfx::ColorSpace::TransferID::PQ:
+      return true;
+    default:
+      return false;
+  }
+}
+
 ColorConversionSkFilterCache::ColorConversionSkFilterCache() = default;
 ColorConversionSkFilterCache::~ColorConversionSkFilterCache() = default;
 
 bool ColorConversionSkFilterCache::Key::Key::operator==(
     const Key& other) const {
   return src == other.src && dst == other.dst &&
-         sdr_max_luminance_nits == other.sdr_max_luminance_nits;
+         sdr_max_luminance_nits == other.sdr_max_luminance_nits &&
+         dst_max_luminance_relative == other.dst_max_luminance_relative;
 }
 
 bool ColorConversionSkFilterCache::Key::operator!=(const Key& other) const {
@@ -45,14 +56,20 @@ bool ColorConversionSkFilterCache::Key::operator!=(const Key& other) const {
 }
 
 bool ColorConversionSkFilterCache::Key::operator<(const Key& other) const {
-  return std::tie(src, dst, sdr_max_luminance_nits) <
-         std::tie(other.src, other.dst, other.sdr_max_luminance_nits);
+  return std::tie(src, dst, sdr_max_luminance_nits,
+                  dst_max_luminance_relative) <
+         std::tie(other.src, other.dst, other.sdr_max_luminance_nits,
+                  other.dst_max_luminance_relative);
 }
 
 ColorConversionSkFilterCache::Key::Key(const gfx::ColorSpace& src,
                                        const gfx::ColorSpace& dst,
-                                       float sdr_max_luminance_nits)
-    : src(src), dst(dst), sdr_max_luminance_nits(sdr_max_luminance_nits) {}
+                                       float sdr_max_luminance_nits,
+                                       float dst_max_luminance_relative)
+    : src(src),
+      dst(dst),
+      sdr_max_luminance_nits(sdr_max_luminance_nits),
+      dst_max_luminance_relative(dst_max_luminance_relative) {}
 
 sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     const gfx::ColorSpace& src,
@@ -61,7 +78,21 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     float resource_multiplier,
     float sdr_max_luminance_nits,
     float dst_max_luminance_relative) {
-  const Key key(src, dst, sdr_max_luminance_nits);
+  // Set unused parameters to bogus values, so that they do not result in
+  // different keys for the same conversion.
+  if (!IsHLGOrPQ(src)) {
+    // If the source is not HLG or PQ, then `dst_max_luminance_relative` will
+    // not be used, so set it to a nonsense value.
+    dst_max_luminance_relative = 0;
+
+    // If neither source nor destination are HLG or PQ, then
+    // `sdr_max_luminance_nits` will not be used, so set it to a nonsense value.
+    if (!IsHLGOrPQ(dst)) {
+      sdr_max_luminance_nits = 0;
+    }
+  }
+
+  const Key key(src, dst, sdr_max_luminance_nits, dst_max_luminance_relative);
   sk_sp<SkRuntimeEffect>& effect = cache_[key];
 
   if (!effect) {
@@ -140,7 +171,7 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
   SkImageInfo image_info =
       SkImageInfo::Make(image->dimensions(),
                         SkColorInfo(kRGBA_F16_SkColorType, kPremul_SkAlphaType,
-                                    image->refColorSpace()));
+                                    target_color_space));
   sk_sp<SkSurface> surface;
   if (context) {
     // TODO(https://crbug.com/1286088): Consider adding mipmap support here.

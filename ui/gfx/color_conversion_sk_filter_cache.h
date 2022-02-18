@@ -56,11 +56,13 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
   struct Key {
     Key(const gfx::ColorSpace& src,
         const gfx::ColorSpace& dst,
-        float sdr_max_luminance_nits);
+        float sdr_max_luminance_nits,
+        float dst_max_luminance_relative);
 
     gfx::ColorSpace src;
     gfx::ColorSpace dst;
     float sdr_max_luminance_nits = 0.f;
+    float dst_max_luminance_relative = 0.f;
 
     bool operator==(const Key& other) const;
     bool operator!=(const Key& other) const;

@@ -1060,6 +1060,53 @@ class ColorTransformPQToneMapToLinear : public ColorTransformStep {
   }
 };
 
+// Scale the color such that the luminance `input_max_value` maps to
+// `output_max_value`. This assumes that the third color component is
+// luminance.
+class ColorTransformToneMapInXYZ : public ColorTransformStep {
+ public:
+  ColorTransformToneMapInXYZ(float input_max_value, float output_max_value)
+      : a_(output_max_value / (input_max_value * input_max_value)),
+        b_(1.f / output_max_value) {}
+
+  // ColorTransformStep implementation:
+  void Transform(ColorTransform::TriStim* color, size_t num) const override {
+    for (size_t i = 0; i < num; i++) {
+      float L = color[i].z();
+      if (L > 0.f)
+        color[i].Scale((1.f + a_ * L) / (1.f + b_ * L));
+    }
+  }
+  void AppendShaderSource(std::stringstream* hdr,
+                          std::stringstream* src,
+                          size_t step_index) const override {
+    *hdr << "vec3 ToneMapStep" << step_index << "(vec3 color) {\n"
+         << "  vec3 result = color;\n"
+         << "  float L = color.b;\n"
+         << "  if (L > 0.0) {\n"
+         << "    result *= (1.0 + " << a_ << "*L) / \n"
+         << "              (1.0 + " << b_ << "*L);\n"
+         << "  }\n"
+         << "  return result;\n"
+         << "}\n";
+    *src << "  color.rgb = ToneMapStep" << step_index << "(color.rgb);\n";
+  }
+  void AppendSkShaderSource(std::stringstream* src) const override {
+    *src << "{\n"
+         << "  half L = color.b;\n"
+         << "  if (L > 0.0) {\n"
+         << "    color.rgb *= (1.0 + " << a_ << "*L) / \n"
+         << "                 (1.0 + " << b_ << "*L);\n"
+         << "  }\n"
+         << "}\n";
+  }
+
+ private:
+  // Constants derived from `input_max_value` and `output_max_value`.
+  const float a_;
+  const float b_;
+};
+
 void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     const ColorSpace& src,
     const ColorSpace& dst,
@@ -1140,6 +1187,31 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   }
   steps_.push_back(
       std::make_unique<ColorTransformMatrix>(GetPrimaryTransform(src)));
+
+  // Perform tone mapping while we're in XYZ space, because in this space, the
+  // third component is already luminance.
+  if (options.tone_map_pq_and_hlg_to_dst) {
+    float src_max_luminance_relative = 1.f;
+    switch (src.GetTransferID()) {
+      case ColorSpace::TransferID::HLG: {
+        // The maximum value that ColorTransformHLGToLinear can produce.
+        src_max_luminance_relative =
+            12 * (gfx::ColorSpace::kDefaultSDRWhiteLevel /
+                  options.sdr_max_luminance_nits);
+        break;
+      }
+      case ColorSpace::TransferID::PQ:
+        // The maximum value that ColorTransformPQToLinear can produce.
+        src_max_luminance_relative = 10000 / options.sdr_max_luminance_nits;
+        break;
+      default:
+        break;
+    }
+    if (src_max_luminance_relative > options.dst_max_luminance_relative) {
+      steps_.push_back(std::make_unique<ColorTransformToneMapInXYZ>(
+          src_max_luminance_relative, options.dst_max_luminance_relative));
+    }
+  }
 
   steps_.push_back(
       std::make_unique<ColorTransformMatrix>(Invert(GetPrimaryTransform(dst))));
