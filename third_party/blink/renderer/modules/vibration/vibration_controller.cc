@@ -174,6 +174,13 @@ bool VibrationController::Vibrate(const VibrationPattern& pattern) {
   CollectHistogramMetrics(DomWindow());
 
   LocalFrame* frame = DomWindow()->GetFrame();
+  if (frame->IsInFencedFrameTree()) {
+    Intervention::GenerateReport(
+        frame, "NavigatorVibrate",
+        "Blocked call to navigator.vibrate inside a fenced frame.");
+    return false;
+  }
+
   if (!frame->GetPage()->IsPageVisible())
     return false;
 
