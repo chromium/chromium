@@ -139,9 +139,8 @@ void MediaStreamDevicesController::RequestPermissions(
     }
   }
 
-  permission_manager->RequestPermissions(
-      content_settings_types, rfh, request.security_origin,
-      request.user_gesture,
+  permission_manager->RequestPermissionsFromCurrentDocument(
+      content_settings_types, rfh, request.user_gesture,
       base::BindOnce(
           &MediaStreamDevicesController::RequestAndroidPermissionsIfNeeded,
           web_contents, std::move(controller), will_prompt_for_audio,
