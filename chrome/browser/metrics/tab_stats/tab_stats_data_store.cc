@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -33,7 +34,10 @@ TabStatsDataStore::TabsStats::TabsStats()
       total_tab_count_max(0U),
       max_tab_per_window(0U),
       window_count(0U),
-      window_count_max(0U) {}
+      window_count_max(0U) {
+  tab_discard_counts.fill(0U);
+  tab_reload_counts.fill(0U);
+}
 TabStatsDataStore::TabsStats::TabsStats(const TabsStats& other) = default;
 TabStatsDataStore::TabsStats& TabStatsDataStore::TabsStats::operator=(
     const TabsStats& other) = default;
@@ -47,6 +51,20 @@ TabStatsDataStore::TabStatsDataStore(PrefService* pref_service)
       pref_service->GetInteger(::prefs::kTabStatsMaxTabsPerWindow);
   tab_stats_.window_count_max =
       pref_service->GetInteger(::prefs::kTabStatsWindowCountMax);
+
+  // Loads discard/reload counters.
+  tab_stats_.tab_discard_counts[static_cast<size_t>(
+      LifecycleUnitDiscardReason::EXTERNAL)] =
+      pref_service->GetInteger(::prefs::kTabStatsDiscardsExternal);
+  tab_stats_.tab_discard_counts[static_cast<size_t>(
+      LifecycleUnitDiscardReason::URGENT)] =
+      pref_service->GetInteger(::prefs::kTabStatsDiscardsUrgent);
+  tab_stats_.tab_reload_counts[static_cast<size_t>(
+      LifecycleUnitDiscardReason::EXTERNAL)] =
+      pref_service->GetInteger(::prefs::kTabStatsReloadsExternal);
+  tab_stats_.tab_reload_counts[static_cast<size_t>(
+      LifecycleUnitDiscardReason::URGENT)] =
+      pref_service->GetInteger(::prefs::kTabStatsReloadsUrgent);
 }
 
 TabStatsDataStore::~TabStatsDataStore() {}
@@ -177,6 +195,39 @@ void TabStatsDataStore::ResetIntervalData(
   interval_map->clear();
   for (auto& iter : existing_tabs_)
     AddTabToIntervalMap(iter.first, GetTabID(iter.first), true, interval_map);
+}
+
+void TabStatsDataStore::OnTabDiscardStateChange(
+    LifecycleUnitDiscardReason discard_reason,
+    bool is_discarded) {
+  size_t discard_reason_index = static_cast<size_t>(discard_reason);
+  size_t& count = is_discarded
+                      ? tab_stats_.tab_discard_counts[discard_reason_index]
+                      : tab_stats_.tab_reload_counts[discard_reason_index];
+  count++;
+  switch (discard_reason) {
+    case LifecycleUnitDiscardReason::EXTERNAL:
+      if (is_discarded)
+        pref_service_->SetInteger(::prefs::kTabStatsDiscardsExternal, count);
+      else
+        pref_service_->SetInteger(::prefs::kTabStatsReloadsExternal, count);
+      break;
+    case LifecycleUnitDiscardReason::URGENT:
+      if (is_discarded)
+        pref_service_->SetInteger(::prefs::kTabStatsDiscardsUrgent, count);
+      else
+        pref_service_->SetInteger(::prefs::kTabStatsReloadsUrgent, count);
+      break;
+  }
+}
+
+void TabStatsDataStore::ClearTabDiscardAndReloadCounts() {
+  tab_stats_.tab_discard_counts.fill(0U);
+  tab_stats_.tab_reload_counts.fill(0U);
+  pref_service_->SetInteger(::prefs::kTabStatsDiscardsExternal, 0);
+  pref_service_->SetInteger(::prefs::kTabStatsDiscardsUrgent, 0);
+  pref_service_->SetInteger(::prefs::kTabStatsReloadsExternal, 0);
+  pref_service_->SetInteger(::prefs::kTabStatsReloadsUrgent, 0);
 }
 
 absl::optional<TabStatsDataStore::TabID> TabStatsDataStore::GetTabIDForTesting(

@@ -111,6 +111,14 @@ class TestTabStatsTracker : public TabStatsTracker {
     return tab_stats_data_store()->tab_stats().window_count;
   }
 
+  void DiscardedStateChange(ChromeRenderViewHostTestHarness* test_harness,
+                            ::mojom::LifecycleUnitDiscardReason reason,
+                            bool is_discarded) {
+    std::unique_ptr<content::WebContents> tab =
+        test_harness->CreateTestWebContents();
+    OnDiscardedStateChange(tab.get(), reason, is_discarded);
+  }
+
   void CheckDailyEventInterval() { daily_event_for_testing()->CheckInterval(); }
 
   void TriggerDailyEvent() {
@@ -406,6 +414,91 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
       GetHistogramNameWithBatteryStateSuffix(
           UmaStatsReportingDelegate::kMaxWindowsInADayHistogramName),
       stats.window_count_max, 1);
+}
+
+TEST_F(TabStatsTrackerTest, DailyDiscards) {
+  // This test checks that the discard/reload counts are reported when the
+  // daily event triggers.
+
+  // Daily report is skipped when there is no tab. Adds tabs to avoid that.
+  tab_stats_tracker_->AddTabs(1, this, tab_strip_model_);
+
+  constexpr size_t kExpectedDiscardsExternal = 3;
+  constexpr size_t kExpectedDiscardsUrgent = 5;
+  constexpr size_t kExpectedReloadsExternal = 7;
+  constexpr size_t kExpectedReloadsUrgent = 9;
+  for (size_t i = 0; i < kExpectedDiscardsExternal; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::EXTERNAL, /*is_discarded*/ true);
+  }
+  for (size_t i = 0; i < kExpectedDiscardsUrgent; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::URGENT, /*is_discarded*/ true);
+  }
+  for (size_t i = 0; i < kExpectedReloadsExternal; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::EXTERNAL, /*is_discarded*/ false);
+  }
+  for (size_t i = 0; i < kExpectedReloadsUrgent; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::URGENT, /*is_discarded*/ false);
+  }
+
+  // Triggers the daily event.
+  tab_stats_tracker_->TriggerDailyEvent();
+
+  // Checks that the histograms have been properly updated.
+  histogram_tester_.ExpectUniqueSample(
+      UmaStatsReportingDelegate::kDailyDiscardsExternalHistogramName,
+      kExpectedDiscardsExternal, 1);
+  histogram_tester_.ExpectUniqueSample(
+      UmaStatsReportingDelegate::kDailyDiscardsUrgentHistogramName,
+      kExpectedDiscardsUrgent, 1);
+  histogram_tester_.ExpectUniqueSample(
+      UmaStatsReportingDelegate::kDailyReloadsExternalHistogramName,
+      kExpectedReloadsExternal, 1);
+  histogram_tester_.ExpectUniqueSample(
+      UmaStatsReportingDelegate::kDailyReloadsUrgentHistogramName,
+      kExpectedReloadsUrgent, 1);
+
+  // Checks that the second report also updates the histograms properly.
+  constexpr size_t kExpectedDiscardsExternal2 = 15;
+  constexpr size_t kExpectedDiscardsUrgent2 = 25;
+  constexpr size_t kExpectedReloadsExternal2 = 35;
+  constexpr size_t kExpectedReloadsUrgent2 = 45;
+  for (size_t i = 0; i < kExpectedDiscardsExternal2; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::EXTERNAL, /*is_discarded=*/true);
+  }
+  for (size_t i = 0; i < kExpectedDiscardsUrgent2; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::URGENT, /*is_discarded=*/true);
+  }
+  for (size_t i = 0; i < kExpectedReloadsExternal2; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::EXTERNAL, /*is_discarded=*/false);
+  }
+  for (size_t i = 0; i < kExpectedReloadsUrgent2; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::URGENT, /*is_discarded=*/false);
+  }
+
+  // Triggers the daily event again.
+  tab_stats_tracker_->TriggerDailyEvent();
+
+  // Checks that the histograms have been properly updated.
+  histogram_tester_.ExpectBucketCount(
+      UmaStatsReportingDelegate::kDailyDiscardsExternalHistogramName,
+      kExpectedDiscardsExternal2, 1);
+  histogram_tester_.ExpectBucketCount(
+      UmaStatsReportingDelegate::kDailyDiscardsUrgentHistogramName,
+      kExpectedDiscardsUrgent2, 1);
+  histogram_tester_.ExpectBucketCount(
+      UmaStatsReportingDelegate::kDailyReloadsExternalHistogramName,
+      kExpectedReloadsExternal2, 1);
+  histogram_tester_.ExpectBucketCount(
+      UmaStatsReportingDelegate::kDailyReloadsUrgentHistogramName,
+      kExpectedReloadsUrgent2, 1);
 }
 
 TEST_F(TabStatsTrackerTest, TabUsageGetsReported) {

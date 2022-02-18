@@ -45,6 +45,14 @@ chromium-metrics-reviews@google.com.
                blank link. e.g. tehchmeme.com will create tabs this way."/>
 </variants>
 
+<variants name="TabDiscardReason">
+  <variant name=".External"
+      summary="from outside of TabManager (e.g. by an extension)"/>
+  <variant name=".Urgent"
+      summary="urgently by TabManager when the system is in a critical
+               condition"/>
+</variants>
+
 <variants name="Tabs_SwitchLatency">
   <variant name="_Actual"
       summary="The time it takes to show a real live frame from the renderer
@@ -66,6 +74,30 @@ chromium-metrics-reviews@google.com.
   <variant name="_18000" summary="5 hours"/>
   <variant name="_43200" summary="12 hours"/>
 </variants>
+
+<histogram name="Discarding.DailyDiscards{TabDiscardReason}" units="tabs"
+    expires_after="2022-08-15">
+  <owner>vovoy@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The number of tabs discards since last emit. The emit interval is at least
+    24 hours, see metrics::DailyEvent for more details. The discards are
+    requested {TabDiscardReason}.
+  </summary>
+  <token key="TabDiscardReason" variants="TabDiscardReason"/>
+</histogram>
+
+<histogram name="Discarding.DailyReloads{TabDiscardReason}" units="tabs"
+    expires_after="2022-08-15">
+  <owner>vovoy@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The number of tabs reloads since last emit. The emit interval is at least 24
+    hours, see metrics::DailyEvent for more details. The discards corresponding
+    to the reloads are requested {TabDiscardReason}.
+  </summary>
+  <token key="TabDiscardReason" variants="TabDiscardReason"/>
+</histogram>
 
 <histogram name="Discarding.DiscardCandidatesCount" units="tabs"
     expires_after="2022-08-07">
