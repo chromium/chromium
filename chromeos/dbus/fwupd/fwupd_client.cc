@@ -26,6 +26,10 @@ FwupdClient* g_instance = nullptr;
 
 const char kCabFileExtension[] = ".cab";
 
+// "1" is the bitflag for an internal device. Defined here:
+// https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
+const uint64_t kInternalDeviceFlag = 1;
+
 base::FilePath GetFilePathFromUri(const GURL uri) {
   const std::string filepath = uri.spec();
 
@@ -163,9 +167,10 @@ class FwupdClientImpl : public FwupdClient {
       }
 
       // Values in the response can have different types. The fields we are
-      // interested in, are all either strings (s) or uint32 (u). Some fields in
-      // the response have other types, but we don't use them, so we just skip
-      // them.
+      // interested in, are all either strings (s), uint64 (t), or uint32 (u).
+      // Some fields in the response have other types, but we don't use them, so
+      // we just skip them.
+
       if (variant_reader.GetDataSignature() == "u") {
         variant_reader.PopUint32(&value_uint);
         // Value doesn't support unsigned numbers, so this has to be converted
@@ -174,6 +179,14 @@ class FwupdClientImpl : public FwupdClient {
       } else if (variant_reader.GetDataSignature() == "s") {
         variant_reader.PopString(&value_string);
         result->SetKey(key, base::Value(value_string));
+      } else if (variant_reader.GetDataSignature() == "t") {
+        if (key == "Flags") {
+          uint64_t value_uint64 = 0;
+          variant_reader.PopUint64(&value_uint64);
+          const bool is_internal =
+              (value_uint64 & kInternalDeviceFlag) == kInternalDeviceFlag;
+          result->SetKey(key, base::Value(is_internal));
+        }
       }
     }
     return result;
@@ -263,8 +276,14 @@ class FwupdClientImpl : public FwupdClient {
         return;
       }
 
-      const auto* id = dict->FindKey("DeviceId");
+      const auto* flags = dict->FindKey("Flags");
       const auto* name = dict->FindKey("Name");
+      if (flags && flags->GetBool()) {
+        VLOG(1) << "Ignoring internal device: " << name;
+        continue;
+      }
+
+      const auto* id = dict->FindKey("DeviceId");
 
       // The keys "DeviceId" and "Name" must exist in the dictionary.
       const bool success = id && name;
