@@ -22,6 +22,8 @@ class Origin;
 
 namespace content {
 
+struct AggregatableAttribution;
+
 // This class provides an interface for persisting attribution data to
 // disk, and performing queries on it. AttributionStorage should initialize
 // itself. Calls to a AttributionStorage instance that failed to initialize
@@ -156,8 +158,7 @@ class AttributionStorage {
 
   // Deletes the report with the given |report_id|. Returns
   // false if an error occurred.
-  [[nodiscard]] virtual bool DeleteReport(
-      AttributionReport::EventLevelData::Id report_id) = 0;
+  [[nodiscard]] virtual bool DeleteReport(AttributionReport::Id report_id) = 0;
 
   // Updates the number of failures associated with the given report, and sets
   // its report time to the given value. Should be called after a transient
@@ -186,6 +187,18 @@ class AttributionStorage {
       base::Time delete_begin,
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin& origin)> filter) = 0;
+
+  // Aggregate Attribution:
+  [[nodiscard]] virtual bool AddAggregatableAttributionForTesting(
+      const AggregatableAttribution& aggregatable_attribution) = 0;
+
+  // Returns all of the aggregatable reports that should be sent before
+  // `max_report_time`. This call is logically const, and does not modify the
+  // underlying storage. `limit` limits the number of reports to return; use a
+  // negative number for no limit.
+  virtual std::vector<AttributionReport>
+  GetAggregatableContributionReportsForTesting(base::Time max_report_time,
+                                               int limit = -1) = 0;
 };
 
 }  // namespace content

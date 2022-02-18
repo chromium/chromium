@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 
@@ -38,6 +39,8 @@ class CONTENT_EXPORT HistogramContribution {
 // Struct which represents all attributes of an aggregatable attribution.
 struct CONTENT_EXPORT AggregatableAttribution {
  public:
+  using Id = base::StrongAlias<AggregatableAttribution, int64_t>;
+
   AggregatableAttribution(StoredSource::Id source_id,
                           base::Time trigger_time,
                           base::Time report_time,

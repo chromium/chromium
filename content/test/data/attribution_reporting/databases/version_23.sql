@@ -10,11 +10,15 @@ CREATE TABLE rate_limits(rate_limit_id INTEGER PRIMARY KEY NOT NULL,scope INTEGE
 
 CREATE TABLE dedup_keys(impression_id INTEGER NOT NULL,dedup_key INTEGER NOT NULL,PRIMARY KEY(impression_id,dedup_key))WITHOUT ROWID;
 
+CREATE TABLE aggregatable_report_metadata(aggregation_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source_id INTEGER NOT NULL,trigger_time INTEGER NOT NULL);
+
+CREATE TABLE aggregatable_contributions(contribution_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,aggregation_id INTEGER NOT NULL,report_time INTEGER NOT NULL,failed_send_attempts INTEGER NOT NULL,bucket TEXT NOT NULL,value INTEGER NOT NULL,external_report_id TEXT NOT NULL);
+
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','21');
-INSERT INTO meta VALUES('last_compatible_version','21');
+INSERT INTO meta VALUES('version','23');
+INSERT INTO meta VALUES('last_compatible_version','23');
 
 CREATE INDEX conversion_destination_idx ON impressions(active,conversion_destination,reporting_origin);
 
@@ -28,7 +32,7 @@ CREATE INDEX conversion_report_idx ON conversions(report_time);
 
 CREATE INDEX conversion_impression_id_idx ON conversions(impression_id);
 
-CREATE INDEX rate_limit_report_idx ON rate_limits(conversion_destination,impression_site,reporting_origin,time)WHERE scope=1;
+CREATE INDEX rate_limit_attribution_idx ON rate_limits(conversion_destination,impression_site,reporting_origin,time)WHERE scope=1;
 
 CREATE INDEX rate_limit_reporting_origin_idx ON rate_limits(scope,conversion_destination,impression_site,time);
 
@@ -36,6 +40,12 @@ CREATE INDEX rate_limit_time_idx ON rate_limits(time);
 
 CREATE INDEX rate_limit_impression_id_idx ON rate_limits(impression_id);
 
-INSERT INTO conversions VALUES (1,2,3,4,5,6,7,8,9);
+CREATE INDEX aggregate_source_id_idx ON aggregatable_report_metadata(source_id);
+
+CREATE INDEX aggregate_trigger_time_idx ON aggregatable_report_metadata(trigger_time);
+
+CREATE INDEX contribution_aggregation_id_idx ON aggregatable_contributions(aggregation_id);
+
+CREATE INDEX contribution_report_time_idx ON aggregatable_contributions(report_time);
 
 COMMIT;

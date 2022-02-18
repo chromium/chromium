@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -100,7 +101,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   std::vector<AttributionReport> GetReports(
       const std::vector<AttributionReport::EventLevelData::Id>& ids) override;
   std::vector<StoredSource> GetActiveSources(int limit = -1) override;
-  bool DeleteReport(AttributionReport::EventLevelData::Id report_id) override;
+  bool DeleteReport(AttributionReport::Id report_id) override;
   bool UpdateReportForSendFailure(
       AttributionReport::EventLevelData::Id report_id,
       base::Time new_report_time) override;
@@ -109,6 +110,11 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       base::Time delete_begin,
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin&)> filter) override;
+  bool AddAggregatableAttributionForTesting(
+      const AggregatableAttribution& aggregatable_attribution) override;
+  std::vector<AttributionReport> GetAggregatableContributionReportsForTesting(
+      base::Time max_report_time,
+      int limit = -1) override;
 
   void ClearAllDataAllTime() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -132,7 +138,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // Deletes the report with `report_id` without checking the the DB
   // initialization status or the number of deleted rows. Returns false on
   // failure.
-  [[nodiscard]] bool DeleteReportInternal(
+  [[nodiscard]] bool DeleteEventLevelReport(
       AttributionReport::EventLevelData::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -160,15 +166,15 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const std::string& serialized_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  enum class MaybeReplaceLowerPriorityReportResult {
+  enum class MaybeReplaceLowerPriorityEventLevelReportResult {
     kError,
     kAddNewReport,
     kDropNewReport,
     kDropNewReportSourceDeactivated,
     kReplaceOldReport,
   };
-  [[nodiscard]] MaybeReplaceLowerPriorityReportResult
-  MaybeReplaceLowerPriorityReport(
+  [[nodiscard]] MaybeReplaceLowerPriorityEventLevelReportResult
+  MaybeReplaceLowerPriorityEventLevelReport(
       const AttributionReport& report,
       int num_conversions,
       int64_t conversion_priority,
@@ -208,6 +214,47 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   void DatabaseErrorCallback(int extended_error, sql::Statement* stmt);
+
+  // Aggregate Attribution:
+
+  // Deletes all aggregatable attribution data in storage for URLs matching
+  // `filter`, between `delete_begin` and `delete_end` time. More specifically,
+  // this:
+  // 1. Deletes all sources within the time range. If any aggregatable
+  // attribution
+  //    is attributed to this source it is also deleted.
+  // 2. Deletes all aggregatable attributions within the time range. All sources
+  //    attributed to the aggregatable attribution are also deleted.
+  //
+  // All sources to be deleted are updated in `source_ids_to_delete`.
+  // Returns false on failure.
+  [[nodiscard]] bool ClearAggregatableAttributionForOriginsInRange(
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::RepeatingCallback<bool(const url::Origin&)> filter,
+      std::vector<StoredSource::Id>& source_ids_to_delete)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool ClearAggregatableAttribution(
+      AggregatableAttribution::Id aggregation_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool ClearAggregatableContributions(
+      AggregatableAttribution::Id aggregation_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool ClearAggregatableAttributionForSourceIds(
+      const std::vector<StoredSource::Id>& source_ids)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Deletes the report with `report_id` without checking the the DB
+  // initialization status or the number of deleted rows. Returns false on
+  // failure.
+  // Note that the `aggregatable_report_metadata` row will be deleted with the
+  // last contribution for the corresponding `aggregation_id`.
+  [[nodiscard]] bool DeleteAggregatableContributionReport(
+      AttributionReport::AggregatableContributionData::Id report_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   static bool g_run_in_memory_;
 

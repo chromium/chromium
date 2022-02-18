@@ -23,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -1815,6 +1816,50 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerAttribution) {
 
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
               ElementsAre(TriggerDebugKeyIs(1), TriggerDebugKeyIs(2)));
+}
+
+TEST_F(AttributionStorageTest, StoreAggregatableAttribution) {
+  storage()->StoreSource(SourceBuilder().Build());
+
+  AggregatableAttribution aggregatable_attribution(
+      StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
+      /*report_time=*/base::Time::Now() + base::Hours(2),
+      /*contributions=*/
+      {HistogramContribution(/*bucket=*/"1", /*value=*/2),
+       HistogramContribution(/*bucket=*/"3", /*value=*/4)});
+
+  EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
+      aggregatable_attribution));
+
+  const HistogramContribution& contribution_1 =
+      aggregatable_attribution.contributions[0];
+  const HistogramContribution& contribution_2 =
+      aggregatable_attribution.contributions[1];
+
+  auto stored_source = SourceBuilder().BuildStored();
+
+  EXPECT_THAT(
+      storage()->GetAggregatableContributionReportsForTesting(
+          base::Time::Max()),
+      ElementsAre(
+          AttributionReport(
+              AttributionInfo(stored_source,
+                              aggregatable_attribution.trigger_time,
+                              /*debug_key=*/absl::nullopt),
+              aggregatable_attribution.report_time, DefaultExternalReportID(),
+              AttributionReport::AggregatableContributionData(
+                  HistogramContribution(contribution_1.bucket(),
+                                        contribution_1.value()),
+                  AttributionReport::AggregatableContributionData::Id(1))),
+          AttributionReport(
+              AttributionInfo(stored_source,
+                              aggregatable_attribution.trigger_time,
+                              /*debug_key*/ absl::nullopt),
+              aggregatable_attribution.report_time, DefaultExternalReportID(),
+              AttributionReport::AggregatableContributionData(
+                  HistogramContribution(contribution_2.bucket(),
+                                        contribution_2.value()),
+                  AttributionReport::AggregatableContributionData::Id(2)))));
 }
 
 }  // namespace content
