@@ -25,6 +25,8 @@ extern const char kSamlPasswordExpirationAdvanceWarningDays[];
 extern const char kLockScreenReauthenticationEnabled[];
 extern const char kSamlPasswordSyncToken[];
 extern const char kActivityTimeAfterOnboarding[];
+extern const char kOobeGuestMetricsEnabled[];
+extern const char kOobeGuestAcceptedTos[];
 
 }  // namespace prefs
 }  // namespace ash

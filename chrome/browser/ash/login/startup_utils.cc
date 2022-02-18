@@ -100,6 +100,8 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(::prefs::kEnrollmentRecoveryRequired, false);
   registry->RegisterStringPref(::prefs::kInitialLocale, "en-US");
   registry->RegisterBooleanPref(kDisableHIDDetectionScreenForTests, false);
+  registry->RegisterBooleanPref(prefs::kOobeGuestMetricsEnabled, false);
+  registry->RegisterBooleanPref(prefs::kOobeGuestAcceptedTos, false);
 }
 
 // static
