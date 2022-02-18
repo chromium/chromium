@@ -572,6 +572,21 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     if (root_manager && event.event_type == ax::mojom::Event::kHover)
       root_manager->CacheHitTestResult(event_target);
 
+    // TODO(accessibility): No platform is doing anything with kLoadComplete
+    // events from Blink, even though we sometimes fire this event explicitly
+    // for the purpose of notifying platform ATs. See, for instance,
+    // RenderAccessibilityImpl::SendPendingAccessibilityEvents(). This should
+    // be resolved in a to-be-determined fashion. In the meantime, if we have
+    // a Blink load-complete event and do not have a generated load-complete
+    // event, behave as if we did have the generated event so platforms are
+    // notified.
+    if (event.event_type == ax::mojom::Event::kLoadComplete &&
+        !received_load_complete_event) {
+      FireGeneratedEvent(ui::AXEventGenerator::Event::LOAD_COMPLETE,
+                         retargeted);
+      received_load_complete_event = true;
+    }
+
     FireBlinkEvent(event.event_type, retargeted, event.action_request_id);
   }
 
