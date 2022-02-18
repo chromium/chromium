@@ -126,6 +126,10 @@ void PairerBrokerImpl::OnFastPairPairingFailure(scoped_refptr<Device> device,
 void PairerBrokerImpl::OnAccountKeyFailure(scoped_refptr<Device> device,
                                            AccountKeyFailure failure) {
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Failure=" << failure;
+
+  for (auto& observer : observers_) {
+    observer.OnAccountKeyWrite(device, failure);
+  }
 }
 
 void PairerBrokerImpl::OnFastPairProcedureComplete(
