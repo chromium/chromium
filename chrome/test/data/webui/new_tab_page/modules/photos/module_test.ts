@@ -24,6 +24,104 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     metrics = fakeMetricsPrivate();
   });
 
+  suite('custom-artwork-enabled', () => {
+    setup(() => {
+      loadTimeData.overrideValues({photosModuleCustomArtWork: '1'});
+    });
+
+    test(
+        'custom art work is shown when custom artwork flag is set',
+        async () => {
+          // Arrange.
+          const data = {
+            memories: [
+              {
+                title: 'Title 1',
+                id: 'key1',
+                coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+              },
+              {
+                title: 'Title 2',
+                id: 'key2',
+                coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
+              }
+            ]
+          };
+          handler.setResultFor('getMemories', Promise.resolve(data));
+          handler.setResultFor(
+              'shouldShowOptInScreen',
+              Promise.resolve({showOptInScreen: true}));
+          handler.setResultFor(
+              'shouldShowSoftOptOutButton',
+              Promise.resolve({showSoftOptOutButton: false}));
+          handler.setResultFor(
+              'getOptInTitleText',
+              Promise.resolve({optInTitleText: 'See your memories here'}));
+          const module =
+              await photosDescriptor.initialize(0) as PhotosModuleElement;
+          assertTrue(!!module);
+          document.body.append(module);
+          await handler.whenCalled('getMemories');
+          await handler.whenCalled('shouldShowOptInScreen');
+          await handler.whenCalled('shouldShowSoftOptOutButton');
+          await handler.whenCalled('getOptInTitleText');
+
+          const img = module.shadowRoot!.querySelector('#customArtWork img');
+          assertTrue(!!img);
+          assertEquals(
+              'chrome://new-tab-page/modules/photos/images/img01_240x236.svg',
+              img.getAttribute('src'));
+
+          const defaultArtWork =
+              module.shadowRoot!.querySelector('#optInArtwork');
+          assertTrue(!defaultArtWork);
+        });
+  });
+
+  test(
+      'default artwork is shown when when custom artwork flag is not set',
+      async () => {
+        // Arrange.
+        const data = {
+          memories: [
+            {
+              title: 'Title 1',
+              id: 'key1',
+              coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+            },
+            {
+              title: 'Title 2',
+              id: 'key2',
+              coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
+            }
+          ]
+        };
+        handler.setResultFor('getMemories', Promise.resolve(data));
+        handler.setResultFor(
+            'shouldShowOptInScreen', Promise.resolve({showOptInScreen: true}));
+        handler.setResultFor(
+            'shouldShowSoftOptOutButton',
+            Promise.resolve({showSoftOptOutButton: false}));
+        handler.setResultFor(
+            'getOptInTitleText',
+            Promise.resolve({optInTitleText: 'See your memories here'}));
+        const module =
+            await photosDescriptor.initialize(0) as PhotosModuleElement;
+        assertTrue(!!module);
+        document.body.append(module);
+        await handler.whenCalled('getMemories');
+        await handler.whenCalled('shouldShowOptInScreen');
+        await handler.whenCalled('shouldShowSoftOptOutButton');
+        await handler.whenCalled('getOptInTitleText');
+
+        const img = module.shadowRoot!.querySelector('#customArtWork');
+        assertTrue(!img);
+
+        const defaultArtWork =
+            module.shadowRoot!.querySelector('#optInArtwork');
+        assertTrue(!!defaultArtWork);
+      });
+
   test('module appears on render', async () => {
     // Arrange.
     const data = {

@@ -323,6 +323,10 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "photosModuleEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpPhotosModule));
+  source->AddString("photosModuleCustomArtWork",
+                    base::GetFieldTrialParamValueByFeature(
+                        ntp_features::kNtpPhotosModuleCustomizedOptInArtWork,
+                        ntp_features::kNtpPhotosModuleOptInArtWorkParam));
   source->AddBoolean(
       "ruleBasedDiscountEnabled",
       base::GetFieldTrialParamValueByFeature(

@@ -197,6 +197,19 @@
     z-index: -1;
   }
 
+  #customArtWork {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: 236px;
+    margin-top: -46px;
+    max-width: 240px;
+    overflow: hidden;
+    position: relative;
+    right: 0;
+    z-index: -1;
+  }
+
   #yellowShape {
     -webkit-mask-image: url(modules/photos/icons/shape_1.svg);
     -webkit-mask-repeat: no-repeat;
@@ -358,18 +371,26 @@
           </cr-button>
         </div>
       </div>
-      <div id="optInArtwork">
-        <div id="yellowShape"></div>
-        <div id="blueShape"></div>
-        <div id="greenShape"></div>
-        <div id="memoryMain" class="memory card">
-          <div class="memory-title" dir="auto">
-            $i18n{modulesPhotosMemoriesWelcomeExample}
+
+      <template is="dom-if" if="[[!showCustomArtWork_]]">
+        <div id="optInArtwork">
+          <div id="yellowShape"></div>
+          <div id="blueShape"></div>
+          <div id="greenShape"></div>
+          <div id="memoryMain" class="memory card">
+            <div class="memory-title" dir="auto">
+              $i18n{modulesPhotosMemoriesWelcomeExample}
+            </div>
           </div>
+          <div id="memorySecond" class="memory card no-title"></div>
+          <div id="memoryThird" class="memory card no-title"></div>
         </div>
-        <div id="memorySecond" class="memory card no-title"></div>
-        <div id="memoryThird" class="memory card no-title"></div>
-      </div>
+      </template>
+      <template is="dom-if" if="[[showCustomArtWork_]]">
+        <div id="customArtWork">
+          <img src="[[customArtworkUrl_]]">
+        </div>
+      </template>
     </div>
   </template>
   <template id="memoriesElement" is="dom-if" if="[[!showOptInScreen]]">
