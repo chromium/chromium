@@ -33,10 +33,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
   GenericPendingReceiver(mojo::PendingReceiver<Interface> receiver)
       : GenericPendingReceiver(Interface::Name_, receiver.PassPipe()) {}
 
-  template <typename Interface>
-  GenericPendingReceiver(mojo::InterfaceRequest<Interface> request)
-      : GenericPendingReceiver(Interface::Name_, request.PassMessagePipe()) {}
-
   GenericPendingReceiver(GenericPendingReceiver&&);
 
   GenericPendingReceiver(const GenericPendingReceiver&) = delete;

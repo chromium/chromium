@@ -113,8 +113,6 @@ def _MapKind(kind):
     lbracket = kind.rfind('[')
     typename = kind[0:lbracket]
     return 'a' + kind[lbracket + 1:-1] + ':' + _MapKind(typename)
-  if kind.endswith('&'):
-    return 'r:' + _MapKind(kind[0:-1])
   if kind.startswith('asso<'):
     assert kind.endswith('>')
     return 'asso:' + _MapKind(kind[5:-1])

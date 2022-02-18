@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
+#include "base/time/time.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #include "ios/web/public/navigation/referrer.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"

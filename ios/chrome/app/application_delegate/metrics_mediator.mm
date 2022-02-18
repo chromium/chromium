@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 
+#include <mach/mach.h>
 #include <sys/sysctl.h>
 
 #include "base/bind.h"

@@ -35,7 +35,6 @@ source_set("tests") {
     "message_queue.h",
     "message_quota_checker_unittest.cc",
     "message_unittest.cc",
-    "mojom_types_downgrader_unittest.cc",
     "multiplex_router_unittest.cc",
     "native_struct_unittest.cc",
     "new_endpoint_types_unittest.cc",
@@ -63,7 +62,6 @@ source_set("tests") {
   ]
 
   deps = [
-    ":downgraded_mojom",
     ":mojo_public_bindings_test_utils",
     ":test_extra_cpp_template_mojom",
     ":test_mojom",
@@ -217,21 +215,4 @@ mojom("generated_test_mojom") {
   testonly = true
   sources = [ "$target_gen_dir/generated.test-mojom" ]
   parser_deps = [ ":generate_test_mojom" ]
-}
-
-action("mojom_types_downgrader") {
-  script = "//mojo/public/tools/bindings/mojom_types_downgrader.py"
-  sources = [ "module_to_downgrade.test-mojom" ]
-  outputs = [ "$target_gen_dir/module_to_downgrade.test-mojom" ]
-  args = [
-    "--outdir",
-    rebase_path(target_gen_dir, root_build_dir),
-    rebase_path("module_to_downgrade.test-mojom", root_build_dir),
-  ]
-}
-
-mojom("downgraded_mojom") {
-  testonly = true
-  sources = [ "$target_gen_dir/module_to_downgrade.test-mojom" ]
-  parser_deps = [ ":mojom_types_downgrader" ]
 }

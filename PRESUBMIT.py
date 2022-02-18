@@ -1004,13 +1004,6 @@ _DEPRECATED_MOJO_TYPES = (
       ),
     ),
     (
-      r'/\bmojo::AssociatedInterfaceRequest\b',
-      (
-        'mojo::AssociatedInterfaceRequest<Interface> is deprecated.',
-        'Use mojo::PendingAssociatedReceiver<Interface> instead.',
-      ),
-    ),
-    (
       r'/\bmojo::InterfacePtr\b',
       (
         'mojo::InterfacePtr<Interface> is deprecated.',
@@ -1022,20 +1015,6 @@ _DEPRECATED_MOJO_TYPES = (
       (
         'mojo::InterfacePtrInfo<Interface> is deprecated.',
         'Use mojo::PendingRemote<Interface> instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::InterfaceRequest\b',
-      (
-        'mojo::InterfaceRequest<Interface> is deprecated.',
-        'Use mojo::PendingReceiver<Interface> instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::MakeRequest\b',
-      (
-        'mojo::MakeRequest is deprecated.',
-        'Use mojo::Remote::BindNewPipeAndPassReceiver() instead.',
       ),
     ),
 )

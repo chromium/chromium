@@ -36,7 +36,7 @@ class SelfOwnedAssociatedReceiver {
   // WeakPtr to the new SelfOwnedAssociatedReceiver instance.
   static SelfOwnedAssociatedReceiverRef<Interface> Create(
       std::unique_ptr<Interface> impl,
-      AssociatedInterfaceRequest<Interface> receiver,
+      PendingAssociatedReceiver<Interface> receiver,
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     SelfOwnedAssociatedReceiver* self_owned = new SelfOwnedAssociatedReceiver(
         std::move(impl), std::move(receiver), std::move(task_runner));

@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/associated_interface_request.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -36,11 +35,6 @@ class PendingAssociatedReceiver {
       : handle_(std::move(other.handle_)) {}
   explicit PendingAssociatedReceiver(ScopedInterfaceEndpointHandle handle)
       : handle_(std::move(handle)) {}
-
-  // Temporary implicit move constructor to aid in converting from use of
-  // InterfaceRequest<Interface> to PendingReceiver.
-  PendingAssociatedReceiver(AssociatedInterfaceRequest<Interface>&& request)
-      : PendingAssociatedReceiver(request.PassHandle()) {}
 
   // Disabled on NaCl since it crashes old version of clang.
 #if !BUILDFLAG(IS_NACL)
@@ -71,13 +65,6 @@ class PendingAssociatedReceiver {
 
   bool is_valid() const { return handle_.is_valid(); }
   explicit operator bool() const { return is_valid(); }
-
-  // Temporary implicit conversion operator to
-  // AssociatedInterfaceRequest<Interface> to aid in converting usage to
-  // PendingAssociatedReceiver.
-  operator AssociatedInterfaceRequest<Interface>() {
-    return AssociatedInterfaceRequest<Interface>(PassHandle());
-  }
 
   ScopedInterfaceEndpointHandle PassHandle() { return std::move(handle_); }
   const ScopedInterfaceEndpointHandle& handle() const { return handle_; }

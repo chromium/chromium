@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/lib/binding_state.h"
 #include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -192,8 +191,7 @@ class Receiver {
   [[nodiscard]] PendingReceiver<Interface> Unbind() {
     DCHECK(is_bound());
     CHECK(!internal_state_.HasAssociatedInterfaces());
-    return PendingReceiver<Interface>(
-        internal_state_.Unbind().PassMessagePipe());
+    return internal_state_.Unbind();
   }
 
   // Sets the message filter to be notified of each incoming message before

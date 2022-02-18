@@ -1086,7 +1086,7 @@ class ParserTest(unittest.TestCase):
           handle<data_pipe_producer>? k;
           handle<message_pipe>? l;
           handle<shared_buffer>? m;
-          some_interface&? n;
+          pending_receiver<some_interface>? n;
           handle<platform>? o;
         };
         """
@@ -1110,7 +1110,7 @@ class ParserTest(unittest.TestCase):
                 ast.StructField('l', None, None, 'handle<message_pipe>?', None),
                 ast.StructField('m', None, None, 'handle<shared_buffer>?',
                                 None),
-                ast.StructField('n', None, None, 'some_interface&?', None),
+                ast.StructField('n', None, None, 'rcv<some_interface>?', None),
                 ast.StructField('o', None, None, 'handle<platform>?', None)
             ]))
     ])
@@ -1137,16 +1137,6 @@ class ParserTest(unittest.TestCase):
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected '<':\n"
         r" *handle\?<data_pipe_consumer> a;$"):
       parser.Parse(source2, "my_file.mojom")
-
-    source3 = """\
-        struct MyStruct {
-          some_interface?& a;
-        };
-        """
-    with self.assertRaisesRegexp(
-        parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected '&':\n"
-        r" *some_interface\?& a;$"):
-      parser.Parse(source3, "my_file.mojom")
 
   def testSimpleUnion(self):
     """Tests a simple .mojom source that just defines a union."""
@@ -1317,9 +1307,9 @@ class ParserTest(unittest.TestCase):
     source1 = """\
         struct MyStruct {
           associated MyInterface a;
-          associated MyInterface& b;
+          pending_associated_receiver<MyInterface> b;
           associated MyInterface? c;
-          associated MyInterface&? d;
+          pending_associated_receiver<MyInterface>? d;
         };
         """
     expected1 = ast.Mojom(None, ast.ImportList(), [
@@ -1327,16 +1317,16 @@ class ParserTest(unittest.TestCase):
             'MyStruct', None,
             ast.StructBody([
                 ast.StructField('a', None, None, 'asso<MyInterface>', None),
-                ast.StructField('b', None, None, 'asso<MyInterface&>', None),
+                ast.StructField('b', None, None, 'rca<MyInterface>', None),
                 ast.StructField('c', None, None, 'asso<MyInterface>?', None),
-                ast.StructField('d', None, None, 'asso<MyInterface&>?', None)
+                ast.StructField('d', None, None, 'rca<MyInterface>?', None)
             ]))
     ])
     self.assertEquals(parser.Parse(source1, "my_file.mojom"), expected1)
 
     source2 = """\
         interface MyInterface {
-          MyMethod(associated A a) =>(associated B& b);
+          MyMethod(associated A a) =>(pending_associated_receiver<B> b);
         };"""
     expected2 = ast.Mojom(None, ast.ImportList(), [
         ast.Interface(
@@ -1344,10 +1334,10 @@ class ParserTest(unittest.TestCase):
             ast.InterfaceBody(
                 ast.Method(
                     'MyMethod', None, None,
-                    ast.ParameterList(
-                        ast.Parameter('a', None, None, 'asso<A>')),
-                    ast.ParameterList(
-                        ast.Parameter('b', None, None, 'asso<B&>')))))
+                    ast.ParameterList(ast.Parameter('a', None, None,
+                                                    'asso<A>')),
+                    ast.ParameterList(ast.Parameter('b', None, None,
+                                                    'rca<B>')))))
     ])
     self.assertEquals(parser.Parse(source2, "my_file.mojom"), expected2)
 

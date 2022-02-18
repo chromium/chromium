@@ -22,11 +22,11 @@
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/interface_ptr_info.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/pending_receiver_state.h"
 #include "mojo/public/cpp/bindings/message_header_validator.h"
 #include "mojo/public/cpp/bindings/pending_flush.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/core.h"
 
@@ -124,10 +124,10 @@ class BindingState : public BindingStateBase {
         Interface::Version_);
   }
 
-  InterfaceRequest<Interface> Unbind() {
+  PendingReceiver<Interface> Unbind() {
     weak_ptr_factory_.InvalidateWeakPtrs();
     endpoint_client_.reset();
-    InterfaceRequest<Interface> request(router_->PassMessagePipe());
+    PendingReceiver<Interface> request(router_->PassMessagePipe());
     router_ = nullptr;
     return request;
   }

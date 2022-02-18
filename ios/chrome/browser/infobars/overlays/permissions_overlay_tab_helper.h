@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/timer/timer.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "ios/web/public/web_state_observer.h"
