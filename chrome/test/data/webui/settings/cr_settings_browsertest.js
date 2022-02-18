@@ -83,7 +83,13 @@ var CrSettingsBasicPageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsBasicPageTest', 'BasicPage', function() {
+// TODO(crbug.com/1298753): Flaky on Mac.
+GEN('#if BUILDFLAG(IS_MAC)');
+GEN('#define MAYBE_BasicPage DISABLED_BasicPage');
+GEN('#else');
+GEN('#define MAYBE_BasicPage BasicPage');
+GEN('#endif');
+TEST_F('CrSettingsBasicPageTest', 'MAYBE_BasicPage', function() {
   runMochaSuite('SettingsBasicPage');
 });
 
