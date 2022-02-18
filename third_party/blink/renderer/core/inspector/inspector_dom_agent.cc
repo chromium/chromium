@@ -1449,11 +1449,9 @@ Response InspectorDOMAgent::getNodeStackTraces(
   if (!response.IsSuccess())
     return response;
 
-  InspectorSourceLocation* creation_inspector_source_location =
-      node_to_creation_source_location_map_.at(node);
-  if (creation_inspector_source_location) {
-    SourceLocation& source_location =
-        creation_inspector_source_location->GetSourceLocation();
+  auto it = node_to_creation_source_location_map_.find(node);
+  if (it != node_to_creation_source_location_map_.end()) {
+    SourceLocation& source_location = it->value->GetSourceLocation();
     *creation = source_location.BuildInspectorObject();
   }
   return Response::Success();
