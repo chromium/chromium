@@ -277,7 +277,7 @@ public class ContextualSearchTest {
     @Feature({"ContextualSearch"})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testLongpressFollowedByNonTextTap() {
-        Assert.assertEquals(mPanelManager.getRequestPanelShowCount(), 0);
+        Assert.assertEquals(0, mPanelManager.getRequestPanelShowCount());
 
         // Fake a selection event.
         mockLongpressText("text");
@@ -285,16 +285,16 @@ public class ContextualSearchTest {
         // Surrounding text is gathered for longpress due to icing integration.
         generateTextSurroundingSelectionAvailable();
 
-        Assert.assertEquals(mPanelManager.getRequestPanelShowCount(), 1);
-        Assert.assertEquals(mPanelManager.getPanelHideCount(), 0);
+        Assert.assertEquals(1, mPanelManager.getRequestPanelShowCount());
+        Assert.assertEquals(0, mPanelManager.getPanelHideCount());
         Assert.assertEquals(
                 mContextualSearchManager.getSelectionController().getSelectedText(), "text");
 
         // Fake tap on non-text.
         mockTapEmptySpace();
 
-        Assert.assertEquals(mPanelManager.getRequestPanelShowCount(), 1);
-        Assert.assertEquals(mPanelManager.getPanelHideCount(), 1);
+        Assert.assertEquals(1, mPanelManager.getRequestPanelShowCount());
+        Assert.assertEquals(1, mPanelManager.getPanelHideCount());
         Assert.assertNull(mContextualSearchManager.getSelectionController().getSelectedText());
     }
 
@@ -308,7 +308,7 @@ public class ContextualSearchTest {
     @Features.DisableFeatures(ChromeFeatureList.SNOOZABLE_IPH)
     @DisabledTest(message = "https://crbug.com/1279770")
     public void testTextTapFollowedByNonTextTap() {
-        Assert.assertEquals(mPanelManager.getRequestPanelShowCount(), 0);
+        Assert.assertEquals(0, mPanelManager.getRequestPanelShowCount());
 
         // Fake a Tap event.
         mockTapText("text");
@@ -317,8 +317,8 @@ public class ContextualSearchTest {
         // Right now the tap-processing sequence will stall at selectWordAroundCaret, so we need
         // to prod it forward by generating an ACK:
         generateSelectWordAroundCaretAck();
-        Assert.assertEquals(mPanelManager.getRequestPanelShowCount(), 1);
-        Assert.assertEquals(mPanelManager.getPanelHideCount(), 0);
+        Assert.assertEquals(1, mPanelManager.getRequestPanelShowCount());
+        Assert.assertEquals(0, mPanelManager.getPanelHideCount());
     }
 
     /**
@@ -331,7 +331,7 @@ public class ContextualSearchTest {
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Features.DisableFeatures("ContextualSearchLongpressResolve")
     public void testTapProcessIsRobustWhenSelectionGetsCleared() {
-        Assert.assertEquals(mPanelManager.getRequestPanelShowCount(), 0);
+        Assert.assertEquals(0, mPanelManager.getRequestPanelShowCount());
 
         // Fake a Tap event.
         mockTapText("text");
@@ -345,7 +345,7 @@ public class ContextualSearchTest {
         // word.  However we just simulated a condition that clears the selection above, so we're
         // testing for robustness in completion of the processing even when there's no selection.
         generateSelectWordAroundCaretAck();
-        Assert.assertEquals(mPanelManager.getRequestPanelShowCount(), 0);
-        Assert.assertEquals(mPanelManager.getPanelHideCount(), 0);
+        Assert.assertEquals(0, mPanelManager.getRequestPanelShowCount());
+        Assert.assertEquals(0, mPanelManager.getPanelHideCount());
     }
 }
