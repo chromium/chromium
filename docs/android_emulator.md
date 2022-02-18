@@ -24,6 +24,8 @@ tools/android/avd/avd.py list
 
 | Configurations | Android Version | AVD Target | Builder |
 |:-------------- |:--------------- |:---------- |:------- |
+| `generic_android19.textpb` | K | google_apis | N/A |
+| `generic_android22.textpb` | L | google_apis | N/A |
 | `generic_android23.textpb` | M | google_apis | [android-marshmallow-x86-rel][android-marshmallow-x86-rel] |
 | `generic_android27.textpb` | O | google_apis | N/A |
 | `generic_playstore_android27.textpb` | O | google_apis_playstore | N/A |
