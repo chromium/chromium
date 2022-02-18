@@ -288,15 +288,11 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
         std::make_unique<SuggestionChipContainerView>(contents_view), 0);
   }
 
-  // Add `apps_grid_view_` at index 0 to put it at the back and ensure other
-  // views in the `scrollable_container` get events first, since the grid
-  // overlaps in bounds with these other views.
-  apps_grid_view_ = scrollable_container_->AddChildViewAt(
+  apps_grid_view_ = scrollable_container_->AddChildView(
       std::make_unique<PagedAppsGridView>(contents_view, a11y_announcer,
                                           /*folder_delegate=*/nullptr,
                                           /*folder_controller=*/this,
-                                          /*container_delegate=*/this),
-      0);
+                                          /*container_delegate=*/this));
   apps_grid_view_->Init();
   apps_grid_view_->pagination_model()->AddObserver(this);
   if (features::IsProductivityLauncherEnabled())

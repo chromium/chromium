@@ -163,6 +163,8 @@ PagedAppsGridView::PagedAppsGridView(
           features::IsProductivityLauncherEnabled()) {
   DCHECK(contents_view_);
 
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
   view_structure_.Init(
       (IsInFolder() || features::IsProductivityLauncherEnabled())
           ? PagedViewStructure::Mode::kFullPages
@@ -851,6 +853,16 @@ void PagedAppsGridView::OnImplicitAnimationsCompleted() {
     return;
   }
   RemoveAllBackgroundCards();
+}
+
+bool PagedAppsGridView::DoesIntersectRect(const views::View* target,
+                                          const gfx::Rect& rect) const {
+  gfx::Rect target_bounds(target->GetLocalBounds());
+  if (features::IsProductivityLauncherEnabled() && GetSelectedPage() == 0) {
+    // Allow events to pass to the continue section and recent apps.
+    target_bounds.Inset(0, first_page_offset_, 0, 0);
+  }
+  return target_bounds.Intersects(rect);
 }
 
 bool PagedAppsGridView::FirePageFlipTimerForTest() {

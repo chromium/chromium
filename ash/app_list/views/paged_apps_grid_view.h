@@ -20,6 +20,7 @@
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/view_targeter_delegate.h"
 
 namespace gfx {
 class Vector2d;
@@ -40,7 +41,8 @@ class PaginationController;
 // for the transition into and out of the "cardified" state.
 class ASH_EXPORT PagedAppsGridView : public AppsGridView,
                                      public PaginationModelObserver,
-                                     public ui::ImplicitAnimationObserver {
+                                     public ui::ImplicitAnimationObserver,
+                                     public views::ViewTargeterDelegate {
  public:
   class ContainerDelegate {
    public:
@@ -147,6 +149,10 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
+
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override;
 
   bool FirePageFlipTimerForTest();
   bool cardified_state_for_testing() const { return cardified_state_; }
