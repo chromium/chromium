@@ -617,8 +617,10 @@ void CaptureModeSession::Shutdown() {
 
     // Kill the camera preview when the capture mode session ends without
     // starting any recording.
-    if (controller_->camera_controller())
+    if (controller_->camera_controller() &&
+        !controller_->is_recording_in_progress()) {
       controller_->camera_controller()->SetShouldShowPreview(false);
+    }
   }
 }
 
@@ -652,7 +654,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
       GetMessageIdForCaptureSource(new_source, /*for_toggle_alert=*/true));
 
   auto* camera_controller = controller_->camera_controller();
-  if (camera_controller)
+  if (camera_controller && !controller_->is_recording_in_progress())
     camera_controller->MaybeReparentPreviewWidget();
 }
 
@@ -2184,7 +2186,7 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
   UpdateRootWindowDimmers();
 
   auto* camera_controller = controller_->camera_controller();
-  if (camera_controller)
+  if (camera_controller && !controller_->is_recording_in_progress())
     camera_controller->MaybeReparentPreviewWidget();
 }
 

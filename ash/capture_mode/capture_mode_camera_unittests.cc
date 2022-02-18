@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_menu_group.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_settings_test_api.h"
@@ -18,6 +19,7 @@
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
@@ -762,6 +764,124 @@ TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
           ->window_being_recorded();
   EXPECT_TRUE(window_being_recorded->GetBoundsInScreen().Contains(
       preview_widget->GetWindowBoundsInScreen()));
+}
+
+// Tests that audio and camera menu groups should be hidden from the settings
+// menu when there's a video recording in progress.
+TEST_F(CaptureModeCameraTest,
+       AudioAndCameraMenuGroupsAreHiddenWhenVideoRecordingInProgress) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  auto* camera_controller = controller->camera_controller();
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // Verify there's no camera preview created, since we don't select any camera.
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+
+  // Check capture session is shut down after the video recording starts.
+  EXPECT_FALSE(controller->IsActive());
+
+  // Start a new session, check the type should be switched automatically to
+  // kImage.
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  EXPECT_EQ(CaptureModeType::kImage, controller->type());
+
+  // Verify there's no camera preview created after a new session started.
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+
+  OpenSettingsView();
+  // Check the audio and camera menu groups are hidden from the settings.
+  CaptureModeSettingsTestApi test_api_new;
+  EXPECT_FALSE(test_api_new.GetCameraMenuGroup());
+  EXPECT_FALSE(test_api_new.GetAudioInputMenuGroup());
+  EXPECT_TRUE(test_api_new.GetSaveToMenuGroup());
+  controller->Stop();
+}
+
+// Verify that starting a new capture session and updating capture source won't
+// affect the current camera preview when there's a video recording is progress.
+TEST_F(CaptureModeCameraTest,
+       CameraPreviewNotChangeWhenVideoRecordingInProgress) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  auto* camera_controller = controller->camera_controller();
+  AddDefaultCamera();
+  OpenSettingsView();
+
+  // Select the default camera for video recording.
+  CaptureModeSettingsTestApi test_api;
+  ClickOnView(test_api.GetCameraOption(kCameraDevicesBegin),
+              GetEventGenerator());
+  StartVideoRecordingImmediately();
+
+  // Check that the camera preview is created.
+  const auto* camera_preview_widget =
+      camera_controller->camera_preview_widget();
+  EXPECT_TRUE(camera_preview_widget);
+
+  auto* preview_window = camera_preview_widget->GetNativeWindow();
+  auto* parent = preview_window->parent();
+
+  // Start a new capture session, and set capture source to `kFullscreen`,
+  // verify the camera preview and its parent are not changed.
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  controller->SetSource(CaptureModeSource::kFullscreen);
+  EXPECT_EQ(preview_window,
+            camera_controller->camera_preview_widget()->GetNativeWindow());
+  EXPECT_EQ(
+      parent,
+      camera_controller->camera_preview_widget()->GetNativeWindow()->parent());
+
+  // Update capture source to `kRegion` and set the user capture region, verify
+  // the camera preview and its parent are not changed.
+  controller->SetSource(CaptureModeSource::kRegion);
+  controller->SetUserCaptureRegion({100, 100, 200, 300}, /*by_user=*/true);
+  EXPECT_EQ(preview_window,
+            camera_controller->camera_preview_widget()->GetNativeWindow());
+  EXPECT_EQ(
+      parent,
+      camera_controller->camera_preview_widget()->GetNativeWindow()->parent());
+
+  // Update capture source to `kWindow` and move mouse on top the `window`,
+  // verify that the camera preview and its parent are not changed.
+  controller->SetSource(CaptureModeSource::kWindow);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(window());
+  EXPECT_EQ(preview_window,
+            camera_controller->camera_preview_widget()->GetNativeWindow());
+  EXPECT_EQ(
+      parent,
+      camera_controller->camera_preview_widget()->GetNativeWindow()->parent());
+  controller->Stop();
+}
+
+// Tests that changing the folder while there's a video recording in progress
+// doesn't change the folder where the video being recorded will be saved to.
+// It will only affect the image to be captured.
+TEST_F(CaptureModeCameraTest, ChangeFolderWhileVideoRecordingInProgress) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  StartVideoRecordingImmediately();
+
+  // While the video recording is in progress, start a new capture session and
+  // update the save-to folder to the custom folder.
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  controller->SetCustomCaptureFolder(
+      CreateCustomFolderInUserDownloadsPath("test"));
+
+  // Perform the image capture. Verify that the image is saved to the custom
+  // folder.
+  controller->PerformCapture();
+  const base::FilePath& saved_image_file = WaitForCaptureFileToBeSaved();
+  EXPECT_EQ(controller->GetCustomCaptureFolder(), saved_image_file.DirName());
+
+  // End the video recoring and verify the video is still saved to the default
+  // downloads folder.
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  const base::FilePath& saved_video_file = WaitForCaptureFileToBeSaved();
+  EXPECT_EQ(controller->delegate_for_testing()->GetUserDefaultDownloadsFolder(),
+            saved_video_file.DirName());
 }
 
 }  // namespace ash

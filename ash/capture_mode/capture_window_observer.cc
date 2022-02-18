@@ -63,8 +63,9 @@ void CaptureWindowObserver::SetSelectedWindow(aura::Window* window) {
     StartObserving(window);
   RepaintCaptureRegion();
 
-  auto* camera_controller = CaptureModeController::Get()->camera_controller();
-  if (camera_controller)
+  auto* controller = CaptureModeController::Get();
+  auto* camera_controller = controller->camera_controller();
+  if (camera_controller && !controller->is_recording_in_progress())
     camera_controller->MaybeReparentPreviewWidget();
 }
 

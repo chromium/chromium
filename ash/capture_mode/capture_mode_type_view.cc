@@ -103,11 +103,18 @@ void CaptureModeTypeView::OnCaptureTypeChanged(CaptureModeType new_type) {
     DCHECK_NE(image_toggle_button_->GetToggled(),
               video_toggle_button_->GetToggled());
   }
+
+  auto* camera_controller = controller->camera_controller();
   // Set the value to true for `SetShouldShowPreview` when the capture mode
   // session is started and switched to a video recording mode before recording
   // starts. False when it is switched to image capture mode.
-  if (controller->camera_controller())
-    controller->camera_controller()->SetShouldShowPreview(is_video);
+  // Don't trigger `SetShouldShowPreview` if there's a video recording in
+  // progress, since the capture type is restricted to `kImage` at this use case
+  // and we don't want to affect the camera preview for the in_progress video
+  // recording.
+  if (camera_controller && !controller->is_recording_in_progress()) {
+    camera_controller->SetShouldShowPreview(is_video);
+  }
 }
 
 void CaptureModeTypeView::OnImageToggle() {

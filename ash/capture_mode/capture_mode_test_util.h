@@ -5,7 +5,13 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_TEST_UTIL_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_TEST_UTIL_H_
 
+#include <string>
+
 #include "ash/capture_mode/capture_mode_types.h"
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace gfx {
 class Point;
@@ -43,6 +49,19 @@ void WaitForRecordingToStart();
 void MoveMouseToAndUpdateCursorDisplay(
     const gfx::Point& point,
     ui::test::EventGenerator* event_generator);
+
+// Starts recording immediately without the 3-seconds count down.
+void StartVideoRecordingImmediately();
+
+// Returns the whole file path where the screen capture file is saved to. The
+// returned file path could be either under the default downloads folder or the
+// custom folder.
+base::FilePath WaitForCaptureFileToBeSaved();
+
+// Creates and returns the custom folder path. The custom folder is created in
+// the default downloads folder with given `custom_folder_name`.
+base::FilePath CreateCustomFolderInUserDownloadsPath(
+    const std::string& custom_folder_name);
 
 }  // namespace ash
 

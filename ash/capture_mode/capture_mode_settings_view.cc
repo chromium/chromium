@@ -59,31 +59,35 @@ CaptureModeController::CaptureFolder GetCurrentCaptureFolder() {
 
 CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
                                                  bool is_in_projector_mode)
-    : capture_mode_session_(session),
-      audio_input_menu_group_(
-          AddChildView(std::make_unique<CaptureModeMenuGroup>(
-              this,
-              kCaptureModeMicIcon,
-              l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT)))) {
-  if (!is_in_projector_mode) {
+    : capture_mode_session_(session) {
+  auto* controller = CaptureModeController::Get();
+  if (!controller->is_recording_in_progress()) {
+    audio_input_menu_group_ =
+        AddChildView(std::make_unique<CaptureModeMenuGroup>(
+            this, kCaptureModeMicIcon,
+            l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT)));
+
+    if (!is_in_projector_mode) {
+      audio_input_menu_group_->AddOption(
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_OFF),
+          kAudioOff);
+    }
     audio_input_menu_group_->AddOption(
-        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_OFF),
-        kAudioOff);
+        l10n_util::GetStringUTF16(
+            IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE),
+        kAudioMicrophone);
   }
-  audio_input_menu_group_->AddOption(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE),
-      kAudioMicrophone);
 
   auto* color_provider = AshColorProvider::Get();
   const SkColor separator_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor);
 
-  if (features::IsCaptureModeSelfieCameraEnabled()) {
-    auto* camera_controller = CaptureModeController::Get()->camera_controller();
-    camera_controller->AddObserver(this);
-
+  if (features::IsCaptureModeSelfieCameraEnabled() &&
+      !controller->is_recording_in_progress()) {
     separator_1_ = AddChildView(std::make_unique<views::Separator>());
     separator_1_->SetColor(separator_color);
+    auto* camera_controller = controller->camera_controller();
+    camera_controller->AddObserver(this);
     camera_menu_group_ = AddChildView(std::make_unique<CaptureModeMenuGroup>(
         this, kCaptureModeCameraIcon,
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_CAMERA)));
@@ -263,6 +267,7 @@ bool CaptureModeSettingsView::IsOptionEnabled(int option_id) const {
 
 void CaptureModeSettingsView::OnAvailableCamerasChanged(
     const CameraInfoList& cameras) {
+  DCHECK(!CaptureModeController::Get()->is_recording_in_progress());
   DCHECK(camera_menu_group_);
   AddCameraOptions(cameras);
 

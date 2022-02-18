@@ -6,9 +6,13 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/shell.h"
 #include "ash/wm/cursor_manager_chromeos.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
@@ -55,6 +59,35 @@ void MoveMouseToAndUpdateCursorDisplay(
   Shell::Get()->cursor_manager()->SetDisplay(
       display::Screen::GetScreen()->GetDisplayNearestPoint(point));
   event_generator->MoveMouseTo(point);
+}
+
+void StartVideoRecordingImmediately() {
+  CaptureModeController::Get()->StartVideoRecordingImmediatelyForTesting();
+  WaitForRecordingToStart();
+}
+
+base::FilePath WaitForCaptureFileToBeSaved() {
+  base::FilePath result;
+  base::RunLoop run_loop;
+  ash::CaptureModeTestApi().SetOnCaptureFileSavedCallback(
+      base::BindLambdaForTesting([&](const base::FilePath& path) {
+        result = path;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return result;
+}
+
+base::FilePath CreateCustomFolderInUserDownloadsPath(
+    const std::string& custom_folder_name) {
+  base::FilePath custom_folder = CaptureModeController::Get()
+                                     ->delegate_for_testing()
+                                     ->GetUserDefaultDownloadsFolder()
+                                     .Append(custom_folder_name);
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  const bool result = base::CreateDirectory(custom_folder);
+  DCHECK(result);
+  return custom_folder;
 }
 
 }  // namespace ash

@@ -125,7 +125,7 @@ class ASH_EXPORT CaptureModeSettingsView
   // "Audio input" menu group that users can select an audio input from for
   // screen capture recording. It has "Off" and "Microphone" options for now.
   // "Off" is the default one which means no audio input selected.
-  CaptureModeMenuGroup* audio_input_menu_group_;
+  CaptureModeMenuGroup* audio_input_menu_group_ = nullptr;
 
   // The separator between audio input and camera menus.
   views::Separator* separator_1_ = nullptr;
