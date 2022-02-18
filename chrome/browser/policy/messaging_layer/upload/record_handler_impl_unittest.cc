@@ -80,9 +80,7 @@ void RetrieveFinalSequenceInformation(const base::Value::Dict& request,
   ASSERT_TRUE(encrypted_record_list != nullptr);
   ASSERT_FALSE(encrypted_record_list->empty());
   const auto* const seq_info =
-      (*encrypted_record_list)[encrypted_record_list->size() - 1]
-          .GetDict()
-          .FindDict("sequenceInformation");
+      encrypted_record_list->back().GetDict().FindDict("sequenceInformation");
   ASSERT_TRUE(seq_info != nullptr);
   ASSERT_TRUE(!seq_info->FindString("sequencingId")->empty());
   ASSERT_TRUE(!seq_info->FindString("generationId")->empty());

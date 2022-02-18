@@ -854,6 +854,30 @@ Value::List::const_iterator Value::List::cend() const {
                         to_address(storage_.cend()));
 }
 
+const Value& Value::List::front() const {
+  CHECK(!storage_.empty());
+  return storage_.front();
+}
+
+Value& Value::List::front() {
+  CHECK(!storage_.empty());
+  return storage_.front();
+}
+
+const Value& Value::List::back() const {
+  CHECK(!storage_.empty());
+  return storage_.back();
+}
+
+Value& Value::List::back() {
+  CHECK(!storage_.empty());
+  return storage_.back();
+}
+
+void Value::List::reserve(size_t capacity) {
+  storage_.reserve(capacity);
+}
+
 const Value& Value::List::operator[](size_t index) const {
   CHECK_LT(index, storage_.size());
   return storage_[index];

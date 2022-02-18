@@ -139,9 +139,9 @@ class ListValue;
 //
 // Lists support:
 // - `empty()`, `size()`, `begin()`, `end()`, `cbegin()`, `cend()`,
-//       `operator[]`, `clear()`, `erase()`: Identical to the STL container
-//       equivalents, with additional safety checks, e.g. `operator[]` will
-//       `CHECK()` if the index is out of range.
+//       `front()`, `back()`, `reserve()`, `operator[]`, `clear()`, `erase()`:
+//       Identical to the STL container equivalents, with additional safety
+//       checks, e.g. `operator[]` will `CHECK()` if the index is out of range.
 // - `Clone()`: Create a deep copy.
 // - `Append()`: Append a value to the end of the list. Accepts `Value` or any
 //       of the subtypes that `Value` can hold.
@@ -571,6 +571,20 @@ class BASE_EXPORT GSL_OWNER Value {
     const_iterator end() const;
     const_iterator cend() const;
 
+    // Returns a reference to the first value in the container. Fails with
+    // `CHECK()` if the list is empty.
+    const Value& front() const;
+    Value& front();
+
+    // Returns a reference to the last value in the container. Fails with
+    // `CHECK()` if the list is empty.
+    const Value& back() const;
+    Value& back();
+
+    // Increase the capacity of the backing container, but does not change
+    // the size. Assume all existing iterators will be invalidated.
+    void reserve(size_t capacity);
+
     // Returns a reference to the value at `index` in this list. Fails with a
     // `CHECK()` if `index >= size()`.
     const Value& operator[](size_t index) const;
@@ -579,8 +593,8 @@ class BASE_EXPORT GSL_OWNER Value {
     // Removes all value from this list.
     void clear();
 
-    // Removes the value referenced by `pos` in this listand returns an iterator
-    // to the value following the removed value.
+    // Removes the value referenced by `pos` in this list and returns an
+    // iterator to the value following the removed value.
     iterator erase(iterator pos);
     const_iterator erase(const_iterator pos);
 

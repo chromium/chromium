@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -574,6 +575,46 @@ TEST(ValuesTest, Insert) {
 // TODO(dcheng): Add more tests directly exercising the updated dictionary and
 // list APIs. For now, most of the updated APIs are tested indirectly via the
 // legacy APIs that are largely backed by the updated APIs.
+TEST(ValuesTest, ListFront) {
+  Value::List list;
+  const Value::List& const_list = list;
+
+  list.Append(1);
+  list.Append(2);
+  list.Append(3);
+
+  EXPECT_EQ(Value(1), list.front());
+  EXPECT_EQ(Value(1), const_list.front());
+}
+
+TEST(ValuesTest, ListFrontWhenEmpty) {
+  Value::List list;
+  const Value::List& const_list = list;
+
+  EXPECT_CHECK_DEATH(list.front());
+  EXPECT_CHECK_DEATH(const_list.front());
+}
+
+TEST(ValuesTest, ListBack) {
+  Value::List list;
+  const Value::List& const_list = list;
+
+  list.Append(1);
+  list.Append(2);
+  list.Append(3);
+
+  EXPECT_EQ(Value(3), list.back());
+  EXPECT_EQ(Value(3), const_list.back());
+}
+
+TEST(ValuesTest, ListBackWhenEmpty) {
+  Value::List list;
+  const Value::List& const_list = list;
+
+  EXPECT_CHECK_DEATH(list.back());
+  EXPECT_CHECK_DEATH(const_list.back());
+}
+
 TEST(ValuesTest, ListErase) {
   Value::List list;
   list.Append(1);
