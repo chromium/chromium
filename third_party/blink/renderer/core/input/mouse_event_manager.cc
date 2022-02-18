@@ -8,6 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_drag_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
@@ -68,17 +69,18 @@ void UpdateMouseMovementXY(const WebMouseEvent& mouse_event,
       !mouse_event.is_raw_movement_event &&
       mouse_event.GetType() == WebInputEvent::Type::kMouseMove &&
       last_position) {
-    // TODO(crbug.com/907309): Current movementX/Y is in physical pixel when
-    // zoom-for-dsf is enabled. Here we apply the device-scale-factor to align
-    // with the current behavior. We need to figure out what is the best
-    // behavior here.
+    // Current movementX/Y is in physical pixel when zoom-for-dsf is enabled
+    // which matches layout coordinates. If we don't have zoom-for-dsf, we
+    // apply the device-scale-factor to align with the current behavior.
     float device_scale_factor = 1;
-    if (dom_window && dom_window->GetFrame()) {
-      LocalFrame* frame = dom_window->GetFrame();
-      if (frame->GetPage()->DeviceScaleFactorDeprecated() == 1) {
-        ChromeClient& chrome_client = frame->GetChromeClient();
-        device_scale_factor =
-            chrome_client.GetScreenInfo(*frame).device_scale_factor;
+    if (!Platform::Current()->IsUseZoomForDSFEnabled()) {
+      if (dom_window && dom_window->GetFrame()) {
+        LocalFrame* frame = dom_window->GetFrame();
+        if (frame->GetPage()->DeviceScaleFactorDeprecated() == 1) {
+          ChromeClient& chrome_client = frame->GetChromeClient();
+          device_scale_factor =
+              chrome_client.GetScreenInfo(*frame).device_scale_factor;
+        }
       }
     }
     // movementX/Y is type int for now, so we need to truncated the coordinates

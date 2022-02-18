@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -86,12 +87,12 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
       !web_pointer_event.is_raw_movement_event &&
       (web_pointer_event.GetType() == WebInputEvent::Type::kPointerMove ||
        web_pointer_event.GetType() == WebInputEvent::Type::kPointerRawUpdate)) {
-    // TODO(crbug.com/907309): Current movementX/Y is in physical pixel when
-    // zoom-for-dsf is enabled. Here we apply the device-scale-factor to align
-    // with the current behavior. We need to figure out what is the best
-    // behavior here.
+    // Current movementX/Y is in physical pixel when zoom-for-dsf is enabled
+    // which matches layout coordinates. If we don't have zoom-for-dsf, we
+    // apply the device-scale-factor to align with the current behavior.
     float device_scale_factor = 1;
-    if (dom_window && dom_window->GetFrame()) {
+    if (!Platform::Current()->IsUseZoomForDSFEnabled() && dom_window &&
+        dom_window->GetFrame()) {
       LocalFrame* frame = dom_window->GetFrame();
       if (frame->GetPage()->DeviceScaleFactorDeprecated() == 1) {
         ChromeClient& chrome_client = frame->GetPage()->GetChromeClient();
