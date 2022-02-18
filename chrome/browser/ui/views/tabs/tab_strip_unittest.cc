@@ -196,7 +196,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
   void AnimateToIdealBounds() { tab_strip_->AnimateToIdealBounds(); }
 
   views::BoundsAnimator* bounds_animator() {
-    return &tab_strip_->bounds_animator_;
+    return &tab_strip_->tab_container_->bounds_animator();
   }
 
   int GetActiveTabWidth() { return tab_strip_->GetActiveTabWidth(); }

@@ -9,9 +9,11 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
@@ -52,11 +54,6 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
 
   Tab* GetTabAtModelIndex(int index) const;
 
-  std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
-  group_views() {
-    return group_views_;
-  }
-
   int GetTabCount() const;
 
   // Updates the indexes and count for AX data on all tabs. Used by some screen
@@ -67,9 +64,34 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
 
   bool IsRectInWindowCaption(const gfx::Rect& rect);
 
+  // Animation stuff. Will be public until fully moved down into TabContainer.
+
+  // Called whenever a tab or group header animation has progressed.
+  void OnTabSlotAnimationProgressed(TabSlotView* view);
+
+  // Animates all the views to their ideal bounds.
+  // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
+  // currently set in ideal_bounds.
+  void AnimateToIdealBounds();
+
+  // Teleports the tabs to their ideal bounds.
+  // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
+  // currently set in ideal_bounds.
+  void SnapToIdealBounds();
+
+  void AnimateTabClosed(Tab* tab, int former_model_index);
+  void StartResetDragAnimation(int tab_model_index);
+
   // TODO (1295774): Move callers down into TabContainer so this
   // encapsulation-breaking getter can be removed.
   TabStripLayoutHelper* layout_helper() const { return layout_helper_.get(); }
+
+  std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
+  group_views() {
+    return group_views_;
+  }
+
+  views::BoundsAnimator& bounds_animator() { return bounds_animator_; }
 
   // views::View
   void PaintChildren(const views::PaintInfo& paint_info) override;
@@ -80,6 +102,10 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
 
  private:
+  class RemoveTabDelegate;
+
+  void OnTabCloseAnimationCompleted(Tab* tab);
+
   // Returns the corresponding view index of a |tab| to be inserted at
   // |to_model_index|. Used to reorder the child views of the tab container
   // so that focus order stays consistent with the visual tab order.
@@ -117,6 +143,9 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   views::ViewModelT<Tab> tabs_view_model_;
 
   TabStripController* controller_;
+
+  // Responsible for animating tabs in response to model changes.
+  views::BoundsAnimator bounds_animator_;
 
   std::unique_ptr<TabStripLayoutHelper> layout_helper_;
 };

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
@@ -18,6 +19,100 @@
 #include "ui/views/view_utils.h"
 
 namespace {
+
+// Provides the ability to monitor when a tab's bounds have been animated. Used
+// to hook callbacks to adjust things like tabstrip preferred size and tab group
+// underlines.
+class TabSlotAnimationDelegate : public gfx::AnimationDelegate {
+ public:
+  using OnAnimationProgressedCallback =
+      base::RepeatingCallback<void(TabSlotView*)>;
+
+  TabSlotAnimationDelegate(
+      TabContainer* tab_container,
+      TabSlotView* slot_view,
+      OnAnimationProgressedCallback on_animation_progressed);
+  TabSlotAnimationDelegate(const TabSlotAnimationDelegate&) = delete;
+  TabSlotAnimationDelegate& operator=(const TabSlotAnimationDelegate&) = delete;
+  ~TabSlotAnimationDelegate() override;
+
+  void AnimationProgressed(const gfx::Animation* animation) override;
+  void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationCanceled(const gfx::Animation* animation) override;
+
+ protected:
+  TabContainer* tab_container() { return tab_container_; }
+  TabSlotView* slot_view() { return slot_view_; }
+
+ private:
+  const raw_ptr<TabContainer> tab_container_;
+  const raw_ptr<TabSlotView> slot_view_;
+  OnAnimationProgressedCallback on_animation_progressed_;
+};
+
+TabSlotAnimationDelegate::TabSlotAnimationDelegate(
+    TabContainer* tab_container,
+    TabSlotView* slot_view,
+    OnAnimationProgressedCallback on_animation_progressed)
+    : tab_container_(tab_container),
+      slot_view_(slot_view),
+      on_animation_progressed_(on_animation_progressed) {
+  slot_view_->set_animating(true);
+}
+
+TabSlotAnimationDelegate::~TabSlotAnimationDelegate() = default;
+
+void TabSlotAnimationDelegate::AnimationProgressed(
+    const gfx::Animation* animation) {
+  on_animation_progressed_.Run(slot_view());
+}
+
+void TabSlotAnimationDelegate::AnimationEnded(const gfx::Animation* animation) {
+  slot_view_->set_animating(false);
+  AnimationProgressed(animation);
+  slot_view_->Layout();
+}
+
+void TabSlotAnimationDelegate::AnimationCanceled(
+    const gfx::Animation* animation) {
+  AnimationEnded(animation);
+}
+
+// Animation delegate used when a dragged tab is released. When done sets the
+// dragging state to false.
+class ResetDraggingStateDelegate : public TabSlotAnimationDelegate {
+ public:
+  ResetDraggingStateDelegate(
+      TabContainer* tab_container,
+      Tab* tab,
+      OnAnimationProgressedCallback on_animation_progressed);
+  ResetDraggingStateDelegate(const ResetDraggingStateDelegate&) = delete;
+  ResetDraggingStateDelegate& operator=(const ResetDraggingStateDelegate&) =
+      delete;
+  ~ResetDraggingStateDelegate() override;
+
+  void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationCanceled(const gfx::Animation* animation) override;
+};
+
+ResetDraggingStateDelegate::ResetDraggingStateDelegate(
+    TabContainer* tab_container,
+    Tab* tab,
+    OnAnimationProgressedCallback on_animation_progressed)
+    : TabSlotAnimationDelegate(tab_container, tab, on_animation_progressed) {}
+
+ResetDraggingStateDelegate::~ResetDraggingStateDelegate() = default;
+
+void ResetDraggingStateDelegate::AnimationEnded(
+    const gfx::Animation* animation) {
+  static_cast<Tab*>(slot_view())->set_dragging(false);
+  TabSlotAnimationDelegate::AnimationEnded(animation);
+}
+
+void ResetDraggingStateDelegate::AnimationCanceled(
+    const gfx::Animation* animation) {
+  AnimationEnded(animation);
+}
 
 // A class that calculates a z-value for a TabContainer child view (one of a
 // tab, a tab group header, a tab group underline, or a tab group highlight).
@@ -106,8 +201,42 @@ class ZOrderableTabContainerElement {
 
 }  // namespace
 
+///////////////////////////////////////////////////////////////////////////////
+// TabContainer::RemoveTabDelegate
+//
+// AnimationDelegate used when removing a tab. Does the necessary cleanup when
+// done.
+class TabContainer::RemoveTabDelegate : public TabSlotAnimationDelegate {
+ public:
+  RemoveTabDelegate(TabContainer* tab_container,
+                    Tab* tab,
+                    OnAnimationProgressedCallback on_animation_progressed);
+  RemoveTabDelegate(const RemoveTabDelegate&) = delete;
+  RemoveTabDelegate& operator=(const RemoveTabDelegate&) = delete;
+
+  void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationCanceled(const gfx::Animation* animation) override;
+};
+
+TabContainer::RemoveTabDelegate::RemoveTabDelegate(
+    TabContainer* tab_container,
+    Tab* tab,
+    OnAnimationProgressedCallback on_animation_progressed)
+    : TabSlotAnimationDelegate(tab_container, tab, on_animation_progressed) {}
+
+void TabContainer::RemoveTabDelegate::AnimationEnded(
+    const gfx::Animation* animation) {
+  tab_container()->OnTabCloseAnimationCompleted(static_cast<Tab*>(slot_view()));
+}
+
+void TabContainer::RemoveTabDelegate::AnimationCanceled(
+    const gfx::Animation* animation) {
+  AnimationEnded(animation);
+}
+
 TabContainer::TabContainer(TabStripController* controller)
     : controller_(controller),
+      bounds_animator_(this),
       layout_helper_(std::make_unique<TabStripLayoutHelper>(
           controller,
           base::BindRepeating(&TabContainer::tabs_view_model,
@@ -258,6 +387,125 @@ bool TabContainer::IsRectInWindowCaption(const gfx::Rect& rect) {
   return false;
 }
 
+void TabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
+  // The rightmost tab moving might have changed the tab container's preferred
+  // width.
+  PreferredSizeChanged();
+  if (view->group())
+    UpdateTabGroupVisuals(view->group().value());
+}
+
+void TabContainer::AnimateToIdealBounds() {
+  for (int i = 0; i < GetTabCount(); ++i) {
+    // If the tab is being dragged manually, skip it.
+    Tab* tab = GetTabAtModelIndex(i);
+    if (tab->dragging() && !bounds_animator().IsAnimating(tab))
+      continue;
+
+    // Also skip tabs already being animated to the same ideal bounds.  Calling
+    // AnimateViewTo() again restarts the animation, which changes the timing of
+    // how the tab animates, leading to hitches.
+    const gfx::Rect& target_bounds = tabs_view_model_.ideal_bounds(i);
+    if (bounds_animator().GetTargetBounds(tab) == target_bounds)
+      continue;
+
+    // Set an animation delegate for the tab so it will clip appropriately.
+    // Don't do this if dragging() is true.  In this case the tab was
+    // previously being dragged and is now animating back to its ideal
+    // bounds; it already has an associated ResetDraggingStateDelegate that
+    // will reset this dragging state. Replacing this delegate would mean
+    // this code would also need to reset the dragging state immediately,
+    // and that could allow the new tab button to be drawn atop this tab.
+    if (bounds_animator().IsAnimating(tab) && tab->dragging()) {
+      bounds_animator().SetTargetBounds(tab, target_bounds);
+    } else {
+      bounds_animator().AnimateViewTo(
+          tab, target_bounds,
+          std::make_unique<TabSlotAnimationDelegate>(
+              this, tab,
+              base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
+                                  base::Unretained(this))));
+    }
+  }
+
+  for (const auto& header_pair : group_views()) {
+    TabGroupHeader* const header = header_pair.second->header();
+
+    // If the header is being dragged manually, skip it.
+    if (header->dragging() && !bounds_animator().IsAnimating(header))
+      continue;
+
+    bounds_animator().AnimateViewTo(
+        header,
+        layout_helper()->group_header_ideal_bounds().at(header_pair.first),
+        std::make_unique<TabSlotAnimationDelegate>(
+            this, header,
+            base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
+                                base::Unretained(this))));
+  }
+
+  // Because the preferred size of the tabstrip depends on the IsAnimating()
+  // condition, but starting an animation doesn't necessarily invalidate the
+  // existing preferred size and layout (which may now be incorrect), we need to
+  // signal this explicitly.
+  PreferredSizeChanged();
+}
+
+void TabContainer::SnapToIdealBounds() {
+  for (int i = 0; i < GetTabCount(); ++i)
+    GetTabAtModelIndex(i)->SetBoundsRect(tabs_view_model_.ideal_bounds(i));
+
+  for (const auto& header_pair : group_views()) {
+    header_pair.second->header()->SetBoundsRect(
+        layout_helper()->group_header_ideal_bounds().at(header_pair.first));
+    header_pair.second->UpdateBounds();
+  }
+
+  PreferredSizeChanged();
+}
+
+void TabContainer::AnimateTabClosed(Tab* tab, int former_model_index) {
+  const int tab_overlap = TabStyle::GetTabOverlap();
+
+  // TODO(pkasting): When closing multiple tabs, we get repeated RemoveTabAt()
+  // calls, each of which closes a new tab and thus generates different ideal
+  // bounds.  We should update the animations of any other tabs that are
+  // currently being closed to reflect the new ideal bounds, or else change from
+  // removing one tab at a time to animating the removal of all tabs at once.
+
+  // Compute the target bounds for animating this tab closed.  The tab's left
+  // edge should stay joined to the right edge of the previous tab, if any.
+  gfx::Rect target_bounds = tab->bounds();
+  target_bounds.set_x(
+      (former_model_index > 0)
+          ? (tabs_view_model_.ideal_bounds(former_model_index - 1).right() -
+             tab_overlap)
+          : 0);
+
+  // The tab should animate to the width of the overlap in order to close at the
+  // same speed the surrounding tabs are moving, since at this width the
+  // subsequent tab is naturally positioned at the same X coordinate.
+  target_bounds.set_width(tab_overlap);
+  bounds_animator().AnimateViewTo(
+      tab, target_bounds,
+      std::make_unique<RemoveTabDelegate>(
+          this, tab,
+          base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
+                              base::Unretained(this))));
+}
+
+void TabContainer::StartResetDragAnimation(int tab_model_index) {
+  Tab* tab = GetTabAtModelIndex(tab_model_index);
+  // Install a delegate to reset the dragging state when done. We have to leave
+  // dragging true for the tab otherwise it'll draw beneath the new tab button.
+  bounds_animator().AnimateViewTo(
+      tab, tabs_view_model_.ideal_bounds(tab_model_index),
+      std::make_unique<ResetDraggingStateDelegate>(
+          this, GetTabAtModelIndex(tab_model_index),
+          base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
+                              base::Unretained(this))));
+}
+
 void TabContainer::PaintChildren(const views::PaintInfo& paint_info) {
   // Groups that are being dragged by their header, or that contain the dragged
   // tabs, need an adjusted z-value. Find that group, if it exists.
@@ -334,6 +582,13 @@ views::View* TabContainer::TargetForRect(views::View* root,
     return tab;
 
   return this;
+}
+
+void TabContainer::OnTabCloseAnimationCompleted(Tab* tab) {
+  DCHECK(tab->closing());
+
+  std::unique_ptr<Tab> deleter(tab);
+  layout_helper_->OnTabDestroyed(tab);
 }
 
 int TabContainer::GetViewInsertionIndex(

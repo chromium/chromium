@@ -327,6 +327,7 @@ class TabStrip : public views::View,
 
   // views::View:
   void Layout() override;
+  void ChildPreferredSizeChanged(views::View* child) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize() const override;
   bool CanDrop(const OSExchangeData& data) override;
@@ -347,7 +348,6 @@ class TabStrip : public views::View,
   void HandleDragExited() override;
 
  private:
-  class RemoveTabDelegate;
   class TabDragContextImpl;
 
   friend class TabDragControllerTest;
@@ -433,11 +433,6 @@ class TabStrip : public views::View,
   // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
   // currently set in ideal_bounds.
   void AnimateToIdealBounds();
-
-  // Teleports the tabs to their ideal bounds.
-  // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
-  // currently set in ideal_bounds.
-  void SnapToIdealBounds();
 
   void ExitTabClosingMode();
 
@@ -546,9 +541,6 @@ class TabStrip : public views::View,
   void StartResizeLayoutAnimation();
   void StartPinnedTabAnimation();
 
-  // Called whenever a tab animation has progressed.
-  void OnTabSlotAnimationProgressed(TabSlotView* view);
-
   // Retrieves the ideal bounds for the Tab at the specified index.
   const gfx::Rect& ideal_bounds(int tab_data_index) const {
     return tab_container_->tabs_view_model()->ideal_bounds(tab_data_index);
@@ -600,9 +592,6 @@ class TabStrip : public views::View,
   TabContainer* tab_container_;
 
   base::RepeatingCallback<int()> available_width_callback_;
-
-  // Responsible for animating tabs in response to model changes.
-  views::BoundsAnimator bounds_animator_;
 
   // Responsible for animating the scroll of the tab strip.
   std::unique_ptr<gfx::LinearAnimation> tab_scrolling_animation_;
