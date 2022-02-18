@@ -27,6 +27,7 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedFetchInfo;
+import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
 import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
 
@@ -168,14 +169,15 @@ public class AwVariationsSeedFetcher extends JobService {
 
             try {
                 VariationsUtils.updateStampTime();
-
+                SeedInfo info = VariationsUtils.readSeedFile(VariationsUtils.getSeedFile());
                 VariationsUtils.debugLog("Downloading new seed");
                 VariationsSeedFetcher downloader =
                         sMockDownloader != null ? sMockDownloader : VariationsSeedFetcher.get();
                 String milestone = String.valueOf(VersionConstants.PRODUCT_MAJOR_VERSION);
                 SeedFetchInfo fetchInfo = downloader.downloadContent(
                         VariationsSeedFetcher.VariationsPlatform.ANDROID_WEBVIEW,
-                        /*restrictMode=*/null, milestone, getChannelStr());
+                        /*restrictMode=*/null, milestone, getChannelStr(),
+                        /*currentSeedInfo=*/info);
 
                 saveMetrics(startTime, /*endTime=*/currentTimeMillis());
 
@@ -183,9 +185,11 @@ public class AwVariationsSeedFetcher extends JobService {
                     return null;
                 }
 
-                // VariationsSeedFetcher returns HttpURLConnection.HTTP_OK if and only if it
-                // succeeds.
-                if (fetchInfo.seedFetchResult != HttpURLConnection.HTTP_OK) {
+                // VariationsSeedFetcher returns HttpURLConnection.HTTP_NOT_MODIFIED if seed did not
+                // change server-side, or HttpURLConnection.HTTP_OK if a new seed was successfully
+                // fetched
+                if (HttpURLConnection.HTTP_OK != fetchInfo.seedFetchResult
+                        && HttpURLConnection.HTTP_NOT_MODIFIED != fetchInfo.seedFetchResult) {
                     int requestCount = mParams.getExtras().getInt(JOB_REQUEST_COUNT_KEY) + 1;
                     mParams.getExtras().putInt(JOB_REQUEST_COUNT_KEY, requestCount);
                     // Limit the retries to JOB_MAX_REQUEST_COUNT.

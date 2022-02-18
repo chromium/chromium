@@ -8,12 +8,15 @@ android_library("variations_java") {
   deps = [
     "//base:base_java",
     "//components/variations:variations_java",
+    "//components/variations/proto:proto_java",
     "//net/android:net_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/variations/VariationsAssociatedData.java",
+    "java/src/org/chromium/components/variations/VariationsUtils.java",
     "java/src/org/chromium/components/variations/firstrun/VariationsSeedBridge.java",
     "java/src/org/chromium/components/variations/firstrun/VariationsSeedFetcher.java",
   ]
@@ -23,13 +26,18 @@ java_library("components_variations_junit_tests") {
   # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
   bypass_platform_checks = true
   testonly = true
-  sources = [ "junit/src/org/chromium/components/variations/firstrun/VariationsSeedFetcherTest.java" ]
+  sources = [
+    "junit/src/org/chromium/components/variations/VariationsUtilsTest.java",
+    "junit/src/org/chromium/components/variations/firstrun/VariationsSeedFetcherTest.java",
+  ]
   deps = [
     ":variations_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/variations:variations_java",
+    "//components/variations/proto:proto_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",

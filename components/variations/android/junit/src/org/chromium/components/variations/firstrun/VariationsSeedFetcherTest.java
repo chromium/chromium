@@ -39,11 +39,16 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.components.variations.VariationsSeedOuterClass.VariationsSeed;
 import org.chromium.components.variations.VariationsSwitches;
+import org.chromium.components.variations.firstrun.VariationsSeedFetcher.DateTime;
+import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedFetchInfo;
+import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -137,6 +142,54 @@ public class VariationsSeedFetcherTest {
         assertEquals("Should only log Variations.FirstRun.SeedFetchResult once", 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM));
+    }
+
+    /**
+     * Test method for {@link VariationsSeedFetcher#downloadContent()} when no fetch is needed as
+     * If-None-Match header matches.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void downloadContentNotModified() throws IOException {
+        // Pretend we are on a background thread; set the UI thread looper to something other than
+        // the current thread.
+        when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_NOT_MODIFIED);
+
+        SeedInfo curSeedInfo = new SeedInfo();
+        curSeedInfo.signature = "";
+        curSeedInfo.country = "US";
+        curSeedInfo.isGzipCompressed = false;
+        Date lastSeedDate = new Date();
+        lastSeedDate.setTime(12345L);
+        curSeedInfo.date = lastSeedDate.getTime();
+
+        final Date date = mock(Date.class);
+        when(date.getTime()).thenReturn(67890L);
+        final DateTime dt = mock(DateTime.class);
+        when(dt.newDate()).thenReturn(date);
+        mFetcher.setDateTime(dt);
+
+        VariationsSeed seed = VariationsSeed.newBuilder()
+                                      .setVersion("V")
+                                      .setSerialNumber("savedSerialNumber")
+                                      .build();
+        curSeedInfo.seedData = seed.toByteArray();
+
+        SeedFetchInfo seedFetchInfo =
+                mFetcher.downloadContent(VariationsSeedFetcher.VariationsPlatform.ANDROID,
+                        sRestrict, sMilestone, sChannel, curSeedInfo);
+
+        assertEquals(seedFetchInfo.seedFetchResult, HttpURLConnection.HTTP_NOT_MODIFIED);
+
+        SeedInfo updatedSeedInfo = seedFetchInfo.seedInfo;
+        assertEquals(curSeedInfo.signature, updatedSeedInfo.signature);
+        assertEquals(curSeedInfo.country, updatedSeedInfo.country);
+        assertEquals(curSeedInfo.isGzipCompressed, updatedSeedInfo.isGzipCompressed);
+        assertEquals(67890L, updatedSeedInfo.date);
+        Arrays.equals(curSeedInfo.seedData, updatedSeedInfo.seedData);
+
+        assertEquals(curSeedInfo.getParsedVariationsSeed().getSerialNumber(), "savedSerialNumber");
     }
 
     /**
