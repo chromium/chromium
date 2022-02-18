@@ -23,6 +23,15 @@ import {isGooglePhotosPhoto} from '../utils.js';
 import {selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
+/** A list of |GooglePhotosPhoto|'s to be rendered in a row. */
+export type GooglePhotosPhotosRow = GooglePhotosPhoto[];
+
+/** A titled list of |GooglePhotosPhotosRow|'s to be rendered in a section. */
+export type GooglePhotosPhotosSection = {
+  title: string,
+  rows: GooglePhotosPhotosRow[]
+};
+
 export interface GooglePhotosPhotos {
   $: {grid: IronListElement;};
 }
@@ -57,7 +66,13 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
       photosByRow_: {
         type: Array,
-        computed: 'computePhotosByRow_(photos_, photosLoading_, photosPerRow_)',
+        computed: 'computePhotosByRow_(photosBySection_)',
+      },
+
+      photosBySection_: {
+        type: Array,
+        computed:
+            'computePhotosBySection_(photos_, photosLoading_, photosPerRow_)',
       },
 
       photosLoading_: Boolean,
@@ -91,6 +106,12 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
    * so as to be rendered in a grid.
    */
   private photosByRow_: GooglePhotosPhoto[][]|null;
+
+  /**
+   * The list of |photos_| split into the appropriate number of |photosPerRow_|
+   * and grouped into sections so as to be rendered in a grid.
+   */
+  private photosBySection_: GooglePhotosPhotosSection[]|null;
 
   /** Whether the list of photos is currently loading. */
   private photosLoading_: boolean;
@@ -195,22 +216,66 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /** Invoked to compute |photosByRow_|. */
-  private computePhotosByRow_(
+  private computePhotosByRow_(photosBySection:
+                                  GooglePhotosPhotos['photosBySection_']):
+      GooglePhotosPhotosRow[]|null {
+    if (!isNonEmptyArray(photosBySection)) {
+      return null;
+    }
+    return photosBySection.flatMap(section => section.rows);
+  }
+
+  /** Invoked to compute |photosBySection_|. */
+  private computePhotosBySection_(
       photos: GooglePhotosPhotos['photos_'],
       photosLoading: GooglePhotosPhotos['photosLoading_'],
       photosPerRow: GooglePhotosPhotos['photosPerRow_']):
-      GooglePhotosPhoto[][]|null {
+      GooglePhotosPhotosSection[]|null {
     if (photosLoading || !photosPerRow) {
       return null;
     }
     if (!isNonEmptyArray(photos)) {
       return null;
     }
-    return Array.from(
-        {length: Math.ceil(photos.length / photosPerRow)}, (_, i) => {
-          i *= photosPerRow;
-          return photos!.slice(i, i + photosPerRow);
-        });
+
+    const sections: GooglePhotosPhotosSection[] = [];
+
+    photos.forEach(photo => {
+      const title = photo.date.data.map(c => String.fromCodePoint(c)).join('');
+
+      // Find/create the appropriate |section| in which to insert |photo|.
+      let section = sections[sections.length - 1];
+      if (section?.title !== title) {
+        section = {title, rows: []};
+        sections.push(section);
+      }
+
+      // Find/create the appropriate |row| in which to insert |photo|.
+      let row = section.rows[section.rows.length - 1];
+      if ((row?.length ?? photosPerRow) === photosPerRow) {
+        row = [];
+        section.rows.push(row);
+      }
+
+      row.push(photo);
+    });
+
+    return sections;
+  }
+
+  // Returns the title to display for the specified grid |row|.
+  private getGridRowTitle_(
+      row: GooglePhotosPhotosRow,
+      photosBySection: GooglePhotosPhotos['photosBySection_']): string
+      |undefined {
+    return photosBySection?.find(section => section.rows[0] === row)?.title;
+  }
+
+  // Returns whether the title for the specified grid |row| is visible.
+  private isGridRowTitleVisible_(
+      row: GooglePhotosPhotosRow,
+      photosBySection: GooglePhotosPhotos['photosBySection_']): boolean {
+    return !!this.getGridRowTitle_(row, photosBySection);
   }
 
   // Returns whether the specified |photo| is currently selected.
