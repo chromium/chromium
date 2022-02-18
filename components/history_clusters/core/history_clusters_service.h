@@ -186,6 +186,7 @@ class HistoryClustersService : public KeyedService {
 
   // Internally used callback for `QueryClusters()`.
   void OnGotHistoryVisits(ClusteringRequestSource clustering_request_source,
+                          base::TimeTicks query_visits_start,
                           QueryClustersCallback callback,
                           std::vector<history::AnnotatedVisit> annotated_visits,
                           base::Time continuation_end_time) const;

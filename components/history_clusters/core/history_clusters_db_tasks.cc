@@ -7,8 +7,10 @@
 #include <algorithm>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_types.h"
@@ -54,6 +56,8 @@ GetAnnotatedVisitsToCluster::~GetAnnotatedVisitsToCluster() = default;
 bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     history::HistoryBackend* backend,
     history::HistoryDatabase* db) {
+  base::ElapsedThreadTimer query_visits_timer;
+
   history::QueryOptions options;
 
   // History Clusters wants a complete navigation graph and internally handles
@@ -184,6 +188,10 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
                                        history::SOURCE_SYNCED;
                               }),
       annotated_visits_.end());
+
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.QueryAnnotatedVisits.ThreadTime",
+      query_visits_timer.Elapsed());
 
   return true;
 }

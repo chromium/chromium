@@ -594,6 +594,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Clusters.Backend.QueryAnnotatedVisits.ThreadTime"
+    units="ms" expires_after="2022-07-24">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <summary>
+    This histogram records the time taken (excluding queuing delay) to retrieve
+    visits from the History database, which occurs on the History DB thread.
+    Logged once per request to cluster vists is made, which could be triggered
+    from several things, including loading the journeys UI, putting a query in
+    the journeys page, etc.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Backend.QueryAnnotatedVisitsLatency"
+    units="ms" expires_after="2022-07-24">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <summary>
+    This histogram records the total time taken (including queuing delay) from
+    which a request to retrieve vists from the History database took. Logged
+    once per request to cluster vists is made, which could be triggered from
+    several things, including loading the journeys UI, putting a query in the
+    journeys page, etc.
+  </summary>
+</histogram>
+
 <histogram
     name="History.Clusters.Backend.WasClusterFiltered.{ClusterFilterReason}"
     enum="BooleanFiltered" expires_after="2022-05-15">

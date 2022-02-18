@@ -295,14 +295,14 @@ void HistoryClustersService::QueryClusters(
                                             ? "null"
                                             : base::TimeToISO8601(end_time)));
 
-  // TODO(crbug/1243049) : Add timing metrics for the history service DB query.
   history_service_->ScheduleDBTask(
       FROM_HERE,
       std::make_unique<GetAnnotatedVisitsToCluster>(
           incomplete_visit_context_annotations_, begin_time, end_time,
           base::BindOnce(&HistoryClustersService::OnGotHistoryVisits,
                          weak_ptr_factory_.GetWeakPtr(),
-                         clustering_request_source, std::move(callback))),
+                         clustering_request_source, base::TimeTicks::Now(),
+                         std::move(callback))),
       task_tracker);
 }
 
@@ -482,6 +482,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
 
 void HistoryClustersService::OnGotHistoryVisits(
     ClusteringRequestSource clustering_request_source,
+    base::TimeTicks query_visits_start,
     QueryClustersCallback callback,
     std::vector<history::AnnotatedVisit> annotated_visits,
     base::Time continuation_end_time) const {
@@ -492,6 +493,10 @@ void HistoryClustersService::OnGotHistoryVisits(
                      (continuation_end_time.is_null()
                           ? "null (i.e. exhausted history)"
                           : base::TimeToISO8601(continuation_end_time)));
+
+  base::UmaHistogramTimes(
+      "Histogram.Clusters.Backend.QueryAnnotatedVisitsLatency",
+      base::TimeTicks::Now() - query_visits_start);
 
   if (annotated_visits.empty()) {
     // Early exit without calling backend if there's no annotated visits.
