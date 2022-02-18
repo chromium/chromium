@@ -234,7 +234,8 @@ class TabStripTestBase : public ChromeViewsTestBase {
 
   std::vector<TabGroupViews*> ListGroupViews() const {
     std::vector<TabGroupViews*> result;
-    for (auto const& group_view_pair : tab_strip_->group_views_)
+    for (auto const& group_view_pair :
+         tab_strip_->tab_container_->group_views())
       result.push_back(group_view_pair.second.get());
     return result;
   }
@@ -245,7 +246,8 @@ class TabStripTestBase : public ChromeViewsTestBase {
     views::View::Views all_children = GetChildViews();
 
     const int num_tab_slot_views =
-        tab_strip_->GetTabCount() + tab_strip_->group_views_.size();
+        tab_strip_->GetTabCount() +
+        tab_strip_->tab_container_->group_views().size();
 
     return views::View::Views(all_children.begin(),
                               all_children.begin() + num_tab_slot_views);

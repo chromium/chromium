@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
@@ -23,6 +24,10 @@ TabContainer::TabContainer(TabStripController* controller)
 }
 
 TabContainer::~TabContainer() {
+  // Since TabGroupViews expects be able to remove the views it creates, clear
+  // |group_views_| before removing the remaining children below.
+  group_views_.clear();
+
   RemoveAllChildViews();
 }
 
@@ -50,6 +55,34 @@ void TabContainer::RemoveTabFromViewModel(int index) {
   layout_helper_->RemoveTabAt(index, tab);
 }
 
+void TabContainer::OnGroupCreated(const tab_groups::TabGroupId& group,
+                                  TabStrip* tab_strip) {
+  auto group_view = std::make_unique<TabGroupViews>(this, tab_strip, group);
+  layout_helper()->InsertGroupHeader(group, group_view->header());
+  group_views()[group] = std::move(group_view);
+}
+
+void TabContainer::OnGroupEditorOpened(const tab_groups::TabGroupId& group) {
+  // The context menu relies on a Browser object which is not provided in
+  // TabStripTest.
+  if (controller_->GetBrowser()) {
+    group_views()[group]->header()->ShowContextMenuForViewImpl(
+        this, gfx::Point(), ui::MENU_SOURCE_NONE);
+  }
+}
+
+void TabContainer::OnGroupMoved(const tab_groups::TabGroupId& group) {
+  DCHECK(group_views()[group]);
+
+  layout_helper()->UpdateGroupHeaderIndex(group);
+
+  TabGroupHeader* group_header = group_views()[group]->header();
+  const int first_tab_model_index =
+      controller_->GetFirstTabInGroup(group).value();
+
+  MoveGroupHeader(group_header, first_tab_model_index);
+}
+
 void TabContainer::MoveGroupHeader(TabGroupHeader* group_header,
                                    int first_tab_model_index) {
   const int header_index = GetIndexOf(group_header);
@@ -64,6 +97,12 @@ void TabContainer::MoveGroupHeader(TabGroupHeader* group_header,
     ReorderChildView(group_header, first_tab_view_index - 1);
   if (header_index > first_tab_view_index - 1)
     ReorderChildView(group_header, first_tab_view_index);
+}
+
+void TabContainer::UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) {
+  const auto group_views = group_views_.find(group_id);
+  if (group_views != group_views_.end())
+    group_views->second->UpdateBounds();
 }
 
 int TabContainer::GetModelIndexOf(const TabSlotView* slot_view) {
@@ -133,19 +172,17 @@ gfx::Size TabContainer::GetMinimumSize() const {
   return gfx::Size(minimum_width, GetLayoutConstant(TAB_HEIGHT));
 }
 
-views::View* TabContainer::GetTooltipHandlerForPoint(
-    const gfx::Point& point_in_tab_container_coords) {
-  if (!HitTestPoint(point_in_tab_container_coords))
+views::View* TabContainer::GetTooltipHandlerForPoint(const gfx::Point& point) {
+  if (!HitTestPoint(point))
     return nullptr;
 
   // Return any view that isn't a Tab or this TabContainer immediately. We don't
   // want to interfere.
-  views::View* v =
-      View::GetTooltipHandlerForPoint(point_in_tab_container_coords);
+  views::View* v = View::GetTooltipHandlerForPoint(point);
   if (v && v != this && !views::IsViewClass<Tab>(v))
     return v;
 
-  views::View* tab = FindTabHitByPoint(point_in_tab_container_coords);
+  views::View* tab = FindTabHitByPoint(point);
   if (tab)
     return tab;
 
@@ -225,18 +262,16 @@ int TabContainer::GetViewIndexForModelIndex(int model_index) const {
   return GetIndexOf(GetTabAtModelIndex(model_index));
 }
 
-bool TabContainer::IsPointInTab(
-    Tab* tab,
-    const gfx::Point& point_in_tab_container_coords) {
+bool TabContainer::IsPointInTab(Tab* tab,
+                                const gfx::Point& point_in_tabstrip_coords) {
   if (!tab->GetVisible())
     return false;
-  gfx::Point point_in_tab_coords(point_in_tab_container_coords);
+  gfx::Point point_in_tab_coords(point_in_tabstrip_coords);
   View::ConvertPointToTarget(this, tab, &point_in_tab_coords);
   return tab->HitTestPoint(point_in_tab_coords);
 }
 
-Tab* TabContainer::FindTabHitByPoint(
-    const gfx::Point& point_in_tab_container_coords) {
+Tab* TabContainer::FindTabHitByPoint(const gfx::Point& point) {
   // Check all tabs, even closing tabs. Mouse events need to reach closing tabs
   // for users to be able to rapidly middle-click close several tabs.
   std::vector<Tab*> all_tabs = layout_helper_->GetTabs();
@@ -246,20 +281,19 @@ Tab* TabContainer::FindTabHitByPoint(
   for (size_t i = 0; i < all_tabs.size(); ++i) {
     // If we don't first exclude points outside the current tab, the code below
     // will return the wrong tab if the next tab is selected, the following tab
-    // is active, and |point_in_tab_container_coords| is in the overlap region
-    // between the two.
+    // is active, and |point| is in the overlap region between the two.
     Tab* tab = all_tabs[i];
-    if (!IsPointInTab(tab, point_in_tab_container_coords))
+    if (!IsPointInTab(tab, point))
       continue;
 
     // Selected tabs render atop unselected ones, and active tabs render atop
-    // everything.  Check whether the next tab renders atop this one and
-    // |point_in_tab_container_coords| is in the overlap region.
+    // everything.  Check whether the next tab renders atop this one and |point|
+    // is in the overlap region.
     Tab* next_tab = i < (all_tabs.size() - 1) ? all_tabs[i + 1] : nullptr;
     if (next_tab &&
         (next_tab->IsActive() ||
          (next_tab->IsSelected() && !tab->IsSelected())) &&
-        IsPointInTab(next_tab, point_in_tab_container_coords))
+        IsPointInTab(next_tab, point))
       return next_tab;
 
     // This is the topmost tab for this point.

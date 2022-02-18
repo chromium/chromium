@@ -213,7 +213,7 @@ class TabStrip : public views::View,
 
   // Returns the TabGroupHeader with ID |id|.
   TabGroupHeader* group_header(const tab_groups::TabGroupId& id) const {
-    return group_views_.at(id).get()->header();
+    return tab_container_->group_views().at(id).get()->header();
   }
 
   // Returns the index of the specified view in the model coordinate system, or
@@ -550,10 +550,6 @@ class TabStrip : public views::View,
   // Called whenever a tab animation has progressed.
   void OnTabSlotAnimationProgressed(TabSlotView* view);
 
-  // Called to update the visuals for a tab group when tabs in the group are
-  // moved or resized.
-  void UpdateTabGroupVisuals(tab_groups::TabGroupId tab_group_id);
-
   // Retrieves the ideal bounds for the Tab at the specified index.
   const gfx::Rect& ideal_bounds(int tab_data_index) const {
     return tab_container_->tabs_view_model()->ideal_bounds(tab_data_index);
@@ -603,8 +599,6 @@ class TabStrip : public views::View,
 
   // The View parent for the tabs and the various group views.
   TabContainer* tab_container_;
-
-  std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>> group_views_;
 
   base::RepeatingCallback<int()> available_width_callback_;
 

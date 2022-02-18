@@ -491,7 +491,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 
     // Note: |drag_controller| can be set to null during the drag above.
     if (drag_controller_ && drag_controller_->group())
-      tab_strip_->UpdateTabGroupVisuals(*drag_controller_->group());
+      tab_strip_->tab_container_->UpdateTabGroupVisuals(
+          *drag_controller_->group());
   }
 
   bool EndDrag(EndDragReason reason) {
@@ -694,7 +695,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     // This ensures a layout happens after the drag is done.
     tab_strip_->last_layout_size_ = gfx::Size();
     if (views.at(0)->group().has_value())
-      tab_strip_->UpdateTabGroupVisuals(views.at(0)->group().value());
+      tab_strip_->tab_container_->UpdateTabGroupVisuals(
+          views.at(0)->group().value());
   }
 
   void StartedDragging(const std::vector<TabSlotView*>& views) override {
@@ -729,7 +731,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     // If this is a header drag, start painting the group highlight.
     TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(views[0]);
     if (header) {
-      tab_strip_->group_views_[header->group().value()]
+      tab_strip_->tab_container_->group_views()[header->group().value()]
           ->highlight()
           ->SetVisible(true);
     }
@@ -1024,10 +1026,6 @@ TabStrip::~TabStrip() {
   // but before moving the mouse.
   RemoveMessageLoopObserver();
 
-  // Since TabGroupViews expects be able to remove the views it creates, clear
-  // |group_views_| before removing the remaining children below.
-  group_views_.clear();
-
   // The child tabs may call back to us from their destructors. Delete them so
   // that if they call back we aren't in a weird state.
   RemoveAllChildViews();
@@ -1298,20 +1296,11 @@ void TabStrip::AddTabToGroup(absl::optional<tab_groups::TabGroupId> group,
 }
 
 void TabStrip::OnGroupCreated(const tab_groups::TabGroupId& group) {
-  auto group_view =
-      std::make_unique<TabGroupViews>(tab_container_, this, group);
-  tab_container_->layout_helper()->InsertGroupHeader(group,
-                                                     group_view->header());
-  group_views_[group] = std::move(group_view);
+  tab_container_->OnGroupCreated(group, this);
 }
 
 void TabStrip::OnGroupEditorOpened(const tab_groups::TabGroupId& group) {
-  // The context menu relies on a Browser object which is not provided in
-  // TabStripTest.
-  if (this->controller()->GetBrowser()) {
-    group_views_[group]->header()->ShowContextMenuForViewImpl(
-        this, gfx::Point(), ui::MENU_SOURCE_NONE);
-  }
+  tab_container_->OnGroupEditorOpened(group);
 }
 
 void TabStrip::OnGroupContentsChanged(const tab_groups::TabGroupId& group) {
@@ -1326,7 +1315,7 @@ void TabStrip::OnGroupVisualsChanged(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData* old_visuals,
     const tab_groups::TabGroupVisualData* new_visuals) {
-  group_views_[group]->OnGroupVisualsChanged();
+  tab_container_->group_views()[group]->OnGroupVisualsChanged();
   // The group title may have changed size, so update bounds.
   // First exit tab closing mode, unless this change was a collapse, in which
   // case we want to stay in tab closing mode.
@@ -1357,29 +1346,25 @@ void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
     // TabGroupHeader::CalculateWidth() for more details.
     const int empty_group_title_adjustment =
         GetGroupTitle(group).empty() ? 2 : -2;
-    const int title_chip_width =
-        group_views_[group]->header()->GetTabSizeInfo().standard_width -
-        2 * TabStyle::GetTabOverlap() - empty_group_title_adjustment;
+    const int title_chip_width = tab_container_->group_views()[group]
+                                     ->header()
+                                     ->GetTabSizeInfo()
+                                     .standard_width -
+                                 2 * TabStyle::GetTabOverlap() -
+                                 empty_group_title_adjustment;
     const int collapsed_header_width =
         title_chip_width + 2 * TabGroupUnderline::GetStrokeInset();
     override_available_width_for_tabs_ =
         ideal_bounds(GetModelCount() - 1).right() -
-        group_views_[group]->GetBounds().width() + collapsed_header_width;
+        tab_container_->group_views()[group]->GetBounds().width() +
+        collapsed_header_width;
   } else {
     ExitTabClosingMode();
   }
 }
 
 void TabStrip::OnGroupMoved(const tab_groups::TabGroupId& group) {
-  DCHECK(group_views_[group]);
-
-  tab_container_->layout_helper()->UpdateGroupHeaderIndex(group);
-
-  TabGroupHeader* group_header = group_views_[group]->header();
-  const int first_tab_model_index =
-      controller_->GetFirstTabInGroup(group).value();
-
-  tab_container_->MoveGroupHeader(group_header, first_tab_model_index);
+  tab_container_->OnGroupMoved(group);
 }
 
 void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
@@ -1388,7 +1373,7 @@ void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
 
   UpdateIdealBounds();
   AnimateToIdealBounds();
-  group_views_.erase(group);
+  tab_container_->group_views().erase(group);
 }
 
 void TabStrip::ShiftGroupLeft(const tab_groups::TabGroupId& group) {
@@ -1506,7 +1491,7 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
     if (old_active_tab) {
       old_active_tab->ActiveStateChanged();
       if (old_active_tab->group().has_value())
-        UpdateTabGroupVisuals(old_active_tab->group().value());
+        tab_container_->UpdateTabGroupVisuals(old_active_tab->group().value());
     }
     if (new_active_tab->group().has_value()) {
       const tab_groups::TabGroupId new_group = new_active_tab->group().value();
@@ -1515,7 +1500,7 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
       if (controller()->IsGroupCollapsed(new_group))
         controller()->ToggleTabGroupCollapsedState(
             new_group, ToggleTabGroupCollapsedStateOrigin::kImplicitAction);
-      UpdateTabGroupVisuals(new_group);
+      tab_container_->UpdateTabGroupVisuals(new_group);
     }
 
     new_active_tab->ActiveStateChanged();
@@ -2111,7 +2096,8 @@ void TabStrip::PaintChildren(const views::PaintInfo& paint_info) {
       dragging_tabs_current_group_underline =
           dragging_tabs_current_group.has_value()
               ? absl::optional<const TabGroupUnderline*>(
-                    group_views_[dragging_tabs_current_group.value()]
+                    tab_container_
+                        ->group_views()[dragging_tabs_current_group.value()]
                         ->underline())
               : absl::nullopt;
 
@@ -2294,7 +2280,7 @@ void TabStrip::Init() {
 
 std::map<tab_groups::TabGroupId, TabGroupHeader*> TabStrip::GetGroupHeaders() {
   std::map<tab_groups::TabGroupId, TabGroupHeader*> group_headers;
-  for (const auto& group_view_pair : group_views_) {
+  for (const auto& group_view_pair : tab_container_->group_views()) {
     group_headers.insert(std::make_pair(group_view_pair.first,
                                         group_view_pair.second->header()));
   }
@@ -2485,7 +2471,7 @@ void TabStrip::AnimateToIdealBounds() {
     }
   }
 
-  for (const auto& header_pair : group_views_) {
+  for (const auto& header_pair : tab_container_->group_views()) {
     TabGroupHeader* const header = header_pair.second->header();
 
     // If the header is being dragged manually, skip it.
@@ -2513,7 +2499,7 @@ void TabStrip::SnapToIdealBounds() {
   for (int i = 0; i < GetTabCount(); ++i)
     tab_at(i)->SetBoundsRect(ideal_bounds(i));
 
-  for (const auto& header_pair : group_views_) {
+  for (const auto& header_pair : tab_container_->group_views()) {
     header_pair.second->header()->SetBoundsRect(
         tab_container_->layout_helper()->group_header_ideal_bounds().at(
             header_pair.first));
@@ -2565,7 +2551,8 @@ void TabStrip::SetTabSlotVisibility() {
   for (Tab* tab : base::Reversed(tabs)) {
     absl::optional<tab_groups::TabGroupId> current_group = tab->group();
     if (current_group != last_tab_group && last_tab_group.has_value()) {
-      TabGroupViews* group_view = group_views_.at(last_tab_group.value()).get();
+      TabGroupViews* group_view =
+          tab_container_->group_views().at(last_tab_group.value()).get();
       group_view->header()->SetVisible(last_tab_visible);
       group_view->underline()->SetVisible(last_tab_visible);
     }
@@ -2665,7 +2652,9 @@ void TabStrip::StoppedDraggingView(TabSlotView* view, bool* is_first_view) {
       view->GetTabSlotViewType() == TabSlotView::ViewType::kTabGroupHeader) {
     view->set_dragging(false);
     // Disable the group highlight now that the drag is ended.
-    group_views_[view->group().value()]->highlight()->SetVisible(false);
+    tab_container_->group_views()[view->group().value()]
+        ->highlight()
+        ->SetVisible(false);
     return;
   }
 
@@ -3124,13 +3113,7 @@ void TabStrip::OnTabSlotAnimationProgressed(TabSlotView* view) {
   // The rightmost tab moving might have changed the tabstrip's preferred width.
   PreferredSizeChanged();
   if (view->group())
-    UpdateTabGroupVisuals(view->group().value());
-}
-
-void TabStrip::UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) {
-  const auto group_views = group_views_.find(group_id);
-  if (group_views != group_views_.end())
-    group_views->second->UpdateBounds();
+    tab_container_->UpdateTabGroupVisuals(view->group().value());
 }
 
 const gfx::Rect& TabStrip::ideal_bounds(tab_groups::TabGroupId group) const {

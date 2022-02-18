@@ -7,6 +7,8 @@
 
 #include <memory>
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_group_underline.h"
+#include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -31,7 +33,17 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   // so it can be animated closed.
   void RemoveTabFromViewModel(int index);
 
+  void OnGroupCreated(const tab_groups::TabGroupId& group, TabStrip* tab_strip);
+
+  // Opens the editor bubble for the tab |group| as a result of an explicit user
+  // action to create the |group|.
+  void OnGroupEditorOpened(const tab_groups::TabGroupId& group);
+
+  void OnGroupMoved(const tab_groups::TabGroupId& group);
+
   void MoveGroupHeader(TabGroupHeader* group_header, int first_tab_model_index);
+
+  void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id);
 
   int GetModelIndexOf(const TabSlotView* slot_view);
 
@@ -39,10 +51,15 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
 
   Tab* GetTabAtModelIndex(int index) const;
 
+  std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
+  group_views() {
+    return group_views_;
+  }
+
   int GetTabCount() const;
 
-  // Updates the indexes and count for a11y data on all tabs. Used by some
-  // screen readers (e.g. ChromeVox).
+  // Updates the indexes and count for AX data on all tabs. Used by some screen
+  // readers (e.g. ChromeVox).
   void UpdateAccessibleTabIndices();
 
   void HandleLongTap(ui::GestureEvent* event);
@@ -55,8 +72,7 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
 
   // views::View
   gfx::Size GetMinimumSize() const override;
-  views::View* GetTooltipHandlerForPoint(
-      const gfx::Point& point_in_tab_container_coords) override;
+  views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
   // views::ViewTargeterDelegate:
   views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
@@ -73,18 +89,20 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
 
   int GetViewIndexForModelIndex(int tab_model_index) const;
 
-  // Returns true if the specified point in the TabContainer's local coordinate
-  // space is within the hit-test region of the specified Tab.
-  bool IsPointInTab(Tab* tab, const gfx::Point& point_in_tab_container_coords);
+  // Returns true if the specified point in TabStrip coords is within the
+  // hit-test region of the specified Tab.
+  bool IsPointInTab(Tab* tab, const gfx::Point& point_in_tabstrip_coords);
 
   // For a given point, finds a tab that is hit by the point. If the point hits
   // an area on which two tabs are overlapping, the tab is selected as follows:
   // - If one of the tabs is active, select it.
   // - Select the left one.
   // If no tabs are hit, returns null.
-  Tab* FindTabHitByPoint(const gfx::Point& point_in_tab_container_coords);
+  Tab* FindTabHitByPoint(const gfx::Point& point);
 
   bool IsValidModelIndex(int model_index) const;
+
+  std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>> group_views_;
 
   // There is a one-to-one mapping between each of the
   // tabs in the TabStripModel and |tabs_view_model_|.
