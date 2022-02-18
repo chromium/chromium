@@ -12,6 +12,6 @@ android_library("java") {
   deps = [
     "//chrome/browser/image_editor/public:java",
     "//chrome/browser/share:java",
-    "//chrome/browser/tab:java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
