@@ -4,6 +4,8 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.chromium.support_lib_boundary.WebSettingsBoundaryInterface.RequestedWithHeaderMode;
+
 /**
  * Boundary interface for ServiceWorkerWebSettings.
  */
@@ -23,4 +25,8 @@ public interface ServiceWorkerWebSettingsBoundaryInterface {
     void setBlockNetworkLoads(boolean flag);
 
     boolean getBlockNetworkLoads();
+
+    void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode);
+    @RequestedWithHeaderMode
+    int getRequestedWithHeaderMode();
 }

@@ -189,4 +189,10 @@ public class Features {
     // WebSettingsCompat.setWebAuthnSupport
     // WebSettingsCompat.getWebAuthnSupport
     public static final String WEB_AUTHENTICATION = "WEB_AUTHENTICATION";
+
+    // WebSettingsCompat.setRequestedWithHeaderMode
+    // WebSettingsCompat.getRequestedWithHeaderMode
+    // ServiceWorkerWebSettingsCompat.setRequestedWithHeaderMode
+    // ServiceWorkerWebSettingsCompat.getRequestedWithHeaderMode
+    public static final String REQUESTED_WITH_HEADER_CONTROL = "REQUESTED_WITH_HEADER_CONTROL";
 }

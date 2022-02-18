@@ -52,4 +52,13 @@ public interface WebSettingsBoundaryInterface {
     void setWebAuthnSupport(@WebAuthnSupport int support);
     @WebAuthnSupport
     int getWebAuthnSupport();
+
+    @Retention(RetentionPolicy.SOURCE)
+    @interface RequestedWithHeaderMode {
+        int NO_HEADER = 0;
+        int APP_PACKAGE_NAME = 1;
+    }
+    void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode);
+    @RequestedWithHeaderMode
+    int getRequestedWithHeaderMode();
 }
