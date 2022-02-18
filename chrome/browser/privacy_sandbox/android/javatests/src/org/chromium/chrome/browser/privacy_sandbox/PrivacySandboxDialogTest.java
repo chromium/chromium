@@ -50,6 +50,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
 
@@ -111,6 +112,7 @@ public final class PrivacySandboxDialogTest {
             if (noMatchException != null) throw noMatchException;
             // Allow disk writes and slow calls to render from UI thread.
             try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
+                TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(v));
                 mRenderTestRule.render(v, renderId);
             } catch (IOException e) {
                 assert false : "Render test failed due to " + e;
@@ -145,6 +147,7 @@ public final class PrivacySandboxDialogTest {
             mDialog.show();
         });
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        onView(withId(R.id.privacy_sandbox_consent_dropdown)).perform(scrollTo());
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_consent_dialog_expanded");
     }
 
