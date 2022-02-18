@@ -1011,7 +1011,7 @@ class CORE_EXPORT Node : public EventTarget {
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 3 bits remaining.
+    // 2 bits remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {
