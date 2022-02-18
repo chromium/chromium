@@ -94,6 +94,8 @@ void AddStrings(content::WebUIDataSource* source) {
       // User/avatar related strings.
       {"avatarLabel", IDS_PERSONALIZATION_APP_AVATAR_LABEL},
       {"takeWebcamPhoto", IDS_PERSONALIZATION_APP_AVATAR_TAKE_PHOTO},
+      {"confirmWebcamPhoto", IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_PHOTO},
+      {"rejectWebcamPhoto", IDS_PERSONALIZATION_APP_AVATAR_REJECT_PHOTO},
 
       // Ambient mode related string.
       {"screensaverLabel", IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL},

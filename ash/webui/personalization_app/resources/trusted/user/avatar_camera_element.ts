@@ -7,20 +7,23 @@
  * allow the user to take a selfie.
  */
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
-import * as webcamUtils from 'chrome://resources/cr_elements/chromeos/cr_picture/webcam_utils.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {saveCameraImage} from './user_controller.js';
 import {getUserProvider} from './user_interface_provider.js';
+import {GetUserMediaProxy, getWebcamUtils} from './webcam_utils_proxy.js';
 
 export interface AvatarCamera {
   $: {dialog: CrDialogElement; webcamVideo: HTMLVideoElement;};
 }
+
 export class AvatarCamera extends WithPersonalizationStore {
   static get is() {
     return 'avatar-camera';
@@ -36,22 +39,29 @@ export class AvatarCamera extends WithPersonalizationStore {
       cameraStream_: {
         type: Object,
         value: null,
+      },
+
+      /**
+       * Store a reference to the captured png data to know if the user has
+       * captured an image yet.
+       */
+      pngBinary_: {
+        type: Object,
+        value: null,
+      },
+
+      /** Show the image as a blob to avoid URL length limits. */
+      previewBlobUrl_: {
+        type: String,
+        computed: 'computePreviewBlobUrl_(pngBinary_)',
+        observer: 'onPreviewBlobUrlChanged_',
       }
     };
   }
 
-  // Static to mock out easier in tests.
-  static webcamUtils = webcamUtils;
-
-  // Static to mock out easier in tests.
-  static getUserMedia(): Promise<MediaStream> {
-    return navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: AvatarCamera.webcamUtils.kDefaultVideoConstraints,
-    });
-  }
-
   private cameraStream_: MediaStream|null;
+  private pngBinary_: Uint8Array|null;
+  private previewBlobUrl_: string|null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -63,10 +73,30 @@ export class AvatarCamera extends WithPersonalizationStore {
     this.stopCamera_();
   }
 
+  private computePreviewBlobUrl_(): string|null {
+    if (!this.pngBinary_) {
+      return null;
+    }
+
+    assertInstanceof(
+        this.pngBinary_, Uint8Array,
+        'Preview binary should be a png uint8array');
+
+    const blob = new Blob([this.pngBinary_], {type: 'image/png'});
+    return URL.createObjectURL(blob);
+  }
+
+  private onPreviewBlobUrlChanged_(_: string|null, old: string|null) {
+    if (old) {
+      // Revoke the last one to free memory.
+      URL.revokeObjectURL(old);
+    }
+  }
+
   private async startCamera_() {
     this.stopCamera_();
     try {
-      this.cameraStream_ = await AvatarCamera.getUserMedia();
+      this.cameraStream_ = await GetUserMediaProxy.getInstance().getUserMedia();
       if (!this.isConnected) {
         // User closed the camera UI while waiting for the camera to start.
         this.stopCamera_();
@@ -86,22 +116,39 @@ export class AvatarCamera extends WithPersonalizationStore {
    * the camera is off.
    */
   private stopCamera_() {
-    AvatarCamera.webcamUtils.stopMediaTracks(this.cameraStream_);
+    getWebcamUtils().stopMediaTracks(this.cameraStream_);
     this.cameraStream_ = null;
+    this.pngBinary_ = null;
   }
 
   private async takePhoto_() {
-    const frames = await AvatarCamera.webcamUtils.captureFrames(
-        this.$.webcamVideo, AvatarCamera.webcamUtils.CAPTURE_SIZE,
-        AvatarCamera.webcamUtils.CAPTURE_INTERVAL_MS,
+    const webcamUtils = getWebcamUtils();
+
+    const frames = await webcamUtils.captureFrames(
+        this.$.webcamVideo, webcamUtils.CAPTURE_SIZE,
+        webcamUtils.CAPTURE_INTERVAL_MS,
         /*num_frames=*/ 1);
 
-    const pngBinary = AvatarCamera.webcamUtils.convertFramesToPngBinary(frames);
+    this.pngBinary_ = webcamUtils.convertFramesToPngBinary(frames);
+  }
 
-    saveCameraImage(pngBinary, getUserProvider());
+  private confirmPhoto_() {
+    assertInstanceof(
+        this.pngBinary_, Uint8Array,
+        'Preview image binary must be set to confirm photo');
 
-    // Close the dialog after saving the image.
+    saveCameraImage(this.pngBinary_, getUserProvider());
+    this.pngBinary_ = null;
+    // Close the camera interface when an image is confirmed.
     this.$.dialog.close();
+  }
+
+  private clearPhoto_() {
+    this.pngBinary_ = null;
+  }
+
+  private isVideoHidden_(): boolean {
+    return !this.cameraStream_ || !!this.previewBlobUrl_;
   }
 }
 

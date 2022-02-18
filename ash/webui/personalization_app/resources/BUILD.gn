@@ -46,6 +46,7 @@ static_js_files = [
   "trusted/user/user_interface_provider.ts",
   "trusted/user/user_reducers.ts",
   "trusted/user/user_state.ts",
+  "trusted/user/webcam_utils_proxy.ts",
   "trusted/utils.ts",
   "trusted/wallpaper/wallpaper_actions.ts",
   "trusted/wallpaper/untrusted_message_handler.ts",

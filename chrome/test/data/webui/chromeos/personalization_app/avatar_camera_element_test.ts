@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {AvatarCamera} from 'chrome://personalization/trusted/user/avatar_camera_element.js';
+import {GetUserMediaProxy, setWebcamUtilsForTesting} from 'chrome://personalization/trusted/user/webcam_utils_proxy.js';
 import * as webcamUtils from 'chrome://resources/cr_elements/chromeos/cr_picture/webcam_utils.js';
 import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -51,21 +52,32 @@ class MockWebcamUtils extends TestBrowserProxy implements WebcamUtilsInterface {
   }
 }
 
+class MockGetUserMediaProxy extends
+    TestBrowserProxy<GetUserMediaProxy> implements GetUserMediaProxy {
+  mediaStream = new MediaStream();
+
+  constructor() {
+    super(['getUserMedia']);
+  }
+
+  getUserMedia(): Promise<MediaStream> {
+    this.methodCalled('getUserMedia');
+    return Promise.resolve(this.mediaStream);
+  }
+}
+
 export function AvatarCameraTest() {
   let avatarCameraElement: AvatarCamera|null = null;
-  let getUserMediaPromise: Promise<void>;
+  let mockGetUserMediaProxy: MockGetUserMediaProxy;
+  let mockWebcamUtils: MockWebcamUtils;
   let userProvider: TestUserProvider;
-  const mockMediaStream = new MediaStream();
 
 
   setup(function() {
-    AvatarCamera.webcamUtils = new MockWebcamUtils();
-    getUserMediaPromise = new Promise((resolve) => {
-      AvatarCamera.getUserMedia = async () => {
-        resolve();
-        return mockMediaStream;
-      };
-    });
+    mockWebcamUtils = new MockWebcamUtils();
+    setWebcamUtilsForTesting(mockWebcamUtils);
+    mockGetUserMediaProxy = new MockGetUserMediaProxy();
+    GetUserMediaProxy.setInstanceForTesting(mockGetUserMediaProxy);
     const mocks = baseSetup();
     userProvider = mocks.userProvider;
   });
@@ -77,23 +89,58 @@ export function AvatarCameraTest() {
 
   test('requests webcam media when open and attaches to video', async () => {
     avatarCameraElement = initElement(AvatarCamera, {open: false});
-    await getUserMediaPromise;
+    await mockGetUserMediaProxy.whenCalled('getUserMedia');
     const video = avatarCameraElement.shadowRoot!.getElementById(
                       'webcamVideo') as HTMLVideoElement;
     assertEquals(
-        mockMediaStream, video.srcObject,
+        mockGetUserMediaProxy.mediaStream, video.srcObject,
         'video.srcObject should equal media stream object');
   });
 
-  test('calls captureFrames and sends to mojom on click', async () => {
-    avatarCameraElement = initElement(AvatarCamera, {open: false});
+  test('shows preview confirm/cancel ui after takePhoto click', async () => {
+    avatarCameraElement = initElement(AvatarCamera);
+    await waitAfterNextRender(avatarCameraElement);
+
+    const previewButtonIds = ['confirmPhoto', 'clearPhoto'];
+
+    for (const buttonId of previewButtonIds) {
+      assertEquals(
+          null, avatarCameraElement.shadowRoot?.getElementById(buttonId),
+          `${buttonId} button should not exist before photo is taken`);
+    }
+
+    const videoElement =
+        avatarCameraElement.shadowRoot?.getElementById('webcamVideo');
+    assertTrue(
+        !!videoElement && !videoElement.hidden,
+        'video element should be visible before takePhoto click');
+
+    const takePhotoButton =
+        avatarCameraElement.shadowRoot?.getElementById('takePhoto');
+    assertTrue(!!takePhotoButton, 'take photo button should be visible');
+    takePhotoButton.click();
+
+    await mockWebcamUtils.whenCalled('captureFrames');
+    await waitAfterNextRender(avatarCameraElement);
+
+    for (const buttonId of previewButtonIds) {
+      assertTrue(
+          !!avatarCameraElement.shadowRoot?.getElementById(buttonId),
+          `${buttonId} button should exist after photo is taken`);
+    }
+
+    assertTrue(
+        videoElement.hidden, 'video element should be hidden during preview');
+  });
+
+  test('calls captureFrames on takePhoto click', async () => {
+    avatarCameraElement = initElement(AvatarCamera);
     await waitAfterNextRender(avatarCameraElement);
 
     avatarCameraElement.shadowRoot?.getElementById('takePhoto')?.click();
 
     const [video, size, interval, numFrames] =
-        await (AvatarCamera.webcamUtils as MockWebcamUtils)
-            .whenCalled('captureFrames');
+        await mockWebcamUtils.whenCalled('captureFrames');
 
     assertEquals(
         avatarCameraElement.shadowRoot?.getElementById('webcamVideo'), video,
@@ -102,17 +149,28 @@ export function AvatarCameraTest() {
     assertDeepEquals({height: 10, width: 10}, size, 'Mock size used');
     assertEquals(10, interval, 'Mock interval value used');
     assertEquals(1, numFrames, 'Single frame requested for photo');
+  });
+
+  test('calls saveCameraImage with data on confirmPhoto click', async () => {
+    avatarCameraElement = initElement(AvatarCamera);
+    await waitAfterNextRender(avatarCameraElement);
+
+    avatarCameraElement.shadowRoot?.getElementById('takePhoto')?.click();
+    await mockWebcamUtils.whenCalled('captureFrames');
+    await waitAfterNextRender(avatarCameraElement);
+
+    avatarCameraElement.shadowRoot?.getElementById('confirmPhoto')?.click();
 
     const bigBuffer = await userProvider.whenCalled('selectCameraImage');
     assertEquals(
         10, bigBuffer.sharedMemory.size,
-        'camera data should be the right size');
+        'camera data should be the right size for the mock data');
 
     const {buffer, result: mapBufferResult} =
         bigBuffer.sharedMemory.bufferHandle.mapBuffer(0, 10);
     assertEquals(
         Mojo.RESULT_OK, mapBufferResult,
-        'Map buffer to read the image data back');
+        'Map buffer to read the image data back should succeed');
 
     const uint8View = new Uint8Array(buffer);
     assertTrue(uint8View.every(val => val === 17), 'mock data should be set');
