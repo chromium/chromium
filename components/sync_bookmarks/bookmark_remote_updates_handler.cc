@@ -343,16 +343,12 @@ void BookmarkRemoteUpdatesHandler::Process(
         // the encryption.
         continue;
       }
-      // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-      // Should be removed after figuring out the reason for the crash.
-      CHECK_EQ(tracked_entity,
-               bookmark_tracker_->GetEntityForSyncId(update_entity.id));
+      DCHECK_EQ(tracked_entity,
+                bookmark_tracker_->GetEntityForSyncId(update_entity.id));
     } else {
       ProcessUpdate(*update, tracked_entity);
-      // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-      // Should be removed after figuring out the reason for the crash.
-      CHECK_EQ(tracked_entity,
-               bookmark_tracker_->GetEntityForSyncId(update_entity.id));
+      DCHECK_EQ(tracked_entity,
+                bookmark_tracker_->GetEntityForSyncId(update_entity.id));
     }
 
     // If the received entity has out of date encryption, we schedule another

@@ -35,9 +35,7 @@ SyncedBookmarkTrackerEntity::SyncedBookmarkTrackerEntity(
     const bookmarks::BookmarkNode* bookmark_node,
     std::unique_ptr<sync_pb::EntityMetadata> metadata)
     : bookmark_node_(bookmark_node), metadata_(std::move(metadata)) {
-  // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-  // Should be removed after figuring out the reason for the crash.
-  CHECK(metadata_);
+  DCHECK(metadata_);
   if (bookmark_node) {
     DCHECK(!metadata_->is_deleted());
   } else {

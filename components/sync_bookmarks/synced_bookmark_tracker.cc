@@ -202,14 +202,12 @@ const SyncedBookmarkTrackerEntity* SyncedBookmarkTracker::Add(
       base::PersistentHash(specifics.bookmark().favicon()));
   auto entity = std::make_unique<SyncedBookmarkTrackerEntity>(
       bookmark_node, std::move(metadata));
-  CHECK_EQ(0U, bookmark_node_to_entities_map_.count(bookmark_node));
+  DCHECK_EQ(0U, bookmark_node_to_entities_map_.count(bookmark_node));
   bookmark_node_to_entities_map_[bookmark_node] = entity.get();
-  CHECK_EQ(0U, client_tag_hash_to_entities_map_.count(client_tag_hash));
+  DCHECK_EQ(0U, client_tag_hash_to_entities_map_.count(client_tag_hash));
   client_tag_hash_to_entities_map_.emplace(std::move(client_tag_hash),
                                            entity.get());
-  // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-  // Should be removed after figuring out the reason for the crash.
-  CHECK_EQ(0U, sync_id_to_entities_map_.count(sync_id));
+  DCHECK_EQ(0U, sync_id_to_entities_map_.count(sync_id));
   const SyncedBookmarkTrackerEntity* raw_entity = entity.get();
   sync_id_to_entities_map_[sync_id] = std::move(entity);
   DCHECK_EQ(sync_id_to_entities_map_.size(),
@@ -273,10 +271,8 @@ void SyncedBookmarkTracker::MarkDeleted(
   // Clear all references to the deleted bookmark node.
   bookmark_node_to_entities_map_.erase(mutable_entity->bookmark_node());
   mutable_entity->clear_bookmark_node();
-  // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-  // Should be removed after figuring out the reason for the crash.
-  CHECK_EQ(0, std::count(ordered_local_tombstones_.begin(),
-                         ordered_local_tombstones_.end(), entity));
+  DCHECK_EQ(0, std::count(ordered_local_tombstones_.begin(),
+                          ordered_local_tombstones_.end(), entity));
   ordered_local_tombstones_.push_back(mutable_entity);
 }
 
@@ -397,10 +393,8 @@ SyncedBookmarkTracker::GetEntitiesWithLocalChanges() const {
       ReorderUnsyncedEntitiesExceptDeletions(entities_with_local_changes);
   for (const SyncedBookmarkTrackerEntity* tombstone_entity :
        ordered_local_tombstones_) {
-    // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-    // Should be removed after figuring out the reason for the crash.
-    CHECK_EQ(0, std::count(ordered_local_changes.begin(),
-                           ordered_local_changes.end(), tombstone_entity));
+    DCHECK_EQ(0, std::count(ordered_local_changes.begin(),
+                            ordered_local_changes.end(), tombstone_entity));
     ordered_local_changes.push_back(tombstone_entity);
   }
   return ordered_local_changes;
@@ -710,10 +704,8 @@ void SyncedBookmarkTracker::UpdateSyncIdIfNeeded(
   if (old_id == sync_id) {
     return;
   }
-  // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-  // Should be removed after figuring out the reason for the crash.
-  CHECK_EQ(1U, sync_id_to_entities_map_.count(old_id));
-  CHECK_EQ(0U, sync_id_to_entities_map_.count(sync_id));
+  DCHECK_EQ(1U, sync_id_to_entities_map_.count(old_id));
+  DCHECK_EQ(0U, sync_id_to_entities_map_.count(sync_id));
 
   std::unique_ptr<SyncedBookmarkTrackerEntity> owned_entity =
       std::move(sync_id_to_entities_map_.at(old_id));

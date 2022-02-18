@@ -719,16 +719,14 @@ BookmarkModelMerger::FindGuidMatchesOrReassignLocal(
       continue;
     }
 
-    bool success =
+    const bool success =
         guid_to_match_map.emplace(node->guid(), GuidMatch{node, remote_node})
             .second;
 
     // Insertion must have succeeded unless there were duplicate GUIDs in the
     // local BookmarkModel (invariant violation that gets resolved upon
     // restart).
-    // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-    // Should be converted to a DCHECK after the root cause if found.
-    CHECK(success);
+    DCHECK(success);
   }
 
   for (const bookmarks::BookmarkNode* node : nodes_to_replace_guid) {

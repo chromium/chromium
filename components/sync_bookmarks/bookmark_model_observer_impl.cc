@@ -87,9 +87,7 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
 
   const SyncedBookmarkTrackerEntity* parent_entity =
       bookmark_tracker_->GetEntityForBookmarkNode(parent);
-  // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-  // Should be removed after figuring out the reason for the crash.
-  CHECK(parent_entity);
+  DCHECK(parent_entity);
 
   const syncer::UniquePosition unique_position =
       ComputePosition(*parent, index, node->guid().AsLowercaseString());
@@ -107,9 +105,7 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
     // If there is a tracked entity with the same client tag hash (effectively
     // the same bookmark GUID), it must be a tombstone. Otherwise it means
     // the bookmark model contains to bookmarks with the same GUID.
-    // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-    // Should be removed after figuring out the reason for the crash.
-    CHECK(!entity->bookmark_node()) << "Added bookmark with duplicate GUID";
+    DCHECK(!entity->bookmark_node()) << "Added bookmark with duplicate GUID";
     bookmark_tracker_->UndeleteTombstoneForBookmarkNode(entity, node);
     bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
                               creation_time, specifics);
