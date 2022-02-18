@@ -289,6 +289,19 @@ export class Preview {
     return this.onIntrinsicSizeChanged();
   }
 
+  private isStreamAlive(): boolean {
+    assert(this.streamInternal !== null);
+    return this.streamInternal.getVideoTracks().length !== 0 &&
+        this.streamInternal.getVideoTracks()[0].readyState !== 'ended';
+  }
+
+  private clearWatchdog() {
+    if (this.watchdog !== null) {
+      clearInterval(this.watchdog);
+      this.watchdog = null;
+    }
+  }
+
   /**
    * Opens preview stream.
    * @param constraints Constraints of preview stream.
@@ -315,15 +328,8 @@ export class Preview {
       // Use a watchdog since the stream.onended event is unreliable in the
       // recent version of Chrome. As of 55, the event is still broken.
       this.watchdog = setInterval(() => {
-        assert(this.streamInternal !== null);
-        // Check if video stream is ended (audio stream may still be live).
-        if (this.streamInternal.getVideoTracks().length === 0 ||
-            this.streamInternal.getVideoTracks()[0].readyState === 'ended') {
-          if (this.watchdog !== null) {
-            clearInterval(this.watchdog);
-            this.watchdog = null;
-          }
-          this.streamInternal = null;
+        if (!this.isStreamAlive()) {
+          this.clearWatchdog();
           this.onNewStreamNeeded();
         }
       }, 100);
@@ -348,6 +354,7 @@ export class Preview {
         this.vidPid = await deviceOperator.getVidPid(deviceId);
       }
 
+      assert(this.onPreviewExpired === null);
       this.onPreviewExpired = new WaitableEvent();
       state.set(state.State.STREAMING, true);
     } catch (e) {
@@ -361,14 +368,11 @@ export class Preview {
    * Closes the preview.
    */
   async close(): Promise<void> {
-    if (this.watchdog !== null) {
-      clearInterval(this.watchdog);
-      this.watchdog = null;
-    }
+    this.clearWatchdog();
     // Pause video element to avoid black frames during transition.
     this.video.pause();
     this.disableShowMetadata();
-    if (this.streamInternal !== null) {
+    if (this.streamInternal !== null && this.isStreamAlive()) {
       const track = this.getVideoTrack();
       const {deviceId} = getVideoTrackSettings(track);
       track.stop();
@@ -377,9 +381,12 @@ export class Preview {
         deviceOperator.dropConnection(deviceId);
       }
       assert(this.onPreviewExpired !== null);
+    }
+    this.streamInternal = null;
+
+    if (this.onPreviewExpired !== null) {
       this.onPreviewExpired.signal();
       this.onPreviewExpired = null;
-      this.streamInternal = null;
     }
     state.set(state.State.STREAMING, false);
   }
