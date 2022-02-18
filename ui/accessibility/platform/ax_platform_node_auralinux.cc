@@ -3474,6 +3474,14 @@ void AXPlatformNodeAuraLinux::OnEnabledChanged() {
       GetData().GetRestriction() != ax::mojom::Restriction::kDisabled);
 }
 
+void AXPlatformNodeAuraLinux::OnBusyStateChanged(bool is_busy) {
+  AtkObject* obj = GetOrCreateAtkObject();
+  if (!obj)
+    return;
+
+  atk_object_notify_state_change(obj, ATK_STATE_BUSY, is_busy);
+}
+
 void AXPlatformNodeAuraLinux::OnExpandedStateChanged(bool is_expanded) {
   // When a list box is expanded, it becomes visible. This means that it might
   // now have a different role (the role for hidden Views is kUnknown).  We

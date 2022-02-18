@@ -195,6 +195,7 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
 
   // Event helpers
   void OnActiveDescendantChanged();
+  void OnBusyStateChanged(bool is_busy);
   void OnCheckedStateChanged();
   void OnEnabledChanged();
   void OnExpandedStateChanged(bool is_expanded);
