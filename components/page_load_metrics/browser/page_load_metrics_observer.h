@@ -459,12 +459,6 @@ class PageLoadMetricsObserver {
       content::RenderFrameHost* rfh,
       const std::vector<mojom::ResourceDataUpdatePtr>& resources) {}
 
-  // Invoked when there is new information about lazy loaded or deferred
-  // resources. |new_deferred_resource_data| only has new deferral/lazy load
-  // events since the last update.
-  virtual void OnNewDeferredResourceCounts(
-      const mojom::DeferredResourceCounts& new_deferred_resource_data) {}
-
   // Invoked when a media element starts playing.
   virtual void MediaStartedPlaying(
       const content::WebContentsObserver::MediaPlayerInfo& video_type,

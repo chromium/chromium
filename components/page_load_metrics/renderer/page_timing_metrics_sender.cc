@@ -58,7 +58,6 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       last_cpu_timing_(mojom::CpuTiming::New()),
       input_timing_delta_(mojom::InputTiming::New()),
       metadata_(mojom::FrameMetadata::New()),
-      new_deferred_resource_data_(mojom::DeferredResourceCounts::New()),
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
       metadata_recorder_(initial_monotonic_timing) {
   InitiateUserInteractionTiming();
@@ -117,24 +116,6 @@ void PageTimingMetricsSender::DidObserveLayoutNg(uint32_t all_block_count,
   render_data_.all_layout_call_count_delta += all_call_count;
   render_data_.ng_layout_call_count_delta += ng_call_count;
   EnsureSendTimer();
-}
-
-void PageTimingMetricsSender::DidObserveLazyLoadBehavior(
-    blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {
-  switch (lazy_load_behavior) {
-    case blink::WebLocalFrameClient::LazyLoadBehavior::kDeferredFrame:
-      ++new_deferred_resource_data_->deferred_frames;
-      break;
-    case blink::WebLocalFrameClient::LazyLoadBehavior::kDeferredImage:
-      ++new_deferred_resource_data_->deferred_images;
-      break;
-    case blink::WebLocalFrameClient::LazyLoadBehavior::kLazyLoadedFrame:
-      ++new_deferred_resource_data_->frames_loaded_after_deferral;
-      break;
-    case blink::WebLocalFrameClient::LazyLoadBehavior::kLazyLoadedImage:
-      ++new_deferred_resource_data_->images_loaded_after_deferral;
-      break;
-  }
 }
 
 void PageTimingMetricsSender::DidObserveMobileFriendlinessChanged(
@@ -333,12 +314,10 @@ void PageTimingMetricsSender::SendNow() {
   }
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
-                      std::move(new_deferred_resource_data_),
                       std::move(input_timing_delta_), mobile_friendliness_);
   input_timing_delta_ = mojom::InputTiming::New();
   mobile_friendliness_ = absl::nullopt;
   InitiateUserInteractionTiming();
-  new_deferred_resource_data_ = mojom::DeferredResourceCounts::New();
   new_features_.clear();
   metadata_->intersection_update.reset();
   last_cpu_timing_->task_time = base::TimeDelta();

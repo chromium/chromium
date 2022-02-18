@@ -210,7 +210,6 @@ class ResourceLoadingCancellingThrottle
         std::vector<blink::UseCounterFeature>(), resources,
         mojom::FrameRenderDataUpdatePtr(base::in_place),
         mojom::CpuTimingPtr(base::in_place),
-        mojom::DeferredResourceCountsPtr(base::in_place),
         mojom::InputTimingPtr(base::in_place), blink::MobileFriendliness());
   }
 };

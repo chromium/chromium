@@ -139,8 +139,6 @@ class PageLoadMetricsUpdateDispatcher {
     virtual void OnFrameIntersectionUpdate(
         content::RenderFrameHost* rfh,
         const mojom::FrameIntersectionUpdate& frame_intersection_update) = 0;
-    virtual void OnNewDeferredResourceCounts(
-        const mojom::DeferredResourceCounts& new_deferred_resource_data) = 0;
     virtual void SetUpSharedMemoryForSmoothness(
         base::ReadOnlySharedMemoryRegion shared_memory) = 0;
   };
@@ -166,7 +164,6 @@ class PageLoadMetricsUpdateDispatcher {
       const std::vector<mojom::ResourceDataUpdatePtr>& resources,
       mojom::FrameRenderDataUpdatePtr render_data,
       mojom::CpuTimingPtr new_cpu_timing,
-      mojom::DeferredResourceCountsPtr new_deferred_resource_data,
       mojom::InputTimingPtr input_timing_delta,
       const absl::optional<blink::MobileFriendliness>& mobile_friendliness);
 

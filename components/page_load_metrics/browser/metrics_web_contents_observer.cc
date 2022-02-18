@@ -914,7 +914,6 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr cpu_timing,
-    mojom::DeferredResourceCountsPtr new_deferred_resource_data,
     mojom::InputTimingPtr input_timing_delta,
     const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
   PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host);
@@ -938,8 +937,8 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     tracker->metrics_update_dispatcher()->UpdateMetrics(
         render_frame_host, std::move(timing), std::move(metadata),
         std::move(new_features), resources, std::move(render_data),
-        std::move(cpu_timing), std::move(new_deferred_resource_data),
-        std::move(input_timing_delta), std::move(mobile_friendliness));
+        std::move(cpu_timing), std::move(input_timing_delta),
+        std::move(mobile_friendliness));
   }
 }
 
@@ -967,15 +966,13 @@ void MetricsWebContentsObserver::UpdateTiming(
     std::vector<mojom::ResourceDataUpdatePtr> resources,
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr cpu_timing,
-    mojom::DeferredResourceCountsPtr new_deferred_resource_data,
     mojom::InputTimingPtr input_timing_delta,
     const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receivers_.GetCurrentTargetFrame();
   OnTimingUpdated(render_frame_host, std::move(timing), std::move(metadata),
                   new_features, resources, std::move(render_data),
-                  std::move(cpu_timing), std::move(new_deferred_resource_data),
-                  std::move(input_timing_delta),
+                  std::move(cpu_timing), std::move(input_timing_delta),
                   std::move(mobile_friendliness));
 }
 

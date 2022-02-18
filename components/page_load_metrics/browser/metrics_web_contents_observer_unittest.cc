@@ -120,7 +120,6 @@ class MetricsWebContentsObserverTest
         std::vector<blink::UseCounterFeature>(),
         std::vector<mojom::ResourceDataUpdatePtr>(),
         mojom::FrameRenderDataUpdatePtr(base::in_place), timing.Clone(),
-        mojom::DeferredResourceCountsPtr(base::in_place),
         mojom::InputTimingPtr(base::in_place), blink::MobileFriendliness());
   }
 
@@ -139,15 +138,14 @@ class MetricsWebContentsObserverTest
       const mojom::PageLoadTiming& timing,
       content::RenderFrameHost* render_frame_host) {
     previous_timing_ = timing.Clone();
-    observer()->OnTimingUpdated(
-        render_frame_host, timing.Clone(),
-        mojom::FrameMetadataPtr(base::in_place),
-        std::vector<blink::UseCounterFeature>(),
-        std::vector<mojom::ResourceDataUpdatePtr>(),
-        mojom::FrameRenderDataUpdatePtr(base::in_place),
-        mojom::CpuTimingPtr(base::in_place),
-        mojom::DeferredResourceCountsPtr(base::in_place),
-        mojom::InputTimingPtr(base::in_place), blink::MobileFriendliness());
+    observer()->OnTimingUpdated(render_frame_host, timing.Clone(),
+                                mojom::FrameMetadataPtr(base::in_place),
+                                std::vector<blink::UseCounterFeature>(),
+                                std::vector<mojom::ResourceDataUpdatePtr>(),
+                                mojom::FrameRenderDataUpdatePtr(base::in_place),
+                                mojom::CpuTimingPtr(base::in_place),
+                                mojom::InputTimingPtr(base::in_place),
+                                blink::MobileFriendliness());
   }
 
   virtual std::unique_ptr<TestMetricsWebContentsObserverEmbedder>

@@ -55,7 +55,6 @@ class MojoPageTimingSender : public PageTimingSender {
                   std::vector<mojom::ResourceDataUpdatePtr> resources,
                   const mojom::FrameRenderDataUpdate& render_data,
                   const mojom::CpuTimingPtr& cpu_timing,
-                  mojom::DeferredResourceCountsPtr new_deferred_resource_data,
                   mojom::InputTimingPtr input_timing_delta,
                   const absl::optional<blink::MobileFriendliness>&
                       mobile_friendliness) override {
@@ -63,8 +62,7 @@ class MojoPageTimingSender : public PageTimingSender {
     page_load_metrics_->UpdateTiming(
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
         metadata->Clone(), new_features, std::move(resources),
-        render_data.Clone(), cpu_timing->Clone(),
-        std::move(new_deferred_resource_data), std::move(input_timing_delta),
+        render_data.Clone(), cpu_timing->Clone(), std::move(input_timing_delta),
         std::move(mobile_friendliness));
   }
 
@@ -157,12 +155,6 @@ void MetricsRenderFrameObserver::DidObserveLayoutNg(uint32_t all_block_count,
   if (page_timing_metrics_sender_)
     page_timing_metrics_sender_->DidObserveLayoutNg(
         all_block_count, ng_block_count, all_call_count, ng_call_count);
-}
-
-void MetricsRenderFrameObserver::DidObserveLazyLoadBehavior(
-    blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {
-  if (page_timing_metrics_sender_)
-    page_timing_metrics_sender_->DidObserveLazyLoadBehavior(lazy_load_behavior);
 }
 
 void MetricsRenderFrameObserver::DidStartResponse(

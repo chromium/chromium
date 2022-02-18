@@ -188,7 +188,6 @@ class MetricsWebContentsObserver
       const std::vector<mojom::ResourceDataUpdatePtr>& resources,
       mojom::FrameRenderDataUpdatePtr render_data,
       mojom::CpuTimingPtr cpu_timing,
-      mojom::DeferredResourceCountsPtr new_deferred_resource_data,
       mojom::InputTimingPtr input_timing_delta,
       const absl::optional<blink::MobileFriendliness>& mobile_friendliness);
 
@@ -230,7 +229,6 @@ class MetricsWebContentsObserver
                     std::vector<mojom::ResourceDataUpdatePtr> resources,
                     mojom::FrameRenderDataUpdatePtr render_data,
                     mojom::CpuTimingPtr cpu_timing,
-                    mojom::DeferredResourceCountsPtr new_deferred_resource_data,
                     mojom::InputTimingPtr input_timing,
                     const absl::optional<blink::MobileFriendliness>&
                         mobile_friendliness) override;

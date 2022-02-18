@@ -175,7 +175,6 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       const std::vector<blink::UseCounterFeature>& new_features,
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTiming& cpu_timing,
-      const mojom::DeferredResourceCounts& new_deferred_resource_data,
       const mojom::InputTiming& input_timing,
       const blink::MobileFriendliness& mobile_friendliness,
       content::RenderFrameHost* rfh);

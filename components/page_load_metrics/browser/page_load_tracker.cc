@@ -760,13 +760,6 @@ void PageLoadTracker::UpdateResourceDataUse(
   }
 }
 
-void PageLoadTracker::OnNewDeferredResourceCounts(
-    const mojom::DeferredResourceCounts& new_deferred_resource_data) {
-  for (const auto& observer : observers_) {
-    observer->OnNewDeferredResourceCounts(new_deferred_resource_data);
-  }
-}
-
 void PageLoadTracker::UpdateFrameCpuTiming(content::RenderFrameHost* rfh,
                                            const mojom::CpuTiming& timing) {
   for (const auto& observer : observers_) {
