@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {
+  assertExists,
   assertInstanceof,
+  assertString,
 } from '../assert.js';
 import * as error from '../error.js';
 import {Point} from '../geometry.js';
@@ -40,7 +42,9 @@ import {
 } from './type.js';
 
 class ResumeStateWatchdog {
-  private trialDone: WaitableEvent<boolean>;
+  // This is definitely assigned in this.start() in the first statement of the
+  // while loop.
+  private trialDone!: WaitableEvent<boolean>;
   private succeed = false;
 
   constructor(private readonly doReconfigure: () => Promise<boolean>) {
@@ -94,8 +98,6 @@ export class CameraManager implements EventListener {
 
   private readonly infoUpdater = new DeviceInfoUpdater();
 
-  private cameraViewUI: CameraViewUI;
-
   private readonly cameraUIs: CameraUI[] = [];
 
   private readonly preview: Preview;
@@ -140,11 +142,11 @@ export class CameraManager implements EventListener {
   }
 
   getCameraInfo(): CameraInfo {
-    return this.scheduler.cameraInfo;
+    return assertExists(this.scheduler.cameraInfo);
   }
 
   private getDeviceId(): string {
-    return this.scheduler.reconfigurer.config.deviceId;
+    return assertString(this.scheduler.reconfigurer.config.deviceId);
   }
 
   getPreviewVideo(): PreviewVideo {
@@ -185,7 +187,7 @@ export class CameraManager implements EventListener {
         deviceId, resolution);
   }
 
-  async getSupportedModes(deviceId: string): Promise<Mode[]> {
+  async getSupportedModes(deviceId: string|null): Promise<Mode[]> {
     const modes: Mode[] = [];
     for (const mode of Object.values(Mode)) {
       if (await this.scheduler.modes.isSupported(mode, deviceId)) {
@@ -234,10 +236,10 @@ export class CameraManager implements EventListener {
   }
 
   async initialize(cameraViewUI: CameraViewUI): Promise<void> {
-    this.cameraViewUI = cameraViewUI;
     const helper = ChromeHelper.getInstance();
 
-    const setTablet = (isTablet) => state.set(state.State.TABLET, isTablet);
+    const setTablet = (isTablet: boolean) =>
+        state.set(state.State.TABLET, isTablet);
     const isTablet = await helper.initTabletModeMonitor(setTablet);
     setTablet(isTablet);
 
@@ -249,7 +251,7 @@ export class CameraManager implements EventListener {
       }
     };
 
-    const updateScreenOffAuto = (screenState) => {
+    const updateScreenOffAuto = (screenState: ScreenState) => {
       const isOffAuto = screenState === ScreenState.OFF_AUTO;
       if (this.screenOffAuto !== isOffAuto) {
         this.screenOffAuto = isOffAuto;
@@ -260,7 +262,7 @@ export class CameraManager implements EventListener {
         await helper.initScreenStateMonitor(updateScreenOffAuto);
     updateScreenOffAuto(screenState);
 
-    const updateExternalScreen = (hasExternalScreen) => {
+    const updateExternalScreen = (hasExternalScreen: boolean) => {
       if (this.hasExternalScreen !== hasExternalScreen) {
         this.hasExternalScreen = hasExternalScreen;
         handleScreenStateChange();
@@ -270,7 +272,7 @@ export class CameraManager implements EventListener {
         await helper.initExternalScreenMonitor(updateExternalScreen);
     updateExternalScreen(hasExternalScreen);
 
-    await this.scheduler.initialize(this.cameraViewUI);
+    await this.scheduler.initialize(cameraViewUI);
   }
 
   requestSuspend(): Promise<boolean> {
@@ -388,7 +390,7 @@ export class CameraManager implements EventListener {
     this.setCameraAvailable(false);
     const captureDone = await this.scheduler.startCapture();
     this.setCameraAvailable(true);
-    return captureDone;
+    return assertExists(captureDone);
   }
 
   stopCapture(): void {

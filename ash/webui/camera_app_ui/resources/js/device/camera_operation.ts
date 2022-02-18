@@ -416,7 +416,7 @@ export class OperationScheduler {
     }
   }
 
-  async startCapture(): Promise<() => Promise<void>>|null {
+  async startCapture(): Promise<(() => Promise<void>)|null> {
     if (this.ongoingOperationType !== null) {
       return null;
     }
