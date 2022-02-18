@@ -48,29 +48,5 @@ void AppsAccessSetupOperation::NotifyAppsStatusChanged(Status new_status) {
   delegate_->OnAppsStatusChange(new_status);
 }
 
-std::ostream& operator<<(std::ostream& stream,
-                         AppsAccessSetupOperation::Status status) {
-  switch (status) {
-    case AppsAccessSetupOperation::Status::kConnecting:
-      stream << "[Connecting]";
-      break;
-    case AppsAccessSetupOperation::Status::kTimedOutConnecting:
-      stream << "[Timed out connecting]";
-      break;
-    case AppsAccessSetupOperation::Status::kConnectionDisconnected:
-      stream << "[Connection disconnected]";
-      break;
-    case AppsAccessSetupOperation::Status::
-        kSentMessageToPhoneAndWaitingForResponse:
-      stream << "[Sent message to phone; waiting for response]";
-      break;
-    case AppsAccessSetupOperation::Status::kCompletedSuccessfully:
-      stream << "[Completed successfully]";
-      break;
-  }
-
-  return stream;
-}
-
 }  // namespace eche_app
 }  // namespace ash

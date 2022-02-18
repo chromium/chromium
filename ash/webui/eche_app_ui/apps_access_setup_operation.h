@@ -83,9 +83,6 @@ class AppsAccessSetupOperation {
   base::OnceClosure destructor_callback_;
 };
 
-std::ostream& operator<<(std::ostream& stream,
-                         AppsAccessSetupOperation::Status status);
-
 }  // namespace eche_app
 }  // namespace ash
 
