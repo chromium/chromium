@@ -521,7 +521,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
   auto signin_screen_handler = std::make_unique<SigninScreenHandler>(
       js_calls_container_.get(), network_state_informer_, error_screen,
-      core_handler_, GetHandler<GaiaScreenHandler>());
+      GetHandler<GaiaScreenHandler>());
   signin_screen_handler_ = signin_screen_handler.get();
   AddWebUIHandler(std::move(signin_screen_handler));
 

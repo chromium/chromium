@@ -55,8 +55,6 @@ void LoginDisplayMojo::UpdateChallengeResponseAuthAvailability(
       account_id, enable_challenge_response);
 }
 
-void LoginDisplayMojo::ClearAndEnablePassword() {}
-
 void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
                             bool show_guest,
                             bool show_users,

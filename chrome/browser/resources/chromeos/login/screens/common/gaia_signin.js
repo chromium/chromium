@@ -998,18 +998,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   }
 
   /**
-   * Clears input fields and switches to input mode.
-   * @param {boolean} takeFocus True to take focus.
-   */
-  reset(takeFocus) {
-    // Reload and show the sign-in UI if needed.
-    this.authenticator_.resetStates();
-    if (takeFocus) {
-      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
-    }
-  }
-
-  /**
    * Reloads extension frame.
    */
   doReload() {

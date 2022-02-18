@@ -57,7 +57,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
@@ -176,19 +175,16 @@ SigninScreenHandler::SigninScreenHandler(
     JSCallsContainer* js_calls_container,
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
     ErrorScreen* error_screen,
-    CoreOobeView* core_oobe_view,
     GaiaScreenHandler* gaia_screen_handler)
     : BaseWebUIHandler(js_calls_container),
       network_state_informer_(network_state_informer),
       error_screen_(error_screen),
-      core_oobe_view_(core_oobe_view),
       proxy_auth_dialog_reload_times_(kMaxGaiaReloadForProxyAuthDialog),
       gaia_screen_handler_(gaia_screen_handler),
       histogram_helper_(
           std::make_unique<ErrorScreensHistogramHelper>("Signin")) {
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
-  DCHECK(core_oobe_view_);
   DCHECK(js_calls_container);
   gaia_screen_handler_->set_signin_screen_handler(this);
   network_state_informer_->AddObserver(this);
@@ -489,10 +485,6 @@ void SigninScreenHandler::Initialize() {
 void SigninScreenHandler::RegisterPrefs(PrefRegistrySimple* registry) {
   // The pref is deprecated. Remove around 09/2022 (https://crbug.com/1297407)
   registry->RegisterDictionaryPref(prefs::kUsersLastInputMethod);
-}
-
-void SigninScreenHandler::ClearAndEnablePassword() {
-  core_oobe_view_->ResetSignInUI(false);
 }
 
 void SigninScreenHandler::OnPreferencesChanged() {

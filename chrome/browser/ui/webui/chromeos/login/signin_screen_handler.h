@@ -41,13 +41,11 @@ enum class TrayActionState;
 
 namespace chromeos {
 
-class CoreOobeView;
 class GaiaScreenHandler;
 
 // An interface for WebUILoginDisplay to call SigninScreenHandler.
 class LoginDisplayWebUIHandler {
  public:
-  virtual void ClearAndEnablePassword() = 0;
   virtual void OnPreferencesChanged() = 0;
   virtual void ShowAllowlistCheckFailedError() = 0;
 
@@ -101,7 +99,6 @@ class SigninScreenHandler
       JSCallsContainer* js_calls_container,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,
       ErrorScreen* error_screen,
-      CoreOobeView* core_oobe_view,
       GaiaScreenHandler* gaia_screen_handler);
 
   SigninScreenHandler(const SigninScreenHandler&) = delete;
@@ -164,7 +161,6 @@ class SigninScreenHandler
   void RegisterMessages() override;
 
   // LoginDisplayWebUIHandler implementation:
-  void ClearAndEnablePassword() override;
   void OnPreferencesChanged() override;
   void ShowAllowlistCheckFailedError() override;
 
@@ -220,7 +216,6 @@ class SigninScreenHandler
   bool preferences_changed_delayed_ = false;
 
   ErrorScreen* error_screen_ = nullptr;
-  CoreOobeView* core_oobe_view_ = nullptr;
 
   NetworkStateInformer::State last_network_state_ =
       NetworkStateInformer::UNKNOWN;

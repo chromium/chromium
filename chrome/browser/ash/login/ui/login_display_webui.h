@@ -26,7 +26,6 @@ class LoginDisplayWebUI : public LoginDisplay,
   ~LoginDisplayWebUI() override;
 
   // LoginDisplay implementation:
-  void ClearAndEnablePassword() override;
   void Init(const user_manager::UserList& users,
             bool show_guest,
             bool show_users,

@@ -845,8 +845,6 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
   } else if (failure.reason() == AuthFailure::TPM_UPDATE_REQUIRED) {
     ShowError(SigninError::kTpmUpdateRequired, error);
   } else if (last_login_attempt_account_id_ == user_manager::GuestAccountId()) {
-    // Show no errors, just re-enable input.
-    GetLoginDisplay()->ClearAndEnablePassword();
     StartAutoLoginTimer();
   } else if (is_known_user &&
              failure.reason() == AuthFailure::MISSING_CRYPTOHOME) {
@@ -876,7 +874,6 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
       else
         ShowError(SigninError::kNewUserFailedNetworkConnected, error);
     }
-    GetLoginDisplay()->ClearAndEnablePassword();
     StartAutoLoginTimer();
   }
 

@@ -142,7 +142,6 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
     this.$.cancelConfirmDlg.hideDialog();
 
     Oobe.getInstance().showScreen({id: 'gaia-signin'});
-    Oobe.getInstance().resetSigninUI(true);
   }
 
   submit_() {

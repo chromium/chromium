@@ -41,11 +41,6 @@ LoginDisplayWebUI::~LoginDisplayWebUI() {
 
 LoginDisplayWebUI::LoginDisplayWebUI() = default;
 
-void LoginDisplayWebUI::ClearAndEnablePassword() {
-  if (webui_handler_)
-    webui_handler_->ClearAndEnablePassword();
-}
-
 void LoginDisplayWebUI::Init(const user_manager::UserList& users,
                              bool show_guest,
                              bool show_users,
@@ -75,16 +70,6 @@ void LoginDisplayWebUI::OnPreferencesChanged() {
 }
 
 void LoginDisplayWebUI::SetUIEnabled(bool is_enabled) {
-  // TODO(nkostylev): Cleanup this condition,
-  // see http://crbug.com/157885 and http://crbug.com/158255.
-  // Allow this call only before user sign in or at lock screen.
-  // If this call is made after new user signs in but login screen is still
-  // around that would trigger a sign in extension refresh.
-  if (is_enabled && (!user_manager::UserManager::Get()->IsUserLoggedIn() ||
-                     ScreenLocker::default_screen_locker())) {
-    ClearAndEnablePassword();
-  }
-
   LoginDisplayHost* host = LoginDisplayHost::default_host();
   if (host && host->GetWebUILoginView())
     host->GetWebUILoginView()->SetUIEnabled(is_enabled);

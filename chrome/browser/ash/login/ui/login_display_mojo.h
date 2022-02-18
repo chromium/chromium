@@ -32,7 +32,6 @@ class LoginDisplayMojo : public LoginDisplay,
   void UpdateChallengeResponseAuthAvailability(const AccountId& account_id);
 
   // LoginDisplay:
-  void ClearAndEnablePassword() override;
   void Init(const user_manager::UserList& filtered_users,
             bool show_guest,
             bool show_users,

@@ -55,9 +55,6 @@ class LoginDisplay {
 
   virtual ~LoginDisplay();
 
-  // Clears and enables fields on user pod or GAIA frame.
-  virtual void ClearAndEnablePassword() = 0;
-
   // Initializes login UI with the user pods based on list of known users and
   // guest, new user pods if those are enabled.
   virtual void Init(const user_manager::UserList& users,

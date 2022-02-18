@@ -55,11 +55,6 @@ class Oobe {
   showScreen(params) {}
 
   /**
-   * @param {boolean} forceOnline
-   */
-  resetSigninUI(forceOnline) {}
-
-  /**
    * @return {?OobeTypes.OobeConfiguration}
    */
   getOobeConfiguration() {}

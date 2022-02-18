@@ -581,18 +581,6 @@ cr.define('cr.ui.login', function() {
     }
 
     /**
-     * Resets sign-in input fields.
-     * @param {boolean} forceOnline Whether online sign-in should be forced.
-     *     If |forceOnline| is false previously used sign-in type will be used.
-     */
-    resetSigninUI(forceOnline) {
-      if ($(SCREEN_GAIA_SIGNIN)) {
-        $(SCREEN_GAIA_SIGNIN)
-            .reset(this.currentScreen.id == SCREEN_GAIA_SIGNIN, forceOnline);
-      }
-    }
-
-    /**
      * Sets text content for a div with |labelId|.
      * @param {string} labelId Id of the label div.
      * @param {string} labelText Text for the label.

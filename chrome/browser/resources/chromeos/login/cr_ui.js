@@ -131,15 +131,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Resets sign-in input fields.
-     * @param {boolean} forceOnline Whether online sign-in should be forced.
-     * If |forceOnline| is false previously used sign-in type will be used.
-     */
-    static resetSigninUI(forceOnline) {
-      Oobe.getInstance().resetSigninUI(forceOnline);
-    }
-
-    /**
      * Sets the current size of the client area (display size).
      * @param {number} width client area width
      * @param {number} height client area height
