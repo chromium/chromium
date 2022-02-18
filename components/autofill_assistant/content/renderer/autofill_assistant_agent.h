@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_driver.mojom.h"
 #include "components/autofill_assistant/content/common/node_data.h"
@@ -39,13 +40,16 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
   // mojom::AutofillAssistantAgent:
   void GetSemanticNodes(int32_t role,
                         int32_t objective,
+                        base::TimeDelta model_timeout,
                         GetSemanticNodesCallback callback) override;
-
-  void GetAnnotateDomModel(base::OnceCallback<void(base::File)> callback);
 
  private:
   // content::RenderFrameObserver:
   void OnDestruct() override;
+
+  void GetAnnotateDomModel(
+      base::TimeDelta model_timeout,
+      base::OnceCallback<void(mojom::ModelStatus, base::File)> callback);
 
   mojom::AutofillAssistantDriver& GetDriver();
 
@@ -54,6 +58,7 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
                       int32_t role,
                       int32_t objective,
                       GetSemanticNodesCallback callback,
+                      mojom::ModelStatus model_status,
                       base::File model);
 
   mojo::AssociatedRemote<mojom::AutofillAssistantDriver> driver_;

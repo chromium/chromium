@@ -59,6 +59,7 @@
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
+#include "components/autofill_assistant/content/common/autofill_assistant_types.mojom.h"
 #include "components/autofill_assistant/content/common/node_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -96,24 +97,17 @@ class MockAutofillAssistantAgent : public mojom::AutofillAssistantAgent {
                   std::move(handle)));
   }
 
-  MOCK_METHOD(
-      void,
-      GetSemanticNodes,
-      (int32_t role,
-       int32_t objective,
-       base::OnceCallback<void(bool, const std::vector<NodeData>&)> callback),
-      (override));
+  MOCK_METHOD(void,
+              GetSemanticNodes,
+              (int32_t role,
+               int32_t objective,
+               base::TimeDelta model_timeout,
+               base::OnceCallback<void(mojom::NodeDataStatus,
+                                       const std::vector<NodeData>&)> callback),
+              (override));
 
  private:
   mojo::AssociatedReceiverSet<mojom::AutofillAssistantAgent> receivers_;
-};
-
-class FakeAnnotateDomModelService : public AnnotateDomModelService {
- public:
-  FakeAnnotateDomModelService()
-      : AnnotateDomModelService(/* opt_guide= */ nullptr,
-                                /* background_task_runner= */ nullptr) {}
-  ~FakeAnnotateDomModelService() override = default;
 };
 
 }  // namespace
@@ -142,9 +136,11 @@ class WebControllerBrowserTest : public autofill_assistant::BaseBrowserTest,
                   base::Unretained(&autofill_assistant_agent_)));
         }));
 
+    annotate_dom_model_service_ = std::make_unique<AnnotateDomModelService>(
+        /* opt_guide= */ nullptr, /* background_task_runner= */ nullptr);
     web_controller_ = WebController::CreateForWebContents(
         shell()->web_contents(), &user_data_, &log_info_,
-        &annotate_dom_model_service_);
+        annotate_dom_model_service_.get());
 
     Observe(shell()->web_contents());
   }
@@ -963,7 +959,7 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
   UserModel user_model_;
   ProcessedActionStatusDetailsProto log_info_;
   MockAutofillAssistantAgent autofill_assistant_agent_;
-  FakeAnnotateDomModelService annotate_dom_model_service_;
+  std::unique_ptr<AnnotateDomModelService> annotate_dom_model_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ElementExistenceCheck) {
@@ -3268,6 +3264,44 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ExecuteJSWithPromise) {
                      &reject_status));
   reject_run_loop.Run();
   EXPECT_EQ(UNEXPECTED_JS_ERROR, reject_status.proto_status());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunWithDomAnnotation) {
+  Selector selector({"#input1"});
+  auto* semantic_information = selector.proto.mutable_semantic_information();
+  semantic_information->set_semantic_role(1);
+  semantic_information->set_objective(2);
+
+  NodeData node_frame_1;
+  node_frame_1.backend_node_id = 100;
+  NodeData node_frame_2;
+  node_frame_2.backend_node_id = 200;
+  EXPECT_CALL(autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, base::Milliseconds(5000), _))
+      .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_frame_1}))
+      .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_frame_2}))
+      // Capture any other frames.
+      .WillRepeatedly(RunOnceCallback<3>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+
+  ClientStatus status;
+  ElementFinder::Result result;
+  FindElement(selector, &status, &result);
+
+  ASSERT_EQ(log_info_.element_finder_info().size(), 1);
+  EXPECT_EQ(log_info_.element_finder_info(0).status(), ACTION_APPLIED);
+  ASSERT_EQ(log_info_.element_finder_info(0)
+                .semantic_inference_result()
+                .predicted_elements()
+                .size(),
+            2);
+  ASSERT_GE(log_info_.element_finder_info(0)
+                .semantic_inference_result()
+                .status_per_frame()
+                .size(),
+            2);
 }
 
 }  // namespace autofill_assistant

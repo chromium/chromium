@@ -58,6 +58,8 @@ class AnnotateDomModelService
   // to be closed on a background thread.
   void NotifyOnModelFileAvailable(NotifyModelAvailableCallback callback);
 
+  void SetModelFileForTest(base::File model_file);
+
  private:
   void OnModelFileLoaded(base::File model_file);
 

@@ -4,6 +4,22 @@
 
 module autofill_assistant.mojom;
 
+// A set of possible model status.
+enum ModelStatus {
+  kSuccess,
+  kUnexpectedError,
+  kTimeout
+};
+
+// A set of possible result status.
+enum NodeDataStatus {
+  kSuccess,
+  kUnexpectedError,
+  kInitializationError,
+  kModelLoadError,
+  kModelLoadTimeout
+};
+
 // autofill_assistant::NodeData
 struct NodeData {
   // The BackendNodeId of this element.

@@ -131,4 +131,12 @@ void AnnotateDomModelService::NotifyOnModelFileAvailable(
   std::move(callback).Run(false);
 }
 
+void AnnotateDomModelService::SetModelFileForTest(base::File model_file) {
+  annotate_dom_model_file_ = std::move(model_file);
+  for (auto& pending_request : pending_model_requests_) {
+    std::move(pending_request).Run(true);
+  }
+  pending_model_requests_.clear();
+}
+
 }  // namespace autofill_assistant

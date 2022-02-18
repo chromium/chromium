@@ -23,6 +23,7 @@
 #include "components/autofill_assistant/browser/web/js_filter_builder.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
+#include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
 #include "components/autofill_assistant/content/common/node_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -279,7 +280,7 @@ class ElementFinder : public WebControllerWorker {
   void OnRunAnnotateDomModelOnFrame(
       const content::GlobalRenderFrameHostId& host_id,
       base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback,
-      bool success,
+      mojom::NodeDataStatus status,
       const std::vector<NodeData>& node_data);
   void OnRunAnnotateDomModel(
       const std::vector<std::vector<GlobalBackendNodeId>>& all_nodes);
@@ -348,6 +349,7 @@ class ElementFinder : public WebControllerWorker {
   // Elements gathered through all frames. Unused if the |selector_| does not
   // contain |SemanticInformation|.
   std::vector<GlobalBackendNodeId> semantic_node_results_;
+  std::vector<mojom::NodeDataStatus> node_data_frame_status_;
   bool semantic_result_done_ = false;
 
   // Finder for the target of the current proximity filter.

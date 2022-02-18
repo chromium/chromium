@@ -5,12 +5,13 @@
 module autofill_assistant.mojom;
 
 import "components/autofill_assistant/content/common/autofill_assistant_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // There is one instance of this interface per render frame in the renderer
 // process. All methods are called by browser on renderer.
 interface AutofillAssistantAgent {
   // Evaluates all input, textarea and select nodes in the frame's document and
   // returns all that match the given semantic role and objective.
-  GetSemanticNodes(int32 role, int32 objective)
-      => (bool success, array<autofill_assistant.mojom.NodeData> nodes);
+  GetSemanticNodes(int32 role, int32 objective, mojo_base.mojom.TimeDelta timeout)
+      => (NodeDataStatus status, array<autofill_assistant.mojom.NodeData> nodes);
 };

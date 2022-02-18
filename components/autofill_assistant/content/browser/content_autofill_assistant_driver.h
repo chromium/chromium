@@ -7,6 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_driver.mojom.h"
@@ -47,19 +49,27 @@ class ContentAutofillAssistantDriver
   GetAutofillAssistantAgent();
 
   // autofill_assistant::mojom::AutofillAssistantDriver:
-  void GetAnnotateDomModel(GetAnnotateDomModelCallback callback) override;
+  void GetAnnotateDomModel(base::TimeDelta timeout,
+                           GetAnnotateDomModelCallback callback) override;
+
+  void SetAnnotateDomModelService(
+      AnnotateDomModelService* annotate_dom_model_service);
 
  private:
+  friend class ContentAutofillAssistantDriverTest;
   explicit ContentAutofillAssistantDriver(
       content::RenderFrameHost* render_frame_host);
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  void OnModelAvailabilityChanged(GetAnnotateDomModelCallback callback,
-                                  bool is_available);
+  void OnTimeout();
+  void OnModelAvailabilityChanged(bool is_available);
 
   raw_ptr<AnnotateDomModelService> annotate_dom_model_service_ = nullptr;
+
+  std::unique_ptr<base::OneShotTimer> timer_;
+  GetAnnotateDomModelCallback callback_;
 
   mojo::AssociatedReceiver<mojom::AutofillAssistantDriver> receiver_{this};
 

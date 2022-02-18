@@ -5,6 +5,7 @@
 #include "components/autofill_assistant/browser/web/element_finder.h"
 
 #include "base/barrier_callback.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
@@ -12,7 +13,6 @@
 #include "components/autofill_assistant/browser/web/js_filter_builder.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 #include "components/autofill_assistant/content/browser/content_autofill_assistant_driver.h"
-#include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -82,6 +82,23 @@ bool ConvertPseudoType(const PseudoType pseudo_type,
 void AddHostToList(std::vector<content::GlobalRenderFrameHostId>& host_ids,
                    content::RenderFrameHost* host) {
   host_ids.push_back(host->GetGlobalId());
+}
+
+ElementFinderInfoProto::SemanticInferenceStatus
+NodeDataStatusToSemanticInferenceStatus(
+    mojom::NodeDataStatus node_data_status) {
+  switch (node_data_status) {
+    case mojom::NodeDataStatus::kSuccess:
+      return ElementFinderInfoProto::SUCCESS;
+    case mojom::NodeDataStatus::kUnexpectedError:
+      return ElementFinderInfoProto::UNEXPECTED_ERROR;
+    case mojom::NodeDataStatus::kInitializationError:
+      return ElementFinderInfoProto::INITIALIZATION_ERROR;
+    case mojom::NodeDataStatus::kModelLoadError:
+      return ElementFinderInfoProto::MODEL_LOAD_ERROR;
+    case mojom::NodeDataStatus::kModelLoadTimeout:
+      return ElementFinderInfoProto::MODEL_LOAD_TIMEOUT;
+  }
 }
 
 }  // namespace
@@ -172,6 +189,10 @@ void ElementFinder::UpdateLogInfo(const Result& result,
   }
 
   if (selector_.proto.has_semantic_information()) {
+    for (auto node_data_status : node_data_frame_status_) {
+      info->mutable_semantic_inference_result()->add_status_per_frame(
+          NodeDataStatusToSemanticInferenceStatus(node_data_status));
+    }
     auto* inference_result = info->mutable_semantic_inference_result();
     for (const auto& node_id : semantic_node_results_) {
       auto* predicted_element = inference_result->add_predicted_elements();
@@ -296,6 +317,8 @@ void ElementFinder::RunAnnotateDomModelOnFrame(
   driver->GetAutofillAssistantAgent()->GetSemanticNodes(
       selector_.proto.semantic_information().semantic_role(),
       selector_.proto.semantic_information().objective(),
+      base::Milliseconds(
+          selector_.proto.semantic_information().model_timeout_ms()),
       base::BindOnce(&ElementFinder::OnRunAnnotateDomModelOnFrame,
                      weak_ptr_factory_.GetWeakPtr(), host_id,
                      std::move(callback)));
@@ -304,8 +327,10 @@ void ElementFinder::RunAnnotateDomModelOnFrame(
 void ElementFinder::OnRunAnnotateDomModelOnFrame(
     const content::GlobalRenderFrameHostId& host_id,
     base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback,
-    bool success,
+    mojom::NodeDataStatus status,
     const std::vector<NodeData>& node_data) {
+  node_data_frame_status_.emplace_back(status);
+
   std::vector<GlobalBackendNodeId> node_ids;
   for (const auto& node : node_data) {
     node_ids.emplace_back(GlobalBackendNodeId(host_id, node.backend_node_id));
