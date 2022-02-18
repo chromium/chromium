@@ -60,10 +60,6 @@ class CC_EXPORT PictureLayer : public Layer {
 
   const DisplayItemList* GetDisplayItemList() const;
 
-  gfx::Vector2dF DirectlyCompositedImageDefaultRasterScaleForTesting() const {
-    return picture_layer_inputs_.directly_composited_image_default_raster_scale;
-  }
-
  protected:
   // Encapsulates all data, callbacks or interfaces received from the embedder.
   struct PictureLayerInputs {
@@ -74,7 +70,7 @@ class CC_EXPORT PictureLayer : public Layer {
     bool nearest_neighbor = false;
     bool is_backdrop_filter_mask = false;
     scoped_refptr<DisplayItemList> display_list;
-    gfx::Vector2dF directly_composited_image_default_raster_scale;
+    absl::optional<gfx::Size> directly_composited_image_size = absl::nullopt;
   };
 
   explicit PictureLayer(ContentLayerClient* client);

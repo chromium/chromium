@@ -23,7 +23,6 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 class SkCanvas;
 
@@ -137,8 +136,7 @@ class CC_PAINT_EXPORT DisplayItemList
   void Finalize();
 
   struct DirectlyCompositedImageResult {
-    // See PictureLayerImpl::direct_composited_image_default_raster_scale_.
-    gfx::Vector2dF default_raster_scale;
+    gfx::Size intrinsic_image_size;
     bool nearest_neighbor;
   };
 
@@ -147,7 +145,7 @@ class CC_PAINT_EXPORT DisplayItemList
   // of the image and whether or not to use nearest neighbor filtering when
   // scaling the layer.
   absl::optional<DirectlyCompositedImageResult>
-  GetDirectlyCompositedImageResult() const;
+  GetDirectlyCompositedImageResult(gfx::Size containing_layer_bounds) const;
 
   int NumSlowPaths() const { return paint_op_buffer_.numSlowPaths(); }
   bool HasNonAAPaint() const { return paint_op_buffer_.HasNonAAPaint(); }
