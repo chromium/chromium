@@ -1486,6 +1486,17 @@ int32_t RTCVideoEncoder::InitEncode(
            << ", width=" << codec_settings->width
            << ", height=" << codec_settings->height
            << ", startBitrate=" << codec_settings->startBitrate;
+
+  if (profile_ >= media::H264PROFILE_MIN &&
+      profile_ <= media::H264PROFILE_MAX &&
+      (codec_settings->width % 2 != 0 || codec_settings->height % 2 != 0)) {
+    DLOG(ERROR)
+        << "Input video size is " << codec_settings->width << "x"
+        << codec_settings->height << ", "
+        << "but hardware H.264 encoder only supports even sized frames.";
+    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+  }
+
   if (impl_)
     Release();
 
