@@ -72,6 +72,9 @@ install:
 	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_assistance-firefox.json" \
 	  "$(FIREFOX_NATIVE_MESSAGING_DIR)/com.google.chrome.remote_assistance.json"
+	install -m 0644 \
+	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_webauthn.json" \
+	  "$(CHROME_NATIVE_MESSAGING_DIR)/com.google.chrome.remote_webauthn.json"
 
 	install "$(CORE_LIBNAME)" "$(INSTALL_DIR)/libremoting_core.so"
 	eu-strip -f "$(CORE_DEBUGFILE)" "$(INSTALL_DIR)/libremoting_core.so"

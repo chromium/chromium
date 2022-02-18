@@ -79,6 +79,7 @@ action("remoting_me2me_host_deb_installer") {
     "$root_out_dir/remoting/com.google.chrome.remote_assistance.json",
     "$root_out_dir/remoting/com.google.chrome.remote_desktop-firefox.json",
     "$root_out_dir/remoting/com.google.chrome.remote_desktop.json",
+    "$root_out_dir/remoting/com.google.chrome.remote_webauthn.json",
     "$root_out_dir/remoting/crd-url-forwarder.desktop",
   ]
 

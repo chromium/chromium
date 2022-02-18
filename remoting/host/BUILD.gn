@@ -824,14 +824,17 @@ if (enable_remoting_host) {
     if (is_mac) {
       me2me_host_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$native_messaging_host_bundle_name/Contents/MacOS/native_messaging_host"
       it2me_host_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$remote_assistance_host_bundle_name/Contents/MacOS/remote_assistance_host"
+      remote_webauthn_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$remote_assistance_host_bundle_name/Contents/MacOS/remote_webauthn"
     } else if (is_win) {
       me2me_host_path = "remoting_native_messaging_host.exe"
       it2me_host_path = "remote_assistance_host.exe"
+      remote_webauthn_path = "remote_webauthn.exe"
     } else {
       me2me_host_path =
           "/opt/google/chrome-remote-desktop/native-messaging-host"
       it2me_host_path =
           "/opt/google/chrome-remote-desktop/remote-assistance-host"
+      remote_webauthn_path = "/opt/google/chrome-remote-desktop/remote-webauthn"
     }
 
     script = "../tools/build/remoting_localize.py"
@@ -841,6 +844,7 @@ if (enable_remoting_host) {
       "it2me/com.google.chrome.remote_assistance.json.jinja2",
       "setup/com.google.chrome.remote_desktop-firefox.json.jinja2",
       "setup/com.google.chrome.remote_desktop.json.jinja2",
+      "setup/com.google.chrome.remote_webauthn.json.jinja2",
     ]
 
     inputs = [ branding_path ]
@@ -852,6 +856,8 @@ if (enable_remoting_host) {
       "ME2ME_HOST_PATH=$me2me_host_path",
       "--define",
       "IT2ME_HOST_PATH=$it2me_host_path",
+      "--define",
+      "REMOTE_WEBAUTHN_PATH=$remote_webauthn_path",
       "--variables",
       rebase_path(branding_path, root_build_dir),
       "--template",
