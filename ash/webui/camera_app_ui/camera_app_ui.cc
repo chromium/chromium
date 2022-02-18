@@ -26,7 +26,6 @@
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/js/grit/mojo_bindings_resources.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "ui/aura/window.h"
@@ -46,9 +45,6 @@ content::WebUIDataSource* CreateCameraAppUIHTMLSource(
   // Add all settings resources.
   source->AddResourcePaths(
       base::make_span(kAshCameraAppResources, kAshCameraAppResourcesSize));
-
-  source->AddResourcePath("js/mojo/mojo_bindings_lite.js",
-                          IDR_MOJO_MOJO_BINDINGS_LITE_JS);
 
   delegate->PopulateLoadTimeData(source);
 
