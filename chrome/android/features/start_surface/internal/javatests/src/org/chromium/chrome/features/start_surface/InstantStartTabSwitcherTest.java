@@ -536,6 +536,7 @@ public class InstantStartTabSwitcherTest {
         mActivityTestRule.resumeMainActivityFromLauncher();
 
         // Create a non search result tab and check the shared preferences.
+        StartSurfaceTestUtils.waitForOverviewVisible(cta);
         StartSurfaceTestUtils.waitForTabModel(cta);
         StartSurfaceTestUtils.launchFirstMVTile(cta, 1);
 
