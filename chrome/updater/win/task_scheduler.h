@@ -63,12 +63,6 @@ class TaskScheduler {
     base::FilePath application_path;
     base::FilePath working_dir;
     std::wstring arguments;
-
-    std::wstring value() const {
-      return base::StrCat({L"[TaskExecAction][application_path]",
-                           application_path.value(), L"[working_dir]",
-                           working_dir.value(), L"[arguments]", arguments});
-    }
   };
 
   // Detailed description of a scheduled task. This type is returned by the
@@ -152,6 +146,8 @@ class TaskScheduler {
   TaskScheduler();
 };
 
+std::ostream& operator<<(std::ostream& stream,
+                         const TaskScheduler::TaskExecAction& t);
 std::ostream& operator<<(std::ostream& stream,
                          const TaskScheduler::TaskInfo& t);
 

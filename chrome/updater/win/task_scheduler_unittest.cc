@@ -22,6 +22,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -382,6 +383,43 @@ TEST_F(TaskSchedulerTests, GetTaskInfoLogonType) {
   EXPECT_EQ(!is_system, !!(info.logon_type & TaskScheduler::LOGON_INTERACTIVE));
   EXPECT_EQ(is_system, !!(info.logon_type & TaskScheduler::LOGON_SERVICE));
   EXPECT_FALSE(info.logon_type & TaskScheduler::LOGON_S4U);
+
+  EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
+}
+
+TEST_F(TaskSchedulerTests, GetTaskInfoUserId) {
+  const bool is_system = GetTestScope() == UpdaterScope::kSystem;
+
+  base::CommandLine command_line1 = GetTestProcessCommandLine(false);
+
+  EXPECT_TRUE(task_scheduler_->RegisterTask(
+      GetTestScope(), kTaskName1, kTaskDescription1, command_line1,
+      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
+
+  TaskScheduler::TaskInfo info;
+  EXPECT_FALSE(task_scheduler_->GetTaskInfo(kTaskName2, &info));
+  EXPECT_STREQ(L"", info.user_id.c_str());
+
+  EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
+
+  const std::wstring expected_user_id = [&is_system]() -> std::wstring {
+    if (is_system)
+      return L"SYSTEM";
+
+    base::win::ScopedBstr user_name_bstr;
+    ULONG user_name_size = 256;
+    EXPECT_TRUE(::GetUserNameExW(
+        NameSamCompatible,
+        user_name_bstr.AllocateBytes(user_name_size * sizeof(OLECHAR)),
+        &user_name_size));
+    return user_name_bstr.Get();
+  }();
+
+  EXPECT_TRUE(base::EndsWith(info.user_id, expected_user_id,
+                             base::CompareCase::INSENSITIVE_ASCII) ||
+              base::EndsWith(expected_user_id, info.user_id,
+                             base::CompareCase::INSENSITIVE_ASCII));
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
 }
