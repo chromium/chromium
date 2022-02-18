@@ -590,6 +590,9 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
       break;
   }
 
+  VLOG_IF(2, !frame_hdr.show_frame) << "not displaying frame";
+  last_decoded_frame_visible_ = frame_hdr.show_frame;
+
   if (!CopyFrameData(frame_hdr, OUTPUT_queue_))
     LOG(FATAL) << "Failed to copy the frame data into the V4L2 buffer.";
 

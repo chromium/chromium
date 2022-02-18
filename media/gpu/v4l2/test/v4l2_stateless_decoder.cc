@@ -30,6 +30,7 @@ constexpr char kUsageMsg[] =
     "           [--v=<log verbosity>]\n"
     "           [--output_path_prefix=<output files path prefix>]\n"
     "           [--md5]\n"
+    "           [--visible]\n"
     "           [--help]\n";
 
 constexpr char kHelpMsg[] =
@@ -48,8 +49,12 @@ constexpr char kHelpMsg[] =
     "        result in output files of the form \"test/test_000000.yuv\",\n"
     "       \"test/test_000001.yuv\", etc.\n"
     "    --md5\n"
-    "        Optional. If specified, prints the md5 of each decoded frame\n"
-    "        in I420 format to stdout.\n"
+    "        Optional. If specified, prints the md5 of each decoded (and\n"
+    "        visible, if --visible is specified) frame in I420 format to\n"
+    "        stdout.\n"
+    "    --visible\n"
+    "        Optional. If specified, computes md5 hash values only for\n"
+    "        visible frames.\n"
     "    --help\n"
     "        Display this help message and exit.\n";
 
@@ -166,11 +171,13 @@ int main(int argc, char** argv) {
       break;
     }
 
+    if (cmd->HasSwitch("visible") && !dec->LastDecodedFrameVisible())
+      continue;
+
     std::vector<char> yuv_plane(y_plane);
     yuv_plane.insert(yuv_plane.end(), u_plane.begin(), u_plane.end());
     yuv_plane.insert(yuv_plane.end(), v_plane.begin(), v_plane.end());
 
-    // TODO(stevecho): md5 computation is not needed for non-displayed frames
     if (cmd->HasSwitch("md5"))
       ComputeAndPrintMd5hash(yuv_plane);
 

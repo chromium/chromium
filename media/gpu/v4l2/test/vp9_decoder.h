@@ -52,6 +52,9 @@ class Vp9Decoder {
                                      gfx::Size& size,
                                      const int frame_number);
 
+  // Returns whether the last decoded frame was visible.
+  bool LastDecodedFrameVisible() const { return last_decoded_frame_visible_; }
+
  private:
   Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
              std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
@@ -97,6 +100,9 @@ class Vp9Decoder {
 
   // CAPTURE_queue needed for uncompressed (decoded) output.
   std::unique_ptr<V4L2Queue> CAPTURE_queue_;
+
+  // Whether the last decoded frame was visible.
+  bool last_decoded_frame_visible_ = false;
 };
 
 }  // namespace v4l2_test
