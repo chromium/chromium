@@ -30,8 +30,12 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -59,8 +63,26 @@ constexpr int kFeedbackButtonSpacingDp = 40;
 // when the grid was first shown.
 constexpr std::size_t kMaxTemplateCount = 6u;
 
+constexpr gfx::Transform kEndTransform;
+
+// Scale for adding/deleting grid items.
+constexpr float kAddOrDeleteItemScale = 0.75f;
+
 constexpr base::TimeDelta kBoundsChangeAnimationDuration =
     base::Milliseconds(300);
+
+constexpr base::TimeDelta kTemplateViewsScaleAndFadeDuration =
+    base::Milliseconds(50);
+
+// Gets the scale transform for `view`. It returns a transform with a scale of
+// `kAddOrDeleteItemScale`. The pivot of the scale animation will be the center
+// point of the view.
+gfx::Transform GetScaleTransformForView(views::View* view) {
+  gfx::Transform scale_transform;
+  scale_transform.Scale(kAddOrDeleteItemScale, kAddOrDeleteItemScale);
+  return gfx::TransformAboutPivot(view->GetLocalBounds().CenterPoint(),
+                                  scale_transform);
+}
 
 }  // namespace
 
@@ -96,7 +118,7 @@ class DesksTemplatesEventHandler : public ui::EventHandler {
 DesksTemplatesGridView::DesksTemplatesGridView()
     : bounds_animator_(this, /*use_transforms=*/true) {
   bounds_animator_.SetAnimationDuration(kBoundsChangeAnimationDuration);
-  bounds_animator_.set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN);
+  bounds_animator_.set_tween_type(gfx::Tween::LINEAR);
 }
 
 DesksTemplatesGridView::~DesksTemplatesGridView() {
@@ -165,6 +187,8 @@ void DesksTemplatesGridView::PopulateGridUI(
 void DesksTemplatesGridView::AddOrUpdateTemplates(
     const std::vector<const DeskTemplate*>& entries,
     bool initializing_grid_view) {
+  std::vector<DesksTemplatesItemView*> new_grid_items;
+
   for (const DeskTemplate* entry : entries) {
     auto iter = std::find_if(grid_items_.begin(), grid_items_.end(),
                              [entry](DesksTemplatesItemView* grid_item) {
@@ -174,8 +198,11 @@ void DesksTemplatesGridView::AddOrUpdateTemplates(
     if (iter != grid_items_.end()) {
       (*iter)->UpdateTemplate(*entry);
     } else if (grid_items_.size() < kMaxTemplateCount) {
-      grid_items_.push_back(
-          AddChildView(std::make_unique<DesksTemplatesItemView>(entry)));
+      DesksTemplatesItemView* grid_item =
+          AddChildView(std::make_unique<DesksTemplatesItemView>(entry));
+      grid_items_.push_back(grid_item);
+      if (!initializing_grid_view)
+        new_grid_items.push_back(grid_item);
     }
   }
 
@@ -199,7 +226,7 @@ void DesksTemplatesGridView::AddOrUpdateTemplates(
   if (initializing_grid_view)
     Layout();
   else
-    AnimateGridItems();
+    AnimateGridItems(new_grid_items);
 }
 
 void DesksTemplatesGridView::DeleteTemplates(
@@ -221,14 +248,32 @@ void DesksTemplatesGridView::DeleteTemplates(
     if (iter == grid_items_.end())
       continue;
 
-    highlight_controller->OnViewDestroyingOrDisabling(*iter);
-    highlight_controller->OnViewDestroyingOrDisabling((*iter)->name_view());
+    DesksTemplatesItemView* grid_item = *iter;
+    highlight_controller->OnViewDestroyingOrDisabling(grid_item);
+    highlight_controller->OnViewDestroyingOrDisabling(grid_item->name_view());
 
-    RemoveChildViewT(*iter);
+    // Performs an animation of changing the deleted grid item opacity
+    // from 1 to 0 and scales down to `kAddOrDeleteItemScale`. `old_layer_tree`
+    // will be deleted when the animation is complete.
+    auto old_grid_item_layer_tree = wm::RecreateLayers(grid_item);
+    auto* old_grid_item_layer_tree_root = old_grid_item_layer_tree->root();
+    GetWidget()->GetLayer()->Add(old_grid_item_layer_tree_root);
+
+    views::AnimationBuilder()
+        .OnEnded(base::BindOnce(
+            [](std::unique_ptr<ui::LayerTreeOwner> layer_tree_owner) {},
+            std::move(old_grid_item_layer_tree)))
+        .Once()
+        .SetTransform(old_grid_item_layer_tree_root,
+                      GetScaleTransformForView(grid_item))
+        .SetOpacity(old_grid_item_layer_tree_root, 0.f)
+        .SetDuration(kTemplateViewsScaleAndFadeDuration);
+
+    RemoveChildViewT(grid_item);
     grid_items_.erase(iter);
   }
 
-  AnimateGridItems();
+  AnimateGridItems(/*new_grid_items=*/{});
 }
 
 DesksTemplatesItemView* DesksTemplatesGridView::GridItemBeingModified() {
@@ -424,7 +469,8 @@ gfx::Rect DesksTemplatesGridView::CalculateFeedbackButtonPosition() const {
       feedback_size);
 }
 
-void DesksTemplatesGridView::AnimateGridItems() {
+void DesksTemplatesGridView::AnimateGridItems(
+    const std::vector<DesksTemplatesItemView*>& new_grid_items) {
   const std::vector<gfx::Rect> positions = CalculateGridItemPositions();
   for (size_t i = 0; i < grid_items_.size(); i++) {
     DesksTemplatesItemView* grid_item = grid_items_[i];
@@ -432,10 +478,26 @@ void DesksTemplatesGridView::AnimateGridItems() {
     if (bounds_animator_.GetTargetBounds(grid_item) == target_bounds)
       continue;
 
-    // We need to ensure that the layer is non-opaque when animating.
-    if (!grid_item->layer())
-      grid_item->SetPaintToLayer();
-    grid_item->layer()->SetFillsBoundsOpaquely(false);
+    // This is a new grid_item, so do the scale up to identity and fade in
+    // animation. The animation is delayed to sync up with the
+    // `bounds_animator_` animation.
+    if (base::Contains(new_grid_items, grid_item)) {
+      grid_item->SetBoundsRect(target_bounds);
+
+      ui::Layer* layer = grid_item->layer();
+      layer->SetTransform(GetScaleTransformForView(grid_item));
+      layer->SetOpacity(0.f);
+
+      views::AnimationBuilder()
+          .Once()
+          .Offset(kBoundsChangeAnimationDuration -
+                  kTemplateViewsScaleAndFadeDuration)
+          .SetTransform(layer, kEndTransform)
+          .SetOpacity(layer, 1.f)
+          .SetDuration(kTemplateViewsScaleAndFadeDuration);
+      continue;
+    }
+
     bounds_animator_.AnimateViewTo(grid_item, target_bounds);
   }
 

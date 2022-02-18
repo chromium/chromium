@@ -33,6 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
@@ -191,6 +192,10 @@ DesksTemplatesItemView::DesksTemplatesItemView(
               .SetUseDefaultFillLayout(true)
               .SetVisible(false))
       .BuildChildren();
+
+  // We need to ensure that the layer is non-opaque when animating.
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 
   launch_button_ = hover_container_->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&DesksTemplatesItemView::OnGridItemPressed,
