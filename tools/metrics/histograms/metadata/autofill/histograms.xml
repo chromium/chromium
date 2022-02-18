@@ -837,6 +837,8 @@ chromium-metrics-reviews@google.com.
         summary="explicitly requesting cardholder name"/>
     <variant name=".RequestingExpirationDate"
         summary="explicitly requesting expiration date"/>
+    <variant name=".WithMultipleLegalLines"
+        summary="when legal message has multiple lines"/>
   </token>
 </histogram>
 

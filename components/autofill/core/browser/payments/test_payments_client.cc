@@ -200,6 +200,12 @@ void TestPaymentsClient::SetUseInvalidLegalMessageInGetUploadDetails(
   use_invalid_legal_message_ = use_invalid_legal_message;
 }
 
+void TestPaymentsClient::SetUseLegalMessageWithMultipleLinesInGetUploadDetails(
+    bool use_legal_message_with_multiple_lines) {
+  use_legal_message_with_multiple_lines_ =
+      use_legal_message_with_multiple_lines;
+}
+
 std::unique_ptr<base::Value> TestPaymentsClient::LegalMessage() {
   if (use_invalid_legal_message_) {
     // Legal message is invalid because it's missing the url.
@@ -212,6 +218,38 @@ std::unique_ptr<base::Value> TestPaymentsClient::LegalMessage() {
                                          "     } ]"
                                          "  } ]"
                                          "}"));
+  } else if (use_legal_message_with_multiple_lines_) {
+    return std::unique_ptr<base::Value>(base::JSONReader::ReadDeprecated(
+        "{"
+        "  \"line\": ["
+        "    {"
+        "      \"template\": \"The legal documents are: {0} and {1}.\","
+        "      \"template_parameter\": ["
+        "        {"
+        "          \"display_text\": \"Terms of Service\","
+        "          \"url\": \"http://www.example.com/tos\""
+        "        },"
+        "        {"
+        "          \"display_text\": \"Privacy Policy\","
+        "          \"url\": \"http://www.example.com/pp\""
+        "        }"
+        "      ]"
+        "    },"
+        "    {"
+        "      \"template\": \"The legal documents are: {0} and {1}.\","
+        "      \"template_parameter\": ["
+        "        {"
+        "          \"display_text\": \"Terms of Service\","
+        "          \"url\": \"http://www.example.com/tos\""
+        "        },"
+        "        {"
+        "          \"display_text\": \"Privacy Policy\","
+        "          \"url\": \"http://www.example.com/pp\""
+        "        }"
+        "      ]"
+        "    }"
+        "  ]"
+        "}"));
   } else {
     return std::unique_ptr<base::Value>(base::JSONReader::ReadDeprecated(
         "{"

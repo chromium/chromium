@@ -41,6 +41,12 @@ void LogAutofillCreditCardMessageMetrics(
     base::UmaHistogramEnumeration(
         base::StrCat({kPrefix, destination, ".FromNonFocusableForm"}), metric);
   }
+
+  if (options.has_multiple_legal_lines) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({kPrefix, destination, ".WithMultipleLegalLines"}),
+        metric);
+  }
 }
 
 }  // namespace autofill

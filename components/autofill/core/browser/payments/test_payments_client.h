@@ -109,6 +109,9 @@ class TestPaymentsClient : public payments::PaymentsClient {
   void SetUseInvalidLegalMessageInGetUploadDetails(
       bool use_invalid_legal_message);
 
+  void SetUseLegalMessageWithMultipleLinesInGetUploadDetails(
+      bool use_legal_message_with_multiple_lines);
+
   void set_select_challenge_option_result(
       AutofillClient::PaymentsRpcResult result) {
     select_challenge_option_result_ = result;
@@ -175,6 +178,7 @@ class TestPaymentsClient : public payments::PaymentsClient {
   PaymentsClient::UploadCardSource upload_card_source_;
   std::unique_ptr<std::unordered_map<std::string, std::string>> save_result_;
   bool use_invalid_legal_message_ = false;
+  bool use_legal_message_with_multiple_lines_ = false;
   std::unique_ptr<base::Value> LegalMessage();
   absl::optional<AutofillClient::PaymentsRpcResult>
       select_challenge_option_result_;

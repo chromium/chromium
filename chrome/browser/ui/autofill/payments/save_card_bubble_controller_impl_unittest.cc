@@ -275,12 +275,13 @@ struct SaveCardOptionParam {
   bool has_non_focusable_field;
   bool should_request_name_from_user;
   bool should_request_expiration_date_from_user;
+  bool has_multiple_legal_lines;
 };
 
 const SaveCardOptionParam kSaveCardOptionParam[] = {
-    {false, false, false, false}, {true, false, false, false},
-    {false, true, false, false},  {false, false, true, false},
-    {false, false, false, true},
+    {false, false, false, false, false}, {true, false, false, false, false},
+    {false, true, false, false, false},  {false, false, true, false, false},
+    {false, false, false, true, false},  {false, false, false, false, true},
 };
 
 // Param of the SaveCardBubbleSingletonTestData:
@@ -307,8 +308,9 @@ class SaveCardBubbleLoggingTest
             .with_should_request_name_from_user(
                 save_card_option_param.should_request_name_from_user)
             .with_should_request_expiration_date_from_user(
-                save_card_option_param
-                    .should_request_expiration_date_from_user);
+                save_card_option_param.should_request_expiration_date_from_user)
+            .with_has_multiple_legal_lines(
+                save_card_option_param.has_multiple_legal_lines);
   }
 
   ~SaveCardBubbleLoggingTest() override = default;

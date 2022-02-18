@@ -955,6 +955,12 @@ void AutofillMetrics::LogCreditCardInfoBarMetric(
         "Autofill.CreditCardInfoBar" + destination + ".FromNonFocusableForm",
         metric, NUM_INFO_BAR_METRICS);
   }
+
+  if (options.has_multiple_legal_lines) {
+    base::UmaHistogramEnumeration(
+        "Autofill.CreditCardInfoBar" + destination + ".WithMultipleLegalLines",
+        metric, NUM_INFO_BAR_METRICS);
+  }
 }
 
 // static
@@ -1013,6 +1019,11 @@ void AutofillMetrics::LogSaveCardPromptOfferMetric(
         metric_with_destination_and_show + ".FromDynamicChangeForm", metric,
         NUM_SAVE_CARD_PROMPT_OFFER_METRICS);
   }
+  if (options.has_multiple_legal_lines) {
+    base::UmaHistogramEnumeration(
+        metric_with_destination_and_show + ".WithMultipleLegalLines", metric,
+        NUM_SAVE_CARD_PROMPT_OFFER_METRICS);
+  }
 
   if (security_level != security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {
     base::UmaHistogramEnumeration(
@@ -1062,6 +1073,11 @@ void AutofillMetrics::LogSaveCardPromptResultMetric(
   if (options.from_dynamic_change_form) {
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".FromDynamicChangeForm", metric,
+        NUM_SAVE_CARD_PROMPT_RESULT_METRICS);
+  }
+  if (options.has_multiple_legal_lines) {
+    base::UmaHistogramEnumeration(
+        metric_with_destination_and_show + ".WithMultipleLegalLines", metric,
         NUM_SAVE_CARD_PROMPT_RESULT_METRICS);
   }
 

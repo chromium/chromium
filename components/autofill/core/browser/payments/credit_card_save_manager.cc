@@ -523,6 +523,7 @@ void CreditCardSaveManager::OfferCardUploadSave() {
         upload_request_.card, legal_message_lines_,
         AutofillClient::SaveCreditCardOptions()
             .with_from_dynamic_change_form(from_dynamic_change_form_)
+            .with_has_multiple_legal_lines(legal_message_lines_.size() > 1)
             .with_has_non_focusable_field(has_non_focusable_field_)
             .with_should_request_name_from_user(should_request_name_from_user_)
             .with_should_request_expiration_date_from_user(

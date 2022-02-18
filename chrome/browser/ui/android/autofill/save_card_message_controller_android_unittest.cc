@@ -429,6 +429,33 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnConfirmDateAcceptUpload) {
                                      1);
 }
 
+TEST_F(SaveCardMessageControllerAndroidTest,
+       DismissOnConfirmLegalLinesAcceptUpload) {
+  base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
+                              const AutofillClient::UserProvidedCardDetails&)>
+      mock_upload_callback_receiver;
+  base::HistogramTester histogram_tester;
+  AutofillClient::SaveCreditCardOptions options;
+  options.has_multiple_legal_lines = true;
+  EnqueueMessage(mock_upload_callback_receiver.Get(), {}, options);
+  EXPECT_CALL(
+      mock_upload_callback_receiver,
+      Run(AutofillClient::SaveCardOfferUserDecision::kAccepted, testing::_));
+  // Triggering dialog will dismiss the message.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
+  OnDateConfirmed();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kServerPrefix, ".WithMultipleLegalLines"}),
+      MessageMetrics::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kServerPrefix, ".WithMultipleLegalLines"}),
+      MessageMetrics::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kAccepted,
+                                     1);
+}
+
 // 4. Decline Dialog UI
 TEST_F(SaveCardMessageControllerAndroidTest, DismissOnPromoDismissedUpload) {
   base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
