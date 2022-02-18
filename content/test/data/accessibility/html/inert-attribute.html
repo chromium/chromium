@@ -60,7 +60,7 @@ inertSlot.inert = true;
 shadowRoot.append(normalSlot, inertSlot);
 
 // Check interaction with focusability.
-for (let root of {document, shadowRoot}) {
+for (let root of [document, shadowRoot]) {
   for (let element of root.querySelectorAll("*")) {
     element.tabIndex = 0;
   }
