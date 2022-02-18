@@ -37,15 +37,6 @@ namespace content {
 
 namespace {
 
-struct ActivateResult {
-  ActivateResult(PrerenderHost::FinalStatus status,
-                 std::unique_ptr<StoredPage> page)
-      : status(status), page(std::move(page)) {}
-
-  PrerenderHost::FinalStatus status = PrerenderHost::FinalStatus::kActivated;
-  std::unique_ptr<StoredPage> page;
-};
-
 bool AreHttpRequestHeadersCompatible(
     const std::string& potential_activation_headers_str,
     const std::string& prerender_headers_str) {
@@ -179,7 +170,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     return web_contents_.GetPrimaryFrameTree();
   }
 
-  ActivateResult Activate(NavigationRequest& navigation_request) {
+  std::unique_ptr<StoredPage> Activate(NavigationRequest& navigation_request) {
     // There should be no ongoing main-frame navigation during activation.
     // TODO(https://crbug.com/1190644): Make sure sub-frame navigations are
     // fine.
@@ -266,7 +257,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     frame_tree_->Shutdown();
     frame_tree_.reset();
 
-    return ActivateResult(FinalStatus::kActivated, std::move(page));
+    return page;
   }
 
   PrerenderHost::LoadingOutcome WaitForLoadCompletionForTesting() {
@@ -465,17 +456,13 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   DCHECK(is_ready_for_activation_);
   is_ready_for_activation_ = false;
 
-  ActivateResult result = page_holder_->Activate(navigation_request);
-  if (result.status != FinalStatus::kActivated) {
-    RecordFinalStatus(result.status);
-    return nullptr;
-  }
+  std::unique_ptr<StoredPage> page = page_holder_->Activate(navigation_request);
 
   for (auto& observer : observers_)
     observer.OnActivated();
 
   RecordFinalStatus(FinalStatus::kActivated);
-  return std::move(result.page);
+  return page;
 }
 
 // Ensure that the frame policies are compatible between primary main frame and
