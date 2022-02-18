@@ -5208,6 +5208,11 @@ const FeatureEntry kFeatureEntries[] = {
          kNtpPhotosModuleOptInTitleVariations,
          "DesktopNtpModules")},
 
+    {"ntp-photos-soft-opt-out",
+     flag_descriptions::kNtpPhotosModuleSoftOptOutName,
+     flag_descriptions::kNtpPhotosModuleSoftOptOutDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpPhotosModuleSoftOptOut)},
+
     {"ntp-recipe-tasks-module", flag_descriptions::kNtpRecipeTasksModuleName,
      flag_descriptions::kNtpRecipeTasksModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpRecipeTasksModule,

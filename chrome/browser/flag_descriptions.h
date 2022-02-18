@@ -2170,6 +2170,9 @@ extern const char kNtpPhotosModuleOptInTitleDescription[];
 extern const char kNtpPhotosModuleOptInArtWorkName[];
 extern const char kNtpPhotosModuleOptInArtWorkDescription[];
 
+extern const char kNtpPhotosModuleSoftOptOutName[];
+extern const char kNtpPhotosModuleSoftOptOutDescription[];
+
 extern const char kNtpRecipeTasksModuleName[];
 extern const char kNtpRecipeTasksModuleDescription[];
 

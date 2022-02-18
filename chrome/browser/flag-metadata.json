@@ -4293,6 +4293,11 @@
     "expiry_milestone":105
   },
   {
+    "name": "ntp-photos-soft-opt-out",
+    "owners": [ "mplg", "tiborg"],
+    "expiry_milestone":105
+  },
+  {
     "name": "ntp-realbox-match-omnibox-theme",
     "owners": [ "mahmadi", "mfacey" ],
     "expiry_milestone": 105

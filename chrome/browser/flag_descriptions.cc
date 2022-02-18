@@ -3784,6 +3784,10 @@ const char kNtpPhotosModuleOptInArtWorkName[] =
 const char kNtpPhotosModuleOptInArtWorkDescription[] =
     "Determines the art work in the NTP Photos Opt-In card";
 
+const char kNtpPhotosModuleSoftOptOutName[] = "NTP Photos Module Soft Opt-Out";
+const char kNtpPhotosModuleSoftOptOutDescription[] =
+    "Enables soft opt-out option in Photos opt-in card";
+
 const char kNtpRecipeTasksModuleName[] = "NTP Recipe Tasks Module";
 const char kNtpRecipeTasksModuleDescription[] =
     "Shows the recipe tasks module on the New Tab Page.";
