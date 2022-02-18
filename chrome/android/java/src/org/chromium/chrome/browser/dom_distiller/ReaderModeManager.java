@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
@@ -66,6 +67,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.LinkedHashSet;
 
 /**
  * Manages UI effects for reader mode including hiding and showing the
@@ -169,8 +171,33 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     /** Whether the messages UI was requested for a navigation. */
     private boolean mMessageRequestedForNavigation;
 
+    @IntDef({ThrottleMode.URL, ThrottleMode.DOMAIN, ThrottleMode.DISABLED, ThrottleMode.PER_TAB})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ThrottleMode {
+        int URL = 0;
+        int DOMAIN = 1;
+        int DISABLED = 2;
+        int PER_TAB = 3;
+    }
+
+    // Record the sites which users refuse to view in reader mode.
+    // If the size is larger than the capacity, remove the earliest added site first.
+    private static final LinkedHashSet<Integer> sMutedSites = new LinkedHashSet<>();
+    private static final int MAX_SIZE_OF_DECLINED_SITES = 100;
+    // Three modes:
+    //   - url: save url (host + path) of sites which user refuses to view in a reader mode
+    //   - domain: save host only
+    //   - disabled: no throttle at all
+    private static final String THROTTLING_MODE_PARAM = "reader_mode_throttling_mode";
+    private static final String THROTTLING_MODE_URL = "url";
+    private static final String THROTTLING_MODE_DOMAIN = "domain";
+    private static final String THROTTLING_MODE_DISABLED = "disabled";
+
     /** Whether the message ui is being shown or has already been shown. */
     private boolean mMessageShown;
+
+    /** Property Model of Reader mode message. */
+    private PropertyModel mMessageModel;
 
     ReaderModeManager(Tab tab, Supplier<MessageDispatcher> messageDispatcherSupplier) {
         super();
@@ -492,9 +519,20 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 || mIsDismissed) {
             return;
         }
+
+        int throttleMode = getThrottleMode();
+        if ((throttleMode == ThrottleMode.URL || throttleMode == ThrottleMode.DOMAIN)
+                && sMutedSites.contains(urlToHash(mDistillerUrl))) {
+            return;
+        }
+
         MessageDispatcher messageDispatcher = mMessageDispatcherSupplier.get();
         if (messageDispatcher != null && DomDistillerTabUtils.useMessagesForReaderModePrompt()) {
-            if (!mMessageRequestedForNavigation && !mMessageShown) {
+            if (!mMessageRequestedForNavigation) {
+                // If feature is disabled, reader mode message ui is only shown once per tab.
+                if (mMessageShown && throttleMode == ThrottleMode.PER_TAB) {
+                    return;
+                }
                 showReaderModeMessage(messageDispatcher);
                 mMessageShown = true;
             }
@@ -505,8 +543,15 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     }
 
     private void showReaderModeMessage(MessageDispatcher messageDispatcher) {
+        if (mMessageModel != null) {
+            // It is safe to dismiss a message which has been dismissed previously.
+            messageDispatcher.dismissMessage(mMessageModel, DismissReason.DISMISSED_BY_FEATURE);
+        }
         Resources resources = mTab.getContext().getResources();
-        PropertyModel message =
+        // Save url for #onMessageDismissed. mDistillerUrl may have been changed and became
+        // different from the url when message is enqueued.
+        GURL url = mDistillerUrl;
+        mMessageModel =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.READER_MODE)
@@ -517,15 +562,26 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 resources.getString(R.string.reader_mode_message_button))
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::activateReaderMode)
-                        .with(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed)
+                        .with(MessageBannerProperties.ON_DISMISSED,
+                                (reason) -> onMessageDismissed(url, reason))
                         .build();
         messageDispatcher.enqueueMessage(
-                message, mTab.getWebContents(), MessageScopeType.NAVIGATION, false);
+                mMessageModel, mTab.getWebContents(), MessageScopeType.NAVIGATION, false);
     }
 
-    private void onMessageDismissed(@DismissReason int dismissReason) {
+    private void onMessageDismissed(GURL url, @DismissReason int dismissReason) {
+        mMessageModel = null;
         if (dismissReason == DismissReason.GESTURE) {
             onClosed();
+        }
+        int mode = getThrottleMode();
+        if (dismissReason != DismissReason.PRIMARY_ACTION
+                && (mode == ThrottleMode.URL || mode == ThrottleMode.DOMAIN)) {
+            sMutedSites.add(urlToHash(url));
+            while (sMutedSites.size() > MAX_SIZE_OF_DECLINED_SITES) {
+                int v = sMutedSites.iterator().next();
+                sMutedSites.remove(v);
+            }
         }
 
         recordDismissalConditions(dismissReason);
@@ -650,16 +706,48 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         TabDistillabilityProvider.get(tabToObserve).addObserver(mDistillabilityObserver);
     }
 
+    // The output is dependent on the experiment arm.
+    private int urlToHash(GURL url) {
+        int mode = getThrottleMode();
+        assert mode == ThrottleMode.DOMAIN || mode == ThrottleMode.URL;
+        String str = url.getHost();
+        if (mode == ThrottleMode.URL) {
+            str += url.getPath();
+        }
+        return str.hashCode();
+    }
+
+    private @ThrottleMode int getThrottleMode() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.IMPROVE_READER_MODE_PROMPT)) {
+            return ThrottleMode.PER_TAB;
+        }
+        String mode = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.IMPROVE_READER_MODE_PROMPT, THROTTLING_MODE_PARAM);
+        if (mode.equals(THROTTLING_MODE_URL)) return ThrottleMode.URL;
+        if (mode.equals(THROTTLING_MODE_DOMAIN)) return ThrottleMode.DOMAIN;
+        return ThrottleMode.DISABLED;
+    }
+
     @VisibleForTesting
     int getDistillationStatus() {
         return mDistillationStatus;
+    }
+
+    @VisibleForTesting
+    void muteSiteForTesting(GURL url) {
+        sMutedSites.add(urlToHash(url));
+    }
+
+    @VisibleForTesting
+    void clearSavedSitesForTesting() {
+        sMutedSites.clear();
     }
 
     /** @return Whether Reader mode and its new UI are enabled. */
     public static boolean isEnabled() {
         boolean enabled = CommandLine.getInstance().hasSwitch(ChromeSwitches.ENABLE_DOM_DISTILLER)
                 && !CommandLine.getInstance().hasSwitch(
-                           ChromeSwitches.DISABLE_READER_MODE_BOTTOM_BAR)
+                        ChromeSwitches.DISABLE_READER_MODE_BOTTOM_BAR)
                 && DomDistillerTabUtils.isDistillerHeuristicsEnabled();
         return enabled;
     }

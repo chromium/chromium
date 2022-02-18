@@ -5,8 +5,11 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -23,6 +26,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -51,6 +56,7 @@ import java.util.concurrent.TimeoutException;
 
 /** This class tests the behavior of the {@link ReaderModeManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.IMPROVE_READER_MODE_PROMPT})
 public class ReaderModeManagerTest {
     private static final GURL MOCK_DISTILLER_URL =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.DOM_DISILLER_URL);
@@ -144,6 +150,7 @@ public class ReaderModeManagerTest {
         // An observer should have also been added to the web contents.
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
         mWebContentsObserver = mWebContentsObserverCaptor.getValue();
+        mManager.clearSavedSitesForTesting();
     }
 
     @Test
@@ -201,6 +208,24 @@ public class ReaderModeManagerTest {
         mManager.onClosed();
 
         mManager.tryShowingPrompt();
+        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @Features.EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE})
+    public void testUI_notTriggered_muted() {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.IMPROVE_READER_MODE_PROMPT, true);
+        testValues.addFeatureFlagOverride(ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE, true);
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.IMPROVE_READER_MODE_PROMPT, "reader_mode_throttling_mode", "url");
+        FeatureList.setTestValues(testValues);
+        mManager.muteSiteForTesting(mTab.getUrl());
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+        assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
+                mManager.getDistillationStatus());
+        verify(mMessageDispatcher, never()).enqueueMessage(any(), any(), anyInt(), anyBoolean());
         verifyNoMoreInteractions(mReaderModeInfobarJniMock);
     }
 
