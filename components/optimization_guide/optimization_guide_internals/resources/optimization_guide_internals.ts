@@ -33,6 +33,25 @@ function convertMojoTimeToJS(mojoTime: Time) {
 }
 
 /**
+ * Converts the source location to chromium source URL.
+ * @param sourceFile
+ * @param sourceLine
+ * @returns string
+ */
+function getChromiumSourceLink(sourceFile: string, sourceLine: number) {
+  // Valid source file starts with ../../
+  if (!sourceFile.startsWith('../../')) {
+    return `${sourceFile}(${sourceLine})`;
+  }
+  const fileName = sourceFile.slice(sourceFile.lastIndexOf('/') + 1);
+  if (fileName.length == 0) {
+    return `${sourceFile}(${sourceLine})`;
+  }
+  return `<a href="https://source.chromium.org/chromium/chromium/src/+/main:${
+      sourceFile.slice(6)};l=${sourceLine}">${fileName}(${sourceLine})</a>`;
+}
+
+/**
  * The callback to button#log-messages-dump to save the logs to a file.
  */
 function onLogMessagesDump() {
@@ -66,7 +85,7 @@ function initialize() {
       (eventTime: Time, sourceFile: string, sourceLine: number,
        message: string) => {
         const eventTimeStr = convertMojoTimeToJS(eventTime).toISOString();
-        const sourceLocation = `${sourceFile}(${sourceLine})`;
+        const sourceLocation = getChromiumSourceLink(sourceFile, sourceLine);
         logMessages.push({eventTime: eventTimeStr, sourceLocation, message});
         if (logMessageContainer) {
           const logmessage = logMessageContainer.insertRow();
