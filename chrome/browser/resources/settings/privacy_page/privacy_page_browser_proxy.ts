@@ -41,7 +41,7 @@ export enum SecureDnsUiManagementMode {
 
 export type SecureDnsSetting = {
   mode: SecureDnsMode,
-  templates: Array<string>,
+  config: string,
   managementMode: SecureDnsUiManagementMode,
 };
 

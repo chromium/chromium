@@ -94,36 +94,34 @@ static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_GetProviders(
   net::DohProviderEntry::List providers = GetFilteredProviders();
   std::vector<std::vector<std::u16string>> ret;
   ret.reserve(providers.size());
-  std::transform(
-      providers.begin(), providers.end(), std::back_inserter(ret),
-      [](const auto* entry) {
-        return std::vector<std::u16string>{
-            {base::UTF8ToUTF16(entry->ui_name),
-             base::UTF8ToUTF16(entry->doh_server_config.server_template()),
-             base::UTF8ToUTF16(entry->privacy_policy)}};
-      });
+  std::transform(providers.begin(), providers.end(), std::back_inserter(ret),
+                 [](const auto* entry) -> std::vector<std::u16string> {
+                   net::DnsOverHttpsConfig config({entry->doh_server_config});
+                   return {base::UTF8ToUTF16(entry->ui_name),
+                           base::UTF8ToUTF16(config.ToString()),
+                           base::UTF8ToUTF16(entry->privacy_policy)};
+                 });
   return base::android::ToJavaArrayOfStringArray(env, ret);
 }
 
-static ScopedJavaLocalRef<jstring> JNI_SecureDnsBridge_GetTemplates(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring> JNI_SecureDnsBridge_GetConfig(JNIEnv* env) {
   PrefService* local_state = g_browser_process->local_state();
   return base::android::ConvertUTF8ToJavaString(
       env, local_state->GetString(prefs::kDnsOverHttpsTemplates));
 }
 
-static jboolean JNI_SecureDnsBridge_SetTemplates(
+static jboolean JNI_SecureDnsBridge_SetConfig(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jtemplates) {
+    const JavaParamRef<jstring>& jconfig) {
   PrefService* local_state = g_browser_process->local_state();
-  std::string templates = base::android::ConvertJavaStringToUTF8(jtemplates);
-  if (templates.empty()) {
+  std::string config = base::android::ConvertJavaStringToUTF8(jconfig);
+  if (config.empty()) {
     local_state->ClearPref(prefs::kDnsOverHttpsTemplates);
     return true;
   }
 
-  if (net::DnsOverHttpsConfig::FromString(templates).has_value()) {
-    local_state->SetString(prefs::kDnsOverHttpsTemplates, templates);
+  if (net::DnsOverHttpsConfig::FromString(config).has_value()) {
+    local_state->SetString(prefs::kDnsOverHttpsTemplates, config);
     return true;
   }
 
@@ -140,12 +138,12 @@ static jint JNI_SecureDnsBridge_GetManagementMode(JNIEnv* env) {
 
 static void JNI_SecureDnsBridge_UpdateDropdownHistograms(
     JNIEnv* env,
-    const JavaParamRef<jstring>& old_template,
-    const JavaParamRef<jstring>& new_template) {
+    const JavaParamRef<jstring>& old_config,
+    const JavaParamRef<jstring>& new_config) {
   secure_dns::UpdateDropdownHistograms(
       GetFilteredProviders(),
-      base::android::ConvertJavaStringToUTF8(old_template),
-      base::android::ConvertJavaStringToUTF8(new_template));
+      base::android::ConvertJavaStringToUTF8(old_config),
+      base::android::ConvertJavaStringToUTF8(new_config));
 }
 
 static void JNI_SecureDnsBridge_UpdateValidationHistogram(JNIEnv* env,
@@ -155,13 +153,13 @@ static void JNI_SecureDnsBridge_UpdateValidationHistogram(JNIEnv* env,
 
 static jboolean JNI_SecureDnsBridge_ProbeConfig(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jtemplates) {
+    const JavaParamRef<jstring>& doh_config) {
   net::DnsConfigOverrides overrides;
   overrides.search = std::vector<std::string>();
   overrides.attempts = 1;
   overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
   secure_dns::ApplyConfig(&overrides,
-                          base::android::ConvertJavaStringToUTF8(jtemplates));
+                          base::android::ConvertJavaStringToUTF8(doh_config));
 
   // Android recommends converting async functions to blocking when using JNI:
   // https://developer.android.com/training/articles/perf-jni.

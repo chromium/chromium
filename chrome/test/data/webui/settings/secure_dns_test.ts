@@ -175,7 +175,7 @@ suite('SettingsSecureDns', function() {
   test('SecureDnsOff', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -190,7 +190,7 @@ suite('SettingsSecureDns', function() {
   test('SecureDnsAutomatic', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -205,7 +205,7 @@ suite('SettingsSecureDns', function() {
   test('SecureDnsSecure', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -220,7 +220,7 @@ suite('SettingsSecureDns', function() {
   test('SecureDnsManagedEnvironment', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.DISABLED_MANAGED,
     });
     flush();
@@ -239,7 +239,7 @@ suite('SettingsSecureDns', function() {
   test('SecureDnsParentalControl', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.DISABLED_PARENTAL_CONTROLS,
     });
     flush();
@@ -263,7 +263,7 @@ suite('SettingsSecureDns', function() {
 
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();

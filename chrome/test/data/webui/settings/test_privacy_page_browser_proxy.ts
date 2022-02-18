@@ -37,7 +37,7 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
 
     this.secureDnsSetting = {
       mode: SecureDnsMode.AUTOMATIC,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     };
 

@@ -106,7 +106,7 @@ suite('SettingsSecureDnsInteractive', function() {
     // Start in automatic mode.
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -185,7 +185,7 @@ suite('SettingsSecureDnsInteractive', function() {
   test('SecureDnsDropdownCustom', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
-      templates: [''],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -201,7 +201,7 @@ suite('SettingsSecureDnsInteractive', function() {
   test('SecureDnsDropdownChangeInSecureMode', async function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
-      templates: [resolverList[1]!.value],
+      config: resolverList[1]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -280,7 +280,7 @@ suite('SettingsSecureDnsInteractive', function() {
     testElement.prefs.dns_over_https.templates.value = 'resolver1_template';
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
-      templates: [resolverList[1]!.value],
+      config: resolverList[1]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -316,7 +316,7 @@ suite('SettingsSecureDnsInteractive', function() {
     // Get another event enabling automatic mode.
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
-      templates: [resolverList[1]!.value],
+      config: resolverList[1]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -352,7 +352,7 @@ suite('SettingsSecureDnsInteractive', function() {
     };
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
-      templates: [validEntry],
+      config: validEntry,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -383,7 +383,7 @@ suite('SettingsSecureDnsInteractive', function() {
     // cleared.
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -440,13 +440,12 @@ suite('SettingsSecureDnsInteractive', function() {
         doubleValidEntry, testElement.prefs.dns_over_https.templates.value);
 
     // Make sure the input field updates with a change in the underlying
-    // templates pref in secure mode.
+    // config pref in secure mode.
+    const managedDoubleEntry =
+        'https://manage.ex/dns-query https://manage.ex.another/dns-query{?dns}';
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
-      templates: [
-        'https://manage.ex/dns-query',
-        'https://manage.ex.another/dns-query{?dns}'
-      ],
+      config: managedDoubleEntry,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -454,9 +453,7 @@ suite('SettingsSecureDnsInteractive', function() {
         'block', getComputedStyle(testElement.$.secureDnsInput).display);
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
     assertFalse(testElement.$.secureDnsInput.isInvalid());
-    assertEquals(
-        'https://manage.ex/dns-query https://manage.ex.another/dns-query{?dns}',
-        testElement.$.secureDnsInput.value);
+    assertEquals(managedDoubleEntry, testElement.$.secureDnsInput.value);
     assertEquals(
         SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
   });
@@ -465,7 +462,7 @@ suite('SettingsSecureDnsInteractive', function() {
     // Start in secure mode with a valid template.
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
-      templates: ['https://dns.example/dns-query'],
+      config: 'https://dns.example/dns-query',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();

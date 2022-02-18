@@ -178,7 +178,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
         // Only update the selected dropdown item if the user is in secure
         // mode. Otherwise, we may be losing a selection that hasn't been
         // pushed yet to prefs.
-        this.updateTemplatesRepresentation_(setting.templates);
+        this.updateConfigRepresentation_(setting.config);
         this.updatePrivacyPolicyLine_();
         break;
       case SecureDnsMode.AUTOMATIC:
@@ -346,32 +346,28 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   }
 
   /**
-   * Updates the UI to represent the given secure DNS templates.
-   * @param secureDnsTemplates List of secure DNS templates in the current host
-   *     resolver configuration.
+   * Updates the UI to represent the given secure DNS config.
+   * @param secureDnsConfig The current host resolver configuration.
    */
-  private updateTemplatesRepresentation_(secureDnsTemplates: Array<string>) {
-    // If there is exactly one template and it is one of the non-custom dropdown
-    // options, select that option.
-    if (secureDnsTemplates.length === 1) {
-      const resolver = this.resolverOptions_.slice(1).find(
-          r => r.value === secureDnsTemplates[0]);
-      if (resolver) {
-        this.$.secureResolverSelect.value = resolver.value;
-        this.lastResolverOption_ = resolver.value;
-        return;
-      }
+  private updateConfigRepresentation_(secureDnsConfig: string) {
+    // If it is one of the non-custom dropdown options, select that option.
+    const resolver =
+        this.resolverOptions_.slice(1).find(r => r.value === secureDnsConfig);
+    if (resolver) {
+      this.$.secureResolverSelect.value = resolver.value;
+      this.lastResolverOption_ = resolver.value;
+      return;
     }
 
     // Otherwise, select the custom option.
     this.$.secureResolverSelect.value = '';
     this.lastResolverOption_ = '';
 
-    // Only update the custom input field if the templates are non-empty.
+    // Only update the custom input field if the config string is non-empty.
     // Otherwise, we may be clearing a previous value that the user wishes to
     // reuse.
-    if (secureDnsTemplates.length > 0) {
-      this.secureDnsInputValue_ = secureDnsTemplates.join(' ');
+    if (secureDnsConfig.length > 0) {
+      this.secureDnsInputValue_ = secureDnsConfig;
     }
   }
 

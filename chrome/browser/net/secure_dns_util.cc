@@ -31,14 +31,15 @@ namespace {
 
 const char kAlternateErrorPagesBackup[] = "alternate_error_pages.backup";
 
-void IncrementDropdownHistogram(net::DohProviderIdForHistogram id,
-                                const std::string& doh_template,
-                                base::StringPiece old_template,
-                                base::StringPiece new_template) {
-  if (doh_template == old_template) {
+void IncrementDropdownHistogram(
+    net::DohProviderIdForHistogram id,
+    const absl::optional<net::DnsOverHttpsConfig>& doh_config,
+    const absl::optional<net::DnsOverHttpsConfig>& old_config,
+    const absl::optional<net::DnsOverHttpsConfig>& new_config) {
+  if (doh_config == old_config) {
     UMA_HISTOGRAM_ENUMERATION("Net.DNS.UI.DropdownSelectionEvent.Unselected",
                               id);
-  } else if (doh_template == new_template) {
+  } else if (doh_config == new_config) {
     UMA_HISTOGRAM_ENUMERATION("Net.DNS.UI.DropdownSelectionEvent.Selected", id);
   } else {
     UMA_HISTOGRAM_ENUMERATION("Net.DNS.UI.DropdownSelectionEvent.Ignored", id);
@@ -120,16 +121,20 @@ net::DohProviderEntry::List RemoveDisabledProviders(
 
 void UpdateDropdownHistograms(
     const std::vector<const net::DohProviderEntry*>& providers,
-    base::StringPiece old_template,
-    base::StringPiece new_template) {
+    base::StringPiece old_config,
+    base::StringPiece new_config) {
+  auto old_parsed = net::DnsOverHttpsConfig::FromString(old_config);
+  auto new_parsed = net::DnsOverHttpsConfig::FromString(new_config);
+  DCHECK(old_parsed.has_value() || old_config.empty());
+  DCHECK(new_parsed.has_value() || new_config.empty());
   for (const auto* entry : providers) {
+    net::DnsOverHttpsConfig doh_config({entry->doh_server_config});
     IncrementDropdownHistogram(entry->provider_id_for_histogram.value(),
-                               entry->doh_server_config.server_template(),
-                               old_template, new_template);
+                               doh_config, old_parsed, new_parsed);
   }
-  // An empty template indicates a custom provider.
+  // An empty config string indicates a custom provider.
   IncrementDropdownHistogram(net::DohProviderIdForHistogram::kCustom,
-                             std::string(), old_template, new_template);
+                             absl::nullopt, old_parsed, new_parsed);
 }
 
 void UpdateValidationHistogram(bool valid) {

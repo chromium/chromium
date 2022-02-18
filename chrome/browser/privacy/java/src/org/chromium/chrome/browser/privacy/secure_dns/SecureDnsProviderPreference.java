@@ -73,13 +73,13 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
         // Indicates that secure mode is selected.
         public final boolean secure;
         // The selected or entered DoH template(s), if any.
-        public final @NonNull String template;
+        public final @NonNull String config;
         // Whether the selected template is valid.
         public final boolean valid;
 
-        State(boolean secure, @NonNull String template, boolean valid) {
+        State(boolean secure, @NonNull String config, boolean valid) {
             this.secure = secure;
-            this.template = template;
+            this.config = config;
             this.valid = valid;
         }
 
@@ -87,7 +87,7 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
         public boolean equals(Object obj) {
             if (obj instanceof State) {
                 State other = (State) obj;
-                return other.secure == secure && other.template.equals(template)
+                return other.secure == secure && other.config.equals(config)
                         && other.valid == valid;
             }
             return false;
@@ -100,20 +100,20 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
         }
 
         State withSecure(boolean secure) {
-            return new State(secure, template, valid);
+            return new State(secure, config, valid);
         }
 
-        State withTemplate(@NonNull String template) {
-            return new State(secure, template, valid);
+        State withConfig(@NonNull String config) {
+            return new State(secure, config, valid);
         }
 
         State withValid(boolean valid) {
-            return new State(secure, template, valid);
+            return new State(secure, config, valid);
         }
 
         @Override
         public @NonNull String toString() {
-            return String.format("State(%b, %s, %b)", secure, template, valid);
+            return String.format("State(%b, %s, %b)", secure, config, valid);
         }
     }
 
@@ -186,7 +186,7 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
     private int matchingDropdownIndex() {
         for (int i = 1; i < mServerMenu.getCount(); ++i) {
             Entry entry = (Entry) mServerMenu.getItemAtPosition(i);
-            if (entry.template.equals(mState.template)) {
+            if (entry.config.equals(mState.config)) {
                 return i;
             }
         }
@@ -228,8 +228,8 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
                 mCustomServerLayout.setVisibility(View.GONE);
             } else {
                 // Custom server mode.
-                if (!mCustomServer.getText().toString().equals(mState.template)) {
-                    mCustomServer.setText(mState.template);
+                if (!mCustomServer.getText().toString().equals(mState.config)) {
+                    mCustomServer.setText(mState.config);
                     mCustomServer.removeCallbacks(mProbeRunner);
                     if (mState.secure) {
                         mCustomServer.requestFocus();
@@ -241,7 +241,7 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
                 }
 
                 // Show a warning if the input is invalid and is not the start of a valid URL.
-                boolean showWarning = !mState.valid && !"https://".startsWith(mState.template);
+                boolean showWarning = !mState.valid && !"https://".startsWith(mState.config);
                 mCustomServerLayout.setError(showWarning ? mInvalidWarning : null);
 
                 mCustomServerLayout.setVisibility(View.VISIBLE);
@@ -257,7 +257,7 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
     }
 
     private void startServerProbe() {
-        String group = mState.template;
+        String group = mState.config;
         if (group.isEmpty() || !mState.valid || !mState.secure) {
             return;
         }
@@ -270,7 +270,7 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
             }
             mCustomServer.post(() -> { // Send the state change back to the UI thread.
                 // Check that the setting hasn't been changed.
-                if (mState.template.contentEquals(group)) {
+                if (mState.config.contentEquals(group)) {
                     mCustomServerLayout.setError(mProbeWarning);
                 }
             });
@@ -296,7 +296,7 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
         }
         Entry oldEntry = (Entry) parent.getItemAtPosition(oldPos);
         Entry entry = (Entry) parent.getItemAtPosition(pos);
-        tryUpdate(mState.withTemplate(entry.template));
+        tryUpdate(mState.withConfig(entry.config));
 
         SecureDnsBridge.updateDropdownHistograms(oldEntry, entry);
     }
@@ -322,7 +322,7 @@ class SecureDnsProviderPreference extends Preference implements RadioGroup.OnChe
 
     @Override
     public void afterTextChanged(Editable s) {
-        tryUpdate(mState.withTemplate(s.toString()));
+        tryUpdate(mState.withConfig(s.toString()));
 
         mCustomServer.removeCallbacks(mProbeRunner);
         mCustomServer.postDelayed(mProbeRunner, 1000);

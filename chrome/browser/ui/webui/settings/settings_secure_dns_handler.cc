@@ -33,7 +33,7 @@ namespace settings {
 
 namespace {
 
-std::unique_ptr<base::DictionaryValue> CreateSecureDnsSettingDict() {
+base::Value CreateSecureDnsSettingDict() {
   // Fetch the current host resolver configuration. It is not sufficient to read
   // the secure DNS prefs directly since the host resolver configuration takes
   // other factors into account such as whether a managed environment or
@@ -43,16 +43,11 @@ std::unique_ptr<base::DictionaryValue> CreateSecureDnsSettingDict() {
           ->GetSecureDnsConfiguration(
               true /* force_check_parental_controls_for_automatic_mode */);
 
-  auto secure_dns_templates = std::make_unique<base::ListValue>();
-  for (base::StringPiece doh_server : config.doh_servers().ToStrings()) {
-    secure_dns_templates->Append(doh_server);
-  }
-
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetStringKey("mode", SecureDnsConfig::ModeToString(config.mode()));
-  dict->SetList("templates", std::move(secure_dns_templates));
-  dict->SetIntKey("managementMode", static_cast<int>(config.management_mode()));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("mode", SecureDnsConfig::ModeToString(config.mode()));
+  dict.Set("config", config.doh_servers().ToString());
+  dict.Set("managementMode", static_cast<int>(config.management_mode()));
+  return base::Value(std::move(dict));
 }
 
 }  // namespace
@@ -109,27 +104,27 @@ void SecureDnsHandler::OnJavascriptDisallowed() {
 }
 
 base::Value SecureDnsHandler::GetSecureDnsResolverList() {
-  base::Value resolvers(base::Value::Type::LIST);
+  base::Value::List resolvers;
   for (const auto* entry : providers_) {
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetStringKey("name", entry->ui_name);
-    dict.SetStringKey("value", entry->doh_server_config.server_template());
-    dict.SetStringKey("policy", entry->privacy_policy);
+    net::DnsOverHttpsConfig doh_config({entry->doh_server_config});
+    base::Value::Dict dict;
+    dict.Set("name", entry->ui_name);
+    dict.Set("value", doh_config.ToString());
+    dict.Set("policy", entry->privacy_policy);
     resolvers.Append(std::move(dict));
   }
 
   // Randomize the order of the resolvers.
-  base::RandomShuffle(resolvers.GetListDeprecated().begin(),
-                      resolvers.GetListDeprecated().end());
+  base::RandomShuffle(resolvers.begin(), resolvers.end());
 
   // Add a custom option to the front of the list
-  base::Value custom(base::Value::Type::DICTIONARY);
-  custom.SetStringKey("name", l10n_util::GetStringUTF8(IDS_SETTINGS_CUSTOM));
-  custom.SetStringKey("value", std::string());  // Empty value means custom.
-  custom.SetStringKey("policy", std::string());
-  resolvers.Insert(resolvers.GetListDeprecated().begin(), std::move(custom));
+  base::Value::Dict custom;
+  custom.Set("name", l10n_util::GetStringUTF8(IDS_SETTINGS_CUSTOM));
+  custom.Set("value", std::string());  // Empty value means custom.
+  custom.Set("policy", std::string());
+  resolvers.Insert(resolvers.begin(), base::Value(std::move(custom)));
 
-  return resolvers;
+  return base::Value(std::move(resolvers));
 }
 
 void SecureDnsHandler::SetNetworkContextForTesting(
@@ -168,7 +163,7 @@ void SecureDnsHandler::HandleGetSecureDnsSetting(
   AllowJavascript();
   CHECK_EQ(1u, args.size());
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, *CreateSecureDnsSettingDict());
+  ResolveJavascriptCallback(callback_id, CreateSecureDnsSettingDict());
 }
 
 void SecureDnsHandler::HandleIsValidConfig(base::Value::ConstListView args) {
@@ -194,13 +189,13 @@ void SecureDnsHandler::HandleProbeConfig(base::Value::ConstListView args) {
   }
 
   probe_callback_id_ = args[0].GetString();
-  const std::string& server_templates = args[1].GetString();
+  const std::string& doh_config = args[1].GetString();
 
   net::DnsConfigOverrides overrides;
   overrides.search = std::vector<std::string>();
   overrides.attempts = 1;
   overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
-  secure_dns::ApplyConfig(&overrides, server_templates);
+  secure_dns::ApplyConfig(&overrides, doh_config);
   DCHECK(!runner_);
   runner_ = std::make_unique<chrome_browser_net::DnsProbeRunner>(
       overrides, network_context_getter_);
@@ -228,8 +223,7 @@ void SecureDnsHandler::OnProbeComplete() {
 }
 
 void SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript() {
-  FireWebUIListener("secure-dns-setting-changed",
-                    *CreateSecureDnsSettingDict());
+  FireWebUIListener("secure-dns-setting-changed", CreateSecureDnsSettingDict());
 }
 
 // static
