@@ -3,6 +3,13 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertTrue} from '../../chai_assert.js';
+
+export function assertCloseTo(actual, expected) {
+  assertTrue(
+      Math.abs(1 - actual / expected) <= 0.001,
+      `expected ${expected} to be close to ${actual}`);
+}
 
 /**
  * Queries for an element through a path of custom elements.

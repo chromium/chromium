@@ -13,13 +13,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
 import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from '../../chai_assert.js';
 
-import {deepQuerySelector, dispatchMouseEvent, isGroupButtonActive, timeout, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
-
-function assertCloseTo(actual, expected) {
-  assertTrue(
-      Math.abs(1 - actual / expected) <= 0.001,
-      `expected ${expected} to be close to ${actual}`);
-}
+import {assertCloseTo, deepQuerySelector, dispatchMouseEvent, isGroupButtonActive, timeout, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
 
 
 suite('<emoji-picker>', () => {
