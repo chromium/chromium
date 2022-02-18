@@ -701,7 +701,8 @@ void TtsControllerImpl::StripSSML(
 
   // Parse using safe, out-of-process Xml Parser.
   data_decoder::DataDecoder::ParseXmlIsolated(
-      utterance, data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
+      utterance,
+      data_decoder::mojom::XmlParser::WhitespaceBehavior::kPreserveSignificant,
       base::BindOnce(&TtsControllerImpl::StripSSMLHelper, utterance,
                      std::move(on_ssml_parsed)));
 }
