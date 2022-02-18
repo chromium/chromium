@@ -135,31 +135,6 @@ LONG CreateRandomSecret(std::string* secret) {
 constexpr char kServiceName[] = "Endpoint Verification Safe Storage";
 constexpr char kAccountName[] = "Endpoint Verification";
 
-class ScopedKeychianUserInteractionAllowed {
- public:
-  explicit ScopedKeychianUserInteractionAllowed(Boolean allowed) {
-    status_ = SecKeychainGetUserInteractionAllowed(&was_allowed_);
-    if (status_ != noErr)
-      return;
-    if (was_allowed_ == allowed)
-      return;
-    status_ = SecKeychainSetUserInteractionAllowed(allowed);
-    needs_reset_ = true;
-  }
-
-  ~ScopedKeychianUserInteractionAllowed() {
-    if (needs_reset_)
-      SecKeychainSetUserInteractionAllowed(was_allowed_);
-  }
-
-  OSStatus status() { return status_; }
-
- private:
-  OSStatus status_;
-  Boolean was_allowed_;
-  bool needs_reset_ = false;
-};
-
 OSStatus AddRandomPasswordToKeychain(const crypto::AppleKeychain& keychain,
                                      std::string* secret) {
   // Generate a password with 128 bits of randomness.
@@ -176,15 +151,19 @@ OSStatus AddRandomPasswordToKeychain(const crypto::AppleKeychain& keychain,
 }
 
 OSStatus ReadEncryptedSecret(std::string* password, bool force_recreate) {
+  password->clear();
+
+  OSStatus status;
+  crypto::ScopedKeychainUserInteractionAllowed user_interaction_allowed(
+      FALSE, &status);
+  if (status != noErr)
+    return status;
+
+  crypto::AppleKeychain keychain;
   UInt32 password_length = 0;
   void* password_data = nullptr;
-  crypto::AppleKeychain keychain;
-  password->clear();
   base::ScopedCFTypeRef<SecKeychainItemRef> item_ref;
-  ScopedKeychianUserInteractionAllowed user_interaction_allowed(FALSE);
-  if (user_interaction_allowed.status() != noErr)
-    return user_interaction_allowed.status();
-  OSStatus status = keychain.FindGenericPassword(
+  status = keychain.FindGenericPassword(
       strlen(kServiceName), kServiceName, strlen(kAccountName), kAccountName,
       &password_length, &password_data, item_ref.InitializeInto());
   if (status == noErr) {
