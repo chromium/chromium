@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_RENDERER_DOCUMENT_STATE_H_
-#define CONTENT_PUBLIC_RENDERER_DOCUMENT_STATE_H_
+#ifndef CONTENT_RENDERER_DOCUMENT_STATE_H_
+#define CONTENT_RENDERER_DOCUMENT_STATE_H_
 
 #include <memory>
 
@@ -48,12 +48,8 @@ class CONTENT_EXPORT DocumentState : public blink::WebDocumentLoader::ExtraData,
   bool was_load_data_with_base_url_request() const {
     return was_load_data_with_base_url_request_;
   }
-  const GURL& data_url() const {
-    return data_url_;
-  }
-  void set_data_url(const GURL& data_url) {
-    data_url_ = data_url;
-  }
+  const GURL& data_url() const { return data_url_; }
+  void set_data_url(const GURL& data_url) { data_url_ = data_url; }
 
  private:
   bool was_load_data_with_base_url_request_;
@@ -62,4 +58,4 @@ class CONTENT_EXPORT DocumentState : public blink::WebDocumentLoader::ExtraData,
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_RENDERER_DOCUMENT_STATE_H_
+#endif  // CONTENT_RENDERER_DOCUMENT_STATE_H_
