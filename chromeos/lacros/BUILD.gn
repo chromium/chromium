@@ -28,8 +28,6 @@ component("lacros") {
     "//ui/native_theme",
   ]
   sources = [
-    "crosapi_pref_observer.cc",
-    "crosapi_pref_observer.h",
     "lacros_service.cc",
     "lacros_service.h",
     "lacros_service_never_blocking_state.cc",

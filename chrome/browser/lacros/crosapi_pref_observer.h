@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_LACROS_CROSAPI_PREF_OBSERVER_H_
-#define CHROMEOS_LACROS_CROSAPI_PREF_OBSERVER_H_
+#ifndef CHROME_BROWSER_LACROS_CROSAPI_PREF_OBSERVER_H_
+#define CHROME_BROWSER_LACROS_CROSAPI_PREF_OBSERVER_H_
 
 #include "base/callback_forward.h"
-#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
@@ -14,8 +13,7 @@
 
 // Helper to simplify the crosapi::mojom::PrefObserver API.
 // Observes ash-chrome for changes in specified pref.
-class COMPONENT_EXPORT(CHROMEOS_LACROS) CrosapiPrefObserver
-    : public crosapi::mojom::PrefObserver {
+class CrosapiPrefObserver : public crosapi::mojom::PrefObserver {
  public:
   using PrefChangedCallback = base::RepeatingCallback<void(base::Value value)>;
 
@@ -37,4 +35,4 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) CrosapiPrefObserver
   mojo::Receiver<crosapi::mojom::PrefObserver> receiver_{this};
 };
 
-#endif  // CHROMEOS_LACROS_CROSAPI_PREF_OBSERVER_H_
+#endif  // CHROME_BROWSER_LACROS_CROSAPI_PREF_OBSERVER_H_
