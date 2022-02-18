@@ -9,6 +9,7 @@ import {Effect} from '../../mojo/type.js';
 import * as toast from '../../toast.js';
 import {
   Facing,
+  Metadata,
   PreviewVideo,
   Resolution,
 } from '../../type.js';
@@ -73,7 +74,7 @@ export class Portrait extends Photo {
       throw e;
     }
 
-    const toPhotoResult = async (blob, metadata) => {
+    const toPhotoResult = async (blob: Blob, metadata: Metadata|null) => {
       const image = await util.blobToImage(blob);
       const resolution = new Resolution(image.width, image.height);
       return {blob, timestamp, resolution, metadata};
