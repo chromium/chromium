@@ -27,7 +27,6 @@ source_set("unit_tests") {
     "//chromeos/services/device_sync:unit_tests",
     "//chromeos/services/federated/public/cpp:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:unit_tests",
-    "//chromeos/services/multidevice_setup:unit_tests",
     "//chromeos/services/network_config:unit_tests",
     "//chromeos/services/tts:services_unittests",
   ]

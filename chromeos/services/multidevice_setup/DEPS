@@ -1,3 +1,7 @@
+# TODO(https://crbug.com/1164001): When this file is edited, same file in
+# //ash/services/multidevice_setup should be updated as well. We need to sync
+# both files until the migration of //chromeos/services/multidevice_setup is
+# done.
 include_rules = [
   "+components/proximity_auth/logging/logging.h",
   '+components/keyed_service/core',
@@ -6,4 +10,7 @@ include_rules = [
   "+components/variations",
   "+mojo/public/cpp/bindings",
   "+third_party/securemessage",
+
+  # TODO(https://crbug.com/1164001): Remove this deps when migration is done.
+  "+ash/services/multidevice_setup"
 ]

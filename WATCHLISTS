@@ -1355,6 +1355,7 @@
       'filepath': 'ash/components/proximity_auth/'\
                   '|ash/multi_device_setup/'\
                   '|ash/resources/multidevice_resources.grdp'\
+                  '|ash/services/multidevice_setup/'\
                   '|ash/services/secure_channel/'\
                   '|chrome/browser/ash/cryptauth/'\
                   '|chrome/browser/ash/device_sync/'\

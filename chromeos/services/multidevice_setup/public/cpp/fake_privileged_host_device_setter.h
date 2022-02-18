@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "chromeos/services/multidevice_setup/privileged_host_device_setter_base.h"
+#include "ash/services/multidevice_setup/privileged_host_device_setter_base.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace chromeos {
