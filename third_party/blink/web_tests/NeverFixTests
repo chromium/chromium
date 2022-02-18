@@ -2016,6 +2016,10 @@ crbug.com/626703 [ Mac11 ] virtual/fsa-incognito/external/wpt/file-system-access
 [ Mac ] virtual/shared_array_buffer_on_desktop/* [ Skip ]
 [ Win ] virtual/shared_array_buffer_on_desktop/* [ Skip ]
 
+# Virtual test suite plz-dedicated-worker is platform agnostic
+[ Mac ] virtual/plz-dedicated-worker/* [ Skip ]
+[ Win ] virtual/plz-dedicated-worker/* [ Skip ]
+
 # The following tests never pass in the default Blink test runner due to forced
 # frame updates, but still pass in the full browser. They are only run in the
 # no-forced-frame-updates virtual test suite.
