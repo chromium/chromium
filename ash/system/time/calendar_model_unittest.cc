@@ -216,7 +216,7 @@ class CalendarModelTest : public AshTestBase {
   ~CalendarModelTest() override = default;
 
   void TearDown() override {
-    event_fetcher_.reset();
+    calendar_model_.reset();
 
     AshTestBase::TearDown();
   }
@@ -230,7 +230,7 @@ class CalendarModelTest : public AshTestBase {
     if (events)
       DCHECK(events->empty());
 
-    return event_fetcher_->EventsNumberOfDay(day_base, events);
+    return calendar_model_->EventsNumberOfDay(day_base, events);
   }
 
   int EventsNumberOfDayInternal(const char* day,
@@ -243,7 +243,7 @@ class CalendarModelTest : public AshTestBase {
     if (events)
       DCHECK(events->empty());
 
-    return event_fetcher_->EventsNumberOfDayInternal(day_base, events);
+    return calendar_model_->EventsNumberOfDayInternal(day_base, events);
   }
 
   bool IsEventPresent(const char* event_id, SingleDayEventList& events) {
@@ -259,7 +259,7 @@ class CalendarModelTest : public AshTestBase {
   static base::Time FakeTimeNow() { return fake_time_; }
   static base::Time fake_time_;
 
-  std::unique_ptr<TestableCalendarModel> event_fetcher_;
+  std::unique_ptr<TestableCalendarModel> calendar_model_;
 };
 
 base::Time CalendarModelTest::fake_time_;
@@ -278,12 +278,12 @@ TEST_F(CalendarModelTest, Instantiate) {
   base::Time now = base::Time::Now();
   std::set<base::Time> months;
   calendar_utils::GetSurroundingMonthsUTC(now, 1, months);
-  event_fetcher_ = std::make_unique<TestableCalendarModel>(months);
+  calendar_model_ = std::make_unique<TestableCalendarModel>(months);
 
   // An event fetcher was instantiated, and there are no events for today (or
   // any day).
-  EXPECT_NE(event_fetcher_.get(), nullptr);
-  EXPECT_EQ(event_fetcher_->EventsNumberOfDay(base::Time::Now(), nullptr), 0);
+  EXPECT_NE(calendar_model_.get(), nullptr);
+  EXPECT_EQ(calendar_model_->EventsNumberOfDay(base::Time::Now(), nullptr), 0);
 }
 
 TEST_F(CalendarModelTest, DayWithEvents_OneDay) {
@@ -305,7 +305,7 @@ TEST_F(CalendarModelTest, DayWithEvents_OneDay) {
   base::Time now = base::Time::Now();
   std::set<base::Time> months;
   calendar_utils::GetSurroundingMonthsUTC(now, 1, months);
-  event_fetcher_ = std::make_unique<TestableCalendarModel>(months);
+  calendar_model_ = std::make_unique<TestableCalendarModel>(months);
 
   // Set up list of events to inject.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
@@ -322,11 +322,11 @@ TEST_F(CalendarModelTest, DayWithEvents_OneDay) {
 
   // Inject events (pretend the user just added them).
   event_list->InjectItemForTesting(std::move(event));
-  event_fetcher_->InjectEvents(std::move(event_list));
+  calendar_model_->InjectEvents(std::move(event_list));
 
   // Now fetch the events, which will get all events from the current month, as
   // well as next/prev months.
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
 
   // Now we have an event on kStartTime0.
   events.clear();
@@ -358,7 +358,7 @@ TEST_F(CalendarModelTest, DayWithEvents_TwoDays) {
   base::Time now = base::Time::Now();
   std::set<base::Time> months;
   calendar_utils::GetSurroundingMonthsUTC(now, 1, months);
-  event_fetcher_ = std::make_unique<TestableCalendarModel>(months);
+  calendar_model_ = std::make_unique<TestableCalendarModel>(months);
 
   // Get ready to inject two events.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
@@ -381,8 +381,8 @@ TEST_F(CalendarModelTest, DayWithEvents_TwoDays) {
   // Inject both events.
   event_list->InjectItemForTesting(std::move(event0));
   event_list->InjectItemForTesting(std::move(event1));
-  event_fetcher_->InjectEvents(std::move(event_list));
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->InjectEvents(std::move(event_list));
+  calendar_model_->FetchEvents(months);
 
   // Now both days should have events.
   events.clear();
@@ -416,7 +416,7 @@ TEST_F(CalendarModelTest, ChangeTimeDifference) {
   base::Time now = base::Time::Now();
   std::set<base::Time> months;
   calendar_utils::GetSurroundingMonthsUTC(now, 1, months);
-  event_fetcher_ = std::make_unique<TestableCalendarModel>(months);
+  calendar_model_ = std::make_unique<TestableCalendarModel>(months);
 
   // Get ready to inject two events.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
@@ -431,8 +431,8 @@ TEST_F(CalendarModelTest, ChangeTimeDifference) {
   // Inject both events.
   event_list->InjectItemForTesting(std::move(event0));
   event_list->InjectItemForTesting(std::move(event1));
-  event_fetcher_->InjectEvents(std::move(event_list));
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->InjectEvents(std::move(event_list));
+  calendar_model_->FetchEvents(months);
 
   // Based on the tesing timezone "America/Los_Angeles" these 2 events are
   // distributed into 2 days. Each day has one event.
@@ -446,7 +446,7 @@ TEST_F(CalendarModelTest, ChangeTimeDifference) {
   // kStartTime0 "23 Oct 2009 11:30" -> "23 Oct 2009 1:30".
   // kStartTime1 "24 Oct 2009 07:30" -> "23 Oct 2009 21:30"
   // Both events should be on the 23rd.
-  event_fetcher_->RedistributeEvents(/*time_difference_minutes=*/-10 * 60);
+  calendar_model_->RedistributeEvents(/*time_difference_minutes=*/-10 * 60);
   events.clear();
   EXPECT_EQ(2, EventsNumberOfDay(kStartTime0, &events));
 
@@ -457,7 +457,7 @@ TEST_F(CalendarModelTest, ChangeTimeDifference) {
   // kStartTime0 "23 Oct 2009 11:30" -> "24 Oct 2009 2:30".
   // kStartTime1 "24 Oct 2009 07:30" -> "24 Oct 2009 22:30"
   // Both events should be on the 24rd.
-  event_fetcher_->RedistributeEvents(/*time_difference_minutes=*/15 * 60);
+  calendar_model_->RedistributeEvents(/*time_difference_minutes=*/15 * 60);
   events.clear();
   EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
 
@@ -492,7 +492,7 @@ TEST_F(CalendarModelTest, OnlyFetchOnce) {
   base::Time now = base::Time::Now();
   std::set<base::Time> months;
   calendar_utils::GetSurroundingMonthsUTC(now, 1, months);
-  event_fetcher_ = std::make_unique<TestableCalendarModel>(months);
+  calendar_model_ = std::make_unique<TestableCalendarModel>(months);
 
   // Set up list of events to inject.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
@@ -509,10 +509,10 @@ TEST_F(CalendarModelTest, OnlyFetchOnce) {
 
   // Inject one event, pretend the user just added it somewhere else.
   event_list->InjectItemForTesting(std::move(event));
-  event_fetcher_->InjectEvents(std::move(event_list));
+  calendar_model_->InjectEvents(std::move(event_list));
 
   // Fetch events, pretend the user just brought up the CrOS calendar.
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
 
   // Confirm we have only event 0 and NOT events 1 or 2.
   events.clear();
@@ -536,8 +536,8 @@ TEST_F(CalendarModelTest, OnlyFetchOnce) {
       calendar_test_utils::CreateEvent(kId2, kSummary2, kStartTime2, kEndTime2);
   event_list->InjectItemForTesting(std::move(event1));
   event_list->InjectItemForTesting(std::move(event2));
-  event_fetcher_->InjectEvents(std::move(event_list));
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->InjectEvents(std::move(event_list));
+  calendar_model_->FetchEvents(months);
 
   // Verify that we still see the first event but neither of the new events,
   // because as far as the controller is concerned we've already fetched this
@@ -578,7 +578,7 @@ TEST_F(CalendarModelTest, EventsDifferentMonths) {
   base::Time now = base::Time::Now();
   std::set<base::Time> months;
   calendar_utils::GetSurroundingMonthsUTC(now, 1, months);
-  event_fetcher_ = std::make_unique<TestableCalendarModel>(months);
+  calendar_model_ = std::make_unique<TestableCalendarModel>(months);
 
   // Set up list of events to inject.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
@@ -607,10 +607,10 @@ TEST_F(CalendarModelTest, EventsDifferentMonths) {
   event_list->InjectItemForTesting(std::move(event0));
   event_list->InjectItemForTesting(std::move(event1));
   event_list->InjectItemForTesting(std::move(event2));
-  event_fetcher_->InjectEvents(std::move(event_list));
+  calendar_model_->InjectEvents(std::move(event_list));
 
   // Fetch events (user just opened CrOS calendar).
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
 
   // Confirm we have all three events.
   events.clear();
@@ -702,7 +702,7 @@ TEST_F(CalendarModelTest, PruneEvents) {
   base::Time now = base::Time::Now();
   std::set<base::Time> months;
   calendar_utils::GetSurroundingMonthsUTC(now, 1, months);
-  event_fetcher_ = std::make_unique<TestableCalendarModel>(months);
+  calendar_model_ = std::make_unique<TestableCalendarModel>(months);
 
   // Get our event list ready.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
@@ -755,13 +755,13 @@ TEST_F(CalendarModelTest, PruneEvents) {
   event_list->InjectItemForTesting(std::move(event10));
   event_list->InjectItemForTesting(std::move(event11));
   event_list->InjectItemForTesting(std::move(event12));
-  event_fetcher_->InjectEvents(std::move(event_list));
+  calendar_model_->InjectEvents(std::move(event_list));
 
   // Fetch events, as if the user just opened the CrOS calendar with
   // `kStartTime1` as the currently on-screen month.  This means events from
   // `kStartTime0` (prev), `kStartTime1` (current), and `kStartTime2` (next)
   // will be fetched.
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
 
   // Events 0, 1, and 2 should be cached, but not 3.
   events.clear();
@@ -778,7 +778,7 @@ TEST_F(CalendarModelTest, PruneEvents) {
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
 
   // Now `kStartTime3` should be cached.
   events.clear();
@@ -790,7 +790,7 @@ TEST_F(CalendarModelTest, PruneEvents) {
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime4, &events));
 
@@ -798,7 +798,7 @@ TEST_F(CalendarModelTest, PruneEvents) {
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime5, &events));
 
@@ -806,7 +806,7 @@ TEST_F(CalendarModelTest, PruneEvents) {
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime6, &events));
 
@@ -814,7 +814,7 @@ TEST_F(CalendarModelTest, PruneEvents) {
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime7, &events));
 
@@ -822,7 +822,7 @@ TEST_F(CalendarModelTest, PruneEvents) {
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime8, &events));
 
@@ -838,7 +838,7 @@ TEST_F(CalendarModelTest, PruneEvents) {
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime9, &events));
   events.clear();
@@ -851,7 +851,7 @@ TEST_F(CalendarModelTest, PruneEvents) {
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime10, &events));
   events.clear();
@@ -864,7 +864,7 @@ TEST_F(CalendarModelTest, PruneEvents) {
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime11, &events));
   events.clear();
@@ -877,7 +877,7 @@ TEST_F(CalendarModelTest, PruneEvents) {
   DCHECK(result);
   months.clear();
   calendar_utils::GetSurroundingMonthsUTC(current_date, 1, months);
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
   events.clear();
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime12, &events));
   events.clear();
@@ -904,7 +904,7 @@ TEST_F(CalendarModelTest, RecordFetchResultHistogram_Success) {
   base::Time now = base::Time::Now();
   std::set<base::Time> months;
   calendar_utils::GetSurroundingMonthsUTC(now, 1, months);
-  event_fetcher_ = std::make_unique<TestableCalendarModel>(months);
+  calendar_model_ = std::make_unique<TestableCalendarModel>(months);
 
   // Set up list of events to inject.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
@@ -921,11 +921,11 @@ TEST_F(CalendarModelTest, RecordFetchResultHistogram_Success) {
 
   // Inject events (pretend the user just added them).
   event_list->InjectItemForTesting(std::move(event));
-  event_fetcher_->InjectEvents(std::move(event_list));
+  calendar_model_->InjectEvents(std::move(event_list));
 
   // Now fetch the events, which will get all events from the current month, as
   // well as next/prev months.
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
 
   // We should have recorded "success" for all three fetches (current, prev, and
   // next months).
@@ -954,7 +954,7 @@ TEST_F(CalendarModelTest, RecordFetchResultHistogram_Failure) {
   base::Time now = base::Time::Now();
   std::set<base::Time> months;
   calendar_utils::GetSurroundingMonthsUTC(now, 1, months);
-  event_fetcher_ = std::make_unique<TestableCalendarModel>(months);
+  calendar_model_ = std::make_unique<TestableCalendarModel>(months);
 
   // Set up list of events to inject.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
@@ -971,16 +971,16 @@ TEST_F(CalendarModelTest, RecordFetchResultHistogram_Failure) {
 
   // Inject events (pretend the user just added them).
   event_list->InjectItemForTesting(std::move(event));
-  event_fetcher_->InjectEvents(std::move(event_list));
+  calendar_model_->InjectEvents(std::move(event_list));
 
   // Set up return error codes.
-  event_fetcher_->SetFetchErrors(current_date, google_apis::HTTP_UNAUTHORIZED,
-                                 google_apis::NO_CONNECTION,
-                                 google_apis::PARSE_ERROR);
+  calendar_model_->SetFetchErrors(current_date, google_apis::HTTP_UNAUTHORIZED,
+                                  google_apis::NO_CONNECTION,
+                                  google_apis::PARSE_ERROR);
 
   // Now fetch the events, which will get all events from the current month, as
   // well as next/prev months.
-  event_fetcher_->FetchEvents(months);
+  calendar_model_->FetchEvents(months);
 
   // We should have recorded "success" for no fetches, and one each for the
   // errors we specified.
