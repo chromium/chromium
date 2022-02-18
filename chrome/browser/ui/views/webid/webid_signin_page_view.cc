@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/webid/webid_signin_page_view.h"
 
 #include "base/base64.h"
-#include "base/rand_util.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -132,11 +131,8 @@ std::unique_ptr<views::WebView> SigninPageView::CreateContentWebView(
 
   // Navigate using the WebContents directly because the WebID custom header
   // is needed.
-  const int kBytes = 64 / 8;
-  std::string fedcm_header_value;
-  base::Base64Encode(base::RandBytesAsString(kBytes), &fedcm_header_value);
-  std::string header =
-      std::string(content::kSecFedCmCsrfHeader) + ": " + fedcm_header_value;
+  std::string header = std::string(content::kSecFedCmCsrfHeader) + ": " +
+                       content::kSecFedCmCsrfHeaderValue;
   idp_web_contents->GetController().LoadURL(
       provider, content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL, header);
 

@@ -20,6 +20,7 @@ namespace content {
 // no such requirements appear.
 // See https://fetch.spec.whatwg.org/#forbidden-header-name
 const char kSecFedCmCsrfHeader[] = "Sec-FedCM-CSRF";
+const char kSecFedCmCsrfHeaderValue[] = "?1";
 
 IdentityRequestAccount::IdentityRequestAccount(
     const std::string& id,

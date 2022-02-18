@@ -6,7 +6,6 @@
 
 #include "base/base64.h"
 #include "base/json/json_writer.h"
-#include "base/rand_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -127,12 +126,7 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
 }
 
 void AddCsrfHeader(network::ResourceRequest* request) {
-  // Using a random 64-bit header value. This is just to keep service
-  // implementations from assuming any particular static value.
-  const int kBytes = 64 / 8;
-  std::string webid_header_value;
-  base::Base64Encode(base::RandBytesAsString(kBytes), &webid_header_value);
-  request->headers.SetHeader(kSecFedCmCsrfHeader, webid_header_value);
+  request->headers.SetHeader(kSecFedCmCsrfHeader, kSecFedCmCsrfHeaderValue);
 }
 
 std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(

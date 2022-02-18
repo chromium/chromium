@@ -81,7 +81,7 @@ class IdpTestServer {
       return nullptr;
 
     if (request.all_headers.find(kIdpForbiddenHeader) != std::string::npos) {
-      EXPECT_EQ(request.headers.at(kIdpForbiddenHeader).size(), 12ul);
+      EXPECT_EQ(request.headers.at(kIdpForbiddenHeader), "?1");
     }
 
     auto response = std::make_unique<BasicHttpResponse>();

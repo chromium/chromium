@@ -20,6 +20,7 @@ namespace content {
 class WebContents;
 
 extern const char CONTENT_EXPORT kSecFedCmCsrfHeader[];
+extern const char CONTENT_EXPORT kSecFedCmCsrfHeaderValue[];
 
 // Represents a federated user account which is used when displaying an account
 // selector.
