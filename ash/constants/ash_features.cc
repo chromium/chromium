@@ -1392,7 +1392,7 @@ const base::Feature kWindowsFollowCursor{"WindowsFollowCursor",
 
 // Enables or disables Fresnel Device Active reporting on Chrome OS.
 const base::Feature kDeviceActiveClient{"DeviceActiveClient",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables PSM CheckMembership for daily device active pings
 // on Chrome OS.
