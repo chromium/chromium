@@ -289,7 +289,16 @@ TEST_P(FastPairDataEncryptorImplTest, NoKeyPair) {
   EXPECT_FALSE(data_encryptor_);
 }
 
-TEST_P(FastPairDataEncryptorImplTest, ParseDecryptedPasskey_ProcessStopped) {
+// TODO(crbug.com/1298377) flaky on ASan + LSan bots
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_ParseDecryptedPasskey_ProcessStopped \
+  DISABLED_ParseDecryptedPasskey_ProcessStopped
+#else
+#define MAYBE_ParseDecryptedPasskey_ProcessStopped \
+  ParseDecryptedPasskey_ProcessStopped
+#endif
+TEST_P(FastPairDataEncryptorImplTest,
+       MAYBE_ParseDecryptedPasskey_ProcessStopped) {
   SuccessfulSetUp();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_encryptor_);
@@ -305,7 +314,16 @@ TEST_P(FastPairDataEncryptorImplTest, ParseDecryptedPasskey_ProcessStopped) {
   ParseDecryptedPasskey();
 }
 
-TEST_P(FastPairDataEncryptorImplTest, ParseDecryptedResponse_ProcessStopped) {
+// TODO(crbug.com/1298377) flaky on ASan + LSan bots
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_ParseDecryptedResponse_ProcessStopped \
+  DISABLED_ParseDecryptedResponse_ProcessStopped
+#else
+#define MAYBE_ParseDecryptedResponse_ProcessStopped \
+  ParseDecryptedResponse_ProcessStopped
+#endif
+TEST_P(FastPairDataEncryptorImplTest,
+       MAYBE_ParseDecryptedResponse_ProcessStopped) {
   SuccessfulSetUp();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_encryptor_);

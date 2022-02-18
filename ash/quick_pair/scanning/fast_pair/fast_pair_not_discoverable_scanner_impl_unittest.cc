@@ -179,8 +179,16 @@ class FastPairNotDiscoverableScannerImplTest : public testing::Test {
   FakeFastPairHandshake* fake_fast_pair_handshake_ = nullptr;
 };
 
+// TODO(crbug.com/1298377) flaky on ASan + LSan bots
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_UtilityProcessStopped_FailedAllRetryAttempts \
+  DISABLED_UtilityProcessStopped_FailedAllRetryAttempts
+#else
+#define MAYBE_UtilityProcessStopped_FailedAllRetryAttempts \
+  UtilityProcessStopped_FailedAllRetryAttempts
+#endif
 TEST_F(FastPairNotDiscoverableScannerImplTest,
-       UtilityProcessStopped_FailedAllRetryAttempts) {
+       MAYBE_UtilityProcessStopped_FailedAllRetryAttempts) {
   device::BluetoothDevice* device = GetDevice(GetAdvServicedata());
   nearby::fastpair::GetObservedDeviceResponse response;
   response.mutable_device()->set_id(kModelIdLong);
@@ -205,8 +213,16 @@ TEST_F(FastPairNotDiscoverableScannerImplTest,
   scanner_->NotifyDeviceFound(device);
 }
 
+// TODO(crbug.com/1298377) flaky on ASan + LSan bots
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_UtilityProcessStopped_DeviceLost \
+  DISABLED_UtilityProcessStopped_DeviceLost
+#else
+#define MAYBE_UtilityProcessStopped_DeviceLost \
+  UtilityProcessStopped_DeviceLost
+#endif
 TEST_F(FastPairNotDiscoverableScannerImplTest,
-       UtilityProcessStopped_DeviceLost) {
+       MAYBE_UtilityProcessStopped_DeviceLost) {
   auto device = std::make_unique<device::MockBluetoothDevice>(
       adapter_.get(), 0, "test_name", kAddress, /*paired=*/false,
       /*connected=*/false);
@@ -241,8 +257,16 @@ TEST_F(FastPairNotDiscoverableScannerImplTest,
   scanner_->NotifyDeviceFound(device_ptr);
 }
 
+// TODO(crbug.com/1298377) flaky on ASan + LSan bots
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_UtilityProcessStopped_FastPairServiceDataLost \
+  DISABLED_UtilityProcessStopped_FastPairServiceDataLost
+#else
+#define MAYBE_UtilityProcessStopped_FastPairServiceDataLost \
+  UtilityProcessStopped_FastPairServiceDataLost
+#endif
 TEST_F(FastPairNotDiscoverableScannerImplTest,
-       UtilityProcessStopped_FastPairServiceDataLost) {
+       MAYBE_UtilityProcessStopped_FastPairServiceDataLost) {
   auto device = std::make_unique<device::MockBluetoothDevice>(
       adapter_.get(), 0, "test_name", kAddress, /*paired=*/false,
       /*connected=*/false);
