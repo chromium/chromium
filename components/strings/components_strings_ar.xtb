@@ -487,7 +487,7 @@
 <translation id="2414886740292270097">داكن</translation>
 <translation id="2430968933669123598">‏إدارة حساب Google: اضغط على مفتاح Enter لإدارة المعلومات والخصوصية والأمان في حسابك على Google.</translation>
 <translation id="2438874542388153331">عمل أربعة ثقوب يمينًا</translation>
-<translation id="2450021089947420533">سجلّ أنشطة البحث والتصفُّح</translation>
+<translation id="2450021089947420533">رحلات البحث</translation>
 <translation id="2463739503403862330">ملء</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">اختيار طريقة التسليم للمستخدم</translation>
@@ -877,7 +877,8 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
 <translation id="3709599264800900598">النص الذي نسخته</translation>
-<translation id="370972442370243704">تفعيل ميزة "سجلّ أنشطة البحث والتصفُّح"</translation>
+<translation id="370972442370243704">تفعيل ميزة "رحلات البحث"
+</translation>
 <translation id="3711895659073496551">تعليق</translation>
 <translation id="3712624925041724820">التراخيص مستنفذة</translation>
 <translation id="3714780639079136834">‏تشغيل بيانات شبكة الجوّال أو Wi-Fi</translation>
@@ -1141,7 +1142,8 @@
 <translation id="4508814173490746936">‏تعذّر استخدام ميزة Touch ID</translation>
 <translation id="4509074745930862522">‏<ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لترجمة هذه الصفحة باستخدام "ترجمة Google".</translation>
 <translation id="4510487217173779431">‏Chou4 (مغلف)</translation>
-<translation id="4514308731478712184">إيقاف ميزة "سجلّ أنشطة البحث والتصفُّح"</translation>
+<translation id="4514308731478712184">إيقاف ميزة "رحلات البحث"
+</translation>
 <translation id="4515275063822566619">‏يتم أخذ البطاقات والعناوين من Chrome وحسابك على Google (<ph name="ACCOUNT_EMAIL" />)، ويمكنك إدارتها في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">‏Comm-10 (مغلف)</translation>
 <translation id="4521157617044179198">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> ملم (<ph name="ORIENTATION" />)</translation>
