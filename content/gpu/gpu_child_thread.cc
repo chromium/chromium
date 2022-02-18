@@ -21,6 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/gpu/browser_exposed_gpu_interfaces.h"
@@ -48,6 +49,13 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_drm_bridge_client.h"
 #include "media/mojo/clients/mojo_android_overlay.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/services/font/public/cpp/font_loader.h"  // nogncheck
+#include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/ports/SkFontConfigInterface.h"
 #endif
 
 namespace content {
@@ -137,6 +145,15 @@ void GpuChildThread::Init(const base::Time& process_start_time) {
   if (!in_process_gpu()) {
     media::SetMediaDrmBridgeClient(
         GetContentClient()->GetMediaDrmBridgeClient());
+  }
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!in_process_gpu()) {
+    mojo::PendingRemote<font_service::mojom::FontService> font_service;
+    BindHostReceiver(font_service.InitWithNewPipeAndPassReceiver());
+    SkFontConfigInterface::SetGlobal(
+        sk_make_sp<font_service::FontLoader>(std::move(font_service)));
   }
 #endif
 

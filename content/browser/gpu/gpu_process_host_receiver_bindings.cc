@@ -7,6 +7,7 @@
 #include "content/browser/gpu/gpu_process_host.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -17,6 +18,11 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"
 #include "media/mojo/mojom/android_overlay.mojom.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck
+#include "content/browser/font_service.h"  // nogncheck
 #endif
 
 namespace content {
@@ -39,6 +45,14 @@ void GpuProcessHost::BindHostReceiver(
   if (auto r = generic_receiver.As<media::mojom::AndroidOverlayProvider>()) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&BindAndroidOverlayProvider, std::move(r)));
+    return;
+  }
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (auto font_receiver =
+          generic_receiver.As<font_service::mojom::FontService>()) {
+    ConnectToFontService(std::move(font_receiver));
     return;
   }
 #endif
