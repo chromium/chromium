@@ -193,11 +193,6 @@ void BrowserNonClientFrameViewChromeOS::Init() {
   }
 
   browser_view()->immersive_mode_controller()->AddObserver(this);
-
-  // Init caption button's WCO state on creation.
-  caption_button_container_->OnWindowControlsOverlayEnabledChanged(
-      browser_view()->IsWindowControlsOverlayEnabled(),
-      GetFrameHeaderColor(browser_view()->IsActive()));
 }
 
 gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForTabStripRegion(
@@ -503,6 +498,9 @@ gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
 void BrowserNonClientFrameViewChromeOS::OnThemeChanged() {
   OnUpdateFrameColor();
   OnUpdateBackgroundColor();
+  caption_button_container_->OnWindowControlsOverlayEnabledChanged(
+      browser_view()->IsWindowControlsOverlayEnabled(),
+      GetFrameHeaderColor(browser_view()->IsActive()));
   BrowserNonClientFrameView::OnThemeChanged();
   MaybeAnimateThemeChanged();
 }

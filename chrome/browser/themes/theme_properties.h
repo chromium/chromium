@@ -296,6 +296,10 @@ class ThemeProperties {
     COLOR_BOOKMARK_FAVICON,
     COLOR_BOOKMARK_SEPARATOR,
 
+    // Colors used for the frame caption/foreground
+    COLOR_FRAME_CAPTION_ACTIVE,
+    COLOR_FRAME_CAPTION_INACTIVE,
+
     // /!\ If you make any changes to this enum, you must also increment
     // kThemePackVersion in browser_theme_pack.cc, or else themes will display
     // incorrectly.

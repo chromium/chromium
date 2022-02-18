@@ -189,10 +189,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   int GetSystemMenuY() const override;
 #endif
 
-  // Get the |frame_| theme provider since it should be non-null even before
-  // we're added to the view hierarchy.
-  const ui::ThemeProvider* GetFrameThemeProvider() const;
-
   // The frame that hosts this view.
   const raw_ptr<BrowserFrame> frame_;
 

@@ -332,6 +332,12 @@ SkColor ThemeHelper::GetDefaultColor(
         return SK_ColorTRANSPARENT;
       }
     }
+    case TP::COLOR_FRAME_CAPTION_ACTIVE:
+    case TP::COLOR_FRAME_CAPTION_INACTIVE:
+      return color_utils::GetColorWithMaxContrast(GetColor(
+          id == TP::COLOR_FRAME_CAPTION_ACTIVE ? TP::COLOR_FRAME_ACTIVE
+                                               : TP::COLOR_FRAME_INACTIVE,
+          incognito, theme_supplier));
     case TP::COLOR_BOOKMARK_TEXT:
     case TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE:
     case TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE:

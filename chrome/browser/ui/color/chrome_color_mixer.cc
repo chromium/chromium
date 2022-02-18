@@ -55,6 +55,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadToolbarButtonInactive] = {ui::kColorMidground};
   mixer[kColorDownloadToolbarButtonRingBackground] = {
       SkColorSetA(kColorDownloadToolbarButtonInactive, 0x33)};
+  mixer[kColorFrameCaptionActive] =
+      ui::GetColorWithMaxContrast({ui::kColorFrameActive});
+  mixer[kColorFrameCaptionInactive] =
+      ui::GetColorWithMaxContrast({ui::kColorFrameInactive});
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   mixer[kColorGooglePayLogo] = {dark_mode ? SK_ColorWHITE
                                           : gfx::kGoogleGrey700};

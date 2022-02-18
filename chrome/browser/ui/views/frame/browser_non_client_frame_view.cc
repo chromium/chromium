@@ -152,12 +152,15 @@ bool BrowserNonClientFrameView::CanDrawStrokes() const {
 
 SkColor BrowserNonClientFrameView::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
-  return color_utils::GetColorWithMaxContrast(GetFrameColor(active_state));
+  return GetThemeProvider()->GetColor(
+      ShouldPaintAsActive(active_state)
+          ? ThemeProperties::COLOR_FRAME_CAPTION_ACTIVE
+          : ThemeProperties::COLOR_FRAME_CAPTION_INACTIVE);
 }
 
 SkColor BrowserNonClientFrameView::GetFrameColor(
     BrowserFrameActiveState active_state) const {
-  return GetFrameThemeProvider()->GetColor(
+  return GetThemeProvider()->GetColor(
       ShouldPaintAsActive(active_state)
           ? ThemeProperties::COLOR_FRAME_ACTIVE
           : ThemeProperties::COLOR_FRAME_INACTIVE);
@@ -178,7 +181,7 @@ SkColor BrowserNonClientFrameView::GetToolbarTopSeparatorColor() const {
   // The vertical tab separator might show through the stroke if the stroke
   // color is translucent.  To prevent this, always use an opaque stroke color.
   return color_utils::GetResultingPaintColor(
-      GetFrameThemeProvider()->GetColor(color_id),
+      GetThemeProvider()->GetColor(color_id),
       GetFrameColor(BrowserFrameActiveState::kUseCurrent));
 }
 
@@ -277,7 +280,7 @@ bool BrowserNonClientFrameView::ShouldPaintAsActive(
 
 gfx::ImageSkia BrowserNonClientFrameView::GetFrameImage(
     BrowserFrameActiveState active_state) const {
-  const ui::ThemeProvider* tp = GetFrameThemeProvider();
+  const ui::ThemeProvider* tp = GetThemeProvider();
   const int frame_image_id = ShouldPaintAsActive(active_state)
                                  ? IDR_THEME_FRAME
                                  : IDR_THEME_FRAME_INACTIVE;
@@ -292,7 +295,7 @@ gfx::ImageSkia BrowserNonClientFrameView::GetFrameOverlayImage(
   if (browser_view_->GetIncognito() || !browser_view_->GetIsNormalType())
     return gfx::ImageSkia();
 
-  const ui::ThemeProvider* tp = GetFrameThemeProvider();
+  const ui::ThemeProvider* tp = GetThemeProvider();
   const int frame_overlay_image_id = ShouldPaintAsActive(active_state)
                                          ? IDR_THEME_FRAME_OVERLAY
                                          : IDR_THEME_FRAME_OVERLAY_INACTIVE;
@@ -343,14 +346,6 @@ int BrowserNonClientFrameView::GetSystemMenuY() const {
          GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
 }
 #endif
-
-const ui::ThemeProvider* BrowserNonClientFrameView::GetFrameThemeProvider()
-    const {
-  // The |frame_| theme provider is obtained from the profile rather than the
-  // widget. This is done this way because it can happen prior to being inserted
-  // into the view hierarchy.
-  return frame_->GetThemeProvider();
-}
 
 BEGIN_METADATA(BrowserNonClientFrameView, views::NonClientFrameView)
 END_METADATA

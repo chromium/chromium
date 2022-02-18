@@ -127,6 +127,8 @@ absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
       {TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE, kColorOmniboxSecurityChipSecure},
       {TP::COLOR_OMNIBOX_TEXT, kColorOmniboxText},
       {TP::COLOR_OMNIBOX_TEXT_DIMMED, kColorOmniboxTextDimmed},
+      {TP::COLOR_FRAME_CAPTION_ACTIVE, kColorFrameCaptionActive},
+      {TP::COLOR_FRAME_CAPTION_INACTIVE, kColorFrameCaptionInactive},
       {TP::COLOR_FRAME_ACTIVE, ui::kColorFrameActive},
       {TP::COLOR_FRAME_INACTIVE, ui::kColorFrameInactive},
       {TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
