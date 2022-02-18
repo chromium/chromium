@@ -15,7 +15,7 @@ import androidx.fragment.app.DialogFragment;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * ScreenshotShareSheetDialog is the main view for sharing non edited screenshots.
@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 public class ScreenshotShareSheetDialog extends DialogFragment {
     private Context mContext;
     private Bitmap mScreenshot;
-    private Tab mTab;
+    private WindowAndroid mWindowAndroid;
     private String mShareUrl;
     private ChromeOptionShareCallback mChromeOptionShareCallback;
     private Callback<Runnable> mInstallCallback;
@@ -36,17 +36,17 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
     /**
      * Initialize the dialog outside of the constructor as fragments require default constructor.
      * @param screenshot The screenshot image to show.
-     * @param tab The shared tab.
+     * @param windowAndroid The associated {@link WindowAndroid}.
      * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback the callback to trigger on share.
      * @param installCallback the callback to trigger on install.
      */
-    public void init(Bitmap screenshot, Tab tab, String shareUrl,
+    public void init(Bitmap screenshot, WindowAndroid windowAndroid, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             Callback<Runnable> installCallback) {
         mScreenshot = screenshot;
         mInstallCallback = installCallback;
-        mTab = tab;
+        mWindowAndroid = windowAndroid;
         mShareUrl = shareUrl;
         mChromeOptionShareCallback = chromeOptionShareCallback;
     }
@@ -67,7 +67,7 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
         builder.setView(screenshotShareSheetView);
 
         new ScreenshotShareSheetCoordinator(mContext, mScreenshot, this::dismissAllowingStateLoss,
-                screenshotShareSheetView, mTab, mShareUrl, mChromeOptionShareCallback,
+                screenshotShareSheetView, mWindowAndroid, mShareUrl, mChromeOptionShareCallback,
                 mInstallCallback);
         return builder.create();
     }

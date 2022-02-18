@@ -327,7 +327,7 @@ public class ChromeProvidedSharingOptionsProvider {
                 .setOnClickCallback((view) -> {
                     mFeatureEngagementTracker.notifyEvent(EventConstants.SHARE_SCREENSHOT_SELECTED);
                     ScreenshotCoordinator coordinator = new ScreenshotCoordinator(mActivity,
-                            mTabProvider.get(), mUrl, mChromeOptionShareCallback,
+                            mShareParams.getWindow(), mUrl, mChromeOptionShareCallback,
                             mBottomSheetController, mImageEditorModuleProvider);
                     mBottomSheetController.addObserver(coordinator);
                     mBottomSheetController.hideContent(mBottomSheetContent, true);

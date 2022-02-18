@@ -8,12 +8,12 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Interface to interact with the image editor dialog.
  */
 public interface ImageEditorDialogCoordinator {
-    public void launchEditor(Activity activity, Bitmap image, Tab mTab, String shareUrl,
+    void launchEditor(Activity activity, Bitmap image, WindowAndroid windowAndroid, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback);
 }
