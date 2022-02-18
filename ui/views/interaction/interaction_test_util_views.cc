@@ -83,20 +83,7 @@ bool InteractionTestUtilSimulatorViews::PressButton(ui::TrackedElement* element,
   if (!button)
     return false;
 
-  const gfx::Point point = button->GetLocalBounds().CenterPoint();
-
-  switch (input_type) {
-    case ui::test::InteractionTestUtil::InputType::kMouse:
-      SendMouseClick(button, point);
-      break;
-    case ui::test::InteractionTestUtil::InputType::kTouch:
-      SendTapGesture(button, point);
-      break;
-    case ui::test::InteractionTestUtil::InputType::kKeyboard:
-    case ui::test::InteractionTestUtil::InputType::kDontCare:
-      SendKeyPress(button, ui::VKEY_SPACE);
-      break;
-  }
+  PressButton(button, input_type);
   return true;
 }
 
@@ -137,6 +124,25 @@ bool InteractionTestUtilSimulatorViews::SelectMenuItem(
     }
   }
   return true;
+}
+
+// static
+void InteractionTestUtilSimulatorViews::PressButton(Button* button,
+                                                    InputType input_type) {
+  const gfx::Point point = button->GetLocalBounds().CenterPoint();
+
+  switch (input_type) {
+    case ui::test::InteractionTestUtil::InputType::kMouse:
+      SendMouseClick(button, point);
+      break;
+    case ui::test::InteractionTestUtil::InputType::kTouch:
+      SendTapGesture(button, point);
+      break;
+    case ui::test::InteractionTestUtil::InputType::kKeyboard:
+    case ui::test::InteractionTestUtil::InputType::kDontCare:
+      SendKeyPress(button, ui::VKEY_SPACE);
+      break;
+  }
 }
 
 }  // namespace views::test

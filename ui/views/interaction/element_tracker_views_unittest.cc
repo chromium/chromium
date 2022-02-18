@@ -23,6 +23,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -266,10 +267,7 @@ TEST_F(ElementTrackerViewsTest, ButtonPressedSendsActivatedSignal) {
   EXPECT_EQ(button, watcher.last_view());
 
   // Test accessible keypress.
-  button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                    ui::EF_NONE, ui::EventTimeForNow()));
-  button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                     ui::EF_NONE, ui::EventTimeForNow()));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(button);
   EXPECT_EQ(2, watcher.event_count());
   EXPECT_EQ(button, watcher.last_view());
 }
@@ -295,10 +293,7 @@ TEST_F(ElementTrackerViewsTest, MenuButtonPressedSendsActivatedSignal) {
   EXPECT_EQ(button, watcher.last_view());
 
   // Test accessible keypress.
-  button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                    ui::EF_NONE, ui::EventTimeForNow()));
-  button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                     ui::EF_NONE, ui::EventTimeForNow()));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(button);
   EXPECT_EQ(2U, pressed_count);
   EXPECT_EQ(2, watcher.event_count());
   EXPECT_EQ(button, watcher.last_view());
@@ -1272,16 +1267,10 @@ TEST_F(ElementTrackerTwoWidgetTest,
   EXPECT_EQ(button2, watcher2.last_view());
 
   // Test accessible keypress.
-  button2->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                     ui::EF_NONE, ui::EventTimeForNow()));
-  button2->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(button2);
   EXPECT_EQ(1, watcher.event_count());
   EXPECT_EQ(2, watcher2.event_count());
-  button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                    ui::EF_NONE, ui::EventTimeForNow()));
-  button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                     ui::EF_NONE, ui::EventTimeForNow()));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(button);
   EXPECT_EQ(2, watcher.event_count());
   EXPECT_EQ(2, watcher2.event_count());
 }

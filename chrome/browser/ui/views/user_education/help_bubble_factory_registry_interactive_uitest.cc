@@ -16,15 +16,17 @@
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/help_bubble_view.h"
+#include "chrome/browser/ui/views/user_education/user_education_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
-#include "ui/events/base_event_utils.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 
@@ -62,19 +64,12 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
 
   // Demonstrate that we can find the app button without having to pick through
   // the BrowserView hierarcny.
-  views::View* const button_view =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+  auto* const app_menu_button =
+      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
           kAppMenuButtonElementId, context);
-  BrowserAppMenuButton* const app_menu_button =
-      views::AsViewClass<BrowserAppMenuButton>(button_view);
   ASSERT_NE(nullptr, app_menu_button);
-
-  // Open the app menu:
-  app_menu_button->OnKeyPressed(ui::KeyEvent(
-      ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE, ui::EventTimeForNow()));
-
-  app_menu_button->OnKeyReleased(ui::KeyEvent(
-      ui::ET_KEY_RELEASED, ui::VKEY_SPACE, ui::EF_NONE, ui::EventTimeForNow()));
+  auto test_util = CreateInteractionTestUtil();
+  test_util->PressButton(app_menu_button);
 
   // Verify that the history menu item is visible.
   ui::TrackedElement* const element =
@@ -83,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
   auto bubble = GetRegistry()->CreateHelpBubble(element, GetBubbleParams());
   EXPECT_TRUE(bubble);
   EXPECT_TRUE(bubble->is_open());
-  EXPECT_TRUE(app_menu_button->GetWidget()->IsActive());
+  EXPECT_TRUE(GetBrowserView()->GetWidget()->IsActive());
   bubble->Close();
 }
 

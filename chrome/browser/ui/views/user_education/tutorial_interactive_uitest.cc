@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_registry.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_service.h"
+#include "chrome/browser/ui/views/user_education/user_education_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -22,7 +23,6 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/interaction/element_tracker_views.h"
 
 namespace {
 constexpr char kTestTutorialId[] = "TutorialInteractiveUitest Tutorial";
@@ -49,8 +49,8 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
         ->tutorial_service_for_testing();
   }
 
-  views::View* GetView(ui::ElementIdentifier id) {
-    return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+  ui::TrackedElement* GetElement(ui::ElementIdentifier id) {
+    return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
         id, browser()->window()->GetElementContext());
   }
 
@@ -88,16 +88,12 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
       completed.Get(), aborted.Get());
   EXPECT_TRUE(started);
 
-  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-      kCustomEventType1, GetView(kTabStripElementId));
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      GetElement(kTabStripElementId), kCustomEventType1);
 
-  EXPECT_CALL_IN_SCOPE(completed, Run, {
-    // Simulate app menu button press.
-    auto* const button =
-        static_cast<views::Button*>(GetView(kAppMenuButtonElementId));
-    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
-    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                       ui::EF_NONE, ui::EventTimeForNow()));
-  });
+  auto test_util = CreateInteractionTestUtil();
+
+  EXPECT_CALL_IN_SCOPE(
+      completed, Run,
+      test_util->PressButton(GetElement(kAppMenuButtonElementId)));
 }

@@ -21,6 +21,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/base_event_utils.h"
@@ -33,6 +34,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
@@ -98,29 +100,25 @@ class InteractionSequenceViewsTest : public ViewsTestBase {
   void ShowMenu(ui::ElementIdentifier id) {
     CreateAndRunMenu(id);
 
-    View* const view = ElementToView(
+    menu_element_ = ui::SafeElementReference(
         ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
             id, ElementTrackerViews::GetContextForView(contents_)));
-    Widget* const menu_widget = view->GetWidget();
+    Widget* const menu_widget = ElementToView(menu_element_.get())->GetWidget();
     test::WidgetVisibleWaiter visible_waiter(menu_widget);
     visible_waiter.Wait();
-    DCHECK(strstr(view->GetClassName(), "MenuItemView"));
-    menu_item_ = static_cast<MenuItemView*>(view);
-    EXPECT_TRUE(menu_item_->GetVisible());
-    EXPECT_TRUE(menu_item_->GetWidget()->IsVisible());
   }
 
   void CloseMenu() {
     menu_runner_.reset();
     menu_model_.reset();
-    menu_item_ = nullptr;
+    menu_element_ = ui::SafeElementReference();
   }
 
   void ShowBubble(ui::ElementIdentifier id) {
     auto delegate = std::make_unique<BubbleDialogDelegateView>(
         contents_, BubbleBorder::Arrow::TOP_LEFT);
-    bubble_view_ = delegate->AddChildView(std::make_unique<LabelButton>());
-    bubble_view_->SetProperty(kElementIdentifierKey, id);
+    label_button_ = delegate->AddChildView(std::make_unique<LabelButton>());
+    label_button_->SetProperty(kElementIdentifierKey, id);
     no_id_view_ = delegate->AddChildView(std::make_unique<LabelButton>());
     bubble_widget_ =
         BubbleDialogDelegateView::CreateBubble(std::move(delegate));
@@ -133,7 +131,7 @@ class InteractionSequenceViewsTest : public ViewsTestBase {
     DCHECK(bubble_widget_);
     bubble_widget_->CloseNow();
     bubble_widget_ = nullptr;
-    bubble_view_ = nullptr;
+    label_button_ = nullptr;
   }
 
   void Activate(View* view) {
@@ -180,11 +178,11 @@ class InteractionSequenceViewsTest : public ViewsTestBase {
   std::unique_ptr<Widget> widget_;
   raw_ptr<View> contents_ = nullptr;
   raw_ptr<Widget> bubble_widget_ = nullptr;
-  raw_ptr<View> bubble_view_ = nullptr;
-  raw_ptr<View> no_id_view_ = nullptr;
+  raw_ptr<LabelButton> label_button_ = nullptr;
+  raw_ptr<LabelButton> no_id_view_ = nullptr;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;
-  raw_ptr<MenuItemView> menu_item_ = nullptr;
+  ui::SafeElementReference menu_element_;
 };
 
 TEST_F(InteractionSequenceViewsTest, DestructWithInitialViewAborts) {
@@ -336,21 +334,14 @@ TEST_F(InteractionSequenceViewsTest, TransitionToBubble) {
   button->SetProperty(kElementIdentifierKey, kTestElementID);
   sequence->Start();
 
-  EXPECT_CALLS_IN_SCOPE_2(step, Run, step2, Run, {
-    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
-    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                       ui::EF_NONE, ui::EventTimeForNow()));
-  });
+  EXPECT_CALLS_IN_SCOPE_2(
+      step, Run, step2, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(button));
 
-  EXPECT_CALLS_IN_SCOPE_2(step3, Run, completed, Run, {
-    bubble_view_->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                            ui::EF_NONE,
-                                            ui::EventTimeForNow()));
-    bubble_view_->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED,
-                                             ui::VKEY_SPACE, ui::EF_NONE,
-                                             ui::EventTimeForNow()));
-  });
+  EXPECT_CALLS_IN_SCOPE_2(
+      step3, Run, completed, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(
+          label_button_));
 }
 
 TEST_F(InteractionSequenceViewsTest, TransitionToBubbleThenAbort) {
@@ -387,12 +378,9 @@ TEST_F(InteractionSequenceViewsTest, TransitionToBubbleThenAbort) {
   button->SetProperty(kElementIdentifierKey, kTestElementID);
   sequence->Start();
 
-  EXPECT_CALLS_IN_SCOPE_2(step, Run, step2, Run, {
-    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
-    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                       ui::EF_NONE, ui::EventTimeForNow()));
-  });
+  EXPECT_CALLS_IN_SCOPE_2(
+      step, Run, step2, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(button));
 
   EXPECT_CALL_IN_SCOPE(aborted, Run, CloseBubble());
 }
@@ -418,6 +406,7 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndViewMenuItem) {
                        .SetStartCallback(step2.Get())
                        .Build())
           .Build();
+
   auto* const button = contents_->AddChildView(
       std::make_unique<LabelButton>(Button::PressedCallback(
           base::BindRepeating(&InteractionSequenceViewsTest::ShowMenu,
@@ -425,12 +414,9 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndViewMenuItem) {
   button->SetProperty(kElementIdentifierKey, kTestElementID);
   sequence->Start();
 
-  EXPECT_CALLS_IN_SCOPE_3(step, Run, step2, Run, completed, Run, {
-    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
-    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                       ui::EF_NONE, ui::EventTimeForNow()));
-  });
+  EXPECT_CALLS_IN_SCOPE_3(
+      step, Run, step2, Run, completed, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(button));
 }
 
 TEST_F(InteractionSequenceViewsTest, TransitionToMenuThenCloseMenuToCancel) {
@@ -467,12 +453,9 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuThenCloseMenuToCancel) {
   button->SetProperty(kElementIdentifierKey, kTestElementID);
   sequence->Start();
 
-  EXPECT_CALLS_IN_SCOPE_2(step, Run, step2, Run, {
-    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
-    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                       ui::EF_NONE, ui::EventTimeForNow()));
-  });
+  EXPECT_CALLS_IN_SCOPE_2(
+      step, Run, step2, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(button));
 
   EXPECT_CALL_IN_SCOPE(aborted, Run, CloseMenu());
 }
@@ -508,19 +491,11 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuWithMenuButton) {
   button->SetProperty(kElementIdentifierKey, kTestElementID);
   sequence->Start();
 
-  EXPECT_CALLS_IN_SCOPE_3(step, Run, step2, Run, completed, Run, {
-    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
-    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                       ui::EF_NONE, ui::EventTimeForNow()));
-  });
+  EXPECT_CALLS_IN_SCOPE_3(
+      step, Run, step2, Run, completed, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(button));
 }
 
-#if !BUILDFLAG(IS_MAC)
-// Because Mac does not use Aura, mouse event delivery to Views menus on Mac
-// doesn't work the same as on other platforms. We still test that activation of
-// Mac menus is correctly communicated through ui::ElementTracker in the
-// following test.
 TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndActivateMenuItem) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
@@ -555,22 +530,17 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndActivateMenuItem) {
   button->SetProperty(kElementIdentifierKey, kTestElementID);
   sequence->Start();
 
-  EXPECT_CALLS_IN_SCOPE_2(step, Run, step2, Run, {
-    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
-    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                       ui::EF_NONE, ui::EventTimeForNow()));
-  });
+  EXPECT_CALLS_IN_SCOPE_2(
+      step, Run, step2, Run,
+      test::InteractionTestUtilSimulatorViews::PressButton(button));
 
   EXPECT_CALLS_IN_SCOPE_2(step3, Run, completed, Run, {
-    ui::test::EventGenerator generator(GetContext(),
-                                       widget_->GetNativeWindow());
-    generator.MoveMouseTo(menu_item_->GetBoundsInScreen().CenterPoint());
-    generator.ClickLeftButton();
+    ui::test::InteractionTestUtil test_util;
+    test_util.AddSimulator(
+        std::make_unique<test::InteractionTestUtilSimulatorViews>());
+    test_util.SelectMenuItem(menu_element_.get());
   });
 }
-
-#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(InteractionSequenceViewsTest, TransitionOnKeyboardMenuActivation) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
@@ -606,12 +576,9 @@ TEST_F(InteractionSequenceViewsTest, TransitionOnKeyboardMenuActivation) {
   button->SetProperty(kElementIdentifierKey, kTestElementID);
   sequence->Start();
 
-  EXPECT_CALLS_IN_SCOPE_2(step, Run, step2, Run, {
-    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
-    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                       ui::EF_NONE, ui::EventTimeForNow()));
-  });
+  EXPECT_CALLS_IN_SCOPE_2(
+      step, Run, step2, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(button));
 
   EXPECT_CALLS_IN_SCOPE_2(step3, Run, completed, Run, {
     ui::test::EventGenerator generator(GetContext(),
@@ -631,8 +598,8 @@ TEST_F(InteractionSequenceViewsTest, NameView_NameViewWithIdentifier) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepStartCallback, step3);
   auto step2 = base::BindLambdaForTesting([&](ui::InteractionSequence* sequence,
                                               ui::TrackedElement* element) {
-    EXPECT_EQ(bubble_view_, element->AsA<TrackedElementViews>()->view());
-    InteractionSequenceViews::NameView(sequence, bubble_view_, kElementName);
+    EXPECT_EQ(label_button_, element->AsA<TrackedElementViews>()->view());
+    InteractionSequenceViews::NameView(sequence, label_button_, kElementName);
   });
   auto sequence =
       ui::InteractionSequence::Builder()
@@ -662,21 +629,14 @@ TEST_F(InteractionSequenceViewsTest, NameView_NameViewWithIdentifier) {
   button->SetProperty(kElementIdentifierKey, kTestElementID);
   sequence->Start();
 
-  EXPECT_CALL_IN_SCOPE(step, Run, {
-    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
-    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                       ui::EF_NONE, ui::EventTimeForNow()));
-  });
+  EXPECT_CALL_IN_SCOPE(
+      step, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(button));
 
-  EXPECT_CALLS_IN_SCOPE_2(step3, Run, completed, Run, {
-    bubble_view_->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                            ui::EF_NONE,
-                                            ui::EventTimeForNow()));
-    bubble_view_->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED,
-                                             ui::VKEY_SPACE, ui::EF_NONE,
-                                             ui::EventTimeForNow()));
-  });
+  EXPECT_CALLS_IN_SCOPE_2(
+      step3, Run, completed, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(
+          label_button_));
 }
 
 TEST_F(InteractionSequenceViewsTest, NameView_NameViewWithNoIdentifier) {
@@ -686,7 +646,7 @@ TEST_F(InteractionSequenceViewsTest, NameView_NameViewWithNoIdentifier) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepStartCallback, step3);
   auto step2 = base::BindLambdaForTesting(
       [&](ui::InteractionSequence* sequence, ui::TrackedElement* element) {
-        EXPECT_EQ(bubble_view_, element->AsA<TrackedElementViews>()->view());
+        EXPECT_EQ(label_button_, element->AsA<TrackedElementViews>()->view());
         InteractionSequenceViews::NameView(sequence, no_id_view_, kElementName);
       });
   auto sequence =
@@ -717,20 +677,13 @@ TEST_F(InteractionSequenceViewsTest, NameView_NameViewWithNoIdentifier) {
   button->SetProperty(kElementIdentifierKey, kTestElementID);
   sequence->Start();
 
-  EXPECT_CALL_IN_SCOPE(step, Run, {
-    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
-    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                       ui::EF_NONE, ui::EventTimeForNow()));
-  });
+  EXPECT_CALL_IN_SCOPE(
+      step, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(button));
 
-  EXPECT_CALLS_IN_SCOPE_2(step3, Run, completed, Run, {
-    no_id_view_->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                           ui::EF_NONE, ui::EventTimeForNow()));
-    no_id_view_->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                            ui::EF_NONE,
-                                            ui::EventTimeForNow()));
-  });
+  EXPECT_CALLS_IN_SCOPE_2(
+      step3, Run, completed, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(no_id_view_));
 }
 
 }  // namespace views
