@@ -67,8 +67,12 @@ def DexJdkLibJar(r8_path,
         desugar_jdk_libs_configuration_jar
     ]
 
+    # See b/219741905. If that gets fixed, we can remove this filter.
+    stderr_filter = lambda output: build_utils.FilterLines(
+        output, r'Warning: The following library types, prefixed by java.,')
     build_utils.CheckOutput(cmd,
                             print_stdout=True,
+                            stderr_filter=stderr_filter,
                             fail_on_output=warnings_as_errors)
     if os.path.exists(os.path.join(tmp_dir, 'classes2.dex')):
       raise Exception('Achievement unlocked: desugar_jdk_libs is multidex!')
