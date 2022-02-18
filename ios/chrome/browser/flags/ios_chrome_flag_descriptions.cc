@@ -399,6 +399,10 @@ const char kOmniboxNewImplementationName[] =
 const char kOmniboxNewImplementationDescription[] =
     "Uses a textfield implementation that doesn't use UILabels internally";
 
+const char kIOSOmniboxUpdatedPopupUIName[] = "Popup refresh";
+const char kIOSOmniboxUpdatedPopupUIDescription[] =
+    "Enable the new SwiftUI Popup implementation";
+
 const char kPasswordReuseDetectionName[] =
     "PhishGuard password reuse detection";
 const char kPasswordReuseDetectionDescription[] =

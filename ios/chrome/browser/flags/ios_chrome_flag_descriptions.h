@@ -367,6 +367,11 @@ extern const char kOmniboxLocalHistoryZeroSuggestDescription[];
 extern const char kOmniboxNewImplementationName[];
 extern const char kOmniboxNewImplementationDescription[];
 
+// Title and description for the flag to enable the SwiftUI omnibox popup
+// implementation.
+extern const char kIOSOmniboxUpdatedPopupUIName[];
+extern const char kIOSOmniboxUpdatedPopupUIDescription[];
+
 // Title and description for the flag to enable PhishGuard password reuse
 // detection.
 extern const char kPasswordReuseDetectionName[];

@@ -4424,6 +4424,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "omnibox-new-popup-ui",
+    "owners": ["rkgibson@google.com", "stkhapugin", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 110
+  },
+  {
       "name": "omnibox-new-textfield-implementation",
       "owners": ["stkhapugin", "rkgibson@google.com", "chrome-omnibox-team@google.com"],
       "expiry_milestone": 95
