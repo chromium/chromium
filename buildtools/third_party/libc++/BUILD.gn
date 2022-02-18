@@ -14,17 +14,17 @@ config("config") {
       # libc++ wants to redefine the macros WIN32_LEAN_AND_MEAN and _CRT_RAND_S
       # in its implementation.
       "-Wno-macro-redefined",
-    ]
 
-    cflags_cc = [
       # We want to use a uniform C++ version across all of chromium, but
       # upstream libc++ requires C++20 so we have to make an exception here.
       # No other target should override the default -std= flag.
       "-std:c++20",
     ]
   } else {
-    cflags += [ "-fPIC" ]
-    cflags_cc = [ "-std=c++20" ]
+    cflags += [
+      "-fPIC",
+      "-std=c++20",
+    ]
   }
 
   defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
