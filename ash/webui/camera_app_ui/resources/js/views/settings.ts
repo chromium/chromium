@@ -347,6 +347,9 @@ export class ResolutionSettings extends BaseSettings {
           return;
         }
         const deviceId = config.deviceId;
+        if (deviceId === null) {
+          return;
+        }
         if (config.mode === Mode.VIDEO) {
           const prefResol = cameraManager.getPrefVideoResolution(deviceId);
           if (prefResol !== null) {
