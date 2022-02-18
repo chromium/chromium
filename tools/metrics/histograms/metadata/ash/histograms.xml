@@ -494,6 +494,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.CalendarKeyboardNavigationSource"
+    enum="CalendarKeyboardNavigationSource" expires_after="2023-02-16">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records which keys are used when the user navigates the Monthly Calendar
+    View accessible from Quick Settings and system tray with the keyboard.
+    Triggered when user shifts focus from a Calendar element to another by
+    pressing tab, or when navigating Calendar Date Cells with the arrow keys.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.FetchEvents.FetchDuration" units="ms"
     expires_after="2022-11-10">
   <owner>rtinkoff@google.com</owner>

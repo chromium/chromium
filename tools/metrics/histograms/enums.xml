@@ -11499,6 +11499,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="Stylus"/>
 </enum>
 
+<enum name="CalendarKeyboardNavigationSource">
+  <int value="0" label="Tab"/>
+  <int value="1" label="Arrow Keys"/>
+</enum>
+
 <enum name="CalendarViewScrollSource">
   <int value="0" label="By Mouse Wheel"/>
   <int value="1" label="By Gesture"/>

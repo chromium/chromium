@@ -31,6 +31,8 @@ constexpr char kCalendarMonthUpArrowButtonActivated[] =
     "Ash.Calendar.MonthUpArrowButton.Activated";
 constexpr char kCalendarMonthDwellTime[] = "Ash.Calendar.MonthDwellTime";
 constexpr char kCalendarScrollSource[] = "Ash.Calendar.ScrollSource";
+constexpr char kCalendarKeyboardNavigation[] =
+    "Ash.Calendar.KeyboardNavigation";
 
 }  // namespace
 
@@ -105,6 +107,11 @@ ui::AnimationThroughputReporter CreateAnimationReporter(
             base::UmaHistogramPercentage(animation_histogram_name, smoothness);
           },
           animation_histogram_name)));
+}
+
+void RecordCalendarKeyboardNavigation(
+    const CalendarKeyboardNavigationSource key_source) {
+  base::UmaHistogramEnumeration(kCalendarKeyboardNavigation, key_source);
 }
 
 }  // namespace calendar_metrics

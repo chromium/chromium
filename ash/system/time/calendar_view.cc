@@ -1281,7 +1281,7 @@ void CalendarView::ScrollOneRowWithAnimation(bool scroll_up) {
 }
 
 void CalendarView::OnEvent(ui::Event* event) {
-  if (!event->IsKeyEvent() || !IsDateCellViewFocused()) {
+  if (!event->IsKeyEvent()) {
     TrayDetailedView::OnEvent(event);
     return;
   }
@@ -1290,10 +1290,23 @@ void CalendarView::OnEvent(ui::Event* event) {
   auto key_code = key_event->key_code();
   auto* focus_manager = GetFocusManager();
 
+  bool is_tab_key_pressed =
+      key_event->type() == ui::EventType::ET_KEY_PRESSED &&
+      views::FocusManager::IsTabTraversalKeyEvent(*key_event);
+
+  if (is_tab_key_pressed) {
+    RecordCalendarKeyboardNavigation(
+        calendar_metrics::CalendarKeyboardNavigationSource::kTab);
+  }
+
+  if (!IsDateCellViewFocused()) {
+    TrayDetailedView::OnEvent(event);
+    return;
+  }
+
   // When tab key is pressed, stops focusing on any `CalendarDateCellView` and
   // goes to the next focusable button in the header.
-  if (key_event->type() == ui::EventType::ET_KEY_PRESSED &&
-      views::FocusManager::IsTabTraversalKeyEvent(*key_event)) {
+  if (is_tab_key_pressed) {
     // Set focus on `up_button_`/`event_list_view_` or null
     // pointer to escape the focusing on the date cell.
     if (key_event->IsShiftDown()) {
@@ -1334,6 +1347,9 @@ void CalendarView::OnEvent(ui::Event* event) {
   switch (key_code) {
     case ui::VKEY_UP:
     case ui::VKEY_DOWN: {
+      RecordCalendarKeyboardNavigation(
+          calendar_metrics::CalendarKeyboardNavigationSource::kArrowKeys);
+
       auto* current_focusable_view = focus_manager->GetFocusedView();
       // Enable the scroll bar mode, in case it is disabled when the event list
       // is showing.
@@ -1406,6 +1422,9 @@ void CalendarView::OnEvent(ui::Event* event) {
     }
     case ui::VKEY_LEFT:
     case ui::VKEY_RIGHT: {
+      RecordCalendarKeyboardNavigation(
+          calendar_metrics::CalendarKeyboardNavigationSource::kArrowKeys);
+
       // Enable the scroll bar mode, in case it is disabled when the event list
       // is showing.
       scroll_view_->SetVerticalScrollBarMode(
