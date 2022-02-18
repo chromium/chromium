@@ -5,8 +5,13 @@
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/sync_sessions/mock_sync_sessions_client.h"
+#include "components/sync_sessions/test_synced_window_delegates_getter.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -21,24 +26,32 @@ class TestSyncedTabDelegate : public TabContentsSyncedTabDelegate {
   SessionID GetWindowId() const override { return SessionID::InvalidValue(); }
   SessionID GetSessionId() const override { return SessionID::InvalidValue(); }
   bool IsPlaceholderTab() const override { return false; }
+  bool IsInitialBlankNavigation() const override {
+    // Returns false so the ShouldSyncReturnsFalse* tests would not return early
+    // because this function returns true.
+    return false;
+  }
 };
 
 class TabContentsSyncedTabDelegateTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  TabContentsSyncedTabDelegateTest() : ChromeRenderViewHostTestHarness() {}
-  ~TabContentsSyncedTabDelegateTest() override {}
-
-  void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
-
-    NavigateAndCommit(GURL("about:blank"));
+  TabContentsSyncedTabDelegateTest() {
+    ON_CALL(mock_sync_sessions_client_, GetSyncedWindowDelegatesGetter())
+        .WillByDefault(testing::Return(&window_getter_));
   }
+  ~TabContentsSyncedTabDelegateTest() override = default;
+
+ protected:
+  sync_sessions::TestSyncedWindowDelegatesGetter window_getter_;
+  testing::NiceMock<sync_sessions::MockSyncSessionsClient>
+      mock_sync_sessions_client_;
 };
 
 TEST_F(TabContentsSyncedTabDelegateTest, InvalidEntryIndexReturnsDefault) {
   std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
   TestSyncedTabDelegate delegate(web_contents.get());
+  NavigateAndCommit(GURL("about:blank"));
 
   sessions::SerializedNavigationEntry serialized_entry;
 
@@ -49,6 +62,62 @@ TEST_F(TabContentsSyncedTabDelegateTest, InvalidEntryIndexReturnsDefault) {
 
   delegate.GetSerializedNavigationAtIndex(2, &serialized_entry);
   EXPECT_EQ(serialized_entry.virtual_url(), GURL());
+}
+
+// Test that ShouldSync will return false if the WebContents has not navigated
+// anywhere yet. When InitialNavigationEntry is turned off, the WebContents will
+// have no NavigationEntries so there is nothing to sync. When
+// InitialNavigationEntry is turned on, the WebContents will be on the initial
+// NavigationEntry and also have nothing to sync, because the function will
+// return "false" early (rather than iterate through the entries list).
+TEST_F(TabContentsSyncedTabDelegateTest,
+       ShouldSyncReturnsFalseOnWebContentsOnInitialNavigationEntry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kInitialNavigationEntry);
+
+  std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
+  TestSyncedTabDelegate delegate(web_contents.get());
+  window_getter_.AddWindow(sync_pb::SessionWindow_BrowserType_TYPE_TABBED,
+                           delegate.GetWindowId());
+
+  // The WebContents has not navigated yet and InitialNavigationEntry is
+  // enabled, so it's on initial NavigationEntry.
+  ASSERT_TRUE(
+      web_contents->GetController().GetLastCommittedEntry()->IsInitialEntry());
+
+  // TestSyncedTabDelegate intentionally returns false for
+  // IsInitialBlankNavigation() even though no navigation has committed
+  // to ensure ShouldSync() won't return early because of it (which is possible
+  // in case the tab was restored before and hasn't navigated anywhere).
+  ASSERT_FALSE(delegate.IsInitialBlankNavigation());
+
+  // ShouldSync should return false because there it's on the initial
+  // NavigationEntry.
+  EXPECT_FALSE(delegate.ShouldSync(&mock_sync_sessions_client_));
+}
+
+TEST_F(TabContentsSyncedTabDelegateTest,
+       ShouldSyncReturnsFalseOnWebContentsWithNoNavigationEntry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kInitialNavigationEntry);
+
+  std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
+  TestSyncedTabDelegate delegate(web_contents.get());
+  window_getter_.AddWindow(sync_pb::SessionWindow_BrowserType_TYPE_TABBED,
+                           delegate.GetWindowId());
+
+  // The WebContents has not navigated yet and InitialNavigationEntry is
+  // disabled, so there is no NavigationEntry.
+  ASSERT_EQ(nullptr, web_contents->GetController().GetLastCommittedEntry());
+
+  // TestSyncedTabDelegate intentionally returns false for
+  // IsInitialBlankNavigation() even though no navigation has committed
+  // to ensure ShouldSync() won't return early because of it (which is possible
+  // in case the tab was restored before and hasn't navigated anywhere).
+  ASSERT_FALSE(delegate.IsInitialBlankNavigation());
+
+  // ShouldSync should return false because there is no NavigationEntry.
+  EXPECT_FALSE(delegate.ShouldSync(&mock_sync_sessions_client_));
 }
 
 }  // namespace

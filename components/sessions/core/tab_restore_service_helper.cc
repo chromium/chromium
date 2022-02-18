@@ -78,6 +78,13 @@ void AddSerializedNavigationEntries(
     if (entry.virtual_url().SchemeIs(dom_distiller::kDomDistillerScheme))
       continue;
 
+    // An entry might have an empty URL (e.g. if it's the initial
+    // NavigationEntry). Don't try to persist it, as it is not actually
+    // associated with any navigation and will just result in about:blank on
+    // session restore.
+    if (entry.virtual_url().is_empty())
+      continue;
+
     // As this code was identified as doing a lot of allocations, push_back is
     // always used and the vector is reversed for `kCurrentAndPreceedingEntries`
     // when done. Doing this instead of inserting at the beginning results in

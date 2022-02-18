@@ -530,7 +530,11 @@ void SessionServiceBase::BuildCommandsForTab(
                                  ? tab->GetController().GetPendingEntry()
                                  : tab->GetController().GetEntryAtIndex(i);
     DCHECK(entry);
-    if (ShouldTrackURLForRestore(entry->GetVirtualURL())) {
+    if (ShouldTrackURLForRestore(entry->GetVirtualURL()) &&
+        !entry->IsInitialEntry()) {
+      // Don't try to persist initial NavigationEntry, as it is not actually
+      // associated with any navigation and will just result in about:blank on
+      // session restore.
       const SerializedNavigationEntry navigation =
           ContentSerializedNavigationBuilder::FromNavigationEntry(i, entry);
       command_storage_manager()->AppendRebuildCommand(

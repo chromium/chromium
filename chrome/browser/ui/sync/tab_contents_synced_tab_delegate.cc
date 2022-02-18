@@ -36,9 +36,14 @@ NavigationEntry* GetPossiblyPendingEntryAtIndex(
     content::WebContents* web_contents,
     int i) {
   int pending_index = web_contents->GetController().GetPendingEntryIndex();
-  return (pending_index == i)
-             ? web_contents->GetController().GetPendingEntry()
-             : web_contents->GetController().GetEntryAtIndex(i);
+  if (pending_index == i)
+    return web_contents->GetController().GetPendingEntry();
+
+  NavigationEntry* entry = web_contents->GetController().GetEntryAtIndex(i);
+  // ShouldSync() should return false if `web_contents` is on the initial
+  // NavigationEntry, preventing calls to this function.
+  DCHECK(!entry || !entry->IsInitialEntry());
+  return entry;
 }
 
 }  // namespace
@@ -132,6 +137,13 @@ bool TabContentsSyncedTabDelegate::ShouldSync(
 
   if (IsInitialBlankNavigation())
     return false;  // This deliberately ignores a new pending entry.
+
+  // Don't try to sync the initial NavigationEntry, as it is not actually
+  // associated with any navigation.
+  content::NavigationEntry* last_committed_entry =
+      web_contents_->GetController().GetLastCommittedEntry();
+  if (last_committed_entry && last_committed_entry->IsInitialEntry())
+    return false;
 
   int entry_count = GetEntryCount();
   for (int i = 0; i < entry_count; ++i) {

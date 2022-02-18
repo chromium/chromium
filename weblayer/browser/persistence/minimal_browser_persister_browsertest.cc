@@ -215,4 +215,13 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, MAYBE_Overflow) {
               nullptr);
 }
 
+// Tests that a tab with no committed navigation won't be persisted/restored.
+IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, TabWithNoNavigation) {
+  std::vector<uint8_t> minimal_state =
+      browser_impl()->GetMinimalPersistenceState();
+  got_on_tab_added_ = false;
+  RestoreMinimalStateForBrowser(browser_impl(), minimal_state);
+  EXPECT_FALSE(got_on_tab_added_);
+}
+
 }  // namespace weblayer

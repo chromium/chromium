@@ -392,7 +392,10 @@ ScopedJavaLocalRef<jobject> WebContentsState::GetContentsStateAsByteBuffer(
 
   content::NavigationController& controller = web_contents->GetController();
   const int entry_count = controller.GetEntryCount();
-  if (entry_count == 0)
+  // Don't try to persist initial NavigationEntry, as it is not actually
+  // associated with any navigation and will just result in about:blank on
+  // session restore.
+  if (entry_count == 0 || controller.GetLastCommittedEntry()->IsInitialEntry())
     return ScopedJavaLocalRef<jobject>();
 
   std::vector<content::NavigationEntry*> navigations(entry_count);
