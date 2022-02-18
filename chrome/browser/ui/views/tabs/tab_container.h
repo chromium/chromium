@@ -17,7 +17,7 @@ class TabStrip;
 class TabGroupHeader;
 
 // A View that contains a sequence of Tabs for the TabStrip.
-class TabContainer : public views::View {
+class TabContainer : public views::View, public views::ViewTargeterDelegate {
  public:
   METADATA_HEADER(TabContainer);
 
@@ -41,12 +41,25 @@ class TabContainer : public views::View {
 
   int GetTabCount() const;
 
+  // Updates the indexes and count for a11y data on all tabs. Used by some
+  // screen readers (e.g. ChromeVox).
+  void UpdateAccessibleTabIndices();
+
+  void HandleLongTap(ui::GestureEvent* event);
+
+  bool IsRectInWindowCaption(const gfx::Rect& rect);
+
   // TODO (1295774): Move callers down into TabContainer so this
   // encapsulation-breaking getter can be removed.
   TabStripLayoutHelper* layout_helper() const { return layout_helper_.get(); }
 
   // views::View
   gfx::Size GetMinimumSize() const override;
+  views::View* GetTooltipHandlerForPoint(
+      const gfx::Point& point_in_tab_container_coords) override;
+
+  // views::ViewTargeterDelegate:
+  views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
 
  private:
   // Returns the corresponding view index of a |tab| to be inserted at
@@ -60,6 +73,19 @@ class TabContainer : public views::View {
 
   int GetViewIndexForModelIndex(int tab_model_index) const;
 
+  // Returns true if the specified point in the TabContainer's local coordinate
+  // space is within the hit-test region of the specified Tab.
+  bool IsPointInTab(Tab* tab, const gfx::Point& point_in_tab_container_coords);
+
+  // For a given point, finds a tab that is hit by the point. If the point hits
+  // an area on which two tabs are overlapping, the tab is selected as follows:
+  // - If one of the tabs is active, select it.
+  // - Select the left one.
+  // If no tabs are hit, returns null.
+  Tab* FindTabHitByPoint(const gfx::Point& point_in_tab_container_coords);
+
+  bool IsValidModelIndex(int model_index) const;
+
   // There is a one-to-one mapping between each of the
   // tabs in the TabStripModel and |tabs_view_model_|.
   // Because we animate tab removal there exists a
@@ -69,6 +95,8 @@ class TabContainer : public views::View {
   // |layout_helper_| (and remains a View child) until
   // the remove animation completes.
   views::ViewModelT<Tab> tabs_view_model_;
+
+  TabStripController* controller_;
 
   std::unique_ptr<TabStripLayoutHelper> layout_helper_;
 };
