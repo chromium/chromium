@@ -246,7 +246,8 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
         }
     }
 
-    private void unsubscribe(List<CommerceSubscription> subscriptions, Callback<Integer> callback) {
+    @Override
+    public void unsubscribe(List<CommerceSubscription> subscriptions, Callback<Integer> callback) {
         String type = subscriptions.get(0).getType();
         if (subscriptions == null || !isSubscriptionTypeSupported(type)) {
             callback.onResult(SubscriptionsManager.StatusCode.INVALID_ARGUMENT);

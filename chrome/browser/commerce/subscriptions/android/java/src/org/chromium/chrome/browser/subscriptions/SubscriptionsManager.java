@@ -65,6 +65,13 @@ public interface SubscriptionsManager {
     void unsubscribe(CommerceSubscription subscription, Callback<Integer> callback);
 
     /**
+     * This is batched version of {@link #unsubscribe(CommerceSubscription, Callback)}.
+     * @param subscriptions The list of subscription objects to unsubscribe from.
+     * @param callback A callback for whether the operation completed successfully.
+     */
+    void unsubscribe(List<CommerceSubscription> subscriptions, Callback<Integer> callback);
+
+    /**
      * Returns all subscriptions that match the provided type.
      * @param type The {@link CommerceSubscription.CommerceSubscriptionType} to query.
      * @param forceFetch Whether to fetch from server.
