@@ -87,10 +87,12 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
     return absl::nullopt;
 
   // Otherwise the key is partitioned, let's see what it's partitioned by.
-  EncodedAttribute encoded_attribute =
+  absl::optional<EncodedAttribute> encoded_attribute =
       DeserializeAttributeSeparator(in.substr(pos_first_caret, 2));
+  if (!encoded_attribute.has_value())
+    return absl::nullopt;
 
-  switch (encoded_attribute) {
+  switch (encoded_attribute.value()) {
     case EncodedAttribute::kTopLevelSite: {
       // A top-level site is serialized.
 
@@ -108,9 +110,13 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       // Make sure we found the last separator, it's valid, that it's the
       // correct attribute.
       if (pos_last_caret == std::string::npos ||
-          !ValidSeparatorWithData(in, pos_last_caret) ||
-          DeserializeAttributeSeparator(in.substr(pos_last_caret, 2)) !=
-              EncodedAttribute::kAncestorChainBit)
+          !ValidSeparatorWithData(in, pos_last_caret))
+        return absl::nullopt;
+
+      absl::optional<EncodedAttribute> encoded_attribute =
+          DeserializeAttributeSeparator(in.substr(pos_last_caret, 2));
+      if (!encoded_attribute.has_value() ||
+          encoded_attribute.value() != EncodedAttribute::kAncestorChainBit)
         return absl::nullopt;
 
       // The ancestor_chain_bit is the portion beyond the last separator.
@@ -148,9 +154,13 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       // Make sure we found the next separator, it's valid, that it's the
       // correct attribute.
       if (pos_second_caret == std::string::npos ||
-          !ValidSeparatorWithData(in, pos_second_caret) ||
-          DeserializeAttributeSeparator(in.substr(pos_second_caret, 2)) !=
-              EncodedAttribute::kNonceLow)
+          !ValidSeparatorWithData(in, pos_second_caret))
+        return absl::nullopt;
+
+      absl::optional<EncodedAttribute> encoded_attribute =
+          DeserializeAttributeSeparator(in.substr(pos_second_caret, 2));
+      if (!encoded_attribute.has_value() ||
+          encoded_attribute.value() != EncodedAttribute::kNonceLow)
         return absl::nullopt;
 
       // The origin is the portion up to, but not including, the first
@@ -354,14 +364,14 @@ std::string StorageKey::SerializeAttributeSeparator(
 }
 
 // static
-StorageKey::EncodedAttribute StorageKey::DeserializeAttributeSeparator(
-    const base::StringPiece& in) {
+absl::optional<StorageKey::EncodedAttribute>
+StorageKey::DeserializeAttributeSeparator(const base::StringPiece& in) {
   DCHECK_EQ(in.size(), 2U);
   uint8_t number = in[1] - '0';
 
-  if (number >= static_cast<uint8_t>(StorageKey::EncodedAttribute::kMax)) {
-    // Bad input, return kMax to indicate an issue.
-    return StorageKey::EncodedAttribute::kMax;
+  if (number > static_cast<uint8_t>(StorageKey::EncodedAttribute::kMaxValue)) {
+    // Bad input, return absl::nullopt to indicate an issue.
+    return absl::nullopt;
   }
 
   return static_cast<StorageKey::EncodedAttribute>(number);
@@ -378,11 +388,12 @@ bool StorageKey::ShouldSkipKeyDueToPartitioning(
   size_t pos_first_caret = reg_key_string.find_first_of('^');
   if (pos_first_caret != std::string::npos &&
       ValidSeparatorWithData(reg_key_string, pos_first_caret)) {
-    StorageKey::EncodedAttribute attribute = DeserializeAttributeSeparator(
+    absl::optional<EncodedAttribute> attribute = DeserializeAttributeSeparator(
         reg_key_string.substr(pos_first_caret, 2));
     // Do skip if partitioning is disabled and we detect a top-level site
     // serialization scheme:
-    if (attribute == StorageKey::EncodedAttribute::kTopLevelSite)
+    if (attribute.has_value() &&
+        attribute == StorageKey::EncodedAttribute::kTopLevelSite)
       return true;
   }
   // If otherwise first-party, nonce, or corrupted, don't skip.

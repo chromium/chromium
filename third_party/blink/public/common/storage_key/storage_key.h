@@ -166,7 +166,7 @@ class BLINK_COMMON_EXPORT StorageKey {
     kNonceHigh = 1,
     kNonceLow = 2,
     kAncestorChainBit = 3,
-    kMax
+    kMaxValue = kAncestorChainBit,
   };
 
   StorageKey(const url::Origin& origin,
@@ -189,7 +189,7 @@ class BLINK_COMMON_EXPORT StorageKey {
   // Converts the serialized separator into an EncodedAttribute enum.
   // E.x.: "^0" becomes kTopLevelSite.
   // Expects `in` to have a length of 2.
-  static EncodedAttribute DeserializeAttributeSeparator(
+  static absl::optional<EncodedAttribute> DeserializeAttributeSeparator(
       const base::StringPiece& in);
 
   BLINK_COMMON_EXPORT
