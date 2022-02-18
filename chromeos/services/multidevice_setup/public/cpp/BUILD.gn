@@ -87,8 +87,8 @@ source_set("url_provider") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
-    "//chrome/common",
   ]
 }
 

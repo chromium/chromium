@@ -391,12 +391,6 @@ const char kInstantTetheringLearnMoreURL[] =
 const char kKerberosAccountsLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=kerberos_accounts";
 
-const char kMultiDeviceLearnMoreURL[] =
-    "https://support.google.com/chromebook/?p=multi_device";
-
-const char kAndroidMessagesLearnMoreURL[] =
-    "https://support.google.com/chromebook/?p=multi_device_messages";
-
 const char kLanguageSettingsLearnMoreUrl[] =
     "https://support.google.com/chromebook/answer/1059490";
 
@@ -408,9 +402,6 @@ const char kLearnMoreEnterpriseURL[] =
 
 const char kLinuxAppsLearnMoreURL[] =
     "https://support.google.com/chromebook?p=chromebook_linuxapps";
-
-const char kLinuxExportImportHelpURL[] =
-    "https://support.google.com/chromebook?p=linux_backup_restore";
 
 const char kNaturalScrollHelpURL[] =
     "https://support.google.com/chromebook/?p=simple_scrolling";

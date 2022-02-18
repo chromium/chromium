@@ -1,5 +1,4 @@
 include_rules = [
-  "+chrome/common/url_constants.h",
   "+components/proximity_auth/logging/logging.h",
   '+components/keyed_service/core',
   "+components/session_manager/core",
