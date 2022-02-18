@@ -30,8 +30,6 @@
 #include "base/bind.h"
 #include "base/dcheck_is_on.h"
 #include "base/time/time.h"
-#include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -40,7 +38,6 @@
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -235,8 +232,6 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
       break;
   }
 
-  GetViewAccessibility().OverrideName(title_label_->GetText());
-
 #if DCHECK_IS_ON()
   switch (list_type_.value()) {
     case SearchResultListType::kAnswerCard:
@@ -402,7 +397,6 @@ int SearchResultListView::DoUpdate() {
   }
 
   std::vector<SearchResult*> displayed_results = UpdateResultViews();
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
 
   auto* notifier = view_delegate_->GetNotifier();
 
@@ -453,13 +447,6 @@ gfx::Size SearchResultListView::CalculatePreferredSize() const {
 
 const char* SearchResultListView::GetClassName() const {
   return "SearchResultListView";
-}
-
-void SearchResultListView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // With productivity launcher disabled, the parent search result page view
-  // will have the list box role.
-  if (ash::features::IsProductivityLauncherEnabled())
-    node_data->role = ax::mojom::Role::kListBox;
 }
 
 int SearchResultListView::GetHeightForWidth(int w) const {
