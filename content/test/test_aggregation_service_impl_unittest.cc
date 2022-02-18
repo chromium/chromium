@@ -18,7 +18,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -55,16 +54,16 @@ TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
          })",
       {generated_key.base64_encoded_public_key}, /*offsets=*/nullptr);
 
-  url::Origin origin = url::Origin::Create(GURL("https://a.com"));
+  GURL url("https://a.com/keys");
 
-  service_impl_->SetPublicKeys(origin, json_string,
+  service_impl_->SetPublicKeys(url, json_string,
                                base::BindLambdaForTesting([&](bool succeeded) {
                                  EXPECT_TRUE(succeeded);
                                }));
 
   base::RunLoop run_loop;
   service_impl_->GetPublicKeys(
-      origin, base::BindLambdaForTesting([&](std::vector<PublicKey> keys) {
+      url, base::BindLambdaForTesting([&](std::vector<PublicKey> keys) {
         EXPECT_TRUE(content::aggregation_service::PublicKeysEqual(
             {generated_key.public_key}, keys));
         run_loop.Quit();

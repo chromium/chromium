@@ -664,9 +664,9 @@ const base::Feature kPrivacySandboxAggregationService = {
     "PrivacySandboxAggregationService", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::FeatureParam<std::string>
-    kPrivacySandboxAggregationServiceTrustedServerOriginParam{
-        &kPrivacySandboxAggregationService, "trusted_server_origin",
-        "https://server.example.com"};
+    kPrivacySandboxAggregationServiceTrustedServerUrlParam{
+        &kPrivacySandboxAggregationService, "trusted_server_url",
+        "https://server.example.com/.well-known/aggregation-service/keys.json"};
 
 // Enables Private Network Access checks for all types of web workers.
 //

@@ -18,6 +18,8 @@
 #include "sql/meta_table.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class GURL;
+
 namespace base {
 class Clock;
 }  // namespace base
@@ -25,10 +27,6 @@ class Clock;
 namespace sql {
 class Statement;
 }  // namespace sql
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -54,10 +52,9 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   ~AggregationServiceStorageSql() override;
 
   // AggregationServiceKeyStorage:
-  std::vector<PublicKey> GetPublicKeys(const url::Origin& origin) override;
-  void SetPublicKeys(const url::Origin& origin,
-                     const PublicKeyset& keyset) override;
-  void ClearPublicKeys(const url::Origin& origin) override;
+  std::vector<PublicKey> GetPublicKeys(const GURL& url) override;
+  void SetPublicKeys(const GURL& url, const PublicKeyset& keyset) override;
+  void ClearPublicKeys(const GURL& url) override;
   void ClearPublicKeysFetchedBetween(base::Time delete_begin,
                                      base::Time delete_end) override;
   void ClearPublicKeysExpiredBy(base::Time delete_end) override;
@@ -99,16 +96,15 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   };
 
   // Inserts public keys to database.
-  bool InsertPublicKeysImpl(const url::Origin& origin,
-                            const PublicKeyset& keyset)
+  bool InsertPublicKeysImpl(const GURL& url, const PublicKeyset& keyset)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Deletes all stored public keys for `origin` from database.
-  bool ClearPublicKeysImpl(const url::Origin& origin)
+  // Deletes all stored public keys for `url` from database.
+  bool ClearPublicKeysImpl(const GURL& url)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Deletes all stored public keys for `origin_id` from database.
-  bool ClearPublicKeysByOriginId(int64_t origin_id)
+  // Deletes all stored public keys for `url_id` from database.
+  bool ClearPublicKeysByUrlId(int64_t url_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Clears all stored public keys.

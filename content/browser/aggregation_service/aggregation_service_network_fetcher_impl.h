@@ -19,14 +19,12 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
+class GURL;
+
 namespace base {
 class Clock;
 class Time;
 }  // namespace base
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -46,8 +44,7 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
       const AggregationServiceNetworkFetcherImpl&) = delete;
   ~AggregationServiceNetworkFetcherImpl() override;
 
-  void FetchPublicKeys(const url::Origin& origin,
-                       NetworkFetchCallback callback) override;
+  void FetchPublicKeys(const GURL& url, NetworkFetchCallback callback) override;
 
   // Used by tests to inject a TestURLLoaderFactory so they can mock the
   // network response. Also used by the aggregation service tool to inject a
@@ -73,19 +70,19 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
 
   // Invoked from SimpleURLLoader after download is complete.
   void OnSimpleLoaderComplete(UrlLoaderList::iterator it,
-                              const url::Origin& origin,
+                              const GURL& url,
                               NetworkFetchCallback callback,
                               std::unique_ptr<std::string> response_body);
 
   // Callback for DataDecoder. `expiry_time` will be null if the freshness
   // lifetime is zero.
-  void OnJsonParse(const url::Origin& origin,
+  void OnJsonParse(const GURL& url,
                    NetworkFetchCallback callback,
                    base::Time fetch_time,
                    base::Time expiry_time,
                    data_decoder::DataDecoder::ValueOrError result);
 
-  void OnError(const url::Origin& origin,
+  void OnError(const GURL& url,
                NetworkFetchCallback callback,
                FetchError error,
                const std::string& error_msg);

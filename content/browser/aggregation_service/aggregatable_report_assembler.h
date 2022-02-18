@@ -19,7 +19,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
 
 template <class T>
 class scoped_refptr;
@@ -96,7 +95,7 @@ class CONTENT_EXPORT AggregatableReportAssembler {
   struct PendingRequest {
     PendingRequest(AggregatableReportRequest report_request,
                    AssemblyCallback callback,
-                   size_t num_processing_origins);
+                   size_t num_processing_urls);
     // Move-only.
     PendingRequest(PendingRequest&& other);
     PendingRequest& operator=(PendingRequest&& other);
@@ -109,10 +108,10 @@ class CONTENT_EXPORT AggregatableReportAssembler {
     size_t num_returned_key_fetches = 0;
 
     // The PublicKey returned for each key fetch request. Indices correspond to
-    // the ordering of `report_request.processing_origins`. Each element is
+    // the ordering of `report_request.processing_urls`. Each element is
     // `absl::nullopt` if that key fetch either has not yet returned or has
     // returned an error.
-    std::vector<absl::optional<PublicKey>> processing_origin_keys;
+    std::vector<absl::optional<PublicKey>> processing_url_keys;
   };
 
   AggregatableReportAssembler(
@@ -122,12 +121,12 @@ class CONTENT_EXPORT AggregatableReportAssembler {
   // Called when a result is returned from the key fetcher. Handles throwing
   // errors on a failed fetch, waiting for both results to return and calling
   // into `OnBothPublicKeysFetched()` when appropriate.
-  // `processing_origin_index` is an index into the corresponding
-  // AggregatableReportRequest's `processing_origins` vector, indicating which
-  // origin this fetch is for.
+  // `processing_url_index` is an index into the corresponding
+  // AggregatableReportRequest's `processing_urls` vector, indicating which
+  // url this fetch is for.
   void OnPublicKeyFetched(
       int64_t report_id,
-      size_t processing_origin_index,
+      size_t processing_url_index,
       absl::optional<PublicKey> key,
       AggregationServiceKeyFetcher::PublicKeyFetchStatus status);
 

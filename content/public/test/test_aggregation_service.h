@@ -56,7 +56,7 @@ class TestAggregationService {
                     ProcessingType processing_type,
                     url::Origin reporting_origin,
                     std::string privacy_budget_key,
-                    std::vector<url::Origin> processing_origins,
+                    std::vector<GURL> processing_urls,
                     bool is_debug_mode_enabled);
     AssembleRequest(AssembleRequest&& other);
     AssembleRequest& operator=(AssembleRequest&& other);
@@ -74,8 +74,8 @@ class TestAggregationService {
     url::Origin reporting_origin;
     // Specifies the key for the aggregation servers to do privacy budgeting.
     std::string privacy_budget_key;
-    // Specifies the aggregation server origins.
-    std::vector<url::Origin> processing_origins;
+    // Specifies the aggregation server URLs.
+    std::vector<GURL> processing_urls;
     // Whether debug_mode should be enabled for the report.
     bool is_debug_mode_enabled;
   };
@@ -92,10 +92,10 @@ class TestAggregationService {
   // after serialization.
   virtual void SetDisablePayloadEncryption(bool should_disable) = 0;
 
-  // Parses the keys for `origin` from `json_string`, and saves the set of keys
+  // Parses the keys for `url` from `json_string`, and saves the set of keys
   // to storage. `callback` will be run once completed which takes a boolean
   // value indicating whether the keys were parsed successfully.
-  virtual void SetPublicKeys(const url::Origin& origin,
+  virtual void SetPublicKeys(const GURL& url,
                              const std::string& json_string,
                              base::OnceCallback<void(bool)> callback) = 0;
 

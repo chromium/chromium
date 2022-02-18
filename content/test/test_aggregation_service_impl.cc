@@ -97,7 +97,7 @@ void TestAggregationServiceImpl::SetDisablePayloadEncryption(
 }
 
 void TestAggregationServiceImpl::SetPublicKeys(
-    const url::Origin& origin,
+    const GURL& url,
     const std::string& json_string,
     base::OnceCallback<void(bool)> callback) {
   JSONStringValueDeserializer deserializer(json_string);
@@ -121,7 +121,7 @@ void TestAggregationServiceImpl::SetPublicKeys(
                       /*fetch_time=*/clock_.Now(),
                       /*expiry_time=*/base::Time::Max());
   storage_.AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
-      .WithArgs(origin, std::move(keyset))
+      .WithArgs(url, std::move(keyset))
       .Then(base::BindOnce(std::move(callback), true));
 }
 
@@ -143,7 +143,7 @@ void TestAggregationServiceImpl::AssembleReport(
 
   absl::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::CreateForTesting(
-          std::move(request.processing_origins), std::move(payload_contents),
+          std::move(request.processing_urls), std::move(payload_contents),
           std::move(shared_info));
   if (!report_request.has_value()) {
     std::move(callback).Run(base::Value::DictStorage());
@@ -171,10 +171,10 @@ void TestAggregationServiceImpl::SendReport(
 }
 
 void TestAggregationServiceImpl::GetPublicKeys(
-    const url::Origin& origin,
+    const GURL& url,
     base::OnceCallback<void(std::vector<PublicKey>)> callback) const {
   storage_.AsyncCall(&AggregationServiceKeyStorage::GetPublicKeys)
-      .WithArgs(origin)
+      .WithArgs(url)
       .Then(std::move(callback));
 }
 

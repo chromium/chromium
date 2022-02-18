@@ -24,7 +24,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -62,10 +61,10 @@ AggregatableReportAssembler::~AggregatableReportAssembler() = default;
 AggregatableReportAssembler::PendingRequest::PendingRequest(
     AggregatableReportRequest report_request,
     AggregatableReportAssembler::AssemblyCallback callback,
-    size_t num_processing_origins)
+    size_t num_processing_urls)
     : report_request(std::move(report_request)),
       callback(std::move(callback)),
-      processing_origin_keys(num_processing_origins) {
+      processing_url_keys(num_processing_urls) {
   DCHECK(this->callback);
 }
 
@@ -99,12 +98,10 @@ AggregatableReportAssembler::CreateForTesting(
 void AggregatableReportAssembler::AssembleReport(
     AggregatableReportRequest report_request,
     AssemblyCallback callback) {
-  DCHECK(base::ranges::is_sorted(report_request.processing_origins()));
-  const size_t num_processing_origins =
-      report_request.processing_origins().size();
-  DCHECK(AggregatableReport::IsNumberOfProcessingOriginsValid(
-      num_processing_origins,
-      report_request.payload_contents().processing_type));
+  DCHECK(base::ranges::is_sorted(report_request.processing_urls()));
+  const size_t num_processing_urls = report_request.processing_urls().size();
+  DCHECK(AggregatableReport::IsNumberOfProcessingUrlsValid(
+      num_processing_urls, report_request.payload_contents().processing_type));
 
   const AggregationServicePayloadContents& contents =
       report_request.payload_contents();
@@ -124,24 +121,23 @@ void AggregatableReportAssembler::AssembleReport(
 
   const PendingRequest& pending_request =
       pending_requests_
-          .emplace(
-              id, PendingRequest(std::move(report_request), std::move(callback),
-                                 num_processing_origins))
+          .emplace(id, PendingRequest(std::move(report_request),
+                                      std::move(callback), num_processing_urls))
           .first->second;
 
-  for (size_t i = 0; i < num_processing_origins; ++i) {
+  for (size_t i = 0; i < num_processing_urls; ++i) {
     // `fetcher_` is owned by `this`, so `base::Unretained()` is safe.
     fetcher_->GetPublicKey(
-        pending_request.report_request.processing_origins()[i],
+        pending_request.report_request.processing_urls()[i],
         base::BindOnce(&AggregatableReportAssembler::OnPublicKeyFetched,
                        base::Unretained(this), /*report_id=*/id,
-                       /*processing_origin_index=*/i));
+                       /*processing_url_index=*/i));
   }
 }
 
 void AggregatableReportAssembler::OnPublicKeyFetched(
     int64_t report_id,
-    size_t processing_origin_index,
+    size_t processing_url_index,
     absl::optional<PublicKey> key,
     AggregationServiceKeyFetcher::PublicKeyFetchStatus status) {
   DCHECK_EQ(key.has_value(),
@@ -154,11 +150,10 @@ void AggregatableReportAssembler::OnPublicKeyFetched(
   // TODO(crbug.com/1254792): Consider implementing some retry logic.
 
   ++pending_request.num_returned_key_fetches;
-  pending_request.processing_origin_keys[processing_origin_index] =
-      std::move(key);
+  pending_request.processing_url_keys[processing_url_index] = std::move(key);
 
   if (pending_request.num_returned_key_fetches ==
-      pending_request.report_request.processing_origins().size()) {
+      pending_request.report_request.processing_urls().size()) {
     OnAllPublicKeysFetched(report_id, pending_request);
   }
 }
@@ -167,8 +162,7 @@ void AggregatableReportAssembler::OnAllPublicKeysFetched(
     int64_t report_id,
     PendingRequest& pending_request) {
   std::vector<PublicKey> public_keys;
-  for (absl::optional<PublicKey> elem :
-       pending_request.processing_origin_keys) {
+  for (absl::optional<PublicKey> elem : pending_request.processing_url_keys) {
     if (!elem.has_value()) {
       std::move(pending_request.callback)
           .Run(absl::nullopt, AssemblyStatus::kPublicKeyFetchFailed);

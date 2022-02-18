@@ -92,19 +92,18 @@ testing::AssertionResult AggregatableReportsEqual(
 testing::AssertionResult ReportRequestsEqual(
     const AggregatableReportRequest& expected,
     const AggregatableReportRequest& actual) {
-  if (expected.processing_origins().size() !=
-      actual.processing_origins().size()) {
+  if (expected.processing_urls().size() != actual.processing_urls().size()) {
     return testing::AssertionFailure()
-           << "Expected processing_origins size "
-           << expected.processing_origins().size()
-           << ", actual: " << actual.processing_origins().size();
+           << "Expected processing_urls size "
+           << expected.processing_urls().size()
+           << ", actual: " << actual.processing_urls().size();
   }
-  for (size_t i = 0; i < expected.processing_origins().size(); ++i) {
-    if (expected.processing_origins()[i] != actual.processing_origins()[i]) {
+  for (size_t i = 0; i < expected.processing_urls().size(); ++i) {
+    if (expected.processing_urls()[i] != actual.processing_urls()[i]) {
       return testing::AssertionFailure()
-             << "Expected processing_origins()[" << i << "] to be "
-             << expected.processing_origins()[i]
-             << ", actual: " << actual.processing_origins()[i];
+             << "Expected processing_urls()[" << i << "] to be "
+             << expected.processing_urls()[i]
+             << ", actual: " << actual.processing_urls()[i];
     }
   }
 
@@ -187,9 +186,9 @@ AggregatableReportRequest CreateExampleRequest(
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request) {
-  return AggregatableReportRequest::CreateForTesting(
-             request.processing_origins(), request.payload_contents(),
-             request.shared_info())
+  return AggregatableReportRequest::CreateForTesting(request.processing_urls(),
+                                                     request.payload_contents(),
+                                                     request.shared_info())
       .value();
 }
 

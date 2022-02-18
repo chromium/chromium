@@ -46,17 +46,17 @@ using DpfParameters = distributed_point_functions::DpfParameters;
 constexpr char kHistogramValue[] = "histogram";
 constexpr char kOperationKey[] = "operation";
 
-std::vector<url::Origin> GetDefaultProcessingOrigins(
+std::vector<GURL> GetDefaultProcessingUrls(
     AggregationServicePayloadContents::ProcessingType processing_type) {
   switch (processing_type) {
     case AggregationServicePayloadContents::ProcessingType::kTwoParty:
-      // TODO(crbug.com/1295705): Update default processing origins.
-      return {url::Origin::Create(GURL("https://server1.example.com")),
-              url::Origin::Create(GURL("https://server2.example.com"))};
+      // TODO(crbug.com/1295705): Update default processing urls.
+      return {GURL("https://server1.example.com"),
+              GURL("https://server2.example.com")};
     case AggregationServicePayloadContents::ProcessingType::kSingleServer:
-      return {url::Origin::Create(GURL(
-          features::kPrivacySandboxAggregationServiceTrustedServerOriginParam
-              .Get()))};
+      return {
+          GURL(features::kPrivacySandboxAggregationServiceTrustedServerUrlParam
+                   .Get())};
   }
 }
 
@@ -111,7 +111,7 @@ std::vector<DpfKey> GenerateDpfKeys(
   return dpf_keys;
 }
 
-// Returns a vector with a serialized CBOR map for each processing origin. See
+// Returns a vector with a serialized CBOR map for each processing url. See
 // the AggregatableReport documentation for more detail on the expected format.
 // Returns an empty vector in case of error.
 std::vector<std::vector<uint8_t>> ConstructUnencryptedTwoPartyPayloads(
@@ -186,7 +186,7 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedSingleServerPayload(
   return {std::move(unencrypted_payload.value())};
 }
 
-// Encrypts the `plaintext` with HPKE using the processing origin's
+// Encrypts the `plaintext` with HPKE using the processing url's
 // `public_key`. Returns empty vector if the encryption fails.
 std::vector<uint8_t> EncryptWithHpke(
     const std::vector<uint8_t>& plaintext,
@@ -308,35 +308,35 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
 absl::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info) {
-  std::vector<url::Origin> processing_origins =
-      GetDefaultProcessingOrigins(payload_contents.processing_type);
-  return CreateInternal(std::move(processing_origins),
-                        std::move(payload_contents), std::move(shared_info));
+  std::vector<GURL> processing_urls =
+      GetDefaultProcessingUrls(payload_contents.processing_type);
+  return CreateInternal(std::move(processing_urls), std::move(payload_contents),
+                        std::move(shared_info));
 }
 
 // static
 absl::optional<AggregatableReportRequest>
 AggregatableReportRequest::CreateForTesting(
-    std::vector<url::Origin> processing_origins,
+    std::vector<GURL> processing_urls,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info) {
-  return CreateInternal(std::move(processing_origins),
-                        std::move(payload_contents), std::move(shared_info));
+  return CreateInternal(std::move(processing_urls), std::move(payload_contents),
+                        std::move(shared_info));
 }
 
 // static
 absl::optional<AggregatableReportRequest>
 AggregatableReportRequest::CreateInternal(
-    std::vector<url::Origin> processing_origins,
+    std::vector<GURL> processing_urls,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info) {
-  if (!AggregatableReport::IsNumberOfProcessingOriginsValid(
-          processing_origins.size(), payload_contents.processing_type)) {
+  if (!AggregatableReport::IsNumberOfProcessingUrlsValid(
+          processing_urls.size(), payload_contents.processing_type)) {
     return absl::nullopt;
   }
 
-  if (!base::ranges::all_of(processing_origins,
-                            network::IsOriginPotentiallyTrustworthy)) {
+  if (!base::ranges::all_of(processing_urls,
+                            network::IsUrlPotentiallyTrustworthy)) {
     return absl::nullopt;
   }
 
@@ -348,20 +348,20 @@ AggregatableReportRequest::CreateInternal(
     return absl::nullopt;
   }
 
-  // Ensure the ordering of origins is deterministic. This is required for
+  // Ensure the ordering of urls is deterministic. This is required for
   // AggregatableReport construction later.
-  base::ranges::sort(processing_origins);
+  base::ranges::sort(processing_urls);
 
-  return AggregatableReportRequest(std::move(processing_origins),
+  return AggregatableReportRequest(std::move(processing_urls),
                                    std::move(payload_contents),
                                    std::move(shared_info));
 }
 
 AggregatableReportRequest::AggregatableReportRequest(
-    std::vector<url::Origin> processing_origins,
+    std::vector<GURL> processing_urls,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info)
-    : processing_origins_(std::move(processing_origins)),
+    : processing_urls_(std::move(processing_urls)),
       payload_contents_(std::move(payload_contents)),
       shared_info_(std::move(shared_info)) {}
 
@@ -432,12 +432,12 @@ absl::optional<AggregatableReport>
 AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
     AggregatableReportRequest report_request,
     std::vector<PublicKey> public_keys) const {
-  const size_t num_processing_origins = public_keys.size();
-  DCHECK_EQ(num_processing_origins, report_request.processing_origins().size());
+  const size_t num_processing_urls = public_keys.size();
+  DCHECK_EQ(num_processing_urls, report_request.processing_urls().size());
 
-  // The origins must be sorted so we can ensure the ordering (and assignment of
+  // The urls must be sorted so we can ensure the ordering (and assignment of
   // DpfKey parties for two-party processing types) is deterministic.
-  DCHECK(base::ranges::is_sorted(report_request.processing_origins()));
+  DCHECK(base::ranges::is_sorted(report_request.processing_urls()));
 
   std::vector<std::vector<uint8_t>> unencrypted_payloads;
 
@@ -468,12 +468,12 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
                             encoded_shared_info.begin(),
                             encoded_shared_info.end());
 
-  // To avoid unnecessary copies, we move the processing origins and shared info
+  // To avoid unnecessary copies, we move the processing urls and shared info
   // from the `report_request`'s private members. Note that the request object
   // is destroyed at the end of this method.
   std::vector<AggregatableReport::AggregationServicePayload> encrypted_payloads;
-  DCHECK_EQ(unencrypted_payloads.size(), num_processing_origins);
-  for (size_t i = 0; i < num_processing_origins; ++i) {
+  DCHECK_EQ(unencrypted_payloads.size(), num_processing_urls);
+  for (size_t i = 0; i < num_processing_urls; ++i) {
     std::vector<uint8_t> encrypted_payload =
         g_disable_encryption_for_testing_tool_
             ? unencrypted_payloads[i]
@@ -527,7 +527,7 @@ base::Value::DictStorage AggregatableReport::GetAsJson() const {
 }
 
 // static
-bool AggregatableReport::IsNumberOfProcessingOriginsValid(
+bool AggregatableReport::IsNumberOfProcessingUrlsValid(
     size_t number,
     AggregationServicePayloadContents::ProcessingType processing_type) {
   switch (processing_type) {

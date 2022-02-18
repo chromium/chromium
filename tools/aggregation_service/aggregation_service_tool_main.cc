@@ -18,6 +18,7 @@
 #include "tools/aggregation_service/aggregation_service_tool.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_canon.h"
 
 namespace {
 
@@ -59,7 +60,7 @@ constexpr char kHelpMsg[] = R"(
   aggregation_service_tool --bucket=1234 --value=5
   --processing-type="single-server" --reporting-origin="https://example.com"
   --privacy-budget-key="test_privacy_budget_key"
-  --helper-keys="https://a.com=keys1.json,https://b.com=keys2.json"
+  --helper-keys="https://a.com=keys.json"
   --output-url="https://c.com/reports"
 
   aggregation_service_tool is a command-line tool that accepts report contents
@@ -184,12 +185,18 @@ int main(int argc, char* argv[]) {
                                      /*key_value_pair_delimiter=*/',',
                                      &kv_pairs);
 
-  std::vector<aggregation_service::OriginKeyFile> key_files;
-  std::vector<url::Origin> processing_origins;
+  std::vector<aggregation_service::UrlKeyFile> key_files;
+  std::vector<GURL> processing_urls;
+  static constexpr char kDefaultEndpointPath[] = "keys.json";
   for (auto& kv : kv_pairs) {
-    url::Origin origin = url::Origin::Create(GURL(kv.first));
-    key_files.emplace_back(origin, std::move(kv.second));
-    processing_origins.push_back(origin);
+    url::Replacements<char> replacements;
+    replacements.SetPath(kDefaultEndpointPath,
+                         url::Component(0, strlen(kDefaultEndpointPath)));
+    GURL url = url::Origin::Create(GURL(kv.first))
+                   .GetURL()
+                   .ReplaceComponents(replacements);
+    key_files.emplace_back(url, std::move(kv.second));
+    processing_urls.push_back(std::move(url));
   }
 
   if (!tool.SetPublicKeys(key_files)) {
@@ -219,7 +226,7 @@ int main(int argc, char* argv[]) {
       std::move(operation), command_line.GetSwitchValueASCII(kSwitchBucket),
       command_line.GetSwitchValueASCII(kSwitchValue),
       std::move(processing_type), std::move(reporting_origin),
-      std::move(privacy_budget_key), std::move(processing_origins),
+      std::move(privacy_budget_key), std::move(processing_urls),
       is_debug_mode_enabled);
   if (report_dict.empty()) {
     LOG(ERROR)

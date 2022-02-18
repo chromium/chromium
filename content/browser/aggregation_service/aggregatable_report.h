@@ -19,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -26,7 +27,7 @@ namespace content {
 class AggregatableReportRequest;
 
 // The underlying private information which will be sent to the processing
-// origins for aggregation. Each payload encodes a single contribution to a
+// servers for aggregation. Each payload encodes a single contribution to a
 // histogram bucket. This will be encrypted and won't be readable by the
 // reporting endpoint.
 struct CONTENT_EXPORT AggregationServicePayloadContents {
@@ -54,7 +55,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
 };
 
 // Represents the information that will be provided to both the reporting
-// endpoint and the processing origin(s), i.e. stored in the encrypted payload
+// endpoint and the processing server(s), i.e. stored in the encrypted payload
 // and in the plaintext report.
 struct CONTENT_EXPORT AggregatableReportSharedInfo {
   enum class DebugMode {
@@ -90,7 +91,7 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
 class CONTENT_EXPORT AggregatableReport {
  public:
   // This is used to encapsulate the data that is specific to a single
-  // processing origin.
+  // processing server.
   struct CONTENT_EXPORT AggregationServicePayload {
     AggregationServicePayload(
         std::vector<uint8_t> payload,
@@ -105,7 +106,7 @@ class CONTENT_EXPORT AggregatableReport {
 
     // This payload is constructed using the data in the
     // AggregationServicePayloadContents and then encrypted with one of
-    // `origin`'s public keys. For the `kSingleServer` processing type, the
+    // `url`'s public keys. For the `kSingleServer` processing type, the
     // plaintext of the encrypted payload is a serialized CBOR map structured as
     // follows:
     // {
@@ -134,7 +135,7 @@ class CONTENT_EXPORT AggregatableReport {
 
     // Processes and serializes the information in `report_request` and encrypts
     // using the `public_keys` as necessary. The order of `public_keys` should
-    // correspond to `report_request.processing_origins`, which should be
+    // correspond to `report_request.processing_urls`, which should be
     // sorted. Returns `absl::nullopt` if an error occurred during construction.
     virtual absl::optional<AggregatableReport> CreateFromRequestAndPublicKeys(
         AggregatableReportRequest report_request,
@@ -199,14 +200,14 @@ class CONTENT_EXPORT AggregatableReport {
   // TODO(crbug.com/1247409): Expose static method to validate that a
   // base::Value appears to represent a valid report.
 
-  // Returns whether `number` is a valid number of processing origins for the
+  // Returns whether `number` is a valid number of processing URLs for the
   // `processing_type`.
-  static bool IsNumberOfProcessingOriginsValid(
+  static bool IsNumberOfProcessingUrlsValid(
       size_t number,
       AggregationServicePayloadContents::ProcessingType processing_type);
 
  private:
-  // This vector should have an entry for each processing origin specified in
+  // This vector should have an entry for each processing URL specified in
   // the original AggregatableReportRequest.
   std::vector<AggregationServicePayload> payloads_;
 
@@ -215,7 +216,7 @@ class CONTENT_EXPORT AggregatableReport {
 
 // Represents a request for an AggregatableReport. Contains all the data
 // necessary to construct the report except for the PublicKey for each
-// processing origin.
+// processing URL.
 class CONTENT_EXPORT AggregatableReportRequest {
  public:
   // Returns `absl::nullopt` if `payload_contents` has a negative value. Also
@@ -225,12 +226,12 @@ class CONTENT_EXPORT AggregatableReportRequest {
       AggregatableReportSharedInfo shared_info);
 
   // Returns `absl::nullopt` if `payload_contents` has a negative value. Also
-  // returns `absl::nullopt` if `processing_origins.size()` is not valid for the
-  // `payload_contents.processing_type` (see `IsNumberOfProcessingOriginsValid`
+  // returns `absl::nullopt` if `processing_url.size()` is not valid for the
+  // `payload_contents.processing_type` (see `IsNumberOfProcessingUrlsValid`
   // above). Also returns `absl::nullopt` if `shared_info.report_id` is not
   // valid.
   static absl::optional<AggregatableReportRequest> CreateForTesting(
-      std::vector<url::Origin> processing_origins,
+      std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info);
 
@@ -239,9 +240,7 @@ class CONTENT_EXPORT AggregatableReportRequest {
   AggregatableReportRequest& operator=(AggregatableReportRequest&& other);
   ~AggregatableReportRequest();
 
-  const std::vector<url::Origin>& processing_origins() const {
-    return processing_origins_;
-  }
+  const std::vector<GURL>& processing_urls() const { return processing_urls_; }
   const AggregationServicePayloadContents& payload_contents() const {
     return payload_contents_;
   }
@@ -255,15 +254,15 @@ class CONTENT_EXPORT AggregatableReportRequest {
   friend class AggregatableReport::Provider;
 
   static absl::optional<AggregatableReportRequest> CreateInternal(
-      std::vector<url::Origin> processing_origins,
+      std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info);
 
-  AggregatableReportRequest(std::vector<url::Origin> processing_origins,
+  AggregatableReportRequest(std::vector<GURL> processing_urls,
                             AggregationServicePayloadContents payload_contents,
                             AggregatableReportSharedInfo shared_info);
 
-  std::vector<url::Origin> processing_origins_;
+  std::vector<GURL> processing_urls_;
   AggregationServicePayloadContents payload_contents_;
   AggregatableReportSharedInfo shared_info_;
 };
