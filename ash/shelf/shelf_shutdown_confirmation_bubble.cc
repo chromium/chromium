@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
@@ -44,6 +45,11 @@ const gfx::Insets GetShutdownConfirmationBubbleInsets() {
   insets.set_bottom(kShutdownConfirmationBubbleInsetsBottom);
   return insets;
 }
+
+// Histogram for tracking the number of actions on the shelf shutdown
+// confirmation bubble.
+constexpr char kActionHistogramName[] =
+    "Ash.Shelf.ShutdownConfirmationBubble.Action";
 
 }  // namespace
 
@@ -110,7 +116,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_CANCEL), PillButton::Type::kIconless,
       /*icon=*/nullptr);
-  cancel_button->SetID(kCancel);
+  cancel_button->SetID(static_cast<int>(ButtonId::kCancel));
   cancel_ = button_container->AddChildView(std::move(cancel_button));
 
   auto confirm_button = std::make_unique<PillButton>(
@@ -118,7 +124,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_ASH_SHUTDOWN_CONFIRM_BUTTON),
       PillButton::Type::kIconless, /*icon=*/nullptr);
-  confirm_button->SetID(kShutdown);
+  confirm_button->SetID(static_cast<int>(ButtonId::kShutdown));
   confirm_ = button_container->AddChildView(std::move(confirm_button));
 
   CreateBubble();
@@ -132,9 +138,16 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
           views::Emphasis::kHigh));
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
   GetWidget()->Show();
+
+  base::UmaHistogramEnumeration(kActionHistogramName,
+                                ShelfShutdownConfirmationBubble::kOpened);
 }
 
 ShelfShutdownConfirmationBubble::~ShelfShutdownConfirmationBubble() {
+  if (cancel_callback_ && confirm_callback_) {
+    base::UmaHistogramEnumeration(kActionHistogramName,
+                                  ShelfShutdownConfirmationBubble::kDismissed);
+  }
   // In case shutdown confirmation bubble was dismissed, the pointer of the
   // ShelfShutdownConfirmationBubble in LoginShelfView shall be cleaned up.
   if (cancel_callback_) {
@@ -163,11 +176,19 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
 
 void ShelfShutdownConfirmationBubble::OnCancelled() {
   GetWidget()->Close();
+
+  base::UmaHistogramEnumeration(kActionHistogramName,
+                                ShelfShutdownConfirmationBubble::kCancelled);
+
   std::move(cancel_callback_).Run();
 }
 
 void ShelfShutdownConfirmationBubble::OnConfirmed() {
   GetWidget()->Close();
+
+  base::UmaHistogramEnumeration(kActionHistogramName,
+                                ShelfShutdownConfirmationBubble::kConfirmed);
+
   std::move(confirm_callback_).Run();
 }
 

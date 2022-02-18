@@ -26,10 +26,20 @@ namespace ash {
 // The implementation of tooltip bubbles for the shelf.
 class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
  public:
-  enum ButtonId {
+  enum class ButtonId {
     // We start from 1 because 0 is the default view ID.
     kShutdown = 1,  // Shut down the device.
     kCancel,        // Cancel shutdown.
+  };
+  // Enum used for UMA. Do NOT reorder or remove entry. Don't forget to
+  // update ShutdownConfirmationBubbleAction enum in enums.xml when adding new
+  // entries.
+  enum BubbleAction {
+    kOpened = 0,
+    kCancelled = 1,
+    kConfirmed = 2,
+    kDismissed = 3,
+    kMaxValue
   };
 
   ShelfShutdownConfirmationBubble(views::View* anchor,

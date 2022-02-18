@@ -1006,7 +1006,8 @@ class LoginShelfViewWithShutdownConfirmationTest : public LoginShelfViewTest {
     ui::test::EventGenerator* event_generator = GetEventGenerator();
     event_generator->MoveMouseTo(
         login_shelf_view_->GetShutdownConfirmationBubbleForTesting()
-            ->GetViewByID(ShelfShutdownConfirmationBubble::kCancel)
+            ->GetViewByID(static_cast<int>(
+                ShelfShutdownConfirmationBubble::ButtonId::kCancel))
             ->GetBoundsInScreen()
             .CenterPoint());
     event_generator->ClickLeftButton();
@@ -1019,7 +1020,8 @@ class LoginShelfViewWithShutdownConfirmationTest : public LoginShelfViewTest {
     ui::test::EventGenerator* event_generator = GetEventGenerator();
     event_generator->MoveMouseTo(
         login_shelf_view_->GetShutdownConfirmationBubbleForTesting()
-            ->GetViewByID(ShelfShutdownConfirmationBubble::kShutdown)
+            ->GetViewByID(static_cast<int>(
+                ShelfShutdownConfirmationBubble::ButtonId::kShutdown))
             ->GetBoundsInScreen()
             .CenterPoint());
     event_generator->ClickLeftButton();

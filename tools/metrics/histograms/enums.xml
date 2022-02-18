@@ -82014,6 +82014,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Snapshot was successfully taken."/>
 </enum>
 
+<enum name="ShutdownConfirmationBubbleAction">
+  <int value="0" label="Opened"/>
+  <int value="1" label="Shutdown cancelled by cancel button"/>
+  <int value="2" label="Shutdown confirmed by shutdown button"/>
+  <int value="3"
+      label="Shutdown confirmation bubbble dismissed by clicking ouside"/>
+</enum>
+
 <enum name="ShutdownReason">
   <summary>
     The reason that the Chrome OS power manager shut down or rebooted the
