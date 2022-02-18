@@ -547,7 +547,10 @@ if (is_win || is_mac || is_linux) {
             "$root_build_dir/base.dll",
             "$root_build_dir/ui_base.dll",
           ]
-          data = [ "$root_build_dir/ucrtbased.dll" ]
+          
+          if (is_debug) {
+            data = [ "$root_build_dir/ucrtbased.dll" ]
+          }
 
           deps += [ "//ui/base" ]
         }
