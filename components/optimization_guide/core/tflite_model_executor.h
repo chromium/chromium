@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/model_enums.h"
@@ -190,6 +191,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
                    "OptimizationTarget",
                    optimization_guide::GetStringNameForOptimizationTarget(
                        optimization_target_));
+      base::ElapsedThreadTimer execution_timer;
       base::TimeTicks execute_start_time = base::TimeTicks::Now();
       output = Execute(loaded_model_.get(), status_recorder.mutable_status(),
                        args...);
@@ -201,6 +203,10 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
           "OptimizationGuide.ModelExecutor.ExecutionLatency." +
               GetStringNameForOptimizationTarget(optimization_target_),
           base::TimeTicks::Now() - execute_start_time);
+      base::UmaHistogramLongTimes(
+          "OptimizationGuide.ModelExecutor.ExecutionThreadTime." +
+              GetStringNameForOptimizationTarget(optimization_target_),
+          execution_timer.Elapsed());
     }
 
     DCHECK(callback_on_complete);
