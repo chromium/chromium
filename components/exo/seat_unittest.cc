@@ -21,6 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/events/event.h"
@@ -477,6 +478,35 @@ TEST_F(SeatTest, SetSelectionFilenames) {
       /*data_dst=*/nullptr, &filenames);
 
   EXPECT_EQ(ui::FileInfosToURIList(filenames), data);
+}
+
+TEST_F(SeatTest, SetSelectionWebCustomData) {
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
+
+  base::flat_map<std::u16string, std::u16string> custom_data;
+  custom_data[u"text/uri-list"] = u"data";
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(custom_data, &pickle);
+  auto custom_data_str =
+      std::string(reinterpret_cast<const char*>(pickle.data()), pickle.size());
+
+  TestDataSourceDelegate delegate;
+  const std::string kMimeType = "chromium/x-web-custom-data";
+  delegate.SetData(kMimeType, std::vector<uint8_t>(custom_data_str.begin(),
+                                                   custom_data_str.end()));
+  DataSource source(&delegate);
+  source.Offer(kMimeType);
+  seat.SetSelection(&source);
+
+  RunReadingTask();
+
+  std::u16string result;
+  ui::Clipboard::GetForCurrentThread()->ReadCustomData(
+      ui::ClipboardBuffer::kCopyPaste, u"text/uri-list", /*data_dst=*/nullptr,
+      &result);
+  EXPECT_EQ(result, u"data");
 }
 
 TEST_F(SeatTest, SetSelection_TwiceSame) {

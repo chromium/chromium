@@ -302,8 +302,9 @@ void Seat::OnWebCustomDataRead(
     base::OnceClosure callback,
     const std::string& mime_type,
     const std::vector<uint8_t>& data) {
-  NOTREACHED()
-      << "Seat does not support custom data mime types for selections.";
+  base::Pickle pickle(reinterpret_cast<const char*>(data.data()), data.size());
+  writer->WritePickledData(pickle,
+                           ui::ClipboardFormatType::WebCustomDataType());
   std::move(callback).Run();
 }
 
