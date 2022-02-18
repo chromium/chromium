@@ -122,7 +122,7 @@
       <div class="cr-secondary-text">$i18n{bodyDescription2}</div>
     </div>
 
-    <div id="expandSection">
+    <div id="expandSection" hidden$="[[!isConsent_]]">
       <template is="dom-if" if="[[isConsent_]]">
         <cr-expand-button expanded="{{expanded_}}">
           <div class="cr-secondary-text">$i18n{learnMoreLabel}</div>
