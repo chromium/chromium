@@ -1560,15 +1560,14 @@ bool Database::OpenInternal(const std::string& file_name,
   // disparate features with their own databases, and having separate page
   // caches makes it easier to reason about each feature's performance in
   // isolation.
-  int err = sqlite3_open_v2(
-      file_name.c_str(), &db_,
-      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_PRIVATECACHE,
-      vfs_name);
-  if (err != SQLITE_OK) {
-    // Extended error codes cannot be enabled until a handle is
-    // available, fetch manually.
-    err = sqlite3_extended_errcode(db_);
+  //
+  // SQLITE_OPEN_EXRESCODE enables the full range of SQLite error codes. See
+  // https://www.sqlite.org/rescode.html for details.
+  constexpr int open_flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE |
+                             SQLITE_OPEN_EXRESCODE | SQLITE_OPEN_PRIVATECACHE;
 
+  int err = sqlite3_open_v2(file_name.c_str(), &db_, open_flags, vfs_name);
+  if (err != SQLITE_OK) {
     OnSqliteError(err, nullptr, "-- sqlite3_open()");
     bool was_poisoned = poisoned_;
     Close();

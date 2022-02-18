@@ -46,8 +46,8 @@ std::tuple<int, sqlite3*> OpenDatabase(const String& filename) {
                               /*make_default=*/false);
 
   sqlite3* connection;
-  constexpr int open_flags =
-      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_PRIVATECACHE;
+  constexpr int open_flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE |
+                             SQLITE_OPEN_EXRESCODE | SQLITE_OPEN_PRIVATECACHE;
   int status = sqlite3_open_v2(filename.Utf8().c_str(), &connection, open_flags,
                                kSqliteVfsName);
   if (status != SQLITE_OK) {
@@ -105,16 +105,6 @@ bool SQLiteDatabase::Open(const String& filename) {
 
   if (!db_) {
     open_error_message_ = "sqlite_open returned null";
-    return false;
-  }
-
-  open_error_ = sqlite3_extended_result_codes(db_, 1);
-  if (open_error_ != SQLITE_OK) {
-    open_error_message_ = sqlite3_errmsg(db_);
-    DLOG(ERROR) << "SQLite database error when enabling extended errors - "
-                << open_error_message_.data();
-    sqlite3_close(db_);
-    db_ = nullptr;
     return false;
   }
 
