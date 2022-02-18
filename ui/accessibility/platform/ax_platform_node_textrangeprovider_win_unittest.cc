@@ -6848,6 +6848,94 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestDeleteTreePositionPreviousSibling) {
+  // This test creates a degenerate range with endpoints pointing after the last
+  // child of the 2 generic container. It then deletes a previous sibling and
+  // ensures that we don't crash with an out of bounds index that causes null
+  // child positions to be created.
+  //
+  // ++1 kRootWebArea
+  // ++++2 kGenericContainer
+  // ++++++3 kHeading
+  // ++++++++4 kStaticText
+  // ++++++++++5 kInlineTextBox
+  // ++++++6 kGenericContainer
+  // ++++++7 kButton
+  ui::AXNodeData root_1;
+  ui::AXNodeData generic_container_2;
+  ui::AXNodeData heading_3;
+  ui::AXNodeData static_text_4;
+  ui::AXNodeData inline_box_5;
+  ui::AXNodeData generic_container_6;
+  ui::AXNodeData button_7;
+
+  root_1.id = 1;
+  generic_container_2.id = 2;
+  heading_3.id = 3;
+  static_text_4.id = 4;
+  inline_box_5.id = 5;
+  generic_container_6.id = 6;
+  button_7.id = 7;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {generic_container_2.id};
+
+  generic_container_2.role = ax::mojom::Role::kGenericContainer;
+  generic_container_2.child_ids = {heading_3.id, generic_container_6.id,
+                                   button_7.id};
+
+  heading_3.role = ax::mojom::Role::kHeading;
+  heading_3.child_ids = {static_text_4.id};
+
+  static_text_4.role = ax::mojom::Role::kStaticText;
+  static_text_4.child_ids = {inline_box_5.id};
+  static_text_4.SetName("3.14");
+
+  inline_box_5.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_5.SetName("3.14");
+
+  generic_container_6.role = ax::mojom::Role::kGenericContainer;
+  generic_container_6.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  button_7.role = ax::mojom::Role::kButton;
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.tree_data = tree_data;
+  update.has_tree_data = true;
+  update.root_id = root_1.id;
+  update.nodes = {root_1,       generic_container_2, heading_3, static_text_4,
+                  inline_box_5, generic_container_6, button_7};
+
+  Init(update);
+
+  AXNode* root_node = GetRootAsAXNode();
+  AXNodePosition::AXPositionInstance range_start =
+      AXNodePosition::CreateTreePosition(tree_data.tree_id,
+                                         generic_container_2.id,
+                                         /*child_index*/ 3);
+  AXNodePosition::AXPositionInstance range_end = range_start->Clone();
+
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(root_node));
+  ComPtr<ITextRangeProvider> text_range_provider =
+      AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+          owner, std::move(range_start), std::move(range_end));
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"");
+
+  generic_container_2.child_ids = {heading_3.id, button_7.id};
+  AXTreeUpdate test_update;
+  test_update.nodes = {generic_container_2};
+  ASSERT_TRUE(GetTree()->Unserialize(test_update));
+
+  root_1.child_ids = {};
+  test_update.nodes = {root_1};
+  ASSERT_TRUE(GetTree()->Unserialize(test_update));
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestReplaceStartAndEndEndpointRepeatRemoval) {
   // This test updates the tree structure to ensure that the text range is still
   // valid after text nodes get removed repeatedly.

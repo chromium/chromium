@@ -268,21 +268,20 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
     void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) override;
 
    private:
-    struct MaybeProblematicNodeDeletion {
+    struct DeletionOfInterest {
       AXTreeID tree_id;
       AXNodeID node_id;
     };
 
     void AdjustEndpointForSubtreeDeletion(AXTree* tree,
-                                          AXNode* node,
+                                          const AXNode* const node,
                                           bool is_start_endpoint);
 
     AXPositionInstance start_;
     AXPositionInstance end_;
 
-    absl::optional<MaybeProblematicNodeDeletion>
-        validation_necessary_for_start_;
-    absl::optional<MaybeProblematicNodeDeletion> validation_necessary_for_end_;
+    absl::optional<DeletionOfInterest> validation_necessary_for_start_;
+    absl::optional<DeletionOfInterest> validation_necessary_for_end_;
   };
   TextRangeEndpoints endpoints_;
 };
