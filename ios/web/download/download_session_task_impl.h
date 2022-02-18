@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_DOWNLOAD_DOWNLOAD_SESSION_TASK_IMPL_H_
 #define IOS_WEB_DOWNLOAD_DOWNLOAD_SESSION_TASK_IMPL_H_
 
+#include "base/ios/block_types.h"
 #include "ios/web/download/download_task_impl.h"
 
 namespace net {
@@ -79,6 +80,20 @@ class DownloadSessionTaskImpl final : public DownloadTaskImpl {
   // Called when data:// url parsing has completed and the data has been
   // written.
   void OnDataUrlWritten(int bytes_written);
+
+  // Called to implement the method -URLSession:task:didCompleteWithError:
+  // from NSURLSessionDataDelegate.
+  void OnTaskDone(NSURLSessionTask* task, NSError* error);
+
+  // Called to implement the method -URLSession:dataTask:didReceiveData:
+  // from NSURLSessionDataDelegate.
+  void OnTaskData(NSURLSessionTask* task,
+                  NSData* data,
+                  ProceduralBlock completion_handler);
+
+  // Called from either OnTaskData() or OnTaskDone() to update the task
+  // progress, and optionally notify the observer of those updates.
+  void OnTaskTick(NSURLSessionTask* task, bool notify_download_updated);
 
   std::unique_ptr<net::URLFetcherResponseWriter> writer_;
   NSURLSession* session_ = nil;

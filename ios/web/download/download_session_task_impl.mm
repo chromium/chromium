@@ -6,6 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -34,14 +35,19 @@ using web::WebThread;
 
 namespace {
 
-// Updates DownloadSessionTaskImpl properties. |terminal_callback| is true if
-// this is the last update for this DownloadSessionTaskImpl.
-using PropertiesBlock = void (^)(NSURLSessionTask*,
-                                 NSError*,
-                                 bool terminal_callback);
-// Writes buffer and calls |completionHandler| when done.
-using DataBlock = void (^)(scoped_refptr<net::IOBufferWithSize> buffer,
-                           void (^completionHandler)());
+// A callback that will be invoked when -URLSession:task:didCompleteWithError:
+// from NSURLSessionDataDelegate is called. In case of success, error will be
+// nil.
+using DoneCallback =
+    base::RepeatingCallback<void(NSURLSessionTask* task, NSError* error)>;
+
+// A callback that will be invoked when -URLSession:dataTask:didReceiveData:
+// from NSURLSessionDataDelegate is called. The completion handler *must* be
+// called at some point. This can be done asynchronously.
+using DataCallback =
+    base::RepeatingCallback<void(NSURLSessionTask* task,
+                                 NSData* data,
+                                 ProceduralBlock completion_handler)>;
 
 // Translates an CFNetwork error code to a net error code. Returns 0 if |error|
 // is nil.
@@ -81,32 +87,24 @@ int GetTaskPercentComplete(NSURLSessionTask* task) {
 // the client. Client of this delegate can pass blocks to receive the updates.
 @interface CRWURLSessionDelegate : NSObject <NSURLSessionDataDelegate>
 
-// Called when DownloadSessionTaskImpl should update its properties (is_done,
-// error_code, total_bytes, and percent_complete) and call OnDownloadUpdated
-// callback.
-@property(nonatomic, readonly) PropertiesBlock propertiesBlock;
-
-// Called when DownloadSessionTaskImpl should write a chunk of downloaded data.
-@property(nonatomic, readonly) DataBlock dataBlock;
-
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithPropertiesBlock:(PropertiesBlock)propertiesBlock
-                              dataBlock:(DataBlock)dataBlock
+- (instancetype)initWithDataCallback:(DataCallback)dataCallback
+                        doneCallback:(DoneCallback)doneCallback
     NS_DESIGNATED_INITIALIZER;
 @end
 
-@implementation CRWURLSessionDelegate
+@implementation CRWURLSessionDelegate {
+  DataCallback _dataCallback;
+  DoneCallback _doneCallback;
+}
 
-@synthesize propertiesBlock = _propertiesBlock;
-@synthesize dataBlock = _dataBlock;
-
-- (instancetype)initWithPropertiesBlock:(PropertiesBlock)propertiesBlock
-                              dataBlock:(DataBlock)dataBlock {
-  DCHECK(propertiesBlock);
-  DCHECK(dataBlock);
+- (instancetype)initWithDataCallback:(DataCallback)dataCallback
+                        doneCallback:(DoneCallback)doneCallback {
+  DCHECK(!dataCallback.is_null());
+  DCHECK(!doneCallback.is_null());
   if ((self = [super init])) {
-    _propertiesBlock = propertiesBlock;
-    _dataBlock = dataBlock;
+    _dataCallback = std::move(dataCallback);
+    _doneCallback = std::move(doneCallback);
   }
   return self;
 }
@@ -114,44 +112,44 @@ int GetTaskPercentComplete(NSURLSessionTask* task) {
 - (void)URLSession:(NSURLSession*)session
                     task:(NSURLSessionTask*)task
     didCompleteWithError:(NSError*)error {
-  __weak CRWURLSessionDelegate* weakSelf = self;
-  base::PostTask(FROM_HERE, {WebThread::UI}, base::BindOnce(^{
-                   CRWURLSessionDelegate* strongSelf = weakSelf;
-                   if (strongSelf.propertiesBlock)
-                     strongSelf.propertiesBlock(task, error,
-                                                /*terminal_callback=*/true);
-                 }));
+  base::PostTask(FROM_HERE, {WebThread::UI},
+                 base::BindOnce(_doneCallback, task, error));
 }
 
 - (void)URLSession:(NSURLSession*)session
           dataTask:(NSURLSessionDataTask*)task
     didReceiveData:(NSData*)data {
-  // Block this background queue until the the data is written.
+  // net::URLFetcherFileWriter does not support trying to write data when
+  // a previous write is still pending. As this callback is called on a
+  // background queue, block it until the write has completed on the IO
+  // thread (in net::URLFetcherFileWriter::Write()).
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-  __weak CRWURLSessionDelegate* weakSelf = self;
-  using Bytes = const void*;
-  [data enumerateByteRangesUsingBlock:^(Bytes bytes, NSRange range, BOOL*) {
-    auto buffer = GetBuffer(bytes, range.length);
-    base::PostTask(FROM_HERE, {WebThread::UI}, base::BindOnce(^{
-                     CRWURLSessionDelegate* strongSelf = weakSelf;
-                     if (!strongSelf.dataBlock) {
-                       dispatch_semaphore_signal(semaphore);
-                       return;
-                     }
-                     strongSelf.dataBlock(std::move(buffer), ^{
-                       // Data was written to disk, unblock queue to
-                       // read the next chunk of downloaded data.
-                       dispatch_semaphore_signal(semaphore);
-                     });
-                   }));
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-  }];
-  base::PostTask(FROM_HERE, {WebThread::UI}, base::BindOnce(^{
-                   CRWURLSessionDelegate* strongSelf = weakSelf;
-                   if (strongSelf.propertiesBlock)
-                     weakSelf.propertiesBlock(task, nil,
-                                              /*terminal_callback=*/false);
-                 }));
+
+  base::PostTask(
+      FROM_HERE, {WebThread::UI},
+      base::BindOnce(
+          [](dispatch_semaphore_t semaphore, DataCallback innerDataCallback,
+             NSURLSessionTask* task, NSData* data) {
+            if (innerDataCallback.IsCancelled()) {
+              // If the callback is cancelled, then signal the semaphore to
+              // allow the background queue to resume its progress. Cancel
+              // the task to avoid unnecessarily consuming data from user.
+              dispatch_semaphore_signal(semaphore);
+
+              [task cancel];
+              return;
+            }
+
+            innerDataCallback.Run(task, data, ^() {
+              // Data was written to disk, unblock queue to read the
+              // next chunk of downloaded data.
+              dispatch_semaphore_signal(semaphore);
+            });
+          },
+          semaphore, _dataCallback, task, data));
+
+  // Block this background queue until the the data is written.
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 
 - (void)URLSession:(NSURLSession*)session
@@ -185,7 +183,7 @@ DownloadSessionTaskImpl::DownloadSessionTaskImpl(
                        delegate) {}
 
 DownloadSessionTaskImpl::~DownloadSessionTaskImpl() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CURRENTLY_ON(WebThread::UI);
   [session_task_ cancel];
   session_task_ = nil;
 }
@@ -240,14 +238,14 @@ void DownloadSessionTaskImpl::Start(const base::FilePath& path,
 }
 
 void DownloadSessionTaskImpl::Cancel() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CURRENTLY_ON(WebThread::UI);
   [session_task_ cancel];
   session_task_ = nil;
   DownloadTaskImpl::Cancel();
 }
 
 void DownloadSessionTaskImpl::ShutDown() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CURRENTLY_ON(WebThread::UI);
   [session_task_ cancel];
   session_task_ = nil;
   DownloadTaskImpl::ShutDown();
@@ -270,6 +268,7 @@ void DownloadSessionTaskImpl::OnWriterInitialized(
     int writer_initialization_status) {
   DCHECK_EQ(state_, State::kInProgress);
   writer_ = std::move(writer);
+  DCHECK(writer_);
 
   if (writer_initialization_status != net::OK) {
     OnWriterDownloadFinished(writer_initialization_status);
@@ -284,61 +283,18 @@ void DownloadSessionTaskImpl::OnWriterInitialized(
 NSURLSession* DownloadSessionTaskImpl::CreateSession(
     NSString* identifier,
     NSArray<NSHTTPCookie*>* cookies) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CURRENTLY_ON(WebThread::UI);
   DCHECK(identifier.length);
+
   base::WeakPtr<DownloadSessionTaskImpl> weak_this = weak_factory_.GetWeakPtr();
+  DataCallback data_callback =
+      base::BindRepeating(&DownloadSessionTaskImpl::OnTaskData, weak_this);
+  DoneCallback done_callback =
+      base::BindRepeating(&DownloadSessionTaskImpl::OnTaskDone, weak_this);
+
   id<NSURLSessionDataDelegate> session_delegate = [[CRWURLSessionDelegate alloc]
-      initWithPropertiesBlock:^(NSURLSessionTask* task, NSError* error,
-                                bool terminal_callback) {
-        if (!weak_this.get()) {
-          return;
-        }
-        download_result_ = DownloadResult(
-            GetNetErrorCodeFromNSError(error, task.currentRequest.URL));
-        percent_complete_ = GetTaskPercentComplete(task);
-        received_bytes_ = task.countOfBytesReceived;
-        if (total_bytes_ == -1 || task.countOfBytesExpectedToReceive) {
-          // countOfBytesExpectedToReceive can be 0 if the device is offline.
-          // In that case total_bytes_ should remain unchanged if the total
-          // bytes count is already known.
-          total_bytes_ = task.countOfBytesExpectedToReceive;
-        }
-        if (task.response.MIMEType) {
-          mime_type_ = base::SysNSStringToUTF8(task.response.MIMEType);
-        }
-        if ([task.response isKindOfClass:[NSHTTPURLResponse class]]) {
-          http_code_ =
-              static_cast<NSHTTPURLResponse*>(task.response).statusCode;
-        }
-
-        if (!terminal_callback) {
-          OnDownloadUpdated();
-          // Download is still in progress, nothing to do here.
-          return;
-        }
-
-        // Download has finished, so finalize the writer and signal completion.
-        auto callback =
-            base::BindOnce(&DownloadSessionTaskImpl::OnWriterDownloadFinished,
-                           weak_factory_.GetWeakPtr());
-        if (writer_->Finish(download_result_.error_code(),
-                            std::move(callback)) != net::ERR_IO_PENDING) {
-          OnWriterDownloadFinished(download_result_.error_code());
-        }
-      }
-      dataBlock:^(scoped_refptr<net::IOBufferWithSize> buffer,
-                  void (^completion_handler)()) {
-        if (weak_this.get()) {
-          net::CompletionOnceCallback callback = base::BindOnce(^(int) {
-            completion_handler();
-          });
-          if (writer_->Write(buffer.get(), buffer->size(),
-                             std::move(callback)) == net::ERR_IO_PENDING) {
-            return;
-          }
-        }
-        completion_handler();
-      }];
+      initWithDataCallback:std::move(data_callback)
+              doneCallback:std::move(done_callback)];
   return delegate_->CreateSession(identifier, cookies, session_delegate,
                                   /*queue=*/nil);
 }
@@ -374,7 +330,7 @@ void DownloadSessionTaskImpl::GetCookiesFromContextGetter(
 
 void DownloadSessionTaskImpl::StartWithCookies(
     NSArray<NSHTTPCookie*>* cookies) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CURRENTLY_ON(WebThread::UI);
   DCHECK(writer_);
 
   if (!session_) {
@@ -423,4 +379,98 @@ void DownloadSessionTaskImpl::OnDataUrlWritten(int bytes_written) {
     OnWriterDownloadFinished(net::OK);
   }
 }
+
+void DownloadSessionTaskImpl::OnTaskDone(NSURLSessionTask* task,
+                                         NSError* error) {
+  if (task != session_task_) {
+    [task cancel];
+    return;
+  }
+
+  download_result_ = DownloadResult(
+      GetNetErrorCodeFromNSError(error, task.currentRequest.URL));
+  OnTaskTick(task, /*notify_download_updated*/ false);
+
+  // Forget the current NSURLSessionTask, so that if any other callbacks are
+  // received they are dropped as calling net::URLFetcherFileWriter::Finish
+  // put the writer in a invalid state.
+  session_task_ = nil;
+
+  const int result = writer_->Finish(
+      download_result_.error_code(),
+      base::BindOnce(&DownloadSessionTaskImpl::OnWriterDownloadFinished,
+                     weak_factory_.GetWeakPtr()));
+
+  if (result != net::ERR_IO_PENDING) {
+    OnWriterDownloadFinished(download_result_.error_code());
+  }
+}
+
+void DownloadSessionTaskImpl::OnTaskData(NSURLSessionTask* task,
+                                         NSData* data,
+                                         ProceduralBlock completion_handler) {
+  if (task != session_task_) {
+    completion_handler();
+    [task cancel];
+    return;
+  }
+
+  scoped_refptr<net::IOBufferWithSize> buffer =
+      GetBuffer(data.bytes, data.length);
+
+  base::RepeatingClosure inner_closure = base::BindRepeating(
+      &DownloadSessionTaskImpl::OnTaskTick, weak_factory_.GetWeakPtr(), task,
+      /*notify_download_updated*/ true);
+
+  // The buffer needs to be kept alive until net::URLFetcherFileWriter::Write
+  // has completed the write. So capture a reference to the buffer in the bound
+  // callback.
+  base::RepeatingCallback<void(int)> write_callback = base::BindRepeating(
+      [](base::RepeatingClosure inner_closure, ProceduralBlock completion_block,
+         scoped_refptr<net::IOBuffer> buffer, int result) {
+        if (!inner_closure.IsCancelled()) {
+          inner_closure.Run();
+        }
+        completion_block();
+      },
+      inner_closure, completion_handler, buffer);
+
+  const int result =
+      writer_->Write(buffer.get(), buffer->size(), write_callback);
+
+  if (result != net::ERR_IO_PENDING) {
+    write_callback.Run(result);
+  }
+}
+
+void DownloadSessionTaskImpl::OnTaskTick(NSURLSessionTask* task,
+                                         bool notify_download_updated) {
+  if (task != session_task_) {
+    [task cancel];
+    return;
+  }
+
+  percent_complete_ = GetTaskPercentComplete(task);
+  received_bytes_ = task.countOfBytesReceived;
+  if (total_bytes_ == -1 || task.countOfBytesExpectedToReceive) {
+    // countOfBytesExpectedToReceive can be 0 if the device if offline.
+    // In that case total_bytes_ should remain unchanged if the total
+    // bytes count is already known.
+    total_bytes_ = task.countOfBytesExpectedToReceive;
+  }
+
+  if (task.response.MIMEType) {
+    mime_type_ = base::SysNSStringToUTF8(task.response.MIMEType);
+  }
+
+  if ([task.response isKindOfClass:[NSHTTPURLResponse class]]) {
+    http_code_ =
+        base::mac::ObjCCastStrict<NSHTTPURLResponse>(task.response).statusCode;
+  }
+
+  if (notify_download_updated) {
+    OnDownloadUpdated();
+  }
+}
+
 }  // namespace web
