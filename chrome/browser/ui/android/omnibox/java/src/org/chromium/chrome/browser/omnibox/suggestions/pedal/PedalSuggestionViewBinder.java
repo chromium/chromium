@@ -46,6 +46,9 @@ public final class PedalSuggestionViewBinder<T extends View>
                     view.getContext().getString(R.string.accessibility_omnibox_pedal, hint);
             view.getPedalTextView().setText(hint);
             view.getPedalTextView().setContentDescription(contentDescription);
+            // NOTE: we avoid using ChipView's allowMultiLine, because it inflates vertical paddings
+            // in the single-line case, which we don't want.
+            view.getPedalTextView().setSingleLine(false);
             final @BrandedColorScheme int brandedColorScheme =
                     model.get(SuggestionCommonProperties.COLOR_SCHEME);
             view.getPedalTextView().setTextColor(
