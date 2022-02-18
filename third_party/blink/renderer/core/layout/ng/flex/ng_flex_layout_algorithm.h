@@ -110,8 +110,16 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // break before a child.
   //
   // https://www.w3.org/TR/css-break-3/#box-splitting
-  void ConsumeRemainingFragmentainerSpace(LogicalOffset item_offset,
-                                          NGFlexItem* flex_item);
+  void ConsumeRemainingFragmentainerSpace();
+
+  // Consume the remaining fragmentainer space and handle expansion when a flex
+  // item breaks before.
+  void ConsumeRemainingFragmentainerSpaceBeforeItem(LogicalOffset item_offset,
+                                                    NGFlexItem* flex_item);
+
+  // Consume the remaining fragmentainer space and handle expansion when a flex
+  // row breaks before.
+  void ConsumeRemainingFragmentainerSpaceBeforeRow(NGFlexLine* flex_line);
 
   // Insert a fragmentainer break before a row if necessary. Rows do not produce
   // a layout result, so when breaking before a row, we will insert a
