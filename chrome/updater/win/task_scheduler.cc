@@ -315,6 +315,15 @@ class TaskSchedulerV2 final : public TaskScheduler {
                  << logging::SystemErrorCodeToString(hr);
       return false;
     }
+
+    hr = GetTaskUserId(registered_task.Get(), &info_storage.user_id);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to get UserId for task '" << task_name << "'. "
+                 << std::hex << hr << ": "
+                 << logging::SystemErrorCodeToString(hr);
+      return false;
+    }
+
     info_storage.name = task_name;
     std::swap(*info, info_storage);
     return true;
@@ -974,6 +983,38 @@ class TaskSchedulerV2 final : public TaskScheduler {
     }
 
     return folder;
+  }
+
+  // Return the UserId of the task.
+  HRESULT GetTaskUserId(IRegisteredTask* task, std::wstring* user_id) {
+    DCHECK(task);
+    DCHECK(user_id);
+
+    Microsoft::WRL::ComPtr<ITaskDefinition> task_info;
+    HRESULT hr = task->get_Definition(&task_info);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to get definition: "
+                 << logging::SystemErrorCodeToString(hr);
+      return hr;
+    }
+
+    Microsoft::WRL::ComPtr<IPrincipal> iprincipal;
+    hr = task_info->get_Principal(&iprincipal);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to get principal: "
+                 << logging::SystemErrorCodeToString(hr);
+      return hr;
+    }
+
+    base::win::ScopedBstr raw_user_id;
+    hr = iprincipal->get_UserId(raw_user_id.Receive());
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to get UserId: "
+                 << logging::SystemErrorCodeToString(hr);
+      return hr;
+    }
+    *user_id = std::wstring(raw_user_id.Get() ? raw_user_id.Get() : L"");
+    return ERROR_SUCCESS;
   }
 
   // If the task folder specified by |folder_name| is empty, try to delete it.

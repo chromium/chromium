@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 
 namespace base {
 class CommandLine;
@@ -60,6 +62,12 @@ class TaskScheduler {
     base::FilePath application_path;
     base::FilePath working_dir;
     std::wstring arguments;
+
+    std::wstring value() const {
+      return base::StrCat({L"[TaskExecAction][application_path]",
+                           application_path.value(), L"[working_dir]",
+                           working_dir.value(), L"[arguments]", arguments});
+    }
   };
 
   // Detailed description of a scheduled task. This type is returned by the
@@ -85,6 +93,22 @@ class TaskScheduler {
     // The log-on requirements for the task's actions to be run. A bit mask with
     // the mapping defined by LogonType.
     uint32_t logon_type = 0;
+
+    // User ID under which the task runs.
+    std::wstring user_id;
+
+    std::wstring value() const {
+      std::wstring value =
+          base::StrCat({L"[TaskInfo][name]", name, L"[description]",
+                        description, L"[exec_actions]"});
+      for (auto exec_action : exec_actions)
+        value += base::StrCat({L"[exec_action]", exec_action.value()});
+
+      value += base::StrCat({L"[logon_type]",
+                             base::StringPrintf(L"0x%x", logon_type),
+                             L"[user_id]", user_id});
+      return value;
+    }
   };
 
   static std::unique_ptr<TaskScheduler> CreateInstance();

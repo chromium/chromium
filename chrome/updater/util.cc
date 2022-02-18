@@ -232,6 +232,8 @@ void InitLogging(UpdaterScope updater_scope,
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
   VLOG(1) << "Log file: " << settings.log_file_path;
+  VLOG(1) << "Process command line: "
+          << base::CommandLine::ForCurrentProcess()->GetCommandLineString();
 }
 
 // This function and the helper functions are copied from net/base/url_util.cc

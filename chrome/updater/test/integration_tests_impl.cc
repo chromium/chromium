@@ -207,9 +207,12 @@ void PrintLog(UpdaterScope scope) {
   EXPECT_TRUE(path);
   if (path &&
       base::ReadFileToString(path->AppendASCII("updater.log"), &contents)) {
-    VLOG(0) << "Contents of updater.log:";
+    const std::string demarcation(72, '=');
+    VLOG(0) << demarcation;
+    VLOG(0) << "Contents of updater.log in " << path.value() << ":";
     VLOG(0) << contents;
     VLOG(0) << "End contents of updater.log.";
+    VLOG(0) << demarcation;
   } else {
     VLOG(0) << "Failed to read updater.log file.";
   }

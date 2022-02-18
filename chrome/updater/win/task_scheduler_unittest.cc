@@ -4,6 +4,8 @@
 
 #include "chrome/updater/win/task_scheduler.h"
 
+#include <mstask.h>
+#include <security.h>
 #include <shlobj.h>
 #include <taskschd.h>
 
@@ -16,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -171,6 +174,11 @@ TEST_F(TaskSchedulerTests, RunAProgramNow) {
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName1, kTaskDescription1, command_line,
       TaskScheduler::TRIGGER_TYPE_NOW, false));
+
+  TaskScheduler::TaskInfo info;
+  EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
+  VLOG(0) << info.value();
+
   EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
   base::Time next_run_time;
   EXPECT_FALSE(task_scheduler_->GetNextTaskRunTime(kTaskName1, &next_run_time));
@@ -374,6 +382,39 @@ TEST_F(TaskSchedulerTests, GetTaskInfoLogonType) {
   EXPECT_EQ(!is_system, !!(info.logon_type & TaskScheduler::LOGON_INTERACTIVE));
   EXPECT_EQ(is_system, !!(info.logon_type & TaskScheduler::LOGON_SERVICE));
   EXPECT_FALSE(info.logon_type & TaskScheduler::LOGON_S4U);
+
+  EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
+}
+
+TEST_F(TaskSchedulerTests, GetTaskInfoUserId) {
+  const bool is_system = GetTestScope() == UpdaterScope::kSystem;
+
+  base::CommandLine command_line1 = GetTestProcessCommandLine(false);
+
+  EXPECT_TRUE(task_scheduler_->RegisterTask(
+      GetTestScope(), kTaskName1, kTaskDescription1, command_line1,
+      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
+
+  TaskScheduler::TaskInfo info;
+  EXPECT_FALSE(task_scheduler_->GetTaskInfo(kTaskName2, &info));
+  EXPECT_STREQ(L"", info.user_id.c_str());
+
+  EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
+
+  if (is_system) {
+    EXPECT_STREQ(L"SYSTEM", info.user_id.c_str());
+  } else {
+    base::win::ScopedBstr user_name_bstr;
+    ULONG user_name_size = 256;
+    EXPECT_TRUE(::GetUserNameExW(
+        NameSamCompatible,
+        user_name_bstr.AllocateBytes(user_name_size * sizeof(OLECHAR)),
+        &user_name_size));
+    std::wstring user_name = user_name_bstr.Get();
+    EXPECT_STREQ(user_name.substr(user_name.find(L"\\") + 1).c_str(),
+                 info.user_id.c_str());
+  }
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
 }

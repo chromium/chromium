@@ -669,6 +669,13 @@ if (is_win || is_mac || is_linux) {
           "//third_party/updater/chromium_win_x86/UpdaterSetup_test.exe",
         ]
       }
+
+      defines = [ "SECURITY_WIN32" ]
+
+      libs = [
+        "secur32.lib",
+        "taskschd.lib",
+      ]
     }
 
     if (is_mac) {
