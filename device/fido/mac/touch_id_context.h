@@ -6,7 +6,7 @@
 #define DEVICE_FIDO_MAC_TOUCH_ID_CONTEXT_H_
 
 #import <LocalAuthentication/LocalAuthentication.h>
-#import <Security/Security.h>
+#include <Security/Security.h>
 
 #include <string>
 
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
   static std::unique_ptr<TouchIdContext> Create();
 
   // Returns whether the device has a secure enclave and can authenticate the
-  // local user, and whether the current binary carries a
+  // local user, and whether the main executable carries a
   // keychain-access-groups entitlement that matches the one set in |config|.
   static void TouchIdAvailable(AuthenticatorConfig config,
                                base::OnceCallback<void(bool is_available)>);
@@ -75,8 +75,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
   using CreateFuncPtr = decltype(&Create);
   static CreateFuncPtr g_create_;
 
-  static bool TouchIdAvailableImplBlocking(AuthenticatorConfig config);
-  using TouchIdAvailableFuncPtr = decltype(&TouchIdAvailableImplBlocking);
+  static bool TouchIdAvailableImpl(AuthenticatorConfig config);
+  using TouchIdAvailableFuncPtr = decltype(&TouchIdAvailableImpl);
   static TouchIdAvailableFuncPtr g_touch_id_available_;
 
   static std::unique_ptr<TouchIdContext> CreateImpl();
