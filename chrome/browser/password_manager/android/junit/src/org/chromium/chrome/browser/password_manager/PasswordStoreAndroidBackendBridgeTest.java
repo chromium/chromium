@@ -7,15 +7,21 @@ package org.chromium.chrome.browser.password_manager;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+
+import android.app.PendingIntent;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.Status;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -26,6 +32,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.sync.protocol.ListPasswordsResult;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
 import org.chromium.components.sync.protocol.PasswordWithLocalData;
@@ -36,7 +46,11 @@ import org.chromium.components.sync.protocol.PasswordWithLocalData;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
 public class PasswordStoreAndroidBackendBridgeTest {
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+
     private static final PasswordSpecificsData.Builder sTestProfile =
             PasswordSpecificsData.newBuilder()
                     .setUsernameValue("Todd Tester")
@@ -140,12 +154,60 @@ public class PasswordStoreAndroidBackendBridgeTest {
                         eq(PasswordStoreOperationTarget.DEFAULT), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
-        Exception kExpectedException =
-                new ApiException(new Status(CommonStatusCodes.RESOLUTION_REQUIRED, ""));
+        Exception kExpectedException = new ApiException(new Status(CommonStatusCodes.ERROR, ""));
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBridgeJniMock)
                 .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.EXTERNAL_ERROR,
-                        6);
+                        CommonStatusCodes.ERROR);
+    }
+
+    @Test
+    public void testGetAllLoginsStartsResolutionOnResolvableAPIFailure()
+            throws PendingIntent.CanceledException {
+        final int kTestTaskId = 42069;
+
+        // Ensure the backend is called with a valid failure callback.
+        mBackendBridge.getAllLogins(kTestTaskId, PasswordStoreOperationTarget.DEFAULT);
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock)
+                .getAllLogins(
+                        eq(PasswordStoreOperationTarget.DEFAULT), any(), failureCallback.capture());
+        assertNotNull(failureCallback.getValue());
+
+        PendingIntent pendingIntentMock = mock(PendingIntent.class);
+        Exception kExpectedException = new ResolvableApiException(
+                new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
+        failureCallback.getValue().onResult(kExpectedException);
+        verify(pendingIntentMock).send();
+        verify(mBridgeJniMock)
+                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.EXTERNAL_ERROR,
+                        CommonStatusCodes.RESOLUTION_REQUIRED);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testDoesNotStartResolutionOnAPIFailureIfFeatureIsDisabled()
+            throws PendingIntent.CanceledException {
+        final int kTestTaskId = 42069;
+
+        // Ensure the backend is called with a valid failure callback.
+        mBackendBridge.getAllLogins(kTestTaskId, PasswordStoreOperationTarget.DEFAULT);
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock)
+                .getAllLogins(
+                        eq(PasswordStoreOperationTarget.DEFAULT), any(), failureCallback.capture());
+        assertNotNull(failureCallback.getValue());
+
+        PendingIntent pendingIntentMock = mock(PendingIntent.class);
+        Exception kExpectedException = new ResolvableApiException(
+                new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
+        failureCallback.getValue().onResult(kExpectedException);
+        verify(pendingIntentMock, never()).send();
+        verify(mBridgeJniMock)
+                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.EXTERNAL_ERROR,
+                        CommonStatusCodes.RESOLUTION_REQUIRED);
     }
 
     @Test
