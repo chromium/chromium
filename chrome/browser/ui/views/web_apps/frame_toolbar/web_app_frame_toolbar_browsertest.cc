@@ -46,6 +46,7 @@
 #include "content/public/common/page_zoom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/test/test_extension_dir.h"
@@ -548,6 +549,9 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
         "rect");
   }
 
+ protected:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
@@ -952,4 +956,30 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       ->ToggleWindowControlsOverlayEnabled();
   web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
   // If there's no crash, the test has passed.
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       DraggableRegionNotResetByFencedFrameNavigation) {
+  InstallAndLaunchWebApp();
+  ToggleWindowControlsOverlayAndWait();
+
+  BrowserView* browser_view = helper()->browser_view();
+  views::NonClientFrameView* frame_view =
+      browser_view->GetWidget()->non_client_view()->frame_view();
+
+  gfx::Point draggable_point(100, 100);
+  views::View::ConvertPointToTarget(browser_view->contents_web_view(),
+                                    frame_view, &draggable_point);
+
+  // Create a fenced frame and ensure that draggable region doesn't clear after
+  // the fenced frame navigation.
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  content::RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_helper_.CreateFencedFrame(
+          browser_view->GetActiveWebContents()->GetMainFrame(),
+          fenced_frame_url);
+  ASSERT_NE(nullptr, fenced_frame_rfh);
+  EXPECT_FALSE(browser_view->ShouldDescendIntoChildForEventHandling(
+      browser_view->GetWidget()->GetNativeView(), draggable_point));
 }
