@@ -54,7 +54,7 @@ std::string LoadReports(const base::FilePath& path) {
 const char kReporterKeyKey[] = "reporter_key";
 const char kBackoffEntryKey[] = "backoff_entry";
 const char kReportKey[] = "report";
-const char kSCTHashdanceMetadataKey[] = "sct_metadata";
+const char kLeafHashKey[] = "leaf_hash";
 
 }  // namespace
 
@@ -117,33 +117,18 @@ void SCTAuditingHandler::MaybeEnqueueReport(
     return;
   }
 
-  absl::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata;
+  absl::optional<std::string> leaf_hash;
   if (mode_ == mojom::SCTAuditingMode::kHashdance) {
     // Randomly select a single entry and calculate its leaf hash for the
     // hashdance lookup query.
-    sct_metadata.emplace();
-    const net::ct::SignedCertificateTimestamp* sct =
-        validated_scts.at(base::RandInt(0, validated_scts.size() - 1))
-            .sct.get();
-    sct_metadata->issued = sct->timestamp;
+    size_t selected = base::RandInt(0, validated_scts.size() - 1);
     net::ct::MerkleTreeLeaf tree_leaf;
-    bool result = net::ct::GetMerkleTreeLeaf(validated_certificate_chain, sct,
-                                             &tree_leaf);
+    bool result = net::ct::GetMerkleTreeLeaf(
+        validated_certificate_chain, validated_scts.at(selected).sct.get(),
+        &tree_leaf);
     DCHECK(result);
-    result = net::ct::HashMerkleTreeLeaf(tree_leaf, &sct_metadata->leaf_hash);
+    result = net::ct::HashMerkleTreeLeaf(tree_leaf, &leaf_hash.emplace());
     DCHECK(result);
-
-    // Find the corresponding log entry metadata.
-    const std::vector<mojom::CTLogInfoPtr>& logs =
-        owner_network_context_->network_service()->log_list();
-    auto log = std::find_if(logs.begin(), logs.end(), [&sct](const auto& log) {
-      return log->id == sct->log_id;
-    });
-    CHECK(log != logs.end());
-    sct_metadata->log_id = log->get()->id;
-    sct_metadata->log_mmd = log->get()->mmd;
-    sct_metadata->certificate_expiry =
-        validated_certificate_chain->valid_expiry();
   }
   absl::optional<SCTAuditingCache::ReportEntry> report =
       owner_network_context_->network_service()
@@ -154,7 +139,7 @@ void SCTAuditingHandler::MaybeEnqueueReport(
     return;
   }
   AddReporter(std::move(report->key), std::move(report->report),
-              std::move(sct_metadata));
+              std::move(leaf_hash));
 }
 
 bool SCTAuditingHandler::SerializeData(std::string* output) {
@@ -169,9 +154,10 @@ bool SCTAuditingHandler::SerializeData(std::string* output) {
 
     report_entry.SetStringKey(kReporterKeyKey, reporter_key.ToString());
 
-    if (reporter->sct_hashdance_metadata()) {
-      report_entry.SetKey(kSCTHashdanceMetadataKey,
-                          reporter->sct_hashdance_metadata()->ToValue());
+    if (reporter->leaf_hash()) {
+      report_entry.SetStringKey(kLeafHashKey,
+                                base::Base64Encode(base::as_bytes(
+                                    base::make_span(*reporter->leaf_hash()))));
     }
 
     base::Value backoff_entry_value =
@@ -207,12 +193,16 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
     const std::string* reporter_key_string =
         sct_entry.FindStringKey(kReporterKeyKey);
     const std::string* report_string = sct_entry.FindStringKey(kReportKey);
-    const absl::optional<base::Value> sct_metadata_value =
-        sct_entry.ExtractKey(kSCTHashdanceMetadataKey);
+    const absl::optional<base::Value> leaf_hash_value =
+        sct_entry.ExtractKey(kLeafHashKey);
     const base::Value* backoff_entry_value =
         sct_entry.FindKey(kBackoffEntryKey);
 
     if (!reporter_key_string || !report_string || !backoff_entry_value) {
+      continue;
+    }
+
+    if (leaf_hash_value && !leaf_hash_value->is_string()) {
       continue;
     }
 
@@ -249,16 +239,15 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
       continue;
     }
 
-    absl::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata;
-    if (sct_metadata_value) {
-      sct_metadata = SCTAuditingReporter::SCTHashdanceMetadata::FromValue(
-          *sct_metadata_value);
-      if (!sct_metadata) {
+    absl::optional<std::string> leaf_hash;
+    if (leaf_hash_value) {
+      if (!base::Base64Decode(std::move(leaf_hash_value->GetString()),
+                              &leaf_hash.emplace())) {
         continue;
       }
     }
 
-    AddReporter(cache_key, std::move(audit_report), std::move(sct_metadata),
+    AddReporter(cache_key, std::move(audit_report), std::move(leaf_hash),
                 std::move(backoff_entry));
     ++num_reporters_deserialized;
   }
@@ -279,33 +268,26 @@ void SCTAuditingHandler::OnStartupFinished() {
 void SCTAuditingHandler::AddReporter(
     net::HashValue reporter_key,
     std::unique_ptr<sct_auditing::SCTClientReport> report,
-    absl::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata,
+    absl::optional<std::string> leaf_hash,
     std::unique_ptr<net::BackoffEntry> backoff_entry) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
   if (mode_ == mojom::SCTAuditingMode::kDisabled) {
     return;
   }
 
-  // Get the URLs, traffic annotations, and timing parameters as configured on
-  // the SCTAuditingCache.
-  auto* sct_auditing_cache =
-      owner_network_context_->network_service()->sct_auditing_cache();
-  auto log_expected_ingestion_delay =
-      sct_auditing_cache->log_expected_ingestion_delay();
-  auto log_max_ingestion_random_delay =
-      sct_auditing_cache->log_max_ingestion_random_delay();
-  auto report_uri = sct_auditing_cache->report_uri();
-  auto hashdance_lookup_uri = sct_auditing_cache->hashdance_lookup_uri();
-  auto traffic_annotation = sct_auditing_cache->traffic_annotation();
-  auto hashdance_traffic_annotation =
-      sct_auditing_cache->hashdance_traffic_annotation();
+  // Get the ReportURI and traffic annotation as configured on the
+  // SCTAuditingCache.
+  auto report_uri = owner_network_context_->network_service()
+                        ->sct_auditing_cache()
+                        ->report_uri();
+  auto traffic_annotation = owner_network_context_->network_service()
+                                ->sct_auditing_cache()
+                                ->traffic_annotation();
 
   auto reporter = std::make_unique<SCTAuditingReporter>(
       reporter_key, std::move(report),
-      mode_ == mojom::SCTAuditingMode::kHashdance, std::move(sct_metadata),
-      GetURLLoaderFactory(), log_expected_ingestion_delay,
-      log_max_ingestion_random_delay, report_uri, hashdance_lookup_uri,
-      traffic_annotation, hashdance_traffic_annotation,
+      mode_ == mojom::SCTAuditingMode::kHashdance, std::move(leaf_hash),
+      GetURLLoaderFactory(), report_uri, traffic_annotation,
       base::BindRepeating(&SCTAuditingHandler::OnReporterStateUpdated,
                           GetWeakPtr()),
       base::BindOnce(&SCTAuditingHandler::OnReporterFinished, GetWeakPtr()),
