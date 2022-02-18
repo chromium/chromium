@@ -163,26 +163,20 @@ class AttributionEventHandler : public AttributionManager::Observer {
     base::Value input_value = std::move(input_values_.front());
     input_values_.pop_front();
 
-    const char* reason;
+    std::stringstream reason;
     switch (result) {
       case StorableSource::Result::kSuccess:
         return;
       case StorableSource::Result::kInternalError:
-        reason = "internalError";
-        break;
       case StorableSource::Result::kInsufficientSourceCapacity:
-        reason = "insufficientSourceCapacity";
-        break;
       case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
-        reason = "insufficientUniqueDestinationCapacity";
-        break;
       case StorableSource::Result::kExcessiveReportingOrigins:
-        reason = "excessiveReportingOrigins";
+        reason << result;
         break;
     }
 
     base::DictionaryValue dict;
-    dict.SetStringKey("reason", reason);
+    dict.SetStringKey("reason", reason.str());
     dict.SetKey("source", std::move(input_value));
 
     rejected_sources_.push_back(std::move(dict));

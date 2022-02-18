@@ -794,15 +794,15 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out, StorableSource::Result status) {
   switch (status) {
     case StorableSource::Result::kSuccess:
-      return out << "kSuccess";
+      return out << "success";
     case StorableSource::Result::kInternalError:
-      return out << "kInternalError";
+      return out << "internalError";
     case StorableSource::Result::kInsufficientSourceCapacity:
-      return out << "kInsufficientSourceCapacity";
+      return out << "insufficientSourceCapacity";
     case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
-      return out << "kInsufficientUniqueDestinationCapacity";
+      return out << "insufficientUniqueDestinationCapacity";
     case StorableSource::Result::kExcessiveReportingOrigins:
-      return out << "kExcessiveReportingOrigins";
+      return out << "excessiveReportingOrigins";
   }
 }
 
