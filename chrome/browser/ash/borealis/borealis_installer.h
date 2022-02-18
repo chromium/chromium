@@ -20,6 +20,7 @@ class BorealisInstaller : public KeyedService {
  public:
   enum class InstallingState {
     kInactive,
+    kCheckingIfAllowed,
     kInstallingDlc,
     kStartingUp,
     kAwaitingApplications,

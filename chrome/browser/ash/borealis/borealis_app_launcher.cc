@@ -87,7 +87,6 @@ void BorealisAppLauncher::Launch(std::string app_id,
 void BorealisAppLauncher::Launch(std::string app_id,
                                  const std::vector<std::string>& args,
                                  OnLaunchedCallback callback) {
-  DCHECK(BorealisService::GetForProfile(profile_)->Features().IsAllowed());
   if (!borealis::BorealisService::GetForProfile(profile_)
            ->Features()
            .IsEnabled()) {

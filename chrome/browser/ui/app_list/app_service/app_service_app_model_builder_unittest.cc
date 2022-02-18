@@ -1115,9 +1115,10 @@ class BorealisAppTest : public AppServiceAppModelBuilderTest {
 };
 
 TEST_F(BorealisAppTest, BorealisDisallowed) {
-  EXPECT_FALSE(borealis::BorealisService::GetForProfile(testing_profile_.get())
-                   ->Features()
-                   .IsAllowed());
+  ASSERT_NE(borealis::BorealisService::GetForProfile(testing_profile_.get())
+                ->Features()
+                .MightBeAllowed(),
+            borealis::BorealisFeatures::AllowStatus::kAllowed);
   EXPECT_EQ(std::vector<std::string>{}, GetModelContent(model_updater_.get()));
 }
 
@@ -1128,9 +1129,6 @@ TEST_F(BorealisAppTest, BorealisAllowed) {
   // Borealis was enabled.
   CreateBuilder(/*guest_mode=*/false);
 
-  EXPECT_TRUE(borealis::BorealisService::GetForProfile(testing_profile_.get())
-                  ->Features()
-                  .IsAllowed());
   EXPECT_EQ(
       std::vector<std::string>{l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME)},
       GetModelContent(model_updater_.get()));

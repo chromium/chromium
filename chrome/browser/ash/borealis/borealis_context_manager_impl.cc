@@ -199,6 +199,7 @@ void BorealisContextManagerImpl::ShutDownBorealis(
 base::queue<std::unique_ptr<BorealisTask>>
 BorealisContextManagerImpl::GetTasks() {
   base::queue<std::unique_ptr<BorealisTask>> task_queue;
+  task_queue.push(std::make_unique<CheckAllowed>());
   task_queue.push(std::make_unique<MountDlc>());
   task_queue.push(std::make_unique<CreateDiskImage>());
   task_queue.push(std::make_unique<RequestWaylandServer>());

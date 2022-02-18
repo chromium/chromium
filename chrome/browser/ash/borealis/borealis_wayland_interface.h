@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
 
 class Profile;
 
@@ -27,22 +28,24 @@ class BorealisCapabilities;
 // same server, rather than creating and destroying for each invocation.
 class BorealisWaylandInterface {
  public:
+  using CapabilityCallback =
+      base::OnceCallback<void(BorealisCapabilities*, const base::FilePath&)>;
+
   explicit BorealisWaylandInterface(Profile* profile);
   ~BorealisWaylandInterface();
 
   // Invokes the callback with the handle to the wayland server once one is
   // available.
-  void GetWaylandServer(
-      base::OnceCallback<void(BorealisCapabilities*, const base::FilePath&)>
-          callback);
+  void GetWaylandServer(CapabilityCallback callback);
 
  private:
+  void OnAllowednessChecked(CapabilityCallback callback,
+                            BorealisFeatures::AllowStatus allowed);
+
   // Called by Exo when the GetWaylandServer request completes.
-  void OnWaylandServerCreated(
-      base::OnceCallback<void(BorealisCapabilities*, const base::FilePath&)>
-          callback,
-      bool success,
-      const base::FilePath& server_path);
+  void OnWaylandServerCreated(CapabilityCallback callback,
+                              bool success,
+                              const base::FilePath& server_path);
 
   Profile* const profile_;
   // This is owned by Exo, once the server is created.

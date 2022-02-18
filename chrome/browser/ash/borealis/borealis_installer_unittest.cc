@@ -214,6 +214,7 @@ TEST_F(BorealisInstallerTest, HandlesMainAppPreExisting) {
 TEST_F(BorealisInstallerTest, InstallationHasAllStages) {
   PrepareSuccessfulInstallation();
 
+  EXPECT_CALL(*observer_, OnStateUpdated(InstallingState::kCheckingIfAllowed));
   EXPECT_CALL(*observer_, OnStateUpdated(InstallingState::kInstallingDlc));
   EXPECT_CALL(*observer_, OnStateUpdated(InstallingState::kStartingUp));
   EXPECT_CALL(*observer_,
@@ -322,6 +323,7 @@ TEST_F(BorealisInstallerTest, ReportsStartupFailureAsError) {
                         BorealisStartupResult::kStartVmFailed, "Some Error"}));
           }));
 
+  EXPECT_CALL(*observer_, OnStateUpdated(InstallingState::kCheckingIfAllowed));
   EXPECT_CALL(*observer_, OnStateUpdated(InstallingState::kInstallingDlc));
   EXPECT_CALL(*observer_, OnStateUpdated(InstallingState::kStartingUp));
   EXPECT_CALL(*observer_,
@@ -355,6 +357,7 @@ TEST_F(BorealisInstallerTest, ReportsMainAppMissingAsError) {
 TEST_P(BorealisInstallerTestDlc, DlcError) {
   FakeDlcserviceClient()->set_install_error(GetParam().first);
 
+  EXPECT_CALL(*observer_, OnStateUpdated(InstallingState::kCheckingIfAllowed));
   EXPECT_CALL(*observer_, OnStateUpdated(InstallingState::kInstallingDlc));
   EXPECT_CALL(*observer_, OnInstallationEnded(GetParam().second));
 

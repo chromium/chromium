@@ -7,6 +7,7 @@
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -16,6 +17,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace borealis {
@@ -44,37 +46,45 @@ class BorealisFeaturesTest : public testing::Test {
 TEST_F(BorealisFeaturesTest, DisallowedWhenFeatureIsDisabled) {
   features_.Reset();
   features_.InitAndDisableFeature(features::kBorealis);
-  EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
+  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
+            BorealisFeatures::AllowStatus::kFeatureDisabled);
 }
 
 TEST_F(BorealisFeaturesTest, AllowedWhenFeatureIsEnabled) {
-  EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
+  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
+            BorealisFeatures::AllowStatus::kAllowed);
 }
 
 TEST_F(BorealisFeaturesTest, UnenrolledUserPolicyAllowedByDefault) {
-  EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
+  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
+            BorealisFeatures::AllowStatus::kAllowed);
 
   profile_.GetPrefs()->SetBoolean(prefs::kBorealisAllowedForUser, false);
-  EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
+  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
+            BorealisFeatures::AllowStatus::kUserPrefBlocked);
 }
 
 TEST_F(BorealisFeaturesTest, CanDisableByVmPolicy) {
-  EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
+  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
+            BorealisFeatures::AllowStatus::kAllowed);
 
   profile_.ScopedCrosSettingsTestHelper()
       ->ReplaceDeviceSettingsProviderWithStub();
   profile_.ScopedCrosSettingsTestHelper()->GetStubbedProvider()->SetBoolean(
       ash::kVirtualMachinesAllowed, false);
 
-  EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
+  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
+            BorealisFeatures::AllowStatus::kVmPolicyBlocked);
 }
 
 TEST_F(BorealisFeaturesTest, EnrolledUserPolicyDisabledByDefault) {
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
+  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
+            BorealisFeatures::AllowStatus::kUserPrefBlocked);
   profile_.GetTestingPrefService()->SetManagedPref(
       prefs::kBorealisAllowedForUser, std::make_unique<base::Value>(true));
-  EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
+  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
+            BorealisFeatures::AllowStatus::kAllowed);
 }
 
 TEST_F(BorealisFeaturesTest, EnablednessDependsOnInstallation) {
@@ -97,8 +107,12 @@ TEST(BorealisFeaturesHelperTest, CheckFeatureHelperWithoutEnable) {
   TestingProfile profile;
   BorealisFeatures features(&profile);
   ScopedAllowBorealis allow(&profile, /*also_enable=*/false);
-  EXPECT_TRUE(features.IsAllowed());
+  EXPECT_EQ(features.MightBeAllowed(), BorealisFeatures::AllowStatus::kAllowed);
   EXPECT_FALSE(features.IsEnabled());
+  NiceCallbackFactory<void(BorealisFeatures::AllowStatus)> factory;
+  EXPECT_CALL(factory, Call(BorealisFeatures::AllowStatus::kAllowed));
+  // We want this to return synchronously in tests, hence no base::RunLoop.
+  features.IsAllowed(factory.BindOnce());
 }
 
 TEST(BorealisFeaturesHelperTest, CheckFeatureHelperWithEnable) {
@@ -106,7 +120,6 @@ TEST(BorealisFeaturesHelperTest, CheckFeatureHelperWithEnable) {
   TestingProfile profile;
   BorealisFeatures features(&profile);
   ScopedAllowBorealis allow(&profile, /*also_enable=*/true);
-  EXPECT_TRUE(features.IsAllowed());
   EXPECT_TRUE(features.IsEnabled());
 }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/borealis/borealis_task.h"
 
 #include <optional>
+#include <sstream>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -21,6 +22,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
@@ -53,6 +55,28 @@ void BorealisTask::Complete(BorealisStartupResult status, std::string message) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), status, std::move(message)));
+}
+
+CheckAllowed::CheckAllowed() : BorealisTask("CheckAllowed") {}
+CheckAllowed::~CheckAllowed() = default;
+
+void CheckAllowed::RunInternal(BorealisContext* context) {
+  BorealisService::GetForProfile(context->profile())
+      ->Features()
+      .IsAllowed(base::BindOnce(&CheckAllowed::OnAllowednessChecked,
+                                weak_factory_.GetWeakPtr(), context));
+}
+
+void CheckAllowed::OnAllowednessChecked(
+    BorealisContext* context,
+    BorealisFeatures::AllowStatus allow_status) {
+  if (allow_status == BorealisFeatures::AllowStatus::kAllowed) {
+    Complete(BorealisStartupResult::kSuccess, "");
+    return;
+  }
+  std::stringstream ss;
+  ss << "Borealis is disallowed: " << allow_status;
+  Complete(BorealisStartupResult::kDisallowed, ss.str());
 }
 
 MountDlc::MountDlc() : BorealisTask("MountDlc") {}

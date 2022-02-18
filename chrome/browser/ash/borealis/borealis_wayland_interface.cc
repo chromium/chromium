@@ -26,12 +26,18 @@ BorealisWaylandInterface::~BorealisWaylandInterface() {
   }
 }
 
-void BorealisWaylandInterface::GetWaylandServer(
-    base::OnceCallback<void(BorealisCapabilities*, const base::FilePath&)>
-        callback) {
+void BorealisWaylandInterface::GetWaylandServer(CapabilityCallback callback) {
   // The custom wayland server will be mandatory for borealis going forward, so
   // it is a good place to guard against unauthorized launches.
-  if (!BorealisService::GetForProfile(profile_)->Features().IsAllowed()) {
+  BorealisService::GetForProfile(profile_)->Features().IsAllowed(
+      base::BindOnce(&BorealisWaylandInterface::OnAllowednessChecked,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BorealisWaylandInterface::OnAllowednessChecked(
+    CapabilityCallback callback,
+    BorealisFeatures::AllowStatus allowed) {
+  if (allowed != BorealisFeatures::AllowStatus::kAllowed) {
     std::move(callback).Run(nullptr, {});
     return;
   }
@@ -57,8 +63,7 @@ void BorealisWaylandInterface::GetWaylandServer(
 }
 
 void BorealisWaylandInterface::OnWaylandServerCreated(
-    base::OnceCallback<void(BorealisCapabilities*, const base::FilePath&)>
-        callback,
+    CapabilityCallback callback,
     bool success,
     const base::FilePath& server_path) {
   if (!success) {

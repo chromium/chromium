@@ -150,9 +150,12 @@ apps::Permissions CreatePermissions(Profile* profile) {
 }
 
 bool IsBorealisLauncherAllowed(Profile* profile) {
+  // TODO(b/217653546): The installer "app" was a short-term solution anyway.
+  // Once insert_coin is a thing it should never be shown.
   return borealis::BorealisService::GetForProfile(profile)
-             ->Features()
-             .IsAllowed() &&
+                 ->Features()
+                 .MightBeAllowed() ==
+             borealis::BorealisFeatures::AllowStatus::kAllowed &&
          !borealis::BorealisService::GetForProfile(profile)
               ->Features()
               .IsEnabled();
@@ -435,7 +438,8 @@ void BorealisApps::OnRegistryUpdated(
     if (app_id == borealis::kClientAppId) {
       bool borealis_allowed = borealis::BorealisService::GetForProfile(profile_)
                                   ->Features()
-                                  .IsAllowed();
+                                  .MightBeAllowed() ==
+                              borealis::BorealisFeatures::AllowStatus::kAllowed;
       PublisherBase::Publish(GetBorealisLauncher(profile_, borealis_allowed),
                              subscribers_);
       AppPublisher::Publish(CreateBorealisLauncher(profile_, borealis_allowed));

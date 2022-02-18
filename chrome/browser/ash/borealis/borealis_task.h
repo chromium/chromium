@@ -8,6 +8,7 @@
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_launch_watcher.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
@@ -43,6 +44,19 @@ class BorealisTask {
   std::string name_;
   base::Time start_time_;
   CompletionResultCallback callback_;
+};
+
+// Double-checks that borealis is allowed.
+class CheckAllowed : public BorealisTask {
+ public:
+  CheckAllowed();
+  ~CheckAllowed() override;
+  void RunInternal(BorealisContext* context) override;
+
+ private:
+  void OnAllowednessChecked(BorealisContext* context,
+                            BorealisFeatures::AllowStatus allow_status);
+  base::WeakPtrFactory<CheckAllowed> weak_factory_{this};
 };
 
 // Mounts the Borealis DLC.

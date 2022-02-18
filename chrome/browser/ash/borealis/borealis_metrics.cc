@@ -200,5 +200,7 @@ std::ostream& operator<<(std::ostream& stream,
       return stream << "Syncing Disk failed";
     case borealis::BorealisStartupResult::kRequestWaylandFailed:
       return stream << "Request Wayland failed";
+    case borealis::BorealisStartupResult::kDisallowed:
+      return stream << "Borealis is not allowed";
   }
 }
