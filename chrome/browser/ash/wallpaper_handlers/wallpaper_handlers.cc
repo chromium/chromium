@@ -176,6 +176,30 @@ std::string MaybeConvertToTestUrl(std::string url) {
   return url;
 }
 
+// Parses a `base::Value` into a GooglePhotosPhoto. If the necessary data isn't
+// present, returns `absl::nullopt` instead.
+absl::optional<ash::personalization_app::mojom::GooglePhotosPhotoPtr>
+ParseGooglePhotosPhoto(const base::Value& photo) {
+  DCHECK(photo.is_dict());
+  const std::string* id = photo.FindStringPath("itemId.mediaKey");
+  const std::string* filename = photo.FindStringPath("filename");
+  const std::string* timestamp_string =
+      photo.FindStringPath("creationTimestamp");
+  const std::string* url = photo.FindStringPath("photo.servingUrl");
+
+  base::Time timestamp;
+  if (!id || !filename || !timestamp_string ||
+      !base::Time::FromUTCString(timestamp_string->c_str(), &timestamp) ||
+      !url) {
+    return absl::nullopt;
+  }
+
+  std::string name = base::FilePath(*filename).RemoveExtension().value();
+  std::u16string date = base::TimeFormatFriendlyDate(timestamp);
+  return ash::personalization_app::mojom::GooglePhotosPhoto::New(
+      *id, name, date, GURL(*url));
+}
+
 }  // namespace
 
 namespace wallpaper_handlers {
@@ -730,31 +754,25 @@ GooglePhotosPhotosCbkArgs GooglePhotosPhotosFetcher::ParseResponse(
   if (resume_token && !resume_token->empty())
     parsed_response->resume_token = *resume_token;
 
-  const base::Value* response_photos = response->FindListPath("item");
-  if (!response_photos)
+  // The `base::Value` at key "item" can be a single item or a list of them.
+  const base::Value* item_or_items = response->FindPath("item");
+
+  if (!item_or_items)
     return parsed_response;
 
   parsed_response->photos =
       std::vector<ash::personalization_app::mojom::GooglePhotosPhotoPtr>();
-  for (const auto& response_photo : response_photos->GetListDeprecated()) {
-    const std::string* id = response_photo.FindStringPath("itemId.mediaKey");
-    const std::string* filename = response_photo.FindStringPath("filename");
-    const std::string* timestamp_string =
-        response_photo.FindStringPath("creationTimestamp");
-    const std::string* url = response_photo.FindStringPath("photo.servingUrl");
 
-    base::Time timestamp;
-    if (!id || !filename || !timestamp_string ||
-        !base::Time::FromUTCString(timestamp_string->c_str(), &timestamp) ||
-        !url) {
-      continue;
+  if (item_or_items->is_list()) {
+    for (const auto& item : item_or_items->GetList()) {
+      auto maybe_photo = ParseGooglePhotosPhoto(item);
+      if (maybe_photo.has_value())
+        parsed_response->photos->push_back(std::move(maybe_photo.value()));
     }
-
-    std::string name = base::FilePath(*filename).RemoveExtension().value();
-    std::u16string date = base::TimeFormatFriendlyDate(timestamp);
-    parsed_response->photos->push_back(
-        ash::personalization_app::mojom::GooglePhotosPhoto::New(*id, name, date,
-                                                                GURL(*url)));
+  } else {
+    auto maybe_photo = ParseGooglePhotosPhoto(*item_or_items);
+    if (maybe_photo.has_value())
+      parsed_response->photos->push_back(std::move(maybe_photo.value()));
   }
   return parsed_response;
 }

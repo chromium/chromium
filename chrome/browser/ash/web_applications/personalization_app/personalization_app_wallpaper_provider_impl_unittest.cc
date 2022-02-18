@@ -92,6 +92,19 @@ constexpr char kGooglePhotosPhotosFullResponse[] =
     "   } ],"
     "   \"resumeToken\": \"token\""
     "}";
+constexpr char kGooglePhotosPhotosSingleItemResponse[] =
+    "{"
+    "   \"item\": {"
+    "      \"itemId\": {"
+    "         \"mediaKey\": \"photoId\""
+    "      },"
+    "      \"filename\": \"photoName.png\","
+    "      \"creationTimestamp\": \"2021-12-31T07:07:07.000Z\","
+    "      \"photo\": {"
+    "         \"servingUrl\": \"https://www.google.com/\""
+    "      }"
+    "   }"
+    "}";
 constexpr char kGooglePhotosResumeTokenOnlyResponse[] =
     "{\"resumeToken\": \"token\"}";
 
@@ -736,9 +749,15 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   auto response = base::JSONReader::Read(kGooglePhotosPhotosFullResponse);
   EXPECT_TRUE(response.has_value());
   response->RemovePath("resumeToken");
+  EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(
+                mojo::Clone(valid_photos_vector), absl::nullopt),
+            google_photos_photos_fetcher->ParseResponse(std::move(response)));
+
+  // Parse a response with a single valid photo not in a list.
   EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(std::move(valid_photos_vector),
                                                  absl::nullopt),
-            google_photos_photos_fetcher->ParseResponse(std::move(response)));
+            google_photos_photos_fetcher->ParseResponse(
+                base::JSONReader::Read(kGooglePhotosPhotosSingleItemResponse)));
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
