@@ -192,11 +192,6 @@ void ModelExecutionManagerImpl::ExecuteModel(
   DCHECK(it != model_handlers_.end());
 
   SegmentationModelHandler* handler = (*it).second.get();
-  if (!handler->ModelAvailable()) {
-    RunModelExecutionCallback(std::move(state), 0,
-                              ModelExecutionStatus::kExecutionError);
-    return;
-  }
 
   if (VLOG_IS_ON(1)) {
     std::stringstream log_input;

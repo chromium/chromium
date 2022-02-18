@@ -209,20 +209,6 @@ TEST_F(ModelExecutionManagerTest, MetadataTests) {
   ExecuteModel(std::make_pair(0, ModelExecutionStatus::kInvalidMetadata));
 }
 
-TEST_F(ModelExecutionManagerTest, ModelNotReady) {
-  auto segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  CreateModelExecutionManager({segment_id}, base::DoNothing());
-
-  segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
-
-  // When the model is unavailable, the execution should fail.
-  EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
-      .WillRepeatedly(Return(false));
-
-  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kExecutionError));
-}
-
 TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
   // Use a MockSegmentInfoDatabase for this test in particular, to verify that
   // it is never used.
