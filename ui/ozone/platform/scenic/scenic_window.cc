@@ -303,6 +303,21 @@ void ScenicWindow::OnScenicEvents(
         case fuchsia::ui::gfx::Event::kViewDetachedFromScene: {
           DCHECK(event.gfx().view_detached_from_scene().view_id == view_.id());
           OnViewAttachedChanged(false);
+
+          // Detach the surface view. This is necessary to ensure that the
+          // current content doesn't become visible when the view is attached
+          // again.
+          render_node_.DetachChildren();
+          surface_view_holder_.reset();
+          safe_presenter_.QueuePresent();
+
+          // Destroy and recreate AcceleratedWidget. This will force the
+          // compositor drop the current LayerTreeFrameSink together with the
+          // corresponding ScenicSurface. They will be created again only after
+          // the window becomes visible again.
+          delegate_->OnAcceleratedWidgetDestroyed();
+          delegate_->OnAcceleratedWidgetAvailable(window_id_);
+
           break;
         }
         default:
