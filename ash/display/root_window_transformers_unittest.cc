@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/cursor_manager_test_api.h"
-#include "base/command_line.h"
 #include "base/synchronization/waitable_event.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -26,7 +25,6 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
-#include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
@@ -151,12 +149,8 @@ class RootWindowTransformersTest : public AshTestBase {
 class UnifiedRootWindowTransformersTest : public RootWindowTransformersTest {
  public:
   void SetUp() override {
-    // kEnableUnifiedDesktop switch needs to be added before DisplayManager
-    // creation. Hence before calling SetUp.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableUnifiedDesktop);
-
     RootWindowTransformersTest::SetUp();
+    display_manager()->SetUnifiedDesktopEnabled(true);
   }
 };
 
@@ -599,7 +593,7 @@ TEST_F(UnifiedRootWindowTransformersTest,
 
   // Use different sized displays with primary display rotated to the right.
   UpdateDisplay("1920x1080*2/r,800x600");
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   // Has only one logical root window.
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -676,7 +670,7 @@ TEST_F(UnifiedRootWindowTransformersTest,
 
   // Use different sized displays with secondary display rotated to the right.
   UpdateDisplay("1920x1080*2,800x600/r");
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   // Has only one logical root window.
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -742,7 +736,7 @@ TEST_F(UnifiedRootWindowTransformersTest,
 
   // Now rotate the 2nd display to the left.
   UpdateDisplay("1920x1080*2,800x600/l");
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   hosts = test_api.GetHosts();
   // Have 2 WindowTreeHosts, one per display.
