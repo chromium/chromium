@@ -54,6 +54,7 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/follow/follow_provider.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/common/user_agent.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -250,6 +251,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   if (_webState) {
     [self updateModel];
     _webState->AddObserver(_webStateObserver.get());
+
+    // Observe the language::IOSLanguageDetectionTabHelper for |_webState|.
+    _iOSLanguageDetectionTabHelperObserverBridge =
+        std::make_unique<language::IOSLanguageDetectionTabHelperObserverBridge>(
+            language::IOSLanguageDetectionTabHelper::FromWebState(_webState),
+            self);
   }
 }
 
@@ -266,12 +273,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
   if (_webStateList) {
     _webStateList->AddObserver(_webStateListObserver.get());
-
-    // Observe the language::IOSLanguageDetectionTabHelper for |_webState|.
-    _iOSLanguageDetectionTabHelperObserverBridge =
-        std::make_unique<language::IOSLanguageDetectionTabHelperObserverBridge>(
-            language::IOSLanguageDetectionTabHelper::FromWebState(_webState),
-            self);
   }
 }
 
@@ -496,13 +497,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                [weakSelf openHelp];
                                              });
 
-  // Footer vary based on state, so it's set in -updateModel.
+  // Footer and actions vary based on state, so they're set in -updateModel.
   self.helpActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"help_actions"
-                                                 actions:@[
-                                                   self.reportIssueAction,
-                                                   self.helpAction,
-                                                 ]
+                                                 actions:@[]
                                                   footer:nil];
 
   // Destinations and footer vary based on state, so they're set in
@@ -612,6 +610,19 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           }
         }));
   }
+
+  NSMutableArray<OverflowMenuAction*>* helpActions =
+      [[NSMutableArray alloc] init];
+
+  if (ios::GetChromeBrowserProvider()
+          .GetUserFeedbackProvider()
+          ->IsUserFeedbackEnabled()) {
+    [helpActions addObject:self.reportIssueAction];
+  }
+
+  [helpActions addObject:self.helpAction];
+
+  self.helpActionsGroup.actions = helpActions;
 
   // Set footer (on last section), if any.
   if (_browserPolicyConnector &&
