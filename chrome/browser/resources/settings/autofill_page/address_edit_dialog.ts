@@ -148,6 +148,7 @@ export class SettingsAddressEditDialogElement extends
     // Default to the last country used if no country code is provided.
     const countryCode = this.countryCode_ || this.countries_[0].countryCode;
     this.countryInfo_.getAddressFormat(countryCode as string).then(format => {
+      this.address.languageCode = format.languageCode;
       this.addressWrapper_ = format.components.flatMap(component => {
         // If this is the name field, add a honorific title row before the
         // name.

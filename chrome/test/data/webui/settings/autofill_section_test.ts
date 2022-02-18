@@ -310,6 +310,24 @@ suite('AutofillSectionAddressTests', function() {
     });
   });
 
+  test('verifyLanguageCodeIsSaved', function() {
+    const address = createEmptyAddressEntry();
+    return createAddressDialog(address).then(function(dialog) {
+      const countrySelect = dialog.shadowRoot!.querySelector('select')!;
+      // The first country is pre-selected.
+      assertEquals('US', address.countryCode);
+      assertEquals('en', address.languageCode);
+      countrySelect.value = 'IL';
+      countrySelect.dispatchEvent(new CustomEvent('change'));
+      flush();
+      return eventToPromise('on-update-address-wrapper', dialog)
+          .then(function() {
+            assertEquals('IL', address.countryCode);
+            assertEquals('iw', address.languageCode);
+          });
+    });
+  });
+
   test('verifyPhoneAndEmailAreSaved', function() {
     const address = createEmptyAddressEntry();
     return createAddressDialog(address).then(function(dialog) {
