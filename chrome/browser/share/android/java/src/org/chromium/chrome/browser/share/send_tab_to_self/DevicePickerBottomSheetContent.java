@@ -123,13 +123,16 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         AccountInfo account = getSharingAccountInfo();
         assert account != null : "The user must be signed in to share a tab";
 
-        RoundedCornerImageView avatarView = containerView.findViewById(R.id.account_avatar);
-        int accountAvatarSizePx = Math.round(
-                ACCOUNT_AVATAR_SIZE_DP * mContext.getResources().getDisplayMetrics().density);
-        avatarView.setImageBitmap(Bitmap.createScaledBitmap(
-                account.getAccountImage(), accountAvatarSizePx, accountAvatarSizePx, false));
-        avatarView.setRoundedCorners(accountAvatarSizePx / 2, accountAvatarSizePx / 2,
-                accountAvatarSizePx / 2, accountAvatarSizePx / 2);
+        // The avatar can be null in tests.
+        if (account.getAccountImage() != null) {
+            RoundedCornerImageView avatarView = containerView.findViewById(R.id.account_avatar);
+            int accountAvatarSizePx = Math.round(
+                    ACCOUNT_AVATAR_SIZE_DP * mContext.getResources().getDisplayMetrics().density);
+            avatarView.setImageBitmap(Bitmap.createScaledBitmap(
+                    account.getAccountImage(), accountAvatarSizePx, accountAvatarSizePx, false));
+            avatarView.setRoundedCorners(accountAvatarSizePx / 2, accountAvatarSizePx / 2,
+                    accountAvatarSizePx / 2, accountAvatarSizePx / 2);
+        }
 
         Resources resources = mContext.getResources();
         // The link is opened in a new tab to avoid exiting the current page, which the user

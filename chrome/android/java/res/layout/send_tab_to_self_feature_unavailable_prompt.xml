@@ -7,6 +7,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/send_tab_to_self_feature_unavailable_prompt"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="@dimen/min_touch_target_size"
