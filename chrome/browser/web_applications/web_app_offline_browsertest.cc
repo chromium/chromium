@@ -216,16 +216,18 @@ class WebAppOfflineDarkModeTest
   }
 
   void SetUp() override {
-    InProcessBrowserTest::SetUp();
-
 #if BUILDFLAG(IS_WIN)
     if (base::win::GetVersion() < base::win::Version::WIN10) {
       GTEST_SKIP();
+    } else {
+      InProcessBrowserTest::SetUp();
     }
 #elif BUILDFLAG(IS_MAC)
     // TODO(crbug.com/1298658): Get this test suite working.
     GTEST_SKIP();
-#endif
+#else
+    InProcessBrowserTest::SetUp();
+#endif // BUILDFLAG(IS_MAC)
   }
 
  protected:
