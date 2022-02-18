@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactor
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -48,8 +50,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -612,8 +616,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 info.icon = R.drawable.infobar_download_complete_animation;
             } else if (singleDownloadScheduled) {
                 // TODO(shaktisahu, xingliu): Find out what the message should be.
-                info.description = getContext().getString(
-                        R.string.download_message_download_scheduled_description);
+                info.description = getMessageForDownloadScheduled(itemToShow);
                 info.link = getContext().getString(R.string.change_link);
                 info.id = itemToShow.id;
                 info.schedule = itemToShow.schedule.clone();
@@ -664,6 +667,24 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private void clearEndTimerRunnable() {
         mHandler.removeCallbacks(mEndTimerRunnable);
         mEndTimerRunnable = null;
+    }
+
+    private String getMessageForDownloadScheduled(OfflineItem offlineItem) {
+        assert offlineItem != null && offlineItem.schedule != null;
+        if (offlineItem.schedule.onlyOnWifi) {
+            return getContext().getString(
+                    R.string.download_message_download_scheduled_description_on_wifi);
+        } else {
+            long now = new Date().getTime();
+            String dateTimeString = DateUtils
+                                            .formatSameDayTime(offlineItem.schedule.startTimeMs,
+                                                    now, DateFormat.MEDIUM, DateFormat.SHORT)
+                                            .toString();
+            int stringId = CalendarUtils.isSameDay(now, offlineItem.schedule.startTimeMs)
+                    ? R.string.download_message_download_scheduled_description_on_time
+                    : R.string.download_message_download_scheduled_description_on_date;
+            return getContext().getString(stringId, dateTimeString);
+        }
     }
 
     private void preProcessUpdatedItem(OfflineItem updatedItem) {

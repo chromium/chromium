@@ -2192,8 +2192,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
           =1 {1 download scheduled}
           other {# downloads scheduled}}
       </message>
-      <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_SCHEDULED_DESCRIPTION" desc="Download message text describing that user can find about their download status from notifications.">
+      <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_SCHEDULED_DESCRIPTION_ON_WIFI" desc="Download message text describing that user can find about their download status from notifications.">
         Download will start when on Wi-Fi
+      </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_SCHEDULED_DESCRIPTION_ON_DATE" desc="Download message text describing that the download was scheduled to start at a later date.">
+        Download will start on <ph name="date">%1$s<ex>Feb 28 2020</ex></ph>.
+      </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_SCHEDULED_DESCRIPTION_ON_TIME" desc="Download message text describing that the download was scheduled to start at a later time.">
+        Download will start at <ph name="time">%1$s<ex>8:30PM</ex></ph>.
       </message>
 
       <message name="IDS_MENU_TRANSLATE" desc="Menu item for triggering a page translation. The word 'Translate' should match the translation in TC ID 1613971242435858090. [CHAR_LIMIT=27]">
