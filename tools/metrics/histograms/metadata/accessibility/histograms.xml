@@ -1629,6 +1629,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DomDistiller.MessageDismissalCondition"
+    enum="ReaderModeMessageDismissalCondition" expires_after="2022-12-31">
+  <owner>twellington@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
+  <summary>
+    Records whether the user accepted or ignored/dismissed the Reader Mode
+    message prompt in conjunction with the Reader Mode accessibility setting.
+    Recorded for Android only.
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.PageDistillableAfterLoading"
     enum="DistillableType2" expires_after="M85">
   <owner>wychen@chromium.org</owner>
@@ -1671,6 +1682,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     The method a user used to exit reader mode and return to the original
     article.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.ReaderModeAccessibilitySettingSelected"
+    enum="Boolean" expires_after="2022-12-31">
+  <owner>twellington@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
+  <summary>
+    Records when the Reader Mode accessibility setting is selected or
+    deselected. Recorded for Android only.
   </summary>
 </histogram>
 

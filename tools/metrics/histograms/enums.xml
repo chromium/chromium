@@ -75055,6 +75055,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Menu option"/>
 </enum>
 
+<enum name="ReaderModeMessageDismissalCondition">
+  <int value="0"
+      label="Message was accepted with accessibility setting selected"/>
+  <int value="1"
+      label="Message was accepted with accessibility setting deselected"/>
+  <int value="2"
+      label="Message was ignored or dismissed with accessibility setting
+             selected"/>
+  <int value="3"
+      label="Message was ignored or dismissed with accessibility setting
+             deselected"/>
+</enum>
+
 <enum name="ReadingListContextMenuActions">
   <int value="0" label="New Tab"/>
   <int value="1" label="New Incognito Tab"/>

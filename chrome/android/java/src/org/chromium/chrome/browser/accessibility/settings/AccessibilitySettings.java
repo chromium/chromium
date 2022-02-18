@@ -11,6 +11,7 @@ import android.provider.Settings;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility.FontSizePrefs;
 import org.chromium.chrome.browser.accessibility.FontSizePrefs.FontSizePrefsObserver;
@@ -132,6 +133,8 @@ public class AccessibilitySettings
         } else if (PREF_FORCE_ENABLE_ZOOM.equals(preference.getKey())) {
             mFontSizePrefs.setForceEnableZoomFromUser((Boolean) newValue);
         } else if (PREF_READER_FOR_ACCESSIBILITY.equals(preference.getKey())) {
+            RecordHistogram.recordBooleanHistogram(
+                    "DomDistiller.ReaderModeAccessibilitySettingSelected", (Boolean) newValue);
             UserPrefs.get(Profile.getLastUsedRegularProfile())
                     .setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) newValue);
         }
