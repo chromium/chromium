@@ -280,10 +280,10 @@ class GLRendererShaderPixelTest : public cc::PixelTest {
     frame.render_passes_in_draw_order = &render_passes_in_draw_order;
 
     // Set a non-identity color matrix on the output surface.
-    skia::Matrix44 color_matrix(skia::Matrix44::kIdentity_Constructor);
-    color_matrix.set(0, 0, 0.7f);
-    color_matrix.set(1, 1, 0.4f);
-    color_matrix.set(2, 2, 0.5f);
+    SkM44 color_matrix;
+    color_matrix.setRC(0, 0, 0.7f);
+    color_matrix.setRC(1, 1, 0.4f);
+    color_matrix.setRC(2, 2, 0.5f);
     renderer()->output_surface_->set_color_matrix(color_matrix);
 
     TestShaderWithDrawingFrame(program_key, frame, true);
@@ -2614,7 +2614,7 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
 
     MOCK_METHOD8(
         Attempt,
-        bool(const skia::Matrix44& output_color_matrix,
+        bool(const SkM44& output_color_matrix,
              const OverlayProcessorInterface::FilterOperationsMap&
                  render_pass_backdrop_filters,
              DisplayResourceProvider* resource_provider,
@@ -2626,7 +2626,7 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
              std::vector<gfx::Rect>* content_bounds));
 
     void ProposePrioritized(
-        const skia::Matrix44& output_color_matrix,
+        const SkM44& output_color_matrix,
         const FilterOperationsMap& render_pass_backdrop_filters,
         DisplayResourceProvider* resource_provider,
         AggregatedRenderPassList* render_pass_list,
@@ -2641,7 +2641,7 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
     }
 
     MOCK_METHOD9(AttemptPrioritized,
-                 bool(const skia::Matrix44& output_color_matrix,
+                 bool(const SkM44& output_color_matrix,
                       const FilterOperationsMap& render_pass_backdrop_filters,
                       DisplayResourceProvider* resource_provider,
                       AggregatedRenderPassList* render_pass_list,
@@ -3035,10 +3035,10 @@ TEST_F(GLRendererTest, OutputColorMatrixTest) {
   renderer.SetVisible(true);
 
   // Set a non-identity color matrix on the output surface.
-  skia::Matrix44 color_matrix(skia::Matrix44::kIdentity_Constructor);
-  color_matrix.set(0, 0, 0.7f);
-  color_matrix.set(1, 1, 0.4f);
-  color_matrix.set(2, 2, 0.5f);
+  SkM44 color_matrix;
+  color_matrix.setRC(0, 0, 0.7f);
+  color_matrix.setRC(1, 1, 0.4f);
+  color_matrix.setRC(2, 2, 0.5f);
   output_surface->set_color_matrix(color_matrix);
 
   // Create a root and a child passes to test that the output color matrix is
@@ -3074,7 +3074,7 @@ TEST_F(GLRendererTest, OutputColorMatrixTest) {
             call_count++;
             output_color_matrix_invoked = true;
             float expected_matrix[16];
-            color_matrix.asColMajorf(expected_matrix);
+            color_matrix.getColMajor(expected_matrix);
             for (int i = 0; i < 16; ++i)
               EXPECT_FLOAT_EQ(expected_matrix[i], gl_matrix[i]);
           })));
@@ -3845,7 +3845,7 @@ class ContentBoundsOverlayProcessor : public OverlayProcessorUsingStrategy {
         : content_bounds_(content_bounds) {}
     ~TestStrategy() override = default;
 
-    bool Attempt(const skia::Matrix44& output_color_matrix,
+    bool Attempt(const SkM44& output_color_matrix,
                  const OverlayProcessorInterface::FilterOperationsMap&
                      render_pass_backdrop_filters,
                  DisplayResourceProvider* resource_provider,
@@ -3860,7 +3860,7 @@ class ContentBoundsOverlayProcessor : public OverlayProcessorUsingStrategy {
     }
 
     void ProposePrioritized(
-        const skia::Matrix44& output_color_matrix,
+        const SkM44& output_color_matrix,
         const FilterOperationsMap& render_pass_backdrop_filters,
         DisplayResourceProvider* resource_provider,
         AggregatedRenderPassList* render_pass_list,
@@ -3877,7 +3877,7 @@ class ContentBoundsOverlayProcessor : public OverlayProcessorUsingStrategy {
     }
 
     bool AttemptPrioritized(
-        const skia::Matrix44& output_color_matrix,
+        const SkM44& output_color_matrix,
         const FilterOperationsMap& render_pass_backdrop_filters,
         DisplayResourceProvider* resource_provider,
         AggregatedRenderPassList* render_pass_list,

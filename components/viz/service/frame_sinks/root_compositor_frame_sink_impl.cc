@@ -260,7 +260,7 @@ void RootCompositorFrameSinkImpl::Resize(const gfx::Size& size) {
 
 void RootCompositorFrameSinkImpl::SetDisplayColorMatrix(
     const gfx::Transform& color_matrix) {
-  display_->SetColorMatrix(color_matrix.matrix());
+  display_->SetColorMatrix(color_matrix.GetMatrixAsSkM44());
 }
 
 void RootCompositorFrameSinkImpl::SetDisplayColorSpaces(

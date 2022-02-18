@@ -55,7 +55,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   void ProcessForOverlays(
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_passes,
-      const skia::Matrix44& output_color_matrix,
+      const SkM44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
@@ -166,7 +166,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // through as a const member because the underlay strategy changes the
   // |primary_plane|'s blending setting.
   bool AttemptWithStrategies(
-      const skia::Matrix44& output_color_matrix,
+      const SkM44& output_color_matrix,
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
       DisplayResourceProvider* resource_provider,
@@ -184,7 +184,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // through as a const member because the underlay strategy changes the
   // |primary_plane|'s blending setting.
   bool AttemptWithStrategiesPrioritized(
-      const skia::Matrix44& output_color_matrix,
+      const SkM44& output_color_matrix,
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
       DisplayResourceProvider* resource_provider,

@@ -216,8 +216,8 @@ AggregatedRenderPassDrawQuad* CreateRenderPassDrawQuadAt(
   return quad;
 }
 
-skia::Matrix44 GetIdentityColorMatrix() {
-  return skia::Matrix44(skia::Matrix44::kIdentity_Constructor);
+SkM44 GetIdentityColorMatrix() {
+  return SkM44();
 }
 
 class DCLayerOverlayTest : public testing::Test {

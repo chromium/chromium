@@ -256,9 +256,9 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixNoCTMSupport) {
   EXPECT_FALSE(base::MatchPattern(actions, "*set_color_matrix*"));
 
   // Attempt to set a color matrix.
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
-  matrix.set(1, 1, 0.7);
-  matrix.set(2, 2, 0.3);
+  SkM44 matrix;
+  matrix.setRC(1, 1, 0.7);
+  matrix.setRC(2, 2, 0.3);
   EXPECT_FALSE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));
   EXPECT_EQ(color_manager_->displays_ctm_support(),
             DisplayColorManager::DisplayCtmSupport::kNone);
@@ -288,9 +288,9 @@ TEST_F(DisplayColorManagerTest,
   log_->GetActionsAndClear();
 
   // Attempt to set a color matrix.
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
-  matrix.set(1, 1, 0.7);
-  matrix.set(2, 2, 0.3);
+  SkM44 matrix;
+  matrix.setRC(1, 1, 0.7);
+  matrix.setRC(2, 2, 0.3);
   EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));
   EXPECT_EQ(color_manager_->displays_ctm_support(),
             DisplayColorManager::DisplayCtmSupport::kAll);
@@ -345,9 +345,9 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixWithMixedCTMSupport) {
             DisplayColorManager::DisplayCtmSupport::kMixed);
 
   // Attempt to set a color matrix.
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
-  matrix.set(1, 1, 0.7);
-  matrix.set(2, 2, 0.3);
+  SkM44 matrix;
+  matrix.setRC(1, 1, 0.7);
+  matrix.setRC(2, 2, 0.3);
   EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayWithCtmId, matrix));
   // This display has no color calibration data. Gamma/degamma won't be
   // affected. Color matrix is applied as is.
@@ -382,9 +382,9 @@ TEST_F(DisplayColorManagerTest,
   log_->GetActionsAndClear();
 
   // Attempt to set a color matrix.
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
-  matrix.set(1, 1, 0.7);
-  matrix.set(2, 2, 0.3);
+  SkM44 matrix;
+  matrix.setRC(1, 1, 0.7);
+  matrix.setRC(2, 2, 0.3);
   EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));
   EXPECT_EQ(color_manager_->displays_ctm_support(),
             DisplayColorManager::DisplayCtmSupport::kAll);

@@ -199,9 +199,9 @@ TEST_F(CompositorTestWithMessageLoop, ShouldUpdateDisplayProperties) {
   // Set a non-identity color matrix, color space, sdr white level, vsync
   // timebase and vsync interval, and expect it to be set on the context
   // factory.
-  skia::Matrix44 color_matrix(skia::Matrix44::kIdentity_Constructor);
-  color_matrix.set(1, 1, 0.7f);
-  color_matrix.set(2, 2, 0.4f);
+  SkM44 color_matrix;
+  color_matrix.setRC(1, 1, 0.7f);
+  color_matrix.setRC(2, 2, 0.4f);
   gfx::DisplayColorSpaces display_color_spaces(
       gfx::ColorSpace::CreateDisplayP3D65());
   display_color_spaces.SetSDRMaxLuminanceNits(1.f);

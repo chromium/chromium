@@ -80,8 +80,8 @@ gfx::Vector3dF GetDisplayCompositorRGBScaleFactors(int64_t display_id) {
   ui::Compositor* compositor = host->compositor();
   DCHECK(compositor);
 
-  const skia::Matrix44& matrix = compositor->display_color_matrix();
-  return gfx::Vector3dF(matrix.get(0, 0), matrix.get(1, 1), matrix.get(2, 2));
+  const SkM44& matrix = compositor->display_color_matrix();
+  return gfx::Vector3dF(matrix.rc(0, 0), matrix.rc(1, 1), matrix.rc(2, 2));
 }
 
 // Returns a vector with a Vector3dF for each compositor.

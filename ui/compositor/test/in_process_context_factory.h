@@ -77,7 +77,7 @@ class InProcessContextFactory : public ContextFactory {
   viz::SubtreeCaptureId AllocateSubtreeCaptureId() override;
   viz::HostFrameSinkManager* GetHostFrameSinkManager() override;
 
-  skia::Matrix44 GetOutputColorMatrix(Compositor* compositor) const;
+  SkM44 GetOutputColorMatrix(Compositor* compositor) const;
   gfx::DisplayColorSpaces GetDisplayColorSpaces(Compositor* compositor) const;
   base::TimeTicks GetDisplayVSyncTimeBase(Compositor* compositor) const;
   base::TimeDelta GetDisplayVSyncTimeInterval(Compositor* compositor) const;

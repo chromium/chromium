@@ -8,7 +8,6 @@
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/service/hit_test/hit_test_aggregator_delegate.h"
 #include "components/viz/service/surfaces/latest_local_surface_id_lookup_delegate.h"
-#include "skia/ext/skia_matrix_44.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {

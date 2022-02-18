@@ -18,11 +18,8 @@
 struct skcms_Matrix3x3;
 struct skcms_TransferFunction;
 class SkColorSpace;
+class SkM44;
 enum SkYUVColorSpace : int;
-
-namespace skia {
-class Matrix44;
-}  // namespace skia
 
 // These forward declarations are used to give IPC code friend access to private
 // fields of gfx::ColorSpace for the purpose of serialization and
@@ -330,7 +327,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   }
 
   void GetPrimaryMatrix(skcms_Matrix3x3* to_XYZD50) const;
-  void GetPrimaryMatrix(skia::Matrix44* to_XYZD50) const;
+  SkM44 GetPrimaryMatrix() const;
   bool GetTransferFunction(skcms_TransferFunction* fn) const;
   bool GetInverseTransferFunction(skcms_TransferFunction* fn) const;
 
@@ -345,11 +342,11 @@ class COLOR_SPACE_EXPORT ColorSpace {
 
   // Returns the transfer matrix for |bit_depth|. For most formats, this is the
   // RGB to YUV matrix.
-  void GetTransferMatrix(int bit_depth, skia::Matrix44* matrix) const;
+  SkM44 GetTransferMatrix(int bit_depth) const;
 
   // Returns the range adjust matrix that converts from |range_| to full range
   // for |bit_depth|.
-  void GetRangeAdjustMatrix(int bit_depth, skia::Matrix44* matrix) const;
+  SkM44 GetRangeAdjustMatrix(int bit_depth) const;
 
   // Returns the current primary ID.
   // Note: if SetCustomPrimaries() has been used, the primary ID returned

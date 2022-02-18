@@ -30,7 +30,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStrategy {
   // and adds any additional passes necessary to represent overlays to
   // |render_pass_list|. Most strategies should look at the primary
   // RenderPass, the last element.
-  virtual bool Attempt(const skia::Matrix44& output_color_matrix,
+  virtual bool Attempt(const SkM44& output_color_matrix,
                        const OverlayProcessorInterface::FilterOperationsMap&
                            render_pass_backdrop_filters,
                        DisplayResourceProvider* resource_provider,
@@ -45,7 +45,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStrategy {
   // should not attempt a specific candidate it should merely identify them
   // and save the necessary data required to for a later attempt.
   virtual void ProposePrioritized(
-      const skia::Matrix44& output_color_matrix,
+      const SkM44& output_color_matrix,
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
       DisplayResourceProvider* resource_provider,
@@ -61,7 +61,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStrategy {
   // represent overlays to |render_pass_list|. Most strategies should look at
   // the primary RenderPass, the last element.
   virtual bool AttemptPrioritized(
-      const skia::Matrix44& output_color_matrix,
+      const SkM44& output_color_matrix,
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
       DisplayResourceProvider* resource_provider,

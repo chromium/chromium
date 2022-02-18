@@ -175,14 +175,14 @@ int GetTemperatureRange(float temperature) {
 // If |in_linear_gamma_space| is true, the generated matrix is the one that
 // should be applied after gamma correction, and it corresponds to the
 // non-linear temperature value for the given |temperature|.
-skia::Matrix44 MatrixFromTemperature(float temperature,
-                                     bool in_linear_gamma_space,
-                                     bool apply_ambient_temperature) {
+SkM44 MatrixFromTemperature(float temperature,
+                            bool in_linear_gamma_space,
+                            bool apply_ambient_temperature) {
   if (in_linear_gamma_space)
     temperature =
         NightLightControllerImpl::GetNonLinearTemperature(temperature);
 
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
+  SkM44 matrix;
   if (temperature != 0.0f) {
     const float blue_scale =
         NightLightControllerImpl::BlueColorScaleFromTemperature(temperature);
@@ -190,8 +190,8 @@ skia::Matrix44 MatrixFromTemperature(float temperature,
         NightLightControllerImpl::GreenColorScaleFromTemperature(
             temperature, in_linear_gamma_space);
 
-    matrix.set(1, 1, green_scale);
-    matrix.set(2, 2, blue_scale);
+    matrix.setRC(1, 1, green_scale);
+    matrix.setRC(2, 2, blue_scale);
   }
 
   auto* night_light_controller = Shell::Get()->night_light_controller();
@@ -203,9 +203,9 @@ skia::Matrix44 MatrixFromTemperature(float temperature,
     // Multiply the two scale factors.
     // If either night light or ambient EQ are disabled the CTM will be affected
     // only by the enabled effect.
-    matrix.set(0, 0, ambient_rgb_scaling_factors.x());
-    matrix.set(1, 1, matrix.get(1, 1) * ambient_rgb_scaling_factors.y());
-    matrix.set(2, 2, matrix.get(2, 2) * ambient_rgb_scaling_factors.z());
+    matrix.setRC(0, 0, ambient_rgb_scaling_factors.x());
+    matrix.setRC(1, 1, matrix.rc(1, 1) * ambient_rgb_scaling_factors.y());
+    matrix.setRC(2, 2, matrix.rc(2, 2) * ambient_rgb_scaling_factors.z());
   }
 
   return matrix;
@@ -215,11 +215,11 @@ skia::Matrix44 MatrixFromTemperature(float temperature,
 // either apply the |night_light_matrix| on the compositor, or reset it to
 // the identity matrix to avoid having double the Night Light effect.
 void UpdateCompositorMatrix(aura::WindowTreeHost* host,
-                            const skia::Matrix44& night_light_matrix,
+                            const SkM44& night_light_matrix,
                             bool crtc_matrix_result) {
   if (host->compositor()) {
     host->compositor()->SetDisplayColorMatrix(
-        crtc_matrix_result ? skia::Matrix44::I() : night_light_matrix);
+        crtc_matrix_result ? SkM44() : night_light_matrix);
   }
 }
 
@@ -233,8 +233,8 @@ void UpdateCompositorMatrix(aura::WindowTreeHost* host,
 // Returns true if the hardware supports this operation and one of the
 // matrices was successfully sent to the GPU.
 bool AttemptSettingHardwareCtm(int64_t display_id,
-                               const skia::Matrix44& linear_gamma_space_matrix,
-                               const skia::Matrix44& gamma_compressed_matrix) {
+                               const SkM44& linear_gamma_space_matrix,
+                               const SkM44& gamma_compressed_matrix) {
   for (const auto* snapshot :
        Shell::Get()->display_configurator()->cached_displays()) {
     if (snapshot->display_id() == display_id &&
@@ -275,9 +275,9 @@ void ApplyTemperatureToHost(aura::WindowTreeHost* host, float temperature) {
       night_light_controller->GetAmbientColorEnabled() &&
       display::Display::IsInternalDisplayId(display_id);
 
-  const skia::Matrix44 linear_gamma_space_matrix =
+  const SkM44 linear_gamma_space_matrix =
       MatrixFromTemperature(temperature, true, apply_ambient_temperature);
-  const skia::Matrix44 gamma_compressed_matrix =
+  const SkM44 gamma_compressed_matrix =
       MatrixFromTemperature(temperature, false, apply_ambient_temperature);
   const bool crtc_result = AttemptSettingHardwareCtm(
       display_id, linear_gamma_space_matrix, gamma_compressed_matrix);

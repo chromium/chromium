@@ -168,7 +168,7 @@ class InProcessContextFactory::PerCompositorData
   }
 #endif
   void SetDisplayColorMatrix(const gfx::Transform& matrix) override {
-    output_color_matrix_ = matrix.matrix();
+    output_color_matrix_ = matrix.GetMatrixAsSkM44();
   }
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& color_spaces) override {
@@ -210,7 +210,7 @@ class InProcessContextFactory::PerCompositorData
   }
 
   void ResetDisplayOutputParameters() {
-    output_color_matrix_.setIdentity();
+    output_color_matrix_ = SkM44();
     display_color_spaces_ = gfx::DisplayColorSpaces();
     vsync_timebase_ = base::TimeTicks();
     vsync_interval_ = base::TimeDelta();
@@ -222,7 +222,7 @@ class InProcessContextFactory::PerCompositorData
   }
   viz::Display* display() { return display_.get(); }
 
-  skia::Matrix44 output_color_matrix() { return output_color_matrix_; }
+  SkM44 output_color_matrix() { return output_color_matrix_; }
   gfx::DisplayColorSpaces display_color_spaces() {
     return display_color_spaces_;
   }
@@ -234,7 +234,7 @@ class InProcessContextFactory::PerCompositorData
   std::unique_ptr<viz::BeginFrameSource> begin_frame_source_;
   std::unique_ptr<viz::Display> display_;
 
-  skia::Matrix44 output_color_matrix_;
+  SkM44 output_color_matrix_;
   gfx::DisplayColorSpaces display_color_spaces_;
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_;
@@ -457,11 +457,11 @@ viz::HostFrameSinkManager* InProcessContextFactory::GetHostFrameSinkManager() {
   return host_frame_sink_manager_;
 }
 
-skia::Matrix44 InProcessContextFactory::GetOutputColorMatrix(
+SkM44 InProcessContextFactory::GetOutputColorMatrix(
     Compositor* compositor) const {
   auto iter = per_compositor_data_.find(compositor);
   if (iter == per_compositor_data_.end())
-    return skia::Matrix44(skia::Matrix44::kIdentity_Constructor);
+    return SkM44();
 
   return iter->second->output_color_matrix();
 }

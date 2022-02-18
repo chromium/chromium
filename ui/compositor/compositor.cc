@@ -416,7 +416,7 @@ cc::AnimationTimeline* Compositor::GetAnimationTimeline() const {
   return animation_timeline_.get();
 }
 
-void Compositor::SetDisplayColorMatrix(const skia::Matrix44& matrix) {
+void Compositor::SetDisplayColorMatrix(const SkM44& matrix) {
   display_color_matrix_ = matrix;
   if (display_private_)
     display_private_->SetDisplayColorMatrix(gfx::Transform(matrix));

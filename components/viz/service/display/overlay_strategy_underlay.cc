@@ -23,7 +23,7 @@ OverlayStrategyUnderlay::OverlayStrategyUnderlay(
 OverlayStrategyUnderlay::~OverlayStrategyUnderlay() {}
 
 bool OverlayStrategyUnderlay::Attempt(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -90,7 +90,7 @@ bool OverlayStrategyUnderlay::Attempt(
 }
 
 void OverlayStrategyUnderlay::ProposePrioritized(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -133,7 +133,7 @@ void OverlayStrategyUnderlay::ProposePrioritized(
 }
 
 bool OverlayStrategyUnderlay::AttemptPrioritized(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,

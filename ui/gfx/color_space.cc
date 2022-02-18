@@ -12,11 +12,13 @@
 #include "base/atomic_sequence_num.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkICC.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/skia_color_space_util.h"
@@ -944,10 +946,10 @@ void ColorSpace::GetPrimaryMatrix(skcms_Matrix3x3* to_XYZD50) const {
   }
 }
 
-void ColorSpace::GetPrimaryMatrix(skia::Matrix44* to_XYZD50) const {
+SkM44 ColorSpace::GetPrimaryMatrix() const {
   skcms_Matrix3x3 toXYZ_3x3;
   GetPrimaryMatrix(&toXYZ_3x3);
-  to_XYZD50->set3x3RowMajorf(&toXYZ_3x3.vals[0][0]);
+  return SkM44FromRowMajor3x3(&toXYZ_3x3.vals[0][0]);
 }
 
 // static
@@ -1074,8 +1076,7 @@ bool ColorSpace::GetPiecewiseHDRParams(float* sdr_joint,
   return true;
 }
 
-void ColorSpace::GetTransferMatrix(int bit_depth,
-                                   skia::Matrix44* matrix) const {
+SkM44 ColorSpace::GetTransferMatrix(int bit_depth) const {
   DCHECK_GE(bit_depth, 8);
   // If chroma samples are real numbers in the range of −0.5 to 0.5, an offset
   // of 0.5 is added to get real numbers in the range of 0 to 1. When
@@ -1092,8 +1093,7 @@ void ColorSpace::GetTransferMatrix(int bit_depth,
   switch (matrix_) {
     case ColorSpace::MatrixID::RGB:
     case ColorSpace::MatrixID::INVALID:
-      matrix->setIdentity();
-      return;
+      return SkM44();
 
     case ColorSpace::MatrixID::BT709:
       Kr = 0.2126f;
@@ -1121,8 +1121,7 @@ void ColorSpace::GetTransferMatrix(int bit_depth,
                         -0.25f, 0.5f, -0.25f, chroma_0_5,  // Cg
                         0.5f,   0.0f, -0.5f,  chroma_0_5,  // Co
                         0.0f,   0.0f, 0.0f,   1.0f};
-      matrix->setRowMajorf(data);
-      return;
+      return SkM44::RowMajor(data);
     }
 
     // BT2020_CL is a special case.
@@ -1136,8 +1135,7 @@ void ColorSpace::GetTransferMatrix(int bit_depth,
                         Kr,   1.0f - Kr - Kb, Kb,   0.0f,  // Y
                         0.0f, 0.0f,           1.0f, 0.0f,  // B
                         0.0f, 0.0f,           0.0f, 1.0f};
-      matrix->setRowMajorf(data);
-      return;
+      return SkM44::RowMajor(data);
     }
 
     case ColorSpace::MatrixID::BT2020_NCL:
@@ -1154,16 +1152,14 @@ void ColorSpace::GetTransferMatrix(int bit_depth,
           0.0f,              0.0f,             0.0f, 1.0f,
       };
       // clang-format on
-      matrix->setRowMajorf(data);
-      return;
+      return SkM44::RowMajor(data);
     }
     case ColorSpace::MatrixID::GBR: {
       float data[16] = {0.0f, 1.0f, 0.0f, 0.0f,  // G
                         0.0f, 0.0f, 1.0f, 0.0f,  // B
                         1.0f, 0.0f, 0.0f, 0.0f,  // R
                         0.0f, 0.0f, 0.0f, 1.0f};
-      matrix->setRowMajorf(data);
-      return;
+      return SkM44::RowMajor(data);
     }
   }
   float Kg = 1.0f - Kr - Kb;
@@ -1177,17 +1173,15 @@ void ColorSpace::GetTransferMatrix(int bit_depth,
                    0.0f,      0.0f,              0.0f, 1.0f,
   };
   // clang-format on
-  matrix->setRowMajorf(data);
+  return SkM44::RowMajor(data);
 }
 
-void ColorSpace::GetRangeAdjustMatrix(int bit_depth,
-                                      skia::Matrix44* matrix) const {
+SkM44 ColorSpace::GetRangeAdjustMatrix(int bit_depth) const {
   DCHECK_GE(bit_depth, 8);
   switch (range_) {
     case RangeID::FULL:
     case RangeID::INVALID:
-      matrix->setIdentity();
-      return;
+      return SkM44();
 
     case RangeID::DERIVED:
     case RangeID::LIMITED:
@@ -1204,11 +1198,9 @@ void ColorSpace::GetRangeAdjustMatrix(int bit_depth,
     case MatrixID::RGB:
     case MatrixID::GBR:
     case MatrixID::INVALID:
-    case MatrixID::YCOCG: {
-      matrix->setScale(scale_y, scale_y, scale_y);
-      matrix->postTranslate(-16.0f / 219.0f, -16.0f / 219.0f, -16.0f / 219.0f);
-      break;
-    }
+    case MatrixID::YCOCG:
+      return SkM44::Scale(scale_y, scale_y, scale_y)
+          .postTranslate(-16.0f / 219.0f, -16.0f / 219.0f, -16.0f / 219.0f);
 
     case MatrixID::BT709:
     case MatrixID::FCC:
@@ -1221,11 +1213,12 @@ void ColorSpace::GetRangeAdjustMatrix(int bit_depth,
       const float a_uv = 224 << shift;
       const float scale_uv = c / a_uv;
       const float translate_uv = (a_uv - c) / (2.0f * a_uv);
-      matrix->setScale(scale_y, scale_uv, scale_uv);
-      matrix->postTranslate(-16.0f / 219.0f, translate_uv, translate_uv);
-      break;
+      return SkM44::Scale(scale_y, scale_uv, scale_uv)
+          .postTranslate(-16.0f / 219.0f, translate_uv, translate_uv);
     }
   }
+  NOTREACHED();
+  return SkM44();
 }
 
 bool ColorSpace::ToSkYUVColorSpace(int bit_depth, SkYUVColorSpace* out) const {

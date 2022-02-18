@@ -22,7 +22,7 @@ OverlayStrategyFullscreen::OverlayStrategyFullscreen(
 OverlayStrategyFullscreen::~OverlayStrategyFullscreen() {}
 
 bool OverlayStrategyFullscreen::Attempt(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -80,7 +80,7 @@ bool OverlayStrategyFullscreen::Attempt(
 }
 
 void OverlayStrategyFullscreen::ProposePrioritized(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -126,7 +126,7 @@ void OverlayStrategyFullscreen::ProposePrioritized(
 }
 
 bool OverlayStrategyFullscreen::AttemptPrioritized(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,

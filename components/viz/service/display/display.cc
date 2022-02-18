@@ -519,7 +519,7 @@ void Display::DisableSwapUntilResize(
     std::move(no_pending_swaps_callback).Run();
 }
 
-void Display::SetColorMatrix(const skia::Matrix44& matrix) {
+void Display::SetColorMatrix(const SkM44& matrix) {
   if (output_surface_)
     output_surface_->set_color_matrix(matrix);
 

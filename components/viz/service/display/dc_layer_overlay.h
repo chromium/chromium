@@ -15,7 +15,6 @@
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/hdr_metadata.h"

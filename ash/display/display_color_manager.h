@@ -15,7 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "skia/ext/skia_matrix_44.h"
+#include "third_party/skia/include/core/SkM44.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/types/display_constants.h"
@@ -67,13 +67,12 @@ class ASH_EXPORT DisplayColorManager
   // this display. This doesn't affect gamma or degamma values.
   // Returns true if the hardware supports this operation and the matrix was
   // successfully sent to the GPU.
-  bool SetDisplayColorMatrix(int64_t display_id,
-                             const skia::Matrix44& color_matrix);
+  bool SetDisplayColorMatrix(int64_t display_id, const SkM44& color_matrix);
 
   // Similar to the above but can be used when a display snapshot is known to
   // the caller.
   bool SetDisplayColorMatrix(const display::DisplaySnapshot* display_snapshot,
-                             const skia::Matrix44& color_matrix);
+                             const SkM44& color_matrix);
 
   // display::DisplayConfigurator::Observer
   void OnDisplayModeChanged(
@@ -157,7 +156,7 @@ class ASH_EXPORT DisplayColorManager
   // Contains a per display color transform matrix that can be post-multiplied
   // by any available color calibration matrix for the corresponding display.
   // The key is the display ID.
-  base::flat_map<int64_t, skia::Matrix44> displays_color_matrix_map_;
+  base::flat_map<int64_t, SkM44> displays_color_matrix_map_;
 
   // Maps a display's color calibration data by the display's product code as
   // the key.

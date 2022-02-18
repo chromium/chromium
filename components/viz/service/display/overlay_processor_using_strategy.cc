@@ -123,7 +123,7 @@ void OverlayProcessorUsingStrategy::SetFrameSequenceNumber(
 void OverlayProcessorUsingStrategy::ProcessForOverlays(
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_passes,
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
@@ -395,7 +395,7 @@ void OverlayProcessorUsingStrategy::AdjustOutputSurfaceOverlay(
 }
 
 bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -523,7 +523,7 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidatesPrioritized(
 }
 
 bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,

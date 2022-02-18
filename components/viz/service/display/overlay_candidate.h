@@ -66,7 +66,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   static CandidateStatus FromDrawQuad(
       DisplayResourceProvider* resource_provider,
       SurfaceDamageRectList* surface_damage_rect_list,
-      const skia::Matrix44& output_color_matrix,
+      const SkM44& output_color_matrix,
       const DrawQuad* quad,
       const gfx::RectF& primary_rect,
       OverlayCandidate* candidate,

@@ -138,7 +138,7 @@ OverlayCandidate::~OverlayCandidate() = default;
 OverlayCandidate::CandidateStatus OverlayCandidate::FromDrawQuad(
     DisplayResourceProvider* resource_provider,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const DrawQuad* quad,
     const gfx::RectF& primary_rect,
     OverlayCandidate* candidate,
@@ -146,7 +146,7 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromDrawQuad(
   // It is currently not possible to set a color conversion matrix on an HW
   // overlay plane.
   // TODO(https://crbug.com/792757): Remove this check once the bug is resolved.
-  if (!output_color_matrix.isIdentity())
+  if (output_color_matrix != SkM44())
     return CandidateStatus::kFailColorMatrix;
 
   const SharedQuadState* sqs = quad->shared_quad_state;

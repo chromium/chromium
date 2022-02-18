@@ -2167,10 +2167,10 @@ void GLRenderer::DrawSolidColorQuad(const SolidColorDrawQuad* quad,
 
   // Apply any color matrix that may be present.
   if (HasOutputColorMatrix()) {
-    const skia::Matrix44& output_color_matrix = output_surface_->color_matrix();
-    const skia::Vector4 color_v(color_f.fR, color_f.fG, color_f.fB, color_f.fA);
-    const skia::Vector4 result = output_color_matrix * color_v;
-    std::copy(result.fData, result.fData + 4, color_f.vec());
+    const SkM44& output_color_matrix = output_surface_->color_matrix();
+    const SkV4 color_v{color_f.fR, color_f.fG, color_f.fB, color_f.fA};
+    const SkV4 result = output_color_matrix * color_v;
+    std::copy(result.ptr(), result.ptr() + 4, color_f.vec());
     color = color_f.toSkColor();
   }
 
@@ -3751,7 +3751,7 @@ void GLRenderer::SetUseProgram(const ProgramKey& program_key_no_color,
   if (has_output_color_matrix) {
     DCHECK_NE(current_program_->output_color_matrix_location(), -1);
     float matrix[16];
-    output_surface_->color_matrix().asColMajorf(matrix);
+    output_surface_->color_matrix().getColMajor(matrix);
     gl_->UniformMatrix4fv(current_program_->output_color_matrix_location(), 1,
                           false, matrix);
   }
@@ -4399,8 +4399,8 @@ ResourceFormat GLRenderer::CurrentRenderPassResourceFormat() const {
 bool GLRenderer::HasOutputColorMatrix() const {
   const bool is_root_render_pass =
       current_frame()->current_render_pass == current_frame()->root_render_pass;
-  const skia::Matrix44& output_color_matrix = output_surface_->color_matrix();
-  return is_root_render_pass && !output_color_matrix.isIdentity();
+  const SkM44& output_color_matrix = output_surface_->color_matrix();
+  return is_root_render_pass && output_color_matrix != SkM44();
 }
 
 bool GLRenderer::CanUseFastSolidColorDraw(

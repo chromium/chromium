@@ -1200,10 +1200,10 @@ TEST_P(GPURendererPixelTest, SolidColorWithTemperature) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  skia::Matrix44 color_matrix(skia::Matrix44::kIdentity_Constructor);
-  color_matrix.set(0, 0, 0.7f);
-  color_matrix.set(1, 1, 0.4f);
-  color_matrix.set(2, 2, 0.5f);
+  SkM44 color_matrix;
+  color_matrix.setRC(0, 0, 0.7f);
+  color_matrix.setRC(1, 1, 0.4f);
+  color_matrix.setRC(2, 2, 0.5f);
   this->output_surface_->set_color_matrix(color_matrix);
 
   EXPECT_TRUE(this->RunPixelTest(
@@ -1240,10 +1240,10 @@ TEST_P(GPURendererPixelTest, SolidColorWithTemperatureNonRootRenderPass) {
 
   // Set a non-identity output color matrix on the output surface, and expect
   // that the colors will be transformed.
-  skia::Matrix44 color_matrix(skia::Matrix44::kIdentity_Constructor);
-  color_matrix.set(0, 0, 0.7f);
-  color_matrix.set(1, 1, 0.4f);
-  color_matrix.set(2, 2, 0.5f);
+  SkM44 color_matrix;
+  color_matrix.setRC(0, 0, 0.7f);
+  color_matrix.setRC(1, 1, 0.4f);
+  color_matrix.setRC(2, 2, 0.5f);
   this->output_surface_->set_color_matrix(color_matrix);
 
   EXPECT_TRUE(this->RunPixelTest(
@@ -1965,10 +1965,10 @@ TEST_P(VideoRendererPixelTest, SimpleYUVJRectWithTemperature) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  skia::Matrix44 color_matrix(skia::Matrix44::kIdentity_Constructor);
-  color_matrix.set(0, 0, 0.7f);
-  color_matrix.set(1, 1, 0.4f);
-  color_matrix.set(2, 2, 0.5f);
+  SkM44 color_matrix;
+  color_matrix.setRC(0, 0, 0.7f);
+  color_matrix.setRC(1, 1, 0.4f);
+  color_matrix.setRC(2, 2, 0.5f);
   this->output_surface_->set_color_matrix(color_matrix);
 
   EXPECT_TRUE(this->RunPixelTest(

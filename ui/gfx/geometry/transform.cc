@@ -70,6 +70,14 @@ Transform::Transform(SkScalar col1row1,
                  x_translation, y_translation, 0, 1);
 }
 
+// TODO(crbug.com/1167153): This implementation is temporary before we change
+// matrix_ to SkM44 type.
+Transform::Transform(const SkM44& matrix) {
+  float data[16];
+  matrix.getRowMajor(data);
+  matrix_.setRowMajor(data);
+}
+
 Transform::Transform(const Quaternion& q)
     : matrix_(skia::Matrix44::kUninitialized_Constructor) {
   double x = q.x();

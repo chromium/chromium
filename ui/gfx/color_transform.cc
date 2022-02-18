@@ -15,9 +15,9 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/skia_color_space_util.h"
 
@@ -48,9 +48,9 @@ std::string Str(float f) {
   return ss.str();
 }
 
-Transform Invert(const Transform& t) {
-  Transform ret = t;
-  if (!t.GetInverse(&ret)) {
+SkM44 Invert(const SkM44& t) {
+  SkM44 ret = t;
+  if (!t.invert(&ret)) {
     LOG(ERROR) << "Inverse should always be possible.";
   }
   return ret;
@@ -144,25 +144,6 @@ float ToLinear(ColorSpace::TransferID id, float v) {
   return 0;
 }
 
-Transform GetTransferMatrix(const gfx::ColorSpace& color_space, int bit_depth) {
-  skia::Matrix44 transfer_matrix;
-  color_space.GetTransferMatrix(bit_depth, &transfer_matrix);
-  return Transform(transfer_matrix);
-}
-
-Transform GetRangeAdjustMatrix(const gfx::ColorSpace& color_space,
-                               int bit_depth) {
-  skia::Matrix44 range_adjust_matrix;
-  color_space.GetRangeAdjustMatrix(bit_depth, &range_adjust_matrix);
-  return Transform(range_adjust_matrix);
-}
-
-Transform GetPrimaryTransform(const gfx::ColorSpace& color_space) {
-  skia::Matrix44 primary_matrix;
-  color_space.GetPrimaryMatrix(&primary_matrix);
-  return Transform(primary_matrix);
-}
-
 }  // namespace
 
 class ColorTransformMatrix;
@@ -247,74 +228,80 @@ class ColorTransformNull : public ColorTransformStep {
 
 class ColorTransformMatrix : public ColorTransformStep {
  public:
-  explicit ColorTransformMatrix(const class Transform& matrix)
-      : matrix_(matrix) {}
+  explicit ColorTransformMatrix(const SkM44& matrix) : matrix_(matrix) {}
   ColorTransformMatrix* GetMatrix() override { return this; }
   bool Join(ColorTransformStep* next_untyped) override {
     ColorTransformMatrix* next = next_untyped->GetMatrix();
     if (!next)
       return false;
-    class Transform tmp = next->matrix_;
-    tmp *= matrix_;
-    matrix_ = tmp;
+    matrix_.postConcat(next->matrix_);
     return true;
   }
 
-  bool IsNull() override {
-    return SkMatrixIsApproximatelyIdentity(matrix_.matrix());
-  }
+  bool IsNull() override { return SkM44IsApproximatelyIdentity(matrix_); }
 
   void Transform(ColorTransform::TriStim* colors, size_t num) const override {
-    for (size_t i = 0; i < num; i++)
-      matrix_.TransformPoint(colors + i);
+    for (size_t i = 0; i < num; i++) {
+      auto& color = colors[i];
+      SkV4 mapped = matrix_.map(color.x(), color.y(), color.z(), 1);
+      color.SetPoint(mapped.x, mapped.y, mapped.z);
+    }
   }
 
   void AppendShaderSource(std::stringstream* hdr,
                           std::stringstream* src,
                           size_t step_index) const override {
-    const skia::Matrix44& m = matrix_.matrix();
     *src << "  color = mat3(";
-    *src << m.get(0, 0) << ", " << m.get(1, 0) << ", " << m.get(2, 0) << ",";
+    *src << matrix_.rc(0, 0) << ", " << matrix_.rc(1, 0) << ", "
+         << matrix_.rc(2, 0) << ",";
     *src << endl;
     *src << "               ";
-    *src << m.get(0, 1) << ", " << m.get(1, 1) << ", " << m.get(2, 1) << ",";
+    *src << matrix_.rc(0, 1) << ", " << matrix_.rc(1, 1) << ", "
+         << matrix_.rc(2, 1) << ",";
     *src << endl;
     *src << "               ";
-    *src << m.get(0, 2) << ", " << m.get(1, 2) << ", " << m.get(2, 2) << ")";
+    *src << matrix_.rc(0, 2) << ", " << matrix_.rc(1, 2) << ", "
+         << matrix_.rc(2, 2) << ")";
     *src << " * color;" << endl;
 
     // Only print the translational component if it isn't the identity.
-    if (m.get(0, 3) != 0.f || m.get(1, 3) != 0.f || m.get(2, 3) != 0.f) {
+    if (matrix_.rc(0, 3) != 0.f || matrix_.rc(1, 3) != 0.f ||
+        matrix_.rc(2, 3) != 0.f) {
       *src << "  color += vec3(";
-      *src << m.get(0, 3) << ", " << m.get(1, 3) << ", " << m.get(2, 3);
+      *src << matrix_.rc(0, 3) << ", " << matrix_.rc(1, 3) << ", "
+           << matrix_.rc(2, 3);
       *src << ");" << endl;
     }
   }
 
   void AppendSkShaderSource(std::stringstream* src) const override {
-    const skia::Matrix44& m = matrix_.matrix();
     *src << "  color = half4x4(";
-    *src << m.get(0, 0) << ", " << m.get(1, 0) << ", " << m.get(2, 0) << ", 0,";
+    *src << matrix_.rc(0, 0) << ", " << matrix_.rc(1, 0) << ", "
+         << matrix_.rc(2, 0) << ", 0,";
     *src << endl;
     *src << "               ";
-    *src << m.get(0, 1) << ", " << m.get(1, 1) << ", " << m.get(2, 1) << ", 0,";
+    *src << matrix_.rc(0, 1) << ", " << matrix_.rc(1, 1) << ", "
+         << matrix_.rc(2, 1) << ", 0,";
     *src << endl;
     *src << "               ";
-    *src << m.get(0, 2) << ", " << m.get(1, 2) << ", " << m.get(2, 2) << ", 0,";
+    *src << matrix_.rc(0, 2) << ", " << matrix_.rc(1, 2) << ", "
+         << matrix_.rc(2, 2) << ", 0,";
     *src << endl;
     *src << "0, 0, 0, 1)";
     *src << " * color;" << endl;
 
     // Only print the translational component if it isn't the identity.
-    if (m.get(0, 3) != 0.f || m.get(1, 3) != 0.f || m.get(2, 3) != 0.f) {
+    if (matrix_.rc(0, 3) != 0.f || matrix_.rc(1, 3) != 0.f ||
+        matrix_.rc(2, 3) != 0.f) {
       *src << "  color += half4(";
-      *src << m.get(0, 3) << ", " << m.get(1, 3) << ", " << m.get(2, 3);
+      *src << matrix_.rc(0, 3) << ", " << matrix_.rc(1, 3) << ", "
+           << matrix_.rc(2, 3);
       *src << ", 0);" << endl;
     }
   }
 
  private:
-  class Transform matrix_;
+  class SkM44 matrix_;
 };
 
 class ColorTransformPerChannelTransferFn : public ColorTransformStep {
@@ -1117,7 +1104,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
       src.GetMatrixID() == ColorSpace::MatrixID::GBR ||
       src.GetMatrixID() == ColorSpace::MatrixID::YCOCG;
   auto src_range_adjust_matrix = std::make_unique<ColorTransformMatrix>(
-      GetRangeAdjustMatrix(src, options.src_bit_depth));
+      src.GetRangeAdjustMatrix(options.src_bit_depth));
 
   if (!src_matrix_is_identity_or_ycgco)
     steps_.push_back(std::move(src_range_adjust_matrix));
@@ -1127,7 +1114,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     steps_.push_back(std::make_unique<ColorTransformFromBT2020CL>());
   } else {
     steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        Invert(GetTransferMatrix(src, options.src_bit_depth))));
+        Invert(src.GetTransferMatrix(options.src_bit_depth))));
   }
 
   if (src_matrix_is_identity_or_ycgco)
@@ -1183,10 +1170,10 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   if (src.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
     // BT2020 CL is a special case.
     steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        Invert(GetTransferMatrix(src, options.src_bit_depth))));
+        Invert(src.GetTransferMatrix(options.src_bit_depth))));
   }
   steps_.push_back(
-      std::make_unique<ColorTransformMatrix>(GetPrimaryTransform(src)));
+      std::make_unique<ColorTransformMatrix>(src.GetPrimaryMatrix()));
 
   // Perform tone mapping while we're in XYZ space, because in this space, the
   // third component is already luminance.
@@ -1214,11 +1201,11 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   }
 
   steps_.push_back(
-      std::make_unique<ColorTransformMatrix>(Invert(GetPrimaryTransform(dst))));
+      std::make_unique<ColorTransformMatrix>(Invert(dst.GetPrimaryMatrix())));
   if (dst.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
     // BT2020 CL is a special case.
     steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        GetTransferMatrix(dst, options.dst_bit_depth)));
+        dst.GetTransferMatrix(options.dst_bit_depth)));
   }
 
   switch (dst.GetTransferID()) {
@@ -1258,7 +1245,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
       dst.GetMatrixID() == ColorSpace::MatrixID::GBR ||
       dst.GetMatrixID() == ColorSpace::MatrixID::YCOCG;
   auto dst_range_adjust_matrix = std::make_unique<ColorTransformMatrix>(
-      Invert(GetRangeAdjustMatrix(dst, options.dst_bit_depth)));
+      Invert(dst.GetRangeAdjustMatrix(options.dst_bit_depth)));
 
   if (dst_matrix_is_identity_or_ycgco)
     steps_.push_back(std::move(dst_range_adjust_matrix));
@@ -1267,7 +1254,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     NOTREACHED();
   } else {
     steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        GetTransferMatrix(dst, options.dst_bit_depth)));
+        dst.GetTransferMatrix(options.dst_bit_depth)));
   }
 
   if (!dst_matrix_is_identity_or_ycgco)

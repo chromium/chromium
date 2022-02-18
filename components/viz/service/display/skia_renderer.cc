@@ -2495,12 +2495,12 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
 }
 
 namespace {
-SkColorMatrix ToColorMatrix(const skia::Matrix44& mat) {
+SkColorMatrix ToColorMatrix(const SkM44& mat) {
   std::array<float, 20> values;
   values.fill(0.0f);
   for (uint32_t r = 0; r < 4; r++) {
     for (uint32_t c = 0; c < 4; c++) {
-      values[r * 5 + c] = mat.getFloat(r, c);
+      values[r * 5 + c] = mat.rc(r, c);
     }
   }
   SkColorMatrix mat_out;
@@ -2512,7 +2512,7 @@ SkColorMatrix ToColorMatrix(const skia::Matrix44& mat) {
 sk_sp<SkColorFilter> SkiaRenderer::GetContentColorFilter() {
   sk_sp<SkColorFilter> color_transform = nullptr;
   if (current_canvas_ == root_canvas_ &&
-      !output_surface_->color_matrix().isIdentity()) {
+      output_surface_->color_matrix() != SkM44()) {
     color_transform =
         SkColorFilters::Matrix(ToColorMatrix(output_surface_->color_matrix()));
   }
@@ -2531,8 +2531,7 @@ sk_sp<SkColorFilter> SkiaRenderer::GetContentColorFilter() {
       color_mat.setScale(rgb[0], rgb[1], rgb[2]);
       tint_transform = SkColorFilters::Matrix(color_mat);
     } else {
-      skia::Matrix44 mat44;
-      mat44.setColMajorf(
+      SkM44 mat44 = SkM44::ColMajor(
           cc::DebugColors::TintCompositedContentColorTransformMatrix().data());
       tint_transform = SkColorFilters::Matrix(ToColorMatrix(mat44));
     }

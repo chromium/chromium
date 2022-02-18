@@ -20,7 +20,7 @@ OverlayStrategySingleOnTop::OverlayStrategySingleOnTop(
 OverlayStrategySingleOnTop::~OverlayStrategySingleOnTop() {}
 
 bool OverlayStrategySingleOnTop::Attempt(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -80,7 +80,7 @@ bool OverlayStrategySingleOnTop::Attempt(
 }
 
 void OverlayStrategySingleOnTop::ProposePrioritized(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -106,7 +106,7 @@ void OverlayStrategySingleOnTop::ProposePrioritized(
 }
 
 bool OverlayStrategySingleOnTop::AttemptPrioritized(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,

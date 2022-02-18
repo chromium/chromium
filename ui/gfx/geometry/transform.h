@@ -41,6 +41,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Initialize with the concatenation of lhs * rhs.
   Transform(const Transform& lhs, const Transform& rhs)
       : matrix_(lhs.matrix_, rhs.matrix_) {}
+  explicit Transform(const SkM44& matrix);
   explicit Transform(const skia::Matrix44& matrix) : matrix_(matrix) {}
   explicit Transform(const SkMatrix& matrix)
       : matrix_(skia::Matrix44(matrix)) {}
