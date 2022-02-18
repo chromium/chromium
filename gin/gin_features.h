@@ -12,6 +12,7 @@
 namespace features {
 
 GIN_EXPORT extern const base::Feature kV8CompactCodeSpaceWithStack;
+GIN_EXPORT extern const base::Feature kV8CompactMaps;
 GIN_EXPORT extern const base::Feature kV8CompactWithStack;
 GIN_EXPORT extern const base::Feature kV8ConcurrentInlining;
 GIN_EXPORT extern const base::Feature kV8ConcurrentSparkplug;
@@ -43,6 +44,7 @@ GIN_EXPORT extern const base::Feature kV8Sparkplug;
 GIN_EXPORT extern const base::Feature kV8SparkplugNeedsShortBuiltinCalls;
 GIN_EXPORT extern const base::Feature kV8TurboFastApiCalls;
 GIN_EXPORT extern const base::Feature kV8Turboprop;
+GIN_EXPORT extern const base::Feature kV8UseMapSpace;
 GIN_EXPORT extern const base::Feature kV8VirtualMemoryCage;
 
 }  // namespace features

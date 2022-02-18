@@ -7,13 +7,21 @@
 
 namespace features {
 
-// Enable code space compaction when finalizing a full GC with stack
+// Enable code space compaction when finalizing a full GC with stack.
 const base::Feature kV8CompactCodeSpaceWithStack{
     "V8CompactCodeSpaceWithStack", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable compaction when finalizing a full GC with stack.
 const base::Feature kV8CompactWithStack{"V8CompactWithStack",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables compaction of maps in a full GC.
+const base::Feature kV8CompactMaps{"V8CompactMaps",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables a separate heap space for all map objects.
+const base::Feature kV8UseMapSpace{"V8UseMapSpace",
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables optimization of JavaScript in V8.
 const base::Feature kV8OptimizeJavascript{"V8OptimizeJavascript",
