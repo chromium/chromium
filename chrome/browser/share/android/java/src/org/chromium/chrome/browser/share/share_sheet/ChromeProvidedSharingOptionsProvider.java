@@ -301,7 +301,9 @@ public class ChromeProvidedSharingOptionsProvider {
         if (!mIsIncognito) {
             mOrderedFirstPartyOptions.add(createQrCodeFirstPartyOption());
         }
-        if (UserPrefs.get(Profile.getLastUsedRegularProfile()).getBoolean(Pref.PRINTING_ENABLED)) {
+        if (mTabProvider.hasValue()
+                && UserPrefs.get(Profile.getLastUsedRegularProfile())
+                           .getBoolean(Pref.PRINTING_ENABLED)) {
             mOrderedFirstPartyOptions.add(createPrintingFirstPartyOption());
         }
         mOrderedFirstPartyOptions.add(createSaveImageFirstPartyOption());

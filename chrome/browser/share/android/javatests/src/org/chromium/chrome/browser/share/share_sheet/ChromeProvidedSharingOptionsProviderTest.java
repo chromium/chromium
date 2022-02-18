@@ -116,6 +116,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         Profile.setLastUsedProfileForTesting(mProfile);
         Mockito.when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
+        Mockito.when(mTabProvider.hasValue()).thenReturn(true);
         Mockito.when(mTabProvider.get()).thenReturn(mTab);
         Mockito.when(mTab.getWebContents()).thenReturn(mWebContents);
         Mockito.when(mTab.getUrl()).thenReturn(new GURL(URL));
@@ -147,6 +148,22 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
         assertTrue("Property models should contain Lightweight Reactions.",
                 propertyModelsContain(propertyModels, R.string.sharing_lightweight_reactions));
+    }
+
+    @Test
+    @MediumTest
+    public void getPropertyModels_printingEnabledNoTab_excludesPrinting() {
+        Mockito.when(mTabProvider.hasValue()).thenReturn(false);
+        setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
+                /*printingEnabled=*/true, LinkGeneration.MAX);
+        List<PropertyModel> propertyModels =
+                mChromeProvidedSharingOptionsProvider.getPropertyModels(
+                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        DetailedContentType.NOT_SPECIFIED,
+                        /*isMultiWindow=*/false);
+
+        assertFalse("Property models should not contain printing.",
+                propertyModelsContain(propertyModels, R.string.print_share_activity_title));
     }
 
     @Test
