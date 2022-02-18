@@ -2012,6 +2012,10 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/appmanifest/icons-member/icons-member
 crbug.com/626703 [ Mac10.15 ] external/wpt/appmanifest/start_url-member/start_url-member-pass-manual.html [ Skip ]
 crbug.com/626703 [ Mac11 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemBaseHandle-postMessage-windows-manual.https.html [ Skip ]
 
+# Virtual test suite shared_array_buffer_on_desktop is platform agnostic
+[ Mac ] virtual/shared_array_buffer_on_desktop/* [ Skip ]
+[ Win ] virtual/shared_array_buffer_on_desktop/* [ Skip ]
+
 # The following tests never pass in the default Blink test runner due to forced
 # frame updates, but still pass in the full browser. They are only run in the
 # no-forced-frame-updates virtual test suite.
