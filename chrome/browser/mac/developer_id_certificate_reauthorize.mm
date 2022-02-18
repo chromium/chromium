@@ -269,8 +269,8 @@ void DeveloperIDCertificateReauthorizeInApp() {
 
 }  // namespace chrome
 
-int DeveloperIDCertificateReauthorizeFromStub(int argc,
-                                              const char* const* argv) {
+__attribute__((visibility("default"))) extern "C" int
+DeveloperIDCertificateReauthorizeFromStub(int argc, const char* const* argv) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   @autoreleasepool {
     NSUserDefaults* user_defaults = chrome::UserDefaults();

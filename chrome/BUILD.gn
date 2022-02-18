@@ -1184,16 +1184,7 @@ if (is_win) {
     if (!is_component_build) {
       # Specify a sensible install_name for static builds. The library is
       # dlopen()ed so this is not used to resolve the module.
-      # ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name" ]
-      #
-      # TODO(mark): The above is more sensible, but since nothing links against
-      # the framework directly aside from the
-      # developer_id_certificate_reauthorize stub executable, set the
-      # framework's install name properly to make the stub's link simpler. Once
-      # the stub is no longer built, switch back to the above.
-      # https://crbug.com/1263152.
-      ldflags +=
-          [ "-Wl,-install_name,@executable_path/../$chrome_framework_name" ]
+      ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name" ]
     } else {
       # In the component build, both the :chrome_app and various
       # :chrome_helper* targets directly link to the Framework target. Use
