@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '../../assert.js';
 import {
   Facing,
   PreviewVideo,
@@ -85,6 +86,7 @@ export class Square extends Photo {
  */
 export class SquareFactory extends PhotoFactory {
   produce(): ModeBase {
+    assert(this.previewVideo !== null);
     return new Square(
         this.previewVideo, this.facing, this.captureResolution, this.handler);
   }

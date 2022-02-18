@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '../../assert.js';
 import * as state from '../../state.js';
 import {
   CanceledError,
@@ -161,6 +162,7 @@ export class PhotoFactory extends ModeFactory {
   }
 
   produce(): ModeBase {
+    assert(this.previewVideo !== null);
     return new Photo(
         this.previewVideo, this.facing, this.captureResolution, this.handler);
   }

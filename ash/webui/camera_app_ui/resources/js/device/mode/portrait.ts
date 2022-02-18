@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '../../assert.js';
 import {I18nString} from '../../i18n_string.js';
 import {TakePhotoResult} from '../../mojo/image_capture.js';
 import {Effect} from '../../mojo/type.js';
@@ -117,6 +118,7 @@ export class PortraitFactory extends PhotoFactory {
   }
 
   produce(): ModeBase {
+    assert(this.previewVideo !== null);
     return new Portrait(
         this.previewVideo, this.facing, this.captureResolution,
         this.portraitHandler);

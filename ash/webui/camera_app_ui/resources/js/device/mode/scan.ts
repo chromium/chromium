@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '../../assert.js';
 import {Point} from '../../geometry.js';
 import {
   Facing,
@@ -89,6 +90,7 @@ export class ScanFactory extends ModeFactory {
   }
 
   produce(): ModeBase {
+    assert(this.previewVideo !== null);
     return new Scan(
         this.previewVideo,
         this.facing,
