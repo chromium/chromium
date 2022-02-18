@@ -314,12 +314,18 @@ interface NetworkService {
 
   // Configures SCT auditing.
   // This allows the embedder to specify what sampling rate to use on SCT
-  // auditing reports, where reports should be sent, and the traffic annotation
+  // auditing reports, how long to wait before assuming an SCT is ingested,
+  // where reports and lookup queries should be sent, and the traffic annotation
   // to use.
   [EnableIf=is_ct_supported]
-  ConfigureSCTAuditing(double sampling_rate,
-                       url.mojom.Url report_uri,
-                       MutableNetworkTrafficAnnotationTag traffic_annotation);
+  ConfigureSCTAuditing(
+      double sampling_rate,
+      mojo_base.mojom.TimeDelta log_expected_ingestion_delay,
+      mojo_base.mojom.TimeDelta log_max_ingestion_random_delay,
+      url.mojom.Url report_uri,
+      url.mojom.Url hashdance_lookup_uri,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
+      MutableNetworkTrafficAnnotationTag hashdance_traffic_annotation);
 
   // Updates the log list used for CT verification. `update_time` should
   // contain the timestamp that the log list was considered fresh/current, in

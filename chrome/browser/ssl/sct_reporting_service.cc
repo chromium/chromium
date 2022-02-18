@@ -13,6 +13,8 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/google_api_keys.h"
+#include "net/base/escape.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -54,9 +56,47 @@ constexpr net::NetworkTrafficAnnotationTag kSCTAuditReportTrafficAnnotation =
           }
         })");
 
+constexpr net::NetworkTrafficAnnotationTag kSCTHashdanceTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("sct_auditing_hashdance", R"(
+        semantics {
+          sender: "Safe Browsing"
+          description:
+            "When a user connects to a site, clients with Safe Browsing "
+            "enabled may query Google about similar Signed Certificate "
+            "Timestamps. If the SCT has not been seen before, this indicates a "
+            "security incident and the client will upload a full report. This "
+            "helps improve the security and trustworthiness of the HTTPS "
+            "ecosystem."
+          trigger:
+            "The browser will query Google when a connection to a website "
+            "includes Signed Certificate Timestamps, and the user is opted in "
+            "to Safe Browsing."
+          data:
+            "A short prefix of the SCT leaf hash, the length of the prefix, "
+            "and a short user agent string."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can enable or disable this feature by enabling or disabling "
+            "'Safe Browsing' in Chrome's settings under Security, "
+            "Safe Browsing. This feature is enabled by default."
+          chrome_policy {
+            SafeBrowsingProtectionLevel {
+              policy_options {mode: MANDATORY}
+              SafeBrowsingProtectionLevel: 0
+            }
+          }
+        })");
+
 constexpr char kSBSCTAuditingReportURL[] =
     "https://safebrowsing.google.com/safebrowsing/clientreport/"
     "chrome-sct-auditing";
+
+constexpr char kHashdanceLookupQueryURL[] =
+    "https://sctauditing-pa.googleapis.com/v1/knownscts/"
+    "length/$1/prefix/$2?key=";
 
 // static
 GURL& SCTReportingService::GetReportURLInstance() {
@@ -65,12 +105,23 @@ GURL& SCTReportingService::GetReportURLInstance() {
 }
 
 // static
+GURL& SCTReportingService::GetHashdanceLookupQueryURLInstance() {
+  static base::NoDestructor<GURL> instance(
+      std::string(kHashdanceLookupQueryURL) +
+      net::EscapeQueryParamValue(google_apis::GetAPIKey(), /*use_plus=*/true));
+  return *instance;
+}
+
+// static
 void SCTReportingService::ReconfigureAfterNetworkRestart() {
-  double sct_sampling_rate = features::kSCTAuditingSamplingRate.Get();
   content::GetNetworkService()->ConfigureSCTAuditing(
-      sct_sampling_rate, SCTReportingService::GetReportURLInstance(),
-      net::MutableNetworkTrafficAnnotationTag(
-          kSCTAuditReportTrafficAnnotation));
+      features::kSCTAuditingSamplingRate.Get(),
+      features::kSCTLogExpectedIngestionDelay.Get(),
+      features::kSCTLogMaxIngestionRandomDelay.Get(),
+      SCTReportingService::GetReportURLInstance(),
+      SCTReportingService::GetHashdanceLookupQueryURLInstance(),
+      net::MutableNetworkTrafficAnnotationTag(kSCTAuditReportTrafficAnnotation),
+      net::MutableNetworkTrafficAnnotationTag(kSCTHashdanceTrafficAnnotation));
 }
 
 SCTReportingService::SCTReportingService(

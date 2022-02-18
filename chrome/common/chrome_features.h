@@ -616,6 +616,10 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<double> kSCTAuditingSamplingRate;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSCTAuditingHashdance;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta> kSCTLogExpectedIngestionDelay;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta> kSCTLogMaxIngestionRandomDelay;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSearchHistoryLink;

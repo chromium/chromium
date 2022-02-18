@@ -530,19 +530,20 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
     for (const auto& ct_log : certificate_transparency::GetKnownLogs()) {
       network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
       log_info->public_key = std::string(ct_log.log_key, ct_log.log_key_length);
+      log_info->id = crypto::SHA256HashString(log_info->public_key);
       log_info->name = ct_log.log_name;
       log_info->current_operator = ct_log.current_operator;
 
-      std::string log_id = crypto::SHA256HashString(log_info->public_key);
       log_info->operated_by_google =
           std::binary_search(std::begin(operated_by_google_logs),
-                             std::end(operated_by_google_logs), log_id);
+                             std::end(operated_by_google_logs), log_info->id);
       auto it = std::lower_bound(
-          std::begin(disqualified_logs), std::end(disqualified_logs), log_id,
+          std::begin(disqualified_logs), std::end(disqualified_logs),
+          log_info->id,
           [](const auto& disqualified_log, const std::string& log_id) {
             return disqualified_log.first < log_id;
           });
-      if (it != std::end(disqualified_logs) && it->first == log_id) {
+      if (it != std::end(disqualified_logs) && it->first == log_info->id) {
         log_info->disqualified_at = it->second;
       }
 
