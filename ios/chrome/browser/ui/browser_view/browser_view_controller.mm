@@ -2806,6 +2806,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.browserViewHiderCoordinator.panGestureHandler = nil;
 
   self.view.transform = CGAffineTransformIdentity;
+  self.contentArea.alpha = 1;
   if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
     self.tabStripSnapshot.transform =
         [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity];
@@ -2964,6 +2965,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         self.tabStripSnapshot.transform =
             [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity];
         self.tabStripSnapshot.alpha = 1;
+        self.contentArea.alpha = 1;
       }
       break;
     case ViewRevealState::Peeked:
@@ -2974,6 +2976,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         self.tabStripSnapshot.transform =
             [self.tabStripView adjustTransformForRTL:transform];
         self.tabStripSnapshot.alpha = 1;
+        self.contentArea.alpha = 1;
       }
       break;
     case ViewRevealState::Revealed:
@@ -2985,6 +2988,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         self.tabStripSnapshot.transform =
             [self.tabStripView adjustTransformForRTL:transform];
         self.tabStripSnapshot.alpha = 0;
+        self.contentArea.alpha =
+            nextViewRevealState == ViewRevealState::Revealed ? 1 : 0;
       }
       break;
   }

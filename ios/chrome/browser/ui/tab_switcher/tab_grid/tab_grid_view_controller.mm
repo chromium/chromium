@@ -1534,14 +1534,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (self.thumbStripEnabled) {
     GridViewController* gridViewController =
         [self gridViewControllerForPage:self.currentPage];
-    DCHECK(gridViewController);
-    if (gridViewController.fractionVisibleOfLastItem >= 0.999) {
-      // Don't show the bottom new tab button because the plus sign cell is
-      // visible.
-      return;
+    // gridViewController can be null if page configuration disables the
+    // currentPage mode.
+    if (gridViewController) {
+      if (gridViewController.fractionVisibleOfLastItem >= 0.999) {
+        // Don't show the bottom new tab button because the plus sign cell is
+        // visible.
+        return;
+      }
+      self.plusSignButton.alpha =
+          1 - gridViewController.fractionVisibleOfLastItem;
     }
-    self.plusSignButton.alpha =
-        1 - gridViewController.fractionVisibleOfLastItem;
   }
   [self.bottomToolbar show];
 }

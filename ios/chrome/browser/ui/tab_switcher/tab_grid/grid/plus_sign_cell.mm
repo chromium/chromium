@@ -35,6 +35,7 @@
 
     AddSameCenterConstraints(plusSignView, self.contentView);
 
+    self.accessibilityTraits |= UIAccessibilityTraitButton;
     self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   }
   return self;

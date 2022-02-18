@@ -536,6 +536,10 @@
 // Returns whether the NewOverflowMenu feature is enabled.
 + (BOOL)isNewOverflowMenuEnabled;
 
+// Returns whether the Thumbstrip feature is enabled for window with given
+// number.
++ (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

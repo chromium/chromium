@@ -444,6 +444,9 @@
   self.bvcContainer = [[BVCContainerViewController alloc] init];
   self.bvcContainer.currentBVC = viewController;
   self.bvcContainer.incognito = incognito;
+  // Set fallback presenter, because currentBVC can be nil if the tab grid is
+  // up but no tabs exist in current page.
+  self.bvcContainer.fallbackPresenterViewController = self.baseViewController;
 
   BOOL animated = !self.animationsDisabledForTesting;
   // Never animate the first time.
@@ -539,8 +542,10 @@
 
   // Create a BVC add it to this view controller if not present. The thumb strip
   // always needs a BVC container on screen.
-  self.bvcContainer =
-      self.bvcContainer ?: [[BVCContainerViewController alloc] init];
+  if (!self.bvcContainer) {
+    self.bvcContainer = [[BVCContainerViewController alloc] init];
+    self.bvcContainer.fallbackPresenterViewController = self.baseViewController;
+  }
   if (!self.bvcContainer.view.superview) {
     [self.baseViewController addChildViewController:self.bvcContainer];
     self.bvcContainer.view.frame = self.baseViewController.view.bounds;
@@ -789,8 +794,8 @@
                focusOmnibox:(BOOL)focusOmnibox
                closeTabGrid:(BOOL)closeTabGrid {
   DCHECK(self.regularBrowser && self.incognitoBrowser);
-  DCHECK(closeTabGrid || ShowThumbStripInTraitCollection(
-                             self.baseViewController.traitCollection));
+  DCHECK(closeTabGrid || [self isThumbStripEnabled]);
+
   Browser* activeBrowser = nullptr;
   switch (page) {
     case TabGridPageIncognitoTabs:
@@ -1101,6 +1106,11 @@
 
 - (void)viewController:(UIViewController*)viewController
     traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
+  if (sceneState.activationLevel < SceneActivationLevelForegroundInactive) {
+    return;
+  }
   BOOL canShowThumbStrip =
       ShowThumbStripInTraitCollection(viewController.traitCollection);
   if (canShowThumbStrip != [self isThumbStripEnabled]) {

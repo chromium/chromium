@@ -42,6 +42,8 @@ void ShowTabViewController() {
 void SelectTab(NSString* title) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(title),
+                                          grey_ancestor(grey_kindOfClassName(
+                                              @"GridCell")),
                                           grey_accessibilityTrait(
                                               UIAccessibilityTraitStaticText),
                                           nil)] performAction:grey_tap()];

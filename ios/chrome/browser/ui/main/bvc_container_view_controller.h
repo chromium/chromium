@@ -23,6 +23,12 @@
 // be added as a child and have its view resized to this object's view's bounds.
 @property(nonatomic, weak) UIViewController* currentBVC;
 
+// Fallback presenter VC to use when |currentBVC| is nil. Owner of this VC
+// should set this property, which is used by
+// |presentViewController:animated:completion:| and
+// |dismissViewControllerAnimated:completion:|.
+@property(nonatomic, weak) UIViewController* fallbackPresenterViewController;
+
 // YES if the currentBVC is in incognito mode. Is used to set proper background
 // color.
 @property(nonatomic, assign) BOOL incognito;

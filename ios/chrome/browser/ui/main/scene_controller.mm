@@ -2713,8 +2713,8 @@ bool IsSigninForcedByPolicy() {
       dismissSettings();
     }
   } else if (self.signinCoordinator) {
-    //      |self.signinCoordinator| can be presented without settings, from the
-    //      bookmarks or the recent tabs view.
+    // |self.signinCoordinator| can be presented without settings, from the
+    // bookmarks or the recent tabs view.
     [self interruptSigninCoordinatorAnimated:animated completion:completion];
   } else {
     completion();

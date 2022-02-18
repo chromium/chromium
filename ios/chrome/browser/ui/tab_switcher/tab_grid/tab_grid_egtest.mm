@@ -83,6 +83,24 @@ id<GREYMatcher> VisibleTabGridEditButton() {
                     grey_sufficientlyVisible(), nil);
 }
 
+void WaitForTabGridFullscreen() {
+  if (![ChromeEarlGrey isThumbstripEnabledForWindowWithNumber:0]) {
+    return;
+  }
+
+  // Check that the bvc hider is visible.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(@"BrowserViewHiderView")]
+        assertWithMatcher:grey_not(grey_sufficientlyVisible())
+                    error:&error];
+    return error == nil;
+  };
+  bool fullscreenAchieved = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, condition);
+  GREYAssertTrue(fullscreenAchieved, @"BrowserViewHiderView still shown");
+}
 }  // namespace
 
 @interface TabGridTestCase : WebHttpServerChromeTestCase {
@@ -862,6 +880,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Tap tab to select.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
@@ -917,6 +936,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Tap "Select all" and close selected tabs.
   [[EarlGrey
@@ -964,6 +984,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Ensure button label is "Select All" and select all items.
   [[EarlGrey selectElementWithMatcher:SelectAllButton()]
@@ -1023,6 +1044,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Select the first and last items.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
@@ -1078,6 +1100,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Select the first and last items.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
@@ -1123,6 +1146,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Select the first and last items.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]

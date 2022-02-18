@@ -285,16 +285,6 @@ const int kSearchBarTrailingSpace = 40;
   else
     _leadingButton = _closeAllOrUndoButton;
 
-  if (ShowThumbStripInTraitCollection(traitCollection)) {
-    // The new tab button is only used if the thumb strip is enabled. In other
-    // cases, there is a floating new tab button on the bottom.
-    [self setItems:@[
-      _leadingButton, _spaceItem, centralItem, _spaceItem, _newTabButton,
-      _iconButtonAdditionalSpaceItem, trailingButton
-    ]];
-    return;
-  }
-
   if (_mode == TabGridModeSelection) {
     // In the selection mode, Done button is much smaller than SelectAll
     // we need to calculate the difference on the width and use it as a
@@ -304,10 +294,23 @@ const int kSearchBarTrailingSpace = 40;
     _leadingButton = _selectAllButton;
   }
 
+  // Build item list based on priority: tab search takes precedence over thumb
+  // strip.
+
   if (IsTabsSearchEnabled() && _mode == TabGridModeNormal) {
     [self setItems:@[
       _leadingButton, _iconButtonAdditionalSpaceItem, _searchButton, _spaceItem,
       centralItem, _spaceItem, trailingButton
+    ]];
+    return;
+  }
+
+  if (ShowThumbStripInTraitCollection(traitCollection)) {
+    // The new tab button is only used if the thumb strip is enabled. In other
+    // cases, there is a floating new tab button on the bottom.
+    [self setItems:@[
+      _leadingButton, _spaceItem, centralItem, _spaceItem, _newTabButton,
+      _iconButtonAdditionalSpaceItem, trailingButton
     ]];
     return;
   }

@@ -1245,6 +1245,11 @@ UIWindow* GetAnyKeyWindow() {
   return [ChromeEarlGreyAppInterface isNewOverflowMenuEnabled];
 }
 
+- (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber {
+  return [ChromeEarlGreyAppInterface
+      isThumbstripEnabledForWindowWithNumber:windowNumber];
+}
+
 #pragma mark - ContentSettings
 
 - (ContentSetting)popupPrefValue {

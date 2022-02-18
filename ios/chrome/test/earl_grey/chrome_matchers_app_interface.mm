@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
@@ -309,7 +310,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)defocusedLocationView {
-  return grey_kindOfClass([LocationBarSteadyView class]);
+  return grey_allOf(
+      grey_kindOfClass([LocationBarSteadyView class]),
+      grey_not(grey_ancestor(grey_accessibilityID(@"BrowserViewHiderView"))),
+      nil);
 }
 
 + (id<GREYMatcher>)pageSecurityInfoButton {
@@ -317,7 +321,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)pageSecurityInfoIndicator {
-  return grey_accessibilityLabel(@"Page Security Info");
+  return grey_allOf(grey_accessibilityLabel(@"Page Security Info"),
+                    grey_ancestor(grey_kindOfClass([PrimaryToolbarView class])),
+                    nil);
 }
 
 + (id<GREYMatcher>)omniboxText:(NSString*)text {
@@ -869,6 +875,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)tabGridCellAtIndex:(unsigned int)index {
   return grey_allOf(grey_accessibilityID(IdentifierForCellAtIndex(index)),
+                    grey_not(grey_kindOfClass([PlusSignCell class])),
                     grey_sufficientlyVisible(), nil);
 }
 

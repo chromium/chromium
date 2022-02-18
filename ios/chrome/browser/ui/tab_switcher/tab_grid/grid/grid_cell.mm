@@ -212,6 +212,7 @@ void PositionView(UIView* view, CGPoint point) {
   self.selected = NO;
   self.priceCardView.hidden = YES;
   self.opacity = 1.0;
+  [self hideActivityIndicator];
 }
 
 #pragma mark - UIAccessibility

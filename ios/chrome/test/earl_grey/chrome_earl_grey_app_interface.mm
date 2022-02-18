@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -360,6 +361,20 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 #pragma mark - Window utilities (EG2)
+
++ (UIWindow*)windowWithNumber:(int)windowNumber {
+  NSArray<SceneState*>* connectedScenes =
+      chrome_test_util::GetMainController().appState.connectedScenes;
+  NSString* accessibilityIdentifier =
+      [NSString stringWithFormat:@"%ld", (long)windowNumber];
+  for (SceneState* state in connectedScenes) {
+    if ([state.window.accessibilityIdentifier
+            isEqualToString:accessibilityIdentifier]) {
+      return state.window;
+    }
+  }
+  return nil;
+}
 
 // Returns screen position of the given |windowNumber|
 + (CGRect)screenPositionOfScreenWithNumber:(int)windowNumber {
@@ -1096,6 +1111,11 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (BOOL)isNewOverflowMenuEnabled {
   return IsNewOverflowMenuEnabled();
+}
+
++ (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber {
+  return ShowThumbStripInTraitCollection(
+      [self windowWithNumber:windowNumber].traitCollection);
 }
 
 #pragma mark - ContentSettings
