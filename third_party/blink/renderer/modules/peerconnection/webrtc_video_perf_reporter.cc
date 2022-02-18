@@ -9,6 +9,15 @@
 
 namespace blink {
 
+WebrtcVideoPerfReporter::WebrtcVideoPerfReporter() {
+  weak_this_ = weak_factory_.GetWeakPtr();
+}
+
+WebrtcVideoPerfReporter::~WebrtcVideoPerfReporter() {
+  // `task_runner_` may not be set in some unit tests of other features.
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+}
+
 void WebrtcVideoPerfReporter::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingRemote<media::mojom::blink::WebrtcVideoPerfRecorder>
@@ -17,12 +26,13 @@ void WebrtcVideoPerfReporter::Initialize(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&WebrtcVideoPerfReporter::InitializeOnTaskRunner,
-                     base::Unretained(this), std::move(perf_recorder)));
+                     weak_this_, std::move(perf_recorder)));
 }
 
 void WebrtcVideoPerfReporter::InitializeOnTaskRunner(
     mojo::PendingRemote<media::mojom::blink::WebrtcVideoPerfRecorder>
         perf_recorder) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   perf_recorder_.Bind(std::move(perf_recorder));
 }
 
@@ -34,7 +44,7 @@ void WebrtcVideoPerfReporter::StoreWebrtcVideoStats(
       FROM_HERE,
       base::BindOnce(
           &WebrtcVideoPerfReporter::StoreWebrtcVideoStatsOnTaskRunner,
-          base::Unretained(this), stats_key, video_stats));
+          weak_this_, stats_key, video_stats));
 }
 
 void WebrtcVideoPerfReporter::StoreWebrtcVideoStatsOnTaskRunner(
