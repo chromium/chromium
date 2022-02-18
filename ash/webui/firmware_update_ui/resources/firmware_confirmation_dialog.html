@@ -2,6 +2,10 @@
   :host {
     --cr-dialog-width: 416px;
   }
+
+  #proceedText {
+    white-space: pre-line;
+  }
 </style>
 <template is="dom-if" if="[[open]]" restamp>
   <cr-dialog id="confirmationDialog" on-close="closeDialog_" show-on-attach>
@@ -11,6 +15,9 @@
     <div slot="body" class="firmware-dialog-body-font">
       <div id="updateDialogBody">
         [[i18n('updatingInfo')]]
+      </div>
+      <div id="proceedText">
+        [[i18n('proceedConfirmationText')]]
       </div>
     </div>
     <div slot="button-container">

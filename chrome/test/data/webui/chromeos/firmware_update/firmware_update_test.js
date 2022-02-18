@@ -111,15 +111,6 @@ export function firmwareUpdateAppTest() {
             .shadowRoot.querySelector('#updateDialogTitle'));
   }
 
-  test('LandingPageLoaded', () => {
-    initializePage();
-    // TODO(michaelcheco): Remove this stub test once the page has more
-    // capabilities to test.
-    assertEquals(
-        'Update peripherals',
-        page.shadowRoot.querySelector('#header').textContent.trim());
-  });
-
   test('SettingGettingTestProvider', () => {
     initializePage();
     let fake_provider =

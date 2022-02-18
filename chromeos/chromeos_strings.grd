@@ -2691,7 +2691,7 @@ Try tapping the mic to ask me anything.
 
       <!-- Peripheral Firmware Update -->
       <message name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">
-        Update peripherals
+        Firmware updates for external devices
       </message>
       <message name="IDS_FIRMWARE_CRITICAL_UPDATE_TEXT" desc="The text shown when an update is deemed critcal.">
         Critical update
@@ -2758,6 +2758,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_FIRMWARE_NUM_AVAILABLE_UPDATES_TEXT" desc="Message annouced in aria-live when we receive a list of available firmware updates.">
         Update firmware for external devices window is open. <ph name="NUM_UPDATES">$1<ex>3</ex></ph> updates available.
+      </message>
+      <message name="IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION" desc="Information text to users that to proceed with the firmware update that they need to click on the Next button.">
+        To proceed with the update, click Next.
       </message>
 
       <!-- Quick Answers -->
