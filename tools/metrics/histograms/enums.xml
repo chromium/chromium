@@ -52283,6 +52283,8 @@ from previous Chrome versions.
   <int value="-1464832541" label="EnableFuzzyAppSearch:disabled"/>
   <int value="-1463489219" label="OfflinePagesCTSuppressNotifications:enabled"/>
   <int value="-1463410070" label="IPH_DemoMode:enabled"/>
+  <int value="-1462980793"
+      label="SupportSearchSuggestionForPrerender2:disabled"/>
   <int value="-1461261930" label="OutOfBlinkCORS:disabled"/>
   <int value="-1460598402"
       label="EnterpriseReportingApiKeychainRecreation:disabled"/>
@@ -52994,6 +52996,7 @@ from previous Chrome versions.
   <int value="-983335806" label="DelegatedCompositing:disabled"/>
   <int value="-981993135"
       label="DesktopPWAsAdditionalWindowingControls:enabled"/>
+  <int value="-981354827" label="SupportSearchSuggestionForPrerender2:enabled"/>
   <int value="-981237342" label="SyncUSSAutofillWalletMetadata:disabled"/>
   <int value="-980926879" label="ArcCompatSnapFeature:enabled"/>
   <int value="-980889204" label="SharingRenameDevices:enabled"/>

@@ -7154,6 +7154,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxTriggerForPrerender2Name,
      flag_descriptions::kOmniboxTriggerForPrerender2Description, kOsAll,
      FEATURE_VALUE_TYPE(features::kOmniboxTriggerForPrerender2)},
+    {"search-suggestion-for-prerender2",
+     flag_descriptions::kSupportSearchSuggestionForPrerender2Name,
+     flag_descriptions::kSupportSearchSuggestionForPrerender2Description,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kSupportSearchSuggestionForPrerender2)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"continuous-search", flag_descriptions::kContinuousSearchName,

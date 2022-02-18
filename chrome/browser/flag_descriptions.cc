@@ -2146,6 +2146,12 @@ const char kOmniboxTriggerForPrerender2Name[] =
 const char kOmniboxTriggerForPrerender2Description[] =
     "Enables the new omnibox trigger prerenderer implementation.";
 
+const char kSupportSearchSuggestionForPrerender2Name[] =
+    "Prerender search suggestions";
+const char kSupportSearchSuggestionForPrerender2Description[] =
+    "Allows Prerender2 to prerender search suggestions provided by the default "
+    "search engine. Requires chrome://flags/#enable-prerender2 to be enabled";
+
 const char kPrivacyAdvisorName[] = "Privacy Advisor";
 const char kPrivacyAdvisorDescription[] =
     "Provides contextual entry points for adjusting privacy settings";
