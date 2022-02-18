@@ -1,43 +1,34 @@
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
-cr.define('options', function() {
-  function Slow() {}
-  cr.addSingletonGetter(Slow);
+/** @type {boolean} */
+let initialized = false;
 
-  Slow.prototype = {initialized_: false};
-
-  Slow.initialize = function() {
-    $('slow-disable').addEventListener('click', function(event) {
-      Slow.disableTracing();
-    });
-    $('slow-enable').addEventListener('click', function(event) {
-      Slow.enableTracing();
-    });
-    this.initialized_ = true;
-  };
-
-  Slow.disableTracing = function() {
-    chrome.send('disableTracing');
-  };
-
-  Slow.enableTracing = function() {
-    chrome.send('enableTracing');
-  };
-
-  Slow.tracingPrefChanged = function(enabled) {
-    $('slow-disable').hidden = !enabled;
-    $('slow-enable').hidden = enabled;
-  };
-
-  // Export
-  return {Slow: Slow};
-});
-
-function load() {
-  options.Slow.initialize();
-  chrome.send('loadComplete');
+function initialize() {
+  $('slow-disable').addEventListener('click', () => disableTracing());
+  $('slow-enable').addEventListener('click', () => enableTracing());
+  addWebUIListener('tracing-pref-changed', tracingPrefChanged);
+  initialized = true;
 }
 
-document.addEventListener('DOMContentLoaded', load);
+function disableTracing() {
+  chrome.send('disableTracing');
+}
+
+function enableTracing() {
+  chrome.send('enableTracing');
+}
+
+/** @param {boolean} enabled */
+function tracingPrefChanged(enabled) {
+  $('slow-disable').hidden = !enabled;
+  $('slow-enable').hidden = enabled;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initialize();
+  chrome.send('loadComplete');
+});

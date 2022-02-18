@@ -33,9 +33,6 @@ const char kJsApiDisableTracing[] = "disableTracing";
 const char kJsApiEnableTracing[] = "enableTracing";
 const char kJsApiLoadComplete[] = "loadComplete";
 
-// Page JS API function names.
-const char kJsApiTracingPrefChanged[] = "options.Slow.tracingPrefChanged";
-
 }  // namespace
 
 namespace chromeos {
@@ -70,6 +67,8 @@ class SlowHandler : public WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
 
  private:
   void UpdatePage();
@@ -86,6 +85,8 @@ class SlowHandler : public WebUIMessageHandler {
 // SlowHandler ------------------------------------------------------------
 
 SlowHandler::SlowHandler(Profile* profile) : profile_(profile) {
+  user_pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  user_pref_registrar_->Init(profile_->GetPrefs());
 }
 
 SlowHandler::~SlowHandler() {
@@ -101,12 +102,16 @@ void SlowHandler::RegisterMessages() {
   web_ui()->RegisterDeprecatedMessageCallback(
       kJsApiLoadComplete,
       base::BindRepeating(&SlowHandler::LoadComplete, base::Unretained(this)));
+}
 
-  user_pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  user_pref_registrar_->Init(profile_->GetPrefs());
+void SlowHandler::OnJavascriptAllowed() {
   user_pref_registrar_->Add(
       prefs::kPerformanceTracingEnabled,
       base::BindRepeating(&SlowHandler::UpdatePage, base::Unretained(this)));
+}
+
+void SlowHandler::OnJavascriptDisallowed() {
+  user_pref_registrar_->RemoveAll();
 }
 
 void SlowHandler::HandleDisable(const base::ListValue* args) {
@@ -120,6 +125,7 @@ void SlowHandler::HandleEnable(const base::ListValue* args) {
 }
 
 void SlowHandler::LoadComplete(const base::ListValue* args) {
+  AllowJavascript();
   UpdatePage();
 }
 
@@ -127,7 +133,7 @@ void SlowHandler::UpdatePage() {
   PrefService* pref_service = profile_->GetPrefs();
   bool enabled = pref_service->GetBoolean(prefs::kPerformanceTracingEnabled);
   base::Value pref_value(enabled);
-  web_ui()->CallJavascriptFunctionUnsafe(kJsApiTracingPrefChanged, pref_value);
+  FireWebUIListener("tracing-pref-changed", pref_value);
 }
 
 // SlowUI -----------------------------------------------------------------
