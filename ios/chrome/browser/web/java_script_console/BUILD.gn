@@ -42,6 +42,7 @@ source_set("unit_tests") {
     ":java_script_console",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/web:test_support",
     "//ios/chrome/test/fakes",
     "//ios/web/public/js_messaging",
