@@ -12702,6 +12702,18 @@ Called by update_protocol_commands_enum.py.-->
   <int value="29" label="CHANNEL_LAYOUT_DISCRETE"/>
 </enum>
 
+<enum name="ChapsReinitializingToken">
+  <int value="0" label="Failed to unseal"/>
+  <int value="1" label="Bad authorization data"/>
+  <int value="2" label="Failed to decrypt root key"/>
+  <int value="3" label="Failed to validate"/>
+</enum>
+
+<enum name="ChapsTPMAvailability">
+  <int value="0" label="TPM available"/>
+  <int value="1" label="TPM unavailable"/>
+</enum>
+
 <enum name="CheckCRCResult">
   <int value="0" label="Stream was never read to end"/>
   <int value="1" label="CRC check not done"/>

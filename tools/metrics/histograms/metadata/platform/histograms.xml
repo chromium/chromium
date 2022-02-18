@@ -117,6 +117,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Chaps.ReinitializingToken"
+    enum="ChapsReinitializingToken" expires_after="2022-08-15">
+  <owner>chenyian@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the status code when Chaps needs to reinitializing token.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Chaps.TPMAvailability" enum="ChapsTPMAvailability"
+    expires_after="2022-08-15">
+  <owner>chenyian@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>Each sample is the TPM Availability status.</summary>
+</histogram>
+
 <histogram name="Platform.CompressedSwapSize" units="MB"
     expires_after="2021-11-07">
   <owner>sonnyrao@chromium.org</owner>
