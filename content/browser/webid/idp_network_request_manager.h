@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -126,7 +127,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   IdpNetworkRequestManager(
       const GURL& provider,
       const url::Origin& relying_party,
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      network::mojom::ClientSecurityStatePtr client_security_state);
 
   virtual ~IdpNetworkRequestManager();
 
@@ -212,6 +214,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   LogoutCallback logout_callback_;
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  network::mojom::ClientSecurityStatePtr client_security_state_;
 
   base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};
 };

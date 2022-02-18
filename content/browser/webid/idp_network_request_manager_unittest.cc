@@ -17,6 +17,7 @@
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -54,7 +55,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     manager_ = std::make_unique<IdpNetworkRequestManager>(
         GURL(kTestIdpUrl), url::Origin::Create(GURL(kTestRpUrl)),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
+            &test_url_loader_factory_),
+        network::mojom::ClientSecurityState::New());
   }
 
   void TearDown() override { manager_.reset(); }

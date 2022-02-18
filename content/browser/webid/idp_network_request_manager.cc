@@ -21,6 +21,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
@@ -132,7 +133,8 @@ void AddCsrfHeader(network::ResourceRequest* request) {
 std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
     GURL target_url,
     bool send_referrer,
-    url::Origin initiator) {
+    url::Origin initiator,
+    network::mojom::ClientSecurityStatePtr client_security_state) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   auto target_origin = url::Origin::Create(target_url);
   auto site_for_cookies = net::SiteForCookies::FromOrigin(target_origin);
@@ -158,6 +160,9 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, target_origin, target_origin,
       site_for_cookies);
+  DCHECK(client_security_state);
+  resource_request->trusted_params->client_security_state =
+      std::move(client_security_state);
 
   return resource_request;
 }
@@ -340,16 +345,30 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
   // read blocking disabled.
   return std::make_unique<IdpNetworkRequestManager>(
       provider, host->GetLastCommittedOrigin(),
-      host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess());
+      host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess(),
+      host->BuildClientSecurityState());
 }
 
 IdpNetworkRequestManager::IdpNetworkRequestManager(
     const GURL& provider,
     const url::Origin& relying_party_origin,
-    scoped_refptr<network::SharedURLLoaderFactory> loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+    network::mojom::ClientSecurityStatePtr client_security_state)
     : provider_(provider),
       relying_party_origin_(relying_party_origin),
-      loader_factory_(loader_factory) {}
+      loader_factory_(loader_factory),
+      client_security_state_(std::move(client_security_state)) {
+  DCHECK(client_security_state_);
+  // If COEP:credentialless was used, this would break FedCM credentialled
+  // requests. We clear the Cross-Origin-Embedder-Policy because FedCM responses
+  // are not really embedded in the page. They do not enter the renderer
+  // process. This is safe because FedCM does not leak any data to the
+  // requesting page except for the final issued token, and we only get that
+  // token if the server is a new FedCM server, on which we can rely to validate
+  // requestors if they want to.
+  client_security_state_->cross_origin_embedder_policy =
+      network::CrossOriginEmbedderPolicy();
+}
 
 IdpNetworkRequestManager::~IdpNetworkRequestManager() = default;
 
@@ -542,7 +561,8 @@ void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
   logout_callback_ = std::move(callback);
 
   auto resource_request = CreateCredentialedResourceRequest(
-      logout_url, /* send_referrer= */ false, relying_party_origin_);
+      logout_url, /* send_referrer= */ false, relying_party_origin_,
+      client_security_state_.Clone());
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept, "*/*");
 
   auto traffic_annotation = CreateTrafficAnnotation();
@@ -867,6 +887,9 @@ IdpNetworkRequestManager::CreateUncredentialedUrlLoader(
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
       net::IsolationInfo::CreateTransient();
+  DCHECK(client_security_state_);
+  resource_request->trusted_params->client_security_state =
+      client_security_state_.Clone();
 
   return network::SimpleURLLoader::Create(std::move(resource_request),
                                           traffic_annotation);
@@ -878,7 +901,8 @@ IdpNetworkRequestManager::CreateCredentialedUrlLoader(
     bool send_referrer,
     absl::optional<std::string> request_body) const {
   auto resource_request = CreateCredentialedResourceRequest(
-      target_url, send_referrer, relying_party_origin_);
+      target_url, send_referrer, relying_party_origin_,
+      client_security_state_.Clone());
   if (request_body) {
     resource_request->method = net::HttpRequestHeaders::kPostMethod;
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
