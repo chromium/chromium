@@ -165,7 +165,7 @@ class ClassLookupIndex:
     """Create the class to target index."""
     logging.debug('Running list_java_targets.py...')
     list_java_targets_command = [
-        'build/android/list_java_targets.py', '--gn-labels',
+        sys.executable, 'build/android/list_java_targets.py', '--gn-labels',
         '--print-build-config-paths',
         f'--output-directory={self._abs_build_output_dir}'
     ]
