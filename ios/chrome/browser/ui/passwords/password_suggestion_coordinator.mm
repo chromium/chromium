@@ -26,7 +26,9 @@
 #endif
 
 namespace {
+#if !TARGET_OS_MACCATALYST
 constexpr CGFloat preferredCornerRadius = 20;
+#endif  // TARGET_OS_MACCATALYST
 }  // namespace
 
 @interface PasswordSuggestionCoordinator () <
