@@ -1029,6 +1029,10 @@ const char kDownloadAutoResumptionNativeName[] =
 const char kDownloadAutoResumptionNativeDescription[] =
     "Enables download auto-resumption in native";
 
+const char kDownloadBubbleName[] = "Enable download bubble";
+const char kDownloadBubbleDescription[] =
+    "Enables the download bubble instead of the download shelf.";
+
 const char kDownloadLaterName[] = "Enable download later";
 const char kDownloadLaterDescription[] = "Enables download later feature.";
 

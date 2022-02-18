@@ -639,6 +639,9 @@ extern const char kQuickActionSearchWidgetAndroidDinoVariantDescription[];
 extern const char kDownloadAutoResumptionNativeName[];
 extern const char kDownloadAutoResumptionNativeDescription[];
 
+extern const char kDownloadBubbleName[];
+extern const char kDownloadBubbleDescription[];
+
 extern const char kDownloadLaterName[];
 extern const char kDownloadLaterDescription[];
 

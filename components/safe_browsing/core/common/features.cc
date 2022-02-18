@@ -58,12 +58,9 @@ const base::Feature kClientSideDetectionReferrerChain{
     "ClientSideDetectionReferrerChain", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // TODO(b/197749390): Add tests for this feature being enabled when it's
-// finalied.
+// finalized.
 const base::Feature kConnectorsScanningReportOnlyUI{
     "ConnectorsScanningReportOnlyUI", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDelayedWarnings{"SafeBrowsingDelayedWarnings",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
@@ -74,6 +71,9 @@ const base::Feature kDelayedWarnings{"SafeBrowsingDelayedWarnings",
 const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
     &kDelayedWarnings, "mouse",
     /*default_value=*/false};
+
+const base::Feature kDownloadBubble{"DownloadBubble",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kEnhancedProtection {
   "SafeBrowsingEnhancedProtection",
@@ -90,6 +90,9 @@ const base::Feature kExtensionTelemetry{"SafeBrowsingExtensionTelemetry",
 const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds{
     &kExtensionTelemetry, "UploadIntervalSeconds",
     /*default_value=*/3600};
+
+const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
@@ -175,7 +178,9 @@ constexpr struct {
     {&kClientSideDetectionModelIsFlatBuffer, true},
     {&kClientSideDetectionModelVersion, true},
     {&kClientSideDetectionReferrerChain, true},
+    {&kConnectorsScanningReportOnlyUI, true},
     {&kDelayedWarnings, true},
+    {&kDownloadBubble, true},
     {&kEnhancedProtection, true},
     {&kExtensionTelemetry, true},
     {&kFileTypePoliciesTag, true},

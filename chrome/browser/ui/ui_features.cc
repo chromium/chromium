@@ -54,10 +54,6 @@ const base::Feature kChromeWhatsNewInMainMenuNewBadge{
     "ChromeWhatsNewInMainMenuNewBadge", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Whether to use download bubble instead of download shelf.
-const base::Feature kDownloadBubble{"DownloadBubble",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if !defined(ANDROID)
 // Enables "Access Code Cast" UI.
 const base::Feature kAccessCodeCastUI{"AccessCodeCastUI",

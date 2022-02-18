@@ -78,6 +78,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
@@ -266,7 +267,7 @@ void ToolbarView::Init() {
   }
 
   std::unique_ptr<DownloadToolbarButtonView> download_button;
-  if (base::FeatureList::IsEnabled(features::kDownloadBubble)) {
+  if (base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)) {
     download_button =
         std::make_unique<DownloadToolbarButtonView>(browser_view_);
   }
