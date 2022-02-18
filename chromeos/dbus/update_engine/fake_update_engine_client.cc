@@ -110,7 +110,7 @@ void FakeUpdateEngineClient::IsFeatureEnabled(
     const std::string& feature,
     IsFeatureEnabledCallback callback) {
   std::move(callback).Run(features_.count(feature) ? features_[feature]
-                                                   : std::nullopt);
+                                                   : absl::nullopt);
 }
 
 void FakeUpdateEngineClient::set_default_status(
@@ -123,8 +123,9 @@ void FakeUpdateEngineClient::set_update_check_result(
   update_check_result_ = result;
 }
 
-void FakeUpdateEngineClient::SetToggleFeature(const std::string& feature,
-                                              std::optional<bool> opt_enabled) {
+void FakeUpdateEngineClient::SetToggleFeature(
+    const std::string& feature,
+    absl::optional<bool> opt_enabled) {
   features_[feature] = opt_enabled;
 }
 

@@ -6,7 +6,6 @@
 #define UI_GL_GL_IMPLEMENTATION_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 

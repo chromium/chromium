@@ -4,7 +4,6 @@
 
 #include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 
-#include <optional>
 #include <string>
 
 #include "base/containers/fixed_flat_map.h"

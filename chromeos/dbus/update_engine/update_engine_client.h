@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <string>
 
 #include "base/callback.h"
@@ -17,6 +16,7 @@
 #include "chromeos/dbus/dbus_client_implementation_type.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "dbus/message.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 
 namespace chromeos {
@@ -173,7 +173,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
 
   // Gets the value of a feature in Update Engine. Returns null result on error.
   using IsFeatureEnabledCallback =
-      base::OnceCallback<void(std::optional<bool> result)>;
+      base::OnceCallback<void(absl::optional<bool> result)>;
   virtual void IsFeatureEnabled(const std::string& feature,
                                 IsFeatureEnabledCallback callback) = 0;
 

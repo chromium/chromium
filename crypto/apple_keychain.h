@@ -7,8 +7,6 @@
 
 #include <Security/Security.h>
 
-#include <optional>
-
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/input_method/assistive_suggester_prefs.h"
 
-#include <optional>
-
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,6 +24,7 @@
 #include "components/query_tiles/tile.h"
 #include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/range/range.h"
