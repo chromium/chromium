@@ -2437,6 +2437,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Tabs.TabSearch.DistanceOf{Action}FromInitiallySelectedTabIn{State}List"
+    units="tabs" expires_after="2022-09-27">
+  <owner>elainechien@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to efficiently navigate, search,
+    and interact with their open and recently closed tabs.
+
+    This metric is emitted when the user performs a {Action} action on a tab in
+    the Open Tabs or Audio and Video section in a {State} state. This records
+    the absolute distance of the index of the tab from the index of the
+    initially selected tab.
+  </summary>
+  <token key="Action">
+    <variant name="CloseTab"/>
+    <variant name="SwitchTab"/>
+  </token>
+  <token key="State">
+    <variant name="Filtered" summary="Filtered by user search query."/>
+    <variant name="Unfiltered" summary="Unfiltered by user search query."/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.TabSearch.NumMediaTabsOnOpen" units="tabs"
     expires_after="2022-10-26">
   <owner>elainechien@chromium.org</owner>
@@ -2556,22 +2583,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabSearch.WebUI.CloseMediaTabAction"
-    enum="BooleanTabSearchWithSearchQuery" expires_after="2022-10-26">
-  <owner>elainechien@chromium.org</owner>
-  <owner>romanarora@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <owner>yuhengh@chromium.org</owner>
-  <summary>
-    Tab Search is a feature that allows users to efficiently navigate, search,
-    and interact with their open and recently closed tabs. This metric will be
-    updated when the user uses Tab Search to close a tab in the Audio and Video
-    section and will track whether this action was taken from a filtered search
-    results list or the default unfiltered list.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.TabSearch.WebUI.IndexOf{Action}In{State}List"
     units="tabs" expires_after="2022-10-26">
   <owner>tluk@chromium.org</owner>
@@ -2596,6 +2607,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Tabs.TabSearch.WebUI.IndexRelativeToOpenTabsSectionOf{Action}InUnfilteredList"
+    units="tabs" expires_after="2022-09-27">
+  <owner>elainechien@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to efficiently navigate, search,
+    and interact with their open and recently closed tabs.
+
+    This records the index relative to the top of the Open Tabs section. This
+    metric is emitted when the user performs a {Action} action on a tab in the
+    Open Tabs section with no search query.
+  </summary>
+  <token key="Action">
+    <variant name="CloseTab"/>
+    <variant name="SwitchTab"/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.TabSearch.WebUI.LoadCompletedTime" units="ms"
     expires_after="2022-10-26">
   <owner>tluk@chromium.org</owner>
@@ -2615,6 +2648,28 @@ chromium-metrics-reviews@google.com.
     The amount of time between the render frame host StartProvisionalLoad and
     DidFinishDocumentLoad events for the Tab Search WebUI page.
   </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.MediaTab{Action}Action"
+    enum="BooleanTabSearchWithSearchQuery" expires_after="2022-10-26">
+  <owner>elainechien@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to efficiently navigate, search,
+    and interact with their open and recently closed tabs.
+
+    This metric will be emitted when the user uses Tab Search to perform a
+    {Action} action on a tab in the Audio and Video section and will track
+    whether this action was taken from a filtered search results list or the
+    default unfiltered list.
+  </summary>
+  <token key="Action">
+    <variant name="CloseTab"/>
+    <variant name="SwitchTab"/>
+  </token>
 </histogram>
 
 <histogram name="Tabs.TabSearch.WebUI.RecentlyClosed{Item}OpenAction"
@@ -2641,22 +2696,6 @@ chromium-metrics-reviews@google.com.
     The time taken to run the search algorithm. The algorithm takes an
     unfiltered list of items and user search query as inputs, then generate a
     list of filtered items as output. Recorded after the measurement ends.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.TabSearch.WebUI.SwitchToMediaTabAction"
-    enum="BooleanTabSearchWithSearchQuery" expires_after="2022-10-26">
-  <owner>elainechien@chromium.org</owner>
-  <owner>romanarora@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <owner>yuhengh@chromium.org</owner>
-  <summary>
-    Tab Search is a feature that allows users to efficiently navigate, search,
-    and interact with their open and recently closed tabs. This metric will be
-    updated when the user uses Tab Search to switch to a tab in the Audio and
-    Video section and will track whether this action was taken from a filtered
-    search results list or the default unfiltered list.
   </summary>
 </histogram>
 
