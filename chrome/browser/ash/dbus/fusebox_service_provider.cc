@@ -21,6 +21,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "dbus/message.h"
+#include "net/base/io_buffer.h"
+#include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -92,8 +94,104 @@ ParseResult ParseCommonDBusMethodArguments(dbus::MessageReader* reader) {
   return ParseResult(std::move(fs_context), std::move(fs_url));
 }
 
-// The fs_context argument may look unused, but we need the BindOnce below to
-// keep the reference alive until at least this function gets called back.
+void OnExportedCallback(const std::string& interface_name,
+                        const std::string& method_name,
+                        bool success) {
+  LOG_IF(ERROR, !success) << "Failed to export " << interface_name << "."
+                          << method_name;
+}
+
+// For the ReplyToEtc functions below, the fs_context argument may look unused,
+// but we need the BindOnce below to keep the reference alive until at least
+// this function gets called back.
+
+void ReplyToReadFailure(scoped_refptr<storage::FileSystemContext> fs_context,
+                        dbus::MethodCall* method,
+                        dbus::ExportedObject::ResponseSender sender,
+                        base::File::Error error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method);
+  dbus::MessageWriter writer(response.get());
+
+  writer.AppendInt32(static_cast<int32_t>(error_code));
+  writer.AppendArrayOfBytes(nullptr, 0);
+
+  std::move(sender).Run(std::move(response));
+}
+
+void ReplyToReadTypical(scoped_refptr<storage::FileSystemContext> fs_context,
+                        dbus::MethodCall* method,
+                        dbus::ExportedObject::ResponseSender sender,
+                        std::unique_ptr<storage::FileStreamReader> fs_reader,
+                        scoped_refptr<net::IOBuffer> buffer,
+                        int length) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method);
+  dbus::MessageWriter writer(response.get());
+
+  if (length < 0) {
+    writer.AppendInt32(
+        static_cast<int32_t>(storage::NetErrorToFileError(length)));
+    writer.AppendArrayOfBytes(nullptr, 0);
+  } else {
+    writer.AppendInt32(static_cast<int32_t>(base::File::Error::FILE_OK));
+    writer.AppendArrayOfBytes(reinterpret_cast<uint8_t*>(buffer->data()),
+                              length);
+  }
+
+  std::move(sender).Run(std::move(response));
+
+  // Clean-up / destroy I/O things on the I/O thread.
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](std::unique_ptr<storage::FileStreamReader>,
+                        scoped_refptr<net::IOBuffer>) {
+                       // No-op other than smart pointers calling destructors.
+                     },
+                     std::move(fs_reader), std::move(buffer)));
+}
+
+void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> fs_context,
+                    storage::FileSystemURL fs_url,
+                    dbus::MethodCall* method,
+                    dbus::ExportedObject::ResponseSender sender,
+                    int64_t offset,
+                    int64_t length) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  std::unique_ptr<storage::FileStreamReader> fs_reader =
+      fs_context->CreateFileStreamReader(fs_url, offset, length, base::Time());
+  if (!fs_reader) {
+    ReplyToReadFailure(std::move(fs_context), method, std::move(sender),
+                       base::File::Error::FILE_ERROR_INVALID_URL);
+    return;
+  }
+
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBuffer>(length);
+
+  // Save the pointer before we std::move fs_reader into a base::OnceCallback.
+  // The std::move keeps the underlying storage::FileStreamReader alive while
+  // any network I/O is pending. Without the std::move, the underlying
+  // storage::FileStreamReader would get destroyed at the end of this function.
+  auto* saved_fs_reader = fs_reader.get();
+
+  auto pair = base::SplitOnceCallback(base::BindPostTask(
+      content::GetUIThreadTaskRunner({}),
+      base::BindOnce(&ReplyToReadTypical, fs_context, method, std::move(sender),
+                     std::move(fs_reader), buffer)));
+
+  int result =
+      saved_fs_reader->Read(buffer.get(), length, std::move(pair.first));
+  if (result != net::ERR_IO_PENDING) {  // The read was synchronous.
+    std::move(pair.second).Run(result);
+  }
+}
+
 void ReplyToStat(scoped_refptr<storage::FileSystemContext> fs_context,
                  dbus::MethodCall* method,
                  dbus::ExportedObject::ResponseSender sender,
@@ -128,15 +226,47 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
     return;
   }
 
-  object->ExportMethod(
-      fusebox::kFuseBoxServiceInterface, fusebox::kStatMethod,
-      base::BindRepeating(&FuseBoxServiceProvider::Stat,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce([](const std::string& interface_name,
-                        const std::string& method_name, bool success) {
-        LOG_IF(ERROR, !success)
-            << "Failed to export " << interface_name << "." << method_name;
-      }));
+  object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kReadMethod,
+                       base::BindRepeating(&FuseBoxServiceProvider::Read,
+                                           weak_ptr_factory_.GetWeakPtr()),
+                       base::BindOnce(&OnExportedCallback));
+  object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kStatMethod,
+                       base::BindRepeating(&FuseBoxServiceProvider::Stat,
+                                           weak_ptr_factory_.GetWeakPtr()),
+                       base::BindOnce(&OnExportedCallback));
+}
+
+void FuseBoxServiceProvider::Read(dbus::MethodCall* method,
+                                  dbus::ExportedObject::ResponseSender sender) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  dbus::MessageReader reader(method);
+  auto common = ParseCommonDBusMethodArguments(&reader);
+  if (common.error_code != base::File::Error::FILE_OK) {
+    ReplyToReadFailure(std::move(common.fs_context), method, std::move(sender),
+                       common.error_code);
+    return;
+  }
+
+  int64_t offset = 0;
+  if (!reader.PopInt64(&offset)) {
+    LOG(ERROR) << "No Offset";
+    ReplyToReadFailure(std::move(common.fs_context), method, std::move(sender),
+                       base::File::Error::FILE_ERROR_INVALID_OPERATION);
+    return;
+  }
+  int32_t length = 0;
+  if (!reader.PopInt32(&length)) {
+    LOG(ERROR) << "No Length";
+    ReplyToReadFailure(std::move(common.fs_context), method, std::move(sender),
+                       base::File::Error::FILE_ERROR_INVALID_OPERATION);
+    return;
+  }
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ReadOnIOThread, common.fs_context, common.fs_url, method,
+                     std::move(sender), offset, static_cast<int64_t>(length)));
 }
 
 void FuseBoxServiceProvider::Stat(dbus::MethodCall* method,
