@@ -47,18 +47,27 @@ class WebContents;
 // (https://www.w3.org/TR/webauthn/) requests.
 //
 // Instances can be obtained via
-// ContentBrowserClient::GetWebAuthenticationDelegate(). They are guaranteed not
-// to outlive the RenderFrameHost with which they are associated.
+// ContentBrowserClient::GetWebAuthenticationDelegate().
 class CONTENT_EXPORT WebAuthenticationDelegate {
  public:
   WebAuthenticationDelegate();
   virtual ~WebAuthenticationDelegate();
 
+  // Returns true if `caller_origin` should be able to claim the given Relying
+  // Party ID outside of regular processing. Otherwise, standard WebAuthn RP ID
+  // security checks are performed by `WebAuthRequestSecurityChecker`.
+  // (https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#relying-party-identifier).
+  //
+  // This is an access-control decision: RP IDs are used to control access to
+  // credentials so thought is required before allowing an origin to assert an
+  // RP ID.
+  virtual bool OverrideCallerOriginAndRelyingPartyIdValidation(
+      const url::Origin& caller_origin,
+      const std::string& relying_party_id);
+
 #if !BUILDFLAG(IS_ANDROID)
-  // Permits the embedder to override normal relying party ID processing. Is
-  // given the untrusted, claimed relying party ID from the WebAuthn call, as
-  // well as the origin of the caller, and may return a relying party ID to
-  // override normal validation.
+  // Permits the embedder to override the Relying Party ID for a WebAuthn call,
+  // given the claimed relying party ID and the origin of the caller.
   //
   // This is an access-control decision: RP IDs are used to control access to
   // credentials so thought is required before allowing an origin to assert an

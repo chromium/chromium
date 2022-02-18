@@ -55,6 +55,9 @@ class ChromeWebAuthenticationDelegate
 
 #if !BUILDFLAG(IS_ANDROID)
   // content::WebAuthenticationDelegate:
+  bool OverrideCallerOriginAndRelyingPartyIdValidation(
+      const url::Origin& caller_origin,
+      const std::string& relying_party_id) override;
   absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
       const url::Origin& caller_origin) override;

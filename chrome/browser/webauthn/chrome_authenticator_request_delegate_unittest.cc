@@ -79,6 +79,52 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
   }
 }
 
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       OverrideValidateDomainAndRelyingPartyIDTest) {
+  constexpr char kTestExtensionOrigin[] = "chrome-extension://abcdef";
+  static const struct {
+    std::string rp_id;
+    std::string origin;
+    bool expected;
+  } kTests[] = {
+      {"example.com", "https://example.com", false},
+      {"foo.com", "https://example.com", false},
+      {"abcdef", kTestExtensionOrigin, true},
+      {"abcdefg", kTestExtensionOrigin, false},
+      {"example.com", kTestExtensionOrigin, false},
+  };
+
+  ChromeWebAuthenticationDelegate delegate;
+  for (const auto& test : kTests) {
+    EXPECT_EQ(delegate.OverrideCallerOriginAndRelyingPartyIdValidation(
+                  url::Origin::Create(GURL(test.origin)), test.rp_id),
+              test.expected);
+  }
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest, MaybeGetRelyingPartyIdOverride) {
+  constexpr char kCryptotokenOrigin[] =
+      "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
+  constexpr char kTestExtensionOrigin[] = "chrome-extension://abcdef";
+  ChromeWebAuthenticationDelegate delegate;
+  static const struct {
+    std::string rp_id;
+    std::string origin;
+    absl::optional<std::string> expected;
+  } kTests[] = {
+      {"example.com", "https://example.com", absl::nullopt},
+      {"foo.com", "https://example.com", absl::nullopt},
+      {"foobar.com", kCryptotokenOrigin, absl::nullopt},
+      {"abcdef", kTestExtensionOrigin, kTestExtensionOrigin},
+      {"example.com", kTestExtensionOrigin, kTestExtensionOrigin},
+  };
+  for (const auto& test : kTests) {
+    EXPECT_EQ(delegate.MaybeGetRelyingPartyIdOverride(
+                  test.rp_id, url::Origin::Create(GURL(test.origin))),
+              test.expected);
+  }
+}
+
 #if BUILDFLAG(IS_MAC)
 API_AVAILABLE(macos(10.12.2))
 std::string TouchIdMetadataSecret(ChromeWebAuthenticationDelegate& delegate,

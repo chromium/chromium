@@ -157,6 +157,7 @@ constexpr size_t kTestCredentialIdLength = 32u;
 constexpr char kTestOrigin1[] = "https://a.google.com";
 constexpr char kTestOrigin2[] = "https://acme.org";
 constexpr char kTestRelyingPartyId[] = "google.com";
+constexpr char kExtensionScheme[] = "chrome-extension";
 constexpr char kCryptotokenOrigin[] =
     "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
 constexpr char kTestExtensionOrigin[] =
@@ -266,9 +267,9 @@ constexpr OriginClaimedAuthorityPair kInvalidRelyingPartyTestCases[] = {
     {"data:google.com", "google.com", AuthenticatorStatus::OPAQUE_DOMAIN},
     {"data:text/html,google.com", "google.com",
      AuthenticatorStatus::OPAQUE_DOMAIN},
-    {"ws://google.com", "google.com", AuthenticatorStatus::INVALID_DOMAIN},
+    {"ws://google.com", "google.com", AuthenticatorStatus::INVALID_PROTOCOL},
     {"gopher://google.com", "google.com", AuthenticatorStatus::OPAQUE_DOMAIN},
-    {"ftp://google.com", "google.com", AuthenticatorStatus::INVALID_DOMAIN},
+    {"ftp://google.com", "google.com", AuthenticatorStatus::INVALID_PROTOCOL},
     {"file:///google.com", "google.com", AuthenticatorStatus::INVALID_PROTOCOL},
     // Use of webauthn from a WSS origin may be technically valid, but we
     // prohibit use on non-HTTPS origins. (At least for now.)
@@ -276,10 +277,10 @@ constexpr OriginClaimedAuthorityPair kInvalidRelyingPartyTestCases[] = {
 
     {"data:,", "", AuthenticatorStatus::OPAQUE_DOMAIN},
     {"https://google.com", "", AuthenticatorStatus::BAD_RELYING_PARTY_ID},
-    {"ws:///google.com", "", AuthenticatorStatus::INVALID_DOMAIN},
+    {"ws:///google.com", "", AuthenticatorStatus::INVALID_PROTOCOL},
     {"wss:///google.com", "", AuthenticatorStatus::INVALID_PROTOCOL},
     {"gopher://google.com", "", AuthenticatorStatus::OPAQUE_DOMAIN},
-    {"ftp://google.com", "", AuthenticatorStatus::INVALID_DOMAIN},
+    {"ftp://google.com", "", AuthenticatorStatus::INVALID_PROTOCOL},
     {"file:///google.com", "", AuthenticatorStatus::INVALID_PROTOCOL},
 
     // This case is acceptable according to spec, but both renderer
@@ -1071,7 +1072,7 @@ TEST_F(AuthenticatorImplTest, CryptotokenBypass) {
     options->appid = kTestOrigin1;
 
     EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
-              AuthenticatorStatus::INVALID_DOMAIN);
+              AuthenticatorStatus::INVALID_PROTOCOL);
   }
 }
 
@@ -1835,7 +1836,7 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 };
 
 // TestWebAuthenticationDelegate is a test fake implementation of the
-// WebAuthentuicationDelegate embedder interface.
+// WebAuthenticationDelegate embedder interface.
 class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
  public:
   absl::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
@@ -1843,10 +1844,20 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
     return is_uvpaa_override;
   }
 
+  bool OverrideCallerOriginAndRelyingPartyIdValidation(
+      const url::Origin& origin,
+      const std::string& rp_id) override {
+    return permit_extensions && origin.scheme() == kExtensionScheme &&
+           origin.host() == rp_id;
+  }
+
   absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_rp_id,
       const url::Origin& caller_origin) override {
-    return rp_id_override;
+    if (permit_extensions && caller_origin.scheme() == kExtensionScheme) {
+      return caller_origin.Serialize();
+    }
+    return absl::nullopt;
   }
 
   bool ShouldPermitIndividualAttestation(
@@ -1879,9 +1890,9 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   // Platform-specific implementations will not be invoked.
   absl::optional<bool> is_uvpaa_override;
 
-  // If set, the delegate will override the RP ID used for WebAuthn requests
-  // with this value.
-  absl::optional<std::string> rp_id_override;
+  // If set, the delegate will permit WebAuthn requests from chrome-extension
+  // origins.
+  bool permit_extensions = false;
 
   // Indicates whether individual attestation should be permitted by the
   // delegate.
@@ -2297,21 +2308,17 @@ class AuthenticatorContentBrowserClientWithCableFlagTest
 // Test that credentials can be created and used from an extension origin when
 // permitted by the delegate.
 TEST_F(AuthenticatorContentBrowserClientTest, ChromeExtensions) {
-  static constexpr char kExtensionId[] = "abcdefg";
+  constexpr char kExtensionId[] = "abcdefg";
   static const std::string kExtensionOrigin =
-      std::string("chrome-extension://") + kExtensionId;
+      std::string(kExtensionScheme) + "://" + kExtensionId;
 
   NavigateAndCommit(GURL(kExtensionOrigin + "/test.html"));
 
-  for (bool permit_rp_id_override : {false, true}) {
-    SCOPED_TRACE(testing::Message() << "permit=" << permit_rp_id_override);
-    if (permit_rp_id_override) {
-      test_client_.GetTestWebAuthenticationDelegate()->rp_id_override =
-          kExtensionOrigin;
-    } else {
-      test_client_.GetTestWebAuthenticationDelegate()->rp_id_override =
-          absl::nullopt;
-    }
+  for (bool permit_webauthn_in_extensions : {false, true}) {
+    SCOPED_TRACE(testing::Message()
+                 << "permit=" << permit_webauthn_in_extensions);
+    test_client_.GetTestWebAuthenticationDelegate()->permit_extensions =
+        permit_webauthn_in_extensions;
 
     std::vector<uint8_t> credential_id;
     {
@@ -2321,11 +2328,11 @@ TEST_F(AuthenticatorContentBrowserClientTest, ChromeExtensions) {
 
       MakeCredentialResult result =
           AuthenticatorMakeCredential(std::move(options));
-      if (permit_rp_id_override) {
+      if (permit_webauthn_in_extensions) {
         EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
         credential_id = result.response->info->raw_id;
       } else {
-        EXPECT_EQ(result.status, AuthenticatorStatus::INVALID_DOMAIN);
+        EXPECT_EQ(result.status, AuthenticatorStatus::INVALID_PROTOCOL);
       }
     }
 
@@ -2337,8 +2344,41 @@ TEST_F(AuthenticatorContentBrowserClientTest, ChromeExtensions) {
           device::CredentialType::kPublicKey, std::move(credential_id));
 
       EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
-                permit_rp_id_override ? AuthenticatorStatus::SUCCESS
-                                      : AuthenticatorStatus::INVALID_DOMAIN);
+                permit_webauthn_in_extensions
+                    ? AuthenticatorStatus::SUCCESS
+                    : AuthenticatorStatus::INVALID_PROTOCOL);
+    }
+  }
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest, ChromeExtensionBadRpIds) {
+  // Permit WebAuthn in extensions.
+  constexpr char kExtensionScheme[] = "chrome-extension";
+  static const std::string kExtensionOrigin =
+      std::string(kExtensionScheme) + "://abcdefg";
+  test_client_.GetTestWebAuthenticationDelegate()->permit_extensions = true;
+
+  // Extensions are not permitted to assert RP IDs different from their
+  // extension ID.
+  for (auto* rp_id : {"", "xyz", "localhost", "xyz.com",
+                      "chrome-extension://abcdefg", "https://abcdefg"}) {
+    NavigateAndCommit(GURL(kExtensionOrigin + "/test.html"));
+    {
+      PublicKeyCredentialCreationOptionsPtr options =
+          GetTestPublicKeyCredentialCreationOptions();
+      options->relying_party.id = rp_id;
+
+      MakeCredentialResult result =
+          AuthenticatorMakeCredential(std::move(options));
+      EXPECT_EQ(result.status, AuthenticatorStatus::INVALID_PROTOCOL);
+    }
+
+    {
+      PublicKeyCredentialRequestOptionsPtr options =
+          GetTestPublicKeyCredentialRequestOptions();
+      options->relying_party_id = rp_id;
+      GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+      EXPECT_EQ(result.status, AuthenticatorStatus::INVALID_PROTOCOL);
     }
   }
 }

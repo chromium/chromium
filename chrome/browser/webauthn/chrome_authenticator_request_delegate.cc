@@ -48,6 +48,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "extensions/common/constants.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -109,6 +110,17 @@ ChromeWebAuthenticationDelegate::~ChromeWebAuthenticationDelegate() = default;
 
 #if !BUILDFLAG(IS_ANDROID)
 
+bool ChromeWebAuthenticationDelegate::
+    OverrideCallerOriginAndRelyingPartyIdValidation(
+        const url::Origin& caller_origin,
+        const std::string& relying_party_id) {
+  // Allow chrome-extensions:// origins to make WebAuthn requests.
+  // `MaybeGetRelyingPartyId` will override the RP ID to use when processing
+  // requests from extensions.
+  return caller_origin.scheme() == extensions::kExtensionScheme &&
+         caller_origin.host() == relying_party_id;
+}
+
 absl::optional<std::string>
 ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     const std::string& claimed_relying_party_id,
@@ -122,13 +134,11 @@ ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
 
   // Otherwise, allow extensions to use WebAuthn and map their origins
   // directly to RP IDs.
-  if (caller_origin.scheme() == "chrome-extension") {
-    // The requested RP ID for an extension must simply be the extension
-    // identifier because no flexibility is permitted. If a caller doesn't
-    // specify an RP ID then Blink defaults the value to the origin's host.
-    if (claimed_relying_party_id != caller_origin.host()) {
-      return absl::nullopt;
-    }
+  if (caller_origin.scheme() == extensions::kExtensionScheme) {
+    // `OverrideCallerOriginAndRelyingPartyIdValidation' ensures an extension
+    // must only use the extension identifier as the RP ID, no flexibility is
+    // permitted. When interacting with authenticators, however, we use the
+    // whole origin to avoid collisions with the RP ID space for HTTPS origins.
     return caller_origin.Serialize();
   }
 

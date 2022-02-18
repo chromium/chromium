@@ -7,7 +7,10 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/bad_message.h"
+#include "content/public/browser/authenticator_request_client_delegate.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -27,11 +30,13 @@ namespace {
 constexpr char kCryptotokenOrigin[] =
     "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
 
-// Returns AuthenticatorStatus::SUCCESS if the domain is valid and an error
-// if it fails one of the criteria below.
+// Returns AuthenticatorStatus::SUCCESS if the caller origin is in principle
+// authorized to make WebAuthn requests, and an error if it fails one of the
+// criteria below.
+//
 // Reference https://url.spec.whatwg.org/#valid-domain-string and
 // https://html.spec.whatwg.org/multipage/origin.html#concept-origin-effective-domain.
-blink::mojom::AuthenticatorStatus ValidateEffectiveDomain(
+blink::mojom::AuthenticatorStatus OriginAllowedToMakeWebAuthnRequests(
     url::Origin caller_origin) {
   // For calls originating in the CryptoToken U2F extension, allow CryptoToken
   // to validate domain.
@@ -44,50 +49,50 @@ blink::mojom::AuthenticatorStatus ValidateEffectiveDomain(
     return blink::mojom::AuthenticatorStatus::OPAQUE_DOMAIN;
   }
 
+  // The scheme is required to be HTTP(S).  Given the
+  // |network::IsUrlPotentiallyTrustworthy| check below, HTTP is effectively
+  // restricted to just "localhost".
+  if (caller_origin.scheme() != url::kHttpScheme &&
+      caller_origin.scheme() != url::kHttpsScheme) {
+    return blink::mojom::AuthenticatorStatus::INVALID_PROTOCOL;
+  }
+
   // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
   if (url::HostIsIPAddress(caller_origin.host()) ||
       !network::IsUrlPotentiallyTrustworthy(caller_origin.GetURL())) {
     return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
   }
 
-  // Additionally, the scheme is required to be HTTP(S). Other schemes
-  // may be supported in the future but the webauthn relying party is
-  // just the domain of the origin so we would have to define how the
-  // authority part of other schemes maps to a "domain" without
-  // collisions. Given the |network::IsUrlPotentiallyTrustworthy| check, just
-  // above, HTTP is effectively restricted to just "localhost".
-  if (caller_origin.scheme() != url::kHttpScheme &&
-      caller_origin.scheme() != url::kHttpsScheme) {
-    return blink::mojom::AuthenticatorStatus::INVALID_PROTOCOL;
-  }
-
   return blink::mojom::AuthenticatorStatus::SUCCESS;
 }
 
-// Return the relying party ID to use for a request given the requested RP ID
-// and the origin of the caller. It's valid for the requested RP ID to be a
-// registrable domain suffix of, or be equal to, the origin's effective domain.
-// Reference:
+// Returns whether a caller origin is allowed to claim a given Relying Party ID.
+// It's valid for the requested RP ID to be a registrable domain suffix of, or
+// be equal to, the origin's effective domain.  Reference:
 // https://html.spec.whatwg.org/multipage/origin.html#is-a-registrable-domain-suffix-of-or-is-equal-to.
-absl::optional<std::string> GetRelyingPartyId(
+bool OriginIsAllowedToClaimRelyingPartyId(
     const std::string& claimed_relying_party_id,
     const url::Origin& caller_origin) {
+  // `OriginAllowedToMakeWebAuthnRequests()` must have been called before.
+  DCHECK_EQ(OriginAllowedToMakeWebAuthnRequests(caller_origin),
+            blink::mojom::AuthenticatorStatus::SUCCESS);
+
   if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
           caller_origin)) {
     // This code trusts cryptotoken to handle the validation itself.
-    return claimed_relying_party_id;
+    return true;
   }
 
   if (claimed_relying_party_id.empty()) {
-    return absl::nullopt;
+    return false;
   }
 
   if (caller_origin.host() == claimed_relying_party_id) {
-    return claimed_relying_party_id;
+    return true;
   }
 
   if (!caller_origin.DomainIs(claimed_relying_party_id)) {
-    return absl::nullopt;
+    return false;
   }
 
   if (!net::registry_controlled_domains::HostHasRegistryControlledDomain(
@@ -98,13 +103,13 @@ absl::optional<std::string> GetRelyingPartyId(
           claimed_relying_party_id,
           net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    // TODO(crbug.com/803414): Accept corner-case situations like the following
-    // origin: "https://login.awesomecompany",
-    // relying_party_id: "awesomecompany".
-    return absl::nullopt;
+    // TODO(crbug.com/803414): Accept corner-case situations like the
+    // following origin: "https://login.awesomecompany", relying_party_id:
+    // "awesomecompany".
+    return false;
   }
 
-  return claimed_relying_party_id;
+  return true;
 }
 
 }  // namespace
@@ -114,7 +119,7 @@ WebAuthRequestSecurityChecker::WebAuthRequestSecurityChecker(
     : render_frame_host_(host) {}
 
 WebAuthRequestSecurityChecker::~WebAuthRequestSecurityChecker() = default;
-// static
+
 bool WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
     const url::Origin& origin) {
   auto cryptotoken_origin = url::Origin::Create(GURL(kCryptotokenOrigin));
@@ -170,8 +175,16 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     const url::Origin& caller_origin,
     const std::string& relying_party_id,
     RequestType request_type) {
+  if (GetContentClient()
+          ->browser()
+          ->GetWebAuthenticationDelegate()
+          ->OverrideCallerOriginAndRelyingPartyIdValidation(caller_origin,
+                                                            relying_party_id)) {
+    return blink::mojom::AuthenticatorStatus::SUCCESS;
+  }
+
   blink::mojom::AuthenticatorStatus domain_validation =
-      ValidateEffectiveDomain(caller_origin);
+      OriginAllowedToMakeWebAuthnRequests(caller_origin);
   if (domain_validation != blink::mojom::AuthenticatorStatus::SUCCESS) {
     return domain_validation;
   }
@@ -183,9 +196,7 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
   if (request_type == RequestType::kGetPaymentCredentialAssertion)
     return blink::mojom::AuthenticatorStatus::SUCCESS;
 
-  absl::optional<std::string> valid_rp_id =
-      GetRelyingPartyId(relying_party_id, caller_origin);
-  if (!valid_rp_id) {
+  if (!OriginIsAllowedToClaimRelyingPartyId(relying_party_id, caller_origin)) {
     return blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID;
   }
   return blink::mojom::AuthenticatorStatus::SUCCESS;

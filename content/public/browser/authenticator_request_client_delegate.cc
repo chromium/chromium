@@ -25,6 +25,13 @@ WebAuthenticationDelegate::WebAuthenticationDelegate() = default;
 
 WebAuthenticationDelegate::~WebAuthenticationDelegate() = default;
 
+bool WebAuthenticationDelegate::OverrideCallerOriginAndRelyingPartyIdValidation(
+    const url::Origin& caller_origin,
+    const std::string& relying_party_id) {
+  // Perform regular security checks for all origins and RP IDs.
+  return false;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 absl::optional<std::string>
 WebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
