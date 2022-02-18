@@ -100,15 +100,18 @@ public class CloseAllTabsDialogUnitTest {
         return mMockModalDialogManager;
     }
 
-    private void verifyModel() {
+    private void verifyModel(boolean isIncognito) {
         assertEquals(
                 ModalDialogManager.ModalDialogType.APP, mMockModalDialogManager.getDialogType());
 
         final PropertyModel model = mMockModalDialogManager.getDialogModel();
         assertNotNull(model);
-        assertEquals(mContext.getString(R.string.close_all_tabs_dialog_title),
+        assertEquals(mContext.getString(isIncognito ? R.string.close_all_tabs_dialog_title_incognito
+                                                    : R.string.close_all_tabs_dialog_title),
                 model.get(ModalDialogProperties.TITLE));
-        assertEquals(mContext.getString(R.string.close_all_tabs_dialog_message),
+        assertEquals(
+                mContext.getString(isIncognito ? R.string.close_all_tabs_dialog_message_incognito
+                                               : R.string.close_all_tabs_dialog_message),
                 model.get(ModalDialogProperties.MESSAGE));
         assertEquals(mContext.getString(R.string.menu_close_all_tabs),
                 model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
@@ -129,9 +132,10 @@ public class CloseAllTabsDialogUnitTest {
     @Test
     @SmallTest
     public void testDialog() {
-        CloseAllTabsDialog.show(
-                mContext, this::getModalDialogManager, () -> { mRunnableCalled = true; });
-        verifyModel();
+        final boolean isIncognito = false;
+        CloseAllTabsDialog.show(mContext, this::getModalDialogManager,
+                () -> { mRunnableCalled = true; }, isIncognito);
+        verifyModel(isIncognito);
 
         mMockModalDialogManager.simulateButtonClick(ModalDialogProperties.ButtonType.POSITIVE);
         assertTrue(mRunnableCalled);
@@ -140,10 +144,24 @@ public class CloseAllTabsDialogUnitTest {
 
     @Test
     @SmallTest
+    public void testDismissButton() {
+        final boolean isIncognito = true;
+        CloseAllTabsDialog.show(mContext, this::getModalDialogManager,
+                () -> { mRunnableCalled = true; }, isIncognito);
+        verifyModel(isIncognito);
+
+        mMockModalDialogManager.simulateButtonClick(ModalDialogProperties.ButtonType.NEGATIVE);
+        assertFalse(mRunnableCalled);
+        verifyDismissed(false);
+    }
+
+    @Test
+    @SmallTest
     public void testDismissNoButton() {
-        CloseAllTabsDialog.show(
-                mContext, this::getModalDialogManager, () -> { mRunnableCalled = true; });
-        verifyModel();
+        final boolean isIncognito = false;
+        CloseAllTabsDialog.show(mContext, this::getModalDialogManager,
+                () -> { mRunnableCalled = true; }, isIncognito);
+        verifyModel(isIncognito);
 
         mMockModalDialogManager.dismissDialog(mMockModalDialogManager.getDialogModel(),
                 DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);

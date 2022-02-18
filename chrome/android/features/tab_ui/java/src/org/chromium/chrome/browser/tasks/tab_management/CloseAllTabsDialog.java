@@ -23,9 +23,13 @@ public class CloseAllTabsDialog {
 
     /**
      * Shows a modal dialog to confirm or cancel the close all tabs action.
+     * @param modalDialogManagerSupplier Provides access to the modal dialog manager.
+     * @param onCloseAll Invoked on a positive button input.
+     * @param isIncognito Whether to show incognito strings.
      */
     public static void show(Context context,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier, Runnable onCloseAll) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier, Runnable onCloseAll,
+            boolean isIncognito) {
         assert modalDialogManagerSupplier.hasValue();
         final ModalDialogManager manager = modalDialogManagerSupplier.get();
 
@@ -60,9 +64,13 @@ public class CloseAllTabsDialog {
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, controller)
                         .with(ModalDialogProperties.TITLE,
-                                context.getString(R.string.close_all_tabs_dialog_title))
+                                context.getString(isIncognito
+                                                ? R.string.close_all_tabs_dialog_title_incognito
+                                                : R.string.close_all_tabs_dialog_title))
                         .with(ModalDialogProperties.MESSAGE,
-                                context.getString(R.string.close_all_tabs_dialog_message))
+                                context.getString(isIncognito
+                                                ? R.string.close_all_tabs_dialog_message_incognito
+                                                : R.string.close_all_tabs_dialog_message))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getString(R.string.menu_close_all_tabs))
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
