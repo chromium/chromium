@@ -10,6 +10,7 @@
 #include <taskschd.h>
 #include <wrl/client.h>
 
+#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -44,7 +45,6 @@ const wchar_t kV2Library[] = L"taskschd.dll";
 // Text for times used in the V2 API of the Task Scheduler.
 const wchar_t kOneHourText[] = L"PT1H";
 const wchar_t kFiveHoursText[] = L"PT5H";
-const wchar_t kZeroMinuteText[] = L"PT0M";
 const wchar_t kFifteenMinutesText[] = L"PT15M";
 const wchar_t kOneDayText[] = L"P1D";
 
@@ -53,9 +53,6 @@ const wchar_t kTaskCompanyFolder[] = L"\\" COMPANY_SHORTNAME_STRING;
 const wchar_t kTaskSubfolderName[] =
     L"\\" COMPANY_SHORTNAME_STRING L"\\" PRODUCT_FULLNAME_STRING;
 
-// Most of the users with pending logs succeeds within 7 days, so no need to
-// try for longer than that, especially for those who keep crashing.
-const int kNumDaysBeforeExpiry = 7;
 const size_t kNumDeleteTaskRetry = 3;
 const size_t kDeleteRetryDelayInMs = 100;
 
@@ -455,14 +452,6 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    // TODO(csharp): Find a way to only set this for log upload retry.
-    hr = task_settings->put_DeleteExpiredTaskAfter(
-        base::win::ScopedBstr(kZeroMinuteText).Get());
-    if (FAILED(hr)) {
-      PLOG(ERROR) << "Can't put 'DeleteExpiredTaskAfter'. " << std::hex << hr;
-      return false;
-    }
-
     hr = task_settings->put_DisallowStartIfOnBatteries(VARIANT_FALSE);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't put 'DisallowStartIfOnBatteries' to false. "
@@ -592,17 +581,6 @@ class TaskSchedulerV2 final : public TaskScheduler {
       }
     }
 
-    // None of the triggers should go beyond kNumDaysBeforeExpiry.
-    base::Time expiry_date(base::Time::NowFromSystemTime() +
-                           base::Days(kNumDaysBeforeExpiry));
-    base::win::ScopedBstr end_boundary(GetTimestampString(expiry_date));
-    hr = trigger->put_EndBoundary(end_boundary.Get());
-    if (FAILED(hr)) {
-      PLOG(ERROR) << "Can't put 'EndBoundary' to " << end_boundary.Get() << ". "
-                  << std::hex << hr;
-      return false;
-    }
-
     Microsoft::WRL::ComPtr<IActionCollection> actions;
     hr = task->get_Actions(&actions);
     if (FAILED(hr)) {
@@ -637,6 +615,10 @@ class TaskSchedulerV2 final : public TaskScheduler {
       PLOG(ERROR) << "Can't set arguments of exec action. " << std::hex << hr;
       return false;
     }
+
+    base::win::ScopedBstr task_xml;
+    task->get_XmlText(task_xml.Receive());
+    VLOG(2) << "Registering Task with XML: " << task_xml.Get();
 
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
     base::win::ScopedVariant user(user_name.Get());
@@ -1104,5 +1086,19 @@ std::unique_ptr<TaskScheduler> TaskScheduler::CreateInstance() {
 }
 
 TaskScheduler::TaskScheduler() = default;
+
+std::ostream& operator<<(std::ostream& stream,
+                         const TaskScheduler::TaskInfo& t) {
+  std::wstring value =
+      base::StrCat({L"[TaskInfo][name]", t.name, L"[description]",
+                    t.description, L"[exec_actions]"});
+  for (auto exec_action : t.exec_actions)
+    value += base::StrCat({L"[exec_action]", exec_action.value()});
+
+  value +=
+      base::StrCat({L"[logon_type]", base::StringPrintf(L"0x%x", t.logon_type),
+                    L"[user_id]", t.user_id});
+  return stream << value;
+}
 
 }  // namespace updater
