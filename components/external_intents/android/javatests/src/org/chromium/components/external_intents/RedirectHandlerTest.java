@@ -489,10 +489,10 @@ public class RedirectHandlerTest {
 
         Assert.assertFalse(handler.isOnNavigation());
         handler.updateNewUrlLoading(PageTransition.LINK, false, true,
-                uninitializedUserInteractionTime, RedirectHandler.INVALID_ENTRY_INDEX,
+                uninitializedUserInteractionTime, RedirectHandler.NO_COMMITTED_ENTRY_INDEX,
                 true /* isInitialNavigation */);
         Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(RedirectHandler.INVALID_ENTRY_INDEX,
+        Assert.assertEquals(RedirectHandler.NO_COMMITTED_ENTRY_INDEX,
                 handler.getLastCommittedEntryIndexBeforeStartingNavigation());
         Assert.assertFalse(handler.hasUserStartedNonInitialNavigation());
     }
@@ -524,6 +524,19 @@ public class RedirectHandlerTest {
         Assert.assertTrue(handler.shouldStayInApp(true));
         Assert.assertFalse(handler.shouldStayInApp(true, true));
         Assert.assertFalse(handler.hasUserStartedNonInitialNavigation());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"IntentHandling"})
+    public void testLastCommittedIndexPersistsThroughClear() {
+        int lastIndex = 1234;
+        RedirectHandler handler = RedirectHandler.create();
+        handler.updateNewUrlLoading(PageTransition.LINK, false /* isRedirect */,
+                false /* hasUserGesture */, 0, lastIndex, true /* isInitialNavigation */);
+        handler.clear();
+        Assert.assertEquals(
+                lastIndex, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
     }
 
     private static class TestPackageManager extends MockPackageManager {

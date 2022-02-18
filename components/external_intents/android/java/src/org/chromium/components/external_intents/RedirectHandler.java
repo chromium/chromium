@@ -27,10 +27,10 @@ import java.util.List;
 public class RedirectHandler {
     private static final String TAG = "RedirectHandler";
 
-    /**
-     * An invalid entry index.
-     */
-    public static final int INVALID_ENTRY_INDEX = -1;
+    // The last committed entry index when no navigations have committed.
+    public static final int NO_COMMITTED_ENTRY_INDEX = -1;
+    // An invalid entry index.
+    private static final int INVALID_ENTRY_INDEX = -2;
     public static final long INVALID_TIME = -1;
 
     private static final int NAVIGATION_TYPE_FROM_INTENT = 1;
@@ -59,18 +59,13 @@ public class RedirectHandler {
 
     private static class NavigationState {
         final int mInitialNavigationType;
-        final int mLastCommittedEntryIndexBeforeStartingNavigation;
         final boolean mHasUserStartedNonInitialNavigation;
         boolean mIsOnEffectiveRedirectChain;
         boolean mShouldNotOverrideUrlLoadingOnCurrentRedirectChain;
         boolean mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain;
 
-        NavigationState(int initialNavigationType,
-                int lastCommittedEntryIndexBeforeStartingNavigation,
-                boolean hasUserStartedNonInitialNavigation) {
+        NavigationState(int initialNavigationType, boolean hasUserStartedNonInitialNavigation) {
             mInitialNavigationType = initialNavigationType;
-            mLastCommittedEntryIndexBeforeStartingNavigation =
-                    lastCommittedEntryIndexBeforeStartingNavigation;
             mHasUserStartedNonInitialNavigation = hasUserStartedNonInitialNavigation;
         }
     }
@@ -78,6 +73,10 @@ public class RedirectHandler {
     private long mLastNewUrlLoadingTime = INVALID_TIME;
     private IntentState mIntentState;
     private NavigationState mNavigationState;
+
+    // Not part of NavigationState as this should persist through resetting of the NavigationChain
+    // so that the history state can be correctly set even after the tab is hidden.
+    private int mLastCommittedEntryIndexBeforeStartingNavigation = INVALID_ENTRY_INDEX;
 
     private long mLastUserInteractionTimeMillis;
 
@@ -123,7 +122,7 @@ public class RedirectHandler {
     }
 
     /**
-     * Resets all variables except timestamps.
+     * Resets navigation and intent state.
      */
     public void clear() {
         mIntentState = null;
@@ -220,8 +219,8 @@ public class RedirectHandler {
                 initialNavigationType = NAVIGATION_TYPE_OTHER;
             }
         }
-        mNavigationState = new NavigationState(
-                initialNavigationType, lastCommittedEntryIndex, !isInitialNavigation);
+        mNavigationState = new NavigationState(initialNavigationType, !isInitialNavigation);
+        mLastCommittedEntryIndexBeforeStartingNavigation = lastCommittedEntryIndex;
     }
 
     /**
@@ -316,7 +315,8 @@ public class RedirectHandler {
      * @return the last committed entry index which was saved before starting this navigation.
      */
     public int getLastCommittedEntryIndexBeforeStartingNavigation() {
-        return mNavigationState.mLastCommittedEntryIndexBeforeStartingNavigation;
+        assert mLastCommittedEntryIndexBeforeStartingNavigation != INVALID_ENTRY_INDEX;
+        return mLastCommittedEntryIndexBeforeStartingNavigation;
     }
 
     /**
