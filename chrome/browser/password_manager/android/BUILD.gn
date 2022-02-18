@@ -207,15 +207,24 @@ android_library("backend_interface_java") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackend.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactory.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactoryImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegate.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateFactory.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateFactoryImpl.java",
   ]
 
   # Add the actual implementation where necessary so that downstream targets
   # can provide their own implementations.
-  jar_excluded_patterns = [ "*/PasswordStoreAndroidBackendFactoryImpl.class" ]
+  jar_excluded_patterns = [
+    "*/PasswordStoreAndroidBackendFactoryImpl.class",
+    "*/PasswordSyncControllerDelegateFactoryImpl.class",
+  ]
 }
 
 android_library("backend_interface_public_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactoryImpl.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactoryImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateFactoryImpl.java",
+  ]
 
   deps = [ ":backend_interface_java" ]
 }
