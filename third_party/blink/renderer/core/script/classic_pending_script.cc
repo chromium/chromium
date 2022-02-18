@@ -229,7 +229,7 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
     // the preload cache however, we know any associated integrity metadata and
     // checks were destined for this request, so we cannot skip the integrity
     // check.
-    if (!element->IntegrityAttributeValue().IsEmpty() ||
+    if (!options_.GetIntegrityMetadata().IsEmpty() ||
         GetResource()->IsLinkPreload()) {
       integrity_failure_ = GetResource()->IntegrityDisposition() !=
                            ResourceIntegrityDisposition::kPassed;
