@@ -237,7 +237,6 @@ src/webgpu/util/create_elements.ts
 src/webgpu/api/validation/queue/copyToTexture/CopyExternalImageToTexture.spec.ts
 src/webgpu/api/validation/queue/destroyed/buffer.spec.ts
 src/webgpu/api/validation/queue/destroyed/query_set.spec.ts
-src/webgpu/api/validation/queue/destroyed/texture.spec.ts
 src/webgpu/api/validation/render_pass/resolve.spec.ts
 src/webgpu/api/validation/render_pass/storeOp.spec.ts
 src/webgpu/api/validation/resource_usages/texture/in_pass_encoder.spec.ts

@@ -2076,7 +2076,7 @@
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyBufferToBuffer:copy_overflow:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyBufferToBuffer:copy_out_of_bounds:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyBufferToBuffer:copy_within_same_buffer:*'>
-<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyTextureToTexture:copy_with_invalid_texture:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyTextureToTexture:copy_with_invalid_or_destroyed_texture:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyTextureToTexture:texture,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyTextureToTexture:mipmap_level:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyTextureToTexture:texture_usage:*'>
@@ -2571,7 +2571,7 @@
 <meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:validation_scope,different_passes:*'>
 <meta name=variant content='?q=webgpu:api,validation,texture,destroy:base:*'>
 <meta name=variant content='?q=webgpu:api,validation,texture,destroy:twice:*'>
-<meta name=variant content='?q=webgpu:api,validation,texture,destroy:submit_a_destroyed_texture:*'>
+<meta name=variant content='?q=webgpu:api,validation,texture,destroy:submit_a_destroyed_texture_as_attachment:*'>
 <meta name=variant content='?q=webgpu:api,validation,vertex_state:max_vertex_buffer_limit:*'>
 <meta name=variant content='?q=webgpu:api,validation,vertex_state:max_vertex_attribute_limit:*'>
 <meta name=variant content='?q=webgpu:api,validation,vertex_state:max_vertex_buffer_array_stride_limit:*'>

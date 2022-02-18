@@ -248,6 +248,7 @@ crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,im
 crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyT2B";depthOrArrayLayers=1;dimension="2d";format="stencil8";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyT2B";depthOrArrayLayers=3;dimension="2d";format="depth16unorm";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyT2B";depthOrArrayLayers=3;dimension="2d";format="stencil8";* [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,texture,destroy:submit_a_destroyed_texture_as_attachment:depthStencilTextureAspect="stencil-only";* [ Failure ]
 crbug.com/dawn/690 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:format="stencil8";* [ Failure ]
 crbug.com/dawn/690 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:format="depth16unorm";* [ Failure ]
 crbug.com/dawn/690 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:format="stencil8";* [ Failure ]
