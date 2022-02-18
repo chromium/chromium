@@ -128,6 +128,9 @@ std::unique_ptr<const ModuleCache::Module> ModuleCache::CreateModuleForAddress(
   // PosixModule reads executable pages in order to extract module info. This
   // may result in a crash if the module is mapped as XOM
   // (https://crbug.com/957801).
+  // TODO(crbug.com/1297724): If this is implemented for ARM64, re-enable heap
+  // sampling in
+  // components/heap_profiling/in_process/heap_profiler_controller.cc.
   return nullptr;
 #else
   Dl_info info;

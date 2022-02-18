@@ -83,6 +83,14 @@ class HeapProfilerControllerTest : public ::testing::Test {
         base::DoNothing());
   }
 
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
+  void SetUp() override {
+    // TODO(crbug.com/1297724): The heap profiler is never started on these
+    // platforms so there is nothing to test.
+    GTEST_SKIP();
+  }
+#endif
+
   void StartHeapProfiling(
       version_info::Channel channel,
       base::RepeatingCallback<void(base::TimeTicks, metrics::SampledProfile)>
