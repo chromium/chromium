@@ -8,10 +8,8 @@
 
 #include "ash/shell.h"
 #include "base/bind.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/exo/buffer.h"
@@ -48,11 +46,7 @@ class TestDataSourceDelegate : public DataSourceDelegate {
   void OnTarget(const absl::optional<std::string>& mime_type) override {}
 
   void OnSend(const std::string& mime_type, base::ScopedFD fd) override {
-    if (data_map_.empty()) {
-      base::WriteFileDescriptor(fd.get(), kText);
-    } else {
-      base::WriteFileDescriptor(fd.get(), data_map_[mime_type]);
-    }
+    base::WriteFileDescriptor(fd.get(), kText);
   }
 
   void OnCancelled() override {}
@@ -66,13 +60,6 @@ class TestDataSourceDelegate : public DataSourceDelegate {
   bool CanAcceptDataEventsForSurface(Surface* surface) const override {
     return true;
   }
-
-  void SetData(const std::string& mime_type, std::vector<uint8_t> data) {
-    data_map_[mime_type] = std::move(data);
-  }
-
- private:
-  base::flat_map<std::string, std::vector<uint8_t>> data_map_;
 };
 
 class DragDropOperationTest : public test::ExoTestBase,
@@ -300,117 +287,6 @@ TEST_F(DragDropOperationTest, DragDropFromNestedPopup) {
   generator.ReleaseLeftButton();
   EXPECT_EQ(0, GetDragStartCountAndReset());
   EXPECT_EQ(1, GetDragEndCountAndReset());
-}
-
-// Lacros sends additional metadata about the drag and drop source (e.g. origin
-// URL). This synchronizes the source metadata between Lacros to Ash. This is
-// used in Data Leak Prevention restrictions where admins can restrict data from
-// being copied from restricted locations.
-TEST_F(DragDropOperationTest, DragDropCheckSourceFromLacros) {
-  TestDataExchangeDelegate data_exchange_delegate;
-  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kLacros);
-
-  auto delegate = std::make_unique<TestDataSourceDelegate>();
-  auto data_source = std::make_unique<DataSource>(delegate.get());
-
-  const std::string kTestText = "TestData";
-
-  // Encoded source DataTransferEndpoint.
-  const std::string kEncodedTestDte =
-      R"({"endpoint_type":"url","url_origin":"https://www.google.com"})";
-  const std::string kDteMimeType = "chromium/x-data-transfer-endpoint";
-
-  data_source->Offer(kTextMimeType);
-  delegate->SetData(kTextMimeType,
-                    std::vector<uint8_t>(kTestText.begin(), kTestText.end()));
-  data_source->Offer(kDteMimeType);
-  delegate->SetData(kDteMimeType, std::vector<uint8_t>(kEncodedTestDte.begin(),
-                                                       kEncodedTestDte.end()));
-
-  auto origin_surface = std::make_unique<Surface>();
-  ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());
-
-  gfx::Size buffer_size(100, 100);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  auto icon_surface = std::make_unique<Surface>();
-  icon_surface->Attach(buffer.get());
-
-  auto operation = DragDropOperation::Create(
-      &data_exchange_delegate, data_source.get(), origin_surface.get(),
-      icon_surface.get(), gfx::PointF(), ui::mojom::DragEventSource::kMouse);
-  icon_surface->Commit();
-
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
-
-  ui::OSExchangeData* os_exchange_data =
-      operation->GetOSExchangeDataForTesting();
-  ASSERT_TRUE(os_exchange_data);
-
-  std::u16string actual_string;
-  os_exchange_data->GetString(&actual_string);
-  EXPECT_EQ(kTestText, base::UTF16ToUTF8(actual_string));
-
-  const ui::DataTransferEndpoint* source_dte = os_exchange_data->GetSource();
-  ASSERT_TRUE(source_dte);
-  ASSERT_EQ(ui::EndpointType::kUrl, source_dte->type());
-  const ui::DataTransferEndpoint expected_dte = ui::DataTransferEndpoint(
-      url::Origin::Create(GURL("https://www.google.com")));
-  EXPECT_TRUE(
-      expected_dte.GetOrigin()->IsSameOriginWith(*source_dte->GetOrigin()));
-}
-
-// Additional source metadata should be ignored from non-Lacros instances.
-TEST_F(DragDropOperationTest, DragDropCheckSourceFromNonLacros) {
-  TestDataExchangeDelegate data_exchange_delegate;
-  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kCrostini);
-
-  auto delegate = std::make_unique<TestDataSourceDelegate>();
-  auto data_source = std::make_unique<DataSource>(delegate.get());
-
-  const std::string kTestText = "TestData";
-
-  // Encoded source DataTransferEndpoint.
-  const std::string kEncodedTestDte =
-      R"({"endpoint_type":"url","url_origin":"https://www.google.com"})";
-  const std::string kDteMimeType = "chromium/x-data-transfer-endpoint";
-
-  data_source->Offer(kTextMimeType);
-  delegate->SetData(kTextMimeType,
-                    std::vector<uint8_t>(kTestText.begin(), kTestText.end()));
-  data_source->Offer(kDteMimeType);
-  delegate->SetData(kDteMimeType, std::vector<uint8_t>(kEncodedTestDte.begin(),
-                                                       kEncodedTestDte.end()));
-
-  auto origin_surface = std::make_unique<Surface>();
-  ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());
-
-  gfx::Size buffer_size(100, 100);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  auto icon_surface = std::make_unique<Surface>();
-  icon_surface->Attach(buffer.get());
-
-  auto operation = DragDropOperation::Create(
-      &data_exchange_delegate, data_source.get(), origin_surface.get(),
-      icon_surface.get(), gfx::PointF(), ui::mojom::DragEventSource::kMouse);
-  icon_surface->Commit();
-
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
-
-  ui::OSExchangeData* os_exchange_data =
-      operation->GetOSExchangeDataForTesting();
-  ASSERT_TRUE(os_exchange_data);
-
-  std::u16string actual_string;
-  os_exchange_data->GetString(&actual_string);
-  EXPECT_EQ(kTestText, base::UTF16ToUTF8(actual_string));
-
-  const ui::DataTransferEndpoint* source_dte = os_exchange_data->GetSource();
-  ASSERT_TRUE(source_dte);
-  ASSERT_EQ(ui::EndpointType::kCrostini, source_dte->type());
 }
 #endif
 
