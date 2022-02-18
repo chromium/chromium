@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="PermissionType">
+  <variant name="Geolocation"/>
+  <variant name="Notifications"/>
+</variants>
+
 <histogram name="BrowserDialogs.ExternalProtocol.HandleState"
     enum="HandleStateType" expires_after="2022-05-01">
   <owner>engedy@chromium.org</owner>
@@ -457,8 +462,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Permissions.OnDevicePredictionService.Response.{PermissionType}"
+    enum="BooleanIgnored" expires_after="2022-06-19">
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever the permissions prediction service(on-device) responds to
+    a {PermissionType} permission request. Records whether its response was
+    ignored or not.
+  </summary>
+  <token key="PermissionType" variants="PermissionType"/>
+</histogram>
+
 <histogram name="Permissions.PredictionService.GeolocationRequest"
     enum="BooleanSent" expires_after="2022-06-19">
+  <obsolete>
+    Removed on 02/2022. Replaced with the newer histogram
+    Permissions.PredictionService.GeolocationResponse
+  </obsolete>
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -481,6 +503,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Permissions.PredictionService.Request" enum="BooleanSent"
     expires_after="2022-06-12">
+  <obsolete>
+    Removed on 02/2022. Replaced with the newer histogram
+    Permissions.PredictionService.NotificationResponse
+  </obsolete>
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -488,6 +514,18 @@ chromium-metrics-reviews@google.com.
     Permissions predictions service. Records whether the request was sent to the
     backend or if it was held back.
   </summary>
+</histogram>
+
+<histogram name="Permissions.PredictionService.Response.{PermissionType}"
+    enum="BooleanIgnored" expires_after="2022-06-19">
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever the permissions prediction service(server-side) responds
+    to a {PermissionType} permission request. Records whether its response was
+    ignored or not.
+  </summary>
+  <token key="PermissionType" variants="PermissionType"/>
 </histogram>
 
 <histogram name="Permissions.Prompt.Accepted" enum="PermissionRequestType"

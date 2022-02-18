@@ -65,6 +65,10 @@ extern const base::FeatureParam<std::string>
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<bool> kPermissionPredictionServiceUseJson;
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<double>
+    kPermissionOnDeviceNotificationPredictionsHoldbackChance;
+
 }  // namespace feature_params
 }  // namespace permissions
 

@@ -12,6 +12,7 @@
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
+#include "components/permissions/request_type.h"
 
 class PredictionServiceRequest;
 class Profile;
@@ -56,10 +57,15 @@ class PredictionBasedPermissionUiSelector
       override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
+                           GetPredictionTypeToUse);
+  FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
+                           HoldbackHistogramTest);
   permissions::PredictionRequestFeatures BuildPredictionRequestFeatures(
       permissions::PermissionRequest* request);
   void LookupResponseReceived(
       bool is_on_device,
+      permissions::RequestType request_type,
       bool lookup_succesful,
       bool response_from_cache,
       const absl::optional<permissions::GeneratePredictionsResponse>& response);
@@ -72,6 +78,8 @@ class PredictionBasedPermissionUiSelector
 
   void OnModelExecutionComplete(
       const absl::optional<permissions::GeneratePredictionsResponse>& result);
+
+  bool ShouldHoldBack(bool is_on_device, permissions::RequestType request_type);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<PredictionServiceRequest> request_;

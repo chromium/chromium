@@ -87,5 +87,11 @@ const base::FeatureParam<bool> kPermissionPredictionServiceUseJson{
     &permissions::features::kPermissionPredictionServiceUseUrlOverride,
     "service_use_json", false};
 
+const base::FeatureParam<double>
+    kPermissionOnDeviceNotificationPredictionsHoldbackChance(
+        &features::kPermissionOnDeviceNotificationPredictions,
+        "holdback_chance",
+        0.0);
+
 }  // namespace feature_params
 }  // namespace permissions

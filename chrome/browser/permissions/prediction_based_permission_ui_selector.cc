@@ -159,6 +159,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
           base::BindOnce(
               &PredictionBasedPermissionUiSelector::LookupResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), /*is_on_device=*/true,
+              request->request_type(),
               /*lookup_succesful=*/true, /*response_from_cache=*/false),
           *proto_request);
       return;
@@ -183,7 +184,8 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
         service, features,
         base::BindOnce(
             &PredictionBasedPermissionUiSelector::LookupResponseReceived,
-            base::Unretained(this), /*is_on_device=*/false));
+            base::Unretained(this), /*is_on_device=*/false,
+            request->request_type()));
     return;
   }
   NOTREACHED();
@@ -234,12 +236,19 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
 
 void PredictionBasedPermissionUiSelector::LookupResponseReceived(
     bool is_on_device,
+    permissions::RequestType request_type,
     bool lookup_succesful,
     bool response_from_cache,
     const absl::optional<permissions::GeneratePredictionsResponse>& response) {
   request_.reset();
   if (!lookup_succesful || !response || response->prediction_size() == 0) {
     VLOG(1) << "[CPSS] Prediction service request failed";
+    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+    return;
+  }
+
+  if (ShouldHoldBack(is_on_device, request_type)) {
+    VLOG(1) << "[CPSS] Prediction service response held back";
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
@@ -260,12 +269,44 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
   std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
 }
 
+bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
+    bool is_on_device,
+    permissions::RequestType request_type) {
+  // Different holdback threshold for the different experiments.
+  const double on_device_notification_holdback_threshold =
+      permissions::feature_params::
+          kPermissionOnDeviceNotificationPredictionsHoldbackChance.Get();
+  const double server_side_notification_holdback_threshold =
+      features::kPermissionPredictionsHoldbackChance.Get();
+  const double server_side_geolocation_holdback_threshold =
+      features::kPermissionGeolocationPredictionsHoldbackChance.Get();
+
+  // Holdback probability for this request.
+  const double holdback_chance = base::RandDouble();
+  bool should_holdback = false;
+  if (is_on_device) {
+    DCHECK_EQ(permissions::RequestType::kNotifications, request_type);
+    should_holdback =
+        holdback_chance < on_device_notification_holdback_threshold;
+  } else {
+    if (request_type == permissions::RequestType::kNotifications) {
+      should_holdback =
+          holdback_chance < server_side_notification_holdback_threshold;
+    } else if (request_type == permissions::RequestType::kGeolocation) {
+      should_holdback =
+          holdback_chance < server_side_geolocation_holdback_threshold;
+    } else {
+      NOTREACHED();
+    }
+  }
+  permissions::PermissionUmaUtil::RecordPermissionPredictionServiceHoldback(
+      request_type, is_on_device, should_holdback);
+  return should_holdback;
+}
+
 PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
     permissions::RequestType request_type) {
-  // We need to also check `kQuietNotificationPrompts` here since there is no
-  // generic safeguard anywhere else in the stack.
-  if (!base::FeatureList::IsEnabled(features::kQuietNotificationPrompts) ||
-      !safe_browsing::IsSafeBrowsingEnabled(*(profile_->GetPrefs()))) {
+  if (!safe_browsing::IsSafeBrowsingEnabled(*(profile_->GetPrefs()))) {
     return PredictionSource::USE_NONE;
   }
 
@@ -277,32 +318,26 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
   is_tflite_available = true;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
-  if (request_type == permissions::RequestType::kNotifications) {
-    if (base::FeatureList::IsEnabled(features::kPermissionPredictions)) {
-      bool should_hold_back =
-          base::RandDouble() <
-          features::kPermissionPredictionsHoldbackChance.Get();
-      is_server_side_prediction_enabled = !should_hold_back;
-      base::UmaHistogramBoolean("Permissions.PredictionService.Request",
-                                !should_hold_back);
-    }
+  // Notification supports both flavours of the quiet prompt
+  if (request_type == permissions::RequestType::kNotifications &&
+      (base::FeatureList::IsEnabled(features::kQuietNotificationPrompts) ||
+       base::FeatureList::IsEnabled(
+           permissions::features::kPermissionQuietChip))) {
+    is_server_side_prediction_enabled =
+        base::FeatureList::IsEnabled(features::kPermissionPredictions);
+
     is_ondevice_prediction_enabled =
         is_tflite_available &&
         base::FeatureList::IsEnabled(
             permissions::features::kPermissionOnDeviceNotificationPredictions);
   }
 
-  if (request_type == permissions::RequestType::kGeolocation) {
-    if (base::FeatureList::IsEnabled(
-            features::kPermissionGeolocationPredictions)) {
-      bool should_hold_back =
-          base::RandDouble() <
-          features::kPermissionGeolocationPredictionsHoldbackChance.Get();
-      is_server_side_prediction_enabled = !should_hold_back;
-      base::UmaHistogramBoolean(
-          "Permissions.PredictionService.GeolocationRequest",
-          !should_hold_back);
-    }
+  // Geolocation supports only the quiet chip ui
+  if (request_type == permissions::RequestType::kGeolocation &&
+      base::FeatureList::IsEnabled(
+          permissions::features::kPermissionQuietChip)) {
+    is_server_side_prediction_enabled = base::FeatureList::IsEnabled(
+        features::kPermissionGeolocationPredictions);
   }
 
   if (is_server_side_prediction_enabled && is_ondevice_prediction_enabled) {
