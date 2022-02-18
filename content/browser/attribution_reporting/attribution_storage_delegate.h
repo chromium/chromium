@@ -124,6 +124,10 @@ class AttributionStorageDelegate {
 
   virtual RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source) const = 0;
+
+  // Returns the maximum sum of the contributions (values) across all buckets
+  // per source.
+  virtual int64_t GetAggregatableBudgetPerSource() const = 0;
 };
 
 }  // namespace content

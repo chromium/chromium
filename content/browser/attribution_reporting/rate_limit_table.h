@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 
@@ -30,17 +31,13 @@ class AttributionStorageDelegate;
 class CommonSourceInfo;
 class StorableSource;
 
+enum class RateLimitResult : int;
+
 // Manages storage for rate-limiting sources and attributions.
 // This class may be constructed on any sequence but must be accessed and
 // destroyed on the same sequence. The sequence must outlive |this|.
 class CONTENT_EXPORT RateLimitTable {
  public:
-  enum class Result {
-    kAllowed,
-    kNotAllowed,
-    kError,
-  };
-
   // We have separate reporting origin rate limits for sources and attributions.
   // This enum helps us differentiate between these two cases in the database.
   //
@@ -73,15 +70,15 @@ class CONTENT_EXPORT RateLimitTable {
       sql::Database* db,
       const AttributionInfo& attribution_info);
 
-  [[nodiscard]] Result SourceAllowedForReportingOriginLimit(
+  [[nodiscard]] RateLimitResult SourceAllowedForReportingOriginLimit(
       sql::Database* db,
       const StorableSource& source);
 
-  [[nodiscard]] Result AttributionAllowedForReportingOriginLimit(
+  [[nodiscard]] RateLimitResult AttributionAllowedForReportingOriginLimit(
       sql::Database* db,
       const AttributionInfo& attribution_info);
 
-  [[nodiscard]] Result AttributionAllowedForAttributionLimit(
+  [[nodiscard]] RateLimitResult AttributionAllowedForAttributionLimit(
       sql::Database* db,
       const AttributionInfo& attribution_info);
 
@@ -106,7 +103,7 @@ class CONTENT_EXPORT RateLimitTable {
                                   base::Time time)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] Result AllowedForReportingOriginLimit(
+  [[nodiscard]] RateLimitResult AllowedForReportingOriginLimit(
       sql::Database* db,
       Scope scope,
       const CommonSourceInfo& common_info,

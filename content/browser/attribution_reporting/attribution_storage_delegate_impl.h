@@ -54,6 +54,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   void ShuffleReports(std::vector<AttributionReport>& reports) const override;
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source) const override;
+  int64_t GetAggregatableBudgetPerSource() const override;
 
   // Generates fake reports using a random "stars and bars" sequence index of a
   // possible output of the API.

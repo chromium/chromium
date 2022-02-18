@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
+#include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -143,6 +144,10 @@ AttributionStorageDelegate::RandomizedResponse
 ConfigurableStorageDelegate::GetRandomizedResponse(
     const CommonSourceInfo& source) const {
   return randomized_response_;
+}
+
+int64_t ConfigurableStorageDelegate::GetAggregatableBudgetPerSource() const {
+  return aggregatable_budget_per_source_;
 }
 
 AttributionManager* TestManagerProvider::GetManager(
@@ -586,15 +591,15 @@ std::ostream& operator<<(std::ostream& out, DeactivatedSource::Reason reason) {
   return out;
 }
 
-std::ostream& operator<<(std::ostream& out, RateLimitTable::Result result) {
+std::ostream& operator<<(std::ostream& out, RateLimitResult result) {
   switch (result) {
-    case RateLimitTable::Result::kAllowed:
+    case RateLimitResult::kAllowed:
       out << "kAllowed";
       break;
-    case RateLimitTable::Result::kNotAllowed:
+    case RateLimitResult::kNotAllowed:
       out << "kNotAllowed";
       break;
-    case RateLimitTable::Result::kError:
+    case RateLimitResult::kError:
       out << "kError";
       break;
   }

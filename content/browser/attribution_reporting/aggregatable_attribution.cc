@@ -4,9 +4,12 @@
 
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
 
+#include <stdint.h>
+
 #include <utility>
 
 #include "base/check.h"
+#include "base/numerics/checked_math.h"
 
 namespace content {
 
@@ -38,5 +41,13 @@ AggregatableAttribution& AggregatableAttribution::operator=(
     AggregatableAttribution&& other) = default;
 
 AggregatableAttribution::~AggregatableAttribution() = default;
+
+base::CheckedNumeric<int64_t> AggregatableAttribution::BudgetRequired() const {
+  base::CheckedNumeric<int64_t> budget_required = 0;
+  for (const HistogramContribution& contribution : contributions) {
+    budget_required += contribution.value();
+  }
+  return budget_required;
+}
 
 }  // namespace content

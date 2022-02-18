@@ -33,6 +33,8 @@ namespace content {
 
 class AttributionStorageDelegate;
 
+enum class RateLimitResult : int;
+
 // Provides an implementation of AttributionStorage that is backed by SQLite.
 // This class may be constructed on any sequence but must be accessed and
 // destroyed on the same sequence. The sequence must outlive |this|.
@@ -254,6 +256,19 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // last contribution for the corresponding `aggregation_id`.
   [[nodiscard]] bool DeleteAggregatableContributionReport(
       AttributionReport::AggregatableContributionData::Id report_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Checks if the given aggregatable attribution is allowed according to the
+  // L1 budget policy specified by the delegate.
+  RateLimitResult AggregatableAttributionAllowedForBudgetLimit(
+      const AggregatableAttribution& aggregatable_attribution)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Adjusts the aggregatable budget for the source event by
+  // `additional_budget_consumed`.
+  [[nodiscard]] bool AdjustBudgetConsumedForSource(
+      StoredSource::Id source_id,
+      int64_t additional_budget_consumed)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   static bool g_run_in_memory_;

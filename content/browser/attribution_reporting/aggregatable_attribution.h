@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -50,6 +51,9 @@ struct CONTENT_EXPORT AggregatableAttribution {
   AggregatableAttribution(AggregatableAttribution&& other);
   AggregatableAttribution& operator=(AggregatableAttribution&& other);
   ~AggregatableAttribution();
+
+  // Returns the sum of the contributions (values) across all buckets.
+  base::CheckedNumeric<int64_t> BudgetRequired() const;
 
   StoredSource::Id source_id;
   base::Time trigger_time;

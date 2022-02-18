@@ -200,4 +200,9 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
   return fake_reports;
 }
 
+int64_t AttributionStorageDelegateImpl::GetAggregatableBudgetPerSource() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return 65536;
+}
+
 }  // namespace content

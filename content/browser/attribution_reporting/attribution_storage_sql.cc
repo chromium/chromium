@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -28,6 +29,7 @@
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -144,11 +146,15 @@ namespace content {
 //
 // Version 23 adds the aggregatable_report_metadata and
 // aggregatable_contributions tables.
-const int AttributionStorageSql::kCurrentVersionNumber = 23;
+//
+// Version 24 - 2022/02/17 - https://crrev.com/c/3421226
+//
+// Version 24 adds the impressions.aggregatable_budget_consumed column.
+const int AttributionStorageSql::kCurrentVersionNumber = 24;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 23;
+const int AttributionStorageSql::kCompatibleVersionNumber = 24;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -171,9 +177,11 @@ const int AttributionStorageSql::kCompatibleVersionNumber = 23;
 //
 // Version 22 was deprecated by https://crrev.com/c/3379484.
 //
-// Note that Versions 15-22 were introduced during the transitional state of
+// Version 23 was deprecated by https://crrev.com/c/3421226.
+//
+// Note that Versions 15-23 were introduced during the transitional state of
 // the Attribution Reporting API and can be removed when done.
-const int AttributionStorageSql::kDeprecatedVersionNumber = 22;
+const int AttributionStorageSql::kDeprecatedVersionNumber = 23;
 
 namespace {
 
@@ -250,75 +258,17 @@ absl::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement,
                    DeserializeUint64(statement.ColumnInt64(col)));
 }
 
-struct SourceToAttribute {
+struct StoredSourceData {
   StoredSource source;
   int num_conversions;
+  int64_t aggregatable_budget_consumed;
 };
-
-absl::optional<SourceToAttribute> ReadSourceToAttribute(
-    sql::Database* db,
-    StoredSource::Id source_id,
-    const url::Origin& reporting_origin) {
-  static constexpr char kReadSourceToAttributeSql[] =
-      "SELECT impression_origin,impression_time,priority,"
-      "conversion_origin,attributed_truthfully,source_type,num_conversions,"
-      "impression_data,expiry_time,debug_key "
-      "FROM impressions "
-      "WHERE impression_id = ?";
-  sql::Statement statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kReadSourceToAttributeSql));
-  statement.BindInt64(0, *source_id);
-  if (!statement.Step())
-    return absl::nullopt;
-
-  url::Origin impression_origin = DeserializeOrigin(statement.ColumnString(0));
-  if (impression_origin.opaque())
-    return absl::nullopt;
-
-  base::Time impression_time = statement.ColumnTime(1);
-  int64_t priority = statement.ColumnInt64(2);
-
-  url::Origin conversion_origin = DeserializeOrigin(statement.ColumnString(3));
-  if (conversion_origin.opaque())
-    return absl::nullopt;
-
-  absl::optional<StoredSource::AttributionLogic> attribution_logic =
-      DeserializeAttributionLogic(statement.ColumnInt(4));
-  // There should never be an unattributed source with `kFalsely`.
-  if (!attribution_logic.has_value() ||
-      attribution_logic == StoredSource::AttributionLogic::kFalsely) {
-    return absl::nullopt;
-  }
-
-  absl::optional<CommonSourceInfo::SourceType> source_type =
-      DeserializeSourceType(statement.ColumnInt(5));
-  if (!source_type.has_value())
-    return absl::nullopt;
-
-  int num_conversions = statement.ColumnInt(6);
-  if (num_conversions < 0)
-    return absl::nullopt;
-
-  uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(7));
-  base::Time expiry_time = statement.ColumnTime(8);
-  absl::optional<uint64_t> debug_key = ColumnUint64OrNull(statement, 9);
-
-  return SourceToAttribute{
-      .source = StoredSource(
-          CommonSourceInfo(source_event_id, std::move(impression_origin),
-                           std::move(conversion_origin), reporting_origin,
-                           impression_time, expiry_time, *source_type, priority,
-                           debug_key),
-          *attribution_logic, source_id),
-      .num_conversions = num_conversions,
-  };
-}
 
 // Helper to deserialize source rows. See `GetActiveSources()` for the
 // expected ordering of columns used for the input to this function.
-absl::optional<StoredSource> ReadSourceFromStatement(
+absl::optional<StoredSourceData> ReadSourceFromStatement(
     sql::Statement& statement) {
-  DCHECK_EQ(statement.ColumnCount(), 11);
+  DCHECK_EQ(statement.ColumnCount(), 13);
 
   StoredSource::Id source_id(statement.ColumnInt64(0));
   uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(1));
@@ -333,16 +283,42 @@ absl::optional<StoredSource> ReadSourceFromStatement(
       DeserializeAttributionLogic(statement.ColumnInt(8));
   int64_t priority = statement.ColumnInt64(9);
   absl::optional<uint64_t> debug_key = ColumnUint64OrNull(statement, 10);
+  int num_conversions = statement.ColumnInt(11);
+  int64_t aggregatable_budget_consumed = statement.ColumnInt64(12);
 
-  if (!source_type.has_value() || !attribution_logic.has_value())
+  if (!source_type.has_value() || !attribution_logic.has_value() ||
+      num_conversions < 0 || aggregatable_budget_consumed < 0) {
+    return absl::nullopt;
+  }
+
+  return StoredSourceData{
+      .source = StoredSource(
+          CommonSourceInfo(source_event_id, std::move(impression_origin),
+                           std::move(conversion_origin),
+                           std::move(reporting_origin), impression_time,
+                           expiry_time, *source_type, priority, debug_key),
+          *attribution_logic, source_id),
+      .num_conversions = num_conversions,
+      .aggregatable_budget_consumed = aggregatable_budget_consumed};
+}
+
+absl::optional<StoredSourceData> ReadSourceToAttribute(
+    sql::Database* db,
+    StoredSource::Id source_id) {
+  static constexpr char kReadSourceToAttributeSql[] =
+      "SELECT impression_id,impression_data,impression_origin,"
+      "conversion_origin,reporting_origin,impression_time,expiry_time,"
+      "source_type,attributed_truthfully,priority,debug_key,"
+      "num_conversions,aggregatable_budget_consumed "
+      "FROM impressions "
+      "WHERE impression_id = ?";
+  sql::Statement statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kReadSourceToAttributeSql));
+  statement.BindInt64(0, *source_id);
+  if (!statement.Step())
     return absl::nullopt;
 
-  return StoredSource(
-      CommonSourceInfo(source_event_id, std::move(impression_origin),
-                       std::move(conversion_origin),
-                       std::move(reporting_origin), impression_time,
-                       expiry_time, *source_type, priority, debug_key),
-      *attribution_logic, source_id);
+  return ReadSourceFromStatement(statement);
 }
 
 }  // namespace
@@ -387,7 +363,8 @@ AttributionStorageSql::DeactivateSources(
     static constexpr char kGetSourcesToReturnSql[] =
         "SELECT impression_id,impression_data,impression_origin,"
         "conversion_origin,reporting_origin,impression_time,expiry_time,"
-        "source_type,attributed_truthfully,priority,debug_key "
+        "source_type,attributed_truthfully,priority,debug_key,"
+        "num_conversions,aggregatable_budget_consumed "
         "FROM impressions "
         DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
         "WHERE conversion_destination = ? AND reporting_origin = ? AND "
@@ -399,13 +376,13 @@ AttributionStorageSql::DeactivateSources(
     get_statement.BindInt(2, return_limit);
 
     while (get_statement.Step()) {
-      absl::optional<StoredSource> source =
+      absl::optional<StoredSourceData> source_data =
           ReadSourceFromStatement(get_statement);
-      if (!source.has_value())
+      if (!source_data.has_value())
         return absl::nullopt;
 
       deactivated_sources.emplace_back(
-          std::move(*source),
+          std::move(source_data->source),
           DeactivatedSource::Reason::kReplacedByNewerSource);
     }
     if (!get_statement.Succeeded())
@@ -481,12 +458,12 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
 
   switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(db_.get(),
                                                                  source)) {
-    case RateLimitTable::Result::kAllowed:
+    case RateLimitResult::kAllowed:
       break;
-    case RateLimitTable::Result::kNotAllowed:
+    case RateLimitResult::kNotAllowed:
       return StoreSourceResult(
           StorableSource::Result::kExcessiveReportingOrigins);
-    case RateLimitTable::Result::kError:
+    case RateLimitResult::kError:
       return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
@@ -532,8 +509,8 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       "conversion_destination,"
       "reporting_origin,impression_time,expiry_time,source_type,"
       "attributed_truthfully,priority,impression_site,"
-      "num_conversions,active,debug_key)"
-      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+      "num_conversions,active,debug_key,aggregatable_budget_consumed)"
+      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(0, SerializeUint64(common_info.source_event_id()));
@@ -738,8 +715,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     return CreateReportResult(AttributionTrigger::Result::kInternalError);
   }
 
-  absl::optional<SourceToAttribute> source_to_attribute = ReadSourceToAttribute(
-      db_.get(), source_id_to_attribute, reporting_origin);
+  absl::optional<StoredSourceData> source_to_attribute =
+      ReadSourceToAttribute(db_.get(), source_id_to_attribute);
   // This is only possible if there is a corrupt DB.
   if (!source_to_attribute.has_value()) {
     return CreateReportResult(AttributionTrigger::Result::kInternalError);
@@ -789,26 +766,26 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
       db_.get(), attribution_info)) {
-    case RateLimitTable::Result::kAllowed:
+    case RateLimitResult::kAllowed:
       break;
-    case RateLimitTable::Result::kNotAllowed:
+    case RateLimitResult::kNotAllowed:
       return CreateReportResult(
           AttributionTrigger::Result::kExcessiveAttributions,
           std::move(report));
-    case RateLimitTable::Result::kError:
+    case RateLimitResult::kError:
       return CreateReportResult(AttributionTrigger::Result::kInternalError,
                                 std::move(report));
   }
 
   switch (rate_limit_table_.AttributionAllowedForReportingOriginLimit(
       db_.get(), attribution_info)) {
-    case RateLimitTable::Result::kAllowed:
+    case RateLimitResult::kAllowed:
       break;
-    case RateLimitTable::Result::kNotAllowed:
+    case RateLimitResult::kNotAllowed:
       return CreateReportResult(
           AttributionTrigger::Result::kExcessiveReportingOrigins,
           std::move(report));
-    case RateLimitTable::Result::kError:
+    case RateLimitResult::kError:
       return CreateReportResult(AttributionTrigger::Result::kInternalError,
                                 std::move(report));
   }
@@ -1540,7 +1517,8 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
   static constexpr char kGetActiveSourcesSql[] =
       "SELECT impression_id,impression_data,impression_origin,"
       "conversion_origin,reporting_origin,impression_time,expiry_time,"
-      "source_type,attributed_truthfully,priority,debug_key "
+      "source_type,attributed_truthfully,priority,debug_key,"
+      "num_conversions,aggregatable_budget_consumed "
       "FROM impressions "
       "WHERE active = 1 and expiry_time > ? "
       "LIMIT ?";
@@ -1552,9 +1530,10 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
 
   std::vector<StoredSource> sources;
   while (statement.Step()) {
-    absl::optional<StoredSource> source = ReadSourceFromStatement(statement);
-    if (source.has_value())
-      sources.push_back(std::move(*source));
+    absl::optional<StoredSourceData> source_data =
+        ReadSourceFromStatement(statement);
+    if (source_data.has_value())
+      sources.push_back(std::move(source_data->source));
   }
   if (!statement.Succeeded())
     return {};
@@ -1743,7 +1722,8 @@ bool AttributionStorageSql::CreateSchema() {
       "attributed_truthfully INTEGER NOT NULL,"
       "priority INTEGER NOT NULL,"
       "impression_site TEXT NOT NULL,"
-      "debug_key INTEGER)";
+      "debug_key INTEGER,"
+      "aggregatable_budget_consumed INTEGER NOT NULL)";
   if (!db_->Execute(kImpressionTableSql))
     return false;
 
@@ -2044,6 +2024,15 @@ bool AttributionStorageSql::AddAggregatableAttributionForTesting(
   if (!LazyInit(DbCreationPolicy::kCreateIfAbsent))
     return false;
 
+  switch (
+      AggregatableAttributionAllowedForBudgetLimit(aggregatable_attribution)) {
+    case RateLimitResult::kAllowed:
+      break;
+    case RateLimitResult::kNotAllowed:
+    case RateLimitResult::kError:
+      return false;
+  }
+
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
     return false;
@@ -2082,6 +2071,16 @@ bool AttributionStorageSql::AddAggregatableAttributionForTesting(
         4, delegate_->NewReportID().AsLowercaseString());
     if (!insert_contributions_statement.Run())
       return false;
+  }
+
+  base::CheckedNumeric<int64_t> budget_required =
+      aggregatable_attribution.BudgetRequired();
+  // The value was already validated by
+  // `AggregatableAttributionAllowedForBudgetLimit()` above.
+  DCHECK(budget_required.IsValid());
+  if (!AdjustBudgetConsumedForSource(aggregatable_attribution.source_id,
+                                     budget_required.ValueOrDie())) {
+    return false;
   }
 
   return transaction.Commit();
@@ -2347,6 +2346,50 @@ bool AttributionStorageSql::DeleteAggregatableContributionReport(
     return false;
 
   return transaction.Commit();
+}
+
+RateLimitResult
+AttributionStorageSql::AggregatableAttributionAllowedForBudgetLimit(
+    const AggregatableAttribution& aggregatable_attribution) {
+  absl::optional<StoredSourceData> source_to_attribute =
+      ReadSourceToAttribute(db_.get(), aggregatable_attribution.source_id);
+  // This is only possible if there is a corrupt DB.
+  if (!source_to_attribute.has_value())
+    return RateLimitResult::kError;
+
+  const int64_t budget = delegate_->GetAggregatableBudgetPerSource();
+  DCHECK_GT(budget, 0);
+
+  const int64_t capacity =
+      budget > source_to_attribute->aggregatable_budget_consumed
+          ? budget - source_to_attribute->aggregatable_budget_consumed
+          : 0;
+
+  if (capacity == 0)
+    return RateLimitResult::kNotAllowed;
+
+  const base::CheckedNumeric<int64_t> budget_required =
+      aggregatable_attribution.BudgetRequired();
+  if (!budget_required.IsValid() || budget_required.ValueOrDie() > capacity)
+    return RateLimitResult::kNotAllowed;
+
+  return RateLimitResult::kAllowed;
+}
+
+bool AttributionStorageSql::AdjustBudgetConsumedForSource(
+    StoredSource::Id source_id,
+    int64_t additional_budget_consumed) {
+  DCHECK_GE(additional_budget_consumed, 0);
+
+  static constexpr char kAdjustBudgetConsumedForSourceSql[] =
+      "UPDATE impressions "
+      "SET aggregatable_budget_consumed=aggregatable_budget_consumed+? "
+      "WHERE impression_id=?";
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE, kAdjustBudgetConsumedForSourceSql));
+  statement.BindInt64(0, additional_budget_consumed);
+  statement.BindInt64(1, *source_id);
+  return statement.Run() && db_->GetLastChangeCount() == 1;
 }
 
 }  // namespace content

@@ -26,7 +26,6 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
-#include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -43,6 +42,8 @@ class HistogramContribution;
 class AttributionTrigger;
 
 struct AggregatableAttribution;
+
+enum class RateLimitResult : int;
 
 const CommonSourceInfo::SourceType kSourceTypes[] = {
     CommonSourceInfo::SourceType::kNavigation,
@@ -150,6 +151,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   void ShuffleReports(std::vector<AttributionReport>& reports) const override;
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source) const override;
+  int64_t GetAggregatableBudgetPerSource() const override;
 
   void set_max_attributions_per_source(int max) {
     max_attributions_per_source_ = max;
@@ -163,6 +165,10 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_max_destinations_per_source_site_reporting_origin(int max) {
     max_destinations_per_source_site_reporting_origin_ = max;
+  }
+
+  void set_aggregatable_budget_per_source(int64_t max) {
+    aggregatable_budget_per_source_ = max;
   }
 
   RateLimitConfig& rate_limits() { return rate_limits_; }
@@ -199,6 +205,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   int max_sources_per_origin_ = INT_MAX;
   int max_attributions_per_origin_ = INT_MAX;
   int max_destinations_per_source_site_reporting_origin_ = INT_MAX;
+  int64_t aggregatable_budget_per_source_ = std::numeric_limits<int64_t>::max();
 
   RateLimitConfig rate_limits_ = {
       .time_window = base::TimeDelta::Max(),
@@ -478,7 +485,7 @@ std::ostream& operator<<(std::ostream& out, AttributionTrigger::Result status);
 std::ostream& operator<<(std::ostream& out,
                          AttributionStorage::DeactivatedSource::Reason reason);
 
-std::ostream& operator<<(std::ostream& out, RateLimitTable::Result result);
+std::ostream& operator<<(std::ostream& out, RateLimitResult result);
 
 std::ostream& operator<<(std::ostream& out,
                          CommonSourceInfo::SourceType source_type);

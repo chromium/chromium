@@ -1862,4 +1862,57 @@ TEST_F(AttributionStorageTest, StoreAggregatableAttribution) {
                   AttributionReport::AggregatableContributionData::Id(2)))));
 }
 
+TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
+  delegate()->set_aggregatable_budget_per_source(16);
+
+  auto source = SourceBuilder().Build();
+  storage()->StoreSource(source);
+  storage()->StoreSource(source);
+
+  // A single contribution exceeds the budget.
+  EXPECT_FALSE(
+      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+          StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
+          /*report_time=*/base::Time::Now() + base::Hours(2),
+          /*contributions=*/
+          {HistogramContribution(/*bucket=*/"a", /*value=*/17)})));
+
+  EXPECT_TRUE(
+      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+          StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
+          /*report_time=*/base::Time::Now() + base::Hours(2),
+          /*contributions=*/
+          {HistogramContribution(/*bucket=*/"a", /*value=*/2),
+           HistogramContribution(/*bucket=*/"b", /*value=*/5)})));
+
+  EXPECT_FALSE(
+      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+          StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
+          /*report_time=*/base::Time::Now() + base::Hours(2),
+          /*contributions=*/
+          {HistogramContribution(/*bucket=*/"a", /*value=*/10)})));
+
+  EXPECT_TRUE(
+      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+          StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
+          /*report_time=*/base::Time::Now() + base::Hours(2),
+          /*contributions=*/
+          {HistogramContribution(/*bucket=*/"a", /*value=*/9)})));
+
+  EXPECT_FALSE(
+      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+          StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
+          /*report_time=*/base::Time::Now() + base::Hours(2),
+          /*contributions=*/
+          {HistogramContribution(/*bucket=*/"a", /*value=*/1)})));
+
+  // A different source should have capacity.
+  EXPECT_TRUE(
+      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+          StoredSource::Id(2), /*trigger_time=*/base::Time::Now(),
+          /*report_time=*/base::Time::Now() + base::Hours(2),
+          /*contributions=*/
+          {HistogramContribution(/*bucket=*/"a", /*value=*/9)})));
+}
+
 }  // namespace content
