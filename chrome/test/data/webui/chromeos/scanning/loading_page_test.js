@@ -10,6 +10,8 @@ import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
 
 export function loadingPageTest() {
+  const scanningSrcBase = 'chrome://scanning/';
+
   /** @type {?LoadingPageElement} */
   let loadingPage = null;
 
@@ -78,11 +80,10 @@ export function loadingPageTest() {
     assertTrue(learnMoreEventFired);
   });
 
-  // Verify correct svg displayed when page is in dark mode.
+  // Verify correct 'no scanners' svg displayed when page is in dark mode.
   test('noScannersSvgSetByColorScheme', async () => {
-    const srcBase = 'chrome://scanning/';
-    const lightModeSvg = `${srcBase}svg/no_scanners.svg`;
-    const darkModeSvg = `${srcBase}svg/no_scanners_dark.svg`;
+    const lightModeSvg = `${scanningSrcBase}svg/no_scanners.svg`;
+    const darkModeSvg = `${scanningSrcBase}svg/no_scanners_dark.svg`;
     const getNoScannersSvg = () => (/** @type {!HTMLImageElement} */ (
         loadingPage.$$('#noScannersDiv img')));
 
@@ -95,5 +96,23 @@ export function loadingPageTest() {
     setIsDarkModeEnabled_(true);
     await flushTasks();
     assertEquals(getNoScannersSvg().src, darkModeSvg);
+  });
+
+  // Verify correct 'loading scanners' svg displayed when page is in dark mode.
+  test('scanLoadingSvgSetByColorScheme', async () => {
+    const lightModeSvg = `${scanningSrcBase}svg/scanners_loading.svg`;
+    const darkModeSvg = `${scanningSrcBase}svg/scanners_loading_dark.svg`;
+    const getLoadingSvg = () =>
+        (/** @type {!HTMLImageElement} */ (loadingPage.$$('#loadingDiv img')));
+
+    // Setup UI to display no scanners div.
+    loadingPage.appState = AppState.NO_SCANNERS;
+    await flushTasks();
+    assertEquals(getLoadingSvg().src, lightModeSvg);
+
+    // Mock media query state for dark mode.
+    setIsDarkModeEnabled_(true);
+    await flushTasks();
+    assertEquals(getLoadingSvg().src, darkModeSvg);
   });
 }

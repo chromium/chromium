@@ -51,6 +51,16 @@ Polymer({
                                      'svg/no_scanners.svg';
   },
 
+  /**
+   * Determines correct SVG for "scanners loading" based on dark mode.
+   * @protected
+   * @return {string}
+   */
+  getScannersLoadingSvgSrc_() {
+    return this.isDarkModeEnabled_ ? 'svg/scanners_loading_dark.svg' :
+                                     'svg/scanners_loading.svg';
+  },
+
   /** @private */
   onAppStateChange_() {
     this.noScannersAvailable_ = this.appState === AppState.NO_SCANNERS;

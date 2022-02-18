@@ -52,7 +52,8 @@
 </iron-media-query>
 <div id="loadingContainer">
   <div id="loadingDiv" hidden="[[noScannersAvailable_]]">
-    <img src="svg/scanners_loading.svg" alt="[[i18n('scannersLoadingText')]]">
+    <img src$="[[getScannersLoadingSvgSrc_(isDarkModeEnabled_)]]"
+        alt="[[i18n('scannersLoadingText')]]">
     <h1>[[i18n('scannersLoadingText')]]</h1>
     <paper-progress indeterminate></paper-progress>
   </div>
