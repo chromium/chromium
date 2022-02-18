@@ -125,6 +125,9 @@ export class Options implements CameraUI {
       if (config.facing !== Facing.EXTERNAL) {
         return true;
       }
+      if (this.videoDeviceId === null) {
+        return true;
+      }
       const info = this.cameraManager.getCameraInfo().getCamera3DeviceInfo(
           this.videoDeviceId);
       if (info === null) {
