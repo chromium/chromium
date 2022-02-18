@@ -537,14 +537,6 @@ const aura::Window* RootWindowController::GetRootWindow() const {
   return GetHost()->window();
 }
 
-void RootWindowController::InitializeShelf() {
-  if (shelf_initialized_)
-    return;
-  shelf_initialized_ = true;
-
-  shelf_->shelf_widget()->PostCreateShelf();
-}
-
 ShelfLayoutManager* RootWindowController::GetShelfLayoutManager() {
   return shelf_->shelf_layout_manager();
 }
@@ -898,7 +890,9 @@ void RootWindowController::Init(RootWindowType root_window_type) {
 
   InitLayoutManagers();
   InitTouchHuds();
-  InitializeShelf();
+
+  // `shelf_` was created in the constructor.
+  shelf_->shelf_widget()->PostCreateShelf();
 
   if (Shell::GetPrimaryRootWindowController()
           ->GetSystemModalLayoutManager(nullptr)
