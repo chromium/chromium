@@ -8,22 +8,18 @@
 #include <memory>
 #include <string>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/background_eid_generator.h"
 #include "ash/services/secure_channel/bluetooth_helper.h"
 #include "ash/services/secure_channel/data_with_timestamp.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/foreground_eid_generator.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace multidevice {
-class RemoteDeviceCache;
-}  // namespace multidevice
-
-namespace secure_channel {
-
-class ForegroundEidGenerator;
+class BackgroundEidGenerator;
 
 // Concrete BluetoothHelper implementation.
 class BluetoothHelperImpl : public BluetoothHelper {
@@ -79,8 +75,11 @@ class BluetoothHelperImpl : public BluetoothHelper {
   std::unique_ptr<ForegroundEidGenerator> foreground_eid_generator_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::BluetoothHelperImpl;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLUETOOTH_HELPER_IMPL_H_

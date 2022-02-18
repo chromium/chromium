@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "ash/services/secure_channel/connection.h"
+// TODO(https://crbug.com/1164001): move to forward  declaration.
+#include "ash/services/secure_channel/connection_observer.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "ash/services/secure_channel/register_payload_file_request.h"
@@ -17,8 +19,6 @@
 namespace chromeos {
 
 namespace secure_channel {
-
-class ConnectionObserver;
 
 // A fake implementation of Connection to use in tests.
 class FakeConnection : public Connection {

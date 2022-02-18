@@ -10,9 +10,7 @@
 
 #include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Fields describing a connection. At any given time, at most one connection
 // with a given set of ConnectionDetails should exist. Note that for all host
@@ -47,13 +45,11 @@ class ConnectionDetails {
 std::ostream& operator<<(std::ostream& stream,
                          const ConnectionDetails& details);
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::ConnectionDetails;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::ConnectionDetails;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CONNECTION_DETAILS_H_

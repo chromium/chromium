@@ -8,6 +8,8 @@
 #include "ash/services/secure_channel/ble_scanner.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/ble_synchronizer_base.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/bluetooth_helper.h"
 #include "ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
 
 namespace device {
@@ -23,8 +25,6 @@ class RemoteDeviceRef;
 }  // namespace multidevice
 
 namespace secure_channel {
-
-class BluetoothHelper;
 
 // Monitors device proximity while a secure channel is active.
 class PresenceMonitorDelegate : public BleScanner::Observer {

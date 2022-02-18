@@ -9,9 +9,7 @@
 #include "base/check.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 ConnectionDetails::ConnectionDetails(const std::string& device_id,
                                      ConnectionMedium connection_medium)
@@ -44,6 +42,4 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

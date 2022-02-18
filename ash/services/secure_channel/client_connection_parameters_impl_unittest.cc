@@ -13,12 +13,15 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
+
 const char kTestFeature[] = "testFeature";
+
 }  // namespace
 
 class SecureChannelClientConnectionParametersImplTest : public testing::Test {
@@ -131,6 +134,4 @@ TEST_F(SecureChannelClientConnectionParametersImplTest, OnConnectionFailed) {
             *fake_connection_delegate()->connection_attempt_failure_reason());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

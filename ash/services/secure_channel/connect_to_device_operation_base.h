@@ -13,9 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Base class for concrete ConnectToDeviceOperation implementations.
 // ConnectToDeviceOperationBase objects take a device to which to connect as a
@@ -114,13 +112,11 @@ class ConnectToDeviceOperationBase
   base::WeakPtrFactory<ConnectToDeviceOperationBase> weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::ConnectToDeviceOperationBase;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::ConnectToDeviceOperationBase;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_BASE_H_

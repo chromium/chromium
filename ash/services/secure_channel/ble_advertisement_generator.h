@@ -11,12 +11,6 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-namespace secure_channel {
-class SecureChannelBluetoothHelperImplTest;
-}
-}  // namespace chromeos
-
 namespace ash::secure_channel {
 
 // Generates advertisements for the ProximityAuth BLE advertisement scheme.
@@ -44,7 +38,7 @@ class BleAdvertisementGenerator {
 
  private:
   friend class SecureChannelBleAdvertisementGeneratorTest;
-  friend class chromeos::secure_channel::SecureChannelBluetoothHelperImplTest;
+  friend class SecureChannelBluetoothHelperImplTest;
 
   static BleAdvertisementGenerator* instance_;
 

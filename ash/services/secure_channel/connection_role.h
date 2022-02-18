@@ -7,9 +7,7 @@
 
 #include <ostream>
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Enumeration of roles which can be used for a connection.
 enum class ConnectionRole {
@@ -23,13 +21,11 @@ enum class ConnectionRole {
 
 std::ostream& operator<<(std::ostream& stream, const ConnectionRole& role);
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::ConnectionRole;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::ConnectionRole;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CONNECTION_ROLE_H_

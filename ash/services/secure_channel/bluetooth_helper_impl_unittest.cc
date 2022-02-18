@@ -18,9 +18,7 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -313,6 +311,4 @@ TEST_F(SecureChannelBluetoothHelperImplTest, BluetoothPublicAddress) {
                      test_local_device_1_.GetDeviceId()));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

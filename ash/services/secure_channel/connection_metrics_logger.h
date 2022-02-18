@@ -9,9 +9,7 @@
 
 #include "base/time/time.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Enumeration of possible connection result when connecting via Nearby
 // Connection library. Keep in sync with corresponding enum in
@@ -37,13 +35,11 @@ void LogNearbyInitiatorConnectionResult(
 void LogLatencyMetric(const std::string& metric_name,
                       const base::TimeDelta& duration);
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::LogLatencyMetric;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::NearbyInitiatorConnectionResult;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CONNECTION_METRICS_LOGGER_H_

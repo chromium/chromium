@@ -7,6 +7,8 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/connect_to_device_operation.h"
 #include "ash/services/secure_channel/connect_to_device_operation_base.h"
 #include "ash/services/secure_channel/nearby_initiator_failure_type.h"

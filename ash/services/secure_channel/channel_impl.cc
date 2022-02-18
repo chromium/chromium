@@ -11,12 +11,15 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
+
 const char kReasonForDisconnection[] = "Remote device disconnected.";
+
 }  // namespace
 
 ChannelImpl::ChannelImpl(Delegate* delegate) : delegate_(delegate) {}
@@ -109,6 +112,4 @@ void ChannelImpl::OnBindingDisconnected() {
   delegate_->OnClientDisconnected();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

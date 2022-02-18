@@ -16,9 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -234,6 +232,4 @@ TEST_F(SecureChannelConnectToDeviceOperationBaseTest,
   EXPECT_FALSE(test_operation()->has_attempted_connection());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

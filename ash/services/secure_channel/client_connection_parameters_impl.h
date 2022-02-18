@@ -11,9 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Concrete ClientConnectionParameters implementation, which utilizes a
 // mojo::Remote<ConnectionDelegate>.
@@ -23,7 +21,7 @@ class ClientConnectionParametersImpl : public ClientConnectionParameters {
    public:
     static std::unique_ptr<ClientConnectionParameters> Create(
         const std::string& feature,
-        mojo::PendingRemote<mojom::ConnectionDelegate>
+        mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
             connection_delegate_remote);
     static void SetFactoryForTesting(Factory* test_factory);
 
@@ -31,7 +29,7 @@ class ClientConnectionParametersImpl : public ClientConnectionParameters {
     virtual ~Factory();
     virtual std::unique_ptr<ClientConnectionParameters> CreateInstance(
         const std::string& feature,
-        mojo::PendingRemote<mojom::ConnectionDelegate>
+        mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
             connection_delegate_remote) = 0;
 
    private:
@@ -46,26 +44,32 @@ class ClientConnectionParametersImpl : public ClientConnectionParameters {
   ~ClientConnectionParametersImpl() override;
 
  private:
-  ClientConnectionParametersImpl(const std::string& feature,
-                                 mojo::PendingRemote<mojom::ConnectionDelegate>
-                                     connection_delegate_remote);
+  ClientConnectionParametersImpl(
+      const std::string& feature,
+      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
+          connection_delegate_remote);
 
   // ClientConnectionParameters:
   bool HasClientCanceledRequest() override;
   void PerformSetConnectionAttemptFailed(
-      mojom::ConnectionAttemptFailureReason reason) override;
-  void PerformSetConnectionSucceeded(
-      mojo::PendingRemote<mojom::Channel> channel,
-      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver)
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
       override;
+  void PerformSetConnectionSucceeded(
+      mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
+      mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
+          message_receiver_receiver) override;
 
   void OnConnectionDelegateRemoteDisconnected();
 
-  mojo::Remote<mojom::ConnectionDelegate> connection_delegate_remote_;
+  mojo::Remote<chromeos::secure_channel::mojom::ConnectionDelegate>
+      connection_delegate_remote_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::ClientConnectionParametersImpl;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CLIENT_CONNECTION_PARAMETERS_IMPL_H_

@@ -70,6 +70,7 @@ namespace multidevice {
 using ::chromeos::multidevice::CreateRemoteDeviceListForTest;
 using ::chromeos::multidevice::CreateRemoteDeviceRefForTest;
 using ::chromeos::multidevice::CreateRemoteDeviceRefListForTest;
+using ::chromeos::multidevice::GetMutableRemoteDevice;
 using ::chromeos::multidevice::RemoteDeviceRefBuilder;
 using ::chromeos::multidevice::kTestRemoteDeviceName;
 }  // namespace multidevice

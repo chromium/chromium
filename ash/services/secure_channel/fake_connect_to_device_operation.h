@@ -78,4 +78,9 @@ class FakeConnectToDeviceOperation
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::FakeConnectToDeviceOperation;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECT_TO_DEVICE_OPERATION_H_

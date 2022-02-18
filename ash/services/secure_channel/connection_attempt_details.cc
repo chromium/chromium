@@ -7,9 +7,7 @@
 #include "base/check.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 ConnectionAttemptDetails::ConnectionAttemptDetails(
     const DeviceIdPair& device_id_pair,
@@ -79,6 +77,4 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -26,9 +26,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -427,6 +425,4 @@ TEST_F(SecureChannelConnectionAttemptBaseTest,
   EXPECT_EQ(fake_parameters_2_raw, extracted_client_data[1].get());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

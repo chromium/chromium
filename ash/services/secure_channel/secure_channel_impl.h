@@ -17,6 +17,8 @@
 #include "ash/services/secure_channel/ble_scanner.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/ble_synchronizer_base.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/bluetooth_helper.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/pending_connection_manager.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
@@ -33,7 +35,6 @@ namespace chromeos {
 
 namespace secure_channel {
 
-class BluetoothHelper;
 class NearbyConnectionManager;
 class SecureChannelDisconnector;
 class TimerFactory;

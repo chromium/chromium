@@ -6,9 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -33,6 +31,4 @@ void LogLatencyMetric(const std::string& metric_name,
                                 kMaxLatencyDuration, kNumMetricsBuckets);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

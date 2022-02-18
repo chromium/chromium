@@ -16,9 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Channel which provides clients the ability to send messages to remote
 // devices, registers local files to receive file transfers, and to listen for
@@ -26,7 +24,7 @@ namespace secure_channel {
 // disconnected, clients should use set_connection_error_with_reason_handler()
 // and wait for a connection error with reason
 // mojom::Channel::kConnectionDroppedReason.
-class ChannelImpl : public mojom::Channel {
+class ChannelImpl : public chromeos::secure_channel::mojom::Channel {
  public:
   class Delegate {
    public:
@@ -35,11 +33,13 @@ class ChannelImpl : public mojom::Channel {
                                         base::OnceClosure on_sent_callback) = 0;
     virtual void RegisterPayloadFile(
         int64_t payload_id,
-        mojom::PayloadFilesPtr payload_files,
+        chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
         FileTransferUpdateCallback file_transfer_update_callback,
         base::OnceCallback<void(bool)> registration_result_callback) = 0;
     virtual void GetConnectionMetadata(
-        base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) = 0;
+        base::OnceCallback<
+            void(chromeos::secure_channel::mojom::ConnectionMetadataPtr)>
+            callback) = 0;
     virtual void OnClientDisconnected() = 0;
   };
 
@@ -52,7 +52,8 @@ class ChannelImpl : public mojom::Channel {
 
   // Generates a mojo::PendingRemote<Channel> for this instance; can only be
   // called once.
-  mojo::PendingRemote<mojom::Channel> GenerateRemote();
+  mojo::PendingRemote<chromeos::secure_channel::mojom::Channel>
+  GenerateRemote();
 
   // Should be called when the underlying connection to the remote device has
   // been disconnected (e.g., because the other device closed the connection or
@@ -65,38 +66,45 @@ class ChannelImpl : public mojom::Channel {
                    SendMessageCallback callback) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
-      mojo::PendingRemote<mojom::FilePayloadListener> listener,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      mojo::PendingRemote<chromeos::secure_channel::mojom::FilePayloadListener>
+          listener,
       RegisterPayloadFileCallback callback) override;
   void GetConnectionMetadata(GetConnectionMetadataCallback callback) override;
 
   void OnConnectionMetadataFetchedFromDelegate(
       GetConnectionMetadataCallback callback,
-      mojom::ConnectionMetadataPtr connection_metadata_from_delegate);
+      chromeos::secure_channel::mojom::ConnectionMetadataPtr
+          connection_metadata_from_delegate);
 
   void OnBindingDisconnected();
 
   void OnRegisterPayloadFileResult(RegisterPayloadFileCallback callback,
                                    mojo::RemoteSetElementId listener_remote_id,
                                    bool success);
-  void NotifyFileTransferUpdate(mojo::RemoteSetElementId listener_remote_id,
-                                mojom::FileTransferUpdatePtr update);
+  void NotifyFileTransferUpdate(
+      mojo::RemoteSetElementId listener_remote_id,
+      chromeos::secure_channel::mojom::FileTransferUpdatePtr update);
 
   Delegate* delegate_;
-  mojo::Receiver<mojom::Channel> receiver_{this};
+  mojo::Receiver<chromeos::secure_channel::mojom::Channel> receiver_{this};
 
   // Set of FilePayloadListener remote endpoints passed from
   // RegisterPayloadFile(). These remotes will be removed when their
   // corresponding file transfer has been completed. They will also be
   // automatically removed from the set when their corresponding pipe
   // is disconnected.
-  mojo::RemoteSet<mojom::FilePayloadListener> file_payload_listener_remotes_;
+  mojo::RemoteSet<chromeos::secure_channel::mojom::FilePayloadListener>
+      file_payload_listener_remotes_;
 
   base::WeakPtrFactory<ChannelImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::ChannelImpl;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CHANNEL_IMPL_H_

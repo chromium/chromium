@@ -9,6 +9,8 @@
 
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/connection_attempt.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/connection_attempt_delegate.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/pending_connection_request.h"
 #include "base/callback.h"
@@ -19,8 +21,6 @@
 namespace chromeos {
 
 namespace secure_channel {
-
-class ConnectionAttemptDelegate;
 
 // Fake ConnectionAttempt implementation.
 template <typename FailureDetailType>

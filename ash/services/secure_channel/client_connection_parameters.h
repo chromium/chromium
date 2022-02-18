@@ -14,9 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Parameters associated with a client request, which should be tightly-coupled
 // to the associated communication channel.
@@ -51,15 +49,17 @@ class ClientConnectionParameters {
   // Alerts the client that the connection attempt has failed due to |reason|.
   // This function can only be called if IsActive() is true and
   // SetConnectionSucceeded() has not been invoked.
-  void SetConnectionAttemptFailed(mojom::ConnectionAttemptFailureReason reason);
+  void SetConnectionAttemptFailed(
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason);
 
   // Alerts the client that the connection has succeeded, providing the client
   // with a Channel and a receiver to bind a MessageReceiver. This function can
   // only be called if IsActive() is true and SetConnectionAttemptFailed() has
   // not been invoked.
   void SetConnectionSucceeded(
-      mojo::PendingRemote<mojom::Channel> channel,
-      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver);
+      mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
+      mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
+          message_receiver_receiver);
 
   bool operator==(const ClientConnectionParameters& other) const;
   bool operator<(const ClientConnectionParameters& other) const;
@@ -67,10 +67,11 @@ class ClientConnectionParameters {
  protected:
   virtual bool HasClientCanceledRequest() = 0;
   virtual void PerformSetConnectionAttemptFailed(
-      mojom::ConnectionAttemptFailureReason reason) = 0;
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason
+          reason) = 0;
   virtual void PerformSetConnectionSucceeded(
-      mojo::PendingRemote<mojom::Channel> channel,
-      mojo::PendingReceiver<mojom::MessageReceiver>
+      mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
+      mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
           message_receiver_receiver) = 0;
 
   void NotifyConnectionRequestCanceled();
@@ -89,13 +90,11 @@ class ClientConnectionParameters {
 std::ostream& operator<<(std::ostream& stream,
                          const ClientConnectionParameters& details);
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::ClientConnectionParameters;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::ClientConnectionParameters;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CLIENT_CONNECTION_PARAMETERS_H_

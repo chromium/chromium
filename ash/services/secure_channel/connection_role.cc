@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/connection_role.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 std::ostream& operator<<(std::ostream& stream, const ConnectionRole& role) {
   switch (role) {
@@ -20,6 +18,4 @@ std::ostream& operator<<(std::ostream& stream, const ConnectionRole& role) {
   return stream;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

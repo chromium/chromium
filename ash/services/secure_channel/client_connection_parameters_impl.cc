@@ -7,9 +7,10 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 // static
 ClientConnectionParametersImpl::Factory*
@@ -71,6 +72,4 @@ void ClientConnectionParametersImpl::OnConnectionDelegateRemoteDisconnected() {
   NotifyConnectionRequestCanceled();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

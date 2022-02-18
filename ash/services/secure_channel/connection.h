@@ -10,18 +10,17 @@
 
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/wire_message.h"
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class ConnectionObserver;
-class WireMessage;
 
 // Base class representing a connection with a remote device, which is a
 // persistent bidirectional channel for sending and receiving wire messages.
@@ -60,7 +59,7 @@ class Connection {
   // |file_transfer_update_callback| if the registration was successful.
   void RegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback);
 
@@ -114,7 +113,7 @@ class Connection {
   // or false if the operation is not supported.
   virtual void RegisterPayloadFileImpl(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) = 0;
 
@@ -150,13 +149,11 @@ class Connection {
 std::ostream& operator<<(std::ostream& stream,
                          const Connection::Status& status);
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::Connection;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::Connection;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CONNECTION_H_

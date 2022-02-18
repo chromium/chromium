@@ -20,9 +20,7 @@
 #include "base/time/default_clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // ConnectionAttempt implementation which stays active for as long as at least
 // one of its requests has not yet completed. While a ConnectionAttemptBase is
@@ -177,13 +175,11 @@ class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
       weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::ConnectionAttemptBase;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::ConnectionAttemptBase;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_CONNECTION_ATTEMPT_BASE_H_

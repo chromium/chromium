@@ -16,9 +16,7 @@
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -235,6 +233,4 @@ void BluetoothHelperImpl::SetTestDoubles(
   foreground_eid_generator_ = std::move(foreground_eid_generator);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
