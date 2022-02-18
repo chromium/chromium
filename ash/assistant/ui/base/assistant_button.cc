@@ -16,6 +16,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view.h"
 
@@ -25,6 +26,7 @@ namespace {
 
 // Appearance.
 constexpr int kFocusRingStrokeWidth = 2;
+constexpr int kInkDropInset = 2;
 
 }  // namespace
 
@@ -42,8 +44,18 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
                                              base::Unretained(this))),
       listener_(listener),
       id_(button_id) {
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+
   // Avoid drawing default dashed focus and draw customized focus.
   SetInstallFocusRingOnFocus(false);
+
+  // Inkdrop only on click.
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  SetHasInkDropActionOnClick(true);
+  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
+                                               /*highlight_on_hover=*/false);
+  UpdateInkDropColors();
+  views::InstallCircleHighlightPathGenerator(this, gfx::Insets(kInkDropInset));
 
   // Image.
   SetFlipCanvasOnPaintForRTLUI(false);
@@ -125,6 +137,8 @@ void AssistantButton::OnPaintBackground(gfx::Canvas* canvas) {
 void AssistantButton::OnThemeChanged() {
   views::View::OnThemeChanged();
 
+  UpdateInkDropColors();
+
   if (!icon_color_type_.has_value() || !icon_description_.has_value())
     return;
 
@@ -138,6 +152,15 @@ void AssistantButton::OnThemeChanged() {
 void AssistantButton::OnButtonPressed() {
   assistant::util::IncrementAssistantButtonClickCount(id_);
   listener_->OnButtonPressed(id_);
+}
+
+void AssistantButton::UpdateInkDropColors() {
+  ScopedAssistantLightModeAsDefault scoped_assistant_light_mode_as_default;
+
+  std::pair<SkColor, float> base_color_and_opacity =
+      ColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+  views::InkDrop::Get(this)->SetBaseColor(base_color_and_opacity.first);
+  views::InkDrop::Get(this)->SetVisibleOpacity(base_color_and_opacity.second);
 }
 
 BEGIN_METADATA(AssistantButton, views::ImageButton)
