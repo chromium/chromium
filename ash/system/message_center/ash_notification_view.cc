@@ -1393,21 +1393,6 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
             },
             weak_factory_.GetWeakPtr(), inline_settings_row()),
         /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
-
-    if (!header_row()->GetVisible()) {
-      message_center_utils::FadeOutView(
-          header_row(),
-          base::BindRepeating(
-              [](base::WeakPtr<ash::AshNotificationView> parent,
-                 views::View* header_row) {
-                if (parent) {
-                  header_row->layer()->SetOpacity(1.0f);
-                  header_row->SetVisible(false);
-                }
-              },
-              weak_factory_.GetWeakPtr(), header_row()),
-          /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
-    }
   }
 
   // Fade in views.
