@@ -182,6 +182,13 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return Error(ENOSYS);
   }
 
+  // pidfd_open provides a file descriptor that refers to a process, meant to
+  // replace the pid as the method of identifying processes. For now there is no
+  // reason to support this, so just pretend pidfd_open doesn't exist.
+  if (sysno == __NR_pidfd_open) {
+    return Error(ENOSYS);
+  }
+
   if (sysno == __NR_fcntl)
     return RestrictFcntlCommands();
 

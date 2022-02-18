@@ -30,6 +30,10 @@ ResultExpr UtilityProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_prlimit64:
       // Restrict prlimit() to reference only the calling process.
       return RestrictPrlimitToGetrlimit(GetPolicyPid());
+    // Some third party libraries seem to call sched_getaffinity(). There's not
+    // much reason to block the syscall.
+    case __NR_sched_getaffinity:
+      return RestrictSchedTarget(GetPolicyPid(), sysno);
     // Allow the system calls below.
     case __NR_fdatasync:
     case __NR_fsync:
