@@ -209,14 +209,15 @@ name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https
 name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://notinset.test, secure, session
 
 Running test: getPartitionedCookie
-Num of cookies 1
-name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session, None
+Num of cookies 2
+name: __Host-foo, value: bar, domain: example.test, path: /, secure, session, None
+name: __Host-foo, value: bar, domain: devtools.test, path: /, secure, session
 
 Running test: deleteAllCookies
 
 Running test: getPartitionedCookieFromOpaqueOrigin
 Num of cookies 1
-name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: <opaque>, secure, session, None
+name: __Host-foo, value: bar, domain: example.test, path: /, secure, session, None
 
 Running test: deleteAllCookies
 

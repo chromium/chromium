@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -113,6 +114,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
 
   // Causes the next call to GetCookieList to crash the process.
   static void CrashOnGetCookieList();
+
+  // Will convert a site's partitioned cookies into unpartitioned cookies. This
+  // may result in multiple cookies which have the same (partition_key, name,
+  // host_key, path), which violates the database's unique constraint. The
+  // algorithm we use to coalesce the cookies into a single unpartitioned cookie
+  // is the following:
+  //
+  // 1.  If one of the cookies has no partition key (i.e. it is unpartitioned)
+  //     choose this cookie.
+  //
+  // 2.  Choose the partitioned cookie with the most recent last_access_time.
+  //
+  // TODO(crbug.com/1296161): Delete this when the partitioned cookies Origin
+  // Trial ends.
+  void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) override;
 
  private:
   // State associated with a CookieChangeListener.

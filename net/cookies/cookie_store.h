@@ -167,6 +167,21 @@ class NET_EXPORT CookieStore {
     return cookie_access_delegate_.get();
   }
 
+  // Will convert a site's partitioned cookies into unpartitioned cookies. This
+  // may result in multiple cookies which have the same (partition_key, name,
+  // host_key, path), which violates the database's unique constraint. The
+  // algorithm we use to coalesce the cookies into a single unpartitioned cookie
+  // is the following:
+  //
+  // 1.  If one of the cookies has no partition key (i.e. it is unpartitioned)
+  //     choose this cookie.
+  //
+  // 2.  Choose the partitioned cookie with the most recent last_access_time.
+  //
+  // TODO(crbug.com/1296161): Delete this when the partitioned cookies Origin
+  // Trial ends.
+  virtual void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) {}
+
  private:
   // Used to determine whether a particular cookie should be subject to legacy
   // or non-legacy access semantics.

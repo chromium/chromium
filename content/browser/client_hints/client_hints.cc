@@ -31,6 +31,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "net/base/features.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -451,19 +452,18 @@ const std::string SerializeHeaderString(const T& value) {
 }
 
 // Returns true iff the `url` is embedded inside a frame that has the
-// corresponding Sec-CH-UA-Reduced or Sec-CH-UA-Full client hint and thus, is
-// enrolled in the UserAgentReduction or SendFullUserAgentAfterReduction Origin
-// Trial.
+// corresponding Sec-CH-UA-Reduced, Sec-CH-UA-Full, or
+// Sec-CH-Partitioned-Cookies client hint and thus, is enrolled in the
+// UserAgentReduction, SendFullUserAgentAfterReduction, or PartitionedCookies
+// Origin Trial.
 //
 // TODO(crbug.com/1258063): Remove when the UserAgentReduction and
 // SendFullUserAgentAfterReduction Origin Trial is finished.
-bool AreUserAgentOriginTrialHintsEnabledForFrame(
-    const GURL& url,
-    const GURL& main_frame_url,
-    FrameTreeNode* frame_tree_node,
-    ClientHintsControllerDelegate* delegate,
-    WebClientHintsType hint_type) {
-  bool is_embedder_in_ua_origin_trial = false;
+bool IsOriginTrialHintEnabledForFrame(const GURL& url,
+                                      const GURL& main_frame_url,
+                                      FrameTreeNode* frame_tree_node,
+                                      ClientHintsControllerDelegate* delegate,
+                                      WebClientHintsType hint_type) {
   RenderFrameHostImpl* current = frame_tree_node->current_frame_host();
   while (current) {
     const GURL& current_url = (current == frame_tree_node->current_frame_host())
@@ -478,15 +478,13 @@ bool AreUserAgentOriginTrialHintsEnabledForFrame(
       blink::EnabledClientHints current_url_hints;
       delegate->GetAllowedClientHintsFromSource(current_url,
                                                 &current_url_hints);
-      if ((is_embedder_in_ua_origin_trial = base::Contains(
-               current_url_hints.GetEnabledHints(), hint_type))) {
-        break;
-      }
+      if (base::Contains(current_url_hints.GetEnabledHints(), hint_type))
+        return true;
     }
 
     current = current->GetParent();
   }
-  return is_embedder_in_ua_origin_trial;
+  return false;
 }
 
 // TODO(crbug.com/1258063): Delete this function when the UserAgentReduction and
@@ -557,12 +555,15 @@ struct ClientHintsExtendedData {
     // TODO(crbug.com/1258063): Remove once the UserAgentReduction Origin Trial
     // is finished.
     if (frame_tree_node && !is_main_frame) {
-      is_embedder_ua_reduced = AreUserAgentOriginTrialHintsEnabledForFrame(
+      is_embedder_ua_reduced = IsOriginTrialHintEnabledForFrame(
           url, main_frame_url, frame_tree_node, delegate,
           WebClientHintsType::kUAReduced);
-      is_embedder_ua_full = AreUserAgentOriginTrialHintsEnabledForFrame(
+      is_embedder_ua_full = IsOriginTrialHintEnabledForFrame(
           url, main_frame_url, frame_tree_node, delegate,
           WebClientHintsType::kFullUserAgent);
+      is_embedder_partitioned_cookies = IsOriginTrialHintEnabledForFrame(
+          url, main_frame_url, frame_tree_node, delegate,
+          WebClientHintsType::kPartitionedCookies);
     }
 
     // Record the time spent getting the client hints.
@@ -587,6 +588,12 @@ struct ClientHintsExtendedData {
   // receive the full User-Agent header, so we want to also send the full
   // User-Agent for the embedded request as well.
   bool is_embedder_ua_full = false;
+  // If true, one of the ancestor requests in the path to this request had
+  // Sec-CH-Partitioned-Cookies in their Accept-CH cache. Only appplies to
+  // embedded requests (top-level requests will always set this to false).
+  //
+  // If the embedder of the
+  bool is_embedder_partitioned_cookies = false;
   url::Origin resource_origin;
   bool is_main_frame = false;
   GURL main_frame_url;
@@ -596,7 +603,8 @@ struct ClientHintsExtendedData {
 
 bool SkipPermissionPolicyCheck(WebClientHintsType type) {
   return type == WebClientHintsType::kUAReduced ||
-         type == WebClientHintsType::kFullUserAgent;
+         type == WebClientHintsType::kFullUserAgent ||
+         type == WebClientHintsType::kPartitionedCookies;
 }
 
 bool IsClientHintEnabled(const ClientHintsExtendedData& data,
@@ -605,7 +613,9 @@ bool IsClientHintEnabled(const ClientHintsExtendedData& data,
          (type == WebClientHintsType::kUAReduced &&
           data.is_embedder_ua_reduced) ||
          (type == WebClientHintsType::kFullUserAgent &&
-          data.is_embedder_ua_full);
+          data.is_embedder_ua_full) ||
+         (type == WebClientHintsType::kPartitionedCookies &&
+          data.is_embedder_partitioned_cookies);
 }
 
 bool IsClientHintAllowed(const ClientHintsExtendedData& data,
@@ -899,6 +909,11 @@ void AddRequestClientHintsHeaders(
     AddPrefersColorSchemeHeader(headers, frame_tree_node);
   }
 
+  if (ShouldAddClientHint(data, WebClientHintsType::kPartitionedCookies)) {
+    SetHeaderToString(headers, WebClientHintsType::kPartitionedCookies,
+                      SerializeHeaderString(true));
+  }
+
   // Static assert that triggers if a new client hint header is added. If a
   // new client hint header is added, the following assertion should be updated.
   // If possible, logic should be added above so that the request headers for
@@ -978,8 +993,16 @@ ParseAndPersistAcceptCHForNavigation(
   DCHECK(context);
   DCHECK(parsed_headers);
 
-  if (!parsed_headers->accept_ch)
+  if (!parsed_headers->accept_ch) {
+    if (base::FeatureList::IsEnabled(net::features::kPartitionedCookies)) {
+      if (auto* cookie_manager = frame_tree_node->current_frame_host()
+                                     ->GetStoragePartition()
+                                     ->GetCookieManagerForBrowserProcess()) {
+        cookie_manager->ConvertPartitionedCookiesToUnpartitioned(url);
+      }
+    }
     return absl::nullopt;
+  }
 
   if (!IsValidURLForClientHints(url))
     return absl::nullopt;
@@ -1027,6 +1050,16 @@ ParseAndPersistAcceptCHForNavigation(
   const std::vector<WebClientHintsType> persisted_hints =
       enabled_hints.GetEnabledHints();
   PersistAcceptCH(url, delegate, persisted_hints);
+  if (base::FeatureList::IsEnabled(net::features::kPartitionedCookies) &&
+      std::find(persisted_hints.begin(), persisted_hints.end(),
+                WebClientHintsType::kPartitionedCookies) ==
+          persisted_hints.end()) {
+    if (auto* cookie_manager = frame_tree_node->current_frame_host()
+                                   ->GetStoragePartition()
+                                   ->GetCookieManagerForBrowserProcess()) {
+      cookie_manager->ConvertPartitionedCookiesToUnpartitioned(url);
+    }
+  }
   return persisted_hints;
 }
 
@@ -1055,6 +1088,10 @@ std::vector<WebClientHintsType> LookupAcceptCHForCommit(
   if (data.is_embedder_ua_full &&
       !base::Contains(hints, WebClientHintsType::kFullUserAgent)) {
     hints.push_back(WebClientHintsType::kFullUserAgent);
+  }
+  if (data.is_embedder_partitioned_cookies &&
+      !base::Contains(hints, WebClientHintsType::kPartitionedCookies)) {
+    hints.push_back(WebClientHintsType::kPartitionedCookies);
   }
   return hints;
 }

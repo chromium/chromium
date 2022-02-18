@@ -894,26 +894,28 @@ bool IsOptedInFencedFrame(const net::HttpResponseHeaders& http_headers) {
 }
 
 // If the response does not contain an Accept-CH header, then remove the
-// Sec-CH-UA-Reduced or Sec-CH-UA-Full client hint from the Accept-CH cache, if
-// it exists, for the response origin.  The `client_hints` vector also has
-// kUaReduced or kFullUserAgent removed from it if the Accept-CH response header
-// doesn't exist.
-void RemoveUaReducedAndFullFromAcceptCH(
+// Sec-CH-UA-Reduced, Sec-CH-UA-Full, or Sec-CH-Partitioned-Cookies, client
+// hint from the Accept-CH cache, if it exists, for the response origin.  The
+// `client_hints` vector also has kUaReduced or kFullUserAgent removed from it
+// if the Accept-CH response header doesn't exist.
+void RemoveOriginTrialHintsFromAcceptCH(
     const GURL& url,
     ClientHintsControllerDelegate* delegate,
     const network::mojom::URLResponseHead* response,
     std::vector<network::mojom::WebClientHintsType>& client_hints) {
   if (response && !response->parsed_headers->accept_ch) {
-    // For Chrome to continue to send Sec-CH-UA-Reduced or Sec-CH-UA-Full, the
-    // server must continue replying with:
+    // For Chrome to continue to send Sec-CH-UA-Reduced, Sec-CH-UA-Full, or
+    // Sec-CH-Partitioned-Cookies, the server must continue replying with:
     //  - a valid Origin Trial token.
-    //  - Accept-CH header with Sec-CH-UA-Reduced or Sec-CH-UA-Full as a value.
+    //  - Accept-CH header with Sec-CH-UA-Reduced, Sec-CH-UA-Full, or
+    //  Sec-CH-Partitioned-Cookies as a value.
     //
     // Here, it did not. So it gets removed from the persisted client hints
     // for the next request.
     std::vector<network::mojom::WebClientHintsType> hints_to_remove = {
         network::mojom::WebClientHintsType::kUAReduced,
-        network::mojom::WebClientHintsType::kFullUserAgent};
+        network::mojom::WebClientHintsType::kFullUserAgent,
+        network::mojom::WebClientHintsType::kPartitionedCookies};
     bool need_update_storage = false;
     for (const auto& hint : hints_to_remove) {
       if (base::Contains(client_hints, hint)) {
@@ -4041,7 +4043,7 @@ void NavigationRequest::OnRedirectChecksComplete(
       std::vector<network::mojom::WebClientHintsType> client_hints =
           LookupAcceptCHForCommit(source_url, client_hints_delegate,
                                   frame_tree_node_);
-      RemoveUaReducedAndFullFromAcceptCH(source_url, client_hints_delegate,
+      RemoveOriginTrialHintsFromAcceptCH(source_url, client_hints_delegate,
                                          response_head, client_hints);
     }
 
@@ -4450,7 +4452,7 @@ void NavigationRequest::CommitNavigation() {
     }
     commit_params_->enabled_client_hints = LookupAcceptCHForCommit(
         common_params_->url, client_hints_delegate, frame_tree_node_);
-    RemoveUaReducedAndFullFromAcceptCH(common_params_->url,
+    RemoveOriginTrialHintsFromAcceptCH(common_params_->url,
                                        client_hints_delegate, response(),
                                        commit_params_->enabled_client_hints);
   }

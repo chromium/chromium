@@ -5347,4 +5347,133 @@ TEST_F(CookieMonsterTest, GetAllCookiesForURLNonce) {
                   MatchesCookieNameValue("__Host-C", "0")));
 }
 
+// TODO(crbug.com/1296161): Delete this when the partitioned cookies Origin
+// Trial ends.
+TEST_F(CookieMonsterTest, ConvertPartitionedCookiesToUnpartitioned) {
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
+  auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get(),
+                                            kFirstPartySetsDefault);
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+
+  // Set unpartitioned cookie
+  EXPECT_TRUE(CreateAndSetCookie(cm.get(), https_www_foo_.url(),
+                                 "__Host-A=0; Secure; Path=/; SameSite=None",
+                                 options, absl::nullopt, absl::nullopt,
+                                 absl::nullopt));
+
+  // Set a partitioned cookie
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "__Host-B=0; Secure; Path=/; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(GURL("https://example.com"))));
+
+  cm->ConvertPartitionedCookiesToUnpartitioned(https_www_foo_.url());
+
+  auto cookies =
+      GetAllCookiesForURL(cm.get(), https_www_foo_.url(),
+                          CookiePartitionKeyCollection::ContainsAll());
+  EXPECT_EQ(cookies.size(), 2u);
+  EXPECT_EQ(cookies[0].Name(), "__Host-A");
+  EXPECT_FALSE(cookies[0].IsPartitioned());
+  EXPECT_EQ(cookies[1].Name(), "__Host-B");
+  EXPECT_FALSE(cookies[1].IsPartitioned());
+
+  // Set a partitioned cookie with the same name/domain/path as an existing
+  // cookie. This cookie should be deleted in favor of the existing
+  // unpartitioned cookie.
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "__Host-A=1; Secure; Path=/; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(GURL("https://example.com"))));
+
+  cm->ConvertPartitionedCookiesToUnpartitioned(https_www_foo_.url());
+
+  cookies = GetAllCookiesForURL(cm.get(), https_www_foo_.url(),
+                                CookiePartitionKeyCollection::ContainsAll());
+  EXPECT_EQ(cookies.size(), 2u);
+  EXPECT_EQ(cookies[0].Name(), "__Host-A");
+  EXPECT_FALSE(cookies[0].IsPartitioned());
+  EXPECT_EQ(cookies[0].Value(), "0");
+
+  // Set two partitioned cookies, the second one should be left over as an
+  // unpartitioned cookie after the conversion since it should have a more
+  // recent last_access_time.
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "__Host-C=0; Secure; Path=/; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(GURL("https://1.com"))));
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "__Host-C=1; Secure; Path=/; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(GURL("https://2.com"))));
+
+  cm->ConvertPartitionedCookiesToUnpartitioned(https_www_foo_.url());
+
+  cookies = GetAllCookiesForURL(cm.get(), https_www_foo_.url(),
+                                CookiePartitionKeyCollection::ContainsAll());
+  EXPECT_EQ(cookies.size(), 3u);
+  EXPECT_EQ(cookies[2].Name(), "__Host-C");
+  EXPECT_FALSE(cookies[0].IsPartitioned());
+  EXPECT_EQ(cookies[2].Value(), "1");
+
+  // Should not convert cookies whose partition keys contain a nonce.
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "__Host-D=0; Secure; Path=/; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(GURL("https://example.com"),
+                                            base::UnguessableToken::Create())));
+  // Unpartitioned cookie with the same name and value should be left alone.
+  EXPECT_TRUE(CreateAndSetCookie(cm.get(), https_www_foo_.url(),
+                                 "__Host-D=1; Secure; Path=/; SameSite=None",
+                                 options, absl::nullopt, absl::nullopt,
+                                 absl::nullopt));
+
+  cm->ConvertPartitionedCookiesToUnpartitioned(https_www_foo_.url());
+
+  cookies = GetAllCookiesForURL(cm.get(), https_www_foo_.url(),
+                                CookiePartitionKeyCollection::ContainsAll());
+  EXPECT_EQ(cookies.size(), 5u);
+  EXPECT_EQ(cookies[3].Name(), "__Host-D");
+  EXPECT_EQ(cookies[3].Value(), "0");
+  EXPECT_TRUE(cookies[3].IsPartitioned());
+  EXPECT_EQ(cookies[4].Name(), "__Host-D");
+  EXPECT_EQ(cookies[4].Value(), "1");
+  EXPECT_FALSE(cookies[4].IsPartitioned());
+
+  // Should not convert or delete partitioned cookies from a different site.
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_bar_.url(),
+      "__Host-E=0; Secure; Path=/; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(GURL("https://example.com"))));
+
+  cm->ConvertPartitionedCookiesToUnpartitioned(https_www_foo_.url());
+  cookies = GetAllCookiesForURL(cm.get(), https_www_bar_.url(),
+                                CookiePartitionKeyCollection::ContainsAll());
+  EXPECT_EQ(cookies.size(), 1u);
+  EXPECT_EQ(cookies[0].Name(), "__Host-E");
+  EXPECT_TRUE(cookies[0].IsPartitioned());
+
+  // Same with subdomains.
+  // Following URL is a subdomain of `https_www_bar_`.
+  GURL subdomain("https://subdomain.bar.com");
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), subdomain,
+      "__Host-F=0; Secure; Path=/; SameSite=None; Partitioned", options,
+      absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(GURL("https://example.com"))));
+
+  cm->ConvertPartitionedCookiesToUnpartitioned(https_www_bar_.url());
+  cookies = GetAllCookiesForURL(cm.get(), subdomain,
+                                CookiePartitionKeyCollection::ContainsAll());
+  EXPECT_EQ(cookies.size(), 1u);
+  EXPECT_EQ(cookies[0].Name(), "__Host-F");
+  EXPECT_TRUE(cookies[0].IsPartitioned());
+}
+
 }  // namespace net
