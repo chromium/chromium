@@ -55596,6 +55596,8 @@ from previous Chrome versions.
       label="ForceMajorVersionInMinorPositionInUserAgent:enabled"/>
   <int value="879651295" label="TabStripImprovements:disabled"/>
   <int value="879699575" label="disable-gesture-tap-highlight"/>
+  <int value="879891709"
+      label="ExperimentalAccessibilityDictationWithPumpkin:enabled"/>
   <int value="879992337" label="disable-pull-to-refresh-effect"/>
   <int value="880510010" label="enable-permissions-bubbles"/>
   <int value="882893584" label="UseOfHashAffiliationFetcher:disabled"/>
@@ -56035,6 +56037,8 @@ from previous Chrome versions.
       label="EnableAmbientAuthenticationInIncognito:enabled"/>
   <int value="1203795051" label="PassiveMixedContentWarning:enabled"/>
   <int value="1203821857" label="Vulkan:disabled"/>
+  <int value="1205596770"
+      label="ExperimentalAccessibilityDictationWithPumpkin:disabled"/>
   <int value="1205849612" label="enable-sync-synced-notifications"/>
   <int value="1205929554" label="SendTabToSelfOmniboxSendingAnimation:enabled"/>
   <int value="1206140820" label="RelatedSearchesInBar:disabled"/>

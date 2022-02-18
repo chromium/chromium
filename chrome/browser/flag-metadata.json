@@ -2019,6 +2019,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "enable-experimental-accessibility-dictation-with-pumpkin",
+    "owners": [ "akihiroota"],
+    "expiry_milestone": 104
+  },
+  {
     "name": "enable-experimental-accessibility-language-detection",
     "owners": [ "chrishall", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 106

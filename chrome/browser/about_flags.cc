@@ -4388,6 +4388,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExperimentalAccessibilityDictationHintsDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kExperimentalAccessibilityDictationHints)},
+    {"enable-experimental-accessibility-dictation-with-pumpkin",
+     flag_descriptions::kExperimentalAccessibilityDictationWithPumpkinName,
+     flag_descriptions::
+         kExperimentalAccessibilityDictationWithPumpkinDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         features::kExperimentalAccessibilityDictationWithPumpkin)},
     {"enable-experimental-accessibility-switch-access-text",
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextName,
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextDescription,
