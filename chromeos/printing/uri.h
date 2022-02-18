@@ -193,7 +193,8 @@ namespace chromeos {
 //   Query = [ pairs [ "&" ] ]
 //   pairs = pair [ "&" pairs ]
 //   pair = name [ "=" value ]
-// The parser replaces all occurrences of "+" in Name and Value by " " (space).
+// All " " (spaces) in parsed Name and Value can be encoded as "+". However, in
+// the normalized form all " " (spaces) are always encoded as %20.
 // Name cannot be empty. When Value is empty, the separator "=" is omitted in
 // the normalized form.
 // Name and Value are strings with the following properties:
