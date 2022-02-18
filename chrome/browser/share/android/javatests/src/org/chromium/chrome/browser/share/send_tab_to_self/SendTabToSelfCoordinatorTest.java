@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for SendTabToSelfCoordinator */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -32,6 +33,8 @@ public class SendTabToSelfCoordinatorTest {
     private BottomSheetController mBottomSheetController;
     @Mock
     private BottomSheetContent mBottomSheetContent;
+    @Mock
+    private WindowAndroid mWindowAndroid;
 
     @Before
     public void setUp() {
@@ -43,8 +46,8 @@ public class SendTabToSelfCoordinatorTest {
     public void testShow() {
         SendTabToSelfCoordinator.setBottomSheetContentForTesting(mBottomSheetContent);
         SendTabToSelfCoordinator coordinator = new SendTabToSelfCoordinator(/*context*/ null,
-                "test", "test", mBottomSheetController,
-                /*isSyncEnabled=*/true, /*navigationTime=*/0);
+                mWindowAndroid, "test", "test", mBottomSheetController,
+                /*navigationTime=*/0);
         coordinator.show();
         verify(mBottomSheetController).requestShowContent(any(BottomSheetContent.class), eq(true));
         SendTabToSelfCoordinator.setBottomSheetContentForTesting(null);

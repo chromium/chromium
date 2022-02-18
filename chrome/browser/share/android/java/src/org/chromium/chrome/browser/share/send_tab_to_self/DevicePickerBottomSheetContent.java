@@ -44,8 +44,8 @@ import java.util.List;
 
 /**
  * Bottom sheet content to display a list of devices a user can send a tab to after they have
- * chosen to share it with themselves through the SendTabToSelfFeature. If sync is disabled
- * or no target devices are available an prompt will be shown indicating to the user that
+ * chosen to share it with themselves through the SendTabToSelfFeature. If the user is signed-out
+ * or no target devices are available, a prompt will be shown indicating to the user that
  * they must sign in to use the feature.
  */
 public class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickListener {
@@ -58,12 +58,11 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
     private final String mUrl;
     private final String mTitle;
     private final long mNavigationTime;
-    private final boolean mIsSyncEnabled;
 
     private static final int ACCOUNT_AVATAR_SIZE_DP = 24;
 
     public DevicePickerBottomSheetContent(Context context, String url, String title,
-            long navigationTime, BottomSheetController controller, boolean isSyncEnabled) {
+            long navigationTime, BottomSheetController controller) {
         mContext = context;
         mController = controller;
         mProfile = Profile.getLastUsedRegularProfile();
@@ -71,7 +70,6 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         mUrl = url;
         mTitle = title;
         mNavigationTime = navigationTime;
-        mIsSyncEnabled = isSyncEnabled;
 
         createToolbarView();
         createContentView();
@@ -101,6 +99,8 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
             title.setText(R.string.send_tab_to_self_share_activity_title);
             instructionsToEnable.setText(R.string.send_tab_to_self_when_signed_in_unavailable);
             mToolbarView.setVisibility(View.GONE);
+            // TODO(crbug.com/1298185): This is cumulating both signed-out and single device users.
+            // Those should be recorded separately instead.
             RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
             return;
         }

@@ -58,6 +58,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
@@ -105,6 +106,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
     private Tracker mTracker;
     @Mock
     private ShareParams.TargetChosenCallback mTargetChosenCallback;
+    @Mock
+    private WindowAndroid mWindowAndroid;
 
     private Activity mActivity;
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
@@ -441,12 +444,11 @@ public class ChromeProvidedSharingOptionsProviderTest {
                                           .setText("")
                                           .build();
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(mActivity,
-                mTabProvider, mBottomSheetController,
+                mWindowAndroid, mTabProvider, mBottomSheetController,
                 new ShareSheetBottomSheetContent(mActivity, null, mShareSheetCoordinator,
                         shareParams, /*featureEngagementTracker=*/null),
                 shareParams,
                 /*TabPrinterDelegate=*/null, isIncognito,
-                /*syncState=*/false,
                 /*shareStartTime=*/0, mShareSheetCoordinator,
                 /*imageEditorModuleProvider*/ null, mTracker, URL, linkGenerationStatus,
                 new LinkToggleMetricsDetails(

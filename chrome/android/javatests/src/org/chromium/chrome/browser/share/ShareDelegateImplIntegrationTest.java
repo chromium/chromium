@@ -121,8 +121,8 @@ public class ShareDelegateImplIntegrationTest {
                         BottomSheetController controller,
                         ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
                         Supplier<TabModelSelector> tabModelSelectorProvider,
-                        Callback<Tab> printCallback, int shareOrigin, boolean syncState,
-                        long shareStartTime, boolean sharingHubEnabled) {
+                        Callback<Tab> printCallback, int shareOrigin, long shareStartTime,
+                        boolean sharingHubEnabled) {
                     paramsRef.set(params);
                     helper.notifyCalled();
                 }

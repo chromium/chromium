@@ -83,7 +83,6 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final ShareSheetPropertyModelBuilder mPropertyModelBuilder;
     private final Callback<Tab> mPrintTabCallback;
     private final boolean mIsIncognito;
-    private final boolean mIsSyncEnabled;
     private final ImageEditorModuleProvider mImageEditorModuleProvider;
     private final BottomSheetObserver mBottomSheetObserver;
     private final LargeIconBridge mIconBridge;
@@ -130,7 +129,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     public ShareSheetCoordinator(BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
             ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab,
-            LargeIconBridge iconBridge, boolean isIncognito, boolean isSyncEnabled,
+            LargeIconBridge iconBridge, boolean isIncognito,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
@@ -139,7 +138,6 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mPropertyModelBuilder = modelBuilder;
         mPrintTabCallback = printTab;
         mIsIncognito = isIncognito;
-        mIsSyncEnabled = isSyncEnabled;
         mImageEditorModuleProvider = imageEditorModuleProvider;
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override
@@ -330,8 +328,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             return new ArrayList<>();
         }
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(activity,
-                mTabProvider, mBottomSheetController, mBottomSheet, shareParams, mPrintTabCallback,
-                mIsIncognito, mIsSyncEnabled, mShareStartTime, this, mImageEditorModuleProvider,
+                mWindowAndroid, mTabProvider, mBottomSheetController, mBottomSheet, shareParams,
+                mPrintTabCallback, mIsIncognito, mShareStartTime, this, mImageEditorModuleProvider,
                 mFeatureEngagementTracker,
                 getUrlToShare(shareParams, chromeShareExtras,
                         mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec()

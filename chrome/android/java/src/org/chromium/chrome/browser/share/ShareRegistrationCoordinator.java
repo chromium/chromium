@@ -15,10 +15,10 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,8 +66,8 @@ public class ShareRegistrationCoordinator {
     }
 
     /** ShareRegistrationCoordinator constructor. */
-    public ShareRegistrationCoordinator(Activity activity, Supplier<Tab> currentTabSupplier,
-            BottomSheetController bottomSheetController) {
+    public ShareRegistrationCoordinator(Activity activity, WindowAndroid windowAndroid,
+            Supplier<Tab> currentTabSupplier, BottomSheetController bottomSheetController) {
         mTaskId = activity.getTaskId();
 
         registerShareType(
@@ -78,7 +78,7 @@ public class ShareRegistrationCoordinator {
                                       .getNavigationController()
                                       .getVisibleEntry()
                             : null;
-                    doSendTabToSelfShare(activity, entry, bottomSheetController);
+                    doSendTabToSelfShare(activity, windowAndroid, entry, bottomSheetController);
                 });
         sCoordinatorMap.put(mTaskId, this);
     }
@@ -105,19 +105,18 @@ public class ShareRegistrationCoordinator {
      * Starts a send tab to self share action.
      *
      * @param context The current application context.
+     * @param windowAndroid The current window.
      * @param entry The current {@link NavigationEntry}, null if the current tab isn't available or
      *              doesn't have a visible entry.
      * @param bottomSheetController Controls what's shown in the bottom sheet.
      */
     @VisibleForTesting
-    void doSendTabToSelfShare(@NonNull Context context, @Nullable NavigationEntry entry,
-            @NonNull BottomSheetController bottomSheetController) {
+    void doSendTabToSelfShare(@NonNull Context context, @NonNull WindowAndroid windowAndroid,
+            @Nullable NavigationEntry entry, @NonNull BottomSheetController bottomSheetController) {
         if (entry == null) return;
-        boolean isSyncEnabled = SyncService.get() != null && SyncService.get().isSyncRequested();
-        bottomSheetController.requestShowContent(
-                SendTabToSelfCoordinator.createBottomSheetContent(context, entry.getUrl().getSpec(),
-                        entry.getTitle(), entry.getTimestamp(), bottomSheetController,
-                        isSyncEnabled),
-                true);
+        SendTabToSelfCoordinator coordinator =
+                new SendTabToSelfCoordinator(context, windowAndroid, entry.getUrl().getSpec(),
+                        entry.getTitle(), bottomSheetController, entry.getTimestamp());
+        coordinator.show();
     }
 }

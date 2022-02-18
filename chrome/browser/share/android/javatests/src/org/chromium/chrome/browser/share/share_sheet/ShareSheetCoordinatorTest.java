@@ -126,7 +126,7 @@ public final class ShareSheetCoordinatorTest {
                           .setCallback(mTargetChosenCallback)
                           .build();
         mShareSheetCoordinator = new ShareSheetCoordinator(mController, mLifecycleDispatcher,
-                mTabProvider, mPropertyModelBuilder, null, null, false, false, null, null);
+                mTabProvider, mPropertyModelBuilder, null, null, false, null, null);
     }
 
     @Test

@@ -653,8 +653,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     mManualFillingComponentSupplier.get().getBottomInsetSupplier());
 
             // Should be called after TabModels are initialized.
-            mShareRegistrationCoordinator = new ShareRegistrationCoordinator(
-                    this, mActivityTabProvider, mRootUiCoordinator.getBottomSheetController());
+            mShareRegistrationCoordinator =
+                    new ShareRegistrationCoordinator(this, getWindowAndroid(), mActivityTabProvider,
+                            mRootUiCoordinator.getBottomSheetController());
             // Some share types are registered in the coorindator itself.
             mShareRegistrationCoordinator.registerShareType(PrintShareActivity.SHARE_ACTION,
                     () -> doPrintShare(this, mActivityTabProvider));

@@ -44,6 +44,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 
@@ -63,13 +64,13 @@ public class ChromeProvidedSharingOptionsProvider {
             new ComponentName("CHROME", "CHROME_FEATURE");
 
     private final Activity mActivity;
+    private final WindowAndroid mWindowAndroid;
     private final Supplier<Tab> mTabProvider;
     private final BottomSheetController mBottomSheetController;
     private final ShareSheetBottomSheetContent mBottomSheetContent;
     private final ShareParams mShareParams;
     private final Callback<Tab> mPrintTabCallback;
     private final boolean mIsIncognito;
-    private final boolean mIsSyncEnabled;
     private final long mShareStartTime;
     private final List<FirstPartyOption> mOrderedFirstPartyOptions;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
@@ -83,6 +84,7 @@ public class ChromeProvidedSharingOptionsProvider {
      * Constructs a new {@link ChromeProvidedSharingOptionsProvider}.
      *
      * @param activity The current {@link Activity}.
+     * @param windowAndroid The current window.
      * @param tabProvider Supplier for the current activity tab.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param bottomSheetContent The {@link ShareSheetBottomSheetContent} for the current
@@ -101,22 +103,22 @@ public class ChromeProvidedSharingOptionsProvider {
      * @param linkToggleMetricsDetails {@link LinkToggleMetricsDetails} for recording the final
      *         toggle state.
      */
-    ChromeProvidedSharingOptionsProvider(Activity activity, Supplier<Tab> tabProvider,
-            BottomSheetController bottomSheetController,
+    ChromeProvidedSharingOptionsProvider(Activity activity, WindowAndroid windowAndroid,
+            Supplier<Tab> tabProvider, BottomSheetController bottomSheetController,
             ShareSheetBottomSheetContent bottomSheetContent, ShareParams shareParams,
-            Callback<Tab> printTab, boolean isIncognito, boolean isSyncEnabled, long shareStartTime,
+            Callback<Tab> printTab, boolean isIncognito, long shareStartTime,
             ChromeOptionShareCallback chromeOptionShareCallback,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
             String url, @LinkGeneration int linkGenerationStatusForMetrics,
             LinkToggleMetricsDetails linkToggleMetricsDetails) {
         mActivity = activity;
+        mWindowAndroid = windowAndroid;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
         mShareParams = shareParams;
         mPrintTabCallback = printTab;
         mIsIncognito = isIncognito;
-        mIsSyncEnabled = isSyncEnabled;
         mShareStartTime = shareStartTime;
         mImageEditorModuleProvider = imageEditorModuleProvider;
         mFeatureEngagementTracker = featureEngagementTracker;
@@ -453,8 +455,8 @@ public class ChromeProvidedSharingOptionsProvider {
                         timestamp = mShareStartTime;
                     }
                     SendTabToSelfCoordinator sttsCoordinator =
-                            new SendTabToSelfCoordinator(mActivity, mUrl, mShareParams.getTitle(),
-                                    mBottomSheetController, mIsSyncEnabled, timestamp);
+                            new SendTabToSelfCoordinator(mActivity, mWindowAndroid, mUrl,
+                                    mShareParams.getTitle(), mBottomSheetController, timestamp);
                     sttsCoordinator.show();
                 })
                 .build();

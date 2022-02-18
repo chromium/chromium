@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Coordinator for displaying the send tab to self feature.
@@ -20,33 +21,29 @@ public class SendTabToSelfCoordinator {
     private final String mUrl;
     private final String mTitle;
     private final BottomSheetController mController;
-    private final boolean mIsSyncEnabled;
     private final long mNavigationTime;
 
-    public SendTabToSelfCoordinator(Context context, String url, String title,
-            BottomSheetController controller, boolean isSyncEnabled, long navigationTime) {
+    public SendTabToSelfCoordinator(Context context, WindowAndroid windowAndroid, String url,
+            String title, BottomSheetController controller, long navigationTime) {
         mContext = context;
         mUrl = url;
         mTitle = title;
         mController = controller;
-        mIsSyncEnabled = isSyncEnabled;
         mNavigationTime = navigationTime;
     }
 
     public void show() {
-        mController.requestShowContent(createBottomSheetContent(mContext, mUrl, mTitle,
-                                               mNavigationTime, mController, mIsSyncEnabled),
+        mController.requestShowContent(
+                createBottomSheetContent(mContext, mUrl, mTitle, mNavigationTime, mController),
                 true);
     }
 
-    public static BottomSheetContent createBottomSheetContent(Context context, String url,
-            String title, long navigationTime, BottomSheetController controller,
-            boolean isSyncEnabled) {
+    private static BottomSheetContent createBottomSheetContent(Context context, String url,
+            String title, long navigationTime, BottomSheetController controller) {
         if (sBottomSheetContentForTesting != null) {
             return sBottomSheetContentForTesting;
         }
-        return new DevicePickerBottomSheetContent(
-                context, url, title, navigationTime, controller, isSyncEnabled);
+        return new DevicePickerBottomSheetContent(context, url, title, navigationTime, controller);
     }
 
     @VisibleForTesting

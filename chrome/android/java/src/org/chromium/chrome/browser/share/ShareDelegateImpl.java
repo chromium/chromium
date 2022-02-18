@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -90,9 +89,8 @@ public class ShareDelegateImpl implements ShareDelegate {
         if (mShareStartTime == 0L) {
             mShareStartTime = System.currentTimeMillis();
         }
-        boolean isSyncEnabled = SyncService.get() != null && SyncService.get().isSyncRequested();
         mDelegate.share(params, chromeShareExtras, mBottomSheetController, mLifecycleDispatcher,
-                mTabProvider, mTabModelSelectorProvider, this::printTab, shareOrigin, isSyncEnabled,
+                mTabProvider, mTabModelSelectorProvider, this::printTab, shareOrigin,
                 mShareStartTime, isSharingHubEnabled());
         mShareStartTime = 0;
     }
@@ -277,8 +275,8 @@ public class ShareDelegateImpl implements ShareDelegate {
         void share(ShareParams params, ChromeShareExtras chromeShareExtras,
                 BottomSheetController controller, ActivityLifecycleDispatcher lifecycleDispatcher,
                 Supplier<Tab> tabProvider, Supplier<TabModelSelector> tabModelSelectorSupplier,
-                Callback<Tab> printCallback, @ShareOrigin int shareOrigin, boolean isSyncEnabled,
-                long shareStartTime, boolean sharingHubEnabled) {
+                Callback<Tab> printCallback, @ShareOrigin int shareOrigin, long shareStartTime,
+                boolean sharingHubEnabled) {
             Profile profile = null;
             if (tabProvider.get() != null && tabProvider.get().getWebContents() != null) {
                 profile = Profile.fromWebContents(tabProvider.get().getWebContents());
@@ -299,7 +297,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                         new ShareSheetPropertyModelBuilder(controller,
                                 ContextUtils.getApplicationContext().getPackageManager(), profile),
                         printCallback, new LargeIconBridge(Profile.getLastUsedRegularProfile()),
-                        isIncognito, isSyncEnabled, AppHooks.get().getImageEditorModuleProvider(),
+                        isIncognito, AppHooks.get().getImageEditorModuleProvider(),
                         TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile()));
                 // TODO(crbug/1009124): open custom share sheet.
                 coordinator.showInitialShareSheet(params, chromeShareExtras, shareStartTime);

@@ -45,6 +45,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for ShareRegistrationCoordinator. */
@@ -72,6 +73,8 @@ public class ShareRegistrationCoordinatorTest {
     private SyncService mSyncService;
     @Mock
     private Context mContext;
+    @Mock
+    private WindowAndroid mWindowAndroid;
 
     @Captor
     private ArgumentCaptor<Intent> mIntentCaptor;
@@ -94,7 +97,7 @@ public class ShareRegistrationCoordinatorTest {
     @SmallTest
     public void doSendTabToSelfShare() {
         ShareRegistrationCoordinator shareCoordinator = new ShareRegistrationCoordinator(
-                mActivity, mCurrentTabSupplier, mBottomSheetController);
+                mActivity, mWindowAndroid, mCurrentTabSupplier, mBottomSheetController);
         // Setup the mocked object chain to get to the url, title and timestamp.
         when(mNavigationEntry.getUrl())
                 .thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
@@ -103,7 +106,8 @@ public class ShareRegistrationCoordinatorTest {
         when(mSyncService.isSyncRequested()).thenReturn(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.overrideForTests(mSyncService));
 
-        shareCoordinator.doSendTabToSelfShare(mActivity, mNavigationEntry, mBottomSheetController);
+        shareCoordinator.doSendTabToSelfShare(
+                mActivity, mWindowAndroid, mNavigationEntry, mBottomSheetController);
         verify(mBottomSheetController).requestShowContent(any(BottomSheetContent.class), eq(true));
 
         shareCoordinator.destroy();
@@ -113,7 +117,7 @@ public class ShareRegistrationCoordinatorTest {
     @SmallTest
     public void onShareActionChosen() {
         ShareRegistrationCoordinator shareCoordinator = new ShareRegistrationCoordinator(
-                mActivity, mCurrentTabSupplier, mBottomSheetController);
+                mActivity, mWindowAndroid, mCurrentTabSupplier, mBottomSheetController);
         Runnable runnable = Mockito.mock(Runnable.class);
         shareCoordinator.registerShareType("foobar", runnable);
 
@@ -134,7 +138,7 @@ public class ShareRegistrationCoordinatorTest {
     @SmallTest
     public void registerShareType_ReusingShareType() {
         ShareRegistrationCoordinator shareCoordinator = new ShareRegistrationCoordinator(
-                mActivity, mCurrentTabSupplier, mBottomSheetController);
+                mActivity, mWindowAndroid, mCurrentTabSupplier, mBottomSheetController);
         Runnable runnable1 = Mockito.mock(Runnable.class);
         Runnable runnable2 = Mockito.mock(Runnable.class);
         shareCoordinator.registerShareType("foobar", runnable1);
@@ -150,7 +154,7 @@ public class ShareRegistrationCoordinatorTest {
     @SmallTest
     public void onShareActionChosen_RegisterShareTypeAfterDestruction() {
         ShareRegistrationCoordinator shareCoordinator = new ShareRegistrationCoordinator(
-                mActivity, mCurrentTabSupplier, mBottomSheetController);
+                mActivity, mWindowAndroid, mCurrentTabSupplier, mBottomSheetController);
         shareCoordinator.destroy();
         Runnable runnable = Mockito.mock(Runnable.class);
         shareCoordinator.registerShareType("foobar", runnable);
@@ -163,7 +167,7 @@ public class ShareRegistrationCoordinatorTest {
     @SmallTest
     public void onShareActionChosen_SendBroadcastAfterDestruction() {
         ShareRegistrationCoordinator shareCoordinator = new ShareRegistrationCoordinator(
-                mActivity, mCurrentTabSupplier, mBottomSheetController);
+                mActivity, mWindowAndroid, mCurrentTabSupplier, mBottomSheetController);
         Runnable runnable = Mockito.mock(Runnable.class);
         shareCoordinator.registerShareType("foobar", runnable);
         shareCoordinator.destroy();
@@ -176,13 +180,13 @@ public class ShareRegistrationCoordinatorTest {
     @SmallTest
     public void sendShareBroadcastWithAction_DifferentActivity() {
         ShareRegistrationCoordinator shareCoordinator1 = new ShareRegistrationCoordinator(
-                mActivity, mCurrentTabSupplier, mBottomSheetController);
+                mActivity, mWindowAndroid, mCurrentTabSupplier, mBottomSheetController);
         Runnable runnable1 = Mockito.mock(Runnable.class);
         shareCoordinator1.registerShareType("foobar", runnable1);
 
         doReturn(123).when(mActivity).getTaskId();
         ShareRegistrationCoordinator shareCoordinator2 = new ShareRegistrationCoordinator(
-                mActivity, mCurrentTabSupplier, mBottomSheetController);
+                mActivity, mWindowAndroid, mCurrentTabSupplier, mBottomSheetController);
         Runnable runnable2 = Mockito.mock(Runnable.class);
         shareCoordinator2.registerShareType("foobar", runnable2);
 
