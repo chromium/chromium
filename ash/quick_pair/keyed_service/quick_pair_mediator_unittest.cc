@@ -15,6 +15,7 @@
 #include "ash/quick_pair/feature_status_tracker/fake_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/mock_quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
+#include "ash/quick_pair/keyed_service/fast_pair_bluetooth_config_delegate.h"
 #include "ash/quick_pair/message_stream/fake_message_stream_lookup.h"
 #include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "ash/quick_pair/pairing/fake_retroactive_pairing_detector.h"
@@ -455,6 +456,15 @@ TEST_F(MediatorTest, PairingFailedAction_Dismissed) {
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
   mock_ui_broker_->NotifyPairingFailedAction(device_,
                                              PairingFailedAction::kDismissed);
+}
+
+TEST_F(MediatorTest, FastPairBluetoothConfigDelegate) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  chromeos::bluetooth_config::FastPairDelegate* delegate =
+      mediator_->GetFastPairDelegate();
+  delegate->SetDeviceNameManager(nullptr);
+  EXPECT_TRUE(delegate);
+  EXPECT_EQ(delegate->GetDeviceImageInfo(kTestMetadataId), absl::nullopt);
 }
 
 }  // namespace quick_pair
