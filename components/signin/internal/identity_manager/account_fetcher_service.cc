@@ -238,12 +238,14 @@ void AccountFetcherService::SetIsChildAccount(const CoreAccountId& account_id,
 }
 #endif
 
-bool AccountFetcherService::IsAccountCapabilitiesFetcherEnabled() {
+bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
   if (enable_account_capabilities_fetcher_for_test_)
     return true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return true;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(
+      switches::kEnableFetchingAccountCapabilities);
 #else
   return false;
 #endif
@@ -273,7 +275,7 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
 
   if ((!only_fetch_if_invalid ||
        !info.capabilities.AreAllCapabilitiesKnown()) &&
-      IsAccountCapabilitiesFetcherEnabled()) {
+      IsAccountCapabilitiesFetchingEnabled()) {
     StartFetchingAccountCapabilities(account_id);
   }
 

@@ -720,6 +720,25 @@ TEST_F(AccountTrackerServiceTest,
 }
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(AccountTrackerServiceTest,
+       TokenAvailable_AccountCapabilitiesFetcherEnabled) {
+  account_fetcher()->EnableAccountCapabilitiesFetcherForTest(false);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kEnableFetchingAccountCapabilities);
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+  ClearAccountTrackerEvents();
+
+  ReturnAccountCapabilitiesFetchSuccess(kAccountKeyAlpha);
+  EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+}
+#endif
+
 TEST_F(AccountTrackerServiceTest, TokenAvailableTwice_UserInfoOnce) {
   SimulateTokenAvailable(kAccountKeyAlpha);
   ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
