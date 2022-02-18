@@ -892,14 +892,15 @@ export class Camera extends View implements CameraViewUI {
   /**
    * Updates |this.activeDeviceId|.
    */
-  private updateActiveCamera(newDeviceId: string) {
+  private updateActiveCamera(newDeviceId: string|null) {
     // Make the different active camera announced by screen reader.
     if (newDeviceId === this.activeDeviceId) {
       return;
     }
     this.activeDeviceId = newDeviceId;
-    const info = this.cameraManager.getCameraInfo().getDeviceInfo(newDeviceId);
-    if (info !== null) {
+    if (newDeviceId !== null) {
+      const info =
+          this.cameraManager.getCameraInfo().getDeviceInfo(newDeviceId);
       speak(I18nString.STATUS_MSG_CAMERA_SWITCHED, info.label);
     }
   }
