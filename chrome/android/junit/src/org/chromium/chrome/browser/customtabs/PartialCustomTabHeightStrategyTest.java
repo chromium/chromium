@@ -81,6 +81,8 @@ public class PartialCustomTabHeightStrategyTest {
     @Mock
     private View mDecorView;
     @Mock
+    private View mRootView;
+    @Mock
     private Display mDisplay;
     @Mock
     private PartialCustomTabHeightStrategy.OnResizedCallback mOnResizedCallback;
@@ -104,6 +106,8 @@ public class PartialCustomTabHeightStrategyTest {
         mAttributes = new WindowManager.LayoutParams();
         when(mWindow.getAttributes()).thenReturn(mAttributes);
         when(mWindow.getDecorView()).thenReturn(mDecorView);
+        when(mDecorView.getRootView()).thenReturn(mRootView);
+        when(mRootView.getLayoutParams()).thenReturn(mAttributes);
         when(mWindowManager.getDefaultDisplay()).thenReturn(mDisplay);
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
