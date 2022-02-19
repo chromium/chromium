@@ -202,37 +202,39 @@ class PLATFORM_EXPORT TransformationMatrix {
   }
 
   // Map a 3D point through the transform, returning a 3D point.
-  gfx::Point3F MapPoint(const gfx::Point3F&) const;
+  [[nodiscard]] gfx::Point3F MapPoint(const gfx::Point3F&) const;
 
   // Map a 2D point through the transform, returning a 2D point.
   // Note that this ignores the z component, effectively projecting the point
   // into the z=0 plane.
-  gfx::PointF MapPoint(const gfx::PointF&) const;
+  [[nodiscard]] gfx::PointF MapPoint(const gfx::PointF&) const;
 
   // If the matrix has 3D components, the z component of the result is
   // dropped, effectively projecting the rect into the z=0 plane
-  gfx::RectF MapRect(const gfx::RectF&) const;
+  [[nodiscard]] gfx::RectF MapRect(const gfx::RectF&) const;
 
   // Rounds the resulting mapped rectangle out. This is helpful for bounding
   // box computations but may not be what is wanted in other contexts.
-  gfx::Rect MapRect(const gfx::Rect&) const;
+  [[nodiscard]] gfx::Rect MapRect(const gfx::Rect&) const;
 
-  LayoutRect MapRect(const LayoutRect&) const;
+  [[nodiscard]] LayoutRect MapRect(const LayoutRect&) const;
 
   // If the matrix has 3D components, the z component of the result is
   // dropped, effectively projecting the quad into the z=0 plane
-  gfx::QuadF MapQuad(const gfx::QuadF&) const;
+  [[nodiscard]] gfx::QuadF MapQuad(const gfx::QuadF&) const;
 
   // Map a point on the z=0 plane into a point on the plane with with the
   // transform applied, by extending a ray perpendicular to the source plane and
   // computing the local x,y position of the point where that ray intersects
   // with the destination plane.
-  gfx::PointF ProjectPoint(const gfx::PointF&, bool* clamped = nullptr) const;
+  [[nodiscard]] gfx::PointF ProjectPoint(const gfx::PointF&,
+                                         bool* clamped = nullptr) const;
   // Projects the four corners of the quad.
-  gfx::QuadF ProjectQuad(const gfx::QuadF&) const;
+  [[nodiscard]] gfx::QuadF ProjectQuad(const gfx::QuadF&) const;
   // Projects the four corners of the quad and takes a bounding box,
   // while sanitizing values created when the w component is negative.
-  LayoutRect ClampedBoundsOfProjectedQuad(const gfx::QuadF&) const;
+  [[nodiscard]] LayoutRect ClampedBoundsOfProjectedQuad(
+      const gfx::QuadF&) const;
 
   void TransformBox(gfx::BoxF&) const;
 
@@ -344,7 +346,7 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   // This method returns the identity matrix if it is not invertible.
   // Use isInvertible() before calling this if you need to know.
-  TransformationMatrix Inverse() const;
+  [[nodiscard]] TransformationMatrix Inverse() const;
 
   // decompose the matrix into its component parts
   typedef struct {
@@ -378,7 +380,7 @@ class PLATFORM_EXPORT TransformationMatrix {
   // Throw away the non-affine parts of the matrix (lossy!)
   void MakeAffine();
 
-  AffineTransform ToAffineTransform() const;
+  [[nodiscard]] AffineTransform ToAffineTransform() const;
 
   // Flatten into a 2-D transformation (non-invertable).
   // Same as gfx::Transform::FlattenTo2d(); see the docs for that function for
