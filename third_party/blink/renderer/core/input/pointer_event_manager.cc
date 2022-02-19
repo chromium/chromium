@@ -112,6 +112,7 @@ void PointerEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(touch_event_manager_);
   visitor->Trace(mouse_event_manager_);
   visitor->Trace(gesture_manager_);
+  visitor->Trace(captured_scrollbar_);
 }
 
 PointerEventManager::PointerEventBoundaryEventDispatcher::
@@ -425,12 +426,13 @@ PointerEventManager::ComputePointerEventTarget(
                                                   HitTestRequest::kActive;
     HitTestLocation location(frame_->View()->ConvertFromRootFrame(
         PhysicalOffset::FromPointFRound(web_pointer_event.PositionInWidget())));
-    HitTestResult hit_test_tesult =
+    HitTestResult hit_test_result =
         frame_->GetEventHandler().HitTestResultAtLocation(location, hit_type);
-    Element* target = hit_test_tesult.InnerElement();
+    Element* target = hit_test_result.InnerElement();
     if (target) {
       pointer_event_target.target_frame = target->GetDocument().GetFrame();
       pointer_event_target.target_element = target;
+      pointer_event_target.scrollbar = hit_test_result.GetScrollbar();
     }
   } else {
     // Set the target of pointer event to the captured element as this
@@ -637,6 +639,9 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
     return WebInputEventResult::kHandledSuppressed;
   }
 
+  if (HandleScrollbarTouchDrag(event, pointer_event_target.scrollbar))
+    return WebInputEventResult::kHandledSuppressed;
+
   // Any finger lifting is a user gesture only when it wasn't associated with a
   // scroll.
   // https://docs.google.com/document/d/1oF1T3O7_E4t1PYHV6gyCwHxOi3ystm0eSL5xZu7nvOg/edit#
@@ -659,6 +664,28 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
                                          pointer_event_target);
 
   return result;
+}
+
+bool PointerEventManager::HandleScrollbarTouchDrag(const WebPointerEvent& event,
+                                                   Scrollbar* scrollbar) {
+  if (!scrollbar ||
+      event.pointer_type != WebPointerProperties::PointerType::kTouch)
+    return false;
+
+  if (event.GetType() == WebInputEvent::Type::kPointerDown) {
+    captured_scrollbar_ = scrollbar;
+    frame_->GetPage()->GetChromeClient().SetTouchAction(frame_,
+                                                        TouchAction::kNone);
+  }
+
+  if (!captured_scrollbar_)
+    return false;
+
+  bool handled = captured_scrollbar_->HandlePointerEvent(event);
+  if (event.GetType() == WebInputEvent::Type::kPointerUp)
+    captured_scrollbar_ = nullptr;
+
+  return handled;
 }
 
 WebInputEventResult PointerEventManager::CreateAndDispatchPointerEvent(

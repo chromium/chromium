@@ -30,6 +30,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/platform/web_scrollbar_overlay_color_theme.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -339,6 +340,53 @@ void Scrollbar::SetPressedPart(ScrollbarPart part, WebInputEvent::Type type) {
     GetScrollableArea()->DidScrollWithScrollbar(part, Orientation(), type);
 
   pressed_part_ = part;
+}
+
+bool Scrollbar::HandlePointerEvent(const WebPointerEvent& event) {
+  WebInputEvent::Type type = event.GetType();
+  // PointerEventManager gives us an event whose position is already
+  // transformed to the root frame.
+  gfx::Point root_frame_position =
+      gfx::ToFlooredPoint(event.PositionInWidget());
+  switch (type) {
+    case WebInputEvent::Type::kPointerDown:
+      if (GetTheme().HitTestRootFramePosition(*this, root_frame_position) ==
+          kThumbPart) {
+        SetPressedPart(kThumbPart, type);
+        gfx::Point local_position = ConvertFromRootFrame(root_frame_position);
+        pressed_pos_ = Orientation() == kHorizontalScrollbar
+                           ? local_position.x()
+                           : local_position.y();
+        scroll_pos_ = pressed_pos_;
+        return true;
+      }
+      return false;
+
+    case WebInputEvent::Type::kPointerMove:
+      if (pressed_part_ == kThumbPart) {
+        gfx::Point local_position = ConvertFromRootFrame(root_frame_position);
+        scroll_pos_ = Orientation() == kHorizontalScrollbar
+                          ? local_position.x()
+                          : local_position.y();
+        MoveThumb(scroll_pos_, false);
+        return true;
+      }
+      return false;
+
+    case WebInputEvent::Type::kPointerUp:
+      if (pressed_part_ == kThumbPart) {
+        SetPressedPart(kNoPart, type);
+        pressed_pos_ = 0;
+        InjectScrollGesture(WebInputEvent::Type::kGestureScrollEnd,
+                            ScrollOffset(),
+                            ui::ScrollGranularity::kScrollByPrecisePixel);
+        return true;
+      }
+      return false;
+
+    default:
+      return false;
+  }
 }
 
 bool Scrollbar::GestureEvent(const WebGestureEvent& evt,

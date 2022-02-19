@@ -53,6 +53,10 @@ class ScrollableAreaPainter {
   void DrawPlatformResizerImage(GraphicsContext&,
                                 const gfx::Rect& resizer_corner_rect);
 
+  void PaintNativeScrollbar(GraphicsContext& context,
+                            Scrollbar& scrollbar,
+                            gfx::Rect visual_rect);
+
   PaintLayerScrollableArea& GetScrollableArea() const;
 
   PaintLayerScrollableArea* scrollable_area_;

@@ -194,6 +194,7 @@ LocalFrame* GetTargetSubframe(
 void PointerEventTarget::Trace(Visitor* visitor) const {
   visitor->Trace(target_element);
   visitor->Trace(target_frame);
+  visitor->Trace(scrollbar);
 }
 
 }  // namespace event_handling_util
