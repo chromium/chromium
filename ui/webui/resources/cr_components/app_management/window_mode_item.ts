@@ -16,7 +16,7 @@ import {recordAppManagementUserAction} from './util.js';
 
 export class AppManagementWindowModeElement extends PolymerElement {
   static get is() {
-    return 'app-management-window-mode';
+    return 'app-management-window-mode-item';
   }
 
   static get template() {
@@ -28,15 +28,6 @@ export class AppManagementWindowModeElement extends PolymerElement {
       windowModeLabel: String,
 
       app: Object,
-
-      /**
-       * True if the window mode type is available for the app.
-       */
-      available_: {
-        type: Boolean,
-        computed: 'isAvailable_(app)',
-        reflectToAttribute: true,
-      },
     };
   }
 
@@ -49,16 +40,8 @@ export class AppManagementWindowModeElement extends PolymerElement {
     this.addEventListener('change', this.toggleWindowMode_);
   }
 
-  private isAvailable_(app: App): boolean {
-    if (app === undefined) {
-      return false;
-    }
-    assert(app);
-    return app.windowMode !== undefined;
-  }
-
   private getValue_(app: App): boolean {
-    if (!this.isAvailable_(app)) {
+    if (app === undefined) {
       return false;
     }
     assert(app);
@@ -110,7 +93,7 @@ export class AppManagementWindowModeElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'app-management-window-mode': AppManagementWindowModeElement;
+    'app-management-window-mode-item': AppManagementWindowModeElement;
   }
 }
 

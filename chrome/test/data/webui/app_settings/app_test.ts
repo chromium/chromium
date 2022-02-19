@@ -93,7 +93,7 @@ suite('AppSettingsAppTest', () => {
 
   test('Toggle window mode', function() {
     const windowModeItem =
-        appSettingsApp.shadowRoot!.querySelector('app-management-window-mode')!;
+        appSettingsApp.shadowRoot!.querySelector('app-management-window-mode-item')!;
     assertTrue(!!windowModeItem);
     assertEquals(windowModeItem.app.windowMode, WindowMode.kWindow);
 

@@ -28,12 +28,6 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
       loginModeLabel: String,
 
       app: Object,
-
-      available_: {
-        type: Boolean,
-        computed: 'isAvailable_(app)',
-        reflectToAttribute: true,
-      },
     };
   }
 
@@ -46,16 +40,8 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
     this.addEventListener('change', this.toggleOsLoginMode_);
   }
 
-  private isAvailable_(app: App): boolean {
-    if (app === undefined) {
-      return false;
-    }
-    assert(app);
-    return app.runOnOsLogin !== undefined;
-  }
-
   private isManaged_(app: App): boolean {
-    if (app === undefined || !this.isAvailable_(app)) {
+    if (app === undefined) {
       return false;
     }
     assert(app);
@@ -66,7 +52,6 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
     }
     return false;
   }
-
 
   private getValue_(app: App): boolean {
     if (app === undefined) {
@@ -88,7 +73,7 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
         .querySelector<AppManagementToggleRowElement>('#toggle-row')!.click();
   }
 
-  toggleOsLoginMode_() {
+  private toggleOsLoginMode_() {
     assert(this.app);
     const currentRunOnOsLoginData = this.app.runOnOsLogin;
     if (currentRunOnOsLoginData) {
@@ -104,12 +89,12 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
           this.app.id,
           newRunOnOsLoginMode,
       );
-      const booleanWindowMode =
+      const booleanRunOnOsLoginMode =
           this.getRunOnOsLoginModeBoolean(newRunOnOsLoginMode);
-      const windowModeChangeAction = booleanWindowMode ?
+      const runOnOsLoginModeChangeAction = booleanRunOnOsLoginMode ?
           AppManagementUserAction.RunOnOsLoginModeTurnedOn :
           AppManagementUserAction.RunOnOsLoginModeTurnedOff;
-      recordAppManagementUserAction(this.app.type, windowModeChangeAction);
+      recordAppManagementUserAction(this.app.type, runOnOsLoginModeChangeAction);
     }
   }
 

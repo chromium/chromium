@@ -30,6 +30,11 @@ export class WebAppSettingsAppElement extends PolymerElement {
   static get properties() {
     return {
       app_: Object,
+      hidden: {
+        type: Boolean,
+        computed: 'appUnready_(app_)',
+        reflectToAttribute: true
+      },
       iconUrl_: {type: String, computed: 'getAppIcon_(app_)'},
       showSearch_: {type: Boolean, value: false, readonly: true},
     };
@@ -68,6 +73,10 @@ export class WebAppSettingsAppElement extends PolymerElement {
 
   private getAppIcon_(app: App|null): string {
     return app ? getAppIcon(app) : '';
+  }
+
+  private appUnready_(app: App|null): Boolean {
+    return !app;
   }
 }
 
