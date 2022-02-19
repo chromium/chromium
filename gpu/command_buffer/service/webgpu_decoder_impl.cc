@@ -1059,6 +1059,12 @@ void WebGPUDecoderImpl::DoRequestDevice(
   if (request_device_properties.depthClamping) {
     required_features.push_back(WGPUFeatureName_DepthClamping);
   }
+  if (request_device_properties.depth24UnormStencil8) {
+    required_features.push_back(WGPUFeatureName_Depth24UnormStencil8);
+  }
+  if (request_device_properties.depth32FloatStencil8) {
+    required_features.push_back(WGPUFeatureName_Depth32FloatStencil8);
+  }
   if (request_device_properties.invalidFeature) {
     // Pass something invalid.
     required_features.push_back(static_cast<WGPUFeatureName>(-1));

@@ -46,6 +46,10 @@ WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
       feature_set.Contains("timestamp-query");
   requested_device_properties.depthClamping =
       feature_set.Contains("depth-clamping");
+  requested_device_properties.depth24UnormStencil8 =
+      feature_set.Contains("depth24unorm-stencil8");
+  requested_device_properties.depth32FloatStencil8 =
+      feature_set.Contains("depth32float-stencil8");
 
   return requested_device_properties;
 }
@@ -143,6 +147,12 @@ void GPUAdapter::InitializeFeatureNameList() {
   }
   if (adapter_properties_.depthClamping) {
     features_->AddFeatureName("depth-clamping");
+  }
+  if (adapter_properties_.depth24UnormStencil8) {
+    features_->AddFeatureName("depth24unorm-stencil8");
+  }
+  if (adapter_properties_.depth32FloatStencil8) {
+    features_->AddFeatureName("depth32float-stencil8");
   }
 }
 
