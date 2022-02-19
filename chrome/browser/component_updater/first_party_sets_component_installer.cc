@@ -19,12 +19,9 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
-#include "chrome/browser/first_party_sets/first_party_sets_util.h"
+#include "chrome/browser/first_party_sets/first_party_sets_settings.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/cookie_util.h"
@@ -62,7 +59,7 @@ base::FilePath& GetConfigPathInstance() {
 }
 
 base::TaskPriority GetTaskPriority() {
-  return FirstPartySetsUtil::GetInstance()->IsFirstPartySetsEnabled()
+  return FirstPartySetsSettings::Get()->IsFirstPartySetsEnabled()
              ? base::TaskPriority::USER_BLOCKING
              : base::TaskPriority::BEST_EFFORT;
 }
@@ -74,7 +71,7 @@ base::TaskPriority GetTaskPriority() {
 // If the component has been installed and can be read, we pass the component
 // file; otherwise, we pass an invalid file.
 void SetFirstPartySetsConfig(SetsReadyOnceCallback on_sets_ready) {
-  if (!FirstPartySetsUtil::GetInstance()->IsFirstPartySetsEnabled() ||
+  if (!FirstPartySetsSettings::Get()->IsFirstPartySetsEnabled() ||
       on_sets_ready.is_null()) {
     return;
   }

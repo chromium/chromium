@@ -16,8 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
-#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
-#include "chrome/browser/first_party_sets/first_party_sets_util.h"
+#include "chrome/browser/first_party_sets/first_party_sets_settings.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/mock_component_updater_service.h"
@@ -46,7 +45,7 @@ class FirstPartySetsComponentInstallerTest : public ::testing::Test {
  public:
   FirstPartySetsComponentInstallerTest() {
     CHECK(component_install_dir_.CreateUniqueTempDir());
-    FirstPartySetsUtil::GetInstance()->ResetForTesting();
+    FirstPartySetsSettings::Get()->ResetForTesting();
   }
 
   void TearDown() override {

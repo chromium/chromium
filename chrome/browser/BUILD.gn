@@ -517,6 +517,8 @@ static_library("browser") {
     "file_util_service.h",
     "first_party_sets/first_party_sets_pref_names.cc",
     "first_party_sets/first_party_sets_pref_names.h",
+    "first_party_sets/first_party_sets_settings.cc",
+    "first_party_sets/first_party_sets_settings.h",
     "first_party_sets/first_party_sets_util.cc",
     "first_party_sets/first_party_sets_util.h",
     "flag_descriptions.cc",

@@ -52,8 +52,7 @@
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
-#include "chrome/browser/first_party_sets/first_party_sets_util.h"
+#include "chrome/browser/first_party_sets/first_party_sets_settings.h"
 #include "chrome/browser/font_family_cache.h"
 #include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
@@ -6393,7 +6392,7 @@ bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
 }
 
 bool ChromeContentBrowserClient::IsFirstPartySetsEnabled() {
-  return FirstPartySetsUtil::GetInstance()->IsFirstPartySetsEnabled();
+  return FirstPartySetsSettings::Get()->IsFirstPartySetsEnabled();
 }
 
 content::mojom::AlternativeErrorPageOverrideInfoPtr
