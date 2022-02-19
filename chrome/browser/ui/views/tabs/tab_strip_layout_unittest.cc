@@ -80,7 +80,7 @@ std::vector<gfx::Rect> CalculateTabBounds(TestCase test_case) {
   }
 
   return CalculateTabBounds(layout_constants, tab_states,
-                            test_case.tabstrip_width, absl::nullopt);
+                            test_case.tabstrip_width);
 }
 
 }  // namespace

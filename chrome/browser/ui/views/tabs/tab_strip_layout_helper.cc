@@ -124,26 +124,6 @@ void TabStripLayoutHelper::RemoveTabAt(int model_index, Tab* tab) {
   animation->CompleteAnimation();
 }
 
-void TabStripLayoutHelper::EnterTabClosingMode(int available_width) {
-  if (!WidthsConstrainedForClosingMode()) {
-    tab_width_override_ = CalculateTabWidthOverride(
-        GetTabLayoutConstants(), GetCurrentTabWidthConstraints(),
-        available_width);
-    tabstrip_width_override_ = available_width;
-  }
-}
-
-absl::optional<int> TabStripLayoutHelper::ExitTabClosingMode() {
-  if (!WidthsConstrainedForClosingMode())
-    return absl::nullopt;
-
-  int available_width = CalculateIdealBounds(absl::nullopt).back().right();
-  tab_width_override_.reset();
-  tabstrip_width_override_.reset();
-
-  return available_width;
-}
-
 void TabStripLayoutHelper::OnTabDestroyed(Tab* tab) {
   auto it =
       std::find_if(slots_.begin(), slots_.end(), [tab](const TabSlot& slot) {
@@ -272,9 +252,7 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
 
 std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
     absl::optional<int> available_width) {
-  absl::optional<int> tabstrip_width = tabstrip_width_override_.has_value()
-                                           ? tabstrip_width_override_
-                                           : available_width;
+  absl::optional<int> tabstrip_width = available_width;
 
   const int active_tab_model_index = controller_->GetActiveIndex();
   const int active_tab_slot_index =
@@ -307,8 +285,7 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
                                              layout_constants, size_info));
   }
 
-  return CalculateTabBounds(layout_constants, tab_widths, tabstrip_width,
-                            tab_width_override_);
+  return CalculateTabBounds(layout_constants, tab_widths, tabstrip_width);
 }
 
 int TabStripLayoutHelper::GetSlotIndexForExistingTab(int model_index) const {
@@ -429,11 +406,6 @@ void TabStripLayoutHelper::UpdateCachedTabWidth(int tab_index,
     active_tab_width_ = tab_width;
   else
     inactive_tab_width_ = tab_width;
-}
-
-bool TabStripLayoutHelper::WidthsConstrainedForClosingMode() {
-  return tab_width_override_.has_value() ||
-         tabstrip_width_override_.has_value();
 }
 
 bool TabStripLayoutHelper::SlotIsCollapsedTab(int i) const {

@@ -2170,7 +2170,6 @@ void TabStrip::AnimateToIdealBounds() {
 void TabStrip::ExitTabClosingMode() {
   in_tab_close_ = false;
   override_available_width_for_tabs_.reset();
-  tab_container_->layout_helper()->ExitTabClosingMode();
 }
 
 bool TabStrip::ShouldHighlightCloseButtonAfterRemove() {
