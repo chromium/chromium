@@ -181,6 +181,13 @@ class NET_EXPORT HostCache {
     void set_error(int error) { error_ = error; }
     absl::optional<std::vector<HostResolverEndpointResult>> GetEndpoints()
         const;
+    const std::vector<IPEndPoint>* ip_endpoints() const {
+      return base::OptionalOrNullptr(ip_endpoints_);
+    }
+    void set_ip_endpoints(
+        absl::optional<std::vector<IPEndPoint>> ip_endpoints) {
+      ip_endpoints_ = std::move(ip_endpoints);
+    }
     const std::set<std::string>* aliases() const {
       return base::OptionalOrNullptr(aliases_);
     }

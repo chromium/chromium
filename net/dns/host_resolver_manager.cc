@@ -175,8 +175,8 @@ enum DnsResolveStatus {
 // For more details: https://www.icann.org/news/announcement-2-2014-08-01-en
 const uint8_t kIcanNameCollisionIp[] = {127, 0, 53, 53};
 
-bool ContainsIcannNameCollisionIp(const AddressList& addr_list) {
-  for (const auto& endpoint : addr_list) {
+bool ContainsIcannNameCollisionIp(const std::vector<IPEndPoint>& endpoints) {
+  for (const auto& endpoint : endpoints) {
     const IPAddress& addr = endpoint.address();
     if (addr.IsIPv4() && IPAddressStartsWith(addr, kIcanNameCollisionIp)) {
       return true;
@@ -880,7 +880,7 @@ class HostResolverManager::RequestImpl
     DCHECK(!fixed_up_dns_alias_results_.has_value());
 
     if (results_.value().legacy_addresses().has_value()) {
-      DCHECK(!results_.value().GetEndpoints());
+      DCHECK(!results_.value().ip_endpoints());
       legacy_address_results_ = results_.value().legacy_addresses();
       endpoint_results_ = HostResolver::AddressListToEndpointResults(
           legacy_address_results_.value());
@@ -1738,29 +1738,30 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     DCHECK(saved_results_.has_value());
     HostCache::Entry results = std::move(*saved_results_);
 
-    // If there are multiple addresses, and at least one is IPv6, need to
-    // sort them.
-    bool at_least_one_ipv6_address =
-        results.legacy_addresses() &&
-        !results.legacy_addresses().value().empty() &&
-        (results.legacy_addresses().value()[0].GetFamily() ==
-             ADDRESS_FAMILY_IPV6 ||
-         std::any_of(results.legacy_addresses().value().begin(),
-                     results.legacy_addresses().value().end(), [](auto& e) {
-                       return e.GetFamily() == ADDRESS_FAMILY_IPV6;
-                     }));
-
-    if (at_least_one_ipv6_address) {
-      // Sort addresses if needed.  Sort could complete synchronously.
-      std::vector<IPEndPoint> endpoints =
-          results.legacy_addresses().value().endpoints();
-      client_->GetAddressSorter()->Sort(
-          endpoints,
-          base::BindOnce(&DnsTask::OnSortComplete, AsWeakPtr(),
-                         tick_clock_->NowTicks(), std::move(results), secure_));
-      return;
+    absl::optional<std::vector<IPEndPoint>> ip_endpoints;
+    if (results.legacy_addresses().has_value()) {
+      ip_endpoints = results.legacy_addresses().value().endpoints();
+    } else {
+      ip_endpoints = base::OptionalFromPtr(results.ip_endpoints());
     }
 
+    if (ip_endpoints.has_value()) {
+      // If there are multiple addresses, and at least one is IPv6, need to
+      // sort them.
+      bool at_least_one_ipv6_address = base::ranges::any_of(
+          ip_endpoints.value(),
+          [](auto& e) { return e.GetFamily() == ADDRESS_FAMILY_IPV6; });
+
+      if (at_least_one_ipv6_address) {
+        // Sort addresses if needed.  Sort could complete synchronously.
+        client_->GetAddressSorter()->Sort(
+            ip_endpoints.value(),
+            base::BindOnce(&DnsTask::OnSortComplete, AsWeakPtr(),
+                           tick_clock_->NowTicks(), std::move(results),
+                           secure_));
+        return;
+      }
+    }
     OnSuccess(std::move(results));
   }
 
@@ -1769,14 +1770,16 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                       bool secure,
                       bool success,
                       std::vector<IPEndPoint> sorted) {
-    DCHECK(results.legacy_addresses().has_value());
-    AddressList sorted_list;
-    for (IPEndPoint& endpoint : sorted) {
-      sorted_list.push_back(std::move(endpoint));
-    }
-    sorted_list.SetDnsAliases(results.legacy_addresses()->dns_aliases());
+    if (results.legacy_addresses().has_value()) {
+      AddressList sorted_list;
+      sorted_list.endpoints() = std::move(sorted);
+      sorted_list.SetDnsAliases(results.legacy_addresses()->dns_aliases());
 
-    results.set_legacy_addresses(std::move(sorted_list));
+      results.set_legacy_addresses(std::move(sorted_list));
+    } else {
+      DCHECK(results.ip_endpoints());
+      results.set_ip_endpoints(std::move(sorted));
+    }
 
     if (!success) {
       OnFailure(ERR_DNS_SORT_ERROR, results.GetOptionalTtl());
@@ -1784,7 +1787,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     }
 
     // AddressSorter prunes unusable destinations.
-    if (results.legacy_addresses().value().empty() &&
+    if (results.legacy_addresses().value_or(AddressList()).empty() &&
+        (!results.ip_endpoints() || results.ip_endpoints()->empty()) &&
         results.text_records().value_or(std::vector<std::string>()).empty() &&
         results.hostnames().value_or(std::vector<HostPortPair>()).empty()) {
       LOG(WARNING) << "Address list empty after RFC3484 sort";
@@ -2491,7 +2495,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       resolver_->OnFallbackResolve(dns_task_error_);
     }
 
-    if (ContainsIcannNameCollisionIp(addr_list))
+    if (ContainsIcannNameCollisionIp(addr_list.endpoints()))
       net_error = ERR_ICANN_NAME_COLLISION;
 
     base::TimeDelta ttl = base::Seconds(kNegativeCacheEntryTTLSeconds);
@@ -2608,7 +2612,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     DCHECK(!key_.query_types.Has(DnsQueryType::UNSPECIFIED));
     if (HasAddressType(key_.query_types) && results.error() == OK &&
         (!results.legacy_addresses() ||
-         results.legacy_addresses().value().empty())) {
+         results.legacy_addresses().value().empty()) &&
+        (!results.ip_endpoints() || results.ip_endpoints()->empty())) {
       results.set_error(ERR_NAME_NOT_RESOLVED);
     }
 
@@ -2631,8 +2636,11 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     base::TimeDelta bounded_ttl =
         std::max(results.ttl(), base::Seconds(kMinimumTTLSeconds));
 
-    if (results.legacy_addresses() &&
-        ContainsIcannNameCollisionIp(results.legacy_addresses().value())) {
+    if ((results.legacy_addresses() &&
+         ContainsIcannNameCollisionIp(
+             results.legacy_addresses().value().endpoints())) ||
+        (results.ip_endpoints() &&
+         ContainsIcannNameCollisionIp(*results.ip_endpoints()))) {
       CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION);
       return;
     }
@@ -2697,7 +2705,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     HostCache::Entry results = mdns_task_->GetResults();
     if (results.legacy_addresses() &&
-        ContainsIcannNameCollisionIp(results.legacy_addresses().value())) {
+        ContainsIcannNameCollisionIp(
+            results.legacy_addresses().value().endpoints())) {
       CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION);
     } else {
       // MDNS uses a separate cache, so skip saving result to cache.
