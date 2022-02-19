@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL The table cell nowrap minimum width calculation quirk, basic assert_equals: quirks mode expected "10px" but got "2px"
-Harness: the test ran to completion.
-
