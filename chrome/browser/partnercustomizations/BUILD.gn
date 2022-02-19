@@ -5,31 +5,26 @@
 import("//build/config/android/rules.gni")
 
 android_library("delegate_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegate.java" ]
-  jar_excluded_patterns = [ "*/CustomizationProviderDelegateImpl.class" ]
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-}
+  sources = [
+    "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegate.java",
+    "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegateImpl.java",
+    "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegateUpstreamImpl.java",
+  ]
 
-android_library("delegate_upstream_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegateUpstreamImpl.java" ]
-  jar_excluded_patterns = [ "*/CustomizationProviderDelegateImpl.class" ]
   deps = [
-    ":delegate_java",
     "//base:base_java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/preferences:java",
     "//components/embedder_support/android:util_java",
     "//components/version_info/android:version_constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//ui/android:ui_java",
   ]
+
+  jar_excluded_patterns = [ "*/CustomizationProviderDelegateImpl.class" ]
 }
 
 android_library("delegate_public_impl_java") {
   sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/CustomizationProviderDelegateImpl.java" ]
   deps = [
     ":delegate_java",
-    ":delegate_upstream_impl_java",
     "//base:base_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
