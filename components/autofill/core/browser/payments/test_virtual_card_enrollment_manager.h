@@ -59,6 +59,7 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
       raw_ptr<PrefService> user_prefs,
       base::OnceCallback<void(const std::string&)> callback) override;
   void OnDidGetUpdateVirtualCardEnrollmentResponse(
+      VirtualCardEnrollmentRequestType type,
       AutofillClient::PaymentsRpcResult result) override;
   void Reset() override;
   void ShowVirtualCardEnrollBubble() override;

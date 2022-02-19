@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -125,7 +126,8 @@ void TestPaymentsClient::UpdateVirtualCardEnrollment(
         request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
   update_virtual_card_enrollment_request_details_ = std::move(request_details);
-  std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess);
+  std::move(callback).Run(update_virtual_card_enrollment_result_.value_or(
+      AutofillClient::PaymentsRpcResult::kSuccess));
 }
 
 void TestPaymentsClient::ShouldReturnUnmaskDetailsImmediately(
