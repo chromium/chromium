@@ -5,6 +5,7 @@
 #include "content/public/test/attribution_simulator.h"
 
 #include <memory>
+#include <ostream>
 #include <sstream>
 #include <utility>
 
@@ -227,17 +228,21 @@ class AttributionEventHandler : public AttributionManager::Observer {
 
 }  // namespace
 
-base::Value RunAttributionSimulationOrExit(
+base::Value RunAttributionSimulation(
     base::Value input,
-    const AttributionSimulationOptions& options) {
+    const AttributionSimulationOptions& options,
+    std::ostream& error_stream) {
   // Prerequisites for using an environment with mock time.
   content::BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  std::vector<AttributionSimulationEventAndValue> events =
-      ParseAttributionSimulationInputOrExit(std::move(input),
-                                            base::Time::Now());
-  base::ranges::stable_sort(events, /*comp=*/{}, &GetEventTime);
+  absl::optional<AttributionSimulationEventAndValues> events =
+      ParseAttributionSimulationInput(std::move(input), base::Time::Now(),
+                                      error_stream);
+  if (!events)
+    return base::Value();
+
+  base::ranges::stable_sort(*events, /*comp=*/{}, &GetEventTime);
 
   // Avoid creating an on-disk sqlite DB.
   content::AttributionManagerImpl::RunInMemoryForTesting();
@@ -264,7 +269,7 @@ base::Value RunAttributionSimulationOrExit(
   AttributionEventHandler handler(manager.get(), rejected_sources,
                                   rejected_triggers);
 
-  for (auto& event : events) {
+  for (auto& event : *events) {
     task_environment.FastForwardBy(GetEventTime(event) - base::Time::Now());
     handler.Handle(std::move(event));
   }

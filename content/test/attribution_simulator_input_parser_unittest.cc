@@ -5,6 +5,7 @@
 #include "content/test/attribution_simulator_input_parser.h"
 
 #include <ostream>
+#include <sstream>
 #include <vector>
 
 #include "base/test/values_test_util.h"
@@ -16,7 +17,6 @@
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -36,7 +36,9 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::HasSubstr;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::SizeIs;
 
@@ -52,10 +54,12 @@ TEST(AttributionSimulatorInputParserTest, EmptyInputParses) {
 
   for (const char* json : kTestCases) {
     base::Value value = base::test::ParseJson(json);
-    EXPECT_THAT(
-        ParseAttributionSimulationInputOrExit(std::move(value), kOffsetTime),
-        IsEmpty())
+    std::stringstream error_stream;
+    EXPECT_THAT(ParseAttributionSimulationInput(std::move(value), kOffsetTime,
+                                                error_stream),
+                Optional(IsEmpty()))
         << json;
+    EXPECT_THAT(error_stream.str(), IsEmpty()) << json;
   }
 }
 
@@ -98,9 +102,11 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
   ]})json";
 
   base::Value value = base::test::ParseJson(kJson);
+  std::stringstream error_stream;
   EXPECT_THAT(
-      ParseAttributionSimulationInputOrExit(std::move(value), kOffsetTime),
-      ElementsAre(
+      ParseAttributionSimulationInput(std::move(value), kOffsetTime,
+                                      error_stream),
+      Optional(ElementsAre(
           Pair(SourceBuilder(kOffsetTime + base::Seconds(1643235574))
                    .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
                    .SetReportingOrigin(
@@ -143,7 +149,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetPriority(0)             // default
                   .SetDebugKey(absl::nullopt)  // default
                   .Build(),
-              _)));
+              _))));
+  EXPECT_THAT(error_stream.str(), IsEmpty());
 }
 
 TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
@@ -169,9 +176,11 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
   ]})json";
 
   base::Value value = base::test::ParseJson(kJson);
+  std::stringstream error_stream;
   EXPECT_THAT(
-      ParseAttributionSimulationInputOrExit(std::move(value), kOffsetTime),
-      ElementsAre(
+      ParseAttributionSimulationInput(std::move(value), kOffsetTime,
+                                      error_stream),
+      Optional(ElementsAre(
           Pair(
               AttributionTriggerAndTime{
                   .trigger =
@@ -205,7 +214,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           .Build(),
                   .time = kOffsetTime + base::Seconds(1643235575),
               },
-              _)));
+              _))));
+  EXPECT_THAT(error_stream.str(), IsEmpty());
 }
 
 TEST(AttributionSimulatorInputParserTest, ValidSourceAndTriggerParses) {
@@ -229,35 +239,36 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceAndTriggerParses) {
   })json";
 
   base::Value value = base::test::ParseJson(kJson);
-  EXPECT_THAT(
-      ParseAttributionSimulationInputOrExit(std::move(value), kOffsetTime),
-      SizeIs(2));
+  std::stringstream error_stream;
+  EXPECT_THAT(ParseAttributionSimulationInput(std::move(value), kOffsetTime,
+                                              error_stream),
+              Optional(SizeIs(2)));
+  EXPECT_THAT(error_stream.str(), IsEmpty());
 }
 
-struct DeathTestCase {
-  const char* expected_failure;
+struct ParseErrorTestCase {
+  const char* expected_failure_substr;
   const char* json;
 };
 
-// Death tests are slow, so use a parameterized test fixture instead of a loop
-// over test cases so that incremental progress is made and tests can be
-// parallelized.
-class AttributionSimulatorInputParserDeathTest
-    : public testing::TestWithParam<DeathTestCase> {};
+class AttributionSimulatorInputParseErrorTest
+    : public testing::TestWithParam<ParseErrorTestCase> {};
 
-TEST_P(AttributionSimulatorInputParserDeathTest, InvalidInputExits) {
-  const DeathTestCase& test_case = GetParam();
-  EXPECT_DEATH_IF_SUPPORTED(
-      {
-        base::Value value = base::test::ParseJson(test_case.json);
-        ParseAttributionSimulationInputOrExit(std::move(value), kOffsetTime);
-      },
-      test_case.expected_failure);
+TEST_P(AttributionSimulatorInputParseErrorTest, InvalidInputFails) {
+  const ParseErrorTestCase& test_case = GetParam();
+
+  base::Value value = base::test::ParseJson(test_case.json);
+  std::stringstream error_stream;
+  EXPECT_EQ(ParseAttributionSimulationInput(std::move(value), kOffsetTime,
+                                            error_stream),
+            absl::nullopt);
+
+  EXPECT_THAT(error_stream.str(), HasSubstr(test_case.expected_failure_substr));
 }
 
-const DeathTestCase kSourceDeathTestCases[] = {
+const ParseErrorTestCase kSourceParseErrorTestCases[] = {
     {
-        "key not found: source_type",
+        "sources[0]: source_type",
         R"json({"sources": [{
           "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
@@ -269,7 +280,7 @@ const DeathTestCase kSourceDeathTestCases[] = {
         }]})json",
     },
     {
-        "key not found: source_time",
+        "sources[0]: source_time",
         R"json({"sources": [{
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
@@ -281,7 +292,7 @@ const DeathTestCase kSourceDeathTestCases[] = {
         }]})json",
     },
     {
-        "key not found: reporting_origin",
+        "sources[0]: reporting_origin",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -293,7 +304,7 @@ const DeathTestCase kSourceDeathTestCases[] = {
         }]})json",
     },
     {
-        "key not found: source_origin",
+        "sources[0]: source_origin",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -305,7 +316,7 @@ const DeathTestCase kSourceDeathTestCases[] = {
         }]})json",
     },
     {
-        "key not found: registration_config",
+        "sources[0]: registration_config",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -314,7 +325,7 @@ const DeathTestCase kSourceDeathTestCases[] = {
         }]})json",
     },
     {
-        "key not found: source_event_id",
+        "sources[0]: source_event_id",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -326,7 +337,7 @@ const DeathTestCase kSourceDeathTestCases[] = {
         }]})json",
     },
     {
-        "key not found: destination",
+        "sources[0]: destination",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -338,7 +349,7 @@ const DeathTestCase kSourceDeathTestCases[] = {
         }]})json",
     },
     {
-        "invalid source type: NAVIGATION",
+        "sources[0]: source_type",
         R"json({"sources": [{
           "source_type": "NAVIGATION",
           "source_time": 1643235574,
@@ -351,7 +362,7 @@ const DeathTestCase kSourceDeathTestCases[] = {
         }]})json",
     },
     {
-        "expiry must be >= 0: -5",
+        "sources[0]: expiry",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -365,7 +376,7 @@ const DeathTestCase kSourceDeathTestCases[] = {
         }]})json",
     },
     {
-        "invalid int64: x",
+        "sources[0]: priority",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -379,7 +390,7 @@ const DeathTestCase kSourceDeathTestCases[] = {
         }]})json",
     },
     {
-        "invalid uint64: x",
+        "sources[0]: source_event_id",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -391,15 +402,19 @@ const DeathTestCase kSourceDeathTestCases[] = {
           }
         }]})json",
     },
+    {
+        "sources: must be a list",
+        R"json({"sources": ""})json",
+    },
 };
 
 INSTANTIATE_TEST_SUITE_P(AttributionSimulatorInputParserInvalidSources,
-                         AttributionSimulatorInputParserDeathTest,
-                         ::testing::ValuesIn(kSourceDeathTestCases));
+                         AttributionSimulatorInputParseErrorTest,
+                         ::testing::ValuesIn(kSourceParseErrorTestCases));
 
-const DeathTestCase kTriggerDeathTestCases[] = {
+const ParseErrorTestCase kTriggerParseErrorTestCases[] = {
     {
-        "key not found: registration_config",
+        "triggers[0]: registration_config",
         R"json({"triggers": [{
           "trigger_time": 1643235576,
           "reporting_origin": "https://a.r.test",
@@ -407,7 +422,7 @@ const DeathTestCase kTriggerDeathTestCases[] = {
         }]})json",
     },
     {
-        "key not found: trigger_time",
+        "triggers[0]: trigger_time",
         R"json({"triggers": [{
           "reporting_origin": "https://a.r.test",
           "destination": " https://a.d1.test",
@@ -415,7 +430,7 @@ const DeathTestCase kTriggerDeathTestCases[] = {
         }]})json",
     },
     {
-        "key not found: destination",
+        "triggers[0]: destination",
         R"json({"triggers": [{
           "trigger_time": 1643235576,
           "reporting_origin": "https://a.r.test",
@@ -423,18 +438,22 @@ const DeathTestCase kTriggerDeathTestCases[] = {
         }]})json",
     },
     {
-        "key not found: reporting_origin",
+        "triggers[0]: reporting_origin",
         R"json({"triggers": [{
           "trigger_time": 1643235576,
           "destination": " https://a.d1.test",
           "registration_config": {}
         }]})json",
+    },
+    {
+        "triggers: must be a list",
+        R"json({"triggers": ""})json",
     },
 };
 
 INSTANTIATE_TEST_SUITE_P(AttributionSimulatorInputParserInvalidTriggers,
-                         AttributionSimulatorInputParserDeathTest,
-                         ::testing::ValuesIn(kTriggerDeathTestCases));
+                         AttributionSimulatorInputParseErrorTest,
+                         ::testing::ValuesIn(kTriggerParseErrorTestCases));
 
 }  // namespace
 }  // namespace content

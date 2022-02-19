@@ -229,8 +229,10 @@ int ProcessJsonString(const std::string& json_input,
   if (copy_input_to_output)
     input_copy = result.value->Clone();
 
-  base::Value output = content::RunAttributionSimulationOrExit(
-      std::move(*result.value), options);
+  base::Value output = content::RunAttributionSimulation(
+      std::move(*result.value), options, std::cerr);
+  if (output.type() == base::Value::Type::NONE)
+    return 1;
 
   if (copy_input_to_output)
     output.SetKey("input", std::move(input_copy));

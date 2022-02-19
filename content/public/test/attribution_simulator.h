@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_TEST_ATTRIBUTION_SIMULATOR_H_
 #define CONTENT_PUBLIC_TEST_ATTRIBUTION_SIMULATOR_H_
 
+#include <iosfwd>
+
 #include "content/public/browser/attribution_reporting.h"
 
 namespace base {
@@ -28,12 +30,14 @@ struct AttributionSimulationOptions {
 
 // Simulates the Attribution Reporting API for a single user on sources and
 // triggers specified in `input`. Returns the generated reports, if any, as a
-// JSON document.
+// JSON document. On error, writes to `error_stream` and returns
+// `base::ValueType::NONE`.
 //
 // Exits if `input` cannot be parsed.
-base::Value RunAttributionSimulationOrExit(
+base::Value RunAttributionSimulation(
     base::Value input,
-    const AttributionSimulationOptions& options);
+    const AttributionSimulationOptions& options,
+    std::ostream& error_stream);
 
 }  // namespace content
 

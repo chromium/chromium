@@ -5,6 +5,7 @@
 #ifndef CONTENT_TEST_ATTRIBUTION_SIMULATOR_INPUT_PARSER_H_
 #define CONTENT_TEST_ATTRIBUTION_SIMULATOR_INPUT_PARSER_H_
 
+#include <iosfwd>
 #include <utility>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
@@ -28,9 +30,13 @@ using AttributionSimulationEvent =
 using AttributionSimulationEventAndValue =
     std::pair<AttributionSimulationEvent, base::Value>;
 
-std::vector<AttributionSimulationEventAndValue>
-ParseAttributionSimulationInputOrExit(base::Value input,
-                                      base::Time offset_time);
+using AttributionSimulationEventAndValues =
+    std::vector<AttributionSimulationEventAndValue>;
+
+absl::optional<AttributionSimulationEventAndValues>
+ParseAttributionSimulationInput(base::Value input,
+                                base::Time offset_time,
+                                std::ostream& error_stream);
 
 }  // namespace content
 

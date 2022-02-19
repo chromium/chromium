@@ -4,6 +4,7 @@
 
 #include "content/public/test/attribution_simulator.h"
 
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -93,10 +94,10 @@ TEST_P(AttributionSimulatorImplTest, HasExpectedOutput) {
 
   const base::Value expected_output = ReadJsonFromFile(OutputPath(input_path));
 
-  base::Value output =
-      RunAttributionSimulationOrExit(std::move(input), options);
-
-  EXPECT_THAT(output, base::test::IsJson(expected_output));
+  std::stringstream error_stream;
+  EXPECT_THAT(RunAttributionSimulation(std::move(input), options, error_stream),
+              base::test::IsJson(expected_output));
+  EXPECT_EQ(error_stream.str(), "");
 }
 
 INSTANTIATE_TEST_SUITE_P(
