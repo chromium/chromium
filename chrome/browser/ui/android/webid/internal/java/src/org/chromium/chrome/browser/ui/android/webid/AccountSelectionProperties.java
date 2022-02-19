@@ -60,17 +60,17 @@ class AccountSelectionProperties {
         public enum HeaderType { AUTO_SIGN_IN, SIGN_IN, VERIFY }
         static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("close_on_click_listener");
-        static final ReadableObjectPropertyKey<String> FORMATTED_IDP_URL =
-                new ReadableObjectPropertyKey<>("formatted_idp_url");
-        static final ReadableObjectPropertyKey<String> FORMATTED_RP_URL =
-                new ReadableObjectPropertyKey<>("formatted_rp_url");
+        static final ReadableObjectPropertyKey<String> FORMATTED_IDP_ETLD_PLUS_ONE =
+                new ReadableObjectPropertyKey<>("formatted_idp_etld_plus_one");
+        static final ReadableObjectPropertyKey<String> FORMATTED_RP_ETLD_PLUS_ONE =
+                new ReadableObjectPropertyKey<>("formatted_rp_etld_plus_one");
         static final ReadableObjectPropertyKey<Bitmap> IDP_BRAND_ICON =
                 new ReadableObjectPropertyKey<>("brand_icon");
         static final ReadableObjectPropertyKey<HeaderType> TYPE =
                 new ReadableObjectPropertyKey<>("type");
 
-        static final PropertyKey[] ALL_KEYS = {
-                CLOSE_ON_CLICK_LISTENER, FORMATTED_IDP_URL, FORMATTED_RP_URL, IDP_BRAND_ICON, TYPE};
+        static final PropertyKey[] ALL_KEYS = {CLOSE_ON_CLICK_LISTENER, FORMATTED_IDP_ETLD_PLUS_ONE,
+                FORMATTED_RP_ETLD_PLUS_ONE, IDP_BRAND_ICON, TYPE};
 
         private HeaderProperties() {}
     }
@@ -81,7 +81,7 @@ class AccountSelectionProperties {
      */
     static class DataSharingConsentProperties {
         static class Properties {
-            public String mFormattedIdpUrl;
+            public String mFormattedIdpEtldPlusOne;
             public String mTermsOfServiceUrl;
             public String mPrivacyPolicyUrl;
         }

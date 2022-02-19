@@ -84,8 +84,8 @@ public class AccountSelectionIntegrationTest {
 
     private static final FakeTabCreator sTabCreator = new FakeTabCreator();
 
-    private static final GURL EXAMPLE_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-    private static final GURL TEST_URL_1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private static final String EXAMPLE_ETLD_PLUS_ONE = "example.com";
+    private static final String TEST_ETLD_PLUS_ONE_1 = "one.com";
     private static final GURL TEST_PROFILE_PIC =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
     private static final GURL TEST_URL_TERMS_OF_SERVICE =
@@ -130,8 +130,8 @@ public class AccountSelectionIntegrationTest {
     @MediumTest
     public void testBackDismissesAndCallsCallback() {
         runOnUiThreadBlocking(() -> {
-            mAccountSelection.showAccounts(EXAMPLE_URL, TEST_URL_1, Arrays.asList(ANA, BOB),
-                    IDP_METADATA, CLIENT_ID_METADATA, false);
+            mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
+                    Arrays.asList(ANA, BOB), IDP_METADATA, CLIENT_ID_METADATA, false);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -145,8 +145,8 @@ public class AccountSelectionIntegrationTest {
     @MediumTest
     public void testClickConsentLinks() {
         runOnUiThreadBlocking(() -> {
-            mAccountSelection.showAccounts(EXAMPLE_URL, TEST_URL_1, Arrays.asList(BOB),
-                    IDP_METADATA, CLIENT_ID_METADATA, false);
+            mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
+                    Arrays.asList(BOB), IDP_METADATA, CLIENT_ID_METADATA, false);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -189,8 +189,8 @@ public class AccountSelectionIntegrationTest {
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
         runOnUiThreadBlocking(() -> {
-            mAccountSelection.showAccounts(EXAMPLE_URL, TEST_URL_1, Arrays.asList(ANA, BOB),
-                    IDP_METADATA, CLIENT_ID_METADATA, false);
+            mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
+                    Arrays.asList(ANA, BOB), IDP_METADATA, CLIENT_ID_METADATA, false);
         });
         waitForEvent(mMockBridge).onDismissed();
         verify(mMockBridge, never()).onAccountSelected(any());

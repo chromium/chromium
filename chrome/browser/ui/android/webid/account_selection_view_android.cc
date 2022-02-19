@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/android/webid/account_selection_view_android.h"
 
 #include <memory>
-#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -114,8 +113,8 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 }
 
 void AccountSelectionViewAndroid::Show(
-    const GURL& rp_url,
-    const GURL& idp_url,
+    const std::string& rp_etld_plus_one,
+    const std::string& idp_etld_plus_one,
     base::span<const Account> accounts,
     const content::IdentityProviderMetadata& idp_metadata,
     const content::ClientIdData& client_data,
@@ -138,8 +137,9 @@ void AccountSelectionViewAndroid::Show(
   ScopedJavaLocalRef<jobject> client_id_metadata_obj =
       ConvertToJavaClientIdMetadata(env, client_data);
   Java_AccountSelectionBridge_showAccounts(
-      env, java_object_internal_, url::GURLAndroid::FromNativeGURL(env, rp_url),
-      url::GURLAndroid::FromNativeGURL(env, idp_url), accounts_obj,
+      env, java_object_internal_,
+      ConvertUTF8ToJavaString(env, rp_etld_plus_one),
+      ConvertUTF8ToJavaString(env, idp_etld_plus_one), accounts_obj,
       idp_metadata_obj, client_id_metadata_obj,
       sign_in_mode == Account::SignInMode::kAuto);
 }

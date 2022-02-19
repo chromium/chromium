@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_WEBID_ACCOUNT_SELECTION_VIEW_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_WEBID_ACCOUNT_SELECTION_VIEW_ANDROID_H_
 
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
@@ -18,8 +20,8 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   ~AccountSelectionViewAndroid() override;
 
   // AccountSelectionView:
-  void Show(const GURL& rp_url,
-            const GURL& idp_url,
+  void Show(const std::string& rp_etld_plus_one,
+            const std::string& idp_etld_plus_one,
             base::span<const Account> accounts,
             const content::IdentityProviderMetadata& idp_metadata,
             const content::ClientIdData& client_data,

@@ -103,16 +103,16 @@ public class AccountSelectionViewTest {
             mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                            .with(HeaderProperties.FORMATTED_RP_URL, "www.example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_URL, "www.idp.org")
+                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
+                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
                             .build()));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         TextView title = mContentView.findViewById(R.id.header_title);
 
         assertEquals("Incorrect title",
-                mActivity.getString(R.string.account_selection_sheet_title_explicit,
-                        "www.example.org", "www.idp.org"),
+                mActivity.getString(
+                        R.string.account_selection_sheet_title_explicit, "example.org", "idp.org"),
                 title.getText());
     }
 
@@ -123,8 +123,8 @@ public class AccountSelectionViewTest {
             mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.VERIFY)
-                            .with(HeaderProperties.FORMATTED_RP_URL, "www.example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_URL, "www.idp.org")
+                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
+                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
                             .build()));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
@@ -219,31 +219,32 @@ public class AccountSelectionViewTest {
             mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.AUTO_SIGN_IN)
-                            .with(HeaderProperties.FORMATTED_RP_URL, "www.example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_URL, "www.idp.org")
+                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
+                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
                             .build()));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         TextView title = mContentView.findViewById(R.id.header_title);
 
         assertEquals("Incorrect title",
-                mActivity.getString(R.string.account_selection_sheet_title_auto, "www.example.org",
-                        "www.idp.org"),
+                mActivity.getString(
+                        R.string.account_selection_sheet_title_auto, "example.org", "idp.org"),
                 title.getText());
     }
 
     @Test
     @MediumTest
     public void testDataSharingConsentDisplayed() {
-        final String idpUrl = "www.idp.org";
+        final String idpEtldPlusOne = "idp.org";
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSheetItems.addAll(Collections.singletonList(buildDataSharingConsentItem(idpUrl)));
+            mSheetItems.addAll(
+                    Collections.singletonList(buildDataSharingConsentItem(idpEtldPlusOne)));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         assertNotNull(getAccounts().getChildAt(0));
         TextView consent = mContentView.findViewById(R.id.user_data_sharing_consent);
         String expectedSharingConsentText =
-                mActivity.getString(R.string.account_selection_data_sharing_consent, "www.idp.org");
+                mActivity.getString(R.string.account_selection_data_sharing_consent, "idp.org");
         expectedSharingConsentText = expectedSharingConsentText.replaceAll("<[^>]*>", "");
         // We use toString() here because otherwise getText() returns a
         // Spanned, which is not equal to the string we get from the resources.
@@ -328,10 +329,10 @@ public class AccountSelectionViewTest {
                         .build());
     }
 
-    private MVCListAdapter.ListItem buildDataSharingConsentItem(String idpUrl) {
+    private MVCListAdapter.ListItem buildDataSharingConsentItem(String idpEtldPlusOne) {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
-        properties.mFormattedIdpUrl = idpUrl;
+        properties.mFormattedIdpEtldPlusOne = idpEtldPlusOne;
         properties.mTermsOfServiceUrl = "https://rp.com/tos";
         properties.mPrivacyPolicyUrl = "https://rp.com/privacy";
 

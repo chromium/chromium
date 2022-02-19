@@ -29,7 +29,6 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,8 +52,8 @@ class AccountSelectionMediator {
     // proceed. Eventually this should be specified by IDPs.
     private static final int AUTO_SIGN_IN_CANCELLATION_TIMER_MS = 5000;
 
-    private GURL mRpUrl;
-    private GURL mIdpUrl;
+    private String mRpEtldPlusOne;
+    private String mIdpEtldPlusOne;
     private IdentityProviderMetadata mIdpMetadata;
     private ClientIdMetadata mClientMetadata;
 
@@ -96,21 +95,22 @@ class AccountSelectionMediator {
 
     private boolean handleBackPress() {
         if (mVisible && mSelectedAccount != null && mAccounts.size() != 1) {
-            showAccountsInternal(mRpUrl, mIdpUrl, mAccounts, /*selectedAccount=*/null, mIdpMetadata,
-                    mClientMetadata, /*isAutoSignIn=*/false);
+            showAccountsInternal(mRpEtldPlusOne, mIdpEtldPlusOne, mAccounts,
+                    /*selectedAccount=*/null, mIdpMetadata, mClientMetadata,
+                    /*isAutoSignIn=*/false);
             return true;
         }
         return false;
     }
 
     // This method should not be used when the VERIFY header is needed.
-    private void addHeader(
-            GURL rpUrl, GURL idpUrl, IdentityProviderMetadata idpMetadata, boolean isAutoSignIn) {
+    private void addHeader(String rpEtldPlusOne, String idpEtldPlusOne,
+            IdentityProviderMetadata idpMetadata, boolean isAutoSignIn) {
         HeaderType headerType = isAutoSignIn ? HeaderType.AUTO_SIGN_IN : HeaderType.SIGN_IN;
-        String formattedRpUrl =
-                UrlFormatter.formatUrlForSecurityDisplay(rpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-        String formattedIdpUrl =
-                UrlFormatter.formatUrlForSecurityDisplay(idpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String formattedRpEtldPlusOne = UrlFormatter.formatUrlForSecurityDisplay(
+                UrlFormatter.fixupUrl(rpEtldPlusOne), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String formattedIdpEtldPlusOne = UrlFormatter.formatUrlForSecurityDisplay(
+                UrlFormatter.fixupUrl(idpEtldPlusOne), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
         Runnable closeOnClickRunnable = () -> {
             onDismissed(BottomSheetController.StateChangeReason.NONE);
@@ -122,13 +122,14 @@ class AccountSelectionMediator {
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.IDP_BRAND_ICON, idpMetadata.getBrandIcon())
                         .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
-                        .with(HeaderProperties.FORMATTED_IDP_URL, formattedIdpUrl)
-                        .with(HeaderProperties.FORMATTED_RP_URL, formattedRpUrl)
+                        .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, formattedIdpEtldPlusOne)
+                        .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, formattedRpEtldPlusOne)
                         .with(HeaderProperties.TYPE, headerType)
                         .build()));
     }
 
-    private void addAccounts(GURL idpUrl, List<Account> accounts, boolean areAccountsClickable) {
+    private void addAccounts(
+            String idpEtldPlusOne, List<Account> accounts, boolean areAccountsClickable) {
         for (Account account : accounts) {
             final PropertyModel model = createAccountItem(account, areAccountsClickable);
             mSheetItems.add(new ListItem(ItemType.ACCOUNT, model));
@@ -141,7 +142,7 @@ class AccountSelectionMediator {
         mSheetItems.add(new ListItem(ItemType.AUTO_SIGN_IN_CANCEL_BUTTON, cancelBtnModel));
     }
 
-    private void addContinueButton(Account account, GURL idpUrl,
+    private void addContinueButton(Account account, String idpEtldPlusOne,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata) {
         // Shows the continue button for both sign-up and non auto-sign-in.
         final PropertyModel continueBtnModel = createContinueBtnItem(account, idpMetadata);
@@ -150,7 +151,7 @@ class AccountSelectionMediator {
         // Only show the user data sharing consent text for sign up.
         if (!account.isSignIn()) {
             mSheetItems.add(new ListItem(ItemType.DATA_SHARING_CONSENT,
-                    createDataSharingConsentItem(idpUrl, clientMetadata)));
+                    createDataSharingConsentItem(idpEtldPlusOne, clientMetadata)));
         }
     }
 
@@ -167,7 +168,7 @@ class AccountSelectionMediator {
                         .with(HeaderProperties.TYPE, HeaderType.VERIFY)
                         .build()));
 
-        addAccounts(mIdpUrl, Arrays.asList(account), /*areAccountsClickable=*/false);
+        addAccounts(mIdpEtldPlusOne, Arrays.asList(account), /*areAccountsClickable=*/false);
         showContent();
 
         // When TalkBack is enabled, updating |mSheetItems| clears the current item's accessibility
@@ -182,21 +183,21 @@ class AccountSelectionMediator {
         if (mVisible) hideContent();
     }
 
-    void showAccounts(GURL rpUrl, GURL idpUrl, List<Account> accounts,
+    void showAccounts(String rpEtldPlusOne, String idpEtldPlusOne, List<Account> accounts,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata,
             boolean isAutoSignIn) {
         Account selectedAccount = accounts.size() == 1 ? accounts.get(0) : null;
-        showAccountsInternal(rpUrl, idpUrl, accounts, selectedAccount, idpMetadata, clientMetadata,
-                isAutoSignIn);
+        showAccountsInternal(rpEtldPlusOne, idpEtldPlusOne, accounts, selectedAccount, idpMetadata,
+                clientMetadata, isAutoSignIn);
     }
 
-    private void showAccountsInternal(GURL rpUrl, GURL idpUrl, List<Account> accounts,
-            Account selectedAccount, IdentityProviderMetadata idpMetadata,
+    private void showAccountsInternal(String rpEtldPlusOne, String idpEtldPlusOne,
+            List<Account> accounts, Account selectedAccount, IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata, boolean isAutoSignIn) {
         mSheetItems.clear();
 
-        mRpUrl = rpUrl;
-        mIdpUrl = idpUrl;
+        mRpEtldPlusOne = rpEtldPlusOne;
+        mIdpEtldPlusOne = idpEtldPlusOne;
         mAccounts = accounts;
         mIdpMetadata = idpMetadata;
         mClientMetadata = clientMetadata;
@@ -206,8 +207,8 @@ class AccountSelectionMediator {
             accounts = Arrays.asList(selectedAccount);
         }
 
-        addHeader(rpUrl, idpUrl, idpMetadata, isAutoSignIn);
-        addAccounts(idpUrl, accounts, /*areAccountsClickable=*/mSelectedAccount == null);
+        addHeader(rpEtldPlusOne, idpEtldPlusOne, idpMetadata, isAutoSignIn);
+        addAccounts(idpEtldPlusOne, accounts, /*areAccountsClickable=*/mSelectedAccount == null);
 
         if (isAutoSignIn) {
             assert mSelectedAccount != null;
@@ -216,7 +217,7 @@ class AccountSelectionMediator {
             mAutoSignInTaskHandler.postDelayed(
                     () -> onAccountSelected(mSelectedAccount), AUTO_SIGN_IN_CANCELLATION_TIMER_MS);
         } else if (mSelectedAccount != null) {
-            addContinueButton(mSelectedAccount, idpUrl, idpMetadata, clientMetadata);
+            addContinueButton(mSelectedAccount, idpEtldPlusOne, idpMetadata, clientMetadata);
         }
 
         showContent();
@@ -275,8 +276,8 @@ class AccountSelectionMediator {
         if (!mVisible) return;
 
         if (mSelectedAccount == null && !selectedAccount.isSignIn()) {
-            showAccountsInternal(mRpUrl, mIdpUrl, mAccounts, selectedAccount, mIdpMetadata,
-                    mClientMetadata, /*isAutoSignIn=*/false);
+            showAccountsInternal(mRpEtldPlusOne, mIdpEtldPlusOne, mAccounts, selectedAccount,
+                    mIdpMetadata, mClientMetadata, /*isAutoSignIn=*/false);
             return;
         }
 
@@ -319,11 +320,12 @@ class AccountSelectionMediator {
                 .build();
     }
 
-    private PropertyModel createDataSharingConsentItem(GURL idpUrl, ClientIdMetadata metadata) {
+    private PropertyModel createDataSharingConsentItem(
+            String idpEtldPlusOne, ClientIdMetadata metadata) {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
-        properties.mFormattedIdpUrl =
-                UrlFormatter.formatUrlForSecurityDisplay(idpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        properties.mFormattedIdpEtldPlusOne = UrlFormatter.formatUrlForSecurityDisplay(
+                UrlFormatter.fixupUrl(idpEtldPlusOne), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         properties.mTermsOfServiceUrl = metadata.getTermsOfServiceUrl().getValidSpecOrEmpty();
         properties.mPrivacyPolicyUrl = metadata.getPrivacyPolicyUrl().getValidSpecOrEmpty();
 

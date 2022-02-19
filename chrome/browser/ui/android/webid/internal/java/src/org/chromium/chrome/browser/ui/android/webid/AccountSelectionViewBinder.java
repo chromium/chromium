@@ -193,8 +193,8 @@ class AccountSelectionViewBinder {
             int consentTextId = (privacyPolicySpan == null && termsOfServiceSpan == null)
                     ? R.string.account_selection_data_sharing_consent_no_links
                     : R.string.account_selection_data_sharing_consent;
-            String consentText = String.format(
-                    view.getContext().getString(consentTextId), properties.mFormattedIdpUrl);
+            String consentText = String.format(view.getContext().getString(consentTextId),
+                    properties.mFormattedIdpEtldPlusOne);
 
             // If the consent text includes the link for the privacy policy or the terms of service,
             // and there is no corresponding URL, remove the link tag.
@@ -296,13 +296,14 @@ class AccountSelectionViewBinder {
      * @param key The key of the property to be bound.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == HeaderProperties.FORMATTED_RP_URL || key == HeaderProperties.FORMATTED_IDP_URL
+        if (key == HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE
+                || key == HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE
                 || key == HeaderProperties.TYPE) {
             TextView headerTitleText = view.findViewById(R.id.header_title);
             HeaderProperties.HeaderType headerType = model.get(HeaderProperties.TYPE);
             String title = computeHeaderTitle(view.getResources(), headerType,
-                    model.get(HeaderProperties.FORMATTED_RP_URL),
-                    model.get(HeaderProperties.FORMATTED_IDP_URL));
+                    model.get(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE),
+                    model.get(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE));
             headerTitleText.setText(title);
 
             if (key == HeaderProperties.TYPE) {

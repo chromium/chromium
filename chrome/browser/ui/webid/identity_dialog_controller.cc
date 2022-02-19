@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/webid_dialog.h"
 #include "components/infobars/core/infobar.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
 IdentityDialogController::IdentityDialogController() = default;
@@ -121,13 +122,19 @@ void IdentityDialogController::ShowAccountsDialog(
 #else
   rp_web_contents_ = rp_web_contents;
   on_account_selection_ = std::move(on_selected);
-  const GURL& rp_url = rp_web_contents_->GetLastCommittedURL();
+  std::string rp_etld_plus_one =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          rp_web_contents_->GetLastCommittedURL(),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  std::string idp_etld_plus_one =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          idp_url,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
-
-  account_view_->Show(rp_url, idp_url, accounts, idp_metadata, client_data,
-                      sign_in_mode);
+  account_view_->Show(rp_etld_plus_one, idp_etld_plus_one, accounts,
+                      idp_metadata, client_data, sign_in_mode);
 #endif
 }
 

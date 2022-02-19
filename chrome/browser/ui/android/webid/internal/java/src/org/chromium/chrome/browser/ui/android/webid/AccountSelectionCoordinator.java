@@ -26,7 +26,6 @@ import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -129,10 +128,11 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
     }
 
     @Override
-    public void showAccounts(GURL rpUrl, GURL idpUrl, List<Account> accounts,
+    public void showAccounts(String rpEtldPlusOne, String idpEtldPlusOne, List<Account> accounts,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata,
             boolean isAutoSignIn) {
-        mMediator.showAccounts(rpUrl, idpUrl, accounts, idpMetadata, clientMetadata, isAutoSignIn);
+        mMediator.showAccounts(
+                rpEtldPlusOne, idpEtldPlusOne, accounts, idpMetadata, clientMetadata, isAutoSignIn);
     }
 
     @Override

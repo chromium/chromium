@@ -40,13 +40,13 @@ class AccountSelectionView {
   virtual ~AccountSelectionView() = default;
 
   // Instructs the view to show the provided |accounts| to the user.
-  // |rp_url| is the relying party's url which is normally the current page's
-  // url, and |idp_url| is the identity provider's url that is providing
-  // the accounts. |sign_in_mode| represents whether this is an auto sign in
-  // flow. After user interaction either OnAccountSelected() or
-  // OnDismiss() gets invoked.
-  virtual void Show(const GURL& rp_url,
-                    const GURL& idp_url,
+  // |rp_etld_plus_one| is the relying party's ETLD+1 which is normally the
+  // current page's domain, and |idp_etld_plus_one| is the identity provider's
+  // ETLD+1 that is providing the accounts. |sign_in_mode| represents whether
+  // this is an auto sign in flow. After user interaction either
+  // OnAccountSelected() or OnDismiss() gets invoked.
+  virtual void Show(const std::string& rp_etld_plus_one,
+                    const std::string& idp_etld_plus_one,
                     base::span<const Account> accounts,
                     const content::IdentityProviderMetadata& idp_metadata,
                     const content::ClientIdData& client_data,
