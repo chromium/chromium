@@ -15,7 +15,6 @@
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/prefetch/search_prefetch/back_forward_search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
-#include "chrome/browser/prefetch/search_prefetch/full_body_search_prefetch_request.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_request.h"
 #include "chrome/browser/profiles/profile.h"
@@ -182,16 +181,10 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
     return false;
   }
 
-  std::unique_ptr<BaseSearchPrefetchRequest> prefetch_request;
-  if (StreamSearchPrefetchResponses()) {
-    prefetch_request = std::make_unique<StreamingSearchPrefetchRequest>(
-        url, base::BindOnce(&SearchPrefetchService::ReportError,
-                            base::Unretained(this)));
-  } else {
-    prefetch_request = std::make_unique<FullBodySearchPrefetchRequest>(
-        url, base::BindOnce(&SearchPrefetchService::ReportError,
-                            base::Unretained(this)));
-  }
+  std::unique_ptr<BaseSearchPrefetchRequest> prefetch_request =
+      std::make_unique<StreamingSearchPrefetchRequest>(
+          url, base::BindOnce(&SearchPrefetchService::ReportError,
+                              base::Unretained(this)));
 
   DCHECK(prefetch_request);
   if (!prefetch_request->StartPrefetchRequest(profile_)) {
