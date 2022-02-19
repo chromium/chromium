@@ -449,328 +449,336 @@ class Day extends DateType {
 
 // ----------------------------------------------------------------
 
-/**
- * @constructor
- * @extends DateType
- * @param {!number} year
- * @param {!number} week
- */
-function Week(year, week) {
+class Week extends DateType {
   /**
-   * @type {number}
-   * @const
+   * @param {!number} year
+   * @param {!number} week
    */
-  this.year = year;
+  constructor(year, week) {
+    super();
+    /**
+     * @type {number}
+     * @const
+     */
+    this.year = year;
+    /**
+     * @type {number}
+     * @const
+     */
+    this.week = week;
+    // Number of years per year is either 52 or 53.
+    if (this.week < 1 ||
+        (this.week > 52 && this.week > Week.numberOfWeeksInYear(this.year))) {
+      var normalizedWeek = Week.createFromDay(this.firstDay());
+      this.year = normalizedWeek.year;
+      this.week = normalizedWeek.week;
+    }
+  }
+
+  static ISOStringRegExp = /^(\d+)-[wW](\d+)$/;
+
+  // See platform/text/date_components.h.
+  static Minimum = new Week(1, 1);
+  static Maximum = new Week(275760, 37);
+
+  // See core/html/forms/week_input_type.cc.
+  static DefaultStep = 604800000;
+  static DefaultStepBase = -259200000;
+
+  static EpochWeekDay = createUTCDate(1970, 0, 0).getUTCDay();
+
   /**
-   * @type {number}
-   * @const
+   * @param {!string} str
+   * @return {?Week}
    */
-  this.week = week;
-  // Number of years per year is either 52 or 53.
-  if (this.week < 1 ||
-      (this.week > 52 && this.week > Week.numberOfWeeksInYear(this.year))) {
-    var normalizedWeek = Week.createFromDay(this.firstDay());
-    this.year = normalizedWeek.year;
-    this.week = normalizedWeek.week;
+  static parse(str) {
+    var match = Week.ISOStringRegExp.exec(str);
+    if (!match)
+      return null;
+    var year = parseInt(match[1], 10);
+    var week = parseInt(match[2], 10);
+    return new Week(year, week);
+  }
+
+  /**
+   * @param {!number} millisecondsSinceEpoch
+   * @return {!Week}
+   */
+  static createFromValue(millisecondsSinceEpoch) {
+    return Week.createFromDate(new Date(millisecondsSinceEpoch))
+  }
+
+  /**
+   * @param {!Date} date
+   * @return {!Week}
+   */
+  static createFromDate(date) {
+    if (isNaN(date.valueOf()))
+      throw 'Invalid date';
+    var year = date.getUTCFullYear();
+    if (year <= Week.Maximum.year &&
+        Week.weekOneStartDateForYear(year + 1).getTime() <= date.getTime())
+      year++;
+    else if (
+        year > 1 &&
+        Week.weekOneStartDateForYear(year).getTime() > date.getTime())
+      year--;
+    var week = 1 +
+        Week._numberOfWeeksSinceDate(Week.weekOneStartDateForYear(year), date);
+    return new Week(year, week);
+  }
+
+  /**
+   * @param {!Day} day
+   * @return {!Week}
+   */
+  static createFromDay(day) {
+    var year = day.year;
+    if (year <= Week.Maximum.year &&
+        Week.weekOneStartDayForYear(year + 1) <= day)
+      year++;
+    else if (year > 1 && Week.weekOneStartDayForYear(year) > day)
+      year--;
+    var week = Math.floor(
+        1 +
+        (day.valueOf() - Week.weekOneStartDayForYear(year).valueOf()) /
+            MillisecondsPerWeek);
+    return new Week(year, week);
+  }
+
+  /**
+   * @return {!Week}
+   */
+  static createFromToday() {
+    var now = new Date();
+    return Week.createFromDate(
+        createUTCDate(now.getFullYear(), now.getMonth(), now.getDate()));
+  }
+
+  /**
+   * @param {!number} year
+   * @return {!Date}
+   */
+  static weekOneStartDateForYear(year) {
+    if (year < 1)
+      return createUTCDate(1, 0, 1);
+    // The week containing January 4th is week one.
+    var yearStartDay = createUTCDate(year, 0, 4).getUTCDay();
+    return createUTCDate(year, 0, 4 - (yearStartDay + 6) % DaysPerWeek);
+  }
+
+  /**
+   * @param {!number} year
+   * @return {!Day}
+   */
+  static weekOneStartDayForYear(year) {
+    if (year < 1)
+      return Day.Minimum;
+    // The week containing January 4th is week one.
+    var yearStartDay = createUTCDate(year, 0, 4).getUTCDay();
+    return new Day(year, 0, 4 - (yearStartDay + 6) % DaysPerWeek);
+  }
+
+  /**
+   * @param {!number} year
+   * @return {!number}
+   */
+  static numberOfWeeksInYear(year) {
+    if (year < 1 || year > Week.Maximum.year)
+      return 0;
+    else if (year === Week.Maximum.year)
+      return Week.Maximum.week;
+    return Week._numberOfWeeksSinceDate(
+        Week.weekOneStartDateForYear(year),
+        Week.weekOneStartDateForYear(year + 1));
+  }
+
+  /**
+   * @param {!Date} baseDate
+   * @param {!Date} date
+   * @return {!number}
+   */
+  static _numberOfWeeksSinceDate(baseDate, date) {
+    return Math.floor(
+        (date.getTime() - baseDate.getTime()) / MillisecondsPerWeek);
+  }
+
+  /**
+   * @param {!DateType} other
+   * @return {!boolean}
+   */
+  equals(other) {
+    return other instanceof Week && this.year === other.year &&
+        this.week === other.week;
+  }
+
+  /**
+   * @param {!number=} offset
+   * @return {!Week}
+   */
+  previous(offset) {
+    if (typeof offset === 'undefined')
+      offset = 1;
+    return new Week(this.year, this.week - offset);
+  }
+
+  /**
+   * @param {!number=} offset
+   * @return {!Week}
+   */
+  next(offset) {
+    if (typeof offset === 'undefined')
+      offset = 1;
+    return new Week(this.year, this.week + offset);
+  }
+
+  /**
+   * @return {!Week}
+   */
+  nextHome() {
+    // Go back weeks until we find the one that is the first week of a month. Do
+    // that by finding the first day in the current week, then go back a day. We
+    // want the first week of the month for that day.
+    var desiredDay = this.firstDay().previous();
+    desiredDay.date = 1;
+    return Week.createFromDay(desiredDay);
+  }
+
+  /**
+   * @return {!Week}
+   */
+  nextEnd() {
+    // Go forward weeks until we find the one that is the last week of a month. Do
+    // that by finding the week containing the last day of the month for the day
+    // following the last day included in the current week.
+    var desiredDay = this.lastDay().next();
+    desiredDay = new Day(desiredDay.year, desiredDay.month + 1, 1).previous();
+    return Week.createFromDay(desiredDay);
+  }
+
+  /**
+   * Given that 'this' is the Nth week of the month, returns
+   * the Week that is the Nth week in the month specified
+   * by the parameter.
+   * Clips the date if necessary, e.g. if 'this' is the 5th week
+   * of a month that has 5 weeks and the parameter month only has
+   * 4 weeks, returns the 4th week of that month.
+   * @param {!Month} month
+   * @return {!Week}
+   */
+  thisRangeInMonth(month) {
+    var firstDateInCurrentMonth = this.startDate();
+    firstDateInCurrentMonth.setUTCDate(1);
+
+    var offsetInOriginalMonth =
+        Week._numberOfWeeksSinceDate(firstDateInCurrentMonth, this.startDate());
+
+    // Determine the first Monday in the new month (the week control shows weeks
+    // starting on Monday).
+    var firstWeekStartInNewMonth = month.startDate();
+    firstWeekStartInNewMonth.setUTCDate(
+        1 +
+        ((DaysPerWeek + 1 - firstWeekStartInNewMonth.getUTCDay()) %
+         DaysPerWeek));
+
+
+    // Find the Nth Monday in the month where N == offsetInOriginalMonth.
+    firstWeekStartInNewMonth.setUTCDate(
+        firstWeekStartInNewMonth.getUTCDate() +
+        (DaysPerWeek * offsetInOriginalMonth));
+
+    if (firstWeekStartInNewMonth.getUTCMonth() != month.month) {
+      // If we overshot into the next month (can happen if we were
+      // on the 5th week of the old month), go back to the last week
+      // of the target month.
+      firstWeekStartInNewMonth.setUTCDate(
+          firstWeekStartInNewMonth.getUTCDate() - DaysPerWeek);
+    }
+
+    return Week.createFromDate(firstWeekStartInNewMonth);
+  }
+
+  /**
+   * @param {!Month} month
+   * @return {!boolean}
+   */
+  overlapsMonth(month) {
+    return (
+        month.firstDay() <= this.lastDay() &&
+        month.lastDay() >= this.firstDay());
+  }
+
+  /**
+   * @param {!Month} month
+   * @return {!boolean}
+   */
+  isFullyContainedInMonth(month) {
+    return (
+        month.firstDay() <= this.firstDay() &&
+        month.lastDay() >= this.lastDay());
+  }
+
+  /**
+   * @return {!Date}
+   */
+  startDate() {
+    var weekStartDate = Week.weekOneStartDateForYear(this.year);
+    weekStartDate.setUTCDate(weekStartDate.getUTCDate() + (this.week - 1) * 7);
+    return weekStartDate;
+  }
+
+  /**
+   * @return {!Date}
+   */
+  endDate() {
+    if (this.equals(Week.Maximum))
+      return Day.Maximum.startDate();
+    return this.next().startDate();
+  }
+
+  /**
+   * @return {!Day}
+   */
+  firstDay() {
+    var weekOneStartDay = Week.weekOneStartDayForYear(this.year);
+    return weekOneStartDay.next((this.week - 1) * DaysPerWeek);
+  }
+
+  /**
+   * @return {!Day}
+   */
+  middleDay() {
+    return this.firstDay().next(3);
+  }
+
+  /**
+   * @return {!Day}
+   */
+  lastDay() {
+    if (this.equals(Week.Maximum))
+      return Day.Maximum;
+    return this.next().firstDay().previous();
+  }
+
+  /**
+   * @return {!number}
+   */
+  valueOf() {
+    return this.firstDay().valueOf() - createUTCDate(1970, 0, 1).getTime();
+  }
+
+  /**
+   * @return {!string}
+   */
+  toString() {
+    var yearString = String(this.year);
+    if (yearString.length < 4)
+      yearString = ('000' + yearString).substr(-4, 4);
+    return yearString + '-W' + ('0' + this.week).substr(-2, 2);
   }
 }
 
-Week.ISOStringRegExp = /^(\d+)-[wW](\d+)$/;
-
-// See platform/text/date_components.h.
-Week.Minimum = new Week(1, 1);
-Week.Maximum = new Week(275760, 37);
-
-// See core/html/forms/week_input_type.cc.
-Week.DefaultStep = 604800000;
-Week.DefaultStepBase = -259200000;
-
-Week.EpochWeekDay = createUTCDate(1970, 0, 0).getUTCDay();
-
-/**
- * @param {!string} str
- * @return {?Week}
- */
-Week.parse = function(str) {
-  var match = Week.ISOStringRegExp.exec(str);
-  if (!match)
-    return null;
-  var year = parseInt(match[1], 10);
-  var week = parseInt(match[2], 10);
-  return new Week(year, week);
-};
-
-/**
- * @param {!number} millisecondsSinceEpoch
- * @return {!Week}
- */
-Week.createFromValue = function(millisecondsSinceEpoch) {
-  return Week.createFromDate(new Date(millisecondsSinceEpoch))
-};
-
-/**
- * @param {!Date} date
- * @return {!Week}
- */
-Week.createFromDate = function(date) {
-  if (isNaN(date.valueOf()))
-    throw 'Invalid date';
-  var year = date.getUTCFullYear();
-  if (year <= Week.Maximum.year &&
-      Week.weekOneStartDateForYear(year + 1).getTime() <= date.getTime())
-    year++;
-  else if (
-      year > 1 && Week.weekOneStartDateForYear(year).getTime() > date.getTime())
-    year--;
-  var week = 1 +
-      Week._numberOfWeeksSinceDate(Week.weekOneStartDateForYear(year), date);
-  return new Week(year, week);
-};
-
-/**
- * @param {!Day} day
- * @return {!Week}
- */
-Week.createFromDay = function(day) {
-  var year = day.year;
-  if (year <= Week.Maximum.year && Week.weekOneStartDayForYear(year + 1) <= day)
-    year++;
-  else if (year > 1 && Week.weekOneStartDayForYear(year) > day)
-    year--;
-  var week = Math.floor(
-      1 +
-      (day.valueOf() - Week.weekOneStartDayForYear(year).valueOf()) /
-          MillisecondsPerWeek);
-  return new Week(year, week);
-};
-
-/**
- * @return {!Week}
- */
-Week.createFromToday = function() {
-  var now = new Date();
-  return Week.createFromDate(
-      createUTCDate(now.getFullYear(), now.getMonth(), now.getDate()));
-};
-
-/**
- * @param {!number} year
- * @return {!Date}
- */
-Week.weekOneStartDateForYear = function(year) {
-  if (year < 1)
-    return createUTCDate(1, 0, 1);
-  // The week containing January 4th is week one.
-  var yearStartDay = createUTCDate(year, 0, 4).getUTCDay();
-  return createUTCDate(year, 0, 4 - (yearStartDay + 6) % DaysPerWeek);
-};
-
-/**
- * @param {!number} year
- * @return {!Day}
- */
-Week.weekOneStartDayForYear = function(year) {
-  if (year < 1)
-    return Day.Minimum;
-  // The week containing January 4th is week one.
-  var yearStartDay = createUTCDate(year, 0, 4).getUTCDay();
-  return new Day(year, 0, 4 - (yearStartDay + 6) % DaysPerWeek);
-};
-
-/**
- * @param {!number} year
- * @return {!number}
- */
-Week.numberOfWeeksInYear = function(year) {
-  if (year < 1 || year > Week.Maximum.year)
-    return 0;
-  else if (year === Week.Maximum.year)
-    return Week.Maximum.week;
-  return Week._numberOfWeeksSinceDate(
-      Week.weekOneStartDateForYear(year),
-      Week.weekOneStartDateForYear(year + 1));
-};
-
-/**
- * @param {!Date} baseDate
- * @param {!Date} date
- * @return {!number}
- */
-Week._numberOfWeeksSinceDate = function(baseDate, date) {
-  return Math.floor(
-      (date.getTime() - baseDate.getTime()) / MillisecondsPerWeek);
-};
-
-/**
- * @param {!DateType} other
- * @return {!boolean}
- */
-Week.prototype.equals = function(other) {
-  return other instanceof Week && this.year === other.year &&
-      this.week === other.week;
-};
-
-/**
- * @param {!number=} offset
- * @return {!Week}
- */
-Week.prototype.previous = function(offset) {
-  if (typeof offset === 'undefined')
-    offset = 1;
-  return new Week(this.year, this.week - offset);
-};
-
-/**
- * @param {!number=} offset
- * @return {!Week}
- */
-Week.prototype.next = function(offset) {
-  if (typeof offset === 'undefined')
-    offset = 1;
-  return new Week(this.year, this.week + offset);
-};
-
-/**
- * @return {!Week}
- */
-Week.prototype.nextHome = function() {
-  // Go back weeks until we find the one that is the first week of a month. Do
-  // that by finding the first day in the current week, then go back a day. We
-  // want the first week of the month for that day.
-  var desiredDay = this.firstDay().previous();
-  desiredDay.date = 1;
-  return Week.createFromDay(desiredDay);
-};
-
-/**
- * @return {!Week}
- */
-Week.prototype.nextEnd = function() {
-  // Go forward weeks until we find the one that is the last week of a month. Do
-  // that by finding the week containing the last day of the month for the day
-  // following the last day included in the current week.
-  var desiredDay = this.lastDay().next();
-  desiredDay = new Day(desiredDay.year, desiredDay.month + 1, 1).previous();
-  return Week.createFromDay(desiredDay);
-};
-
-/**
- * Given that 'this' is the Nth week of the month, returns
- * the Week that is the Nth week in the month specified
- * by the parameter.
- * Clips the date if necessary, e.g. if 'this' is the 5th week
- * of a month that has 5 weeks and the parameter month only has
- * 4 weeks, returns the 4th week of that month.
- * @param {!Month} month
- * @return {!Week}
- */
-Week.prototype.thisRangeInMonth = function(month) {
-  var firstDateInCurrentMonth = this.startDate();
-  firstDateInCurrentMonth.setUTCDate(1);
-
-  var offsetInOriginalMonth =
-      Week._numberOfWeeksSinceDate(firstDateInCurrentMonth, this.startDate());
-
-  // Determine the first Monday in the new month (the week control shows weeks
-  // starting on Monday).
-  var firstWeekStartInNewMonth = month.startDate();
-  firstWeekStartInNewMonth.setUTCDate(
-      1 +
-      ((DaysPerWeek + 1 - firstWeekStartInNewMonth.getUTCDay()) % DaysPerWeek));
-
-
-  // Find the Nth Monday in the month where N == offsetInOriginalMonth.
-  firstWeekStartInNewMonth.setUTCDate(
-      firstWeekStartInNewMonth.getUTCDate() +
-      (DaysPerWeek * offsetInOriginalMonth));
-
-  if (firstWeekStartInNewMonth.getUTCMonth() != month.month) {
-    // If we overshot into the next month (can happen if we were
-    // on the 5th week of the old month), go back to the last week
-    // of the target month.
-    firstWeekStartInNewMonth.setUTCDate(
-        firstWeekStartInNewMonth.getUTCDate() - DaysPerWeek);
-  }
-
-  return Week.createFromDate(firstWeekStartInNewMonth);
-};
-
-/**
- * @param {!Month} month
- * @return {!boolean}
- */
-Week.prototype.overlapsMonth = function(month) {
-  return (
-      month.firstDay() <= this.lastDay() && month.lastDay() >= this.firstDay());
-};
-
-/**
- * @param {!Month} month
- * @return {!boolean}
- */
-Week.prototype.isFullyContainedInMonth = function(month) {
-  return (
-      month.firstDay() <= this.firstDay() && month.lastDay() >= this.lastDay());
-};
-
-/**
- * @return {!Date}
- */
-Week.prototype.startDate = function() {
-  var weekStartDate = Week.weekOneStartDateForYear(this.year);
-  weekStartDate.setUTCDate(weekStartDate.getUTCDate() + (this.week - 1) * 7);
-  return weekStartDate;
-};
-
-/**
- * @return {!Date}
- */
-Week.prototype.endDate = function() {
-  if (this.equals(Week.Maximum))
-    return Day.Maximum.startDate();
-  return this.next().startDate();
-};
-
-/**
- * @return {!Day}
- */
-Week.prototype.firstDay = function() {
-  var weekOneStartDay = Week.weekOneStartDayForYear(this.year);
-  return weekOneStartDay.next((this.week - 1) * DaysPerWeek);
-};
-
-/**
- * @return {!Day}
- */
-Week.prototype.middleDay = function() {
-  return this.firstDay().next(3);
-};
-
-/**
- * @return {!Day}
- */
-Week.prototype.lastDay = function() {
-  if (this.equals(Week.Maximum))
-    return Day.Maximum;
-  return this.next().firstDay().previous();
-};
-
-/**
- * @return {!number}
- */
-Week.prototype.valueOf = function() {
-  return this.firstDay().valueOf() - createUTCDate(1970, 0, 1).getTime();
-};
-
-/**
- * @return {!string}
- */
-Week.prototype.toString = function() {
-  var yearString = String(this.year);
-  if (yearString.length < 4)
-    yearString = ('000' + yearString).substr(-4, 4);
-  return yearString + '-W' + ('0' + this.week).substr(-2, 2);
-};
+// ----------------------------------------------------------------
 
 /**
  * @constructor
@@ -4960,3 +4968,4 @@ if (window.dialogArguments) {
 
 // Necessary for some web tests.
 window.Day = Day;
+window.Week = Week;
