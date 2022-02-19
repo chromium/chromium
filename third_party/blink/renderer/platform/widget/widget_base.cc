@@ -442,6 +442,7 @@ void WidgetBase::WasShown(bool was_evicted,
                          TRACE_EVENT_FLAG_FLOW_IN);
 
   SetHidden(false);
+  UpdateCompositorPriorityCutoff(in_active_window);
 
   if (record_tab_switch_time_request) {
     LayerTreeHost()->RequestPresentationTimeForNextFrame(
@@ -457,7 +458,9 @@ void WidgetBase::WasShown(bool was_evicted,
   client_->WasShown(was_evicted);
 }
 
-void WidgetBase::OnActiveWindowChanged(bool in_active_window) {}
+void WidgetBase::OnActiveWindowChanged(bool in_active_window) {
+  UpdateCompositorPriorityCutoff(in_active_window);
+}
 
 void WidgetBase::RequestPresentationTimeForNextFrame(
     mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request) {
@@ -1642,6 +1645,20 @@ gfx::RectF WidgetBase::BlinkSpaceToDIPs(const gfx::RectF& rect) {
     return rect;
   float reverse = 1 / GetOriginalDeviceScaleFactor();
   return gfx::ScaleRect(rect, reverse);
+}
+
+void WidgetBase::UpdateCompositorPriorityCutoff(bool in_active_window) {
+  if (never_composited_ ||
+      !base::FeatureList::IsEnabled(
+          features::kFreeNonRequiredTileResourcesForInactiveWindows)) {
+    return;
+  }
+
+  LayerTreeHost()->SetPriorityCutoffOverride(
+      in_active_window
+          ? absl::nullopt
+          : absl::make_optional(gpu::MemoryAllocation::PriorityCutoff::
+                                    CUTOFF_ALLOW_REQUIRED_ONLY));
 }
 
 }  // namespace blink

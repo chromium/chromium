@@ -394,6 +394,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Helper to get the non-emulated device scale factor.
   float GetOriginalDeviceScaleFactor() const;
 
+  // Updates the compositors priority-cutoff based on whether the widget is
+  // contained in an active window.
+  void UpdateCompositorPriorityCutoff(bool in_active_window);
+
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;
   // Indicates this is for a child local root.

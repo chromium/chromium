@@ -1261,6 +1261,10 @@ const base::Feature kDurableClientHintsCache{"DurableClientHintsCache",
 const base::Feature kEditContext{"EditContext",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kFreeNonRequiredTileResourcesForInactiveWindows{
+    "FreeNonRequiredTileResourcesForInactiveWindows",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the WindowPlacement RuntimeEnabledFeature.
 const base::Feature kWindowPlacement{"WindowPlacement",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
