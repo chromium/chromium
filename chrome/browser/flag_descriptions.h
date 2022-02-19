@@ -1083,9 +1083,6 @@ extern const char kOmniboxDynamicMaxAutocompleteDescription[];
 extern const char kEnableSearchPrefetchName[];
 extern const char kEnableSearchPrefetchDescription[];
 
-extern const char kOopRasterizationDDLName[];
-extern const char kOopRasterizationDDLDescription[];
-
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 

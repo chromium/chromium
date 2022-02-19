@@ -3117,10 +3117,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-gpu-rasterization", flag_descriptions::kGpuRasterizationName,
      flag_descriptions::kGpuRasterizationDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableGpuRasterizationChoices)},
-    {"enable-oop-rasterization-ddl",
-     flag_descriptions::kOopRasterizationDDLName,
-     flag_descriptions::kOopRasterizationDDLDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kOopRasterizationDDL)},
     {"enable-experimental-web-platform-features",
      flag_descriptions::kExperimentalWebPlatformFeaturesName,
      flag_descriptions::kExperimentalWebPlatformFeaturesDescription, kOsAll,
@@ -3133,7 +3129,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebUITabStripName,
      flag_descriptions::kWebUITabStripDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebUITabStrip)},
-
     {"webui-tab-strip-context-menu-after-tap",
      flag_descriptions::kWebUITabStripContextMenuAfterTapName,
      flag_descriptions::kWebUITabStripContextMenuAfterTapDescription,

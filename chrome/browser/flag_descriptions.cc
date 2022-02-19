@@ -1909,13 +1909,6 @@ const char kEnableSearchPrefetchDescription[] =
     "Allow the default search engine to specify prefetch behavior for "
     "suggestions to search results pages.";
 
-const char kOopRasterizationDDLName[] =
-    "Out of process rasterization using DDLs";
-const char kOopRasterizationDDLDescription[] =
-    "Use Skia Deferred Display Lists when performing rasterization in the GPU "
-    "process  "
-    "Must also enable OOP rasterization";
-
 const char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
 const char kOptimizationGuideDebugLogsDescription[] =

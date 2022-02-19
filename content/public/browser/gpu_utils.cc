@@ -87,9 +87,6 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
       command_line->HasSwitch(switches::kInProcessGPU);
   gpu_preferences.gpu_sandbox_start_early =
       command_line->HasSwitch(switches::kGpuSandboxStartEarly);
-
-  gpu_preferences.enable_oop_rasterization_ddl =
-      base::FeatureList::IsEnabled(features::kOopRasterizationDDL);
   gpu_preferences.enable_vulkan_protected_memory =
       command_line->HasSwitch(switches::kEnableVulkanProtectedMemory);
   gpu_preferences.disable_vulkan_fallback_to_gl_for_testing =

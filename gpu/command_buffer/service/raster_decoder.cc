@@ -67,7 +67,6 @@
 #include "skia/ext/rgba_to_yuva.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkDeferredDisplayListRecorder.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
@@ -923,8 +922,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   bool use_gpu_raster_ = false;
   bool supports_oop_canvas_ = false;
   bool use_passthrough_ = false;
-  bool use_ddl_ = false;
-  bool use_ddl_in_current_raster_session_ = false;
 
   // The current decoder error communicates the decoder error through command
   // processing functions that do not return the error value. Should be set
@@ -976,11 +973,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   std::vector<GrBackendSemaphore> end_semaphores_;
   std::unique_ptr<cc::ServicePaintCache> paint_cache_;
 
-  std::unique_ptr<SkDeferredDisplayListRecorder> recorder_;
-  sk_sp<SkDeferredDisplayList> ddl_;
-  absl::optional<SkDeferredDisplayList::ProgramIterator> program_iterator_;
-  raw_ptr<SkCanvas> raster_canvas_ =
-      nullptr;  // ptr into recorder_ or sk_surface_
+  raw_ptr<SkCanvas> raster_canvas_ = nullptr;
   std::vector<SkDiscardableHandleId> locked_handles_;
 
   // Tracing helpers.
@@ -1176,7 +1169,6 @@ ContextResult RasterDecoderImpl::Initialize(
     DCHECK(gr_context());
     use_gpu_raster_ = true;
     paint_cache_ = std::make_unique<cc::ServicePaintCache>();
-    use_ddl_ = gpu_preferences_.enable_oop_rasterization_ddl;
   }
 
   return ContextResult::kSuccess;
@@ -3580,7 +3572,6 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
     case kNoMSAA:
       final_msaa_count = 0;
       flags = 0;
-      use_ddl_in_current_raster_session_ = use_ddl_;
       break;
     case kMSAA:
       // If we can't match requested MSAA samples, don't use MSAA.
@@ -3589,13 +3580,10 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
           gr_context()->maxSurfaceSampleCountForColorType(sk_color_type))
         final_msaa_count = 0;
       flags = 0;
-      use_ddl_in_current_raster_session_ = use_ddl_;
       break;
     case kDMSAA:
       final_msaa_count = 1;
       flags = SkSurfaceProps::kDynamicMSAA_Flag;
-      // DMSAA is not compatible with DDL
-      use_ddl_in_current_raster_session_ = false;
       break;
   }
 
@@ -3649,16 +3637,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
     DCHECK(result);
   }
 
-  if (use_ddl_in_current_raster_session_) {
-    SkSurfaceCharacterization characterization;
-    bool result = sk_surface_->characterize(&characterization);
-    DCHECK(result) << "Failed to characterize raster SkSurface.";
-    recorder_ =
-        std::make_unique<SkDeferredDisplayListRecorder>(characterization);
-    raster_canvas_ = recorder_->getCanvas();
-  } else {
-    raster_canvas_ = sk_surface_->getCanvas();
-  }
+  raster_canvas_ = sk_surface_->getCanvas();
 
   paint_op_shared_image_provider_ = std::make_unique<SharedImageProviderImpl>(
       &shared_image_representation_factory_, shared_context_state_, sk_surface_,
@@ -3780,33 +3759,6 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   }
 }
 
-bool RasterDecoderImpl::EnsureDDLReadyForRaster() {
-  DCHECK(use_ddl_in_current_raster_session_);
-  DCHECK_EQ(current_decoder_error_, error::kNoError);
-
-  if (!ddl_) {
-    DCHECK(recorder_);
-    DCHECK(!program_iterator_);
-
-    TRACE_EVENT0("gpu",
-                 "RasterDecoderImpl::EnsureDDLReadyForRaster::DetachDDL");
-    ddl_ = recorder_->detach();
-    program_iterator_.emplace(shared_context_state_->gr_context(), ddl_.get());
-  }
-
-  while (!program_iterator_->done()) {
-    TRACE_EVENT0("gpu",
-                 "RasterDecoderImpl::EnsureDDLReadyForRaster::MaybeCompile");
-    bool did_compile = program_iterator_->compile();
-    program_iterator_->next();
-    if (did_compile)
-      return false;
-  }
-
-  program_iterator_.reset();
-  return true;
-}
-
 void RasterDecoderImpl::DoEndRasterCHROMIUM() {
   TRACE_EVENT0("gpu", "RasterDecoderImpl::DoEndRasterCHROMIUM");
   if (!sk_surface_ && !scoped_shared_image_raster_write_) {
@@ -3830,18 +3782,6 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
   }
 
   raster_canvas_ = nullptr;
-
-  if (use_ddl_in_current_raster_session_) {
-    if (!EnsureDDLReadyForRaster()) {
-      // This decoder error indicates that this command has not finished
-      // executing. The decoder will yield and re-execute this command when it
-      // resumes decoding.
-      current_decoder_error_ = error::kDeferCommandUntilLater;
-      return;
-    }
-    TRACE_EVENT0("gpu", "RasterDecoderImpl::DoEndRasterCHROMIUM::DrawDDL");
-    sk_surface_->draw(std::move(ddl_));
-  }
 
   {
     TRACE_EVENT0("gpu", "RasterDecoderImpl::DoEndRasterCHROMIUM::Flush");

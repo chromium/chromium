@@ -84,7 +84,6 @@ struct GpuPreferences {
   array<gfx.mojom.BufferUsageAndFormat> texture_target_exception_list;
 
   bool ignore_gpu_blocklist;
-  bool enable_oop_rasterization_ddl;
   bool watchdog_starts_backgrounded;
   GrContextType gr_context_type;
   VulkanImplementationName use_vulkan;
