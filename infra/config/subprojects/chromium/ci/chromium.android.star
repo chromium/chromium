@@ -552,6 +552,16 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-weblayer-10-x86-rel-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|weblayer",
+        short_name = "10",
+    ),
+    triggered_by = ["android-weblayer-with-aosp-webview-x86-rel"],
+    notifies = ["weblayer-sheriff"],
+)
+
+ci.builder(
     name = "android-weblayer-marshmallow-x86-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",

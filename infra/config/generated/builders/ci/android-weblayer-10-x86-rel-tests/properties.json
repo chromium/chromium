@@ -1,6 +1,7 @@
 {
   "$build/goma": {
     "enable_ats": true,
+    "jobs": 150,
     "rpc_extra_params": "?prod",
     "server_host": "goma.chromium.org",
     "use_luci_auth": true
@@ -12,6 +13,9 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android.fyi",
-  "recipe": "chromium"
+  "builder_group": "chromium.android",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "android"
+  ]
 }
