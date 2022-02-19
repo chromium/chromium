@@ -1337,6 +1337,9 @@ bool IsAXSetter(SEL selector) {
     if (ancestor->HasState(ax::mojom::State::kFocusable))
       break;
   }
+  // The assignment to ancestor may be null.
+  if (!ancestor)
+    return nil;
   return ancestor->GetNativeViewAccessible();
 }
 
