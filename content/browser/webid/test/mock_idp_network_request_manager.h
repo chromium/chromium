@@ -22,6 +22,8 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
   MockIdpNetworkRequestManager& operator=(const MockIdpNetworkRequestManager&) =
       delete;
 
+  bool IsMockIdpNetworkRequestManager() const override { return true; }
+
   MOCK_METHOD3(FetchManifest,
                void(absl::optional<int>,
                     absl::optional<int>,

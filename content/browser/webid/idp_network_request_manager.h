@@ -169,6 +169,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // Send logout request to a single target.
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
 
+  virtual bool IsMockIdpNetworkRequestManager() const;
+
  private:
   void OnManifestLoaded(absl::optional<int> idp_brand_icon_ideal_size,
                         absl::optional<int> idp_brand_icon_minimum_size,

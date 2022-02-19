@@ -296,15 +296,6 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, TokenExchangePermissionDeclined) {
   EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
 }
 
-// Verify an error is returned when WebID is not supported by the provided IdP.
-IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, WebIdNotSupported) {
-  idp_server()->SetManifestResponseDetails({net::HTTP_NOT_FOUND, "", ""});
-
-  std::string expected_error =
-      "a JavaScript error: \"NetworkError: Error retrieving an id token.\"\n";
-  EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
-}
-
 // Verify an attempt to invoke WebID with an insecure IDP path fails.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
   std::string script = R"(

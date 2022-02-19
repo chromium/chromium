@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -68,6 +69,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   void SetSharingPermissionDelegateForTests(
       FederatedIdentitySharingPermissionContextDelegate*);
 
+  // Rejects the pending request if it has not been resolved naturally yet.
+  void OnRejectRequest();
+
  private:
   bool HasPendingRequest() const;
   GURL ResolveManifestUrl(const std::string& url);
@@ -115,13 +119,15 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   void OnLogoutCompleted();
   std::unique_ptr<WebContents> CreateIdpWebContents();
   void CompleteRequest(blink::mojom::FederatedAuthRequestResult,
-                       const std::string& id_token);
+                       const std::string& id_token,
+                       bool should_call_callback);
   void CompleteLogoutRequest(blink::mojom::LogoutRpsStatus);
   void OnManifestFetchedForRevoke(IdpNetworkRequestManager::FetchStatus status,
                                   IdpNetworkRequestManager::Endpoints,
                                   IdentityProviderMetadata idp_metadata);
   void OnRevokeResponse(IdpNetworkRequestManager::RevokeResponse response);
-  void CompleteRevokeRequest(blink::mojom::RevokeStatus status);
+  void CompleteRevokeRequest(blink::mojom::RevokeStatus status,
+                             bool should_call_callback);
 
   void CleanUp();
 
@@ -205,6 +211,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   base::TimeTicks show_accounts_dialog_time_;
   base::TimeTicks select_account_time_;
   base::TimeTicks id_token_response_time_;
+  base::DelayTimer delay_timer_;
   blink::mojom::FederatedAuthRequest::RequestIdTokenCallback
       auth_request_callback_;
 

@@ -918,4 +918,8 @@ IdpNetworkRequestManager::CreateCredentialedUrlLoader(
   return loader;
 }
 
+bool IdpNetworkRequestManager::IsMockIdpNetworkRequestManager() const {
+  return false;
+}
+
 }  // namespace content
