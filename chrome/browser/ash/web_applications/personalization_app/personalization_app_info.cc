@@ -14,6 +14,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/size.h"
 
 std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForPersonalizationApp() {
   std::unique_ptr<WebAppInstallInfo> info =
@@ -45,6 +46,10 @@ PersonalizationSystemAppDelegate::PersonalizationSystemAppDelegate(
 std::unique_ptr<WebAppInstallInfo>
 PersonalizationSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForPersonalizationApp();
+}
+
+gfx::Size PersonalizationSystemAppDelegate::GetMinimumWindowSize() const {
+  return {600, 420};
 }
 
 bool PersonalizationSystemAppDelegate::ShouldCaptureNavigations() const {

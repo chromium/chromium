@@ -8,6 +8,8 @@
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "ui/gfx/geometry/size.h"
+
 struct WebAppInstallInfo;
 
 class PersonalizationSystemAppDelegate : public web_app::SystemWebAppDelegate {
@@ -16,6 +18,7 @@ class PersonalizationSystemAppDelegate : public web_app::SystemWebAppDelegate {
 
   // web_app::SystemWebAppDelegate overrides:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  gfx::Size GetMinimumWindowSize() const override;
   bool ShouldCaptureNavigations() const override;
   bool IsAppEnabled() const override;
   bool ShouldShowInLauncher() const override;
