@@ -20,7 +20,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/browser_process.h"

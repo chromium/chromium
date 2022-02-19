@@ -9,7 +9,7 @@
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"

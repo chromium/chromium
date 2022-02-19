@@ -16,7 +16,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
