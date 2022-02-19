@@ -1089,7 +1089,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
   PA_DCHECK(FromSlotSpan(slot_span) == root);
 
   uintptr_t slot_start = root->ObjectToSlotStart(object);
-  PA_DCHECK(slot_span = SlotSpan::FromSlotStart(slot_start));
+  PA_DCHECK(slot_span == SlotSpan::FromSlotStart(slot_start));
 
   // We are going to read from |*slot_span| in all branches. Since
   // |FromSlotSpan()| below doesn't touch *slot_span, there is some time for the
