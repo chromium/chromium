@@ -22,6 +22,9 @@
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/formats/mp4/aac.h"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#include "media/formats/mp4/hevc.h"
+#endif
 #endif
 
 namespace media {
@@ -542,7 +545,39 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         profile = H264PROFILE_BASELINE;
       break;
     }
-#endif
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    case VideoCodec::kHEVC: {
+      int hevc_profile = FF_PROFILE_UNKNOWN;
+      if ((codec_context->profile < FF_PROFILE_HEVC_MAIN ||
+           codec_context->profile > FF_PROFILE_HEVC_REXT) &&
+          codec_context->extradata && codec_context->extradata_size) {
+        mp4::HEVCDecoderConfigurationRecord hevc_config;
+        if (hevc_config.Parse(codec_context->extradata,
+                              codec_context->extradata_size)) {
+          hevc_profile = hevc_config.general_profile_idc;
+        }
+      } else {
+        hevc_profile = codec_context->profile;
+      }
+      switch (hevc_profile) {
+        case FF_PROFILE_HEVC_MAIN:
+          profile = HEVCPROFILE_MAIN;
+          break;
+        case FF_PROFILE_HEVC_MAIN_10:
+          profile = HEVCPROFILE_MAIN10;
+          break;
+        case FF_PROFILE_HEVC_MAIN_STILL_PICTURE:
+          profile = HEVCPROFILE_MAIN_STILL_PICTURE;
+          break;
+        default:
+          // Always assign a default if all heuristics fail.
+          profile = HEVCPROFILE_MAIN;
+          break;
+      }
+      break;
+    }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kVP8:
       profile = VP8PROFILE_ANY;
       break;
@@ -568,11 +603,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     case VideoCodec::kAV1:
       profile = AV1PROFILE_PROFILE_MAIN;
       break;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    case VideoCodec::kHEVC:
-      profile = HEVCPROFILE_MAIN;
-      break;
-#endif
     case VideoCodec::kTheora:
       profile = THEORAPROFILE_ANY;
       break;

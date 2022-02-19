@@ -1176,6 +1176,18 @@ tfhd.default_sample_flags: s/0x01010000/0x02000000 (second frame is sync-sample,
 doesn't depend on other frames, mismatches compressed h265 second frame's
 nonkeyframe-ness).
 
+#### bear-1280x720-hevc.mp4
+HEVC video stream with 8-bit main profile, generated with
+```
+ffmpeg -i bear-1280x720.mp4 -vcodec hevc bear-1280x720-hevc.mp4
+```
+
+#### bear-1280x720-hevc-10bit.mp4
+HEVC video stream with 10-bit main10 profile, generated with
+```
+ffmpeg -i bear-1280x720.mp4 -vcodec hevc -pix_fmt yuv420p10le bear-1280x720-hevc-10bit.mp4
+```
+
 ### Multi-track MP4 file
 
 (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org
