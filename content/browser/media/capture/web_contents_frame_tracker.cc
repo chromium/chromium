@@ -214,8 +214,11 @@ void WebContentsFrameTracker::Crop(
   DCHECK(callback);
 
   if (crop_version_ >= crop_version) {
-    // TODO(crbug.com/1266378): BadMessage here.
-    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    // This will trigger a BadMessage from MediaStreamDispatcherHost.
+    // (MediaStreamDispatcherHost knows the capturer, whereas here we know
+    // the capturee.)
+    std::move(callback).Run(
+        media::mojom::CropRequestResult::kNonIncreasingCropVersion);
     return;
   }
 

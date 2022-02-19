@@ -32,7 +32,8 @@ enum class CropToResult {
   kRejectedWithUnsupportedCaptureDevice = 4,
   kRejectedWithErrorUnknownDeviceId = 5,
   kRejectedWithNotImplemented = 6,
-  kMaxValue = kRejectedWithNotImplemented
+  kNonIncreasingCropVersion = 7,
+  kMaxValue = kNonIncreasingCropVersion
 };
 
 void RecordUma(CropToResult result) {
@@ -96,6 +97,16 @@ void ResolveCropPromiseHelper(ScriptPromiseResolver* resolver,
       RecordUma(CropToResult::kRejectedWithNotImplemented);
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
                          "Not implemented.");
+      return;
+    case media::mojom::CropRequestResult::kNonIncreasingCropVersion:
+      // This should rarely happen, as the browser process would issue
+      // a BadMessage in this case. But if that message has to hop from
+      // the IO thread to the UI thread, it could theoretically happen
+      // that Blink receives this callback before being killed, so we
+      // can't quite DCHECK this.
+      RecordUma(CropToResult::kNonIncreasingCropVersion);
+      RaiseCropException(resolver, DOMExceptionCode::kAbortError,
+                         "Non-increasing crop version.");
       return;
   }
 
