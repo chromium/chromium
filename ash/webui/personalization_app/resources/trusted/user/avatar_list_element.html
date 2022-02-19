@@ -25,11 +25,14 @@
   }
 </style>
 <div id="container">
-  <p>Avatar list</p>
   <template is="dom-if" if="[[isCameraPresent_]]">
     <div id="openCamera" on-click="openCamera_">
       <!-- TODO(cowmoo) placeholder string -->
       <p>Open Camera</p>
+    </div>
+    <div id="openVideo" on-click="openVideo_">
+      <!-- TODO(cowmoo) placeholder string -->
+      <p>Open Video</p>
     </div>
   </template>
   <div class="folder-container">
@@ -47,6 +50,7 @@
         on-click="onSelectDefaultImage_" on-keypress="onSelectDefaultImage_">
   </template>
 </div>
-<template is="dom-if" if="[[shouldShowCameraUi_]]" restamp>
-  <avatar-camera on-close="onCameraClosed_"></avatar-camera>
+<template is="dom-if" if="[[cameraMode_]]" restamp>
+  <avatar-camera on-close="onCameraClosed_" mode="[[cameraMode_]]">
+  </avatar-camera>
 </template>

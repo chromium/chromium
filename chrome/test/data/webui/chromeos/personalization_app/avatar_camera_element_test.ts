@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AvatarCamera} from 'chrome://personalization/trusted/user/avatar_camera_element.js';
+import {AvatarCamera, AvatarCameraMode} from 'chrome://personalization/trusted/user/avatar_camera_element.js';
 import {GetUserMediaProxy, setWebcamUtilsForTesting} from 'chrome://personalization/trusted/user/webcam_utils_proxy.js';
 import * as webcamUtils from 'chrome://resources/cr_elements/chromeos/cr_picture/webcam_utils.js';
 import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -88,7 +88,8 @@ export function AvatarCameraTest() {
   });
 
   test('requests webcam media when open and attaches to video', async () => {
-    avatarCameraElement = initElement(AvatarCamera, {open: false});
+    avatarCameraElement =
+        initElement(AvatarCamera, {mode: AvatarCameraMode.CAMERA});
     await mockGetUserMediaProxy.whenCalled('getUserMedia');
     const video = avatarCameraElement.shadowRoot!.getElementById(
                       'webcamVideo') as HTMLVideoElement;
@@ -98,7 +99,8 @@ export function AvatarCameraTest() {
   });
 
   test('shows preview confirm/cancel ui after takePhoto click', async () => {
-    avatarCameraElement = initElement(AvatarCamera);
+    avatarCameraElement =
+        initElement(AvatarCamera, {mode: AvatarCameraMode.CAMERA});
     await waitAfterNextRender(avatarCameraElement);
 
     const previewButtonIds = ['confirmPhoto', 'clearPhoto'];
@@ -134,12 +136,13 @@ export function AvatarCameraTest() {
   });
 
   test('calls captureFrames on takePhoto click', async () => {
-    avatarCameraElement = initElement(AvatarCamera);
+    avatarCameraElement =
+        initElement(AvatarCamera, {mode: AvatarCameraMode.CAMERA});
     await waitAfterNextRender(avatarCameraElement);
 
     avatarCameraElement.shadowRoot?.getElementById('takePhoto')?.click();
 
-    const [video, size, interval, numFrames] =
+    let [video, size, interval, numFrames] =
         await mockWebcamUtils.whenCalled('captureFrames');
 
     assertEquals(
@@ -149,10 +152,25 @@ export function AvatarCameraTest() {
     assertDeepEquals({height: 10, width: 10}, size, 'Mock size used');
     assertEquals(10, interval, 'Mock interval value used');
     assertEquals(1, numFrames, 'Single frame requested for photo');
+
+    avatarCameraElement.mode = AvatarCameraMode.VIDEO;
+    await waitAfterNextRender(avatarCameraElement);
+
+    mockWebcamUtils.resetResolver('captureFrames');
+    avatarCameraElement.shadowRoot?.getElementById('takePhoto')?.click();
+
+    [video, size, interval, numFrames] =
+        await mockWebcamUtils.whenCalled('captureFrames');
+
+    assertDeepEquals(
+        {height: 5, width: 5}, size, 'Half mock size used for video');
+    assertEquals(10, interval, 'Same mock interval value used for video');
+    assertEquals(2, numFrames, '2 frames requested for video');
   });
 
   test('calls saveCameraImage with data on confirmPhoto click', async () => {
-    avatarCameraElement = initElement(AvatarCamera);
+    avatarCameraElement =
+        initElement(AvatarCamera, {mode: AvatarCameraMode.CAMERA});
     await waitAfterNextRender(avatarCameraElement);
 
     avatarCameraElement.shadowRoot?.getElementById('takePhoto')?.click();

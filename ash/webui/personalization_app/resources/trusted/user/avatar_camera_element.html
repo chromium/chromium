@@ -18,12 +18,12 @@
   <div slot="footer">
     <template is="dom-if" if="[[!previewBlobUrl_]]">
       <cr-button id="takePhoto" on-click="takePhoto_">
-        $i18n{takeWebcamPhoto}
+        [[getTakePhotoText_(mode)]]
       </cr-button>
     </template>
     <template is="dom-if" if="[[previewBlobUrl_]]">
       <cr-button id="confirmPhoto" on-click="confirmPhoto_">
-        $i18n{confirmWebcamPhoto}
+        [[getConfirmText_(mode)]]
       </cr-button>
       <cr-button id="clearPhoto" on-click="clearPhoto_">
         $i18n{rejectWebcamPhoto}

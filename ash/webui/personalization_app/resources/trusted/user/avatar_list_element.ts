@@ -7,7 +7,7 @@
  * that the user can select from.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -15,7 +15,7 @@ import {isSelectionEvent} from '../../common/utils.js';
 import {DefaultUserImage} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
-import {AvatarCamera} from './avatar_camera_element.js';
+import {AvatarCamera, AvatarCameraMode} from './avatar_camera_element.js';
 import {fetchDefaultUserImages} from './user_controller.js';
 import {getUserProvider} from './user_interface_provider.js';
 
@@ -45,18 +45,18 @@ export class AvatarList extends WithPersonalizationStore {
         observer: 'onIsCameraPresentChanged_',
       },
 
-      /** Whether to show the camera UI to the user. */
-      shouldShowCameraUi_: {
-        type: Boolean,
-        value: false,
-      }
+      /** Whether the camera is off, photo mode, or video mode. */
+      cameraMode_: {
+        type: String,
+        value: null,
+      },
     };
   }
 
   private defaultUserImages_: Array<DefaultUserImage>|null;
   private profileImage_: Url|null;
   private isCameraPresent_: boolean;
-  private shouldShowCameraUi_: boolean;
+  private cameraMode_: AvatarCameraMode|null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -94,12 +94,19 @@ export class AvatarList extends WithPersonalizationStore {
 
   private openCamera_() {
     assert(this.isCameraPresent_, 'Camera needed to record an image');
-    this.shouldShowCameraUi_ = true;
+    this.cameraMode_ = AvatarCameraMode.CAMERA;
+  }
+
+  private openVideo_() {
+    assert(this.isCameraPresent_, 'Camera needed to record a video');
+    this.cameraMode_ = AvatarCameraMode.VIDEO;
   }
 
   private onIsCameraPresentChanged_(value: boolean) {
     // Potentially hide camera UI if the camera has become unavailable.
-    this.shouldShowCameraUi_ = this.shouldShowCameraUi_ && value;
+    if (!value) {
+      this.cameraMode_ = null;
+    }
   }
 
   private onSelectImageFromDisk_(event: Event) {
@@ -111,7 +118,7 @@ export class AvatarList extends WithPersonalizationStore {
   }
 
   private onCameraClosed_() {
-    this.shouldShowCameraUi_ = false;
+    this.cameraMode_ = null;
   }
 }
 

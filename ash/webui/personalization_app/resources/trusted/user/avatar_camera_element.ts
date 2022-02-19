@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
+import {assertInstanceof, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -19,6 +19,40 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {saveCameraImage} from './user_controller.js';
 import {getUserProvider} from './user_interface_provider.js';
 import {GetUserMediaProxy, getWebcamUtils} from './webcam_utils_proxy.js';
+
+
+export const enum AvatarCameraMode {
+  CAMERA = 'camera',
+  VIDEO = 'video',
+}
+
+function getNumFrames(mode: AvatarCameraMode): number {
+  switch (mode) {
+    case AvatarCameraMode.CAMERA:
+      return 1;
+    case AvatarCameraMode.VIDEO:
+      const webcamUtils = getWebcamUtils();
+      return webcamUtils.CAPTURE_DURATION_MS / webcamUtils.CAPTURE_INTERVAL_MS;
+    default:
+      assertNotReached(`Called with impossible AvatarCameraMode: ${mode}`);
+  }
+}
+
+function getCaptureSize(mode: AvatarCameraMode):
+    {height: number, width: number} {
+  const webcamUtils = getWebcamUtils();
+  switch (mode) {
+    case AvatarCameraMode.CAMERA:
+      return webcamUtils.CAPTURE_SIZE;
+    case AvatarCameraMode.VIDEO:
+      return {
+        height: webcamUtils.CAPTURE_SIZE.height / 2,
+        width: webcamUtils.CAPTURE_SIZE.width / 2,
+      };
+    default:
+      assertNotReached(`Called with impossible AvatarCameraMode: ${mode}`);
+  }
+}
 
 export interface AvatarCamera {
   $: {dialog: CrDialogElement; webcamVideo: HTMLVideoElement;};
@@ -35,6 +69,15 @@ export class AvatarCamera extends WithPersonalizationStore {
 
   static get properties() {
     return {
+      /**
+       * Set mode property to switch between camera and video.
+       */
+      mode: {
+        type: String,
+        observer: 'onModeChanged_',
+        value: AvatarCameraMode.CAMERA,
+      },
+
       /** Keep track of the open handle to the webcam. */
       cameraStream_: {
         type: Object,
@@ -59,6 +102,7 @@ export class AvatarCamera extends WithPersonalizationStore {
     };
   }
 
+  mode: AvatarCameraMode;
   private cameraStream_: MediaStream|null;
   private pngBinary_: Uint8Array|null;
   private previewBlobUrl_: string|null;
@@ -95,6 +139,7 @@ export class AvatarCamera extends WithPersonalizationStore {
 
   private async startCamera_() {
     this.stopCamera_();
+
     try {
       this.cameraStream_ = await GetUserMediaProxy.getInstance().getUserMedia();
       if (!this.isConnected) {
@@ -125,9 +170,8 @@ export class AvatarCamera extends WithPersonalizationStore {
     const webcamUtils = getWebcamUtils();
 
     const frames = await webcamUtils.captureFrames(
-        this.$.webcamVideo, webcamUtils.CAPTURE_SIZE,
-        webcamUtils.CAPTURE_INTERVAL_MS,
-        /*num_frames=*/ 1);
+        this.$.webcamVideo, getCaptureSize(this.mode),
+        webcamUtils.CAPTURE_INTERVAL_MS, getNumFrames(this.mode));
 
     this.pngBinary_ = webcamUtils.convertFramesToPngBinary(frames);
   }
@@ -150,6 +194,23 @@ export class AvatarCamera extends WithPersonalizationStore {
   private isVideoHidden_(): boolean {
     return !this.cameraStream_ || !!this.previewBlobUrl_;
   }
+
+
+  private getTakePhotoText_(mode: AvatarCameraMode): string {
+    return mode === AvatarCameraMode.VIDEO ? this.i18n('takeWebcamVideo') :
+                                             this.i18n('takeWebcamPhoto');
+  }
+
+  private getConfirmText_(mode: AvatarCameraMode): string {
+    return mode === AvatarCameraMode.VIDEO ? this.i18n('confirmWebcamVideo') :
+                                             this.i18n('confirmWebcamPhoto');
+  }
 }
 
 customElements.define(AvatarCamera.is, AvatarCamera);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'avatar-camera': AvatarCamera;
+  }
+}

@@ -2005,10 +2005,16 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_AVATAR_TAKE_PHOTO" desc="Label for the button to take a webcam photo">
         Take a photo
       </message>
-      <message name="IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_PHOTO" desc="Label for the button confirm webcam photo">
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_TAKE_VIDEO" desc="Label for the button to take a short webcam video">
+        Create a looping video
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_PHOTO" desc="Label for the button to confirm webcam photo">
         Use this photo
       </message>
-      <message name="IDS_PERSONALIZATION_APP_AVATAR_REJECT_PHOTO" desc="Label for the button to reject webcam photo">
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_VIDEO" desc="Label for the button to confirm webcam video">
+        Use this video 
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_REJECT_PHOTO" desc="Label for the button to reject webcam photo or video">
         Retake
       </message>
       <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL" desc="Label for the Screensaver page in Personalization app.">
