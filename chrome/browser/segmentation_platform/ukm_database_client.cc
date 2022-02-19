@@ -11,7 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
-#include "components/segmentation_platform/internal/ukm_data_manager.h"
+#include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 #include "components/ukm/ukm_service.h"
 
 namespace segmentation_platform {
@@ -24,7 +24,7 @@ UkmDatabaseClient& UkmDatabaseClient::GetInstance() {
 
 UkmDatabaseClient::UkmDatabaseClient()
     : ukm_data_manager_(
-          std::make_unique<segmentation_platform::UkmDataManager>()) {}
+          std::make_unique<segmentation_platform::UkmDataManagerImpl>()) {}
 
 UkmDatabaseClient::~UkmDatabaseClient() = default;
 

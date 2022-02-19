@@ -120,7 +120,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       std::make_unique<HistogramSignalHandler>(signal_database_.get());
   signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
       segment_info_database_.get(), user_action_signal_handler_.get(),
-      histogram_signal_handler_.get());
+      histogram_signal_handler_.get(), ukm_data_manager_);
 
   for (const auto& config : configs_) {
     segment_selectors_[config->segmentation_key] =

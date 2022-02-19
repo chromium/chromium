@@ -16,6 +16,7 @@ namespace segmentation_platform {
 
 class HistogramSignalHandler;
 class UserActionSignalHandler;
+class UkmDataManager;
 
 // Responsible for listening to the metadata updates for the models and
 // registers various signal handlers for the relevant UMA signals specified in
@@ -24,7 +25,8 @@ class SignalFilterProcessor {
  public:
   SignalFilterProcessor(SegmentInfoDatabase* segment_database,
                         UserActionSignalHandler* user_action_signal_handler,
-                        HistogramSignalHandler* histogram_signal_handler);
+                        HistogramSignalHandler* histogram_signal_handler,
+                        UkmDataManager* ukm_data_manager);
   ~SignalFilterProcessor();
 
   // Disallow copy/assign.
@@ -49,6 +51,7 @@ class SignalFilterProcessor {
   raw_ptr<SegmentInfoDatabase> segment_database_;
   raw_ptr<UserActionSignalHandler> user_action_signal_handler_;
   raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
+  raw_ptr<UkmDataManager> ukm_data_manager_;
 
   base::WeakPtrFactory<SignalFilterProcessor> weak_ptr_factory_{this};
 };

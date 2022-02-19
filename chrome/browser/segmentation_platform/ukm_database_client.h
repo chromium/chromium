@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 
 namespace segmentation_platform {
+class UkmDataManagerImpl;
 class UkmDataManager;
 
 // Provides UKM functionality to the segmentation platform service(s).
@@ -37,7 +38,7 @@ class UkmDatabaseClient {
   UkmDatabaseClient();
   ~UkmDatabaseClient();
 
-  std::unique_ptr<segmentation_platform::UkmDataManager> ukm_data_manager_;
+  std::unique_ptr<segmentation_platform::UkmDataManagerImpl> ukm_data_manager_;
 };
 
 }  // namespace segmentation_platform

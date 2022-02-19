@@ -25,5 +25,7 @@ SignalKeyInternalTest.*
 SignalKeyTest.*
 SignalStorageConfigTest.*
 StatsTest.*
+UkmConfigTest.*
+UkmDatabaseBackendTest.*
 UrlSignalHandlerTest.*
 UserActionSignalHandlerTest.*

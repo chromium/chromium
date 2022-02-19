@@ -8,12 +8,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 
 namespace segmentation_platform {
+
+class UkmConfig;
 
 namespace test {
 
@@ -55,6 +59,9 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
                                uint64_t tensor_length,
                                proto::Aggregation aggregation,
                                const std::vector<int32_t>& accepted_enum_ids);
+  void AddSqlFeature(OptimizationTarget segment_id,
+                     const std::string& sql,
+                     const UkmConfig& ukm_config);
   void AddPredictionResult(OptimizationTarget segment_id,
                            float score,
                            base::Time timestamp);

@@ -42,7 +42,7 @@
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
-#include "components/segmentation_platform/internal/ukm_data_manager.h"
+#include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 #include "components/segmentation_platform/public/config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -225,7 +225,7 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
   optimization_guide::TestOptimizationGuideModelProvider model_provider_;
   TestingPrefServiceSimple pref_service_;
   base::SimpleTestClock test_clock_;
-  UkmDataManager ukm_data_manager_;
+  UkmDataManagerImpl ukm_data_manager_;
   std::unique_ptr<SegmentationPlatformServiceImpl>
       segmentation_platform_service_impl_;
   MockServiceProxyObserver observer_;

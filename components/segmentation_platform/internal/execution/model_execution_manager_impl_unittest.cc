@@ -293,11 +293,19 @@ TEST_F(ModelExecutionManagerTest,
   EXPECT_EQ(2, segment_info_from_db_1->prediction_result().result());
   // Verify the metadata features have been stored correctly.
   EXPECT_EQ(proto::SignalType::USER_ACTION,
-            segment_info_from_db_1->model_metadata().features(0).type());
-  EXPECT_EQ("hello",
-            segment_info_from_db_1->model_metadata().features(0).name());
+            segment_info_from_db_1->model_metadata()
+                .input_features(0)
+                .uma_feature()
+                .type());
+  EXPECT_EQ("hello", segment_info_from_db_1->model_metadata()
+                         .input_features(0)
+                         .uma_feature()
+                         .name());
   EXPECT_EQ(proto::Aggregation::BUCKETED_COUNT,
-            segment_info_from_db_1->model_metadata().features(0).aggregation());
+            segment_info_from_db_1->model_metadata()
+                .input_features(0)
+                .uma_feature()
+                .aggregation());
 
   // Create segment info that does not match.
   proto::SegmentInfo segment_info;

@@ -13,11 +13,10 @@
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace segmentation_platform {
-
-namespace test {
+namespace segmentation_platform::test {
 
 namespace {
 void AddFeature(proto::SegmentInfo* segment_info,
@@ -29,7 +28,8 @@ void AddFeature(proto::SegmentInfo* segment_info,
                 const std::vector<int32_t>& accepted_enum_ids) {
   proto::SegmentationModelMetadata* metadata =
       segment_info->mutable_model_metadata();
-  proto::UMAFeature* feature = metadata->add_features();
+  proto::InputFeature* input = metadata->add_input_features();
+  proto::UMAFeature* feature = input->mutable_uma_feature();
   feature->set_type(signal_type);
   feature->set_name(name);
   feature->set_name_hash(base::HashMetricName(name));
@@ -150,6 +150,24 @@ void TestSegmentInfoDatabase::AddHistogramEnumFeature(
              tensor_length, aggregation, accepted_enum_ids);
 }
 
+void TestSegmentInfoDatabase::AddSqlFeature(OptimizationTarget segment_id,
+                                            const std::string& sql,
+                                            const UkmConfig& event_config) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+  auto* metadata = info->mutable_model_metadata();
+  proto::SqlFeature* feature =
+      metadata->add_input_features()->mutable_sql_feature();
+  feature->set_sql(sql);
+  for (const auto& event_it : event_config.metrics_for_event_for_testing()) {
+    auto* ukm_event = feature->mutable_signal_filter()->add_ukm_events();
+    const UkmEventHash event_hash = event_it.first;
+    ukm_event->set_event_hash(event_hash.GetUnsafeValue());
+    const base::flat_set<UkmMetricHash>& metrics = event_it.second;
+    for (const auto& metric : metrics)
+      ukm_event->mutable_metric_hash_filter()->Add(metric.GetUnsafeValue());
+  }
+}
+
 void TestSegmentInfoDatabase::AddPredictionResult(OptimizationTarget segment_id,
                                                   float score,
                                                   base::Time timestamp) {
@@ -204,6 +222,4 @@ proto::SegmentInfo* TestSegmentInfoDatabase::FindOrCreateSegment(
   return info;
 }
 
-}  // namespace test
-
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::test
