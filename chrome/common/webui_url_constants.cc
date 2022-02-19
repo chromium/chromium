@@ -703,6 +703,7 @@ const char* const kChromeHostURLs[] = {
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     kChromeUIExtensionsHost,
+    kChromeUIExtensionsInternalsHost,
 #endif
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     kChromeUIPrintHost,
