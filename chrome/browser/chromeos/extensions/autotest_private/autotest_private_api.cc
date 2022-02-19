@@ -131,6 +131,7 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/metrics/login_event_recorder.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -5474,6 +5475,71 @@ AutotestPrivateResetHoldingSpaceFunction::Run() {
         Error("Failed to call `MarkTimeOfFirstAdd()` after clearing prefs."));
   }
 
+  return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateStartLoginEventRecorderDataCollectionFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateStartLoginEventRecorderDataCollectionFunction::
+    AutotestPrivateStartLoginEventRecorderDataCollectionFunction() = default;
+
+AutotestPrivateStartLoginEventRecorderDataCollectionFunction::
+    ~AutotestPrivateStartLoginEventRecorderDataCollectionFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateStartLoginEventRecorderDataCollectionFunction::Run() {
+  chromeos::LoginEventRecorder::Get()
+      ->PrepareEventCollectionForTesting();  // IN-TEST
+  return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetLoginEventRecorderLoginEventsFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetLoginEventRecorderLoginEventsFunction::
+    AutotestPrivateGetLoginEventRecorderLoginEventsFunction() = default;
+
+AutotestPrivateGetLoginEventRecorderLoginEventsFunction::
+    ~AutotestPrivateGetLoginEventRecorderLoginEventsFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateGetLoginEventRecorderLoginEventsFunction::Run() {
+  const auto& collected_data =
+      chromeos::LoginEventRecorder::Get()
+          ->GetCollectedLoginEventsForTesting();  // IN-TEST
+  std::vector<api::autotest_private::LoginEventRecorderData> result_data;
+  for (const auto& data : collected_data) {
+    api::autotest_private::LoginEventRecorderData event_data;
+    event_data.name = data.name();
+    event_data.microsecnods_since_unix_epoch =
+        (data.time() - base::Time::UnixEpoch()).InMicroseconds();
+    result_data.emplace_back(std::move(event_data));
+  }
+
+  return RespondNow(ArgumentList(
+      api::autotest_private::GetLoginEventRecorderLoginEvents::Results::Create(
+          result_data)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateAddLoginEventForTestingFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateAddLoginEventForTestingFunction::
+    AutotestPrivateAddLoginEventForTestingFunction() = default;
+
+AutotestPrivateAddLoginEventForTestingFunction::
+    ~AutotestPrivateAddLoginEventForTestingFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateAddLoginEventForTestingFunction::Run() {
+  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
+      /*marker_name=*/"AutotestPrivateTestMarker",
+      /*send_to_uma=*/false,
+      /*write_to_file=*/false);
   return RespondNow(NoArguments());
 }
 

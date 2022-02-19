@@ -31741,6 +31741,10 @@ Called by update_extension_histograms.py.-->
   <int value="1626" label="AUTOFILLPRIVATE_ADDVIRTUALCARD"/>
   <int value="1627" label="AUTOFILLPRIVATE_REMOVEVIRTUALCARD"/>
   <int value="1628" label="FILEMANAGERPRIVATE_LISTMOUNTABLEGUESTS"/>
+  <int value="1629"
+      label="AUTOTESTPRIVATE_STARTLOGINEVENTRECORDERDATACOLLECTION"/>
+  <int value="1630" label="AUTOTESTPRIVATE_GETLOGINEVENTRECORDERLOGINEVENTS"/>
+  <int value="1631" label="AUTOTESTPRIVATE_ADDLOGINEVENTFORTESTING"/>
 </enum>
 
 <enum name="ExtensionIconState">

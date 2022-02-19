@@ -1478,6 +1478,43 @@ class AutotestPrivateResetHoldingSpaceFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutotestPrivateStartLoginEventRecorderDataCollectionFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateStartLoginEventRecorderDataCollectionFunction();
+  DECLARE_EXTENSION_FUNCTION(
+      "autotestPrivate.startLoginEventRecorderDataCollection",
+      AUTOTESTPRIVATE_STARTLOGINEVENTRECORDERDATACOLLECTION)
+
+ private:
+  ~AutotestPrivateStartLoginEventRecorderDataCollectionFunction() override;
+  ResponseAction Run() override;
+};
+
+class AutotestPrivateGetLoginEventRecorderLoginEventsFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateGetLoginEventRecorderLoginEventsFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getLoginEventRecorderLoginEvents",
+                             AUTOTESTPRIVATE_GETLOGINEVENTRECORDERLOGINEVENTS)
+
+ private:
+  ~AutotestPrivateGetLoginEventRecorderLoginEventsFunction() override;
+  ResponseAction Run() override;
+};
+
+class AutotestPrivateAddLoginEventForTestingFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateAddLoginEventForTestingFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.addLoginEventForTesting",
+                             AUTOTESTPRIVATE_ADDLOGINEVENTFORTESTING)
+
+ private:
+  ~AutotestPrivateAddLoginEventForTestingFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(
