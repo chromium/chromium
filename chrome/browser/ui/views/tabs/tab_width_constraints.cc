@@ -8,7 +8,7 @@
 #include "ui/gfx/animation/tween.h"
 
 TabWidthConstraints::TabWidthConstraints(
-    const TabAnimationState& state,
+    const TabLayoutState& state,
     const TabLayoutConstants& layout_constants,
     const TabSizeInfo& size_info)
     : state_(state),
@@ -16,9 +16,9 @@ TabWidthConstraints::TabWidthConstraints(
       size_info_(size_info) {}
 
 float TabWidthConstraints::GetMinimumWidth() const {
-  const float min_width = gfx::Tween::FloatValueBetween(
-      state_.activeness(), size_info_.min_inactive_width,
-      size_info_.min_active_width);
+  const float min_width = state_.active() == TabActive::kActive
+                              ? size_info_.min_active_width
+                              : size_info_.min_inactive_width;
   return TransformForPinnednessAndOpenness(min_width);
 }
 
@@ -32,8 +32,9 @@ float TabWidthConstraints::GetPreferredWidth() const {
 
 float TabWidthConstraints::TransformForPinnednessAndOpenness(
     float width) const {
-  const float pinned_width = gfx::Tween::FloatValueBetween(
-      state_.pinnedness(), width, size_info_.pinned_tab_width);
-  return gfx::Tween::FloatValueBetween(
-      state_.openness(), layout_constants_.tab_overlap, pinned_width);
+  const float pinned_width = state_.pinned() == TabPinned::kPinned
+                                 ? size_info_.pinned_tab_width
+                                 : width;
+  return state_.open() == TabOpen::kOpen ? pinned_width
+                                         : layout_constants_.tab_overlap;
 }

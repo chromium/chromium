@@ -11,7 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
-#include "chrome/browser/ui/views/tabs/tab_animation_state.h"
+#include "chrome/browser/ui/views/tabs/tab_layout_state.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
@@ -139,9 +139,6 @@ class TabStripLayoutHelper {
   // Given a group ID, returns the index of its header's corresponding TabSlot
   // in |slots_|.
   int GetSlotIndexForGroupHeader(tab_groups::TabGroupId group) const;
-
-  // Returns the current width constraints for each View.
-  std::vector<TabWidthConstraints> GetCurrentTabWidthConstraints() const;
 
   // Compares |cached_slots_| to the TabAnimations in |animator_| and DCHECKs if
   // the TabAnimation::ViewType do not match. Prevents bugs that could cause the
