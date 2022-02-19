@@ -4,7 +4,7 @@
 
 import {UserSubpage} from 'chrome://personalization/trusted/user/user_subpage_element.js';
 
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {initElement, teardownElement} from './personalization_app_test_utils.js';
 
@@ -20,7 +20,11 @@ export function UserSubpageTest() {
 
   test('displays content', async () => {
     userSubpageElement = initElement(UserSubpage);
-    assertEquals(
-        'User', userSubpageElement.shadowRoot!.querySelector('h2')!.innerText);
+    const userPreview =
+        userSubpageElement.shadowRoot!.querySelector('user-preview');
+    assertTrue(!!userPreview);
+    const avatarList =
+        userSubpageElement.shadowRoot!.querySelector('avatar-list');
+    assertTrue(!!avatarList);
   });
 }

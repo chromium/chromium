@@ -1,6 +1,25 @@
-<style></style>
+<style>
+  #container {
+    display: grid;
+    grid-template-areas:
+      '. . userpreview . .'
+      '. . avatars     . .'
+      '. . .           . .';
+    grid-template-columns: 1fr 24px minmax(568px, 920px) 24px 1fr;
+    grid-template-rows: auto auto 12px;
+  }
+  user-preview {
+    grid-area: userpreview;
+    margin-bottom: 16px;
+  }
+  avatar-list {
+    grid-area: avatars;
+  }
+  user-preview + avatar-list {
+    border-top: 1px solid var(--cros-separator-color);
+  }
+</style>
 <div id="container">
-  <h2>User</h2>
   <user-preview></user-preview>
   <avatar-list></avatar-list>
 </div>
