@@ -190,6 +190,12 @@
   from { transform: translate(100px, 0) }
   to { --not-used: 200px }
 }
+
+@keyframes anim-only-timing-function-for-from-and-to {
+    from, to { animation-timing-function: linear }
+    50% { left: 10px }
+}
+
 </style>
 <body>
 <div id="log"></div>
@@ -829,6 +835,24 @@ test(t => {
     'Keyframes reflects the updated @keyframes rule'
   );
 }, 'KeyframeEffect.getKeyframes() reflects changes to @keyframes rules');
+
+test(t => {
+  const div = addDiv(t);
+  div.style.animation = 'anim-only-timing-function-for-from-and-to 100s';
+
+  const frames = getKeyframes(div);
+
+  const expected = [
+    { offset: 0,   computedOffset: 0,   easing: "ease",   composite: "auto", left: "auto" },
+    { offset: 0,   computedOffset: 0,   easing: "linear", composite: "auto" },
+    { offset: 0.5, computedOffset: 0.5, easing: "ease",   composite: "auto", left: "10px" },
+    { offset: 1,   computedOffset: 1,   easing: "linear", composite: "auto" },
+    { offset: 1,   computedOffset: 1,   easing: "ease",   composite: "auto", left: "auto" }
+  ];
+  assert_frame_lists_equal(frames, expected);
+}, 'KeyframeEffect.getKeyframes() returns expected values for ' +
+   'animations with implicit values and a non-default timing' +
+   'function specified for 0% and 100%');
 
 </script>
 </body>

@@ -19,7 +19,6 @@ cookie_test(async t => {
   document.cookie = initiator_cookie;
   const result = await exec(() => {
     const result = document.cookie;
-    prerender_log(result);
     document.cookie = "prerender_cookie=exist;path=/;";
     return result;
   });

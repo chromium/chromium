@@ -3290,6 +3290,20 @@ crbug.com/626703 [ Linux ] external/wpt/url/failure.html [ Failure ]
 crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/workers.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Failure Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.13 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.14 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/sandboxed-features.https.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-shadows.https.html [ Failure ]
+crbug.com/626703 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
+crbug.com/626703 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
+crbug.com/626703 [ Mac10.13 ] virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
+crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-color/deprecated-sameas-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/deprecated-sameas-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/deprecated-sameas-006.html [ Failure ]
@@ -7616,13 +7630,13 @@ crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ 
 crbug.com/1243128 http/tests/devtools/extensions/extensions-useragent.js [ Failure Pass ]
 
 # Sheriff 2022-02-15
-crbug.com/1297553 external/wpt/fetch/api/basic/response-null-body.any.sharedworker.html [ Pass Failure ]
-crbug.com/1297587 [ Mac10.12 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Pass Failure ]
+crbug.com/1297553 external/wpt/fetch/api/basic/response-null-body.any.sharedworker.html [ Failure Pass ]
+crbug.com/1297587 [ Mac10.12 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass ]
 
 # Sheriff 2022-02-16
 crbug.com/1297416 [ Mac Release ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.html [ Failure Pass ]
 crbug.com/1297416 [ Linux Release ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.html [ Failure Pass ]
-crbug.com/1297416 [ Win10.20h2 Release ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.html [ Failure Pass ]
+crbug.com/1297416 [ Release Win10.20h2 ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.html [ Failure Pass ]
 
 crbug.com/1296179 [ Mac Release ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
 crbug.com/1296179 [ Linux Release ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]

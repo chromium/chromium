@@ -26,7 +26,7 @@
       }
 
       window.addEventListener('error', error =>
-        logChannel.postMessage('[Prerendered Page Error]', {message: error.message, stack: error.stack}));
+        logChannel.postMessage(['[Prerendered Page Error]', {message: error.message, stack: error.stack}]));
 
       window.prerender_log('Channel Created');
       new PrerenderChannel(uuid, 'ready').postMessage({});

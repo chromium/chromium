@@ -246,7 +246,6 @@ function test_prerender_defer(fn, label) {
         resolve(result);
       }));
 
-    await new Promise(resolve => t.step_timeout(resolve, 100));
     await activate();
     activated = true;
     await post;
