@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -130,26 +131,21 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
   }
 
   absl::optional<SkColor> color;
+  const auto* tp = GetThemeProvider();
   switch (type_and_severity_.severity) {
     case AppMenuIconController::Severity::NONE:
       break;
     case AppMenuIconController::Severity::LOW:
-      color = AdjustHighlightColorForContrast(
-          GetThemeProvider(), gfx::kGoogleGreen300, gfx::kGoogleGreen600,
-          gfx::kGoogleGreen050, gfx::kGoogleGreen900);
-
+      color =
+          tp->GetColor(ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_LOW);
       break;
     case AppMenuIconController::Severity::MEDIUM:
-      color = AdjustHighlightColorForContrast(
-          GetThemeProvider(), gfx::kGoogleYellow300, gfx::kGoogleYellow600,
-          gfx::kGoogleYellow050, gfx::kGoogleYellow900);
-
+      color = tp->GetColor(
+          ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_MEDIUM);
       break;
     case AppMenuIconController::Severity::HIGH:
-      color = AdjustHighlightColorForContrast(
-          GetThemeProvider(), gfx::kGoogleRed300, gfx::kGoogleRed600,
-          gfx::kGoogleRed050, gfx::kGoogleRed900);
-
+      color =
+          tp->GetColor(ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_HIGH);
       break;
   }
 

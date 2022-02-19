@@ -24,6 +24,7 @@
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/views_features.h"
 
 namespace {
 
@@ -245,7 +246,16 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabForegroundActiveFrameActive] = {ui::kColorNativeHighlightText};
   mixer[kColorToolbar] = {ui::kColorNativeWindow};
   mixer[kColorToolbarButtonIcon] = {kColorToolbarText};
+  const bool platform_high_contrast_ink_drop = base::FeatureList::IsEnabled(
+      views::features::kEnablePlatformHighContrastInkDrop);
+  if (platform_high_contrast_ink_drop)
+    mixer[kColorToolbarButtonIconHovered] = {ui::kColorNativeHighlightText};
+  else
+    mixer[kColorToolbarButtonIconHovered] = {kColorToolbarText};
+  mixer[kColorToolbarButtonIconInactive] = {ui::kColorNativeGrayText};
   mixer[kColorToolbarContentAreaSeparator] = {kColorToolbarText};
+  if (platform_high_contrast_ink_drop)
+    mixer[kColorToolbarInkDrop] = {ui::kColorNativeHighlight};
   mixer[kColorToolbarSeparator] = {ui::kColorNativeWindowText};
   mixer[kColorToolbarText] = {ui::kColorNativeBtnText};
 }

@@ -4788,8 +4788,6 @@ static_library("ui") {
       "views/user_education/browser_feature_promo_controller.h",
       "views/user_education/browser_user_education_service.cc",
       "views/user_education/browser_user_education_service.h",
-      "views/user_education/feature_promo_colors.cc",
-      "views/user_education/feature_promo_colors.h",
       "views/user_education/help_bubble_factory_views.cc",
       "views/user_education/help_bubble_factory_views.h",
       "views/user_education/help_bubble_view.cc",

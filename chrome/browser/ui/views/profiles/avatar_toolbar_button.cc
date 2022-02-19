@@ -141,6 +141,7 @@ void AvatarToolbarButton::UpdateText() {
   absl::optional<SkColor> color;
   std::u16string text;
 
+  const auto* tp = GetThemeProvider();
   switch (delegate_->GetState()) {
     case State::kIncognitoProfile: {
       const int incognito_window_count = delegate_->GetWindowCount();
@@ -155,15 +156,13 @@ void AvatarToolbarButton::UpdateText() {
       break;
     }
     case State::kSyncError:
-      color = AdjustHighlightColorForContrast(
-          GetThemeProvider(), gfx::kGoogleRed300, gfx::kGoogleRed600,
-          gfx::kGoogleRed050, gfx::kGoogleRed900);
+      color = tp->GetColor(
+          ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_ERROR);
       text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR);
       break;
     case State::kSyncPaused:
-      color = AdjustHighlightColorForContrast(
-          GetThemeProvider(), gfx::kGoogleBlue300, gfx::kGoogleBlue600,
-          gfx::kGoogleBlue050, gfx::kGoogleBlue900);
+      color = tp->GetColor(
+          ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_PAUSED);
       text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
       break;
     case State::kGuestSession: {
@@ -184,9 +183,8 @@ void AvatarToolbarButton::UpdateText() {
     }
     case State::kNormal:
       if (delegate_->IsHighlightAnimationVisible()) {
-        color = AdjustHighlightColorForContrast(
-            GetThemeProvider(), gfx::kGoogleBlue300, gfx::kGoogleBlue600,
-            gfx::kGoogleBlue050, gfx::kGoogleBlue900);
+        color =
+            tp->GetColor(ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_NORMAL);
       }
       break;
   }

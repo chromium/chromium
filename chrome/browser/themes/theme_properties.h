@@ -101,16 +101,29 @@ class ThemeProperties {
     // The color of the border drawn around the location bar.
     COLOR_LOCATION_BAR_BORDER = 1000,
 
+    COLOR_APP_MENU_HIGHLIGHT_SEVERITY_LOW,
+    COLOR_APP_MENU_HIGHLIGHT_SEVERITY_HIGH,
+    COLOR_APP_MENU_HIGHLIGHT_SEVERITY_MEDIUM,
+    COLOR_AVATAR_BUTTON_HIGHLIGHT_NORMAL,
+    COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_ERROR,
+    COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_PAUSED,
+    COLOR_READ_LATER_BUTTON_HIGHLIGHT,
+
+    COLOR_TOOLBAR_BUTTON_BACKGROUND,
+    COLOR_TOOLBAR_BUTTON_BORDER,
+    COLOR_TOOLBAR_BUTTON_ICON_HOVERED,
+    COLOR_TOOLBAR_BUTTON_ICON_INACTIVE,
+    COLOR_TOOLBAR_BUTTON_ICON_PRESSED,
+    COLOR_TOOLBAR_BUTTON_TEXT,
+
     // The color of the line separating the bottom of the toolbar from the
     // contents.
     COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR,
 
-    // The color of a toolbar button's icon when it is being hovered or pressed.
-    COLOR_TOOLBAR_BUTTON_ICON_HOVERED,
-    COLOR_TOOLBAR_BUTTON_ICON_PRESSED,
+    COLOR_TOOLBAR_FEATURE_PROMO_HIGHLIGHT,
 
-    // The color of a disabled toolbar button's icon.
-    COLOR_TOOLBAR_BUTTON_ICON_INACTIVE,
+    // Opaque base color for toolbar button ink drops.
+    COLOR_TOOLBAR_INK_DROP,
 
     // The color of the line separating the top of the toolbar from the region
     // above. For a tabbed browser window, this is the line along the bottom
@@ -126,9 +139,6 @@ class ThemeProperties {
     // Colors of vertical separators, such as on the bookmark bar or on the DL
     // shelf.
     COLOR_TOOLBAR_VERTICAL_SEPARATOR,
-
-    // Opaque base color for toolbar button ink drops.
-    COLOR_TOOLBAR_INK_DROP,
 
     // Colors used for various 'shelves' and 'bars'.
     // Download shelf colors.

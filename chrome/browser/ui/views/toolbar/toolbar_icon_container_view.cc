@@ -50,7 +50,8 @@ void ToolbarIconContainerView::RoundRectBorder::OnPaintLayer(
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(1);
-  flags.setColor(ToolbarButton::GetDefaultBorderColor(parent_));
+  flags.setColor(parent_->GetThemeProvider()->GetColor(
+      ThemeProperties::COLOR_TOOLBAR_BUTTON_BORDER));
   gfx::RectF rect(gfx::SizeF(layer_.size()));
   rect.Inset(0.5f, 0.5f);  // Pixel edges -> pixel centers.
   canvas->DrawRoundRect(rect, radius, flags);

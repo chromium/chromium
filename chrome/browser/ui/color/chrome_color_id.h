@@ -11,15 +11,30 @@
 
 // clang-format off
 #define COMMON_CHROME_COLOR_IDS \
-  /* Bookmark Bar colors. */ \
+  /* App menu colors. */ \
+  E(kColorAppMenuHighlightSeverityLow, \
+    ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_LOW, \
+    kChromeColorsStart) \
+  E(kColorAppMenuHighlightSeverityHigh, \
+    ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_HIGH) \
+  E(kColorAppMenuHighlightSeverityMedium, \
+    ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_MEDIUM) \
+  /* Avatar colors. */ \
+  E(kColorAvatarButtonHighlightNormal, \
+    ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_NORMAL) \
+  E(kColorAvatarButtonHighlightSyncError, \
+    ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_ERROR) \
+  E(kColorAvatarButtonHighlightSyncPaused, \
+    ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_PAUSED) \
+  /* Bookmark bar colors. */ \
   E(kColorBookmarkBarBackground, \
-    ThemeProperties::COLOR_BOOKMARK_BAR_BACKGROUND, kChromeColorsStart) \
+    ThemeProperties::COLOR_BOOKMARK_BAR_BACKGROUND) \
   E(kColorBookmarkBarForeground, ThemeProperties::COLOR_BOOKMARK_TEXT) \
   E(kColorBookmarkBarSeparator, ThemeProperties::COLOR_BOOKMARK_SEPARATOR) \
   E(kColorBookmarkButtonIcon, ThemeProperties::COLOR_BOOKMARK_BUTTON_ICON) \
   E(kColorBookmarkFavicon, ThemeProperties::COLOR_BOOKMARK_FAVICON) \
   E_CPONLY(kColorBookmarkFolderIcon) \
-  /* Download Shelf colors. */ \
+  /* Download shelf colors. */ \
   E(kColorDownloadShelf, ThemeProperties::COLOR_DOWNLOAD_SHELF) \
   E(kColorDownloadShelfButtonBackground, \
     ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND) \
@@ -75,6 +90,9 @@
     ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_SECURE) \
   E(kColorOmniboxText, ThemeProperties::COLOR_OMNIBOX_TEXT) \
   E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
+  /* Read Later button colors. */ \
+  E(kColorReadLaterButtonHighlight, \
+    ThemeProperties::COLOR_READ_LATER_BUTTON_HIGHLIGHT) \
   /* Tab colors. */ \
   E(kColorTabBackgroundActiveFrameActive, \
     ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE) \
@@ -108,9 +126,22 @@
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_YELLOW) \
   /* Toolbar colors. */ \
   E(kColorToolbar, ThemeProperties::COLOR_TOOLBAR) \
+  E(kColorToolbarButtonBackground, \
+    ThemeProperties::COLOR_TOOLBAR_BUTTON_BACKGROUND) \
+  E(kColorToolbarButtonBorder, ThemeProperties::COLOR_TOOLBAR_BUTTON_BORDER) \
   E(kColorToolbarButtonIcon, ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON) \
+  E(kColorToolbarButtonIconHovered, \
+    ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED) \
+  E(kColorToolbarButtonIconInactive, \
+    ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_INACTIVE) \
+  E(kColorToolbarButtonIconPressed, \
+    ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_PRESSED) \
+  E(kColorToolbarButtonText, ThemeProperties::COLOR_TOOLBAR_BUTTON_TEXT) \
   E(kColorToolbarContentAreaSeparator, \
     ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR) \
+  E(kColorToolbarFeaturePromoHighlight, \
+    ThemeProperties::COLOR_TOOLBAR_FEATURE_PROMO_HIGHLIGHT) \
+  E(kColorToolbarInkDrop, ThemeProperties::COLOR_TOOLBAR_INK_DROP) \
   E(kColorToolbarSeparator, \
     ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR) \
   E(kColorToolbarText, ThemeProperties::COLOR_TOOLBAR_TEXT)

@@ -51,6 +51,7 @@ source_set("mixers") {
       "//ui/base",
       "//ui/color:accent_color_observer",
       "//ui/native_theme",
+      "//ui/views",
     ]
   }
 }

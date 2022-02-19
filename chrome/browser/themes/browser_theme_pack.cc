@@ -97,7 +97,7 @@ constexpr int kTallestFrameHeight = kTallestTabHeight + 19;
 // changed default theme assets, if you need themes to recreate their generated
 // images (which are cached), if you changed how missing values are
 // generated, or if you changed any constants.
-const int kThemePackVersion = 85;
+const int kThemePackVersion = 86;
 
 // IDs that are in the DataPack won't clash with the positive integer
 // uint16_t. kHeaderID should always have the maximum value because we want the
@@ -1096,6 +1096,8 @@ void BrowserThemePack::AddColorMixers(
       {TP::COLOR_TAB_THROBBER_WAITING, ui::kColorThrobberPreconnect},
       {TP::COLOR_TOOLBAR, kColorToolbar},
       {TP::COLOR_TOOLBAR_BUTTON_ICON, kColorToolbarButtonIcon},
+      {TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED, kColorToolbarButtonIconHovered},
+      {TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED, kColorToolbarButtonIconPressed},
       {TP::COLOR_TOOLBAR_TEXT, kColorToolbarText},
       /* Tab Group Colors */
       {TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREY, kColorTabGroupContextMenuGrey},
