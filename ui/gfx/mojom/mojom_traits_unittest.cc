@@ -118,22 +118,22 @@ TEST_F(StructTraitsTest, Transform) {
   mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
   gfx::Transform output;
   remote->EchoTransform(input, &output);
-  EXPECT_EQ(col1row1, output.matrix().get(0, 0));
-  EXPECT_EQ(col2row1, output.matrix().get(0, 1));
-  EXPECT_EQ(col3row1, output.matrix().get(0, 2));
-  EXPECT_EQ(col4row1, output.matrix().get(0, 3));
-  EXPECT_EQ(col1row2, output.matrix().get(1, 0));
-  EXPECT_EQ(col2row2, output.matrix().get(1, 1));
-  EXPECT_EQ(col3row2, output.matrix().get(1, 2));
-  EXPECT_EQ(col4row2, output.matrix().get(1, 3));
-  EXPECT_EQ(col1row3, output.matrix().get(2, 0));
-  EXPECT_EQ(col2row3, output.matrix().get(2, 1));
-  EXPECT_EQ(col3row3, output.matrix().get(2, 2));
-  EXPECT_EQ(col4row3, output.matrix().get(2, 3));
-  EXPECT_EQ(col1row4, output.matrix().get(3, 0));
-  EXPECT_EQ(col2row4, output.matrix().get(3, 1));
-  EXPECT_EQ(col3row4, output.matrix().get(3, 2));
-  EXPECT_EQ(col4row4, output.matrix().get(3, 3));
+  EXPECT_EQ(col1row1, output.matrix().rc(0, 0));
+  EXPECT_EQ(col2row1, output.matrix().rc(0, 1));
+  EXPECT_EQ(col3row1, output.matrix().rc(0, 2));
+  EXPECT_EQ(col4row1, output.matrix().rc(0, 3));
+  EXPECT_EQ(col1row2, output.matrix().rc(1, 0));
+  EXPECT_EQ(col2row2, output.matrix().rc(1, 1));
+  EXPECT_EQ(col3row2, output.matrix().rc(1, 2));
+  EXPECT_EQ(col4row2, output.matrix().rc(1, 3));
+  EXPECT_EQ(col1row3, output.matrix().rc(2, 0));
+  EXPECT_EQ(col2row3, output.matrix().rc(2, 1));
+  EXPECT_EQ(col3row3, output.matrix().rc(2, 2));
+  EXPECT_EQ(col4row3, output.matrix().rc(2, 3));
+  EXPECT_EQ(col1row4, output.matrix().rc(3, 0));
+  EXPECT_EQ(col2row4, output.matrix().rc(3, 1));
+  EXPECT_EQ(col3row4, output.matrix().rc(3, 2));
+  EXPECT_EQ(col4row4, output.matrix().rc(3, 3));
 }
 
 TEST_F(StructTraitsTest, AcceleratedWidget) {

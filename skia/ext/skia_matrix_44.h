@@ -181,7 +181,7 @@ class SK_API Matrix44 {
    *  (0, 3)  translate-x
    *  (3, 0)  perspective-x
    */
-  inline SkScalar get(int row, int col) const {
+  inline SkScalar rc(int row, int col) const {
     SkASSERT((unsigned)row <= 3);
     SkASSERT((unsigned)col <= 3);
     return fMat[col][row];
@@ -193,24 +193,11 @@ class SK_API Matrix44 {
    *  (0, 3)  translate-x
    *  (3, 0)  perspective-x
    */
-  inline void set(int row, int col, SkScalar value) {
+  inline void setRC(int row, int col, SkScalar value) {
     SkASSERT((unsigned)row <= 3);
     SkASSERT((unsigned)col <= 3);
     fMat[col][row] = value;
     this->recomputeTypeMask();
-  }
-
-  inline double getDouble(int row, int col) const {
-    return double(this->get(row, col));
-  }
-  inline void setDouble(int row, int col, double value) {
-    this->set(row, col, SkScalar(value));
-  }
-  inline float getFloat(int row, int col) const {
-    return float(this->get(row, col));
-  }
-  inline void setFloat(int row, int col, float value) {
-    this->set(row, col, value);
   }
 
   /** These methods allow one to efficiently read matrix entries into an

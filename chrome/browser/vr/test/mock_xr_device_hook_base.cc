@@ -43,7 +43,7 @@ device_test::mojom::ControllerFrameDataPtr DeviceToMojoControllerFrameData(
   ret->pose_data->device_to_origin = gfx::Transform();
   for (int col = 0; col < 4; ++col) {
     for (int row = 0; row < 4; ++row) {
-      ret->pose_data->device_to_origin->matrix().set(
+      ret->pose_data->device_to_origin->matrix().setRC(
           row, col, data.pose_data.device_to_origin[row + col * 4]);
     }
   }

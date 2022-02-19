@@ -20,8 +20,7 @@ struct ArrayTraits<skia::Matrix44> {
   static size_t GetSize(const skia::Matrix44& input) { return 16; }
 
   static float GetAt(const skia::Matrix44& input, size_t index) {
-    return input.getFloat(static_cast<int>(index % 4),
-                          static_cast<int>(index / 4));
+    return input.rc(static_cast<int>(index % 4), static_cast<int>(index / 4));
   }
 };
 

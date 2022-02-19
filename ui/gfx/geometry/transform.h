@@ -139,7 +139,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Returns true if the matrix is either the identity or a 2d translation.
   bool IsIdentityOr2DTranslation() const {
-    return matrix_.isTranslate() && matrix_.get(2, 3) == 0;
+    return matrix_.isTranslate() && matrix_.rc(2, 3) == 0;
   }
 
   // Returns true if the matrix is either identity or pure translation,
@@ -151,8 +151,8 @@ class GEOMETRY_SKIA_EXPORT Transform {
   bool IsPositiveScaleOrTranslation() const {
     if (!IsScaleOrTranslation())
       return false;
-    return matrix_.get(0, 0) > 0.0 && matrix_.get(1, 1) > 0.0 &&
-           matrix_.get(2, 2) > 0.0;
+    return matrix_.rc(0, 0) > 0.0 && matrix_.rc(1, 1) > 0.0 &&
+           matrix_.rc(2, 2) > 0.0;
   }
 
   // Returns true if the matrix is identity or, if the matrix consists only
@@ -165,7 +165,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   bool IsScale() const { return matrix_.isScale(); }
 
   // Returns true if the matrix has only x and y scaling components.
-  bool IsScale2d() const { return IsScale() && matrix_.get(2, 2) == 1; }
+  bool IsScale2d() const { return IsScale() && matrix_.rc(2, 2) == 1; }
 
   // Returns true if the matrix is has only scaling and translation components.
   bool IsScaleOrTranslation() const { return matrix_.isScaleTranslate(); }
@@ -222,7 +222,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Returns the x and y scale components of the matrix.
   gfx::Vector2dF To2dScale() const {
-    return gfx::Vector2dF(matrix_.get(0, 0), matrix_.get(1, 1));
+    return gfx::Vector2dF(matrix_.rc(0, 0), matrix_.rc(1, 1));
   }
 
   // Applies the transformation to the point.

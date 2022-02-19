@@ -67,10 +67,10 @@ bool GetCalibratedTransform(
   // |xt_4  yt_4  1  0|
   skia::Matrix44 touch_point_matrix;
   for (int row = 0; row < 4; row++) {
-    touch_point_matrix.set(row, 0, touch_point_pairs[row].second.x());
-    touch_point_matrix.set(row, 1, touch_point_pairs[row].second.y());
-    touch_point_matrix.set(row, 2, 1);
-    touch_point_matrix.set(row, 3, 0);
+    touch_point_matrix.setRC(row, 0, touch_point_pairs[row].second.x());
+    touch_point_matrix.setRC(row, 1, touch_point_pairs[row].second.y());
+    touch_point_matrix.setRC(row, 2, 1);
+    touch_point_matrix.setRC(row, 3, 0);
   }
   skia::Matrix44 touch_point_matrix_transpose(touch_point_matrix);
   touch_point_matrix_transpose.transpose();
@@ -80,7 +80,7 @@ bool GetCalibratedTransform(
 
   // Set (3, 3) = 1 so that |determinent| of the matrix is != 0 and the inverse
   // can be calculated.
-  product_matrix.set(3, 3, 1);
+  product_matrix.setRC(3, 3, 1);
 
   skia::Matrix44 product_matrix_inverse;
 
@@ -91,7 +91,7 @@ bool GetCalibratedTransform(
     return false;
   }
 
-  product_matrix_inverse.set(3, 3, 0);
+  product_matrix_inverse.setRC(3, 3, 0);
 
   product_matrix = product_matrix_inverse * touch_point_matrix_transpose;
 

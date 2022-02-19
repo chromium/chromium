@@ -2550,7 +2550,7 @@ TEST_F(ViewTest, TransformPaint) {
   // Rotate |v1| counter-clockwise.
   gfx::Transform transform;
   RotateCounterclockwise(&transform);
-  transform.matrix().set(1, 3, 500.0);
+  transform.matrix().setRC(1, 3, 500.0);
   v1->SetTransform(transform);
 
   // |v2| now occupies (100, 200) to (200, 400) in |root|.
@@ -2584,7 +2584,7 @@ TEST_F(ViewTest, TransformEvent) {
   // Rotate |v1| counter-clockwise.
   gfx::Transform transform(v1->GetTransform());
   RotateCounterclockwise(&transform);
-  transform.matrix().set(1, 3, 500.0);
+  transform.matrix().setRC(1, 3, 500.0);
   v1->SetTransform(transform);
 
   // |v2| now occupies (100, 200) to (200, 400) in |root|.
@@ -2607,7 +2607,7 @@ TEST_F(ViewTest, TransformEvent) {
   // Now rotate |v2| inside |v1| clockwise.
   transform = v2->GetTransform();
   RotateClockwise(&transform);
-  transform.matrix().set(0, 3, 100.f);
+  transform.matrix().setRC(0, 3, 100.f);
   v2->SetTransform(transform);
 
   // Now, |v2| occupies (100, 100) to (200, 300) in |v1|, and (100, 300) to
@@ -2637,13 +2637,13 @@ TEST_F(ViewTest, TransformEvent) {
   // Rotate |v3| clockwise with respect to |v2|.
   transform = v1->GetTransform();
   RotateClockwise(&transform);
-  transform.matrix().set(0, 3, 30.f);
+  transform.matrix().setRC(0, 3, 30.f);
   v3->SetTransform(transform);
 
   // Scale |v2| with respect to |v1| along both axis.
   transform = v2->GetTransform();
-  transform.matrix().set(0, 0, 0.8f);
-  transform.matrix().set(1, 1, 0.5f);
+  transform.matrix().setRC(0, 0, 0.8f);
+  transform.matrix().setRC(1, 1, 0.5f);
   v2->SetTransform(transform);
 
   // |v3| occupies (108, 105) to (132, 115) in |root|.
@@ -2674,7 +2674,7 @@ TEST_F(ViewTest, TransformEvent) {
   // Rotate |v3| clockwise with respect to |v2|, and scale it along both axis.
   transform = v3->GetTransform();
   RotateClockwise(&transform);
-  transform.matrix().set(0, 3, 30.f);
+  transform.matrix().setRC(0, 3, 30.f);
   // Rotation sets some scaling transformation. Using SetScale would overwrite
   // that and pollute the rotation. So combine the scaling with the existing
   // transforamtion.
@@ -2685,8 +2685,8 @@ TEST_F(ViewTest, TransformEvent) {
 
   // Translate |v2| with respect to |v1|.
   transform = v2->GetTransform();
-  transform.matrix().set(0, 3, 10.f);
-  transform.matrix().set(1, 3, 10.f);
+  transform.matrix().setRC(0, 3, 10.f);
+  transform.matrix().setRC(1, 3, 10.f);
   v2->SetTransform(transform);
 
   // |v3| now occupies (120, 120) to (144, 130) in |root|.
@@ -2727,7 +2727,7 @@ TEST_F(ViewTest, TransformVisibleBound) {
   // Rotate |child| counter-clockwise
   gfx::Transform transform;
   RotateCounterclockwise(&transform);
-  transform.matrix().set(1, 3, 50.f);
+  transform.matrix().setRC(1, 3, 50.f);
   child->SetTransform(transform);
   EXPECT_EQ(gfx::Rect(40, 0, 10, 50), child->GetVisibleBounds());
 
@@ -3136,7 +3136,7 @@ TEST_F(ViewTest, ConvertRectWithTransform) {
   // Rotate |v2|
   gfx::Transform t2;
   RotateCounterclockwise(&t2);
-  t2.matrix().set(1, 3, 100.f);
+  t2.matrix().setRC(1, 3, 100.f);
   v2->SetTransform(t2);
 
   // |v2| now occupies (30, 30) to (230, 130) in |widget|
@@ -4233,13 +4233,13 @@ TEST_F(ViewLayerTest, ToggleVisibilityWithTransform) {
   gfx::Transform transform;
   transform.Scale(2.0, 2.0);
   view->SetTransform(transform);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
 
   view->SetVisible(false);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
 
   view->SetVisible(true);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
 }
 
 // Verifies a transform persists after removing/adding a view with a transform.
@@ -4248,17 +4248,17 @@ TEST_F(ViewLayerTest, ResetTransformOnLayerAfterAdd) {
   gfx::Transform transform;
   transform.Scale(2.0, 2.0);
   view->SetTransform(transform);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
   ASSERT_TRUE(view->layer() != nullptr);
-  EXPECT_EQ(2.0f, view->layer()->transform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->layer()->transform().matrix().rc(0, 0));
 
   View* parent = view->parent();
   parent->RemoveChildView(view);
   parent->AddChildView(view);
 
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
   ASSERT_TRUE(view->layer() != nullptr);
-  EXPECT_EQ(2.0f, view->layer()->transform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->layer()->transform().matrix().rc(0, 0));
 }
 
 // Makes sure that layer visibility is correct after toggling View visibility.

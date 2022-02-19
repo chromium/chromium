@@ -177,9 +177,9 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
                 [clip_and_sorting_layer sublayerTransform].m42);
 
       // Validate the transform layer.
-      EXPECT_EQ(properties.transform.matrix().get(3, 0),
+      EXPECT_EQ(properties.transform.matrix().rc(3, 0),
                 [transform_layer sublayerTransform].m41);
-      EXPECT_EQ(properties.transform.matrix().get(3, 1),
+      EXPECT_EQ(properties.transform.matrix().rc(3, 1),
                 [transform_layer sublayerTransform].m42);
 
       // Validate the content layer.
@@ -265,9 +265,9 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
       EXPECT_EQ(transform_layer, [rounded_rect_layer sublayers][0]);
 
       // Validate the transform layer.
-      EXPECT_EQ(properties.transform.matrix().get(3, 0),
+      EXPECT_EQ(properties.transform.matrix().rc(3, 0),
                 [transform_layer sublayerTransform].m41);
-      EXPECT_EQ(properties.transform.matrix().get(3, 1),
+      EXPECT_EQ(properties.transform.matrix().rc(3, 1),
                 [transform_layer sublayerTransform].m42);
     }
 
@@ -473,10 +473,10 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
 
       // Validate the transform layer.
       EXPECT_EQ(
-          properties.transform.matrix().get(3, 0) / properties.scale_factor,
+          properties.transform.matrix().rc(3, 0) / properties.scale_factor,
           [transform_layer sublayerTransform].m41);
       EXPECT_EQ(
-          properties.transform.matrix().get(3, 1) / properties.scale_factor,
+          properties.transform.matrix().rc(3, 1) / properties.scale_factor,
           [transform_layer sublayerTransform].m42);
 
       // Validate the content layer.

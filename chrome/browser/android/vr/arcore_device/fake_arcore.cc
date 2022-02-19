@@ -204,12 +204,12 @@ gfx::Transform FakeArCore::GetProjectionMatrix(float near, float far) {
   }
   // Calculate a perspective matrix based on the FOV values.
   gfx::Transform result;
-  result.matrix().set(0, 0, 1.f / right_tan);
-  result.matrix().set(1, 1, 1.f / up_tan);
-  result.matrix().set(2, 2, (near + far) / (near - far));
-  result.matrix().set(3, 2, -1.0f);
-  result.matrix().set(2, 3, (2.0f * far * near) / (near - far));
-  result.matrix().set(3, 3, 0.0f);
+  result.matrix().setRC(0, 0, 1.f / right_tan);
+  result.matrix().setRC(1, 1, 1.f / up_tan);
+  result.matrix().setRC(2, 2, (near + far) / (near - far));
+  result.matrix().setRC(3, 2, -1.0f);
+  result.matrix().setRC(2, 3, (2.0f * far * near) / (near - far));
+  result.matrix().setRC(3, 3, 0.0f);
   return result;
 }
 

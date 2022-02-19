@@ -1682,9 +1682,9 @@ bool PictureLayerImpl::CalculateRasterTranslation(
   static constexpr float kScaleErrorThreshold = kPixelErrorThreshold / 10000;
   auto is_raster_scale = [this](const skia::Matrix44& matrix) -> bool {
     // The matrix has the X scale at (0,0), and the Y scale at (1,1).
-    return std::abs(matrix.getFloat(0, 0) - raster_contents_scale_.x()) <=
+    return std::abs(matrix.rc(0, 0) - raster_contents_scale_.x()) <=
                kScaleErrorThreshold &&
-           std::abs(matrix.getFloat(1, 1) - raster_contents_scale_.y()) <=
+           std::abs(matrix.rc(1, 1) - raster_contents_scale_.y()) <=
                kScaleErrorThreshold;
   };
   if (!is_raster_scale(screen_transform.matrix()) ||
@@ -1695,10 +1695,10 @@ bool PictureLayerImpl::CalculateRasterTranslation(
   // Extract the fractional part of layer origin in the screen space and in the
   // target space.
   auto fraction = [](float f) -> float { return f - floorf(f); };
-  float screen_x_fraction = fraction(screen_transform.matrix().getFloat(0, 3));
-  float screen_y_fraction = fraction(screen_transform.matrix().getFloat(1, 3));
-  float target_x_fraction = fraction(draw_transform.matrix().getFloat(0, 3));
-  float target_y_fraction = fraction(draw_transform.matrix().getFloat(1, 3));
+  float screen_x_fraction = fraction(screen_transform.matrix().rc(0, 3));
+  float screen_y_fraction = fraction(screen_transform.matrix().rc(1, 3));
+  float target_x_fraction = fraction(draw_transform.matrix().rc(0, 3));
+  float target_y_fraction = fraction(draw_transform.matrix().rc(1, 3));
 
   // If the origin is different in the screen space and in the target space,
   // it means the render target is not aligned to physical pixels, and the

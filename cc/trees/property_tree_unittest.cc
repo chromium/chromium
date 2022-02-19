@@ -165,7 +165,7 @@ TEST(PropertyTreeTest, ComputeTransformSiblingSingularAncestor) {
   tree.UpdateTransforms(1);
 
   TransformNode singular;
-  singular.local.matrix().set(2, 2, 0.0);
+  singular.local.matrix().setRC(2, 2, 0.0);
   singular.id = tree.Insert(singular, 1);
 
   TransformNode child;

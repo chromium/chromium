@@ -13,7 +13,7 @@ void CheckApproximatelyEqual(const gfx::Transform& lhs,
                              const gfx::Transform& rhs) {
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {
-      EXPECT_FLOAT_EQ(lhs.matrix().get(i, j), rhs.matrix().get(i, j));
+      EXPECT_FLOAT_EQ(lhs.matrix().rc(i, j), rhs.matrix().rc(i, j));
     }
   }
 }
@@ -180,7 +180,7 @@ TEST(InterpolatedTransformTest, ScreenRotationEndsCleanly) {
       // Upper-left 3x3 matrix should all be 0, 1 or -1.
       for (int row = 0; row < 3; ++row) {
         for (int col = 0; col < 3; ++col) {
-          float entry = m.get(row, col);
+          float entry = m.rc(row, col);
           EXPECT_TRUE(entry == 0 || entry == 1 || entry == -1);
         }
       }
@@ -230,7 +230,7 @@ TEST(InterpolatedTransformTest, MaximizeEndsCleanly) {
   // Upper-left 3x3 matrix should all be 0, 1 or -1.
   for (int row = 0; row < 3; ++row) {
     for (int col = 0; col < 3; ++col) {
-      float entry = m.get(row, col);
+      float entry = m.rc(row, col);
       EXPECT_TRUE(entry == 0 || entry == 1 || entry == -1);
     }
   }

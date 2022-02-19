@@ -58,14 +58,14 @@ SkScalar Round(SkScalar n) {
 
 // Returns false if the matrix cannot be normalized.
 bool Normalize(skia::Matrix44& m) {
-  if (m.get(3, 3) == 0.0)
+  if (m.rc(3, 3) == 0.0)
     // Cannot normalize.
     return false;
 
-  SkScalar scale = SK_Scalar1 / m.get(3, 3);
+  SkScalar scale = SK_Scalar1 / m.rc(3, 3);
   for (int i = 0; i < 4; i++)
     for (int j = 0; j < 4; j++)
-      m.set(i, j, m.get(i, j) * scale);
+      m.setRC(i, j, m.rc(i, j) * scale);
 
   return true;
 }
@@ -74,7 +74,7 @@ skia::Matrix44 BuildPerspectiveMatrix(const DecomposedTransform& decomp) {
   skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
 
   for (int i = 0; i < 4; i++)
-    matrix.setDouble(3, i, decomp.perspective[i]);
+    matrix.setRC(3, i, decomp.perspective[i]);
   return matrix;
 }
 
@@ -103,7 +103,7 @@ skia::Matrix44 BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
   skia::Matrix44 rotation_matrix = BuildRotationMatrix(decomp);
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      SkScalar value = rotation_matrix.get(i, j);
+      SkScalar value = rotation_matrix.rc(i, j);
       // Snap values to -1, 0 or 1.
       if (value < -0.5f) {
         value = -1.0f;
@@ -112,7 +112,7 @@ skia::Matrix44 BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
       } else {
         value = 0.0f;
       }
-      rotation_matrix.set(i, j, value);
+      rotation_matrix.setRC(i, j, value);
     }
   }
   return rotation_matrix;
@@ -123,19 +123,19 @@ skia::Matrix44 BuildSkewMatrix(const DecomposedTransform& decomp) {
 
   skia::Matrix44 temp(skia::Matrix44::kIdentity_Constructor);
   if (decomp.skew[2]) {
-    temp.setDouble(1, 2, decomp.skew[2]);
+    temp.setRC(1, 2, decomp.skew[2]);
     matrix.preConcat(temp);
   }
 
   if (decomp.skew[1]) {
-    temp.setDouble(1, 2, 0);
-    temp.setDouble(0, 2, decomp.skew[1]);
+    temp.setRC(1, 2, 0);
+    temp.setRC(0, 2, decomp.skew[1]);
     matrix.preConcat(temp);
   }
 
   if (decomp.skew[0]) {
-    temp.setDouble(0, 2, 0);
-    temp.setDouble(0, 1, decomp.skew[0]);
+    temp.setRC(0, 2, 0);
+    temp.setRC(0, 1, decomp.skew[0]);
     matrix.preConcat(temp);
   }
   return matrix;
@@ -214,10 +214,9 @@ bool Is2dTransform(const Transform& transform) {
   if (matrix.hasPerspective())
     return false;
 
-  return matrix.get(2, 0) == 0 && matrix.get(2, 1) == 0 &&
-         matrix.get(0, 2) == 0 && matrix.get(1, 2) == 0 &&
-         matrix.get(2, 2) == 1 && matrix.get(3, 2) == 0 &&
-         matrix.get(2, 3) == 0;
+  return matrix.rc(2, 0) == 0 && matrix.rc(2, 1) == 0 && matrix.rc(0, 2) == 0 &&
+         matrix.rc(1, 2) == 0 && matrix.rc(2, 2) == 1 && matrix.rc(3, 2) == 0 &&
+         matrix.rc(2, 3) == 0;
 }
 
 bool Decompose2DTransform(DecomposedTransform* decomp,
@@ -227,10 +226,10 @@ bool Decompose2DTransform(DecomposedTransform* decomp,
   }
 
   const skia::Matrix44 matrix = transform.matrix();
-  double m11 = matrix.getDouble(0, 0);
-  double m21 = matrix.getDouble(0, 1);
-  double m12 = matrix.getDouble(1, 0);
-  double m22 = matrix.getDouble(1, 1);
+  double m11 = matrix.rc(0, 0);
+  double m21 = matrix.rc(0, 1);
+  double m12 = matrix.rc(1, 0);
+  double m22 = matrix.rc(1, 1);
 
   double determinant = m11 * m22 - m12 * m21;
   // Test for matrix being singular.
@@ -243,8 +242,8 @@ bool Decompose2DTransform(DecomposedTransform* decomp,
   // [m12 m22 0 m42]  = [0 1 0 Ty] [m12 m22 0 0]
   // [ 0   0  1  0 ]    [0 0 1 0 ] [ 0   0  1 0]
   // [ 0   0  0  1 ]    [0 0 0 1 ] [ 0   0  0 1]
-  decomp->translate[0] = matrix.get(0, 3);
-  decomp->translate[1] = matrix.get(1, 3);
+  decomp->translate[0] = matrix.rc(0, 3);
+  decomp->translate[1] = matrix.rc(1, 3);
 
   // For the remainder of the decomposition process, we can focus on the upper
   // 2x2 submatrix
@@ -371,20 +370,20 @@ bool DecomposeTransform(DecomposedTransform* decomp,
   skia::Matrix44 perspectiveMatrix = matrix;
 
   for (int i = 0; i < 3; ++i)
-    perspectiveMatrix.set(3, i, 0.0);
+    perspectiveMatrix.setRC(3, i, 0.0);
 
-  perspectiveMatrix.set(3, 3, 1.0);
+  perspectiveMatrix.setRC(3, 3, 1.0);
 
   // If the perspective matrix is not invertible, we are also unable to
   // decompose, so we'll bail early. Constant taken from skia::Matrix44::invert.
   if (std::abs(perspectiveMatrix.determinant()) < 1e-8)
     return false;
 
-  if (matrix.get(3, 0) != 0.0 || matrix.get(3, 1) != 0.0 ||
-      matrix.get(3, 2) != 0.0) {
+  if (matrix.rc(3, 0) != 0.0 || matrix.rc(3, 1) != 0.0 ||
+      matrix.rc(3, 2) != 0.0) {
     // rhs is the right hand side of the equation.
-    SkScalar rhs[4] = {matrix.get(3, 0), matrix.get(3, 1), matrix.get(3, 2),
-                       matrix.get(3, 3)};
+    SkScalar rhs[4] = {matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 2),
+                       matrix.rc(3, 3)};
 
     // Solve the equation by inverting perspectiveMatrix and multiplying
     // rhs by the inverse.
@@ -410,14 +409,14 @@ bool DecomposeTransform(DecomposedTransform* decomp,
   }
 
   for (int i = 0; i < 3; i++)
-    decomp->translate[i] = matrix.get(i, 3);
+    decomp->translate[i] = matrix.rc(i, 3);
 
   // Copy of matrix is stored in column major order to facilitate column-level
   // operations.
   SkScalar column[3][3];
   for (int i = 0; i < 3; i++)
     for (int j = 0; j < 3; ++j)
-      column[i][j] = matrix.get(j, i);
+      column[i][j] = matrix.rc(j, i);
 
   // Compute X scale factor and normalize first column.
   decomp->scale[0] = Length3(column[0]);
@@ -610,14 +609,14 @@ Transform OrthoProjectionMatrix(float left,
   Transform proj;
   if (!delta_x || !delta_y)
     return proj;
-  proj.matrix().set(0, 0, 2.0f / delta_x);
-  proj.matrix().set(0, 3, -(right + left) / delta_x);
-  proj.matrix().set(1, 1, 2.0f / delta_y);
-  proj.matrix().set(1, 3, -(top + bottom) / delta_y);
+  proj.matrix().setRC(0, 0, 2.0f / delta_x);
+  proj.matrix().setRC(0, 3, -(right + left) / delta_x);
+  proj.matrix().setRC(1, 1, 2.0f / delta_y);
+  proj.matrix().setRC(1, 3, -(top + bottom) / delta_y);
 
   // Z component of vertices is always set to zero as we don't use the depth
   // buffer while drawing.
-  proj.matrix().set(2, 2, 0);
+  proj.matrix().setRC(2, 2, 0);
 
   return proj;
 }
@@ -655,11 +654,11 @@ static inline float ScaleOnAxis(double a, double b, double c) {
 absl::optional<Vector2dF> TryComputeTransform2dScaleComponents(
     const Transform& transform) {
   const auto& matrix = transform.matrix();
-  if (matrix.get(3, 0) != 0.0f || matrix.get(3, 1) != 0.0f) {
+  if (matrix.rc(3, 0) != 0.0f || matrix.rc(3, 1) != 0.0f) {
     return absl::nullopt;
   }
 
-  float w = matrix.getFloat(3, 3);
+  float w = matrix.rc(3, 3);
   if (!std::isnormal(w)) {
     return absl::nullopt;
   }
@@ -676,10 +675,10 @@ absl::optional<Vector2dF> TryComputeTransform2dScaleComponents(
   // during animation.  Currently some such code only considers the
   // endpoints, which would become problematic for cases like animation
   // from rotateY(-60deg) to rotateY(60deg).
-  float x_scale = ScaleOnAxis(matrix.getDouble(0, 0), matrix.getDouble(1, 0),
-                              matrix.getDouble(2, 0));
-  float y_scale = ScaleOnAxis(matrix.getDouble(0, 1), matrix.getDouble(1, 1),
-                              matrix.getDouble(2, 1));
+  float x_scale =
+      ScaleOnAxis(matrix.rc(0, 0), matrix.rc(1, 0), matrix.rc(2, 0));
+  float y_scale =
+      ScaleOnAxis(matrix.rc(0, 1), matrix.rc(1, 1), matrix.rc(2, 1));
   return Vector2dF(x_scale * w_scale, y_scale * w_scale);
 }
 

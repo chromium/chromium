@@ -88,8 +88,8 @@ template <typename T>
                                                      const Transform& rhs) {
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      if (!FloatAlmostEqual(lhs.matrix().get(row, col),
-                            rhs.matrix().get(row, col))) {
+      if (!FloatAlmostEqual(lhs.matrix().rc(row, col),
+                            rhs.matrix().rc(row, col))) {
         return EqFailure(lhs_expr, rhs_expr, lhs, rhs)
                << "\nFirst difference at row: " << row << " col: " << col;
       }
@@ -106,7 +106,7 @@ template <typename T>
                                                     float abs_error) {
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      if (!FloatNear(lhs.matrix().get(row, col), rhs.matrix().get(row, col),
+      if (!FloatNear(lhs.matrix().rc(row, col), rhs.matrix().rc(row, col),
                      abs_error)) {
         return NearFailure(lhs_expr, rhs_expr, abs_error_expr, lhs, rhs,
                            abs_error)

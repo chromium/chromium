@@ -1380,9 +1380,9 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
   // gfx::Transform::IsPositiveScaleAndTranslation in that it also allows zero
   // scales. This is because in the common orthographic case the z scale is 0.
   if (!content_device_transform.IsScaleOrTranslation() ||
-      content_device_transform.matrix().get(0, 0) < 0.0f ||
-      content_device_transform.matrix().get(1, 1) < 0.0f ||
-      content_device_transform.matrix().get(2, 2) < 0.0f) {
+      content_device_transform.matrix().rc(0, 0) < 0.0f ||
+      content_device_transform.matrix().rc(1, 1) < 0.0f ||
+      content_device_transform.matrix().rc(2, 2) < 0.0f) {
     return;
   }
 
@@ -2983,10 +2983,10 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       // Skia cannot transform a SkRRect with a matrix which contains epsilons,
       // workaround the problem by removing epsilons in the matrix.
       auto matrix = quad_to_target_transform_inverse->matrix();
-      matrix.set(0, 0, remove_epsilon(matrix.get(0, 0)));
-      matrix.set(0, 1, remove_epsilon(matrix.get(0, 1)));
-      matrix.set(1, 0, remove_epsilon(matrix.get(1, 0)));
-      matrix.set(1, 1, remove_epsilon(matrix.get(1, 1)));
+      matrix.setRC(0, 0, remove_epsilon(matrix.rc(0, 0)));
+      matrix.setRC(0, 1, remove_epsilon(matrix.rc(0, 1)));
+      matrix.setRC(1, 0, remove_epsilon(matrix.rc(1, 0)));
+      matrix.setRC(1, 1, remove_epsilon(matrix.rc(1, 1)));
       result =
           shared_quad_state->mask_filter_info.Transform(gfx::Transform(matrix));
     }

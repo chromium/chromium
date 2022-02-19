@@ -814,11 +814,10 @@ void Slerp(TransformationMatrix::DecomposedType& from_decomp,
 
 TransformationMatrix::TransformationMatrix(const gfx::Transform& t) {
   const auto& matrix = t.matrix();
-  SetMatrix(
-      matrix.get(0, 0), matrix.get(1, 0), matrix.get(2, 0), matrix.get(3, 0),
-      matrix.get(0, 1), matrix.get(1, 1), matrix.get(2, 1), matrix.get(3, 1),
-      matrix.get(0, 2), matrix.get(1, 2), matrix.get(2, 2), matrix.get(3, 2),
-      matrix.get(0, 3), matrix.get(1, 3), matrix.get(2, 3), matrix.get(3, 3));
+  SetMatrix(matrix.rc(0, 0), matrix.rc(1, 0), matrix.rc(2, 0), matrix.rc(3, 0),
+            matrix.rc(0, 1), matrix.rc(1, 1), matrix.rc(2, 1), matrix.rc(3, 1),
+            matrix.rc(0, 2), matrix.rc(1, 2), matrix.rc(2, 2), matrix.rc(3, 2),
+            matrix.rc(0, 3), matrix.rc(1, 3), matrix.rc(2, 3), matrix.rc(3, 3));
 }
 
 TransformationMatrix::TransformationMatrix(const AffineTransform& t) {

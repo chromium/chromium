@@ -222,7 +222,7 @@ static std::unique_ptr<protocol::LayerTree::Layer> BuildObjectForLayer(
     auto transform_array = std::make_unique<protocol::Array<double>>();
     for (int col = 0; col < 4; ++col) {
       for (int row = 0; row < 4; ++row)
-        transform_array->emplace_back(transform.matrix().get(row, col));
+        transform_array->emplace_back(transform.matrix().rc(row, col));
     }
     layer_object->setTransform(std::move(transform_array));
     // FIXME: rename these to setTransformOrigin*

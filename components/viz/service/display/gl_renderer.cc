@@ -3966,10 +3966,10 @@ void GLRenderer::ScheduleDCLayers() {
         texture_ids[0], texture_ids[1], z_order, content_rect.x(),
         content_rect.y(), content_rect.width(), content_rect.height(),
         quad_rect.x(), quad_rect.y(), quad_rect.width(), quad_rect.height(),
-        transform.get(0, 0), transform.get(0, 1), transform.get(1, 0),
-        transform.get(1, 1), transform.get(0, 3), transform.get(1, 3),
-        is_clipped, clip_rect.x(), clip_rect.y(), clip_rect.width(),
-        clip_rect.height(), protected_video_type);
+        transform.rc(0, 0), transform.rc(0, 1), transform.rc(1, 0),
+        transform.rc(1, 1), transform.rc(0, 3), transform.rc(1, 3), is_clipped,
+        clip_rect.x(), clip_rect.y(), clip_rect.width(), clip_rect.height(),
+        protected_video_type);
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

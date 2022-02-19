@@ -26,7 +26,7 @@ TEST(MathUtilTest, ProjectionOfPerpendicularPlane) {
 
   gfx::Transform transform;
   transform.MakeIdentity();
-  transform.matrix().set(2, 2, 0);
+  transform.matrix().setRC(2, 2, 0);
 
   gfx::RectF rect = gfx::RectF(0, 0, 1, 1);
   gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
@@ -47,12 +47,12 @@ TEST(MathUtilTest, ProjectionOfAlmostPerpendicularPlane) {
   //   +16331238407143424.0000 +0.0000 -0.0000 +51346917453137000267776.0000
   //   +0.0000 +0.0000 +0.0000 +1.0000 ]
   transform.MakeIdentity();
-  transform.matrix().set(0, 2, static_cast<SkScalar>(-1));
-  transform.matrix().set(0, 3, static_cast<SkScalar>(3144132.0));
-  transform.matrix().set(2, 0, static_cast<SkScalar>(16331238407143424.0));
-  transform.matrix().set(2, 2, static_cast<SkScalar>(-1e-33));
-  transform.matrix().set(2, 3,
-                         static_cast<SkScalar>(51346917453137000267776.0));
+  transform.matrix().setRC(0, 2, static_cast<SkScalar>(-1));
+  transform.matrix().setRC(0, 3, static_cast<SkScalar>(3144132.0));
+  transform.matrix().setRC(2, 0, static_cast<SkScalar>(16331238407143424.0));
+  transform.matrix().setRC(2, 2, static_cast<SkScalar>(-1e-33));
+  transform.matrix().setRC(2, 3,
+                           static_cast<SkScalar>(51346917453137000267776.0));
 
   gfx::RectF rect = gfx::RectF(0, 0, 1, 1);
   gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);

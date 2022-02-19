@@ -13759,11 +13759,11 @@ TEST_F(WebFrameSimTest, MainFrameTransformOffsetPixelSnapped) {
                   ->main_frame_transform.IsIdentityOrIntegerTranslation());
   EXPECT_EQ(remote_frame_host.GetIntersectionState()
                 ->main_frame_transform.matrix()
-                .get(0, 3),
+                .rc(0, 3),
             14.f);
   EXPECT_EQ(remote_frame_host.GetIntersectionState()
                 ->main_frame_transform.matrix()
-                .get(1, 3),
+                .rc(1, 3),
             7.f);
   MainFrame().FirstChild()->Detach();
 }

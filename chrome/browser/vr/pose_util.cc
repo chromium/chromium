@@ -12,15 +12,15 @@ namespace vr {
 gfx::Vector3dF GetForwardVector(const gfx::Transform& head_pose) {
   // Same as multiplying the inverse of the rotation component of the matrix by
   // (0, 0, -1, 0).
-  return gfx::Vector3dF(-head_pose.matrix().get(2, 0),
-                        -head_pose.matrix().get(2, 1),
-                        -head_pose.matrix().get(2, 2));
+  return gfx::Vector3dF(-head_pose.matrix().rc(2, 0),
+                        -head_pose.matrix().rc(2, 1),
+                        -head_pose.matrix().rc(2, 2));
 }
 
 gfx::Vector3dF GetUpVector(const gfx::Transform& head_pose) {
-  return gfx::Vector3dF(head_pose.matrix().get(1, 0),
-                        head_pose.matrix().get(1, 1),
-                        head_pose.matrix().get(1, 2));
+  return gfx::Vector3dF(head_pose.matrix().rc(1, 0),
+                        head_pose.matrix().rc(1, 1),
+                        head_pose.matrix().rc(1, 2));
 }
 
 }  // namespace vr
