@@ -590,7 +590,7 @@
       'cros_chrome_version': '100.0.4888.0',
       'cros_img': 'atlas-release/R100-14522.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'ATLAS_LKGM',
   },
   'CROS_ATLAS_DEV': {
@@ -614,8 +614,8 @@
   'CROS_ATLAS_STABLE': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '98.0.4758.91',
-      'cros_img': 'atlas-release/R98-14388.52.0',
+      'cros_chrome_version': '98.0.4758.107',
+      'cros_img': 'atlas-release/R98-14388.61.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_STABLE',
@@ -626,7 +626,7 @@
       'cros_chrome_version': '100.0.4888.0',
       'cros_img': 'eve-release/R100-14522.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'EVE_LKGM',
   },
   'CROS_EVE_DEV': {
@@ -650,8 +650,8 @@
   'CROS_EVE_STABLE': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '98.0.4758.91',
-      'cros_img': 'eve-release/R98-14388.52.0',
+      'cros_chrome_version': '98.0.4758.107',
+      'cros_img': 'eve-release/R98-14388.61.0',
     },
     'enabled': True,
     'identifier': 'EVE_STABLE',
@@ -662,7 +662,7 @@
       'cros_chrome_version': '100.0.4888.0',
       'cros_img': 'kevin-release/R100-14522.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'KEVIN_LKGM',
   },
   'CROS_HANA_LKGM': {
@@ -671,7 +671,7 @@
       'cros_chrome_version': '100.0.4888.0',
       'cros_img': 'hana-release/R100-14522.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'HANA_LKGM',
   },
   'CROS_OCTOPUS_LKGM': {
@@ -680,7 +680,7 @@
       'cros_chrome_version': '100.0.4888.0',
       'cros_img': 'octopus-release/R100-14522.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'OCTOPUS_LKGM',
   },
   'CROS_OCTOPUS_DEV': {
@@ -704,8 +704,8 @@
   'CROS_OCTOPUS_STABLE': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '98.0.4758.91',
-      'cros_img': 'octopus-release/R98-14388.52.0',
+      'cros_chrome_version': '98.0.4758.107',
+      'cros_img': 'octopus-release/R98-14388.61.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_STABLE',
