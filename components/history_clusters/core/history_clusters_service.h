@@ -18,6 +18,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
@@ -178,6 +179,7 @@ class HistoryClustersService : public KeyedService {
   // `keyword_accumulator`. If History is not yet exhausted, will request
   // another batch of clusters. Otherwise, will update the keyword cache.
   void PopulateClusterKeywordCache(
+      base::ElapsedTimer total_latency_timer,
       base::Time begin_time,
       std::unique_ptr<std::vector<std::u16string>> keyword_accumulator,
       KeywordSet* cache,

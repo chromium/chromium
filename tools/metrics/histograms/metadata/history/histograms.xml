@@ -722,6 +722,34 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="History.Clusters.KeywordCache.Latency" units="ms"
+    expires_after="2022-07-24">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <summary>
+    Records the total amount of time spent populating the keyword cache,
+    measured via the wall clock. Most of this time is not on the main thread.
+
+    The total time spent populating the keywords cache will be:
+    History.Clusters.KeywordCache.Latency = (number of batches) *
+    (History.Clusters.Backend.QueryAnnotatedVisitsLatency +
+    History.Clusters.Backend.GetClustersLatency +
+    History.Clusters.KeywordCache.ThreadTime)
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.KeywordCache.ThreadTime" units="ms"
+    expires_after="2022-07-24">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <summary>
+    This measures the amount of main thread time spent populating the keyword
+    cache AFTER we get it from the backend.
+
+    See History.Clusters.KeywordCache.Latency for the full wall clock time.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.ProcessClustersDuration" units="ms"
     expires_after="2022-07-24">
   <owner>olivierli@chromium.org</owner>
@@ -748,8 +776,8 @@ chromium-metrics-reviews@google.com.
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <summary>
-    Records the time taken between the History Clusters WebUI handler requests a
-    batch of clusters, and when we get the clusters back from the Service.
+    Records the time taken between the History Clusters UI requests a batch of
+    clusters, and when we get the post-processed clusters back.
 
     This request occurs when the page is first loaded, when the page is
     refreshed, when the user changes the History search terms, and when the user
@@ -760,7 +788,13 @@ chromium-metrics-reviews@google.com.
     recorded on all requests, whether or not it returns clusters.
 
     This does not take into account the time spent in JavaScript, or updating
-    the DOM.
+    the DOM. It's recorded in QueryClustersState, which is meant to be shared
+    between multiple UIs.
+
+    Roughly, History.Clusters.ServiceLatency =
+    History.Clusters.Backend.QueryAnnotatedVisitsLatency +
+    History.Clusters.Backend.GetClustersLatency +
+    History.Clusters.ProcessClustersDuration
   </summary>
 </histogram>
 

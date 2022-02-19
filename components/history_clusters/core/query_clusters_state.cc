@@ -102,8 +102,8 @@ void QueryClustersState::OnGotClusters(base::ElapsedTimer post_processing_timer,
                                        ResultCallback callback,
                                        base::Time continuation_end_time,
                                        std::vector<history::Cluster> clusters) {
-  base::UmaHistogramLongTimes("History.Clusters.ProcessClustersDuration",
-                              post_processing_timer.Elapsed());
+  base::UmaHistogramTimes("History.Clusters.ProcessClustersDuration",
+                          post_processing_timer.Elapsed());
 
   if (clusters_from_backend_count > 0) {
     // Log the percentage of clusters that get filtered (e.g., 100 - % of

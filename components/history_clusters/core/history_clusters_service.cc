@@ -348,7 +348,8 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
         ClusteringRequestSource::kKeywordCacheGeneration, begin_time,
         /*end_time=*/base::Time(),
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
-                       weak_ptr_factory_.GetWeakPtr(), begin_time,
+                       weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
+                       begin_time,
                        std::make_unique<std::vector<std::u16string>>(),
                        &all_keywords_cache_),
         &cache_query_task_tracker_);
@@ -373,7 +374,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
         /*begin_time=*/all_keywords_cache_timestamp_, /*end_time=*/
         base::Time(),
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
-                       weak_ptr_factory_.GetWeakPtr(),
+                       weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                        all_keywords_cache_timestamp_,
                        std::make_unique<std::vector<std::u16string>>(),
                        &short_keyword_cache_),
@@ -400,11 +401,13 @@ void HistoryClustersService::ClearKeywordCache() {
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(
+    base::ElapsedTimer total_latency_timer,
     base::Time begin_time,
     std::unique_ptr<std::vector<std::u16string>> keyword_accumulator,
     KeywordSet* cache,
     std::vector<history::Cluster> clusters,
     base::Time continuation_end_time) {
+  base::ElapsedThreadTimer populate_keywords_thread_timer;
   const size_t max_keyword_phrases = kMaxKeywordPhrases.Get();
 
   // Copy keywords from every cluster into a the accumulator set.
@@ -441,6 +444,8 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   // Make a continuation request to get the next page of clusters and their
   // keywords only if both 1) there is more clusters remaining, and 2) we
   // haven't reached the soft cap `max_keyword_phrases` (or there is no cap).
+  constexpr char kKeywordCacheThreadTimeUmaName[] =
+      "History.Clusters.KeywordCache.ThreadTime";
   if (!continuation_end_time.is_null() &&
       (max_keyword_phrases == 0 ||
        keyword_accumulator->size() < max_keyword_phrases)) {
@@ -448,10 +453,14 @@ void HistoryClustersService::PopulateClusterKeywordCache(
         ClusteringRequestSource::kKeywordCacheGeneration, begin_time,
         continuation_end_time,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
-                       weak_ptr_factory_.GetWeakPtr(), begin_time,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(total_latency_timer), begin_time,
                        // Pass on the accumulator set to the next callback.
                        std::move(keyword_accumulator), cache),
         &cache_query_task_tracker_);
+    // Log this even if we go back for more clusters.
+    base::UmaHistogramTimes(kKeywordCacheThreadTimeUmaName,
+                            populate_keywords_thread_timer.Elapsed());
     return;
   }
 
@@ -478,6 +487,11 @@ void HistoryClustersService::PopulateClusterKeywordCache(
         "History.Clusters.Backend.KeywordCache.ShortKeywordsCount",
         static_cast<int>(cache->size()));
   }
+
+  base::UmaHistogramTimes(kKeywordCacheThreadTimeUmaName,
+                          populate_keywords_thread_timer.Elapsed());
+  base::UmaHistogramMediumTimes("History.Clusters.KeywordCache.Latency",
+                                total_latency_timer.Elapsed());
 }
 
 void HistoryClustersService::OnGotHistoryVisits(
