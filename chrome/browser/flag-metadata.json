@@ -4310,17 +4310,17 @@
   {
     "name": "ntp-realbox-pedals",
     "owners": [ "mahmadi", "mfacey" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "ntp-realbox-suggestion-answers",
     "owners": [ "mahmadi", "mfacey" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "ntp-realbox-tail-suggest",
     "owners": [ "mahmadi", "mfacey" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "ntp-realbox-use-google-g-icon",
