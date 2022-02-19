@@ -20,12 +20,18 @@ void UkmDataManagerImpl::Initialize(const base::FilePath& database_path) {
   // TODO(ssid): Create database here.
 }
 
+bool UkmDataManagerImpl::IsUkmEngineEnabled() {
+  // DummyUkmDataManager is created when UKM engine is disabled.
+  return true;
+}
+
 UrlSignalHandler* UkmDataManagerImpl::GetOrCreateUrlHandler() {
   // TODO(ssid): Return signal handler here.
   return nullptr;
 }
 
-void UkmDataManagerImpl::CanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder) {
+void UkmDataManagerImpl::NotifyCanObserveUkm(
+    ukm::UkmRecorderImpl* ukm_recorder) {
   // TODO(ssid): Create observer here.
 }
 

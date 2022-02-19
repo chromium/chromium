@@ -35,13 +35,19 @@ class UkmDataManager {
   // Initializes UKM database.
   virtual void Initialize(const base::FilePath& database_path) = 0;
 
+  // Returns true when UKM engine is usable. If false, then UKM based engine is
+  // disabled and this class is a no-op. UkmObserver, UrlSignalHandler and
+  // UkmDatabase are not created and are unusable when this method returns
+  // false.
+  virtual bool IsUkmEngineEnabled() = 0;
+
   // Must be called when UKM service is available to start observing metrics.
-  virtual void CanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder) = 0;
+  virtual void NotifyCanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder) = 0;
 
   // Can be called at any time, irrespective of UKM observer's lifetime. If
-  // CanObserveUkm() was already called, then starts observing UKM with the
-  // given config. Else, starts when CanObserveUkm() is called. If called after
-  // StopObservingUkm(), does nothing.
+  // NotifyCanObserveUkm() was already called, then starts observing UKM with
+  // the given config. Else, starts when NotifyCanObserveUkm() is called. If
+  // called after StopObservingUkm(), does nothing.
   virtual void StartObservingUkm(const UkmConfig& config) = 0;
 
   // Pauses or resumes observation of UKM, can be called any time, irrespective

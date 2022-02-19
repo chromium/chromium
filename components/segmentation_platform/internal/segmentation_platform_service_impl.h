@@ -123,8 +123,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   ServiceProxy* GetServiceProxy() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SegmentationPlatformServiceImplTest,
-                           InitializationFlow);
+  friend class SegmentationPlatformServiceImplTest;
 
   void OnSegmentInfoDatabaseInitialized(bool success);
   void OnSignalDatabaseInitialized(bool success);

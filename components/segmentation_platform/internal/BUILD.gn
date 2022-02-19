@@ -40,6 +40,8 @@ static_library("internal") {
     "database/ukm_types.h",
     "dummy_segmentation_platform_service.cc",
     "dummy_segmentation_platform_service.h",
+    "dummy_ukm_data_manager.cc",
+    "dummy_ukm_data_manager.h",
     "execution/custom_input_processor.cc",
     "execution/custom_input_processor.h",
     "execution/dummy_model_execution_manager.cc",

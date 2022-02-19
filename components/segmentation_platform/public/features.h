@@ -19,6 +19,10 @@ extern const base::Feature kSegmentationPlatformDummyFeature;
 
 // Feature flag for allowing structured metrics to be collected.
 extern const base::Feature kSegmentationStructuredMetricsFeature;
+
+// Feature flag for enabling UKM based engine.
+extern const base::Feature kSegmentationPlatformUkmEngine;
+
 }  // namespace features
 }  // namespace segmentation_platform
 

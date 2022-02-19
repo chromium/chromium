@@ -23,5 +23,9 @@ const base::Feature kSegmentationPlatformDummyFeature{
 
 const base::Feature kSegmentationStructuredMetricsFeature{
     "SegmentationStructuredMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSegmentationPlatformUkmEngine{
+    "SegmentationPlatformUkmEngine", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace segmentation_platform

@@ -76,8 +76,8 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
                     ModelExecutionCallback callback) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SegmentationPlatformServiceImplTest,
-                           InitializationFlow);
+  friend class SegmentationPlatformServiceImplTest;
+
   struct ExecutionState;
   struct ModelExecutionTraceEvent;
 

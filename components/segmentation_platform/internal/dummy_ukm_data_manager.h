@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_UKM_DATA_MANAGER_IMPL_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_UKM_DATA_MANAGER_IMPL_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DUMMY_UKM_DATA_MANAGER_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DUMMY_UKM_DATA_MANAGER_H_
 
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
 
 namespace segmentation_platform {
 
-class UkmDataManagerImpl : public UkmDataManager {
+// This class is used by the segmentation services when UKM engine is disabled,
+// in the production code.
+class DummyUkmDataManager : public UkmDataManager {
  public:
-  UkmDataManagerImpl();
-  ~UkmDataManagerImpl() override;
+  DummyUkmDataManager();
+  ~DummyUkmDataManager() override;
 
-  UkmDataManagerImpl(UkmDataManagerImpl&) = delete;
-  UkmDataManagerImpl& operator=(UkmDataManagerImpl&) = delete;
+  DummyUkmDataManager(DummyUkmDataManager&) = delete;
+  DummyUkmDataManager& operator=(DummyUkmDataManager&) = delete;
 
   // UkmDataManager implementation:
   void Initialize(const base::FilePath& database_path) override;
@@ -28,11 +30,8 @@ class UkmDataManagerImpl : public UkmDataManager {
   UkmDatabase* GetUkmDatabase() override;
   void AddRef() override;
   void RemoveRef() override;
-
- private:
-  int ref_count_ = 0;
 };
 
 }  // namespace segmentation_platform
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_UKM_DATA_MANAGER_IMPL_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DUMMY_UKM_DATA_MANAGER_H_

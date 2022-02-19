@@ -10,6 +10,7 @@ ModelExecutionManagerFactoryTest.*
 ModelExecutionManagerTest.*
 ModelExecutionSchedulerTest.*
 SegmentationModelExecutorTest.*
+SegmentationPlatformDummyUkmManagerTest.*
 SegmentationPlatformServiceImplEmptyConfigTest.*
 SegmentationPlatformServiceImplMultiClientTest.*
 SegmentationPlatformServiceImplTest.*
@@ -26,6 +27,5 @@ SignalKeyTest.*
 SignalStorageConfigTest.*
 StatsTest.*
 UkmConfigTest.*
-UkmDatabaseBackendTest.*
 UrlSignalHandlerTest.*
 UserActionSignalHandlerTest.*
