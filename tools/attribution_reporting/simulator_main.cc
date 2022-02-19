@@ -30,13 +30,14 @@ constexpr char kSwitchNoiseMode[] = "noise_mode";
 constexpr char kSwitchRemoveReportIds[] = "remove_report_ids";
 constexpr char kSwitchInputMode[] = "input_mode";
 constexpr char kSwitchCopyInputToOutput[] = "copy_input_to_output";
+constexpr char kSwitchReportTimeFormat[] = "report_time_format";
 
 constexpr const char* kAllowedSwitches[] = {
     kSwitchHelp,         kSwitchHelpShort,         kSwitchVersion,
     kSwitchVersionShort,
 
     kSwitchDelayMode,    kSwitchNoiseMode,         kSwitchRemoveReportIds,
-    kSwitchInputMode,    kSwitchCopyInputToOutput,
+    kSwitchInputMode,    kSwitchCopyInputToOutput, kSwitchReportTimeFormat,
 };
 
 constexpr char kHelpMsg[] = R"(
@@ -46,6 +47,7 @@ attribution_reporting_simulator
   [--noise_mode=<mode>]
   [--input_mode=<input_mode>]
   [--remove_report_ids]
+  [--report_time_format=<format>]
 
 attribution_reporting_simulator is a command-line tool that simulates the
 Attribution Reporting API for for sources and triggers specified in an input
@@ -102,6 +104,18 @@ Switches:
                               field from report bodies, as they are randomly
                               generated. Use this switch to make the tool's
                               output more deterministic.
+
+  --report_time_format=<format>
+                            - Optional. Either `seconds_since_unix_epoch`
+                              (default) or `iso8601`. Controls the report time
+                              output format.
+
+                              `seconds_since_unix_epoch`: Report times are
+                              integer seconds since the Unix epoch, e.g.
+                              1643408373.
+
+                              `iso8601`: Report times are ISO 8601 strings,
+                              e.g. "2022-01-28T22:19:33.000Z".
 
   --version                 - Outputs the tool version and exits.
 
@@ -301,7 +315,20 @@ int main(int argc, char* argv[]) {
     if (str == "none") {
       delay_mode = content::AttributionDelayMode::kNone;
     } else if (str != "default") {
-      std::cerr << "unknown report mode: " << str << std::endl;
+      std::cerr << "unknown delay mode: " << str << std::endl;
+      return 1;
+    }
+  }
+
+  auto report_time_format =
+      content::AttributionReportTimeFormat::kSecondsSinceUnixEpoch;
+  if (command_line.HasSwitch(kSwitchReportTimeFormat)) {
+    std::string str = command_line.GetSwitchValueASCII(kSwitchReportTimeFormat);
+
+    if (str == "iso8601") {
+      report_time_format = content::AttributionReportTimeFormat::kISO8601;
+    } else if (str != "seconds_since_unix_epoch") {
+      std::cerr << "unknown report time format: " << str << std::endl;
       return 1;
     }
   }
@@ -327,6 +354,7 @@ int main(int argc, char* argv[]) {
       .noise_mode = noise_mode,
       .delay_mode = delay_mode,
       .remove_report_ids = command_line.HasSwitch(kSwitchRemoveReportIds),
+      .report_time_format = report_time_format,
   });
 
   // Required for using mock time in the simulator. Must be initialized exactly

@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -76,9 +77,11 @@ class AlwaysSetCookieChecker : public AttributionCookieChecker {
 class SentReportAccumulator : public AttributionNetworkSender {
  public:
   SentReportAccumulator(base::Value::ListStorage& reports,
-                        bool remove_report_ids)
+                        bool remove_report_ids,
+                        AttributionReportTimeFormat report_time_format)
       : time_origin_(base::Time::Now()),
         remove_report_ids_(remove_report_ids),
+        report_time_format_(report_time_format),
         reports_(reports) {}
 
   ~SentReportAccumulator() override = default;
@@ -100,8 +103,19 @@ class SentReportAccumulator : public AttributionNetworkSender {
     base::DictionaryValue value;
     value.SetKey("report", std::move(report_body));
     value.SetStringKey("report_url", report.ReportURL().spec());
-    value.SetIntKey("report_time",
-                    (base::Time::Now() - time_origin_).InSeconds());
+
+    static constexpr char kKeyReportTime[] = "report_time";
+    base::TimeDelta report_time_delta = base::Time::Now() - time_origin_;
+    switch (report_time_format_) {
+      case AttributionReportTimeFormat::kSecondsSinceUnixEpoch:
+        value.SetIntKey(kKeyReportTime, report_time_delta.InSeconds());
+        break;
+      case AttributionReportTimeFormat::kISO8601:
+        value.SetStringKey(
+            kKeyReportTime,
+            base::TimeToISO8601(base::Time::UnixEpoch() + report_time_delta));
+        break;
+    }
 
     base::DictionaryValue test_info;
     test_info.SetBoolKey("randomized_trigger",
@@ -118,6 +132,7 @@ class SentReportAccumulator : public AttributionNetworkSender {
 
   const base::Time time_origin_;
   const bool remove_report_ids_;
+  const AttributionReportTimeFormat report_time_format_;
   base::Value::ListStorage& reports_;
 };
 
@@ -261,8 +276,8 @@ base::Value RunAttributionSimulation(
                                                        options.delay_mode),
       std::make_unique<AlwaysSetCookieChecker>(),
       /*network_sender=*/
-      std::make_unique<SentReportAccumulator>(reports,
-                                              options.remove_report_ids));
+      std::make_unique<SentReportAccumulator>(
+          reports, options.remove_report_ids, options.report_time_format));
 
   base::Value::ListStorage rejected_sources;
   base::Value::ListStorage rejected_triggers;

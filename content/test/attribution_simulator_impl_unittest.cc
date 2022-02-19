@@ -64,13 +64,26 @@ base::FilePath OptionsPath(const base::FilePath& input_path) {
 
 void ParseOptions(const base::Value& dict,
                   AttributionSimulationOptions& options) {
-  const std::string* delay_mode = dict.FindStringKey("delay_mode");
-  ASSERT_TRUE(delay_mode) << "missing key: delay_mode";
+  if (const std::string* delay_mode = dict.FindStringKey("delay_mode")) {
+    if (*delay_mode == "none") {
+      options.delay_mode = AttributionDelayMode::kNone;
+    } else {
+      ASSERT_EQ(*delay_mode, "default")
+          << "unknown delay mode: " << *delay_mode;
+      options.delay_mode = AttributionDelayMode::kDefault;
+    }
+  }
 
-  if (*delay_mode == "none") {
-    options.delay_mode = AttributionDelayMode::kNone;
-  } else {
-    ASSERT_EQ(*delay_mode, "default") << "unknown delay mode: " << *delay_mode;
+  if (const std::string* report_time_format =
+          dict.FindStringKey("report_time_format")) {
+    if (*report_time_format == "iso8601") {
+      options.report_time_format = AttributionReportTimeFormat::kISO8601;
+    } else {
+      ASSERT_EQ(*report_time_format, "seconds_since_unix_epoch")
+          << "unknown report time format: " << *report_time_format;
+      options.report_time_format =
+          AttributionReportTimeFormat::kSecondsSinceUnixEpoch;
+    }
   }
 }
 
@@ -86,6 +99,7 @@ TEST_P(AttributionSimulatorImplTest, HasExpectedOutput) {
       .noise_mode = AttributionNoiseMode::kNone,
       .delay_mode = AttributionDelayMode::kDefault,
       .remove_report_ids = true,
+      .report_time_format = AttributionReportTimeFormat::kSecondsSinceUnixEpoch,
   };
 
   const base::FilePath options_path = OptionsPath(input_path);

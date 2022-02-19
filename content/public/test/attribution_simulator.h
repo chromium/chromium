@@ -15,6 +15,13 @@ class Value;
 
 namespace content {
 
+enum class AttributionReportTimeFormat {
+  // Times are an integer number of seconds since the Unix epoch.
+  kSecondsSinceUnixEpoch,
+  // Times are strings in the ISO 8601 format.
+  kISO8601,
+};
+
 struct AttributionSimulationOptions {
   AttributionNoiseMode noise_mode = AttributionNoiseMode::kDefault;
 
@@ -26,6 +33,9 @@ struct AttributionSimulationOptions {
   // to deduplicate reports in the event of retries. As such, it is a source
   // of nondeterminism in the output.
   bool remove_report_ids = false;
+
+  AttributionReportTimeFormat report_time_format =
+      AttributionReportTimeFormat::kSecondsSinceUnixEpoch;
 };
 
 // Simulates the Attribution Reporting API for a single user on sources and
