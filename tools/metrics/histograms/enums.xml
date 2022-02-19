@@ -71213,6 +71213,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="17" label="Fetch camera roll item data request"/>
   <int value="18" label="Fetch camera roll item data response"/>
   <int value="19" label="Initiate camera roll item transfer request"/>
+  <int value="20" label="Decline incoming call request"/>
+  <int value="21" label="Decline incoming call response"/>
+  <int value="22" label="Hangup ongoing call request"/>
+  <int value="23" label="Hangup ongoing call response"/>
+  <int value="24" label="Feature setup request"/>
+  <int value="25" label="Feature setup response"/>
 </enum>
 
 <enum name="PhoneHubNotificationAccessSetupStatus">
