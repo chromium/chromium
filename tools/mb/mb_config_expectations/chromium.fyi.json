@@ -30,6 +30,31 @@
       "use_thin_lto": true
     }
   },
+  "Comparison Android (reclient)": {
+    "goma": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview",
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true
+    },
+    "reclient": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview",
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "Comparison Linux (reclient)": {
     "goma": {
       "dcheck_always_on": false,

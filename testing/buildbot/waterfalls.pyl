@@ -2526,6 +2526,11 @@
     'name': 'chromium.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'Comparison Android (reclient)': {
+        'additional_compile_targets': [
+          'all'
+        ],
+      },
       'Comparison Linux (reclient)': {
         'mixins': [
           'isolate_profile_data',
