@@ -41,6 +41,9 @@ namespace arc {
 
 namespace {
 
+using SetNativeChromeVoxResponse =
+    extensions::api::accessibility_private::SetNativeChromeVoxResponse;
+
 ArcAccessibilityTreeTracker::TreeKey KeyForInputMethod() {
   return {ArcAccessibilityTreeTracker::TreeKeyType::kInputMethod,
           kNoTaskId,
@@ -60,7 +63,7 @@ ArcAccessibilityTreeTracker::TreeKey KeyForTaskId(int32_t task_id) {
 }
 
 bool ShouldTrackWindow(aura::Window* window) {
-  return arc::IsArcOrGhostWindow(window);
+  return IsArcOrGhostWindow(window);
 }
 
 void SetChildAxTreeIDForWindow(aura::Window* window,
@@ -100,19 +103,15 @@ FromMojomResponseToAutomationResponse(
     arc::mojom::SetNativeChromeVoxResponse response) {
   switch (response) {
     case arc::mojom::SetNativeChromeVoxResponse::SUCCESS:
-      return extensions::api::accessibility_private::
-          SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_SUCCESS;
+      return SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_SUCCESS;
     case arc::mojom::SetNativeChromeVoxResponse::TALKBACK_NOT_INSTALLED:
-      return extensions::api::accessibility_private::
-          SetNativeChromeVoxResponse::
-              SET_NATIVE_CHROME_VOX_RESPONSE_TALKBACKNOTINSTALLED;
+      return SetNativeChromeVoxResponse::
+          SET_NATIVE_CHROME_VOX_RESPONSE_TALKBACKNOTINSTALLED;
     case arc::mojom::SetNativeChromeVoxResponse::WINDOW_NOT_FOUND:
-      return extensions::api::accessibility_private::
-          SetNativeChromeVoxResponse::
-              SET_NATIVE_CHROME_VOX_RESPONSE_WINDOWNOTFOUND;
+      return SetNativeChromeVoxResponse::
+          SET_NATIVE_CHROME_VOX_RESPONSE_WINDOWNOTFOUND;
     case arc::mojom::SetNativeChromeVoxResponse::FAILURE:
-      return extensions::api::accessibility_private::
-          SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE;
+      return SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE;
   }
 }
 
@@ -305,7 +304,7 @@ void ArcAccessibilityTreeTracker::OnWindowFocused(aura::Window* gained_focus,
 }
 
 void ArcAccessibilityTreeTracker::OnWindowDestroying(aura::Window* window) {
-  const auto& task_id_opt = arc::GetWindowTaskId(window);
+  const auto task_id_opt = GetWindowTaskId(window);
   if (!task_id_opt.has_value())
     return;
 
@@ -353,7 +352,7 @@ bool ArcAccessibilityTreeTracker::EnableTree(const ui::AXTreeID& tree_id) {
           exo::GetShellClientAccessibilityId(tree_source->window())) {
     window_key->set_window_id(window_id_opt.value());
   } else if (const absl::optional<int32_t> task_id =
-                 arc::GetWindowTaskId(tree_source->window())) {
+                 GetWindowTaskId(tree_source->window())) {
     window_key->set_task_id(task_id.value());
   } else {
     return false;
@@ -513,15 +512,13 @@ void ArcAccessibilityTreeTracker::SetNativeChromeVoxArcSupport(
   aura::Window* window = GetFocusedArcWindow();
   if (!window) {
     std::move(callback).Run(
-        extensions::api::accessibility_private::SetNativeChromeVoxResponse::
-            SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE);
+        SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE);
     return;
   }
 
-  if (!arc::GetWindowTaskId(window).has_value()) {
+  if (!GetWindowTaskId(window).has_value()) {
     std::move(callback).Run(
-        extensions::api::accessibility_private::SetNativeChromeVoxResponse::
-            SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE);
+        SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE);
     return;
   }
 
@@ -550,7 +547,7 @@ void ArcAccessibilityTreeTracker::OnSetNativeChromeVoxArcSupportProcessed(
   }
 
   aura::Window* window = window_tracker->Pop();
-  auto task_id = arc::GetWindowTaskId(window);
+  auto task_id = GetWindowTaskId(window);
   DCHECK(task_id);
 
   if (enabled) {
@@ -608,7 +605,7 @@ void ArcAccessibilityTreeTracker::TrackWindow(aura::Window* window) {
 }
 
 void ArcAccessibilityTreeTracker::UpdateWindowIdMapping(aura::Window* window) {
-  auto task_id = arc::GetWindowTaskId(window);
+  auto task_id = GetWindowTaskId(window);
   if (!task_id.has_value())
     return;
 
@@ -639,7 +636,7 @@ void ArcAccessibilityTreeTracker::UpdateWindowProperties(aura::Window* window) {
   if (!ash::IsArcWindow(window))
     return;
 
-  auto task_id = arc::GetWindowTaskId(window);
+  auto task_id = GetWindowTaskId(window);
   if (!task_id.has_value())
     return;
 
