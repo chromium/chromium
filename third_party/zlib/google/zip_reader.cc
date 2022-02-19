@@ -160,43 +160,29 @@ void ZipReader::Close() {
   Reset();
 }
 
-bool ZipReader::HasMore() {
-  return !reached_end_;
-}
-
-bool ZipReader::AdvanceToNextEntry() {
-  DCHECK(zip_file_);
-
-  // Should not go further if we already reached the end.
-  if (reached_end_)
-    return false;
-
-  if (const int err = unzGoToNextFile(zip_file_); err != UNZ_OK) {
-    reached_end_ = true;
-    if (err != UNZ_END_OF_LIST_OF_FILE) {
-      LOG(ERROR) << "Cannot go to next entry in ZIP: " << UnzipError(err);
-      ok_ = false;
-      return false;
-    }
-  }
-
-  entry_ = {};
-  current_entry_ = nullptr;
-  return true;
-}
-
 const ZipReader::Entry* ZipReader::Next() {
   DCHECK(zip_file_);
 
   if (reached_end_)
     return nullptr;
 
-  if (next_index_ > 0 && (!AdvanceToNextEntry() || reached_end_))
-    return nullptr;
+  DCHECK(ok_);
+
+  // Move to the next entry if we're not trying to open the first entry.
+  if (next_index_ > 0) {
+    if (const int err = unzGoToNextFile(zip_file_); err != UNZ_OK) {
+      reached_end_ = true;
+      if (err != UNZ_END_OF_LIST_OF_FILE) {
+        LOG(ERROR) << "Cannot go to next entry in ZIP: " << UnzipError(err);
+        ok_ = false;
+      }
+      return nullptr;
+    }
+  }
 
   next_index_++;
 
-  if (!OpenCurrentEntryInZip()) {
+  if (!OpenEntry()) {
     reached_end_ = true;
     ok_ = false;
     return nullptr;
@@ -205,10 +191,8 @@ const ZipReader::Entry* ZipReader::Next() {
   return &entry_;
 }
 
-bool ZipReader::OpenCurrentEntryInZip() {
+bool ZipReader::OpenEntry() {
   DCHECK(zip_file_);
-
-  current_entry_ = nullptr;
 
   // Get entry info.
   unz_file_info64 info = {};
@@ -221,33 +205,33 @@ bool ZipReader::OpenCurrentEntryInZip() {
     return false;
   }
 
-  Entry& entry = entry_;
-  entry.path_in_original_encoding = path_in_zip;
+  entry_.path_in_original_encoding = path_in_zip;
 
   // Convert path from original encoding to Unicode.
   std::u16string path_in_utf16;
   const char* const encoding = encoding_.empty() ? "UTF-8" : encoding_.c_str();
-  if (!base::CodepageToUTF16(entry.path_in_original_encoding, encoding,
+  if (!base::CodepageToUTF16(entry_.path_in_original_encoding, encoding,
                              base::OnStringConversionError::SUBSTITUTE,
                              &path_in_utf16)) {
     LOG(ERROR) << "Cannot convert path from encoding " << encoding;
     return false;
   }
 
-  entry.path = base::FilePath::FromUTF16Unsafe(path_in_utf16);
-  entry.original_size = info.uncompressed_size;
+  entry_.path = base::FilePath::FromUTF16Unsafe(path_in_utf16);
+  entry_.original_size = info.uncompressed_size;
 
   // Directory entries in ZIP have a path ending with "/".
-  entry.is_directory = base::EndsWith(path_in_utf16, u"/");
+  entry_.is_directory = base::EndsWith(path_in_utf16, u"/");
 
   // Check the entry path for directory traversal issues. We consider entry
   // paths unsafe if they are absolute or if they contain "..". On Windows,
   // IsAbsolute() returns false for paths starting with "/".
-  entry.is_unsafe = entry.path.ReferencesParent() || entry.path.IsAbsolute() ||
-                    base::StartsWith(path_in_utf16, u"/");
+  entry_.is_unsafe = entry_.path.ReferencesParent() ||
+                     entry_.path.IsAbsolute() ||
+                     base::StartsWith(path_in_utf16, u"/");
 
   // The file content of this entry is encrypted if flag bit 0 is set.
-  entry.is_encrypted = info.flag & 1;
+  entry_.is_encrypted = info.flag & 1;
 
   // Construct the last modified time. The timezone info is not present in ZIP
   // archives, so we construct the time as UTC.
@@ -260,27 +244,29 @@ bool ZipReader::OpenCurrentEntryInZip() {
   exploded_time.second = info.tmu_date.tm_sec;
   exploded_time.millisecond = 0;
 
-  if (!base::Time::FromUTCExploded(exploded_time, &entry.last_modified))
-    entry.last_modified = base::Time::UnixEpoch();
+  if (!base::Time::FromUTCExploded(exploded_time, &entry_.last_modified))
+    entry_.last_modified = base::Time::UnixEpoch();
 
 #if defined(OS_POSIX)
-  entry.posix_mode = (info.external_fa >> 16L) & (S_IRWXU | S_IRWXG | S_IRWXO);
+  entry_.posix_mode = (info.external_fa >> 16L) & (S_IRWXU | S_IRWXG | S_IRWXO);
 #else
-  entry.posix_mode = 0;
+  entry_.posix_mode = 0;
 #endif
 
-  current_entry_ = &entry_;
   return true;
 }
 
 bool ZipReader::ExtractCurrentEntry(WriterDelegate* delegate,
                                     uint64_t num_bytes_to_extract) const {
   DCHECK(zip_file_);
+  DCHECK_LT(0, next_index_);
+  DCHECK(ok_);
+  DCHECK(!reached_end_);
 
   // Use password only for encrypted files. For non-encrypted files, no password
   // is needed, and must be nullptr.
   const char* const password =
-      entry_.is_encrypted() ? password_.c_str() : nullptr;
+      entry_.is_encrypted ? password_.c_str() : nullptr;
   if (const int err = unzOpenCurrentFilePassword(zip_file_, password);
       err != UNZ_OK) {
     LOG(ERROR) << "Cannot open file " << Redact(entry_.path)
@@ -332,9 +318,9 @@ bool ZipReader::ExtractCurrentEntry(WriterDelegate* delegate,
   }
 
   if (entire_file_extracted) {
-    delegate->SetPosixFilePermissions(current_entry_info()->posix_mode());
-    if (current_entry_info()->last_modified() != base::Time::UnixEpoch()) {
-      delegate->SetTimeModified(current_entry_info()->last_modified());
+    delegate->SetPosixFilePermissions(entry_.posix_mode);
+    if (entry_.last_modified != base::Time::UnixEpoch()) {
+      delegate->SetTimeModified(entry_.last_modified);
     }
   }
 
@@ -353,10 +339,12 @@ void ZipReader::ExtractCurrentEntryToFilePathAsync(
     FailureCallback failure_callback,
     const ProgressCallback& progress_callback) {
   DCHECK(zip_file_);
-  DCHECK(current_entry_);
+  DCHECK_LT(0, next_index_);
+  DCHECK(ok_);
+  DCHECK(!reached_end_);
 
   // If this is a directory, just create it and return.
-  if (current_entry_info()->is_directory()) {
+  if (entry_.is_directory) {
     if (base::CreateDirectory(output_file_path)) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, std::move(success_callback));
@@ -371,7 +359,7 @@ void ZipReader::ExtractCurrentEntryToFilePathAsync(
   // Use password only for encrypted files. For non-encrypted files, no password
   // is needed, and must be nullptr.
   const char* const password =
-      entry_.is_encrypted() ? password_.c_str() : nullptr;
+      entry_.is_encrypted ? password_.c_str() : nullptr;
   if (const int err = unzOpenCurrentFilePassword(zip_file_, password);
       err != UNZ_OK) {
     LOG(ERROR) << "Cannot open file " << Redact(entry_.path)
@@ -411,6 +399,7 @@ bool ZipReader::ExtractCurrentEntryToString(uint64_t max_read_bytes,
                                             std::string* output) const {
   DCHECK(output);
   DCHECK(zip_file_);
+  DCHECK_LT(0, next_index_);
   DCHECK(ok_);
   DCHECK(!reached_end_);
 
@@ -419,7 +408,7 @@ bool ZipReader::ExtractCurrentEntryToString(uint64_t max_read_bytes,
   if (max_read_bytes == 0)
     return true;
 
-  if (entry_.is_directory())
+  if (entry_.is_directory)
     return true;
 
   // The original_size is the best hint for the real size, so it saves doing
@@ -427,7 +416,7 @@ bool ZipReader::ExtractCurrentEntryToString(uint64_t max_read_bytes,
   // However, we need to assume that the uncompressed size could be incorrect
   // therefore this function needs to read as much data as possible.
   output->reserve(static_cast<size_t>(std::min(
-      base::checked_cast<int64_t>(max_read_bytes), entry_.original_size())));
+      base::checked_cast<int64_t>(max_read_bytes), entry_.original_size)));
 
   StringWriterDelegate writer(output);
   if (!ExtractCurrentEntry(&writer, max_read_bytes)) {
@@ -463,10 +452,9 @@ void ZipReader::Reset() {
   zip_file_ = nullptr;
   num_entries_ = 0;
   next_index_ = 0;
-  reached_end_ = false;
+  reached_end_ = true;
   ok_ = false;
   entry_ = {};
-  current_entry_ = nullptr;
 }
 
 void ZipReader::ExtractChunk(base::File output_file,
