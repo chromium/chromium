@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Προστέθηκε ο ιστότοπος <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1384959399684842514">Η λήψη διακόπηκε προσωρινά.</translation>
+<translation id="1409426117486808224">Απλοποιημένη προβολή για ανοικτές καρτέλες</translation>
 <translation id="1415402041810619267">Περικομμένο URL</translation>
 <translation id="1446450296470737166">Να επιτρέπεται πλήρης έλεγχος σε MIDI</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Κατάργηση</translation>
 <translation id="2289270750774289114">Να γίνεται ερώτηση όταν ένας ιστότοπος επιθυμεί να εντοπίσει κοντινές συσκευες Bluetooth (συνιστάται)</translation>
 <translation id="2315043854645842844">Η επιλογή πιστοποιητικού από τον πελάτη δεν υποστηρίζεται από το λειτουργικό σύστημα.</translation>
+<translation id="2321958826496381788">Σύρετε το ρυθμιστικό έως ότου να διαβάσετε αυτό το μήνυμα άνετα. Το κείμενο θα πρέπει να είναι τουλάχιστον τόσο μεγάλο αφού πατήσετε δύο φορές σε μια παράγραφο.</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2379925928934107488">Εφαρμογή σκούρου θέματος σε ιστοτόπους όταν το Chrome χρησιμοποιεί σκούρο θέμα, όταν υπάρχει αυτή η δυνατότητα</translation>
+<translation id="2387895666653383613">Κλιμάκωση κειμένου</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}other{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}}</translation>
 <translation id="2434158240863470628">Η λήψη ολοκληρώθηκε <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,6 +115,7 @@
 <translation id="3835233591525155343">Χρήση της συσκευής σας</translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3859306556332390985">Αναζήτηση προς τα εμπρός</translation>
+<translation id="3895926599014793903">Αναγκαστική ενεργοποίηση εστίασης</translation>
 <translation id="3955193568934677022">Να επιτρέπεται στους ιστοτόπους να αναπαράγουν προστατευμένο περιεχόμενο (συνιστάται)</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
 <translation id="3987993985790029246">Αντ. συνδ.</translation>
@@ -119,6 +123,7 @@
 <translation id="4002066346123236978">Τίτλος</translation>
 <translation id="4008040567710660924">Επιτρέπει τα cookie για έναν συγκεκριμένο ιστότοπο.</translation>
 <translation id="4046123991198612571">Επόμενο κομμάτι</translation>
+<translation id="4149994727733219643">Απλοποιημένη προβολή για ιστοσελίδες</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
 <translation id="4194328954146351878">Να γίνεται ερώτηση πριν επιτραπεί στους ιστοτόπους να βλέπουν και να αλλάζουν πληροφορίες σε συσκευές NFC (συνιστάται)</translation>
 <translation id="4200726100658658164">Άνοιγμα ρυθμίσεων τοποθεσίας</translation>
@@ -182,6 +187,7 @@
 <translation id="5556459405103347317">Επαναφόρτωση</translation>
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5649053991847567735">Αυτόματες λήψεις</translation>
+<translation id="5668404140385795438">Παράκαμψη του αιτήματος ενός ιστότοπου για παρεμπόδιση εστίασης</translation>
 <translation id="5677928146339483299">Αποκλεισμένο</translation>
 <translation id="5689516760719285838">Τοποθεσία</translation>
 <translation id="5690795753582697420">Η κάμερα απενεργοποιήθηκε στις ρυθμίσεις Android.</translation>
@@ -237,9 +243,11 @@
 <translation id="6912998170423641340">Αποκλεισμός ιστοτόπων από ανάγνωση κειμένου και εικόνων από το πρόχειρο</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6981982820502123353">Προσβασιμότητα</translation>
 <translation id="6992289844737586249">Να γίνεται ερώτηση προτού επιτραπεί στους ιστότοπους να χρησιμοποιήσουν το μικρόφωνό σας (συνιστάται)</translation>
 <translation id="7000754031042624318">Έχει απενεργοποιηθεί στις Ρυθμίσεις Android</translation>
 <translation id="7016516562562142042">Επιτράπηκε για την τρέχουσα μηχανή αναζήτησης</translation>
+<translation id="702463548815491781">Συνιστάται όταν έχει ενεργοποιηθεί το TalkBack ή η πρόσβαση με διακόπτη</translation>
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 επιλεγμένο}other{# επιλεγμένα}}</translation>
 <translation id="7087918508125750058">Επιλέχθηκαν <ph name="ITEM_COUNT" />. Οι επιλογές είναι διαθέσιμες κοντά στο επάνω μέρος της οθόνης</translation>
@@ -290,6 +298,7 @@
 <translation id="8211406090763984747">Η σύνδεση είναι ασφαλής</translation>
 <translation id="8249310407154411074">Μετακίνηση επάνω</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
+<translation id="8284326494547611709">Υπότιτλοι</translation>
 <translation id="8300705686683892304">Διαχείριση από εφαρμογή</translation>
 <translation id="8324158725704657629">Να μην ερωτηθώ ξανά</translation>
 <translation id="8372893542064058268">Να επιτρέπεται ο Συγχρονισμός παρασκηνίου για έναν συγκεκριμένο ιστότοπο.</translation>

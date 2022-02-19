@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">Nastavenia sledovania cien</translation>
 <translation id="1378979118429748177">Dostávajte upozornenia pri poklesoch cien</translation>
 <translation id="1403228085774130835">Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne</translation>
+<translation id="1455506303394048917">Vaša aktivita v týchto kartách inkognito bude vymazaná z tohto zariadenia</translation>
+<translation id="1499635324672558517">Chcete zavrieť všetky karty inkognito?</translation>
 <translation id="1657719826150349398">Presunúť kartu nadol</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
 <translation id="2118649612461486615">Informácie o obchode</translation>

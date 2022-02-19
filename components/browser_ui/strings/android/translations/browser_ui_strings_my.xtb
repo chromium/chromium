@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">ဆိုက် <ph name="SITE_NAME" /> အား ထည့်ခဲ့၏</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
 <translation id="1384959399684842514">ဒေါင်းလုဒ်လုပ်မှု ဆိုင်းငံ့ထားသည်</translation>
+<translation id="1409426117486808224">တဘ်ဖွင့်ခြင်းများအတွက် ရိုးရှင်းသည့် မြင်ကွင်း</translation>
 <translation id="1415402041810619267">URL ကို ဖြတ်လိုက်သည်</translation>
 <translation id="1446450296470737166">MIDI ကိရိယာများအား အပြည့်အဝ ထိန်းချုပ်ခွင့် ပြုရန်</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> ဖယ်ရှားရန်</translation>
 <translation id="2289270750774289114">ဝဘ်ဆိုက်က အနီးအနားရှိ ဘလူးတုသ်ကိရိယာများ ရှာဖွေလိုသည့်အခါ ခွင့်တောင်းရန် (အကြံပြုထားသည်)</translation>
 <translation id="2315043854645842844">ကလိုင်းယင့် ဘက်မှ လက်မှတ်ရွေးမှုကို လည်ပတ်သည့်စနစ်မှ မပံ့ပိုးပါ။</translation>
+<translation id="2321958826496381788">သင်က ယင်းကို ဖတ်ရအဆင်ပြေသည့် အထိ ဆွဲတန်းကို ဆွဲယူပါ။ စာသားတွင် စာပိုဒ် တစ်ခုကို နှစ်ကြိမ် ပုတ်လိုက်သည့် နောက်မှာ ဤမျှလောက် ကြီးလျက် မြင်ရသင့်သည်။</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2379925928934107488">Chrome က ဝဘ်ဆိုက်များကို မှောင်သည့် အပြင်အဆင်သုံးလျှင် ဖြစ်နိုင်ပါက ၎င်းအပြင်အဆင်ကို ပြောင်းပေးသည်</translation>
+<translation id="2387895666653383613">စာသား စကေး</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> မီဂါဘိုက်</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}}</translation>
 <translation id="2434158240863470628">ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,6 +115,7 @@
 <translation id="3835233591525155343">သင်၏ ကိရိယာအသုံးပြုမှု</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3859306556332390985">အရှေ့သို့ ရစ်ရန်</translation>
+<translation id="3895926599014793903">ဇူးမ် အတင်း ဖွင့်ရန်</translation>
 <translation id="3955193568934677022">ကာကွယ်ထားသည့် အကြောင်းအရာများကို ဆိုက်များအား ဖွင့်ခွင့်ပြုပါ (အကြံပြုထားသည်)</translation>
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3987993985790029246">လင့်ခ်ကူးယူမည်</translation>
@@ -119,6 +123,7 @@
 <translation id="4002066346123236978">ခေါင်းစဉ်</translation>
 <translation id="4008040567710660924">အချို့ဝဘ်ဆိုက်များအတွက် ကွတ်ကီးများ ခွင့်ပြုသည်။</translation>
 <translation id="4046123991198612571">နောက်တစ်ပုဒ်</translation>
+<translation id="4149994727733219643">ဝဘ်စာမျက်နှာများအတွက် ရိုးရှင်းသည့်မြင်ကွင်း</translation>
 <translation id="4165986682804962316">ဝက်ဆိုက် ဆက်တင်များ</translation>
 <translation id="4194328954146351878">NFC စက်ပစ္စည်းများရှိ အချက်အလက်များကို ဝဘ်ဆိုက်များအား ကြည့်ခွင့်နှင့် ပြောင်းလဲခွင့်မပေးမီ ဦးစွာမေးမြန်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="4200726100658658164">'တည်နေရာပြဆက်တင်များ' ကို ဖွင့်ပါ</translation>
@@ -182,6 +187,7 @@
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
 <translation id="5596627076506792578">ပိုမို ရွေးချယ်စရာများ</translation>
 <translation id="5649053991847567735">အလိုအလျောက် ဒေါင်းလုပ်ရယူခြင်း</translation>
+<translation id="5668404140385795438">ချဲ့နေမှုကို ဟန့်တားရန် ဝဘ်ဆိုက် တစ်ခု၏ တောင်းဆိုချက်ကို အုပ်ရေးပါ</translation>
 <translation id="5677928146339483299">ပိတ်ဆို့ထား</translation>
 <translation id="5689516760719285838">တည်နေရာ</translation>
 <translation id="5690795753582697420">Android ဆက်တင်များတွင် 'ကင်မရာ' ပိတ်ထားသည်</translation>
@@ -237,9 +243,11 @@
 <translation id="6912998170423641340">ကလစ်ဘုတ်ရှိ စာနှင့် ပုံများအား မကြည့်နိုင်ရန် ဝဘ်ဆိုက်များကို ပိတ်ပါ</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>
 <translation id="6992289844737586249">ဆိုက်များကို သင့်မိုခရိုဖုန်းအား အသုံးပြုခွင့်မပေးမီ ဦးစွာမေးမြန်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="7000754031042624318">Android ဆက်တင်များတွင် ပိတ်ထားသည်</translation>
 <translation id="7016516562562142042">လက်ရှိရှာ​ဖွေမှု အင်ဂျင်အတွက် ခွင့်ပြုထားသည်</translation>
+<translation id="702463548815491781">TalkBack သို့မဟုတ် 'ခလုတ်အသုံးပြုခွင့်' ဖွင့်ထားသည့်အခါ အကြံပြုသည်</translation>
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ခု ရွေးထားသည်}other{# ခု ရွေးထားသည်}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ခု ရွေးထားသည်။ မျက်နှာပြင်၏ ထိပ်နားတွင် ရွေးချယ်စရာများ ရှိသည်</translation>
@@ -290,6 +298,7 @@
 <translation id="8211406090763984747">ချိတ်ဆက်မှုသည် လုံခြုံပါသည်</translation>
 <translation id="8249310407154411074">အပေါ်ဆုံးသို့ ရွှေ့ပါ</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
+<translation id="8284326494547611709">စာတန်းများ</translation>
 <translation id="8300705686683892304">အက်ပ်က စီမံခန့်ခွဲထားသည်</translation>
 <translation id="8324158725704657629">ထပ်မမေးပါနှင့်</translation>
 <translation id="8372893542064058268">တိကျသည့်ဆိုက်အတွက် နောက်ခံတွင်စင့်ခ်လုပ်ခြင်းကို ခွင့်ပြုပါ</translation>

@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Энэ фолдерыг Linux-тай хуваалцсан байна</translation>
 <translation id="1864756863218646478">Файл олдсонгүй.</translation>
 <translation id="1884013283844450420">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, холбогдох</translation>
+<translation id="1914901738028575085">CloudReady 2.0 төхөөрөмж</translation>
 <translation id="1920670151694390848">Малайлам галиг</translation>
 <translation id="1920798810075583923">Тарвас</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" />-г форматаллаа</translation>
@@ -899,6 +900,7 @@
 <translation id="8714406895390098252">Унадаг дугуй</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> сонгогдсон.</translation>
 <translation id="872537912056138402">Хорват</translation>
+<translation id="873847021056608403">CloudReady 2.0 төхөөрөмжүүд</translation>
 <translation id="8743164338060742337">Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, холбогдох</translation>
 <translation id="8750438273876807512">Тавиур дахь файлууддаа шуурхай хандахын тулд файлыг удаан дарж, <ph name="ICON" />-г товшоод, "Тавиурт бэхлэх"-ийг сонгоно уу.</translation>
 <translation id="8787254343425541995">Нэгдсэн сүлжээнүүдэд проксиг зөвшөөрөх</translation>

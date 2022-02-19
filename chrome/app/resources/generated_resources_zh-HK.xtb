@@ -150,6 +150,7 @@
 <translation id="1139923033416533844">記憶體用量</translation>
 <translation id="1140351953533677694">存取您的藍牙和序列裝置</translation>
 <translation id="114036956334641753">音訊和字幕</translation>
+<translation id="1142002900084379065">最近的相片</translation>
 <translation id="1143142264369994168">憑證簽署者</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome 在您的電腦上找不到有害軟件 • 上次檢查時間：1 分鐘前}other{Chrome 在您的電腦上找不到有害軟件 • 上次檢查時間：{NUM_MINS} 分鐘前}}</translation>
 <translation id="1145593918056169051">打印機已停止運作</translation>
@@ -2393,7 +2394,6 @@
 <translation id="3390013585654699824">應用程式詳情</translation>
 <translation id="3390741581549395454">已成功備份 Linux 應用程式和檔案。升級即將開始。</translation>
 <translation id="3391512812407811893">試用 Privacy Sandbox</translation>
-<translation id="339178315942519818">在 <ph name="DEVICE_TYPE" /> 上查看即時通訊應用程式的通知</translation>
 <translation id="3393554941209044235">Chrome 文件分析</translation>
 <translation id="3394850431319394743">已允許使用識別碼來播放受保護的內容</translation>
 <translation id="3396744558790608201">在網站上瀏覽及購物時，先按一下右鍵再選取 [使用「Google 智能鏡頭」搜尋圖片] 即可搜尋網站的任何區域，進一步瞭解您看到的影像內容。</translation>
@@ -3427,7 +3427,6 @@
 <translation id="4432621511648257259">密碼不正確</translation>
 <translation id="443454694385851356">舊版 (不安全)</translation>
 <translation id="443475966875174318">更新或移除不兼容的應用程式</translation>
-<translation id="4435634292635092844">在 <ph name="DEVICE_TYPE" /> 上查看手機相機膠卷中的相片。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">透明</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" /> 已傳送通知到您的手機。如要確認您的身份，請輕按「<ph name="NOTIFICATIONTITLE" />」通知，然後按步驟操作。</translation>
 <translation id="4441124369922430666">您要在裝置開機時自動啟動這個應用程式嗎？</translation>
@@ -4924,6 +4923,7 @@
 <translation id="6016972670657536680">選取語言和鍵盤按鈕。目前選取的語言為<ph name="LANGUAGE" />。</translation>
 <translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> 是您 Chromebook 上的預設帳戶</translation>
 <translation id="6017514345406065928">綠色</translation>
+<translation id="6019169947004469866">剪裁</translation>
 <translation id="6019851026059441029">極佳 - 高清畫質</translation>
 <translation id="6020431688553761150">伺服器未授予您這個資源的存取權。</translation>
 <translation id="6022526133015258832">開啟全螢幕</translation>
@@ -4955,6 +4955,7 @@
     <ph name="BEGIN_PARAGRAPH2" />您隨時可在子女的 Chrome OS 裝置設定中啟用或停用這類報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />即使關閉此功能，此裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />如果您為子女的 Google 帳戶開啟「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。您可前往 families.google.com，進一步瞭解這些設定及其調整方式。<ph name="END_PARAGRAPH4" /></translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052976518993719690">SSL 憑證授權單位</translation>
 <translation id="6053401458108962351">清除瀏覽數據(&amp;C)…</translation>
 <translation id="6054284857788651331">最近閂咗嘅分頁群組</translation>
@@ -6508,7 +6509,6 @@
 <translation id="7661259717474717992">允許網站儲存及讀取 Cookie 資料</translation>
 <translation id="7661451191293163002">無法取得註冊憑證。</translation>
 <translation id="7662283695561029522">輕觸即可設定</translation>
-<translation id="7662419552544645985">在 <ph name="DEVICE_TYPE" /> 上查看手機相機膠卷中的相片</translation>
 <translation id="7663719505383602579">接收端：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">可以使用鍵盤快速鍵</translation>
 <translation id="7663859337051362114">新增 eSIM 卡設定檔</translation>
@@ -7142,6 +7142,7 @@
 <translation id="827097179112817503">顯示 [主頁] 按鈕</translation>
 <translation id="8271268254812352141">按住文字或在文字上按一下右鍵後，就能取得定義、翻譯或單位轉換結果。請在<ph name="LINK_BEGIN" />網站語言<ph name="LINK_END" />中自訂翻譯語言。</translation>
 <translation id="8271379370373330993">後續幾個步驟須由家長完成。您可在帳戶設定後將 <ph name="DEVICE_TYPE" /> 交還給子女。</translation>
+<translation id="8272194309885535896">下載圖片</translation>
 <translation id="8272443605911821513">如要管理擴充功能，只需按一下 [其他工具] 選單裡的 [擴充功能] 即可。</translation>
 <translation id="8274332263553132018">投放檔案</translation>
 <translation id="8274921654076766238">放大鏡追蹤鍵盤焦點</translation>

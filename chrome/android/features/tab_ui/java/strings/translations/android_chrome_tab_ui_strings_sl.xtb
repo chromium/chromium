@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">Nastavitve spremljanja cen</translation>
 <translation id="1378979118429748177">Prejmite obvestila ob znižanju cen.</translation>
 <translation id="1403228085774130835">Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma.</translation>
+<translation id="1455506303394048917">Vaša dejavnost na teh anonimnih zavihkih bo izbrisana iz te naprave.</translation>
+<translation id="1499635324672558517">Želite zapreti vse anonimne zavihke?</translation>
 <translation id="1657719826150349398">Premakni zavihek navzdol</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> zavihek}one{<ph name="TABS_COUNT_MANY" /> zavihek}two{<ph name="TABS_COUNT_MANY" /> zavihka}few{<ph name="TABS_COUNT_MANY" /> zavihki}other{<ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
 <translation id="2118649612461486615">Podatki o trgovini</translation>

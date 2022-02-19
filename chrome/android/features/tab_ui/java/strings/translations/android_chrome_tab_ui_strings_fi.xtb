@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">Hintaseurannan asetukset</translation>
 <translation id="1378979118429748177">Saat ilmoituksia, kun hinnat laskevat</translation>
 <translation id="1403228085774130835">Löydät suljetut välilehdet Chromen päävalikon Hiljattain suljetut välilehdet ‑kohdasta</translation>
+<translation id="1455506303394048917">Toimintasi näillä incognito-välilehdillä tyhjennetään laitteelta</translation>
+<translation id="1499635324672558517">Suljetaanko kaikki incognito-välilehdet?</translation>
 <translation id="1657719826150349398">Siirrä välilehti alaspäin</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
 <translation id="2118649612461486615">Kaupan tiedot</translation>

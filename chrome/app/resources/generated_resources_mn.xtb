@@ -107,6 +107,7 @@
     Google Home апп<ph name="END_LINK" />-д харах боломжтой байна уу?</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />-с хуулсан зураг</translation>
 <translation id="1100504063505580045">Одоогийн дүрс тэмдэг</translation>
+<translation id="1102790815296970136">"<ph name="PERSONALIZED_MEMORY_TITLE" />" болон бусад дурсамжийг эндээс харна уу</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
 <translation id="1108600514891325577">&amp; Зогс</translation>
 <translation id="1108938384783527433">Түүхийг синк хийх</translation>
@@ -150,6 +151,7 @@
 <translation id="1139923033416533844">Санах ойн ашиглалт</translation>
 <translation id="1140351953533677694">Bluetooth болон Цуваа төхөөрөмжүүд рүүгээ нэвтэр</translation>
 <translation id="114036956334641753">Аудио болон хадмал</translation>
+<translation id="1142002900084379065">Саяхны зургууд</translation>
 <translation id="1143142264369994168">Сертификат баталгаажуулагч</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome таны компьютероос хортой программ хангамж олсонгүй • 1 минутын өмнө шалгасан}other{Chrome таны компьютероос хортой программ хангамж олсонгүй • {NUM_MINS} минутын өмнө шалгасан}}</translation>
 <translation id="1145593918056169051">Хэвлэгч зогсчихлоо</translation>
@@ -263,6 +265,7 @@
 <translation id="125220115284141797">Өгөгдмөл</translation>
 <translation id="1252987234827889034">Профайлд алдаа гарлаа</translation>
 <translation id="1254593899333212300">Интернетийн шууд холболт</translation>
+<translation id="1258144502260926473">Таны компьютер CloudReady 2.0-д аюулгүй байдлын чухал онцлогуудыг хэрэгжүүлэхэд ашигладаг аюулгүй байдлын модуль агуулж байна. Нэмэлт мэдээлэл авах бол Chromebook-н Тусламжийн төвд зочилно уу: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="1258491128795710625">Шинэ юм юу байна</translation>
 <translation id="1259152067760398571">Аюулгүй байдлын шалгалтыг өчигдөр хийсэн</translation>
 <translation id="1260451001046713751"><ph name="HOST" />-н попап болон дахин чиглүүлэлтийг үргэлж зөвшөөрөх</translation>
@@ -484,6 +487,7 @@
 <translation id="1481537595330271162">Дискийн хэмжээг өөрчлөхөд алдаа гарлаа</translation>
 <translation id="1482626744466814421">Энэ табыг тэмдэглэх...</translation>
 <translation id="1483493594462132177">Илгээх</translation>
+<translation id="1484599694148543901">Та CloudReady 2.0-ийн бүрэлдэхүүн дэлгэц уншигч болох ChromeVox-г идэвхжүүлэхийг хүсэж байна уу?</translation>
 <translation id="1484979925941077974">Сайт Bluetooth-г ашиглаж байна</translation>
 <translation id="1485015260175968628">Энэ одоо болно:</translation>
 <translation id="1485141095922496924"><ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /> хувилбар</translation>
@@ -662,6 +666,7 @@
 <translation id="1644852018355792105"><ph name="DEVICE" /> төхөөрөмжийн Bluetooth нууц үгийг оруулна уу</translation>
 <translation id="1645516838734033527"><ph name="DEVICE_TYPE" />-г аюулгүй байлгахын тулд Smart Lock таны утсанд дэлгэцийн түгжээг шаардаж байна.</translation>
 <translation id="1646982517418478057">Энэ сертификатыг шифрлэхийн тулд нууц үг оруулна уу</translation>
+<translation id="1647408325348388858"><ph name="FILE_NAME" />-г энэ веб аппад нээж, засах уу?</translation>
 <translation id="1648528859488547844">Байршлыг тогтоохын тулд Wi-Fi эсвэл мобайл сүлжээ ашиглах</translation>
 <translation id="164936512206786300">Bluetooth төхөөрөмжийг үл хослуулах</translation>
 <translation id="1651008383952180276">Та нэвтрэх үгээ хоёр удаа зөв оруулах шаардлагатай</translation>
@@ -1129,6 +1134,7 @@
 <translation id="2113921862428609753">Удирдлагын мэдээллийн хандалт</translation>
 <translation id="2114326799768592691">Дахин ачаалах, фрейм</translation>
 <translation id="2114413269775311385">Энэ бүртгэлийг Android аппуудтай ашиглана уу. Та Android аппуудын зөвшөөрлийг <ph name="LINK_BEGIN" />Аппуудын тохиргоо<ph name="LINK_END" /> хэсэгт хянах боломжтой.</translation>
+<translation id="2114820389966440614">"Сүүлийн үеийн онцлох зургууд" болон бусад дурсамжийг эндээс харна уу</translation>
 <translation id="2114896190328250491"><ph name="NAME" />-н зураг</translation>
 <translation id="2114995631896158695">Ямар ч SIM карт оруулаагүй байна</translation>
 <translation id="2116619964159595185">Сайтууд ихэвчлэн бага эрчим хүчний дохионы цамхаг, эрүүл мэнд, фитнесийн хянагч эсвэл ухаалаг гэрлийн чийдэн тохируулах, синк хийх зэрэг онцлогуудад зориулж Bluetooth төхөөрөмжүүдэд холбогддог</translation>
@@ -1367,6 +1373,7 @@
 <translation id="2326188115274135041">Түгжээг автоматаар тайлах үйлдлийг идэвхжүүлэхийн тулд ПИН-г баталгаажуулна уу</translation>
 <translation id="2326931316514688470">Аппыг дахин ачаалла</translation>
 <translation id="2327492829706409234">Аппликейшнийг идэвхжүүл</translation>
+<translation id="2327920026543055248"><ph name="TOTAL" />-с <ph name="CHARACTER" />-р тэмдгийг оруулна уу</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" />-г ашиглахын тулд төхөөрөмжөө дахин эхлүүлнэ үү.</translation>
 <translation id="2328636661627946415">Таныг Нууцлалын горимд байх үед сайтууд зөвхөн өөрийн сайт дээрх хөтчийн үйл ажиллагааг харахын тулд күүки ашиглах боломжтой. Нууцлалтай харилцан үйлдлийн төгсгөлд күүкиг устгана.</translation>
 <translation id="2329597144923131178">Өөрийн төхөөрөмж дээрх хавчуурга, түүх, бусад тохиргоог авахын тулд нэвтэрнэ үү.</translation>
@@ -1836,6 +1843,7 @@
 <translation id="2791952154587244007">Алдаа гарлаа. Kiosk апп энэ төхөөрөмж дээр автоматиар эхлэх боломжгүй.</translation>
 <translation id="2792290659606763004">Андройд апп-г устгах уу?</translation>
 <translation id="2792465461386711506">Утаснаасаа Chrome-н саяхны табуудыг харахын тулд Chrome Синкийг асаана уу</translation>
+<translation id="2792697226874849938">Хязгаарлалтын зураг</translation>
 <translation id="2794233252405721443">Сайтыг блоклосон</translation>
 <translation id="2794522004398861033">eSIM тохируулахын тулд Wi-Fi эсвэл Этернэтэд холбогдоно уу</translation>
 <translation id="2795716239552913152">Сайтууд ихэвчлэн таны байршлыг орон нутгийн мэдээ, ойролцоох дэлгүүр зэрэг хамааралтай онцлогууд эсвэл мэдээлэлд зориулж ашигладаг</translation>
@@ -2064,6 +2072,7 @@
 <translation id="3012804260437125868">Зөвхөн ижил сайтын аюулгүй холболтод</translation>
 <translation id="3012917896646559015">Та өөрийн компьютерийг засварын төвд илгээхийн тулд компьютерийн техник хангамжийн үйлдвэрлэгчтэй нэн даруй холбогдоно уу.</translation>
 <translation id="301525898020410885">Хэлийг танай Байгууллагаас тохируулсан байна</translation>
+<translation id="3015425363367310551">Та CloudReady 2.0-ийн бүрэлдэхүүн дэлгэц уншигч болох ChromeVox-г идэвхжүүлэхийг хүсэж байна уу? Хэрэв тийм бол хоёр дууны түвшний товчийг хоёуланг нь таван секундийн турш удаан дарна уу.</translation>
 <translation id="3015639418649705390">Одоо дахин ажиллуулах</translation>
 <translation id="3016381065346027039">Оролтын бүртгэл алга</translation>
 <translation id="3016641847947582299">Бүрэлдэхүүн хэсэг шинэчлэгдсэн</translation>
@@ -2185,6 +2194,7 @@
 <translation id="3142562627629111859">Шинэ бүлэг</translation>
 <translation id="3143515551205905069">Синкийг цуцлах</translation>
 <translation id="3143754809889689516">Эхнээс нь тоглуулах</translation>
+<translation id="3144023778624018265">CloudReady 2.0-ийн тохиргооны синк</translation>
 <translation id="3144647712221361880">Холбоосыг нээх</translation>
 <translation id="3149510190863420837">Chrome Аппликейшнууд</translation>
 <translation id="3150693969729403281">Аюулгүй байдлын шалгалтыг одоо хийх</translation>
@@ -2287,6 +2297,7 @@
 <translation id="3275778913554317645">Цонх хэлбэрээр нээ</translation>
 <translation id="3277691515294482687">Linux-г сайжруулахын өмнө миний апп болон файлуудыг Миний файлууд фолдер луу хуулбарлана уу.</translation>
 <translation id="3278001907972365362">Та Google Бүртгэлээ шалгах шаардлагатай байна</translation>
+<translation id="3278800075417428224">CloudReady 2.0-ийн тохиргоо хэсэгт хэлнүүдийг удирдана уу</translation>
 <translation id="3279092821516760512">Сонгосон харилцагчид ойролцоо байх үедээ тантай хуваалцах боломжтой. Таныг зөвшөөрөх хүртэл шилжүүлгийг эхлүүлэхгүй.</translation>
 <translation id="3279230909244266691">Энэ үйл явцад хэдэн минут шаардлагатай. Виртуал машиныг эхлүүлж байна.</translation>
 <translation id="3280237271814976245">... гэх хадгалах</translation>
@@ -2390,7 +2401,6 @@
 <translation id="3390013585654699824">Аппын дэлгэрэнгүй</translation>
 <translation id="3390741581549395454">Linux аппууд болон файлуудыг амжилттай хуулбарлалаа. Тун удахгүй дэвшүүлэлтийг эхлүүлнэ.</translation>
 <translation id="3391512812407811893">Privacy Sandbox-н туршилт</translation>
-<translation id="339178315942519818"><ph name="DEVICE_TYPE" /> дээрх чатны аппуудынхаа мэдэгдлийг харах</translation>
 <translation id="3393554941209044235">Chrome-н документын задлан шинжилгээ</translation>
 <translation id="3394850431319394743">Хамгаалагдсан контентыг тоглуулахын тулд таниулбар ашиглахыг зөвшөөрсөн</translation>
 <translation id="3396744558790608201">Та веб дээр үзэх болон дэлгүүр хэсэх үедээ харах визуал контентынхоо талаар нэмэлт мэдээлэл авахын тулд сайтын дурын хэсгийг хайх бол баруун талыг товшиж, “Google Дурангаар зураг хайх”-ыг сонгоно уу.</translation>
@@ -2434,6 +2444,7 @@
 <translation id="343115368966109153"><ph name="FILE_NAME" />-г татах уу? Төхөөрөмжийг ашиглаж буй хүн бүр үүнийг харах боломжтой.</translation>
 <translation id="3432227430032737297">Харуулсан бүх зүйлийг устгах</translation>
 <translation id="3432762828853624962">Хуваалцсан ажилчид</translation>
+<translation id="3433507769937235446">Гарах үед түгжих</translation>
 <translation id="3433621910545056227">Анхаарна уу! Систем төхөөрөмжийг суурьлуулж чадахгүй байна.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Хэрэв таны хүүхдийн Веб, аппын нэмэлт үйл ажиллагааны тохиргоо асаалттай байвал энэ өгөгдлийг түүний Google Бүртгэлд хадгалж болзошгүй. Эдгээр тохиргооны талаар болон тэднийг хэрхэн тохируулах тухай нэмэлт мэдээллийг families.google.com дээрээс авна уу.</translation>
@@ -2455,6 +2466,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">USB-C төхөөрөмж</translation>
 <translation id="3446274660183028131">Windows-г суулгахын тулд Parallels Desktop-г эхлүүлнэ үү.</translation>
+<translation id="3446286111407214190">Google CloudReady 2.0-ийн нөхцөлийн агуулга</translation>
 <translation id="344630545793878684">Олон тооны веб хуудсууд дээр байгаа өөрийнхөө мэдээллийг уншина уу</translation>
 <translation id="3446650212859500694">Энэ файл эмзэг контенттой байна</translation>
 <translation id="3447644283769633681">Гуравдагч талын бүх күүкиг блоклох</translation>
@@ -2651,6 +2663,7 @@
 <translation id="3640214691812501263"><ph name="USER_NAME" />-д зориулсан "<ph name="EXTENSION_NAME" />"-ыг нэмэх үү?</translation>
 <translation id="3640613767643722554">Туслахдаа дуу хоолойгоо таниулна уу</translation>
 <translation id="3641456520301071208">Сайтууд таны байршлыг асуух боломжтой</translation>
+<translation id="3642699533549879077">Өөр хэн нэгэн таны дэлгэц рүү харах үед та сэрэмжлүүлэг авах бөгөөд мэдэгдлийн контентыг нууна.</translation>
 <translation id="3645372836428131288">Хурууны хээг өөр талаас нь авахын тулд хуруугаа бага зэрэг хөдөлгөнө үү</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-с <ph name="ATTACHMENTS" /> хүлээж авсан}other{<ph name="DEVICE_NAME" />-с <ph name="ATTACHMENTS" /> хүлээж авсан}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> илэрсэн</translation>
@@ -2680,6 +2693,7 @@
 <translation id="3672681487849735243">Үйлдвэрлэлийн алдаа илэрлээ</translation>
 <translation id="3673097791729989571">Нэвтрэлтийг <ph name="SAML_DOMAIN" />-с хост хийсэн</translation>
 <translation id="3673622964532248901">Та энэ төхөөрөмжид дамжуулах зөвшөөрөлгүй байна.</translation>
+<translation id="3675511132463531771">CloudReady 2.0-ийн шинэчлэлт шаардлагатай</translation>
 <translation id="367645871420407123">Хэрэв та тест зургийн өгөгдөлд үндсэн нууц үг тохируулахыг хүсвэл хоосон үлдээнэ үү</translation>
 <translation id="3677106374019847299">Захиалгат нийлүүлэгчийг оруулах</translation>
 <translation id="3677911431265050325">Мобайл сайтын хүсэлт тавих</translation>
@@ -2696,6 +2710,24 @@
 <translation id="3688526734140524629">Сувгийг өөрчлөх</translation>
 <translation id="3688578402379768763">Шинэчлэгдсэн</translation>
 <translation id="3688794912214798596">Хэл солих...</translation>
+<translation id="3688944113090948433"><ph name="BEGIN_H3" />Дебагийн онцлогууд<ph name="END_H3" />
+      <ph name="BR" />
+      Та төхөөрөмж дээрээ захиалгат кодыг суулгаж, туршихын тулд Chrome OS төхөөрөмждөө дебагийн онцлогуудыг идэвхжүүлэх боломжтой.  Ингэснээр та дараахыг хийх боломжтой:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Rootfs баталгаажуулалтыг хассанаар та OS-н файлуудыг өөрчлөх боломжтой
+        <ph name="LIST_ITEM" />Стандарт туршилтын түлхүүр ашиглан төхөөрөмжийн SSH хандалтыг идэвхжүүлснээр та <ph name="BEGIN_CODE" />'cros flash'<ph name="END_CODE" /> зэрэг хэрэгслүүдийг төхөөрөмжид хандахад ашиглах боломжтой
+        <ph name="LIST_ITEM" />USB-с ачаалахыг идэвхжүүлснээр та USB драйваас OS зураглалыг суулгах боломжтой
+        <ph name="LIST_ITEM" />Хөгжүүлэгч болон системийн үндсэн хандалтын нэвтрэх нууц үгний аль алиныг захиалгат утгад тохируулснаар та төхөөрөмжид гар аргаар SSH хийх боломжтой
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      Идэвхжүүлсний дараа ихэнх дебагийн онцлог байгууллагын удирддаг төхөөрөмж дээр powerwash эсвэл өгөгдөл арчилт гүйцэтгэсний дараа ч идэвхтэй хэвээр үлдэнэ.  Бүх дебагийн онцлогийг бүрэн идэвхгүй болгохын тулд Chrome OS-н сэргээх үйл явцыг дуусгана уу (https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      Дебагийн онцлогуудын талаар нэмэлт мэдээлэл авахын тулд дараахыг харна уу:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" />  Уг явцын үеэр системийг дахин асаана.</translation>
 <translation id="3690369331356918524">Өгөгдлийн зөрчлийн улмаас нууц үгийг задруулсан бол танд анхааруулга өгдөг</translation>
 <translation id="3691231116639905343">Гарын апп</translation>
 <translation id="3691267899302886494"><ph name="HOST" /> таны дэлгэцийг хуваалцах хүсэлтэй байна</translation>
@@ -2904,6 +2936,7 @@
 <translation id="3886446263141354045">Таны энэ сайтад нэвтрэх хүсэлтийг <ph name="NAME" />-д илгээсэн</translation>
 <translation id="3887022758415973389">Төхөөрөмжийн жагсаалтыг харуулах</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-н холболт</translation>
+<translation id="3888491127874785636">CouldReady 2.0 Системийн зураг бичигч</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />-р тэмдэглэл бичиж байна</translation>
 <translation id="3888586133700543064">Энэ мэдээлэл нь бидэнд таны Туслахын асуудлыг илүү сайн ойлгоход тусална. Үүнийг 90 хоног хүртэлх хугацаанд хадгалдаг бөгөөд үүнд зөвхөн инженерчлэл болон санал хүсэлтийн зохих багийнхан хандах боломжтой.</translation>
 <translation id="3888900458694486810">Хажуугийн хайлтыг хаах</translation>
@@ -2994,6 +3027,7 @@
 <translation id="3962119236270174787">Аюултай гэж мэдэгдсэн вебсайтууд, татаж авсан файл болон өргөтгөлийн эсрэг стандарт хамгаалалт</translation>
 <translation id="3963721102035795474">Уншигчийн горим</translation>
 <translation id="3964480518399667971">Үүрэн холбооны сүлжээг унтраах</translation>
+<translation id="39650333289039736">Таны аппууд, тохиргоо болон бусад өөрчлөлтийг таны Google Бүртгэлээрээ нэвтэрсэн бүх CloudReady 2.0 төхөөрөмж дээр синк хийнэ.</translation>
 <translation id="3965811923470826124">Хамт</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />-с гарах</translation>
 <translation id="3966072572894326936">Өөр хавтас сонгох ...</translation>
@@ -3105,6 +3139,7 @@
 <translation id="4079140982534148664">Зөв бичгийн алдаа шалгах сайжруулсан онцлогийг ашиглах</translation>
 <translation id="4081242589061676262">Файлыг дамжуулах боломжгүй.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> таны утас руу мэдэгдэл илгээсэн. Та өөрийгөө мөн болохыг баталгаажуулахын тулд тэнд байгаа алхмуудыг дагана уу.</translation>
+<translation id="4083599409544993198">Миний энэ файлын төрлийн сонголтыг санана уу: <ph name="FILE_FORMAT" /></translation>
 <translation id="4084682180776658562">Хадгалах</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />-ыг хаах</translation>
 <translation id="4085270836953633510">Сайт цуваа портод хандахыг хүсэх үед асуух</translation>
@@ -3134,6 +3169,7 @@
 <translation id="4101352914005291489">Нуусан SSID</translation>
 <translation id="4102906002417106771">Үйлдвэрийн тохиргоонд нь буцааж оруулахын тулд дахин эхлүүлэх</translation>
 <translation id="4104163789986725820">Экспортлох ...</translation>
+<translation id="410547683402570632">Эдгээр файлын төрөлд миний сонголтыг сана: <ph name="FILE_FORMATS" /></translation>
 <translation id="4107048419833779140">Хадгалах төхөөрөмжийг таних, салгах</translation>
 <translation id="4109135793348361820">Цонхыг  <ph name="USER_NAME" /> ( <ph name="USER_EMAIL" /> ) руу зөөх</translation>
 <translation id="4110485659976215879">Сануулгыг сэргээх</translation>
@@ -3142,6 +3178,7 @@
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
 <translation id="4115002065223188701">Сүлжээний хүрээнээс гарсан</translation>
 <translation id="4115378294792113321">Гүн ягаавтар улаан өнгө</translation>
+<translation id="4116704186509653070">Дахин нээх</translation>
 <translation id="4117637339509843559">Бараан горим</translation>
 <translation id="4117714603282104018">Мэдрэгч самбарын мэдрэгдэх хариу</translation>
 <translation id="4118579674665737931">Төхөөрөмжийг дахин асаагаад дахин оролдоно уу.</translation>
@@ -3357,6 +3394,7 @@
 <translation id="4369121877634339065">Хайхын тулд дурын зургийг чирч авчирна уу</translation>
 <translation id="4369215744064167350">Вебсайтын хүсэлтийг зөвшөөрсөн</translation>
 <translation id="4370975561335139969">Таны оруулсан имэйл болон нууц үг таарахгүй байна</translation>
+<translation id="4371179719793593133">Таны Google бүртгэлээрээ нэвтэрсэн бүх CloudReady 2.0 төхөөрөмж дээр таны аппууд болон тохиргоог синк хийнэ. Хөтчийг синк хийх сонголтыг харах бол <ph name="LINK_BEGIN" />Chrome-н тохиргоо<ph name="LINK_END" /> руу очно уу.</translation>
 <translation id="4373966964907728675">Компьютерийг каст хийж байна</translation>
 <translation id="4374831787438678295">Linux суулгагч</translation>
 <translation id="4375035964737468845">Татаж авсан файлуудыг нээх</translation>
@@ -3423,7 +3461,6 @@
 <translation id="4432621511648257259">Нууц үг буруу байна</translation>
 <translation id="443454694385851356">Уламжлалт (аюултай)</translation>
 <translation id="443475966875174318">Үл тохирох аппуудыг шинэчлэх эсвэл устгах</translation>
-<translation id="4435634292635092844"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа камераар авсан цомгийнхоо зургийг үзээрэй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">Тунгалаг</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" /> таны утас руу мэдэгдэл илгээсэн. Та өөрийгөө мөн болохыг баталгаажуулахын тулд “<ph name="NOTIFICATIONTITLE" />” мэдэгдэл дээр товшиж, алхмуудыг дагана уу.</translation>
 <translation id="4441124369922430666">Машин асахад та энэ программыг автоматиар эхлүүлэхийг хүсэж байна уу?</translation>
@@ -3463,6 +3500,7 @@
 <translation id="4477015793815781985">Ctrl, Alt эсвэл ⌘-р эхлүүлнэ үү</translation>
 <translation id="4478664379124702289">Холбоосыг хадгалах хэлбэр...</translation>
 <translation id="4479424953165245642">Kiosk аппуудыг удирдах</translation>
+<translation id="4479481745547029647">Google Chrome болон CloudReady 2.0-ийн нэмэлт нөхцөл</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4479877282574735775">Виртуал машиныг тохируулж байна. Үүнд хэдэн хором шаардлагатай.</translation>
 <translation id="4480590691557335796">Chrome таны компьютероос хортой программ хангамжийг олж устгах боломжтой</translation>
@@ -3629,6 +3667,7 @@
 <translation id="4638930039313743000">ADB алдаа засахыг идэвхжүүлэх</translation>
 <translation id="4641539339823703554">Chrome-оос системийн цагийг тохируулах боломжгүй байсан. Доор байгаа цагийг шалгаад шаардлагатай бол зөв болгоно уу.</translation>
 <translation id="4643612240819915418">&amp; Шинэ цонхонд видеог нээх</translation>
+<translation id="4643833688073835173">Таны Chromebook нь таны төхөөрөмжийн урд байгаа хүмүүсийг илрүүлэхдээ бүрэлдэхүүн мэдрэгчийг ашиглана. Бүх өгөгдлийг таны төхөөрөмж дээр тэр даруй боловсруулдаг бөгөөд дараа нь устгадаг. Мэдрэгчийн өгөгдлийг Google рүү хэзээ ч илгээдэггүй.</translation>
 <translation id="4644205769234414680">Нууцлалтай горимд зөвшөөрөх</translation>
 <translation id="4645676300727003670">&amp;Хадгал</translation>
 <translation id="4646675363240786305">Портууд</translation>
@@ -3642,6 +3681,7 @@
 <translation id="4653405415038586100">Linux-г тохируулахад алдаа гарлаа</translation>
 <translation id="4654236001025007561">Эргэн тойрныхоо Chromebook болон Android төхөөрөмжүүдтэй файл хуваалцаарай</translation>
 <translation id="4657914796247705218">TrackPoint-н хурд</translation>
+<translation id="4658285806588491142">Дэлгэцээ хувийн байлгаарай</translation>
 <translation id="465878909996028221">Хөтчийн дахин чиглүүлэлтэд зөвхөн http, https болон файлын протоколыг дэмждэг.</translation>
 <translation id="4659126640776004816">Таныг Google Бүртгэлдээ нэвтрэхэд энэ онцлог асна.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Зураг}other{# зураг}}</translation>
@@ -3690,6 +3730,7 @@
 <translation id="4699357559218762027">(автоматаар эхлүүлсэн)</translation>
 <translation id="4701025263201366865">Эцэг эхийн нэвтрэлт</translation>
 <translation id="4701335814944566468">Өчигдөр үзсэн</translation>
+<translation id="4701540735981103145">Нэвтрэхийг танай админ блоклосон</translation>
 <translation id="4707337002099455863">Бүх сайт дээр үргэлж</translation>
 <translation id="4708794300267213770">Унтаад сэрэх үед дэлгэцийн түгжээг харуулах</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />-аас гарах</translation>
@@ -3725,6 +3766,7 @@
 <translation id="475088594373173692">Анхны хэрэглэгч</translation>
 <translation id="4756378406049221019">Зогсоох/Дахин ачааллах</translation>
 <translation id="4756388243121344051">&amp; Түүх</translation>
+<translation id="4759202969060787081">Бүү нээ</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
 <translation id="4761104368405085019">Микрофоноо ашигла</translation>
 <translation id="4762718786438001384">Төхөөрөмжийн дискний багтаамж маш бага байна</translation>
@@ -3888,6 +3930,7 @@
 <translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" өргөтгөлтэй холбогдох хүсэлтэй байна</translation>
 <translation id="4918086044614829423">Хүлээн зөвшөөрөх</translation>
+<translation id="4918134162946436591">Давхарлах зааврыг харуулах</translation>
 <translation id="4921348630401250116">Бичвэрийг ярианд хувиргах</translation>
 <translation id="4921809350408880559">Та саяхны болон санал болгосон документуудаа Google Драйвыг ашиглан хийсэн өмнөх үйл ажиллагаандаа тулгуурлан харж байна.
         <ph name="BREAK" />
@@ -3919,6 +3962,7 @@
 <translation id="4944310289250773232">Энэ нотолгооны үйлчилгээг <ph name="SAML_DOMAIN" />-с удирддаг</translation>
 <translation id="4945439665401275950">Хурууны хээ тохируулахын тулд хүүхдээ асаах/унтраах товчинд хүргэнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ <ph name="DEVICE_TYPE" />-с хэзээ ч гардаггүй.</translation>
 <translation id="4946459324029651239">Та стандарт хамгаалалт авч байна</translation>
+<translation id="4950993567860689081">Таны харилцан үйлдлийг танай байгууллагаас удирддаг. Администраторууд таны профайлыг устгаж, мөн сүлжээний ачааллыг тань хянах боломжтой.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="495170559598752135">Авах арга хэмжээ</translation>
 <translation id="4953808748584563296">Өгөгдмөл улбар шар аватар</translation>
@@ -4058,6 +4102,7 @@
 <translation id="5111646998522066203">Нууцлалын цонхыг хаах</translation>
 <translation id="5111692334209731439">&amp; Хадгалагдсан хуудсын менежер</translation>
 <translation id="5112577000029535889">&amp; Хөгжүүлэгч хэрэгслүүд</translation>
+<translation id="511313294362309725">Хурдан холбохыг асаах</translation>
 <translation id="5113739826273394829">Хэрэв та энэхүү дүрсэн тэмдэгт дээр дарсан тохиолдолд та энэхүү <ph name="DEVICE_TYPE" /> төхөөрөмжийг гараар түгжих болно. Дараагийн удаа нэвтрэхийн тулд та өөрийн нууц үгийг оруулах шаардлагатай.</translation>
 <translation id="51143538739122961">Аюулгүй байдлын түлхүүрээ залгаад дээр нь хүрнэ үү</translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" />-г цахилгаан залгуурт залгана уу.</translation>
@@ -4587,6 +4632,7 @@
 <translation id="5648166631817621825">Сүүлийн 7 хоног</translation>
 <translation id="5651308944918885595">Ойролцоо хуваалцах онцлогийн илрэх байдал</translation>
 <translation id="5653154844073528838">Танд хадгалсан <ph name="PRINTER_COUNT" /> хэвлэгч байна.</translation>
+<translation id="5654266266024827740">Та CloudReady 2.0-ийн бүрэлдэхүүн дэлгэц уншигч болох ChromeVox-г идэвхжүүлэхийг хүсэж байна уу? Хэрэв тийм бол зай авах товчийг дарна уу.</translation>
 <translation id="5655296450510165335">Төхөөрөмж бүртгүүлэх</translation>
 <translation id="5656845498778518563">Google-д санал хүсэлт илгээх</translation>
 <translation id="5657156137487675418">Бүх күүкиг зөвшөөрөх</translation>
@@ -4670,6 +4716,7 @@
 <translation id="5747552184818312860">Дуусах хугацаа</translation>
 <translation id="5747785204778348146">Хөгжүүлэгч - тогтворгүй</translation>
 <translation id="5747809636523347288"><ph name="URL" /> г буулгаад, очих</translation>
+<translation id="5747845802829012825">Linux-г тохируулж дуусгахын тулд CloudReady 2.0-г шинэчлээд, дахин оролдоно уу.</translation>
 <translation id="5755022574660047665">Google Зургийн дурсамжууд</translation>
 <translation id="5756163054456765343">Тусламжийн төв</translation>
 <translation id="5757375109985023827">Урьдчилан үзэх табыг сонгоно уу</translation>
@@ -4796,9 +4843,12 @@
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />-г автоматаар блоклосон</translation>
 <translation id="5884474295213649357">Энэ таб USB төхөөрөмжид холбогдсон байна.</translation>
 <translation id="5886009770935151472">Хуруу 1</translation>
+<translation id="5886325049116255797">Таныг Google Бүртгэлээрээ нэвтрэх үед хадгалсан сонголт болон үйл ажиллагаа тань аливаа CloudReady 2.0 төхөөрөмж дээр бэлэн байх болно. Та Тохиргоо хэсэгт синк хийх зүйлээ сонгох боломжтой.</translation>
+<translation id="5888843733007437002">Загваруудыг үзэж байна. Шилжихийн тулд tab дээр дарна уу.</translation>
 <translation id="5889282057229379085">Завсрын Cas-ийн хамгийн их тоо: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Сонгосон Wi-Fi сүлжээнүүд</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
+<translation id="5896436821193322561">Бүү зөвшөөр</translation>
 <translation id="5900302528761731119">Google-ийн танилцуулга зураг</translation>
 <translation id="590036993063074298">Тусгал үүсгэх чанарын дэлгэрэнгүй</translation>
 <translation id="5901069264981746702">Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд таны <ph name="DEVICE_TYPE" />-с хэзээ ч гардаггүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -4848,6 +4898,7 @@
 <translation id="5939719276406088041">Товчлол үүсгэх боломжгүй</translation>
 <translation id="594048410531370124">Товчлуурыг танихгүй байна. <ph name="RESPONSE" />-н тулд дурын товчлуурыг дарна уу.</translation>
 <translation id="5941153596444580863">Хүн нэм...</translation>
+<translation id="5941176400377813459">CloudReady 2.0 төхөөрөмж болон бүрэлдэхүүн хэсгийн серийн дугаарыг унших.</translation>
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" />-т нэвтрэнэ үү.</translation>
 <translation id="5941711191222866238">Багасгах</translation>
 <translation id="5942779427914696408">Төхөөрөмжийн харагдац</translation>
@@ -4860,6 +4911,24 @@
 <translation id="5950819593680344519">Chrome таны компьютероос хортой программ хангамж олсонгүй • Өчигдөр шалгасан</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> орон нутгийн фонтууд ашиглахыг хүсэж байна</translation>
 <translation id="5951624318208955736">Монитор</translation>
+<translation id="5953627503079109298"><ph name="BEGIN_H3" />Дебагийн онцлогууд<ph name="END_H3" />
+      <ph name="BR" />
+      Та төхөөрөмж дээрээ захиалгат кодыг суулгаж, туршихын тулд CloudReady 2.0 төхөөрөмждөө дебагийн онцлогуудыг идэвхжүүлэх боломжтой.  Ингэснээр та дараахыг хийх боломжтой:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Rootfs баталгаажуулалтыг хассанаар та OS-н файлуудыг өөрчлөх боломжтой
+        <ph name="LIST_ITEM" />Стандарт туршилтын түлхүүр ашиглан төхөөрөмжийн SSH хандалтыг идэвхжүүлснээр та <ph name="BEGIN_CODE" />'cros flash'<ph name="END_CODE" /> зэрэг хэрэгслүүдийг төхөөрөмжид хандахад ашиглах боломжтой
+        <ph name="LIST_ITEM" />USB-с ачаалахыг идэвхжүүлснээр та USB драйваас OS зураглалыг суулгах боломжтой
+        <ph name="LIST_ITEM" />Хөгжүүлэгч болон системийн үндсэн хандалтын нэвтрэх нууц үгний аль алиныг захиалгат утгад тохируулснаар та төхөөрөмжид гар аргаар SSH хийх боломжтой
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      Идэвхжүүлсний дараа ихэнх дебагийн онцлог байгууллагын удирддаг төхөөрөмж дээр powerwash эсвэл өгөгдөл арчилт гүйцэтгэсний дараа ч идэвхтэй хэвээр үлдэнэ.  Бүх дебагийн онцлогийг бүрэн идэвхгүй болгохын тулд Chrome OS-н сэргээх үйл явцыг дуусгана уу (https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      Дебагийн онцлогуудын талаар нэмэлт мэдээлэл авахын тулд дараахыг харна уу:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" />  Уг явцын үеэр системийг дахин асаана.</translation>
 <translation id="5955282598396714173">Таны нууц үг хүчингүй боллоо. Нууц үгээ өөрчлөхийн тулд бүртгэлээсээ гараад буцаж нэвтэрнэ үү.</translation>
 <translation id="5955304353782037793">аппликейшн</translation>
 <translation id="5955721306465922729">Вебсайт энэ хэрэглээний программыг нээх хүсэлтэй байна.</translation>
@@ -4919,6 +4988,7 @@
 <translation id="6016972670657536680">Хэл болон гарын товчлуурыг сонгоно уу. Одоогоор <ph name="LANGUAGE" /> хэлийг сонгосон байна.</translation>
 <translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> нь таны Chromebook-н үндсэн бүртгэл юм</translation>
 <translation id="6017514345406065928">Ногоон</translation>
+<translation id="6019169947004469866">Таслах</translation>
 <translation id="6019851026059441029">Гайхалтай - HD</translation>
 <translation id="6020431688553761150">Танд энэ нөөцөд хандах зөвшөөрлийг сервер өгөөгүй.</translation>
 <translation id="6022526133015258832">Дэлгэц дүүрэн нээх</translation>
@@ -4950,6 +5020,8 @@
     <ph name="BEGIN_PARAGRAPH2" />Та хүүхдийнхээ ChromeOS төхөөрөмжийн тохиргоонд эдгээр тайланг хүссэн үедээ зөвшөөрч эхлэх эсвэл зогсоох боломжтой. Хэрэв та домэйний администратор бол энэ тохиргоог хүссэн үедээ админ консолд өөрчлөх боломжтой.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Энэ онцлогийг унтрааснаар энэ төхөөрөмжийн системийн шинэчлэлт, аюулгүй байдал зэрэг чухал үйлчилгээнд шаардлагатай мэдээллийг илгээх чадварт нөлөөлөхгүй.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Хэрэв таны хүүхдийн Google Бүртгэлд Веб, аппын үйл ажиллагааны тохиргоо асаалттай бол таны хүүхдийн өгөгдлийг Google Бүртгэлд нь хадгалж магадгүй. Эдгээр тохиргооны талаар болон тэднийг хэрхэн тохируулах тухай нэмэлт мэдээллийг families.google.com дээрээс авна уу.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="6052284303005792909">•</translation>
+<translation id="6052488962264772833">Дамжуулж эхлэхийн тулд нэвтрэх кодыг бичнэ үү</translation>
 <translation id="6052976518993719690">SSL Гэрчилгээжүүлэх алба</translation>
 <translation id="6053401458108962351">&amp; Хайлтын мэдээллийг цэвэрлэх...</translation>
 <translation id="6054284857788651331">Саяхан хаасан табын бүлэг</translation>
@@ -4987,6 +5059,7 @@
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" HID төхөөрөмжид холбогдох хүсэлтэй байна</translation>
 <translation id="608029822688206592">Сүлжээ олдсонгүй. SIM-ээ оруулаад, дахин оролдоно уу.</translation>
 <translation id="6080689532560039067">Системийн цагаа шалгана уу</translation>
+<translation id="6082877069782862752">Товч харгалзуулах</translation>
 <translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Нэргүй бүлгийн хэсэг</translation>
 <translation id="6085886413119427067">Веб сайтуудтай аюулгүй холболтоор хэрхэн холбогдохыг шийддэг</translation>
@@ -5153,6 +5226,7 @@
 <translation id="6254503684448816922">Түлхүүр тааруулах</translation>
 <translation id="6254892857036829079">Төгс</translation>
 <translation id="6257602895346497974">Синкийг асаах...</translation>
+<translation id="62586649943626337">Табын бүлгүүдээр табуудаа цэгцэлнэ үү</translation>
 <translation id="625895209797312329">Төхөөрөмжид тань суулгасан фонтыг ашиглахыг нь сайтуудад блоклох</translation>
 <translation id="6262371516389954471">Таны нөөцлөлтийг Google-д байршуулдаг бөгөөд таны Google Бүртгэлийн нууц үгийг ашиглан шифрлэдэг.</translation>
 <translation id="6263082573641595914">Microsoft-ийн CA хувилбар</translation>
@@ -5528,6 +5602,7 @@
 <translation id="6644513150317163574">URL формат буруу байна. SSO нотолгоог ашиглах үед серверийг хост нэрээр тодорхойлсон байх ёстой.</translation>
 <translation id="6644846457769259194">Таны төхөөрөмжийг шинэчилж байна (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">Сонгосон Google Клоуд Хэвлэгч төхөөрөмжийг цаашид дэмжихгүй. <ph name="BR" /> Компьютерийнхээ системийн тохиргоонд хэвлэгчийг тохируулж үзнэ үү.</translation>
+<translation id="6646476869708241165">Хурдан холбохыг унтраах</translation>
 <translation id="6647228709620733774">Netscape Certification Authority Revocation URL</translation>
 <translation id="6647441008198474441">Таны зочилсон URL-г Google рүү илгээж, дараа нь ямар сайтад зочилж болохыг таамаглах болно</translation>
 <translation id="6648911618876616409">Шаардлагатай шинэчлэлтийг суулгахад бэлэн байна. Эхлүүлэхийн тулд нэвтэрнэ үү.</translation>
@@ -5638,6 +5713,7 @@
 <translation id="6770602306803890733">Таны болон веб дэх хүн бүрийн аюулгүй байдлыг сайжруулдаг</translation>
 <translation id="6771503742377376720">Гэрчилгээжүүлэх Алба</translation>
 <translation id="6775163072363532304">Боломжтой байгаа төхөөрөмжүүд энд харагдана.</translation>
+<translation id="6776729248872343918">Хурдан холбохыг идэвхжүүлэх</translation>
 <translation id="6777817260680419853">Дахин чиглүүлэлтийг блоклосон</translation>
 <translation id="6778737459546443941">Таны эцэг эх үүнийг зөвшөөрөөгүй байна</translation>
 <translation id="6779092717724412415">Үүнтэй адил тодруулга үүсгэхийн тулд дурын текст сонгож, баруун талыг товшино уу.</translation>
@@ -5695,7 +5771,9 @@
 <translation id="6813907279658683733">Бүтэн дэлгэц</translation>
 <translation id="6817174620439930047">Сайт MIDI төхөөрөмжид хандахын тулд системийн тусгай мессежийг ашиглахыг хүссэн тохиолдолд асуух (санал болгосон)</translation>
 <translation id="6818198425579322765">Хуудсыг орчуулах хэл</translation>
+<translation id="6818640747323584611">CloudReady 2.0-ийн онцлогууд болон гүйцэтгэлийг сайжруулахад тусална уу</translation>
 <translation id="6818802132960437751">Суурилуулсан вирусний хамгаалалт</translation>
+<translation id="6819741204334296334">'Kiosk_only' тодорхойлогч атрибуттай аппыг CloudReady 2.0-ийн kiosk горимд суулгах ёстой</translation>
 <translation id="682123305478866682">Компьютерийг дамжуулах</translation>
 <translation id="6823174134746916417">Мэдрэгч самбарын tap-to-click</translation>
 <translation id="6824564591481349393">Хуулах &amp; И-мэйл хаяг</translation>
@@ -5765,6 +5843,7 @@
 <translation id="6889957081990109136">Одоогоор сэлгүүр оноогоогүй байна</translation>
 <translation id="6892812721183419409">Холбоосыг <ph name="USER" />-р нээх</translation>
 <translation id="6895032998810961280">Энэ цэвэрлэгээний үеэр компьютероосоо олдсон хортой программ хангамж, системийн тохиргоо болон боловсруулалтын талаар дэлгэрэнгүй мэдээллийг Google-д мэдээлнэ үү</translation>
+<translation id="6895902329218596456"><ph name="USER_EMAIL" />-г <ph name="MANAGER" /> удирддаг бөгөөд танай админ хоёрдогч бүртгэлээр нэвтрэхийг блоклосон</translation>
 <translation id="6896758677409633944">Хуулах</translation>
 <translation id="6897363604023044284">Устгах сайтуудыг сонгох</translation>
 <translation id="6898440773573063262">Kiosk аппликейшнүүд энэ төхөөрөмж дээр автоматаар ажиллаж эхэлдэг байхаар тохирууллаа</translation>
@@ -6150,6 +6229,7 @@
 <translation id="730515362922783851">Суурин сүлжээ болон интернэтээр ямар ч төхөөрөмж ашиглан мэдээлэл солилцоорой</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" />-г <ph name="USB_VM_NAME" />-д холбохын тулд Тохиргоог нээнэ үү</translation>
 <translation id="7307129035224081534">Түр зогсоосон</translation>
+<translation id="7307719647623535470">CloudReady 2.0-ийн тохиргоо хэсэгт Аюулгүй DNS-г удирдана уу</translation>
 <translation id="7308643132139167865">Вебсайтын хэлнүүд</translation>
 <translation id="7310598146671372464">Нэвтэрч чадсангүй. Сервер нь Kerberos-н тодорхой шифрлэлтийн төрлийг дэмждэггүй. Админтайгаа холбогдоно уу.</translation>
 <translation id="7312210124139670355">Таны администратор eSIM-г тань шинэчилж байна. Үүнд хэдэн минут шаардлагатай.</translation>
@@ -6364,6 +6444,7 @@
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{Өөр 1}other{Бусад {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">Oрлуулагч</translation>
 <translation id="7527758104894292229">Үүнийг <ph name="ACCOUNT" /> Google Бүртгэлдээ шинэчилнэ үү</translation>
+<translation id="7528224636098571080">Бүү нээ</translation>
 <translation id="7529411698175791732">Интернет холболтоо шалгана уу. Асуудал үргэлжилсээр байвал гараад, дахин нэвтэрнэ үү.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Зочны цонхыг хаах}other{Зочны цонхыг хаах}}</translation>
 <translation id="7530016656428373557">Ватт хэмжигдэхүүнээр цэнэггүй болгох</translation>
@@ -6503,7 +6584,6 @@
 <translation id="7661259717474717992">Күүки өгөгдлийг уншиж, хадгалахыг сайтад зөвшөөрөх</translation>
 <translation id="7661451191293163002">Бүртгэлийн гэрчилгээг авах боломжгүй байна.</translation>
 <translation id="7662283695561029522">Тохируулахын тулд товших</translation>
-<translation id="7662419552544645985"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа камераар авсан зургийн цомгийнхоо зургуудыг үзээрэй</translation>
 <translation id="7663719505383602579">Хүлээн авагч: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Товчлуурны шууд холбоос боломжтой</translation>
 <translation id="7663859337051362114">eSIM профайл нэмэх</translation>
@@ -6541,6 +6621,7 @@
 <translation id="7691163173018300413">"Ok Google"</translation>
 <translation id="7691698019618282776">Crostini-н сайжруулалт</translation>
 <translation id="769375405463525957">Та төхөөрөмжөөсөө холдсон тохиолдолд таны дэлгэц автоматаар түгжигдэнэ. Таныг төхөөрөмжийнхөө урд байх үед таны дэлгэцийг идэвхтэй байлгана.</translation>
+<translation id="7694052127939518600">Files апп нь таны Google Драйв, гадаад хадгалах сан эсвэл CloudReady 2.0 төхөөрөмж дээр хадгалсан файлуудад шуурхай хандалт олгоно.</translation>
 <translation id="7696063401938172191">Tаны '<ph name="PHONE_NAME" />'-д:</translation>
 <translation id="7697166915480294040">Таныг дэлгэцээ хуваалцах үед дэлгэрэнгүйг нууна</translation>
 <translation id="769824636077131955">Энэ документ аюулгүй байдлын шалгалт хийхэд хэт том байна. Та 50 МБ хүртэлх документыг хэвлэх боломжтой.</translation>
@@ -6605,6 +6686,7 @@
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Дэлгэцийн заагийг тохируулна уу</translation>
 <translation id="7760004034676677601">Энэ таны хүлээж байсан эхлүүлэх хуудас мөн үү?</translation>
+<translation id="7762463735017901568">Мэдэгдэл синк хийхийг таны утасны администратор идэвхгүй болгосон</translation>
 <translation id="7764225426217299476">Хаяг нэмэх</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" />-н <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7765158879357617694">Зөөх</translation>
@@ -6789,6 +6871,7 @@
 <translation id="7935451262452051102"><ph name="PERCENT" />%-ийг гүйцэтгэсэн</translation>
 <translation id="7938594894617528435">Одоогийн байдлаар офлайн байна</translation>
 <translation id="7939062555109487992">Дэвшилтэт сонголт</translation>
+<translation id="7939321852721702336">Та sshd daemon-г тохируулж, USB драйвуудыг ачаалахыг идэвхжүүлэх CloudReady 2.0-ийн дебагийн онцлогуудыг идэвхжүүлж байна.</translation>
 <translation id="7939412583708276221">Ямар ч байсан үргэлжлүүлнэ үү</translation>
 <translation id="7942349550061667556">Улаан</translation>
 <translation id="7943368935008348579">PDF татах</translation>
@@ -6934,6 +7017,7 @@
 <translation id="8076492880354921740">Таб</translation>
 <translation id="8076835018653442223">Таны админ төхөөрөмжийн дотоод файлд хандах тохиргоог идэвхгүй болгосон</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081623398548615289">Таны харилцан үйлдлийг <ph name="MANAGER_NAME" /> удирддаг. Администраторууд таны профайлыг устгаж, мөн сүлжээний ачааллыг тань хянах боломжтой.</translation>
 <translation id="8081989000209387414">ADB алдаа засахыг идэвхгүй болгох уу?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />"-тай хослуулах уу?</translation>
 <translation id="8082390128630131497">ADB алдаа засахыг идэвхгүй болгосноор энэ <ph name="DEVICE_TYPE" />-г үйлдвэрийн тохиргоонд шинэчилнэ. Бүх хэрэглэгчийн бүртгэл болон дотоод өгөгдлийг устах болно.</translation>
@@ -7134,6 +7218,7 @@
 <translation id="827097179112817503">Нүүр хуудас хэсгийн товчлуурыг харуулах</translation>
 <translation id="8271268254812352141">Та баруун талыг товших эсвэл текстийг удаан дарах үедээ тодорхойлолт, орчуулга эсвэл нэгж хөрвүүлэлт аваарай. Орчуулгын хэлийг <ph name="LINK_BEGIN" />Вебсайтын хэл<ph name="LINK_END" /> хэсэгт өөрчилнө үү.</translation>
 <translation id="8271379370373330993">Эцэг эхчүүд ээ, дараагийн хэдэн алхмыг та бүхэнд зориулсан. Та бүртгэлийг тохируулж дууссаны дараа <ph name="DEVICE_TYPE" />-г хүүхдэдээ буцааж өгч болно.</translation>
+<translation id="8272194309885535896">Зураг татах</translation>
 <translation id="8272443605911821513">"More tools" цэсэн дэх өргөтгөл дээр дарж өргөтгөлүүдээ удирдаарай.</translation>
 <translation id="8274332263553132018">Файл дамжуулах</translation>
 <translation id="8274921654076766238">Томруулагч нь гарын фокусыг дагадаг</translation>
@@ -7477,6 +7562,7 @@
 <translation id="8665110742939124773">Та буруу нэвтрэх код оруулсан байна. Дахин оролдоно уу.</translation>
 <translation id="8665180165765946056">Нөөцөлж дууссан</translation>
 <translation id="866611985033792019">Имэйл хэрэглэгчийг тодорхойлохын тулд энэ сертификатыг итгэмжилнэ үү</translation>
+<translation id="8666224701549693691">CloudReady 2.0-ийн оношилгооны туршилтыг ажиллуулах.</translation>
 <translation id="8666584013686199826">Сайт USB төхөөрөмжүүдэд хандах хүсэлтэй үед асуух</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> нь бүрэн дэлгэцийн горимд шилжсэн бөгөөд таны хулганын курсорыг идэвхгүй болгосон.</translation>
 <translation id="8668052347555487755">Өнгөний горим</translation>
@@ -7529,6 +7615,7 @@
 <translation id="8719472795285728850">Өргөтгөлийн үйл ажиллагааг сонсож байна...</translation>
 <translation id="8719653885894320876"><ph name="PLUGIN_NAME" /> таталт амжилтгүй боллоо</translation>
 <translation id="8720200012906404956">Мобайл сүлжээг хайж байна. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
+<translation id="8720781020694544444">Харамсалтай нь таны компьютерыг алдаатай техник хангамж ID-р тохируулсан байна. Энэ нь CloudReady 2.0-ийг хамгийн сүүлийн үеийн аюулгүй байдлын засвараар шинэчлэхээс сэргийлж байгаа бөгөөд таны компьютер <ph name="BEGIN_BOLD" />хортой дайралтуудад өртөж магадгүй<ph name="END_BOLD" />.</translation>
 <translation id="8720816553731218127">Суулгалтын хугацааны атрибутын анхны утгыг олох хугацаа дууслаа.</translation>
 <translation id="8722912030556880711">Ашиглалт болон оношилгооны өгөгдлийг илгээнэ үү. Энэ төхөөрөмж одоогоор оношилгоо, төхөөрөмж болон аппын ашиглалтын өгөгдлийг Google-д автоматаар илгээж байна. Энэ нь систем, аппын тогтвортой байдал болон бусад зүйлийг сайжруулахад тусална. Зарим хуримтлуулсан өгөгдөл нь Google аппууд болон Android хөгжүүлэгч зэрэг түншүүдэд мөн адил тусална. Хэрэв таны Веб, Аппын нэмэлт үйл ажиллагааны тохиргоо асаалттай байвал энэ өгөгдлийг таны Google Бүртгэлд хадгалж болзошгүй. <ph name="BEGIN_LINK2" />Нэмэлт мэдээлэл авах<ph name="END_LINK2" /></translation>
 <translation id="8724405322205516354">Та энэ дүрс тэмдгийг харсан үедээ өөрийгөө мөн болохыг баталгаажуулах эсвэл худалдан авалтыг зөвшөөрөхийн тулд хурууны хээгээ ашиглана уу.</translation>
@@ -7711,6 +7798,7 @@
 <translation id="8890516388109605451">Эх сурвалж</translation>
 <translation id="8890529496706615641">Профайлын нэрийг өөрчлөх боломжгүй. Дахин оролдож эсвэл техникийн тусламж авахаар оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="8892168913673237979">Бүгд тохируулагдсан!</translation>
+<translation id="8893116021193670489">Таны компьютер CloudReady 2.0-д аюулгүй байдлын чухал онцлогуудыг хэрэгжүүлэхэд ашигладаг Итгэмжлэгдсэн платформын модуль (TPM)-ийн аюулгүй байдлын төхөөрөмж агуулж байна. Нэмэлт мэдээлэл авах бол Chromebook-н Тусламжийн төвд зочилно уу: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="8893801527741465188">Амжилттай устгалаа</translation>
 <translation id="8893928184421379330">Уучлаарай, төхөөрөмжийг <ph name="DEVICE_LABEL" /> таних боломжгүй байна.</translation>
 <translation id="8894761918470382415">Захын өгөгдлийн хандалтын хамгаалалт</translation>
@@ -7844,6 +7932,7 @@
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" />-г цаашид дэмжихээ больсон</translation>
 <translation id="9031549947500880805">Google Драйвд хуулбарлана уу. Өгөгдлөө амархан сэргээх эсвэл хүссэн үедээ төхөөрөмж хооронд сэлгэнэ үү. Таны нөөцлөлтөд аппын өгөгдөл багтана.</translation>
 <translation id="9031811691986152304">дахин оролдоно уу</translation>
+<translation id="9032097289595078011">Хурдан холбохыг идэвхгүй болгох</translation>
 <translation id="9033765790910064284">Ямартай ч үргэлжлүүлэх</translation>
 <translation id="9033857511263905942">&amp;Наах</translation>
 <translation id="903480517321259405">ПИН-г дахин бичнэ үү</translation>
@@ -7873,6 +7962,7 @@
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />-с <ph name="ERROR_LINE_END" /> мөрийн алдаа</translation>
 <translation id="9063800855227801443">Нууцлалтай контентын зургийг авах боломжгүй</translation>
 <translation id="9064275926664971810">Маягтыг нэг даралтаар бөглөхийн тулд Autofill-г идэвхжүүлнэ үү</translation>
+<translation id="9064599787951583960">CloudReady 2.0 төхөөрөмжийн мэдээлэл болон төхөөрөмжийн өгөгдлийг унших.</translation>
 <translation id="9065203028668620118">Засварлах</translation>
 <translation id="9066394310994446814">Та энэ зүйлийг Google-н үйлчилгээнүүдийг ашиглан хийсэн өмнөх үйл ажиллагаандаа тулгуурлан харж байна. Та <ph name="BEGIN_LINK1" />myactivity.google.com<ph name="END_LINK1" /> дээрээс өгөгдлөө харах, устгах болон тохиргоогоо өөрчлөх боломжтой.
         <ph name="BREAK" />
