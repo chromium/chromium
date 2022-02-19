@@ -146,9 +146,9 @@ void RecordModelUpdateVersion(
 
 // Returns whether models should be fetched from the
 // remote Optimization Guide Service.
-bool ShouldFetchModels(Profile* profile) {
-  return optimization_guide::features::IsRemoteFetchingEnabled() &&
-         !profile->IsOffTheRecord();
+bool ShouldFetchModels(bool off_the_record, PrefService* pref_service) {
+  return optimization_guide::features::IsRemoteFetchingEnabled(pref_service) &&
+         !off_the_record;
 }
 
 std::unique_ptr<optimization_guide::proto::PredictionModel>
@@ -345,7 +345,7 @@ void PredictionManager::FetchModels() {
   if (switches::IsModelOverridePresent())
     return;
 
-  if (!ShouldFetchModels(profile_))
+  if (!ShouldFetchModels(profile_->IsOffTheRecord(), pref_service_))
     return;
 
   // Models should not be fetched if there are no optimization targets
@@ -786,7 +786,7 @@ void PredictionManager::StoreLoadedModelInfo(
 }
 
 void PredictionManager::MaybeFetchModels() {
-  if (!ShouldFetchModels(profile_))
+  if (!ShouldFetchModels(profile_->IsOffTheRecord(), pref_service_))
     return;
 
   // Add a slight delay to allow the rest of the browser startup process to

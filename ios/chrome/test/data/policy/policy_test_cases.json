@@ -792,6 +792,36 @@
       }
     ]
   },
+
+  "OptimizationGuideFetchingEnabled": {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OptimizationGuideFetchingEnabled": true
+        },
+        "prefs": {
+          "optimization_guide.fetching_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "OptimizationGuideFetchingEnabled": false
+        },
+        "prefs": {
+          "optimization_guide.fetching_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  },
   "EnableExperimentalPolicies": {
     "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
   }

@@ -103,7 +103,8 @@ void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
     OPTIMIZATION_GUIDE_LOG(optimization_guide_logger,
                            "FEATURE_FLAG Hints component disabled");
   }
-  if (!optimization_guide::features::IsRemoteFetchingEnabled()) {
+  if (!optimization_guide::features::IsRemoteFetchingEnabled(
+          profile->GetPrefs())) {
     OPTIMIZATION_GUIDE_LOG(optimization_guide_logger,
                            "FEATURE_FLAG remote fetching feature disabled");
   }

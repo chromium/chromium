@@ -18,6 +18,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 namespace optimization_guide {
 namespace features {
 
@@ -77,7 +79,7 @@ bool IsOptimizationHintsEnabled();
 
 // Returns true if the feature to fetch from the remote Optimization Guide
 // Service is enabled.
-bool IsRemoteFetchingEnabled();
+bool IsRemoteFetchingEnabled(PrefService* pref_service);
 
 // Returns true if the feature to fetch data for users that have consented to
 // anonymous data collection is enabled but are not Data Saver users.

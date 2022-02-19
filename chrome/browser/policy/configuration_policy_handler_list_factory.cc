@@ -79,6 +79,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/network_time/network_time_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
@@ -720,6 +721,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kForcedLanguages,
     language::prefs::kForcedLanguages,
     base::Value::Type::LIST },
+    { key::kOptimizationGuideFetchingEnabled,
+    optimization_guide::prefs::kOptimizationGuideFetchingEnabled,
+    base::Value::Type::BOOLEAN },
 
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,

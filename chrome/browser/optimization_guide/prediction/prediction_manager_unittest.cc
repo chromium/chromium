@@ -461,6 +461,11 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
     return &task_environment_;
   }
 
+  void SetOptimizationGuideFetchingPrefEnabled(bool enabled) {
+    pref_service_->SetBoolean(prefs::kOptimizationGuideFetchingEnabled,
+                              enabled);
+  }
+
  protected:
   // |feature_list_| needs to be destroyed after |task_environment_|, to avoid
   // tsan flakes caused by other tasks running while |feature_list_| is
@@ -520,6 +525,22 @@ class PredictionManagerTest : public PredictionManagerTestBase {
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
+
+TEST_F(PredictionManagerTest, RemoteFetchingPrefDisabled) {
+  SetOptimizationGuideFetchingPrefEnabled(false);
+  CreatePredictionManager();
+
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithModels));
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+  SetStoreInitialized();
+
+  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+}
 
 TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   base::HistogramTester histogram_tester;

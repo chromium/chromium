@@ -28,11 +28,13 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -306,6 +308,23 @@ class PredictionManagerBrowserTest : public PredictionManagerBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
+                       RemoteFetchingPrefDisabled) {
+  ModelFileObserver model_file_observer;
+  SetResponseType(PredictionModelsFetcherRemoteResponseType::kUnsuccessful);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      optimization_guide::prefs::kOptimizationGuideFetchingEnabled, false);
+  base::HistogramTester histogram_tester;
+
+  RegisterWithKeyedService(&model_file_observer);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Should not have made fetch request.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
                        ModelsAndFeaturesStoreInitialized) {
   ModelFileObserver model_file_observer;
   SetResponseType(
@@ -371,7 +390,6 @@ class PredictionManagerNoUserPermissionsTest
     PredictionManagerBrowserTest::SetUpCommandLine(cmd);
 
     // Remove switches that enable user permissions.
-    cmd->RemoveSwitch("enable-spdy-proxy-auth");
     cmd->RemoveSwitch(switches::kDisableCheckingUserPermissionsForTesting);
   }
 

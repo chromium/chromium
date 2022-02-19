@@ -29269,6 +29269,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
         },
       ],
       'default': False,
+      'deprecated': True,
       'example_value': True,
       'id': 902,
       'caption': '''Force WebSQL in third-party contexts to be re-enabled.''',
@@ -30161,7 +30162,35 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'tags': [],
       'desc': '''Setting the policy to Enabled will launch browser windows from current user's last used device automatically upon login.
       Setting the policy to Disabled or leaving it unset will let full restore settings determine what to be launched upon login.''',
-    }
+    },
+    {
+      'name': 'OptimizationGuideFetchingEnabled',
+      'owners': ['file://components/optimization_guide/OWNERS', 'sophiechang@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['android:101-', 'chrome.*:101-', 'chrome_os:101-', 'ios:101-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': '''Enable fetching of page load metadata and machine learning models to enhance the browsing experience''',
+        },
+        {
+          'value': False,
+          'caption': '''Disable fetching of page load metadata and machine learning models that enhance the browsing experience''',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 963,
+      'caption': '''Enable Optimization Guide Fetching''',
+      'tags': [],
+      'desc': '''Setting the policy to Enabled or leaving it unset will enable the fetching of page load metadata and machine learning models that enhance the browsing experience.
+      Setting the policy to Disabled may cause some features to not work appropriately.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -31158,6 +31187,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 962,
+  'highest_id_currently_used': 963,
   'highest_atomic_group_id_currently_used': 42
 }
