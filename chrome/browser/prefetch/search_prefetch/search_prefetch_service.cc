@@ -396,36 +396,32 @@ void SearchPrefetchService::OnResultChanged(
   if (!default_search)
     return;
 
-  // Cancel Unneeded prefetch requests.
-  if (SearchPrefetchShouldCancelUneededInflightRequests()) {
-    // Since we limit the number of prefetches in the map, this should be fast
-    // despite the two loops.
-    for (const auto& kv_pair : prefetches_) {
-      const auto& search_terms = kv_pair.first;
-      auto& prefetch_request = kv_pair.second;
-      if (prefetch_request->current_status() !=
-              SearchPrefetchStatus::kInFlight &&
-          prefetch_request->current_status() !=
-              SearchPrefetchStatus::kCanBeServed) {
-        continue;
-      }
-      bool should_cancel_request = true;
-      for (const auto& match : result) {
-        std::u16string match_search_terms;
-        default_search->ExtractSearchTermsFromURL(
-            match.destination_url, template_url_service->search_terms_data(),
-            &match_search_terms);
+  // Cancel Unneeded prefetch requests. Since we limit the number of prefetches
+  // in the map, this should be fast despite the two loops.
+  for (const auto& kv_pair : prefetches_) {
+    const auto& search_terms = kv_pair.first;
+    auto& prefetch_request = kv_pair.second;
+    if (prefetch_request->current_status() != SearchPrefetchStatus::kInFlight &&
+        prefetch_request->current_status() !=
+            SearchPrefetchStatus::kCanBeServed) {
+      continue;
+    }
+    bool should_cancel_request = true;
+    for (const auto& match : result) {
+      std::u16string match_search_terms;
+      default_search->ExtractSearchTermsFromURL(
+          match.destination_url, template_url_service->search_terms_data(),
+          &match_search_terms);
 
-        if (search_terms == match_search_terms) {
-          should_cancel_request = false;
-          break;
-        }
+      if (search_terms == match_search_terms) {
+        should_cancel_request = false;
+        break;
       }
+    }
 
-      // Cancel the inflight request and mark it as canceled.
-      if (should_cancel_request) {
-        prefetch_request->CancelPrefetch();
-      }
+    // Cancel the inflight request and mark it as canceled.
+    if (should_cancel_request) {
+      prefetch_request->CancelPrefetch();
     }
   }
 

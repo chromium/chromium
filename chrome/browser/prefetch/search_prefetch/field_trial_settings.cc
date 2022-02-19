@@ -67,11 +67,6 @@ base::TimeDelta SearchPrefetchErrorBackoffDuration() {
       kSearchPrefetchServicePrefetching, "error_backoff_duration_ms", 60000));
 }
 
-bool SearchPrefetchShouldCancelUneededInflightRequests() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kSearchPrefetchServicePrefetching, "cancel_inflight_unneeded", true);
-}
-
 size_t SearchPrefetchMaxCacheEntries() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "cache_size", 10);

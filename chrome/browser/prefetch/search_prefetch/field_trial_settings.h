@@ -30,10 +30,6 @@ size_t SearchPrefetchMaxAttemptsPerCachingDuration();
 // service to stop prefetching responses.
 base::TimeDelta SearchPrefetchErrorBackoffDuration();
 
-// When a request is inflight, but no longer shows up in the match list, whether
-// the request is canceled or allowed to finish.
-bool SearchPrefetchShouldCancelUneededInflightRequests();
-
 // The max number of stored cached prefetch responses. This is stored as a list
 // of navigation URLs to prefetch URLs.
 size_t SearchPrefetchMaxCacheEntries();
