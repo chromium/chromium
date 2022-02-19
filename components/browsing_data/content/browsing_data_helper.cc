@@ -147,17 +147,8 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
       ContentSettingsType::BLUETOOTH_CHOOSER_DATA, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
 
-  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION, delete_begin,
-      delete_end, HostContentSettingsMap::PatternSourcePredicate());
-
-  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::FEDERATED_IDENTITY_REQUEST, delete_begin, delete_end,
-      HostContentSettingsMap::PatternSourcePredicate());
-
-  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::FEDERATED_IDENTITY_SHARING, delete_begin, delete_end,
-      HostContentSettingsMap::PatternSourcePredicate());
+  RemoveFederatedSiteSettingsData(delete_begin, delete_end,
+                                  host_content_settings_map);
 
 #if !BUILDFLAG(IS_ANDROID)
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
@@ -172,6 +163,23 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
       ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, delete_begin,
       delete_end, HostContentSettingsMap::PatternSourcePredicate());
 #endif
+}
+
+void RemoveFederatedSiteSettingsData(
+    const base::Time& delete_begin,
+    const base::Time& delete_end,
+    HostContentSettingsMap* host_content_settings_map) {
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION, delete_begin,
+      delete_end, HostContentSettingsMap::PatternSourcePredicate());
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::FEDERATED_IDENTITY_REQUEST, delete_begin, delete_end,
+      HostContentSettingsMap::PatternSourcePredicate());
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::FEDERATED_IDENTITY_SHARING, delete_begin, delete_end,
+      HostContentSettingsMap::PatternSourcePredicate());
 }
 
 }  // namespace browsing_data
