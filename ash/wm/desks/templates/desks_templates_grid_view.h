@@ -93,8 +93,11 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   gfx::Rect CalculateFeedbackButtonPosition() const;
 
   // Animates the bounds for all the `grid_items_` (using `bounds_animator_`) to
-  // their calculated position.
-  void AnimateGridItems();
+  // their calculated position. `new_grid_items` contains a list of the
+  // newly-created desk template items and will be animated differently than
+  // the existing views that are being shifted around.
+  void AnimateGridItems(
+      const std::vector<DesksTemplatesItemView*>& new_grid_items);
 
   // Called when the feedback button is pressed. Shows the feedback dialog with
   // desks templates information.
