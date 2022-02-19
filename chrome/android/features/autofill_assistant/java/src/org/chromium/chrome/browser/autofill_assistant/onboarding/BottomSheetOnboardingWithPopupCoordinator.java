@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFa
 import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -44,13 +45,13 @@ public class BottomSheetOnboardingWithPopupCoordinator extends BottomSheetOnboar
 
     private @Nullable AlertDialog mDialog;
 
-    BottomSheetOnboardingWithPopupCoordinator(AssistantInfoPageUtil infoPageUtil,
-            String experimentIds, Map<String, String> parameters, Context context,
-            BottomSheetController controller,
+    BottomSheetOnboardingWithPopupCoordinator(BrowserContextHandle browserContext,
+            AssistantInfoPageUtil infoPageUtil, String experimentIds,
+            Map<String, String> parameters, Context context, BottomSheetController controller,
             AssistantBrowserControlsFactory browserControlsFactory, View rootView,
             ScrimCoordinator scrim, AccessibilityUtil accessibilityUtil) {
-        super(infoPageUtil, experimentIds, parameters, context, controller, browserControlsFactory,
-                rootView, scrim, accessibilityUtil);
+        super(browserContext, infoPageUtil, experimentIds, parameters, context, controller,
+                browserControlsFactory, rootView, scrim, accessibilityUtil);
     }
 
     @Override

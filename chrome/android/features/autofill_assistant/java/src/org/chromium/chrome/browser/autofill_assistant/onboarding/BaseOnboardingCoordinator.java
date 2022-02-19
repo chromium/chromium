@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -55,6 +56,7 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     private static final String TERMS_AND_CONDITIONS_KEY = "terms_and_conditions";
     private static final String TERMS_AND_CONDITIONS_URL_KEY = "terms_and_conditions_url";
 
+    private final BrowserContextHandle mBrowserContext;
     private final AssistantInfoPageUtil mInfoPageUtil;
     private final String mExperimentIds;
     private final Map<String, String> mParameters;
@@ -67,8 +69,10 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     @Nullable
     ScrollView mView;
 
-    public BaseOnboardingCoordinator(AssistantInfoPageUtil infoPageUtil, String experimentIds,
+    public BaseOnboardingCoordinator(BrowserContextHandle browserContext,
+            AssistantInfoPageUtil infoPageUtil, String experimentIds,
             Map<String, String> parameters, Context context) {
+        mBrowserContext = browserContext;
         mInfoPageUtil = infoPageUtil;
         mExperimentIds = experimentIds;
         mParameters = parameters;
@@ -102,8 +106,9 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
             updateAndShowView();
         } else {
             BaseOnboardingCoordinatorJni.get().fetchOnboardingDefinition(this,
+
                     mParameters.get(INTENT_IDENTFIER), LocaleUtils.getDefaultLocaleString(),
-                    fetchTimeoutMs);
+                    mBrowserContext.getNativeBrowserContextPointer(), fetchTimeoutMs);
         }
     }
 
@@ -304,7 +309,7 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
 
     @NativeMethods
     interface Natives {
-        void fetchOnboardingDefinition(
-                BaseOnboardingCoordinator coordinator, String intent, String locale, int timeoutMs);
+        void fetchOnboardingDefinition(BaseOnboardingCoordinator coordinator, String intent,
+                String locale, long nativeBrowserContext, int timeoutMs);
     }
 }

@@ -31,6 +31,8 @@ class DependenciesChrome : public Dependencies {
 
   variations::VariationsService* GetVariationsService() const override;
 
+  autofill::PersonalDataManager* GetPersonalDataManager() const override;
+
   std::string GetChromeSignedInEmailAddress(
       content::WebContents* web_contents) const override;
 

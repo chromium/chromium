@@ -22,11 +22,8 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantDirectActionImpl_jni.h"
 #include "chrome/browser/android/autofill_assistant/annotate_dom_model_service_factory.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
-#include "chrome/browser/autofill/android/personal_data_manager_android.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change_success_tracker_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/controller.h"
@@ -533,8 +530,7 @@ AccessTokenFetcher* ClientAndroid::GetAccessTokenFetcher() {
 }
 
 autofill::PersonalDataManager* ClientAndroid::GetPersonalDataManager() const {
-  return autofill::PersonalDataManagerFactory::GetForProfile(
-      ProfileManager::GetLastUsedProfile());
+  return dependencies_->GetPersonalDataManager();
 }
 
 WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {

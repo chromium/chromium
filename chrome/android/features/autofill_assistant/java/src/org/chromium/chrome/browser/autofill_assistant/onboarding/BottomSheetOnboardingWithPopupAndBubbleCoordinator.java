@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDimens
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -42,13 +43,13 @@ public class BottomSheetOnboardingWithPopupAndBubbleCoordinator
     @Nullable
     TextBubble mTextBubble;
 
-    BottomSheetOnboardingWithPopupAndBubbleCoordinator(AssistantInfoPageUtil infoPageUtil,
-            String experimentIds, Map<String, String> parameters, Context context,
-            BottomSheetController controller,
+    BottomSheetOnboardingWithPopupAndBubbleCoordinator(BrowserContextHandle browserContext,
+            AssistantInfoPageUtil infoPageUtil, String experimentIds,
+            Map<String, String> parameters, Context context, BottomSheetController controller,
             AssistantBrowserControlsFactory browserControlsFactory, View rootView,
             ScrimCoordinator scrim, AccessibilityUtil accessibilityUtil) {
-        super(infoPageUtil, experimentIds, parameters, context, controller, browserControlsFactory,
-                rootView, scrim, accessibilityUtil);
+        super(browserContext, infoPageUtil, experimentIds, parameters, context, controller,
+                browserControlsFactory, rootView, scrim, accessibilityUtil);
     }
 
     @Override

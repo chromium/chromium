@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -110,8 +111,10 @@ public class BottomSheetOnboardingCoordinatorTest {
                                     .getScrimCoordinator();
 
         AssistantStaticDependencies staticDependencies = new AssistantStaticDependenciesChrome();
+        BrowserContextHandle browserContext =
+                TestThreadUtils.runOnUiThreadBlocking(() -> staticDependencies.getBrowserContext());
         mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(mActivity,
-                mBottomSheetController,
+                mBottomSheetController, browserContext,
                 ()
                         -> new AssistantBrowserControlsChrome(
                                 mActivity.getBrowserControlsManager()),

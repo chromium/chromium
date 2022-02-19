@@ -38,7 +38,7 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 Supplier<WebContents> webContentsSupplier,
                 AssistantStaticDependencies staticDependencies) {
             super(new OnboardingCoordinatorFactory(context, bottomSheetController,
-                          browserControlsFactory, rootView,
+                          staticDependencies.getBrowserContext(), browserControlsFactory, rootView,
                           staticDependencies.getAccessibilityUtil(),
                           staticDependencies.createInfoPageUtil()),
                     webContentsSupplier, staticDependencies);

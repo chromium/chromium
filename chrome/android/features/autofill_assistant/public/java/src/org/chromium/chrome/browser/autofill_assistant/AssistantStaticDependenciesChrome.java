@@ -24,6 +24,7 @@ import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.AccessibilityUtil;
 
@@ -95,6 +96,11 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
      */
     private Profile getProfile() {
         return Profile.getLastUsedRegularProfile();
+    }
+
+    @Override
+    public BrowserContextHandle getBrowserContext() {
+        return getProfile();
     }
 
     @Override

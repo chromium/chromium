@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.util.AccessibilityUtil;
 
 import java.util.Map;
@@ -53,11 +54,12 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
     @Nullable
     AssistantOverlayCoordinator mOverlayCoordinator;
 
-    BottomSheetOnboardingCoordinator(AssistantInfoPageUtil infoPageUtil, String experimentIds,
+    BottomSheetOnboardingCoordinator(BrowserContextHandle browserContext,
+            AssistantInfoPageUtil infoPageUtil, String experimentIds,
             Map<String, String> parameters, Context context, BottomSheetController controller,
             AssistantBrowserControlsFactory browserControlsFactory, View rootView,
             ScrimCoordinator scrim, AccessibilityUtil accessibilityUtil) {
-        super(infoPageUtil, experimentIds, parameters, context);
+        super(browserContext, infoPageUtil, experimentIds, parameters, context);
         mController = controller;
         mBrowserControlsFactory = browserControlsFactory;
         mRootView = rootView;

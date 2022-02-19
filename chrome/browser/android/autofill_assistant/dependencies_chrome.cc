@@ -10,9 +10,11 @@
 #include "chrome/browser/android/autofill_assistant/annotate_dom_model_service_factory.h"
 #include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -59,6 +61,12 @@ DependenciesChrome::CreateFieldTrialUtil() const {
 variations::VariationsService* DependenciesChrome::GetVariationsService()
     const {
   return g_browser_process->variations_service();
+}
+
+autofill::PersonalDataManager* DependenciesChrome::GetPersonalDataManager()
+    const {
+  return autofill::PersonalDataManagerFactory::GetForProfile(
+      ProfileManager::GetLastUsedProfile());
 }
 
 std::string DependenciesChrome::GetChromeSignedInEmailAddress(

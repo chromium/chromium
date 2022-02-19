@@ -33,7 +33,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             AssistantStaticDependencies staticDependencies) {
         return new AutofillAssistantActionHandlerImpl(
                 new OnboardingCoordinatorFactory(context, bottomSheetController,
-                        browserControlsFactory, rootView, staticDependencies.getAccessibilityUtil(),
+                        staticDependencies.getBrowserContext(), browserControlsFactory, rootView,
+                        staticDependencies.getAccessibilityUtil(),
                         staticDependencies.createInfoPageUtil()),
                 webContentsSupplier, staticDependencies);
     }
