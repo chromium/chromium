@@ -7359,6 +7359,21 @@
             ]
         }
     ],
+    "WebViewLegacyTlsSupport": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "WebViewLegacyTlsSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewLogFirstPartyPageTimeSpent": [
         {
             "platforms": [
