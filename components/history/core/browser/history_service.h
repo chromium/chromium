@@ -260,7 +260,8 @@ class HistoryService : public KeyedService {
   // the caller is interested in the visits (each time the URL is visited),
   // set `want_visits` to true. If these are not needed, the function will be
   // faster by setting this to false.
-  base::CancelableTaskTracker::TaskId QueryURL(
+  // Note: Virtual needed for mocking.
+  virtual base::CancelableTaskTracker::TaskId QueryURL(
       const GURL& url,
       bool want_visits,
       QueryURLCallback callback,

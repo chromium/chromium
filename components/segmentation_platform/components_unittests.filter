@@ -4,6 +4,7 @@ DummySegmentationPlatformServiceTest.*
 FeatureAggregatorImplTest.*
 FeatureListQueryProcessorTest.*
 HistogramSignalHandlerTest.*
+HistoryDelegateImplTest.*
 MetadataUtilsTest.*
 ModelExecutionManagerFactoryTest.*
 ModelExecutionManagerTest.*

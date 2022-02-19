@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/history",
   "+components/keyed_service",
   "+components/leveldb_proto",
   "+components/optimization_guide",
