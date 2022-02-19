@@ -400,6 +400,9 @@
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ADD_SITE_DIALOG_TITLE" desc="The title of the dialog used to allow a user to add a new site. Used for the permitted and restricted site lists.">
     Add site
   </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_SITE_DIALOG_TITLE" desc="The title of the dialog used to allow a user to edit an existing site. Used for the permitted and restricted site lists.">
+    Edit site
+  </message>
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_DIALOG_INPUT_ERROR" desc="The error message shown to the user when they entered an invalid site address into the input field.">
     Not a valid web address
   </message>

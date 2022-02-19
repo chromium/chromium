@@ -11,6 +11,7 @@ import './strings.m.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SitePermissionsDelegate} from './site_permissions.js';
@@ -41,16 +42,16 @@ export function getSitePermissionsPatternFromSite(site: string): string {
   return scheme + host + port;
 }
 
-export interface SitePermissionsAddSiteDialogElement {
+export interface SitePermissionsEditDialogElement {
   $: {
     dialog: CrDialogElement,
     submit: CrButtonElement,
   };
 }
 
-export class SitePermissionsAddSiteDialogElement extends PolymerElement {
+export class SitePermissionsEditDialogElement extends PolymerElement {
   static get is() {
-    return 'site-permissions-add-site-dialog';
+    return 'site-permissions-edit-dialog';
   }
 
   static get template() {
@@ -61,6 +62,15 @@ export class SitePermissionsAddSiteDialogElement extends PolymerElement {
     return {
       delegate: Object,
       siteSet: String,
+
+      /**
+       * The site that this entry is currently managing. Only non-empty if this
+       * is for editing an existing entry.
+       */
+      siteToEdit: {
+        type: String,
+        value: null,
+      },
 
       site_: {
         type: String,
@@ -77,8 +87,18 @@ export class SitePermissionsAddSiteDialogElement extends PolymerElement {
 
   delegate: SitePermissionsDelegate;
   siteSet: chrome.developerPrivate.UserSiteSet;
+  siteToEdit: string|null;
   private site_: string;
   private inputValid_: boolean;
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    if (this.siteToEdit !== null) {
+      this.site_ = this.siteToEdit;
+      this.validate_();
+    }
+  }
 
   /**
    * Validates that the pattern entered is valid by testing it against the
@@ -91,9 +111,19 @@ export class SitePermissionsAddSiteDialogElement extends PolymerElement {
         this.site_.trim().length === 0 || patternRegExp.test(this.site_);
   }
 
+  private computeDialogTitle_(): string {
+    return loadTimeData.getString(
+        this.siteToEdit === null ? 'sitePermissionsAddSiteDialogTitle' :
+                                   'sitePermissionsEditSiteDialogTitle');
+  }
+
   private computeSubmitButtonDisabled_(): boolean {
     // If input is empty, disable the action button.
     return !this.inputValid_ || this.site_.trim().length === 0;
+  }
+
+  private computeSubmitButtonLabel_(): string {
+    return loadTimeData.getString(this.siteToEdit === null ? 'add' : 'save');
   }
 
   private onCancel_() {
@@ -102,6 +132,32 @@ export class SitePermissionsAddSiteDialogElement extends PolymerElement {
 
   private onSubmit_() {
     const pattern = getSitePermissionsPatternFromSite(this.site_);
+    if (this.siteToEdit !== null) {
+      this.handleEdit_(pattern);
+    } else {
+      this.handleAdd_(pattern);
+    }
+  }
+
+  private handleEdit_(pattern: string) {
+    assert(this.siteToEdit);
+    if (pattern === this.siteToEdit) {
+      this.$.dialog.close();
+      return;
+    }
+
+    this.delegate.removeUserSpecifiedSite(this.siteSet, this.siteToEdit!)
+        .then(() => {
+          this.addUserSpecifiedSite_(pattern);
+        });
+  }
+
+  private handleAdd_(pattern: string) {
+    assert(!this.siteToEdit);
+    this.addUserSpecifiedSite_(pattern);
+  }
+
+  private addUserSpecifiedSite_(pattern: string) {
     this.delegate.addUserSpecifiedSite(this.siteSet, pattern)
         .then(
             () => {
@@ -115,10 +171,9 @@ export class SitePermissionsAddSiteDialogElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'site-permissions-add-site-dialog': SitePermissionsAddSiteDialogElement;
+    'site-permissions-edit-dialog': SitePermissionsEditDialogElement;
   }
 }
 
 customElements.define(
-    SitePermissionsAddSiteDialogElement.is,
-    SitePermissionsAddSiteDialogElement);
+    SitePermissionsEditDialogElement.is, SitePermissionsEditDialogElement);

@@ -10,11 +10,12 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './strings.m.js';
 import './shared_style.js';
 import './shared_vars.js';
-import './site_permissions_add_site_dialog.js';
+import './site_permissions_edit_dialog.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SitePermissionsDelegate} from './site_permissions.js';
@@ -43,9 +44,18 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
       siteSet: String,
       sites: Array,
 
-      showAddSiteDialog_: {
+      showEditSiteDialog_: {
         type: Boolean,
         value: false,
+      },
+
+      /**
+       * The site currently being edited if the user has opened the action menu
+       * for a given site.
+       */
+      siteToEdit_: {
+        type: String,
+        value: null,
       },
     };
   }
@@ -54,8 +64,13 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
   header: string;
   siteSet: chrome.developerPrivate.UserSiteSet;
   sites: Array<string>;
-  private showAddSiteDialog_: boolean;
+  private showEditSiteDialog_: boolean;
   private siteToEdit_: string|null;
+
+  // The element to return focus to once the site input dialog closes. If
+  // specified, this is the 3 dots menu for the site just edited, otherwise it's
+  // the add site button.
+  private siteToEditAnchorElement_: HTMLElement|null = null;
 
   private hasSites_(): boolean {
     return !!this.sites.length;
@@ -66,16 +81,32 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
   }
 
   private onAddSiteClick_() {
-    this.showAddSiteDialog_ = true;
+    this.siteToEdit_ = null;
+    this.showEditSiteDialog_ = true;
   }
 
-  private onAddSiteDialogClose_() {
-    this.showAddSiteDialog_ = false;
+  private onEditSiteDialogClose_() {
+    this.showEditSiteDialog_ = false;
+    if (this.siteToEdit_ !== null) {
+      // Return focus to the three dots menu once a site has been edited.
+      // TODO(crbug.com/1298326): If the edited site is the only site in the
+      // list, focus is not on the three dots menu.
+      focusWithoutInk(assert(this.siteToEditAnchorElement_!, 'Site Anchor'));
+      this.siteToEditAnchorElement_ = null;
+    }
+    this.siteToEdit_ = null;
   }
 
   private onDotsClick_(e: DomRepeatEvent<string>) {
     this.siteToEdit_ = e.model.item;
     this.$.siteActionMenu.showAt(e.target as HTMLElement);
+    this.siteToEditAnchorElement_ = e.target as HTMLElement;
+  }
+
+  private onActionMenuEditClick_() {
+    this.closeActionMenu_();
+    assert(this.siteToEdit_ !== null);
+    this.showEditSiteDialog_ = true;
   }
 
   private onActionMenuRemoveClick_() {
@@ -84,6 +115,7 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
             this.siteSet, assert(this.siteToEdit_!, 'Site To Edit'))
         .then(() => {
           this.closeActionMenu_();
+          this.siteToEdit_ = null;
         });
   }
 
@@ -91,7 +123,6 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
     const menu = this.$.siteActionMenu;
     assert(menu.open);
     menu.close();
-    this.siteToEdit_ = null;
   }
 }
 

@@ -53,17 +53,21 @@
 </div>
 
 <cr-action-menu id="siteActionMenu">
+  <button class="dropdown-item" id="edit-site"
+      on-click="onActionMenuEditClick_">
+    $i18n{hostPermissionsEdit}
+  </button>
   <button class="dropdown-item" id="remove-site"
       on-click="onActionMenuRemoveClick_">
     $i18n{remove}
   </button>
 </cr-action-menu>
 
-<template is="dom-if" if="[[showAddSiteDialog_]]" restamp>
-  <site-permissions-add-site-dialog
+<template is="dom-if" if="[[showEditSiteDialog_]]" restamp>
+  <site-permissions-edit-dialog
       delegate="[[delegate]]"
+      site-to-edit="[[siteToEdit_]]"
       site-set="[[siteSet]]"
-      on-close="onAddSiteDialogClose_"
-      on-cancel="onAddSiteDialogClose_">
-  </site-permissions-add-site-dialog>
+      on-close="onEditSiteDialogClose_">
+  </site-permissions-edit-dialog>
 </template>

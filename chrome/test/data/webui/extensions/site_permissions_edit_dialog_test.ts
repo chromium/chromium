@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Suite of tests for site-permissions-add-site-dialog. */
+/** @fileoverview Suite of tests for site-permissions-edit-dialog. */
 import 'chrome://extensions/extensions.js';
 
-import {getSitePermissionsPatternFromSite, SitePermissionsAddSiteDialogElement} from 'chrome://extensions/extensions.js';
+import {getSitePermissionsPatternFromSite, SitePermissionsEditDialogElement} from 'chrome://extensions/extensions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 
-suite('SitePermissionsAddSiteDialog', function() {
-  let element: SitePermissionsAddSiteDialogElement;
+suite('SitePermissionsEditDialog', function() {
+  let element: SitePermissionsEditDialogElement;
   let delegate: TestService;
 
   setup(function() {
     delegate = new TestService();
 
     document.body.innerHTML = '';
-    element = document.createElement('site-permissions-add-site-dialog');
+    element = document.createElement('site-permissions-edit-dialog');
     element.delegate = delegate;
     element.siteSet = chrome.developerPrivate.UserSiteSet.PERMITTED;
     document.body.appendChild(element);
@@ -62,6 +63,35 @@ suite('SitePermissionsAddSiteDialog', function() {
     input.fire('input');
     assertFalse(input.invalid);
     assertFalse(submit.disabled);
+  });
+
+  test('editing current site', async function() {
+    const oldSite = 'http://www.example.com';
+    const newSite = 'https://www.google.com';
+    element.siteToEdit = oldSite;
+
+    const input = element.shadowRoot!.querySelector('cr-input');
+    assertTrue(!!input);
+    input.value = newSite;
+    input.fire('input');
+    assertFalse(input.invalid);
+
+    const submit = element.$.submit;
+    assertFalse(submit.disabled);
+    submit.click();
+
+    const [removedSiteSet, removedSite] =
+        await delegate.whenCalled('removeUserSpecifiedSite');
+    assertEquals(chrome.developerPrivate.UserSiteSet.PERMITTED, removedSiteSet);
+    assertEquals(oldSite, removedSite);
+
+    const [addedSiteSet, addedSite] =
+        await delegate.whenCalled('addUserSpecifiedSite');
+    assertEquals(chrome.developerPrivate.UserSiteSet.PERMITTED, addedSiteSet);
+    assertEquals(newSite, addedSite);
+
+    await eventToPromise('close', element);
+    assertFalse(element.$.dialog.open);
   });
 
   test('get pattern from url', function() {
