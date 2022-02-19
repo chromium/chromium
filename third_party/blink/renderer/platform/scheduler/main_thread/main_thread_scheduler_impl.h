@@ -511,9 +511,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     bool& should_pause_task_queues() { return should_pause_task_queues_; }
     bool should_pause_task_queues() const { return should_pause_task_queues_; }
 
-    bool& use_virtual_time() { return use_virtual_time_; }
-    bool use_virtual_time() const { return use_virtual_time_; }
-
     bool& should_pause_task_queues_for_android_webview() {
       return should_pause_task_queues_for_android_webview_;
     }
@@ -541,7 +538,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
                  other.should_freeze_compositor_task_queue_ &&
              should_defer_task_queues_ == other.should_defer_task_queues_ &&
              should_pause_task_queues_ == other.should_pause_task_queues_ &&
-             use_virtual_time_ == other.use_virtual_time_ &&
              should_pause_task_queues_for_android_webview_ ==
                  other.should_pause_task_queues_for_android_webview_ &&
              find_in_page_priority_ == other.find_in_page_priority_ &&
@@ -559,7 +555,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     bool should_freeze_compositor_task_queue_{false};
     bool should_defer_task_queues_{false};
     bool should_pause_task_queues_{false};
-    bool use_virtual_time_{false};
     bool should_pause_task_queues_for_android_webview_{false};
 
     base::sequence_manager::TaskQueue::QueuePriority find_in_page_priority_{
