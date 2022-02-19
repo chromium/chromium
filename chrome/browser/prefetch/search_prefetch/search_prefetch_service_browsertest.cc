@@ -2617,64 +2617,6 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroErrorTimeBrowserTest,
       GetSearchServerQueryURL("other_query")));
 }
 
-class SearchPrefetchServiceDefaultMatchOnlyBrowserTest
-    : public SearchPrefetchBaseBrowserTest {
- public:
-  SearchPrefetchServiceDefaultMatchOnlyBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{kSearchPrefetchServicePrefetching,
-          {{"only_prefetch_default_match", "true"},
-           {"device_memory_threshold_MB", "0"}}},
-         {{kSearchPrefetchService}, {}}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceDefaultMatchOnlyBrowserTest,
-                       OmniboxEditDoesNotTriggerPrefetchForSecondMatch) {
-  // phi being set to one causes the order of prefetch suggest to be different.
-  // This should still prefetch a result for the |kOmniboxSuggestPrefetchQuery|.
-  set_phi_is_one(true);
-  auto* search_prefetch_service =
-      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
-  std::string search_terms = kOmniboxSuggestPrefetchQuery;
-
-  // Trigger an omnibox suggest fetch that does not have a prefetch hint.
-  AutocompleteInput input(
-      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
-  AutocompleteController* autocomplete_controller =
-      omnibox->model()->autocomplete_controller();
-
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
-
-  ui_test_utils::WaitForAutocompleteDone(browser());
-  EXPECT_TRUE(autocomplete_controller->done());
-
-  WaitForDuration(base::Milliseconds(100));
-
-  auto prefetch_status =
-      search_prefetch_service->GetSearchPrefetchStatusForTesting(
-          kOmniboxSuggestPrefetchSecondItemQuery16);
-  EXPECT_FALSE(prefetch_status.has_value());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GetSearchServerQueryURL(kOmniboxSuggestPrefetchSecondItemQuery)));
-
-  auto inner_html = GetDocumentInnerHTML();
-
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
-}
-
 class SearchPrefetchServiceLowMemoryDeviceBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:

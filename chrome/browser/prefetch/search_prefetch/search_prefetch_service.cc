@@ -395,7 +395,6 @@ void SearchPrefetchService::ReportError() {
 void SearchPrefetchService::OnResultChanged(
     AutocompleteController* controller) {
   const auto& result = controller->result();
-  const auto* default_match = result.default_match();
 
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
@@ -435,15 +434,6 @@ void SearchPrefetchService::OnResultChanged(
         prefetch_request->CancelPrefetch();
       }
     }
-  }
-
-  // One arm of the experiment only prefetches the top match when it is default.
-  if (SearchPrefetchOnlyFetchDefaultMatch()) {
-    if (default_match && BaseSearchProvider::ShouldPrefetch(*default_match)) {
-      MaybePrefetchURL(
-          GetPrefetchURLFromMatch(*default_match, template_url_service));
-    }
-    return;
   }
 
   for (const auto& match : result) {
