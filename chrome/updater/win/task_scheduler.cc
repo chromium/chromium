@@ -648,6 +648,53 @@ class TaskSchedulerV2 final : public TaskScheduler {
     return true;
   }
 
+  bool StartTask(const wchar_t* task_name) override {
+    DCHECK(task_name);
+
+    if (!task_folder_)
+      return false;
+
+    Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
+    if (!GetTask(task_name, &registered_task)) {
+      LOG(ERROR) << "GetTask failed.";
+      return false;
+    }
+
+    if ([&registered_task]() {
+          Microsoft::WRL::ComPtr<IRunningTaskCollection>
+              running_task_collection;
+          HRESULT hr =
+              registered_task->GetInstances(0, &running_task_collection);
+          if (FAILED(hr)) {
+            LOG(ERROR) << "IRegisteredTask.GetInstances failed. " << std::hex
+                       << hr;
+            return false;
+          }
+
+          long count = 0;  // NOLINT
+          hr = running_task_collection->get_Count(&count);
+          if (FAILED(hr)) {
+            LOG(ERROR) << "IRunningTaskCollection.get_Count failed. "
+                       << std::hex << hr;
+            return false;
+          }
+
+          return count > 0;
+        }()) {
+      // The task is already running.
+      return true;
+    }
+
+    HRESULT hr =
+        registered_task->Run(base::win::ScopedVariant::kEmptyVariant, nullptr);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "IRegisteredTask.Run failed. " << std::hex << hr;
+      return false;
+    }
+
+    return true;
+  }
+
  private:
   // Helper class that lets us iterate over all registered tasks.
   class TaskIterator {

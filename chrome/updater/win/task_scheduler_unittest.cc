@@ -175,10 +175,13 @@ TEST_F(TaskSchedulerTests, RunAProgramNow) {
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName1, kTaskDescription1, command_line,
       TaskScheduler::TRIGGER_TYPE_NOW, false));
+  EXPECT_TRUE(task_scheduler_->StartTask(kTaskName1));
 
-  TaskScheduler::TaskInfo info;
-  EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
-  VLOG(0) << info;
+  VLOG(0) << [this]() {
+    TaskScheduler::TaskInfo info;
+    EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
+    return info;
+  }();
 
   EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
   base::Time next_run_time;

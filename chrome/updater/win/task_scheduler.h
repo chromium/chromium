@@ -142,6 +142,10 @@ class TaskScheduler {
                             TriggerType trigger_type,
                             bool hidden) = 0;
 
+  // Returns true if the scheduled task specified by |task_name| can be started
+  // successfully or is currently running.
+  virtual bool StartTask(const wchar_t* task_name) = 0;
+
  protected:
   TaskScheduler();
 };
