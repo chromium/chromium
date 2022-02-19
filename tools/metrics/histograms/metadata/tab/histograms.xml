@@ -28,6 +28,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".PluggedIn"/>
 </variants>
 
+<variants name="TabActiveState">
+  <variant name="Active" summary="active"/>
+  <variant name="Inactive" summary="inactive"/>
+</variants>
+
 <variants name="TabCreatedReason">
   <variant name=".FromExternalApp"
       summary="This bucket is for any tabs that are created because of custom
@@ -3099,6 +3104,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     The width of each open browser window, in DIPs, reported every 5 minutes.
     Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.{TabActiveState}TabWidth" units="px"
+    expires_after="2023-01-01">
+  <owner>dpenning@chromium.org</owner>
+  <owner>tbergquist@chromium.org</owner>
+  <summary>
+    [Desktop] The size in pixels of the {TabActiveState} tab logged when a tab
+    is added. Used to collect size data for scrolling tabs.
   </summary>
 </histogram>
 
