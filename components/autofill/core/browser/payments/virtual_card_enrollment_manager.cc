@@ -40,9 +40,11 @@ VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
     : autofill_client_(autofill_client),
       personal_data_manager_(personal_data_manager),
       payments_client_(payments_client) {
-  StrikeDatabaseBase* strike_database = autofill_client->GetStrikeDatabase();
-  virtual_card_enrollment_strike_database_ =
-      std::make_unique<VirtualCardEnrollmentStrikeDatabase>(strike_database);
+  if (autofill_client_) {
+    StrikeDatabaseBase* strike_database = autofill_client->GetStrikeDatabase();
+    virtual_card_enrollment_strike_database_ =
+        std::make_unique<VirtualCardEnrollmentStrikeDatabase>(strike_database);
+  }
 }
 
 VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
