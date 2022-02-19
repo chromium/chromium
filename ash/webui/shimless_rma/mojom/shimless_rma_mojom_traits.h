@@ -8,6 +8,7 @@
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 
 namespace mojo {
@@ -59,6 +60,16 @@ struct EnumTraits<ash::shimless_rma::mojom::OsUpdateOperation,
 
   static bool FromMojom(ash::shimless_rma::mojom::OsUpdateOperation input,
                         update_engine::Operation* out);
+};
+
+template <>
+struct EnumTraits<ash::shimless_rma::mojom::UpdateErrorCode,
+                  update_engine::ErrorCode> {
+  static ash::shimless_rma::mojom::UpdateErrorCode ToMojom(
+      update_engine::ErrorCode error_code);
+
+  static bool FromMojom(ash::shimless_rma::mojom::UpdateErrorCode input,
+                        update_engine::ErrorCode* out);
 };
 
 template <>

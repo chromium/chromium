@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "base/callback.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
@@ -25,7 +24,8 @@ class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
                                        bool rollback,
                                        bool powerwash,
                                        const std::string& version,
-                                       int64_t update_size)>
+                                       int64_t update_size,
+                                       update_engine::ErrorCode error_code)>
       OsUpdateStatusCallback;
 
   VersionUpdater();
@@ -38,6 +38,8 @@ class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
   void CheckOsUpdateAvailable();
   bool UpdateOs();
   bool IsUpdateEngineIdle();
+
+  void UpdateStatusChangedForTesting(const update_engine::StatusResult& status);
 
  private:
   // Callback from UpdateEngineClient::RequestUpdateCheck().

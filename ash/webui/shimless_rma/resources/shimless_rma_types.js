@@ -100,6 +100,12 @@ export const FinalizationStatus = ash.shimlessRma.mojom.FinalizationStatus;
 export const OsUpdateOperation = ash.shimlessRma.mojom.OsUpdateOperation;
 
 /**
+ * Type alias for UpdateErrorCode.
+ * @typedef {ash.shimlessRma.mojom.UpdateErrorCode}
+ */
+export const UpdateErrorCode = ash.shimlessRma.mojom.UpdateErrorCode;
+
+/**
  * @typedef {ash.shimlessRma.mojom.Component}
  */
 export const Component = ash.shimlessRma.mojom.Component;

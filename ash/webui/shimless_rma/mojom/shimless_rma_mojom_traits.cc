@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 
 namespace mojo {
@@ -22,6 +23,9 @@ using ProtoRmadErrorCode = rmad::RmadErrorCode;
 
 using MojomOsUpdateOperation = ash::shimless_rma::mojom::OsUpdateOperation;
 using ProtoOsUpdateOperation = update_engine::Operation;
+
+using MojomUpdateErrorCode = ash::shimless_rma::mojom::UpdateErrorCode;
+using ProtoOsUpdateErrorCode = update_engine::ErrorCode;
 
 using MojomComponentType = ash::shimless_rma::mojom::ComponentType;
 using ProtoComponentType = rmad::RmadComponent;
@@ -423,6 +427,39 @@ bool EnumTraits<MojomOsUpdateOperation, ProtoOsUpdateOperation>::FromMojom(
   }
   NOTREACHED();
   return false;
+}
+
+MojomUpdateErrorCode
+EnumTraits<MojomUpdateErrorCode, ProtoOsUpdateErrorCode>::ToMojom(
+    ProtoOsUpdateErrorCode operation) {
+  switch (operation) {
+    case ProtoOsUpdateErrorCode::kSuccess:
+      return MojomUpdateErrorCode::kSuccess;
+    case ProtoOsUpdateErrorCode::kDownloadTransferError:
+    case ProtoOsUpdateErrorCode::kOmahaErrorInHTTPResponse:
+      return MojomUpdateErrorCode::kDownloadError;
+    case ProtoOsUpdateErrorCode::kError:
+    case ProtoOsUpdateErrorCode::kOmahaUpdateIgnoredPerPolicy:
+    case ProtoOsUpdateErrorCode::kNoUpdate:
+      return MojomUpdateErrorCode::kOtherError;
+  }
+}
+
+// static
+bool EnumTraits<MojomUpdateErrorCode, ProtoOsUpdateErrorCode>::FromMojom(
+    MojomUpdateErrorCode input,
+    ProtoOsUpdateErrorCode* out) {
+  switch (input) {
+    case MojomUpdateErrorCode::kSuccess:
+      *out = ProtoOsUpdateErrorCode::kSuccess;
+      return true;
+    case MojomUpdateErrorCode::kDownloadError:
+      *out = ProtoOsUpdateErrorCode::kDownloadTransferError;
+      return true;
+    case MojomUpdateErrorCode::kOtherError:
+      *out = ProtoOsUpdateErrorCode::kError;
+      return true;
+  }
 }
 
 // static

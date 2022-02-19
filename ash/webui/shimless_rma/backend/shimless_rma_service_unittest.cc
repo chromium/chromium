@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
+#include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/rmad/fake_rmad_client.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
+#include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
@@ -3115,6 +3117,46 @@ TEST_F(ShimlessRmaServiceTest, GetWriteProtectManuallyDisabledInstructions) {
             EXPECT_EQ(qrcode->data.size(), expected_qrcode_data.size());
             EXPECT_EQ(qrcode->data, expected_qrcode_data);
           }));
+}
+
+class FakeOsUpdateObserver : public mojom::OsUpdateObserver {
+ public:
+  struct Observation {
+    update_engine::Operation operation;
+    float progress;
+    update_engine::ErrorCode error_code;
+  };
+
+  void OnOsUpdateProgressUpdated(update_engine::Operation operation,
+                                 float progress,
+                                 update_engine::ErrorCode error_code) override {
+    Observation observation;
+    observation.operation = operation;
+    observation.progress = progress;
+    observation.error_code = error_code;
+    observations.push_back(observation);
+  }
+
+  std::vector<Observation> observations;
+  mojo::Receiver<mojom::OsUpdateObserver> receiver{this};
+};
+
+TEST_F(ShimlessRmaServiceTest, OsUpdateProgress) {
+  FakeOsUpdateObserver fake_os_update_observer;
+  const update_engine::Operation operation =
+      update_engine::Operation::DOWNLOADING;
+  const double progress = 50.0;
+  const update_engine::ErrorCode error_code =
+      update_engine::ErrorCode::kSuccess;
+
+  shimless_rma_provider_->ObserveOsUpdateProgress(
+      fake_os_update_observer.receiver.BindNewPipeAndPassRemote());
+  shimless_rma_provider_->OsUpdateProgress(operation, progress, error_code);
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(operation, fake_os_update_observer.observations[0].operation);
+  EXPECT_EQ(progress, fake_os_update_observer.observations[0].progress);
+  EXPECT_EQ(error_code, fake_os_update_observer.observations[0].error_code);
 }
 
 }  // namespace shimless_rma

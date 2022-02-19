@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_cert_loader.h"
@@ -141,14 +142,18 @@ class VersionUpdaterTest : public testing::Test {
                                 bool rollback,
                                 bool powerwash,
                                 const std::string& version,
-                                int64_t update_size) {
+                                int64_t update_size,
+                                update_engine::ErrorCode error_code) {
     callback_count_++;
+    error_code_ = error_code;
   }
 
   uint32_t callback_count_ = 0;
   FakeUpdateEngineClient& fake_update_engine_client() {
     return *fake_update_engine_client_;
   }
+
+  update_engine::ErrorCode error_code() { return error_code_; }
 
  private:
   std::unique_ptr<VersionUpdater> version_updater_;
@@ -163,6 +168,7 @@ class VersionUpdaterTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
   FakeUpdateEngineClient* fake_update_engine_client_;
+  update_engine::ErrorCode error_code_;
 
   base::test::TaskEnvironment task_environment_;
 
@@ -209,6 +215,17 @@ TEST_F(VersionUpdaterTest, CallbackFiresWhenUpdateEngineStatusChanges) {
   status.set_current_operation(update_engine::Operation::CHECKING_FOR_UPDATE);
   fake_update_engine_client().NotifyObserversThatStatusChanged(status);
   EXPECT_EQ(1u, callback_count_);
+}
+
+TEST_F(VersionUpdaterTest, UpdateStatusChangedGetError) {
+  SetCallback();
+  update_engine::StatusResult status;
+  status.set_current_operation(update_engine::Operation::REPORTING_ERROR_EVENT);
+  status.set_last_attempt_error(
+      static_cast<int32_t>(update_engine::ErrorCode::kError));
+  version_updater().UpdateStatusChangedForTesting(status);
+  EXPECT_EQ(1u, callback_count_);
+  EXPECT_EQ(update_engine::ErrorCode::kError, error_code());
 }
 
 }  // namespace

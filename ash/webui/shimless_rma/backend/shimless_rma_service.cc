@@ -878,9 +878,11 @@ void ShimlessRmaService::Error(rmad::RmadErrorCode error) {
 }
 
 void ShimlessRmaService::OsUpdateProgress(update_engine::Operation operation,
-                                          double progress) {
+                                          double progress,
+                                          update_engine::ErrorCode error_code) {
   if (os_update_observer_.is_bound()) {
-    os_update_observer_->OnOsUpdateProgressUpdated(operation, progress);
+    os_update_observer_->OnOsUpdateProgressUpdated(operation, progress,
+                                                   error_code);
   }
 }
 
@@ -1118,7 +1120,8 @@ void ShimlessRmaService::OnOsUpdateStatusCallback(
     bool rollback,
     bool powerwash,
     const std::string& version,
-    int64_t update_size) {
+    int64_t update_size,
+    update_engine::ErrorCode error_code) {
   if (check_os_callback_) {
     switch (operation) {
       // If IDLE is received when there is a callback it means no update is
@@ -1147,8 +1150,7 @@ void ShimlessRmaService::OnOsUpdateStatusCallback(
         break;
     }
   }
-  // TODO(gavindodd): Pass errors and any other needed data.
-  OsUpdateProgress(operation, progress);
+  OsUpdateProgress(operation, progress, error_code);
 }
 
 void ShimlessRmaService::OsUpdateOrNextRmadStateCallback(

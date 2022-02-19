@@ -208,6 +208,13 @@ enum OsUpdateOperation {
   kNeedPermissionToUpdate = 10,
 };
 
+enum UpdateErrorCode {
+  kSuccess = 0,
+  kDownloadError = 1,
+  // Error includes device out of space, unauthorized, and no update available.
+  kOtherError = 2,
+};
+
 // Device components
 // This maps to RmadComponent in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
@@ -355,7 +362,8 @@ interface ErrorObserver {
 interface OsUpdateObserver {
   // OnOsUpdateProgressUpdated is called when the UpdateEngine sends a update
   // status change signal.
-  OnOsUpdateProgressUpdated(OsUpdateOperation operation, float progress);
+  OnOsUpdateProgressUpdated(OsUpdateOperation operation, float progress,
+      UpdateErrorCode update_error_code);
 };
 
 // Implemented by clients to track the progress of component calibration.

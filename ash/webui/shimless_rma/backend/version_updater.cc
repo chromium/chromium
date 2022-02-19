@@ -4,7 +4,6 @@
 
 #include "ash/webui/shimless_rma/backend/version_updater.h"
 
-#include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "base/logging.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
@@ -19,10 +18,11 @@ namespace shimless_rma {
 namespace {
 
 void ReportUpdateFailure(const VersionUpdater::OsUpdateStatusCallback& callback,
-                         update_engine::Operation operation) {
+                         update_engine::Operation operation,
+                         const update_engine::ErrorCode& error_code) {
   callback.Run(operation, /*progress=*/0,
                /*rollback=*/false, /*powerwash=*/false,
-               /*version=*/std::string(), /*update_size=*/0);
+               /*version=*/std::string(), /*update_size=*/0, error_code);
 }
 
 // Returns whether an update is allowed. If not, it calls the callback with
@@ -36,7 +36,6 @@ bool IsUpdateAllowed() {
   // Don't allow an update if device is currently offline or connected
   // to a network for which data is metered.
   if (!network || !network->IsConnectedState()) {
-    // TODO(gavindodd): Pass a specific error to UI.
     return false;
   }
 
@@ -78,14 +77,16 @@ void VersionUpdater::CheckOsUpdateAvailable() {
   if (check_update_available_ == UPDATE_AVAILABLE) {
     status_callback_.Run(update_engine::Operation::UPDATE_AVAILABLE,
                          /*progress=*/0, /*rollback=*/false,
-                         /*powerwash=*/false, new_version_, /*update_size=*/0);
+                         /*powerwash=*/false, new_version_, /*update_size=*/0,
+                         update_engine::ErrorCode::kSuccess);
     return;
   }
 
   if (check_update_available_ == NO_UPDATE_AVAILABLE) {
     status_callback_.Run(update_engine::Operation::IDLE,
                          /*progress=*/0, /*rollback=*/false,
-                         /*powerwash=*/false, new_version_, /*update_size=*/0);
+                         /*powerwash=*/false, new_version_, /*update_size=*/0,
+                         update_engine::ErrorCode::kSuccess);
     return;
   }
 
@@ -94,13 +95,15 @@ void VersionUpdater::CheckOsUpdateAvailable() {
   }
 
   if (!IsUpdateAllowed()) {
-    ReportUpdateFailure(status_callback_, update_engine::REPORTING_ERROR_EVENT);
+    ReportUpdateFailure(status_callback_, update_engine::REPORTING_ERROR_EVENT,
+                        update_engine::ErrorCode::kError);
     return;
   }
 
   if (!IsUpdateEngineIdle()) {
     LOG(ERROR) << "Tried to check for update when UpdateEngine not IDLE.";
-    ReportUpdateFailure(status_callback_, update_engine::REPORTING_ERROR_EVENT);
+    ReportUpdateFailure(status_callback_, update_engine::REPORTING_ERROR_EVENT,
+                        update_engine::ErrorCode::kError);
     return;
   }
 
@@ -183,20 +186,25 @@ void VersionUpdater::UpdateStatusChanged(
       break;
   }
 
-  // TODO(gavinwill): Work out how errors are passed from UpdateEngine when
-  // operation == REPORTING_ERROR_EVENT and handle them appropriately.
-  status_callback_.Run(status.current_operation(), status.progress(), false,
-                       status.will_powerwash_after_reboot(),
-                       status.new_version(), status.new_size());
+  status_callback_.Run(
+      status.current_operation(), status.progress(), false,
+      status.will_powerwash_after_reboot(), status.new_version(),
+      status.new_size(),
+      static_cast<update_engine::ErrorCode>(status.last_attempt_error()));
 }
 
 void VersionUpdater::OnRequestUpdateCheck(
     UpdateEngineClient::UpdateCheckResult result) {
   if (result != chromeos::UpdateEngineClient::UPDATE_RESULT_SUCCESS) {
     LOG(ERROR) << "OS update request failed.";
-    // TODO(gavinwill): Pass a specific error to UI.
-    ReportUpdateFailure(status_callback_, update_engine::REPORTING_ERROR_EVENT);
+    ReportUpdateFailure(status_callback_, update_engine::REPORTING_ERROR_EVENT,
+                        update_engine::ErrorCode::kDownloadTransferError);
   }
+}
+
+void VersionUpdater::UpdateStatusChangedForTesting(
+    const update_engine::StatusResult& status) {
+  UpdateStatusChanged(status);
 }
 
 }  // namespace shimless_rma
