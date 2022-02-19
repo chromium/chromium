@@ -5,13 +5,15 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PROFILING_UTILS_H_
 #define CONTENT_PUBLIC_BROWSER_PROFILING_UTILS_H_
 
+#include "base/callback_forward.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
-// Ask all the child processes to dump their profiling data to disk and block
-// until this is done.
-CONTENT_EXPORT void WaitForAllChildrenToDumpProfilingData();
+// Ask all the child processes to dump their profiling data to disk and calls
+// |callback| once it's done.
+CONTENT_EXPORT void AskAllChildrenToDumpProfilingData(
+    base::OnceClosure callback);
 
 }  // namespace content
 

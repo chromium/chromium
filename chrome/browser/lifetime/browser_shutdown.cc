@@ -69,6 +69,7 @@
 #endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
+#include "base/run_loop.h"
 #include "content/public/browser/profiling_utils.h"
 #endif
 
@@ -136,7 +137,11 @@ void OnShutdownStarting(ShutdownType type) {
   // TODO(https://crbug.com/1071664): Check if this should also be enabled for
   // coverage builds.
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
-  content::WaitForAllChildrenToDumpProfilingData();
+  // Wait for all the child processes to dump their profiling data without
+  // blocking the main thread.
+  base::RunLoop nested_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  content::AskAllChildrenToDumpProfilingData(nested_run_loop.QuitClosure());
+  nested_run_loop.Run();
 #endif  // BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
 
   // Call FastShutdown on all of the RenderProcessHosts.  This will be

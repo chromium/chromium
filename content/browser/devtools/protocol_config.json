@@ -53,7 +53,8 @@
             },
             {
                 "domain": "NativeProfiling",
-                "include": ["dumpProfilingDataOfAllProcesses"]
+                "include": ["dumpProfilingDataOfAllProcesses"],
+                "async": ["dumpProfilingDataOfAllProcesses"]
             },
             {
                 "domain": "Network",

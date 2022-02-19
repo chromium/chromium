@@ -27,7 +27,9 @@ class NativeProfilingHandler final : public DevToolsDomainHandler,
   void Wire(UberDispatcher* dispatcher) override;
 
   // NativeProfiling::Backend.
-  DispatchResponse DumpProfilingDataOfAllProcesses() override;
+  void DumpProfilingDataOfAllProcesses(
+      std::unique_ptr<DumpProfilingDataOfAllProcessesCallback> callback)
+      override;
 
  private:
   std::unique_ptr<NativeProfiling::Frontend> frontend_;

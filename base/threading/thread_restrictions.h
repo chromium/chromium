@@ -193,7 +193,6 @@ class SynchronousCompositor;
 class SynchronousCompositorHost;
 class SynchronousCompositorSyncCallBridge;
 class TextInputClientMac;
-class WaitForProcessesToDumpProfilingInfo;
 class WebContentsImpl;
 class WebContentsViewMac;
 }  // namespace content
@@ -649,7 +648,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class content::SynchronousCompositor;
   friend class content::SynchronousCompositorHost;
   friend class content::SynchronousCompositorSyncCallBridge;
-  friend class content::WaitForProcessesToDumpProfilingInfo;
   friend class content::RenderProcessHost;
   friend class media::AudioInputDevice;
   friend class media::AudioOutputDevice;
