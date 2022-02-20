@@ -37,6 +37,7 @@ component("base") {
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//ui/base",
+    "//ui/chromeos/styles:cros_styles_views",
     "//ui/display",
     "//ui/gfx",
     "//ui/gfx/geometry",

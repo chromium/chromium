@@ -14,6 +14,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -41,23 +42,34 @@ struct IconParams {
 };
 
 SkColor ResolveColor(ColorId color_id, bool dark_background) {
+  // Changes to this should be reflected in
+  // ui/file_manager/file_manager/foreground/css/file_types.css.
   switch (color_id) {
     case ColorId::kBlue:
-      return dark_background ? gfx::kGoogleBlue300 : gfx::kGoogleBlue500;
+      return cros_styles::ResolveColor(cros_styles::ColorName::kIconColorBlue,
+                                       dark_background,
+                                       /*use_debug_colors=*/false);
     case ColorId::kGreen:
-      return dark_background ? gfx::kGoogleGreen300 : gfx::kGoogleGreen500;
+      return cros_styles::ResolveColor(cros_styles::ColorName::kIconColorGreen,
+                                       dark_background,
+                                       /*use_debug_colors=*/false);
     case ColorId::kGrey:
-      return dark_background ? gfx::kGoogleGrey200 : gfx::kGoogleGrey700;
+      return cros_styles::ResolveColor(
+          cros_styles::ColorName::kIconColorPrimary, dark_background,
+          /*use_debug_colors=*/false);
     case ColorId::kRed:
-      return dark_background ? gfx::kGoogleRed300 : gfx::kGoogleRed500;
+      return cros_styles::ResolveColor(cros_styles::ColorName::kIconColorRed,
+                                       dark_background,
+                                       /*use_debug_colors=*/false);
     case ColorId::kYellow:
-      return dark_background ? gfx::kGoogleYellow300 : gfx::kGoogleYellow500;
-    case ColorId::kFiletypeGsite:
-      return SkColorSetRGB(0x79, 0x6E, 0xEF);
+      return cros_styles::ResolveColor(cros_styles::ColorName::kIconColorYellow,
+                                       dark_background,
+                                       /*use_debug_colors=*/false);
     case ColorId::kFiletypePpt:
       return SkColorSetRGB(0xFF, 0x76, 0x37);
+    case ColorId::kFiletypeGsite:
     case ColorId::kFiletypeSites:
-      return dark_background ? SkColorSetRGB(0xBC, 0xB7, 0xF7)
+      return dark_background ? SkColorSetRGB(0xBC, 0x9E, 0xFF)
                              : SkColorSetRGB(0x79, 0x6E, 0xEE);
   }
 }
