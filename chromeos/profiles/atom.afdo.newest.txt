@@ -1,1 +1,1 @@
-chromeos-chrome-amd64-atom-99-4844.23-1644843622-benchmark-99.0.4844.39-r1-redacted.afdo.xz
+chromeos-chrome-amd64-atom-99-4844.23-1644843622-benchmark-99.0.4844.40-r1-redacted.afdo.xz
