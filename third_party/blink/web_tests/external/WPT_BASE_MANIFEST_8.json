@@ -381,6 +381,20 @@
        {}
       ]
      ],
+     "firefox-bug1693616-001-crash.html": [
+      "5aadb70037c3b31abc7bd91ee1dc8dc412e0c3e1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "firefox-bug1693616-002-crash.html": [
+      "01f836c805d0909a96f759d0b1d4e404fe7509fb",
+      [
+       null,
+       {}
+      ]
+     ],
      "flexbox": {
       "fixed-flex-item-inside-abs-flex-in-multicol-crash.html": [
        "29ba56748f9a81615977ded26f4299fa744475f0",
@@ -137350,6 +137364,32 @@
        {}
       ]
      ],
+     "multicol-zero-height-002.html": [
+      "c5f432d9ae1da5f12a1d2b58a2127c40fbf7c4e9",
+      [
+       null,
+       [
+        [
+         "/css/css-multicol/multicol-zero-height-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "multicol-zero-height-003.html": [
+      "d685d49bf689748ee14443181e14cd44df6b530c",
+      [
+       null,
+       [
+        [
+         "/css/css-multicol/multicol-zero-height-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "named-page.html": [
       "c8b486f2806037042afcf1f24835f0cade507b82",
       [
@@ -262379,6 +262419,14 @@
      ],
      "multicol-zero-height-001-ref.xht": [
       "389ff0ad8d5a9a0f3323d290e195621551aef924",
+      []
+     ],
+     "multicol-zero-height-002-ref.html": [
+      "b5dd9c44b62a818eedd1c4e3c0d038d0d4c1dfaf",
+      []
+     ],
+     "multicol-zero-height-003-ref.html": [
+      "ac3dcf046d1e772df359902bc8fa9bc6c608d571",
       []
      ],
      "nested-with-too-tall-line-ref.html": [
