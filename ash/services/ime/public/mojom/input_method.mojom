@@ -389,7 +389,7 @@ interface InputMethod {
   // Called when there's a new focused input field.
   [MinVersion=9]
   OnFocus@6(InputFieldInfo input_field_info,
-            InputMethodSettings settings) => (bool success);
+            InputMethodSettings? settings) => (bool success);
 
   // Called when the input field loses focus.
   OnBlur@1();
