@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase_vector.h"

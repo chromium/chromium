@@ -4,6 +4,7 @@
 
 #include "content/web_test/browser/web_test_tts_platform.h"
 
+#include "base/callback.h"
 #include "content/public/browser/tts_controller.h"
 
 // static

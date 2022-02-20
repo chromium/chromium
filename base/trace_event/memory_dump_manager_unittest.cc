@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/at_exit.h"
 #include "base/allocator/buildflags.h"
 #include "base/base_switches.h"
 #include "base/bind.h"

@@ -5,6 +5,7 @@
 #include "components/sessions/ios/ios_serialized_navigation_driver.h"
 
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "ios/web/common/referrer_util.h"
 #include "ios/web/public/navigation/referrer.h"
