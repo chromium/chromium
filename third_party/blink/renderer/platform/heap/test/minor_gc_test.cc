@@ -216,4 +216,67 @@ TYPED_TEST(MinorGCTestForType,
   EXPECT_EQ(1u, MinorGCTest::DestructedObjects());
 }
 
+namespace {
+template <typename T>
+class InlinedObjectBase {
+  DISALLOW_NEW();
+
+ public:
+  InlinedObjectBase() : value_(MakeGarbageCollected<T>()) {}
+  virtual ~InlinedObjectBase() = default;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(value_); }
+
+  Member<T> GetValue() const { return value_; }
+
+ private:
+  int a = 0;
+  Member<T> value_;
+};
+
+template <typename T>
+class InlinedObject : public InlinedObjectBase<T> {};
+}  // namespace
+
+TYPED_TEST(MinorGCTestForType,
+           InterGenerationalPointerInPlaceBarrierForTraced) {
+  using Type = typename TestFixture::Type;
+  using ValueType = InlinedObject<Type>;
+  using CollectionType = HeapVector<ValueType>;
+
+  static constexpr size_t kCollectionSize = 1;
+
+  Persistent<CollectionType> old = MakeGarbageCollected<CollectionType>();
+  old->ReserveInitialCapacity(kCollectionSize);
+
+  void* raw_backing = old->data();
+  EXPECT_FALSE(IsOld(raw_backing));
+  MinorGCTest::CollectMinor();
+  EXPECT_TRUE(IsOld(raw_backing));
+
+  // Issue barrier (in HeapAllocator::NotifyNewElement).
+  old->push_back(ValueType{});
+
+  // Store the reference in a weak pointer to check liveness.
+  WeakPersistent<Type> object_is_live = old->at(0).GetValue();
+
+  // Check that the remembered set is visited.
+  MinorGCTest::CollectMinor();
+
+  // No objects destructed.
+  EXPECT_EQ(0u, MinorGCTest::DestructedObjects());
+  EXPECT_EQ(1u, old->size());
+
+  {
+    Type* member = old->at(0).GetValue();
+    EXPECT_TRUE(IsOld(member));
+    EXPECT_TRUE(object_is_live);
+  }
+
+  old.Release();
+  MinorGCTest::CollectMajor();
+  EXPECT_FALSE(object_is_live);
+  EXPECT_EQ(1u, MinorGCTest::DestructedObjects());
+}
+
 }  // namespace blink
