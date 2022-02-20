@@ -75,8 +75,9 @@ void FontManager::DidGetEnumerationResponse(
 
   if (mapping.size() > INT_MAX) {
     // Cannot deserialize without overflow.
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError, "Font data exceeds memory limit."));
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver->GetScriptState()->GetIsolate(), DOMExceptionCode::kDataError,
+        "Font data exceeds memory limit."));
     return;
   }
 
