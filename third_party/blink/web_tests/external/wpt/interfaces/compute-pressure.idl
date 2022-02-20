@@ -3,8 +3,10 @@
 // (https://github.com/w3c/webref)
 // Source: Compute Pressure API (https://wicg.github.io/compute-pressure/)
 
+enum PressureState { "nominal", "fair", "serious", "critical" };
+
 callback ComputePressureUpdateCallback = undefined (
-  ComputePressureEntry update,
+  sequence<ComputePressureEntry> entries,
   ComputePressureObserver observer
 );
 
@@ -13,20 +15,20 @@ enum ComputePressureTarget { "cpu" };
 [Exposed=Window]
 interface ComputePressureObserver {
   constructor(ComputePressureUpdateCallback callback);
+
   undefined observe(ComputePressureTarget target, optional ComputePressureObserverOptions options = {});
   undefined unobserve(ComputePressureTarget target);
   undefined disconnect();
   sequence<ComputePressureEntry> takeRecords();
+
   [SameObject] static readonly attribute FrozenArray<DOMString> supportedTargetTypes;
 };
 
 dictionary ComputePressureEntry {
-  double cpuSpeed;
-  double cpuUtilization;
+  PressureState state;
   ComputePressureObserverOptions options;
 };
 
 dictionary ComputePressureObserverOptions {
-  sequence<double> cpuUtilizationThresholds = [];
-  sequence<double> cpuSpeedThresholds = [];
+  // For future-proofing - expect things to be added here later.
 };

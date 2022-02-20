@@ -201,6 +201,7 @@ interface HTMLLinkElement : HTMLElement {
   [CEReactions] attribute USVString imageSrcset;
   [CEReactions] attribute DOMString imageSizes;
   [CEReactions] attribute DOMString referrerPolicy;
+  [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
   [CEReactions] attribute boolean disabled;
 
   // also has obsolete members
@@ -224,6 +225,7 @@ interface HTMLStyleElement : HTMLElement {
   [HTMLConstructor] constructor();
 
   [CEReactions] attribute DOMString media;
+  [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
 
   // also has obsolete members
 };
@@ -1221,6 +1223,7 @@ interface HTMLScriptElement : HTMLElement {
   [CEReactions] attribute DOMString text;
   [CEReactions] attribute DOMString integrity;
   [CEReactions] attribute DOMString referrerPolicy;
+  [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
 
   static boolean supports(DOMString type);
 

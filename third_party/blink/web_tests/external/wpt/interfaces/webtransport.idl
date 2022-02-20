@@ -54,6 +54,7 @@ dictionary WebTransportStats {
   DOMHighResTimeStamp timestamp;
   unsigned long long bytesSent;
   unsigned long long packetsSent;
+  unsigned long long packetsLost;
   unsigned long numOutgoingStreamsCreated;
   unsigned long numIncomingStreamsCreated;
   unsigned long long bytesReceived;
