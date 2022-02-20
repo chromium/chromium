@@ -10,6 +10,7 @@
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/public/android/content_jni_headers/NavigationHandle_jni.h"
 #include "content/public/browser/navigation_handle.h"
+#include "net/http/http_response_headers.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/navigation/impression_mojom_traits.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"

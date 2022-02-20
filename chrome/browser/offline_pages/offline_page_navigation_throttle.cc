@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/offline_pages/core/request_header/offline_page_header.h"
 #include "content/public/browser/navigation_handle.h"
+#include "net/http/http_request_headers.h"
 
 namespace offline_pages {
 
