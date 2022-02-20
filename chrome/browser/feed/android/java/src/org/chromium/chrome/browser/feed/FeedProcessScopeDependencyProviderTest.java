@@ -51,6 +51,10 @@ public final class FeedProcessScopeDependencyProviderTest {
             return true;
         }
         @Override
+        public boolean isUsageAndCrashReportingPermittedByPolicy() {
+            return true;
+        }
+        @Override
         public boolean isUsageAndCrashReportingPermittedByUser() {
             return true;
         }

@@ -150,6 +150,11 @@ public class CrashTestRule implements TestRule {
         }
 
         @Override
+        public boolean isUsageAndCrashReportingPermittedByPolicy() {
+            return true;
+        }
+
+        @Override
         public boolean isUsageAndCrashReportingPermittedByUser() {
             return mIsUserPermitted;
         }

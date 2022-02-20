@@ -73,6 +73,12 @@ public class ChromeMinidumpUploaderDelegate implements MinidumpUploaderDelegate 
             }
 
             @Override
+            public boolean isUsageAndCrashReportingPermittedByPolicy() {
+                return PrivacyPreferencesManagerImpl.getInstance()
+                        .isUsageAndCrashReportingPermittedByPolicy();
+            }
+
+            @Override
             public boolean isUsageAndCrashReportingPermittedByUser() {
                 return PrivacyPreferencesManagerImpl.getInstance()
                         .isUsageAndCrashReportingPermittedByUser();

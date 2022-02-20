@@ -102,6 +102,16 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     }
 
     @Override
+    public boolean isUsageAndCrashReportingPermittedByPolicy() {
+        // Skip if native browser process is not yet fully initialized.
+        if (!BrowserStartupController.getInstance().isNativeStarted()) {
+            return true;
+        }
+
+        return !PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy();
+    }
+
+    @Override
     public boolean isUsageAndCrashReportingPermittedByUser() {
         return mPrefs.readBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
     }
