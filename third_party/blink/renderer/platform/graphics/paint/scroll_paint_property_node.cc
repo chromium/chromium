@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 
+#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+
 namespace blink {
 
 namespace {
@@ -43,9 +45,10 @@ PaintPropertyChangeType ScrollPaintPropertyNode::State::ComputeChange(
 }
 
 const ScrollPaintPropertyNode& ScrollPaintPropertyNode::Root() {
-  DEFINE_STATIC_REF(
-      ScrollPaintPropertyNode, root,
-      base::AdoptRef(new ScrollPaintPropertyNode(nullptr, State{})));
+  DEFINE_STATIC_REF(ScrollPaintPropertyNode, root,
+                    base::AdoptRef(new ScrollPaintPropertyNode(
+                        nullptr, State{LayoutRect::InfiniteIntRect(),
+                                       LayoutRect::InfiniteIntRect().size()})));
   return *root;
 }
 

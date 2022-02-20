@@ -4365,17 +4365,25 @@ TEST_P(PaintArtifactCompositorTest, Non2dAxisAlignedRoundedRectClip) {
   artifact.Chunk(t0(), *clip, *opacity)
       .RectDrawing(gfx::Rect(50, 50, 50, 50), Color::kWhite);
   Update(artifact.Build());
-  ASSERT_EQ(1u, LayerCount());
+  ASSERT_EQ(2u, LayerCount());
 
   // We should create a synthetic effect node for the non-2d-axis-aligned clip.
-  int clip_id = LayerAt(0)->clip_tree_index();
+  auto* masked_layer = LayerAt(0);
+  EXPECT_TRUE(masked_layer->draws_content());
+  int clip_id = masked_layer->clip_tree_index();
   const auto* cc_clip = GetPropertyTrees().clip_tree().Node(clip_id);
-  int effect_id = LayerAt(0)->effect_tree_index();
+  int effect_id = masked_layer->effect_tree_index();
   const auto* cc_effect = GetPropertyTrees().effect_tree().Node(effect_id);
   EXPECT_OPACITY(effect_id, 1.f, kHasRenderSurface);
   EXPECT_OPACITY(cc_effect->parent_id, 0.5f, kNoRenderSurface);
   // cc_clip should be applied in the clip mask layer.
   EXPECT_EQ(cc_effect->clip_id, cc_clip->parent_id);
+
+  // The mask layer is needed because the masked layer draws content.
+  auto* mask_layer = LayerAt(1);
+  const auto* cc_mask =
+      GetPropertyTrees().effect_tree().Node(mask_layer->effect_tree_index());
+  EXPECT_EQ(SkBlendMode::kDstIn, cc_mask->blend_mode);
 }
 
 TEST_P(PaintArtifactCompositorTest,
