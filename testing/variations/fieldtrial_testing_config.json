@@ -1265,21 +1265,6 @@
             ]
         }
     ],
-    "BrowserJankinessProfiling": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BrowserJankinessProfiling"
-                    ]
-                }
-            ]
-        }
-    ],
     "BrowserSwitcherNoneIsGreylist": [
         {
             "platforms": [
