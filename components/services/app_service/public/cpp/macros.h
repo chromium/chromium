@@ -49,8 +49,8 @@ namespace apps {
   return DEFAULT_VALUE;
 
 #define IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(VALUE, DEFAULT_VALUE) \
-  return delta_ && (delta_->VALUE() != DEFAULT_VALUE) &&          \
-         (!state_ || (delta_->VALUE() != state_->VALUE()));
+  return delta_ && (delta_->VALUE != DEFAULT_VALUE) &&            \
+         (!state_ || (delta_->VALUE != state_->VALUE));
 
 #define GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(VALUE, CHECK, DEFAULT_RETURN) \
   if (delta_ && !delta_->VALUE.CHECK()) {                                     \
@@ -62,8 +62,14 @@ namespace apps {
   return DEFAULT_RETURN;
 
 #define IS_VALUE_CHANGED_WITH_CHECK(VALUE, CHECK) \
-  return delta_ && !delta_->VALUE().CHECK() &&    \
-         (!state_ || (delta_->VALUE() != state_->VALUE()));
+  return delta_ && !delta_->VALUE.CHECK() &&      \
+         (!state_ || (delta_->VALUE != state_->VALUE));
+
+#define MAYBE_RETURN_OPTIONAL_VALUE_CHANGED(VALUE)                        \
+  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) { \
+    return delta_ && delta_->VALUE.has_value() &&                         \
+           (!state_ || (delta_->VALUE != state_->VALUE));                 \
+  }
 
 }  // namespace apps
 

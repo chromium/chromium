@@ -128,19 +128,6 @@ apps::Permissions MakeFakePermissions() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-bool IsEqual(const apps::Permissions& source, const apps::Permissions& target) {
-  if (source.size() != target.size()) {
-    return false;
-  }
-
-  for (int i = 0; i < static_cast<int>(source.size()); i++) {
-    if (*source[i] != *target[i]) {
-      return false;
-    }
-  }
-  return true;
-}
-
 apps::IntentFilters CreateIntentFilters() {
   const GURL url(kUrl);
   apps::IntentFilters filters;

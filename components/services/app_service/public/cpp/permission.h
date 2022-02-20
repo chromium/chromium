@@ -80,6 +80,9 @@ using Permissions = std::vector<PermissionPtr>;
 COMPONENT_EXPORT(APP_TYPES)
 Permissions ClonePermissions(const Permissions& source_permissions);
 
+COMPONENT_EXPORT(APP_TYPES)
+bool IsEqual(const Permissions& source, const Permissions& target);
+
 // TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
 // AppService.
 COMPONENT_EXPORT(APP_TYPES)

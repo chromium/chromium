@@ -82,6 +82,19 @@ Permissions ClonePermissions(const Permissions& source_permissions) {
   return permissions;
 }
 
+bool IsEqual(const Permissions& source, const Permissions& target) {
+  if (source.size() != target.size()) {
+    return false;
+  }
+
+  for (int i = 0; i < static_cast<int>(source.size()); i++) {
+    if (*source[i] != *target[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 PermissionType ConvertMojomPermissionTypeToPermissionType(
     apps::mojom::PermissionType mojom_permission_type) {
   switch (mojom_permission_type) {

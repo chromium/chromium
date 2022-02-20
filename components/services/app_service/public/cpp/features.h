@@ -12,6 +12,7 @@ namespace apps {
 
 COMPONENT_EXPORT(APP_UPDATE)
 extern const base::Feature kAppServiceOnAppTypeInitializedWithoutMojom;
+COMPONENT_EXPORT(APP_UPDATE)
 extern const base::Feature kAppServiceOnAppUpdateWithoutMojom;
 
 }  // namespace apps

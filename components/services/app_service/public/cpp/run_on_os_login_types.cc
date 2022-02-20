@@ -17,6 +17,10 @@ bool RunOnOsLogin::operator==(const RunOnOsLogin& other) const {
   return login_mode == other.login_mode && is_managed == other.is_managed;
 }
 
+bool RunOnOsLogin::operator!=(const RunOnOsLogin& other) const {
+  return !(*this == other);
+}
+
 apps::mojom::RunOnOsLoginPtr ConvertRunOnOsLoginToMojomRunOnOsLogin(
     const RunOnOsLogin& run_on_os_login) {
   auto run_on_os_login_mojom = apps::mojom::RunOnOsLogin::New();

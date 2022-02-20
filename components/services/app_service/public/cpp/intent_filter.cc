@@ -101,6 +101,19 @@ IntentFilters CloneIntentFilters(const IntentFilters& intent_filters) {
   return ret;
 }
 
+bool IsEqual(const IntentFilters& source, const IntentFilters& target) {
+  if (source.size() != target.size()) {
+    return false;
+  }
+
+  for (int i = 0; i < static_cast<int>(source.size()); i++) {
+    if (*source[i] != *target[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 ConditionType ConvertMojomConditionTypeToConditionType(
     const apps::mojom::ConditionType& mojom_condition_type) {
   switch (mojom_condition_type) {

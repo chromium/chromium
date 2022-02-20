@@ -23,6 +23,7 @@ struct COMPONENT_EXPORT(ICON_TYPES) IconKey {
   IconKey& operator=(IconKey&&) = default;
 
   bool operator==(const IconKey& other) const;
+  bool operator!=(const IconKey& other) const;
 
   ~IconKey();
 

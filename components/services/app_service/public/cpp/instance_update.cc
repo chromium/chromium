@@ -130,7 +130,7 @@ const std::string& InstanceUpdate::LaunchId() const {
 }
 
 bool InstanceUpdate::LaunchIdChanged() const {
-  IS_VALUE_CHANGED_WITH_CHECK(LaunchId, empty);
+  IS_VALUE_CHANGED_WITH_CHECK(LaunchId(), empty);
 }
 
 InstanceState InstanceUpdate::State() const {
@@ -138,7 +138,7 @@ InstanceState InstanceUpdate::State() const {
 }
 
 bool InstanceUpdate::StateChanged() const {
-  IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(State, InstanceState::kUnknown);
+  IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(State(), InstanceState::kUnknown);
 }
 
 base::Time InstanceUpdate::LastUpdatedTime() const {
@@ -147,7 +147,7 @@ base::Time InstanceUpdate::LastUpdatedTime() const {
 }
 
 bool InstanceUpdate::LastUpdatedTimeChanged() const {
-  IS_VALUE_CHANGED_WITH_CHECK(LastUpdatedTime, is_null);
+  IS_VALUE_CHANGED_WITH_CHECK(LastUpdatedTime(), is_null);
 }
 
 content::BrowserContext* InstanceUpdate::BrowserContext() const {

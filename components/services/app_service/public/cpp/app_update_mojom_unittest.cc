@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -19,6 +21,11 @@ const char test_name_1[] = "Dread Pirate Roberts";
 
 class AppUpdateMojomTest : public testing::Test {
  protected:
+  AppUpdateMojomTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        apps::kAppServiceOnAppUpdateWithoutMojom);
+  }
+
   apps::mojom::Readiness expect_readiness_;
   apps::mojom::Readiness expect_prior_readiness_;
   bool expect_readiness_changed_;
@@ -978,6 +985,9 @@ class AppUpdateMojomTest : public testing::Test {
       CheckExpects(u);
     }
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AppUpdateMojomTest, StateIsNonNull) {
