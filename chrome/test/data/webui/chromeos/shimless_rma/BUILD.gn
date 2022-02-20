@@ -16,6 +16,7 @@ js_type_check("closure_compile") {
     ":critical_error_page_test",
     ":fake_shimless_rma_service_test",
     ":onboarding_choose_destination_page_test",
+    ":onboarding_choose_wipe_device_page_test",
     ":onboarding_choose_wp_disable_method_page_test",
     ":onboarding_enter_rsu_wp_disable_code_page_test",
     ":onboarding_landing_page_test",
@@ -102,6 +103,15 @@ js_library("onboarding_choose_destination_page_test") {
     "//ash/webui/shimless_rma/resources:onboarding_choose_destination_page",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:promise_resolver.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("onboarding_choose_wipe_device_page_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/shimless_rma/resources:onboarding_choose_wipe_device_page",
+    "//ui/webui/resources/js:assert.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

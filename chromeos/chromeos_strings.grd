@@ -2700,6 +2700,22 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON" translateable="false" desc="Label for the button that attempts to cancel RMA and reboot the device.">
         Reboot
       </message>
+      <!-- Wipe device page -->
+      <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_TITLE" translateable="false" desc="Title for the page where the user chooses whether to erase the data or keep/preserve the data on the device.">
+        Preserve Device Data
+      </message>
+      <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_REMOVE_DATA_OPTION" translateable="false" desc="Label for the option to wipe/erase the data on the device.">
+        Wipe device
+      </message>
+      <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_REMOVE_DATA_OPTION_DESCRIPTION" translateable="false" desc="Description for the option to wipe/erase the data on the device.">
+        Remove the data
+      </message>
+      <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_PRESERVE_DATA_OPTION" translateable="false" desc="Label for the option to preserve/save the data on the device.">
+        Don't wipe the device
+      </message>
+      <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_PRESERVE_DATA_OPTION_DESCRIPTION" translateable="false" desc="Description for the option to preserve/save the data on the device.">
+        Preserve the data
+      </message>
 
       <!-- Peripheral Firmware Update -->
       <message name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">

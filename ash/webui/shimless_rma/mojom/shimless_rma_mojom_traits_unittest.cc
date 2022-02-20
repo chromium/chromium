@@ -68,6 +68,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
       {{mojom::State::kWelcomeScreen, rmad::RmadState::kWelcome},
        {mojom::State::kSelectComponents, rmad::RmadState::kComponentsRepair},
        {mojom::State::kChooseDestination, rmad::RmadState::kDeviceDestination},
+       {mojom::State::kChooseWipeDevice, rmad::RmadState::kWipeSelection},
        {mojom::State::kChooseWriteProtectDisableMethod,
         rmad::RmadState::kWpDisableMethod},
        {mojom::State::kEnterRSUWPDisableCode, rmad::RmadState::kWpDisableRsu},

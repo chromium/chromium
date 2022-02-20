@@ -77,6 +77,8 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
       return MojomRmaState::kSelectComponents;
     case ProtoRmadState::kDeviceDestination:
       return MojomRmaState::kChooseDestination;
+    case ProtoRmadState::kWipeSelection:
+      return MojomRmaState::kChooseWipeDevice;
     case ProtoRmadState::kWpDisableMethod:
       return MojomRmaState::kChooseWriteProtectDisableMethod;
     case ProtoRmadState::kWpDisableRsu:

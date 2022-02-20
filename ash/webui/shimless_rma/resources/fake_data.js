@@ -39,6 +39,12 @@ export const fakeStates = [
     error: RmadErrorCode.kOk
   },
   {
+    state: State.kChooseWipeDevice,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
     state: State.kChooseWriteProtectDisableMethod,
     canCancel: true,
     canGoBack: true,

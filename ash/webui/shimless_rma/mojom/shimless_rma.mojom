@@ -51,6 +51,7 @@ enum State {
   kUpdateOs,
   kSelectComponents,
   kChooseDestination,
+  kChooseWipeDevice,
   kChooseWriteProtectDisableMethod,
   kEnterRSUWPDisableCode,
   kWaitForManualWPDisable,

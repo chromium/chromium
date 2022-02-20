@@ -8,6 +8,7 @@ import {allInputsDisabledTest} from './all_inputs_disabled_test.js';
 import {criticalErrorPageTest} from './critical_error_page_test.js';
 import {fakeShimlessRmaServiceTestSuite} from './fake_shimless_rma_service_test.js';
 import {onboardingChooseDestinationPageTest} from './onboarding_choose_destination_page_test.js';
+import {onboardingChooseWipeDevicePageTest} from './onboarding_choose_wipe_device_page_test.js';
 import {onboardingChooseWpDisableMethodPageTest} from './onboarding_choose_wp_disable_method_page_test.js';
 import {onboardingEnterRsuWpDisableCodePageTest} from './onboarding_enter_rsu_wp_disable_code_page_test.js';
 import {onboardingLandingPageTest} from './onboarding_landing_page_test.js';
@@ -41,6 +42,8 @@ runSuite('CriticalErrorPageTest', criticalErrorPageTest);
 runSuite('FakeShimlessRmaServiceTestSuite', fakeShimlessRmaServiceTestSuite);
 runSuite(
     'OnboardingChooseDestinationPageTest', onboardingChooseDestinationPageTest);
+runSuite(
+    'OnboardingChooseWipeDevicePageTest', onboardingChooseWipeDevicePageTest);
 runSuite(
     'OnboardingChooseWpDisableMethodPageTest',
     onboardingChooseWpDisableMethodPageTest);

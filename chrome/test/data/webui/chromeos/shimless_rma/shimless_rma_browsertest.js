@@ -43,6 +43,7 @@ const debug_suites_list = [
   'CriticalErrorPageTest',
   'FakeShimlessRmaServiceTestSuite',
   'OnboardingChooseDestinationPageTest',
+  'OnboardingChooseWipeDevicePageTest',
   'OnboardingChooseWpDisableMethodPageTest',
   'OnboardingEnterRsuWpDisableCodePageTest',
   'OnboardingLandingPageTest',

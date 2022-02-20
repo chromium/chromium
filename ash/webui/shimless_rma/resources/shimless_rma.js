@@ -4,6 +4,7 @@
 
 import './critical_error_page.js';
 import './onboarding_choose_destination_page.js';
+import './onboarding_choose_wipe_device_page.js';
 import './onboarding_choose_wp_disable_method_page.js';
 import './onboarding_enter_rsu_wp_disable_code_page.js';
 import './onboarding_landing_page.js';
@@ -99,6 +100,13 @@ export const StateComponentMapping = {
   },
   [State.kChooseDestination]: {
     componentIs: 'onboarding-choose-destination-page',
+    requiresReloadWhenShown: false,
+    buttonNext: ButtonState.DISABLED,
+    buttonCancel: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
+  },
+  [State.kChooseWipeDevice]: {
+    componentIs: 'onboarding-choose-wipe-device-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonCancel: ButtonState.HIDDEN,

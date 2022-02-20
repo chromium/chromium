@@ -22,6 +22,7 @@ polymer_element_files = [
   "critical_error_page.js",
   "onboarding_choose_destination_page.js",
   "onboarding_choose_wp_disable_method_page.js",
+  "onboarding_choose_wipe_device_page.js",
   "onboarding_enter_rsu_wp_disable_code_page.js",
   "onboarding_landing_page.js",
   "onboarding_network_page.js",
@@ -85,6 +86,7 @@ js_type_check("closure_compile_module") {
     ":fake_shimless_rma_service",
     ":mojo_interface_provider",
     ":onboarding_choose_destination_page",
+    ":onboarding_choose_wipe_device_page",
     ":onboarding_choose_wp_disable_method_page",
     ":onboarding_enter_rsu_wp_disable_code_page",
     ":onboarding_landing_page",
@@ -115,6 +117,7 @@ js_library("shimless_rma") {
     ":critical_error_page",
     ":mojo_interface_provider",
     ":onboarding_choose_destination_page",
+    ":onboarding_choose_wipe_device_page",
     ":onboarding_choose_wp_disable_method_page",
     ":onboarding_enter_rsu_wp_disable_code_page",
     ":onboarding_landing_page",
@@ -204,6 +207,15 @@ js_library("onboarding_choose_destination_page") {
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("onboarding_choose_wipe_device_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 

@@ -303,6 +303,16 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"criticalErrorMessageText", IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE},
       {"criticalErrorExitText", IDS_SHIMLESS_RMA_CRITICAL_EXIT_BUTTON},
       {"criticalErrorRebootText", IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON},
+      // Wipe device page
+      {"wipeDeviceTitleText", IDS_SHIMLESS_RMA_WIPE_DEVICE_TITLE},
+      {"wipeDeviceRemoveDataLabel",
+       IDS_SHIMLESS_RMA_WIPE_DEVICE_REMOVE_DATA_OPTION},
+      {"wipeDeviceRemoveDataDescription",
+       IDS_SHIMLESS_RMA_WIPE_DEVICE_REMOVE_DATA_OPTION_DESCRIPTION},
+      {"wipeDevicePreserveDataLabel",
+       IDS_SHIMLESS_RMA_WIPE_DEVICE_PRESERVE_DATA_OPTION},
+      {"wipeDevicePreserveDataDescription",
+       IDS_SHIMLESS_RMA_WIPE_DEVICE_PRESERVE_DATA_OPTION_DESCRIPTION},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
