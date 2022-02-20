@@ -22,15 +22,14 @@
 namespace unzip {
 namespace {
 
-base::FilePath GetArchivePath(
-    const base::FilePath::StringPieceType archive_name) {
+base::FilePath GetArchivePath(const base::StringPiece archive_name) {
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
-  return path.Append(FILE_PATH_LITERAL("components"))
-      .Append(FILE_PATH_LITERAL("test"))
-      .Append(FILE_PATH_LITERAL("data"))
-      .Append(FILE_PATH_LITERAL("unzip_service"))
-      .Append(archive_name);
+  return path.AppendASCII("components")
+      .AppendASCII("test")
+      .AppendASCII("data")
+      .AppendASCII("unzip_service")
+      .AppendASCII(archive_name);
 }
 
 // Sets the number of files under |dir| in |file_count| and if
@@ -120,9 +119,17 @@ class UnzipTest : public testing::Test {
   mojo::ReceiverSet<mojom::Unzipper> receivers_;
 };
 
+TEST_F(UnzipTest, UnzipAbsentArchive) {
+  EXPECT_FALSE(DoUnzip(GetArchivePath("absent_archive.zip"), unzip_dir_));
+
+  // No files should have been extracted.
+  int64_t file_count = -1;
+  CountFiles(unzip_dir_, &file_count, /*some_files_empty=*/nullptr);
+  EXPECT_EQ(0, file_count);
+}
+
 TEST_F(UnzipTest, UnzipBadArchive) {
-  EXPECT_FALSE(DoUnzip(GetArchivePath(FILE_PATH_LITERAL("bad_archive.zip")),
-                       unzip_dir_));
+  EXPECT_FALSE(DoUnzip(GetArchivePath("bad_archive.zip"), unzip_dir_));
 
   // No files should have been extracted.
   int64_t file_count = -1;
@@ -131,8 +138,7 @@ TEST_F(UnzipTest, UnzipBadArchive) {
 }
 
 TEST_F(UnzipTest, UnzipGoodArchive) {
-  EXPECT_TRUE(DoUnzip(GetArchivePath(FILE_PATH_LITERAL("good_archive.zip")),
-                      unzip_dir_));
+  EXPECT_TRUE(DoUnzip(GetArchivePath("good_archive.zip"), unzip_dir_));
 
   // Sanity check that the right number of files have been extracted and that
   // they are not empty.
@@ -144,8 +150,7 @@ TEST_F(UnzipTest, UnzipGoodArchive) {
 }
 
 TEST_F(UnzipTest, UnzipWithFilter) {
-  EXPECT_TRUE(DoUnzip(GetArchivePath(FILE_PATH_LITERAL("good_archive.zip")),
-                      unzip_dir_,
+  EXPECT_TRUE(DoUnzip(GetArchivePath("good_archive.zip"), unzip_dir_,
                       base::BindRepeating([](const base::FilePath& path) {
                         return path.MatchesExtension(FILE_PATH_LITERAL(".txt"));
                       })));
@@ -159,45 +164,43 @@ TEST_F(UnzipTest, UnzipWithFilter) {
 }
 
 TEST_F(UnzipTest, DetectEncodingAbsentArchive) {
-  EXPECT_EQ(UNKNOWN_ENCODING, DoDetectEncoding(GetArchivePath(
-                                  FILE_PATH_LITERAL("absent_archive.zip"))));
+  EXPECT_EQ(UNKNOWN_ENCODING,
+            DoDetectEncoding(GetArchivePath("absent_archive.zip")));
 }
 
 TEST_F(UnzipTest, DetectEncodingBadArchive) {
-  EXPECT_EQ(
-      UNKNOWN_ENCODING,
-      DoDetectEncoding(GetArchivePath(FILE_PATH_LITERAL("bad_archive.zip"))));
+  EXPECT_EQ(UNKNOWN_ENCODING,
+            DoDetectEncoding(GetArchivePath("bad_archive.zip")));
 }
 
 TEST_F(UnzipTest, DetectEncodingAscii) {
-  EXPECT_EQ(
-      Encoding::ASCII_7BIT,
-      DoDetectEncoding(GetArchivePath(FILE_PATH_LITERAL("good_archive.zip"))));
+  EXPECT_EQ(Encoding::ASCII_7BIT,
+            DoDetectEncoding(GetArchivePath("good_archive.zip")));
 }
 
 // See https://crbug.com/903664
 TEST_F(UnzipTest, DetectEncodingUtf8) {
-  EXPECT_EQ(Encoding::UTF8, DoDetectEncoding(GetArchivePath(
-                                FILE_PATH_LITERAL("UTF8 (Bug 903664).zip"))));
+  EXPECT_EQ(Encoding::UTF8,
+            DoDetectEncoding(GetArchivePath("UTF8 (Bug 903664).zip")));
 }
 
 // See https://crbug.com/1287893
 TEST_F(UnzipTest, DetectEncodingSjis) {
-  for (const base::FilePath::StringPieceType name : {
-           FILE_PATH_LITERAL("SJIS 00.zip"),
-           FILE_PATH_LITERAL("SJIS 01.zip"),
-           FILE_PATH_LITERAL("SJIS 02.zip"),
-           FILE_PATH_LITERAL("SJIS 03.zip"),
-           FILE_PATH_LITERAL("SJIS 04.zip"),
-           FILE_PATH_LITERAL("SJIS 05.zip"),
-           FILE_PATH_LITERAL("SJIS 06.zip"),
-           FILE_PATH_LITERAL("SJIS 07.zip"),
-           FILE_PATH_LITERAL("SJIS 08.zip"),
-           FILE_PATH_LITERAL("SJIS 09.zip"),
-           FILE_PATH_LITERAL("SJIS 10.zip"),
-           FILE_PATH_LITERAL("SJIS 11.zip"),
-           FILE_PATH_LITERAL("SJIS 12.zip"),
-           FILE_PATH_LITERAL("SJIS 13.zip"),
+  for (const base::StringPiece name : {
+           "SJIS 00.zip",
+           "SJIS 01.zip",
+           "SJIS 02.zip",
+           "SJIS 03.zip",
+           "SJIS 04.zip",
+           "SJIS 05.zip",
+           "SJIS 06.zip",
+           "SJIS 07.zip",
+           "SJIS 08.zip",
+           "SJIS 09.zip",
+           "SJIS 10.zip",
+           "SJIS 11.zip",
+           "SJIS 12.zip",
+           "SJIS 13.zip",
        }) {
     EXPECT_EQ(Encoding::JAPANESE_SHIFT_JIS,
               DoDetectEncoding(GetArchivePath(name)));
