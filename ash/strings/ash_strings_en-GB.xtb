@@ -334,6 +334,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3105917916468784889">Take screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Remove suggestion</translation>
+<translation id="3120421559657122717">Shut down device?</translation>
 <translation id="3126069444801937830">Restart to update</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Mobile data</translation>
@@ -354,6 +355,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> moved from Desk <ph name="ACTIVE_DESK" /> to Desk <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">What can you do?</translation>
 <translation id="3269597722229482060">Right-click</translation>
+<translation id="3289544412142055976">Linux apps aren’t currently supported</translation>
 <translation id="3289674678944039601">Charging via adaptor</translation>
 <translation id="3290356915286466215">Unsecured</translation>
 <translation id="3294437725009624529">Guest</translation>
@@ -705,6 +707,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5400461572260843123">Quick Settings: press search + left to access the notification centre.</translation>
 <translation id="5426063383988017631">Settings menu closed</translation>
 <translation id="5428899915242071344">Start selecting</translation>
+<translation id="5429993543155113935">Incognito windows aren’t currently supported</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Colour</translation>
 <translation id="5433020815079095860">Audio input</translation>
@@ -820,6 +823,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6166852626429024716">Search your device, apps, settings, web…</translation>
 <translation id="6179832488876878285">You can pin your important files here. Open Files app to get started.</translation>
+<translation id="6220928844947387476">You can now record yourself and your screen at the same time</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">Peripheral performance may be limited</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -846,6 +850,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6431865393913628856">Screen record</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> event</translation>
+<translation id="6449483711453944360">Linux apps and incognito windows aren’t currently supported</translation>
 <translation id="6452181791372256707">Reject</translation>
 <translation id="6453179446719226835">Language has been changed</translation>
 <translation id="6459472438155181876">Extending screen to <ph name="DISPLAY_NAME" /></translation>
@@ -945,6 +950,7 @@ New install</translation>
 <translation id="7025533177575372252">Connect your <ph name="DEVICE_NAME" /> with your phone</translation>
 <translation id="7026338066939101231">Decrement</translation>
 <translation id="7029814467594812963">Exit session</translation>
+<translation id="7032161822340700104">Only six templates allowed. Remove a template to save a new one.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Collapse status area</translation>
 <translation id="7045033600005038336">Replace template?</translation>
