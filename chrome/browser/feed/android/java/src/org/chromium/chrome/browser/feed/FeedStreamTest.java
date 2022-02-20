@@ -17,11 +17,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -59,16 +56,11 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.base.test.util.MetricsUtils;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
-import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
@@ -117,11 +109,9 @@ public class FeedStreamTest {
     @Mock
     private SnackbarManager mSnackbarManager;
     @Mock
-    private NativePageNavigationDelegate mPageNavigationDelegate;
-    @Mock
     private BottomSheetController mBottomSheetController;
     @Mock
-    private HelpAndFeedbackLauncherImpl mHelpAndFeedbackLauncherImpl;
+    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     @Mock
     private WindowAndroid mWindowAndroid;
     @Mock
@@ -140,8 +130,6 @@ public class FeedStreamTest {
     private RecyclerView.Adapter mAdapter;
     @Mock
     private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
-    @Mock
-    private BookmarkBridge mBookmarkBridge;
     @Mock
     private FeedActionDelegate mActionDelegate;
 
@@ -188,14 +176,6 @@ public class FeedStreamTest {
         mContentManager = new NtpListContentManager();
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
-        doAnswer((invocation) -> {
-            ((Runnable) invocation.getArgument(0)).run();
-            return null;
-        })
-                .when(mBookmarkBridge)
-                .finishLoadingBookmarkModel(any());
-        doReturn(true).when(mBookmarkBridge).isBookmarkModelLoaded();
 
         setFeatureOverrides(true);
 
@@ -528,9 +508,6 @@ public class FeedStreamTest {
     @Test
     @SmallTest
     public void testNavigateIncognitoTab() {
-        MetricsUtils.HistogramDelta actionOpenedSnippetDelta = new MetricsUtils.HistogramDelta(
-                "NewTabPage.ActionAndroid2", NewTabPageUma.ACTION_OPENED_SNIPPET);
-        when(mPageNavigationDelegate.openUrl(anyInt(), any())).thenReturn(new MockTab(1, false));
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
@@ -594,7 +571,7 @@ public class FeedStreamTest {
         productSpecificDataMap.put(FeedStream.FeedActionsHandlerImpl.XSURFACE_CARD_URL, testUrl);
         productSpecificDataMap.put(xSurfaceCardTitle, testTitle);
 
-        mFeedStream.setHelpAndFeedbackLauncherForTest(mHelpAndFeedbackLauncherImpl);
+        mFeedStream.setHelpAndFeedbackLauncherForTest(mHelpAndFeedbackLauncher);
         bindToView();
         FeedStream.FeedActionsHandlerImpl handler =
                 (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
@@ -604,7 +581,7 @@ public class FeedStreamTest {
         handler.sendFeedback(productSpecificDataMap);
 
         // Assert.
-        verify(mHelpAndFeedbackLauncherImpl)
+        verify(mHelpAndFeedbackLauncher)
                 .showFeedback(any(), any(), eq(testUrl),
                         eq(FeedStream.FeedActionsHandlerImpl.FEEDBACK_REPORT_TYPE),
                         mMapCaptor.capture());
