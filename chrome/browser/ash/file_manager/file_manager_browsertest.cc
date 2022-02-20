@@ -1421,6 +1421,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesTooltip, /* files_tooltip.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("filesTooltipFocus"),
+                      TestCase("filesTooltipLabelChange"),
                       TestCase("filesTooltipMouseOver"),
                       TestCase("filesTooltipClickHides"),
                       TestCase("filesTooltipHidesOnWindowResize"),

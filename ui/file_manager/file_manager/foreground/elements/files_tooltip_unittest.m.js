@@ -121,6 +121,28 @@ export function testFocus(callback) {
       callback);
 }
 
+export function testFocusWithLabelChange(callback) {
+  chocolateButton.focus();
+
+  return reportPromise(
+      waitForMutation(tooltip)
+          .then(() => {
+            const label = tooltip.shadowRoot.querySelector('#label');
+            assertEquals('Chocolate!', label.textContent.trim());
+            // Change the button's aria-label attribute and the tooltip should
+            // also update.
+            chocolateButton.setAttribute('aria-label', 'New chocolate!');
+
+            tooltip.updateTooltipText(chocolateButton);
+            return waitForMutation(tooltip);
+          })
+          .then(() => {
+            const label = tooltip.shadowRoot.querySelector('#label');
+            assertEquals('New chocolate!', label.textContent.trim());
+          }),
+      callback);
+}
+
 export function testHover(callback) {
   chocolateButton.dispatchEvent(new MouseEvent('mouseover'));
 

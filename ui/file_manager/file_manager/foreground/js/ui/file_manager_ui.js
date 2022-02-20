@@ -182,6 +182,13 @@ export class FileManagerUI {
     this.toolbar = queryRequiredElement('.dialog-header', this.element);
 
     /**
+     * The tooltip element.
+     * @type {!FilesTooltip}
+     */
+    this.filesTooltip =
+        assertInstanceof(document.querySelector('files-tooltip'), FilesTooltip);
+
+    /**
      * The actionbar which contains buttons to perform actions on selected
      * file(s).
      * @type {!HTMLElement}
@@ -545,11 +552,9 @@ export class FileManagerUI {
    * Attaches files tooltip.
    */
   attachFilesTooltip() {
-    const filesTooltip =
-        assertInstanceof(document.querySelector('files-tooltip'), FilesTooltip);
-    filesTooltip.addTargets(document.querySelectorAll('[has-tooltip]'));
+    this.filesTooltip.addTargets(document.querySelectorAll('[has-tooltip]'));
 
-    this.locationLine.filesTooltip = filesTooltip;
+    this.locationLine.filesTooltip = this.filesTooltip;
   }
 
   /**
