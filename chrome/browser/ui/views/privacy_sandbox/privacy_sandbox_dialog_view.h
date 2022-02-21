@@ -7,7 +7,7 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/view.h"
 
 class Browser;
 
@@ -17,7 +17,7 @@ class WebView;
 
 // Implements the PrivacySandboxDialog as a View. The view contains a WebView
 // into which is loaded a WebUI page which renders the actual dialog content.
-class PrivacySandboxDialogView : public views::BubbleDialogDelegateView {
+class PrivacySandboxDialogView : public views::View {
  public:
   METADATA_HEADER(PrivacySandboxDialogView);
   PrivacySandboxDialogView(Browser* browser,
