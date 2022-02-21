@@ -116,12 +116,10 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [pasteboard setValue:@"" forPasteboardType:UIPasteboardNameGeneral];
 
   [self closeAllTabs];
-  [NewTabPageAppInterface setUpService];
 }
 
 + (void)tearDown {
   [self closeAllTabs];
-  [NewTabPageAppInterface resetService];
 
   [super tearDown];
 }
@@ -144,6 +142,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 - (void)setUp {
   [super setUp];
+  [NewTabPageAppInterface setUpService];
   [NewTabPageAppInterface makeSuggestionsAvailable];
   [ChromeEarlGreyAppInterface
       setBoolValue:YES
