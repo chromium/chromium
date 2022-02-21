@@ -602,7 +602,7 @@ LocalFrameView* FindWebViewPluginContentFrameView(
 void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
     const LayoutObject& object,
     const NGPhysicalBoxFragment& fragment,
-    PrePaintTreeWalkContext& context) {
+    const PrePaintTreeWalkContext& parent_context) {
   // If this is a multicol container, the actual children are inside the flow
   // thread child of |object|.
   const auto* flow_thread =
@@ -611,20 +611,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
 
   DCHECK(fragment.IsFragmentationContextRoot());
 
-  const auto outer_fragmentainer = context.current_fragmentainer;
   absl::optional<wtf_size_t> inner_fragmentainer_idx;
-
-  context.current_fragmentainer.fragmentation_nesting_level++;
-  PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext*
-      containing_block_context = nullptr;
-  PhysicalOffset previous_oof_offset;
-  if (LIKELY(context.tree_builder_context)) {
-    containing_block_context =
-        &context.tree_builder_context->fragments[0].current;
-
-    previous_oof_offset =
-        containing_block_context->paint_offset_for_oof_in_fragmentainer;
-  }
 
   for (NGLink child : fragment.Children()) {
     const auto* box_fragment = To<NGPhysicalBoxFragment>(child.fragment);
@@ -644,20 +631,9 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
       // spanner. This is fixable, but it would require non-trivial amounts of
       // special-code for such a special case. If anyone complains, we can
       // revisit this decision.
-      if (box_fragment->IsColumnSpanAll()) {
-        context.current_fragmentainer = outer_fragmentainer;
-        // When an OOF has a spanner CB (or a CB inside a spanner) it will get
-        // laid out in the next outer fragmentainer (if there is one). Thus,
-        // any such OOF descendants should be adjusted by offset of the outer
-        // fragmentainer rather than the innermost fragmentainer.
-        if (containing_block_context) {
-          containing_block_context->paint_offset_for_oof_in_fragmentainer =
-              previous_oof_offset;
-        }
-      }
 
-      NGPrePaintInfo pre_paint_info = CreatePrePaintInfo(child, context);
-      Walk(*box_fragment->GetLayoutObject(), context, &pre_paint_info);
+      NGPrePaintInfo pre_paint_info = CreatePrePaintInfo(child, parent_context);
+      Walk(*box_fragment->GetLayoutObject(), parent_context, &pre_paint_info);
       continue;
     }
 
@@ -669,17 +645,29 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
     // and descend into children.
     DCHECK(box_fragment->IsFragmentainerBox());
 
+    PrePaintTreeWalkContext fragmentainer_context(
+        parent_context, NeedsTreeBuilderContextUpdate(object, parent_context));
+
+    fragmentainer_context.current_fragmentainer.fragmentation_nesting_level++;
+    fragmentainer_context.is_parent_first_for_node =
+        box_fragment->IsFirstForNode();
+
     // Always keep track of the current innermost fragmentainer we're handling,
     // as they may serve as containing blocks for OOF descendants.
-    context.current_fragmentainer.fragment = box_fragment;
+    fragmentainer_context.current_fragmentainer.fragment = box_fragment;
 
     // Set up |inner_fragmentainer_idx| lazily, as it's O(n) (n == number of
     // multicol container fragments).
     if (!inner_fragmentainer_idx)
       inner_fragmentainer_idx = PreviousInnerFragmentainerIndex(fragment);
-    context.current_fragmentainer.fragmentainer_idx = *inner_fragmentainer_idx;
+    fragmentainer_context.current_fragmentainer.fragmentainer_idx =
+        *inner_fragmentainer_idx;
 
-    if (containing_block_context) {
+    PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext*
+        containing_block_context = nullptr;
+    if (LIKELY(fragmentainer_context.tree_builder_context)) {
+      containing_block_context =
+          &fragmentainer_context.tree_builder_context->fragments[0].current;
       containing_block_context->paint_offset += child.offset;
 
       const PhysicalOffset paint_offset =
@@ -692,7 +680,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
           paint_offset;
     }
 
-    WalkChildren(actual_parent, box_fragment, context);
+    WalkChildren(actual_parent, box_fragment, fragmentainer_context);
 
     if (containing_block_context)
       containing_block_context->paint_offset -= child.offset;
@@ -725,7 +713,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
     for (const auto& fixedpos : copy) {
       DCHECK(!walked_fixedpos_.Contains(fixedpos));
       walked_fixedpos_.insert(fixedpos);
-      Walk(*fixedpos, context, /* pre_paint_info */ nullptr);
+      Walk(*fixedpos, parent_context, /* pre_paint_info */ nullptr);
     }
   }
 }
@@ -733,7 +721,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
 void PrePaintTreeWalk::WalkLayoutObjectChildren(
     const LayoutObject& parent_object,
     const NGPhysicalBoxFragment* parent_fragment,
-    PrePaintTreeWalkContext& context) {
+    const PrePaintTreeWalkContext& context) {
   absl::optional<NGInlineCursor> inline_cursor;
   for (const LayoutObject* child = parent_object.SlowFirstChild(); child;
        // Stay on the |child| while iterating fragments of |child|.

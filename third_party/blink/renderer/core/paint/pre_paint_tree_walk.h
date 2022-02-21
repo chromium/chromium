@@ -185,10 +185,10 @@ class CORE_EXPORT PrePaintTreeWalk final {
 
   void WalkFragmentationContextRootChildren(const LayoutObject&,
                                             const NGPhysicalBoxFragment&,
-                                            PrePaintTreeWalkContext&);
+                                            const PrePaintTreeWalkContext&);
   void WalkLayoutObjectChildren(const LayoutObject&,
                                 const NGPhysicalBoxFragment*,
-                                PrePaintTreeWalkContext&);
+                                const PrePaintTreeWalkContext&);
   void WalkChildren(const LayoutObject&,
                     const NGPhysicalBoxFragment*,
                     PrePaintTreeWalkContext&,
