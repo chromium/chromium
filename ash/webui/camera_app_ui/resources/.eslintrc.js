@@ -372,37 +372,9 @@ module.exports = {
     'ecmaVersion': 2020,
     'sourceType': 'module',
   },
-  'extends': 'eslint:recommended',
-  'globals': {
-    'arc': 'readable',
-    'chromeosCamera': 'readable',
-    'cros': 'readable',
-    'trustedTypes': 'readable',
-    'BarcodeDetector': 'readable',
-    'FileSystemFileHandle': 'readable',
-    'FileSystemDirectoryHandle': 'readable',
-    'IdleDetector': 'readable',
-
-    // TODO(b/172879638): Remove this once we have
-    // https://github.com/sindresorhus/globals/pull/171 merged in ESLint and
-    // Chromium.
-    'OffscreenCanvasRenderingContext2D': 'readable',
-
-    // TODO(b/168894537): Remove this once we have
-    // https://github.com/sindresorhus/globals/pull/175 merged in ESlint and
-    // Chromium.
-    'OverconstrainedError': 'readable',
-
-    // TODO(b/190689433): Remove this once we have
-    // https://github.com/sindresorhus/globals/pull/178 merged in ESlint and
-    // Chromium.
-    'CSSNumericValue': 'readable',
-    'CSSRotate': 'readable',
-    'CSSScale': 'readable',
-    'CSSTransformValue': 'readable',
-    'CSSTranslate': 'readable',
-    'CSSUnitValue': 'readable',
-  },
+  'extends': ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  'parser': `${typescriptEslintDir}/parser`,
+  'plugins': ['@typescript-eslint'],
   // Generally, the rules should be compatible to both bundled and the newest
   // stable eslint, so it's easier to upgrade and develop without the full
   // Chromium tree.
@@ -426,54 +398,52 @@ module.exports = {
         method: 'both',
       },
     ],
+
+    // This doesn't work well with TypeScript files. The alternate
+    // @typescript-eslint/no-unused-vars that works with TypeScript files is
+    // enabled in @typescript-eslint/recommended.
+    'no-unused-vars': 'off',
+
+    // TODO(pihsun): We should use eslint-plugin-jsdoc for jsdoc in
+    // TypeScript, since the Google TypeScript style guide states that
+    // redundant type or trivial arguments for params and returns can be
+    // omitted in jsdoc for TypeScript, but eslint builtin valid-jsdoc rule
+    // doesn't have fine-grained control to disable those checks (and is also
+    // deprecated).
+    // (TypeScript doesn't yet support getting types from jsdoc,
+    // https://github.com/microsoft/TypeScript/issues/42048)
+    'valid-jsdoc': 'off',
+
+    // TODO(pihsun): Currently there are many existing js files that have
+    // jsdoc which only contains type information and nothing else, which is
+    // all removed while converting to ts. Disabling the requirement for
+    // jsdoc for now. Note that the style guide suggest to document all
+    // properties and methods whose purpose is not immediately obvious from
+    // their name, which means that we should be able to skip jsdoc for some
+    // of the constructors and trivial structs.
+    'require-jsdoc': 'off',
+
+    // go/tsstyle states that no variable should have _ as prefix/suffix, but
+    // there's no better alternative for unused function parameters. Since the
+    // convention for noUnusedParameters for TypeScript is also leading
+    // underscore, we use the same ignore pattern here.  See b/173108529 and
+    // g/typescript-style/uOfKsoxxWEY/HCgzNfAFAwAJ for other discussions.
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        varsIgnorePattern: '^_',
+        argsIgnorePattern: '^_',
+      },
+    ],
+
+    // Disallow parseInt (go/tsstyle#type-coercion)
+    'no-restricted-syntax': [
+      'error',
+      {
+        'selector': 'CallExpression[callee.name="parseInt"]',
+        'message': 'parseInt are not allowed, use Number() instead. ' +
+            '(go/tsstyle#type-coercion)',
+      },
+    ],
   }),
-  'overrides': [{
-    'files': ['**/*.ts'],
-    'plugins': ['@typescript-eslint'],
-    'parser': `${typescriptEslintDir}/parser`,
-    'extends': ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
-    'rules': {
-      // TODO(pihsun): We should use eslint-plugin-jsdoc for jsdoc in
-      // TypeScript, since the Google TypeScript style guide states that
-      // redundant type or trivial arguments for params and returns can be
-      // omitted in jsdoc for TypeScript, but eslint builtin valid-jsdoc rule
-      // doesn't have fine-grained control to disable those checks (and is also
-      // deprecated).
-      // (TypeScript doesn't yet support getting types from jsdoc,
-      // https://github.com/microsoft/TypeScript/issues/42048)
-      'valid-jsdoc': 'off',
-
-      // TODO(pihsun): Currently there are many existing js files that have
-      // jsdoc which only contains type information and nothing else, which is
-      // all removed while converting to ts. Disabling the requirement for
-      // jsdoc for now. Note that the style guide suggest to document all
-      // properties and methods whose purpose is not immediately obvious from
-      // their name, which means that we should be able to skip jsdoc for some
-      // of the constructors and trivial structs.
-      'require-jsdoc': 'off',
-
-      // go/tsstyle states that no variable should have _ as prefix/suffix, but
-      // there's no better alternative for unused function parameters. Since
-      // the convention for noUnusedParameters for TypeScript is also leading
-      // underscore, we use the same ignore pattern here.
-      // See b/173108529 and g/typescript-style/uOfKsoxxWEY/HCgzNfAFAwAJ for
-      // other discussions.
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          varsIgnorePattern: '^_',
-          argsIgnorePattern: '^_',
-        },
-      ],
-      // Disallow parseInt (go/tsstyle#type-coercion)
-      'no-restricted-syntax': [
-        'error',
-        {
-          'selector': 'CallExpression[callee.name="parseInt"]',
-          'message': 'parseInt are not allowed, use Number() instead. ' +
-              '(go/tsstyle#type-coercion)',
-        },
-      ],
-    },
-  }],
 };
