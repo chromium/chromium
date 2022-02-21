@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/autofill_assistant/starter_android.h"
+#include "chrome/browser/android/autofill_assistant/starter_delegate_android.h"
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -40,14 +40,17 @@ static jlong JNI_Starter_FromWebContents(
 
   auto dependencies = Dependencies::CreateFromJavaStaticDependencies(
       ScopedJavaGlobalRef<jobject>(env, jstatic_dependencies));
-  StarterAndroid::CreateForWebContents(web_contents, std::move(dependencies));
-  auto* tab_helper_android = StarterAndroid::FromWebContents(web_contents);
+  StarterDelegateAndroid::CreateForWebContents(web_contents,
+                                               std::move(dependencies));
+  auto* tab_helper_android =
+      StarterDelegateAndroid::FromWebContents(web_contents);
   return reinterpret_cast<intptr_t>(tab_helper_android);
 }
 
-StarterAndroid::StarterAndroid(content::WebContents* web_contents,
-                               std::unique_ptr<Dependencies> dependencies)
-    : content::WebContentsUserData<StarterAndroid>(*web_contents),
+StarterDelegateAndroid::StarterDelegateAndroid(
+    content::WebContents* web_contents,
+    std::unique_ptr<Dependencies> dependencies)
+    : content::WebContentsUserData<StarterDelegateAndroid>(*web_contents),
       dependencies_(std::move(dependencies)),
       website_login_manager_(std::make_unique<WebsiteLoginManagerImpl>(
           ChromePasswordManagerClient::FromWebContents(web_contents),
@@ -58,9 +61,10 @@ StarterAndroid::StarterAndroid(content::WebContents* web_contents,
       web_contents->GetBrowserContext());
 }
 
-StarterAndroid::~StarterAndroid() = default;
+StarterDelegateAndroid::~StarterDelegateAndroid() = default;
 
-void StarterAndroid::Attach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
+void StarterDelegateAndroid::Attach(JNIEnv* env,
+                                    const JavaParamRef<jobject>& jcaller) {
   Detach(env, jcaller);
   java_object_ = base::android::ScopedJavaGlobalRef<jobject>(jcaller);
 
@@ -70,14 +74,15 @@ void StarterAndroid::Attach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
       base::DefaultTickClock::GetInstance());
 }
 
-void StarterAndroid::Detach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
+void StarterDelegateAndroid::Detach(JNIEnv* env,
+                                    const JavaParamRef<jobject>& jcaller) {
   java_object_ = nullptr;
   java_dependencies_ = nullptr;
   starter_.reset();
 }
 
 std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
-StarterAndroid::CreateTriggerScriptUiDelegate() {
+StarterDelegateAndroid::CreateTriggerScriptUiDelegate() {
   CreateJavaDependenciesIfNecessary();
   return std::make_unique<TriggerScriptBridgeAndroid>(
       base::android::AttachCurrentThread(),
@@ -85,26 +90,26 @@ StarterAndroid::CreateTriggerScriptUiDelegate() {
 }
 
 std::unique_ptr<ServiceRequestSender>
-StarterAndroid::GetTriggerScriptRequestSenderToInject() {
+StarterDelegateAndroid::GetTriggerScriptRequestSenderToInject() {
   DCHECK(GetFeatureModuleInstalled());
   return ui_controller_android_utils::GetServiceRequestSenderToInject(
       base::android::AttachCurrentThread());
 }
 
-WebsiteLoginManager* StarterAndroid::GetWebsiteLoginManager() const {
+WebsiteLoginManager* StarterDelegateAndroid::GetWebsiteLoginManager() const {
   return website_login_manager_.get();
 }
 
-version_info::Channel StarterAndroid::GetChannel() const {
+version_info::Channel StarterDelegateAndroid::GetChannel() const {
   return version_info::android::GetChannel();
 }
 
-bool StarterAndroid::GetFeatureModuleInstalled() const {
+bool StarterDelegateAndroid::GetFeatureModuleInstalled() const {
   return Java_Starter_getFeatureModuleInstalled(
       base::android::AttachCurrentThread());
 }
 
-void StarterAndroid::InstallFeatureModule(
+void StarterDelegateAndroid::InstallFeatureModule(
     bool show_ui,
     base::OnceCallback<void(Metrics::FeatureModuleInstallation result)>
         callback) {
@@ -114,7 +119,7 @@ void StarterAndroid::InstallFeatureModule(
                                     java_object_, show_ui);
 }
 
-void StarterAndroid::OnFeatureModuleInstalled(
+void StarterDelegateAndroid::OnFeatureModuleInstalled(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     jint result) {
@@ -123,7 +128,7 @@ void StarterAndroid::OnFeatureModuleInstalled(
       .Run(static_cast<Metrics::FeatureModuleInstallation>(result));
 }
 
-void StarterAndroid::OnInteractabilityChanged(
+void StarterDelegateAndroid::OnInteractabilityChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     jboolean is_interactable) {
@@ -134,7 +139,7 @@ void StarterAndroid::OnInteractabilityChanged(
   starter_->OnTabInteractabilityChanged(is_interactable);
 }
 
-void StarterAndroid::OnActivityAttachmentChanged(
+void StarterDelegateAndroid::OnActivityAttachmentChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   java_dependencies_ = nullptr;
@@ -147,26 +152,26 @@ void StarterAndroid::OnActivityAttachmentChanged(
   starter_->OnDependenciesInvalidated();
 }
 
-bool StarterAndroid::GetIsFirstTimeUser() const {
+bool StarterDelegateAndroid::GetIsFirstTimeUser() const {
   return Java_Starter_getIsFirstTimeUser(base::android::AttachCurrentThread());
 }
 
-void StarterAndroid::SetIsFirstTimeUser(bool first_time_user) {
+void StarterDelegateAndroid::SetIsFirstTimeUser(bool first_time_user) {
   Java_Starter_setIsFirstTimeUser(base::android::AttachCurrentThread(),
                                   first_time_user);
 }
 
-bool StarterAndroid::GetOnboardingAccepted() const {
+bool StarterDelegateAndroid::GetOnboardingAccepted() const {
   return Java_Starter_getOnboardingAccepted(
       base::android::AttachCurrentThread());
 }
 
-void StarterAndroid::SetOnboardingAccepted(bool accepted) {
+void StarterDelegateAndroid::SetOnboardingAccepted(bool accepted) {
   Java_Starter_setOnboardingAccepted(base::android::AttachCurrentThread(),
                                      accepted);
 }
 
-void StarterAndroid::ShowOnboarding(
+void StarterDelegateAndroid::ShowOnboarding(
     bool use_dialog_onboarding,
     const TriggerContext& trigger_context,
     base::OnceCallback<void(bool shown, OnboardingResult result)> callback) {
@@ -193,7 +198,7 @@ void StarterAndroid::ShowOnboarding(
                               base::android::ToJavaArrayOfStrings(env, values));
 }
 
-void StarterAndroid::HideOnboarding() {
+void StarterDelegateAndroid::HideOnboarding() {
   if (!java_dependencies_) {
     return;
   }
@@ -201,7 +206,7 @@ void StarterAndroid::HideOnboarding() {
                               java_object_, java_onboarding_helper_);
 }
 
-void StarterAndroid::OnOnboardingFinished(
+void StarterDelegateAndroid::OnOnboardingFinished(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     jboolean shown,
@@ -217,17 +222,17 @@ void StarterAndroid::OnOnboardingFinished(
       .Run(shown, static_cast<OnboardingResult>(result));
 }
 
-bool StarterAndroid::GetProactiveHelpSettingEnabled() const {
+bool StarterDelegateAndroid::GetProactiveHelpSettingEnabled() const {
   return Java_Starter_getProactiveHelpSettingEnabled(
       base::android::AttachCurrentThread());
 }
 
-void StarterAndroid::SetProactiveHelpSettingEnabled(bool enabled) {
+void StarterDelegateAndroid::SetProactiveHelpSettingEnabled(bool enabled) {
   Java_Starter_setProactiveHelpSettingEnabled(
       base::android::AttachCurrentThread(), enabled);
 }
 
-bool StarterAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
+bool StarterDelegateAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
   if (!java_object_) {
     // Failsafe, should never happen.
     NOTREACHED();
@@ -238,11 +243,11 @@ bool StarterAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
       base::android::AttachCurrentThread(), java_object_);
 }
 
-bool StarterAndroid::GetIsCustomTab() const {
+bool StarterDelegateAndroid::GetIsCustomTab() const {
   return dependencies_->IsCustomTab(GetWebContents());
 }
 
-bool StarterAndroid::GetIsTabCreatedByGSA() const {
+bool StarterDelegateAndroid::GetIsTabCreatedByGSA() const {
   if (!java_object_) {
     // Failsafe, should never happen.
     NOTREACHED();
@@ -252,7 +257,7 @@ bool StarterAndroid::GetIsTabCreatedByGSA() const {
                                            java_object_);
 }
 
-void StarterAndroid::CreateJavaDependenciesIfNecessary() {
+void StarterDelegateAndroid::CreateJavaDependenciesIfNecessary() {
   if (java_dependencies_) {
     return;
   }
@@ -270,7 +275,7 @@ void StarterAndroid::CreateJavaDependenciesIfNecessary() {
   java_onboarding_helper_ = *(++array.begin());
 }
 
-void StarterAndroid::Start(
+void StarterDelegateAndroid::Start(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaRef<jstring>& jexperiment_ids,
@@ -290,7 +295,7 @@ void StarterAndroid::Start(
   starter_->Start(std::move(trigger_context));
 }
 
-void StarterAndroid::StartRegularScript(
+void StarterDelegateAndroid::StartRegularScript(
     GURL url,
     std::unique_ptr<TriggerContext> trigger_context,
     const absl::optional<TriggerScriptProto>& trigger_script) {
@@ -308,7 +313,7 @@ void StarterAndroid::StartRegularScript(
       trigger_script);
 }
 
-bool StarterAndroid::IsRegularScriptRunning() const {
+bool StarterDelegateAndroid::IsRegularScriptRunning() const {
   const auto* client_android =
       ClientAndroid::FromWebContents(&GetWebContents());
   if (!client_android) {
@@ -317,7 +322,7 @@ bool StarterAndroid::IsRegularScriptRunning() const {
   return client_android->IsRunning();
 }
 
-bool StarterAndroid::IsRegularScriptVisible() const {
+bool StarterDelegateAndroid::IsRegularScriptVisible() const {
   const auto* client_android =
       ClientAndroid::FromWebContents(&GetWebContents());
   if (!client_android) {
@@ -327,10 +332,10 @@ bool StarterAndroid::IsRegularScriptVisible() const {
 }
 
 std::unique_ptr<AssistantFieldTrialUtil>
-StarterAndroid::CreateFieldTrialUtil() {
+StarterDelegateAndroid::CreateFieldTrialUtil() {
   return dependencies_->CreateFieldTrialUtil();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(StarterAndroid);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(StarterDelegateAndroid);
 
 }  // namespace autofill_assistant

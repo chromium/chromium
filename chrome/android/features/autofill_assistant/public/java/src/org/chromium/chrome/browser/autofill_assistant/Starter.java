@@ -323,15 +323,16 @@ public class Starter implements AssistantTabObserver, UserData {
     interface Natives {
         long fromWebContents(
                 WebContents webContents, AssistantStaticDependencies staticDependencies);
-        void attach(long nativeStarterAndroid, Starter caller);
-        void detach(long nativeStarterAndroid, Starter caller);
-        void onFeatureModuleInstalled(long nativeStarterAndroid, Starter caller, int result);
+        void attach(long nativeStarterDelegateAndroid, Starter caller);
+        void detach(long nativeStarterDelegateAndroid, Starter caller);
+        void onFeatureModuleInstalled(
+                long nativeStarterDelegateAndroid, Starter caller, int result);
         void onOnboardingFinished(
-                long nativeStarterAndroid, Starter caller, boolean shown, int result);
+                long nativeStarterDelegateAndroid, Starter caller, boolean shown, int result);
         void onInteractabilityChanged(
-                long nativeStarterAndroid, Starter caller, boolean isInteractable);
-        void onActivityAttachmentChanged(long nativeStarterAndroid, Starter caller);
-        void start(long nativeStarterAndroid, Starter caller, String experimentIds,
+                long nativeStarterDelegateAndroid, Starter caller, boolean isInteractable);
+        void onActivityAttachmentChanged(long nativeStarterDelegateAndroid, Starter caller);
+        void start(long nativeStarterDelegateAndroid, Starter caller, String experimentIds,
                 String[] parameterNames, String[] parameterValues,
                 String[] deviceOnlyParameterNames, String[] deviceOnlyParameterValues,
                 String initialUrl);

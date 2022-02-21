@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_STARTER_ANDROID_H_
-#define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_STARTER_ANDROID_H_
+#ifndef CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_STARTER_DELEGATE_ANDROID_H_
+#define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_STARTER_DELEGATE_ANDROID_H_
 
 #include <memory>
 
@@ -31,12 +31,13 @@ namespace autofill_assistant {
 // This class is intended to be instantiated from Java via |FromWebContents|, at
 // an appropriate time when the Java dependencies are ready and |Attach| will be
 // called shortly after creation.
-class StarterAndroid : public StarterPlatformDelegate,
-                       public content::WebContentsUserData<StarterAndroid> {
+class StarterDelegateAndroid
+    : public StarterPlatformDelegate,
+      public content::WebContentsUserData<StarterDelegateAndroid> {
  public:
-  ~StarterAndroid() override;
-  StarterAndroid(const StarterAndroid&) = delete;
-  StarterAndroid& operator=(const StarterAndroid&) = delete;
+  ~StarterDelegateAndroid() override;
+  StarterDelegateAndroid(const StarterDelegateAndroid&) = delete;
+  StarterDelegateAndroid& operator=(const StarterDelegateAndroid&) = delete;
 
   // Attaches this instance to the java-side instance. Only call this with a
   // |jcaller| which is ready to serve requests by native!
@@ -116,9 +117,9 @@ class StarterAndroid : public StarterPlatformDelegate,
       const base::android::JavaParamRef<jobject>& jcaller);
 
  private:
-  friend class content::WebContentsUserData<StarterAndroid>;
-  StarterAndroid(content::WebContents* web_contents,
-                 std::unique_ptr<Dependencies> dependencies);
+  friend class content::WebContentsUserData<StarterDelegateAndroid>;
+  StarterDelegateAndroid(content::WebContents* web_contents,
+                         std::unique_ptr<Dependencies> dependencies);
 
   void CreateJavaDependenciesIfNecessary();
 
@@ -136,9 +137,9 @@ class StarterAndroid : public StarterPlatformDelegate,
       feature_module_installation_finished_callback_;
   base::OnceCallback<void(bool shown, OnboardingResult result)>
       onboarding_finished_callback_;
-  base::WeakPtrFactory<StarterAndroid> weak_ptr_factory_{this};
+  base::WeakPtrFactory<StarterDelegateAndroid> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill_assistant
 
-#endif  // CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_STARTER_ANDROID_H_
+#endif  // CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_STARTER_DELEGATE_ANDROID_H_
