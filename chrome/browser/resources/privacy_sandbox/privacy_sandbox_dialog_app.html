@@ -149,18 +149,21 @@
 
   <div class="buttons-container">
     <template is="dom-if" if="[[isConsent_]]">
-      <cr-button class="action-button" on-click="onConsentDeclined_">
+      <cr-button id="declineButton" class="action-button"
+          on-click="onConsentDeclined_">
         $i18n{consentDeclineButton}
       </cr-button>
-      <cr-button class="action-button" on-click="onConsentAccepted_">
+      <cr-button id="confirmButton" class="action-button"
+          on-click="onConsentAccepted_">
         $i18n{consentAcceptButton}
       </cr-button>
     </template>
     <template is="dom-if" if="[[!isConsent_]]">
-      <cr-button on-click="onNoticeOpenSettings_">
+      <cr-button id="settingsButton" on-click="onNoticeOpenSettings_">
         $i18n{noticeOpenSettingsButton}
       </cr-button>
-      <cr-button class="action-button" on-click="onNoticeAcknowledge_">
+      <cr-button id="ackButton" class="action-button"
+          on-click="onNoticeAcknowledge_">
         $i18n{noticeAcknowledgeButton}
       </cr-button>
     </template>

@@ -64,6 +64,7 @@ html_to_js("web_components") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = non_web_component_files + web_component_files
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

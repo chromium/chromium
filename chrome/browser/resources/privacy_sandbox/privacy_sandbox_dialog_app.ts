@@ -116,5 +116,12 @@ export class PrivacySandboxDialogAppElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'privacy-sandbox-dialog-app': PrivacySandboxDialogAppElement;
+  }
+}
+
+
 customElements.define(
     PrivacySandboxDialogAppElement.is, PrivacySandboxDialogAppElement);

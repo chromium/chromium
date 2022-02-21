@@ -96,6 +96,7 @@ if (include_js_tests) {
       "media_internals/media_internals_ui_browsertest.js",
       "net_internals/net_internals_browsertest.js",
       "ntp4.js",
+      "privacy_sandbox/privacy_sandbox_dialog_browsertest.js",
       "resources/webui_resources_browsertest.js",
       "sandboxstatus_browsertest.js",
       "settings/a11y/a11y_browsertest.js",
@@ -620,6 +621,7 @@ generate_grd("build_grd") {
     "history:build_grdp",
     "js:build_grdp",
     "new_tab_page:build_grdp",
+    "privacy_sandbox:build_grdp",
     "read_later:build_grdp",
     "settings:build_grdp",
     "tab_search:build_grdp",
@@ -638,6 +640,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/settings/resources.grdp",
     "$target_gen_dir/tab_search/resources.grdp",
     "$target_gen_dir/web_ui_test_mojo_resources.grdp",
+    "$target_gen_dir/privacy_sandbox/resources.grdp",
   ]
 
   if (enable_extensions) {
