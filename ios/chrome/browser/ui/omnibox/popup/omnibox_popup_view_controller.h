@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/commands/omnibox_suggestion_commands.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 
 @protocol ImageRetriever;
 @protocol FaviconRetriever;
@@ -22,6 +23,7 @@
 // Hence the delegation.
 @interface OmniboxPopupViewController
     : UIViewController <AutocompleteResultConsumer,
+                        ContentProviding,
                         OmniboxSuggestionCommands,
                         UIScrollViewDelegate>
 

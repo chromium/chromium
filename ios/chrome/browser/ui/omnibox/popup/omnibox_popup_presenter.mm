@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 
+#import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
@@ -27,7 +28,7 @@ const CGFloat kVerticalOffset = 6;
 @property(nonatomic, strong) NSLayoutConstraint* bottomConstraint;
 
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate> delegate;
-@property(nonatomic, weak) UIViewController* viewController;
+@property(nonatomic, weak) UIViewController<ContentProviding>* viewController;
 @property(nonatomic, strong) UIView* popupContainerView;
 // Separator for the bottom edge of the popup on iPad.
 @property(nonatomic, strong) UIView* bottomSeparator;
@@ -36,10 +37,11 @@ const CGFloat kVerticalOffset = 6;
 
 @implementation OmniboxPopupPresenter
 
-- (instancetype)initWithPopupPresenterDelegate:
-                    (id<OmniboxPopupPresenterDelegate>)delegate
-                           popupViewController:(UIViewController*)viewController
-                                     incognito:(BOOL)incognito {
+- (instancetype)
+    initWithPopupPresenterDelegate:(id<OmniboxPopupPresenterDelegate>)delegate
+               popupViewController:
+                   (UIViewController<ContentProviding>*)viewController
+                         incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
     _delegate = delegate;
@@ -92,10 +94,9 @@ const CGFloat kVerticalOffset = 6;
 }
 
 - (void)updatePopup {
-  BOOL popupHeightIsZero =
-      self.viewController.view.intrinsicContentSize.height == 0;
+  BOOL popupHasContent = self.viewController.hasContent;
   BOOL popupIsOnscreen = self.popupContainerView.superview != nil;
-  if (popupHeightIsZero && popupIsOnscreen) {
+  if (!popupHasContent && popupIsOnscreen) {
     // If intrinsic size is 0 and popup is onscreen, we want to remove the
     // popup view.
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -109,7 +110,7 @@ const CGFloat kVerticalOffset = 6;
 
     self.open = NO;
     [self.delegate popupDidCloseForPresenter:self];
-  } else if (!popupHeightIsZero && !popupIsOnscreen) {
+  } else if (popupHasContent && !popupIsOnscreen) {
     // If intrinsic size is nonzero and popup is offscreen, we want to add it.
     UIViewController* parentVC =
         [self.delegate popupParentViewControllerForPresenter:self];

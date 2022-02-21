@@ -22,17 +22,8 @@
 }
 
 - (PopupModel*)createModel {
-  __weak __typeof(self) weakSelf = self;
-  PopupModel* model = [[PopupModel alloc] initWithMatches:PopupMatch.previews
-                                            buttonHandler:^{
-                                              [weakSelf addMatches];
-                                            }];
+  PopupModel* model = [[PopupModel alloc] initWithMatches:PopupMatch.previews];
   return model;
-}
-
-- (void)addMatches {
-  self.model.matches =
-      [self.model.matches arrayByAddingObject:PopupMatch.added];
 }
 
 @end

@@ -20,9 +20,11 @@ import Foundation
 
   let pedal: Pedal?
 
+  let handler: () -> Void
+
   public init(
     title: String, subtitle: String?, url: URL?, isAppendable: Bool, isTabMatch: Bool,
-    supportsDeletion: Bool, pedal: Pedal?
+    supportsDeletion: Bool, pedal: Pedal?, trailingButtonHandler: @escaping () -> Void = {}
   ) {
     self.title = title
     self.subtitle = subtitle
@@ -31,6 +33,7 @@ import Foundation
     self.isTabMatch = isTabMatch
     self.supportsDeletion = supportsDeletion
     self.pedal = pedal
+    handler = trailingButtonHandler
   }
 
   public var id: String {
@@ -39,6 +42,7 @@ import Foundation
 
   func trailingButtonTapped() {
     print("Trailing button of match \"\(title)\" tapped!")
+    handler()
   }
 }
 

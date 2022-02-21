@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #include "ios/chrome/browser/ui/elements/self_sizing_table_view.h"
 #include "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
+#import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
 #include "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -436,6 +437,14 @@ const CGFloat kTopAndBottomPadding = 8.0;
   self.keyboardHeight = CurrentKeyboardHeight(keyboardFrameValue);
   if (self.tableView.contentSize.height > 0)
     [self updateContentInsetForKeyboard];
+}
+
+#pragma mark - ContentProviding
+
+- (BOOL)hasContent {
+  // The table view is a |SelfSizingTableView|, so its intrinsic content size
+  // can tell whether it has content.
+  return self.view.intrinsicContentSize.height > 0;
 }
 
 @end

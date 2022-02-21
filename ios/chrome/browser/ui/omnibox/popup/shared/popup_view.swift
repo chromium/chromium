@@ -15,9 +15,6 @@ struct PopupView: View {
         }
         .onDelete { indexSet in model.matches.remove(atOffsets: indexSet) }
       }
-      Button("Add matches") {
-        model.buttonHandler()
-      }
     }
   }
 }
@@ -26,6 +23,6 @@ struct PopupView_Previews: PreviewProvider {
   static var previews: some View {
     PopupView(
       model: PopupModel(
-        matches: PopupMatch.previews, buttonHandler: {}))
+        matches: PopupMatch.previews))
   }
 }

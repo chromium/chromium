@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ContentProviding;
 @class OmniboxPopupPresenter;
 
 @protocol OmniboxPopupPresenterDelegate
@@ -40,7 +41,9 @@
 
 - (instancetype)initWithPopupPresenterDelegate:
                     (id<OmniboxPopupPresenterDelegate>)presenterDelegate
-                           popupViewController:(UIViewController*)viewController
+                           popupViewController:
+                               (UIViewController<ContentProviding>*)
+                                   viewController
                                      incognito:(BOOL)incognito;
 
 @end

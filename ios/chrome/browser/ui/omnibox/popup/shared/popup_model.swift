@@ -6,12 +6,8 @@ import Foundation
 
 @objcMembers public class PopupModel: NSObject, ObservableObject {
   @Published var matches: [PopupMatch]
-  var buttonHandler: () -> Void
 
-  public init(
-    matches: [PopupMatch], buttonHandler: @escaping () -> Void
-  ) {
+  public init(matches: [PopupMatch]) {
     self.matches = matches
-    self.buttonHandler = buttonHandler
   }
 }
