@@ -4333,6 +4333,7 @@ source_set("unit_tests") {
     "../ash/login/quick_unlock/pin_storage_cryptohome_unittest.cc",
     "../ash/login/quick_unlock/pin_storage_prefs_unittest.cc",
     "../ash/login/quick_unlock/quick_unlock_storage_unittest.cc",
+    "../ash/login/quick_unlock/quick_unlock_utils_unittest.cc",
     "../ash/login/reporting/login_logout_reporter_unittest.cc",
     "../ash/login/saml/in_session_password_change_manager_unittest.cc",
     "../ash/login/saml/in_session_password_sync_manager_unittest.cc",
