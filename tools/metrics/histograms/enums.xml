@@ -54169,6 +54169,7 @@ from previous Chrome versions.
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:disabled"/>
   <int value="-164259311"
       label="ColorProviderRedirectionForThemeProvider:disabled"/>
+  <int value="-163537782" label="SyncAndroidPromosRevamp:disabled"/>
   <int value="-162928621" label="ForceStartupSigninPromo:disabled"/>
   <int value="-161782023" label="AndroidMessagesProdEndpoint:enabled"/>
   <int value="-160571071" label="InterestFeedV2:enabled"/>
@@ -55030,6 +55031,7 @@ from previous Chrome versions.
   <int value="446316019" label="enable-threaded-compositing"/>
   <int value="448463569" label="NewShortcutMapping:disabled"/>
   <int value="451196246" label="disable-impl-side-painting"/>
+  <int value="451500573" label="SyncAndroidPromosRevamp:enabled"/>
   <int value="452139294" label="VrShellExperimentalRendering:enabled"/>
   <int value="452955571" label="EnableFilesystemInIncognito:disabled"/>
   <int value="453017472"

@@ -34,6 +34,11 @@ inline constexpr base::Feature
         "SyncAllowAutofillWalletDataInTransportModeWithCustomPassphrase",
         base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr base::Feature kSyncAndroidPromosRevamp{
+    "SyncAndroidPromosRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Causes the sync engine to count a quota for commits of data types that can
 // be committed by extension JS API. If the quota is depleted, an extra long
 // nudge delay is applied to that data type. As a result, more changes are
