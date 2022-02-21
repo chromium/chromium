@@ -23,17 +23,12 @@
 </body>
 
 <script>
-
-var notify_on_first_name_input_change = false;
-var first_name_input_changed = false;
-
 function CountryChanged() {
   var first_name_input = document.getElementById("firstname");
   // Reset the value of the first name field.
   first_name_input.value = '';
   first_name_input.addEventListener('change', function() {
     first_name_input.value = '';
-    first_name_input_changed = true;
 
     setTimeout(function() {
       // Re-change the select options.
@@ -45,12 +40,7 @@ function CountryChanged() {
       state_select.options[2] = new Option('TX', 'TX');
     });
 
-    if (notify_on_first_name_input_change) {
-      // Give time to see if it fills.
-      setTimeout(function() {
-        window.domAutomationController.send(first_name_input.value != '');
-      }, 1000);
-    }
+    window['refill'] = true;
   });
 
   // Reset the value of the address field.
@@ -69,17 +59,4 @@ function CountryChanged() {
   state_select.options[1] = new Option('MA', 'MA');
   state_select.options[2] = new Option('TX', 'TX');
 }
-
-function hasRefilled() {
-  var first_name_input = document.getElementById('firstname');
-  if (first_name_input && first_name_input_changed) {
-    // Give time to see if it fills.
-    setTimeout(function() {
-      window.domAutomationController.send(document.getElementById("firstname").value != '');
-    }, 1000);
-  } else {
-    notify_on_first_name_input_change = true;
-  }
-}
-
 </script>

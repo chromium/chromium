@@ -80,6 +80,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/events/base_event_utils.h"
@@ -533,6 +534,7 @@ struct AutofillFlowParams {
   base::RepeatingClosure after_show = {};
   base::RepeatingClosure after_select = {};
   base::RepeatingClosure after_accept = {};
+  size_t max_show_tries = 5;
   base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
   absl::optional<content::ToRenderFrameHost> execution_target = {};
 };
@@ -556,6 +558,7 @@ struct AutofillFlowParams {
         ShowAutofillPopup(e, test,
                           {.show_method = p.show_method,
                            .num_profile_suggestions = p.num_profile_suggestions,
+                           .max_tries = p.max_show_tries,
                            .timeout = p.timeout,
                            .execution_target = execution_target});
     if (!a)
@@ -638,7 +641,7 @@ const std::vector<FieldValue> kDefaultAddress{
 // matches the `i`th `expected` FieldValue::value.
 // As a sanity check, also requires that the `i`th actual FieldValue::id
 // starts with the `i`th `expected` FieldValue::id.
-auto ValuesAre(const std::vector<FieldValue>& expected) {
+[[nodiscard]] auto ValuesAre(const std::vector<FieldValue>& expected) {
   auto FieldEq = [](const FieldValue& expected) {
     return ::testing::AllOf(
         ::testing::Field(&FieldValue::id, ::testing::StartsWith(expected.id)),
@@ -648,6 +651,178 @@ auto ValuesAre(const std::vector<FieldValue>& expected) {
   for (const FieldValue& field : expected)
     matchers.push_back(FieldEq(field));
   return ::testing::UnorderedElementsAreArray(matchers);
+}
+
+// An object that waits for an observed form-control element to change its value
+// to a non-empty string.
+//
+// See ListenForValueChange() for details.
+class ValueWaiter {
+ public:
+  static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(5);
+
+  ValueWaiter(int waiterId, content::ToRenderFrameHost execution_target)
+      : waiterId_(waiterId), execution_target_(execution_target) {}
+
+  // Returns the non-empty value of the observed form-control element, or
+  // absl::nullopt if no value change is observed before `timeout`.
+  [[nodiscard]] absl::optional<std::string> Wait(
+      base::TimeDelta timeout = kDefaultTimeout) && {
+    const std::string kFunction = R"(
+      // Polls the value of `window[observedValueSlots]` and replies with the
+      // value once its non-`undefined` or `timeoutMillis` have elapsed.
+      //
+      // The value is expected to be populated by listenForValueChange().
+      function pollValue(waiterId, timeoutMillis) {
+        console.log(`pollValue('${waiterId}', ${timeoutMillis})`);
+
+        let interval = undefined;
+        let timeout = undefined;
+
+        function reply(r) {
+          console.log(`pollValue('${waiterId}', ${timeoutMillis}): `+
+                      `replying '${r}'`);
+          window.domAutomationController.send(r);
+          clearTimeout(timeout);
+          clearInterval(interval);
+        }
+
+        function replyIfSet(r) {
+          if (r !== undefined)
+            reply(r);
+        }
+
+        timeout = setTimeout(function() {
+          console.log(`pollValue('${waiterId}', ${timeoutMillis}): timeout`);
+          reply('');
+        }, timeoutMillis);
+
+        const kPollingIntervalMillis = 100;
+        interval = setInterval(function() {
+          replyIfSet(window.observedValueSlots[waiterId]);
+        }, kPollingIntervalMillis);
+
+        replyIfSet(window.observedValueSlots[waiterId]);
+      }
+    )";
+    std::string call = base::StringPrintf("pollValue(`%d`, %" PRId64 ")",
+                                          waiterId_, timeout.InMilliseconds());
+    content::EvalJsResult r =
+        content::EvalJs(execution_target_, kFunction + call,
+                        content::EXECUTE_SCRIPT_USE_MANUAL_REPLY);
+    std::string value = r.ExtractString();
+    return !value.empty() ? absl::make_optional(value) : absl::nullopt;
+  }
+
+ private:
+  int waiterId_;
+  content::ToRenderFrameHost execution_target_;
+};
+
+// Registers observers for a value change of a field `id`. This listener fires
+// on the first time *any* object whose ID is `id` changes its value to a
+// non-empty string after the global `unblock_variable` has become true.
+//
+// It is particularly useful for detecting refills.
+//
+// For example, consider the following chain JavaScript statements:
+//
+// 1. window.unblock = undefined // or any other value that converts to false;
+// 2. document.body.innerHTML += '<input id="id">';
+// 3. document.getElementById('id').value = "foo";
+// 4. document.getElementById('id').remove();
+// 5. document.body.innerHTML += '<input id="id">';
+// 6. document.getElementById('id').value = "foo";
+// 7. window.unblock = true;
+// 8. document.getElementById('id').value = "";
+// 9. document.getElementById('id').value = "bar";
+//
+// Then `ListenForValueChange("id", "unblock", rfh).Wait(base::Seconds(5)) ==
+// "bar"` the ListenForValueChange() call happens any point before Event 9 and
+// Event 9 happens no later than 5 seconds after that.
+[[nodiscard]] ValueWaiter ListenForValueChange(
+    const std::string& id,
+    const absl::optional<std::string>& unblock_variable,
+    content::ToRenderFrameHost execution_target) {
+  const std::string kFunction = R"(
+    // This function observes the DOM for an attached form-control element `id`.
+    //
+    // On the first `change` event of such an element, it stores that element's
+    // value in an array `window[observedValueSlots]`.
+    //
+    // Returns the index of that value.
+    function listenForValueChange(id, unblockVariable) {
+      console.log(`listenForValueChange('${id}')`);
+
+      if (window.observedValueSlots === undefined)
+        window.observedValueSlots = [];
+
+      const waiterId = window.observedValueSlots.length;
+      window.observedValueSlots.push(undefined);
+
+      let observer = undefined;
+
+      function changeHandler() {
+        console.log(`listenForValueChange('${id}'): observed change in event `+
+                    `handler: '${document.getElementById(id).value}'`);
+        // Since other handlers may manipulate the fields value or remove it
+        // from the DOM or replace it, we delay its execution.
+        setTimeout(function() {
+          console.log(`listenForValueChange('${id}'): observed change after `+
+                      `event handler: '${document.getElementById(id).value}'`);
+          if (unblockVariable && window[unblockVariable] !== true) {
+            console.log(`listenForValueChange('${id}'): `+
+                        `observed change, blocked by '${unblockVariable}'`);
+            return;
+          }
+          const e = document.getElementById(id);
+          if (e === undefined) {
+            console.log(`listenForValueChange('${id}'): element not found`);
+            return;
+          }
+          if (e.value === '') {
+            console.log(`listenForValueChange('${id}'): empty value`);
+            return;
+          }
+          console.log(`listenForValueChange('${id}'): storing in slot`);
+          window.observedValueSlots[waiterId] = e.value;
+          e.removeEventListener('change', changeHandler);
+          observer.disconnect();
+        }, 0);
+      }
+
+      // Observes the DOM to see if a new element `id` is added or some element
+      // changes its ID to `id`.
+      observer = new MutationObserver(function(mutations) {
+        const e = document.getElementById(id);
+        if (e !== null) {
+          console.log(`listenForValueChange('${id}'): some element has been `+
+                      `attached or change`);
+          e.addEventListener('change', changeHandler);
+        }
+      });
+      observer.observe(document, {
+        attributes: true,
+        childList: true,
+        characterData: false,
+        subtree: true
+      });
+
+      const e = document.getElementById(id);
+      if (e !== null) {
+        console.log(`listenForValueChange('${id}'): element exists already`);
+        e.addEventListener('change', changeHandler);
+      }
+
+      return waiterId;
+    }
+  )";
+  std::string call =
+      base::StringPrintf("listenForValueChange(`%s`, `%s`)", id.c_str(),
+                         unblock_variable.value_or("").c_str());
+  content::EvalJsResult r = content::EvalJs(execution_target, kFunction + call);
+  int waiterId = r.ExtractInt();
+  return ValueWaiter(waiterId, execution_target);
 }
 
 }  // namespace
@@ -701,6 +876,10 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
       content::ToRenderFrameHost execution_target) {
     std::string script = base::StringPrintf("%s.value", e->c_str());
     return content::EvalJs(execution_target, script);
+  }
+
+  ValueWaiter ListenForRefill(const std::string& id) {
+    return ListenForValueChange(id, "refill", GetWebContents());
   }
 
   void SetUp() override {
@@ -1423,6 +1602,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                             {.do_select = false,
                              .do_accept = false,
                              .show_method = ShowMethod::ByClick(),
+                             // Since failure is expected, no need to retry
+                             // showing the Autofill popup too often.
+                             .max_show_tries = 2,
                              .execution_target = GetWebContents()}));
 }
 
@@ -2848,16 +3030,6 @@ class AutofillInteractiveTestDynamicForm
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  // Waits for the refill (of the form `id`, if specified) to happen, and
-  // returns true if it did.
-  content::EvalJsResult WaitForRefill(std::string id = "") {
-    if (!id.empty())
-      id = "`" + id + "`";
-    return content::EvalJs(GetWebContents(),
-                           base::StringPrintf("hasRefilled(%s)", id.c_str()),
-                           content::EXECUTE_SCRIPT_USE_MANUAL_REPLY);
-  }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2871,8 +3043,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       embedded_test_server()->GetURL("a.com", "/autofill/dynamic_form.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname_form1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname_form1"));
@@ -2892,8 +3065,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                                             "/autofill/two_dynamic_forms.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname_form1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_form1"), this));
-  ASSERT_EQ(true, WaitForRefill("firstname_form1"));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname_form1"));
@@ -2904,8 +3078,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form1"));
   EXPECT_EQ("15125551234", GetFieldValueById("phone_form1"));
 
+  refill = ListenForRefill("firstname_form2");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_form2"), this));
-  ASSERT_EQ(true, WaitForRefill("firstname_form2"));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname_form2"));
@@ -2926,8 +3101,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/double_dynamic_form.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname_form2");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(false, WaitForRefill());
+  ASSERT_FALSE(std::move(refill).Wait());
 
   // Make sure the new form was not filled.
   EXPECT_EQ("", GetFieldValueById("firstname_form2"));
@@ -2947,8 +3123,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/dynamic_form_after_delay.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname_form1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(false, WaitForRefill());
+  ASSERT_FALSE(std::move(refill).Wait());
 
   // Make sure that the new form was not filled.
   EXPECT_EQ("", GetFieldValueById("firstname_form1"));
@@ -2969,8 +3146,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/dynamic_form_new_field_types.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname_form1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // The fields present in the initial fill should be filled.
   EXPECT_EQ("Milton", GetFieldValueById("firstname_form1"));
@@ -2998,8 +3176,10 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_select_to_text.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ValueWaiter refill = ListenForRefill("firstname");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
@@ -3021,8 +3201,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/dynamic_form_visibility_switch.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
@@ -3044,8 +3225,10 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ValueWaiter refill = ListenForRefill("address1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname2"));
@@ -3066,8 +3249,10 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid_noname_form.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ValueWaiter refill = ListenForRefill("address1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname2"));
@@ -3090,8 +3275,9 @@ IN_PROC_BROWSER_TEST_P(
       "/autofill/dynamic_form_element_invalid_multiple_badname_forms.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("address1_7");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_5"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the second form was filled correctly, and the first form was left
   // unfilled.
@@ -3115,8 +3301,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/dynamic_form_element_invalid_unowned_badnames.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("address1_7");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_5"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the second form was filled correctly, and the first form was left
   // unfilled.
@@ -3141,8 +3328,9 @@ IN_PROC_BROWSER_TEST_P(
       "/autofill/dynamic_form_element_invalid_multiple_noname_forms.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("address1_7");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_5"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the second form was filled correctly, and the first form was left
   // unfilled.
@@ -3164,8 +3352,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/dynamic_form_element_invalid_unowned.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("address1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname2"));
@@ -3185,9 +3374,10 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                                     "/autofill/dynamic_form_credit_card.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("cc-name");
   ASSERT_TRUE(AutofillFlow(GetElementById("cc-name"), this,
                            {.show_method = ShowMethod::ByChar('M')}));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   EXPECT_EQ("Milton Waddams", GetFieldValueById("cc-name"));
   EXPECT_EQ("4111111111111111", GetFieldValueById("cc-num"));
@@ -3206,8 +3396,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/dynamic_form_select_options_change.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
@@ -3229,8 +3420,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/dynamic_form_double_select_options_change.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(false, WaitForRefill());
+  ASSERT_FALSE(std::move(refill).Wait());
 
   // The fields that were initially filled and not reset should still be filled.
   EXPECT_EQ("", GetFieldValueById(
@@ -3252,8 +3444,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/dynamic_form_no_name.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname_form1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname_form1"));
@@ -3277,8 +3470,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "/autofill/dynamic_form_with_no_name_select_options_change.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
@@ -3300,8 +3494,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/dynamic_synthetic_form.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname_syntheticform1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname_syntheticform1"));
@@ -3324,8 +3519,9 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
       "a.com", "/autofill/dynamic_synthetic_form_select_options_change.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  ValueWaiter refill = ListenForRefill("firstname");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  ASSERT_EQ(true, WaitForRefill());
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));

@@ -20,21 +20,11 @@
 </body>
 
 <script>
-
-
-var notify_on_address_input_change = false;
-var address_input_changed = false;
-
 function CountryChanged() {
   // Reset the value of the address field.
   var address1 = document.getElementById('address1');
   address1.value = '';
-  address1.onchange = function() {
-    if (notify_on_address_input_change)
-      window.domAutomationController.send(address1.value != '');
-    else
-      address_input_changed = true;
-  }
+  window.refill = true;
 
   // Change the element that triggered the autofill. Remove it, and make another
   // field visible. This is to test if the autofill can handle the case where
@@ -45,16 +35,5 @@ function CountryChanged() {
   var name_later = document.getElementById("firstname2");
   name_later.removeAttribute('style');
 }
-
-
-function hasRefilled() {
-  var address1 = document.getElementById('address1');
-  if (address1 && address_input_changed) {
-    window.domAutomationController.send(address1.value != '');
-  } else {
-    notify_on_address_input_change = true;
-  }
-}
-
 </script>
 
