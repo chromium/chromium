@@ -587,7 +587,7 @@ class QuickUnlockPrivateUnitTest
     bool success = false;
     base::RunLoop loop;
     ash::quick_unlock::PinBackend::GetInstance()->TryAuthenticate(
-        account_id, ash::Key(password),
+        account_id, ash::Key(password), ash::quick_unlock::Purpose::kAny,
         base::BindLambdaForTesting([&](bool auth_success) {
           called = true;
           success = auth_success;

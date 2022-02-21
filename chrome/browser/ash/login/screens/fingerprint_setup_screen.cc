@@ -121,7 +121,8 @@ FingerprintSetupScreen::~FingerprintSetupScreen() {
 
 bool FingerprintSetupScreen::MaybeSkip(WizardContext* context) {
   if (!quick_unlock::IsFingerprintEnabled(
-          ProfileManager::GetActiveUserProfile()) ||
+          ProfileManager::GetActiveUserProfile(),
+          quick_unlock::Purpose::kAny) ||
       chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;

@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_power_button_race_detector.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -61,9 +62,10 @@ class FingerprintStorage final
   // `num_attempts`:  Only valid when auth success to record number of attempts.
   void RecordFingerprintUnlockResult(FingerprintUnlockResult result);
 
-  // Returns true if fingerprint unlock is currently available.
-  // This does not check if strong auth is available.
-  bool IsFingerprintAvailable() const;
+  // Returns true if fingerprint unlock is currently available to be used for
+  // the specified purpose. When purpose is kAny, it checks if any purpose is
+  // enabled. This does not check if strong auth is available.
+  bool IsFingerprintAvailable(Purpose purpose) const;
 
   // Returns true if the user has fingerprint record registered.
   bool HasRecord() const;

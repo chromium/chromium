@@ -226,7 +226,7 @@ void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
 
   if (enabled) {
     // Unretained safe because the PinBackend instance is never destroyed.
-    TryAuthenticate(account_id, Key(pin),
+    TryAuthenticate(account_id, Key(pin), Purpose::kAny,
                     base::BindOnce(&PinBackend::OnPinAutosubmitCheckComplete,
                                    base::Unretained(this), account_id,
                                    pin.size(), std::move(did_set)));
@@ -271,39 +271,42 @@ void PinBackend::Remove(const AccountId& account_id,
 }
 
 void PinBackend::CanAuthenticate(const AccountId& account_id,
+                                 Purpose purpose,
                                  BoolCallback result) {
   if (resolving_backend_) {
     on_cryptohome_support_received_.push_back(
         base::BindOnce(&PinBackend::CanAuthenticate, base::Unretained(this),
-                       account_id, std::move(result)));
+                       account_id, purpose, std::move(result)));
     return;
   }
 
   if (ShouldUseCryptohome(account_id)) {
-    cryptohome_backend_->CanAuthenticate(account_id, std::move(result));
+    cryptohome_backend_->CanAuthenticate(account_id, purpose,
+                                         std::move(result));
   } else {
     QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-    PostResponse(
-        std::move(result),
-        storage && storage->HasStrongAuth() &&
-            storage->pin_storage_prefs()->IsPinAuthenticationAvailable());
+    PostResponse(std::move(result),
+                 storage && storage->HasStrongAuth() &&
+                     storage->pin_storage_prefs()->IsPinAuthenticationAvailable(
+                         purpose));
   }
 }
 
 void PinBackend::TryAuthenticate(const AccountId& account_id,
                                  const Key& key,
+                                 Purpose purpose,
                                  BoolCallback result) {
   if (resolving_backend_) {
     on_cryptohome_support_received_.push_back(
         base::BindOnce(&PinBackend::TryAuthenticate, base::Unretained(this),
-                       account_id, key, std::move(result)));
+                       account_id, key, purpose, std::move(result)));
     return;
   }
 
   if (ShouldUseCryptohome(account_id)) {
     // Safe because the PinBackend instance is never destroyed.
     cryptohome_backend_->TryAuthenticate(
-        account_id, key,
+        account_id, key, purpose,
         base::BindOnce(&PinBackend::OnCryptohomeAuthenticationResponse,
                        base::Unretained(this), account_id, key,
                        std::move(result)));
@@ -315,7 +318,7 @@ void PinBackend::TryAuthenticate(const AccountId& account_id,
       PostResponse(std::move(result), false);
     } else {
       const bool auth_success =
-          storage->pin_storage_prefs()->TryAuthenticatePin(key);
+          storage->pin_storage_prefs()->TryAuthenticatePin(key, purpose);
       if (auth_success && key.GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
         UpdatePinAutosubmitOnSuccessfulTryAuth(account_id,
                                                key.GetSecret().length());

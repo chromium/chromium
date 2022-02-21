@@ -89,7 +89,7 @@ bool PinSetupScreen::ShouldSkipBecauseOfPolicy() {
     return false;
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
-      quick_unlock::IsPinDisabledByPolicy(prefs)) {
+      quick_unlock::IsPinDisabledByPolicy(prefs, quick_unlock::Purpose::kAny)) {
     return true;
   }
 

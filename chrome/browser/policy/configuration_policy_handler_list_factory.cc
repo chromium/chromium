@@ -2007,6 +2007,17 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kQuickUnlockModeAllowlist, ash::prefs::kQuickUnlockModeAllowlist,
       base::Value::Type::LIST));
 
+  // TODO(b/214871750): Here we're not deprecating QuickUnlockModeAllowlist, but
+  // just want to set WebAuthnFactors policy value as QuickUnlockModeAllowlist
+  // if it's not set. Move this logic to server side afterwards.
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(key::kQuickUnlockModeAllowlist,
+                                            ash::prefs::kWebAuthnFactors,
+                                            base::Value::Type::LIST),
+      std::make_unique<SimplePolicyHandler>(key::kWebAuthnFactors,
+                                            ash::prefs::kWebAuthnFactors,
+                                            base::Value::Type::LIST)));
+
   handlers->AddHandler(base::WrapUnique(
       NetworkConfigurationPolicyHandler::CreateForDevicePolicy()));
   handlers->AddHandler(base::WrapUnique(

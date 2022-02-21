@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
@@ -43,8 +44,14 @@ LoginDisplayMojo::~LoginDisplayMojo() {
 
 void LoginDisplayMojo::UpdatePinKeyboardState(const AccountId& account_id) {
   quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
-      account_id, base::BindOnce(&LoginDisplayMojo::OnPinCanAuthenticate,
-                                 weak_factory_.GetWeakPtr(), account_id));
+      // Currently if PIN is cryptohome-based, PinCanAuthenticate always return
+      // true if there's a set up PIN, even if the quick unlock policy disables
+      // it. And if PIN is pref-based it always returns false regardless of the
+      // policy because pref-based PIN doesn't have capability to decrypt the
+      // user's cryptohome. So just pass an arbitrary purpose here.
+      account_id, quick_unlock::Purpose::kAny,
+      base::BindOnce(&LoginDisplayMojo::OnPinCanAuthenticate,
+                     weak_factory_.GetWeakPtr(), account_id));
 }
 
 void LoginDisplayMojo::UpdateChallengeResponseAuthAvailability(

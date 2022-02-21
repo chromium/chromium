@@ -15,6 +15,7 @@ class PrefService;
 
 namespace ash {
 namespace quick_unlock {
+enum class Purpose;
 
 class PinStoragePrefs {
  public:
@@ -47,11 +48,11 @@ class PinStoragePrefs {
   void RemovePin();
 
   // Is PIN entry currently available?
-  bool IsPinAuthenticationAvailable() const;
+  bool IsPinAuthenticationAvailable(Purpose purpose) const;
 
   // Tries to authenticate the given pin. This will consume an unlock attempt.
   // This always returns false if IsPinAuthenticationAvailable returns false.
-  bool TryAuthenticatePin(const Key& key);
+  bool TryAuthenticatePin(const Key& key, Purpose purpose);
 
   // Return the stored salt/secret. This is fetched directly from pref_service_.
   std::string PinSalt() const;

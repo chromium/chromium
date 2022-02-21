@@ -40,6 +40,11 @@ void QuickUnlockHandler::OnJavascriptAllowed() {
       base::BindRepeating(
           &QuickUnlockHandler::UpdateQuickUnlockDisabledByPolicy,
           weak_ptr_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      prefs::kWebAuthnFactors,
+      base::BindRepeating(
+          &QuickUnlockHandler::UpdateQuickUnlockDisabledByPolicy,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void QuickUnlockHandler::OnJavascriptDisallowed() {
@@ -67,9 +72,9 @@ void QuickUnlockHandler::OnPinLoginAvailable(bool is_available) {
 }
 
 void QuickUnlockHandler::UpdateQuickUnlockDisabledByPolicy() {
-  FireWebUIListener(
-      "quick-unlock-disabled-by-policy-changed",
-      base::Value(quick_unlock::IsPinDisabledByPolicy(pref_service_)));
+  FireWebUIListener("quick-unlock-disabled-by-policy-changed",
+                    base::Value(quick_unlock::IsPinDisabledByPolicy(
+                        pref_service_, quick_unlock::Purpose::kAny)));
 }
 
 }  // namespace settings

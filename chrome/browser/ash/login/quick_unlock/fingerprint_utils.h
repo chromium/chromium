@@ -13,8 +13,10 @@ namespace ash {
 enum class FingerprintState;
 
 namespace quick_unlock {
+enum class Purpose;
 
-FingerprintState GetFingerprintStateForUser(const user_manager::User* user);
+FingerprintState GetFingerprintStateForUser(const user_manager::User* user,
+                                            Purpose purpose);
 
 }  // namespace quick_unlock
 }  // namespace ash

@@ -49,7 +49,6 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
     CryptohomeMiscClient::Shutdown();
     SystemSaltGetter::Shutdown();
     EnabledForTesting(false);
-    IsFingerprintEnabled(nullptr);
   }
 
   bool IsPinSet() const {
@@ -71,7 +70,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
     bool res;
     base::RunLoop loop;
     storage_->CanAuthenticate(
-        test_account_id_,
+        test_account_id_, Purpose::kAny,
         base::BindOnce(
             [](base::OnceClosure closure, bool* res, bool can_auth) {
               *res = can_auth;

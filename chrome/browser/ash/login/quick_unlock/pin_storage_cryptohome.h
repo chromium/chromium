@@ -20,6 +20,7 @@ class Key;
 class UserContext;
 
 namespace quick_unlock {
+enum class Purpose;
 
 class PinStorageCryptohome {
  public:
@@ -49,9 +50,12 @@ class PinStorageCryptohome {
               const absl::optional<std::string>& pin_salt,
               BoolCallback did_set);
   void RemovePin(const UserContext& user_context, BoolCallback did_remove);
-  void CanAuthenticate(const AccountId& account_id, BoolCallback result) const;
+  void CanAuthenticate(const AccountId& account_id,
+                       Purpose purpose,
+                       BoolCallback result) const;
   void TryAuthenticate(const AccountId& account_id,
                        const Key& key,
+                       Purpose purpose,
                        BoolCallback result);
 
  private:

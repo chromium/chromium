@@ -19,6 +19,7 @@ namespace quick_unlock {
 class AuthToken;
 class FingerprintStorage;
 class PinStoragePrefs;
+enum class Purpose;
 
 // Helper class for managing state for quick unlock services (pin and
 // fingerprint), and general lock screen management (tokens for extension API
@@ -49,14 +50,14 @@ class QuickUnlockStorage : public KeyedService {
 
   // Returns true if fingerprint unlock is currently available.
   // This checks whether there's fingerprint setup, as well as HasStrongAuth.
-  bool IsFingerprintAuthenticationAvailable() const;
+  bool IsFingerprintAuthenticationAvailable(Purpose purpose) const;
 
   // Returns true if PIN unlock is currently available.
-  bool IsPinAuthenticationAvailable() const;
+  bool IsPinAuthenticationAvailable(Purpose purpose) const;
 
   // Tries to authenticate the given pin. This will consume a pin unlock
   // attempt. This always returns false if HasStrongAuth returns false.
-  bool TryAuthenticatePin(const Key& key);
+  bool TryAuthenticatePin(const Key& key, Purpose purpose);
 
   // Creates a new authentication token to be used by the quickSettingsPrivate
   // API for authenticating requests. Resets the expiration timer and
@@ -75,7 +76,7 @@ class QuickUnlockStorage : public KeyedService {
 
   // Determines the fingerprint state. This is called at lock screen
   // initialization or after the fingerprint sensor has restarted.
-  FingerprintState GetFingerprintState();
+  FingerprintState GetFingerprintState(Purpose purpose);
 
   FingerprintStorage* fingerprint_storage() {
     return fingerprint_storage_.get();

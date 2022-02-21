@@ -58,16 +58,16 @@ std::string PinStoragePrefs::PinSecret() const {
   return pref_service_->GetString(prefs::kQuickUnlockPinSecret);
 }
 
-bool PinStoragePrefs::IsPinAuthenticationAvailable() const {
+bool PinStoragePrefs::IsPinAuthenticationAvailable(Purpose purpose) const {
   const bool exceeded_unlock_attempts =
       unlock_attempt_count() >= kMaximumUnlockAttempts;
 
-  return !IsPinDisabledByPolicy(pref_service_) && IsPinSet() &&
+  return !IsPinDisabledByPolicy(pref_service_, purpose) && IsPinSet() &&
          !exceeded_unlock_attempts;
 }
 
-bool PinStoragePrefs::TryAuthenticatePin(const Key& key) {
-  if (!IsPinAuthenticationAvailable())
+bool PinStoragePrefs::TryAuthenticatePin(const Key& key, Purpose purpose) {
+  if (!IsPinAuthenticationAvailable(purpose))
     return false;
 
   AddUnlockAttempt();

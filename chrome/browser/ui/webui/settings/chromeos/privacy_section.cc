@@ -464,7 +464,8 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {
-  return quick_unlock::IsFingerprintEnabled(profile());
+  return quick_unlock::IsFingerprintEnabled(profile(),
+                                            quick_unlock::Purpose::kAny);
 }
 
 void PrivacySection::UpdateRemoveFingerprintSearchTags() {

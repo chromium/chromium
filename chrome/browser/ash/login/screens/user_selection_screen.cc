@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_utils.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/views/user_board_view.h"
@@ -884,8 +885,8 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     user_info.is_signed_in = user->is_logged_in();
     user_info.is_device_owner = is_owner;
     user_info.can_remove = CanRemoveUser(user);
-    user_info.fingerprint_state =
-        quick_unlock::GetFingerprintStateForUser(user);
+    user_info.fingerprint_state = quick_unlock::GetFingerprintStateForUser(
+        user, quick_unlock::Purpose::kUnlock);
 
     auto* easy_unlock_service = GetEasyUnlockServiceForUser(account_id);
     if (easy_unlock_service) {

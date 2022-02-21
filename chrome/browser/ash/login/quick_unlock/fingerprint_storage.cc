@@ -72,11 +72,11 @@ bool FingerprintStorage::IsEligible() const {
 }
 
 absl::optional<bool> FingerprintStorage::IsAccessible() const {
-  return IsFingerprintEnabled(profile_);
+  return IsFingerprintEnabled(profile_, Purpose::kAny);
 }
 
 bool FingerprintStorage::IsEnabled() const {
-  return IsFingerprintEnabled(profile_) && HasRecord();
+  return IsAccessible() && HasRecord();
 }
 
 void FingerprintStorage::RecordFingerprintUnlockResult(
@@ -92,8 +92,8 @@ void FingerprintStorage::RecordFingerprintUnlockResult(
   feature_usage_metrics_service_->RecordUsage(success);
 }
 
-bool FingerprintStorage::IsFingerprintAvailable() const {
-  return !ExceededUnlockAttempts() && IsFingerprintEnabled(profile_) &&
+bool FingerprintStorage::IsFingerprintAvailable(Purpose purpose) const {
+  return !ExceededUnlockAttempts() && IsFingerprintEnabled(profile_, purpose) &&
          HasRecord();
 }
 
@@ -149,7 +149,7 @@ void FingerprintStorage::OnSessionFailed() {}
 
 void FingerprintStorage::OnGetRecords(
     const base::flat_map<std::string, std::string>& fingerprints_list_mapping) {
-  if (!IsFingerprintDisabledByPolicy(profile_->GetPrefs())) {
+  if (!IsFingerprintDisabledByPolicy(profile_->GetPrefs(), Purpose::kAny)) {
     profile_->GetPrefs()->SetInteger(prefs::kQuickUnlockFingerprintRecord,
                                      fingerprints_list_mapping.size());
     return;

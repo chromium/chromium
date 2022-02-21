@@ -318,6 +318,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPinUnlockWeakPinsAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kQuickUnlockFingerprintRecord[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQuickUnlockModeAllowlist[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kWebAuthnFactors[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQuickUnlockPinSalt[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQuickUnlockPinSecret[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQuickUnlockTimeout[];

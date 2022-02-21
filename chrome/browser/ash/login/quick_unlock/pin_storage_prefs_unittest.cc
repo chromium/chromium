@@ -58,10 +58,11 @@ class PinStoragePrefsTestApi {
   std::string PinSecret() const { return pin_storage_->PinSecret(); }
 
   bool IsPinAuthenticationAvailable() const {
-    return pin_storage_->IsPinAuthenticationAvailable();
+    return pin_storage_->IsPinAuthenticationAvailable(Purpose::kAny);
   }
   bool TryAuthenticatePin(const std::string& secret, Key::KeyType key_type) {
-    return pin_storage_->TryAuthenticatePin(Key(key_type, "" /*salt*/, secret));
+    return pin_storage_->TryAuthenticatePin(Key(key_type, "" /*salt*/, secret),
+                                            Purpose::kAny);
   }
 
  private:

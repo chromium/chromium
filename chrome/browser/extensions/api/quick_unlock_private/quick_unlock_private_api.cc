@@ -357,7 +357,7 @@ QuickUnlockPrivateCanAuthenticatePinFunction::Run() {
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
 
   ash::quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
-      user->GetAccountId(),
+      user->GetAccountId(), ash::quick_unlock::Purpose::kAny,
       base::BindOnce(&QuickUnlockPrivateCanAuthenticatePinFunction::
                          HandleCanAuthenticateResult,
                      this));
@@ -383,7 +383,8 @@ ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetAvailableModesFunction::Run() {
   QuickUnlockModeList modes;
   if (!ash::quick_unlock::IsPinDisabledByPolicy(
-          GetActiveProfile(browser_context())->GetPrefs())) {
+          GetActiveProfile(browser_context())->GetPrefs(),
+          ash::quick_unlock::Purpose::kAny)) {
     modes.push_back(quick_unlock_private::QUICK_UNLOCK_MODE_PIN);
   }
 
@@ -519,7 +520,8 @@ ExtensionFunction::ResponseAction QuickUnlockPrivateSetModesFunction::Run() {
   // on the UI, but users can still reach here via dev tools.
   for (size_t i = 0; i < params_->modes.size(); ++i) {
     if (params_->modes[i] == QuickUnlockMode::QUICK_UNLOCK_MODE_PIN &&
-        ash::quick_unlock::IsPinDisabledByPolicy(pref_service)) {
+        ash::quick_unlock::IsPinDisabledByPolicy(
+            pref_service, ash::quick_unlock::Purpose::kAny)) {
       return RespondNow(Error(kPinDisabledByPolicy));
     }
   }

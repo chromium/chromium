@@ -57,16 +57,20 @@ base::Time QuickUnlockStorage::TimeOfNextStrongAuth() const {
   return last_strong_auth_ + GetStrongAuthTimeout(profile_->GetPrefs());
 }
 
-bool QuickUnlockStorage::IsFingerprintAuthenticationAvailable() const {
-  return HasStrongAuth() && fingerprint_storage_->IsFingerprintAvailable();
+bool QuickUnlockStorage::IsFingerprintAuthenticationAvailable(
+    Purpose purpose) const {
+  return HasStrongAuth() &&
+         fingerprint_storage_->IsFingerprintAvailable(purpose);
 }
 
-bool QuickUnlockStorage::IsPinAuthenticationAvailable() const {
-  return HasStrongAuth() && pin_storage_prefs_->IsPinAuthenticationAvailable();
+bool QuickUnlockStorage::IsPinAuthenticationAvailable(Purpose purpose) const {
+  return HasStrongAuth() &&
+         pin_storage_prefs_->IsPinAuthenticationAvailable(purpose);
 }
 
-bool QuickUnlockStorage::TryAuthenticatePin(const Key& key) {
-  return HasStrongAuth() && pin_storage_prefs()->TryAuthenticatePin(key);
+bool QuickUnlockStorage::TryAuthenticatePin(const Key& key, Purpose purpose) {
+  return HasStrongAuth() &&
+         pin_storage_prefs()->TryAuthenticatePin(key, purpose);
 }
 
 std::string QuickUnlockStorage::CreateAuthToken(
@@ -89,7 +93,7 @@ const UserContext* QuickUnlockStorage::GetUserContext(
   return auth_token_->user_context();
 }
 
-FingerprintState QuickUnlockStorage::GetFingerprintState() {
+FingerprintState QuickUnlockStorage::GetFingerprintState(Purpose purpose) {
   // Fingerprint is not registered for this account.
   if (!fingerprint_storage_->HasRecord())
     return FingerprintState::UNAVAILABLE;
@@ -108,7 +112,7 @@ FingerprintState QuickUnlockStorage::GetFingerprintState() {
     return FingerprintState::DISABLED_FROM_TIMEOUT;
 
   // Auth is available.
-  if (IsFingerprintAuthenticationAvailable())
+  if (IsFingerprintAuthenticationAvailable(purpose))
     return FingerprintState::AVAILABLE_DEFAULT;
 
   // Default to unavailabe.

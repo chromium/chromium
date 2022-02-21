@@ -64,7 +64,7 @@ class FingerprintStorageTestApi {
       : fingerprint_storage_(fingerprint_storage) {}
 
   bool IsFingerprintAvailable() const {
-    return fingerprint_storage_->IsFingerprintAvailable();
+    return fingerprint_storage_->IsFingerprintAvailable(Purpose::kAny);
   }
 
  private:

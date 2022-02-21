@@ -320,7 +320,8 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("quickUnlockPinAutosubmitFeatureEnabled",
                           chromeos::features::IsPinAutosubmitFeatureEnabled());
   html_source->AddBoolean("quickUnlockDisabledByPolicy",
-                          quick_unlock::IsPinDisabledByPolicy(pref_service));
+                          quick_unlock::IsPinDisabledByPolicy(
+                              pref_service, quick_unlock::Purpose::kAny));
   html_source->AddBoolean("lockScreenNotificationsEnabled",
                           ash::features::IsLockScreenNotificationsEnabled());
   html_source->AddBoolean(
@@ -822,7 +823,8 @@ void PeopleSection::UpdateAccountManagerSearchTags(
 }
 
 bool PeopleSection::AreFingerprintSettingsAllowed() {
-  return quick_unlock::IsFingerprintEnabled(profile());
+  return quick_unlock::IsFingerprintEnabled(profile(),
+                                            quick_unlock::Purpose::kAny);
 }
 
 }  // namespace settings

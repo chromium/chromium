@@ -20,6 +20,14 @@ class Profile;
 namespace ash {
 namespace quick_unlock {
 
+// Enumeration specifying the purpose that the caller is using the credentials
+// for.
+enum class Purpose {
+  kAny,
+  kUnlock,
+  kWebAuthn,
+};
+
 // Enumeration specifying the possible intervals before a strong auth
 // (password) is required to use quick unlock. These values correspond to the
 // policy items of QuickUnlockTimeout (policy ID 352) in policy_templates.json,
@@ -48,8 +56,10 @@ base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
 // Register quick unlock prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-// Returns true if PIN unlock is disabled by policy.
-bool IsPinDisabledByPolicy(PrefService* pref_service);
+// Returns true if setting PIN is disabled by policy for the
+// specified purpose. If purpose is kAny, then it is regarded as enabled if any
+// of the purposes is enabled.
+bool IsPinDisabledByPolicy(PrefService* pref_service, Purpose purpose);
 
 // Returns true if the quick unlock feature flag is present.
 // TODO(crbug/1111541): Remove this function because it always returns true.
@@ -59,10 +69,13 @@ bool IsPinEnabled();
 bool IsFingerprintSupported();
 
 // Returns true if the fingerprint is allowed for specified profile.
-bool IsFingerprintEnabled(Profile* profile);
+bool IsFingerprintEnabled(Profile* profile, Purpose purpose);
 
-// Returns true if the fingerprint unlock is disabled by policy.
-bool IsFingerprintDisabledByPolicy(const PrefService* pref_service);
+// Returns true if the fingerprint unlock is disabled by policy for the
+// specified purpose. If purpose is kAny, then it is regarded as enabled if any
+// of the purposes is enabled.
+bool IsFingerprintDisabledByPolicy(const PrefService* pref_service,
+                                   Purpose purpose);
 
 // Returns fingerprint sensor location depending on the command line switch.
 // Is used to display correct UI assets. Returns TABLET_POWER_BUTTON by default.
@@ -96,6 +109,7 @@ using ::ash::quick_unlock::GetFingerprintLocation;
 using ::ash::quick_unlock::IsFingerprintEnabled;
 using ::ash::quick_unlock::IsPinDisabledByPolicy;
 using ::ash::quick_unlock::IsPinEnabled;
+using ::ash::quick_unlock::Purpose;
 }  // namespace quick_unlock
 }  // namespace chromeos
 
