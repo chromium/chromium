@@ -5452,6 +5452,11 @@ const char kDesktopCaptureLacrosV2Description[] =
     "Enables the improved desktop/window capturer for doing screen/window "
     "sharing on Lacros";
 
+const char kLacrosMergeIcuDataFileName[] =
+    "Enable merging of icudtl.dat in Lacros";
+const char kLacrosMergeIcuDataFileDescription[] =
+    "Enables sharing common areas of icudtl.dat between Ash and Lacros.";
+
 const char kLacrosNonSyncingProfilesName[] =
     "Enable non-syncing profiles on lacros";
 const char kLacrosNonSyncingProfilesDescription[] =

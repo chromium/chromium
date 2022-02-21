@@ -57,8 +57,7 @@
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #endif
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 #if !BUILDFLAG(IS_NACL)
 namespace {
@@ -118,10 +117,10 @@ const char kAssetsPathPrefix[] = "assets/";
 // Windows implementation guards against two instances owning the same
 // PlatformFile (which we allow since we know it is never freed).
 PlatformFile g_icudtl_pf = kInvalidPlatformFile;
-MemoryMappedFile* g_icudtl_mapped_file = nullptr;
+IcuDataFile* g_icudtl_mapped_file = nullptr;
 MemoryMappedFile::Region g_icudtl_region;
 PlatformFile g_icudtl_extra_pf = kInvalidPlatformFile;
-MemoryMappedFile* g_icudtl_extra_mapped_file = nullptr;
+IcuDataFile* g_icudtl_extra_mapped_file = nullptr;
 MemoryMappedFile::Region g_icudtl_extra_region;
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -238,7 +237,7 @@ void InitializeExternalTimeZoneData() {
 
 int LoadIcuData(PlatformFile data_fd,
                 const MemoryMappedFile::Region& data_region,
-                std::unique_ptr<MemoryMappedFile>* out_mapped_data_file,
+                std::unique_ptr<IcuDataFile>* out_mapped_data_file,
                 UErrorCode* out_error_code) {
   InitializeExternalTimeZoneData();
 
@@ -247,7 +246,7 @@ int LoadIcuData(PlatformFile data_fd,
     return 1;  // To debug http://crbug.com/445616.
   }
 
-  *out_mapped_data_file = std::make_unique<MemoryMappedFile>();
+  *out_mapped_data_file = std::make_unique<IcuDataFile>();
   if (!(*out_mapped_data_file)->Initialize(File(data_fd), data_region)) {
     LOG(ERROR) << "Couldn't mmap icu data file";
     return 2;  // To debug http://crbug.com/445616.
@@ -274,7 +273,7 @@ bool InitializeICUWithFileDescriptorInternal(
     return true;
   }
 
-  std::unique_ptr<MemoryMappedFile> mapped_file;
+  std::unique_ptr<IcuDataFile> mapped_file;
   UErrorCode err;
   g_debug_icu_load = LoadIcuData(data_fd, data_region, &mapped_file, &err);
   if (g_debug_icu_load == 1 || g_debug_icu_load == 2) {
@@ -513,7 +512,7 @@ bool InitializeExtraICUWithFileDescriptor(
     // InitializeICUWithFileDescriptor().
     return false;
   }
-  std::unique_ptr<MemoryMappedFile> mapped_file;
+  std::unique_ptr<IcuDataFile> mapped_file;
   UErrorCode err;
   if (LoadIcuData(data_fd, data_region, &mapped_file, &err) != 0) {
     return false;
@@ -560,7 +559,7 @@ bool InitializeExtraICU(const std::string& split_name) {
   }
   g_icudtl_extra_pf = pf_region->pf;
   g_icudtl_extra_region = pf_region->region;
-  std::unique_ptr<MemoryMappedFile> mapped_file;
+  std::unique_ptr<IcuDataFile> mapped_file;
   UErrorCode err;
   if (LoadIcuData(g_icudtl_extra_pf, g_icudtl_extra_region, &mapped_file,
                   &err) != 0) {
@@ -614,5 +613,4 @@ void AllowMultipleInitializeCallsForTesting() {
 
 #endif  // !BUILDFLAG(IS_NACL)
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

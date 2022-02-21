@@ -10,13 +10,20 @@
 #if !BUILDFLAG(IS_NACL)
 #if ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 class IcuUtilTest : public testing::Test {
  protected:
   void SetUp() override { ResetGlobalsForTesting(); }
 };
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(IcuUtilTest, InitializeIcuSucceeds) {
+  bool success = InitializeICU();
+
+  ASSERT_TRUE(success);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_ANDROID)
 
@@ -75,8 +82,7 @@ TEST_F(IcuUtilTest, CannotInitializeExtraIcuFromFdAfterIcu) {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n
 
 #endif  // ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
 #endif  // !BUILDFLAG(IS_NACL)

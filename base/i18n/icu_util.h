@@ -12,11 +12,14 @@
 #include "base/i18n/base_i18n_export.h"
 #include "build/build_config.h"
 
-#define ICU_UTIL_DATA_FILE   0
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "icu_mergeable_data_file.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#define ICU_UTIL_DATA_FILE 0
 #define ICU_UTIL_DATA_STATIC 1
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 #if !BUILDFLAG(IS_NACL)
 // Call this function to load ICU's data tables for the current process.  This
@@ -24,6 +27,18 @@ namespace i18n {
 BASE_I18N_EXPORT bool InitializeICU();
 
 #if ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
+
+// In ChromeOS, two versions of icudtl.dat are shipped separately with Ash and
+// Lacros. Although the two files can differ, there's a big overlap in content.
+// We can take advantage of that and save memory by scanning the two files and
+// merging the pages that are in common.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+using IcuDataFile = IcuMergeableDataFile;
+#else
+// Outside of Lacros, we simply memory map the ICU data file.
+using IcuDataFile = MemoryMappedFile;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 // Loads ICU's extra data tables from disk for the current process. If used must
 // be called before InitializeICU(). |split_name| is used on Android to find the
 // asset file.
@@ -32,8 +47,8 @@ BASE_I18N_EXPORT bool InitializeExtraICU(const std::string& split_name);
 // Returns the PlatformFile and Region that was initialized by InitializeICU()
 // or InitializeExtraICU(). Use with InitializeICUWithFileDescriptor() or
 // InitializeExtraICUWithFileDescriptor().
-BASE_I18N_EXPORT PlatformFile GetIcuDataFileHandle(
-    MemoryMappedFile::Region* out_region);
+BASE_I18N_EXPORT PlatformFile
+GetIcuDataFileHandle(MemoryMappedFile::Region* out_region);
 BASE_I18N_EXPORT PlatformFile
 GetIcuExtraDataFileHandle(MemoryMappedFile::Region* out_region);
 
@@ -62,7 +77,6 @@ BASE_I18N_EXPORT void SetIcuTimeZoneDataDirForTesting(const char* dir);
 BASE_I18N_EXPORT void AllowMultipleInitializeCallsForTesting();
 #endif  // !BUILDFLAG(IS_NACL)
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n
 
 #endif  // BASE_I18N_ICU_UTIL_H_
