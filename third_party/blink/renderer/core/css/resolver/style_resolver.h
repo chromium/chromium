@@ -206,6 +206,11 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                       const StyleRequest&,
                       StyleResolverState& state,
                       StyleCascade& cascade);
+  void ApplyBaseStyleNoCache(Element* element,
+                             const StyleRecalcContext&,
+                             const StyleRequest&,
+                             StyleResolverState& state,
+                             StyleCascade& cascade);
   void ApplyInterpolations(StyleResolverState& state,
                            StyleCascade& cascade,
                            ActiveInterpolationsMap& interpolations);
