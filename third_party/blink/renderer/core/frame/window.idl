@@ -50,7 +50,7 @@
     [Replaceable, MeasureAs=BarPropToolbar] readonly attribute BarProp toolbar;
     attribute DOMString status;
     [CrossOrigin, CallWith=Isolate] void close();
-    [HighEntropy=Direct, MeasureAs=WindowClosed, CrossOrigin] readonly attribute boolean closed;
+    [MeasureAs=WindowClosed, CrossOrigin] readonly attribute boolean closed;
     void stop();
     [CrossOrigin, CallWith=Isolate] void focus();
     [CrossOrigin] void blur();
