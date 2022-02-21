@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_ASH_DEVICE_SCHEDULED_REBOOT_REBOOT_NOTIFICATION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_ASH_DEVICE_SCHEDULED_REBOOT_REBOOT_NOTIFICATION_CONTROLLER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/ui/ash/device_scheduled_reboot/scheduled_reboot_dialog.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -34,6 +36,15 @@ class RebootNotificationController {
       const base::Time& reboot_time,
       ButtonClickCallback reboot_callback) const;
 
+  // Only show dialog if the user is in session and kiosk session is not
+  // in progress.
+  void MaybeShowPendingRebootDialog(const base::Time& reboot_time,
+                                    base::OnceClosure reboot_callback);
+
+ protected:
+  // Only notify in-session users that are not running in kiosk mode.
+  virtual bool ShouldNotifyUser() const;
+
  private:
   void ShowNotification(
       const std::string& id,
@@ -41,6 +52,9 @@ class RebootNotificationController {
       const std::u16string& message,
       const message_center::RichNotificationData& data,
       scoped_refptr<message_center::NotificationDelegate> delegate) const;
+
+  // Dialog notifying the user about the pending reboot.
+  std::unique_ptr<ScheduledRebootDialog> scheduled_reboot_dialog_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_DEVICE_SCHEDULED_REBOOT_REBOOT_NOTIFICATION_CONTROLLER_H_

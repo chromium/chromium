@@ -21,35 +21,31 @@
 // until the reboot if the dialog is left open.
 class ScheduledRebootDialog : public views::WidgetObserver {
  public:
-  ScheduledRebootDialog(base::Time reboot_time);
+  ScheduledRebootDialog(const base::Time& reboot_time,
+                        gfx::NativeView native_view,
+                        base::OnceClosure reboot_callback);
   ScheduledRebootDialog(const ScheduledRebootDialog&) = delete;
   ScheduledRebootDialog& operator=(const ScheduledRebootDialog&) = delete;
   ~ScheduledRebootDialog() override;
 
-  // Sets the timer deadline to |reboot_time| and refreshes the view's title
-  // accordingly.
-  void SetRebootTime(base::Time reboot_time);
-
-  // Show bubble dialog and set |dialog_delegate_|.
-  void ShowBubble(gfx::NativeView native_view,
-                  base::OnceClosure reboot_callback);
-
   // Returns |dialog_delegate_|.
-  views::DialogDelegate* GetDialogDelegate();
+  views::DialogDelegate* GetDialogDelegate() const;
 
  protected:
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
 
  private:
+  // Show bubble dialog and set |dialog_delegate_|.
+  void ShowBubble(const base::Time& reboot_time,
+                  gfx::NativeView native_view,
+                  base::OnceClosure reboot_callback);
+
   // Invoked when the timer fires to refresh the title text.
   void UpdateWindowTitle();
 
   // Build title string.
-  std::u16string BuildTitle();
-
-  // Time of the scheduled reboot.
-  base::Time reboot_time_;
+  const std::u16string BuildTitle() const;
 
   // Timer that schedules title refreshes.
   RelaunchRequiredTimer title_refresh_timer_;

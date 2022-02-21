@@ -47,8 +47,8 @@ class ScheduledRebootDialogTest : public views::ViewsTestBase {
 
 void ScheduledRebootDialogTest::CreateViewAndShow() {
   base::Time deadline = base::Time::Now() + base::Minutes(5);
-  dialog_ = std::make_unique<ScheduledRebootDialog>(deadline);
-  dialog_->ShowBubble(parent_widget_.GetNativeView(), base::NullCallback());
+  dialog_ = std::make_unique<ScheduledRebootDialog>(
+      deadline, parent_widget_.GetNativeView(), base::NullCallback());
   views::DialogDelegate* dialog_model = dialog_->GetDialogDelegate();
   EXPECT_NE(dialog_model, nullptr);
   views::test::WidgetVisibleWaiter(dialog_model->GetWidget()).Wait();
@@ -74,11 +74,6 @@ TEST_F(ScheduledRebootDialogTest, VerifyWindowTitleChange) {
   // Fast forward time to reboot time.
   task_environment()->FastForwardBy(base::Seconds(55));
   EXPECT_EQ(delegate->GetWindowTitle(), u"Your device will restart now");
-
-  // Set reboot time to new time and verify title change.
-  dialog()->SetRebootTime(base::Time::Now() + base::Minutes(10));
-  EXPECT_EQ(delegate->GetWindowTitle(),
-            u"Your device will restart in 10 minutes");
 }
 
 TEST_F(ScheduledRebootDialogTest, CloseDialog) {

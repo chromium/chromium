@@ -16,12 +16,15 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
-ScheduledRebootDialog::ScheduledRebootDialog(base::Time reboot_time)
-    : reboot_time_(reboot_time),
-      title_refresh_timer_(
+ScheduledRebootDialog::ScheduledRebootDialog(const base::Time& reboot_time,
+                                             gfx::NativeView native_view,
+                                             base::OnceClosure reboot_callback)
+    : title_refresh_timer_(
           reboot_time,
           base::BindRepeating(&ScheduledRebootDialog::UpdateWindowTitle,
-                              base::Unretained(this))) {}
+                              base::Unretained(this))) {
+  ShowBubble(reboot_time, native_view, std::move(reboot_callback));
+}
 
 ScheduledRebootDialog::~ScheduledRebootDialog() {
   if (dialog_delegate_) {
@@ -30,12 +33,8 @@ ScheduledRebootDialog::~ScheduledRebootDialog() {
   }
 }
 
-void ScheduledRebootDialog::SetRebootTime(base::Time reboot_time) {
-  reboot_time_ = reboot_time;
-  title_refresh_timer_.SetDeadline(reboot_time);
-}
-
-void ScheduledRebootDialog::ShowBubble(gfx::NativeView native_view,
+void ScheduledRebootDialog::ShowBubble(const base::Time& reboot_time,
+                                       gfx::NativeView native_view,
                                        base::OnceClosure reboot_callback) {
   auto dialog_model =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>())
@@ -47,8 +46,8 @@ void ScheduledRebootDialog::ShowBubble(gfx::NativeView native_view,
               ui::DialogModelLabel(
                   l10n_util::GetStringFUTF16(
                       IDS_POLICY_DEVICE_SCHEDULED_REBOOT_DIALOG_MESSAGE,
-                      base::TimeFormatTimeOfDay(reboot_time_),
-                      base::TimeFormatShortDate(reboot_time_)))
+                      base::TimeFormatTimeOfDay(reboot_time),
+                      base::TimeFormatShortDate(reboot_time)))
                   .set_is_secondary())
           .OverrideShowCloseButton(false)
           .Build();
@@ -68,7 +67,7 @@ void ScheduledRebootDialog::OnWidgetClosing(views::Widget* widget) {
   dialog_delegate_ = nullptr;
 }
 
-views::DialogDelegate* ScheduledRebootDialog::GetDialogDelegate() {
+views::DialogDelegate* ScheduledRebootDialog::GetDialogDelegate() const {
   return dialog_delegate_;
 }
 
@@ -77,7 +76,7 @@ void ScheduledRebootDialog::UpdateWindowTitle() {
     dialog_delegate_->SetTitle(BuildTitle());
 }
 
-std::u16string ScheduledRebootDialog::BuildTitle() {
+const std::u16string ScheduledRebootDialog::BuildTitle() const {
   const base::TimeDelta rounded_offset =
       title_refresh_timer_.GetRoundedDeadlineDelta();
   int amount = rounded_offset.InSeconds();

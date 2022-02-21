@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/ptr_util.h"
@@ -35,11 +37,8 @@ RebootNotificationController::~RebootNotificationController() = default;
 void RebootNotificationController::MaybeShowPendingRebootNotification(
     const base::Time& reboot_time,
     ButtonClickCallback reboot_callback) const {
-  if (!user_manager::UserManager::IsInitialized() ||
-      !user_manager::UserManager::Get()->IsUserLoggedIn() ||
-      user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
+  if (!ShouldNotifyUser())
     return;
-  }
 
   std::u16string reboot_title =
       l10n_util::GetStringUTF16(IDS_POLICY_DEVICE_SCHEDULED_REBOOT_TITLE);
@@ -58,6 +57,21 @@ void RebootNotificationController::MaybeShowPendingRebootNotification(
 
   ShowNotification(kPendingRebootNotificationId, reboot_title, reboot_message,
                    notification_data, delegate);
+}
+
+void RebootNotificationController::MaybeShowPendingRebootDialog(
+    const base::Time& reboot_time,
+    base::OnceClosure reboot_callback) {
+  if (!ShouldNotifyUser())
+    return;
+
+  gfx::NativeView parent =
+      ash::Shell::GetContainer(ash::Shell::GetRootWindowForNewWindows(),
+                               ash::kShellWindowId_SystemModalContainer);
+  // Closes old dialog if it was active at the moment and shows a new dialog
+  // notifying the user about the reboot.
+  scheduled_reboot_dialog_ = std::make_unique<ScheduledRebootDialog>(
+      reboot_time, parent, std::move(reboot_callback));
 }
 
 void RebootNotificationController::ShowNotification(
@@ -83,4 +97,10 @@ void RebootNotificationController::ShowNotification(
   notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
                                         *notification,
                                         /*metadata=*/nullptr);
+}
+
+bool RebootNotificationController::ShouldNotifyUser() const {
+  return (user_manager::UserManager::IsInitialized() &&
+          user_manager::UserManager::Get()->IsUserLoggedIn() &&
+          !user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
 }
